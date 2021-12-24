@@ -1,0 +1,38 @@
+{% extends "links.html" %}
+
+{% block title %}
+    Automation
+{% endblock title %}
+
+
+
+{% block styles %}
+{{super()}}
+<link href="{{url_for('.static', filename='automation.css')}}" rel="stylesheet" />
+{% endblock %}
+
+{% block app_content %}
+{% if projectName is defined %}
+    <h4>Project Name : {{ projectName }}</h4><br>
+{% endif %}
+  <button type="button" class="btn btn-primary btn-lg POS">Automate POS</button>
+  <div class="predictpos"></div>
+  </br>
+  </br>
+  <button type="button" class="btn btn-primary btn-lg MORPH">Automate Morph Analyser</button>
+  </br>
+  </br>
+  <button type="button" class="btn btn-primary btn-lg MT">Automate MT</button>
+  </br>
+  </br>
+  <button type="button" class="btn btn-primary btn-lg ASR">Automate Transcription</button>
+  </br>
+  </br>
+  <!-- <input type="text" class="form-control" placeholder="Enter morpheme to get its MORPH" name="predictMORPH"> -->
+  <div class="clear"></div>      
+{% endblock %}
+
+{% block scripts %}
+{{super()}}
+<script src="{{url_for('.static', filename='automation.js')}}"></script>
+{% endblock %}

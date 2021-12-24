@@ -1,0 +1,37 @@
+{% extends "links.html" %}
+
+{% block title %}
+Edit Lexeme
+{% endblock title %}
+
+{% block styles %}
+{{super()}}
+<link rel="stylesheet" href="{{url_for('.static', filename='editlexeme.css')}}">
+{% endblock %}
+
+{% block app_content %}
+    <h4> 
+        <!-- <a href="#">
+            <button type="button" class="btn btn-primary downloadlex">Download Lexeme</button>
+        </a> -->
+    </h4>
+    <br>    
+    <form action="{{ url_for('lexemeupdate') }}" method="POST" enctype="multipart/form-data">
+        <div class="form-group projectname"></div>    
+        <div class="lexemeform"></div>
+        <div class="enternewlexeme1"></div>
+        <div class="sense"></div>
+        <div class="variant"></div>
+        <div class="allomorph"></div>
+        <div class="enternewlexeme2"></div>
+        <div class="customfields"></div>
+        <div class="count"></div>
+        <input class="btn btn-primary" id="submit" type="submit" value="Update">
+    </form>
+{% endblock %}
+
+
+{% block scripts %}
+{{super()}}
+<script src="{{url_for('.static', filename='editlexeme.js')}}"></script>
+{% endblock %}

@@ -1,0 +1,124 @@
+[
+  {
+    "projectname": "Project_1"
+  },
+  {
+    "username": "ritesh",
+    "projectname": "Project_1",
+    "headword": "अच्छा",
+    "Lexeme Form Script": [
+      {
+        "Devanagari": "अच्छा"
+      }
+    ],
+    "Pronunciation": "/gʊd /",
+    "Additional Metadata Information": "",
+    "Any Additional Information": "",
+    "Encyclopedic Information": "",
+    "Source": "",
+    "Allomorph": {
+      "Allomorph 1": [
+        {
+          "Stem Allomorph": ""
+        },
+        {
+          "Environment": ""
+        }
+      ]
+    },
+    "Sense": {
+      "Sense 1": [
+        {
+          "Gloss Bengali": "ভালো"
+        },
+        {
+          "Definition Bengali": "ভালো"
+        },
+        {
+          "Gloss English": "good"
+        },
+        {
+          "Definition English": "good"
+        },
+        {
+          "Grammatical Category": "Adjective"
+        },
+        {
+          "Example": "Ram is a good boy"
+        },
+        {
+          "Free Translation": "Ram is a good boy"
+        },
+        {
+          "Semantic Domain": [
+            "9.2.1 Adjectives"
+          ]
+        },
+        {
+          "Lexical Relation": [
+            "Hypernym"
+          ]
+        }
+      ]
+    },
+    "Variant": {
+      "Variant 1": [
+        {
+          "Variant Form": ""
+        }
+      ]
+    },
+    "filesname": {
+      "Upload Sound File": "35022212_ahu.wav",
+      "Upload Field Notebook Scan": "3503123.jpeg"
+    },
+    "gloss": "ভালো",
+    "grammaticalcategory": "Adjective",
+    "lexemedeleteFLAG": 0,
+    "updatedBy": "ritesh",
+    "lexemeId": "L20211224164652424080",
+    "langscripts": {
+      "langname": "Hindi",
+      "langcode": "hin",
+      "headwordscript": {
+        "Deva": "Devanagari"
+      },
+      "lexemeformscripts": {
+        "Deva": "Devanagari"
+      },
+      "glosslangs": {
+        "Ben": "Bengali",
+        "Eng": "English"
+      },
+      "glossscripts": {
+        "Deva": "Devanagari",
+        "Gujr": "Gujarati",
+        "Latn": "Latin"
+      }
+    },
+    "SenseNew": {
+      "Sense 1": {
+        "Grammatical Category": "Adjective",
+        "Example": "Ram is a good boy",
+        "Free Translation": "Ram is a good boy",
+        "Semantic Domain": [
+          "9.2.1 Adjectives"
+        ],
+        "Gloss": {
+          "ben": "ভালো",
+          "eng": "good"
+        },
+        "Definition": {
+          "ben": "ভালো",
+          "eng": "good"
+        },
+        "Lexical Relation": {
+          "Hypernym": "Hypernym"
+        }
+      }
+    },
+    "Lexeme Form": {
+      "Deva": "अच्छा"
+    }
+  }
+]

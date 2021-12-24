@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block title %}
+Home
+{% endblock title %}
+
+{% block styles %}
+{{super()}}
+<link href="{{url_for('.static', filename='home.css')}}" rel="stylesheet" />
+{% endblock %}
+
+
+{% block app_content %}
+   <h2>Linguistic Field Data Management and Analysis System<br>[LiFE]</h2><br/><hr/>
+   <div>
+   <div id="activeProject">
+    <button type="button" class="btn btn-lg btn-success" onclick="window.location.href='{{ url_for('newproject') }}';">Create New Project</button>
+    <br/><br/>
+    <hr/>
+    {% if data|length > 0 %}
+    <h3>Active Project: {{ activeproject }}</h3>
+    <div>    
+        <button type="button" class="btn btn-lg btn-primary" onclick="window.location.href='{{ url_for('dictionaryview') }}';">View/Edit Project</button>
+        <button type="button" class="btn btn-lg btn-danger" data-toggle="modal" data-target="#myShareProjectModal">
+            Share Project
+        </button>
+        <button type="button" class="btn btn-lg btn-warning" onclick="window.location.href='{{ url_for('downloadproject') }}';">Download Project</button>
+        <!-- <button type="button" class="btn btn-lg btn-warning downloadProject">Download Project</button> -->
+    </div>
+    </div>
+    </br>
+    </br>
+   <div id="allProjects">
+    <h3>All Projects</h3>
+    
+      <table class="table table-sm col-md-6">
+        <tbody>
+            <tr>
+        {% for d in data %}
+            <td><button type="button" class="btn btn-info" id ="{{ d }}" onclick="changeActiveProject('{{ d }}')">{{ d }}</button></td>
+            {% if loop.index is divisibleby 3 %}
+                        </tr>
+                    </tbody>
+                    <tbody>
+                        <tr>    
+                {% endif %}
+        {% endfor %}
+        </tr>
+    </tbody>
+    </table>
+
+
+   </div>     
+   {% endif %}
+   <!-- Share Project Modal -->
+  <div class="modal fade" id="myShareProjectModal" tabindex="-1" role="dialog" aria-labelledby="myShareProjectModalLabel">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="myShareProjectModalLabel">Share</h4>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <!-- <div class="col-xs-12">Select A State</div> -->
+            <div class="col-xs-12">
+              <div class="form-group">
+                <select name="" id="shareProjectSelect"  multiple="multiple" style="width: 100%">
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary shareprojectwith">Share</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+    
+{% endblock %}
+
+{% block scripts %}
+{{super()}}
+<script src="{{url_for('.static', filename='shareproject.js')}}"></script>
+<script src="{{url_for('.static', filename='shareprojectwith.js')}}"></script>
+<script src="{{url_for('.static', filename='home.js')}}"></script>
+{% endblock %}

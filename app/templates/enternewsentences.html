@@ -1,0 +1,135 @@
+{% extends "links.html" %}
+
+{% block title %}
+    Enter New Sentences
+{% endblock title %}
+
+
+{% block styles %}
+{{super()}}
+<link href="{{url_for('.static', filename='enternewsentences.css')}}" rel="stylesheet" />
+{% endblock %}
+
+{% block app_content %}
+{% if projectName is defined %}
+    <h4>Project Name : {{ projectName }}</h4><br>
+{% endif %}
+  {% for data in sdata %}
+      {% if data['sentenceId'] is defined %}
+        {% if data['interlineargloss'] is defined %}
+          <p id='sentenceId'><strong>Sentence ID: </strong>{{ data['sentenceId'] }}</p>
+          <input type="text" class="form-control" placeholder="{{ data['interlineargloss']['level_1'] }}" name="interlinearglosslevel_1" value="{{ data['interlineargloss']['level_1'] }}" disabled>
+          <input type="text" class="form-control" placeholder="{{ data['interlineargloss']['level_2'] }}" name="interlinearglosslevel_2" value="{{ data['interlineargloss']['level_2'] }}" disabled>
+          <input type="text" class="form-control" placeholder="{{ data['interlineargloss']['level_3'] }}" name="interlinearglosslevel_3" value="{{ data['interlineargloss']['level_3'] }}" disabled>
+          <br>
+          <button type="button" class="btn btn-primary " onclick="editSentenceBtn()">Edit Sentence</button>
+          <!-- <input type="button" value="Edit Sentence" >  -->
+          <hr>
+      {% endif %}
+    {% endif %}
+  {% endfor %}
+  <!-- {% if sdata is defined %}
+    <h4>Project Name : {{ sdata[0]['sentenceId'] }}</h4>
+  {% endif %}       -->
+  <!-- <h4>Add Fields for your Project</h4> -->
+  <!-- <p><strong>**use # for word boundary(if there are affixes in the word) and - for morphemic break</strong></p> -->
+  <!-- <form action="{{ url_for('enternewsentences') }}" method="POST" enctype="multipart/form-data"> -->
+    <!-- <div class="form-group">
+      <input type="text" class="form-control" placeholder="sentence" name="projectname">
+    </div> -->
+    <div class="container defaultfield">
+    </div>
+    <!-- <br> -->
+    <!-- <div class="container Lexemeformscript">
+      <div class="row">
+        <div class="col-md-3"> 
+          <label for="Lexeme Form Script">Lexeme Form Script (First option will be use as Head Word)</label>
+          <select class="lexemeformscript" name="Lexeme Form Script" multiple="multiple" style="width: 150%"></select>
+        </div>
+      </div> 
+    </div>   -->
+    <!-- <br> -->
+    <!-- <div class="container Sensefield">
+      <div class="row">
+        <div class="col-md-3">
+          <label for="Gloss Language">Gloss Language</label>
+          <select class="glosslanguage" name="Gloss Language" multiple="multiple" style="width: 150%"></select>
+        </div>
+      </div> 
+    </div>   -->
+    <!-- <br> -->
+    <div class="container sentencefield">
+      <!-- <div class="row">
+        <div class="col-md-3">
+          <p><strong>Add Custom Field</strong></p>
+        </div>
+      </div> -->
+      <!-- <div class="row">  
+        <div class="col-md-6">
+          <div class="form-group">
+            <div class="input-group">
+              <input type="text" class="form-control" name="sentenceField1" placeholder="sentence">
+              <div class="input-group-btn">
+                <button class="btn btn-success" type="button" id="checkSentenceField"> 
+                  <span class="glyphicon glyphicon-ok" aria-hidden="true"></span> 
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div> -->
+    </div>
+      
+
+      <!-- <tr>
+      <td><input type="checkbox" id="lexemecheckbox" onchange="checkLexeme(this)" name="name1" checked/></td>
+      {% if data['lexemeId'] is defined %}
+          <td id='lexemeId'>{{ data['lexemeId'] }}</td>
+      {% else %}
+          <td> - </td>    
+      {% endif %}
+      {% if data['headword'] is defined %}
+          <td id='headword'>{{ data['headword'] }}</td>
+      {% else %}
+          <td> - </td>    
+      {% endif %}
+      {% if data['gloss'] is defined %}
+          <td>{{ data['gloss'] }}</td>
+      {% else %}
+      <td> - </td>    
+      {% endif %}
+      {% if data['grammaticalcategory'] is defined %}
+          <td>{{ data['grammaticalcategory'] }}</td>
+      {% else %}
+          <td> - </td>    
+      {% endif %}
+      
+      <td><button type="button" class="btn btn-primary lexemeview">View</button></td>
+      <td><button type="button" class="btn btn-warning lexemeedit">Edit</button></td>
+      <td><button type="button" class="btn btn-danger lexemedelete">Delete</button></td> -->
+    
+    <div class="interlineargloss"></div>
+    <br>
+    <div class="row">  
+      <div class="col-md-3">
+        <p><strong>Add New Sentence</strong></p>    
+        <div class="input-group-btn">
+          <button class="btn btn-success" type="button" id="addSentenceField"> 
+            <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 
+          </button>
+        </div>
+      </div>
+    </div>
+    <br>
+    <!-- <input class="btn btn-primary addSentences" id="submit" type="submit" value="Add Sentences" >
+  </form> -->
+  <div class="clear"></div>
+{% endblock %}
+
+{% block scripts %}
+{{super()}}
+<script src="{{url_for('.static', filename='enternewsentences.js')}}"></script>
+<!-- {% if sdata is defined %}
+<script type="text/javascript">interLinearGloss({{ sdata | tojson | safe }});</script>
+{% endif %} -->
+{% endblock %}

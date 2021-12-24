@@ -1,0 +1,25 @@
+Deploy python flask app mongoDB Atlas on Heroku
+
+link_1 : https://devcenter.heroku.com/articles/getting-started-with-python
+link_2 : https://stackabuse.com/deploying-a-flask-application-to-heroku/
+link_3 : https://www.mongodb.com/developer/how-to/use-atlas-on-heroku/
+link_4 : https://coding-boot-camp.github.io/full-stack/mongodb/deploy-with-heroku-and-mongodb-atlas
+
+1. sudo snap install heroku --classic
+2. heroku login
+3. git clone https://github.com/<username>/<repoName.git>
+4. cd python-getting-started
+5. heroku create appName
+6. heroku git:remote -a appName
+7. git add.
+8. git commit -m 'commit message'
+9. git push heroku master
+9.1 heroku git:remote -a appName
+10. heroku ps:scale web=1
+11. heroku open
+12. heroku logs --tail
+13. use link_3, link_4 to create:
+    13.1. MongoDB Atlas
+    13.2. Cluster in the Atlas
+    13.3. Database in the Cluster
+    13.4. Getting URI to connect MongoDB Atlas to Heroku and Flask-Application.

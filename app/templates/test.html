@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block title %}
+    Test
+{% endblock title %}
+
+
+{% block styles %}
+{{super()}}
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
+{% endblock %}
+
+{% block app_content %}
+  <h4>Add Fields for your Project</h4>
+  <hr>
+  <!-- <div class="container">
+    <form action="{{ url_for('enternewlexeme') }}" method="POST" enctype="multipart/form-data">
+      <div class="row">
+        <div class="col-md-3">
+          <select class="js-example-basic-single" name="state" style="width: 100%">
+            <option selected="selected" value="0" disabled>Script</option>
+          </select>
+        </div>
+      </div>
+      <br>      
+      <div class="row">
+        <div class="col-md-3">    
+          <select class="script" name="script" multiple="multiple" style="width: 100%"></select>
+        </div>
+      </div>      
+  </div>    
+    <div class="container defaultfield">
+    </div>
+    <br>
+    <input class="btn btn-primary create" id="submit" type="submit" value="Create Form" >
+  </form>
+  <div class="clear"></div>
+  <br>
+
+  <div class="btn-group" role="group">
+    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      Download Project
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu">
+      <li><a href="#">.docx</a></li>
+      <li><a href="#">.odt</a></li>
+      <li><a href="#">.pdf</a></li>
+      <li><a href="#">.xlxs</a></li>
+      <li><a href="#">.ods</a></li>
+      <li><a href="#">.json</a></li>
+    </ul>
+  </div> -->
+
+<!-- Button trigger modal -->
+<button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">
+  Launch demo modal
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-xs-12">Select A State</div>
+          <div class="col-xs-12">
+            <div class="form-group">
+              <!-- <select name="" id="select2-sample">
+                <option value="AES">AES</option>
+                <option value="AHP">AHP</option>
+                <option value="AJAX">AJAX</option>
+                <option value="AJAX Frameworks">AJAX Frameworks</option>
+                <option value="AJAX Toolkit">AJAX Toolkit</option>
+                <option value="AP Style">AP Style</option>
+                <option value="API Umbrella">API Umbrella</option>
+                <option value="APISpark">APISpark</option>
+                <option value="APItools">APItools</option>
+                <option value="APO SNP">APO SNP</option>
+                <option value="AQTF compliance">AQTF compliance</option>
+                <option value="ASIC">ASIC</option>
+                <option value="ASP">ASP</option>
+                <option value="ASP.NET">ASP.NET</option>
+                <option value="ASP.NET AJAX">ASP.NET AJAX</option>
+                <option value="ASP.NET MVC">ASP.NET MVC</option>
+                <option value="ATLS">ATLS</option>
+                <option value="ATM Networks">ATM Networks</option>
+                <option value="AWS Amazon Elastic Transcoder">AWS Amazon Elastic Transcoder</option>
+                <option value="AWS Amazon Mobile Analytics">AWS Amazon Mobile Analytics</option>
+                <option value="AWS CWI">AWS CWI</option>
+                <option value="AWS CloudFormation">AWS CloudFormation</option>
+                <option value="AWS CloudHSM">AWS CloudHSM</option>
+                <option value="AWS CloudTrail">AWS CloudTrail</option>
+                <option value="AWS CodeCommit">AWS CodeCommit</option>
+              </select> -->
+              <form action="/action_page.php">
+                <label for="fname">First name:</label><br>
+                <input type="text" id="fname" name="fname" value="John"><br>
+                <label for="lname">Last name:</label><br>
+                <input type="text" id="lname" name="lname" value="Doe"><br><br>
+                <input type="submit" value="Submit">
+              </form> 
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+  {% endblock %}
+
+{% block scripts %}
+{{super()}}
+<!-- <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script> -->
+<script src="{{url_for('.static', filename='test.js')}}"></script>
+{% endblock %}

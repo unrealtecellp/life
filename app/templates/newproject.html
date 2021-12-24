@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block title %}
+    New Project
+{% endblock title %}
+
+
+{% block styles %}
+{{super()}}
+<link href="{{url_for('.static', filename='newproject.css')}}" rel="stylesheet" />
+{% endblock %}
+
+{% block app_content %}
+  <h4>Add Fields for your Project</h4>
+  <form action="{{ url_for('enternewlexeme') }}" method="POST" enctype="multipart/form-data">
+    <div class="form-group">
+      <input type="text" class="form-control" placeholder="Project Name" name="projectname">
+    </div>
+    
+    <div class="container defaultfield">
+    </div>
+    <br>
+    <div class="container LexemeLanguage">
+      <div class="row">
+        <div class="col-md-3">
+          <label for="Lexeme Language">Lexeme Language</label>
+          <select class="lexemelanguage" name="Lexeme Language" style="width: 150%"></select>
+        </div>
+      </div> 
+    </div>  
+    <br>
+    <div class="container Lexemeformscript">
+      <div class="row">
+        <div class="col-md-3"> 
+          <label for="Lexeme Form Script">Lexeme Scripts </label>
+          <br><em>First option will be used as the Headword</em>
+          <select class="lexemeformscript" name="Lexeme Form Script" multiple="multiple" style="width: 150%"></select>
+        </div>
+      </div> 
+    </div>  
+    <br>
+    <div class="container Sensefield">
+      <div class="row">
+        <div class="col-md-3">
+          <label for="Gloss Language">Gloss Languages</label>
+          <select class="glosslanguage" name="Gloss Language" multiple="multiple" style="width: 150%"></select>
+        </div>
+      </div> 
+    </div>  
+    <br>
+    <div class="container customfield">
+      <div class="row">
+        <div class="col-md-3">
+          <p><strong>Add Custom Field</strong></p>
+        </div>
+      </div>
+      <div class="row">  
+        <div class="col-md-3">
+          <div class="form-group">
+            <input type="text" class="form-control" name="customField1" placeholder="Custom Field">
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="form-group">
+            <div class="input-group">
+              <select id="fieldType1" class="form-control" name="fieldType1"></select>
+              <div class="input-group-btn">
+                <button class="btn btn-success" type="button" id="addCustomField"> 
+                  <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <input class="btn btn-primary create" id="submit" type="submit" value="Create Form" >
+  </form>
+  <div class="clear"></div>      
+{% endblock %}
+
+{% block scripts %}
+{{super()}}
+<script src="{{url_for('.static', filename='newproject.js')}}"></script>
+{% endblock %}

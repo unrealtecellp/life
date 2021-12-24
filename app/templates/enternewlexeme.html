@@ -1,0 +1,51 @@
+{% extends "links.html" %}
+
+{% block title %}
+Enter New Lexeme
+{% endblock title %}
+
+{% block styles %}
+{{super()}}
+<link rel="stylesheet" href="{{url_for('.static', filename='enternewlexeme.css')}}">
+{% endblock %}
+
+{% block app_content %}
+{% if newData is defined %}
+    <h4>Project Name : {{ newData['projectname'] }}
+        <!-- <a href="{{url_for('download')}}">
+
+            <button type="button" class="btn btn-primary downloadlexform">Offline Lexeme Entry Form<i class="fa fa-download" aria-hidden="true"></i></button>
+        </a> -->
+    </h4>
+    <br>    
+    <form action="{{ url_for('dictionaryview') }}" method="POST" enctype="multipart/form-data">
+        <div class="form-group">
+            {# <input type="text" class="form-control" placeholder="Project Name : {{ newData[1]['projectname'] }}" name="projectname" value="{{ newData[1]['projectname'] }}" readonly><br>#}
+            <input type="hidden" class="form-control" placeholder="Project Name : {{ newData['projectname'] }}" name="projectname" value="{{ newData['projectname'] }}" readonly>
+            <br>
+        </div>    
+        <div class="lexemelang"></div>
+        <div class="lexemeform"></div>
+        <div class="enternewlexeme1"></div>
+        <div class="sense"></div>
+        <div class="variant"></div>
+        <div class="allomorph"></div>
+        <div class="enternewlexeme2"></div>
+        <div class="customfields"></div>
+        <div class="count"></div>
+        <input class="btn btn-primary" id="submit" type="submit" value="Submit">
+    </form>
+{% else %}
+    <input type="search" class="form-control" id="projectFormSearch" name="projectFormSearch" placeholder="Project Form Search">
+{% endif %}
+
+{% endblock %}
+
+
+{% block scripts %}
+{{super()}}
+<script src="{{url_for('.static', filename='enternewlexeme.js')}}"></script>
+{% if newData is defined %}
+<script type="text/javascript">myFunction({{ newData | tojson | safe }});</script>
+{% endif %}
+{% endblock %}

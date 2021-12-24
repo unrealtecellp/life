@@ -1,0 +1,46 @@
+{% extends "links.html" %}
+
+{% block title %}
+Dictionary View
+{% endblock title %}
+
+{% block styles %}
+{{super()}}
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.16.0/dist/bootstrap-table.min.css">
+{% endblock %}
+
+{% block app_content %}
+    <table id="table" 
+    data-show-columns="true" 
+    data-toggle="table" >
+    </table>
+{% endblock %}
+
+
+{% block scripts %}
+{{super()}}
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/bootstrap-table@1.16.0/dist/bootstrap-table.min.js"></script>
+    <script type="text/javascript">
+    d = {{ sdata | tojson | safe}}
+    $('#table').bootstrapTable({
+  pagination: true,
+  search: true,
+  columns: [{
+    field: 'headword',
+    title: 'Head Word',
+    sortable : "true"
+  }, {
+    field: 'gloss',
+    title: 'Gloss',
+    sortable : "true"
+  }, {
+    field: 'grammaticalcategory',
+    title: 'Grammatical Info',
+    sortable : "true"
+  }],
+  data : d
+})
+    </script>
+{% endblock %}

@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block title %}
+Dictionary View
+{% endblock title %}
+
+{% block styles %}
+{{super()}}
+<link rel="stylesheet" href="{{url_for('.static', filename='dictionary_view.css')}}">
+{% endblock %}
+
+{% block app_content %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-2 text-left">
+                <button type="button" class="btn btn-primary" id="enl">Enter New Lexeme</button>
+            </div>
+            <div class="col-md-8 text-center">
+                <button type="button" class="btn btn-primary" id="iml">Import Multiple Lexemes</button>
+                <button type="button" class="btn btn-primary" id ="nlfs">New Lexemes From Sentence</button>
+                <button type="button" class="btn btn-primary" id="nlfn">New Lexemes From Narration</button>
+            </div>
+            <div class="col-md-2 text-right">
+                <button type="button" class="btn btn-primary" id="dl">Delete Lexeme</button>
+            </div>
+        </div>
+        <br>
+            <div class="row">
+                <div class="col-md-2 text-left">
+                    <button type="button" class="btn btn-primary" id="ved">View / Edit Dictionary</button>
+                </div>
+                <div class="col-md-8 text-center" >
+                    <button type="button" class="btn btn-primary" id="ped">Print / Export Dictionary</button>
+                    <button type="button" class="btn btn-primary"id="ee">Export Excel</button>
+                </div>
+                <div class="col-md-2 text-right">
+                    <button type="button" class="btn btn-primary" id="sv">Switch View</button>
+                </div>
+            </div>
+        <br>
+            <div class="row">
+                <div class="text-center">
+                    <button type="button" class="btn btn-primary btn-lg">Search and Replace</button>
+                </div>
+            </div>
+    </div>        
+{% endblock %}

@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block extra_nav %}
+    <ul class="nav navbar-nav">
+        <li><a href="{{ url_for('enternewlexeme') }}">Enter Lexemes</a></li>
+        <li><a href="{{ url_for('dictionaryview') }}">View Lexemes</a></li>
+        <!-- <li><a href="{{ url_for('dictionaryview') }}">Upload Lexeme Entry Form</a></li> -->
+        <li><a href="{{ url_for('enternewsentences') }}">Enter/View Sentences</a></li>
+        <li><a href="{{ url_for('automation') }}">Automation</a></li>
+        <!-- <button type="button" class="btn btn-primary shareprojectwith">Share</button> -->
+        <!-- <li><a href="{{ url_for('dictionaryview') }}">Import Multiple Lexemes</a></li> -->
+        <!-- <li><a>New Lexemes From Sentence</a></li> -->
+        <!-- <li><a>New Lexemes From Narration</a></li> -->
+        <!-- <li><a href="{{ url_for('dictionaryview') }}">View / Edit Dictionary</a></li> -->
+        <!-- <li><a href="{{ url_for('dictionaryview') }}">Print / Export Dictionary</a></li> -->
+        <!-- <li><a href="{{ url_for('dictionaryview') }}">Export Excel</a></li> -->
+        <!-- <li><a>Switch View</a></li> -->
+        <!-- <li><a>Search and Replace</a></li> -->
+    </ul>      
+{% endblock %}
