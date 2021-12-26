@@ -213,7 +213,7 @@ $(document).ready(function() {
             data: {'data': JSON.stringify(lexemes)},
             contentType: "application/json; charset=utf-8", 
             success: function(response){
-                window.location.href = "http://127.0.0.1:5000/downloadjson";
+                // window.location.href = "http://127.0.0.1:5000/downloadjson";
                 // window.location.reload();
                 // console.info(response);
             }
@@ -251,7 +251,8 @@ $(document).ready(function() {
             data: {'data': JSON.stringify(lexemes)},
             contentType: "application/json; charset=utf-8", 
             success: function(response){
-                window.location.href = "http://127.0.0.1:5000/downloadjson";
+                console.info(typeof response);
+                // window.location.href = "http://127.0.0.1:5000/downloadjson";
                 // window.location.reload();
                 // console.info(response);
             }

@@ -24,7 +24,7 @@ import pandas as pd
 import json
 
 
-app = Flask(__name__)
+# app = Flask(__name__)
 
 # def generate_text():
 #     for x in range(10000):

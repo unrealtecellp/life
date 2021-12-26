@@ -35,7 +35,7 @@ import json
 import io
 import zipstream
 import zlib
-from flask import Response
+from flask import Response, stream_with_context
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -933,20 +933,23 @@ def _generator_lexemes(projectname, format='json'):
     # download a file and stream it
     lexemes = mongo.db.lexemes # collection containing entry of each lexeme and its details
     
-    headwords = request.args.get('data')    # data through ajax
+    # headwords = request.args.get('data')    # data through ajax
 
-    if headwords != None:
-        headwords = eval(headwords)
-    print(f'{"="*80}\nheadwords from downloadselectedlexeme route:\n {headwords}\n{"="*80}')
+    # if headwords != None:
+    #     headwords = eval(headwords)
+    # print(f'{"="*80}\nheadwords from downloadselectedlexeme route:\n {headwords}\n{"="*80}')
     
-    download_format = headwords['downloadFormat']
+    # download_format = headwords['downloadFormat']
 
-    del headwords['downloadFormat']
-    print(f'{"="*80}\ndelete download format:\n {headwords}\n{"="*80}')
+    # del headwords['downloadFormat']
+    # print(f'{"="*80}\ndelete download format:\n {headwords}\n{"="*80}')
 
-    for lexemeId in headwords.keys():
-        lexeme = lexemes.find_one({'projectname' : projectname, 'lexemeId' : lexemeId},\
-                            {'_id' : 0 })
+    # for lexemeId in headwords.keys():
+    #     lexeme = lexemes.find_one({'projectname' : projectname, 'lexemeId' : lexemeId},\
+    #                         {'_id' : 0 })
+
+    for lexeme in lexemes.find({ 'projectname' : projectname, 'lexemedeleteFLAG' : 0 }, \
+                        {'_id' : 0}):
 
         if format == 'json':
             lex_formatted = json.dumps(lexeme, indent = 2, ensure_ascii=False)
@@ -973,6 +976,7 @@ def _generator_lexeme_full(projectname, format='json', rdf_format='turtle'):
     print(f'{"="*80}\ndelete download format:\n {headwords}\n{"="*80}')
 
     all_lexemes = []
+    all_lexemes.append({'projectname': projectname})
     for lexemeId in headwords.keys():
         lexeme = lexemes.find_one({'projectname' : projectname, 'lexemeId' : lexemeId},\
                             {'_id' : 0 })
@@ -1264,14 +1268,14 @@ def download_lexicon(lex_json, output_format, rdf_format='turtle'):
 
     def generate_rdf(lexicon, domain_name, project, rdf_format):
         g_lex = Graph()
-        
+
         for lex_entry in lexicon:
             json_to_rdf_lexicon(g_lex, lex_entry, 
                             domain_name, project, rdf_format)
             
         # with open (write_path, 'w') as f_w:    
         rdf_out = g_lex.serialize(format=rdf_format)
-            # f_w.write(rdf_out)
+            # f_w.write(rdf_out) 
         return rdf_out
 
     def preprocess_csv_excel(lexicon):
@@ -1415,27 +1419,41 @@ def get_lexeme_files(projectname):
     lexemes = mongo.db.lexemes # collection containing entry of each lexeme and its details
     fs =  gridfs.GridFS(mongo.db) # creating GridFS instance to get required files
     
-    headwords = request.args.get('data')    # data through ajax
+    # code commented here
+    # headwords = request.args.get('data')    # data through ajax
 
-    if headwords != None:
-        headwords = eval(headwords)
-    print(f'{"="*80}\nheadwords from downloadselectedlexeme route:\n {headwords}\n{"="*80}')
+    # if headwords != None:
+    #     headwords = eval(headwords)
+    # print(f'{"="*80}\nheadwords from downloadselectedlexeme route:\n {headwords}\n{"="*80}')
     
-    del headwords['downloadFormat']
-    print(f'{"="*80}\ndelete download format:\n {headwords}\n{"="*80}')
+    # del headwords['downloadFormat']
+    # print(f'{"="*80}\ndelete download format:\n {headwords}\n{"="*80}')
 
+    
+    # for lexemeId in headwords.keys():
+    #     lexeme = lexemes.find_one({'projectname' : projectname, 'lexemeId' : lexemeId},\
+    #                         {'_id' : 0 })
+    # commented code end here
     all_files = {}
-    for lexemeId in headwords.keys():
-        lexeme = lexemes.find_one({'projectname' : projectname, 'lexemeId' : lexemeId},\
-                            {'_id' : 0 })
+    # code added here
+
+    lst = list()
+    for lexeme in lexemes.find({ 'projectname' : projectname, 'lexemedeleteFLAG' : 0 }, \
+                        {'_id' : 0}):
+        lst.append(lexeme)
+    # save current user mutimedia files of each lexeme to local storage
+    # print(lst)
+    for lexeme in lst:
+    # added code end here    
         for lexkey, lexvalue in lexeme.items():
             if (lexkey == 'lexemeId'):    
                 files = fs.find({'projectname' : projectname, 'lexemeId' : lexvalue})
-                for entry_id, all_files in files.items():
-                    for cur_file in all_files:
-                        fname = cur_file.filename + '_' + entry_id
-                        file_path = os.path.join("lexeme_files", fname)
-                        all_files[file_path] = cur_file    
+                for cur_file in files:
+                # for entry_id, all_files in files.items():
+                    # for cur_file in all_files:
+                    fname = cur_file.filename + '_' + lexkey
+                    file_path = os.path.join("lexeme_files", fname)
+                    all_files[file_path] = cur_file    
     return all_files   
 
 
@@ -1475,12 +1493,13 @@ def downloadproject():
         # here is where the magic happens. Each call will iterate the generator we wrote for each file
         # one at a time until all files are completed.
         for chunk in z:
+            # print(type(chunk))
             yield chunk
 
     userprojects = mongo.db.userprojects # collection of users and their respective projects
     proj_name = userprojects.find_one({ 'username' : current_user.username })['activeproject']
     
-    response = Response(generator(proj_name), mimetype='application/zip')
+    response = Response(stream_with_context(generator(proj_name)), mimetype='application/zip')
     response.headers['Content-Disposition'] = 'attachment; filename={}.zip'.format(proj_name)
     return response
 
@@ -1499,11 +1518,11 @@ def downloadselectedlexeme():
 
     if headwords != None:
         headwords = eval(headwords)
-    print(f'{"="*80}\nheadwords from downloadselectedlexeme route:\n {headwords}\n{"="*80}')
+    # print(f'{"="*80}\nheadwords from downloadselectedlexeme route:\n {headwords}\n{"="*80}')
     
     download_format = headwords['downloadFormat']
     del headwords['downloadFormat']
-    print(f'{"="*80}\ndelete download format:\n {headwords}\n{"="*80}')
+    # print(f'{"="*80}\ndelete download format:\n {headwords}\n{"="*80}')
     
     
     if ('rdf' in download_format):
@@ -1525,11 +1544,11 @@ def downloadselectedlexeme():
     elif download_format == 'markdown':
         response = Response(data, mimetype='application/markdown')
     elif download_format == 'html':
-        response = Response(data, mimetype='application/html')
+        response = Response(stream_with_context(data), mimetype='application/html')
     elif download_format == 'csv':
         response = Response(data, mimetype='application/csv')
     elif 'rdf' in download_format:
-        response = Response(data, mimetype='application/rdf')
+        response = Response(stream_with_context(data), mimetype='application/rdf')
 
     response.headers['Content-Disposition'] = 'attachment; filename={}.{}'.format(proj_name, file_ext)
     return response
