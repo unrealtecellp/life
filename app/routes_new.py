@@ -1,3 +1,5 @@
+# using flask streaming to download the files
+
 from flask import flash, redirect, render_template, url_for, request, json, jsonify, send_file
 from pymongo import database
 from werkzeug.urls import url_parse
@@ -29,6 +31,13 @@ from rdflib.namespace import Namespace
 
 import pandas as pd
 import json
+
+
+#new imports for streaming
+import io
+import zipstream
+import zlib
+from flask import Response, stream_with_context
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -916,99 +925,87 @@ def enternewlexeme():
 def editlexeme():
     return render_template('editlexeme.html')  
 
-# download route
-@app.route('/downloadselectedlexeme', methods=['GET', 'POST'])
-def downloadselectedlexeme():
-    # getting the collections
-    projects = mongo.db.projects                        # collection containing projects name
-    userprojects = mongo.db.userprojects              # collection of users and their respective projects
-    lexemes = mongo.db.lexemes                          # collection containing entry of each lexeme and its details
-    # sentences = mongo.db.sentences                          # collection containing entry of each sentence and its details
-    fs =  gridfs.GridFS(mongo.db)                       # creating GridFS instance to get required files
 
-    ontolex = Namespace('http://www.w3.org/ns/lemon/ontolex#')
-    lexinfo = Namespace('http://www.lexinfo.net/ontology/2.0/lexinfo#')
-    dbpedia = Namespace('http://dbpedia.org/resource/')
-    pwn = Namespace('http://wordnet-rdf.princeton.edu/rdf/lemma/')
-    life = None
+# download route - streaming
+def _generator_file(cur_file):
+    # for chunk in r.iter_content(1024):
+    yield cur_file.read()
 
-    lst = list()
+def _generator_lexemes(projectname, format='json'):
+    # download a file and stream it
+    lexemes = mongo.db.lexemes # collection containing entry of each lexeme and its details
+    
+    # headwords = request.args.get('data')    # data through ajax
 
-    headwords = request.args.get('data')                   # data through ajax
+    # if headwords != None:
+    #     headwords = eval(headwords)
+    # print(f'{"="*80}\nheadwords from downloadselectedlexeme route:\n {headwords}\n{"="*80}')
+    
+    # download_format = headwords['downloadFormat']
+
+    # del headwords['downloadFormat']
+    # print(f'{"="*80}\ndelete download format:\n {headwords}\n{"="*80}')
+
+    # for lexemeId in headwords.keys():
+    #     lexeme = lexemes.find_one({'projectname' : projectname, 'lexemeId' : lexemeId},\
+    #                         {'_id' : 0 })
+
+    for lexeme in lexemes.find({ 'projectname' : projectname, 'lexemedeleteFLAG' : 0 }, \
+                        {'_id' : 0}):
+
+        if format == 'json':
+            lex_formatted = json.dumps(lexeme, indent = 2, ensure_ascii=False)
+        else:
+            # This is to make the generation memory-friendly if we could 
+            # get a way of doing it - currently we are taking all entries into
+            # memory before generating the file
+            lex_formatted = get_other_format_lexeme(lexeme, format=format)
+        yield lex_formatted
 
 
+def _generator_lexeme_full(projectname, format='json', rdf_format='turtle'):
+    lexemes = mongo.db.lexemes # collection containing entry of each lexeme and its details
+    
+    headwords = request.args.get('data')    # data through ajax
 
     if headwords != None:
         headwords = eval(headwords)
     print(f'{"="*80}\nheadwords from downloadselectedlexeme route:\n {headwords}\n{"="*80}')
     
     download_format = headwords['downloadFormat']
-    # print(download_format)
 
     del headwords['downloadFormat']
-
     print(f'{"="*80}\ndelete download format:\n {headwords}\n{"="*80}')
 
-    activeprojectname = userprojects.find_one({ 'username' : current_user.username })['activeproject']
-    lst.append({'projectname': activeprojectname})
-    projectname =  activeprojectname
-    
-    # for headword in headwords:
-    #     lexeme = lexemes.find_one({'username' : current_user.username, 'projectname' : projectname, 'headword' : headword},\
-    #                         {'_id' : 0, 'username' : 0, 'projectname' : 0})
-    #     lst.append(lexeme)
-    # for lexemeId in headwords.keys():
-    #     lexeme = lexemes.find_one({'projectname' : projectname, 'lexemeId' : lexemeId},\
-    #                         {'_id' : 0})
-    #     lst.append(lexeme)
-
+    all_lexemes = []
+    all_lexemes.append({'projectname': projectname})
     for lexemeId in headwords.keys():
         lexeme = lexemes.find_one({'projectname' : projectname, 'lexemeId' : lexemeId},\
                             {'_id' : 0 })
-        lst.append(lexeme)
-        # save current user mutimedia files of each lexeme to local storage
-        files = fs.find({'projectname' : projectname, 'lexemeId' : lexemeId})
-        for file in files:
-            name = file.filename
-            # open(basedir+'/app/download/'+name, 'wb').write(file.read())
-            open(os.path.join(basedir,'download', name), 'wb').write(file.read())
+        all_lexemes.append(lexeme)
+    # lex_json = json.dumps(lexeme, indent = 2, ensure_ascii=False)
 
+    if ('rdf' in format):
+        formatted_lex = download_lexicon(all_lexemes, format, rdf_format=rdf_format)
+    else:
+        formatted_lex = download_lexicon(all_lexemes, format)
     
+    yield formatted_lex
 
-    # Serializing json  
-    json_object = json.dumps(lst, indent = 2, ensure_ascii=False)
 
-    with open(basedir+"/lexemeEntry.json", "w") as outfile: 
-            outfile.write(json_object) 
+def download_lexicon(lex_json, output_format, rdf_format='turtle'):
+    ontolex = Namespace('http://www.w3.org/ns/lemon/ontolex#')
+    lexinfo = Namespace('http://www.lexinfo.net/ontology/2.0/lexinfo#')
+    dbpedia = Namespace('http://dbpedia.org/resource/')
+    pwn = Namespace('http://wordnet-rdf.princeton.edu/rdf/lemma/')
 
-  
-    # # writing to currentprojectname.json 
-    # with open(basedir+"/download/"+projectname+".json", "w") as outfile: 
-    #     outfile.write(json_object)
+
+    domain_name = 'http://lifeapp.in'
     
+    metadata = lex_json[0]
+    project = metadata['projectname']
 
-    def generate_json(lex_json):
-        json_object = json.dumps(lex_json, indent = 2, ensure_ascii=False)
-        # writing to currentprojectname.json 
-        # with open(basedir+"/app/download/lexicon_"+activeprojectname+".json", "w") as outfile: 
-        with open(basedir+"/download/lexicon_"+activeprojectname+".json", "w") as outfile: 
-            outfile.write(json_object)  
-
-    def test():
-        g = Graph()
-        semweb = URIRef('http://dbpedia.org/resource/Semantic_Web')
-        type = g.value(semweb, RDFS.label)
-
-        g.add((
-            URIRef("http://example.com/person/nick"),
-            FOAF.givenName,
-            Literal("Nick", datatype=XSD.string)
-        ))
-
-        g.bind("foaf", FOAF)
-        g.bind("xsd", XSD)
-
-        print(g.serialize(format="turtle"))
+    lexicon = lex_json[1:]
 
 
     def add_canonical_form(g_form, life, lex_entry, lex_item, ipa, dict_lang):
@@ -1271,16 +1268,17 @@ def downloadselectedlexeme():
             add_example(g_lex, life, lex_item, sense_ex, dict_lang)
 
 
-    def generate_rdf(write_path, lexicon, domain_name, project, rdf_format):
+    def generate_rdf(lexicon, domain_name, project, rdf_format):
         g_lex = Graph()
-        
+
         for lex_entry in lexicon:
             json_to_rdf_lexicon(g_lex, lex_entry, 
                             domain_name, project, rdf_format)
             
-        with open (write_path, 'w') as f_w:    
-            rdf_out = g_lex.serialize(format=rdf_format)
-            f_w.write(rdf_out)
+        # with open (write_path, 'w') as f_w:    
+        rdf_out = g_lex.serialize(format=rdf_format)
+            # f_w.write(rdf_out) 
+        return rdf_out
 
     def preprocess_csv_excel(lexicon):
         df = pd.json_normalize(lexicon)
@@ -1308,214 +1306,254 @@ def downloadselectedlexeme():
 
         return df
 
-    def generate_csv(write_path, lexicon):
+    def generate_csv(lexicon):
         df = preprocess_csv_excel(lexicon)
-        with open (write_path, 'w') as f_w:
-            df.to_csv(f_w, index=False)
+        # with open (write_path, 'w') as f_w:
+        csv_out = df.to_csv(index=False)
+        return csv_out
 
-    def generate_xlsx(write_path, lexicon):
+    def generate_xlsx(lexicon):
         df = preprocess_csv_excel(lexicon)
-        with open (write_path, 'w') as f_w:
-            df.to_excel(f_w, index=False, engine='xlsxwriter')
+        # with open (write_path, 'w') as f_w:
+        write_file = io.BytesIO()
+        writer = pd.ExcelWriter(write_file,engine='xlsxwriter')
+        # df.to_excel(write_file, index=False, engine='xlsxwriter')
+        df.to_excel(writer)
+        writer.save()
+        write_file.seek(0)
+        return write_file
+        
+    def generate_ods(lexicon):
+        df = preprocess_csv_excel(lexicon)
+        # with open (write_path, 'w') as f_w:
+        write_file = io.BytesIO()
+        writer = pd.ExcelWriter(write_file,engine='openpyxl')
+        # df.to_excel(write_file, index=False, engine='xlsxwriter')
+        df.to_excel(writer)
+        writer.save()
+        write_file.seek(0)
+        return write_file
 
-    def generate_ods(write_path, lexicon):
+    def generate_html(lexicon):
         df = preprocess_csv_excel(lexicon)
-        with open (write_path, 'w') as f_w:
-            df.to_excel(f_w, index=False, engine='openpyxl')
+        # with open (write_path, 'w') as f_w:
+        html_out = df.to_html(index=False)
+        return html_out
 
-    def generate_html(write_path, lexicon):
+    def generate_latex(lexicon):
         df = preprocess_csv_excel(lexicon)
-        with open (write_path, 'w') as f_w:
-            df.to_html(f_w, index=False)
+        # with open (write_path, 'w') as f_w:
+        latex_out = df.to_latex(index=False)
+        return latex_out
 
-    def generate_latex(write_path, lexicon):
+    def generate_markdown(lexicon):
         df = preprocess_csv_excel(lexicon)
-        with open (write_path, 'w') as f_w:
-            df.to_latex(f_w, index=False)
-
-    def generate_markdown(write_path, lexicon):
-        df = preprocess_csv_excel(lexicon)
-        with open (write_path, 'w') as f_w:
-            df.to_markdown(f_w, index=False)
+        # with open (write_path, 'w') as f_w:
+        mdown_out = df.to_markdown(index=False)
+        return mdown_out
 
     def generate_pdf(write_path, lexicon, project):
         return None
 
-    def download_lexicon(lex_json, write_path, 
-        output_format='rdf', rdf_format='turtle'):
-        file_ext_map = {'turtle': '.ttl', 'n3': '.n3', 
-        'ntriples': 'n', 'rdfxml': '.rdf', 'json': '.json', 'csv': '.csv',
-        'xlsx': '.xlsx', 'pdf': '.pdf', 'html': '.html', 'latex': '.tex',
-        'markdown': '.md', 'ods': '.ods'}
+    def generate_json(lex_json):
+        json_out = json.dumps(lex_json, indent = 2, ensure_ascii=False)
+        # writing to currentprojectname.json 
+        # with open(basedir+"/app/download/lexicon_"+activeprojectname+".json", "w") as outfile: 
+        # with open(basedir+"/download/lexicon_"+activeprojectname+".json", "w") as outfile: 
+        #     outfile.write(json_object)  
+        return json_out
 
-        domain_name = 'http://lifeapp.in'
+
+    # if (rdf_format in file_ext_map) or (output_format in file_ext_map):
+    if output_format == 'rdf':
+        # file_ext = file_ext_map[rdf_format]
+        # write_file = os.path.join(write_path, 'lexicon_'+project+'_'+output_format+file_ext)
+        formatted_lex = generate_rdf(lexicon, domain_name, project, rdf_format)
+    else:
+        # file_ext = file_ext_map[output_format]
+        # write_file = os.path.join(write_path, 'lexicon_'+project+file_ext)
+        if output_format == 'csv':
+            formatted_lex = generate_csv(lexicon)
+        elif output_format == 'xlsx':
+            formatted_lex = generate_xlsx(lexicon)
+        elif output_format == 'pdf':
+            formatted_lex = generate_pdf(lexicon)
+        elif output_format == 'markdown':
+            formatted_lex = generate_markdown(lexicon)
+        elif output_format == 'html':
+            formatted_lex = generate_html(lexicon)
+        elif output_format == 'latex':
+            formatted_lex = generate_latex(lexicon)
+        elif output_format == 'ods':
+            formatted_lex = generate_ods(lexicon)
+        elif output_format == 'json':
+            formatted_lex = generate_json(lex_json)
+# else:
+#     print ('File type\t', output_format, '\tnot supported')
+#     print ('Supported File Types', file_ext_map.keys())
+    
+    return formatted_lex
+
+
+def _generator_sentences(projectname, format='json'):
+    # download a file and stream it
+    sentences = mongo.db.sentences # collection containing entry of each lexeme and its details
+    
+    for sentence in sentences.find({ 'projectname' : projectname, 'sentencedeleteFLAG' : 0 }, \
+                                {'_id' : 0}):
+        if format == 'json':
+            sent_formatted = json.dumps(sentence, indent = 2, ensure_ascii=False)
+        else:
+            sent_formatted = get_other_format_sent(sentence, format=format)
         
-        metadata = lex_json[0]
-        project = metadata['projectname']
-
-        lexicon = lex_json[1:]
-
-        if (rdf_format in file_ext_map) or (output_format in file_ext_map):
-            if output_format == 'rdf':
-                file_ext = file_ext_map[rdf_format]
-                write_file = os.path.join(write_path, 'lexicon_'+project+'_'+output_format+file_ext)
-                generate_rdf(write_file, lexicon, domain_name, project, rdf_format)
-            else:
-                file_ext = file_ext_map[output_format]
-                write_file = os.path.join(write_path, 'lexicon_'+project+file_ext)
-                if output_format == 'csv':
-                    generate_csv(write_file, lexicon)
-                elif output_format == 'xlsx':
-                    generate_xlsx(write_file, lexicon)
-                elif output_format == 'pdf':
-                    generate_pdf(write_file, lexicon)
-                elif output_format == 'markdown':
-                    generate_markdown(write_file, lexicon)
-                elif output_format == 'html':
-                    generate_html(write_file, lexicon)
-                elif output_format == 'latex':
-                    generate_latex(write_file, lexicon)
-                elif output_format == 'ods':
-                    generate_ods(write_file, lexicon)
-                elif output_format == 'json':
-                    generate_json(lex_json)
-        else:
-            print ('File type\t', output_format, '\tnot supported')
-            print ('Supported File Types', file_ext_map.keys())        
-                    
+        yield sent_formatted
 
 
+def get_other_format_lexeme(lexemes, format):
+    return lexemes
 
-    lexeme_dir = basedir
-    # working_dir = basedir+'/app/download'
-    working_dir = basedir+'/download'
-    with open(os.path.join(lexeme_dir, 'lexemeEntry.json')) as f_r:
-        lex = json.load(f_r)
-        out_form = download_format
-        # print(out_form)
-        if ('rdf' in out_form):
-            rdf_format = out_form[3:]
-            out_form = 'rdf'
-            print(rdf_format)
-            download_lexicon(lex, working_dir, out_form, rdf_format=rdf_format)
-        else:
-            download_lexicon(lex, working_dir, out_form)
 
-    # save current user mutimedia files of each lexeme to local storage
-    # files = fs.find({'username' : current_user.username, 'projectname' : projectname, 'headword' : headword})
-    # for file in files:
-    #     name = file.filename
-    #     open(basedir+'/download/'+name, 'wb').write(file.read())
+def get_other_format_sent(sentences, format):
+    return sentences
+
+def get_lexeme_files(projectname):
+    # download a file and stream it
+    lexemes = mongo.db.lexemes # collection containing entry of each lexeme and its details
+    fs =  gridfs.GridFS(mongo.db) # creating GridFS instance to get required files
     
-    # printing the list of all files to be zipped 
-    # files = glob.glob(basedir+'/app/download/*')
-    files = glob.glob(basedir+'/download/*')
-     
-    with ZipFile('download.zip', 'w') as zip:
-        # writing each file one by one 
-        for file in files: 
-            zip.write(file, os.path.join(projectname, os.path.basename(file)))
-    print('All files zipped successfully!')
+    # code commented here
+    # headwords = request.args.get('data')    # data through ajax
 
-    # deleting all files from storage
-    for f in files:
-        print(f)
-        os.remove(f)
+    # if headwords != None:
+    #     headwords = eval(headwords)
+    # print(f'{"="*80}\nheadwords from downloadselectedlexeme route:\n {headwords}\n{"="*80}')
     
-    # return send_file('../download.zip', as_attachment=True)
-    return 'OK'
+    # del headwords['downloadFormat']
+    # print(f'{"="*80}\ndelete download format:\n {headwords}\n{"="*80}')
 
-# download route
-@app.route('/downloadproject', methods=['GET', 'POST'])
-def downloadproject():
-    # getting the collections
-    projects = mongo.db.projects                        # collection containing projects name
-    userprojects = mongo.db.userprojects              # collection of users and their respective projects
-    lexemes = mongo.db.lexemes                          # collection containing entry of each lexeme and its details
-    sentences = mongo.db.sentences                          # collection containing entry of each sentence and its details
-    fs =  gridfs.GridFS(mongo.db)                       # creating GridFS instance to get required files
+    
+    # for lexemeId in headwords.keys():
+    #     lexeme = lexemes.find_one({'projectname' : projectname, 'lexemeId' : lexemeId},\
+    #                         {'_id' : 0 })
+    # commented code end here
+    all_files = {}
+    # code added here
 
     lst = list()
-
-    activeprojectname = userprojects.find_one({ 'username' : current_user.username })['activeproject']
-    # lst.append(activeprojectname)
-    projectname =  activeprojectname
-
-    for lexeme in lexemes.find({ 'projectname' : activeprojectname, 'lexemedeleteFLAG' : 0 }, \
-                            {'_id' : 0}):
+    for lexeme in lexemes.find({ 'projectname' : projectname, 'lexemedeleteFLAG' : 0 }, \
+                        {'_id' : 0}):
         lst.append(lexeme)
-        # save current user mutimedia files of each lexeme to local storage
-        # print(lst)
+    # save current user mutimedia files of each lexeme to local storage
+    # print(lst)
     for lexeme in lst:
+    # added code end here    
         for lexkey, lexvalue in lexeme.items():
             if (lexkey == 'lexemeId'):    
                 files = fs.find({'projectname' : projectname, 'lexemeId' : lexvalue})
-                for file in files:
-                    name = file.filename
-                    print(f'{"#"*80}')
-                    # print(basedir+'/app/download/'+name)
-                    print(f'{"#"*80}')
-                    # open(basedir+'/app/download/'+name, 'wb').write(file.read())
-                    open(basedir+'/download/'+name, 'wb').write(file.read())
+                for cur_file in files:
+                # for entry_id, all_files in files.items():
+                    # for cur_file in all_files:
+                    fname = cur_file.filename + '_' + lexkey
+                    file_path = os.path.join("lexeme_files", fname)
+                    all_files[file_path] = cur_file    
+    return all_files   
 
+
+def get_sent_files(projectname):
+    # download a file and stream it
+    sentences = mongo.db.sentences # collection containing entry of each lexeme and its details
+    fs =  gridfs.GridFS(mongo.db) # creating GridFS instance to get required files
     
-
-    # Serializing json  
-    json_object = json.dumps(lst, indent = 2, ensure_ascii=False) 
-    
-    # writing to currentprojectname.json 
-    # print(f'{"#"*80}')
-    # print(basedir+"/app/download/lexicon_"+activeprojectname+".json")
-    # print(f'{"#"*80}')
-    # with open(basedir+"/app/download/lexicon_"+activeprojectname+".json", "w") as outfile:
-    with open(basedir+"/download/lexicon_"+activeprojectname+".json", "w") as outfile:
-        outfile.write(json_object)  
-
-    
-    # get all sentences of the activeproject    
-    sentenceLst = []
-    for sentence in sentences.find({ 'projectname' : activeprojectname, 'sentencedeleteFLAG' : 0 }, \
-                            {'_id' : 0}):
-        sentenceLst.append(sentence)
-
-    # print(sentenceLst)    
-        # save current user mutimedia files of each lexeme to local storage
-    for sentence in sentenceLst:
+    all_files = {}
+    for sentence in sentences.find({ 'projectname' : projectname, 'sentencedeleteFLAG' : 0 }, \
+                                {'_id' : 0}):
         for sentkey, sentvalue in sentence.items():
-            if (sentkey == 'sentenceId'):    
+            if (sentkey == 'sentenceId'):
                 files = fs.find({'projectname' : projectname, 'sentenceId' : sentvalue})
-                for file in files:
-                    name = file.filename
-                    open(basedir+'/app/download/'+name, 'wb').write(file.read())
-
-
-    # Serializing json  
-    json_object = json.dumps(sentenceLst, indent = 2, ensure_ascii=False) 
-
-
-    # writing to currentprojectname.json 
-    # with open(basedir+"/app/download/sentence_"+activeprojectname+".json", "w") as outfile:
-    with open(basedir+"/download/sentence_"+activeprojectname+".json", "w") as outfile:
-        outfile.write(json_object)  
+                file_path = os.path.join("sent_files", sentvalue)
+                all_files[file_path] = files
+    return all_files
     
-    # printing the list of all files to be zipped 
-    # files = glob.glob(basedir+'/app/download/*')
-    files = glob.glob(basedir+'/download/*')
-     
-    with ZipFile('download.zip', 'w') as zip:
-        # writing each file one by one 
-        for file in files: 
-            zip.write(file, os.path.join(projectname, os.path.basename(file)))
-    print('All files zipped successfully!')
 
-    # deleting all files from storage
-    for f in files:
-        print(files)
-        os.remove(f)
+@app.route('/downloadproject', methods=['GET', 'POST'], endpoint='downloadproject')
+def downloadproject():
+    def generator(proj_name):
+        lex_files = get_lexeme_files(proj_name)
+        sent_files = get_sent_files(proj_name)
+
+        z = zipstream.ZipFile(mode='w', compression=zlib.DEFLATED)
+
+        z.write_iter("lexicon_"+proj_name+".json", _generator_lexemes(proj_name))
+        z.write_iter("sentence_"+proj_name+".json", _generator_sentences(proj_name))
+
+        for file_path, cur_file in lex_files.items():
+            z.write_iter(file_path, _generator_file(cur_file))
+
+        for file_path, cur_file in sent_files.items():
+            z.write_iter(file_path, _generator_file(cur_file))
+
+        # here is where the magic happens. Each call will iterate the generator we wrote for each file
+        # one at a time until all files are completed.
+        for chunk in z:
+            # print(type(chunk))
+            yield chunk
+
+    userprojects = mongo.db.userprojects # collection of users and their respective projects
+    proj_name = userprojects.find_one({ 'username' : current_user.username })['activeproject']
     
-    return send_file('../download.zip', as_attachment=True)
-    # return 'OK'
+    response = Response(stream_with_context(generator(proj_name)), mimetype='application/zip')
+    response.headers['Content-Disposition'] = 'attachment; filename={}.zip'.format(proj_name)
+    return response
 
+
+@app.route('/downloadselectedlexeme', methods=['GET', 'POST'], endpoint='downloadselectedlexeme()')
+def downloadselectedlexeme():    
+    file_ext_map = {'turtle': '.ttl', 'n3': '.n3', 
+    'nt': '.nt', 'xml': '.rdf', 'pretty-xml': '.rdfp', 'trix': '.trix', 
+    'trig': '.trig', 'nquads': 'nquad', 'json': '.json', 'csv': '.csv',
+    'xlsx': '.xlsx', 'pdf': '.pdf', 'html': '.html', 'latex': '.tex',
+    'markdown': '.md', 'ods': '.ods'}
+
+    userprojects = mongo.db.userprojects # collection of users and their respective projects
+    proj_name = userprojects.find_one({ 'username' : current_user.username })['activeproject']
+    headwords = request.args.get('data')    # data through ajax
+
+    if headwords != None:
+        headwords = eval(headwords)
+    # print(f'{"="*80}\nheadwords from downloadselectedlexeme route:\n {headwords}\n{"="*80}')
+    
+    download_format = headwords['downloadFormat']
+    del headwords['downloadFormat']
+    # print(f'{"="*80}\ndelete download format:\n {headwords}\n{"="*80}')
+    
+    
+    if ('rdf' in download_format):
+        rdf_format = download_format[3:]
+        download_format = 'rdf'
+        file_ext = file_ext_map[rdf_format]
+        data = _generator_lexeme_full(proj_name, download_format, rdf_format)
+        print(rdf_format)
+    else:
+        file_ext = file_ext_map[download_format]
+        data = _generator_lexeme_full(proj_name, download_format)
+    
+    if download_format == 'xlsx':
+        response = Response(data.getvalue(), mimetype='application/octet-stream')
+    elif download_format == 'json':
+        response = Response(data, mimetype='application/json')
+    elif download_format == 'latex':
+        response = Response(data, mimetype='application/latex')
+    elif download_format == 'markdown':
+        response = Response(data, mimetype='application/markdown')
+    elif download_format == 'html':
+        response = Response(stream_with_context(data), mimetype='application/html')
+    elif download_format == 'csv':
+        response = Response(data, mimetype='application/csv')
+    elif 'rdf' in download_format:
+        response = Response(stream_with_context(data), mimetype='application/rdf')
+
+    response.headers['Content-Disposition'] = 'attachment; filename={}.{}'.format(proj_name, file_ext)
+    return response
 
 # download route
 @app.route('/download', methods=['GET'])
