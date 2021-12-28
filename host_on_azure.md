@@ -26,7 +26,9 @@
 7. Setup mongodb
     ```
     sudo apt-get install mongodb
-
+    ```
+    Check the MongoDB Version and its status -
+    ```
     mongod --version
 
     sudo systemctl status mongodb

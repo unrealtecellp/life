@@ -996,21 +996,21 @@ def downloadselectedlexeme():
         with open(basedir+"/download/lexicon_"+activeprojectname+".json", "w") as outfile: 
             outfile.write(json_object)  
 
-    def test():
-        g = Graph()
-        semweb = URIRef('http://dbpedia.org/resource/Semantic_Web')
-        type = g.value(semweb, RDFS.label)
+    # def test():
+    #     g = Graph()
+    #     semweb = URIRef('http://dbpedia.org/resource/Semantic_Web')
+    #     type = g.value(semweb, RDFS.label)
 
-        g.add((
-            URIRef("http://example.com/person/nick"),
-            FOAF.givenName,
-            Literal("Nick", datatype=XSD.string)
-        ))
+    #     g.add((
+    #         URIRef("http://example.com/person/nick"),
+    #         FOAF.givenName,
+    #         Literal("Nick", datatype=XSD.string)
+    #     ))
 
-        g.bind("foaf", FOAF)
-        g.bind("xsd", XSD)
+    #     g.bind("foaf", FOAF)
+    #     g.bind("xsd", XSD)
 
-        print(g.serialize(format="turtle"))
+    #     print(g.serialize(format="turtle"))
 
 
     def add_canonical_form(g_form, life, lex_entry, lex_item, ipa, dict_lang):
@@ -1077,22 +1077,22 @@ def downloadselectedlexeme():
             Literal(example, lang=ex_lang)
         ))
 
-    def add_other_forms(g_other_form, life, lex_entry, lex_item, other_form, dict_lang):
-        # g_other_form = Graph()
-        # g_other_form.bind("ontolex", ontolex)
-        # g_other_form.bind("life", life)
+    # def add_other_forms(g_other_form, life, lex_entry, lex_item, other_form, dict_lang):
+    #     # g_other_form = Graph()
+    #     # g_other_form.bind("ontolex", ontolex)
+    #     # g_other_form.bind("life", life)
 
-        g_other_form.add((
-            URIRef(life[lex_item+'_otherForm']),
-            RDF.type,
-            ontolex.form
-        ))
+    #     g_other_form.add((
+    #         URIRef(life[lex_item+'_otherForm']),
+    #         RDF.type,
+    #         ontolex.form
+    #     ))
 
-        g_other_form.add((
-            URIRef(life[lex_item+'_otherForm']),
-            ontolex.writtenRep,
-            Literal(other_form, lang=dict_lang)
-        ))
+    #     g_other_form.add((
+    #         URIRef(life[lex_item+'_otherForm']),
+    #         ontolex.writtenRep,
+    #         Literal(other_form, lang=dict_lang)
+    #     ))
 
 
     def add_sense(g_lex, life, lex_entry, sense_entry, lex_sense):
@@ -1273,17 +1273,6 @@ def downloadselectedlexeme():
             add_example(g_lex, life, lex_item, sense_ex, dict_lang)
 
 
-    def generate_rdf(write_path, lexicon, domain_name, project, rdf_format):
-        g_lex = Graph()
-        
-        for lex_entry in lexicon:
-            json_to_rdf_lexicon(g_lex, lex_entry, 
-                            domain_name, project, rdf_format)
-            
-        with open (write_path, 'w') as f_w:    
-            rdf_out = g_lex.serialize(format=rdf_format)
-            f_w.write(rdf_out)
-
     def preprocess_csv_excel(lexicon):
         df = pd.json_normalize(lexicon)
         columns = df.columns
@@ -1310,6 +1299,17 @@ def downloadselectedlexeme():
 
         return df
 
+    def generate_rdf(write_path, lexicon, domain_name, project, rdf_format):
+        g_lex = Graph()
+        
+        for lex_entry in lexicon:
+            json_to_rdf_lexicon(g_lex, lex_entry, 
+                            domain_name, project, rdf_format)
+            
+        with open (write_path, 'wb') as f_w:    
+            rdf_out = g_lex.serialize(format=rdf_format)
+            f_w.write(rdf_out)
+
     def generate_csv(write_path, lexicon):
         df = preprocess_csv_excel(lexicon)
         with open (write_path, 'w') as f_w:
@@ -1317,13 +1317,13 @@ def downloadselectedlexeme():
 
     def generate_xlsx(write_path, lexicon):
         df = preprocess_csv_excel(lexicon)
-        with open (write_path, 'w') as f_w:
-            df.to_excel(f_w, index=False, engine='xlsxwriter')
+        f_w = open (write_path, 'wb')
+        df.to_excel(f_w, index=False, engine='xlsxwriter')
 
     def generate_ods(write_path, lexicon):
         df = preprocess_csv_excel(lexicon)
-        with open (write_path, 'w') as f_w:
-            df.to_excel(f_w, index=False, engine='openpyxl')
+        f_w = open (write_path, 'wb')
+        df.to_excel(f_w, index=False, engine='openpyxl')
 
     def generate_html(write_path, lexicon):
         df = preprocess_csv_excel(lexicon)
