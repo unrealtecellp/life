@@ -1,17 +1,17 @@
 [
   {
-    "projectname": "Demo Project"
+    "projectname": "Project_111"
   },
   {
-    "username": "demouser",
-    "projectname": "Demo Project",
-    "headword": "good",
+    "username": "ritesh",
+    "projectname": "Project_111",
+    "headword": "अच्छा",
     "Lexeme Form Script": [
       {
-        "Latin": "good"
+        "Devanagari": "अच्छा"
       }
     ],
-    "Pronunciation": "/ gʊd /",
+    "Pronunciation": "/gʊd /",
     "Additional Metadata Information": "",
     "Any Additional Information": "",
     "Encyclopedic Information": "",
@@ -29,19 +29,25 @@
     "Sense": {
       "Sense 1": [
         {
-          "Gloss Hindi": "अच्छा"
+          "Gloss Bengali": "ভালো"
         },
         {
-          "Definition Hindi": ""
+          "Definition Bengali": "ভালো"
         },
         {
-          "Grammatical Category": "Adjective [ADJ]"
+          "Gloss English": "good"
         },
         {
-          "Example": ""
+          "Definition English": "good"
         },
         {
-          "Free Translation": ""
+          "Grammatical Category": "Adjective"
+        },
+        {
+          "Example": "Ram is a good boy"
+        },
+        {
+          "Free Translation": "Ram is a good boy"
         }
       ]
     },
@@ -53,14 +59,50 @@
       ]
     },
     "filesname": {
-      "Upload Movie File": "003689Track_horizontal_plane.mp4",
-      "Upload Sound File": "0037832_eno.wav"
+      "Upload Sound File": "0840119_tigegu.wav"
     },
-    "gloss": "अच्छा",
-    "grammaticalcategory": "Adjective [ADJ]",
+    "gloss": "ভালো",
+    "grammaticalcategory": "Adjective",
     "lexemedeleteFLAG": 0,
-    "updatedBy": "demouser",
-    "lexemeId": "Demo Projectgood1",
-    "lemon": ":good a lemon:LexicalEntry ;\n\tlemon:canonicalForm [\n\tlemon:writtenRep \"good\" @Latin ;\n\tlexinfo:pronunciation \"/ gʊd /\"\n] ."
+    "updatedBy": "ritesh",
+    "lexemeId": "L20211228183320085678",
+    "langscripts": {
+      "langname": "Hindi",
+      "langcode": "hin",
+      "headwordscript": {
+        "Deva": "Devanagari"
+      },
+      "lexemeformscripts": {
+        "Deva": "Devanagari"
+      },
+      "glosslangs": {
+        "Ben": "Bengali",
+        "Eng": "English"
+      },
+      "glossscripts": {
+        "Deva": "Devanagari",
+        "Gujr": "Gujarati",
+        "Latn": "Latin"
+      }
+    },
+    "SenseNew": {
+      "Sense 1": {
+        "Grammatical Category": "Adjective",
+        "Example": "Ram is a good boy",
+        "Free Translation": "Ram is a good boy",
+        "Gloss": {
+          "ben": "ভালো",
+          "eng": "good"
+        },
+        "Definition": {
+          "ben": "ভালো",
+          "eng": "good"
+        },
+        "Lexical Relation": {}
+      }
+    },
+    "Lexeme Form": {
+      "Deva": "अच्छा"
+    }
   }
 ]

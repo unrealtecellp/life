@@ -99,7 +99,8 @@ $(document).ready(function() {
             data: {'data': JSON.stringify(lexemes)},
             contentType: "application/json; charset=utf-8", 
             success: function(response){
-                window.location.href = "http://127.0.0.1:5000/downloadjson";
+                // window.location.href = "http://127.0.0.1:5000/downloadjson";
+                window.location.href = window.location.href.replace("dictionaryview", "downloadjson");
                 // window.location.reload();
                 // console.info(response);
             }
@@ -118,7 +119,8 @@ $(document).ready(function() {
             data: {'data': JSON.stringify(lexemes)},
             contentType: "application/json; charset=utf-8", 
             success: function(response){
-                window.location.href = "http://127.0.0.1:5000/downloadjson";
+                // window.location.href = "http://127.0.0.1:5000/downloadjson";
+                window.location.href = window.location.href.replace("dictionaryview", "downloadjson");
                 // window.location.reload();
                 // console.info(response);
             }
@@ -137,7 +139,8 @@ $(document).ready(function() {
             data: {'data': JSON.stringify(lexemes)},
             contentType: "application/json; charset=utf-8", 
             success: function(response){
-                window.location.href = "http://127.0.0.1:5000/downloadjson";
+                // window.location.href = "http://127.0.0.1:5000/downloadjson";
+                window.location.href = window.location.href.replace("dictionaryview", "downloadjson");
                 // window.location.reload();
                 // console.info(response);
             }
@@ -156,7 +159,8 @@ $(document).ready(function() {
             data: {'data': JSON.stringify(lexemes)},
             contentType: "application/json; charset=utf-8", 
             success: function(response){
-                window.location.href = "http://127.0.0.1:5000/downloadjson";
+                // window.location.href = "http://127.0.0.1:5000/downloadjson";
+                window.location.href = window.location.href.replace("dictionaryview", "downloadjson");
                 // window.location.reload();
                 // console.info(response);
             }
@@ -175,7 +179,8 @@ $(document).ready(function() {
             data: {'data': JSON.stringify(lexemes)},
             contentType: "application/json; charset=utf-8", 
             success: function(response){
-                window.location.href = "http://127.0.0.1:5000/downloadjson";
+                // window.location.href = "http://127.0.0.1:5000/downloadjson";
+                window.location.href = window.location.href.replace("dictionaryview", "downloadjson");
                 // window.location.reload();
                 // console.info(response);
             }
@@ -194,7 +199,8 @@ $(document).ready(function() {
             data: {'data': JSON.stringify(lexemes)},
             contentType: "application/json; charset=utf-8", 
             success: function(response){
-                window.location.href = "http://127.0.0.1:5000/downloadjson";
+                // window.location.href = "http://127.0.0.1:5000/downloadjson";
+                window.location.href = window.location.href.replace("dictionaryview", "downloadjson");
                 // window.location.reload();
                 // console.info(response);
             }
@@ -213,7 +219,8 @@ $(document).ready(function() {
             data: {'data': JSON.stringify(lexemes)},
             contentType: "application/json; charset=utf-8", 
             success: function(response){
-                window.location.href = "http://127.0.0.1:5000/downloadjson";
+                // window.location.href = "http://127.0.0.1:5000/downloadjson";
+                window.location.href = window.location.href.replace("dictionaryview", "downloadjson");
                 // window.location.reload();
                 // console.info(response);
             }
@@ -232,7 +239,8 @@ $(document).ready(function() {
             data: {'data': JSON.stringify(lexemes)},
             contentType: "application/json; charset=utf-8", 
             success: function(response){
-                window.location.href = "http://127.0.0.1:5000/downloadjson";
+                // window.location.href = "http://127.0.0.1:5000/downloadjson";
+                window.location.href = window.location.href.replace("dictionaryview", "downloadjson");
                 // window.location.reload();
                 // console.info(response);
             }
@@ -252,7 +260,8 @@ $(document).ready(function() {
             contentType: "application/json; charset=utf-8", 
             success: function(response){
                 console.info(typeof response);
-                window.location.href = "http://127.0.0.1:5000/downloadjson";
+                // window.location.href = "http://127.0.0.1:5000/downloadjson";
+                window.location.href = window.location.href.replace("dictionaryview", "downloadjson");
                 // window.location.reload();
                 // console.info(response);
             }
@@ -271,7 +280,8 @@ $(document).ready(function() {
             data: {'data': JSON.stringify(lexemes)},
             contentType: "application/json; charset=utf-8", 
             success: function(response){
-                window.location.href = "http://127.0.0.1:5000/downloadjson";
+                // window.location.href = "http://127.0.0.1:5000/downloadjson";
+                window.location.href = window.location.href.replace("dictionaryview", "downloadjson");
                 // window.location.reload();
                 // console.info(response);
             }
@@ -290,7 +300,8 @@ $(document).ready(function() {
             data: {'data': JSON.stringify(lexemes)},
             contentType: "application/json; charset=utf-8", 
             success: function(response){
-                window.location.href = "http://127.0.0.1:5000/downloadjson";
+                // window.location.href = "http://127.0.0.1:5000/downloadjson";
+                window.location.href = window.location.href.replace("dictionaryview", "downloadjson");
                 // window.location.reload();
                 // console.info(response);
             }
@@ -309,9 +320,11 @@ $(document).ready(function() {
             data: {'data': JSON.stringify(lexemes)},
             contentType: "application/json; charset=utf-8", 
             success: function(response){
-                window.location.href = "http://127.0.0.1:5000/downloadjson";
+                // console.log(window.location.href.replace("dictionaryview", "downloadjson"))
+                window.location.href = window.location.href.replace("dictionaryview", "downloadjson");
                 // window.location.reload();
                 // console.info(response);
+                // .replace("dictionaryview", "downloadjson")
             }
         });
       return false; 
