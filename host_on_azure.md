@@ -35,6 +35,9 @@
     ```
     flask run -h 0.0.0.0
     ```
+    ```
+    nohup flask run -h 0.0.0.0 &
+    ```
 9. In browser address bar
     ```
     20.124.225.196:5000

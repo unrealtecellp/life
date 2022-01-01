@@ -7481,12 +7481,17 @@ function myFunction(newData) {
                   '</div></div>';  
           }
 		  else if (Sense[i].name === 'Semantic Domain'
-					  || Sense[i].name === 'Lexical Relation' 
-					  || Sense[i].name === 'Grammatical Category'
+					  || Sense[i].name === 'Lexical Relation'
 				) {
             inpt += '<div class="col-md-4 collapse sense' + senseCount +'"><div class="form-group">'+
                     '<label for="'+ Sense[i].name +'">'+ Sense[i].name +'</label>'+
                     '<select class="'+ Sense[i].name +'" name="'+ Sense[i].name + ' Sense '+ senseCount+'" multiple="multiple" style="width: 100%"></select>'+
+                    '</div></div>';
+          }
+		  else if (Sense[i].name === 'Grammatical Category') {
+            inpt += '<div class="col-md-4 collapse sense' + senseCount +'"><div class="form-group">'+
+                    '<label for="'+ Sense[i].name +'">'+ Sense[i].name +'</label>'+
+                    '<select class="'+ Sense[i].name +'" name="'+ Sense[i].name + ' Sense '+ senseCount+'" style="width: 100%"></select>'+
                     '</div></div>';
           }
           else {
@@ -7694,12 +7699,18 @@ function addsense() {
                   '<input type="file" class="form-control" id="'+ Sense[i].name +'" name="'+ Sense[i].name + ' Sense '+ senseCount+'">'+
                   '</div></div>';  
     }
-    else if (Sense[i].name === 'Semantic Domain'|| Sense[i].name === 'Lexical Relation' || Sense[i].name === 'Grammatical Category') {
+    else if (Sense[i].name === 'Semantic Domain'|| Sense[i].name === 'Lexical Relation') {
       addSense += '<div class="col-md-4 collapse sense' + senseCount +'"><div class="form-group">'+
               '<label for="'+ Sense[i].name +'">'+ Sense[i].name +'</label>'+
               '<select class="'+ Sense[i].name +'" name="'+ Sense[i].name + ' Sense '+ senseCount+'" multiple="multiple" style="width: 100%"></select>'+
               '</div></div>';
     }
+	else if (Sense[i].name === 'Grammatical Category') {
+		addSense += '<div class="col-md-4 collapse sense' + senseCount +'"><div class="form-group">'+
+				'<label for="'+ Sense[i].name +'">'+ Sense[i].name +'</label>'+
+				'<select class="'+ Sense[i].name +'" name="'+ Sense[i].name + ' Sense '+ senseCount+'" style="width: 100%"></select>'+
+				'</div></div>';
+	}
     else {
       addSense += '<div class="col-md-4 collapse sense' + senseCount +'"><div class="form-group">'+
                   '<label for="'+ Sense[i].name +'">'+ Sense[i].name +'</label>'+

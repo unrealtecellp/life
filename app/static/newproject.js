@@ -81,46 +81,6 @@ var language = [
 
 var scripts = 
 [
-  {
-    "id": "IPA",
-    "text": "IPA"
-  },
-  {
-    "id": "Adlam alphabet", 
-    "text": "Adlam alphabet"
-  },
-  {
-    "id": "Afaka syllabary", 
-    "text": "Afaka syllabary"
-  },
-  {
-    "id": "Anatolian alphabets", 
-    "text": "Anatolian alphabets"
-  },
-  {
-    "id": "Arabic script", 
-    "text": "Arabic script"
-  },
-  {
-    "id": "Aramaic alphabet", 
-    "text": "Aramaic alphabet"
-  },
-  {
-    "id": "Armenian script", 
-    "text": "Armenian script"
-  },
-  {
-    "id": "ASL-phabet", 
-    "text": "ASL-phabet"
-  },
-  {
-    "id": "Borama script", 
-    "text": "Borama script"
-  },
-  {
-    "text": "Brahmic family and derivatives",
-    "children" : 
-    [
       {
         "id": "Bengali–Assamese script", 
         "text": "Bengali–Assamese script"
@@ -276,99 +236,11 @@ var scripts =
       {
         "id": "Tibetan script", 
         "text": "Tibetan script"
-      }
-    ]
-  },
-  {
-    "id": "Canadian Aboriginal script", 
-    "text": "Canadian Aboriginal script"
-  },
-  {
-    "id": "Caucasian Albanian alphabet", 
-    "text": "Caucasian Albanian alphabet"
-  },
-  {
-    "id": "Cherokee script", 
-    "text": "Cherokee script"
-  },
-  {
-    "id": "Coptic alphabet", 
-    "text": "Coptic alphabet"
-  },
-  {
-    "text": "Cyrillic script",
-    "children" : 
-    [
+      },
       {
         "id": "Bosnian Cyrillic alphabet (bosančica)",
         "text": "Bosnian Cyrillic alphabet (bosančica)"
-      }
-    ]
-  },
-  {
-    "id": "Ge'ez script (Eritrean and Ethiopic)",
-    "text": "Ge'ez script (Eritrean and Ethiopic)"
-  },
-  {
-    "id": "Georgian script", 
-    "text": "Georgian script"
-  },
-  {
-    "id": "Glagolitic alphabet", 
-    "text": "Glagolitic alphabet"
-  },
-  {
-    "id": "Gothic alphabet", 
-    "text": "Gothic alphabet"
-  },
-  {
-    "id": "Greek script", 
-    "text": "Greek script"
-  },
-  {
-    "id": "Chinese characters and derivatives",
-    "text": "Chinese characters and derivatives"
-  },
-  {
-    "id": "Hangul", 
-    "text": "Hangul"
-  },
-  {
-    "id": "Hebrew script", 
-    "text": "Hebrew script"
-  },
-  {
-    "id": "Old Italic script", 
-    "text": "Old Italic script"
-  },
-  {
-    "id": "Kaddare script", 
-    "text": "Kaddare script"
-  },
-  {
-    "id": "Kana", 
-    "text": "Kana"
-  },
-  {
-    "id": "Khitan large script", 
-    "text": "Khitan large script"
-  },
-  {
-    "id": "Khitan small script", 
-    "text": "Khitan small script"
-  },
-  {
-    "id": "Latin script", 
-    "text": "Latin script"
-  },
-  {
-    "id": "Meetei Mayek", 
-    "text": "Meetei Mayek"
-  },
-  {
-    "text": "Mesoamerican scripts",
-    "children" : 
-    [
+      },
       {
         "id": "Epi-Olmec script", 
         "text": "Epi-Olmec script"
@@ -396,13 +268,7 @@ var scripts =
       {
         "id": "Takalik Abaj and Kaminaljuyú scripts",
         "text": "Takalik Abaj and Kaminaljuyú scripts"
-      }
-    ]
-  },
-  {
-    "text": "Mongolian and related scripts",
-    "children" : 
-    [
+      },
       {
         "id": "Old Uyghur alphabet", 
         "text": "Old Uyghur alphabet"
@@ -414,13 +280,7 @@ var scripts =
       {
         "id": "Manchu script", 
         "text": "Manchu script"
-      }
-    ]
-  },
-  {
-    "text": "Munda scripts",
-    "children" : 
-    [
+      },
       {
         "id": "Sorang Sompeng", 
         "text": "Sorang Sompeng"
@@ -432,71 +292,175 @@ var scripts =
       {
         "id": "Warang Citi", 
         "text": "Warang Citi"
-      }
-    ]
-  },
-  {
-    "id": "N'Ko script", 
-    "text": "N'Ko script"
-  },
-  {
-    "id": "Naxi script", 
-    "text": "Naxi script"
-  },
-  {
-    "id": "Nsibidi", 
-    "text": "Nsibidi"
-  },
-  {
-    "id": "Ogham", 
-    "text": "Ogham"
-  },
-  {
-    "id": "Osmanya script", 
-    "text": "Osmanya script"
-  },
-  {
-    "id": "Pahawh Hmong", 
-    "text": "Pahawh Hmong"
-  },
-  {
-    "id": "Old Permic alphabet", 
-    "text": "Old Permic alphabet"
-  },
-  {
-    "id": "Runic script", 
-    "text": "Runic script"
-  },
-  {
-    "id": "si5s", 
-    "text": "si5s"
-  },
-  {
-    "id": "SignWriting", 
-    "text": "SignWriting"
-  },
-  {
-    "id": "Stokoe notation", 
-    "text": "Stokoe notation"
-  },
-  {
-    "text": "Old Turkic script",
-    "children" : 
-    [
+      },
       {
         "id": "Old Hungarian alphabet", 
         "text": "Old Hungarian alphabet"
+      },
+      {
+        "id": "IPA",
+        "text": "IPA"
+      },
+      {
+        "id": "Adlam alphabet", 
+        "text": "Adlam alphabet"
+      },
+      {
+        "id": "Afaka syllabary", 
+        "text": "Afaka syllabary"
+      },
+      {
+        "id": "Anatolian alphabets", 
+        "text": "Anatolian alphabets"
+      },
+      {
+        "id": "Arabic script", 
+        "text": "Arabic script"
+      },
+      {
+        "id": "Aramaic alphabet", 
+        "text": "Aramaic alphabet"
+      },
+      {
+        "id": "Armenian script", 
+        "text": "Armenian script"
+      },
+      {
+        "id": "ASL-phabet", 
+        "text": "ASL-phabet"
+      },
+      {
+        "id": "Borama script", 
+        "text": "Borama script"
+      },
+      {
+        "id": "Canadian Aboriginal script", 
+        "text": "Canadian Aboriginal script"
+      },
+      {
+        "id": "Caucasian Albanian alphabet", 
+        "text": "Caucasian Albanian alphabet"
+      },
+      {
+        "id": "Cherokee script", 
+        "text": "Cherokee script"
+      },
+      {
+        "id": "Coptic alphabet", 
+        "text": "Coptic alphabet"
+      },
+      {
+        "id": "Ge'ez script (Eritrean and Ethiopic)",
+        "text": "Ge'ez script (Eritrean and Ethiopic)"
+      },
+      {
+        "id": "Georgian script", 
+        "text": "Georgian script"
+      },
+      {
+        "id": "Glagolitic alphabet", 
+        "text": "Glagolitic alphabet"
+      },
+      {
+        "id": "Gothic alphabet", 
+        "text": "Gothic alphabet"
+      },
+      {
+        "id": "Greek script", 
+        "text": "Greek script"
+      },
+      {
+        "id": "Chinese characters and derivatives",
+        "text": "Chinese characters and derivatives"
+      },
+      {
+        "id": "Hangul", 
+        "text": "Hangul"
+      },
+      {
+        "id": "Hebrew script", 
+        "text": "Hebrew script"
+      },
+      {
+        "id": "Old Italic script", 
+        "text": "Old Italic script"
+      },
+      {
+        "id": "Kaddare script", 
+        "text": "Kaddare script"
+      },
+      {
+        "id": "Kana", 
+        "text": "Kana"
+      },
+      {
+        "id": "Khitan large script", 
+        "text": "Khitan large script"
+      },
+      {
+        "id": "Khitan small script", 
+        "text": "Khitan small script"
+      },
+      {
+        "id": "Latin script", 
+        "text": "Latin script"
+      },
+      {
+        "id": "Meetei Mayek", 
+        "text": "Meetei Mayek"
+      },
+      {
+        "id": "N'Ko script", 
+        "text": "N'Ko script"
+      },
+      {
+        "id": "Naxi script", 
+        "text": "Naxi script"
+      },
+      {
+        "id": "Nsibidi", 
+        "text": "Nsibidi"
+      },
+      {
+        "id": "Ogham", 
+        "text": "Ogham"
+      },
+      {
+        "id": "Osmanya script", 
+        "text": "Osmanya script"
+      },
+      {
+        "id": "Pahawh Hmong", 
+        "text": "Pahawh Hmong"
+      },
+      {
+        "id": "Old Permic alphabet", 
+        "text": "Old Permic alphabet"
+      },
+      {
+        "id": "Runic script", 
+        "text": "Runic script"
+      },
+      {
+        "id": "si5s", 
+        "text": "si5s"
+      },
+      {
+        "id": "SignWriting", 
+        "text": "SignWriting"
+      },
+      {
+        "id": "Stokoe notation", 
+        "text": "Stokoe notation"
+      },
+      {
+        "id": "Tifinagh", 
+        "text": "Tifinagh"
+      },
+      {
+        "id": "Yi script", 
+        "text": "Yi script"
       }
-    ]
-  },
-  {
-    "id": "Tifinagh", 
-    "text": "Tifinagh"
-  },
-  {
-    "id": "Yi script", 
-    "text": "Yi script"
-  }
 ]
 
 $(document).ready(function () {
@@ -513,6 +477,16 @@ $(document).ready(function () {
     data: scripts,
     allowClear: true,
     // sorter: false
+  });
+  
+// partial solution to the select2 multiselect
+  $("select").on("select2:select", function (evt) {
+    var element = evt.params.data.element;
+    console.log(element);
+    var $element = $(element);
+    $element.detach();
+    $(this).append($element);
+    $(this).trigger("change");
   });
 
   $('.glosslanguage').select2({

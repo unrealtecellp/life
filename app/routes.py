@@ -46,10 +46,11 @@ def home():
     # print(f'{"#"*80}\n{mongo.db.list_collection_names()}')
     userprojects = mongo.db.userprojects              # collection of users and their respective projects
 
-    currentuserprojectsname =  list(currentuserprojects())
+    currentuserprojectsname =  sorted(list(currentuserprojects()))
     activeprojectname = userprojects.find_one({ 'username' : current_user.username },\
                     {'_id' : 0, 'activeproject': 1})['activeproject']
-    print(currentuserprojectsname, activeprojectname)
+    # print(currentuserprojectsname, activeprojectname)
+    # print(sorted(currentuserprojectsname))
     return render_template('home.html',  data=currentuserprojectsname, activeproject=activeprojectname)
 
 
