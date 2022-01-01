@@ -835,10 +835,13 @@ def enternewlexeme():
             #         return redirect(url_for('newproject'))
 
             projectForm['username'] = current_user.username
-
-            projects.update_one({ "_id" : projects_id }, \
-                { '$set' : { projectForm['projectname'] : {"projectOwner" : current_user.username,"lexemeInserted" : 0, "lexemeDeleted" : 0, \
-                    'sharedwith': [projectForm['username']], 'projectdeleteFLAG' : 0} }})
+            try:
+                projects.update_one({ "_id" : projects_id }, \
+                    { '$set' : { projectForm['projectname'] : {"projectOwner" : current_user.username,"lexemeInserted" : 0, "lexemeDeleted" : 0, \
+                        'sharedwith': [projectForm['username']], 'projectdeleteFLAG' : 0} }})
+            except:
+                flash("Please enter the Project Name!!!")
+                return redirect(url_for('newproject'))
 
             
             # print(usersprojects.find_one({ 'username' : current_user.username }))
