@@ -29,8 +29,16 @@ from rdflib import Graph, Literal, RDF, URIRef, XSD
 from rdflib.namespace import RDFS, FOAF, RDF, SKOS
 from rdflib.namespace import Namespace
 
-import pandas as pd
+from pylatex import Document, PageStyle, Head, Foot, MiniPage, \
+    LargeText, MediumText, Section, \
+    LineBreak, NewPage, Tabularx, TextColor, simple_page_number
+from pylatex.utils import bold, NoEscape
+
+from pylatex.base_classes import Environment
+from pylatex.package import Package
 import json
+from app import latex_generator as lg
+
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -1484,21 +1492,411 @@ def downloadselectedlexeme():
         with open(basedir+"/download/lexicon_"+activeprojectname+".json", "w") as outfile: 
             outfile.write(json_object)  
 
-    # def test():
-    #     g = Graph()
-    #     semweb = URIRef('http://dbpedia.org/resource/Semantic_Web')
-    #     type = g.value(semweb, RDFS.label)
+    # # def test():
+    # #     g = Graph()
+    # #     semweb = URIRef('http://dbpedia.org/resource/Semantic_Web')
+    # #     type = g.value(semweb, RDFS.label)
 
-    #     g.add((
-    #         URIRef("http://example.com/person/nick"),
-    #         FOAF.givenName,
-    #         Literal("Nick", datatype=XSD.string)
+    # #     g.add((
+    # #         URIRef("http://example.com/person/nick"),
+    # #         FOAF.givenName,
+    # #         Literal("Nick", datatype=XSD.string)
+    # #     ))
+
+    # #     g.bind("foaf", FOAF)
+    # #     g.bind("xsd", XSD)
+
+    # #     print(g.serialize(format="turtle"))
+
+
+    # def add_canonical_form(g_form, life, lex_entry, lex_item, ipa, dict_lang):
+    #     # g_form = Graph()
+    #     # g_form.bind("ontolex", ontolex)
+    #     # g_form.bind("life", life)
+
+    #     g_form.add((
+    #         URIRef(life[lex_item+'_form']),
+    #         RDF.type,
+    #         ontolex.form
     #     ))
 
-    #     g.bind("foaf", FOAF)
-    #     g.bind("xsd", XSD)
+    #     g_form.add((
+    #         URIRef(life[lex_item+'_form']),
+    #         ontolex.phoneticRep,
+    #         Literal(ipa, lang="ipa")
+    #     ))
 
-    #     print(g.serialize(format="turtle"))
+    #     headword_script = list(lex_entry['langscripts']['headwordscript'])[0]
+    #     print ('Headword script', headword_script)
+    #     headword_lang = dict_lang+'-'+headword_script
+
+    #     g_form.add((
+    #         URIRef(life[lex_item+'_form']),
+    #         ontolex.writtenRep,
+    #         Literal(lex_item, lang=headword_lang)
+    #     ))
+
+    #     #If written reps are entered in other scripts, they are added
+    #     other_scripts = lex_entry['langscripts']['lexemeformscripts']
+    #     for other_script in other_scripts:
+    #         lex_trans_forms = lex_entry['Lexeme Form']
+    #         if other_script in lex_trans_forms:
+    #             lex_trans = lex_trans_forms[other_script]
+    #             g_form.add((
+    #                 URIRef(life[lex_item+'_form']),
+    #                 ontolex.writtenRep,
+    #                 Literal(lex_trans, lang=dict_lang+'-'+other_script)
+    #             ))
+            
+
+    # def add_definition(g_form, life, lex_entry, lex_item, sense_defn):
+    #     defn_langs = lex_entry['langscripts']['glosslangs']
+    #     for defn_lang in defn_langs:
+    #         if defn_lang in sense_defn:
+    #             lex_defn = sense_defn[defn_lang]
+    #             g_form.add((
+    #                 URIRef(life[lex_item]),
+    #                 ontolex.denotes,
+    #                 URIRef(life[lex_item+'_definition'])
+    #             ))
+
+    #             g_form.add((
+    #                 URIRef(life[lex_item+'_definition']),
+    #                 SKOS.definition,
+    #                 Literal(lex_defn, lang=defn_lang)
+    #             ))
+
+    # def add_example(g_form, life, lex_item, example, ex_lang):
+    #     g_form.add((
+    #         URIRef(life[lex_item]),
+    #         SKOS.example,
+    #         Literal(example, lang=ex_lang)
+    #     ))
+
+    # # def add_other_forms(g_other_form, life, lex_entry, lex_item, other_form, dict_lang):
+    # #     # g_other_form = Graph()
+    # #     # g_other_form.bind("ontolex", ontolex)
+    # #     # g_other_form.bind("life", life)
+
+    # #     g_other_form.add((
+    # #         URIRef(life[lex_item+'_otherForm']),
+    # #         RDF.type,
+    # #         ontolex.form
+    # #     ))
+
+    # #     g_other_form.add((
+    # #         URIRef(life[lex_item+'_otherForm']),
+    # #         ontolex.writtenRep,
+    # #         Literal(other_form, lang=dict_lang)
+    # #     ))
+
+
+    # def add_sense(g_lex, life, lex_entry, sense_entry, lex_sense):
+    #     g_lex.add((
+    #         sense_entry,
+    #         RDF.type,
+    #         ontolex.LexicalSense
+    #     ))
+
+    #     if dbpedia_exists(lex_sense):
+    #         g_lex.add((
+    #             life[lex_entry],
+    #             ontolex.denotes,
+    #             dbpedia[lex_sense.capitalize()]
+    #         ))
+
+    #         g_lex.add((
+    #             sense_entry,
+    #             ontolex.reference,
+    #             dbpedia[lex_sense.capitalize()]
+    #         ))
+
+    #     g_lex.add((
+    #         sense_entry,
+    #         ontolex.isSenseOf,
+    #         life[lex_entry]
+    #     ))
+        
+
+    #     wordnet_code = get_wordnet_code(lex_sense)
+    #     if wordnet_code != '':
+    #         g_lex.add((
+    #             sense_entry,
+    #             ontolex.isLexicalisedSenseOf,
+    #             pwn[wordnet_code]
+    #         ))
+    #         g_lex.add((
+    #             life[lex_entry],
+    #             ontolex.evokes,
+    #             pwn[wordnet_code]
+    #         ))
+
+    #     g_lex.add((
+    #         sense_entry,
+    #         ontolex.isSenseOf,
+    #         life[lex_entry]
+    #     ))
+
+    #     #Creating dbpedia entry
+    #     g_lex.add((
+    #         dbpedia[lex_sense.capitalize()],
+    #         ontolex.concept,
+    #         pwn[wordnet_code]
+    #     ))
+
+    #     g_lex.add((
+    #         dbpedia[lex_sense.capitalize()],
+    #         ontolex.isReferenceOf,
+    #         sense_entry
+    #     ))
+
+    #     g_lex.add((
+    #         dbpedia[lex_sense.capitalize()],
+    #         ontolex.isDenotedBy,
+    #         ontolex.LexicalConcept
+    #     ))
+
+
+    #     #Creating WordNet entry
+    #     g_lex.add((
+    #         pwn[wordnet_code],
+    #         RDF.type,
+    #         life[lex_entry]
+    #     ))
+        
+    #     g_lex.add((
+    #         pwn[wordnet_code],
+    #         ontolex.isEvokedBy,
+    #         life[lex_entry]
+    #     ))
+
+    #     g_lex.add((
+    #         pwn[wordnet_code],
+    #         ontolex.lexicalizedSense,
+    #         sense_entry
+    #     ))
+
+    #     g_lex.add((
+    #         pwn[wordnet_code],
+    #         ontolex.isConceptOf,
+    #         dbpedia[lex_sense.capitalize()]
+    #     ))
+
+
+    # def get_wordnet_code(lex_gloss):
+    #     query = '''
+    #     ASK WHERE {
+    #     {<my-specific-URI> ?p ?o . }
+    #     UNION
+    #     {?s ?p <my-specific-URI> . }
+    #     }
+    #     '''
+    #     return lex_gloss
+
+    # def dbpedia_exists(lex_gloss):
+    #     query = '''
+    #     ASK WHERE {
+    #     {<my-specific-URI> ?p ?o . }
+    #     UNION
+    #     {?s ?p <my-specific-URI> . }
+    #     }
+    #     '''
+    #     return True
+
+    # def json_to_rdf_lexicon(g_lex, lex_entry, domain_name,
+    #                         project, output_format='turtle'):
+
+    #     lex_item = lex_entry['headword']
+    #     lex_pos = lex_entry['grammaticalcategory']
+    #     # can_form = lex_item
+    #     lex_pron = lex_entry['Pronunciation']
+    #     lex_sense = lex_entry['SenseNew']
+    #     dict_lang = lex_entry['langscripts']['langcode']
+
+    #     # ontolex = URIRef('http://www.w3.org/ns/lemon/ontolex#')
+    #     # lexinfo = URIRef('http://www.lexinfo.net/ontology/2.0/lexinfo#')
+
+    #     life = Namespace(domain_name+'/'+project + '/word/')    
+
+    #     g_lex.bind("ontolex", ontolex)
+    #     g_lex.bind("lexinfo", lexinfo)
+    #     g_lex.bind("skos", SKOS)
+    #     g_lex.bind("life", life)
+    #     g_lex.bind("pwnlemma", pwn)
+    #     g_lex.bind("dbpedia", dbpedia)
+
+
+    #     g_lex.add((
+    #         URIRef(life[lex_item]),
+    #         RDF.type,
+    #         lexinfo.LexicalEntry
+    #     ))
+
+    #     g_lex.add((
+    #         URIRef(life[lex_item]),
+    #         lexinfo.partOfSpeech,
+    #         lexinfo[lex_pos]
+    #     ))
+
+    #     # g_lex.add((
+    #     #     URIRef(life[lex_item]),
+    #     #     ontolex.lexicalForm,
+    #     #     URIRef(life[lex_item+'_form'])
+    #     # ))
+
+    #     g_lex.add((
+    #         URIRef(life[lex_item]),
+    #         ontolex.canonicalForm,
+    #         URIRef(life[lex_item+'_form'])
+    #     ))
+
+    #     # Add graph for the canonical form
+    #     add_canonical_form(g_lex, life, lex_entry, lex_item, lex_pron, dict_lang)
+
+    #     for i in range(1, len(lex_sense)):
+    #         sense_gloss = lex_sense['Sense '+str(i)]["Gloss"]["eng"]
+    #         sense_defn = lex_sense['Sense '+str(i)]["Definition"]        
+    #         sense_ex = lex_sense['Sense '+str(i)]["Example"]
+
+    #         sense_entry = life[lex_item+'_sense'+str(i)]
+    #         g_lex.add((
+    #             URIRef(life[lex_item]),
+    #             ontolex.sense,
+    #             URIRef(sense_entry)
+    #         ))
+    #         add_sense(g_lex, life, lex_item, sense_entry, sense_gloss)
+    #         add_definition(g_lex, life, lex_entry, lex_item, sense_defn)
+    #         add_example(g_lex, life, lex_item, sense_ex, dict_lang)
+
+
+    # def preprocess_csv_excel(lexicon):
+    #     df = pd.json_normalize(lexicon)
+    #     columns = df.columns
+    #     drop_cols = [c for c in df.columns if c.startswith('langscripts.')]
+    #     drop_cols.append ('lexemedeleteFLAG')
+    #     drop_cols.append ('grammaticalcategory')
+    #     drop_cols.append ('projectname')
+
+    #     if 'gloss' in columns:
+    #         drop_cols.append ('gloss')
+    #     drop_oldsense = [c for c in df.columns if c.startswith('Sense.')]
+    #     drop_oldvariant = [c for c in df.columns if c.startswith('Variant.')]
+    #     drop_oldallomorph = [c for c in df.columns if c.startswith('Allomorph.')]
+    #     drop_oldscript = [c for c in df.columns if c.startswith('Lexeme Form Script')]
+    #     drop_files = [c for c in df.columns if c.startswith('filesname.')]
+
+    #     drop_cols.extend(drop_oldsense)
+    #     drop_cols.extend(drop_oldvariant)
+    #     drop_cols.extend(drop_oldallomorph)
+    #     drop_cols.extend(drop_oldscript)
+    #     drop_cols.extend(drop_files)
+
+    #     df.drop(columns=drop_cols, inplace=True)
+
+    #     return df
+
+    # def generate_rdf(write_path, lexicon, domain_name, project, rdf_format):
+    #     g_lex = Graph()
+        
+    #     for lex_entry in lexicon:
+    #         json_to_rdf_lexicon(g_lex, lex_entry, 
+    #                         domain_name, project, rdf_format)
+            
+    #     with open (write_path, 'wb') as f_w:    
+    #         rdf_out = g_lex.serialize(format=rdf_format)
+    #         f_w.write(rdf_out)
+
+    # def generate_csv(write_path, lexicon):
+    #     df = preprocess_csv_excel(lexicon)
+    #     with open (write_path, 'w') as f_w:
+    #         df.to_csv(f_w, index=False)
+
+    # def generate_xlsx(write_path, lexicon):
+    #     df = preprocess_csv_excel(lexicon)
+    #     f_w = open (write_path, 'wb')
+    #     df.to_excel(f_w, index=False, engine='xlsxwriter')
+
+    # def generate_ods(write_path, lexicon):
+    #     df = preprocess_csv_excel(lexicon)
+    #     f_w = open (write_path, 'wb')
+    #     df.to_excel(f_w, index=False, engine='openpyxl')
+
+    # def generate_html(write_path, lexicon):
+    #     df = preprocess_csv_excel(lexicon)
+    #     with open (write_path, 'w') as f_w:
+    #         df.to_html(f_w, index=False)
+
+    # def generate_latex(write_path, lexicon):
+    #     df = preprocess_csv_excel(lexicon)
+    #     with open (write_path, 'w') as f_w:
+    #         df.to_latex(f_w, index=False)
+
+    # def generate_markdown(write_path, lexicon):
+    #     df = preprocess_csv_excel(lexicon)
+    #     with open (write_path, 'w') as f_w:
+    #         df.to_markdown(f_w, index=False)
+
+    # def generate_pdf(write_path, lexicon, project):
+    #     return None
+
+    # def download_lexicon(lex_json, write_path, 
+    #     output_format='rdf', rdf_format='turtle'):
+    #     file_ext_map = {'turtle': '.ttl', 'n3': '.n3', 
+    #     'ntriples': '.nt', 'rdfxml': '.rdf', 'json': '.json', 'csv': '.csv',
+    #     'xlsx': '.xlsx', 'pdf': '.pdf', 'html': '.html', 'latex': '.tex',
+    #     'markdown': '.md', 'ods': '.ods'}
+
+    #     domain_name = 'http://lifeapp.in'
+        
+    #     pprint(lex_json)
+    #     metadata = lex_json[0]
+    #     project = metadata['projectname']
+
+    #     lexicon = lex_json[1:]
+
+    #     if (rdf_format in file_ext_map) or (output_format in file_ext_map):
+    #         if output_format == 'rdf':
+    #             file_ext = file_ext_map[rdf_format]
+    #             write_file = os.path.join(write_path, 'lexicon_'+project+'_'+output_format+file_ext)
+    #             generate_rdf(write_file, lexicon, domain_name, project, rdf_format)
+    #         else:
+    #             file_ext = file_ext_map[output_format]
+    #             write_file = os.path.join(write_path, 'lexicon_'+project+file_ext)
+    #             if output_format == 'csv':
+    #                 generate_csv(write_file, lexicon)
+    #             elif output_format == 'xlsx':
+    #                 generate_xlsx(write_file, lexicon)
+    #             elif output_format == 'pdf':
+    #                 generate_pdf(write_file, lexicon)
+    #             elif output_format == 'markdown':
+    #                 generate_markdown(write_file, lexicon)
+    #             elif output_format == 'html':
+    #                 generate_html(write_file, lexicon)
+    #             elif output_format == 'latex':
+    #                 generate_latex(write_file, lexicon)
+    #             elif output_format == 'ods':
+    #                 generate_ods(write_file, lexicon)
+    #             elif output_format == 'json':
+    #                 generate_json(lex_json)
+    #     else:
+    #         print ('File type\t', output_format, '\tnot supported')
+    #         print ('Supported File Types', file_ext_map.keys())        
+                    
+    def test():
+        g = Graph()
+        semweb = URIRef('http://dbpedia.org/resource/Semantic_Web')
+        type = g.value(semweb, RDFS.label)
+
+        g.add((
+            URIRef("http://example.com/person/nick"),
+            FOAF.givenName,
+            Literal("Nick", datatype=XSD.string)
+        ))
+
+        g.bind("foaf", FOAF)
+        g.bind("xsd", XSD)
+
+        print(g.serialize(format="turtle"))
 
 
     def add_canonical_form(g_form, life, lex_entry, lex_item, ipa, dict_lang):
@@ -1565,22 +1963,22 @@ def downloadselectedlexeme():
             Literal(example, lang=ex_lang)
         ))
 
-    # def add_other_forms(g_other_form, life, lex_entry, lex_item, other_form, dict_lang):
-    #     # g_other_form = Graph()
-    #     # g_other_form.bind("ontolex", ontolex)
-    #     # g_other_form.bind("life", life)
+    def add_other_forms(g_other_form, life, lex_entry, lex_item, other_form, dict_lang):
+        # g_other_form = Graph()
+        # g_other_form.bind("ontolex", ontolex)
+        # g_other_form.bind("life", life)
 
-    #     g_other_form.add((
-    #         URIRef(life[lex_item+'_otherForm']),
-    #         RDF.type,
-    #         ontolex.form
-    #     ))
+        g_other_form.add((
+            URIRef(life[lex_item+'_otherForm']),
+            RDF.type,
+            ontolex.form
+        ))
 
-    #     g_other_form.add((
-    #         URIRef(life[lex_item+'_otherForm']),
-    #         ontolex.writtenRep,
-    #         Literal(other_form, lang=dict_lang)
-    #     ))
+        g_other_form.add((
+            URIRef(life[lex_item+'_otherForm']),
+            ontolex.writtenRep,
+            Literal(other_form, lang=dict_lang)
+        ))
 
 
     def add_sense(g_lex, life, lex_entry, sense_entry, lex_sense):
@@ -1761,6 +2159,17 @@ def downloadselectedlexeme():
             add_example(g_lex, life, lex_item, sense_ex, dict_lang)
 
 
+    def generate_rdf(write_path, lexicon, domain_name, project, rdf_format):
+        g_lex = Graph()
+        
+        for lex_entry in lexicon:
+            json_to_rdf_lexicon(g_lex, lex_entry, 
+                            domain_name, project, rdf_format)
+            
+        with open (write_path, 'w') as f_w:    
+            rdf_out = g_lex.serialize(format=rdf_format)
+            f_w.write(rdf_out)
+
     def preprocess_csv_excel(lexicon):
         df = pd.json_normalize(lexicon)
         columns = df.columns
@@ -1787,17 +2196,6 @@ def downloadselectedlexeme():
 
         return df
 
-    def generate_rdf(write_path, lexicon, domain_name, project, rdf_format):
-        g_lex = Graph()
-        
-        for lex_entry in lexicon:
-            json_to_rdf_lexicon(g_lex, lex_entry, 
-                            domain_name, project, rdf_format)
-            
-        with open (write_path, 'wb') as f_w:    
-            rdf_out = g_lex.serialize(format=rdf_format)
-            f_w.write(rdf_out)
-
     def generate_csv(write_path, lexicon):
         df = preprocess_csv_excel(lexicon)
         with open (write_path, 'w') as f_w:
@@ -1810,8 +2208,8 @@ def downloadselectedlexeme():
 
     def generate_ods(write_path, lexicon):
         df = preprocess_csv_excel(lexicon)
-        f_w = open (write_path, 'wb')
-        df.to_excel(f_w, index=False, engine='openpyxl')
+        with open (write_path, 'w') as f_w:
+            df.to_excel(f_w, index=False, engine='openpyxl')
 
     def generate_html(write_path, lexicon):
         df = preprocess_csv_excel(lexicon)
@@ -1823,28 +2221,80 @@ def downloadselectedlexeme():
         with open (write_path, 'w') as f_w:
             df.to_latex(f_w, index=False)
 
+    def generate_formatted_latex(write_path, 
+        lexicon, 
+        project, 
+        editors = ['Editor 1', 'Editor 2', 'Editor 3'],
+        co_editors = ['Co-ed 1', 'Co-ed 2', 'Co-ed 3'],
+        metadata = ['Scheme for Protection and Preservation of Indian Languages', 'Central Institute of Indian Languages'],
+        fields=[],
+        dict_headword='headword', #lexemeformscripts.ipa.., glosslangs.hin..
+        formatting_options={
+        'documentclass': 'article', 
+        'document_options':'a4paper, 12pt, twoside, xelatex',
+        'geometry_options': {
+            "top": "3.5cm",
+            "bottom": "3.5cm",
+            "left": "3.5cm",
+            "right": "3.5cm",
+            "columnsep": "30pt",
+            "includeheadfoot": True
+        }
+        }):
+        # geometry_options_1 = {"tmargin": "1cm", "lmargin": "10cm"}
+        # lg.generate_formatted_latex(write_path, lexicon, project)
+        lg.generate_formatted_latex(write_path, lexicon, project, fields=fields)
+
+
+
     def generate_markdown(write_path, lexicon):
         df = preprocess_csv_excel(lexicon)
         with open (write_path, 'w') as f_w:
             df.to_markdown(f_w, index=False)
 
-    def generate_pdf(write_path, lexicon, project):
-        return None
+    def generate_pdf(write_path, 
+        lexicon, 
+        project, 
+        editors = ['Editor 1', 'Editor 2', 'Editor 3'],
+        co_editors = ['Co-ed 1', 'Co-ed 2', 'Co-ed 3'],
+        metadata = ['Scheme for Protection and Preservation of Indian Languages', 'Central Institute of Indian Languages'],
+        fields=[],
+        dict_headword='headword', #lexemeformscripts.ipa.., glosslangs.hin..
+        formatting_options={
+        'documentclass': 'article', 
+        'document_options':'a4paper, 12pt, twoside, xelatex',
+        'geometry_options': {
+            "top": "3.5cm",
+            "bottom": "3.5cm",
+            "left": "3.5cm",
+            "right": "3.5cm",
+            "columnsep": "30pt",
+            "includeheadfoot": True
+        }
+        }):
+        # lg.generate_formatted_latex(write_path, lexicon, project)
+        lg.generate_formatted_latex(write_path, lexicon, project, fields=fields)
 
+        # return True
+
+
+    #“xml”, “n3”, “turtle”, “nt”, “pretty-xml”, “trix”, “trig” and “nquads”
     def download_lexicon(lex_json, write_path, 
         output_format='rdf', rdf_format='turtle'):
         file_ext_map = {'turtle': '.ttl', 'n3': '.n3', 
-        'ntriples': '.nt', 'rdfxml': '.rdf', 'json': '.json', 'csv': '.csv',
-        'xlsx': '.xlsx', 'pdf': '.pdf', 'html': '.html', 'latex': '.tex',
+        'nt': '.nt', 'xml': '.rdf', 'pretty-xml': '.rdfp', 'trix': '.trix', 
+        'trig': '.trig', 'nquads': 'nquad', 'json': '.json', 'csv': '.csv',
+        'xlsx': '.xlsx', 'pdf': '', 'html': '.html', 'latex_dict': '',
         'markdown': '.md', 'ods': '.ods'}
 
         domain_name = 'http://lifeapp.in'
         
-        pprint(lex_json)
         metadata = lex_json[0]
         project = metadata['projectname']
 
         lexicon = lex_json[1:]
+
+        fields = ['headword', 'Lexeme Form.ipa', 'Lexeme Form.Deva', 'grammaticalcategory', ['SenseNew.Gloss.hin', 'SenseNew.Gloss.eng', 'SenseNew.Definition.hin', 'SenseNew.Definition.eng', 'SenseNew.Example']]
 
         if (rdf_format in file_ext_map) or (output_format in file_ext_map):
             if output_format == 'rdf':
@@ -1859,7 +2309,8 @@ def downloadselectedlexeme():
                 elif output_format == 'xlsx':
                     generate_xlsx(write_file, lexicon)
                 elif output_format == 'pdf':
-                    generate_pdf(write_file, lexicon)
+                    # generate_pdf(write_file, lexicon, project, fields=[], formatting_options={})
+                    generate_pdf(write_file, lexicon, project, fields=fields, formatting_options={})
                 elif output_format == 'markdown':
                     generate_markdown(write_file, lexicon)
                 elif output_format == 'html':
@@ -1868,13 +2319,14 @@ def downloadselectedlexeme():
                     generate_latex(write_file, lexicon)
                 elif output_format == 'ods':
                     generate_ods(write_file, lexicon)
+                elif output_format == 'latex_dict':
+                    # generate_formatted_latex(write_file, lexicon, project, fields=[], formatting_options={})
+                    generate_formatted_latex(write_file, lexicon, project, fields=fields, formatting_options={})
                 elif output_format == 'json':
                     generate_json(lex_json)
         else:
             print ('File type\t', output_format, '\tnot supported')
             print ('Supported File Types', file_ext_map.keys())        
-                    
-
 
 
     lexeme_dir = basedir
@@ -1883,7 +2335,7 @@ def downloadselectedlexeme():
     with open(os.path.join(lexeme_dir, 'lexemeEntry.json')) as f_r:
         lex = json.load(f_r)
         out_form = download_format
-        # print(out_form)
+        print(out_form)
         if ('rdf' in out_form):
             rdf_format = out_form[3:]
             out_form = 'rdf'

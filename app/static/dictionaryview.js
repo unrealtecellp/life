@@ -192,7 +192,8 @@ $(document).ready(function() {
 $(document).ready(function() {  
     $(".latex").click(function() {
       lexemes = GetSelected()
-      lexemes['downloadFormat'] = "latex";
+    //   lexemes['downloadFormat'] = "latex";
+      lexemes['downloadFormat'] = "latex_dict";
       $.ajax({
             url: '/downloadselectedlexeme',
             type: 'GET',
@@ -253,6 +254,7 @@ $(document).ready(function() {
     $(".rdfturtle").click(function() {
       lexemes = GetSelected()
       lexemes['downloadFormat'] = "rdfturtle";
+    // lexemes['downloadFormat'] = "turtle";
       $.ajax({
             url: '/downloadselectedlexeme',
             type: 'GET',
@@ -274,6 +276,7 @@ $(document).ready(function() {
     $(".rdfxml").click(function() {
       lexemes = GetSelected()
       lexemes['downloadFormat'] = "rdfxml";
+    //   lexemes['downloadFormat'] = "xml";
       $.ajax({
             url: '/downloadselectedlexeme',
             type: 'GET',
@@ -293,7 +296,8 @@ $(document).ready(function() {
 $(document).ready(function() {  
     $(".rdfntriples").click(function() {
       lexemes = GetSelected()
-      lexemes['downloadFormat'] = "rdfntriples";
+    //   lexemes['downloadFormat'] = "rdfntriples";
+    lexemes['downloadFormat'] = "rdfnt";
       $.ajax({
             url: '/downloadselectedlexeme',
             type: 'GET',
@@ -314,6 +318,7 @@ $(document).ready(function() {
     $(".rdfn3").click(function() {
       lexemes = GetSelected()
       lexemes['downloadFormat'] = "rdfn3";
+    // lexemes['downloadFormat'] = "n3";
       $.ajax({
             url: '/downloadselectedlexeme',
             type: 'GET',
