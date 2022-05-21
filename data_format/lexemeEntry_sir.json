@@ -1,0 +1,195 @@
+// version 1
+{
+    "username": "user_19",
+    "projectname": "P_1",
+    "headword": "good",
+    "Lexeme Form": {
+        "IPA": "/good/",
+        "Devanagari": "/अच्छा/"
+    },
+    "Pronunciation": "/gud/",
+    "Additional Metadata Information": "Meta data Info",
+    "Any Additional Information": "Additional Info",
+    "Encyclopedic Information": "More Info",
+    "Source": "Internet",
+    "Custom Fields": {
+        "Extra_1": "Extra data",
+        "Extra_2": "Extra details"},
+    "Sense": {
+        "Sense 1": {
+            "Gloss Gujarati": "/સારું/",
+            "Definition Gujarati": "સારું",
+            "Gloss Hindi": "अच्छा",
+            "Definition Hindi": "बढ़ीया",
+            "Grammatical Category": "Adjective",
+            "Example": "राम अच्छा लड़का है",
+            "Free Translation": "Free Translation",
+            "Semantic Domain": ["1.1.1 Sun"],
+            "Lexical Relation": ["Hyponym"]
+        },
+        "Sense 2": {
+            "Gloss Gujarati": "/સારું/",
+            "Definition Gujarati": "સારું",
+            "Gloss Hindi": "अच्छा",
+            "Definition Hindi": "बढ़ीया",
+            "Grammatical Category": "Adjective [ADJ]",
+            "Example": "राम अच्छा लड़का है",
+            "Free Translation": "Free Translation",
+            "Semantic Domain": ["1.1.1.1 Moon"],
+            "Lexical Relation": ["Hypernym"]
+        },
+        "Sense 3": {
+            "Gloss English": "/સારું/",
+            "Grammatical Category": "Adjective",
+            "Example": "राम अच्छा लड़का है",
+            "Free Translation": "Free Translation"
+        }
+    },
+    "Variant": {
+        "Variant 1": {
+            "Variant Form": "Variant Form 1",
+            "Variant Type": "Regional Variant"
+        },
+        "Variant 2": {
+            "Variant Form": "Variant Form 2",
+            "Variant Type": "Social Variant"
+        }
+    },
+    "Allomorph": {
+        "Allomorph 1": {
+            "Stem Allomorph": "Stem Allomorph 1",
+            "Morph Type": "ifx infix",
+            "Environment": "Environment 1"
+        },
+        "Allomorph 2": {
+            "Stem Allomorph": "Stem Allomorph 2",
+            "Morph Type": "pfx prefix",
+            "Environment": "Environment 2"
+        }
+    },
+    "filesname": {
+        "Upload Movie File": "788004Reset_position.mp4",
+        "Upload Sound File": "7880502_eno.wav",
+        "Upload Picture Sense 1": "7880613.jpeg",
+        "Upload Picture Sense 2": "7880723.jpeg",
+        "Upload Field Notebook Scan": "7880842.jpeg",
+        "Custom Field Extra_3": "7880952.jpeg"
+    },
+    "gloss": "સારું",
+    "grammaticalcategory": "Adjective",
+    "lexemedeleteFLAG": 0,
+    "updatedBy": "user_19",
+    "lexemeId": "P_1good1"
+}
+
+
+// version 2
+
+{
+    "username": "user_19",
+    "projectname": "P_1",
+    "langscripts": {
+        "langname": "English",
+        "langcode": "eng",
+        "headwordscript": {"Latn": "Latin"},
+        "lexemeformscripts": {
+            "ipa": "International Phonetic Alphabet",
+            "Deva": "Devanagari"
+        },
+        "glosslangs": {
+            "hin": "Hindi",
+            "guj": "Gujarati",
+            "eng": "English"        
+        },
+        "glossscripts": {
+            "Deva": "Devanagari",
+            "Gujr": "Gujarati",
+            "Latn": "Latin"
+        }
+    },
+    "headword": "good",    
+    "Lexeme Form": {
+        "ipa": "/good/",
+        "Deva": "/गुड/"
+    },
+    "Pronunciation": "/gud/",
+    "Additional Metadata Information": "Meta data Info",
+    "Any Additional Information": "Additional Info",
+    "Encyclopedic Information": "More Info",
+    "Source": "Internet",
+    "Custom Fields": {
+        "Extra_1": "Extra data",
+        "Extra_2": "Extra details"},
+    "SenseNew": {
+        "Sense 1": {
+            "Gloss": {
+                "guj": "સારું",
+                "hin": "अच्छा",
+                "eng": "good"
+            },
+            "Definition":{
+                "guj": "સારું",
+                "hin": "बढ़ीया",
+                "eng": "good"
+            },
+            "Example": "Ram is a good boy",
+            "Free Translation": "Ram is a good boy",
+            "Semantic Domain": ["1.1.1 Sun"],
+            "Lexical Relation": {
+                "Hyponym": "P_1good1"
+            }
+        },
+        "Sense 2": {
+            "Gloss": {
+                "guj": "સારું",
+                "hin": "अच्छा",
+                "eng": "good"
+            },
+            "Definition":{
+                "guj": "સારું",
+                "hin": "बढ़ीया",
+                "eng": "good"
+            },
+            "Example": "Ram is a good boy",
+            "Free Translation": "Ram is a good boy",
+            "Semantic Domain": ["1.1.1.1 Moon"],
+            "Lexical Relation":{
+                "Hypernym": "P_1good2"
+            }
+        }
+    },
+    "VariantNew": {
+        "Variant 1": {
+            "Variant Form": "Variant Form 1",
+            "Variant Type": "Regional Variant"
+        },
+        "Variant 2": {
+            "Variant Form": "Variant Form 2",
+            "Variant Type": "Social Variant"
+        }
+    },
+    "AllomorphNew": {
+        "Allomorph 1": {
+            "Stem Allomorph": "Stem Allomorph 1",
+            "Morph Type": "ifx infix",
+            "Environment": "Environment 1"
+        },
+        "Allomorph 2": {
+            "Stem Allomorph": "Stem Allomorph 2",
+            "Morph Type": "pfx prefix",
+            "Environment": "Environment 2"
+        }
+    },
+    "filesname": {
+        "Upload Movie File": "788004Reset_position.mp4",
+        "Upload Sound File": "7880502_eno.wav",
+        "Upload Picture Sense 1": "7880613.jpeg",
+        "Upload Picture Sense 2": "7880723.jpeg",
+        "Upload Field Notebook Scan": "7880842.jpeg",
+        "Custom Field Extra_3": "7880952.jpeg"
+    },
+    "grammaticalcategory": "Adjective",
+    "lexemedeleteFLAG": 0,
+    "updatedBy": "user_19",
+    "lexemeId": "P_1good1"
+}

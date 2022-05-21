@@ -1,108 +1,216 @@
 [
   {
-    "projectname": "Project_111"
+    "projectname": "Testing_32"
   },
   {
     "username": "ritesh",
-    "projectname": "Project_111",
-    "headword": "अच्छा",
-    "Lexeme Form Script": [
-      {
-        "Devanagari": "अच्छा"
-      }
-    ],
-    "Pronunciation": "/gʊd /",
-    "Additional Metadata Information": "",
-    "Any Additional Information": "",
-    "Encyclopedic Information": "",
-    "Source": "",
-    "Allomorph": {
-      "Allomorph 1": [
-        {
-          "Stem Allomorph": ""
-        },
-        {
-          "Environment": ""
-        }
-      ]
+    "projectname": "Testing_32",
+    "headword": "aaaa",
+    "Pronunciation": "aaa",
+    "Additional Metadata Information": "aas",
+    "Any Additional Information": "xaxax",
+    "Encyclopedic Information": "asdsad",
+    "Source": "xax",
+    "Custom Fields": {
+      "extra_1": "aasa",
+      "extra_2": "sasAS"
     },
-    "Sense": {
-      "Sense 1": [
-        {
-          "Gloss Bengali": "ভালো"
-        },
-        {
-          "Definition Bengali": "ভালো"
-        },
-        {
-          "Gloss English": "good"
-        },
-        {
-          "Definition English": "good"
-        },
-        {
-          "Grammatical Category": "Adjective"
-        },
-        {
-          "Example": "Ram is a good boy"
-        },
-        {
-          "Free Translation": "Ram is a good boy"
-        }
-      ]
+    "Allomorph": {
+      "Allomorph 1": {
+        "Stem Allomorph": "nn",
+        "Morph Type": "spfx suprafix",
+        "Environment": "nnn"
+      }
     },
     "Variant": {
-      "Variant 1": [
-        {
-          "Variant Form": ""
-        }
-      ]
+      "Variant 1": {
+        "Variant Form": "xx",
+        "Variant Type": "Spelling Variant"
+      }
     },
     "filesname": {
-      "Upload Sound File": "0840119_tigegu.wav"
+      "Upload Movie File": "418939_3.jpeg",
+      "Upload Sound File": "419025_2.jpeg",
+      "Upload Picture Sense 1": "419035_11.png",
+      "Upload Picture Sense 2": "419042_1.png",
+      "Upload Field Notebook Scan": "419048_1.png",
+      "Custom Field extra_3": "419054_3.jpeg"
     },
-    "gloss": "ভালো",
-    "grammaticalcategory": "Adjective",
+    "gloss": "good",
+    "grammaticalcategory": "Particle",
     "lexemedeleteFLAG": 0,
     "updatedBy": "ritesh",
-    "lexemeId": "L20211228183320085678",
+    "lexemeId": "L20220521132908423936",
     "langscripts": {
-      "langname": "Hindi",
-      "langcode": "hin",
+      "langname": "Assamese",
+      "langcode": "ass",
       "headwordscript": {
-        "Deva": "Devanagari"
+        "Beng": "Bengali"
       },
       "lexemeformscripts": {
-        "Deva": "Devanagari"
+        "Beng": "Bengali",
+        "Mlym": "Malayalam"
       },
       "glosslangs": {
-        "Ben": "Bengali",
-        "Eng": "English"
+        "Eng": "English",
+        "Ass": "Assamese",
+        "Odi": "Odia"
       },
       "glossscripts": {
-        "Deva": "Devanagari",
-        "Gujr": "Gujarati",
-        "Latn": "Latin"
+        "Latn": "English",
+        "Beng": "Assamese",
+        "Orya": "Odia"
       }
     },
     "SenseNew": {
       "Sense 1": {
-        "Grammatical Category": "Adjective",
-        "Example": "Ram is a good boy",
+        "Grammatical Category": "Particle",
+        "Example": "as",
         "Free Translation": "Ram is a good boy",
+        "Semantic Domain": "1.1.1.2 Star",
+        "Lexical Relation": "Antonym",
         "Gloss": {
-          "ben": "ভালো",
-          "eng": "good"
+          "eng": "good",
+          "ass": "aa",
+          "odi": "aaa"
         },
         "Definition": {
-          "ben": "ভালো",
-          "eng": "good"
+          "eng": "good",
+          "ass": "aaa",
+          "odi": "aaa"
+        }
+      },
+      "Sense 2": {
+        "Grammatical Category": "Adjective",
+        "Example": "xc",
+        "Free Translation": "Ram is a good boy",
+        "Semantic Domain": "1.1.1.1 Moon",
+        "Lexical Relation": "Hyponym",
+        "Gloss": {
+          "eng": "good",
+          "ass": "ss",
+          "odi": "aaa"
         },
-        "Lexical Relation": {}
+        "Definition": {
+          "eng": "good",
+          "ass": "ssss",
+          "odi": "xasa"
+        }
       }
     },
     "Lexeme Form": {
-      "Deva": "अच्छा"
+      "Beng": "aaaa",
+      "Mlym": "अच्छा"
+    }
+  },
+  {
+    "username": "ritesh",
+    "projectname": "Testing_32",
+    "headword": "aaaa",
+    "Pronunciation": "aaa",
+    "Additional Metadata Information": "",
+    "Any Additional Information": "",
+    "Encyclopedic Information": "",
+    "Source": "",
+    "Custom Fields": {
+      "extra_1": "",
+      "extra_2": ""
+    },
+    "Allomorph": {
+      "Allomorph 1": {
+        "Stem Allomorph": "",
+        "Morph Type": "",
+        "Environment": ""
+      }
+    },
+    "Variant": {
+      "Variant 1": {
+        "Variant Form": "",
+        "Variant Type": ""
+      }
+    },
+    "gloss": "good",
+    "grammaticalcategory": "Noun",
+    "lexemedeleteFLAG": 0,
+    "updatedBy": "ritesh",
+    "lexemeId": "L20220521133331857086",
+    "langscripts": {
+      "langname": "Assamese",
+      "langcode": "ass",
+      "headwordscript": {
+        "Beng": "Bengali"
+      },
+      "lexemeformscripts": {
+        "Beng": "Bengali",
+        "Mlym": "Malayalam"
+      },
+      "glosslangs": {
+        "Eng": "English",
+        "Ass": "Assamese",
+        "Odi": "Odia"
+      },
+      "glossscripts": {
+        "Latn": "English",
+        "Beng": "Assamese",
+        "Orya": "Odia"
+      }
+    },
+    "SenseNew": {
+      "Sense 1": {
+        "Grammatical Category": "Noun",
+        "Example": "aq",
+        "Free Translation": "Ram is a good boy",
+        "Semantic Domain": "1.1.1.1 Moon",
+        "Lexical Relation": "Meronym (part of)",
+        "Gloss": {
+          "eng": "good",
+          "ass": "aa",
+          "odi": "aaa"
+        },
+        "Definition": {
+          "eng": "good",
+          "ass": "aaa",
+          "odi": "aaa"
+        }
+      },
+      "Sense 2": {
+        "Grammatical Category": "",
+        "Example": "",
+        "Free Translation": "",
+        "Semantic Domain": "",
+        "Lexical Relation": "",
+        "Gloss": {
+          "eng": "",
+          "ass": "",
+          "odi": ""
+        },
+        "Definition": {
+          "eng": "",
+          "ass": "",
+          "odi": ""
+        }
+      },
+      "Sense 3": {
+        "Grammatical Category": "",
+        "Example": "",
+        "Free Translation": "",
+        "Semantic Domain": "",
+        "Lexical Relation": "",
+        "Gloss": {
+          "eng": "",
+          "ass": "",
+          "odi": ""
+        },
+        "Definition": {
+          "eng": "",
+          "ass": "",
+          "odi": ""
+        }
+      }
+    },
+    "Lexeme Form": {
+      "Beng": "aaaa",
+      "Mlym": "अच्छा"
     }
   }
 ]

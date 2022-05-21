@@ -12,10 +12,10 @@ Enter New Lexeme
 {% block app_content %}
 {% if newData is defined %}
     <h4>Project Name : {{ newData['projectname'] }}
-        <!-- <a href="{{url_for('download')}}">
+        <a href="{{url_for('downloadlexemeformexcel')}}">
 
-            <button type="button" class="btn btn-primary downloadlexform">Offline Lexeme Entry Form<i class="fa fa-download" aria-hidden="true"></i></button>
-        </a> -->
+            <button type="button" class="btn btn-primary downloadlexform">Download Lexeme Entry/Edit Form<i class="fa fa-download" aria-hidden="true"></i></button>
+        </a>
     </h4>
     <br>    
     <form action="{{ url_for('dictionaryview') }}" method="POST" enctype="multipart/form-data">

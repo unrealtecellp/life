@@ -15,7 +15,7 @@
   <h4>Add Fields for your Project</h4>
   <form action="{{ url_for('enternewlexeme') }}" method="POST" enctype="multipart/form-data">
     <div class="form-group">
-      <input type="text" class="form-control" placeholder="Project Name" name="projectname">
+      <input type="text" class="form-control" placeholder="Project Name" name="projectname" required>
     </div>
     
     <div class="container defaultfield">
@@ -25,7 +25,7 @@
       <div class="row">
         <div class="col-md-3">
           <label for="Lexeme Language">Lexeme Language</label>
-          <select class="lexemelanguage" name="Lexeme Language" style="width: 150%"></select>
+          <select class="lexemelanguage" name="Lexeme Language" style="width: 150%" required></select>
         </div>
       </div> 
     </div>  
@@ -35,7 +35,7 @@
         <div class="col-md-3"> 
           <label for="Lexeme Form Script">Lexeme Scripts </label>
           <br><em>First option will be used as the Headword</em>
-          <select class="lexemeformscript" name="Lexeme Form Script" multiple="multiple" style="width: 150%"></select>
+          <select class="lexemeformscript" name="Lexeme Form Script" multiple="multiple" style="width: 150%" required></select>
         </div>
       </div> 
     </div>  
