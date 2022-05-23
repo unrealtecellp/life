@@ -3038,8 +3038,6 @@ def downloadselectedlexeme():
         # lg.generate_formatted_latex(write_path, lexicon, project)
         lg.generate_formatted_latex(write_path, lexicon, project, fields=fields)
 
-
-
     def generate_markdown(write_path, lexicon):
         df = preprocess_csv_excel(lexicon)
         with open (write_path, 'w') as f_w:
@@ -3161,7 +3159,7 @@ def downloadselectedlexeme():
     # return send_file('../download.zip', as_attachment=True)
     return 'OK'
 
-# download route
+# download project route
 @app.route('/downloadproject', methods=['GET', 'POST'])
 def downloadproject():
     # getting the collections
@@ -3194,8 +3192,6 @@ def downloadproject():
                     # open(basedir+'/app/download/'+name, 'wb').write(file.read())
                     open(basedir+'/download/'+name, 'wb').write(file.read())
 
-    
-
     # Serializing json  
     json_object = json.dumps(lst, indent = 2, ensure_ascii=False) 
     
@@ -3207,7 +3203,6 @@ def downloadproject():
     with open(basedir+"/download/lexicon_"+activeprojectname+".json", "w") as outfile:
         outfile.write(json_object)  
 
-    
     # get all sentences of the activeproject    
     sentenceLst = []
     for sentence in sentences.find({ 'projectname' : activeprojectname, 'sentencedeleteFLAG' : 0 }, \
@@ -3223,7 +3218,6 @@ def downloadproject():
                 for file in files:
                     name = file.filename
                     open(basedir+'/download/'+name, 'wb').write(file.read())
-
 
     # Serializing json  
     json_object = json.dumps(sentenceLst, indent = 2, ensure_ascii=False) 
@@ -3252,6 +3246,168 @@ def downloadproject():
     return send_file('../download.zip', as_attachment=True)
     # return 'OK'
 
+# download dictionary route
+@app.route('/downloaddictionary', methods=['GET', 'POST'])
+def downloaddictionary():
+    # getting the collections
+    projects = mongo.db.projects                        # collection containing projects name
+    userprojects = mongo.db.userprojects              # collection of users and their respective projects
+    lexemes = mongo.db.lexemes                          # collection containing entry of each lexeme and its details
+    # sentences = mongo.db.sentences                          # collection containing entry of each sentence and its details
+    fs =  gridfs.GridFS(mongo.db)                       # creating GridFS instance to get required files
+    lst = list()
+    download_format = 'pdf'
+    activeprojectname = userprojects.find_one({ 'username' : current_user.username })['activeproject']
+    lst.append({'projectname': activeprojectname})
+    projectname =  activeprojectname
+
+    for lexeme in lexemes.find({ 'projectname' : activeprojectname, 'lexemedeleteFLAG' : 0 }, \
+                            {'_id' : 0}):
+        if (len(lexeme['headword']) != 0):
+            lst.append(lexeme)
+        # # save current user mutimedia files of each lexeme to local storage
+        # files = fs.find({'projectname' : projectname, 'lexemeId' : lexemeId})
+        # for file in files:
+        #     name = file.filename
+        #     # open(basedir+'/app/download/'+name, 'wb').write(file.read())
+        #     open(os.path.join(basedir,'download', name), 'wb').write(file.read())
+
+    # Serializing json  
+    json_object = json.dumps(lst, indent = 2, ensure_ascii=False)
+
+    with open(basedir+"/lexemeEntry.json", "w") as outfile: 
+            outfile.write(json_object) 
+
+    def preprocess_csv_excel(lexicon):
+        df = pd.json_normalize(lexicon)
+        columns = df.columns
+        drop_cols = [c for c in df.columns if c.startswith('langscripts.')]
+        drop_cols.append ('lexemedeleteFLAG')
+        drop_cols.append ('grammaticalcategory')
+        drop_cols.append ('projectname')
+
+        if 'gloss' in columns:
+            drop_cols.append ('gloss')
+        drop_oldsense = [c for c in df.columns if c.startswith('Sense.')]
+        drop_oldvariant = [c for c in df.columns if c.startswith('Variant.')]
+        drop_oldallomorph = [c for c in df.columns if c.startswith('Allomorph.')]
+        drop_oldscript = [c for c in df.columns if c.startswith('Lexeme Form Script')]
+        drop_files = [c for c in df.columns if c.startswith('filesname.')]
+
+        drop_cols.extend(drop_oldsense)
+        drop_cols.extend(drop_oldvariant)
+        drop_cols.extend(drop_oldallomorph)
+        drop_cols.extend(drop_oldscript)
+        drop_cols.extend(drop_files)
+
+        df.drop(columns=drop_cols, inplace=True)
+
+        return df
+
+    def generate_latex(write_path, lexicon):
+        df = preprocess_csv_excel(lexicon)
+        with open (write_path, 'w') as f_w:
+            df.to_latex(f_w, index=False)
+
+    def generate_formatted_latex(write_path, 
+        lexicon, 
+        project, 
+        editors = ['Editor 1', 'Editor 2', 'Editor 3'],
+        co_editors = ['Co-ed 1', 'Co-ed 2', 'Co-ed 3'],
+        metadata = ['Scheme for Protection and Preservation of Indian Languages', 'Central Institute of Indian Languages'],
+        fields=[],
+        dict_headword='headword', #lexemeformscripts.ipa.., glosslangs.hin..
+        formatting_options={
+        'documentclass': 'article', 
+        'document_options':'a4paper, 12pt, twoside, xelatex',
+        'geometry_options': {
+            "top": "3.5cm",
+            "bottom": "3.5cm",
+            "left": "3.5cm",
+            "right": "3.5cm",
+            "columnsep": "30pt",
+            "includeheadfoot": True
+        }
+        }):
+        lg.generate_formatted_latex(write_path, lexicon, project, fields=fields)
+
+    def generate_pdf(write_path, 
+        lexicon, 
+        project, 
+        editors = ['Editor 1', 'Editor 2', 'Editor 3'],
+        co_editors = ['Co-ed 1', 'Co-ed 2', 'Co-ed 3'],
+        metadata = ['Scheme for Protection and Preservation of Indian Languages', 'Central Institute of Indian Languages'],
+        fields=[],
+        dict_headword='headword', #lexemeformscripts.ipa.., glosslangs.hin..
+        formatting_options={
+        'documentclass': 'article', 
+        'document_options':'a4paper, 12pt, twoside, xelatex',
+        'geometry_options': {
+            "top": "3.5cm",
+            "bottom": "3.5cm",
+            "left": "3.5cm",
+            "right": "3.5cm",
+            "columnsep": "30pt",
+            "includeheadfoot": True
+        }
+        }):
+        lg.generate_formatted_latex(write_path, lexicon, project, fields=fields)
+
+    #“xml”, “n3”, “turtle”, “nt”, “pretty-xml”, “trix”, “trig” and “nquads”
+    def download_lexicon(lex_json, write_path, 
+        output_format='rdf', rdf_format='turtle'):
+        file_ext_map = {'turtle': '.ttl', 'n3': '.n3', 
+        'nt': '.nt', 'xml': '.rdf', 'pretty-xml': '.rdfp', 'trix': '.trix', 
+        'trig': '.trig', 'nquads': 'nquad', 'json': '.json', 'csv': '.csv',
+        'xlsx': '.xlsx', 'pdf': '', 'html': '.html', 'latex_dict': '',
+        'markdown': '.md', 'ods': '.ods'}
+        
+        metadata = lex_json[0]
+        project = metadata['projectname']
+
+        lexicon = lex_json[1:]
+
+        fields = ['headword', 'Lexeme Form.ipa', 'Lexeme Form.Deva', 'grammaticalcategory', ['SenseNew.Gloss.hin', 'SenseNew.Gloss.eng', 'SenseNew.Definition.hin', 'SenseNew.Definition.eng', 'SenseNew.Example']]
+
+        if (output_format in file_ext_map):
+            print(f"pdf is match")
+            file_ext = file_ext_map[output_format]
+            write_file = os.path.join(write_path, 'lexicon_'+project+file_ext)
+            if output_format == 'pdf':
+                generate_pdf(write_file, lexicon, project, fields=fields, formatting_options={})
+            elif output_format == 'latex':
+                generate_latex(write_file, lexicon)
+            elif output_format == 'latex_dict':
+                generate_formatted_latex(write_file, lexicon, project, fields=fields, formatting_options={})
+        else:
+            print ('File type\t', output_format, '\tnot supported')
+            print ('Supported File Types', file_ext_map.keys())        
+
+
+    lexeme_dir = basedir
+    working_dir = basedir+'/download'
+    with open(os.path.join(lexeme_dir, 'lexemeEntry.json')) as f_r:
+        lex = json.load(f_r)
+        out_form = download_format
+        download_lexicon(lex, working_dir, out_form)
+
+    # printing the list of all files to be zipped 
+    # files = glob.glob(basedir+'/app/download/*')
+    files = glob.glob(basedir+'/download/*')
+     
+    with ZipFile('download.zip', 'w') as zip:
+        # writing each file one by one 
+        for file in files: 
+            zip.write(file, os.path.join(projectname, os.path.basename(file)))
+    print('All files zipped successfully!')
+
+    # deleting all files from storage
+    for f in files:
+        print(f)
+        os.remove(f)
+    
+    return send_file('../download.zip', as_attachment=True)
+    # return 'OK'
 
 # download route
 @app.route('/download', methods=['GET'])
