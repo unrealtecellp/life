@@ -1145,7 +1145,7 @@ def dictionaryview():
     try:
         my_projects = len(userprojects.find_one({'username' : current_user.username})["myproject"])
         shared_projects = len(userprojects.find_one({'username' : current_user.username})["projectsharedwithme"])
-        print(my_projects, shared_projects)
+        print(f"MY PROJECTS: {my_projects}, SHARED PROJECTS: {shared_projects}")
         if  (my_projects+shared_projects)== 0:
             flash('Please create your first project')
             return redirect(url_for('home'))
@@ -1164,7 +1164,7 @@ def dictionaryview():
         print(projectOwner)
         for lexeme in lexemes.find({ 'username' : projectOwner, 'projectname' : activeprojectname, 'lexemedeleteFLAG' : 0 }, \
                                 {'_id' : 0, 'headword' : 1, 'gloss' : 1, 'grammaticalcategory' : 1, 'lexemeId' : 1}):
-            pprint(lexeme)
+            # pprint(lexeme)
             if (len(lexeme['headword']) != 0):
                 lst.append(lexeme)
     except:
@@ -1342,21 +1342,6 @@ def enterlexemefromuploadedfile(lexemedf):
     projectOwner = projects.find_one({}, {"_id" : 0, activeprojectname : 1})[activeprojectname]["projectOwner"]
     print(f"PROJECT OWNER: {projectOwner}")
     print(f"DATAFRAME COLUMNS:\n{lexemedf.columns}")
-    # try:
-    #     projectOwner = projects.find_one({}, {"_id" : 0, activeprojectname : 1})[activeprojectname]["projectOwner"]
-    #     print(projectOwner)
-    #     for lexeme in lexemes.find({ 'username' : projectOwner, 'projectname' : activeprojectname, 'lexemedeleteFLAG' : 0 }, \
-    #                             {'_id' : 0, 'headword' : 1, 'gloss' : 1, 'grammaticalcategory' : 1, 'lexemeId' : 1}):
-    #         pprint(lexeme)
-    #         if (len(lexeme['headword']) != 0):
-    #             lst.append(lexeme)
-    # except:
-    #     flash('Enter first lexeme of the project')
-    # new lexeme details coming from uploaded file(xlsx/lift-xml)
-    
-    # format data filled in enter new lexeme form    
-    # lexemeFormData = {}
-    # lexemeFormData['username'] = current_user.username
     projectname = activeprojectname
     project = projects.find_one({}, {projectname : 1})
     def lexmetadata():
@@ -1370,7 +1355,8 @@ def enterlexemefromuploadedfile(lexemedf):
 
     # when testing comment these to avoid any database update/changes      
     # saving data for that new lexeme to database in lexemes collection
-    # try:    
+    # try:
+    # print(lexemedf)    
     for index, row in lexemedf.iterrows():
         uploadedFileLexeme = {
             "username": projectOwner,
@@ -1380,17 +1366,18 @@ def enterlexemefromuploadedfile(lexemedf):
             }
         lexemeId = str(row['lexemeId'])
         getlexemeId = None
-        print(f"{index}\t{lexemeId}")
-        if (lexemeId != 'nan'):
+        # print(f"{index}\t{lexemeId}\t{len(lexemeId)}\t{type(lexemeId)}")
+        if (lexemeId == 'nan' or lexemeId == ''):
+            lexemeId, lexemeCount = lexmetadata()
+            # print(lexemeId, lexemeCount)
+        else:
             getlexemeId = lexemes.find_one({ 'lexemeId' : lexemeId }, {'_id' : 0, 'lexemeId' : 1})
             # print(getlexemeId)
-        else:
-            lexemeId, lexemeCount = lexmetadata()
-            print(lexemeId, lexemeCount)
+
         uploadedFileLexeme['lexemeId'] = lexemeId
         # pprint(uploadedFileLexeme)
         if (getlexemeId != None):
-            print(f"LEXEME ALREADY EXISTS")
+            # print(f"LEXEME ALREADY EXISTS")
             lexemes.update_one({ 'lexemeId': lexemeId }, { '$set' : uploadedFileLexeme })
         else:
             lexemes.insert(uploadedFileLexeme)
@@ -1412,9 +1399,9 @@ def enterlexemefromuploadedfile(lexemedf):
 
         lexemes.update_one({ 'lexemeId': lexemeId }, { '$set' : uploadedFileLexeme })
 
-        print(f'{"="*80}\nLexeme Form :')
-        pprint(uploadedFileLexeme)
-        print(f'{"="*80}')
+        # print(f'{"="*80}\nLexeme Form :')
+        # pprint(uploadedFileLexeme)
+        # print(f'{"="*80}')
 
     flash('Successfully added new lexeme')
     return redirect(url_for('enternewlexeme'))
@@ -2122,9 +2109,10 @@ def downloadlexemeformexcel():
     lst = []
     lst.append({'projectname': activeprojectname})
     for lexeme in lexemes.find({'projectname' : projectname, 'lexemedeleteFLAG' : 0}, {'_id' : 0 }):
-        lst.append(lexeme)
+        if (len(lexeme['headword']) != 0):
+            lst.append(lexeme)
 
-    pprint(lst)
+    # pprint(lst)
     # Serializing json  
     json_object = json.dumps(lst, indent = 2, ensure_ascii=False)
 
@@ -2132,7 +2120,7 @@ def downloadlexemeformexcel():
             outfile.write(json_object) 
 
     def preprocess_csv_excel(lexicon):
-        pprint(lexicon)
+        # pprint(lexicon)
         df = pd.json_normalize(lexicon)
         columns = df.columns
         drop_cols = [c for c in df.columns if c.startswith('langscripts.')]
@@ -2160,7 +2148,7 @@ def downloadlexemeformexcel():
 
     def generate_xlsx(write_path, lexicon):
         df = preprocess_csv_excel(lexicon)
-        df.drop([0], inplace=True)
+        # df.drop([0], inplace=True)
         f_w = open (write_path, 'wb')
         df.to_excel(f_w, index=False, engine='xlsxwriter')
 
@@ -2168,12 +2156,12 @@ def downloadlexemeformexcel():
         output_format='xlsx'):
         file_ext_map = {'xlsx': '.xlsx'}
         
-        pprint(lex_json)
+        # pprint(lex_json)
         metadata = lex_json[0]
         project = metadata['projectname']
 
         lexicon = lex_json[1:]
-        pprint(lexicon)
+        # pprint(lexicon)
         if output_format == 'xlsx':
             file_ext = file_ext_map[output_format]
             write_file = os.path.join(write_path, 'lexicon_'+project+file_ext)
