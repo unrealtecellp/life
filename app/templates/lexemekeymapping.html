@@ -1,0 +1,30 @@
+{% extends "links.html" %}
+
+{% block title %}
+Lexeme Key Mapping
+{% endblock title %}
+
+{% block styles %}
+{{super()}}
+<link rel="stylesheet" href="{{url_for('.static', filename='lexemekeymapping.css')}}">
+{% endblock %}
+
+{% block app_content %}
+    <h4>Lexeme Key Mapping</h4>
+    <br>
+    <br>    
+    <form action="{{ url_for('uploadlexemeexcelliftxml') }}" method="POST" enctype="multipart/form-data">    
+        <div class="lexemekeymapping"></div>
+        <input class="btn btn-primary" id="submit" type="submit" value="Submit">
+    </form>
+
+{% endblock %}
+
+
+{% block scripts %}
+{{super()}}
+<script src="{{url_for('.static', filename='lexemekeymapping.js')}}"></script>
+{% if not_mapped_data is defined %}
+<script type="text/javascript">myFunction({{ not_mapped_data | tojson | safe }});</script>
+{% endif %}
+{% endblock %}

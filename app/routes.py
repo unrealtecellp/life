@@ -37,6 +37,8 @@ from pylatex.utils import bold, NoEscape
 from pylatex.base_classes import Environment
 from pylatex.package import Package
 import json
+from xml.etree import ElementTree as ET
+from xml.etree.ElementTree import ElementTree
 from app import latex_generator as lg
 
 
@@ -1316,6 +1318,797 @@ def enternewlexeme():
 @login_required
 def editlexeme():
     return render_template('editlexeme.html')  
+
+# # defining file_format and uploaded_file_content globally to solve the proble of accessing the variable later by some functions
+# file_format = ''
+# uploaded_file_content = ''
+
+def enterlexemefromuploadedfile(lexemedf):
+    # flash("IN enterlexemefromuploadedfile() FUNCTION")
+    print(f"{'-'*80}\nIN enterlexemefromuploadedfile() FUNCTION")
+    print(current_user.username)
+    # getting the collections
+    projects = mongo.db.projects                        # collection containing projects name
+    userprojects = mongo.db.userprojects              # collection of users and their respective projects
+    lexemes = mongo.db.lexemes                          # collection containing entry of each lexeme and its details
+
+    # getting the name of all the projects created by current user
+    currentuserprojectsname =  currentuserprojects()
+
+    # getting the name of the active project
+    activeprojectname = userprojects.find_one({ 'username' : current_user.username },\
+                    {'_id' : 0, 'activeproject': 1})['activeproject']
+    print(f"PROJECT NAME: {activeprojectname}")
+    projectOwner = projects.find_one({}, {"_id" : 0, activeprojectname : 1})[activeprojectname]["projectOwner"]
+    print(f"PROJECT OWNER: {projectOwner}")
+    print(f"DATAFRAME COLUMNS:\n{lexemedf.columns}")
+    # try:
+    #     projectOwner = projects.find_one({}, {"_id" : 0, activeprojectname : 1})[activeprojectname]["projectOwner"]
+    #     print(projectOwner)
+    #     for lexeme in lexemes.find({ 'username' : projectOwner, 'projectname' : activeprojectname, 'lexemedeleteFLAG' : 0 }, \
+    #                             {'_id' : 0, 'headword' : 1, 'gloss' : 1, 'grammaticalcategory' : 1, 'lexemeId' : 1}):
+    #         pprint(lexeme)
+    #         if (len(lexeme['headword']) != 0):
+    #             lst.append(lexeme)
+    # except:
+    #     flash('Enter first lexeme of the project')
+    # new lexeme details coming from uploaded file(xlsx/lift-xml)
+    
+    # format data filled in enter new lexeme form    
+    # lexemeFormData = {}
+    # lexemeFormData['username'] = current_user.username
+    projectname = activeprojectname
+    project = projects.find_one({}, {projectname : 1})
+    def lexmetadata():
+        # create lexemeId
+        lexemeCount = projects.find_one({}, {projectname : 1})[projectname]['lexemeInserted']+1
+        # lexemeId = projectname+lexemeFormData['headword']+str(lexemeCount)
+        Id = re.sub(r'[-: \.]', '', str(datetime.now()))
+        lexemeId = 'L'+Id
+
+        return (lexemeId, lexemeCount)
+
+    # when testing comment these to avoid any database update/changes      
+    # saving data for that new lexeme to database in lexemes collection
+    # try:    
+    for index, row in lexemedf.iterrows():
+        uploadedFileLexeme = {
+            "username": projectOwner,
+            "projectname": activeprojectname,
+            "lexemedeleteFLAG": 0,
+            "updatedBy": current_user.username,
+            }
+        lexemeId = str(row['lexemeId'])
+        getlexemeId = None
+        print(f"{index}\t{lexemeId}")
+        if (lexemeId != 'nan'):
+            getlexemeId = lexemes.find_one({ 'lexemeId' : lexemeId }, {'_id' : 0, 'lexemeId' : 1})
+            # print(getlexemeId)
+        else:
+            lexemeId, lexemeCount = lexmetadata()
+            print(lexemeId, lexemeCount)
+        uploadedFileLexeme['lexemeId'] = lexemeId
+        # pprint(uploadedFileLexeme)
+        if (getlexemeId != None):
+            print(f"LEXEME ALREADY EXISTS")
+            lexemes.update_one({ 'lexemeId': lexemeId }, { '$set' : uploadedFileLexeme })
+        else:
+            lexemes.insert(uploadedFileLexeme)
+            # update lexemeInserted count of the project in projects collection
+            project[projectname]['lexemeInserted'] = lexemeCount
+            # print(f'{"#"*80}\n{project}')
+            projects.update_one({}, { '$set' : { projectname : project[projectname] }})
+
+        for column_name in list(lexemedf.columns):
+            if (column_name not in uploadedFileLexeme):
+                value = str(row[column_name])
+                if (value == 'nan'):
+                    value = ''
+                if ('Sense 1.Gloss.eng' in column_name):
+                    uploadedFileLexeme['gloss'] = value
+                if ('Sense 1.Grammatical Category' in column_name):
+                    uploadedFileLexeme['grammaticalcategory'] = value        
+                uploadedFileLexeme[column_name] = value
+
+        lexemes.update_one({ 'lexemeId': lexemeId }, { '$set' : uploadedFileLexeme })
+
+        print(f'{"="*80}\nLexeme Form :')
+        pprint(uploadedFileLexeme)
+        print(f'{"="*80}')
+
+    flash('Successfully added new lexeme')
+    return redirect(url_for('enternewlexeme'))
+    # comment till here
+
+def lifeuploader(fileFormat, uploadedFileContent, field_map = {}):
+    lang_script_map = {
+    'ipa': 'ipa',
+    'hin': 'Deva',
+    'guj': 'Gujr',
+    'pun': 'Guru',
+    'ban': 'Beng',
+    'ass': 'Beng',
+    'odi': 'Orya',
+    'kan': 'Knda',
+    'tam': 'Taml',
+    'tel': 'Telu',
+    'mal': 'Mlym',
+    'mar': 'Deva',
+    'bod': 'Deva',
+    'kon': 'Deva',
+    'nep': 'Deva',
+    'mai': 'Deva',
+    'mag': 'Deva',
+    'bho': 'Deva',
+    'awa': 'Deva',
+    'har': 'Deva',
+    'bra': 'Deva',
+    'bun': 'Deva',
+    'anp': 'Deva'
+    }
+
+    def get_lift_map():
+        map = {
+            'grammatical-info': 'grammaticalcategory',
+            'lexical-unit': 'headword',
+            'lexical-unit-form': 'Lexical Form',
+            'pronunciation': 'Pronunciation',
+            'gloss': 'Gloss',
+            'example': 'Example',
+            'translation':'Free Translation',
+            'definition': 'Definition',
+            'note': 'Encyclopedic Information',
+            'semantic-domain': 'Semantic Domain',
+            'variant': 'VariantNew.Variant 1',
+            'relation': ''
+        }
+
+        return map
+
+
+    def get_script_name(wordform):
+        lang_name = wordform.attrib['lang']
+        # print (lang_name)
+        parts = lang_name.split('-')
+        if len(parts) > 1:
+            script_name = parts[1]
+        else:
+            script_name = lang_script_map.get(lang_name, lang_name)
+        
+        return script_name, lang_name
+
+    def get_lang_name(wordform):
+        lang_name_full = wordform.attrib['lang']
+        # print (lang_name_full)
+        lang_name = lang_name_full.split('-')[0]
+        # if len(parts) > 1:
+        #     script_name = parts[1]
+        # else:
+        #     script_name = lang_script_map.get(lang_name, lang_name)
+        
+        return lang_name, lang_name_full
+
+
+    def get_scripts_map(lex_fields):
+        scripts_map = {}
+        # print (lex_fields)
+        for lex_field in lex_fields:
+            print ('Lex field', lex_field)
+            script_name = lex_field.split('.')[-1]
+            if 'langscripts.headwordscript' in lex_field:
+                scripts_map['langscripts.headwordscript'] = script_name
+            elif 'langscripts.lexemeformscripts' in lex_field:
+                if 'langscripts.lexemeformscripts' in scripts_map:
+                    scripts_map['langscripts.lexemeformscripts'].append(script_name)
+                else:
+                    scripts_map['langscripts.lexemeformscripts']= [script_name]
+            elif 'langscripts.glosslangs' in lex_field:
+                if 'langscripts.glosslangs' in scripts_map:
+                    scripts_map['langscripts.glosslangs'].append(script_name)
+                else:
+                    scripts_map['langscripts.glosslangs']= [script_name]
+                # scripts_map.get('langscripts.glosslangs', []).append(script_name)
+        print(f"{'-'*80}\nIN get_scripts_map(lex_fields) function\n\nscript_map:\n{scripts_map}")
+        
+        return scripts_map
+
+
+
+    def map_lift(file_stream, field_map, lex_fields):
+        print(f"{'-'*80}\nIN map_lift(file_stream, field_map, lex_fields) function\n")
+        mapped_lift = {}
+        all_mapped = True
+
+        life_scripts_map = get_scripts_map(lex_fields)
+        print (life_scripts_map)
+
+        if len(field_map) == 0:
+            field_map = get_lift_map()
+        
+        print(f"{'-'*80}\nget_lift_map():\n{field_map}")
+        print(f"{'-'*80}\nFILE STREAM TYPE:{type(file_stream)}")
+        # exit()
+        # tree = ET.parse(file_stream)
+        root = ET.fromstring(file_stream)
+        # print(f"TYPE OF TREE: {type(tree)}")
+        # exit()
+        # root = tree.getroot()
+        print(f"{'-'*80}\nroot:\n{root}")
+        # exit()
+        entries = root.findall('.//entry')
+        print(f"entries:\n{entries}")
+        # exit()
+        mapped_life_langs_lexeme_form = []
+        unmapped_lift_langs_lexeme_form = []
+
+        mapped_life_langs_gloss = []
+        unmapped_lift_langs_gloss = []
+
+        life_headword_script = life_scripts_map['langscripts.headwordscript']
+        life_lexeme_form_scripts = life_scripts_map['langscripts.lexemeformscripts']
+        life_gloss_langs = life_scripts_map['langscripts.glosslangs']
+
+        highest_sense_num = 0
+        for entry in entries:
+            # pd_row = {}
+            for entry_part in entry:
+                sense_num = 0
+                entry_part_tag = entry_part.tag
+                if entry_part_tag != 'entry':
+                    # print (entry_part_tag)
+                    if entry_part_tag == 'lexical-unit':
+                        life_key_headword = field_map[entry_part_tag]
+
+                        # lift_tag_other_lexemes = entry_part_tag+'-form'
+                        # life_key_other_lexemes = field_map[lift_tag_other_lexemes]
+
+                        for wordform in entry_part:
+                            lift_script_name, lift_lang_name = get_script_name(wordform)
+                            # lift_tag = entry_part_tag + '.' + lift_lang_name
+                            # lift_tag = './/entry/lexical-unit/form[@lang='+lift_lang_name+']/text'
+                            # lift_tag = './lexical-unit/form[@lang='+lift_lang_name+']/text'
+                            lift_tag = './lexical-unit/form[@lang="'+lift_lang_name+'"]'
+
+                            if lift_script_name == life_headword_script:
+                                if lift_tag not in mapped_lift:
+                                    mapped_lift[lift_tag] = life_key_headword
+                                
+                                if lift_script_name not in mapped_life_langs_lexeme_form:
+                                    mapped_life_langs_lexeme_form.append(lift_script_name)
+
+                            elif lift_script_name in life_lexeme_form_scripts:                            
+                                # mapped_lift[lift_tag] = life_key_other_lexemes+'.'+lift_script_name
+                                mapped_lift[lift_tag] = lift_script_name
+                                if lift_script_name not in mapped_life_langs_lexeme_form:
+                                    mapped_life_langs_lexeme_form.append(lift_script_name)
+
+                            else:
+                                if lift_tag not in unmapped_lift_langs_lexeme_form:
+                                    unmapped_lift_langs_lexeme_form.append(lift_tag)
+                                # mapped_lift[other_lexeme_forms] = lexeme_form_scripts
+
+
+                        #     print ('Script', script_name)
+                        #     # txt = wordform[0].text
+                        #     life_val = life_key #+'.'+script_name
+                        #     entry_part_tag = entry_part_tag + '.' + script_name
+                        #     other_entries = other_entries + '.' + script_name
+                        #     if entry_part_tag not in mapped_lift:
+                        #         mapped_lift[entry_part_tag] = life_val
+                        #     else:
+                        #         old_val = mapped_lift[entry_part_tag]
+                        #         if life_val not in old_val:
+                        #             life_val_other = life_val.replace(life_key, life_key_other)
+
+                        #             if type(old_val) == str:
+                        #                 life_val_other_old = old_val.replace(life_key, life_key_other)
+                        #                 life_val_other = [life_val_other_old, life_val_other]
+                        #                 old_val = [old_val, life_val]
+                        #                 mapped_lift[entry_part_tag] = old_val
+                        #                 mapped_lift[other_entries] = life_val_other
+                        #             else:
+                        #                 mapped_lift[entry_part_tag].append(old_val)
+                        #                 mapped_lift[other_entries].append(life_val_other)
+                        # # else:
+                        # #     script_name = get_script_name(wordforms[0])
+                        # #     print ('Script', script_name)
+                        # #     mapped_lift[entry_part_tag] = life_key+'.'+script_name
+                    elif entry_part_tag == 'sense':
+                        sense_num += 1
+                        
+                        if sense_num > highest_sense_num:
+                            highest_sense_num = sense_num
+
+                        for sense_part in entry_part:                        
+                            sense_part_tag = sense_part.tag             
+                            # print (sense_part_tag)
+                            life_key_sense = field_map[sense_part_tag]
+
+                            if sense_part_tag == 'gloss' or sense_part_tag == 'definition' or sense_part_tag == 'example':
+                                lift_lang_name, lift_full_lang = get_script_name(sense_part)
+                                # lift_sense_tag = sense_part_tag + '.' + lift_lang_name
+                                # lift_sense_tag = './/entry/sense/'+sense_part_tag+'[@lang='+lift_full_lang+']'
+                                # lift_sense_tag = './sense/'+sense_part_tag+'[@lang='+lift_full_lang+']/text'
+                                lift_sense_tag = './sense/'+sense_part_tag+'[@lang="'+lift_full_lang+'"]'
+                                
+                                if lift_lang_name in life_gloss_langs:
+                                    mapped_lift[lift_sense_tag] = 'SenseNew.Sense '+str(sense_num)+'.'+life_key_sense + '.' + lift_lang_name
+                                    if lift_lang_name not in mapped_life_langs_gloss:
+                                        mapped_life_langs_gloss.append(lift_lang_name)
+                                else:
+                                    if lift_sense_tag not in unmapped_lift_langs_gloss:
+                                        unmapped_lift_langs_gloss.append(lift_sense_tag)
+                            elif sense_part_tag == 'grammatical-info':
+                                life_key = field_map.get(sense_part_tag, [])
+                                # lift_tag = './/entry/sense/'+sense_part_tag
+                                print (entry_part[0].tag)
+                                # gram_categ = entry_part[0].attrib['value']
+
+                                lift_tag = './sense/'+sense_part_tag#+'[@value="'+gram_categ+'"]'
+                                if lift_tag not in mapped_lift:
+                                    mapped_lift[lift_tag] = life_key
+                            else:
+                                life_key = field_map.get(sense_part_tag, [])
+                                # lift_tag = './/entry/sense/'+sense_part_tag
+                                lift_tag = './sense/'+sense_part_tag
+                                mapped_lift[lift_tag] = 'SenseNew.Sense '+str(sense_num)+'.'+life_key_sense
+                    
+                    elif entry_part_tag == 'pronunciation':
+                        life_key_pron = field_map[entry_part_tag]
+                        for pronform in entry_part:
+                            lift_lang_name, lift_full_lang = get_script_name(pronform)
+                            lift_pron_tag = './pronunciation/form[@lang="'+lift_full_lang+'"]'
+                            mapped_lift[lift_pron_tag] = life_key_pron
+                    
+                    # elif entry_part_tag == 'grammatical-info':
+                    #     life_key_gr = field_map[entry_part_tag]
+                    #     gram_categ = entry_part.attrib['value']
+                    #     lift_gr_tag = './grammatical-info[@value="'+gram_categ+'"]'
+                    #     mapped_lift[lift_gr_tag] = life_key_gr
+                                
+                    else:
+                        if 'trait' not in entry_part_tag:
+                            life_key = field_map.get(entry_part_tag, [])
+                            # lift_entry_tag = './/entry/'+entry_part_tag
+                            lift_entry_tag = './'+entry_part_tag
+                            mapped_lift[lift_entry_tag] = life_key
+                # elif entry_part_tag == 'gloss':
+        
+        mapped_life_langs_lexeme_form_set = set(mapped_life_langs_lexeme_form)
+        all_life_lexeme_form_scripts = set(life_lexeme_form_scripts)
+        life_unmapped_lexeme_forms = all_life_lexeme_form_scripts - mapped_life_langs_lexeme_form_set
+        # unmapped_lift_langs_lexeme_form = []
+        
+
+        mapped_life_langs_gloss_set = set(mapped_life_langs_gloss)
+        all_life_gloss_langs = set(life_gloss_langs)
+        life_unmapped_gloss_langs = all_life_gloss_langs - mapped_life_langs_gloss_set
+        # unmapped_lift_langs_gloss = []
+        print ('Unmapped gloss', unmapped_lift_langs_gloss)
+
+        headword_mapped = False
+        life_all_mapped = mapped_lift.values()
+        for life_key_mapped in life_all_mapped:
+            if 'headword' in life_key_mapped:
+                headword_mapped = True
+
+        # if headword_mapped:
+        for lift_unmapped_lexeme_form in unmapped_lift_langs_lexeme_form:
+            # lift_unmapped_entry = './/entry/lexical-unit/form[@lang='+lift_unmapped_lexeme_form+']/text'
+            mapped_lift[lift_unmapped_lexeme_form] = list(life_unmapped_lexeme_forms)
+
+        for lift_unmapped_gloss in unmapped_lift_langs_gloss:
+            mapped_lift[lift_unmapped_gloss] = list(life_unmapped_gloss_langs)
+
+        print (mapped_lift)
+        print (headword_mapped)
+
+        if len (unmapped_lift_langs_lexeme_form) > 0 or len(unmapped_lift_langs_gloss) > 0:
+            all_mapped = False
+        
+        print(f"{'-'*80}\nheadword_mapped:\n{headword_mapped}\nall_mapped:\n{all_mapped}\nmapped_lift:\n{mapped_lift}\nroot:\n{root}")
+
+        return headword_mapped, all_mapped, mapped_lift, root
+
+
+    def get_sense_col(lift_tag, field_name, lang_name):
+        all_cols = []
+        sense_num = 0
+        for sense in lift_tag:
+            sense_num+=1
+            df_col = 'SenseNew.Sense '+str(sense_num)+'.'+field_name+'.'+lang_name
+            all_cols.append(df_col)
+        return all_cols
+
+
+    def lift_to_df (root, field_map, lex_fields):
+        print(f"{'-'*80}\nIN lift_to_df (root, field_map, lex_fields) function\n")
+        data = pd.DataFrame(columns=lex_fields)
+        # lex_fields_without_sense = [lex_field for lex_field in lex_fields if 'sense' not in lex_field]
+
+        life_scripts_map = get_scripts_map(lex_fields)
+        print (life_scripts_map)
+
+        # if len(field_map) == 0:
+        lift_life_field_map = get_lift_map()
+        print(f"{'-'*80}\nIN lift_to_df (root, field_map, lex_fields) function: get_lift_map():\n{lift_life_field_map}")
+        
+        # tree = ET.parse(file_stream)
+        # root = tree.getroot()
+        entries = root.findall('.//entry')
+
+        # mapped_life_langs_lexeme_form = []
+        # unmapped_lift_langs_lexeme_form = []
+
+        # mapped_life_langs_gloss = []
+        # unmapped_lift_langs_gloss = []
+
+        # life_headword_script = life_scripts_map['langscripts.headwordscript']
+        # life_lexeme_form_scripts = life_scripts_map['langscripts.lexemeformscripts']
+        # life_gloss_langs = life_scripts_map['langscripts.glosslangs']
+
+        print (f"{'-'*80}\nIN lift_to_df (root, field_map, lex_fields) function: {field_map}")
+
+        # highest_sense_num = 0
+        for entry in entries:
+            df_row = {}
+            for lift_tag, life_key in field_map.items():
+                if len(life_key) > 0:
+                    if 'lexical-unit' in lift_tag:
+                        # txt = entry.findall(lift_tag+'/text').text
+                        # print (lift_tag)
+                        txt_entry = entry.find(lift_tag+'/text')
+
+                        if not txt_entry is None:
+                            txt = txt_entry.text
+                        
+                        if 'headword' in life_key:
+                            df_row['headword'] = txt
+                        else:
+                            df_row['Lexeme Form.'+life_key] = txt
+                    
+                    elif 'pronunciation' in lift_tag:
+                        txt_entry = entry.find(lift_tag+'/text')
+                        # life_key = lift_life_field_map[lift_tag]
+
+                        if not txt_entry is None:
+                            txt = txt_entry.text
+                            
+
+                        df_row[life_key] = txt
+
+                    elif '@lang' in lift_tag:
+                        sense_num = 0
+                        all_sense = entry.findall(lift_tag)
+                        for sense in all_sense:
+                            sense_num+=1                    
+                            if 'gloss' in lift_tag:
+                                life_key_name = lift_life_field_map['gloss']
+                            elif 'definition' in lift_tag:
+                                life_key_name = lift_life_field_map['definition']
+                            elif 'example' in lift_tag:
+                                life_key_name = lift_life_field_map['example']
+
+                            # print (sense.tag)
+                            txt_entry = sense.find('text')
+
+                            if not txt_entry is None:
+                                txt = txt_entry.text
+
+                            df_col = 'SenseNew.Sense '+str(sense_num)+'.'+life_key_name+'.'+life_key
+                            df_row[df_col] = txt
+                    
+                    elif 'grammatical-info' in lift_tag:
+                        gram_info_tag = entry.find(lift_tag)
+                        # print ('Grammar tag', gram_info_tag, gram_info_tag.tag)
+                        # life_key = lift_life_field_map[lift_tag]
+
+                        if not gram_info_tag is None:
+                            try:
+                                gram_info = gram_info_tag.attrib['value']
+                            # print ('Gram info', gram_info)
+                            except:
+                                gram_info = ''
+                        
+                        df_row[life_key] = gram_info
+                    
+                    else:
+                        # print (lift_tag)
+                        txt_entry = entry.find(lift_tag)
+                        life_key = lift_life_field_map[lift_tag]
+
+                        if not txt_entry is None:
+                            txt = txt_entry.text
+                            
+
+                        df_row[life_key] = txt
+
+            data = data.append(df_row, ignore_index=True)
+        
+        data.fillna('', inplace=True)
+        
+        headword_mapped = True
+        all_mapped = True
+
+        # data.to_csv(os.path.join(basedir, 'testliftXML.tsv'), sep='\t', index=False)
+
+        print(f"{'-'*80}\nIN lift_to_df (root, field_map, lex_fields) FUNCTION\n\nheadword_mapped\n{headword_mapped}\n\nall_mapped:\n{all_mapped}\n\ndata:\n{data}\n\nroot:\n{root}")
+        print(f"{'-'*80}\nIN lift_to_df (root, field_map, lex_fields) FUNCTION\n\nheadword_mapped\n{type(headword_mapped)}\n\nall_mapped:\n{type(all_mapped)}\n\ndata:\n{type(data)}\n\nroot:\n{type(root)}")
+
+        return headword_mapped, all_mapped, data, root
+
+
+    def prepare_lex(lexicon):
+        df = pd.json_normalize(lexicon)
+        columns = df.columns
+        # drop_cols = [c for c in df.columns if c.startswith('langscripts.')]
+        drop_cols = []
+        drop_cols.append ('lexemedeleteFLAG')
+        # drop_cols.append ('grammaticalcategory')
+        drop_cols.append ('projectname')
+
+        if 'gloss' in columns:
+            drop_cols.append ('gloss')
+        drop_oldsense = [c for c in df.columns if c.startswith('Sense.')]
+        drop_oldvariant = [c for c in df.columns if c.startswith('Variant.')]
+        drop_oldallomorph = [c for c in df.columns if c.startswith('Allomorph.')]
+        drop_oldscript = [c for c in df.columns if c.startswith('Lexeme Form Script')]
+        drop_files = [c for c in df.columns if c.startswith('filesname.')]
+
+        drop_cols.extend(drop_oldsense)
+        drop_cols.extend(drop_oldvariant)
+        drop_cols.extend(drop_oldallomorph)
+        drop_cols.extend(drop_oldscript)
+        drop_cols.extend(drop_files)
+
+        df.drop(columns=drop_cols, inplace=True)
+
+        return df
+
+
+    def generate_all_possible_mappings(key_cols, val_cols):
+        final_map = {}
+        for key_col in key_cols:
+            final_map[key_col] = list(val_cols)
+        print(f"{'-'*80}\nIN generate_all_possible_mappings(key_cols, val_cols) function\nFINAL MAP:\n{final_map}")
+        return final_map
+
+
+    def map_excel(file_stream, lex_fields):
+        print(f"{'-'*80}\nIN MAP EXCEL function map_excel(file_stream, lex_fields)")
+        excel_data = pd.read_excel(file_stream)
+        print(excel_data)
+        excel_data_cols = set(excel_data.columns)
+        lex_field_cols = set(lex_fields)
+        print(f"{'-'*80}\nexcel_data_cols:\n{excel_data.columns}")
+        print(f"{'-'*80}\nNUMBER OF ELEMENTS IN excel_data_cols: {len(excel_data_cols)}")
+        print(f"{'-'*80}\nNUMBER OF ELEMENTS IN lex_field_cols: {len(lex_field_cols)}")
+
+        print(f"{'-'*80}\nlex_field_cols-excel_data_cols:\n{lex_field_cols-excel_data_cols}")
+
+        if excel_data_cols == lex_field_cols:
+            print(f"{'-'*80}\nexcel_data_cols == lex_field_cols")
+            mapped = True
+            headword_mapped = True
+            return headword_mapped, mapped, {}, excel_data
+        else:
+            print(f"{'-'*80}\nexcel_data_cols != lex_field_cols")
+            headword_mapped = True
+            mapped = False
+            excel_remaining = excel_data_cols - lex_field_cols
+            lex_remaining = lex_field_cols - excel_data_cols
+            print(f"{'-'*80}\nexcel_remaining:\n{excel_remaining}\n{'-'*80}\nlex_remaining:\n{lex_remaining}")
+            field_map = generate_all_possible_mappings(excel_remaining, lex_remaining)
+            print(f"{'-'*80}\nheadword_mapped\n{headword_mapped}\n\nmapped:\n{mapped}\n\nfield_map:\n{field_map}\n\nexcel_data:\n{excel_data}")
+            return headword_mapped, mapped, field_map, excel_data
+
+
+    def upload_excel (excel_data, field_map, lex_fields):
+        # excel_data = pd.read_excel(file_stream)
+        final_data = excel_data.rename(columns=field_map)
+        mapped = True
+        headword_mapped = True
+
+        return headword_mapped, mapped, final_data
+
+
+    def upload_lexicon(lexicon, file_stream, format, field_map):
+        lexicon = lexicon[1:]
+        print(f"{'-'*80}\nLEXICON:\n{lexicon}")
+        norm_lex = prepare_lex(lexicon)
+        print(f"{'-'*80}\nNORM LEX:\n{norm_lex}")
+        lex_fields = norm_lex.columns
+        print(f"{'-'*80}\nLEX FIELDS:\n{lex_fields}")
+        print(f"{'-'*80}\nFILE STREAM TYPE:{type(file_stream)}")
+
+        if format == 'lift-xml':
+            print(f"{'-'*80}\nFIELD MAP:\n{len(field_map)}")
+            if len(field_map) == 0:
+                print(f"{'-'*80}\nlift-xml: len(field_map) == 0")
+                
+                headword_mapped, all_mapped, field_map, root = map_lift(file_stream, field_map, lex_fields)
+                
+                if headword_mapped and all_mapped:
+                    print(f"{'-'*80}\nheadword_mapped and all_mapped")
+                    headword_mapped, all_mapped, data, root = lift_to_df (root, field_map, lex_fields)
+                    print(f"{'-'*80}\nheadword_mapped:\n{type(headword_mapped)}\nall_mapped:\n{type(all_mapped)}\nmapped_lift/data:\n{type(data)}\nroot:\n{type(root)}")
+                    return headword_mapped, all_mapped, data, root
+                else:
+                    print(f"{'-'*80}\nheadword_mapped and all_mapped: NOT")
+                    print(f"{'-'*80}\nheadword_mapped:\n{type(headword_mapped)}\nall_mapped:\n{type(all_mapped)}\nmapped_lift/data:\n{type(field_map)}\nroot:\n{type(root)}")
+                    return headword_mapped, all_mapped, field_map, root
+            else:
+                print(f"{'-'*80}\nlift-xml: len(field_map) != 0")
+                headword_mapped, all_mapped, life_df, root = lift_to_df (file_stream, field_map, lex_fields)
+                # print (life_df.head())
+                print(life_df.loc[0,:])
+                return headword_mapped, all_mapped, life_df
+        elif format == 'xlsx':
+            if len(field_map) == 0:
+                print(f"{'-'*80}\nxlsx: len(field_map) == 0")
+                headword_mapped, all_mapped, field_map, df = map_excel(file_stream, lex_fields)
+                return headword_mapped, all_mapped, field_map, df
+            else:
+                print(f"{'-'*80}\nxlsx: len(field_map) != 0")
+                headword_mapped, all_mapped, data = upload_excel(file_stream, field_map, lex_fields)
+                return headword_mapped, all_mapped, data
+
+    working_dir = basedir    
+    # upload_file = os.path.join(working_dir, 'LiFE.lift')
+    upload_file = uploadedFileContent
+    # print(upload_file)
+    # format = 'lift-xml'
+    format = fileFormat
+    print(f"{'-'*80}\nFILE FORMAT:{fileFormat}")
+    with open(os.path.join(working_dir, 'lexemeEntry.json')) as f_r:
+        lex = json.load(f_r)
+
+    return upload_lexicon(lex, upload_file, format, field_map)
+
+# upload lexeme form in excel/liftXML format
+@app.route('/uploadlexemeexcelliftxml', methods=['GET', 'POST'])
+def uploadlexemeexcelliftxml():
+    if request.method == 'POST':
+        lexkeymapping = dict(request.form.lists())
+        # lexkeymapping = lexkeymapping.keys().decode('unicode-escape')
+        print(lexkeymapping)
+        print(type(lexkeymapping))
+        lexkeymappingNew = {}
+        for key, value in lexkeymapping.items():
+            key = key.replace('%22', '"')
+            lexkeymappingNew[key] = value[0]
+        print(lexkeymappingNew)
+        field_map = lexkeymappingNew
+        life_uploaded_file_content_path = os.path.join(basedir, 'lifeUploadedFileContent.pkl')
+        # Open the file in binary mode
+        with open(life_uploaded_file_content_path, 'rb') as file:
+            retrieve_uploaded_file_content = pickle.load(file)
+            # print(retrieve_uploaded_file_content.keys())
+            file_format = retrieve_uploaded_file_content['file_format']
+            uploaded_file_content = retrieve_uploaded_file_content['uploaded_file_content']
+        if (file_format == 'lift-xml'):    
+            life_lift_root_path = os.path.join(basedir, 'lifeliftroot.xml')
+            tree = ET.parse(life_lift_root_path)
+            root = tree.getroot()
+            print(f"{'-'*80}\nIN uploadlexemeexcelliftxml() FUNCTION\n\nfile_format\n{file_format}\n\nfield_map:\n{field_map}\n\nroot:\n{root}")
+            print(f"{'-'*80}\nIN uploadlexemeexcelliftxml() FUNCTION\n\nfile_format\n{type(file_format)}\n\nfield_map:\n{type(field_map)}\n\nroot:\n{type(root)}")
+            headword_mapped, all_mapped, life_df = lifeuploader(file_format, root, field_map)
+            print(f"{'-'*80}\nIN uploadlexemeexcelliftxml() FUNCTION\n\nheadword_mapped\n{headword_mapped}\n\nall_mapped:\n{all_mapped}\n\nlife_df:\n{life_df}\n\nroot:\n{root}")
+            print(f"{'-'*80}\nIN uploadlexemeexcelliftxml() FUNCTION\n\nheadword_mapped\n{type(headword_mapped)}\n\nall_mapped:\n{type(all_mapped)}\n\nlife_df:\n{type(life_df)}\n\nroot:\n{type(root)}")
+        elif (file_format == 'xlsx'):
+            life_xlsx_root_path = os.path.join(basedir, 'lifexlsxdf.tsv')
+            df = pd.read_csv(life_xlsx_root_path, sep='\t', dtype=str)
+            headword_mapped, all_mapped, data = lifeuploader(file_format, df, field_map)
+            print(f"{'-'*80}\nIN uploadlexemeexcelliftxml() FUNCTION\n\nheadword_mapped\n{headword_mapped}\n\nall_mapped:\n{all_mapped}\n\ndata:\n{data}\n\ndf:\n{df}")
+            print(f"{'-'*80}\nIN uploadlexemeexcelliftxml() FUNCTION\n\nheadword_mapped\n{type(headword_mapped)}\n\nall_mapped:\n{type(all_mapped)}\n\ndata:\n{type(data)}\n\ndf:\n{type(df)}")
+
+        if (not headword_mapped):
+            flash("headword is missing from the file")
+            return redirect(url_for('enternewlexeme'))
+        
+        elif (not all_mapped and len(field_map) != 0):
+            not_mapped_data = field_map
+            print('create a modal/page where user can give the mapping of the columns')
+            return render_template('lexemekeymapping.html', not_mapped_data=not_mapped_data)
+        else:
+            if (file_format == 'lift-xml'):
+                enterlexemefromuploadedfile(life_df)    
+            elif (file_format == 'xlsx'):
+                enterlexemefromuploadedfile(data)
+
+    return redirect(url_for('enternewlexeme'))
+
+# lexeme key mapping
+@app.route('/lexemekeymapping', methods=['GET', 'POST'])
+def lexemekeymapping():
+    # getting the collections
+    userprojects = mongo.db.userprojects              # collection of users and their respective projects
+    lexemes = mongo.db.lexemes                          # collection containing entry of each lexeme and its details
+
+    activeprojectname = userprojects.find_one({ 'username' : current_user.username })['activeproject']
+    projectname =  activeprojectname
+    lst = []
+    lst.append({'projectname': activeprojectname})
+    for lexeme in lexemes.find({'projectname' : projectname, 'lexemedeleteFLAG' : 0}, {'_id' : 0 }):
+        lst.append(lexeme)
+
+    # pprint(lst)
+    # Serializing json  
+    json_object = json.dumps(lst, indent = 2, ensure_ascii=False)
+
+    with open(basedir+"/lexemeEntry.json", "w") as outfile: 
+            outfile.write(json_object)
+            
+    if request.method == 'POST':
+        newLexemeFiles = request.files.to_dict()
+        # print(newLexemeFiles)
+        key = 'Upload Excel LiftXML'
+        # print(type(newLexemeFiles[key].read()))
+        if newLexemeFiles[key].filename != '':
+            filename = newLexemeFiles[key].filename
+            # print(filename)
+            file_format = filename.rsplit('.', 1)[-1]
+            if (file_format == 'xlsx' or file_format == 'lift'):
+                uploaded_file_content = newLexemeFiles[key].read()
+                if (file_format == 'lift'):
+                    file_format = file_format+'-xml'
+                    uploaded_file_content = str(uploaded_file_content, 'UTF-8')
+                # print(file_format)    
+                pass
+                # flash(f"File format is correct")
+                # return redirect(url_for('enternewlexeme'))
+            else:
+                flash("File should be in 'xlsx' or 'lift' format")
+                return redirect(url_for('enternewlexeme'))
+        # print("File format is correct")
+
+        # df = pd.read_excel(uploaded_file_content)
+        # print(df)
+        # save uploaded file details in pickle file for future use
+        store_uploaded_file_content = {}
+        store_uploaded_file_content['file_format'] = file_format
+        store_uploaded_file_content['uploaded_file_content'] = uploaded_file_content
+        life_uploaded_file_content_path = os.path.join(basedir, 'lifeUploadedFileContent.pkl')
+        with open(life_uploaded_file_content_path, 'wb') as file:
+            pickle.dump(store_uploaded_file_content, file)
+        if (file_format == 'lift-xml'):
+            headword_mapped, all_mapped, field_map, root = lifeuploader(file_format, uploaded_file_content, field_map={})
+            print(f"{'-'*80}\nIN lexemekeymapping() FUNCTION\n\nheadword_mapped\n{headword_mapped}\n\nall_mapped:\n{all_mapped}\n\nfield_map:\n{field_map}\n\nroot:\n{root}")
+            print(f"{'-'*80}\nIN lexemekeymapping() FUNCTION\n\nheadword_mapped\n{type(headword_mapped)}\n\nall_mapped:\n{type(all_mapped)}\n\nfield_map:\n{type(field_map)}\n\nroot:\n{type(root)}")
+            tree = ElementTree(root)
+            life_lift_root_path = os.path.join(basedir, 'lifeliftroot.xml')
+            with open(life_lift_root_path, 'wb') as f:
+                tree.write(f, encoding='utf-8')
+        elif (file_format == 'xlsx'):
+            headword_mapped, all_mapped, field_map, df = lifeuploader(file_format, uploaded_file_content, field_map={})
+            print(f"{'-'*80}\nIN lexemekeymapping() FUNCTION\n\nheadword_mapped\n{headword_mapped}\n\nall_mapped:\n{all_mapped}\n\nfield_map:\n{field_map}\n\ndf:\n{df}")
+            print(f"{'-'*80}\nIN lexemekeymapping() FUNCTION\n\nheadword_mapped\n{type(headword_mapped)}\n\nall_mapped:\n{type(all_mapped)}\n\nfield_map:\n{type(field_map)}\n\ndf:\n{type(df)}")
+            life_xlsx_root_path = os.path.join(basedir, 'lifexlsxdf.tsv')
+            df.to_csv(life_xlsx_root_path, sep='\t', index=False)
+
+        # headword_mapped = True
+        # all_mapped = False
+        if (not headword_mapped):
+            flash("headword is missing from the file")
+            return redirect(url_for('enternewlexeme'))
+        
+        elif (not all_mapped and len(field_map) != 0):
+            # not_mapped_data = {
+            #     './pronunciation/form[@lang="anp-Deva"]': 'Pronunciation', 
+            #     './sense/grammatical-info': 'grammaticalcategory', 
+            #     './lexical-unit/form[@lang="anp-Deva"]': ['Beng', 'Mlym'], 
+            #     './sense/gloss[@lang="anp"]': ['Odi', 'Ass', 'Eng'], 
+            #     './sense/gloss[@lang="en"]': ['Odi', 'Ass', 'Eng']
+            # }
+            not_mapped_data = field_map
+            print('create a modal/page where user can give the mapping of the columns')
+            return render_template('lexemekeymapping.html', not_mapped_data=not_mapped_data)
+        else:
+            if (file_format == 'xlsx'):
+                enterlexemefromuploadedfile(df)
+        
+    return redirect(url_for('enternewlexeme'))
+    
 
 # download lexeme form in excel format
 @app.route('/downloadlexemeformexcel', methods=['GET', 'POST'])

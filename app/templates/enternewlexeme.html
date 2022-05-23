@@ -13,10 +13,16 @@ Enter New Lexeme
 {% if newData is defined %}
     <h4>Project Name : {{ newData['projectname'] }}
         <a href="{{url_for('downloadlexemeformexcel')}}">
-
             <button type="button" class="btn btn-primary downloadlexform">Download Lexeme Entry/Edit Form<i class="fa fa-download" aria-hidden="true"></i></button>
         </a>
     </h4>
+    <br>
+    <form action="{{ url_for('lexemekeymapping') }}" method="POST" enctype="multipart/form-data">
+        <input class="btn btn-primary pull-right" id="submit" type="submit" value="Upload Excel/LiftXML">
+        <div class="form-group col-md-3 pull-right">
+            <input type="file" class="form-control " id="Upload Excel LiftXML" name="Upload Excel LiftXML" required>
+        </div>
+    </form>
     <br>    
     <form action="{{ url_for('dictionaryview') }}" method="POST" enctype="multipart/form-data">
         <div class="form-group">

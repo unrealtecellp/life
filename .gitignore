@@ -2,3 +2,11 @@ __pycache__
 .vscode
 venv
 app/static/json
+download.zip
+LiFE_Uploader_Downloader
+app/lifeliftroot.xml
+app/lifeUploadedFileContent.pkl
+app/lifexlsxdf.tsv
+data_format/lexicon_Testing_32.xlsx
+app/testliftXML.tsv
+app/lexemeEntry.json
