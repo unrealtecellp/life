@@ -154,11 +154,13 @@ $(document).ready(function() {
     }, function(data) {
       // console.log(data.newData, data.result1, data.result2)
       // window.location.href = "http://127.0.0.1:5000/editlexeme";
-      localStorage.setItem("newData", JSON.stringify(data.newData));
-      localStorage.setItem("lexeme", JSON.stringify(data.result1));
-      localStorage.setItem("filen", JSON.stringify(data.result2));
+      localStorage.clear();
+      localStorage.setItem("newDataeditlexeme", JSON.stringify(data.newData));
+      localStorage.setItem("lexemeeditlexeme", JSON.stringify(data.result1));
+      localStorage.setItem("fileneditlexeme", JSON.stringify(data.result2));
       // window.open("http://127.0.0.1:5000/editlexeme", "_blank");
-      window.open("http://127.0.0.1:5000/editlexeme");
+      // window.open("http://127.0.0.1:5000/editlexeme");
+      window.location.href = window.location.href.replace("dictionaryview", "editlexeme");
       // editFunction(data.newData, data.result1, data.result2)
         
     });

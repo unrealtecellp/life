@@ -10,14 +10,17 @@ Edit Lexeme
 {% endblock %}
 
 {% block app_content %}
-    <h4> 
-        <!-- <a href="#">
-            <button type="button" class="btn btn-primary downloadlex">Download Lexeme</button>
-        </a> -->
+    <h3>
+        Edit Lexeme
+    </h3>
+    <hr>
+    <h4 class="editlexemeprojectnameheading"> 
+
     </h4>
     <br>    
     <form action="{{ url_for('lexemeupdate') }}" method="POST" enctype="multipart/form-data">
-        <div class="form-group projectname"></div>    
+        <div class="form-group projectname"></div>
+        <div class="form-group lexemeId"></div>
         <div class="lexemeform"></div>
         <div class="enternewlexeme1"></div>
         <div class="sense"></div>
@@ -26,7 +29,7 @@ Edit Lexeme
         <div class="enternewlexeme2"></div>
         <div class="customfields"></div>
         <div class="count"></div>
-        <input class="btn btn-primary" id="submit" type="submit" value="Update">
+        <input class="btn btn-primary lexemeupdatebutton" id="submit" type="submit" value="Update">
     </form>
 {% endblock %}
 

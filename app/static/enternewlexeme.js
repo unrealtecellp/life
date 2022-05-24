@@ -7437,16 +7437,16 @@ function myFunction(newData) {
                 '<legend class="col-form-label">Lexeme Form'+
                 '<button class="btn btn-default pull-right" type="button" data-toggle="collapse"'+
                 'data-target=".script" aria-expanded="false" aria-controls="lexemeform">'+
-                '<span class="glyphicon glyphicon-chevron-down lf" aria-hidden="true"></span>'+
+                '<span class="glyphicon glyphicon-chevron-up lf" aria-hidden="true"></span>'+
                 '</button></legend>';
         // lexemeScript[0] is Head Word       
-        inpt += '<div class="collapse script"><div class="form-group">'+
+        inpt += '<div class="script collapse in"><div class="form-group">'+
                 '<label for="'+ lexemeScript[0] +'">'+ lexemeScript[0] +' (Head Word)</label>'+
                 '<input type="text" class="form-control" id="'+ lexemeScript[0] +'"'+ 
-                'placeholder="'+ lexemeScript[0] +'" name="Lexeme Form Script '+ lexemeScript[0] +'">'+
+                'placeholder="'+ lexemeScript[0] +'" name="Lexeme Form Script '+ lexemeScript[0] +'" required>'+
                 '</div></div>';
         for (var i = 1; i < lexemeScript.length; i++) {
-          inpt += '<div class="collapse script"><div class="form-group">'+
+          inpt += '<div class="script collapse in"><div class="form-group">'+
                 '<label for="'+ lexemeScript[i] +'">'+ lexemeScript[i] +'</label>'+
                 '<input type="text" class="form-control" id="'+ lexemeScript[i] +'"'+ 
                 'placeholder="'+ lexemeScript[i] +'" name="Lexeme Form Script '+ lexemeScript[i] +'">'+
@@ -7473,7 +7473,20 @@ function myFunction(newData) {
                 '</button></legend>';
 
         for (var i = 0; i < glossLang.length; i++) {
-          inpt += '<div class="col-md-6 collapse sense' + senseCount +'"><div class="form-group">'+
+			if (glossLang[i] === 'English') {
+				inpt += '<div class="col-md-6 collapse sense' + senseCount +'"><div class="form-group">'+
+                  '<label for="Gloss '+ glossLang[i] +'">Gloss '+ glossLang[i] +'</label>'+
+                  '<input type="text" class="form-control" id="Gloss '+ glossLang[i] +'"'+ 
+                  'name="Gloss '+ glossLang[i] + ' Sense '+ senseCount+'" required>'+
+                  '</div></div>'+
+                  '<div class="col-md-6 collapse sense' + senseCount +'"><div class="form-group">'+
+                  '<label for="Definition '+ glossLang[i] +'">Definition '+ glossLang[i] +'</label>'+
+                  '<input type="text" class="form-control" id="Definition '+ glossLang[i] +'"'+ 
+                  'name="Definition '+ glossLang[i] + ' Sense '+ senseCount+'">'+
+                  '</div></div>';
+			}
+			else {
+				inpt += '<div class="col-md-6 collapse sense' + senseCount +'"><div class="form-group">'+
                   '<label for="Gloss '+ glossLang[i] +'">Gloss '+ glossLang[i] +'</label>'+
                   '<input type="text" class="form-control" id="Gloss '+ glossLang[i] +'"'+ 
                   'name="Gloss '+ glossLang[i] + ' Sense '+ senseCount+'">'+
@@ -7483,6 +7496,8 @@ function myFunction(newData) {
                   '<input type="text" class="form-control" id="Definition '+ glossLang[i] +'"'+ 
                   'name="Definition '+ glossLang[i] + ' Sense '+ senseCount+'">'+
                   '</div></div>';
+			}
+          
         }
                 
         for (var i = 0; i < Sense.length; i++) {
@@ -7504,7 +7519,7 @@ function myFunction(newData) {
 		  else if (Sense[i].name === 'Grammatical Category') {
             inpt += '<div class="col-md-4 collapse sense' + senseCount +'"><div class="form-group">'+
                     '<label for="'+ Sense[i].name +'">'+ Sense[i].name +'</label>'+
-                    '<select class="'+ Sense[i].name +'" name="'+ Sense[i].name + ' Sense '+ senseCount+'" style="width: 100%"></select>'+
+                    '<select class="'+ Sense[i].name +'" name="'+ Sense[i].name + ' Sense '+ senseCount+'" style="width: 100%" required></select>'+
                     '</div></div>';
           }
           else {
@@ -7609,7 +7624,7 @@ function myFunction(newData) {
     else if (value === 'text'){
       inpt += '<div class="col"><div class="form-group">'+
                 '<label for="'+key+'">'+key+'</label>'+
-                '<input type="text" class="form-control" id="'+key+'" name="'+key+'">'+
+                '<input type="text" class="form-control" id="'+key+'" name="'+key+'" required>'+
                 '</div></div>';         
       if (key === 'Pronunciation' || key === 'Upload Sound File' || key === 'Upload Movie File') {               
         $('.enternewlexeme1').append(inpt);

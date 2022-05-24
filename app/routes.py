@@ -622,6 +622,7 @@ def dummylexemeentry():
         "Assamese": "Bengali",
         "Awadhi": "Devanagari",
         "Bangla": "Bengali",
+        "Bengali": "Bengali",
         "Bhojpuri": "Devanagari",
         "Bodo": "Devanagari",
         "Braj": "Devanagari",
@@ -897,6 +898,7 @@ def dictionaryview():
             "Assamese": "Bengali",
             "Awadhi": "Devanagari",
             "Bangla": "Bengali",
+            "Bengali": "Bengali",
             "Bhojpuri": "Devanagari",
             "Bodo": "Devanagari",
             "Braj": "Devanagari",
@@ -1310,14 +1312,7 @@ def enternewlexeme():
     if y is not None:
         return render_template('enternewlexeme.html',  newData=y, data=currentuserprojectsname)
     return render_template('enternewlexeme.html')   
-
-
-# enter new lexeme route
-# display form for new lexeme entry for current project
-@app.route('/editlexeme', methods=['GET', 'POST'])
-@login_required
-def editlexeme():
-    return render_template('editlexeme.html')  
+ 
 
 # # defining file_format and uploaded_file_content globally to solve the proble of accessing the variable later by some functions
 # file_format = ''
@@ -3601,6 +3596,8 @@ def lexemeedit():
     #                 {'_id' : 0, 'activeproject': 1})['activeproject']
     lexeme = lexemes.find_one({'username' : projectOwner, 'lexemeId' : headword[0], },\
                             {'_id' : 0, 'username' : 0})
+
+    pprint(lexeme)
     
     filen = []
     if 'filesname' in lexeme:
@@ -3613,8 +3610,327 @@ def lexemeedit():
     y = projectsform.find_one_or_404({'projectname' : activeprojectname,\
                                 'username' : projectOwner}, { "_id" : 0 })                             
     # y = change(y)
-    # print(y)
+    pprint(y)
     return jsonify(newData=y, result1=lexeme, result2=filen)
+
+# enter new lexeme route
+# display form for new lexeme entry for current project
+@app.route('/editlexeme', methods=['GET', 'POST'])
+@login_required
+def editlexeme():
+    return render_template('editlexeme.html') 
+
+@app.route('/lexemeupdate', methods=['GET', 'POST'])
+def lexemeupdate():
+    print(current_user.username)
+    # getting the collections
+    projects = mongo.db.projects                        # collection containing projects name
+    userprojects = mongo.db.userprojects              # collection of users and their respective projects
+    lexemes = mongo.db.lexemes                          # collection containing entry of each lexeme and its details
+    # activeprojectnames = mongo.db.activeprojectnames    # collection containing username and his/her last seen project name
+
+    # getting the name of all the projects created by current user
+    currentuserprojectsname =  currentuserprojects()
+
+    # getting the name of the active project
+    activeprojectname = userprojects.find_one({ 'username' : current_user.username },\
+                    {'_id' : 0, 'activeproject': 1})['activeproject']
+    # new lexeme details coming from current project form
+    if request.method == 'POST':
+
+        # newLexemeData = request.form.to_dict()
+        newLexemeData = dict(request.form.lists())
+        newLexemeFiles = request.files.to_dict()
+        # print(newLexemeFiles)
+        pprint(newLexemeData)
+        lexemeId = newLexemeData['lexemeId'][0]
+        # dictionary to store files name
+        newLexemeFilesName = {}
+        for key in newLexemeFiles:
+            if newLexemeFiles[key].filename != '':
+                # adding microseconds of current time to differ two files of same name
+                newLexemeFilesName[key] = (datetime.now().strftime('%f')+'_'+newLexemeFiles[key].filename)
+       
+        # format data filled in enter new lexeme form    
+        lexemeFormData = {}
+        sense = {}
+        variant = {}
+        allomorph = {}
+        lemon = ''
+        scriptCode = {
+            "Bengali": "Beng",
+            "Devanagari": "Deva",
+            "Gujarati": "Gujr",
+            "Gurumukhi": "Guru",
+            "Kannada": "Knda",
+            "Latin": "Latn",
+            "Malayalam": "Mlym",
+            "Odia": "Orya",
+            "Tamil": "Taml",
+            "Telugu": "Telu"
+        }
+        langScript = {
+            "Assamese": "Bengali",
+            "Awadhi": "Devanagari",
+            "Bangla": "Bengali",
+            "Bengali": "Bengali",
+            "Bhojpuri": "Devanagari",
+            "Bodo": "Devanagari",
+            "Braj": "Devanagari",
+            "Bundeli": "Devanagari",
+            "English": "Latin",
+            "Gujarati": "Gujarati",
+            "Haryanvi": "Devanagari",
+            "Hindi": "Devanagari",
+            "Kannada": "Kannada",
+            "Konkani": "Devanagari",
+            "Magahi": "Devanagari",
+            "Maithili": "Devanagari",
+            "Malayalam": "Malayalam",
+            "Marathi": "Devanagari",
+            "Nepali": "Devanagari",
+            "Odia": "Odia",
+            "Punjabi": "Gurumukhi",
+            "Tamil": "Tamil",
+            "Telugu": "Telugu"
+        }
+
+        lexemeFormData['username'] = current_user.username
+
+        def lexemeFormScript():
+            """'List of dictionary' of lexeme form scripts"""
+            lexemeFormScriptList = []
+            for key, value in newLexemeData.items():
+                if 'Script' in key:
+                    k = re.search(r'Script (\w+)', key)
+                    lexemeFormScriptList.append({k[1] : value[0]})
+            lexemeFormData['headword'] =  list(lexemeFormScriptList[0].values())[0]
+            return lexemeFormScriptList
+
+        def senseListOfDict(senseCount):
+            """'List of dictionary' of sense"""
+            for num in range(1, int(newLexemeData['senseCount'][-1])+1):
+                senselist = []
+                for key, value in newLexemeData.items():
+                    if 'Sense '+str(num) in key:
+                        k = re.search(r'([\w+\s]+) Sense', key)
+                        if k[1] == 'Semantic Domain' or k[1] == 'Lexical Relation':
+                            senselist.append({k[1] : value})
+                        else:
+                            senselist.append({k[1] : value[0]})
+                sense['Sense '+str(num)] = senselist
+            # pprint.pprint(sense)
+            return sense
+
+        def variantListOfDict(variantCount):
+            """'List of dictionary' of variant"""
+            for num in range(1, int(newLexemeData['variantCount'][-1])+1):
+                # variantlist = []
+                variantdict = {}
+                for key, value in newLexemeData.items():
+                    if 'Variant '+str(num) in key:
+                        k = re.search(r'([\w+\s]+) Variant', key)
+                        # variantlist.append({k[1] : value[0]})
+                        variantdict[k[1]] = value[0]
+                variant['Variant '+str(num)] = variantdict
+            # pprint.pprint(variant)
+            return variant
+
+        def allomorphListOfDict(allomorphCount):
+            """'List of dictionary' of allomorph"""
+            for num in range(1, int(newLexemeData['allomorphCount'][-1])+1):
+                # allomorphlist = []
+                allomorphdict = {}
+                for key, value in newLexemeData.items():
+                    if 'Allomorph '+str(num) in key:
+                        k = re.search(r'([\w+\s]+) Allomorph', key)
+                        # allomorphlist.append({k[1] : value[0]})
+                        allomorphdict[k[1]] = value[0]
+                # allomorph['Allomorph '+str(num)] = allomorphlist
+                allomorph['Allomorph '+str(num)] = allomorphdict
+            # pprint.pprint(allomorph)
+            return allomorph
+
+        def customFields():
+            """'List of dictionary' of custom fields"""
+            # customFieldsList = []
+            customFieldsDict = {}
+            for key, value in newLexemeData.items():
+                if 'Custom' in key:
+                    k = re.search(r'Field (\w+)', key)
+                    # customFieldsList.append({k[1] : value[0]})
+                    customFieldsDict[k[1]] = value[0]
+            # pprint.pprint(sense)
+            return customFieldsDict
+
+        for key, value in newLexemeData.items():
+            if 'Sense' in key or 'Variant' in key or 'Allomorph' in key: continue
+            elif key == 'senseCount':
+                Sense = senseListOfDict(value[0])
+                lexemeFormData['Sense'] = Sense
+            elif key == 'variantCount':
+                Variant = variantListOfDict(value[0])
+                lexemeFormData['Variant'] = Variant
+            elif key == 'allomorphCount':
+                Allomorph = allomorphListOfDict(value[0])
+                lexemeFormData['Allomorph'] = Allomorph
+            elif 'Script' in key:
+                lexemeFormData['Lexeme Form Script'] = lexemeFormScript()
+            elif 'Custom' in key:
+                lexemeFormData['Custom Fields'] = customFields()
+            elif key == 'Lexeme Language':
+                pass
+            else:
+                # print(lexemeFormData)
+                # print(key)
+                lexemeFormData[key] = value[0]    
+
+        # print(f"{'#'*80}\n{list(lexemeFormData['Sense']['Sense 1'][0].keys())}")
+        gloss = list(lexemeFormData['Sense']['Sense 1'][0].keys())
+        lexemeFormData['gloss'] = lexemeFormData['Sense']['Sense 1'][0][gloss[0]]
+        # grammaticalcategory  = list(lexemeFormData['Sense']['Sense 1'][4].keys())
+        # print(f"{'#'*80}\n{lexemeFormData['Sense']['Sense 1']}")
+        for senseData in lexemeFormData['Sense']['Sense 1']:
+            if list(senseData.keys())[0] == 'Grammatical Category':
+                # print(f"{'#'*80}\n{list(senseData.values())[0]}")
+                lexemeFormData['grammaticalcategory'] = list(senseData.values())[0]
+        lexemeFormData['lexemedeleteFLAG'] = 0
+        lexemeFormData['updatedBy'] = current_user.username
+        lexemeFormData['lexemeId'] = lexemeId
+
+        langscripts = {}
+        # langscripts["langname"] = newLexemeData['Lexeme Language'][0]
+        # langscripts["langcode"] = newLexemeData['Lexeme Language'][0][:3].lower()
+        headwordscript = list(lexemeFormData['Lexeme Form Script'][0].keys())[0]
+        # langscripts["headwordscript"] = {headwordscript[0]+headwordscript[1:4].lower(): headwordscript}
+        langscripts["headwordscript"] = {scriptCode[headwordscript]: headwordscript}
+        lexemeformscripts = {}
+        for i in range(len(lexemeFormData['Lexeme Form Script'])):
+            for lfs in lexemeFormData['Lexeme Form Script'][i].keys():
+                # lexemeformscripts[lfs[0]+lfs[1:4]] = lfs
+                lexemeformscripts[scriptCode[lfs]] = lfs
+        langscripts["lexemeformscripts"] = lexemeformscripts
+        glosslangs = {}
+        glossscripts = {}
+        for gl in newLexemeData.keys():
+            if ('Gloss' in gl):
+                gl = gl.split()[1]
+                glosslangs[gl[0:3]] = gl
+                glossscripts[scriptCode[langScript[gl]]] = gl
+        langscripts["glosslangs"] = glosslangs
+
+        langscripts["glossscripts"] = glossscripts
+        lexemeFormData['langscripts'] = langscripts
+
+
+        SenseNew = {}
+
+        for key, value in lexemeFormData['Sense'].items():
+            keyParent = key
+            key = {}
+            # print(keyParent)
+            Gloss = {}
+            Definition = {}
+            Lexical_Relation = {}
+            for val in value:
+                
+                for k, v in val.items():
+                    if ("Gloss" in k):
+                        Gloss[k.split()[1][:3].lower()] = v
+                        # print(key, k, v)
+                    elif ("Definition" in k):
+                        Definition[k.split()[1][:3].lower()] = v
+                    elif ("Lexical Relation" in k):
+                        # Lexical_Relation[v[0]] = v[0]
+                        key['Lexical Relation'] = v[0]
+                    elif ("Semantic Domain" in k):
+                        # Lexical_Relation[v[0]] = v[0]
+                        key['Semantic Domain'] = v[0]
+
+                    else:
+                        key[k] = v
+            
+            key['Gloss'] = Gloss
+            key['Definition'] = Definition
+            # key['Lexical Relation'] = Lexical_Relation
+            
+            SenseNew[keyParent] = key
+        # pprint(SenseNew)
+        lexemeFormData['SenseNew'] = SenseNew
+
+        lexemeForm = {}
+        for lexForm in lexemeFormData['Lexeme Form Script']:
+            for lexKey, lexValue in lexForm.items():
+                # lexemeForm[lexKey[:4]] = lexValue
+                lexemeForm[scriptCode[lexKey]] = lexValue
+
+        lexemeFormData['Lexeme Form'] = lexemeForm
+        
+        # keep only new updated keys as in 'lexemeEntry_sir.json' file in 'data_format folder
+        # and delete old keys
+        lexemeFormData.pop('Sense', None)
+        lexemeFormData.pop('Lexeme Form Script', None)
+        
+        # when testing comment these to avoid any database update/changes
+        # saving files for the new lexeme to the database in fs collection
+        for (filename, key) in zip(newLexemeFilesName.values(), newLexemeFiles):
+            print(filename, key, newLexemeFiles[key])
+            mongo.save_file(filename, newLexemeFiles[key], lexemeId=lexemeId, username=current_user.username,\
+                            projectname=lexemeFormData['projectname'], headword=lexemeFormData['headword'],\
+                            updatedBy=current_user.username)       
+       
+       # prevent deletion of old files name from lexeme details
+        oldFilesOfLexeme = lexemes.find_one({ 'lexemeId': lexemeId }, { '_id': 0, 'filesname': 1 })
+        # print(oldFilesOfLexeme)
+        if (len(oldFilesOfLexeme) != 0):
+            oldFilesOfLexeme = oldFilesOfLexeme['filesname']
+            for key, fname in oldFilesOfLexeme.items():
+                if (key not in newLexemeFilesName):
+                    newLexemeFilesName[key] = fname
+        # save file names of a lexeme in lexemeFormData dictionary with other details related to the lexeme
+        if len(newLexemeFilesName) != 0:
+            lexemeFormData['filesname'] = newLexemeFilesName
+        # saving data for that new lexeme to database in lexemes collection
+        # lexemes.insert(lexemeFormData)
+        print(f'{"="*80}\nLexeme Form :')
+        pprint(lexemeFormData)
+        print(f'{"="*80}')
+        lexemes.update_one({ 'lexemeId': lexemeId }, { '$set' : lexemeFormData })
+
+        flash('Successfully Updated lexeme')
+        return redirect(url_for('dictionaryview'))
+        # comment till here
+
+    try:
+        my_projects = len(userprojects.find_one({'username' : current_user.username})["myproject"])
+        shared_projects = len(userprojects.find_one({'username' : current_user.username})["projectsharedwithme"])
+        print(f"MY PROJECTS: {my_projects}, SHARED PROJECTS: {shared_projects}")
+        if  (my_projects+shared_projects) == 0:
+            flash('Please create your first project')
+            return redirect(url_for('home'))
+    except:
+        print(f'{"#"*80}\nCurrent user details not in database!!!')
+        flash('Please create your first project')
+        return redirect(url_for('home'))
+    # get the list of lexeme entries for current project to show in dictionary view table
+    lst = list()
+    
+    # projectOwner = projects.find_one({}, {"_id" : 0, activeprojectname : 1})[activeprojectname]["projectOwner"]
+    # print(projectOwner)
+    try:
+        # print(activeprojectname)
+        projectOwner = projects.find_one({}, {"_id" : 0, activeprojectname : 1})[activeprojectname]["projectOwner"]
+        print(projectOwner)
+        for lexeme in lexemes.find({ 'username' : projectOwner, 'projectname' : activeprojectname, 'lexemedeleteFLAG' : 0 }, \
+                                {'_id' : 0, 'headword' : 1, 'gloss' : 1, 'grammaticalcategory' : 1, 'lexemeId' : 1}):
+            # pprint(lexeme)
+            if (len(lexeme['headword']) != 0):
+                lst.append(lexeme)
+    except:
+        flash('Enter first lexeme of the project')
+
+    # print(lst)
+    return render_template('dictionaryview.html', projectName=activeprojectname, sdata=lst, count=len(lst), data=currentuserprojectsname)    
 
 
 # delete button on dictionary view table
@@ -3669,169 +3985,6 @@ def deletemultiplelexemes():
                         }, { '$set': { 'lexemedeleteFLAG': 1 }})
 
     return 'OK'
-
-@app.route('/lexemeupdate', methods=['GET', 'POST'])
-def lexemeupdate():
-    # getting the collections
-    lexemes = mongo.db.lexemes                          # collection containing entry of each lexeme and its details
-    activeprojectnames = mongo.db.activeprojectnames    # collection containing username and his/her last seen project name
-
-    # getting the name of all the projects created by current user
-    currentuserprojectsname =  currentuserprojects()
-
-    # getting the name of the active project
-    activeprojectname = activeprojectnames.find_one({ 'username' : current_user.username })
-
-    # new lexeme details coming from current project form
-    if request.method == 'POST':
-
-        # newLexemeData = request.form.to_dict()
-        newLexemeData = dict(request.form.lists())                   
-
-        # format data filled in enter new lexeme form    
-        lexemeFormData = {}
-        sense = {}
-        variant = {}
-        allomorph = {}
-
-        lexemeFormData['username'] = current_user.username
-
-        def lexemeFormScript():
-            """'List of dictionary' of lexeme form scripts"""
-            lexemeFormScriptList = []
-            for key, value in newLexemeData.items():
-                if 'Script' in key:
-                    k = re.search(r'Script (\w+)', key)
-                    lexemeFormScriptList.append({k[1] : value[0]})
-            lexemeFormData['headword'] =  list(lexemeFormScriptList[0].values())[0]
-            return lexemeFormScriptList
-
-        def senseListOfDict(senseCount):
-            """'List of dictionary' of sense"""
-            for num in range(1, int(newLexemeData['senseCount'][0])+1):
-                senselist = []
-                for key, value in newLexemeData.items():
-                    if 'Sense '+str(num) in key:
-                        k = re.search(r'([\w+\s]+) Sense', key)
-                        if k[1] == 'Semantic Domain' or k[1] == 'Lexical Relation':
-                            senselist.append({k[1] : value})
-                        else:
-                            senselist.append({k[1] : value[0]})
-                sense['Sense '+str(num)] = senselist
-            # pprint.pprint(sense)
-            return sense
-
-        def variantListOfDict(variantCount):
-            """'List of dictionary' of variant"""
-            for num in range(1, int(newLexemeData['variantCount'][0])+1):
-                variantlist = []
-                for key, value in newLexemeData.items():
-                    if 'Variant '+str(num) in key:
-                        k = re.search(r'([\w+\s]+) Variant', key)
-                        variantlist.append({k[1] : value[0]})
-                variant['Variant '+str(num)] = variantlist
-            # pprint.pprint(variant)
-            return variant
-
-        def allomorphListOfDict(allomorphCount):
-            """'List of dictionary' of allomorph"""
-            for num in range(1, int(newLexemeData['allomorphCount'][0])+1):
-                allomorphlist = []
-                for key, value in newLexemeData.items():
-                    if 'Allomorph '+str(num) in key:
-                        k = re.search(r'([\w+\s]+) Allomorph', key)
-                        allomorphlist.append({k[1] : value[0]})
-                allomorph['Allomorph '+str(num)] = allomorphlist
-            # pprint.pprint(allomorph)
-            return allomorph
-
-        def customFields():
-            """'List of dictionary' of custom fields"""
-            # customFieldsList = []
-            customFieldsDict = {}
-            for key, value in newLexemeData.items():
-                if 'Custom' in key:
-                    k = re.search(r'Field (\w+)', key)
-                    # customFieldsList.append({k[1] : value[0]})
-                    customFieldsDict[k[1]] = value[0]
-            # pprint.pprint(sense)
-            return customFieldsDict
-
-        for key, value in newLexemeData.items():
-            if 'Sense' in key or 'Variant' in key or 'Allomorph' in key: continue
-            elif key == 'senseCount':
-                Sense = senseListOfDict(value[0])
-                lexemeFormData['Sense'] = Sense
-            elif key == 'variantCount':
-                Variant = variantListOfDict(value[0])
-                lexemeFormData['Variant'] = Variant
-            elif key == 'allomorphCount':
-                Allomorph = allomorphListOfDict(value[0])
-                lexemeFormData['Allomorph'] = Allomorph
-            elif 'Script' in key:
-                lexemeFormData['Lexeme Form Script'] = lexemeFormScript()
-            elif 'Custom' in key:
-                lexemeFormData['Custom Fields'] = customFields()
-            else:
-                # print(lexemeFormData)
-                # print(key)
-                lexemeFormData[key] = value[0]
-
-
-        # if len(newLexemeFilesName) != 0:    
-        #     lexemeFormData['filesname'] = newLexemeFilesName
-        lexemeFormData['gloss'] = lexemeFormData['Sense']['Sense 1'][0]['Gloss English']
-        lexemeFormData['grammaticalcategory'] = lexemeFormData['Sense']['Sense 1'][4]['Grammatical Category']
-        lexemeFormData['projectname'] = activeprojectname['projectname']
-        lexemeFormData['Flag'] = 1
-
-        # pprint(lexemeFormData)
-        dbfilter = {'username' : current_user.username, 'projectname' : activeprojectname['projectname'], \
-                                'headword' : lexemeFormData['headword']}
-        lexeme = lexemes.find_one(dbfilter, {'_id' : 0, 'filesname' : 0})
-
-        pprint(lexeme)
-
-        lexemediff = eval(diff(lexeme, lexemeFormData, dump=True))
-        if len(lexemediff) > 0:
-            updatevalues = {}
-
-            for keys, values in lexemediff.items():
-                if (
-                        keys == "Lexeme Form Script" or
-                        keys == "Custom Fields"
-                    ):
-                    for key, value in values.items():
-                        x = list(value.keys())
-                        y = list(value.values())
-                        updatevalues[keys+'.'+key+'.'+x[0]] = y[0]
-                elif (
-                        keys=="Sense" or
-                        keys=="Variant" or
-                        keys=="Allomorph"
-                    ):
-                    for key, value in values.items():
-                        for k, v in value.items():
-                            x = list(v.keys())
-                            y = list(v.values())
-                            if (x[0]=='Semantic Domain' or x[0]=='Lexical Relation'):
-                                updatevalues[keys+'.'+key+'.'+k+'.'+x[0]] = lexemeFormData[keys][key][int(k)][x[0]]
-                            else:        
-                                updatevalues[keys+'.'+key+'.'+k+'.'+x[0]] = y[0]        
-                else :
-                    updatevalues[keys] = values
-            setvalues = {'$set': updatevalues}
-            # pprint(setvalues)
-            # pprint(len(lexemediff))
-            lexemes.find_one_and_update(dbfilter, setvalues)
-
-    # get the list of lexeme entries for current project to show in dictionary view table
-    lst = list()
-    for lexeme in lexemes.find({ 'username' : current_user.username, 'projectname' : activeprojectname['projectname'] }, \
-                            {'_id' : 0, 'headword' : 1, 'gloss' : 1, 'grammaticalcategory' : 1}):
-        lst.append(lexeme)
-         
-    return render_template('dictionaryview.html', sdata=lst, count=len(lst), data=currentuserprojectsname)
 
 
 # save active project name for active user
@@ -4233,3 +4386,169 @@ def dummyUserandProject():
 
     # activeprojectname = activeprojectnames.find_one({ 'username' : 'alice' },{'_id' : 0})
     # print(activeprojectname)
+
+
+# @app.route('/lexemeupdate', methods=['GET', 'POST'])
+# def lexemeupdate():
+    # # getting the collections
+    # lexemes = mongo.db.lexemes                          # collection containing entry of each lexeme and its details
+    # activeprojectnames = mongo.db.activeprojectnames    # collection containing username and his/her last seen project name
+
+    # # getting the name of all the projects created by current user
+    # currentuserprojectsname =  currentuserprojects()
+
+    # # getting the name of the active project
+    # activeprojectname = activeprojectnames.find_one({ 'username' : current_user.username })
+
+    # # new lexeme details coming from current project form
+    # if request.method == 'POST':
+
+    #     # newLexemeData = request.form.to_dict()
+    #     newLexemeData = dict(request.form.lists())
+
+    #     pprint(newLexemeData)                  
+
+    #     # format data filled in enter new lexeme form    
+    #     lexemeFormData = {}
+    #     sense = {}
+    #     variant = {}
+    #     allomorph = {}
+
+    #     lexemeFormData['username'] = current_user.username
+
+    #     def lexemeFormScript():
+    #         """'List of dictionary' of lexeme form scripts"""
+    #         lexemeFormScriptList = []
+    #         for key, value in newLexemeData.items():
+    #             if 'Script' in key:
+    #                 k = re.search(r'Script (\w+)', key)
+    #                 lexemeFormScriptList.append({k[1] : value[0]})
+    #         lexemeFormData['headword'] =  list(lexemeFormScriptList[0].values())[0]
+    #         return lexemeFormScriptList
+
+    #     def senseListOfDict(senseCount):
+    #         """'List of dictionary' of sense"""
+    #         for num in range(1, int(newLexemeData['senseCount'][0])+1):
+    #             senselist = []
+    #             for key, value in newLexemeData.items():
+    #                 if 'Sense '+str(num) in key:
+    #                     k = re.search(r'([\w+\s]+) Sense', key)
+    #                     if k[1] == 'Semantic Domain' or k[1] == 'Lexical Relation':
+    #                         senselist.append({k[1] : value})
+    #                     else:
+    #                         senselist.append({k[1] : value[0]})
+    #             sense['Sense '+str(num)] = senselist
+    #         # pprint.pprint(sense)
+    #         return sense
+
+    #     def variantListOfDict(variantCount):
+    #         """'List of dictionary' of variant"""
+    #         for num in range(1, int(newLexemeData['variantCount'][0])+1):
+    #             variantlist = []
+    #             for key, value in newLexemeData.items():
+    #                 if 'Variant '+str(num) in key:
+    #                     k = re.search(r'([\w+\s]+) Variant', key)
+    #                     variantlist.append({k[1] : value[0]})
+    #             variant['Variant '+str(num)] = variantlist
+    #         # pprint.pprint(variant)
+    #         return variant
+
+    #     def allomorphListOfDict(allomorphCount):
+    #         """'List of dictionary' of allomorph"""
+    #         for num in range(1, int(newLexemeData['allomorphCount'][0])+1):
+    #             allomorphlist = []
+    #             for key, value in newLexemeData.items():
+    #                 if 'Allomorph '+str(num) in key:
+    #                     k = re.search(r'([\w+\s]+) Allomorph', key)
+    #                     allomorphlist.append({k[1] : value[0]})
+    #             allomorph['Allomorph '+str(num)] = allomorphlist
+    #         # pprint.pprint(allomorph)
+    #         return allomorph
+
+    #     def customFields():
+    #         """'List of dictionary' of custom fields"""
+    #         # customFieldsList = []
+    #         customFieldsDict = {}
+    #         for key, value in newLexemeData.items():
+    #             if 'Custom' in key:
+    #                 k = re.search(r'Field (\w+)', key)
+    #                 # customFieldsList.append({k[1] : value[0]})
+    #                 customFieldsDict[k[1]] = value[0]
+    #         # pprint.pprint(sense)
+    #         return customFieldsDict
+
+    #     for key, value in newLexemeData.items():
+    #         if 'Sense' in key or 'Variant' in key or 'Allomorph' in key: continue
+    #         elif key == 'senseCount':
+    #             Sense = senseListOfDict(value[0])
+    #             lexemeFormData['Sense'] = Sense
+    #         elif key == 'variantCount':
+    #             Variant = variantListOfDict(value[0])
+    #             lexemeFormData['Variant'] = Variant
+    #         elif key == 'allomorphCount':
+    #             Allomorph = allomorphListOfDict(value[0])
+    #             lexemeFormData['Allomorph'] = Allomorph
+    #         elif 'Script' in key:
+    #             lexemeFormData['Lexeme Form Script'] = lexemeFormScript()
+    #         elif 'Custom' in key:
+    #             lexemeFormData['Custom Fields'] = customFields()
+    #         else:
+    #             # print(lexemeFormData)
+    #             # print(key)
+    #             lexemeFormData[key] = value[0]
+
+
+    #     # if len(newLexemeFilesName) != 0:    
+    #     #     lexemeFormData['filesname'] = newLexemeFilesName
+    #     lexemeFormData['gloss'] = lexemeFormData['Sense']['Sense 1'][0]['Gloss English']
+    #     lexemeFormData['grammaticalcategory'] = lexemeFormData['Sense']['Sense 1'][4]['Grammatical Category']
+    #     lexemeFormData['projectname'] = activeprojectname['projectname']
+    #     lexemeFormData['Flag'] = 1
+
+    #     # pprint(lexemeFormData)
+    #     dbfilter = {'username' : current_user.username, 'projectname' : activeprojectname['projectname'], \
+    #                             'headword' : lexemeFormData['headword']}
+    #     lexeme = lexemes.find_one(dbfilter, {'_id' : 0, 'filesname' : 0})
+
+    #     pprint(lexeme)
+
+    #     lexemediff = eval(diff(lexeme, lexemeFormData, dump=True))
+    #     if len(lexemediff) > 0:
+    #         updatevalues = {}
+
+    #         for keys, values in lexemediff.items():
+    #             if (
+    #                     keys == "Lexeme Form Script" or
+    #                     keys == "Custom Fields"
+    #                 ):
+    #                 for key, value in values.items():
+    #                     x = list(value.keys())
+    #                     y = list(value.values())
+    #                     updatevalues[keys+'.'+key+'.'+x[0]] = y[0]
+    #             elif (
+    #                     keys=="Sense" or
+    #                     keys=="Variant" or
+    #                     keys=="Allomorph"
+    #                 ):
+    #                 for key, value in values.items():
+    #                     for k, v in value.items():
+    #                         x = list(v.keys())
+    #                         y = list(v.values())
+    #                         if (x[0]=='Semantic Domain' or x[0]=='Lexical Relation'):
+    #                             updatevalues[keys+'.'+key+'.'+k+'.'+x[0]] = lexemeFormData[keys][key][int(k)][x[0]]
+    #                         else:        
+    #                             updatevalues[keys+'.'+key+'.'+k+'.'+x[0]] = y[0]        
+    #             else :
+    #                 updatevalues[keys] = values
+    #         setvalues = {'$set': updatevalues}
+    #         # pprint(setvalues)
+    #         # pprint(len(lexemediff))
+    #         lexemes.find_one_and_update(dbfilter, setvalues)
+
+    # # get the list of lexeme entries for current project to show in dictionary view table
+    # lst = list()
+    # for lexeme in lexemes.find({ 'username' : current_user.username, 'projectname' : activeprojectname['projectname'] }, \
+    #                         {'_id' : 0, 'headword' : 1, 'gloss' : 1, 'grammaticalcategory' : 1}):
+    #     lst.append(lexeme)
+         
+    # return render_template('dictionaryview.html', sdata=lst, count=len(lst), data=currentuserprojectsname)
