@@ -152,7 +152,7 @@ def enternewsentences():
             split_sentence = sentence.split()
             sentenceMorphemicBreak = newSentencesData['sentenceMorphemicBreak'+sFId][0]
             interlineargloss['level_1'] = sentenceMorphemicBreak.replace('#', '')
-            split_sentenceMorphemicBreak = sentenceMorphemicBreak.split()
+            split_sentenceMorphemicBreak = sentenceMorphemicBreak.strip().split()
             # print(split_sentenceMorphemicBreak)
             
             # save details for each sentence as the format shown in file name sentenceEntry.json in data_format folder
