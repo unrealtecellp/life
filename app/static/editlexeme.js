@@ -15563,7 +15563,7 @@ function editFunction(newData, lexeme, filen) {
 									'<label for="'+ Allomorph[i].name +'">'+ Allomorph[i].name +'</label>'+
 									// '<select class="'+ Allomorph[i].name +'" name="'+ Allomorph[i].name + ' Allomorph '+ allomorphCount+'" multiple="multiple" style="width: 100%"></select>'+
 									'<select class="'+ Allomorph[i].name +'" name="'+ Allomorph[i].name + ' Allomorph '+ allomorphCount+'" style="width: 100%">'+
-									'<option value="'+lexeme["Allomorph"]["Allomorph "+allomorphCount][Allomorph[i].name]+'" selected>'+lexeme["AllomorphNew"]["Allomorph "+allomorphCount][Allomorph[i].name]+'</option>'+
+									'<option value="'+lexeme["Allomorph"]["Allomorph "+allomorphCount][Allomorph[i].name]+'" selected>'+lexeme["Allomorph"]["Allomorph "+allomorphCount][Allomorph[i].name]+'</option>'+
 									'</select>'+
 									'</div></div>';
 						}
@@ -15980,3 +15980,7 @@ $(".customfield").ready(function(){
       $(".cf").addClass('glyphicon-chevron-down').removeClass('glyphicon-chevron-up');
     });   
   });
+
+$(".lexemeupdatebutton").click(function() {
+	localStorage.clear();
+  });  

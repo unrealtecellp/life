@@ -3552,14 +3552,18 @@ def lexemeview():
                             {'_id' : 0, 'username' : 0})
 
     # print(lexeme["lemon"])
+    # pprint(lexeme)
 
-    filen = []
+    filen = {}
     if 'filesname' in lexeme:
-        for filename in lexeme['filesname']:
-            filen.append(url_for('retrieve', filename=filename))
+        for key, filename in lexeme['filesname'].items():
+            print(key, filename)
+            filen[key] = url_for('retrieve', filename=filename)
 
     # lexeme = change(lexeme)
     # print(lexeme)
+
+    # pprint(filen)
 
     y = projectsform.find_one_or_404({'projectname' : activeprojectname,\
                                 'username' : projectOwner}, { "_id" : 0 })
