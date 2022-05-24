@@ -1356,7 +1356,7 @@ def enterlexemefromuploadedfile(lexemedf):
     # when testing comment these to avoid any database update/changes      
     # saving data for that new lexeme to database in lexemes collection
     # try:
-    # print(lexemedf)    
+    # print(lexemedf)
     for index, row in lexemedf.iterrows():
         uploadedFileLexeme = {
             "username": projectOwner,
@@ -1371,8 +1371,15 @@ def enterlexemefromuploadedfile(lexemedf):
             lexemeId, lexemeCount = lexmetadata()
             # print(lexemeId, lexemeCount)
         else:
-            getlexemeId = lexemes.find_one({ 'lexemeId' : lexemeId }, {'_id' : 0, 'lexemeId' : 1})
-            # print(getlexemeId)
+            getlexemeId = lexemes.find_one({ 'lexemeId' : lexemeId }, {'_id' : 0, 'lexemeId' : 1, 'projectname': 1})
+            print(getlexemeId)
+            if (getlexemeId == None):
+                print(f"lexemeId not in DB")
+                lexemeId, lexemeCount = lexmetadata()
+            else:
+                if (getlexemeId['projectname'] != activeprojectname):
+                    flash(f"lexemeId: {lexemeId} if from different project!!!")
+                    return redirect(url_for('enternewlexeme'))    
 
         uploadedFileLexeme['lexemeId'] = lexemeId
         # pprint(uploadedFileLexeme)
@@ -1396,6 +1403,10 @@ def enterlexemefromuploadedfile(lexemedf):
                 if ('Sense 1.Grammatical Category' in column_name):
                     uploadedFileLexeme['grammaticalcategory'] = value        
                 uploadedFileLexeme[column_name] = value
+
+        # print(f'{"="*80}\nLexeme Form :')
+        # pprint(uploadedFileLexeme)
+        # print(f'{"="*80}')
 
         lexemes.update_one({ 'lexemeId': lexemeId }, { '$set' : uploadedFileLexeme })
 
@@ -1863,7 +1874,7 @@ def lifeuploader(fileFormat, uploadedFileContent, field_map = {}):
 
     def map_excel(file_stream, lex_fields):
         print(f"{'-'*80}\nIN MAP EXCEL function map_excel(file_stream, lex_fields)")
-        excel_data = pd.read_excel(file_stream)
+        excel_data = pd.read_excel(file_stream, engine="openpyxl")
         print(excel_data)
         excel_data_cols = set(excel_data.columns)
         lex_field_cols = set(lex_fields)

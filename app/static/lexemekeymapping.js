@@ -14,7 +14,7 @@ function myFunction(not_mapped_data) {
     if (value.constructor === Array) {
       inpt += '<div class="col"><div class="form-group">'+
               '<label for="'+key+'">'+key+'</label>'+
-              '<select class="form-control '+key+'" name="'+key+'" style="width: 100%">'
+              '<select class="form-control '+key+'" name="'+key+'" style="width: 100%" required>'
       for (var i = 0; i < value.length; i++) {
         inpt += '<option value="'+value[i]+'">'+value[i]+'</option>';
       }
