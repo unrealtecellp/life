@@ -15,19 +15,20 @@
 {% if projectName is defined %}
     <h4>Project Name : {{ projectName }}</h4><br>
 {% endif %}
-  <button type="button" class="btn btn-primary btn-lg POS">Automate POS</button>
+  <button type="button" class="btn btn-primary btn-lg POS">Automate Grammatical Category Assignment</button>
   <div class="predictpos"></div>
   </br>
   </br>
-  <button type="button" class="btn btn-primary btn-lg MORPH">Automate Morph Analyser</button>
+  <button type="button" class="btn btn-success btn-lg MORPH">Automate Inter-linear Glossing </button>
   </br>
   </br>
-  <button type="button" class="btn btn-primary btn-lg MT">Automate MT</button>
+  <button type="button" class="btn btn-info btn-lg ASR">Automate Transcription</button>
   </br>
   </br>
-  <button type="button" class="btn btn-primary btn-lg ASR">Automate Transcription</button>
+  <button type="button" class="btn btn-warning btn-lg MT">Automate Free Translation</button>
   </br>
   </br>
+  
   <!-- <input type="text" class="form-control" placeholder="Enter morpheme to get its MORPH" name="predictMORPH"> -->
   <div class="clear"></div>      
 {% endblock %}
