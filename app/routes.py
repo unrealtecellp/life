@@ -556,6 +556,7 @@ def dummylexemeentry():
         'allomorphCount': ['1'],
         'senseCount': ['3'],
         'variantCount': ['1']}
+
     if y is not None:
         for key, value in y.items():
             # print(value)
@@ -846,7 +847,7 @@ def dummylexemeentry():
 @app.route('/dictionaryview', methods=['GET', 'POST'])
 @login_required
 def dictionaryview():
-    print(current_user.username)
+    print(f"CURRENT USER: {current_user.username}")
     # getting the collections
     projects = mongo.db.projects                        # collection containing projects name
     userprojects = mongo.db.userprojects              # collection of users and their respective projects
@@ -859,6 +860,10 @@ def dictionaryview():
     # getting the name of the active project
     activeprojectname = userprojects.find_one({ 'username' : current_user.username },\
                     {'_id' : 0, 'activeproject': 1})['activeproject']
+    # activeprojectname = userprojects.find_one({ 'username' : current_user.username })['activeproject']
+
+    projectOwner = projects.find_one({}, {"_id" : 0, activeprojectname : 1})[activeprojectname]["projectOwner"]
+    print(f"PROJECT OWNER: {projectOwner}")
     # new lexeme details coming from current project form
     if request.method == 'POST':
 
@@ -920,7 +925,7 @@ def dictionaryview():
             "Telugu": "Telugu"
         }
 
-        lexemeFormData['username'] = current_user.username
+        lexemeFormData['username'] = projectOwner
 
         def lexemeFormScript():
             """'List of dictionary' of lexeme form scripts"""
@@ -3639,6 +3644,9 @@ def lexemeupdate():
     # getting the name of the active project
     activeprojectname = userprojects.find_one({ 'username' : current_user.username },\
                     {'_id' : 0, 'activeproject': 1})['activeproject']
+    
+    projectOwner = projects.find_one({}, {"_id" : 0, activeprojectname : 1})[activeprojectname]["projectOwner"]
+    print(f"PROJECT OWNER: {projectOwner}")
     # new lexeme details coming from current project form
     if request.method == 'POST':
 
@@ -3699,7 +3707,7 @@ def lexemeupdate():
             "Telugu": "Telugu"
         }
 
-        lexemeFormData['username'] = current_user.username
+        lexemeFormData['username'] = projectOwner
 
         def lexemeFormScript():
             """'List of dictionary' of lexeme form scripts"""

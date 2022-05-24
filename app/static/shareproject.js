@@ -23,3 +23,7 @@ $(document).ready(function() {
         $('#shareProjectSelect').select2('destroy');
       })
   });
+
+  $(".shareprojectwith").click(function() {
+    alert('Project sharing successful :)');
+    });
