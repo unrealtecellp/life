@@ -3811,8 +3811,8 @@ def lexemeupdate():
         lexemeFormData['lexemeId'] = lexemeId
 
         langscripts = {}
-        # langscripts["langname"] = newLexemeData['Lexeme Language'][0]
-        # langscripts["langcode"] = newLexemeData['Lexeme Language'][0][:3].lower()
+        langscripts["langname"] = newLexemeData['Lexeme Language'][0]
+        langscripts["langcode"] = newLexemeData['Lexeme Language'][0][:3].lower()
         headwordscript = list(lexemeFormData['Lexeme Form Script'][0].keys())[0]
         # langscripts["headwordscript"] = {headwordscript[0]+headwordscript[1:4].lower(): headwordscript}
         langscripts["headwordscript"] = {scriptCode[headwordscript]: headwordscript}

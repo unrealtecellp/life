@@ -15220,7 +15220,9 @@ function editFunction(newData, lexeme, filen) {
 	$('.lexemeId').append(inpt);
 	inpt = ''
   for (let [key, value] of Object.entries(newData)){
+	//   console.log(key);
 	if (key === 'Lexeme Language') {
+		// console.log(key, newData[key]);
 		inpt += '<div class="col"><div class="form-group">'+
                 '<label for="'+key+'">'+key+'</label>'+
                 '<input type="text" class="form-control" id="'+key+'" name="'+key+'" value="'+newData[key]+'" readonly>'+
