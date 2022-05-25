@@ -121,7 +121,7 @@ var scripts =
 
 $(document).ready(function () {
   $('.lexemelanguage').select2({
-    // tags: true,
+    tags: true,
     placeholder: 'Lexeme Languages',
     data: language,
     allowClear: true
