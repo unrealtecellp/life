@@ -3120,9 +3120,11 @@ def downloadselectedlexeme():
                 elif output_format == 'xlsx':
                     generate_xlsx(write_file, lexicon)
                 elif output_format == 'pdf':
+                    # print("...................cur_fields.................")
+                    # pprint(cur_fields)
                     # generate_pdf(write_file, lexicon, project, fields=[], formatting_options={})
                     # generate_pdf(write_file, lexicon, lexicon_df, project, fields=cur_fields)
-                    lg.generate_formatted_latex(write_path, lexicon, lexicon_df, project, fields=fields)
+                    lg.generate_formatted_latex(write_file, lexicon, lexicon_df, project, fields=cur_fields)
                 elif output_format == 'markdown':
                     generate_markdown(write_file, lexicon)
                 elif output_format == 'html':
@@ -3132,11 +3134,13 @@ def downloadselectedlexeme():
                 elif output_format == 'ods':
                     generate_ods(write_file, lexicon)
                 elif output_format == 'latex_dict':
+                    # print("...................cur_fields.................")
+                    # pprint(cur_fields)
                     # generate_formatted_latex(write_file, lexicon, project, fields=[], formatting_options={})
                     # generate_formatted_latex(write_file, lexicon, project, fields=cur_fields, formatting_options={})
                     # generate_formatted_latex(
                     #     write_file, lexicon, lexicon_df, project, fields=cur_fields)
-                    lg.generate_formatted_latex(write_path, lexicon, lexicon_df, project, fields=fields)
+                    lg.generate_formatted_latex(write_file, lexicon, lexicon_df, project, fields=cur_fields)
                 elif output_format == 'json':
                     generate_json(lex_json)
         else:
@@ -3334,7 +3338,8 @@ def downloaddictionary():
             df.to_latex(f_w, index=False)
 
     def generate_formatted_latex(write_path, 
-        lexicon, 
+        lexicon,
+        lexicon_df, 
         project, 
         editors = ['Editor 1', 'Editor 2', 'Editor 3'],
         co_editors = ['Co-ed 1', 'Co-ed 2', 'Co-ed 3'],
@@ -3353,7 +3358,7 @@ def downloaddictionary():
             "includeheadfoot": True
         }
         }):
-        lg.generate_formatted_latex(write_path, lexicon, project, fields=fields)
+        lg.generate_formatted_latex(write_path, lexicon, lexicon_df, project, fields=fields)
 
     def generate_pdf(write_path, 
         lexicon, 
@@ -3414,12 +3419,16 @@ def downloaddictionary():
             file_ext = file_ext_map[output_format]
             write_file = os.path.join(write_path, 'lexicon_'+project+file_ext)
             if output_format == 'pdf':
-                lg.generate_formatted_latex(write_path, lexicon, lexicon_df, project, fields=cur_fields)
+                # print("...................cur_fields.................")
+                # pprint(cur_fields)
+                lg.generate_formatted_latex(write_file, lexicon, lexicon_df, project, fields=cur_fields)
                 # generate_pdf(write_file, lexicon, project, fields=fields, formatting_options={})
             elif output_format == 'latex':
                 generate_latex(write_file, lexicon)
             elif output_format == 'latex_dict':
-                lg.generate_formatted_latex(write_path, lexicon, lexicon_df, project, fields=cur_fields)
+                # print("...................cur_fields.................")
+                # pprint(cur_fields)
+                lg.generate_formatted_latex(write_file, lexicon, lexicon_df, project, fields=cur_fields)
                 # generate_formatted_latex(write_file, lexicon, project, fields=fields, formatting_options={})
         else:
             print ('File type\t', output_format, '\tnot supported')
