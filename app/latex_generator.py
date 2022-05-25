@@ -517,8 +517,8 @@ def generate_formatted_latex(
         return True
 
 
-def download_lexicon(lex_json, write_path, fields=[],
-                     output_format='rdf', rdf_format='turtle'):
+def download_lexicon(lex_json, write_path,
+                     output_format='rdf', rdf_format='turtle', fields=[]):
     file_ext_map = {'turtle': '.ttl', 'n3': '.n3',
                     'nt': '.nt', 'xml': '.rdf', 'pretty-xml': '.rdfp', 'trix': '.trix',
                     'trig': '.trig', 'nquads': 'nquad', 'json': '.json', 'csv': '.csv',

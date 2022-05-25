@@ -3015,7 +3015,8 @@ def downloadselectedlexeme():
             df.to_latex(f_w, index=False)
 
     def generate_formatted_latex(write_path, 
-        lexicon, 
+        lexicon,
+        lexicon_df, 
         project, 
         editors = ['Editor 1', 'Editor 2', 'Editor 3'],
         co_editors = ['Co-ed 1', 'Co-ed 2', 'Co-ed 3'],
@@ -3036,15 +3037,18 @@ def downloadselectedlexeme():
         }):
         # geometry_options_1 = {"tmargin": "1cm", "lmargin": "10cm"}
         # lg.generate_formatted_latex(write_path, lexicon, project)
-        lg.generate_formatted_latex(write_path, lexicon, project, fields=fields)
+        lg.generate_formatted_latex(write_path, lexicon, lexicon_df, project, fields=fields)
 
     def generate_markdown(write_path, lexicon):
         df = preprocess_csv_excel(lexicon)
         with open (write_path, 'w') as f_w:
             df.to_markdown(f_w, index=False)
 
+
+    # write_file, lexicon, lexicon_df, project, fields=cur_fields
     def generate_pdf(write_path, 
-        lexicon, 
+        lexicon,
+        lexicon_df, 
         project, 
         editors = ['Editor 1', 'Editor 2', 'Editor 3'],
         co_editors = ['Co-ed 1', 'Co-ed 2', 'Co-ed 3'],
@@ -3064,14 +3068,14 @@ def downloadselectedlexeme():
         }
         }):
         # lg.generate_formatted_latex(write_path, lexicon, project)
-        lg.generate_formatted_latex(write_path, lexicon, project, fields=fields)
+        lg.generate_formatted_latex(write_path, lexicon, lexicon_df, project, fields=fields)
 
         # return True
 
 
     #“xml”, “n3”, “turtle”, “nt”, “pretty-xml”, “trix”, “trig” and “nquads”
     def download_lexicon(lex_json, write_path, 
-        output_format='rdf', rdf_format='turtle'):
+        output_format='rdf', rdf_format='turtle', fields=[]):
         file_ext_map = {'turtle': '.ttl', 'n3': '.n3', 
         'nt': '.nt', 'xml': '.rdf', 'pretty-xml': '.rdfp', 'trix': '.trix', 
         'trig': '.trig', 'nquads': 'nquad', 'json': '.json', 'csv': '.csv',
@@ -3085,7 +3089,23 @@ def downloadselectedlexeme():
 
         lexicon = lex_json[1:]
 
-        fields = ['headword', 'Lexeme Form.ipa', 'Lexeme Form.Deva', 'grammaticalcategory', ['SenseNew.Gloss.hin', 'SenseNew.Gloss.eng', 'SenseNew.Definition.hin', 'SenseNew.Definition.eng', 'SenseNew.Example']]
+        # fields = ['headword', 'Lexeme Form.ipa', 'Lexeme Form.Deva', 'grammaticalcategory', ['SenseNew.Gloss.hin', 'SenseNew.Gloss.eng', 'SenseNew.Definition.hin', 'SenseNew.Definition.eng', 'SenseNew.Example']]
+        if len(fields) == 0:
+            lexicon_df = pd.json_normalize(lexicon)
+            columns = lexicon_df.columns
+            cur_fields = ['headword', 'Pronunciation']
+            # sense_fields = ['', '', '']
+            sense_fields = []
+            for field in columns:
+                if 'SenseNew' in field:
+                    if 'Gloss' in field or 'Definition' in field or 'Example' in field:
+                        sense_fields.append(field)
+                elif 'Lexeme' in field:
+                    cur_fields.append(field)
+            cur_fields.append('grammaticalcategory')
+            cur_fields.extend(sense_fields)
+        else:
+            cur_fields = fields
 
         if (rdf_format in file_ext_map) or (output_format in file_ext_map):
             if output_format == 'rdf':
@@ -3101,7 +3121,8 @@ def downloadselectedlexeme():
                     generate_xlsx(write_file, lexicon)
                 elif output_format == 'pdf':
                     # generate_pdf(write_file, lexicon, project, fields=[], formatting_options={})
-                    generate_pdf(write_file, lexicon, project, fields=fields, formatting_options={})
+                    # generate_pdf(write_file, lexicon, lexicon_df, project, fields=cur_fields)
+                    lg.generate_formatted_latex(write_path, lexicon, lexicon_df, project, fields=fields)
                 elif output_format == 'markdown':
                     generate_markdown(write_file, lexicon)
                 elif output_format == 'html':
@@ -3112,7 +3133,10 @@ def downloadselectedlexeme():
                     generate_ods(write_file, lexicon)
                 elif output_format == 'latex_dict':
                     # generate_formatted_latex(write_file, lexicon, project, fields=[], formatting_options={})
-                    generate_formatted_latex(write_file, lexicon, project, fields=fields, formatting_options={})
+                    # generate_formatted_latex(write_file, lexicon, project, fields=cur_fields, formatting_options={})
+                    # generate_formatted_latex(
+                    #     write_file, lexicon, lexicon_df, project, fields=cur_fields)
+                    lg.generate_formatted_latex(write_path, lexicon, lexicon_df, project, fields=fields)
                 elif output_format == 'json':
                     generate_json(lex_json)
         else:
@@ -3355,7 +3379,7 @@ def downloaddictionary():
 
     #“xml”, “n3”, “turtle”, “nt”, “pretty-xml”, “trix”, “trig” and “nquads”
     def download_lexicon(lex_json, write_path, 
-        output_format='rdf', rdf_format='turtle'):
+        output_format='rdf', rdf_format='turtle', fields=[]):
         file_ext_map = {'turtle': '.ttl', 'n3': '.n3', 
         'nt': '.nt', 'xml': '.rdf', 'pretty-xml': '.rdfp', 'trix': '.trix', 
         'trig': '.trig', 'nquads': 'nquad', 'json': '.json', 'csv': '.csv',
@@ -3367,18 +3391,36 @@ def downloaddictionary():
 
         lexicon = lex_json[1:]
 
-        fields = ['headword', 'Lexeme Form.ipa', 'Lexeme Form.Deva', 'grammaticalcategory', ['SenseNew.Gloss.hin', 'SenseNew.Gloss.eng', 'SenseNew.Definition.hin', 'SenseNew.Definition.eng', 'SenseNew.Example']]
+        # fields = ['headword', 'Lexeme Form.ipa', 'Lexeme Form.Deva', 'grammaticalcategory', ['SenseNew.Gloss.hin', 'SenseNew.Gloss.eng', 'SenseNew.Definition.hin', 'SenseNew.Definition.eng', 'SenseNew.Example']]
+        if len(fields) == 0:
+            lexicon_df = pd.json_normalize(lexicon)
+            columns = lexicon_df.columns
+            cur_fields = ['headword', 'Pronunciation']
+            # sense_fields = ['', '', '']
+            sense_fields = []
+            for field in columns:
+                if 'SenseNew' in field:
+                    if 'Gloss' in field or 'Definition' in field or 'Example' in field:
+                        sense_fields.append(field)
+                elif 'Lexeme' in field:
+                    cur_fields.append(field)
+            cur_fields.append('grammaticalcategory')
+            cur_fields.extend(sense_fields)
+        else:
+            cur_fields = fields
 
         if (output_format in file_ext_map):
             print(f"pdf is match")
             file_ext = file_ext_map[output_format]
             write_file = os.path.join(write_path, 'lexicon_'+project+file_ext)
             if output_format == 'pdf':
-                generate_pdf(write_file, lexicon, project, fields=fields, formatting_options={})
+                lg.generate_formatted_latex(write_path, lexicon, lexicon_df, project, fields=cur_fields)
+                # generate_pdf(write_file, lexicon, project, fields=fields, formatting_options={})
             elif output_format == 'latex':
                 generate_latex(write_file, lexicon)
             elif output_format == 'latex_dict':
-                generate_formatted_latex(write_file, lexicon, project, fields=fields, formatting_options={})
+                lg.generate_formatted_latex(write_path, lexicon, lexicon_df, project, fields=cur_fields)
+                # generate_formatted_latex(write_file, lexicon, project, fields=fields, formatting_options={})
         else:
             print ('File type\t', output_format, '\tnot supported')
             print ('Supported File Types', file_ext_map.keys())        
