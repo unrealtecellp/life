@@ -152,7 +152,7 @@ $(document).ready(function () {
     allowClear: true
   });
 
-  var fListItems = '<option selected="selected" value="0" disabled>Field Type</option>';
+  var fListItems = '<option value="">Field Type</option>';
 
   for (var i = 0; i < fieldType.length; i++) {
       fListItems += "<option value='" + fieldType[i].value + "'>" + fieldType[i].name + "</option>";
@@ -172,11 +172,12 @@ $("#addCustomField").click(function(){
 
   var dItems = '<div class="col-md-3"><div class="form-group">'+
               '<input type="text" class="form-control"'+
-              ' name="customField' + customField + '" placeholder="Custom Field"></div></div>';
+              ' name="customField' + customField + '" placeholder="Custom Field" required></div></div>';
 
   var fItems = '<div class="col-md-3"><div class="form-group">'+
-              '<div class="input-group"><select class="form-control" name="fieldType' + customField + '">';
-  fItems += '<option selected="selected" value="0" disabled>Field Type</option>';
+              '<div class="input-group">'+
+              '<select class="form-control" name="fieldType' + customField + '" required>';
+  fItems += '<option value="">Field Type</option>';
 
   for (var i = 0; i < fieldType.length; i++) {
     fItems += '<option value="' + fieldType[i].value + '">' + fieldType[i].name + '</option>';
