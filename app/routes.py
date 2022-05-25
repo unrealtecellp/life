@@ -2958,10 +2958,11 @@ def downloadselectedlexeme():
             json_to_rdf_lexicon(g_lex, lex_entry, 
                             domain_name, project, rdf_format)
             
-        with open (write_path, 'w') as f_w:    
-            rdf_out = g_lex.serialize(format=rdf_format)
-            print(type(rdf_out))
-            f_w.write(rdf_out)
+        # with open (write_path, 'w') as f_w:    
+        # rdf_out = g_lex.serialize(format=rdf_format, destination=write_path)
+        g_lex.serialize(format=rdf_format, destination=write_path)
+            # print(type(rdf_out))
+            # f_w.write(rdf_out)
 
     def preprocess_csv_excel(lexicon):
         df = pd.json_normalize(lexicon)
