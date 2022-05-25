@@ -2960,6 +2960,7 @@ def downloadselectedlexeme():
             
         with open (write_path, 'w') as f_w:    
             rdf_out = g_lex.serialize(format=rdf_format)
+            print(type(rdf_out))
             f_w.write(rdf_out)
 
     def preprocess_csv_excel(lexicon):
