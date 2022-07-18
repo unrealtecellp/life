@@ -40,6 +40,7 @@ import json
 from xml.etree import ElementTree as ET
 from xml.etree.ElementTree import ElementTree
 from app import latex_generator as lg
+import shutil
 
 
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -608,14 +609,17 @@ def dummylexemeentry():
     allomorph = {}
     lemon = ''
     scriptCode = {
+
         "Bengali": "Beng",
         "Devanagari": "Deva",
         "Gujarati": "Gujr",
         "Gurumukhi": "Guru",
+        "IPA": "IPA",
         "Kannada": "Knda",
         "Latin": "Latn",
         "Malayalam": "Mlym",
         "Odia": "Orya",
+        "Ol_Chiki": "Olck",
         "Tamil": "Taml",
         "Telugu": "Telu"
     }
@@ -632,6 +636,7 @@ def dummylexemeentry():
         "Gujarati": "Gujarati",
         "Haryanvi": "Devanagari",
         "Hindi": "Devanagari",
+        "IPA": "IPA",
         "Kannada": "Kannada",
         "Konkani": "Devanagari",
         "Magahi": "Devanagari",
@@ -641,6 +646,7 @@ def dummylexemeentry():
         "Nepali": "Devanagari",
         "Odia": "Odia",
         "Punjabi": "Gurumukhi",
+        "Santali":"Ol_Chiki",
         "Tamil": "Tamil",
         "Telugu": "Telugu"
     }
@@ -892,10 +898,12 @@ def dictionaryview():
             "Devanagari": "Deva",
             "Gujarati": "Gujr",
             "Gurumukhi": "Guru",
+            "IPA": "IPA",
             "Kannada": "Knda",
             "Latin": "Latn",
             "Malayalam": "Mlym",
             "Odia": "Orya",
+            "Ol_Chiki": "Olck",
             "Tamil": "Taml",
             "Telugu": "Telu"
         }
@@ -912,6 +920,7 @@ def dictionaryview():
             "Gujarati": "Gujarati",
             "Haryanvi": "Devanagari",
             "Hindi": "Devanagari",
+            "IPA": "IPA",
             "Kannada": "Kannada",
             "Konkani": "Devanagari",
             "Magahi": "Devanagari",
@@ -921,6 +930,7 @@ def dictionaryview():
             "Nepali": "Devanagari",
             "Odia": "Odia",
             "Punjabi": "Gurumukhi",
+            "Santali":"Ol_Chiki",
             "Tamil": "Tamil",
             "Telugu": "Telugu"
         }
@@ -2131,7 +2141,7 @@ def downloadlexemeformexcel():
             outfile.write(json_object) 
 
     def preprocess_csv_excel(lexicon):
-        # pprint(lexicon)
+        pprint(lexicon)
         df = pd.json_normalize(lexicon)
         columns = df.columns
         drop_cols = [c for c in df.columns if c.startswith('langscripts.')]
@@ -2153,6 +2163,8 @@ def downloadlexemeformexcel():
         drop_cols.extend(drop_oldscript)
         drop_cols.extend(drop_files)
 
+        print(list(df.columns))
+        print(drop_cols)
         df.drop(columns=drop_cols, inplace=True)
 
         return df
@@ -3727,10 +3739,12 @@ def lexemeupdate():
             "Devanagari": "Deva",
             "Gujarati": "Gujr",
             "Gurumukhi": "Guru",
+            "IPA": "IPA",
             "Kannada": "Knda",
             "Latin": "Latn",
             "Malayalam": "Mlym",
             "Odia": "Orya",
+            "Ol_Chiki": "Olck",
             "Tamil": "Taml",
             "Telugu": "Telu"
         }
@@ -3747,6 +3761,7 @@ def lexemeupdate():
             "Gujarati": "Gujarati",
             "Haryanvi": "Devanagari",
             "Hindi": "Devanagari",
+            "IPA": "IPA",
             "Kannada": "Kannada",
             "Konkani": "Devanagari",
             "Magahi": "Devanagari",
@@ -3756,6 +3771,7 @@ def lexemeupdate():
             "Nepali": "Devanagari",
             "Odia": "Odia",
             "Punjabi": "Gurumukhi",
+            "Santali":"Ol_Chiki",
             "Tamil": "Tamil",
             "Telugu": "Telugu"
         }
@@ -4383,6 +4399,50 @@ def dummyUserandProject():
         projects.insert({"dummyProject1" : {"projectOwner" : "dummyUser", "lexemeInserted" : 0, "lexemeDeleted" : 0,\
             'sharedwith': ['dummyUser'], 'projectdeleteFLAG' : 0}})
 
+# audio transcription route
+@app.route('/', methods=['GET', 'POST'])
+@app.route('/audiotranscription', methods=['GET', 'POST'])
+@login_required
+def audiotranscription():
+    userprojects = mongo.db.userprojects              # collection of users and their respective projects
+
+    currentuserprojectsname =  sorted(list(currentuserprojects()))
+    activeprojectname = userprojects.find_one({ 'username' : current_user.username },\
+                    {'_id' : 0, 'activeproject': 1})['activeproject']
+
+    fs =  gridfs.GridFS(mongo.db)                       # creating GridFS instance to get required files                
+    files = fs.find({})
+    audioFolder = os.path.join(basedir, 'static/audio')
+    shutil.rmtree(audioFolder)
+    os.mkdir(audioFolder)
+    for file in files:
+        if ('audio' in file.contentType):
+            name = file.filename
+            # print(file.projectname)
+            # print(name)
+            audiofile = fs.get_last_version(filename=name)
+            audiofileBytes = audiofile.read()
+            # print(len(audiofile.read()))
+            if (len(audiofileBytes) != 0):
+                open(basedir+'/static/audio/'+name, 'wb').write(audiofileBytes)
+
+    if request.method == 'POST':
+
+        newLexemeData = dict(request.form.lists())
+        newLexemeFiles = request.files.to_dict()
+        pprint(newLexemeData)
+        # dictionary to store files name
+        newLexemeFilesName = {}
+        for key in newLexemeFiles:
+            if newLexemeFiles[key].filename != '':
+                # adding microseconds of current time to differ two files of same name
+                newLexemeFilesName[key] = (datetime.now().strftime('%f')+'_'+newLexemeFiles[key].filename)
+        print(newLexemeFiles)
+        print(newLexemeFilesName)
+
+        return redirect(url_for('audiotranscription'))       
+    
+    return render_template('audiotranscription.html',  data=currentuserprojectsname, activeproject=activeprojectname, audiofile=str(file.read()))
 
 
 # @app.errorhandler(InternalServerError)

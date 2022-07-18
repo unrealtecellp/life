@@ -15178,10 +15178,12 @@ scriptCode = {
 	"Devanagari": "Deva",
 	"Gujarati": "Gujr",
 	"Gurumukhi": "Guru",
+	"IPA": "IPA",
 	"Kannada": "Knda",
 	"Latin": "Latn",
 	"Malayalam": "Mlym",
 	"Odia": "Orya",
+	"Ol_Chiki": "Olck",
 	"Tamil": "Taml",
 	"Telugu": "Telu"
 }

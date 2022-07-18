@@ -104,13 +104,15 @@ function viewFunction(newData, lexeme, filen) {
     }
     if (key === 'Lexeme Form Script') {
       var lexemeScript = newData[key];
+      console.log(lexemeScript);
         inpt += '<fieldset class="form-group border">'+
                 '<legend class="col-form-label">Lexeme Form'+
                 '<button class="btn btn-default pull-right" type="button" data-toggle="collapse"'+
                 'data-target=".script" aria-expanded="false" aria-controls="lexemeform">'+
                 '<span class="glyphicon glyphicon-chevron-up lf" aria-hidden="true"></span>'+
                 '</button></legend>';
-        // lexemeScript[0] is Head Word       
+        // lexemeScript[0] is Head Word
+        console.log(lexemeScript[0])       
         inpt += '<div class="script collapse in"><div class="form-group">'+
                 '<label for="'+ lexemeScript[0] +'">'+ lexemeScript[0] +' (Head Word)</label>'+
                 '<input type="text" class="form-control" id="'+ lexemeScript[0] +'"'+ 

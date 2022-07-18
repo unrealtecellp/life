@@ -1,0 +1,412 @@
+{
+    "username": "ritesh",
+    "projectname": "Testing_32",
+    "textdeleteFLAG": 0,
+    "updatedBy": "ritesh",
+    "textId": "T20220524145355758839",
+    "prompt": "I have rewritten the papers",
+    "textGrid": { 
+        "sentence": {
+            "boundary_1_ID": {
+                "speakerID": "spk1",
+                "sentenceID": "sid1",
+                "start": "1.3",
+                "end": "1.8",
+                "transcription": {
+                    "ipa": "I have rewritten",
+                    "Latn": "I have rewritten"
+                },
+                "tags":{
+                    "aggression": "NAG",
+                    "sentiment": "POS",
+                    "sentence_type": "AFF"
+                },
+                "morphemes": {
+                    "ipa": {
+                        "I": "I",
+                        "have": "have",
+                        "rewritten": "re-write-en"
+                    },
+                    "Latn": {
+                        "I": "I",
+                        "have": "have",
+                        "rewritten": "re-write-en"
+                    }
+                },
+                "gloss": {
+                    "ipa": {
+                        "I": {
+                            "I": {
+                                "lexgloss": {
+                                    "eng-Latn": "I"
+                                },
+                                "lexemeID": "T20220524145355758839L1",
+                                "lextype": "lemma"
+                            }
+                        },
+                        "have": {
+                            "have": {
+                                "lexgloss":  {
+                                    "eng-Latn": "has.PL"
+                                },
+                                "lexemeID": "T20220524145355758839L2",
+                                "lextype": "lemma"
+                            }
+                        },
+                        "rewritten": {
+                            "re-": {
+                                "lexgloss":  {
+                                    "eng-Latn": "postModifier"
+                                },
+                                "lexemeID": "T20220524145355758839L3",
+                                "lextype": "affix"
+                            },
+                            "write": {
+                                "lexgloss":  {
+                                    "eng-Latn": "write"
+                                },
+                                "lexemeID": "T20220524145355758839L4",
+                                "lextype": "lemma"
+                            },
+                            "-en": {
+                                "lexgloss":  {
+                                    "eng-Latn": "postModifier"
+                                },
+                                "lexemeID": "T20220524145355758839L5",
+                                "lextype": "affix"
+                            }
+                        }
+                    },
+                    "Latn": {
+                        "I": {
+                            "I": {
+                                "lexgloss": {
+                                    "eng-Latn": "I"
+                                },
+                                "lexemeID": "T20220524145355758839L1",
+                                "lextype": "lemma"
+                            }
+                        },
+                        "have": {
+                            "have": {
+                                "lexgloss":  {
+                                    "eng-Latn": "has.PL"
+                                },
+                                "lexemeID": "T20220524145355758839L2",
+                                "lextype": "lemma"
+                            }
+                        },
+                        "rewritten": {
+                            "re-": {
+                                "lexgloss":  {
+                                    "eng-Latn": "postModifier"
+                                },
+                                "lexemeID": "T20220524145355758839L3",
+                                "lextype": "affix"
+                            },
+                            "write": {
+                                "lexgloss":  {
+                                    "eng-Latn": "write"
+                                },
+                                "lexemeID": "T20220524145355758839L4",
+                                "lextype": "lemma"
+                            },
+                            "-en": {
+                                "lexgloss":  {
+                                    "eng-Latn": "postModifier"
+                                },
+                                "lexemeID": "T20220524145355758839L5",
+                                "lextype": "affix"
+                            }
+                        }
+                    }
+                },
+                "pos": {
+                    "I": "Determiner",
+                    "have": "Particle",
+                    "rewritten": "Verb"
+                },
+                "translation": {
+                    "eng-Latn": "I have rewritten",
+                    "hin-Deva": ""
+                }
+            },
+            "boundary_2_ID": {
+                "speakerID": "spk1",
+                "sentenceID": "sid2",
+                "start": "1.9",
+                "end": "2.1",
+                "transcription": {
+                    "ipa": "the papers",
+                    "Latn": "the papers"
+                },
+                "tags":{
+                    "aggression": "NAG",
+                    "sentiment": "POS",
+                    "sentence_type": "AFF"
+                },
+                "morphemes": {
+                    "ipa": {
+                        "the": "the",
+                        "papers": "paper-s"
+                    },
+                    "Latn": {
+                        "the": "the",
+                        "papers": "paper-s"
+                    }
+                },
+                "gloss": {
+                    "ipa":{
+                        "the": {
+                            "the": {
+                                "lexgloss":  {
+                                    "eng-Latn": "the"
+                                },
+                                "lexemeID": "T20220524145355758839L6",
+                                "lextype": "lemma"
+                            }
+                        },
+                        "papers": {
+                            "paper": {
+                                "lexgloss":  {
+                                    "eng-Latn": "paper"
+                                },
+                                "lexemeID": "T20220524145355758839L7",
+                                "lextype": "lemma"
+                            },
+                            "-s": {
+                                "lexgloss":  {
+                                    "eng-Latn": "postModifier"
+                                },
+                                "lexemeID": "T20220524145355758839L8",
+                                "lextype": "affix"
+                            }
+                        }
+                    },
+                    "Latn":{
+                        "the": {
+                            "the": {
+                                "lexgloss":  {
+                                    "eng-Latn": "the"
+                                },
+                                "lexemeID": "T20220524145355758839L6",
+                                "lextype": "lemma"
+                            }
+                        },
+                        "papers": {
+                            "paper": {
+                                "lexgloss":  {
+                                    "eng-Latn": "paper"
+                                },
+                                "lexemeID": "T20220524145355758839L7",
+                                "lextype": "lemma"
+                            },
+                            "-s": {
+                                "lexgloss":  {
+                                    "eng-Latn": "postModifier"
+                                },
+                                "lexemeID": "T20220524145355758839L8",
+                                "lextype": "affix"
+                            }
+                        }
+                    }
+                },
+                "pos": {
+                    "the": "Determiner",
+                    "papers": "Noun"
+                },
+                "translation": {
+                    "eng-Latn": "the papers",
+                    "hin-Deva": ""
+                }
+                
+            }
+        }
+    },
+    "word": {
+        "boundary_1_ID": {
+            "speakerID": "spk1",
+            "start": "1.3",
+            "end": "1.4",
+            "transcription": {
+                "ipa": "I",
+                "Latn": "I"
+            },
+            "tags":{
+                "aggression": "NAG",
+                "sentiment": "POS",
+                "sentence_type": "AFF"
+            },
+            "morphemes": {
+                "ipa": {
+                    "I": "I"
+                },
+                "Latn": {
+                    "I": "I"
+                }
+            },
+            "gloss": {
+                "ipa": {
+                    "I": {
+                        "I": {
+                            "lexgloss": {
+                                "eng-Latn": "I"
+                            },
+                            "lexemeID": "T20220524145355758839L1",
+                            "lextype": "lemma"
+                        }
+                    }
+                },
+                "Latn": {
+                    "I": {
+                        "I": {
+                            "lexgloss": {
+                                "eng-Latn": "I"
+                            },
+                            "lexemeID": "T20220524145355758839L1",
+                            "lextype": "lemma"
+                        }
+                    }
+                }
+            },
+            "pos": {
+                "I": "Determiner",
+                "have": "Particle",
+                "rewritten": "Verb"
+            },
+            "translation": {
+                "eng-Latn": "I have rewritten",
+                "hin-Deva": ""
+            }
+        },
+        "boundary_2_ID": {
+            "speakerID": "spk1",
+            "start": "1.9",
+            "end": "2.0",
+            "transcription": {
+                "ipa": "papers",
+                "Latn": "papers"
+            },
+            "tags":{
+                "aggression": "NAG",
+                "sentiment": "POS",
+                "sentence_type": "AFF"
+            },
+            "morphemes": {
+                "ipa": {
+                    "papers": "paper-s"
+                },
+                "Latn": {
+                    "papers": "paper-s"
+                }
+            },
+            "gloss":{ 
+                "ipa": {
+                    "papers": {
+                        "paper": {
+                            "lexgloss": {
+                                "eng-Latn": "paper"
+                            },
+                            "lexemeID": "T20220524145355758839L7",
+                            "lextype": "lemma"
+                        },
+                        "-s": {
+                            "lexgloss": {
+                                "eng-Latn": "postModifier"
+                            },
+                            "lexemeID": "T20220524145355758839L8",
+                            "lextype": "affix"
+                        }
+                    }
+                },
+                "Latn": {
+                    "papers": {
+                        "paper": {
+                            "lexgloss": {
+                                "eng-Latn": "paper"
+                            },
+                            "lexemeID": "T20220524145355758839L7",
+                            "lextype": "lemma"
+                        },
+                        "-s": {
+                            "lexgloss": {
+                                "eng-Latn": "postModifier"
+                            },
+                            "lexemeID": "T20220524145355758839L8",
+                            "lextype": "affix"
+                        }
+                    }
+                }
+            },
+            "pos": {
+                "the": "Determiner",
+                "papers": "Noun"
+            },
+            "translation": {
+                "eng-Latn": "the papers",
+                "hin-Deva": ""
+            }
+            
+        }
+    },
+    "phone": {
+        "boundary_1_ID": {
+            "phoneID": "phone1",
+            "speakerID": "spk1",
+            "start": "1.356",
+            "end": "1.358",
+            "transcription": {
+                "ipa": "a"
+            },
+            "tags":{
+                "aggression": "NAG",
+                "sentiment": "POS",
+                "sentence_type": "AFF"
+            }
+        },
+        "boundary_2_ID": {
+            "phoneID": "phone2",
+            "speakerID": "spk1",
+            "start": "1.9284",
+            "end": "1.9285",
+            "transcription": {
+                "ipa": "p"
+            },
+            "tags":{
+                "aggression": "NAG",
+                "sentiment": "POS",
+                "sentence_type": "AFF"
+            }
+        }            
+    },
+    "langscripts": {
+        "langname": "English",
+        "langcode": "eng",
+        "textscripts": {
+            "ipa": "International Phonetic Alphabet",
+            "Latn": "Latin"
+        },
+        "glosslangs": {
+            "eng": "English"
+        },
+        "glossscripts": {
+            "Latn": "Latin"
+        },
+        "translationlangs": {
+            "eng": "English",
+            "hin": "Hindi"
+        },
+        "translationscripts": {
+            "Latn": "Latin",
+            "Deva": "Devanagari"
+        }
+    },
+    "interlineargloss": {
+        "level_1": "I have re-write-en the paper-s",
+        "level_2": "I has.PL postModifier-write-postModifier the paper-postModifier",
+        "level_3": ""
+    },
+    "filesname": {
+        "sentenceFieldAudio1": "75880712_ahu.wav"
+    }
+}

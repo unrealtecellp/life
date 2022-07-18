@@ -75,6 +75,7 @@ var language = [
   {"id": "Nepali", "text": "Nepali"},
   {"id": "Odia", "text": "Odia"},
   {"id": "Punjabi", "text": "Punjabi"},
+  {"id": "Santali", "text": "Santali"},
   {"id": "Tamil", "text": "Tamil"},
   {"id": "Telugu", "text": "Telugu"}
 ]
@@ -98,6 +99,10 @@ var scripts =
         "text": "Gurumukhi"
       },
       {
+        "id": "IPA", 
+        "text": "IPA"
+      },
+      {
         "id": "Kannada", 
         "text": "Kannada"
       },
@@ -108,6 +113,10 @@ var scripts =
       {
         "id": "Odia", 
         "text": "Odia"
+      },
+      {
+        "id": "Ol_Chiki", 
+        "text": "Ol Chiki"
       },
       {
         "id": "Tamil", 
@@ -152,18 +161,19 @@ $(document).ready(function () {
     allowClear: true
   });
 
-  var fListItems = '<option value="">Field Type</option>';
+  // var fListItems = '<option value="">Field Type</option>';
 
-  for (var i = 0; i < fieldType.length; i++) {
-      fListItems += "<option value='" + fieldType[i].value + "'>" + fieldType[i].name + "</option>";
-  } 
+  // for (var i = 0; i < fieldType.length; i++) {
+  //     fListItems += "<option value='" + fieldType[i].value + "'>" + fieldType[i].name + "</option>";
+  // } 
 
-  $("#fieldType1").html(fListItems);
+  // $("#fieldType1").html(fListItems);
    
 });
 
 // add new custom element
-var customField = 1;
+// var customField = 1;
+var customField = 0;
 
 $("#addCustomField").click(function(){
   customField++;

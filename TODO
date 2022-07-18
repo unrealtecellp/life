@@ -1,0 +1,13 @@
+- transcription wale input element ko textarea se text mei kr do
+
+- sentence wale input element ko hata do
+
+- combine start and end time to form key for each boundary.
+
+- checkbox for active/inactive for 'Sentence with Morphemic Break'
+
+- print sentence form data
+
+- save the sentence form data in regions.data key in localstorage
+
+

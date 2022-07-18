@@ -8,6 +8,7 @@
 {% block styles %}
 {{super()}}
 <link href="{{url_for('.static', filename='enternewsentences.css')}}" rel="stylesheet" />
+<link href="{{url_for('.static', filename='audiotranscription.css')}}" rel="stylesheet" />
 {% endblock %}
 
 {% block app_content %}
@@ -23,94 +24,74 @@
           <input type="text" class="form-control" placeholder="{{ data['interlineargloss']['level_3'] }}" name="interlinearglosslevel_3" value="{{ data['interlineargloss']['level_3'] }}" disabled>
           <br>
           <button type="button" class="btn btn-primary " onclick="editSentenceBtn()">Edit Sentence</button>
-          <!-- <input type="button" value="Edit Sentence" >  -->
           <hr>
       {% endif %}
     {% endif %}
   {% endfor %}
-  <!-- {% if sdata is defined %}
-    <h4>Project Name : {{ sdata[0]['sentenceId'] }}</h4>
-  {% endif %}       -->
-  <!-- <h4>Add Fields for your Project</h4> -->
-  <!-- <p><strong>**use # for word boundary(if there are affixes in the word) and - for morphemic break</strong></p> -->
-  <!-- <form action="{{ url_for('enternewsentences') }}" method="POST" enctype="multipart/form-data"> -->
-    <!-- <div class="form-group">
-      <input type="text" class="form-control" placeholder="sentence" name="projectname">
-    </div> -->
     <div class="container defaultfield">
     </div>
-    <!-- <br> -->
-    <!-- <div class="container Lexemeformscript">
-      <div class="row">
-        <div class="col-md-3"> 
-          <label for="Lexeme Form Script">Lexeme Form Script (First option will be use as Head Word)</label>
-          <select class="lexemeformscript" name="Lexeme Form Script" multiple="multiple" style="width: 150%"></select>
+    <p id="subtitle" class="text-center text-info">&nbsp;</p>
+    <div id="wave-timeline"></div>
+    <div id="waveform"></div>
+    <br>
+    <p id="subtitle" class="text-center text-info">&nbsp;</p>
+    <div id="wave-timeline"></div>
+    <div id="waveform"></div>
+    <br>
+    <form id="boundaryForm" role="form" name="edit" style="opacity: 0; transition: opacity 300ms linear; margin: 30px 0;">
+        <div class="form-group">
+            <label for="start">Start</label>
+            <input class="form-control" id="start" name="start" />
         </div>
-      </div> 
-    </div>   -->
-    <!-- <br> -->
-    <!-- <div class="container Sensefield">
-      <div class="row">
-        <div class="col-md-3">
-          <label for="Gloss Language">Gloss Language</label>
-          <select class="glosslanguage" name="Gloss Language" multiple="multiple" style="width: 150%"></select>
-        </div>
-      </div> 
-    </div>   -->
-    <!-- <br> -->
-    <div class="container sentencefield">
-      <!-- <div class="row">
-        <div class="col-md-3">
-          <p><strong>Add Custom Field</strong></p>
-        </div>
-      </div> -->
-      <!-- <div class="row">  
-        <div class="col-md-6">
-          <div class="form-group">
-            <div class="input-group">
-              <input type="text" class="form-control" name="sentenceField1" placeholder="sentence">
-              <div class="input-group-btn">
-                <button class="btn btn-success" type="button" id="checkSentenceField"> 
-                  <span class="glyphicon glyphicon-ok" aria-hidden="true"></span> 
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div> -->
-    </div>
-      
 
-      <!-- <tr>
-      <td><input type="checkbox" id="lexemecheckbox" onchange="checkLexeme(this)" name="name1" checked/></td>
-      {% if data['lexemeId'] is defined %}
-          <td id='lexemeId'>{{ data['lexemeId'] }}</td>
-      {% else %}
-          <td> - </td>    
-      {% endif %}
-      {% if data['headword'] is defined %}
-          <td id='headword'>{{ data['headword'] }}</td>
-      {% else %}
-          <td> - </td>    
-      {% endif %}
-      {% if data['gloss'] is defined %}
-          <td>{{ data['gloss'] }}</td>
-      {% else %}
-      <td> - </td>    
-      {% endif %}
-      {% if data['grammaticalcategory'] is defined %}
-          <td>{{ data['grammaticalcategory'] }}</td>
-      {% else %}
-          <td> - </td>    
-      {% endif %}
-      
-      <td><button type="button" class="btn btn-primary lexemeview">View</button></td>
-      <td><button type="button" class="btn btn-warning lexemeedit">Edit</button></td>
-      <td><button type="button" class="btn btn-danger lexemedelete">Delete</button></td> -->
+        <div class="form-group">
+            <label for="end">End</label>
+            <input class="form-control" id="end" name="end" />
+        </div>
+
+        <div id="transcription", class="form-group">
+            <!-- <label for="note">Transcription</label> -->
+            <!-- <textarea id="note" class="form-control" rows="3" name="transcription"></textarea> -->
+            <!-- <input class="form-control" id="note" name="transcription" /> -->
+        </div>
+        <div class="form-group sentencefield">
+          <!-- <div class="container sentencefield"> -->
+            <!-- <div class="container containerremovesentencefield1"> -->
+              <!-- <div class="row removesentencefield1">
+            </div> -->
+            <!-- <div class="form-group"><div class="input-group">
+            <label for="sentenceField1">Sentence</label>
+              <input type="text" class="form-control" name="sentenceField1" 
+              placeholder="e.g. I have rewritten the papers" id="sentenceField1" required> -->
+              <!-- <div class="input-group-btn">
+              <button class="btn btn-danger" type="button" onclick="removeSentenceFields(1);">
+              <span class="glyphicon glyphicon-minus" aria-hidden="true"></span></button></div>+ -->
+              <!-- </div></div> -->
+            <!-- <p><strong>Sentence with Morphemic Break</p></strong>
+            <p><strong>**(use "#" for word boundary(if there are affixes in the word) and "-" for morphemic break)</strong></p>
+            <div class="form-group">
+              <div class="input-group">
+                <input type="text" class="form-control" name="sentenceMorphemicBreak1"
+                placeholder="e.g. I have re-#write#-en the paper#-s"
+                id="sentenceMorphemicBreak1" required>
+                <div class="input-group-btn">
+                  <button class="btn btn-success" type="button" id="checkSentenceField1" onclick="getSentence(1);">
+                  <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+                  </button>
+                </div>
+              </div>
+            </div> -->
+          <!-- </div> -->
+        </div>
+        <br>
+        <button type="submit" class="btn btn-success btn-block saveTemp">Save</button>
+        <center><i>or</i></center>
+        <button type="button" class="btn btn-danger btn-block" data-action="delete-region">Delete</button>
+    </form>
     
     <div class="interlineargloss"></div>
     <br>
-    <div class="row">  
+    <!-- <div class="row">  
       <div class="col-md-3">
         <p><strong>Add New Sentence</strong></p>    
         <div class="input-group-btn">
@@ -119,17 +100,17 @@
           </button>
         </div>
       </div>
-    </div>
+    </div> -->
     <br>
-    <!-- <input class="btn btn-primary addSentences" id="submit" type="submit" value="Add Sentences" >
-  </form> -->
   <div class="clear"></div>
 {% endblock %}
 
 {% block scripts %}
 {{super()}}
 <script src="{{url_for('.static', filename='enternewsentences.js')}}"></script>
-<!-- {% if sdata is defined %}
-<script type="text/javascript">interLinearGloss({{ sdata | tojson | safe }});</script>
-{% endif %} -->
+<script src="https://unpkg.com/wavesurfer.js"></script>
+<script src="https://unpkg.com/wavesurfer.js/dist/plugin/wavesurfer.timeline.js"></script>
+<script src="https://unpkg.com/wavesurfer.js/dist/plugin/wavesurfer.regions.js"></script>
+<script src="https://unpkg.com/wavesurfer.js/dist/plugin/wavesurfer.minimap.js"></script>
+<script src="{{url_for('.static', filename='audiotranscription.js')}}"></script>
 {% endblock %}
