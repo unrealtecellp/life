@@ -8,6 +8,12 @@
 
 - print sentence form data
 
-- save the sentence form data in regions.data key in localstorage
+- save the sentence form data (morphemic details) in regions.data key in localstorage
+
+- recreate the morphemic details form if checkbox in true. Basically to edit the morphemic details.
+
+- send the morphemic details to backend through ajax. Use Save button.
+
+- 
 
 

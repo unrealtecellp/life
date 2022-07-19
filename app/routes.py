@@ -122,6 +122,14 @@ def enternewsentences():
         # getting the name of the active project
     activeprojectname = userprojects.find_one({ 'username' : current_user.username },\
                     {'_id' : 0, 'activeproject': 1})['activeproject']
+    
+    print()
+    transcriptionDetails = request.args.get('a')                    # data through ajax
+    if (transcriptionDetails != None):
+        transcriptionDetails = json.loads(transcriptionDetails)
+        pprint(transcriptionDetails)
+        print(type(transcriptionDetails))
+        print()
 
     if request.method == 'POST':
         # newLexemeData = request.form.to_dict()

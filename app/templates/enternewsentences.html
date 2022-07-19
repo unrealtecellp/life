@@ -84,10 +84,30 @@
           <!-- </div> -->
         </div>
         <br>
-        <button type="submit" class="btn btn-success btn-block saveTemp">Save</button>
+        <button type="submit" class="btn btn-success btn-block saveTempTranscription">Save</button>
         <center><i>or</i></center>
         <button type="button" class="btn btn-danger btn-block" data-action="delete-region">Delete</button>
     </form>
+    <div id="waveformControl">
+      <button class="btn btn-info btn-lg" type="button" id="previous">
+          <span class="previousaudio glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+          Previous
+      </button>
+      <!-- <button class="btn btn-primary" type="button" id="playAudio">PLAY/PAUSE
+          <span class="audioplaypause glyphicon glyphicon-play" aria-hidden="true"></span>
+      </button>
+      <button class="btn btn-danger" type="button" id="stopAudio">STOP
+          <span class="audiostop glyphicon glyphicon-stop" aria-hidden="true"></span>
+      </button> -->
+      <button class="btn btn-info pull-right btn-lg" type="button" id="next">Next
+          <span class="nextaudio glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+      </button>
+      <br>
+      <br>
+      <button class="btn btn-warning pull-right btn-lg" id="save">Save
+          <span class="saveaudio glyphicon glyphicon-floppy-save" aria-hidden="true"></span>
+      </button>
+  </div>
     
     <div class="interlineargloss"></div>
     <br>

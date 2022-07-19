@@ -115,12 +115,12 @@ document.addEventListener('DOMContentLoaded', function() {
  * Save annotations to localStorage.
  */
 function saveRegions() {
-    console.log('WHERE')
+    // console.log('WHERE')
     localStorage.regions = JSON.stringify(
         Object.keys(wavesurfer.regions.list).map(function(id) {
             let region = wavesurfer.regions.list[id];
             rid = region.start.toString().slice(0, 4).replace('.', '').concat(region.end.toString().slice(0, 4).replace('.', ''));
-            console.log(rid)
+            // console.log(rid)
             return {
                 boundaryID: rid,
                 start: region.start,
@@ -232,7 +232,7 @@ function randomColor(alpha) {
  */
 function editAnnotation(region) {
     console.log('editAnnotation(region)')
-    console.log(region)
+    // console.log(region)
     let form = document.forms.edit;
     form.style.opacity = 1;
     // (form.elements.start.value = Math.round(region.start * 10) / 10),
@@ -240,14 +240,47 @@ function editAnnotation(region) {
     (form.elements.start.value = region.start),
     (form.elements.end.value = region.end);
     form.elements.note.value = region.data.note || '';
+    document.getElementById("activeSentenceMorphemicBreak").checked = false;
+    $(".containerremovesentencefield1").remove();
+    if (region.data.morphemicData) {
+        // console.log('true true');
+        if (region.data.morphemicData.activeSentenceMorphemicBreak == "true") {
+            // console.log(region.data.note);
+            document.getElementById("activeSentenceMorphemicBreak").checked = true;
+            $(".containerremovesentencefield1").remove();
+            activeMorphSentenceField();
+            if (region.data.morphemicData.sentenceMorphemicBreak1) {
+                form.elements.sentenceMorphemicBreak1.value = region.data.morphemicData.sentenceMorphemicBreak1
+                getSentence(1);
+                setTimeout(function() {
+                    for (const [key, value] of Object.entries(region.data.morphemicData)) {
+                        // console.log(key, value, form.elements[key].tagName);
+                        if (form.elements[key] !== undefined && form.elements[key].tagName == "SELECT") {
+                            // console.log(key, value, form.elements[key]);
+                            form.elements[key].value = value
+                        }
+                        else if (form.elements[key] !== undefined) {
+                            form.elements[key].value = value
+                        }
+                    }
+                }, 100);
+                
+            }
+        }
+    }
     form.onsubmit = function(e) {
         e.preventDefault();
-        rid = region.start.toFixed(2);
+        morphData = morphemeDetails();
+        // console.log(morphData);
+        // $(".containerremovesentencefield1").remove();
+        // document.getElementById("activeSentenceMorphemicBreak").checked = false;
+        // rid = region.start.toFixed(2);
         region.update({
             start: form.elements.start.value,
             end: form.elements.end.value,
             data: {
-                note: form.elements.note.value
+                note: form.elements.note.value,
+                morphemicData: morphData
             }
         });
         form.style.opacity = 0;
@@ -269,3 +302,24 @@ function showNote(region) {
     showNote.el.textContent = region.data.note || '–';
 }
 
+function morphemeDetails() {
+    console.log(document.forms.edit.elements)
+    formData = document.forms.edit.elements
+    console.log(typeof formData)
+    const morphemeData = new Object();
+    for (const [key, value] of Object.entries(formData)) {
+      eleName = value.name
+      // console.log(eleName)
+      if (eleName !== '') {
+        console.log(key, value.name, formData[eleName].value);
+        morphemeData[value.name] = formData[eleName].value
+  
+      }
+    }
+    bid = morphemeData['start'].toString().slice(0, 4).replace('.', '').concat(morphemeData['end'].toString().slice(0, 4).replace('.', ''));
+    morphemeData['boundaryID'] = bid
+    // console.log(morphemeData);
+    
+    return morphemeData;
+}
+  

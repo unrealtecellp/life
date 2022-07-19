@@ -332,25 +332,25 @@ var posCategories =
 {"id": "Verb", "text": "Verb"}
 ];
 
-$(".saveTemp").click(function() {
-  console.log(document.forms.edit.elements)
-  formData = document.forms.edit.elements
-  console.log(typeof formData)
-  for (const [key, value] of Object.entries(formData)) {
-    eleID = value.name
-    // console.log(eleID)
-    if (eleID !== '') {
-      console.log(key, value.name, formData[eleID].value);
-    }
-  }
-});
+// $(".saveTempTranscription").click(function() {
+//   console.log(document.forms.edit.elements)
+//   formData = document.forms.edit.elements
+//   console.log(typeof formData)
+//   for (const [key, value] of Object.entries(formData)) {
+//     eleID = value.name
+//     // console.log(eleID)
+//     if (eleID !== '') {
+//       console.log(key, value.name, formData[eleID].value);
+//     }
+//   }
+// });
 var transcription = '<div class="form-group">'+
                     '<label for="note">Transcription</label>'+
                     '<input class="form-control" id="note" name="transcription" />'+
                     '</div>'
 $("#transcription").append(transcription);
 
-var activeSentenceMorphemicBreak = '<input type="checkbox" id="activeSentenceMorphemicBreak" name="activeSentenceMorphemicBreak" value="">'+
+var activeSentenceMorphemicBreak = '<input type="checkbox" id="activeSentenceMorphemicBreak" name="activeSentenceMorphemicBreak" value="false">'+
             '<label for="activeSentenceMorphemicBreak">&nbsp; Sentence with Morphemic Break</label><br></br>'
 $(".sentencefield").append(activeSentenceMorphemicBreak);
 
@@ -358,6 +358,7 @@ $(".sentencefield").append(activeSentenceMorphemicBreak);
 var sentenceField = 1;
 
 $("#activeSentenceMorphemicBreak").click(function() {
+  activeMorphSentenceField();
   // $("#addSentenceField").click(function(){
   // document.getElementById("addSentenceField").disabled = true;
   // sentenceField++;
@@ -366,28 +367,57 @@ $("#activeSentenceMorphemicBreak").click(function() {
 
 
   // var drow = '<form id="sentenceForm' + sentenceField +'" action="/enternewsentences" method="POST" enctype="multipart/form-data">';
+  // var drow = '<div class="container containerremovesentencefield' + sentenceField + '"><div class="row removesentencefield' + sentenceField + '">';
+
+  // // var dItems = '<div class="col-md-6"><div class="form-group">'+
+  // //             '<input type="text" class="form-control"'+
+  // //             ' name="sentenceField' + sentenceField + '" placeholder="sentence"></div></div>';
+
+  // // var sentenceAudio = '<div class="col-md-12"><div class="form-group">'+
+  // //   '<label for="sentenceFieldAudio' + sentenceField +'">Sentence Audio</label>'+
+  // //   '<input type="file" class="form-control" id="sentenceFieldAudio' + sentenceField +'" name="sentenceFieldAudio' + sentenceField +'">'+
+  // //   '</div></div>';
+
+  // // var dItems = '<div class="col-md-12"><div class="form-group"><div class="input-group">'+
+  // // // '<label for="sentenceField' + sentenceField +'">Sentence</label>'+
+  // // '<input type="text" class="form-control" name="sentenceField' + sentenceField +'" '+
+  // // 'placeholder="e.g. I have rewritten the papers" id="sentenceField' + sentenceField +'" required>'+
+  // // '<div class="input-group-btn">'+
+  // // '<button class="btn btn-danger" type="button" onclick="removeSentenceFields('+ sentenceField +');">'+
+  // // '<span class="glyphicon glyphicon-minus" aria-hidden="true"></span></button></div>'+
+  // // '</div></div></div>';
+
+  // // dItems += '<p><strong>Sentence with Morphemic Break</p></strong>'+
+  // // var drow = '';
+  // var dItems = '<div id="morphemicDetail"><p><strong>**(use "#" for word boundary(if there are affixes in the word) and "-" for morphemic break)</strong></p>'+
+  // '<div class="col-md-12"><div class="form-group"><div class="input-group">'+
+  // '<input type="text" class="form-control" name="sentenceMorphemicBreak' + sentenceField +'"'+
+  // 'placeholder="e.g. I have re-#write#-en the paper#-s"'+
+  // 'id="sentenceMorphemicBreak' + sentenceField +'">'+
+  // '<div class="input-group-btn">'+
+  // '<button class="btn btn-success" type="button" id="checkSentenceField' + sentenceField +'" onclick="getSentence('+ sentenceField +');">'+
+  // '<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>'+ 
+  // '</button></div>'+
+  // '</div></div></div></div>'
+
+  // // drow += sentenceAudio;
+  // drow += dItems;
+  // // drow += '</div></div>';
+
+  // // drow += '</br><input class="btn btn-primary addSentences" id="submitSentenceField' + sentenceField +'" type="submit" value="Save Sentence" disabled></form>';
+  // if (document.getElementById("activeSentenceMorphemicBreak").checked) {
+  //   document.getElementById("activeSentenceMorphemicBreak").value = true;
+  //   $(".sentencefield").append(drow);
+  // }
+  // else {
+  //   document.getElementById("activeSentenceMorphemicBreak").value = false;
+  //   $(".containerremovesentencefield1").remove();
+  // }
+});
+
+function activeMorphSentenceField () {
   var drow = '<div class="container containerremovesentencefield' + sentenceField + '"><div class="row removesentencefield' + sentenceField + '">';
 
-  // var dItems = '<div class="col-md-6"><div class="form-group">'+
-  //             '<input type="text" class="form-control"'+
-  //             ' name="sentenceField' + sentenceField + '" placeholder="sentence"></div></div>';
-
-  // var sentenceAudio = '<div class="col-md-12"><div class="form-group">'+
-  //   '<label for="sentenceFieldAudio' + sentenceField +'">Sentence Audio</label>'+
-  //   '<input type="file" class="form-control" id="sentenceFieldAudio' + sentenceField +'" name="sentenceFieldAudio' + sentenceField +'">'+
-  //   '</div></div>';
-
-  // var dItems = '<div class="col-md-12"><div class="form-group"><div class="input-group">'+
-  // // '<label for="sentenceField' + sentenceField +'">Sentence</label>'+
-  // '<input type="text" class="form-control" name="sentenceField' + sentenceField +'" '+
-  // 'placeholder="e.g. I have rewritten the papers" id="sentenceField' + sentenceField +'" required>'+
-  // '<div class="input-group-btn">'+
-  // '<button class="btn btn-danger" type="button" onclick="removeSentenceFields('+ sentenceField +');">'+
-  // '<span class="glyphicon glyphicon-minus" aria-hidden="true"></span></button></div>'+
-  // '</div></div></div>';
-
-  // dItems += '<p><strong>Sentence with Morphemic Break</p></strong>'+
-  // var drow = '';
   var dItems = '<div id="morphemicDetail"><p><strong>**(use "#" for word boundary(if there are affixes in the word) and "-" for morphemic break)</strong></p>'+
   '<div class="col-md-12"><div class="form-group"><div class="input-group">'+
   '<input type="text" class="form-control" name="sentenceMorphemicBreak' + sentenceField +'"'+
@@ -399,18 +429,16 @@ $("#activeSentenceMorphemicBreak").click(function() {
   '</button></div>'+
   '</div></div></div></div>'
 
-  // drow += sentenceAudio;
   drow += dItems;
-  // drow += '</div></div>';
-
-  // drow += '</br><input class="btn btn-primary addSentences" id="submitSentenceField' + sentenceField +'" type="submit" value="Save Sentence" disabled></form>';
   if (document.getElementById("activeSentenceMorphemicBreak").checked) {
+    document.getElementById("activeSentenceMorphemicBreak").value = true;
     $(".sentencefield").append(drow);
   }
   else {
+    document.getElementById("activeSentenceMorphemicBreak").value = false;
     $(".containerremovesentencefield1").remove();
   }
-});
+}
 
 // remove a sentence element
 function removeSentenceFields(rid) {
@@ -423,7 +451,7 @@ document.getElementById("addSentenceField").disabled = false;
 // var morphemePOS;
 
 function getWordPos(morphemicSplitSentence, sid) {
-  console.log('getWordPos');
+  // console.log('getWordPos');
 
   $.getJSON('/predictPOSNaiveBayes', {
 
@@ -446,7 +474,7 @@ function getSentence(sid) {
   // document.getElementById("sentenceField" + sentenceField).readonly = true; 
   // document.getElementById("sentenceMorphemicBreak" + sentenceField).readonly = true; 
   // document.getElementById("submitSentenceField" + sid).disabled = false;
-  console.log(sid);
+  // console.log(sid);
   var morphemicSplitSentence = [];
 
   // sentence = document.getElementById("sentenceField" + sentenceField).value.trim(); // Find the text
@@ -477,8 +505,8 @@ function getSentence(sid) {
   if (sentence_morphemic_break_full.includes('-')) {
     morph_len = (sentence_morphemic_break_full.match(/-/g)||[]).length;
     boundary_len = (sentence_morphemic_break_full.match(/#/g)||[]).length;
-    console.log(morph_len)
-    console.log(boundary_len)
+    // console.log(morph_len)
+    // console.log(boundary_len)
     if (morph_len != boundary_len) {
       alert("Number of # ("+boundary_len+") not equal to numer of - ("+morph_len+") in the morphemic break")
       document.getElementById("checkSentenceField" + sid).disabled = false;
@@ -510,13 +538,13 @@ function getSentence(sid) {
 
   // console.log(sentence);
 
-  console.log(morphemicSplitSentence);
+  // console.log(morphemicSplitSentence);
   getWordPos(morphemicSplitSentence, sid)
 }  
 
 function morphemeFields(morphemicSplitSentence, sid, morphemePOS) {
 
-  console.log(morphemePOS);
+  // console.log(morphemePOS);
   var morphemeinput = '</br><div class="morphemefield' + sid + '">';
   morphemeinput += '<div class="row">'+
   '<div class="col-sm-3"><strong>Morphemes</strong></div>'+
@@ -604,3 +632,15 @@ function editSentenceBtn() {
 console.log("Edit Sentence Button Clicked")
 
 }
+
+$("#save").click(function() {
+  console.log('sending transcription and morphemic details to the server');
+  var transcriptionData = localStorage.regions
+  $.getJSON('/enternewsentences', {
+  
+  a:String(transcriptionData)
+  }, function(data) {
+
+  });
+  return false; 
+});
