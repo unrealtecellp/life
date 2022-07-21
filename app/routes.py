@@ -127,16 +127,16 @@ def enternewsentences():
     transcriptionDetails = request.args.get('a')                    # data through ajax
     if (transcriptionDetails != None):
         transcriptionDetails = json.loads(transcriptionDetails)
-        pprint(transcriptionDetails)
-        print(type(transcriptionDetails))
-        print()
+        # pprint(transcriptionDetails)
+        # print(type(transcriptionDetails))
+        # print()
 
     if request.method == 'POST':
         # newLexemeData = request.form.to_dict()
         newSentencesData = dict(request.form.lists())
         newSentencesFiles = request.files.to_dict()
-        pprint(newSentencesData)
-        print(f'{"="*80}')
+        # pprint(newSentencesData)
+        # print(f'{"="*80}')
         # to see format of the data coming from the front end look for file name newSentencesData.txt in data_format folder
         
         # dictionary to store files name
@@ -272,8 +272,8 @@ def enternewsentences():
             if len(newSentencesFilesName) != 0:    
                 sentenceDetails['filesname'] = newSentencesFilesName
 
-            pprint(sentenceDetails)
-            print(f'{"="*80}')
+            # pprint(sentenceDetails)
+            # print(f'{"="*80}')
             
             # sentence_lexeme_to_lexemes(sentenceDetails)
 
@@ -382,8 +382,8 @@ def getnewsentences():
         else:
             gloss[morpheme] = [morpheme]        
     sentenceDetails['morphemes'] = morphemes
-    pprint(sentenceDetails) 
-    print(gloss)  
+    # pprint(sentenceDetails) 
+    # print(gloss)  
 
     return jsonify(sentenceFieldId=sentenceFieldId, gloss=gloss, result2=sentence)
 
@@ -560,7 +560,7 @@ def dummylexemeentry():
     y = projectsform.find_one_or_404({'projectname' : activeprojectname,'username' : projectOwner}, { "_id" : 0 }) 
     # y = change(y)
     # print(f'{"#"*80}\ny:\n{y}')
-    pprint(y)
+    # pprint(y)
     newLexemeData = {
         'allomorphCount': ['1'],
         'senseCount': ['3'],
@@ -609,7 +609,7 @@ def dummylexemeentry():
             else:    
                 newLexemeData[key] = ['']        
 
-    pprint(newLexemeData)
+    # pprint(newLexemeData)
     # format data filled in enter new lexeme form    
     lexemeFormData = {}
     sense = {}
@@ -845,9 +845,9 @@ def dummylexemeentry():
     
     # saving data for that new lexeme to database in lexemes collection
     lexemes.insert(lexemeFormData)
-    print(f'{"="*80}\nLexeme Form :')
-    pprint(lexemeFormData)
-    print(f'{"="*80}')
+    # print(f'{"="*80}\nLexeme Form :')
+    # pprint(lexemeFormData)
+    # print(f'{"="*80}')
 
 
     # update lexemeInserted count of the project in projects collection
@@ -884,7 +884,7 @@ def dictionaryview():
         # newLexemeData = request.form.to_dict()
         newLexemeData = dict(request.form.lists())
         newLexemeFiles = request.files.to_dict()
-        pprint(newLexemeData)
+        # pprint(newLexemeData)
         # dictionary to store files name
         newLexemeFilesName = {}
         for key in newLexemeFiles:
@@ -1153,9 +1153,9 @@ def dictionaryview():
        
         # saving data for that new lexeme to database in lexemes collection
         lexemes.insert(lexemeFormData)
-        print(f'{"="*80}\nLexeme Form :')
-        pprint(lexemeFormData)
-        print(f'{"="*80}')
+        # print(f'{"="*80}\nLexeme Form :')
+        # pprint(lexemeFormData)
+        # print(f'{"="*80}')
 
 
         # update lexemeInserted count of the project in projects collection
@@ -1221,7 +1221,7 @@ def enternewlexeme():
     if request.method == 'POST':
         projectFormData = dict(request.form.lists())
 
-        # print(f'{"#"*80}\nprojectFormData\n{projectFormData}')
+        print(f'{"#"*80}\nprojectFormData\n{projectFormData}')
 
         dynamicFormField = []
         listOfCustomFields = []
@@ -1281,14 +1281,38 @@ def enternewlexeme():
                 elif key == 'Gloss Language':
                     # value.append('English')
                     value.insert(0, 'English')
-                    projectForm[key] = value    
+                    projectForm[key] = value
+                elif key == 'Gloss Script':
+                    # value.append('English')
+                    value.insert(0, 'Latin')
+                    projectForm[key] = value
+                elif key == 'Interlinear Gloss Language':
+                    # value.append('English')
+                    value.insert(0, 'English')
+                    projectForm[key] = value
+                elif key == 'Interlinear Gloss Script':
+                    # value.append('English')
+                    value.insert(0, 'Latin')
+                    projectForm[key] = value                
                 elif len(value) == 1:
                     projectForm[key] = value[0]
                 else:
                     projectForm[key] = value
 
+            # sentence form detail
+            projectForm['Sentence Language'] = projectForm['Lexeme Language']
+            projectForm['Transcription Script'] = projectForm['Lexeme Form Script']   
+            projectForm['Translation Language'] = projectForm['Gloss Language']
+            projectForm['Translation Script']  = projectForm['Gloss Script']
+
             if ("Gloss Language" not in projectForm):
-                projectForm["Gloss Language"] = ['English']    
+                projectForm["Gloss Language"] = ['English']
+            if ("Gloss Script" not in projectForm):
+                projectForm["Gloss Script"] = ['Latin']
+            if ("Interlinear Gloss Language" not in projectForm):
+                projectForm["Interlinear Gloss Language"] = ['English']
+            if ("Interlinear Gloss Script" not in projectForm):
+                projectForm["Interlinear Gloss Script"] = ['Latin']        
 
             # print(f'{"#"*80}\ndynamicFormField\n{len(dynamicFormField)}')
             if len(dynamicFormField) > 1:
@@ -1301,7 +1325,7 @@ def enternewlexeme():
             # when testing comment these to avoid any database update/changes
             projectsform.insert(projectForm)
             # create dummy lexeme
-            dummylexemeentry()
+            # dummylexemeentry()
             # else:
             #     flash(f'Project Name : {projectForm["projectname"]} already created by {current_user.username}')
             #     return redirect(url_for('newproject'))
@@ -2149,7 +2173,7 @@ def downloadlexemeformexcel():
             outfile.write(json_object) 
 
     def preprocess_csv_excel(lexicon):
-        pprint(lexicon)
+        # pprint(lexicon)
         df = pd.json_normalize(lexicon)
         columns = df.columns
         drop_cols = [c for c in df.columns if c.startswith('langscripts.')]
@@ -3679,7 +3703,7 @@ def lexemeedit():
     lexeme = lexemes.find_one({'username' : projectOwner, 'lexemeId' : headword[0], },\
                             {'_id' : 0, 'username' : 0})
 
-    pprint(lexeme)
+    # pprint(lexeme)
     
     filen = []
     if 'filesname' in lexeme:
@@ -3692,7 +3716,7 @@ def lexemeedit():
     y = projectsform.find_one_or_404({'projectname' : activeprojectname,\
                                 'username' : projectOwner}, { "_id" : 0 })                             
     # y = change(y)
-    pprint(y)
+    # pprint(y)
     return jsonify(newData=y, result1=lexeme, result2=filen)
 
 # enter new lexeme route
@@ -3727,7 +3751,7 @@ def lexemeupdate():
         newLexemeData = dict(request.form.lists())
         newLexemeFiles = request.files.to_dict()
         # print(newLexemeFiles)
-        pprint(newLexemeData)
+        # pprint(newLexemeData)
         lexemeId = newLexemeData['lexemeId'][0]
         # dictionary to store files name
         newLexemeFilesName = {}
@@ -3981,9 +4005,9 @@ def lexemeupdate():
             lexemeFormData['filesname'] = newLexemeFilesName
         # saving data for that new lexeme to database in lexemes collection
         # lexemes.insert(lexemeFormData)
-        print(f'{"="*80}\nLexeme Form :')
-        pprint(lexemeFormData)
-        print(f'{"="*80}')
+        # print(f'{"="*80}\nLexeme Form :')
+        # pprint(lexemeFormData)
+        # print(f'{"="*80}')
         lexemes.update_one({ 'lexemeId': lexemeId }, { '$set' : lexemeFormData })
 
         flash('Successfully Updated lexeme')
@@ -4438,7 +4462,7 @@ def audiotranscription():
 
         newLexemeData = dict(request.form.lists())
         newLexemeFiles = request.files.to_dict()
-        pprint(newLexemeData)
+        # pprint(newLexemeData)
         # dictionary to store files name
         newLexemeFilesName = {}
         for key in newLexemeFiles:

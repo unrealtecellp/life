@@ -1,3 +1,5 @@
+18 July 2022
+---------------------------------------------------------------
 - transcription wale input element ko textarea se text mei kr do
 
 - sentence wale input element ko hata do
@@ -8,12 +10,18 @@
 
 - print sentence form data
 
+19 July 2022
+---------------------------------------------------------------
 - save the sentence form data (morphemic details) in regions.data key in localstorage
 
 - recreate the morphemic details form if checkbox in true. Basically to edit the morphemic details.
 
 - send the morphemic details to backend through ajax. Use Save button.
 
-- 
+20 July 2022
+---------------------------------------------------------------
+-  Work on create new project and give options to add transcription and translation in multiple scripts
+
+- based on number of scripts given for transcription, render the transcription and morphemic detail HTML form in sentence interface accordingly.
 
 

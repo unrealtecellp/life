@@ -54,7 +54,7 @@ var fieldType = [{
   }
 ];
 
-var language = [
+var languages = [
   {"id": "", "text": ""},
   {"id": "Assamese", "text": "Assamese"},
   {"id": "Awadhi", "text": "Awadhi"},
@@ -132,7 +132,7 @@ $(document).ready(function () {
   $('.lexemelanguage').select2({
     tags: true,
     placeholder: 'Lexeme Languages',
-    data: language,
+    data: languages,
     allowClear: true
   });
 
@@ -157,10 +157,34 @@ $(document).ready(function () {
   $('.glosslanguage').select2({
     // tags: true,
     placeholder: 'Gloss Languages',
-    data: language,
+    data: languages,
     allowClear: true
   });
 
+
+  $('.transcriptionscript').select2({
+    // tags: true,
+    placeholder: 'Transcription Scripts',
+    data: scripts,
+    allowClear: true,
+    // sorter: false
+  });
+
+  $('.translationlanguage').select2({
+    // tags: true,
+    placeholder: 'Translation Languages',
+    data: languages,
+    allowClear: true,
+    // sorter: false
+  });
+
+  $('.translationscript').select2({
+    // tags: true,
+    placeholder: 'Translation Scripts',
+    data: scripts,
+    allowClear: true,
+    // sorter: false
+  });
   // var fListItems = '<option value="">Field Type</option>';
 
   // for (var i = 0; i < fieldType.length; i++) {
@@ -170,6 +194,92 @@ $(document).ready(function () {
   // $("#fieldType1").html(fListItems);
    
 });
+
+var glossField = 0;
+
+$("#addGlossField").click(function(){
+  glossField++;
+  
+  var drow = '<div class="row removeglossfield' + glossField + '">';
+
+  var fItems = '<div class="col-md-3"><div class="form-group">'+
+              // '<select class="form-control" name="Gloss Language' + glossField + '" required>';
+              '<select class="form-control" name="Gloss Language" required>';
+  fItems += '<option value="">Translation/Gloss Language</option>';
+
+  for (var i = 0; i < languages.length; i++) {
+    fItems += '<option value="' + languages[i].text + '">' + languages[i].id + '</option>';
+  }
+  fItems += '</select></div></div>';
+
+  fItems += '<div class="col-md-3"><div class="form-group">'+
+              '<div class="input-group">'+
+              // '<select class="form-control" name="glossScriptField' + glossField + '" required>';
+              '<select class="form-control" name="Gloss Script" required>';
+  fItems += '<option value="">Translation/Gloss Script</option>';
+
+  for (var i = 0; i < scripts.length; i++) {
+    fItems += '<option value="' + scripts[i].text + '">' + scripts[i].id + '</option>';
+  }
+  fItems += '</select>';
+
+  fItems += '<div class="input-group-btn">'+
+            '<button class="btn btn-danger" type="button" onclick="removeGlossFields('+ glossField +');">'+
+            '<span class="glyphicon glyphicon-minus" aria-hidden="true"></span></button></div></div></div></div>';
+
+  drow += fItems;
+  drow += '</div>'
+  $(".Sensefield").append(drow);
+});
+
+
+// remove a interlineargloss element
+function removeGlossFields(rid) {
+  $(".removeglossfield"+rid).remove();
+}
+
+var interlinearGlossField = 0;
+
+$("#addInterlinearGlossField").click(function(){
+  interlinearGlossField++;
+  
+  var drow = '<div class="row removeinterlinearglossfield' + interlinearGlossField + '">';
+
+  var fItems = '<div class="col-md-3"><div class="form-group">'+
+              // '<select class="form-control" name="interlinearGlossLangField' + interlinearGlossField + '" required>';
+              '<select class="form-control" name="Interlinear Gloss Language" required>';
+  fItems += '<option value="">Interlinear Gloss Language</option>';
+
+  for (var i = 0; i < languages.length; i++) {
+    fItems += '<option value="' + languages[i].text + '">' + languages[i].id + '</option>';
+  }
+  fItems += '</select></div></div>';
+
+  fItems += '<div class="col-md-3"><div class="form-group">'+
+              '<div class="input-group">'+
+              // '<select class="form-control" name="interlinearGlossScriptField' + interlinearGlossField + '" required>';
+              '<select class="form-control" name="Interlinear Gloss Script" required>';
+  fItems += '<option value="">Interlinear Gloss Script</option>';
+
+  for (var i = 0; i < scripts.length; i++) {
+    fItems += '<option value="' + scripts[i].text + '">' + scripts[i].id + '</option>';
+  }
+  fItems += '</select>';
+
+  fItems += '<div class="input-group-btn">'+
+            '<button class="btn btn-danger" type="button" onclick="removeInterlinearGlossFields('+ interlinearGlossField +');">'+
+            '<span class="glyphicon glyphicon-minus" aria-hidden="true"></span></button></div></div></div></div>';
+
+  drow += fItems;
+  drow += '</div>'
+  $(".interlinearglossfield").append(drow);
+});
+
+
+// remove a interlineargloss element
+function removeInterlinearGlossFields(rid) {
+  $(".removeinterlinearglossfield"+rid).remove();
+}
 
 // add new custom element
 // var customField = 1;
@@ -207,8 +317,7 @@ $("#addCustomField").click(function(){
 // remove a custom element
 function removeCustomFields(rid) {
   $(".removecustomfield"+rid).remove();
-}  
-
+}
 
 // default dictionary fields
 function projectForm() {
@@ -249,7 +358,7 @@ function projectForm() {
 projectForm();
 
 
-// var language = [
+// var languages = [
 //   // {"id": "", "text": ""},
 //   {"id": "Assamese", "text": "Assamese"},
 //   {"id": "Bengali", "text": "Bengali"},
