@@ -7,7 +7,7 @@ $(document).ready(function() {
       var $users = []
     for (i = 0; i < $ele.length; i++) {
     //   console.log($ele[i].getAttribute('title'))
-    var userName = $ele[i].getAttribute('title')
+      var userName = $ele[i].getAttribute('title')
         $users.push(userName)
     }
     console.log(Object.assign({}, $users))

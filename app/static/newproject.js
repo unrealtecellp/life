@@ -72,6 +72,7 @@ var languages = [
   {"id": "Maithili", "text": "Maithili"},
   {"id": "Malayalam", "text": "Malayalam"},
   {"id": "Marathi", "text": "Marathi"},
+  {"id": "Meitei", "text": "Meitei"},
   {"id": "Nepali", "text": "Nepali"},
   {"id": "Odia", "text": "Odia"},
   {"id": "Punjabi", "text": "Punjabi"},
@@ -109,6 +110,10 @@ var scripts =
       {
         "id": "Malayalam", 
         "text": "Malayalam"
+      },
+      {
+        "id": "Meitei_Mayek", 
+        "text": "Meitei Mayek"
       },
       {
         "id": "Odia", 

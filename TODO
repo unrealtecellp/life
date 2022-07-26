@@ -20,8 +20,30 @@
 
 20 July 2022
 ---------------------------------------------------------------
--  Work on create new project and give options to add transcription and translation in multiple scripts
+- Work on create new project and give options to add transcription and translation in multiple scripts
 
 - based on number of scripts given for transcription, render the transcription and morphemic detail HTML form in sentence interface accordingly.
+
+22 July 2022
+---------------------------------------------------------------
+- create sentence interface HTMl form using the form created by the user in Create New Project
+
+26 July 2022
+---------------------------------------------------------------
+- In 'create new project'
+    - Only one more 'Interlinear gloss' apart from english
+- In 'sentence interface'
+    - automatic copy 'transcription' to 'sentence morphemic break' input element
+    - In 'Interlinear GLoss'
+        - All 'gloss' element as multiple select2
+        - all 'morpheme' element as readonly
+        - one more 'gloss' column for gloss apart from english
+- Karya Access Code assignment interface
+    - put limit max 50 access code fo one registered (in LiFE app) user
+    - dropdown to select max form to fill in one go (max 10)
+    - HTML button to activate HTML form to fill speaker metadata
+    - update the access code for a speaker in case the previous access code not working
+
+
 
 

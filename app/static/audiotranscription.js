@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', function() {
     //     });
 
     /* Regions */
-    wavesurfer.load('static/audio/874148281474976729846.wav')
+    wavesurfer.load('static/audio/1. AD1 sən ədu jum məmaŋdə ləjre.wav')
     wavesurfer.on('ready', function() {
         
         wavesurfer.enableDragSelection({

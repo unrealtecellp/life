@@ -13,8 +13,10 @@
 
 {% block app_content %}
   <h3>Create Form for your Project</h3>
+  <hr>
   <form action="{{ url_for('enternewlexeme') }}" method="POST" enctype="multipart/form-data">
     <div class="form-group">
+      <label for="projectname">Project Name</label>
       <input type="text" class="form-control" placeholder="Project Name" name="projectname" required>
     </div>
     <br>

@@ -28,8 +28,11 @@
       {% endif %}
     {% endif %}
   {% endfor %}
+    <p><strong>Audio Filename: 1. AD1.wav</strong></p>
     <div class="container defaultfield">
     </div>
+    <div class="lexemelang"></div>
+    <div class="lexemeform"></div>
     <p id="subtitle" class="text-center text-info">&nbsp;</p>
     <div id="wave-timeline"></div>
     <div id="waveform"></div>
@@ -40,12 +43,12 @@
     <br>
     <form id="boundaryForm" role="form" name="edit" style="opacity: 0; transition: opacity 300ms linear; margin: 30px 0;">
         <div class="form-group">
-            <label for="start">Start</label>
+            <label for="start">Start Time</label>
             <input class="form-control" id="start" name="start" />
         </div>
 
         <div class="form-group">
-            <label for="end">End</label>
+            <label for="end">End Time</label>
             <input class="form-control" id="end" name="end" />
         </div>
 
@@ -54,6 +57,7 @@
             <!-- <textarea id="note" class="form-control" rows="3" name="transcription"></textarea> -->
             <!-- <input class="form-control" id="note" name="transcription" /> -->
         </div>
+        <div class="form-group translationfield"></div>
         <div class="form-group sentencefield">
           <!-- <div class="container sentencefield"> -->
             <!-- <div class="container containerremovesentencefield1"> -->
@@ -83,10 +87,11 @@
             </div> -->
           <!-- </div> -->
         </div>
+        <div class="form-group tagsfield"></div>
         <br>
-        <button type="submit" class="btn btn-success btn-block saveTempTranscription">Save</button>
+        <button type="submit" class="btn btn-success btn-block saveTempTranscription">Save Boundary</button>
         <center><i>or</i></center>
-        <button type="button" class="btn btn-danger btn-block" data-action="delete-region">Delete</button>
+        <button type="button" class="btn btn-danger btn-block" data-action="delete-region">Delete Boundary</button>
     </form>
     <div id="waveformControl">
       <button class="btn btn-info btn-lg" type="button" id="previous">
@@ -104,7 +109,7 @@
       </button>
       <br>
       <br>
-      <button class="btn btn-warning pull-right btn-lg" id="save">Save
+      <button class="btn btn-warning pull-right btn-lg" id="save">Save All Boundaries
           <span class="saveaudio glyphicon glyphicon-floppy-save" aria-hidden="true"></span>
       </button>
   </div>
@@ -133,4 +138,5 @@
 <script src="https://unpkg.com/wavesurfer.js/dist/plugin/wavesurfer.regions.js"></script>
 <script src="https://unpkg.com/wavesurfer.js/dist/plugin/wavesurfer.minimap.js"></script>
 <script src="{{url_for('.static', filename='audiotranscription.js')}}"></script>
+<script type="text/javascript">myFunction({{ newData | tojson | safe }});</script>
 {% endblock %}

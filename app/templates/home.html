@@ -20,6 +20,7 @@ Home
     <hr/>
     {% if data|length > 0 %}
     <h3>Active Project: {{ activeproject }}</h3>
+    
     <div>    
         <button type="button" class="btn btn-lg btn-primary" onclick="window.location.href='{{ url_for('dictionaryview') }}';">View/Edit Project</button>
         <button type="button" class="btn btn-lg btn-danger" data-toggle="modal" data-target="#myShareProjectModal">
@@ -27,11 +28,18 @@ Home
         </button>
         <button type="button" class="btn btn-lg btn-warning" onclick="window.location.href='{{ url_for('downloadproject') }}';">Download Project</button>
         <button type="button" class="btn btn-lg btn-info" onclick="window.location.href='{{ url_for('downloaddictionary') }}';">Download Dictionary</button>
+        <div class="assignkaryaaccesscodecount pull-right"></div>
+        <div>
+        <button type="button" class="btn btn-lg btn-info pull-right assignkaryaaccesscodebtn" data-toggle="modal" data-target="#assignKaryaAccessCodeModal">
+          Assign Karya Access Code
+        </button>
+      </div>
         <!-- <button type="button" class="btn btn-lg btn-warning downloadProject">Download Project</button> -->
     </div>
     </div>
     </br>
     </br>
+    <br>
    <div id="allProjects">
     <h3>All Projects</h3>
     
@@ -81,6 +89,33 @@ Home
     </div>
   </div>
 
+  <!-- Assign Karya Access Code Modal -->
+  <div class="modal fade" id="assignKaryaAccessCodeModal" tabindex="-1" role="dialog" aria-labelledby="assignKaryaAccessCodeModalLabel">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="assignKaryaAccessCodeModalLabel">Project Name: {{ activeproject }}</h4>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <!-- <div class="col-xs-12">Select A State</div> -->
+            <div class="col-xs-12">
+              <form action="{{ url_for('dictionaryview') }}" method="POST" enctype="multipart/form-data">
+                
+                <div id="speakerdetail" class="speakerdetail"></div>
+                <input class="btn btn-primary" id="submit" type="submit" value="Submit">
+              </form>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary savespeakerdata">Save Speaker Data</button>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
     
 {% endblock %}
@@ -89,5 +124,6 @@ Home
 {{super()}}
 <script src="{{url_for('.static', filename='shareproject.js')}}"></script>
 <script src="{{url_for('.static', filename='shareprojectwith.js')}}"></script>
+<script src="{{url_for('.static', filename='assignkaryaaccesscode.js')}}"></script>
 <script src="{{url_for('.static', filename='home.js')}}"></script>
 {% endblock %}

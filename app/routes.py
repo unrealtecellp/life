@@ -112,6 +112,7 @@ def enternewsentences():
     # getting the collections
     projects = mongo.db.projects                        # collection containing projects name
     userprojects = mongo.db.userprojects              # collection of users and their respective projects
+    projectsform = mongo.db.projectsform                # collection of project specific form created by the user
     lexemes = mongo.db.lexemes                          # collection containing entry of each lexeme and its details
     sentences = mongo.db.sentences                          # collection containing entry of each sentence and its details
     # activeprojectnames = mongo.db.activeprojectnames    # collection containing username and his/her last seen project name
@@ -123,13 +124,6 @@ def enternewsentences():
     activeprojectname = userprojects.find_one({ 'username' : current_user.username },\
                     {'_id' : 0, 'activeproject': 1})['activeproject']
     
-    print()
-    transcriptionDetails = request.args.get('a')                    # data through ajax
-    if (transcriptionDetails != None):
-        transcriptionDetails = json.loads(transcriptionDetails)
-        # pprint(transcriptionDetails)
-        # print(type(transcriptionDetails))
-        # print()
 
     if request.method == 'POST':
         # newLexemeData = request.form.to_dict()
@@ -306,8 +300,19 @@ def enternewsentences():
     #                 {'_id' : 0})
     # sentence_lexeme_to_lexemes(oneSentenceDetail, oneLexemeDetail)
 
-    if  (len(lst) == 0):
-        return render_template('enternewsentences.html', projectName=activeprojectname, data=currentuserprojectsname)        
+    # if  (len(lst) == 0):
+    #     return render_template('enternewsentences.html', projectName=activeprojectname, data=currentuserprojectsname)        
+
+    # if method is not 'POST'
+    projectOwner = projects.find_one({}, {"_id" : 0, activeprojectname : 1})[activeprojectname]["projectOwner"]
+    print(projectOwner)
+    y = projectsform.find_one_or_404({'projectname' : activeprojectname,'username' : projectOwner}, { "_id" : 0 }) 
+    # y = change(y)
+    print(f'{"#"*80}\ny:\n{y}')
+
+    if y is not None:
+        print(y)
+        return render_template('enternewsentences.html', projectName=activeprojectname, newData=y, data=currentuserprojectsname)
 
     return render_template('enternewsentences.html', projectName=activeprojectname, sdata=lst, data=currentuserprojectsname)
 
@@ -329,6 +334,14 @@ def getnewsentences():
         # getting the name of the active project
     activeprojectname = userprojects.find_one({ 'username' : current_user.username },\
                     {'_id' : 0, 'activeproject': 1})['activeproject']
+
+    print()
+    transcriptionDetails = request.args.get('a')                    # data through ajax
+    if (transcriptionDetails != None):
+        transcriptionDetails = json.loads(transcriptionDetails)
+        # pprint(transcriptionDetails)
+        # print(type(transcriptionDetails))
+        # print()
 
     sentence = request.args.get('a').split(',')                    # data through ajax
     sentenceFieldId = sentence[0]
@@ -626,6 +639,7 @@ def dummylexemeentry():
         "Kannada": "Knda",
         "Latin": "Latn",
         "Malayalam": "Mlym",
+        "Meitei_Mayek": "Mtei",
         "Odia": "Orya",
         "Ol_Chiki": "Olck",
         "Tamil": "Taml",
@@ -651,6 +665,7 @@ def dummylexemeentry():
         "Maithili": "Devanagari",
         "Malayalam": "Malayalam",
         "Marathi": "Devanagari",
+        "Meitei": "Meitei_Mayek",
         "Nepali": "Devanagari",
         "Odia": "Odia",
         "Punjabi": "Gurumukhi",
@@ -877,7 +892,7 @@ def dictionaryview():
     # activeprojectname = userprojects.find_one({ 'username' : current_user.username })['activeproject']
 
     projectOwner = projects.find_one({}, {"_id" : 0, activeprojectname : 1})[activeprojectname]["projectOwner"]
-    print(f"PROJECT OWNER: {projectOwner}")
+    # print(f"PROJECT OWNER: {projectOwner}")
     # new lexeme details coming from current project form
     if request.method == 'POST':
 
@@ -910,6 +925,7 @@ def dictionaryview():
             "Kannada": "Knda",
             "Latin": "Latn",
             "Malayalam": "Mlym",
+            "Meitei_Mayek": "Mtei",
             "Odia": "Orya",
             "Ol_Chiki": "Olck",
             "Tamil": "Taml",
@@ -935,6 +951,7 @@ def dictionaryview():
             "Maithili": "Devanagari",
             "Malayalam": "Malayalam",
             "Marathi": "Devanagari",
+            "Meitei": "Meitei_Mayek",
             "Nepali": "Devanagari",
             "Odia": "Odia",
             "Punjabi": "Gurumukhi",
@@ -1170,7 +1187,7 @@ def dictionaryview():
     try:
         my_projects = len(userprojects.find_one({'username' : current_user.username})["myproject"])
         shared_projects = len(userprojects.find_one({'username' : current_user.username})["projectsharedwithme"])
-        print(f"MY PROJECTS: {my_projects}, SHARED PROJECTS: {shared_projects}")
+        # print(f"MY PROJECTS: {my_projects}, SHARED PROJECTS: {shared_projects}")
         if  (my_projects+shared_projects)== 0:
             flash('Please create your first project')
             return redirect(url_for('home'))
@@ -1382,7 +1399,7 @@ def enterlexemefromuploadedfile(lexemedf):
                     {'_id' : 0, 'activeproject': 1})['activeproject']
     print(f"PROJECT NAME: {activeprojectname}")
     projectOwner = projects.find_one({}, {"_id" : 0, activeprojectname : 1})[activeprojectname]["projectOwner"]
-    print(f"PROJECT OWNER: {projectOwner}")
+    # print(f"PROJECT OWNER: {projectOwner}")
     print(f"DATAFRAME COLUMNS:\n{lexemedf.columns}")
     projectname = activeprojectname
     project = projects.find_one({}, {projectname : 1})
@@ -3743,7 +3760,7 @@ def lexemeupdate():
                     {'_id' : 0, 'activeproject': 1})['activeproject']
     
     projectOwner = projects.find_one({}, {"_id" : 0, activeprojectname : 1})[activeprojectname]["projectOwner"]
-    print(f"PROJECT OWNER: {projectOwner}")
+    # print(f"PROJECT OWNER: {projectOwner}")
     # new lexeme details coming from current project form
     if request.method == 'POST':
 
@@ -3775,6 +3792,7 @@ def lexemeupdate():
             "Kannada": "Knda",
             "Latin": "Latn",
             "Malayalam": "Mlym",
+            "Meitei_Mayek": "Mtei",
             "Odia": "Orya",
             "Ol_Chiki": "Olck",
             "Tamil": "Taml",
@@ -3800,6 +3818,7 @@ def lexemeupdate():
             "Maithili": "Devanagari",
             "Malayalam": "Malayalam",
             "Marathi": "Devanagari",
+            "Meitei": "Meitei_Mayek",
             "Nepali": "Devanagari",
             "Odia": "Odia",
             "Punjabi": "Gurumukhi",
@@ -4017,7 +4036,7 @@ def lexemeupdate():
     try:
         my_projects = len(userprojects.find_one({'username' : current_user.username})["myproject"])
         shared_projects = len(userprojects.find_one({'username' : current_user.username})["projectsharedwithme"])
-        print(f"MY PROJECTS: {my_projects}, SHARED PROJECTS: {shared_projects}")
+        # print(f"MY PROJECTS: {my_projects}, SHARED PROJECTS: {shared_projects}")
         if  (my_projects+shared_projects) == 0:
             flash('Please create your first project')
             return redirect(url_for('home'))
@@ -4476,6 +4495,13 @@ def audiotranscription():
     
     return render_template('audiotranscription.html',  data=currentuserprojectsname, activeproject=activeprojectname, audiofile=str(file.read()))
 
+
+# karya access code assignment route
+@app.route('/assignkaryaaccesscode', methods=['GET', 'POST'])
+@login_required
+def assignkaryaaccesscode():
+    print(f"IN KARYA ACCESS CODE ASSIGNMENT FUNCTION")
+    return redirect(url_for('home'))
 
 # @app.errorhandler(InternalServerError)
 # def handle_500(e):
