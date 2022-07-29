@@ -1,12 +1,12 @@
 18 July 2022
 ---------------------------------------------------------------
-- transcription wale input element ko textarea se text mei kr do
+-- - transcription wale input element ko textarea se text mei kr do
 
-- sentence wale input element ko hata do
+-- - sentence wale input element ko hata do
 
-- combine start and end time to form key for each boundary.
+-- - combine start and end time to form key for each boundary.
 
-- checkbox for active/inactive for 'Sentence with Morphemic Break'
+-- - checkbox for active/inactive for 'Sentence with Morphemic Break'
 
 - print sentence form data
 
@@ -33,10 +33,11 @@
 - In 'create new project'
     - Only one more 'Interlinear gloss' apart from english
 - In 'sentence interface'
-    - automatic copy 'transcription' to 'sentence morphemic break' input element
+    -- - PLAY/PAUSE, STOP button
+    -- - automatic copy 'transcription' to 'sentence morphemic break' input element
     - In 'Interlinear GLoss'
         - All 'gloss' element as multiple select2
-        - all 'morpheme' element as readonly
+        -- - all 'morpheme' element as readonly
         - one more 'gloss' column for gloss apart from english
 - Karya Access Code assignment interface
     - put limit max 50 access code fo one registered (in LiFE app) user

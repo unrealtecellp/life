@@ -1,0 +1,24 @@
+{
+    "accessCode_1": {
+            "username": "",
+            "projectname": "",
+            "speakerMetadata": {
+                "name": "",
+                "age": "",
+                "gender": "",
+                "activeAccessCode": ""
+            },
+        "isActive": 0
+        },
+    "accessCode_2": {
+            "username": "",
+            "projectname": "",
+            "speakerMetadata": {
+                "name": "",
+                "age": "",
+                "gender": "",
+                "activeAccessCode": ""
+            },
+        "isActive": 0
+        }
+}

@@ -85,19 +85,9 @@ document.addEventListener('DOMContentLoaded', function() {
             wavesurfer.pause();
         });
     });
-
-    // /* Toggle play/pause buttons. */
-    // let playButton = document.querySelector('#play');
-    // let pauseButton = document.querySelector('#pause');
-    // wavesurfer.on('play', function() {
-    //     playButton.style.display = 'none';
-    //     pauseButton.style.display = '';
-    // });
-    // wavesurfer.on('pause', function() {
-    //     playButton.style.display = '';
-    //     pauseButton.style.display = 'none';
-    // });
-
+    wavesurfer.on('finish', function () {
+        $(".audioplaypause").addClass('glyphicon-play').removeClass('glyphicon-pause');
+    });
 
     document.querySelector(
         '[data-action="delete-region"]'
@@ -234,43 +224,30 @@ function editAnnotation(region) {
     console.log('editAnnotation(region)')
     // console.log(region)
     let form = document.forms.edit;
-    form.style.opacity = 1;
+    transcriptionFormDisplay(form, 'edit');
+    // form.style.opacity = 1;
     // (form.elements.start.value = Math.round(region.start * 10) / 10),
     // (form.elements.end.value = Math.round(region.end * 10) / 10);
     (form.elements.start.value = region.start),
     (form.elements.end.value = region.end);
-    form.elements.note.value = region.data.note || '';
+    // form.elements.note.value = region.data.note || '';
     document.getElementById("activeSentenceMorphemicBreak").checked = false;
     $(".containerremovesentencefield1").remove();
-    if (region.data.morphemicData) {
+    if (region.data.sentence) {
+        createSentenceForm(form, region);
         // console.log('true true');
-        if (region.data.morphemicData.activeSentenceMorphemicBreak == "true") {
-            // console.log(region.data.note);
-            document.getElementById("activeSentenceMorphemicBreak").checked = true;
-            $(".containerremovesentencefield1").remove();
-            activeMorphSentenceField();
-            if (region.data.morphemicData.sentenceMorphemicBreak1) {
-                form.elements.sentenceMorphemicBreak1.value = region.data.morphemicData.sentenceMorphemicBreak1
-                getSentence(1);
-                setTimeout(function() {
-                    for (const [key, value] of Object.entries(region.data.morphemicData)) {
-                        // console.log(key, value, form.elements[key].tagName);
-                        if (form.elements[key] !== undefined && form.elements[key].tagName == "SELECT") {
-                            // console.log(key, value, form.elements[key]);
-                            form.elements[key].value = value
-                        }
-                        else if (form.elements[key] !== undefined) {
-                            form.elements[key].value = value
-                        }
-                    }
-                }, 100);
-                
-            }
-        }
     }
     form.onsubmit = function(e) {
         e.preventDefault();
-        morphData = morphemeDetails();
+        // morphData = morphemeDetails();
+        let sentenceData = new Object();
+        if (region.data.sentence) {
+            sentenceData = region.data.sentence
+            sentData = sentenceDetails(sentenceData);
+        }
+        else {
+            sentData = sentenceDetails(sentenceData);
+        }
         // console.log(morphData);
         // $(".containerremovesentencefield1").remove();
         // document.getElementById("activeSentenceMorphemicBreak").checked = false;
@@ -279,14 +256,19 @@ function editAnnotation(region) {
             start: form.elements.start.value,
             end: form.elements.end.value,
             data: {
-                note: form.elements.note.value,
-                morphemicData: morphData
+                // note: form.elements.note.value,
+                sentence: sentData
             }
         });
-        form.style.opacity = 0;
+        something = window.open("data:text/json," + encodeURIComponent(sentData),
+                       "_blank");
+        something.focus();
+        // form.style.opacity = 0;
+        transcriptionFormDisplay(form);
     };
     form.onreset = function() {
-        form.style.opacity = 0;
+        // form.style.opacity = 0;
+        transcriptionFormDisplay(form);
         form.dataset.region = null;
     };
     form.dataset.region = region.id;
@@ -302,12 +284,57 @@ function showNote(region) {
     showNote.el.textContent = region.data.note || '–';
 }
 
-function morphemeDetails() {
+function sentenceDetails(sentenceData) {
     console.log(document.forms.edit.elements)
     formData = document.forms.edit.elements
     console.log(typeof formData)
-    const morphemeData = new Object();
-    for (const [key, value] of Object.entries(formData)) {
+    // let sentenceData = new Object();
+    let transcriptionData = new Object();
+    let translationData = new Object();
+    let tagsData = new Object();
+    let morphData = new Object();
+    activetranscriptionscript = displayRadioValue();
+    for (let [key, value] of Object.entries(formData)) {
+    
+        eleName = value.name;
+        ename = value.name.replace(activetranscriptionscript, '');
+        console.log(eleName, ename)
+        if (eleName !== '') {
+            console.log(key, value.name, formData[eleName].value);
+            if (ename.includes('Transcription') && !ename.includes('active')) {
+                transcriptionData[value.name] = formData[eleName].value;
+            }
+            else if (ename.includes('Translation') && !ename.includes('active')) {
+                translationData[value.name] = formData[eleName].value;
+            }
+            else if (ename.includes('Tags') && !ename.includes('active')) {
+                tagsData[value.name] = formData[eleName].value;
+            }
+            // else if (eleName.includes('morph') && eleName.includes(activetranscriptionscript)) {
+            //     morphData[value.name] = formData[eleName].value;
+            // }
+            else {
+                sentenceData[value.name] = formData[eleName].value;
+            }
+        }
+    }
+    sentenceData['transciption'] = transcriptionData
+    sentenceData['translation'] = translationData
+    sentenceData['tags'] = tagsData
+    sentenceData['morph'] = morphData
+    bid = sentenceData['start'].toString().slice(0, 4).replace('.', '').concat(sentenceData['end'].toString().slice(0, 4).replace('.', ''));
+    sentenceData['boundaryID'] = bid
+    console.log(sentenceData);
+    
+    return sentenceData;
+}
+
+function morphemeDetails(morph, morphCount, script) {
+    console.log(document.forms.edit.elements)
+    formData = document.forms.edit.elements
+    console.log(typeof formData)
+    let morphemeData = new Object();
+    for (let [key, value] of Object.entries(formData)) {
       eleName = value.name
       // console.log(eleName)
       if (eleName !== '') {
@@ -322,4 +349,69 @@ function morphemeDetails() {
     
     return morphemeData;
 }
+
+function createSentenceForm(form, region) {
+
+
+}
+
+function createMorphemeForm(form, region) {
+    if (region.data.morphemicData.activeSentenceMorphemicBreak == "true") {
+        // console.log(region.data.note);
+        document.getElementById("activeSentenceMorphemicBreak").checked = true;
+        $(".containerremovesentencefield1").remove();
+        activeMorphSentenceField();
+        if (region.data.morphemicData.sentenceMorphemicBreak1) {
+            form.elements.sentenceMorphemicBreak1.value = region.data.morphemicData.sentenceMorphemicBreak1
+            getSentence(1);
+            setTimeout(function() {
+                for (let [key, value] of Object.entries(region.data.morphemicData)) {
+                    // console.log(key, value, form.elements[key].tagName);
+                    if (form.elements[key] !== undefined && form.elements[key].tagName == "SELECT") {
+                        // console.log(key, value, form.elements[key]);
+                        form.elements[key].value = value
+                    }
+                    else if (form.elements[key] !== undefined) {
+                        form.elements[key].value = value
+                    }
+                }
+            }, 100);
+            
+        }
+    }
+
+}
+
+$("#stopAudio").click(function() {
+    wavesurfer.stop();
+    playPauseState = $(".audioplaypause").attr('class');
+    if (playPauseState.includes('glyphicon-pause')) {
+        $(".audioplaypause").addClass('glyphicon-play').removeClass('glyphicon-pause');
+    }
+});
+
+$("#playPauseAudio").click(function() {
+    wavesurfer.playPause();
+    playPauseState = $(".audioplaypause").attr('class');
+    // console.log(playPauseState)
+    if (playPauseState.includes('glyphicon-play')) {
+        $(".audioplaypause").addClass('glyphicon-pause').removeClass('glyphicon-play');
+    }
+    else if (playPauseState.includes('glyphicon-pause')) {
+        $(".audioplaypause").addClass('glyphicon-play').removeClass('glyphicon-pause');
+    }
+});
+
+function transcriptionFormDisplay(form, mode) {
+    if (form.style.display === "none") {
+        form.style.display = "block";
+    } 
+    else if (form.style.display === "block" && mode==='edit') {
+        form.style.display = "block";
+    }
+    else {
+        form.style.display = "none";
+    }
+}
+
   

@@ -339,9 +339,12 @@ def getnewsentences():
     transcriptionDetails = request.args.get('a')                    # data through ajax
     if (transcriptionDetails != None):
         transcriptionDetails = json.loads(transcriptionDetails)
-        # pprint(transcriptionDetails)
-        # print(type(transcriptionDetails))
-        # print()
+        pprint(transcriptionDetails)
+        print(transcriptionDetails)
+        print(type(transcriptionDetails))
+        print()
+        with open("data_format/tempSentence.json", 'w') as f:
+            json.dump(transcriptionDetails, f)
 
     sentence = request.args.get('a').split(',')                    # data through ajax
     sentenceFieldId = sentence[0]
