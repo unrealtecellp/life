@@ -45,6 +45,9 @@
     - HTML button to activate HTML form to fill speaker metadata
     - update the access code for a speaker in case the previous access code not working
 
-
-
+11 August 2022
+---------------------------------------------------------------
+- Refactoring the code
+- Divide the code in multiple modules
+- Add docstring to each modules
 

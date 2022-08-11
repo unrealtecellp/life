@@ -12,7 +12,7 @@ from flask_login import current_user, login_user, logout_user, login_required
 
 from pprint import pprint
 from datetime import datetime
-import gridfs 
+import gridfs
 import os
 import glob
 from zipfile import ZipFile
@@ -39,7 +39,9 @@ from pylatex.package import Package
 import json
 from xml.etree import ElementTree as ET
 from xml.etree.ElementTree import ElementTree
-from app import latex_generator as lg
+from app.controller import latex_generator as lg
+from app.controller import getdbcollections, getcurrentuserprojects, getactiveprojectname
+from app.controller import getprojectowner, getactiveprojectform, savenewsentence
 import shutil
 
 
@@ -48,29 +50,20 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 print(f'{"#"*80}Base directory:\n{basedir}\n{"#"*80}')
 
 
-def getdbcollections():
-    # getting the collections
-    projects = mongo.db.projects                        # collection containing projects name
-    userprojects = mongo.db.userprojects              # collection of users and their respective projects
-    projectsform = mongo.db.projectsform                # collection of project specific form created by the user
-
-    return (projects, userprojects, projectsform)
-
 # home page route
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/home', methods=['GET', 'POST'])
 @login_required
 def home():
-    # form = OpenExistingProjectForm()
-    # print(f'{"#"*80}\n{mongo.db.list_collection_names()}')
-    userprojects = mongo.db.userprojects              # collection of users and their respective projects
+    userprojects, = getdbcollections.getdbcollections(mongo, 'userprojects')
+    currentuserprojectsname = getcurrentuserprojects.getcurrentuserprojects(current_user.username,
+                                userprojects)
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username,
+                            userprojects)
 
-    currentuserprojectsname =  sorted(list(currentuserprojects()))
-    activeprojectname = userprojects.find_one({ 'username' : current_user.username },\
-                    {'_id' : 0, 'activeproject': 1})['activeproject']
-    # print(currentuserprojectsname, activeprojectname)
-    # print(sorted(currentuserprojectsname))
-    return render_template('home.html',  data=currentuserprojectsname, activeproject=activeprojectname)
+    return render_template('home.html',
+                            data=currentuserprojectsname,
+                            activeproject=activeprojectname)
 
 
 # new project route
@@ -78,30 +71,17 @@ def home():
 @app.route('/newproject', methods=['GET', 'POST'])
 @login_required
 def newproject():
-    # if 'projectnames' not in mongo.db.list_collection_names():
-    #     projectnames = mongo.db.projectnames                # collection containing projects name
-    #     projectnames.insert({'_id':10, 'projectname':{}})
-    currentuserprojectsname =  currentuserprojects()
-    return render_template('newproject.html', data=currentuserprojectsname)
+    userprojects, = getdbcollections.getdbcollections(mongo, 'userprojects')
+    currentuserprojectsname =  getcurrentuserprojects.getcurrentuserprojects(current_user.username,
+                                userprojects)
+
+    return render_template('newproject.html',
+                            data=currentuserprojectsname)
 
 # get lexeme from sentences and save them to lexemes collection
 def sentence_lexeme_to_lexemes(oneSentenceDetail, oneLexemeDetail):
-    print(f'{"="*80}')
-    # pprint(oneSentenceDetail)
-    # print(f'{"="*80}')
-    # pprint(oneLexemeDetail)
-    # print(f'{"="*80}')
-
     for key, value in oneLexemeDetail.items():
         print(key, ' : ', value)
-        print(f'{"="*80}')
-    # sentence_to_lexeme = {}
-    # sentence_to_lexeme["username"] = oneSentenceDetail["username"]
-    # sentence_to_lexeme["projectname"] = oneSentenceDetail["projectname"]
-    # sentence_to_lexeme["updatedBy"] = oneSentenceDetail["updatedBy"]
-    # sentence_to_lexeme["lexemedeleteFlag"] = oneLexemeDetail["lexemedeleteFlag"]
-    # sentence_to_lexeme["username"] = oneSentenceDetail["username"]
-    # sentence_to_lexeme["username"] = oneSentenceDetail["username"]
 
 
 # enter new sentences route
@@ -109,212 +89,43 @@ def sentence_lexeme_to_lexemes(oneSentenceDetail, oneLexemeDetail):
 @app.route('/enternewsentences', methods=['GET', 'POST'])
 @login_required
 def enternewsentences():
-    # getting the collections
-    projects = mongo.db.projects                        # collection containing projects name
-    userprojects = mongo.db.userprojects              # collection of users and their respective projects
-    projectsform = mongo.db.projectsform                # collection of project specific form created by the user
-    lexemes = mongo.db.lexemes                          # collection containing entry of each lexeme and its details
-    sentences = mongo.db.sentences                          # collection containing entry of each sentence and its details
-    # activeprojectnames = mongo.db.activeprojectnames    # collection containing username and his/her last seen project name
-
-    # getting the name of all the projects created by current user
-    currentuserprojectsname =  currentuserprojects()
-
-        # getting the name of the active project
-    activeprojectname = userprojects.find_one({ 'username' : current_user.username },\
-                    {'_id' : 0, 'activeproject': 1})['activeproject']
-    
+    projects, userprojects, projectsform, sentences = getdbcollections.getdbcollections(mongo,
+                                                'projects',
+                                                'userprojects',
+                                                'projectsform',
+                                                'sentences')
+    currentuserprojectsname =  getcurrentuserprojects.getcurrentuserprojects(current_user.username,
+                                userprojects)
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username,
+                            userprojects)
 
     if request.method == 'POST':
-        # newLexemeData = request.form.to_dict()
         newSentencesData = dict(request.form.lists())
         newSentencesFiles = request.files.to_dict()
-        # pprint(newSentencesData)
-        # print(f'{"="*80}')
-        # to see format of the data coming from the front end look for file name newSentencesData.txt in data_format folder
-        
-        # dictionary to store files name
-        newSentencesFilesName = {}
-        for key in newSentencesFiles:
-            if newSentencesFiles[key].filename != '':
-                # adding microseconds of current time to differ two files of same name
-                newSentencesFilesName[key] = (datetime.now().strftime('%f')+newSentencesFiles[key].filename)
+        savenewsentence.savenewsentence(mongo,
+                                        sentences,
+                                        current_user.username,
+                                        activeprojectname,
+                                        newSentencesData,
+                                        newSentencesFiles)
 
-        sentenceFieldIds = []
-        interlineargloss = {}
-        for key in newSentencesData.keys():
-            if ('sentenceField' in key):
-                # print(key[-1])
-                sentenceFieldIds.append(key[-1])
-
-        for sFId in sentenceFieldIds:
-            # print(type(sFId), sFId)
-            sentenceFieldId = sFId
-            sentence = newSentencesData['sentenceField'+sFId][0]
-            # interlineargloss['level_3'] = sentence
-            split_sentence = sentence.split()
-            sentenceMorphemicBreak = newSentencesData['sentenceMorphemicBreak'+sFId][0]
-            interlineargloss['level_1'] = sentenceMorphemicBreak.replace('#', '')
-            split_sentenceMorphemicBreak = sentenceMorphemicBreak.strip().split()
-            # print(split_sentenceMorphemicBreak)
-            
-            # save details for each sentence as the format shown in file name sentenceEntry.json in data_format folder
-            sentenceDetails = {}
-            # generate unique id using the datetime module
-            Id = re.sub(r'[-: \.]', '', str(datetime.now()))
-            sentenceDetails['username'] = current_user.username
-            sentenceDetails['projectname'] = activeprojectname
-            sentenceDetails['sentencedeleteFLAG'] = 0
-            sentenceDetails['updatedBy'] = current_user.username
-            sentenceDetails['sentenceId'] = 'S'+Id
-            sentenceDetails['sentence'] = sentence
-            sentenceDetails['langscripts'] = {
-                                            "langname": "English",
-                                            "langcode": "eng",
-                                            "sentencescripts": {
-                                                "ipa": "International Phonetic Alphabet",
-                                                "Latn": "Latin"
-                                            },
-                                            "glosslangs": {
-                                                "eng": "English"        
-                                            },
-                                            "glossscripts": {
-                                                "Latn": "Latin"
-                                            },
-                                            "translationlangs": {
-                                                "eng": "English",
-                                                "hin": "Hindi"
-                                            },
-                                            "translationscripts": {
-                                                "Latn": "Latin",
-                                                "Deva": "Devanagari"
-                                            }
-                                        }
-
-            morphemes = {}
-            gloss = {}
-            pos = {}
-            split_sentenceMorphemeWise = []
-            morphemeId = sFId+str(0)
-            lexglossId = 'morphemicgloss'+morphemeId
-            lexemeId = sentenceDetails['sentenceId']+'L'+str(0)
-            lextypeId = 'lextype'+morphemeId
-            posId = 'pos'+morphemeId
-            interlineargloss_level_2 = ''
-            for i in range(len(split_sentenceMorphemicBreak)):
-                morph = {}
-
-                if ('#' in split_sentenceMorphemicBreak[i]):
-                    # print(split_sentenceMorphemicBreak[i].split('#'))
-                    morphemic = split_sentenceMorphemicBreak[i].split('#')
-                    split_sentenceMorphemicBreak[i] = split_sentenceMorphemicBreak[i].replace('#', '')
-                    morphemes[split_sentence[i]] = split_sentenceMorphemicBreak[i]
-                    # print(morphemic)
-                    for j in range(len(morphemic)):
-                        lexglossId = lexglossId[:len(lexglossId)-1]+str(int(lexglossId[-1])+1)
-                        lexemeId = lexemeId[:len(lexemeId)-1]+str(int(lexemeId[-1])+1)
-                        lextypeId = lextypeId[:len(lextypeId)-1]+str(int(lextypeId[-1])+1)
-                        posId = posId[:len(posId)-1]+str(int(posId[-1])+1)
-                        # print(morphemeId, lexglossId, lexemeId, lextypeId, posId)
-                        # print(m)
-                        morph[morphemic[j]] = {'lexgloss': '.'.join(newSentencesData[lexglossId]), 
-                                            'lexemeID': lexemeId,
-                                            'lextype': newSentencesData[lextypeId][0]}
-                        if ('-' in morphemic[j][0]):
-                            interlineargloss_level_2 += '-'+'.'.join(newSentencesData[lexglossId])
-                        elif ('-' in morphemic[j][-1]):
-                            interlineargloss_level_2 += '.'.join(newSentencesData[lexglossId])+'-'
-                        else:
-                            interlineargloss_level_2 += '.'.join(newSentencesData[lexglossId])    
-                        gloss[split_sentence[i]] = morph
-                        if ('-' not in morphemic[j] and posId in newSentencesData):
-                            pos[split_sentence[i]] = newSentencesData[posId][0]
-                # print(morph)
-                        split_sentenceMorphemeWise.append(morphemic[j])
-                else:
-                    lexglossId = lexglossId[:len(lexglossId)-1]+str(int(lexglossId[-1])+1)
-                    lexemeId = lexemeId[:len(lexemeId)-1]+str(int(lexemeId[-1])+1)
-                    lextypeId = lextypeId[:len(lextypeId)-1]+str(int(lextypeId[-1])+1)
-                    posId = posId[:len(posId)-1]+str(int(posId[-1])+1)
-                    # print(morphemeId, lexglossId, lexemeId, lextypeId, posId) 
-                    #   
-                    morphemes[split_sentence[i]] = split_sentenceMorphemicBreak[i]
-                    morph[split_sentence[i]] = {'lexgloss': '.'.join(newSentencesData[lexglossId]), 
-                                            'lexemeID': lexemeId,
-                                            'lextype': newSentencesData[lextypeId][0]}
-                    interlineargloss_level_2 += ' '+'.'.join(newSentencesData[lexglossId])+' '                       
-                    gloss[split_sentence[i]] = morph
-                    pos[split_sentence[i]] = newSentencesData[posId][0]
-                    split_sentenceMorphemeWise.append(split_sentenceMorphemicBreak[i])
-
-                sentenceDetails['morphemes'] = morphemes
-                
-            # print(split_sentenceMorphemicBreak)
-            sentenceDetails['gloss'] = gloss
-            sentenceDetails['pos'] = pos
-
-            translation = {}
-            translation['eng-Latn'] = newSentencesData['sentenceTranslation'+sFId][0]
-            translation['hin-Deva'] = sentenceDetails['sentence'] 
-            sentenceDetails['translation'] = translation
-            
-            interlineargloss['level_2'] = interlineargloss_level_2.strip().replace('  ', ' ')
-            interlineargloss['level_3'] = translation['eng-Latn']
-            sentenceDetails['interlineargloss'] = interlineargloss
-
-            # save file names of a sentence in sentenceDetails dictionary with other details related to the sentence
-            if len(newSentencesFilesName) != 0:    
-                sentenceDetails['filesname'] = newSentencesFilesName
-
-            # pprint(sentenceDetails)
-            # print(f'{"="*80}')
-            
-            # sentence_lexeme_to_lexemes(sentenceDetails)
-
-            # saving files for the new lexeme to the database in fs collection
-            for (filename, key) in zip(newSentencesFilesName.values(), newSentencesFiles):
-                mongo.save_file(filename, newSentencesFiles[key], sentenceId=sentenceDetails['sentenceId'], username=current_user.username,\
-                                projectname=sentenceDetails['projectname'], sentence = sentenceDetails['sentence'],\
-                                updatedBy=current_user.username)
-
-            # enter the sentence details to the database
-            sentences.insert(sentenceDetails)
-
-    currentuserprojectsname =  currentuserprojects()
-
-    # get the list of lexeme entries for current project to show in dictionary view table
-    lst = list()
-    # lst.append(activeprojectname)
-    for interlineargloss in sentences.find({ 'projectname' : activeprojectname }, \
-                            {'_id' : 0, 'sentenceId' : 1, 'interlineargloss' : 1}):
-        lst.append(interlineargloss)
-    # print(lst)
-
-    # # getting the details of one sentence in the activeproject
-    # oneSentenceDetail = sentences.find_one({ 'username' : current_user.username, 'projectname': '20211218_114658', \
-    #                 'sentenceId': "S20211218163718533966"},\
-    #                 {'_id' : 0})
-    # # getting the details of one lexeme in the activeproject
-    # oneLexemeDetail = lexemes.find_one({ 'username' : current_user.username, 'projectname': '20211218_114658', \
-    #                 'lexemeId': "L20211218155932463521"},\
-    #                 {'_id' : 0})
-    # sentence_lexeme_to_lexemes(oneSentenceDetail, oneLexemeDetail)
-
-    # if  (len(lst) == 0):
-    #     return render_template('enternewsentences.html', projectName=activeprojectname, data=currentuserprojectsname)        
+    # currentuserprojectsname =  getcurrentuserprojects.getcurrentuserprojects(current_user.username,
+    #                             userprojects)
 
     # if method is not 'POST'
-    projectOwner = projects.find_one({}, {"_id" : 0, activeprojectname : 1})[activeprojectname]["projectOwner"]
-    print(projectOwner)
-    y = projectsform.find_one_or_404({'projectname' : activeprojectname,'username' : projectOwner}, { "_id" : 0 }) 
-    # y = change(y)
-    print(f'{"#"*80}\ny:\n{y}')
+    projectowner = getprojectowner.getprojectowner(activeprojectname, projects)
+    activeprojectform = getactiveprojectform.getactiveprojectform(projectsform, projectowner, activeprojectname)
 
-    if y is not None:
-        print(y)
-        return render_template('enternewsentences.html', projectName=activeprojectname, newData=y, data=currentuserprojectsname)
+    if activeprojectform is not None:
+        return render_template('enternewsentences.html',
+                                projectName=activeprojectname,
+                                newData=activeprojectform,
+                                data=currentuserprojectsname)
 
-    return render_template('enternewsentences.html', projectName=activeprojectname, sdata=lst, data=currentuserprojectsname)
+    return render_template('enternewsentences.html',
+                            projectName=activeprojectname,
+                            sdata=[],
+                            data=currentuserprojectsname)
 
 # get new sentences route
 # get new sentences in the project coming throug ajax
@@ -411,33 +222,15 @@ def getnewsentences():
 @app.route('/automation', methods=['GET', 'POST'])
 @login_required
 def automation():
-    userprojects = mongo.db.userprojects              # collection of users and their respective projects
+    userprojects, = getdbcollections.getdbcollections(mongo, 'userprojects')
+    currentuserprojectsname =  getcurrentuserprojects.getcurrentuserprojects(current_user.username,
+                                userprojects)
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username,
+                            userprojects)
 
-    # getting the name of the active project
-    activeprojectname = userprojects.find_one({ 'username' : current_user.username },\
-                    {'_id' : 0, 'activeproject': 1})['activeproject']
-    currentuserprojectsname =  currentuserprojects()
-    return render_template('automation.html', projectName=activeprojectname, data=currentuserprojectsname)
-
-# def autoviML(df):
-    from autoviml.Auto_ViML import Auto_ViML
-
-    model, features, trainm, testm = Auto_ViML(
-    train=df,
-    target="label",
-    test="",
-    sample_submission="",
-    hyper_param="RS",
-    feature_reduction=True,
-    scoring_parameter="weighted-f1",
-    KMeans_Featurizer=False,
-    Boosting_Flag=None,
-    Binning_Flag=False,
-    Add_Poly=False,
-    Stacking_Flag=True,
-    Imbalanced_Flag=True,
-    verbose=3
-    )
+    return render_template('automation.html',
+                            projectName=activeprojectname,
+                            data=currentuserprojectsname)
 
 def naiveBayes(corpus, y, x_test):
     vectorizer = CountVectorizer()
@@ -445,85 +238,52 @@ def naiveBayes(corpus, y, x_test):
 
     # example for saving python object as pkl
     joblib.dump(vectorizer, "trainedModels/naiveBayesPOSVectorizer.pkl")
-
-    
-    # print(vectorizer.get_feature_names_out())
-    # print(x_test.toarray())
     clf = MultinomialNB()
     clf.fit(X, y)
 
     # save
     with open('trainedModels/naiveBayesPOSModel.pkl','wb') as f:
         pickle.dump(clf,f)
-    
+
 
 # new automation route
 # buttons working for different automation(POS, morph analyser)
 @app.route('/predictPOSNaiveBayes', methods=['GET', 'POST'])
 @login_required
 def predictPOSNaiveBayes():
-    # getting the collections
-    projects = mongo.db.projects                        # collection containing projects name
-    userprojects = mongo.db.userprojects              # collection of users and their respective projects
-    lexemes = mongo.db.lexemes                          # collection containing entry of each lexeme and its details
-    sentences = mongo.db.sentences                          # collection containing entry of each sentence and its details
-    # activeprojectnames = mongo.db.activeprojectnames    # collection containing username and his/her last seen project name
-
-    # getting the name of all the projects created by current user
-    currentuserprojectsname =  currentuserprojects()
-
-        # getting the name of the active project
-    activeprojectname = userprojects.find_one({ 'username' : current_user.username },\
-                    {'_id' : 0, 'activeproject': 1})['activeproject']
-
-    wordList = request.args.get('a').split(',')                    # data through ajax
-    print(wordList)
-
-
-
+    userprojects, = getdbcollections.getdbcollections(mongo, 'userprojects')
+    currentuserprojectsname =  getcurrentuserprojects.getcurrentuserprojects(current_user.username,
+                                userprojects)
+    # data through ajax
+    wordList = request.args.get('a').split(',')                    
     if (len(wordList) != 0):
-        
         # load model
         with open('trainedModels/naiveBayesPOSModel.pkl', 'rb') as f:
             clf = pickle.load(f)
-
         # loading pickled vectorizer
         vectorizer = joblib.load("trainedModels/naiveBayesPOSVectorizer.pkl")
         x_test = vectorizer.transform(wordList)
         predictedpos = list(clf.predict(x_test))
-
-        print(predictedpos)
         predictedPOS = []
         for word, pos in zip(wordList, predictedpos):
-            # if ('-' in word): pass
-            # else:
-            print([word, pos])
             predictedPOS.append([word, pos])
-
-        print(predictedPOS)        
 
         return jsonify(predictedPOS=predictedPOS)
 
     
-    return render_template('automation.html', data=currentuserprojectsname)
+    return render_template('automation.html',
+                            data=currentuserprojectsname)
 
 @app.route('/automatepos', methods=['GET', 'POST'])
 @login_required
 def automatepos():
-
-    # getting the collections
-    projects = mongo.db.projects                        # collection containing projects name
-    userprojects = mongo.db.userprojects              # collection of users and their respective projects
-    lexemes = mongo.db.lexemes                          # collection containing entry of each lexeme and its details
-    sentences = mongo.db.sentences                          # collection containing entry of each sentence and its details
-    # activeprojectnames = mongo.db.activeprojectnames    # collection containing username and his/her last seen project name
-
-    # getting the name of all the projects created by current user
-    currentuserprojectsname =  currentuserprojects()
-
-        # getting the name of the active project
-    activeprojectname = userprojects.find_one({ 'username' : current_user.username },\
-                    {'_id' : 0, 'activeproject': 1})['activeproject']
+    userprojects, sentences = getdbcollections.getdbcollections(mongo,
+                                                'userprojects',
+                                                'sentences')
+    currentuserprojectsname =  getcurrentuserprojects.getcurrentuserprojects(current_user.username,
+                                userprojects)
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username,
+                            userprojects)
 
     sentence = request.args.get('a').split(',')                    # data through ajax
     # create dataframe from the json type data
@@ -532,27 +292,17 @@ def automatepos():
     label = []
     for pos in sentences.find({ 'projectname' : activeprojectname, 'sentencedeleteFLAG' : 0 }, \
                         {'_id' : 0, 'pos': 1}):
-        # print(pos['pos'])
-        
         for key, value in pos['pos'].items():
-            # print(key, value)
             word.append(key)
             label.append(value)
         posdf['word'] = word
         posdf['label'] = label
-    # print(posdf)
     posdf = pd.DataFrame.from_dict(posdf)
-    # print(word, label)
     x_test = ['cow']
     naiveBayes(word, label, x_test)
-    # autoviML(posdf)
-    # print(posdf)
-    # print(type(posdf))
-    # posdf.to_csv('data_format/posdf.csv', index=False)
 
-    # lst.append(lexeme)
-    print('In Automate POS')
-    return render_template('automation.html', data=currentuserprojectsname)
+    return render_template('automation.html',
+                            data=currentuserprojectsname)
 
 # create an empty lexeme entry in the lexemes collection whenever new project is created
 # so that if user download the excel of lexeme form directly after creating the poject
@@ -574,9 +324,7 @@ def dummylexemeentry():
     projectOwner = projects.find_one({}, {"_id" : 0, activeprojectname : 1})[activeprojectname]["projectOwner"]
     print(projectOwner)
     y = projectsform.find_one_or_404({'projectname' : activeprojectname,'username' : projectOwner}, { "_id" : 0 }) 
-    # y = change(y)
-    # print(f'{"#"*80}\ny:\n{y}')
-    # pprint(y)
+    
     newLexemeData = {
         'allomorphCount': ['1'],
         'senseCount': ['3'],
@@ -882,17 +630,18 @@ def dictionaryview():
     print(f"CURRENT USER: {current_user.username}")
     # getting the collections
     projects = mongo.db.projects                        # collection containing projects name
-    userprojects = mongo.db.userprojects              # collection of users and their respective projects
+    # userprojects = mongo.db.userprojects              # collection of users and their respective projects
     lexemes = mongo.db.lexemes                          # collection containing entry of each lexeme and its details
     # activeprojectnames = mongo.db.activeprojectnames    # collection containing username and his/her last seen project name
 
-    # getting the name of all the projects created by current user
-    currentuserprojectsname =  currentuserprojects()
+    userprojects, = getdbcollections.getdbcollections(mongo, 'userprojects')
+    currentuserprojectsname = getcurrentuserprojects.getcurrentuserprojects(current_user.username,
+                                userprojects)
 
-    # getting the name of the active project
-    activeprojectname = userprojects.find_one({ 'username' : current_user.username },\
-                    {'_id' : 0, 'activeproject': 1})['activeproject']
-    # activeprojectname = userprojects.find_one({ 'username' : current_user.username })['activeproject']
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username,
+                            userprojects)
+
+    print(f"ACTIVE PROJECT NAME: {activeprojectname}")
 
     projectOwner = projects.find_one({}, {"_id" : 0, activeprojectname : 1})[activeprojectname]["projectOwner"]
     # print(f"PROJECT OWNER: {projectOwner}")
@@ -1362,9 +1111,7 @@ def enternewlexeme():
             x = projectsform.find_one_or_404({'projectname' : activeprojectname,\
                                             'username' : current_user.username}, { "_id" : 0 })
             
-            # x = change(x)
-
-            # print(f'{"#"*80}\nx:\n{x}')
+            
             if x is not None:
                 return render_template('enternewlexeme.html', newData=x, data=currentuserprojectsname)
             return render_template('enternewlexeme.html')
@@ -1373,8 +1120,7 @@ def enternewlexeme():
     projectOwner = projects.find_one({}, {"_id" : 0, activeprojectname : 1})[activeprojectname]["projectOwner"]
     print(projectOwner)
     y = projectsform.find_one_or_404({'projectname' : activeprojectname,'username' : projectOwner}, { "_id" : 0 }) 
-    # y = change(y)
-    # print(f'{"#"*80}\ny:\n{y}')
+    
 
     if y is not None:
         return render_template('enternewlexeme.html',  newData=y, data=currentuserprojectsname)
@@ -3682,10 +3428,6 @@ def lexemeview():
             print(key, filename)
             filen[key] = url_for('retrieve', filename=filename)
 
-    # lexeme = change(lexeme)
-    # print(lexeme)
-
-    # pprint(filen)
 
     y = projectsform.find_one_or_404({'projectname' : activeprojectname,\
                                 'username' : projectOwner}, { "_id" : 0 })
@@ -3730,13 +3472,9 @@ def lexemeedit():
         for filename in lexeme['filesname']:
             filen.append(url_for('retrieve', filename=filename))
 
-    # lexeme = change(lexeme)
-    # pprint(lexeme)
-
     y = projectsform.find_one_or_404({'projectname' : activeprojectname,\
                                 'username' : projectOwner}, { "_id" : 0 })                             
-    # y = change(y)
-    # pprint(y)
+    
     return jsonify(newData=y, result1=lexeme, result2=filen)
 
 # enter new lexeme route
@@ -4199,248 +3937,12 @@ def register():
         return redirect(url_for('login'))
     return render_template('register.html', form=form)
 
-
-# # SQLite Database
-# # user login form route
-# @app.route('/login', methods=['GET', 'POST'])
-# def login():
-#     dummyUserandProject()
-#     if current_user.is_authenticated:
-#         return redirect(url_for('home'))
-#     form = UserLoginForm()
-#     if form.validate_on_submit():
-#         user = UserLogin.query.filter_by(username=form.username.data).first()
-#         print(user)
-#         if user is None or not user.check_password(form.password.data):
-#             flash('Invalid username or password')
-#             return redirect(url_for('login'))
-#         login_user(user)
-#         next_page = request.args.get('next')
-#         if not next_page or url_parse(next_page).netloc != '':
-#             next_page = url_for('home')
-#         return redirect(next_page)
-#     return render_template('login.html', form=form)
-
-
-# # SQLite Database
-# # use logout
-# @app.route('/logout')
-# def logout():
-#     try:
-#         logout_user()
-#         return redirect(url_for('home'))
-#     except:
-#         return redirect(url_for('home'))    
-
-
-# # SQLite Database
-# # new user registration
-# @app.route('/register', methods=['GET', 'POST'])
-# def register():
-#     dummyUserandProject()
-#     if current_user.is_authenticated:
-#         return redirect(url_for('home'))
-#     form = RegistrationForm()
-#     if form.validate_on_submit():
-#         user = UserLogin(username=form.username.data)
-#         user.set_password(form.password.data)
-#         # print(user)
-#         db.session.add(user)
-#         db.session.commit()
-
-#         userprojects = mongo.db.userprojects              # collection of users and their respective projectlist
-#         userprojects.insert({'username' : form.username.data, 'myproject': [], \
-#             'projectsharedwithme': [], 'activeproject' : ''})
-
-#         flash('Congratulations, you are now a registered user!')
-#         return redirect(url_for('login'))
-#     return render_template('register.html', form=form)
-
-
-# get all projects name created by the current active user
-@app.route('/currentuserprojects')
-def currentuserprojects():
-    # getting the collections
-    userprojects = mongo.db.userprojects              # collection of users and their respective projects
-
-    # print(f'{"#"*80}\n{current_user.username}')
-    userprojectsname = []
-    try:
-        userprojects  = userprojects.find_one({ 'username' : current_user.username })
-        myproject = userprojects['myproject']
-        projectsharedwithme = userprojects['projectsharedwithme']
-        userprojectsname = set(myproject + projectsharedwithme)
-    except:
-        flash('Please create your first project.')
-
-    # print(f'{"#"*80}\n{userprojectsname}')
-    
-    return userprojectsname
-
-# contact us route
+# Contact Us route
 # create contact us form for the LiFE
 @app.route('/contactus', methods=['GET', 'POST'])
 # @login_required
 def contactus():
-    # if 'projectnames' not in mongo.db.list_collection_names():
-    #     projectnames = mongo.db.projectnames                # collection containing projects name
-    #     projectnames.insert({'_id':10, 'projectname':{}})
-    # currentuserprojectsname =  currentuserprojects()
     return render_template('contactus.html')
-
-# retrieve files from database
-@app.route('/retrieve/<filename>')
-def retrieve(filename):
-    x = mongo.send_file(filename)
-    return x
-
-
-# change presentation of keys retrieved from database
-@app.route('/change/<data>')
-def change(data):
-
-    # print(data)
-
-    # if 'headword' in data:
-    #     data['Head Word'] = data.pop('headword')
-    # if 'pronunciation' in data:
-    #     data['Pronunciation'] = data.pop('pronunciation')
-    # if 'gloss' in data:
-    #     data['Gloss'] = data.pop('gloss')
-    # if 'grammaticalcategory' in data:
-    #     data['Grammatical Category'] = data.pop('grammaticalcategory')
-    # if 'additionalmetadatainformation' in data:
-    #     data['Additional Metadata Information'] = data.pop('additionalmetadatainformation')
-    #     # print(k)
-    # if 'uploadsoundfile' in data:
-    #     data['Upload Sound File'] = data.pop('uploadsoundfile')
-    # if 'uploadmoviefile' in data:
-    #     data['Upload Movie File'] = data.pop('uploadmoviefile')
-
-    # num = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
-    # d = data
-    lst = list()
-    print()
-    # print(d)
-    for k, v in data.items():
-        n = re.findall('[0-9]+', k)
-        # print(n)
-        # if k[-1] in num:
-        if len(n) != 0:
-            # print(k)
-            # nk = k[0:len(k)-1] + ''
-            index = k.index(n[0])
-            # print(index)
-            nk = k[:index] + ''
-            # print(nk)
-            lst.append({nk : v})
-            # print(lst)
-        else:    
-            lst.append({k : v})
-            # print(lst)
-    print(lst)
-
-    return lst
-
-
-# test route for quick testing before adding any new feature
-# @app.route('/test', methods=['GET', 'POST'])
-# def test():
-#     if request.method == 'POST':
-#         projectFormData = dict(request.form.lists())
-
-#         # print(f'{"#"*80}\nprojectFormData\n{projectFormData}')
-
-#         dynamicFormField = []
-#         listOfCustomFields = []
-#         projectForm = {}
-#         projectForm['projectname'] = projectFormData['projectname'][0]
-        
-#         # print(f'{"#"*80}\n{projectnames.find_one({"_id":10})["projectname"]}')
-
-#         # chech uniqueness of the project name and update projectname list
-#         # projectnamelist = projectnames.find_one({"_id":10})["projectname"]
-#         # if projectForm["projectname"] in projects.find_one({}).keys():
-#         #     flash(f'Project Name : {projectForm["projectname"]} already exist!')
-#         #     return redirect(url_for('newproject'))
-#         # # projectslist = list(projectsCollection["projectname"].keys())
-#         # #get _id in collection name projects
-#         # projects_id = projects.find_one({}, {"_id" : 1})["_id"]
-#         # print(f'{"#"*80}\n{projects_id}\n')
-#         # for proname in projectslist:
-#         #     # print(f'{"#"*80}\n{proname}\n')
-#         #     if proname == projectForm['projectname']:
-#         #         flash(f'Project Name : {projectForm["projectname"]} already exist!')
-#         #         return redirect(url_for('newproject'))
-
-#         projectForm['username'] = current_user.username
-
-#         # projects.update_one({ "_id" : projects_id }, \
-#         #     { '$set' : { projectForm['projectname'] : {"projectOwner" : current_user.username,"lexemeInserted" : 0, "lexemeDeleted" : 0, \
-#         #         'sharedwith': [projectForm['username']], 'projectdeleteFLAG' : 0} }})
-
-        
-#         # print(usersprojects.find_one({ 'username' : current_user.username }))
-
-#         # print(f'{"#"*80}\n{usersprojects.find_one({"username" : current_user.username})["projectname"]}')
-
-#         # get curent user project list and update
-#         # userprojectnamelist = userprojects.find_one({'username' : current_user.username})["myproject"]
-#         # # print(f'{"#"*80}\n{userprojectnamelist}')
-#         # userprojectnamelist.append(projectForm['projectname'])
-#         # userprojects.update_one({ 'username' : current_user.username }, \
-#         #     { '$set' : { 'myproject' : userprojectnamelist, 'activeproject' :  projectForm['projectname']}})
-
-#         # dynamicFormField = []
-#         # listOfCustomFields = []
-
-#         for key, value in projectFormData.items():
-#             if re.search(r'[0-9]+', key):
-#                 dynamicFormField.append(value[0])
-#             elif key == 'Lexeme Form Script':
-#                 projectForm[key] = value
-#             elif key == 'Gloss Language':
-#                 value.append('English')
-#                 projectForm[key] = value
-#             elif len(value) == 1:
-#                 projectForm[key] = value[0]
-#             else:
-#                 projectForm[key] = value
-
-#         # print(f'{"#"*80}\ndynamicFormField\n{len(dynamicFormField)}')
-#         if len(dynamicFormField) > 1:
-#             for i in range(0,len(dynamicFormField),2):
-#                 listOfCustomFields.append({dynamicFormField[i] : dynamicFormField[i+1]})
-
-#             projectForm['Custom Fields'] = listOfCustomFields
-
-#         print(f'{"="*80}\nProject Form :\n{projectForm}\n{"="*80}')
-#         # projectsform.insert(projectForm)
-#         # else:
-#         #     flash(f'Project Name : {projectForm["projectname"]} already created by {current_user.username}')
-#         #     return redirect(url_for('newproject'))
-
-#         # if activeprojectnames.find_one({'username' : current_user.username}) is None:
-#         #     activeprojectnames.insert({ 'username' : current_user.username, 'projectname' : projectForm['projectname'] })
-#         # else:
-#         # activeprojectnames.update_one({ 'username' : current_user.username }, \
-#         #                             {'$set' : { 'projectname' : projectForm['projectname'] }})
-
-#         # currentuserprojectsname =  currentuserprojects()
-#         # activeprojectname = userprojects.find_one({ 'username' : current_user.username })['activeproject']
-
-#         # x = projectsform.find_one_or_404({'projectname' : activeprojectname,\
-#         #                                 'username' : current_user.username}, { "_id" : 0 })
-        
-#         # x = change(x)
-
-#         # print(f'{"#"*80}\nx:\n{x}')
-#         # if x is not None:
-#         #     return render_template('enternewlexeme.html', newData=x, data=currentuserprojectsname)
-#         # return render_template('enternewlexeme.html')
-
-#     # return render_template('test.html', filen=url_for('retrieve', filename='20200622-030356011433mail.jpeg')) 
-#     return render_template('test.html')
 
 def dummyUserandProject():
     """ Creates dummy user and project if the database has no collection """
@@ -4505,236 +4007,3 @@ def audiotranscription():
 def assignkaryaaccesscode():
     print(f"IN KARYA ACCESS CODE ASSIGNMENT FUNCTION")
     return redirect(url_for('home'))
-
-# @app.errorhandler(InternalServerError)
-# def handle_500(e):
-#     original = getattr(e, "original_exception", None)
-
-#     if original is None:
-#         # direct 500 error, such as abort(500)
-#         return render_template("500.html"), 500
-
-#     # wrapped unhandled error
-#     return render_template("500_unhandled.html", e=original), 500
-
-
-
-# for instant testing in terminal
-# with app.test_request_context():
-
-    # activeprojectnames = mongo.db.activeprojectnames  
-# #     # projectsForm = mongo.db.projectsForm
-#     lexemes = mongo.db.lexemes
-    # fs =  gridfs.GridFS(mongo.db)
-    # fs = mongo.db.fs.files
-#     lst = list()
-#     for lexeme in lexemes.find({ 'username' : 'alice', 'projectname' : 'Project_1' }, \
-#                             {'_id' : 0, 'headword' : 1, 'gloss' : 1, 'grammaticalcategory' : 1}):
-#         lst.append(lexeme)    
-#     pprint.pprint(lst)
-#     for i in lst:
-#         print(i['gloss'])
-#     # for projectForm in projectsForm.find({}):
-#     #     print('###################################################################################################')
-#     #     pprint.pprint(projectForm['NewProject'])
-#     #     print('###################################################################################################')
-    
-#     for lexeme in lexemes.find({'Tisra.projectName' : 'Third'}):
-#         print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n')
-#         pprint.pprint(lexeme['Tisra']['filesName'])
-#         print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n')
-    # data = lexemes.find_one({})
-    # pprint.pprint(data['bobTesting'])
-
-    # for f in fs.find({'projectName' : 'Third'}):
-    #     print('######################################################################\n')
-    #     pprint.pprint(f['filename'])
-    #     print('######################################################################\n')    
-        
-
-    # if fs.exists({"filename" : "20200622-030356011362patr.jpeg"}):
-    #     print('H!')
-    # file = fs.find({})
-    # for f in file:
-    #     name = f.filename
-    #     open(basedir + name, 'wb').write(f.read())
-    # print('Done')
-    # filen = fs.find_one({"filename" : "20200622-030356011362patr.jpeg"})
-    # print(filen)
-    # print(fs.list())
-    # x = fs.get({"filename" : "20200622-030356011362patr.jpeg"})
-    # print(x.upload_date)
-    # for f in forms.find({}):
-    #     pprint.pprint(f['First'])
-    # form = forms.find_one_or_404({'pronunciation' : 'text'})
-    # filename = user['filename']
-    # print(form)
-
-    # activeprojectname = activeprojectnames.find_one({ 'username' : 'alice' },{'_id' : 0})
-    # print(activeprojectname)
-
-
-# @app.route('/lexemeupdate', methods=['GET', 'POST'])
-# def lexemeupdate():
-    # # getting the collections
-    # lexemes = mongo.db.lexemes                          # collection containing entry of each lexeme and its details
-    # activeprojectnames = mongo.db.activeprojectnames    # collection containing username and his/her last seen project name
-
-    # # getting the name of all the projects created by current user
-    # currentuserprojectsname =  currentuserprojects()
-
-    # # getting the name of the active project
-    # activeprojectname = activeprojectnames.find_one({ 'username' : current_user.username })
-
-    # # new lexeme details coming from current project form
-    # if request.method == 'POST':
-
-    #     # newLexemeData = request.form.to_dict()
-    #     newLexemeData = dict(request.form.lists())
-
-    #     pprint(newLexemeData)                  
-
-    #     # format data filled in enter new lexeme form    
-    #     lexemeFormData = {}
-    #     sense = {}
-    #     variant = {}
-    #     allomorph = {}
-
-    #     lexemeFormData['username'] = current_user.username
-
-    #     def lexemeFormScript():
-    #         """'List of dictionary' of lexeme form scripts"""
-    #         lexemeFormScriptList = []
-    #         for key, value in newLexemeData.items():
-    #             if 'Script' in key:
-    #                 k = re.search(r'Script (\w+)', key)
-    #                 lexemeFormScriptList.append({k[1] : value[0]})
-    #         lexemeFormData['headword'] =  list(lexemeFormScriptList[0].values())[0]
-    #         return lexemeFormScriptList
-
-    #     def senseListOfDict(senseCount):
-    #         """'List of dictionary' of sense"""
-    #         for num in range(1, int(newLexemeData['senseCount'][0])+1):
-    #             senselist = []
-    #             for key, value in newLexemeData.items():
-    #                 if 'Sense '+str(num) in key:
-    #                     k = re.search(r'([\w+\s]+) Sense', key)
-    #                     if k[1] == 'Semantic Domain' or k[1] == 'Lexical Relation':
-    #                         senselist.append({k[1] : value})
-    #                     else:
-    #                         senselist.append({k[1] : value[0]})
-    #             sense['Sense '+str(num)] = senselist
-    #         # pprint.pprint(sense)
-    #         return sense
-
-    #     def variantListOfDict(variantCount):
-    #         """'List of dictionary' of variant"""
-    #         for num in range(1, int(newLexemeData['variantCount'][0])+1):
-    #             variantlist = []
-    #             for key, value in newLexemeData.items():
-    #                 if 'Variant '+str(num) in key:
-    #                     k = re.search(r'([\w+\s]+) Variant', key)
-    #                     variantlist.append({k[1] : value[0]})
-    #             variant['Variant '+str(num)] = variantlist
-    #         # pprint.pprint(variant)
-    #         return variant
-
-    #     def allomorphListOfDict(allomorphCount):
-    #         """'List of dictionary' of allomorph"""
-    #         for num in range(1, int(newLexemeData['allomorphCount'][0])+1):
-    #             allomorphlist = []
-    #             for key, value in newLexemeData.items():
-    #                 if 'Allomorph '+str(num) in key:
-    #                     k = re.search(r'([\w+\s]+) Allomorph', key)
-    #                     allomorphlist.append({k[1] : value[0]})
-    #             allomorph['Allomorph '+str(num)] = allomorphlist
-    #         # pprint.pprint(allomorph)
-    #         return allomorph
-
-    #     def customFields():
-    #         """'List of dictionary' of custom fields"""
-    #         # customFieldsList = []
-    #         customFieldsDict = {}
-    #         for key, value in newLexemeData.items():
-    #             if 'Custom' in key:
-    #                 k = re.search(r'Field (\w+)', key)
-    #                 # customFieldsList.append({k[1] : value[0]})
-    #                 customFieldsDict[k[1]] = value[0]
-    #         # pprint.pprint(sense)
-    #         return customFieldsDict
-
-    #     for key, value in newLexemeData.items():
-    #         if 'Sense' in key or 'Variant' in key or 'Allomorph' in key: continue
-    #         elif key == 'senseCount':
-    #             Sense = senseListOfDict(value[0])
-    #             lexemeFormData['Sense'] = Sense
-    #         elif key == 'variantCount':
-    #             Variant = variantListOfDict(value[0])
-    #             lexemeFormData['Variant'] = Variant
-    #         elif key == 'allomorphCount':
-    #             Allomorph = allomorphListOfDict(value[0])
-    #             lexemeFormData['Allomorph'] = Allomorph
-    #         elif 'Script' in key:
-    #             lexemeFormData['Lexeme Form Script'] = lexemeFormScript()
-    #         elif 'Custom' in key:
-    #             lexemeFormData['Custom Fields'] = customFields()
-    #         else:
-    #             # print(lexemeFormData)
-    #             # print(key)
-    #             lexemeFormData[key] = value[0]
-
-
-    #     # if len(newLexemeFilesName) != 0:    
-    #     #     lexemeFormData['filesname'] = newLexemeFilesName
-    #     lexemeFormData['gloss'] = lexemeFormData['Sense']['Sense 1'][0]['Gloss English']
-    #     lexemeFormData['grammaticalcategory'] = lexemeFormData['Sense']['Sense 1'][4]['Grammatical Category']
-    #     lexemeFormData['projectname'] = activeprojectname['projectname']
-    #     lexemeFormData['Flag'] = 1
-
-    #     # pprint(lexemeFormData)
-    #     dbfilter = {'username' : current_user.username, 'projectname' : activeprojectname['projectname'], \
-    #                             'headword' : lexemeFormData['headword']}
-    #     lexeme = lexemes.find_one(dbfilter, {'_id' : 0, 'filesname' : 0})
-
-    #     pprint(lexeme)
-
-    #     lexemediff = eval(diff(lexeme, lexemeFormData, dump=True))
-    #     if len(lexemediff) > 0:
-    #         updatevalues = {}
-
-    #         for keys, values in lexemediff.items():
-    #             if (
-    #                     keys == "Lexeme Form Script" or
-    #                     keys == "Custom Fields"
-    #                 ):
-    #                 for key, value in values.items():
-    #                     x = list(value.keys())
-    #                     y = list(value.values())
-    #                     updatevalues[keys+'.'+key+'.'+x[0]] = y[0]
-    #             elif (
-    #                     keys=="Sense" or
-    #                     keys=="Variant" or
-    #                     keys=="Allomorph"
-    #                 ):
-    #                 for key, value in values.items():
-    #                     for k, v in value.items():
-    #                         x = list(v.keys())
-    #                         y = list(v.values())
-    #                         if (x[0]=='Semantic Domain' or x[0]=='Lexical Relation'):
-    #                             updatevalues[keys+'.'+key+'.'+k+'.'+x[0]] = lexemeFormData[keys][key][int(k)][x[0]]
-    #                         else:        
-    #                             updatevalues[keys+'.'+key+'.'+k+'.'+x[0]] = y[0]        
-    #             else :
-    #                 updatevalues[keys] = values
-    #         setvalues = {'$set': updatevalues}
-    #         # pprint(setvalues)
-    #         # pprint(len(lexemediff))
-    #         lexemes.find_one_and_update(dbfilter, setvalues)
-
-    # # get the list of lexeme entries for current project to show in dictionary view table
-    # lst = list()
-    # for lexeme in lexemes.find({ 'username' : current_user.username, 'projectname' : activeprojectname['projectname'] }, \
-    #                         {'_id' : 0, 'headword' : 1, 'gloss' : 1, 'grammaticalcategory' : 1}):
-    #     lst.append(lexeme)
-         
-    # return render_template('dictionaryview.html', sdata=lst, count=len(lst), data=currentuserprojectsname)
