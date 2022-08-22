@@ -675,6 +675,7 @@ function myFunction(newData) {
           inpt = '';         
         }
     if (key === 'Transcription Script') {
+      var transcriptionScriptLocalStorage = []
       var transcriptionScript = newData[key];
         for (var i = 0; i < transcriptionScript.length; i++) {
           if (transcriptionScript[i].includes('_')) {
@@ -695,9 +696,11 @@ function myFunction(newData) {
                 '<input type="text" class="form-control" id="Transcription_'+ transcriptionScript[i] +'"'+ 
                 'placeholder="Transcription '+ lScript +'" name="Transcription_'+ transcriptionScript[i] +'">'+
                 '</div></div>';
+          transcriptionScriptLocalStorage.push(transcriptionScript[i]);
         }
         $('.transcription').append(inpt);
         inpt = '';
+        localStorage.setItem("Transcription Script", JSON.stringify(transcriptionScriptLocalStorage));
     }
     else if (key === 'Translation Language') {
       translationLang = newData[key];

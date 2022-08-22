@@ -26,7 +26,7 @@
 
 22 July 2022
 ---------------------------------------------------------------
-- create sentence interface HTMl form using the form created by the user in Create New Project
+- create sentence interface HTML form using the form created by the user in Create New Project
 
 26 July 2022
 ---------------------------------------------------------------
@@ -50,4 +50,8 @@
 - Refactoring the code
 - Divide the code in multiple modules
 - Add docstring to each modules
+
+22 August 2022
+---------------------------------------------------------------
+- show/change form based on active radio button in transcription field.
 

@@ -260,9 +260,9 @@ function editAnnotation(region) {
                 sentence: sentData
             }
         });
-        something = window.open("data:text/json," + encodeURIComponent(sentData),
-                       "_blank");
-        something.focus();
+        // something = window.open("data:text/json," + encodeURIComponent(sentData),
+        //                "_blank");
+        // something.focus();
         // form.style.opacity = 0;
         transcriptionFormDisplay(form);
     };
@@ -285,73 +285,122 @@ function showNote(region) {
 }
 
 function sentenceDetails(sentenceData) {
-    console.log(document.forms.edit.elements)
+    // console.log(sentenceData);
+    // console.log(document.forms.edit.elements)
     formData = document.forms.edit.elements
-    console.log(typeof formData)
+    // console.log(typeof formData)
     // let sentenceData = new Object();
     let transcriptionData = new Object();
     let translationData = new Object();
     let tagsData = new Object();
     let morphData = new Object();
+    if (Object.keys(sentenceData).includes('morphemes')) {
+        morphData = sentenceData['morphemes']    
+    }
+    let glossData = new Object();
+    if (Object.keys(sentenceData).includes('gloss')) {
+        glossData = sentenceData['gloss']
+    }
     activetranscriptionscript = displayRadioValue();
-    for (let [key, value] of Object.entries(formData)) {
-    
-        eleName = value.name;
-        ename = value.name.replace(activetranscriptionscript, '');
-        console.log(eleName, ename)
-        if (eleName !== '') {
-            console.log(key, value.name, formData[eleName].value);
-            if (ename.includes('Transcription') && !ename.includes('active')) {
-                transcriptionData[value.name] = formData[eleName].value;
-            }
-            else if (ename.includes('Translation') && !ename.includes('active')) {
-                translationData[value.name] = formData[eleName].value;
-            }
-            else if (ename.includes('Tags') && !ename.includes('active')) {
-                tagsData[value.name] = formData[eleName].value;
-            }
-            // else if (eleName.includes('morph') && eleName.includes(activetranscriptionscript)) {
-            //     morphData[value.name] = formData[eleName].value;
-            // }
-            else {
-                sentenceData[value.name] = formData[eleName].value;
+    var transcriptionScriptLocalStorage = JSON.parse(localStorage.getItem("Transcription Script"));
+    // console.log('transcriptionScriptLocalStorage', transcriptionScriptLocalStorage)
+    for (i = 0; i<transcriptionScriptLocalStorage.length; i++) {
+        for (let [key, value] of Object.entries(formData)) {
+            eleName = value.name;
+            ename = value.name.replace(activetranscriptionscript, '');
+            // console.log(eleName, ename)
+            if (eleName !== '') {
+                // console.log(key, value.name, formData[eleName].value);
+
+                if (ename.includes('Transcription') && !ename.includes('active')) {
+                    transcriptionData[value.name] = formData[eleName].value;
+                }
+                else if (ename.includes('Translation') && !ename.includes('active')) {
+                    translationData[value.name] = formData[eleName].value;
+                }
+                else if (ename.includes('Tags') && !ename.includes('active')) {
+                    tagsData[value.name] = formData[eleName].value;
+                }
+                else if (eleName.includes('morphcount') && eleName.includes(transcriptionScriptLocalStorage[i])) {
+                    // console.log('morphcountTranscription_'+transcriptionScriptLocalStorage[i]);
+                    // morphCount = formData[eleName].value
+                    morphemeFor = transcriptionScriptLocalStorage[i]
+                    actualTranscription = formData['Transcription_'+morphemeFor].value.split(" ")
+                    morphemicBreakTranscription = formData['morphsentenceMorphemicBreakTranscription_'+morphemeFor].value
+                    morphData[morphemeFor] = morphemeDetails(actualTranscription, morphemicBreakTranscription)
+                    glossData[morphemeFor] = glossDetails(actualTranscription, morphemicBreakTranscription)
+                    // console.log('morphData', morphData)
+                }
+                // else if (eleName.includes('morph') && eleName.includes(activetranscriptionscript)) {
+                //     morphData[value.name] = formData[eleName].value;
+                // }
+                else {
+                    sentenceData[value.name] = formData[eleName].value;
+                }
+
             }
         }
     }
     sentenceData['transciption'] = transcriptionData
     sentenceData['translation'] = translationData
     sentenceData['tags'] = tagsData
-    sentenceData['morph'] = morphData
+    sentenceData['morphemes'] = morphData
+    sentenceData['gloss'] = glossData
     bid = sentenceData['start'].toString().slice(0, 4).replace('.', '').concat(sentenceData['end'].toString().slice(0, 4).replace('.', ''));
     sentenceData['boundaryID'] = bid
-    console.log(sentenceData);
+    // console.log(sentenceData);
     
     return sentenceData;
 }
 
-function morphemeDetails(morph, morphCount, script) {
-    console.log(document.forms.edit.elements)
-    formData = document.forms.edit.elements
-    console.log(typeof formData)
-    let morphemeData = new Object();
-    for (let [key, value] of Object.entries(formData)) {
-      eleName = value.name
-      // console.log(eleName)
-      if (eleName !== '') {
-        console.log(key, value.name, formData[eleName].value);
-        morphemeData[value.name] = formData[eleName].value
-  
-      }
-    }
-    bid = morphemeData['start'].toString().slice(0, 4).replace('.', '').concat(morphemeData['end'].toString().slice(0, 4).replace('.', ''));
-    morphemeData['boundaryID'] = bid
+function morphemeDetails(actualTranscription, morphemicBreakTranscription) {
+    console.log('morphemeDetails!!!!!!!!!')
+    morphemicBreakTranscription = morphemicBreakTranscription.replace('#', '').split(" ")
+    morphemeData = mapArrays(actualTranscription, morphemicBreakTranscription)
+
+    return morphemeData
     // console.log(morphemeData);
-    
-    return morphemeData;
+}
+
+function glossDetails(actualTranscription, morphemicBreakTranscription) {
+    // console.log(actualTranscription, morphemicBreakTranscription)
+    morphemicBreakTranscription = morphemicBreakTranscription.split(" ")
+    glossDataMapping = mapArrays(actualTranscription, morphemicBreakTranscription)
+    console.log(glossDataMapping);
+    let glossData = new Object();
+    for (let [key, value] of Object.entries(glossDataMapping)) {
+        console.log(key, value);
+        let glossSubData = new Object();
+        if (value.includes('#')) {
+            value = value.split('#')
+            for (i=0; i<value.length; i++) {
+                glossSubData[value[i]] = {}
+                glossData[key] = glossSubData
+            }
+        }
+        else {
+            glossSubData[value] = {}
+            glossData[key] = glossSubData
+        }
+    }
+    console.log(glossData);
+}
+
+function mapArrays(array_1, array_2) {
+    if(array_1.length != array_2.length || 
+        array_1.length == 0 || 
+        array_2.length == 0) {
+        return null;
+       }
+       let mappedData = new Object();
+         
+     // Using the foreach method
+     array_1.forEach((k, i) => {mappedData[k] = array_2[i]})
+       return mappedData;
+
 }
 
 function createSentenceForm(form, region) {
-
 
 }
 
