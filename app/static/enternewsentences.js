@@ -332,6 +332,11 @@ var posCategories =
 {"id": "Verb", "text": "Verb"}
 ];
 
+var activeAudioFilename = JSON.parse(localStorage.getItem('AudioFilePath')).split('/')[2];
+// console.log(activeAudioFilename)
+var audioFilenameTag = '<strong>Audio Filename: </strong><strong id="audioFilename">'+ activeAudioFilename +'</strong>'
+$(".defaultfield").append(audioFilenameTag);
+
 var activeSentenceMorphemicBreak = '<input type="checkbox" id="activeSentenceMorphemicBreak" name="activeSentenceMorphemicBreak" value="false">'+
                                   '<label for="activeSentenceMorphemicBreak">&nbsp; Add Interlinear Gloss</label><br></br>'
 $(".sentencefield").append(activeSentenceMorphemicBreak);
@@ -361,6 +366,8 @@ $("#activeSentenceMorphemicBreak").click(function() {
     alert('No input given in the selected transcription script!');  
   }
   else {
+    // const sentmorphemicbreak = document.getElementById('activeSentenceMorphemicBreak');
+    // sentmorphemicbreak.setAttribute('name', 'activeSentenceMorphemicBreak_'+activetranscriptionscript);
     activeMorphSentenceField(activetranscriptionscriptvalue, activetranscriptionscript);
   }
 });
@@ -666,6 +673,7 @@ function myFunction(newData) {
 
   var inpt = '';
   for (let [key, value] of Object.entries(newData)){
+    // console.log(key, value);
     if (key === 'Sentence Language') {
       inpt += '<div class="col"><div class="form-group">'+
                   '<label for="'+key+'">'+key+'</label>'+
@@ -674,9 +682,11 @@ function myFunction(newData) {
           $('.lexemelang').append(inpt);
           inpt = '';         
         }
-    if (key === 'Transcription Script') {
+    else if (key === 'Transcription Script') {
       var transcriptionScriptLocalStorage = []
       var transcriptionScript = newData[key];
+      var interLinearGlossLang = ''
+      var interLinearGlossScript = ''
         for (var i = 0; i < transcriptionScript.length; i++) {
           if (transcriptionScript[i].includes('_')) {
             // console.log(transcriptionScript[i]);
@@ -687,10 +697,12 @@ function myFunction(newData) {
           }
           inpt += '<div class="form-group">';
           if (i === 0) {
-            inpt += '<input type="radio" id="TranscriptionRadioBtn'+ transcriptionScript[i] +'" name="activeTranscriptionScript" value="Transcription_'+ transcriptionScript[i] +'" checked>';
+            inpt += '<input type="radio" id="TranscriptionRadioBtn'+ transcriptionScript[i] +'" name="activeTranscriptionScript"'+
+                    'value="Transcription_'+ transcriptionScript[i] +'" onchange="getActiveTranscription()" checked>';
           }
           else {
-            inpt += '<input type="radio" id="TranscriptionRadioBtn'+ transcriptionScript[i] +'" name="activeTranscriptionScript" value="Transcription_'+ transcriptionScript[i] +'">';
+            inpt += '<input type="radio" id="TranscriptionRadioBtn'+ transcriptionScript[i] +'" name="activeTranscriptionScript"'+
+                    'value="Transcription_'+ transcriptionScript[i] +'" onchange="getActiveTranscription()">';
           }                
           inpt += '<label for="Transcription_'+ transcriptionScript[i] +'">Transcription in '+ lScript +'</label>'+
                 '<input type="text" class="form-control" id="Transcription_'+ transcriptionScript[i] +'"'+ 
@@ -714,9 +726,34 @@ function myFunction(newData) {
       $('#translationlangs').append(inpt);
       inpt = '';
     }
+    else if (key === 'Interlinear Gloss Language') {
+      interLinearGlossLang = newData[key]
+    }
+    else if (key === 'Interlinear Gloss Script') {
+      interLinearGlossScript = newData[key]
+    }
   }
+  // interLinearGlossLangScriptMapping = mapArrays(interLinearGlossLang, interLinearGlossScript)
+  // localStorage.setItem("Interlinear Gloss Lang Script", JSON.stringify(interLinearGlossLangScriptMapping));
+  // for (k=0; k<=1000; k++) {
+  //   console.log(Date.now())
+  //   // datetime = new Date()
+  //   // console.log(datetime.toJSON(), datetime.getMilliseconds());
+  // }
 }
 
+function mapArrays(array_1, array_2) {
+  if(array_1.length != array_2.length || 
+      array_1.length == 0 || 
+      array_2.length == 0) {
+      return null;
+     }
+     let mappedData = new Object();
+       
+   // Using the foreach method
+   array_1.forEach((k, i) => {mappedData[k] = array_2[i]})
+     return mappedData;
+}
 
 function displayRadioValue() {
   var ele = document.getElementsByName('activeTranscriptionScript');
@@ -727,3 +764,113 @@ function displayRadioValue() {
   }
   return activetranscriptionscript
 }
+
+  
+function previousAudio() {
+  lastActiveFilename = document.getElementById("audioFilename").innerHTML;
+  // console.log(lastActiveFilename)
+    $.ajax({
+        url: '/loadpreviousaudio',
+        type: 'GET',
+        data: {'data': JSON.stringify(lastActiveFilename)},
+        contentType: "application/json; charset=utf-8", 
+        success: function(response){
+          // console.log(response.newAudioFilePath)
+          localStorage.setItem("AudioFilePath", JSON.stringify(response.newAudioFilePath));
+          window.location.reload();
+        }
+    });
+    return false;
+}
+
+function nextAudio() {
+  lastActiveFilename = document.getElementById("audioFilename").innerHTML;
+  // console.log(lastActiveFilename)
+    $.ajax({
+        url: '/loadnextaudio',
+        type: 'GET',
+        data: {'data': JSON.stringify(lastActiveFilename)},
+        contentType: "application/json; charset=utf-8", 
+        success: function(response){
+          // console.log(response.newAudioFilePath)
+          localStorage.setItem("AudioFilePath", JSON.stringify(response.newAudioFilePath));
+          window.location.reload();
+        }
+    });
+    return false;
+}
+
+function unAnnotated() {
+  unanno = '';
+  $('#uNAnnotated').remove();
+  $.ajax({
+      url: '/allunannotated',
+      type: 'GET',
+      data: {'data': JSON.stringify(unanno)},
+      contentType: "application/json; charset=utf-8", 
+      success: function(response){
+          allunanno = response.allunanno;
+          allanno = response.allanno;
+          console.log(allanno)
+          var inpt = '';
+          inpt += '<select class="col-sm-3 allanno" id="allanno" onchange="loadAnnoText()">'+
+                  '<option selected disabled>All Annotated</option>';
+                  for (i=0; i<allanno.length; i++) {
+                      inpt += '<option value="'+allanno[i]+'">'+allanno[i]+'</option>';
+                  }
+          inpt += '</select>';
+          inpt += '<select class="pr-4 col-sm-3" id="allunanno" onchange="loadUnAnnoText()">'+
+                  '<option selected disabled>All Un-Annotated</option>';
+                  for (i=0; i<allunanno.length; i++) {
+                      inpt += '<option value="'+allunanno[i]+'">'+allunanno[i]+'</option>';
+                  }
+          inpt += '</select>';
+          $('.commentIDs').append(inpt);
+          // console.log(inpt);
+      }
+  });
+  return false; 
+}
+
+function loadUnAnnoText() {
+  newAudioFilename = document.getElementById('allunanno').value;
+  console.log(newAudioFilename)
+  loadRandomAudio(newAudioFilename)
+  // $.ajax({
+  //     url: '/loadunannotext',
+  //     type: 'GET',
+  //     data: {'data': JSON.stringify(textId)},
+  //     contentType: "application/json; charset=utf-8", 
+  //     success: function(response){
+  //         window.location.reload();
+  //     }
+  // });
+  // return false;
+}
+
+function loadAnnoText() {
+  newAudioFilename = document.getElementById('allanno').value;
+  console.log(newAudioFilename)
+  loadRandomAudio(newAudioFilename)
+  // $.ajax({
+  //     url: '/loadunannotext',
+  //     type: 'GET',
+  //     data: {'data': JSON.stringify(textId)},
+  //     contentType: "application/json; charset=utf-8", 
+  //     success: function(response){
+  //         window.location.reload();
+  //     }
+  // });
+  // return false;
+}
+
+function loadRandomAudio(newAudioFilename) {
+  filePath = JSON.parse(localStorage.getItem('AudioFilePath'));
+  // console.log(typeof filePath)
+  currentAudioFilename = filePath.split('/')[2];
+  newfilePath = filePath.replace(currentAudioFilename, newAudioFilename)
+  localStorage.setItem("AudioFilePath", JSON.stringify(newfilePath));
+  window.location.reload();
+}
+
+

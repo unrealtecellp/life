@@ -28,9 +28,26 @@
       {% endif %}
     {% endif %}
   {% endfor %}
-    <p><strong>Audio Filename: 1. AD1.wav</strong></p>
-    <div class="container defaultfield">
+  <!-- <div class="row"> -->
+    <div class="col-md-12 btn-group btn-group-lg btn-primary">
+      <button type="button" class="btn btn-lg btn-primary">Discourse</button>
+      <button type="button" class="btn btn-lg btn-primary">Sentence</button>
+      <button type="button" class="btn btn-lg btn-primary">Word</button>
+      <button type="button" class="btn btn-lg btn-primary">Phone</button>
+    </div> 
+  <!-- </div> -->
+  <br>
+  <hr>
+    <!-- <p><strong>Audio Filename: 1. AD1.wav</strong></p> -->
+    <div class="row">
+      <div class="col-sm-7 commentIDs">
+          <button type="button" id="uNAnnotated" class="btn btn-light" onclick="unAnnotated()">All Filename</button>
+      </div>
     </div>
+    <br>
+    <div class="defaultfield">
+    </div>
+    <br>
     <div class="lexemelang"></div>
     <div class="lexemeform"></div>
     <p id="subtitle" class="text-center text-info">&nbsp;</p>
@@ -74,12 +91,13 @@
     <br>
     <br>
     <div id="waveformControl">
-      <button class="btn btn-info btn-lg" type="button" id="previous">
-          <span class="previousaudio glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
-          Previous Audio
+      <button class="btn btn-info btn-lg" type="button" id="previous" onclick="previousAudio()">
+        <span class="previousaudio glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+        Previous Audio
       </button>
-      <button class="btn btn-info pull-right btn-lg" type="button" id="next">Next Audio
-          <span class="nextaudio glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+      <button class="btn btn-info pull-right btn-lg" type="button" id="next" onclick="nextAudio()">
+        Next Audio
+        <span class="nextaudio glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
       </button>
       <br>
       <br>

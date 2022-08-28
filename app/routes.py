@@ -116,7 +116,9 @@ def enternewsentences():
 
     # if method is not 'POST'
     projectowner = getprojectowner.getprojectowner(activeprojectname, projects)
-    activeprojectform = getactiveprojectform.getactiveprojectform(projectsform, projectowner, activeprojectname)
+    activeprojectform = getactiveprojectform.getactiveprojectform(projectsform,
+                                                                    projectowner,
+                                                                    activeprojectname)
 
     if activeprojectform is not None:
         return render_template('enternewsentences.html',
@@ -198,7 +200,6 @@ def predictPOSNaiveBayes():
 
         return jsonify(predictedPOS=predictedPOS)
 
-    
     return render_template('automation.html',
                             data=currentuserprojectsname)
 
@@ -368,24 +369,15 @@ def enternewlexeme():
 # uploaded_file_content = ''
 
 def enterlexemefromuploadedfile(lexemedf):
-    # flash("IN enterlexemefromuploadedfile() FUNCTION")
-    print(f"{'-'*80}\nIN enterlexemefromuploadedfile() FUNCTION")
-    print(current_user.username)
-    # getting the collections
-    projects = mongo.db.projects                        # collection containing projects name
-    userprojects = mongo.db.userprojects              # collection of users and their respective projects
-    lexemes = mongo.db.lexemes                          # collection containing entry of each lexeme and its details
-
-    # getting the name of all the projects created by current user
-    currentuserprojectsname =  currentuserprojects()
-
-    # getting the name of the active project
-    activeprojectname = userprojects.find_one({ 'username' : current_user.username },\
-                    {'_id' : 0, 'activeproject': 1})['activeproject']
-    print(f"PROJECT NAME: {activeprojectname}")
-    projectOwner = projects.find_one({}, {"_id" : 0, activeprojectname : 1})[activeprojectname]["projectOwner"]
-    # print(f"PROJECT OWNER: {projectOwner}")
-    print(f"DATAFRAME COLUMNS:\n{lexemedf.columns}")
+    projects, userprojects, lexemes = getdbcollections.getdbcollections(mongo,
+                                                'projects',
+                                                'userprojects',
+                                                'lexemes')
+    currentuserprojectsname =  getcurrentuserprojects.getcurrentuserprojects(current_user.username,
+                                userprojects)
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username,
+                            userprojects)
+    projectowner = getprojectowner.getprojectowner(activeprojectname, projects)
     projectname = activeprojectname
     project = projects.find_one({}, {projectname : 1})
     def lexmetadata():
@@ -403,7 +395,7 @@ def enterlexemefromuploadedfile(lexemedf):
     # print(lexemedf)
     for index, row in lexemedf.iterrows():
         uploadedFileLexeme = {
-            "username": projectOwner,
+            "username": projectowner,
             "projectname": activeprojectname,
             "lexemedeleteFLAG": 0,
             "updatedBy": current_user.username,
@@ -415,8 +407,9 @@ def enterlexemefromuploadedfile(lexemedf):
             lexemeId, lexemeCount = lexmetadata()
             # print(lexemeId, lexemeCount)
         else:
-            getlexemeId = lexemes.find_one({ 'lexemeId' : lexemeId }, {'_id' : 0, 'lexemeId' : 1, 'projectname': 1})
-            print(getlexemeId)
+            getlexemeId = lexemes.find_one({ 'lexemeId' : lexemeId },
+                                            {'_id' : 0, 'lexemeId' : 1, 'projectname': 1})
+            # print(getlexemeId)
             if (getlexemeId == None):
                 print(f"lexemeId not in DB")
                 lexemeId, lexemeCount = lexmetadata()
@@ -445,7 +438,7 @@ def enterlexemefromuploadedfile(lexemedf):
                 if ('Sense 1.Gloss.eng' in column_name):
                     uploadedFileLexeme['gloss'] = value
                 if ('Sense 1.Grammatical Category' in column_name):
-                    uploadedFileLexeme['grammaticalcategory'] = value        
+                    uploadedFileLexeme['grammaticalcategory'] = value
                 uploadedFileLexeme[column_name] = value
 
         # print(f'{"="*80}\nLexeme Form :')
@@ -1028,7 +1021,7 @@ def uploadlexemeexcelliftxml():
             # print(retrieve_uploaded_file_content.keys())
             file_format = retrieve_uploaded_file_content['file_format']
             uploaded_file_content = retrieve_uploaded_file_content['uploaded_file_content']
-        if (file_format == 'lift-xml'):    
+        if (file_format == 'lift-xml'):
             life_lift_root_path = os.path.join(basedir, 'lifeliftroot.xml')
             tree = ET.parse(life_lift_root_path)
             root = tree.getroot()
@@ -1064,10 +1057,12 @@ def uploadlexemeexcelliftxml():
 @app.route('/lexemekeymapping', methods=['GET', 'POST'])
 def lexemekeymapping():
     # getting the collections
-    userprojects = mongo.db.userprojects              # collection of users and their respective projects
-    lexemes = mongo.db.lexemes                          # collection containing entry of each lexeme and its details
-
-    activeprojectname = userprojects.find_one({ 'username' : current_user.username })['activeproject']
+    userprojects, lexemes = getdbcollections.getdbcollections(mongo,
+                                                'projects',
+                                                'userprojects',
+                                                'lexemes')
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username,
+                            userprojects)
     projectname =  activeprojectname
     lst = []
     lst.append({'projectname': activeprojectname})
@@ -1078,8 +1073,8 @@ def lexemekeymapping():
     # Serializing json  
     json_object = json.dumps(lst, indent = 2, ensure_ascii=False)
 
-    with open(basedir+"/lexemeEntry.json", "w") as outfile: 
-            outfile.write(json_object)
+    with open(basedir+"/lexemeEntry.json", "w") as outfile:
+        outfile.write(json_object)
             
     if request.method == 'POST':
         newLexemeFiles = request.files.to_dict()
@@ -2722,21 +2717,15 @@ def editlexeme():
 
 @app.route('/lexemeupdate', methods=['GET', 'POST'])
 def lexemeupdate():
-    print(current_user.username)
-    # getting the collections
-    projects = mongo.db.projects                        # collection containing projects name
-    userprojects = mongo.db.userprojects              # collection of users and their respective projects
-    lexemes = mongo.db.lexemes                          # collection containing entry of each lexeme and its details
-    # activeprojectnames = mongo.db.activeprojectnames    # collection containing username and his/her last seen project name
-
-    # getting the name of all the projects created by current user
-    currentuserprojectsname =  currentuserprojects()
-
-    # getting the name of the active project
-    activeprojectname = userprojects.find_one({ 'username' : current_user.username },\
-                    {'_id' : 0, 'activeproject': 1})['activeproject']
-    
-    projectOwner = projects.find_one({}, {"_id" : 0, activeprojectname : 1})[activeprojectname]["projectOwner"]
+    projects, userprojects, lexemes = getdbcollections.getdbcollections(mongo,
+                                                'projects',
+                                                'userprojects',
+                                                'lexemes')
+    currentuserprojectsname =  getcurrentuserprojects.getcurrentuserprojects(current_user.username,
+                                userprojects)
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username,
+                            userprojects)
+    projectowner = getprojectowner.getprojectowner(activeprojectname, projects)
     # print(f"PROJECT OWNER: {projectOwner}")
     # new lexeme details coming from current project form
     if request.method == 'POST':
@@ -2804,7 +2793,7 @@ def lexemeupdate():
             "Telugu": "Telugu"
         }
 
-        lexemeFormData['username'] = projectOwner
+        lexemeFormData['username'] = projectowner
 
         def lexemeFormScript():
             """'List of dictionary' of lexeme form scripts"""
@@ -3046,51 +3035,38 @@ def lexemeupdate():
 @app.route('/lexemedelete', methods=['GET', 'POST'])
 def lexemedelete():
     # getting the collections
-    projectsform = mongo.db.projectsform                # collection of project specific form created by the user
-    lexemes = mongo.db.lexemes                          # collection containing entry of each lexeme and its details
-    userprojects = mongo.db.userprojects                # collection of users and their respective projects
-    projects = mongo.db.projects                        # collection of projects
+    projects, userprojects, lexemes = getdbcollections.getdbcollections(mongo,
+                                                'projects',
+                                                'userprojects',
+                                                'lexemes')
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username,
+                            userprojects)
+    projectowner = getprojectowner.getprojectowner(activeprojectname, projects)
 
-
-    headword = request.args.get('a').split(',')                    # data through ajax
-    print(headword[0])
-    
-    activeprojectname = userprojects.find_one({ 'username' : current_user.username })['activeproject']
-    # print(activeprojectname)
-    
-    projectOwner = projects.find_one({}, {"_id" : 0, activeprojectname : 1})[activeprojectname]["projectOwner"]
-    # print(projectOwner)
-
-    # l = lexemes.find_one({ 'username' : projectOwner, 'projectname' : activeprojectname, 'lexemeId' : headword[0] }, \
-    #                             {'_id' : 0, 'headword' : 1, 'gloss' : 1, 'grammaticalcategory' : 1, 'lexemeId' : 1})
-    # print(l)
-
-    lexemes.update_one({'username' : projectOwner, 'lexemeId' : headword[0]},\
+    # data through ajax
+    headword = request.args.get('a').split(',')
+    lexemes.update_one({'username' : projectowner, 'lexemeId' : headword[0]},\
                         { '$set': { 'lexemedeleteFLAG': 1 }})
                     
     return jsonify(msg=headword[1]+' deletion successful')
-    # return 'OK'
 
 # delete button on dictionary view table
 @app.route('/deletemultiplelexemes', methods=['GET', 'POST'])
 def deletemultiplelexemes():
-    # getting the collections
-    projectsform = mongo.db.projectsform                # collection of project specific form created by the user
-    lexemes = mongo.db.lexemes                          # collection containing entry of each lexeme and its details
-    userprojects = mongo.db.userprojects                # collection of users and their respective projects
-    projects = mongo.db.projects                        # collection of projects
-    
-    activeprojectname = userprojects.find_one({ 'username' : current_user.username })['activeproject']
-    
-    projectOwner = projects.find_one({}, {"_id" : 0, activeprojectname : 1})[activeprojectname]["projectOwner"]
-    print(projectOwner)
-
-    headwords = request.args.get('data')                   # data through ajax
+    projects, userprojects, lexemes = getdbcollections.getdbcollections(mongo,
+                                                'projects',
+                                                'userprojects',
+                                                'lexemes')
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username,
+                            userprojects)
+    projectowner = getprojectowner.getprojectowner(activeprojectname, projects)
+    # data through ajax
+    headwords = request.args.get('data')
     headwords = eval(headwords)
 
     # print(headwords)
     for headwordId in headwords.keys():
-        lexemes.update_one({'username' : projectOwner, 'lexemeId' : headwordId, \
+        lexemes.update_one({'username' : projectowner, 'lexemeId' : headwordId, \
                         }, { '$set': { 'lexemedeleteFLAG': 1 }})
 
     return 'OK'
@@ -3243,3 +3219,55 @@ def audiotranscription():
 def assignkaryaaccesscode():
     print(f"IN KARYA ACCESS CODE ASSIGNMENT FUNCTION")
     return redirect(url_for('home'))
+
+@app.route('/datetimeasid', methods=['GET'])
+def datetimeasid():
+    Id = re.sub(r'[-: \.]', '', str(datetime.now()))
+    print(Id)
+    return jsonify(Id=Id)
+
+@app.route('/loadpreviousaudio', methods=['GET', 'POST'])
+@login_required
+def loadpreviousaudio():
+    # data through ajax
+    lastActiveFilename = request.args.get('data')
+    lastActiveFilename = eval(lastActiveFilename)
+    print(lastActiveFilename)
+    newAudioFilePath = getAudioFilename(lastActiveFilename, 'previous')
+
+    return jsonify(newAudioFilePath=newAudioFilePath)
+
+@app.route('/loadnextaudio', methods=['GET', 'POST'])
+@login_required
+def loadnextaudio():
+    # data through ajax
+    lastActiveFilename = request.args.get('data')
+    lastActiveFilename = eval(lastActiveFilename)
+    print(lastActiveFilename)
+    newAudioFilePath = getAudioFilename(lastActiveFilename, 'next')
+
+    return jsonify(newAudioFilePath=newAudioFilePath)
+
+def getAudioFilename(lastActiveFilename, whichOne):
+    audioFilesPath = 'static/audio'
+    baseAudioFilesPath = os.path.join(basedir, audioFilesPath)
+    audioFilesList = sorted(os.listdir(baseAudioFilesPath))
+    print(audioFilesList)
+    audioFileIndex = audioFilesList.index(lastActiveFilename)
+    if (whichOne == 'next'):
+        audioFileIndex = audioFileIndex + 1
+    elif (whichOne == 'previous'):
+        audioFileIndex = audioFileIndex - 1  
+    newAudioFilePath = os.path.join(audioFilesPath, audioFilesList[audioFileIndex])
+
+    return newAudioFilePath
+
+# this is for the dropdown list of all the filenames.
+# it could be use by the user to move to (load) some random audio using the filename
+@app.route('/allunannotated', methods=['GET', 'POST'])
+def allunannotated():
+    audioFilesPath = 'static/audio'
+    baseAudioFilesPath = os.path.join(basedir, audioFilesPath)
+    audioFilesList = sorted(os.listdir(baseAudioFilesPath))
+
+    return jsonify(allunanno=audioFilesList, allanno=audioFilesList)

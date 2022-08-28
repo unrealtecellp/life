@@ -54,4 +54,6 @@
 22 August 2022
 ---------------------------------------------------------------
 - show/change form based on active radio button in transcription field.
+- multiple gloss lang script in interlinear gloss column.
+- each transcription has there own 'Add Interlinear Gloss'
 
