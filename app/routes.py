@@ -41,7 +41,7 @@ from app.controller import latex_generator as lg, savenewlexeme
 from app.controller import getdbcollections, getcurrentuserprojects, getactiveprojectname
 from app.controller import getprojectowner, getactiveprojectform, savenewsentence
 from app.controller import readJSONFile, createdummylexemeentry
-from app.controller import savenewprojectform, getnewsentence
+from app.controller import savenewproject, updateuserprojects, savenewprojectform, getnewsentence, saveaudiofiles
 import shutil
 
 
@@ -73,10 +73,32 @@ def home():
 @app.route('/newproject', methods=['GET', 'POST'])
 @login_required
 def newproject():
-    userprojects, = getdbcollections.getdbcollections(mongo, 'userprojects')
+    projects, userprojects, projectsform = getdbcollections.getdbcollections(mongo,
+                                                'projects',
+                                                'userprojects',
+                                                'projectsform')
     currentuserprojectsname =  getcurrentuserprojects.getcurrentuserprojects(current_user.username,
                                 userprojects)
-
+    if request.method == 'POST':
+        project_form_data = dict(request.form.lists())
+        project_name = project_form_data['projectname'][0]
+        project_name = savenewproject.savenewproject(projects,
+                                                        project_name,
+                                                        current_user.username)
+        if project_name == '':
+            flash(f'Project Name : {project_name} already exist!')
+            return redirect(url_for('newproject'))
+        else:
+            print(project_name)
+            updateuserprojects.updateuserprojects(userprojects,
+                                                    project_name,
+                                                    current_user.username)
+            savenewprojectform.savenewprojectform(projectsform,
+                                                    project_name,
+                                                    project_form_data,
+                                                    current_user.username)
+            flash(f'Project Name : {project_name} created successfully :)')
+            return redirect(url_for('home'))
     return render_template('newproject.html',
                             data=currentuserprojectsname)
 
@@ -100,7 +122,6 @@ def enternewsentences():
                                 userprojects)
     activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username,
                             userprojects)
-
     if request.method == 'POST':
         newSentencesData = dict(request.form.lists())
         newSentencesFiles = request.files.to_dict()
@@ -114,12 +135,12 @@ def enternewsentences():
     # currentuserprojectsname =  getcurrentuserprojects.getcurrentuserprojects(current_user.username,
     #                             userprojects)
 
+    
     # if method is not 'POST'
-    projectowner = getprojectowner.getprojectowner(activeprojectname, projects)
+    projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
     activeprojectform = getactiveprojectform.getactiveprojectform(projectsform,
                                                                     projectowner,
                                                                     activeprojectname)
-
     if activeprojectform is not None:
         return render_template('enternewsentences.html',
                                 projectName=activeprojectname,
@@ -136,11 +157,15 @@ def enternewsentences():
 @app.route('/getnewsentences', methods=['GET', 'POST'])
 @login_required
 def getnewsentences():
-    userprojects, = getdbcollections.getdbcollections(mongo, 'userprojects')
+    userprojects, transcriptions = getdbcollections.getdbcollections(mongo,
+                                                                    'userprojects',
+                                                                    'transcriptions')
     activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username, userprojects)
     # data through ajax
-    transcriptionDetails = request.args.get('a')
-    getnewsentence.getnewsentence(transcriptionDetails)
+    transcription_regions = request.args.get('a')
+    getnewsentence.getnewsentence(transcriptions,
+                                    current_user.username,
+                                    transcription_regions)
     sentenceFieldId = ''
     gloss = ''
     sentence = ''
@@ -245,7 +270,7 @@ def dummylexemeentry():
     activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username,
                             userprojects)
 
-    projectowner = getprojectowner.getprojectowner(activeprojectname, projects)
+    projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
     activeprojectform = getactiveprojectform.getactiveprojectform(projectsform,
                                                                     projectowner,
                                                                     activeprojectname)
@@ -271,13 +296,13 @@ def dictionaryview():
                                 userprojects)
     activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username,
                             userprojects)
-    projectowner = getprojectowner.getprojectowner(activeprojectname, projects)
+    projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
     scriptCode = readJSONFile.readJSONFile(scriptCodeJSONFilePath)
     langScript = readJSONFile.readJSONFile(langScriptJSONFilePath)
     if request.method == 'POST':
         new_lexeme_data = dict(request.form.lists())
         new_lexeme_files = request.files.to_dict()
-        savenewlexeme.enternewlexeme(mongo,
+        savenewlexeme.savenewlexeme(mongo,
                                         projects,
                                         lexemes,
                                         scriptCode,
@@ -303,7 +328,7 @@ def dictionaryview():
     lst = list()
     try:
         # print(activeprojectname)
-        projectowner = getprojectowner.getprojectowner(activeprojectname, projects)
+        projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
         for lexeme in lexemes.find({ 'username' : projectowner, 'projectname' : activeprojectname, 'lexemedeleteFLAG' : 0 }, \
                                 {'_id' : 0, 'headword' : 1, 'gloss' : 1, 'grammaticalcategory' : 1, 'lexemeId' : 1}):
             # pprint(lexeme)
@@ -334,26 +359,38 @@ def enternewlexeme():
                             userprojects)
 
     # new project form containing dictionary fields and its type
-    if request.method == 'POST':
-        project_form_data = dict(request.form.lists())
-        savenewprojectform.savenewprojectform(projects,
-                                                userprojects,
-                                                projectsform,
-                                                project_form_data,
-                                                current_user.username)
+    # if request.method == 'POST':
+    #     project_form_data = dict(request.form.lists())
+    #     project_name = project_form_data['projectname'][0]
+    #     project_name = savenewproject.savenewproject(projects,
+    #                                                     project_name,
+    #                                                     current_user.username)
+    #     if project_name == '':
+    #         flash(f'Project Name : {project_name} already exist!')
+    #         return redirect(url_for('newproject'))
+    #     else:
+    #         print(project_name)
+    #         updateuserprojects.updateuserprojects(userprojects,
+    #                                                 project_name,
+    #                                                 current_user.username)
+    #         savenewprojectform.savenewprojectform(projectsform,
+    #                                                 project_name,
+    #                                                 project_form_data,
+    #                                                 current_user.username)
 
-        activeprojectname = userprojects.find_one({ 'username' : current_user.username })['activeproject']
+    # activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username,
+    #                     userprojects)
 
-        project_form = projectsform.find_one_or_404({'projectname' : activeprojectname,
-                                        'username' : current_user.username},
-                                        { "_id" : 0 })
-        if project_form is not None:
-            return render_template('enternewlexeme.html',
-                                    newData=project_form,
-                                    data=currentuserprojectsname)
-        return render_template('enternewlexeme.html')
+    # project_form = projectsform.find_one_or_404({'projectname' : activeprojectname,
+    #                                 'username' : current_user.username},
+    #                                 { "_id" : 0 })
+    # if project_form is not None:
+    #     return render_template('enternewlexeme.html',
+    #                             newData=project_form,
+    #                             data=currentuserprojectsname)
+    # return render_template('enternewlexeme.html')
     # if method is not 'POST'
-    projectowner = getprojectowner.getprojectowner(activeprojectname, projects)
+    projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
     project_form = projectsform.find_one_or_404({'projectname' : activeprojectname,
                                         'username' : projectowner},
                                         { "_id" : 0 })
@@ -377,7 +414,7 @@ def enterlexemefromuploadedfile(lexemedf):
                                 userprojects)
     activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username,
                             userprojects)
-    projectowner = getprojectowner.getprojectowner(activeprojectname, projects)
+    projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
     projectname = activeprojectname
     project = projects.find_one({}, {projectname : 1})
     def lexmetadata():
@@ -2725,7 +2762,7 @@ def lexemeupdate():
                                 userprojects)
     activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username,
                             userprojects)
-    projectowner = getprojectowner.getprojectowner(activeprojectname, projects)
+    projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
     # print(f"PROJECT OWNER: {projectOwner}")
     # new lexeme details coming from current project form
     if request.method == 'POST':
@@ -3041,7 +3078,7 @@ def lexemedelete():
                                                 'lexemes')
     activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username,
                             userprojects)
-    projectowner = getprojectowner.getprojectowner(activeprojectname, projects)
+    projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
 
     # data through ajax
     headword = request.args.get('a').split(',')
@@ -3059,7 +3096,7 @@ def deletemultiplelexemes():
                                                 'lexemes')
     activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username,
                             userprojects)
-    projectowner = getprojectowner.getprojectowner(activeprojectname, projects)
+    projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
     # data through ajax
     headwords = request.args.get('data')
     headwords = eval(headwords)
@@ -3163,9 +3200,37 @@ def dummyUserandProject():
     projects = mongo.db.projects                        # collection containing projects name
     if len(mongo.db.list_collection_names()) == 0:
         userprojects.insert({'username' : "dummyUser", 'myproject': ["dummyProject1"], \
-            'projectsharedwithme': [], 'activeproject' : "dummyActiveProject"})
-        projects.insert({"dummyProject1" : {"projectOwner" : "dummyUser", "lexemeInserted" : 0, "lexemeDeleted" : 0,\
-            'sharedwith': ['dummyUser'], 'projectdeleteFLAG' : 0}})
+            'projectsharedwithme': [], 'activeprojectname' : "dummyActiveProject"})
+        projects.insert({"projectname": "dummyProject1",
+                        "projectOwner" : "dummyUser",
+                        "lexemeInserted" : 0,
+                        "lexemeDeleted" : 0,\
+                        'sharedwith': ['dummyUser'],
+                        'projectdeleteFLAG' : 0
+                        })
+
+# uploadaudiofiles route
+@app.route('/uploadaudiofiles', methods=['GET', 'POST'])
+@login_required
+def uploadaudiofiles():
+
+    projects, userprojects, transcriptions = getdbcollections.getdbcollections(mongo,
+                                                'projects',
+                                                'userprojects',
+                                                'transcriptions')
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username,
+                            userprojects)
+    projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
+    if request.method == 'POST':
+        new_audio_file = request.files.to_dict()
+        saveaudiofiles.saveaudiofiles(mongo,
+                                        projects,
+                                        transcriptions,
+                                        projectowner,
+                                        activeprojectname,
+                                        current_user.username,
+                                        new_audio_file)
+    return redirect(url_for('enternewsentences'))
 
 # audio transcription route
 @app.route('/', methods=['GET', 'POST'])
@@ -3217,7 +3282,7 @@ def audiotranscription():
 @app.route('/assignkaryaaccesscode', methods=['GET', 'POST'])
 @login_required
 def assignkaryaaccesscode():
-    print(f"IN KARYA ACCESS CODE ASSIGNMENT FUNCTION")
+    # print(f"IN KARYA ACCESS CODE ASSIGNMENT FUNCTION")
     return redirect(url_for('home'))
 
 @app.route('/datetimeasid', methods=['GET'])

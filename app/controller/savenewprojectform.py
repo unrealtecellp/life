@@ -1,95 +1,67 @@
 """Module to save new project form in database."""
 
 import re
-from flask import flash, redirect, url_for
 
-def savenewprojectform(projects,
-                        userprojects,
-                        projectsform,
+def savenewprojectform(projectsform,
+                        projectname,
                         project_form_data,
                         current_username):
     """
     Args:
-        projects: instance of 'projects' collection.
-        userprojects: instance of 'userprojects' collection.
         projectsform: instance of 'projectsform' collection.
+        projectname: name of the project.
         project_form_data: project form detail from frontend.
         current_username: name of the current active user.
 
     Returns:
         _type_: _description_
     """
+    
     print(f'{"#"*80}\nprojectFormData\n{project_form_data}')
-    dynamicFormField = []
-    listOfCustomFields = []
-    projectForm = {}
-    projectForm['projectname'] = project_form_data['projectname'][0]
-    if (projects.find_one({}) != None and
-        projectForm["projectname"] in projects.find_one({}).keys()):
-        # flash(f'Project Name : {projectForm["projectname"]} already exist!')
-        return redirect(url_for('newproject'))
-    #get _id in collection name projects
-    if projects.find_one({}) is not None:
-        projects_id = projects.find_one({}, {"_id" : 1})["_id"]
-        projectForm['username'] = current_username
-        # when testing comment these to avoid any database update/changes
-        try:
-            projects.update_one({ "_id" : projects_id }, \
-                { '$set' : { projectForm['projectname'] : {"projectOwner" : current_username,
-                        "lexemeInserted" : 0, "lexemeDeleted" : 0,
-                        "sharedwith": [projectForm['username']], "projectdeleteFLAG" : 0} }})
-        except:
-            flash("Please enter the Project Name!!!")
-            return redirect(url_for('newproject'))
+    project_form = {}
+    project_form['username'] = current_username
+    project_form['projectname'] = projectname
+    dynamic_form_field = []
+    list_of_custom_fields = []
+    for key, value in project_form_data.items():
+        if re.search(r'[0-9]+', key):
+            dynamic_form_field.append(value[0])
+        elif key == 'Lexeme Form Script':
+            project_form[key] = value
+        elif key == 'Gloss Language':
+            value.insert(0, 'English')
+            project_form[key] = value
+        elif key == 'Gloss Script':
+            value.insert(0, 'Latin')
+            project_form[key] = value
+        elif key == 'Interlinear Gloss Language':
+            value.insert(0, 'English')
+            project_form[key] = value
+        elif key == 'Interlinear Gloss Script':
+            value.insert(0, 'Latin')
+            project_form[key] = value
+        elif len(value) == 1:
+            project_form[key] = value[0]
+        else:
+            project_form[key] = value
 
-        # get curent user project list and update
-        userprojectnamelist = userprojects.find_one({'username' : current_username})["myproject"]
-        # print(f'{"#"*80}\n{userprojectnamelist}')
-        userprojectnamelist.append(projectForm['projectname'])
-        # when testing comment these to avoid any database update/changes
-        userprojects.update_one({ 'username' : current_username },
-            { '$set' : { 'myproject' : userprojectnamelist,
-                'activeproject' :  projectForm['projectname']}})
-        dynamicFormField = []
-        listOfCustomFields = []
-        for key, value in project_form_data.items():
-            if re.search(r'[0-9]+', key):
-                dynamicFormField.append(value[0])
-            elif key == 'Lexeme Form Script':
-                projectForm[key] = value
-            elif key == 'Gloss Language':
-                value.insert(0, 'English')
-                projectForm[key] = value
-            elif key == 'Gloss Script':
-                value.insert(0, 'Latin')
-                projectForm[key] = value
-            elif key == 'Interlinear Gloss Language':
-                value.insert(0, 'English')
-                projectForm[key] = value
-            elif key == 'Interlinear Gloss Script':
-                value.insert(0, 'Latin')
-                projectForm[key] = value
-            elif len(value) == 1:
-                projectForm[key] = value[0]
-            else:
-                projectForm[key] = value
-        # sentence form detail
-        projectForm['Sentence Language'] = projectForm['Lexeme Language']
-        projectForm['Transcription Script'] = projectForm['Lexeme Form Script']
-        projectForm['Translation Language'] = projectForm['Gloss Language']
-        projectForm['Translation Script']  = projectForm['Gloss Script']
-
-        if ("Gloss Language" not in projectForm):
-            projectForm["Gloss Language"] = ['English']
-        if ("Gloss Script" not in projectForm):
-            projectForm["Gloss Script"] = ['Latin']
-        if ("Interlinear Gloss Language" not in projectForm):
-            projectForm["Interlinear Gloss Language"] = ['English']
-        if ("Interlinear Gloss Script" not in projectForm):
-            projectForm["Interlinear Gloss Script"] = ['Latin']
-        if len(dynamicFormField) > 1:
-            for i in range(0,len(dynamicFormField),2):
-                listOfCustomFields.append({dynamicFormField[i] : dynamicFormField[i+1]})
-            projectForm['Custom Fields'] = listOfCustomFields
-        # when testing comment these to avoid any database update/changes
-        projectsform.insert(projectForm)
+    if "Gloss Language" not in project_form:
+        project_form["Gloss Language"] = ['English']
+    if "Gloss Script" not in project_form:
+        project_form["Gloss Script"] = ['Latin']
+    if "Interlinear Gloss Language" not in project_form:
+        project_form["Interlinear Gloss Language"] = ['English']
+    if "Interlinear Gloss Script" not in project_form:
+        project_form["Interlinear Gloss Script"] = ['Latin']
+    if len(dynamic_form_field) > 1:
+        for i in range(0,len(dynamic_form_field),2):
+            list_of_custom_fields.append({dynamic_form_field[i] : dynamic_form_field[i+1]})
+        project_form['Custom Fields'] = list_of_custom_fields
+    # sentence form detail
+    project_form['Sentence Language'] = project_form['Lexeme Language']
+    project_form['Transcription Script'] = project_form['Lexeme Form Script']
+    project_form['Translation Language'] = project_form['Gloss Language']
+    project_form['Translation Script']  = project_form['Gloss Script']
+    print(project_form)
+    # when testing comment these to avoid any database update/changes
+    projectsform.insert(project_form)

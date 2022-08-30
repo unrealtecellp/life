@@ -420,8 +420,10 @@ $("#activeTranslationField").click(function() {
 function activeTranslationLangs() {
   var x = document.getElementById("translationlangs");
   if (x.style.display === "none") {
+    document.getElementById("activeTranslationField").value = true;
     x.style.display = "block";
   } else {
+    document.getElementById("activeTranslationField").value = false;
     x.style.display = "none";
   }
 }
@@ -433,8 +435,10 @@ $("#activeTagsField").click(function() {
 function activeTags() {
     var x = document.getElementById("tags");
     if (x.style.display === "none") {
+      document.getElementById("activeTagsField").value = true;
       x.style.display = "block";
     } else {
+      document.getElementById("activeTagsField").value = false;
       x.style.display = "none";
     }
 }
@@ -698,11 +702,11 @@ function myFunction(newData) {
           inpt += '<div class="form-group">';
           if (i === 0) {
             inpt += '<input type="radio" id="TranscriptionRadioBtn'+ transcriptionScript[i] +'" name="activeTranscriptionScript"'+
-                    'value="Transcription_'+ transcriptionScript[i] +'" onchange="getActiveTranscription()" checked>';
+                    'value="Transcription_'+ transcriptionScript[i] +'" checked>';
           }
           else {
             inpt += '<input type="radio" id="TranscriptionRadioBtn'+ transcriptionScript[i] +'" name="activeTranscriptionScript"'+
-                    'value="Transcription_'+ transcriptionScript[i] +'" onchange="getActiveTranscription()">';
+                    'value="Transcription_'+ transcriptionScript[i] +'">';
           }                
           inpt += '<label for="Transcription_'+ transcriptionScript[i] +'">Transcription in '+ lScript +'</label>'+
                 '<input type="text" class="form-control" id="Transcription_'+ transcriptionScript[i] +'"'+ 

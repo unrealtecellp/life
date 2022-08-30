@@ -43,8 +43,8 @@ document.addEventListener('DOMContentLoaded', function() {
     //     });
 
     /* Regions */
-    localStorage.removeItem('regions');
-    localStorage.setItem("regions", JSON.stringify([]));
+    // localStorage.removeItem('regions');
+    // localStorage.setItem("regions", JSON.stringify([]));
     filePath = JSON.parse(localStorage.getItem('AudioFilePath'));
     wavesurfer.load(filePath)
     wavesurfer.on('ready', function() {
@@ -301,6 +301,9 @@ function sentenceDetails(sentenceData) {
     // console.log(typeof formData)
     // let sentenceData = new Object();
     let transcriptionData = new Object();
+    if (Object.keys(sentenceData).includes('transcription')) {
+        transcriptionData = sentenceData['transcription']
+    }
     let translationData = new Object();
     let tagsData = new Object();
     let morphData = new Object();
@@ -320,10 +323,10 @@ function sentenceDetails(sentenceData) {
             ename = value.name.replace(activetranscriptionscript, '');
             // console.log(eleName, ename)
             if (eleName !== '') {
-                // console.log(key, value.name, formData[eleName].value);
+                console.log(key, value.name, formData[eleName].value);
 
                 if (ename.includes('Transcription') && !ename.includes('active')) {
-                    console.log(key, value.name, formData[eleName].value);
+                    console.log('!!!!!!!!!!!!!!!', key, value.name, formData[eleName].value);
                     transcriptionData[value.name] = formData[eleName].value;
                 }
                 else if (ename.includes('Translation') && !ename.includes('active')) {
@@ -342,7 +345,7 @@ function sentenceDetails(sentenceData) {
                     actualTranscription = formData['Transcription_'+morphemeFor].value.split(" ")
                     morphemicBreakTranscription = formData['morphsentenceMorphemicBreakTranscription_'+morphemeFor].value
                     morphData[morphemeFor] = morphemeDetails(actualTranscription, morphemicBreakTranscription)
-                    morphemeIdMap = morphemeIdMap(actualTranscription, morphemicBreakTranscription)
+                    morphemeIdMap = morphemeidMap(actualTranscription, morphemicBreakTranscription)
                     glossData[morphemeFor] = glossDetails(morphCount,
                                                             morphemeFor,
                                                             formData,
@@ -429,7 +432,7 @@ function glossDetails(morphCount, morphemeFor, formData, actualTranscription, mo
     return glossData
 }
 
-function morphemeIdMap() {
+function morphemeidMap() {
     morphemicBreakTranscription = morphemicBreakTranscription.split(" ")
     glossDataMapping = mapArrays(actualTranscription, morphemicBreakTranscription)
     // console.log(glossDataMapping);

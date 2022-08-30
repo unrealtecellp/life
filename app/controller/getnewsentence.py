@@ -1,17 +1,42 @@
 """Module to work on the sentence details (transcription and all) through ajax."""
 
 import json
-from pprint import pprint
+# from pprint import pprint
 
-def getnewsentence(transcriptionDetails):
-    if (transcriptionDetails != None):
-        transcriptionDetails = json.loads(transcriptionDetails)
-        pprint(transcriptionDetails)
-        print(transcriptionDetails)
-        print(type(transcriptionDetails))
-        print()
-        with open("data_format/tempSentence.json", 'w') as f:
-            json.dump(transcriptionDetails, f)
+def getnewsentence(transcriptions,
+                    current_username,
+                    transcription_regions):
+    """_summary_
+
+    Args:
+        transcription_details (_type_): _description_
+    """
+
+    transcription_details = {
+        'updatedBy' : current_username,
+        "textdeleteFLAG": 0
+    }
+    text_grid = {}
+    sentence = {}
+    if transcription_regions is not None:
+        transcription_regions = json.loads(transcription_regions)
+        for transcription_boundary in transcription_regions:
+            print(transcription_boundary)
+            sentence[transcription_boundary['boundaryID']] = {
+                'start': transcription_boundary['start'],
+                'end': transcription_boundary['end']
+            }
+        text_grid['sentence'] = sentence
+        print(text_grid)
+        transcription_details['textGrid'] = text_grid
+        transcriptions.insert(transcription_details)
+
+        # pprint(transcriptionDetails)
+        # print(transcriptionDetails)
+        # print(type(transcriptionDetails))
+        # print()
+        # with open("data_format/tempSentence.json", 'w') as f:
+        #     json.dump(transcriptionDetails, f)
 
         # sentence = request.args.get('a').split(',')                    # data through ajax
         # sentenceFieldId = sentence[0]

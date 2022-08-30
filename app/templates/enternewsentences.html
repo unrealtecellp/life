@@ -12,9 +12,23 @@
 {% endblock %}
 
 {% block app_content %}
-{% if projectName is defined %}
-    <h4>Project Name : {{ projectName }}</h4><br>
-{% endif %}
+<div class="row">
+  <div class="col-sm-9">
+    {% if projectName is defined %}
+        <h4>Project Name : {{ projectName }}</h4><br>
+    {% endif %}
+  </div>
+  <div class="col-sm-3">
+    <form name="newaudioupload" action="/uploadaudiofiles" method="POST" enctype="multipart/form-data">
+      <div class="col upload">
+        <input type="file" id="audiofile" name="audiofile" required>
+        <br>
+        <input class="btn btn-primary uploadbtn" type="submit" value="Upload Audio Files">
+      </div>
+    </form>
+  </div>
+</div>
+<hr>
   {% for data in sdata %}
       {% if data['sentenceId'] is defined %}
         {% if data['interlineargloss'] is defined %}
