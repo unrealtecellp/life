@@ -5,7 +5,8 @@ import json
 
 def getnewsentence(transcriptions,
                     current_username,
-                    transcription_regions):
+                    transcription_regions,
+                    audio_id):
     """_summary_
 
     Args:
@@ -29,7 +30,9 @@ def getnewsentence(transcriptions,
         text_grid['sentence'] = sentence
         print(text_grid)
         transcription_details['textGrid'] = text_grid
-        transcriptions.insert(transcription_details)
+        # transcriptions.insert(transcription_details)
+        transcriptions.update_one({ 'audioId': audio_id },
+                                    {'$set': { 'textGrid.sentence': sentence }})
 
         # pprint(transcriptionDetails)
         # print(transcriptionDetails)

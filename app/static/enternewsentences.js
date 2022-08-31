@@ -332,11 +332,6 @@ var posCategories =
 {"id": "Verb", "text": "Verb"}
 ];
 
-var activeAudioFilename = JSON.parse(localStorage.getItem('AudioFilePath')).split('/')[2];
-// console.log(activeAudioFilename)
-var audioFilenameTag = '<strong>Audio Filename: </strong><strong id="audioFilename">'+ activeAudioFilename +'</strong>'
-$(".defaultfield").append(audioFilenameTag);
-
 var activeSentenceMorphemicBreak = '<input type="checkbox" id="activeSentenceMorphemicBreak" name="activeSentenceMorphemicBreak" value="false">'+
                                   '<label for="activeSentenceMorphemicBreak">&nbsp; Add Interlinear Gloss</label><br></br>'
 $(".sentencefield").append(activeSentenceMorphemicBreak);
@@ -662,20 +657,37 @@ function morphemeFields(morphemicSplitSentence, name, morphemePOS) {
 
 $("#save").click(function() {
   console.log('sending transcription and morphemic details to the server');
-  var transcriptionData = localStorage.regions
+  var transcriptionData = Object()
+  var transcriptionRegions = localStorage.regions
+  var lastActiveId = document.getElementById("lastActiveId").value;
+  transcriptionData['lastActiveId'] = lastActiveId
+  transcriptionData['transcriptionRegions'] = transcriptionRegions
+  console.log(transcriptionData)
   $.getJSON('/getnewsentences', {
   
-  a:String(transcriptionData)
+  a:JSON.stringify(transcriptionData)
   }, function(data) {
-
+      window.location.reload();
   });
   return false; 
 });
 
 function myFunction(newData) {
   console.log(newData);
-
-  var inpt = '';
+  localStorage.setItem("regions", JSON.stringify(newData['transcriptionRegions']));
+  // var activeAudioFilename = JSON.parse(localStorage.getItem('AudioFilePath')).split('/')[2];
+  var activeAudioFilename = newData["AudioFilePath"].split('/')[2];
+  // console.log(activeAudioFilename)
+  var inpt = '<strong>Audio Filename: </strong><strong id="audioFilename">'+ activeAudioFilename +'</strong>'
+  $(".defaultfield").append(inpt);
+  lastActiveId = newData["lastActiveId"]
+  // console.log(lastActiveId)
+  inpt = '<input type="hidden" id="lastActiveId" name="lastActiveId" value="'+lastActiveId+'">';
+  $('.defaultfield').append(inpt);
+  inpt = ''
+  // localStorage.removeItem('regions');
+  localStorage.setItem("transcriptionDetails", JSON.stringify([newData['transcriptionDetails']]));
+  localStorage.setItem("AudioFilePath", JSON.stringify(newData['AudioFilePath']));
   for (let [key, value] of Object.entries(newData)){
     // console.log(key, value);
     if (key === 'Sentence Language') {
@@ -771,16 +783,16 @@ function displayRadioValue() {
 
   
 function previousAudio() {
-  lastActiveFilename = document.getElementById("audioFilename").innerHTML;
-  // console.log(lastActiveFilename)
+  var lastActiveId = document.getElementById("lastActiveId").value;
+  console.log(lastActiveId)
     $.ajax({
         url: '/loadpreviousaudio',
         type: 'GET',
-        data: {'data': JSON.stringify(lastActiveFilename)},
+        data: {'data': JSON.stringify(lastActiveId)},
         contentType: "application/json; charset=utf-8", 
         success: function(response){
           // console.log(response.newAudioFilePath)
-          localStorage.setItem("AudioFilePath", JSON.stringify(response.newAudioFilePath));
+          // localStorage.setItem("AudioFilePath", JSON.stringify(response.newAudioFilePath));
           window.location.reload();
         }
     });
@@ -788,16 +800,17 @@ function previousAudio() {
 }
 
 function nextAudio() {
-  lastActiveFilename = document.getElementById("audioFilename").innerHTML;
+  // lastActiveFilename = document.getElementById("audioFilename").innerHTML;
+  var lastActiveId = document.getElementById("lastActiveId").value;
   // console.log(lastActiveFilename)
     $.ajax({
         url: '/loadnextaudio',
         type: 'GET',
-        data: {'data': JSON.stringify(lastActiveFilename)},
+        data: {'data': JSON.stringify(lastActiveId)},
         contentType: "application/json; charset=utf-8", 
         success: function(response){
           // console.log(response.newAudioFilePath)
-          localStorage.setItem("AudioFilePath", JSON.stringify(response.newAudioFilePath));
+          // localStorage.setItem("AudioFilePath", JSON.stringify(response.newAudioFilePath));
           window.location.reload();
         }
     });

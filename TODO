@@ -80,7 +80,7 @@
     
 - redefine 'projects' collection
 --     - each project should be saved as one document in the collection.
-    - 'audioIds' - list of all uploaded audios in the project.
+    -- - 'audioIds' - list of all uploaded audios in the project.
 
 - audio transcription
     - one audio can be transcribe by mutiple user.

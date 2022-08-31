@@ -14,5 +14,5 @@ def getprojectowner(projects, activeprojectname):
     print(activeprojectname)
     projectowner = projects.find_one({ "projectname": activeprojectname },
                                         { "_id" : 0, "projectOwner" : 1 })["projectOwner"]
-                                        
+
     return projectowner

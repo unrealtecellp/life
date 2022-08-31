@@ -1,3 +1,4 @@
+from email.mime import audio
 from flask import flash, redirect, render_template, url_for, request, json, jsonify, send_file
 from pymongo import database
 from werkzeug.urls import url_parse
@@ -41,7 +42,8 @@ from app.controller import latex_generator as lg, savenewlexeme
 from app.controller import getdbcollections, getcurrentuserprojects, getactiveprojectname
 from app.controller import getprojectowner, getactiveprojectform, savenewsentence
 from app.controller import readJSONFile, createdummylexemeentry
-from app.controller import savenewproject, updateuserprojects, savenewprojectform, getnewsentence, saveaudiofiles
+from app.controller import savenewproject, updateuserprojects, savenewprojectform, getnewsentence
+from app.controller import audiodetails
 import shutil
 
 
@@ -113,11 +115,12 @@ def sentence_lexeme_to_lexemes(oneSentenceDetail, oneLexemeDetail):
 @app.route('/enternewsentences', methods=['GET', 'POST'])
 @login_required
 def enternewsentences():
-    projects, userprojects, projectsform, sentences = getdbcollections.getdbcollections(mongo,
-                                                'projects',
-                                                'userprojects',
-                                                'projectsform',
-                                                'sentences')
+    projects, userprojects, projectsform, sentences, transcriptions = getdbcollections.getdbcollections(mongo,
+                                                                                                        'projects',
+                                                                                                        'userprojects',
+                                                                                                        'projectsform',
+                                                                                                        'sentences',
+                                                                                                        'transcriptions')
     currentuserprojectsname =  getcurrentuserprojects.getcurrentuserprojects(current_user.username,
                                 userprojects)
     activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username,
@@ -135,37 +138,66 @@ def enternewsentences():
     # currentuserprojectsname =  getcurrentuserprojects.getcurrentuserprojects(current_user.username,
     #                             userprojects)
 
-    
+
     # if method is not 'POST'
     projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
     activeprojectform = getactiveprojectform.getactiveprojectform(projectsform,
                                                                     projectowner,
                                                                     activeprojectname)
     if activeprojectform is not None:
+        # , audio_file_path, transcription_details
+        audio_id = audiodetails.getactiveaudioid(projects,
+                                                    activeprojectname,
+                                                    current_user.username)
+        transcription_details = audiodetails.getaudiofiletranscription(transcriptions, audio_id)
+        file_path = audiodetails.getaudiofilefromfs(mongo,
+                                                    basedir,
+                                                    audio_id,
+                                                    'audioId')
+        activeprojectform['lastActiveId'] = audio_id
+        activeprojectform['transcriptionDetails'] = transcription_details
+        activeprojectform['AudioFilePath'] = file_path
+        transcription_regions = audiodetails.getaudiotranscriptiondetails(transcriptions, audio_id)
+        activeprojectform['transcriptionRegions'] = transcription_regions
         return render_template('enternewsentences.html',
                                 projectName=activeprojectname,
                                 newData=activeprojectform,
                                 data=currentuserprojectsname)
 
-    return render_template('enternewsentences.html',
-                            projectName=activeprojectname,
-                            sdata=[],
-                            data=currentuserprojectsname)
+    # return render_template('enternewsentences.html',
+    #                         projectName=activeprojectname,
+    #                         sdata=[],
+    #                         data=currentuserprojectsname)
 
 # get new sentences route
 # get new sentences in the project coming throug ajax
 @app.route('/getnewsentences', methods=['GET', 'POST'])
 @login_required
 def getnewsentences():
-    userprojects, transcriptions = getdbcollections.getdbcollections(mongo,
+    projects, userprojects, transcriptions = getdbcollections.getdbcollections(mongo,
+                                                                    'projects',
                                                                     'userprojects',
                                                                     'transcriptions')
     activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username, userprojects)
     # data through ajax
-    transcription_regions = request.args.get('a')
+    transcription_data = json.loads(request.args.get('a'))
+    transcription_data = dict(transcription_data)
+    lastActiveId = transcription_data['lastActiveId']
+    transcription_regions = transcription_data['transcriptionRegions']
+    print(lastActiveId)
+    print(transcription_regions)
     getnewsentence.getnewsentence(transcriptions,
                                     current_user.username,
-                                    transcription_regions)
+                                    transcription_regions,
+                                    lastActiveId)
+    latest_audio_id = audiodetails.getnewaudioid(projects,
+                                                    activeprojectname,
+                                                    lastActiveId,
+                                                    'next')
+    audiodetails.updatelatestaudioid(projects,
+                                        activeprojectname,
+                                        latest_audio_id,
+                                        current_user.username)
     sentenceFieldId = ''
     gloss = ''
     sentence = ''
@@ -3122,7 +3154,7 @@ def activeprojectname():
     #     activeprojectnames.update_one({ 'username' : current_user.username }, {'$set' : { 'projectname' : projectname }})
 
     userprojects.update_one({ 'username' : current_user.username }, \
-            { '$set' : { 'activeproject' :  projectname}})
+            { '$set' : { 'activeprojectname' :  projectname}})
     return 'OK'
 
 
@@ -3209,29 +3241,6 @@ def dummyUserandProject():
                         'projectdeleteFLAG' : 0
                         })
 
-# uploadaudiofiles route
-@app.route('/uploadaudiofiles', methods=['GET', 'POST'])
-@login_required
-def uploadaudiofiles():
-
-    projects, userprojects, transcriptions = getdbcollections.getdbcollections(mongo,
-                                                'projects',
-                                                'userprojects',
-                                                'transcriptions')
-    activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username,
-                            userprojects)
-    projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
-    if request.method == 'POST':
-        new_audio_file = request.files.to_dict()
-        saveaudiofiles.saveaudiofiles(mongo,
-                                        projects,
-                                        transcriptions,
-                                        projectowner,
-                                        activeprojectname,
-                                        current_user.username,
-                                        new_audio_file)
-    return redirect(url_for('enternewsentences'))
-
 # audio transcription route
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/audiotranscription', methods=['GET', 'POST'])
@@ -3294,24 +3303,50 @@ def datetimeasid():
 @app.route('/loadpreviousaudio', methods=['GET', 'POST'])
 @login_required
 def loadpreviousaudio():
+    projects, userprojects = getdbcollections.getdbcollections(mongo,
+                                                                'projects',
+                                                                'userprojects')
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username,
+                            userprojects)
     # data through ajax
-    lastActiveFilename = request.args.get('data')
-    lastActiveFilename = eval(lastActiveFilename)
-    print(lastActiveFilename)
-    newAudioFilePath = getAudioFilename(lastActiveFilename, 'previous')
+    lastActiveId = request.args.get('data')
+    lastActiveId = eval(lastActiveId)
+    # newAudioFilePath = getAudioFilename(lastActiveFilename, 'previous')
+    latest_audio_id = audiodetails.getnewaudioid(projects,
+                                                    activeprojectname,
+                                                    lastActiveId,
+                                                    'previous')
+    audiodetails.updatelatestaudioid(projects,
+                                        activeprojectname,
+                                        latest_audio_id,
+                                        current_user.username)
 
-    return jsonify(newAudioFilePath=newAudioFilePath)
+    return jsonify(newAudioId=latest_audio_id)
+    # return jsonify(newAudioFilePath=newAudioFilePath)
 
 @app.route('/loadnextaudio', methods=['GET', 'POST'])
 @login_required
 def loadnextaudio():
+    projects, userprojects = getdbcollections.getdbcollections(mongo,
+                                                                'projects',
+                                                                'userprojects')
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username,
+                            userprojects)
     # data through ajax
-    lastActiveFilename = request.args.get('data')
-    lastActiveFilename = eval(lastActiveFilename)
-    print(lastActiveFilename)
-    newAudioFilePath = getAudioFilename(lastActiveFilename, 'next')
+    lastActiveId = request.args.get('data')
+    lastActiveId = eval(lastActiveId)
+    # newAudioFilePath = getAudioFilename(lastActiveFilename, 'previous')
+    latest_audio_id = audiodetails.getnewaudioid(projects,
+                                                    activeprojectname,
+                                                    lastActiveId,
+                                                    'next')
+    audiodetails.updatelatestaudioid(projects,
+                                        activeprojectname,
+                                        latest_audio_id,
+                                        current_user.username)
 
-    return jsonify(newAudioFilePath=newAudioFilePath)
+    return jsonify(newAudioId=latest_audio_id)
+    # return jsonify(newAudioFilePath=newAudioFilePath)
 
 def getAudioFilename(lastActiveFilename, whichOne):
     audioFilesPath = 'static/audio'
@@ -3336,3 +3371,29 @@ def allunannotated():
     audioFilesList = sorted(os.listdir(baseAudioFilesPath))
 
     return jsonify(allunanno=audioFilesList, allanno=audioFilesList)
+
+
+# uploadaudiofiles route
+@app.route('/uploadaudiofiles', methods=['GET', 'POST'])
+@login_required
+def uploadaudiofiles():
+
+    projects, userprojects, transcriptions = getdbcollections.getdbcollections(mongo,
+                                                'projects',
+                                                'userprojects',
+                                                'transcriptions')
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username,
+                            userprojects)
+    projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
+    if request.method == 'POST':
+        new_audio_file = request.files.to_dict()
+        audiodetails.saveaudiofiles(mongo,
+                                        projects,
+                                        transcriptions,
+                                        projectowner,
+                                        activeprojectname,
+                                        current_user.username,
+                                        new_audio_file)
+    return redirect(url_for('enternewsentences'))
+
+
