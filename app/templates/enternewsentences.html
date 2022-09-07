@@ -17,10 +17,23 @@
     {% if projectName is defined %}
         <h4>Project Name : {{ projectName }}</h4><br>
     {% endif %}
+    {% if speakerids is defined %}
+    <label for="speakeridsdropdown">Audio Files of Speaker: </label>
+    <select class="custom-select custom-select-sm" id="speakeridsdropdown" style="margin-top:10px">
+        <option selected disabled>{{ activespeakerid }}</option>
+        {% for d in speakerids %}
+          {% if d != activespeakerid %}
+            <option value="{{ d }}">{{ d }}</option>
+          {% endif %}
+        {% endfor %}
+    </select>
+    {% endif %}
   </div>
   <div class="col-sm-3">
     <form name="newaudioupload" action="/uploadaudiofiles" method="POST" enctype="multipart/form-data">
       <div class="col upload">
+        <input type="text" class="form-control" placeholder="Speaker ID" name="speakerId" required>
+        <br>
         <input type="file" id="audiofile" name="audiofile" required>
         <br>
         <input class="btn btn-primary uploadbtn" type="submit" value="Upload Audio Files">
@@ -66,7 +79,7 @@
     <div class="lexemeform"></div>
     <p id="subtitle" class="text-center text-info">&nbsp;</p>
     <div id="wave-timeline"></div>
-    <div id="waveform"></div>
+    <div id="waveform" readonly></div>
     <br>
     <p id="subtitle" class="text-center text-info">&nbsp;</p>
     <div id="wave-timeline"></div>
@@ -133,5 +146,6 @@
 <script src="https://unpkg.com/wavesurfer.js/dist/plugin/wavesurfer.regions.js"></script>
 <script src="https://unpkg.com/wavesurfer.js/dist/plugin/wavesurfer.minimap.js"></script>
 <script src="{{url_for('.static', filename='audiotranscription.js')}}"></script>
+<script src="{{url_for('.static', filename='changeactivespeaker.js')}}"></script>
 <script type="text/javascript">myFunction({{ newData | tojson | safe }});</script>
 {% endblock %}

@@ -663,7 +663,7 @@ $("#save").click(function() {
   transcriptionData['lastActiveId'] = lastActiveId
   transcriptionData['transcriptionRegions'] = transcriptionRegions
   console.log(transcriptionData)
-  $.getJSON('/getnewsentences', {
+  $.getJSON('/savetranscription', {
   
   a:JSON.stringify(transcriptionData)
   }, function(data) {
@@ -678,6 +678,9 @@ function myFunction(newData) {
   // var activeAudioFilename = JSON.parse(localStorage.getItem('AudioFilePath')).split('/')[2];
   var activeAudioFilename = newData["AudioFilePath"].split('/')[2];
   // console.log(activeAudioFilename)
+  if (activeAudioFilename === undefined) {
+    activeAudioFilename = '';
+  }
   var inpt = '<strong>Audio Filename: </strong><strong id="audioFilename">'+ activeAudioFilename +'</strong>'
   $(".defaultfield").append(inpt);
   lastActiveId = newData["lastActiveId"]

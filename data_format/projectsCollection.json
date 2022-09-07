@@ -1,0 +1,50 @@
+{
+    "_id": {"$oid": "630f52fb4302db1cace40d76"},
+    "lastActiveId": {
+                        "ritesh": 
+                            {
+                                "speakerId_1": {"audioId": "A20220901150631452593"},
+                                "speakerId_2": {"audioId": "A20220901150631452593"}
+                            },
+                        "bob": 
+                            {
+                                "audioId": "A20220901150631452593"
+                            }
+                    },
+    "lexemeDeleted": 0,
+    "lexemeInserted": 0,
+    "projectOwner": "ritesh",
+    "projectdeleteFLAG": 0,
+    "projectname": "Meitei_pilot",
+    "sharedwith": 
+                [
+                    "ritesh",
+                    "bob"
+                ],
+    "speakerIds": {
+        "ritesh": 
+                [
+                    "speakerId_1",
+                    "speakerId_2"
+                ],
+        "bob": 
+                [
+                    "speakerId_3"
+                ]
+    },
+    "speakersAudioIds": 
+                        {
+                            "speakerId_1": ["A20220831192051270377",
+                                            "A20220901113238106914",
+                                            "A20220901113302169153",
+                                            "A20220901150631452593"],
+                            "speakerId_2": ["A20220831192051270377",
+                                            "A20220901113238106914",
+                                            "A20220901113302169153",
+                                            "A20220901150631452593"],
+                            "speakerId_3": ["A20220831192051270377",
+                                            "A20220901113238106914",
+                                            "A20220901113302169153",
+                                            "A20220901150631452593"]
+                        }
+}

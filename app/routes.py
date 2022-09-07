@@ -41,10 +41,10 @@ from xml.etree.ElementTree import ElementTree
 from app.controller import latex_generator as lg, savenewlexeme
 from app.controller import getdbcollections, getcurrentuserprojects, getactiveprojectname
 from app.controller import getprojectowner, getactiveprojectform, savenewsentence
-from app.controller import readJSONFile, createdummylexemeentry
-from app.controller import savenewproject, updateuserprojects, savenewprojectform, getnewsentence
+from app.controller import readJSONFile, createdummylexemeentry, getactivespeakerid
+from app.controller import savenewproject, updateuserprojects, savenewprojectform
 from app.controller import audiodetails
-import shutil
+import shutil, traceback
 
 
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -145,24 +145,42 @@ def enternewsentences():
                                                                     projectowner,
                                                                     activeprojectname)
     if activeprojectform is not None:
-        # , audio_file_path, transcription_details
-        audio_id = audiodetails.getactiveaudioid(projects,
-                                                    activeprojectname,
-                                                    current_user.username)
-        transcription_details = audiodetails.getaudiofiletranscription(transcriptions, audio_id)
-        file_path = audiodetails.getaudiofilefromfs(mongo,
-                                                    basedir,
-                                                    audio_id,
-                                                    'audioId')
-        activeprojectform['lastActiveId'] = audio_id
-        activeprojectform['transcriptionDetails'] = transcription_details
-        activeprojectform['AudioFilePath'] = file_path
-        transcription_regions = audiodetails.getaudiotranscriptiondetails(transcriptions, audio_id)
-        activeprojectform['transcriptionRegions'] = transcription_regions
-        return render_template('enternewsentences.html',
-                                projectName=activeprojectname,
-                                newData=activeprojectform,
-                                data=currentuserprojectsname)
+        try:
+            # , audio_file_path, transcription_details
+            activespeakerid = getactivespeakerid.getactivespeakerid(userprojects, current_user.username)
+            audio_id = audiodetails.getactiveaudioid(projects,
+                                                        activeprojectname,
+                                                        activespeakerid,
+                                                        current_user.username)
+            transcription_details = audiodetails.getaudiofiletranscription(transcriptions, audio_id)
+            file_path = audiodetails.getaudiofilefromfs(mongo,
+                                                        basedir,
+                                                        audio_id,
+                                                        'audioId')
+            activeprojectform['lastActiveId'] = audio_id
+            activeprojectform['transcriptionDetails'] = transcription_details
+            activeprojectform['AudioFilePath'] = file_path
+            transcription_regions = audiodetails.getaudiotranscriptiondetails(transcriptions, audio_id)
+            activeprojectform['transcriptionRegions'] = transcription_regions
+            speakerids = projects.find_one({"projectname": activeprojectname},
+                                            {"_id": 0, "speakerIds."+current_user.username: 1}
+                                        )["speakerIds"][current_user.username]
+            # print('currentuserprojectsname', currentuserprojectsname)
+            # print('speakerids', speakerids)
+            return render_template('enternewsentences.html',
+                                    projectName=activeprojectname,
+                                    newData=activeprojectform,
+                                    data=currentuserprojectsname,
+                                    speakerids=speakerids,
+                                    activespeakerid=activespeakerid)
+        except Exception as e:
+            traceback.print_exc()
+            flash('Upload first audio file.')
+
+    return render_template('enternewsentences.html',
+                                    projectName=activeprojectname,
+                                    newData=activeprojectform,
+                                    data=currentuserprojectsname)
 
     # return render_template('enternewsentences.html',
     #                         projectName=activeprojectname,
@@ -171,14 +189,21 @@ def enternewsentences():
 
 # get new sentences route
 # get new sentences in the project coming throug ajax
-@app.route('/getnewsentences', methods=['GET', 'POST'])
+@app.route('/savetranscription', methods=['GET', 'POST'])
 @login_required
-def getnewsentences():
-    projects, userprojects, transcriptions = getdbcollections.getdbcollections(mongo,
+def savetranscription():
+    projects, userprojects, projectsform, transcriptions = getdbcollections.getdbcollections(mongo,
                                                                     'projects',
                                                                     'userprojects',
+                                                                    'projectsform',
                                                                     'transcriptions')
-    activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username, userprojects)
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username,
+                                                                    userprojects)                                                                    
+    projectowner = getprojectowner.getprojectowner(projects, activeprojectname)                                                                    
+    activeprojectform = getactiveprojectform.getactiveprojectform(projectsform,
+                                                                    projectowner,
+                                                                    activeprojectname)
+    activespeakerid = getactivespeakerid.getactivespeakerid(userprojects, current_user.username)                                                                    
     # data through ajax
     transcription_data = json.loads(request.args.get('a'))
     transcription_data = dict(transcription_data)
@@ -186,18 +211,24 @@ def getnewsentences():
     transcription_regions = transcription_data['transcriptionRegions']
     print(lastActiveId)
     print(transcription_regions)
-    getnewsentence.getnewsentence(transcriptions,
+    scriptCode = readJSONFile.readJSONFile(scriptCodeJSONFilePath)
+    audiodetails.savetranscription(transcriptions,
+                                    activeprojectform,
+                                    scriptCode,
                                     current_user.username,
                                     transcription_regions,
-                                    lastActiveId)
+                                    lastActiveId,
+                                    activespeakerid)
     latest_audio_id = audiodetails.getnewaudioid(projects,
                                                     activeprojectname,
                                                     lastActiveId,
+                                                    activespeakerid,
                                                     'next')
     audiodetails.updatelatestaudioid(projects,
                                         activeprojectname,
                                         latest_audio_id,
-                                        current_user.username)
+                                        current_user.username,
+                                        activespeakerid)
     sentenceFieldId = ''
     gloss = ''
     sentence = ''
@@ -3308,6 +3339,7 @@ def loadpreviousaudio():
                                                                 'userprojects')
     activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username,
                             userprojects)
+    activespeakerid = getactivespeakerid.getactivespeakerid(userprojects, current_user.username)
     # data through ajax
     lastActiveId = request.args.get('data')
     lastActiveId = eval(lastActiveId)
@@ -3315,11 +3347,13 @@ def loadpreviousaudio():
     latest_audio_id = audiodetails.getnewaudioid(projects,
                                                     activeprojectname,
                                                     lastActiveId,
+                                                    activespeakerid,
                                                     'previous')
     audiodetails.updatelatestaudioid(projects,
                                         activeprojectname,
                                         latest_audio_id,
-                                        current_user.username)
+                                        current_user.username,
+                                        activespeakerid)
 
     return jsonify(newAudioId=latest_audio_id)
     # return jsonify(newAudioFilePath=newAudioFilePath)
@@ -3332,6 +3366,7 @@ def loadnextaudio():
                                                                 'userprojects')
     activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username,
                             userprojects)
+    activespeakerid = getactivespeakerid.getactivespeakerid(userprojects, current_user.username)                            
     # data through ajax
     lastActiveId = request.args.get('data')
     lastActiveId = eval(lastActiveId)
@@ -3339,11 +3374,14 @@ def loadnextaudio():
     latest_audio_id = audiodetails.getnewaudioid(projects,
                                                     activeprojectname,
                                                     lastActiveId,
+                                                    activespeakerid,
                                                     'next')
+    print('latest_audio_id ROUTES', latest_audio_id)                                                    
     audiodetails.updatelatestaudioid(projects,
                                         activeprojectname,
                                         latest_audio_id,
-                                        current_user.username)
+                                        current_user.username,
+                                        activespeakerid)
 
     return jsonify(newAudioId=latest_audio_id)
     # return jsonify(newAudioFilePath=newAudioFilePath)
@@ -3386,14 +3424,31 @@ def uploadaudiofiles():
                             userprojects)
     projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
     if request.method == 'POST':
+        speakerId = dict(request.form.lists())['speakerId'][0]
         new_audio_file = request.files.to_dict()
         audiodetails.saveaudiofiles(mongo,
-                                        projects,
-                                        transcriptions,
-                                        projectowner,
-                                        activeprojectname,
-                                        current_user.username,
-                                        new_audio_file)
+                                    projects,
+                                    userprojects,
+                                    transcriptions,
+                                    projectowner,
+                                    activeprojectname,
+                                    current_user.username,
+                                    speakerId,
+                                    new_audio_file)
+
     return redirect(url_for('enternewsentences'))
 
+# change speaker ID
+@app.route('/changespeakerid', methods=['GET', 'POST'])
+@login_required
+def changespeakerid():
+    userprojects = mongo.db.userprojects
 
+    # data through ajax
+    speakerId = str(request.args.get('a'))
+    print(speakerId)
+
+    userprojects.update_one({ 'username' : current_user.username },
+                            { '$set' : { 'activespeakerId' :  speakerId}})
+
+    return 'OK'

@@ -114,13 +114,15 @@ function saveRegions() {
             let region = wavesurfer.regions.list[id];
             // console.log(region)
             rid = region.start.toString().slice(0, 4).replace('.', '').concat(region.end.toString().slice(0, 4).replace('.', ''));
+             
             // console.log(rid)
             return {
                 boundaryID: rid,
                 start: region.start,
                 end: region.end,
                 attributes: region.attributes,
-                data: region.data
+                data: region.data,
+                sentence: updateSentenceDetails(rid, region)
             };
         })
     );
@@ -294,9 +296,36 @@ function showNote(region) {
     showNote.el.textContent = region.data.note || '–';
 }
 
+function updateSentenceDetails(boundaryID, region) {
+    if (region.sentence) {
+        sentence = region.sentence
+    }
+    else {
+        sentence = new Object()
+        transcription = {}
+        translation = {}
+        morphemes = {}
+        gloss = {}
+        pos = {}
+        tags = {}
+    }
+    sentence[boundaryID] = {
+        'start': region.start,
+        'end': region.end,
+        'transcription': transcription,
+        'translation': translation,
+        'morphemes': morphemes,
+        'gloss': gloss,
+        'pos': pos,
+        'tags': tags
+    }
+    return sentence
+
+}
+
 function sentenceDetails(sentenceData) {
     // console.log(sentenceData);
-    // console.log(document.forms.edit.elements)
+    console.log(document.forms.edit.elements)
     formData = document.forms.edit.elements
     // console.log(typeof formData)
     // let sentenceData = new Object();
