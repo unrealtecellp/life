@@ -26,7 +26,7 @@
 
 22 July 2022
 ---------------------------------------------------------------
-- create sentence interface HTMl form using the form created by the user in Create New Project
+- create sentence interface HTML form using the form created by the user in Create New Project
 
 26 July 2022
 ---------------------------------------------------------------
@@ -50,4 +50,39 @@
 - Refactoring the code
 - Divide the code in multiple modules
 - Add docstring to each modules
+
+22 August 2022
+---------------------------------------------------------------
+- show/change form based on active radio button in transcription field.
+- multiple gloss lang script in interlinear gloss column.
+- each transcription has there own 'Add Interlinear Gloss'
+
+30 August 2022
+---------------------------------------------------------------
+- interface on the 'enternewsentences' route.
+    -- - upload button
+    - for now only owner can upload audio files to the project.
+    --     - upload one audio file at a time.
+    --     - save the audio file with relevant details.
+    --         - SEE 'app/controller/saveaudiofiles.py'.
+    --             - save file in 'fs' collections
+    --             - details related to file in 'transcriptions' collection
+    --             - file ID 'audioId' in 'projects' collection 
+    -- - after audio upload refresh the 'enternewsentences' page.
+    - load the uploaded audio file in the transcription part of the page.
+        - get the 'audioId' in 'lastactiveId' in projects collections for current user
+        - if 'audioId' is None
+            - get the 'audioId' of the first audio file in the project
+            - update it in the 'audioId' in 'lastactiveId' in projects collections for current user
+            - get the file from fs collections
+            - save it to 'static/audio folder'
+            - send 'audioId', 'audioFilePath' and 'transcriptionDetails'
+    
+- redefine 'projects' collection
+--     - each project should be saved as one document in the collection.
+    -- - 'audioIds' - list of all uploaded audios in the project.
+
+- audio transcription
+    - one audio can be transcribe by mutiple user.
+        - save each user transcription seperately in the audio document.
 

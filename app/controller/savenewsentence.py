@@ -9,9 +9,16 @@ def savenewsentence(mongo,
                     activeprojectname,
                     newSentencesData,
                     newSentencesFiles):
-    """
-    """
+    """_summary_
 
+    Args:
+        mongo: instance of PyMongo.
+        sentences: instance of 'sentences' collection.
+        current_username: name of the current active user.
+        activeprojectname: name of the project activated by current active user.
+        newSentencesData: text data related to new sentence details.
+        newSentencesFiles: files related to new sentence details.
+    """
     # dictionary to store files name
     newSentencesFilesName = {}
     for key in newSentencesFiles:
@@ -141,7 +148,7 @@ def savenewsentence(mongo,
         interlineargloss['level_3'] = translation['eng-Latn']
         sentenceDetails['interlineargloss'] = interlineargloss
 
-        # save file names of a sentence in sentenceDetails dictionary 
+        # save file names of a sentence in sentenceDetails dictionary
         # with other details related to the sentence
         if len(newSentencesFilesName) != 0:
             sentenceDetails['filesname'] = newSentencesFilesName

@@ -20,5 +20,5 @@ def getcurrentuserprojects(current_username, userprojects):
         userprojectsname = set(myproject + projectsharedwithme)
     except:
         flash('Please create your first project.')
-
+    # print(userprojectsname)
     return sorted(list(userprojectsname))

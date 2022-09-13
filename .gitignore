@@ -11,3 +11,4 @@ app/lifexlsxdf.tsv
 data_format/lexicon_Testing_32.xlsx
 app/testliftXML.tsv
 app/lexemeEntry.json
+path_test.py

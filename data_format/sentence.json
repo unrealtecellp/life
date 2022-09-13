@@ -2,6 +2,8 @@
     "username": "ritesh",
     "projectname": "Testing_32",
     "textdeleteFLAG": 0,
+    "audioverifiedFLAG": 0,
+    "transcriptionFLAG": 0,
     "updatedBy": "ritesh",
     "textId": "T20220524145355758839",
     "prompt": "I have rewritten the papers",
@@ -33,15 +35,17 @@
                         "rewritten": "re-write-en"
                     }
                 },
-                "gloss": {
-                    "ipa": {
+                "gloss": {                    
+                    "ipa": {                        
                         "I": {
-                            "I": {
-                                "lexgloss": {
-                                    "eng-Latn": "I"
-                                },
-                                "lexemeID": "T20220524145355758839L1",
-                                "lextype": "lemma"
+                            "1": {                           
+                                "I": {
+                                    "lexgloss": {
+                                        "eng-Latn": "I"
+                                    },
+                                    "lexemeID": "T20220524145355758839L1",
+                                    "lextype": "lemma"
+                                }
                             }
                         },
                         "have": {

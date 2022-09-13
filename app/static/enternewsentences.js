@@ -361,6 +361,8 @@ $("#activeSentenceMorphemicBreak").click(function() {
     alert('No input given in the selected transcription script!');  
   }
   else {
+    // const sentmorphemicbreak = document.getElementById('activeSentenceMorphemicBreak');
+    // sentmorphemicbreak.setAttribute('name', 'activeSentenceMorphemicBreak_'+activetranscriptionscript);
     activeMorphSentenceField(activetranscriptionscriptvalue, activetranscriptionscript);
   }
 });
@@ -413,8 +415,10 @@ $("#activeTranslationField").click(function() {
 function activeTranslationLangs() {
   var x = document.getElementById("translationlangs");
   if (x.style.display === "none") {
+    document.getElementById("activeTranslationField").value = true;
     x.style.display = "block";
   } else {
+    document.getElementById("activeTranslationField").value = false;
     x.style.display = "none";
   }
 }
@@ -426,8 +430,10 @@ $("#activeTagsField").click(function() {
 function activeTags() {
     var x = document.getElementById("tags");
     if (x.style.display === "none") {
+      document.getElementById("activeTagsField").value = true;
       x.style.display = "block";
     } else {
+      document.getElementById("activeTagsField").value = false;
       x.style.display = "none";
     }
 }
@@ -651,21 +657,42 @@ function morphemeFields(morphemicSplitSentence, name, morphemePOS) {
 
 $("#save").click(function() {
   console.log('sending transcription and morphemic details to the server');
-  var transcriptionData = localStorage.regions
-  $.getJSON('/getnewsentences', {
+  var transcriptionData = Object()
+  var transcriptionRegions = localStorage.regions
+  var lastActiveId = document.getElementById("lastActiveId").value;
+  transcriptionData['lastActiveId'] = lastActiveId
+  transcriptionData['transcriptionRegions'] = transcriptionRegions
+  console.log(transcriptionData)
+  $.getJSON('/savetranscription', {
   
-  a:String(transcriptionData)
+  a:JSON.stringify(transcriptionData)
   }, function(data) {
-
+      window.location.reload();
   });
   return false; 
 });
 
 function myFunction(newData) {
   console.log(newData);
-
-  var inpt = '';
+  localStorage.setItem("regions", JSON.stringify(newData['transcriptionRegions']));
+  // var activeAudioFilename = JSON.parse(localStorage.getItem('AudioFilePath')).split('/')[2];
+  var activeAudioFilename = newData["AudioFilePath"].split('/')[2];
+  // console.log(activeAudioFilename)
+  if (activeAudioFilename === undefined) {
+    activeAudioFilename = '';
+  }
+  var inpt = '<strong>Audio Filename: </strong><strong id="audioFilename">'+ activeAudioFilename +'</strong>'
+  $(".defaultfield").append(inpt);
+  lastActiveId = newData["lastActiveId"]
+  // console.log(lastActiveId)
+  inpt = '<input type="hidden" id="lastActiveId" name="lastActiveId" value="'+lastActiveId+'">';
+  $('.defaultfield').append(inpt);
+  inpt = ''
+  // localStorage.removeItem('regions');
+  localStorage.setItem("transcriptionDetails", JSON.stringify([newData['transcriptionDetails']]));
+  localStorage.setItem("AudioFilePath", JSON.stringify(newData['AudioFilePath']));
   for (let [key, value] of Object.entries(newData)){
+    // console.log(key, value);
     if (key === 'Sentence Language') {
       inpt += '<div class="col"><div class="form-group">'+
                   '<label for="'+key+'">'+key+'</label>'+
@@ -674,8 +701,11 @@ function myFunction(newData) {
           $('.lexemelang').append(inpt);
           inpt = '';         
         }
-    if (key === 'Transcription Script') {
+    else if (key === 'Transcription Script') {
+      var transcriptionScriptLocalStorage = []
       var transcriptionScript = newData[key];
+      var interLinearGlossLang = ''
+      var interLinearGlossScript = ''
         for (var i = 0; i < transcriptionScript.length; i++) {
           if (transcriptionScript[i].includes('_')) {
             // console.log(transcriptionScript[i]);
@@ -686,18 +716,22 @@ function myFunction(newData) {
           }
           inpt += '<div class="form-group">';
           if (i === 0) {
-            inpt += '<input type="radio" id="TranscriptionRadioBtn'+ transcriptionScript[i] +'" name="activeTranscriptionScript" value="Transcription_'+ transcriptionScript[i] +'" checked>';
+            inpt += '<input type="radio" id="TranscriptionRadioBtn'+ transcriptionScript[i] +'" name="activeTranscriptionScript"'+
+                    'value="Transcription_'+ transcriptionScript[i] +'" checked>';
           }
           else {
-            inpt += '<input type="radio" id="TranscriptionRadioBtn'+ transcriptionScript[i] +'" name="activeTranscriptionScript" value="Transcription_'+ transcriptionScript[i] +'">';
+            inpt += '<input type="radio" id="TranscriptionRadioBtn'+ transcriptionScript[i] +'" name="activeTranscriptionScript"'+
+                    'value="Transcription_'+ transcriptionScript[i] +'">';
           }                
           inpt += '<label for="Transcription_'+ transcriptionScript[i] +'">Transcription in '+ lScript +'</label>'+
                 '<input type="text" class="form-control" id="Transcription_'+ transcriptionScript[i] +'"'+ 
                 'placeholder="Transcription '+ lScript +'" name="Transcription_'+ transcriptionScript[i] +'">'+
                 '</div></div>';
+          transcriptionScriptLocalStorage.push(transcriptionScript[i]);
         }
         $('.transcription').append(inpt);
         inpt = '';
+        localStorage.setItem("Transcription Script", JSON.stringify(transcriptionScriptLocalStorage));
     }
     else if (key === 'Translation Language') {
       translationLang = newData[key];
@@ -711,9 +745,34 @@ function myFunction(newData) {
       $('#translationlangs').append(inpt);
       inpt = '';
     }
+    else if (key === 'Interlinear Gloss Language') {
+      interLinearGlossLang = newData[key]
+    }
+    else if (key === 'Interlinear Gloss Script') {
+      interLinearGlossScript = newData[key]
+    }
   }
+  // interLinearGlossLangScriptMapping = mapArrays(interLinearGlossLang, interLinearGlossScript)
+  // localStorage.setItem("Interlinear Gloss Lang Script", JSON.stringify(interLinearGlossLangScriptMapping));
+  // for (k=0; k<=1000; k++) {
+  //   console.log(Date.now())
+  //   // datetime = new Date()
+  //   // console.log(datetime.toJSON(), datetime.getMilliseconds());
+  // }
 }
 
+function mapArrays(array_1, array_2) {
+  if(array_1.length != array_2.length || 
+      array_1.length == 0 || 
+      array_2.length == 0) {
+      return null;
+     }
+     let mappedData = new Object();
+       
+   // Using the foreach method
+   array_1.forEach((k, i) => {mappedData[k] = array_2[i]})
+     return mappedData;
+}
 
 function displayRadioValue() {
   var ele = document.getElementsByName('activeTranscriptionScript');
@@ -724,3 +783,114 @@ function displayRadioValue() {
   }
   return activetranscriptionscript
 }
+
+  
+function previousAudio() {
+  var lastActiveId = document.getElementById("lastActiveId").value;
+  console.log(lastActiveId)
+    $.ajax({
+        url: '/loadpreviousaudio',
+        type: 'GET',
+        data: {'data': JSON.stringify(lastActiveId)},
+        contentType: "application/json; charset=utf-8", 
+        success: function(response){
+          // console.log(response.newAudioFilePath)
+          // localStorage.setItem("AudioFilePath", JSON.stringify(response.newAudioFilePath));
+          window.location.reload();
+        }
+    });
+    return false;
+}
+
+function nextAudio() {
+  // lastActiveFilename = document.getElementById("audioFilename").innerHTML;
+  var lastActiveId = document.getElementById("lastActiveId").value;
+  // console.log(lastActiveFilename)
+    $.ajax({
+        url: '/loadnextaudio',
+        type: 'GET',
+        data: {'data': JSON.stringify(lastActiveId)},
+        contentType: "application/json; charset=utf-8", 
+        success: function(response){
+          // console.log(response.newAudioFilePath)
+          // localStorage.setItem("AudioFilePath", JSON.stringify(response.newAudioFilePath));
+          window.location.reload();
+        }
+    });
+    return false;
+}
+
+function unAnnotated() {
+  unanno = '';
+  $('#uNAnnotated').remove();
+  $.ajax({
+      url: '/allunannotated',
+      type: 'GET',
+      data: {'data': JSON.stringify(unanno)},
+      contentType: "application/json; charset=utf-8", 
+      success: function(response){
+          allunanno = response.allunanno;
+          allanno = response.allanno;
+          console.log(allanno)
+          var inpt = '';
+          inpt += '<select class="col-sm-3 allanno" id="allanno" onchange="loadAnnoText()">'+
+                  '<option selected disabled>All Annotated</option>';
+                  for (i=0; i<allanno.length; i++) {
+                      inpt += '<option value="'+allanno[i]+'">'+allanno[i]+'</option>';
+                  }
+          inpt += '</select>';
+          inpt += '<select class="pr-4 col-sm-3" id="allunanno" onchange="loadUnAnnoText()">'+
+                  '<option selected disabled>All Un-Annotated</option>';
+                  for (i=0; i<allunanno.length; i++) {
+                      inpt += '<option value="'+allunanno[i]+'">'+allunanno[i]+'</option>';
+                  }
+          inpt += '</select>';
+          $('.commentIDs').append(inpt);
+          // console.log(inpt);
+      }
+  });
+  return false; 
+}
+
+function loadUnAnnoText() {
+  newAudioFilename = document.getElementById('allunanno').value;
+  console.log(newAudioFilename)
+  loadRandomAudio(newAudioFilename)
+  // $.ajax({
+  //     url: '/loadunannotext',
+  //     type: 'GET',
+  //     data: {'data': JSON.stringify(textId)},
+  //     contentType: "application/json; charset=utf-8", 
+  //     success: function(response){
+  //         window.location.reload();
+  //     }
+  // });
+  // return false;
+}
+
+function loadAnnoText() {
+  newAudioFilename = document.getElementById('allanno').value;
+  console.log(newAudioFilename)
+  loadRandomAudio(newAudioFilename)
+  // $.ajax({
+  //     url: '/loadunannotext',
+  //     type: 'GET',
+  //     data: {'data': JSON.stringify(textId)},
+  //     contentType: "application/json; charset=utf-8", 
+  //     success: function(response){
+  //         window.location.reload();
+  //     }
+  // });
+  // return false;
+}
+
+function loadRandomAudio(newAudioFilename) {
+  filePath = JSON.parse(localStorage.getItem('AudioFilePath'));
+  // console.log(typeof filePath)
+  currentAudioFilename = filePath.split('/')[2];
+  newfilePath = filePath.replace(currentAudioFilename, newAudioFilename)
+  localStorage.setItem("AudioFilePath", JSON.stringify(newfilePath));
+  window.location.reload();
+}
+
+
