@@ -1,0 +1,290 @@
+from curses import meta
+from flask import Blueprint, flash, redirect, render_template, url_for, request, json, jsonify, send_file
+from pymongo import database
+from werkzeug.urls import url_parse
+from werkzeug.security import generate_password_hash
+# from karya_plugin import karya_plugin, mongo
+# from karya_plugin.forms import UserLoginForm, RegistrationForm
+# from karya_plugin.models import UserLogin
+from app import app, mongo
+from app.controller import getdbcollections
+# from app.forms import UserLoginForm, RegistrationForm
+# from app.models import UserLogin
+import pandas as pd
+from flask_login import current_user, login_user, logout_user, login_required
+from io import StringIO
+import re
+from flask import Flask, render_template, request
+from werkzeug.utils import secure_filename
+
+#############################################################################
+#############################################################################
+#############################################################################
+#############################################################################
+# neerav is adding after this
+#############################################################################
+#############################################################################
+#############################################################################
+#############################################################################
+
+karya_bp = Blueprint('karya_bp', __name__, template_folder='templates', static_folder='static')
+
+
+
+@karya_bp.route('/home_insert')
+def home_insert():
+        return render_template("home_insert.html")
+
+
+
+
+import codecs
+import os
+from datetime import datetime
+@karya_bp.route('/uploadfile' , methods=['GET', 'POST'])
+def uploadfile():
+    karyaaccesscodedetails, = getdbcollections.getdbcollections(mongo, 'accesscodedetails')
+    # karyaaccesscodedetail, = getdbcollections.getdbcollections(mongo, 'accesscodedetail')
+    # karyaaccesscodedetails.insert({'dummy': 1})
+
+    # print ('FInd', karyaaccesscodedetail.find_one({}))
+    # print ('FInd details', karyaaccesscodedetails.find_one({}))
+    # print ('karyaaccesscodedetails', karyaaccesscodedetails)
+    # print ('Mongo', mongo)
+
+    if request.method == "POST":
+        accesscodebp  = {"speakerMetadata": {"name": "", "age": "", "gender": "", "activeAccessCode": ""}}
+        karyaaccesscodecollection = {}
+
+        # f = request.files.to_dict('accesscodefile')
+        f = request.files['accesscodefile']
+        print(f)
+        filename = secure_filename(f.filename)
+        cur_dir = os.getcwd()
+        print (cur_dir)
+        fpath = os.path.join(cur_dir, 'app', 'karya_ext', 'static', filename)
+
+        f.save(fpath)
+
+        # acode_f = open(fpath,"r")
+
+        if os.path.exists(fpath):
+            print (fpath, 'found')
+
+        # content = acode_f.readlines()
+        with open (fpath) as content:
+            for line in content:
+                code = line.strip()
+                print (code)
+                # karyaaccesscodecollection[code] = accesscodebp
+                current_dt = str(datetime.now()).replace('.', ':')
+                print ('current data', current_dt)
+                insert_dict = {
+                        code: 
+                        {
+                            "username": "",
+                            "projectname": "",
+                            "current": {current_dt: accesscodebp},
+                            "previous": {current_dt: accesscodebp},
+                            "isActive": 0
+                        }
+                    }
+                print ('Data to be inserted', insert_dict)
+                return_obj = karyaaccesscodedetails.insert (insert_dict)
+                print ('Return object', return_obj)
+                # print (return_obj.inserted_id)
+
+        # p = json.dumps(karyaaccesscodecollection)
+        # print(p)
+        #karyaaccesscodedetails.insert(ac)
+        datafromdb = karyaaccesscodedetails.find({},{"_id" :0})
+        print(list(datafromdb))
+        
+        flash('Successfully added new lexeme')
+        return redirect(url_for('karya_bp.home_insert'))
+    return render_template("uploadfile.html")
+
+
+
+
+from pymongo import MongoClient
+import ast
+@karya_bp.route('/assignaccesscodeform' , methods=['GET', 'POST'])
+def assignaccesscodeform():
+    #create new collection
+    accesscodedetail, = getdbcollections.getdbcollections(mongo, 'accesscodedetail')
+    #accesscodedetail = mongo.db.accesscodedetail              # collection of users and their respective projectlist
+    if request.method == "POST":
+        #creating form input data value as dictionary
+        speakerData = dict(request.form.lists())
+        #print(speakerData)
+        #seprating key and value into list
+        keys = []
+        values = []
+        for i in speakerData:
+            keys.append(i)
+            values.append(speakerData[i])
+        #replacing array with string into a new list    
+        new_values_type = [''.join(ele) for ele in values] 
+        #creating new dictionary
+        new_from_of_data = {}
+        for key in keys:
+            for value in new_values_type:
+                new_from_of_data[key] = value
+                new_values_type.remove(value)
+                break 
+        #print(str(new_from_of_data)) 
+        # printing keys and values separately
+        '''convert dictionary to string to change the data format i.e creating nested dictionary'''    
+        speakerData_to_string = str(new_from_of_data)
+        speakerData_new_string = speakerData_to_string.replace('\'speakerName\'', '\'speakerMetadata\': {\'speakerName\'').replace(', \'isactive\'', '}, \'isactive\'')
+        result = ast.literal_eval(speakerData_new_string)
+        #print(result)
+        #join access code with data 
+
+        #putting data into mongodb data base
+        #accesscodedetail.insert(result)
+
+        accesscodedetail.insert(result)
+        
+        # client= MongoClient()
+        # db = client.mydb
+        #mycollection = db['accesscodedetail']
+        # print("\n he;lloo \n \n", str(mycollection))
+        # print("\n he;lloo \n \n", type(mycollection), "\n \n")
+        #datafromdb = accesscodedetail.find()
+        datafromdb = accesscodedetail.find({},{"_id" :0})
+        print(list(datafromdb))
+        flash('Successfully added new lexeme')
+        #return new url/page
+        return redirect(url_for('karya_bp.accesscodemainpage'))
+    #rendring to main page
+    return render_template("assignaccesscodeform.html")
+
+
+
+
+@karya_bp.route('/add_user_try', methods=['GET', 'POST'])
+def add_user_try():
+    uname = getdbcollections.getdbcollections.accesscodedetails.find_one({"sname": uname}, {"_id" :0})
+    uage = getdbcollections.getdbcollections.accesscodedetails.find_one({"sage": uage}, {"_id" :0})
+    ugender = getdbcollections.getdbcollections.accesscodedetails.find_one({"sgender": ugender}, {"_id" :0})
+    #aj = name, age, gender
+    if request.method =='POST':
+        add_user = getdbcollections.getdbcollections(mongo, 'accesscodedetail')
+        add_all_user_metadata = add_user.update_one({"accesscode":accesscode}, {"$set": {"previous.name": uname, "previous.age": uage, "previous.gender": ugender},"$currentDate": {"lastModified": True}}) 
+
+@karya_bp.route('/update_user_try', methods=['GET', 'POST'])
+def update_user_try():
+    uname = getdbcollections.getdbcollections.accesscodedetails.find_one({"sname": uname}, {"_id" :0})
+    uage = getdbcollections.getdbcollections.accesscodedetails.find_one({"sage": uage}, {"_id" :0})
+    ugender = getdbcollections.getdbcollections.accesscodedetails.find_one({"sgender": ugender}, {"_id" :0})
+    aj = name, age, gender
+    if request.method =='POST':
+        add_user = getdbcollections.getdbcollections(mongo, 'accesscodedetail')
+        add_all_user_metadata = add_user.update_one({"accesscode":accesscode}, 
+                                                        {"$set": {"current.name": "uname",
+                                                            "previous.age": "uage", 
+                                                                "previous.gender": "ugender"},
+                                                                    "$currentDate": {"lastModified": True}})
+
+
+# @karya_bp.route('/user_table_details', methods = ['Get', 'POST'])                                                                   
+# def user_table_details():
+
+
+
+
+
+# @karya_bp.route('/updatekayrauserdetail' , methods=['POST'])
+# def updatekaryauserdetail():
+#     accesscode = request.form['accesscode']
+#     name = request.form['name']
+#     age = request.form['age']
+#     gender = request.form['gender']
+#     activeaccesscode = request.form['activeAccesscode']
+#     user_detail = getdbcollections.getdbcollections.accesscodedetail.objects(id= accesscode).first()
+#     if not user_detail:
+#         return json.dumps({'error':'data not found'})
+#     else:
+#         if name == 'name':
+#             user_detail.update(name = name)
+#         elif age == 'age':
+#             user_detail.update(age = age)
+#         elif gender == 'gneder':
+#             user_detail.update(gender = gender)
+#     return json.dumps({'status':'OK'})
+
+
+
+
+
+
+# @karya_bp.route('/edit_jam/<jam_id>', methods=['POST', 'GET'])
+# def edit_userdetail("accesscode"):
+#     user_logged_in = 'username' in session
+#     the_jam =  mongo.db.accesscodedetails.find_one({"accesscode": ObjectId(jam_id)})
+#     username=session['username']
+
+#     if request.method == 'POST':
+#         if user_logged_in:
+#             jams = mongo.db.jam_or_event
+#             jams.update( {'_id': ObjectId(jam_id)},
+#             {
+#                 'jam_title':request.form.get('jam_title'),
+#                 'genre':request.form.get('genre'),
+#                 'date_of_jam': request.form.get('date_of_jam'),
+#                 'jam_location': request.form.get('jam_location'),
+#                 'jam_county':request.form.get('jam_county'),
+#                 'jam_member_1':request.form.get('jam_member_1'),
+#                 'member_instrument_1':request.form.get('member_instrument_1'),
+#                 'jam_notes':request.form.get('jam_notes'),
+#             })
+#             return redirect(url_for('get_jams'))
+#     return render_template('editjam.html',
+#         jam=the_jam,
+#         instruments=mongo.db.instruments.find(),
+#         counties=mongo.db.counties.find(),
+#         username=session['username'])
+
+
+
+
+
+
+# # karya access code assignment route
+# @karya_bp.route('/assignkaryaaccesscode', methods=['GET', 'POST'])
+# @login_required
+# def assignkaryaaccesscode():
+#     print(f"IN KARYA ACCESS CODE ASSIGNMENT FUNCTION")
+#     return redirect(url_for('home_insert'))
+
+
+
+
+
+
+# @karya_bp.route('/try')
+# def tryy():
+#     data_info = getdbcollections.getdbcollections(mongo, 'accesscodedetail')
+#     name = getdbcollections.getdbcollections.accesscodedetails.find_one({"sname": name}, {"_id" :0})
+#     age = getdbcollections.getdbcollections.accesscodedetails.find_one({"sage": age}, {"_id" :0})
+#     gender = getdbcollections.getdbcollections.accesscodedetails.find_one({"sgender": gender}, {"_id" :0})
+#     aj = name, age, gender
+#     print(aj)
+#     if request.method == 'post':
+#         user_update = getdbcollections.getdbcollections.accesscodedetails
+#         user_update.update({"access_code": accesscode}, 
+#         {
+#             "name" :request.form.get("sname"),
+#             "age" :request.form.get("sage"),
+#             "gender" :request.form.get("sgender")
+
+#         })
+#         return redirect(url_for('karya_bp.home_insert'))
+#     return render_template('updatekaryauserdetail.html',
+#         user=uname,
+#         instruments=getdbcollections.getdbcollections.accesscodedetails.find(),
+#         username= accesscode
+
+

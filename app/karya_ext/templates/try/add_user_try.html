@@ -1,0 +1,145 @@
+//templates/updatekayrauserdetail.html
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>Add/ Update User Details </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
+        <script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+        <script src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap.min.js"></script>  
+        <link rel="stylesheet" href="https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css" />
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.1/bootstrap3-editable/css/bootstrap-editable.css" rel="stylesheet">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.1/bootstrap3-editable/js/bootstrap-editable.js"></script>
+<script type="text/javascript" language="javascript">
+$(document).ready(function(){
+    var dataTable = $('#sample_data').DataTable();
+    $('#sample_data').editable({
+        container:'body',
+        selector:'td.name',
+        url:'/add_user_try',
+        title:'Name',
+        type:'POST',
+        validate:function(value){
+            if($.trim(value) == '')
+            {
+                return 'This field is required';
+            }
+        }
+    });
+ 
+    $('#sample_data').editable({
+        container:'body',
+        selector:'td.age',
+        url:'/add_user_try',
+        title:'Age',
+        type:'POST',
+        validate:function(value){
+            if($.trim(value) == '')
+            {
+                return 'This field is required';
+            }
+        }
+    });
+ 
+    $('#sample_data').editable({
+        container:'body',
+        selector:'td.gender',
+        url:'/add_user_try',
+        title:'Gender',
+        type:'POST',
+        validate:function(value){
+            if($.trim(value) == '')
+            {
+                return 'This field is required';
+            }
+        }
+    });
+}); 
+function update(ID, title){
+    if (confirm("Are you sure you want to update '" + title + "'")){
+        window.location.href = '/update/' + ID;
+    }
+}
+</script>
+    </head>
+    <body>
+        <div class="container">
+            <h3 align="center">DataTable Of User Deatils (Create, Read, Update)</h3>
+            <br />
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+                  Get Access Code For New User
+                </button>
+                </div>
+                <div class="panel-body">
+                    <div class="table-responsive">
+                        <table id="sample_data" class="table table-bordered table-striped">
+                            <thead>
+                            	<!-- UPDATE USER-->
+                                <tr>
+                                    <th>Access Code</th>
+                                    <th>Name</th>
+                                    <th>Age</th>
+                                    <th>Gender</th>
+                                    <th>Update User</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for row in employee %}
+                                <tr>
+                                    <td data-pk="{{row.id}}">{{row.id}}</td>
+                                    <td data-name="name" class="name" data-type="text" data-pk="{{row.id}}">{{Name}}</td>
+                                    <td data-name="age" class="age" data-type="text" data-pk="{{row.id}}">{{Age}}</td>
+                                    <td data-name="gender" class="gender" data-type="text" data-pk="{{row.id}}">{{Gender}}</td>
+                                    <td><a href="javascript:update('{{row.id}}','{{row.name}}')" class="btn btn-primary">Update User Details</a></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+             
+<!-- Modal = ADD USER-->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Add New Speaker</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">×</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form role="form" method="post" action="/add">
+          <div class="form-group">
+            <label class="col-form-label">Name:</label>
+            <input type="text" class="form-control" id="uname" name="uname">
+          </div>
+          <div class="form-group">
+            <label class="col-form-label">Age:</label>
+            <input type="text" class="form-control" id="uage" name="uage">
+          </div>
+          <div class="form-group">
+            <label class="col-form-label">Gender:</label>
+            <input type="text" class="form-control" id="ugender" name="ugender">
+          </div>
+          <!--<div class="form-group">
+            <label class="col-form-label">Active Access Code:</label>
+            <input type="text" class="form-control" id="acc" name="acc">
+          </div>-->
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <input name="cmdsubmit" class="btn btn-primary" type="submit" value="Submit" />
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+        </div>
+        <br />
+        <br />
+    </body>
+</html>

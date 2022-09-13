@@ -8,9 +8,10 @@
                 "gender": "",
                 "activeAccessCode": ""
             },
-        "isActive": 0
+            "isActive": 0
         },
-    "accessCode_2": {
+    "accessCOde": "accessCode_2", 
+    "accessCOdeDetails":{
             "username": "",
             "projectname": "",
             "speakerMetadata": {
@@ -19,6 +20,7 @@
                 "gender": "",
                 "activeAccessCode": ""
             },
-        "isActive": 0
+            "isActive": 0
         }
+    }
 }

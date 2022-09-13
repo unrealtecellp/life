@@ -1,0 +1,385 @@
+
+
+    <html>
+      <head>
+          <meta name="viewport" content="width=device-width">
+          <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+              <title>Add/ Update User Details </title>
+              <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+              <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
+              <script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+              <script src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap.min.js"></script>  
+              <link rel="stylesheet" href="https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css" />
+              <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+              <link href="https://cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.1/bootstrap3-editable/css/bootstrap-editable.css" rel="stylesheet">
+              <script src="https://cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.1/bootstrap3-editable/js/bootstrap-editable.js"></script>
+              
+
+
+</head>
+
+
+<body>
+  
+
+  <!-- <div class="container">
+      <h3 align="center">DataTable Of User Deatils (Create, Read, Update)</h3>
+      <br />
+  </div> -->
+
+
+<!--Siddharth Code Start-->
+
+
+{% extends "links.html" %}
+
+
+
+{% block styles %}
+{{super()}}
+<link href="{{url_for('.static', filename='dictionaryview.css')}}" rel="stylesheet">
+{% endblock %}
+
+{% block app_content %}
+{% if projectName is defined %}
+  <h4>
+      Project Name : {{ projectName }}
+
+  </h4><br>
+{% endif %}
+
+
+    
+    <script>    
+
+      
+    </script>
+
+
+
+<!-- 
+<div> -->
+  <input id="myInput" type="text" placeholder="Search">
+  <div class="btn-group" role="group">
+      <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        Download Lexicon
+        <span class="caret"></span>
+      </button>
+      <ul class="dropdown-menu">
+          <li class="json"><a href="#">JSON</a></li>
+          <li class="csv"><a href="#">CSV</a></li>
+          <li class="xlsx"><a href="#">XLSX</a></li>
+          <li class="pdf"><a href="#">PDF</a></li>
+          <li class="markdown"><a href="#">MARKDOWN</a></li>
+          <li class="latex"><a href="#">LATEX</a></li>
+          <li class="html"><a href="#">HTML</a></li>
+          <!-- <li class="ods"><a href="#">ODS</a></li> -->
+          <li class="rdfturtle"><a href="#">RDF/Turtle</a></li>
+          <li class="rdfxml"><a href="#">RDF/XML</a></li>
+          <li class="rdfntriples"><a href="#">RDF/N-Triples</a></li>
+          <li class="rdfn3"><a href="#">RDF/N3</a></li>
+          <!-- <li><a href="{{url_for('download')}}">.docx</a></li>
+          <li><a href="{{url_for('download')}}">.odt</a></li>
+          <li><a href="{{url_for('download')}}">.pdf</a></li>
+          <li><a href="{{url_for('download')}}">.xlxs</a></li>
+          <li><a href="{{url_for('download')}}">.ods</a></li> -->
+      </ul>
+  </div>
+<br>
+
+      <div class="panel panel-default">
+          <div class="panel-heading">
+          <button type="button" id="newcodebutton" class="btn btn-primary assignaccesscode" data-toggle="modal" data-target="#exampleModal">
+          Get Access Code For New User
+          </button>
+          </div>
+
+          <script>
+            function activeform(buttonType) {
+                var x = document.getElementById("formdisplay");
+                // buttonType = $(this).attr("id");
+                console.log(buttonType)
+
+                if (x.style.display === "none") {
+                  x.style.display = "block";
+                } else if (buttonType == 'closebutton') {
+                  x.style.display = "none";
+                }
+              }
+
+              $(document).ready(function() {
+                $('.lexemeview').click(function() {
+                  buttonType = $(this).attr("id")
+                  activeform(buttonType)
+                  $('#formdisplay').find('input, select').attr('disabled', true);
+                  $('#editbutton').attr('hidden', false);
+                  // sending accesscode using AJAX
+                  // getting speaker details assigned to that accesscode
+                  var accode = $(this).attr("id");
+                  console.log(accode)
+                  $.getJSON("{{url_for('karya_bp.getonespeakerdetails')}}", {
+                    asycaccesscode:String(accode)
+                    }, function(data) {
+                        console.log(data)
+                        metadata = data.speakerdetails.karya_info.current.speaker_info.speakerMetadata
+                        console.log (metadata)
+
+                        name = metadata.name
+                        $('#idname').attr('value', name)
+
+                        agroup = metadata.agegroup
+                        ageOption = '<option value="'+agroup+'" selected="selected">'+agroup+'</option>'
+                        // document.getElementById('idage').innerHTML=""
+                        $('#idage').html(ageOption)
+
+                        gender = metadata.gender
+                        genderOption = '<option value="'+gender+'" selected="selected">'+gender+'</option>'
+                        $('#idgender').html(genderOption)
+                        
+                        elevel = metadata.educationlevel
+                        elevelOption = '<option value="'+elevel+'" selected="selected">'+elevel+'</option>'
+                        $('#idelevel').html(elevelOption)
+
+                        // mediumpre = metadata.medium-of-education-after-12th
+                        // mediumpost = metadata.medium-of-education-upto-12th
+                        
+                        otherlangs = metadata.otherlanguages
+                        otherlangsOption = ''
+                        for (i=0; i<otherlangs.length; i++) {
+                          otherlangsOption += '<option value="'+otherlangs[i]+'" selected="selected">'+otherlangs[i]+'</option>'
+                        }                        
+                        $('#idotherlangs').html(otherlangsOption)
+
+                        place = metadata.place-of-recording
+                        placeOption = '<option value="'+place+'" selected="selected">'+place+'</option>'
+                        $('#idplace').html(placeOption)
+
+                        ptype = metadata.type-of-place
+                        ptypeOption = '<option value="'+ptype+'" selected="selected">'+ptype+'</option>'
+                        $('#idptype').html(ptypeOption)
+
+                        // $(#)
+                    });
+                    return false;            
+                });
+                $('#editbutton').click(function() {
+                  $('#formdisplay').find('input, select').attr('disabled', false);
+                  $('#editbutton').attr('hidden', true)
+                })
+                $('.assignaccesscode').click(function() {
+                  buttonType = $(this).attr("id")
+                  activeform(buttonType)
+                  // activeform()
+                  $('#idname').attr('value', '')
+                  $('#idplace').attr('value', '')
+                  // $('#formdisplay').find('input').attr('value', '')
+                  // $('#formdisplay').find('select').attr('selected', false)
+                  $('#formdisplay').find('select').html("")
+
+                  $('#formdisplay').find('input, select').attr('disabled', false);
+                  $('#editbutton').attr('hidden', true)                  
+                })
+                $('#closebutton').click(function() {
+                  buttonType = $(this).attr("id")
+                  activeform(buttonType)
+                  // activeform()
+                  // $('#formdisplay').find('input, select').attr('disabled', false);
+                  // $('#editbutton').attr('hidden', true)
+                })
+              });
+          </script>
+
+          <!-- Add/Edit Speaker button -->
+          <!-- Modal -->
+          <div id="formdisplay" style="display: none;">
+            <form role="form" method="post" action="{{url_for('karya_bp.add')}}">
+              
+              <button class="pull-right btn-danger" type="button" id="editbutton">Edit</button><br/>
+              <div class="form-group">
+
+                <!-- return render_template('homespeaker.html', data = table_data, speaker_data_accesscode= speaker_data_accesscode, speaker_data_name = speaker_data_name, 
+                                                              speaker_data_age =speaker_data_age, speaker_data_gender=speaker_data_gender) -->
+                <label class="col-form-label">Name:</label>
+                <input type="text" class="form-control" id="idname" name="sname" placeholder="--Speaker Name--" style="width:55%" value="" required >
+
+              
+              </div>
+
+
+              <div class="form-group">
+              <label for="sagegroup">Age Group: </label> <br> 
+              <select class="age" id="idage" name="sagegroup" multiple="multiple" style="width:55%" required>
+              <div id="ageoptions"></div>
+                
+              </select><br>
+                </div>
+
+            <div class="form-group">                    
+            <label for="sgender">Gender: </label>  <br>
+            <select class="gender" id="idgender" name="sgender" multiple="multiple" style="width:55%" required>
+              <div id="genderoptions"></div>
+            
+            </select><br>
+
+            </div>  
+
+            <div class="form-group">
+            <label for="educationalevel">Educational Level: </label> <br>
+            <select class="educationlvl" id="idelevel" name="educationalevel" multiple="multiple" style="width:55%" required>
+              <div id="eleveloptions"></div>
+
+            </select><br>
+            </div>
+          
+
+            <div class="form-group">
+                <label for="moe12">Medium Of Education (upto 12ᵗʰ): </label><br>                           
+                <select class="educationmediumupto12" id="idmediumpre" name="moe12" multiple="multiple" style="width:55%" required>
+                
+                
+                </select><br>
+            </div> 
+            
+            
+            <div class="form-group">
+                <label for="moea12">Medium Of Education (After 12ᵗʰ): </label><br>                           
+                <select class="educationmediumafter12" id="idmediumpost" name="moea12" multiple="multiple" style="width:55%" required>
+                </select><br>
+            </div>                      
+                                                                
+
+            <div class="form-group">
+                <label for="sols">Other Languages Speaker Could Speak: </label><br>                           
+                <select class="speakerspeaklanguage" id="idotherlangs" name="sols" multiple="multiple" style="width:55%" required></select><br>
+            </div> 
+                                    
+            <div class="form-group">
+              <label class="col-form-label">Place Of Recording:</label>
+              <input type="text" class="form-control" id="idplace" name="por" placeholder="--Place Of Recording--" style="width:55%" required >
+            </div>                                                 
+
+            <div class="form-group">   
+            <label for="toc">Type Of City: </label> <br>
+            <select class="typeofcity" id="idptype" name="toc" multiple="multiple" style="width:55%" required></select><br>
+            </div>                   
+
+            <button type="button" id="closebutton" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <input type="submit" value="Submit"> <br><br>
+            
+            </form>
+          </div>
+
+<!--Form DIV-->
+
+
+
+<br>
+
+<div class="row">
+  <div class="col">
+    <p id="totalrecords">Total Records:&nbsp;{{ count }}</p>
+    
+    <table class="table table-striped " id="myTable">
+      <thead>
+          <tr>
+          <!-- <th onclick="sortTable(0)">id</th> -->
+          <th><input type="checkbox" id="headcheckbox" onchange="checkAllLexeme(this)" name="chk[]" checked/>&nbsp;</th>
+          <th onclick="sortTable(1)">Access Code</th>
+          <th onclick="sortTable(2)">Name</th>
+          <th onclick="sortTable(3)">Age Group</th>
+          <th onclick="sortTable(4)">Gender</th>
+          <th>View</th>
+          <!-- <th>Edit</th> -->
+
+          </tr>
+      </thead>
+      <tbody id="myTableBody">
+           {% for row in data %}
+           
+               <tr>
+               <td><input type="checkbox" id="lexemecheckbox" onchange="checkLexeme(this)" name="name1" checked/></td> 
+                  {% for item in row %}
+                  
+                  <td> {{item['lifespeakerid']}} {{item['name']}} {{item['agegroup']}} {{item['gender']}}</td>     
+                  {% endfor %}
+                  <td><button type="button" class="btn btn-primary lexemeview" id="{{row[0]['lifespeakerid']}}" data-toggle="modal" data-target="#exampleModal">View</button></td>
+                  <!-- <td><button type="button" class="btn btn-warning lexemeedit" id="{{row[0]}}" data-toggle="modal" data-target="#exampleModal">Edit</button></td> -->
+                  <!-- <p> id="{{row[0]}}"</p> -->
+                
+                </tr>
+                  {% endfor %}
+                  
+              
+          </tbody>
+          </table>
+      {% endblock %}
+  </div>
+ 
+      </div>
+      
+      <br />
+      <br />
+
+
+<script>
+  function myFunction() {
+      var input, filter, table, tr, td, i;
+      input = document.getElementById("myInput");
+      filter = input.value.toUpperCase();
+      table = document.getElementById("data");
+      tr = table.getElementsByTagName("tr");
+      for (i = 0; i < tr.length; i++) {
+      td = tr[i].getElementsByTagName("td")[1];
+      if (td) {
+          txtValue = td.textContent || td.innerText;
+          if (txtValue.toUpperCase().indexOf(filter) > -1) {
+          tr[i].style.display = "";
+          } else {
+          tr[i].style.display = "none";
+          }
+      }
+      }
+  };
+// $('.lexemeview').click(function(){
+//   var accode = $(this).attr("id");
+//   console.log(accode)
+// });
+
+  function moea(source) {
+checkboxes = document.getElementsByName('moea12');
+for(var i=0, n=checkboxes.length;i<n;i++) {
+  checkboxes[i].checked = source.checked;
+}
+};
+
+function moe(source) {
+checkboxes = document.getElementsByName('moe12');
+for(var i=0, n=checkboxes.length;i<n;i++) {
+  checkboxes[i].checked = source.checked;
+}
+};
+function olscs(source) {
+checkboxes = document.getElementsByName('sols');
+for(var i=0, n=checkboxes.length;i<n;i++) {
+  checkboxes[i].checked = source.checked;
+}
+};
+
+
+
+  </body>
+  {% block scripts %}
+{{super()}}
+<script src="{{url_for('.static', filename='dictionaryview.js')}}"></script>
+<script src="{{url_for('.static', filename='search.js')}}"></script>
+<script src="{{url_for('.static', filename='sorttable.js')}}"></script>
+<script src="{{url_for('.static', filename='lexemeview.js')}}"></script>
+<script src="{{url_for('.static', filename='lexemeedit.js')}}"></script>
+<script src="{{url_for('.static', filename='editlexeme.js')}}"></script>
+<script src="{{url_for('.static', filename='lexemedelete.js')}}"></script>
+<script src="{{url_for('.static', filename='shareproject.js')}}"></script>
+<script src="{{url_for('.static', filename='shareprojectwith.js')}}"></script>
+<script src="{{url_for('.static', filename='speaker_select2_dropdown.js')}}"></script>
+{% endblock %}
+</html>
+

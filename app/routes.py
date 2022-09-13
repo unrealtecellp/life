@@ -119,8 +119,8 @@ def enternewsentences():
     if activeprojectform is not None:
         return render_template('enternewsentences.html',
                                 projectName=activeprojectname,
-                                newData=activeprojectform,
-                                data=currentuserprojectsname)
+                                newData = activeprojectform,
+                                data = currentuserprojectsname)
 
     return render_template('enternewsentences.html',
                             projectName=activeprojectname,
@@ -4007,3 +4007,4 @@ def audiotranscription():
 def assignkaryaaccesscode():
     print(f"IN KARYA ACCESS CODE ASSIGNMENT FUNCTION")
     return redirect(url_for('home'))
+
