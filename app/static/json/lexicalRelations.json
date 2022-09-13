@@ -1,0 +1,22 @@
+[
+  {
+  	"id":"Hyponym",
+  	"text":"Hyponym"
+  },
+  {
+  	"id":"Hypernym",
+  	"text":"Hypernym"
+  },
+  {
+  	"id":"Meronym (part of)",
+  	"text":"Meronym (part of)"
+  },
+  {
+  	"id":"Antonym",
+  	"text":"Antonym"
+  },
+  {
+  	"id":"Synonym",
+  	"text":"Synonym"
+  }
+]

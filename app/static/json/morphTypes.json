@@ -1,0 +1,78 @@
+[
+  {
+  	"id":"part particle",
+  	"text":"part particle"
+  },
+  {
+  	"id":"ifx infix",
+  	"text":"ifx infix"
+  },
+  {
+  	"id":"pfx prefix",
+  	"text":"pfx prefix"
+  },
+  {
+  	"id":"smfx simulfix",
+  	"text":"smfx simulfix"
+  },
+  {
+  	"id":"sfx suffix",
+  	"text":"sfx suffix"
+  },
+  {
+  	"id":"spfx suprafix",
+  	"text":"spfx suprafix"
+  },
+  {
+  	"id":"cfx circumfix",
+  	"text":"cfx circumfix"
+  },
+  {
+  	"id":"clit clitic",
+  	"text":"clit clitic"
+  },
+  {
+  	"id":"enclit enclitic",
+  	"text":"enclit enclitic"
+  },
+  {
+  	"id":"proclit proclitic",
+  	"text":"proclit proclitic"
+  },
+  {
+  	"id":"bd root bound root",
+  	"text":"bd root bound root"
+  },
+  {
+  	"id":"ubd root root",
+  	"text":"ubd root root"
+  },
+  {
+  	"id":"bd stem bound stem",
+  	"text":"bd stem bound stem"
+  },
+  {
+  	"id":"ubd stem stem",
+  	"text":"ubd stem stem"
+  },
+  {
+  	"id":"ifxnfx infixing interfix",
+  	"text":"ifxnfx infixing interfix"
+  },
+  {
+  	"id":"pfxnfx prefixing interfix",
+  	"text":"pfxnfx prefixing interfix"
+  },
+  {
+  	"id":"sfxnfx suffixing interfix",
+  	"text":"sfxnfx suffixing interfix"
+  },
+  {
+  	"id":"phr phrase",
+  	"text":"phr phrase"
+  },
+  {
+  	"id":"dis phr discontiguous phrase",
+  	"text":"dis phr discontiguous phrase"
+  }
+]

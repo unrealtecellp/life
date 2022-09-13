@@ -1,7 +1,6 @@
 __pycache__
 .vscode
 venv
-app/static/json
 app/static/audio
 download.zip
 LiFE_Uploader_Downloader
