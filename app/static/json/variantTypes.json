@@ -1,0 +1,31 @@
+[
+  {
+    "text": "Dialectal Variant",
+    "children":
+    [
+     {"id": "Regional Variant",
+      "text": "Regional Variant"
+    },
+     {
+       "id": "Social Variant",
+       "text": "Social Variant"
+     },
+     {
+       "id": "Other Variation",
+       "text": "Other Variation"
+     }
+   ]
+ }, 
+ {
+   "id": "Free Variant",
+   "text": "Free Variant"
+ },
+ {
+   "id": "Spelling Variant",
+   "text": "Spelling Variant"
+ },
+ {
+   "id": "Unspecified Variant",
+   "text": "Unspecified Variant"
+ }
+]

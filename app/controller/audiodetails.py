@@ -149,9 +149,10 @@ def getactiveaudioid(projects,
     # print(last_active_audio_id)
     if len(last_active_audio_id) != 0:
         last_active_audio_id = last_active_audio_id['lastActiveId'][current_username][activespeakerId]['audioId']
+
     return last_active_audio_id
 
-def getaudiofiletranscription(transcriptions, file_id):
+def getaudiofiletranscription(transcriptions, audio_id):
     """get the transcription details of the audio file
 
     Args:
@@ -162,7 +163,7 @@ def getaudiofiletranscription(transcriptions, file_id):
         _type_: _description_
     """
     transcription_details = {}
-    transcription_data = transcriptions.find_one({'audioId': file_id})
+    transcription_data = transcriptions.find_one({'audioId': audio_id})
     if transcription_data is not None:
         transcription_details['data'] = transcription_data['textGrid']
 
@@ -264,27 +265,33 @@ def getaudiotranscriptiondetails(transcriptions, audio_id):
     transcription_data = {}
     transcription_regions = []
     t_data = transcriptions.find_one({ 'audioId': audio_id },
-                                                    { '_id': 0, 'textGrid': 1 })
-    # print('t_data!!!!!', t_data)                                                 
+                                    { '_id': 0, 'textGrid.sentence': 1 })
+    # print('t_data!!!!!', t_data)
     if t_data is not None:
-        transcription_data['data'] = t_data['textGrid']
-    print(transcription_data)
-    for key, value in transcription_data['data']['sentence'].items():
+        transcription_data = t_data['textGrid']
+    pprint(transcription_data)
+    sentence = transcription_data['sentence']
+    for key, value in sentence.items():
         transcription_region = {}
+        # transcription_region['sentence'] = {}
         transcription_region['data'] = {}
-        sentence = {}
-        if (key == 'speakerId' or
-            key == 'sentenceId'):
-            continue
-        print(key, value)
         transcription_region['boundaryID'] = key
-        sentence['boundaryID'] = key
-        for k, v in value.items():
-            transcription_region[k] = v
-            sentence[k] = v
-        transcription_region['data']['sentence'] = sentence
+        transcription_region['start'] = sentence[key]['start']
+        transcription_region['end'] = sentence[key]['end']
+        # transcription_region['sentence'] = {key: value}
+        transcription_region['data'] = {'sentence': {key: value}}
+
+        pprint(transcription_region)
+    #     if (key == 'speakerId' or
+    #         key == 'sentenceId'):
+    #         continue
+    #     sentence['boundaryID'] = key
+    #     for k, v in value.items():
+    #         transcription_region[k] = v
+    #         sentence[k] = v
+    #     transcription_region['data']['sentence'] = sentence
         transcription_regions.append(transcription_region)
-    print(transcription_regions)
+    # print(transcription_regions)
 
     return transcription_regions
 
@@ -301,39 +308,52 @@ def savetranscription(transcriptions,
         transcription_details (_type_): _description_
     """
 
-    pprint(activeprojectform)
-    pprint(scriptCode)
-    transcription_details = {
-        'updatedBy' : current_username,
-        "textdeleteFLAG": 0
-    }
-    text_grid = {}
+    # pprint(activeprojectform)
+    # pprint(scriptCode)
+    # transcription_details = {
+    #     'updatedBy' : current_username,
+    #     "textdeleteFLAG": 0
+    # }
+    # text_grid = {}
     sentence = {}
     if transcription_regions is not None:
         transcription_regions = json.loads(transcription_regions)
+        pprint(transcription_regions)
         for transcription_boundary in transcription_regions:
-            print('transcription_boundary.keys()', transcription_boundary.keys())
-            sentence[transcription_boundary['boundaryID']] = {
-                "speakerId": activespeakerId,
-                "sentenceId": audio_id,
-                'start': transcription_boundary['start'],
-                'end': transcription_boundary['end'],
+            transcription_boundary = transcription_boundary['data']
+            if 'sentence' in transcription_boundary:
+                for key, value in transcription_boundary['sentence'].items():
+                    print(f"KEY: {key}\nVALUE: {value}")
+                    value["speakerId"] = activespeakerId
+                    value["sentenceId"] = audio_id
+                    sentence[key] = value
+            # pprint(sentence)
+            #     print('transcription_boundary.keys()', transcription_boundary.keys())
+            #     sentence[transcription_boundary['boundaryID']] = {
+            #         "speakerId": activespeakerId,
+            #         "sentenceId": audio_id,
+            #         'start': transcription_boundary['start'],
+            #         'end': transcription_boundary['end'],
 
-                "transcription": {},
-                "translation": {},
-                "morphemes": {},
-                "gloss": {},
-                "pos": {},
-                "tags": {}
-            }
-        for transcription_data in transcription_regions:
-            for key in list(transcription_data['data'].keys()):
-                if key == 'sentence':
-                    print(key)
+            #         "transcription": {},
+            #         "translation": {},
+            #         "morphemes": {},
+            #         "gloss": {},
+            #         "pos": {},
+            #         "tags": {}
+            #     }
+            # for transcription_data in transcription_regions:
+            #     for key in list(transcription_data['data'].keys()):
+            #         if key == 'sentence':
+            #             print(key)
 
-        text_grid['sentence'] = sentence
-        # print(text_grid)
-        transcription_details['textGrid'] = text_grid
-        # transcriptions.insert(transcription_details)
-        transcriptions.update_one({ 'audioId': audio_id },
-                                    {'$set': { 'textGrid.sentence': sentence }})
+            # text_grid['sentence'] = sentence
+            # print(text_grid)
+            # transcription_details['textGrid'] = text_grid
+            # transcriptions.insert(transcription_details)
+            print("'sentence' in transcription_boundary")
+            pprint(sentence)
+            transcriptions.update_one({ 'audioId': audio_id },
+                                        {'$set': { 'textGrid.sentence': sentence,
+                                                    'updatedBy': current_username,
+                                                    'transcriptionFLAG': 1 }})

@@ -56,20 +56,21 @@ document.addEventListener('DOMContentLoaded', function() {
         if (localStorage.regions) {
             // console.log(localStorage.regions)
             loadRegions(JSON.parse(localStorage.regions));
-        } else {
-            // loadRegions(
-            //     extractRegions(
-            //         wavesurfer.backend.getPeaks(512),
-            //         wavesurfer.getDuration()
-            //     )
-            // );
-            fetch('annotations.json')
-                .then(r => r.json())
-                .then(data => {
-                    loadRegions(data);
-                    saveRegions();
-                });
         }
+        //  else {
+        //     // loadRegions(
+        //     //     extractRegions(
+        //     //         wavesurfer.backend.getPeaks(512),
+        //     //         wavesurfer.getDuration()
+        //     //     )
+        //     // );
+        //     fetch('annotations.json')
+        //         .then(r => r.json())
+        //         .then(data => {
+        //             loadRegions(data);
+        //             saveRegions();
+        //         });
+        // }
     });
     wavesurfer.on('region-click', function(region, e) {
         e.stopPropagation();
@@ -79,7 +80,7 @@ document.addEventListener('DOMContentLoaded', function() {
     wavesurfer.on('region-click', editAnnotation);
     // wavesurfer.on('region-created', saveRegions);
     wavesurfer.on('region-updated', saveRegions);
-    wavesurfer.on('region-removed', saveRegions);
+    // wavesurfer.on('region-removed', saveRegions);
     wavesurfer.on('region-in', showNote);
 
     wavesurfer.on('region-play', function(region) {
@@ -116,13 +117,15 @@ function saveRegions() {
             rid = region.start.toString().slice(0, 4).replace('.', '').concat(region.end.toString().slice(0, 4).replace('.', ''));
              
             // console.log(rid)
+            // sentence = getActiveRegionSentence(region);
+            // console.log(sentence)
             return {
                 boundaryID: rid,
                 start: region.start,
                 end: region.end,
                 attributes: region.attributes,
                 data: region.data,
-                sentence: updateSentenceDetails(rid, region)
+                // sentence: updateSentenceDetails(rid, sentence, region)
             };
         })
     );
@@ -230,6 +233,28 @@ function editAnnotation(region) {
     console.log('editAnnotation(region)')
     // console.log(region)
     let form = document.forms.edit;
+    // let id = form.dataset.region;
+    // let wavesurferregion = wavesurfer.regions.list[id];
+    // console.log(wavesurferregion)
+
+    var sentence = getActiveRegionSentence(region);
+    console.log(sentence)
+    rid = region.start.toString().slice(0, 4).replace('.', '').concat(region.end.toString().slice(0, 4).replace('.', ''));
+    if (sentence === undefined) {
+        sentence = updateSentenceDetails(rid, sentence, region)
+        console.log(sentence)
+        createSentenceForm(sentence[rid])
+        
+    }
+    else {
+        console.log('elseeeee', sentence)
+        sentence = updateSentenceDetails(rid, sentence, region)
+        createSentenceForm(sentence[rid])
+    }
+    // sentence = updateSentenceDetails(rid, sentence, region)
+    // console.log(sentence)
+    // createSentenceForm(sentence[rid])
+
     transcriptionFormDisplay(form, 'edit');
     // form.style.opacity = 1;
     // (form.elements.start.value = Math.round(region.start * 10) / 10),
@@ -237,12 +262,12 @@ function editAnnotation(region) {
     (form.elements.start.value = region.start),
     (form.elements.end.value = region.end);
     // form.elements.note.value = region.data.note || '';
-    document.getElementById("activeSentenceMorphemicBreak").checked = false;
-    $(".containerremovesentencefield1").remove();
-    if (region.data.sentence) {
-        createSentenceForm(form, region);
-        // console.log('true true');
-    }
+    // document.getElementById("activeSentenceMorphemicBreak").checked = false;
+    // $(".containerremovesentencefield1").remove();
+    // if (region.data.sentence) {
+    //     createSentenceForm(form, region);
+    //     // console.log('true true');
+    // }
     formOnSubmit(form, region)
     form.onreset = function() {
         // form.style.opacity = 0;
@@ -254,28 +279,42 @@ function editAnnotation(region) {
 
 // save partial transcription details
 function formOnSubmit(form, region) {
-    // console.log('formOnSubmit(form, region)', region)
+    console.log('formOnSubmit(form, region) region', region)
     form.onsubmit = function(e) {
         e.preventDefault();
         // morphData = morphemeDetails();
-        let sentenceData = new Object();
-        if (region.data.sentence) {
-            sentenceData = region.data.sentence
-            sentData = sentenceDetails(sentenceData);
-        }
-        else {
-            sentData = sentenceDetails(sentenceData);
-        }
+        // let sentenceData = new Object();
+        // if (region.data.sentence) {
+        //     sentenceData = region.data.sentence
+        //     sentData = sentenceDetails(sentenceData);
+        // }
+        // else {
+        //     sentData = sentenceDetails(sentenceData);
+        // }
         // console.log(morphData);
         // $(".containerremovesentencefield1").remove();
         // document.getElementById("activeSentenceMorphemicBreak").checked = false;
         // rid = region.start.toFixed(2);
+        console.log('formOnSubmit(form, region) form', form)
+        let regions = JSON.parse(localStorage.regions)
+        for (i=0; i<regions.length; i++) {
+            if (regions[i]['start'] === region.start &&
+                regions[i]['end'] === region.end) {
+                    rid = region.start.toString().slice(0, 4).replace('.', '').concat(region.end.toString().slice(0, 4).replace('.', ''));
+                    sentence = regions[i]['data']['sentence']
+                    sentece = updateSentenceDetailsOnSaveBoundary(rid, sentence, region, form)
+                }
+            }
+        console.log('formOnSubmit(form, region) sentence', sentence)  
+        // localStorage.setItem("regions", JSON.stringify(regions));
+        // console.log('regions', regions)
+
         region.update({
             start: form.elements.start.value,
             end: form.elements.end.value,
             data: {
                 // note: form.elements.note.value,
-                sentence: sentData
+                sentence: sentence
             }
         });
         // something = window.open("data:text/json," + encodeURIComponent(sentData),
@@ -296,29 +335,172 @@ function showNote(region) {
     showNote.el.textContent = region.data.note || '–';
 }
 
-function updateSentenceDetails(boundaryID, region) {
-    if (region.sentence) {
-        sentence = region.sentence
+function updateSentenceDetailsOnSaveBoundary(boundaryID, sentence, region, form) {
+
+    console.log(boundaryID);
+    console.log(sentence);
+    console.log(region);
+    console.log(form);
+    // console.log(document.forms.edit.elements);
+
+    for (let [key, value] of Object.entries(sentence[boundaryID])) {
+        console.log(key, value)
+        if (key === 'transcription') {
+            for (let [k, v] of Object.entries(sentence[boundaryID][key])) {
+                // console.log(k, v)
+                eleName = 'transcription_'+k
+                sentence[boundaryID][key][k] = form[eleName].value
+            }
+        }
+        else if (key === 'translation') {
+            for (let [k, v] of Object.entries(sentence[boundaryID][key])) {
+                // console.log(k, v)
+                tk = k.split('-')[1]
+                eleName = 'translation_'+tk
+                sentence[boundaryID][key][k] = form[eleName].value
+            }
+        }
+        else if (key === 'morphemes') {
+            // console.log('morphemes!!!!!!!!!!!!!!')
+            for (let [k, v] of Object.entries(sentence[boundaryID][key])) {
+                // console.log(k, v)
+                if (form['morphcount'] !== undefined && k === 'IPA') {
+                    morphCount = form['morphcount'].value
+                    morphemeFor = k
+                    actualTranscription = form['Transcription_'+morphemeFor].value.split(" ")
+                    morphemicBreakTranscription = form['morphsentenceMorphemicBreakTranscription_'+morphemeFor].value
+                    console.log(morphCount, morphemeFor, actualTranscription, morphemicBreakTranscription)
+                    sentence[boundaryID][key][k] = morphemeDetails(actualTranscription, morphemicBreakTranscription)
+                    
+                    morphemeIdMap = morphemeidMap(actualTranscription, morphemicBreakTranscription)
+                    sentence[boundaryID]['gloss'][k] = glossDetails(morphCount,
+                                                            morphemeFor,
+                                                            form,
+                                                            morphemeIdMap)
+                    console.log(sentence)
+                }
+                // tk = k.split('-')[1]
+                // eleName = 'translation_'+tk
+                // sentence[boundaryID][key][k] = form[eleName].value
+            }
+        }
+        // else if (key === 'gloss') {
+        //     console.log('gloss!!!!!!!!!!!!!!')
+        //     for (let [k, v] of Object.entries(sentence[boundaryID][key])) {
+        //         console.log(k, v)
+                
+        //         // if (form['morphcount'] !== undefined && k === 'IPA') {
+        //         //     morphCount = form['morphcount'].value
+        //         //     morphemeFor = k
+        //         //     actualTranscription = form['Transcription_'+morphemeFor].value.split(" ")
+        //         //     morphemicBreakTranscription = form['morphsentenceMorphemicBreakTranscription_'+morphemeFor].value
+        //         //     console.log(morphCount, morphemeFor, actualTranscription, morphemicBreakTranscription)
+        //         //     sentence[boundaryID][key][k] = morphemeDetails(actualTranscription, morphemicBreakTranscription)
+        //         //     console.log(sentence)
+        //         // }
+        //         // tk = k.split('-')[1]
+        //         // eleName = 'translation_'+tk
+        //         // sentence[boundaryID][key][k] = form[eleName].value
+        //     }
+        // }
     }
-    else {
+    console.log(sentence);
+
+    let regions = JSON.parse(localStorage.regions)
+    for (i=0; i<regions.length; i++) {
+        if (regions[i]['start'] === region.start &&
+            regions[i]['end'] === region.end) {
+                regions[i]['data']['sentence'] = sentence
+            }
+        }
+    localStorage.setItem("regions", JSON.stringify(regions));
+    console.log('regions', regions)
+    console.log('updateSentenceDetails(boundaryID, sentence, region, form)', sentence)
+
+    return sentence
+}
+
+function updateSentenceDetails(boundaryID, sentence, region) {
+    // console.log(sentence)
+    // if (sentence !== undefined ) {
+    //     console.log(sentence)
+    //     sentence[boundaryID] = {
+    //         'start': region.start,
+    //         'end': region.end
+    //     }
+    // }
+    // else {
+    if (sentence === undefined ) {    
         sentence = new Object()
         transcription = {}
         translation = {}
         morphemes = {}
         gloss = {}
+        activeprojectform= JSON.parse(localStorage.getItem('activeprojectform'));
+        scriptCode = activeprojectform['scriptCode']
+        
+        // console.log(activeprojectform)
+        // console.log(scriptCode)
+        scripts = activeprojectform["Transcription Script"]
+        translationscripts = activeprojectform["Translation Script"]
+        translationlang = activeprojectform["Translation Language"]
+        for (i=0; i<scripts.length; i++) {
+            script_code = scriptCode[scripts[i]]
+            // console.log(lang_code)
+            // console.log(script_code)
+            transcription[script_code] = ''
+            morphemes[script_code] = {}
+            gloss[script_code] = {}
+        }
+        for (i=0; i<translationscripts.length; i++) {
+            tscript_code = scriptCode[translationscripts[i]]
+            lang_code = translationlang[i].slice(0, 3).toLowerCase()+'-'+tscript_code
+            translation[lang_code] = ''
+        }
         pos = {}
         tags = {}
+        sentence[boundaryID] = {
+            'start': region.start,
+            'end': region.end,
+            'transcription': transcription,
+            'translation': translation,
+            'morphemes': morphemes,
+            'gloss': gloss,
+            'pos': pos,
+            'tags': tags
+        }
+        // }
+        // let regions = JSON.parse(localStorage.regions)
+        // for (i=0; i<regions.length; i++) {
+        //     if (regions[i]['start'] === region.start &&
+        //         regions[i]['end'] === region.end) {
+        //             regions[i]['data']['sentence'] = sentence
+        //         }
+        //     }
+        // localStorage.setItem("regions", JSON.stringify(regions));
+        // console.log('regions', regions)
+        // console.log('updateSentenceDetails(boundaryID, sentence, region)', sentence)
     }
-    sentence[boundaryID] = {
-        'start': region.start,
-        'end': region.end,
-        'transcription': transcription,
-        'translation': translation,
-        'morphemes': morphemes,
-        'gloss': gloss,
-        'pos': pos,
-        'tags': tags
+    else {
+        console.log(boundaryID)
+        console.log(sentence)
+        tempSentence = sentence
+        sentence = new Object()
+        sentence[boundaryID] = tempSentence
+        sentence[boundaryID]['start'] = region.start,
+        sentence[boundaryID]['end'] = region.end
     }
+    let regions = JSON.parse(localStorage.regions)
+        for (i=0; i<regions.length; i++) {
+            if (regions[i]['start'] === region.start &&
+                regions[i]['end'] === region.end) {
+                    regions[i]['data']['sentence'] = sentence
+                }
+            }
+        localStorage.setItem("regions", JSON.stringify(regions));
+        console.log('regions', regions)
+        console.log('updateSentenceDetails(boundaryID, sentence, region)', sentence)
+    console.log('return sentence', sentence)
     return sentence
 
 }
@@ -428,7 +610,9 @@ function glossDetails(morphCount, morphemeFor, formData, actualTranscription, mo
                 // console.log(eleName);
                 if (eleName.includes('morpheme')) {
                     morpheme = formData[eleName].value
+                    console.log(morpheme)
                 }
+                
                 else if (eleName.includes('gloss')) {
                     lexgloss = {
                         "eng-Latn": formData[eleName].value
@@ -445,6 +629,7 @@ function glossDetails(morphCount, morphemeFor, formData, actualTranscription, mo
         // datetime = new Date()
         // console.log(datetime.toJSON());
         glossSubData[morpheme] = {
+            'lexemeId': 'L'+String(i),
             'lexgloss': lexgloss,
             'lextype': lextype
         }
@@ -506,8 +691,107 @@ function mapArrays(array_1, array_2) {
        return mappedData;
 }
 
-function createSentenceForm(form, region) {
+function createSentenceForm(formElement) {
+    // var activeSentenceMorphemicBreak = '<input type="checkbox" id="activeSentenceMorphemicBreak" name="activeSentenceMorphemicBreak" value="false" onclick="">'+
+    //                                     '<label for="activeSentenceMorphemicBreak">&nbsp; Add Interlinear Gloss</label><br></br>'
+    // // document.getElementById("sentencefield2").innerHTML = "";                                        
+    // $(".sentencefield").html(activeSentenceMorphemicBreak);
+    console.log('createSentenceForm(formElement)', formElement)
+    inpt = '';
+    for (let [key, value] of Object.entries(formElement)) {
+        console.log(key, value)
+        if (key === 'transcription') {
+            var transcriptionScript = formElement[key];
+            console.log('Object.keys(transcriptionScript)[0]', Object.keys(transcriptionScript)[0]);
+            firstTranscriptionScript = Object.keys(transcriptionScript)[0]
+            for (let [transcriptionkey, transcriptionvalue] of Object.entries(transcriptionScript)) {
+                inpt += '<div class="form-group">';
+                inpt += '<label for="Transcription_'+ transcriptionkey +'">Transcription in '+ transcriptionkey +'</label>'+
+                        '<input type="text" class="form-control" id="Transcription_'+ transcriptionkey +'"'+ 
+                        'placeholder="Transcription '+ transcriptionkey +'" name="transcription_'+ transcriptionkey +'"'+
+                        'value="'+ transcriptionvalue +'">'+
+                        '</div></div>';
+                inpt += '<div id="morphemicDetail">'+
+                        '<p><strong>Give Morphemic Break</strong></p>'+
+                        '<p><strong>**(use "#" for word boundary(if there are affixes in the word) and "-" for morphemic break)</strong></p>'+
+                        '<div class="form-group"><div class="input-group">'+
+                        '<input type="text" class="form-control" name="morphsentenceMorphemicBreak_' + transcriptionkey +'"'+
+                        'placeholder="e.g. I have re-#write#-en the paper#-s"'+
+                        'id="sentenceMorphemicBreak_' + transcriptionkey +'" value="'+transcriptionvalue+'">';
+                if (transcriptionkey === firstTranscriptionScript) {
+                    inpt += '<div class="input-group-btn">'+
+                            '<button class="btn btn-success" type="button" id="checkSentenceField"'+
+                            'onclick="getSentence(\''+transcriptionvalue+'\', \''+transcriptionkey+'\');">'+
+                            '<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>'+ 
+                            '</button></div>';
+                }
+                inpt += '</div></div>';
+            }
+            document.getElementById("transcription2").innerHTML = "";
+            $('.transcription1').append(inpt);
+            inpt = '';
+        }
+        else if (key === 'translation') {
+        var activeTranslationField = '<input type="checkbox" id="activeTranslationField" name="activeTranslationField" value="false" onclick="activeTranslationLangs()">'+
+                                        '<label for="activeTranslationField">&nbsp; Add Translation</label><br></br>'+
+                                        '<div id="translationlangs" style="display: none;"></div>';
+        document.getElementById("translationfield2").innerHTML = "";                                
+        $(".translationfield1").append(activeTranslationField);
+        translationLang = formElement[key];
+        console.log(translationLang)
+        for (let [translationkey, translationvalue] of Object.entries(translationLang)) {
+            translationkey = translationkey.split('-')[1]
+            inpt += '<div class="form-group">'+
+                    '<label for="Translation_'+ translationkey +'">Translation in '+ translationkey +'</label>'+
+                    '<input type="text" class="form-control" id="Translation_'+ translationkey +'"'+ 
+                    'placeholder="Translation '+ translationkey +'" name="translation_'+ translationkey + '"'+
+                    'value="'+ translationvalue +'">'+
+                    '</div></div>';          
+        }
+        document.getElementById("translationlangs").innerHTML = "";
+        $('#translationlangs').append(inpt);
+        inpt = '';
+        }
+        else if (key === 'tags') {
+        var tagsData = formElement[key]
+        let value = ''
+        for (let [tagskey, tagsvalue] of Object.entries(tagsData)) {
+            value = value+';'+tagskey+':'+tagsvalue
+        }
+        var activeTagsField = '<input type="checkbox" id="activeTagsField" name="activeTagsField" value="false" onclick="activeTags()">'+
+                            '<label for="activeTagsField">&nbsp; Add Tags</label><br></br>'+
+                            '<div id="tags" style="display: none;">'+
+                            '<div class="form-group">'+
+                            '<label for="Tags">Tags</label>'+
+                            '<input type="text" class="form-control" id="Tags" name="Tags" value="'+value+'">'+
+                            '</div></div></div>';
+        document.getElementById("tagsfield2").innerHTML = "";          
+        $(".tagsfield1").append(activeTagsField);
+        inpt = '';
+        }
+        else if (key == 'morphemes' ||
+                    key == 'gloss' ||
+                    key == 'pos') {
+                        inpt = '';
+                    }
+        else if (key == 'start' ||
+                    key == 'end') {
+                        inpt = '';
+                    }
+    }
 
+    $("#activeSentenceMorphemicBreak").click(function() {
+        // activetranscriptionscript = displayRadioValue();
+        eleid = 'Transcription_'+Object.keys(transcriptionScript)[0]
+        activetranscriptionscriptvalue = document.getElementById(eleid).value;
+        if (activetranscriptionscriptvalue === '') {
+          document.getElementById("activeSentenceMorphemicBreak").checked=false;
+          alert('No input given in the selected transcription script!');  
+        }
+        else {
+          activeMorphSentenceField(activetranscriptionscriptvalue, eleid);
+        }
+      });
 }
 
 function createMorphemeForm(form, region) {
@@ -616,4 +900,30 @@ function transcriptionDetailsOnChange(form, region) {
             sentence: sentData
         }
     });
+}
+
+function getActiveRegionSentence(region) {
+    var sentence = ''
+    let regions = JSON.parse(localStorage.regions)
+    for (i=0; i<regions.length; i++) {
+        if (regions[i]['start'] === region.start &&
+            regions[i]['end'] === region.end) {
+                console.log('getActiveRegionSentence(region)', regions[i])
+                // if ('sentence' in regions[i]) {
+                //     console.log("'sentence' in Object.values(regions[i])")
+                //     sentence = Object.values(regions[i]['sentence'])[0]
+                //     console.log('sentence getActiveRegionSentence(region)', sentence)    
+                // }
+                if ('sentence' in regions[i]['data']) {
+                    console.log("'sentence' in Object.values(regions[i])")
+                    sentence = Object.values(regions[i]['data']['sentence'])[0]
+                    console.log('sentence YES getActiveRegionSentence(region)', sentence)    
+                }
+                else {
+                    console.log('sentence NOT getActiveRegionSentence(region)', sentence)   
+                    sentence = undefined
+                }
+                return sentence
+        }
+    }
 }

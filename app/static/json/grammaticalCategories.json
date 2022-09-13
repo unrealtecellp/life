@@ -1,0 +1,285 @@
+[
+  {
+  	"id":"Adjective [ADJ]",
+  	"text":"Adjective [ADJ]"
+  },
+  {
+  	"text":"Adposition [ADP]",
+    "children" :
+    [
+      {
+      	"id":"Postposition",
+      	"text":"Postposition"
+      },
+      {
+      	"id":"Preposition",
+      	"text":"Preposition"
+      }
+    ]
+  },
+  {
+  	"text":"Classifier [PART]",
+    "children" :
+    [
+      {
+      	"id":"Noun Classifier",
+      	"text":"Noun Classifier"
+      }
+    ]
+  },
+  {
+    "text":"Connective",
+    "children" :
+    [
+      {
+      	"text":"Coordinating connective [CCONJ]",
+        "children" :
+        [
+          {
+          	"id":"Correlative connective",
+          	"text":"Correlative connective"
+          }
+        ]
+      },
+      {
+      	"text":"Subordinating connective [SCONJ]",
+        "children" :
+        [
+          {
+          	"id":"Adverbalizer",
+          	"text":"Adverbalizer"
+          },
+          {
+          	"id":"Complementizer",
+          	"text":"Complementizer"
+          },
+          {
+          	"id":"Relativizer",
+          	"text":"Relativizer"
+          }
+        ]
+      }
+    ]
+  },
+  {
+  	"text":"Determiner [DET]",
+    "children" :
+    [
+      {
+      	"text":"Article",
+        "children" :
+        [
+          {
+          	"id":"Definite Article",
+          	"text":"Definite Article"
+          },
+          {
+          	"id":"Indefinite Article",
+          	"text":"Indefinite Article"
+          }
+        ]
+      }
+    ]
+  },
+  {
+  	"id":"Demonstrative [DET]",
+  	"text":"Demonstrative [DET]"
+  },
+  {
+  	"text":"Quantifier",
+    "children" :
+    [
+      {
+      	"text":"Numeral",
+        "children" :
+        [
+          {
+          	"id":"Cardinal numeral [NUM]",
+          	"text":"Cardinal numeral [NUM]"
+          },
+          {
+          	"id":"Distributive numeral [DET]",
+          	"text":"Distributive numeral [DET]"
+          },
+          {
+          	"id":"Multiplicative numeral [DET]",
+          	"text":"Multiplicative numeral [DET]"
+          },
+          {
+          	"id":"Ordinal numeral [DET]",
+          	"text":"Ordinal numeral [DET]"
+          },
+          {
+          	"id":"Partitive numberal [DET]",
+          	"text":"Partitive numberal [DET]"
+          }
+        ]
+      }
+    ]
+  },
+  {
+  	"id":"Existential Marker [PART]",
+  	"text":"Existential Marker [PART]"
+  },
+  {
+  	"id":"Expletive [DET]",
+  	"text":"Expletive [DET]"
+  },
+  {
+  	"id":"Interjection [INTJ]",
+  	"text":"Interjection [INTJ]"
+  },
+  {
+    "text":"Noun [NOUN]",
+    "children" :
+    [
+      {
+      	"text":"Nominal",
+        "children" :
+        [
+          {
+          	"id":"Gerund",
+          	"text":"Gerund"
+          }
+        ]
+      },
+      {
+      	"id":"Proper Noun [PROPN]",
+      	"text":"Proper Noun [PROPN]"
+      },
+      {
+      	"id":"Substantive",
+      	"text":"Substantive"
+      }
+    ]
+  },
+  {
+  	"id":"Participle [VERB / NOUN]",
+  	"text":"Participle [VERB / NOUN]"
+  },
+  {
+  	"text":"Particle [PART]",
+    "children" :
+    [
+      {
+      	"id":"Nominal particle",
+      	"text":"Nominal particle"
+      },
+      {
+      	"id":"Question particle",
+      	"text":"Question particle"
+      },
+      {
+      	"id":"Verbal particle",
+      	"text":"Verbal particle"
+      }
+    ]
+  },
+  {
+  	"id":"Prenoun [X]",
+  	"text":"Prenoun [X]"
+  },
+  {
+  	"id":"Preverb [X]",
+  	"text":"Preverb [X]"
+  },
+  {
+  	"text":"Pro-form [X]",
+    "children" :
+    [
+      {
+      	"id":"Interrogative pro-form",
+      	"text":"Interrogative pro-form"
+      },
+      {
+      	"id":"Pro-Adjective",
+      	"text":"Pro-Adjective"
+      },
+      {
+      	"id":"Pro-Adverb",
+      	"text":"Pro-Adverb"
+      }
+    ]
+  },
+  {
+  	"text":"Pronoun [PRON]",
+    "children" :
+    [
+      {
+      	"id":"Indefinite pronoun",
+      	"text":"Indefinite pronoun"
+      },
+      {
+      	"text":"Personal pronoun",
+        "children" :
+        [
+          {
+          	"id":"Emphatic pronoun",
+          	"text":"Emphatic pronoun"
+          },
+          {
+          	"id":"Possessive pronoun",
+          	"text":"Possessive pronoun"
+          },
+          {
+          	"id":"Reflexive pronoun",
+          	"text":"Reflexive pronoun"
+          }
+        ]
+      },
+      {
+      	"id":"Reciprocal pronoun",
+      	"text":"Reciprocal pronoun"
+      },
+      {
+      	"id":"Relative pronoun",
+      	"text":"Relative pronoun"
+      }
+    ]
+  },
+  {
+  	"text":"Verb",
+    "children" :
+    [
+      {
+      	"id":"Copulative Verb [AUX]",
+      	"text":"Copulative Verb [AUX]"
+      },
+      {
+      	"id":"Ditransitive Verb [VERB]",
+      	"text":"Ditransitive Verb [VERB]"
+      },
+      {
+      	"id":"Intransitive Verb [VERB]",
+      	"text":"Intransitive Verb [VERB]"
+      },
+      {
+      	"id":"Transitive Verb [VERB]",
+      	"text":"Transitive Verb [VERB]"
+      },
+      {
+      	"id":"Light Verb [VERB]",
+      	"text":"Light Verb [VERB]"
+      }
+    ]
+  }
+]
+
+
+
+// var posCategories 2
+  [
+    {"id": "Conjunction", "text": "Conjunction"},
+    {"id": "Particle", "text": "Particle"},
+    {"id": "Noun", "text": "Noun"},
+    {"id": "Adjective", "text": "Adjective"},
+    {"id": "Article", "text": "Article"},
+    {"id": "Adverb", "text": "Adverb"},
+    {"id": "FusedPreposition", "text": "FusedPreposition"},
+    {"id": "Pronoun", "text": "Pronoun"},
+    {"id": "Adposition", "text": "Adposition"},
+    {"id": "Determiner", "text": "Determiner"},
+    {"id": "Symbol", "text": "Symbol"},
+    {"id": "Numeral", "text": "Numeral"},
+    {"id": "Verb", "text": "Verb"}
+  ];

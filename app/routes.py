@@ -165,6 +165,8 @@ def enternewsentences():
             speakerids = projects.find_one({"projectname": activeprojectname},
                                             {"_id": 0, "speakerIds."+current_user.username: 1}
                                         )["speakerIds"][current_user.username]
+            scriptCode = readJSONFile.readJSONFile(scriptCodeJSONFilePath)
+            activeprojectform['scriptCode'] = scriptCode                                      
             # print('currentuserprojectsname', currentuserprojectsname)
             # print('speakerids', speakerids)
             return render_template('enternewsentences.html',
@@ -209,8 +211,8 @@ def savetranscription():
     transcription_data = dict(transcription_data)
     lastActiveId = transcription_data['lastActiveId']
     transcription_regions = transcription_data['transcriptionRegions']
-    print(lastActiveId)
-    print(transcription_regions)
+    # print(lastActiveId)
+    # print(transcription_regions)
     scriptCode = readJSONFile.readJSONFile(scriptCodeJSONFilePath)
     audiodetails.savetranscription(transcriptions,
                                     activeprojectform,

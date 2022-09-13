@@ -332,14 +332,14 @@ var posCategories =
 {"id": "Verb", "text": "Verb"}
 ];
 
-var activeSentenceMorphemicBreak = '<input type="checkbox" id="activeSentenceMorphemicBreak" name="activeSentenceMorphemicBreak" value="false">'+
-                                  '<label for="activeSentenceMorphemicBreak">&nbsp; Add Interlinear Gloss</label><br></br>'
-$(".sentencefield").append(activeSentenceMorphemicBreak);
+// var activeSentenceMorphemicBreak = '<input type="checkbox" id="activeSentenceMorphemicBreak" name="activeSentenceMorphemicBreak" value="false">'+
+//                                   '<label for="activeSentenceMorphemicBreak">&nbsp; Add Interlinear Gloss</label><br></br>'
+// $(".sentencefield").append(activeSentenceMorphemicBreak);
 
 var activeTranslationField = '<input type="checkbox" id="activeTranslationField" name="activeTranslationField" value="false">'+
                             '<label for="activeTranslationField">&nbsp; Add Translation</label><br></br>'+
                             '<div id="translationlangs" style="display: none;"></div>';
-$(".translationfield").append(activeTranslationField);
+$(".translationfield1").append(activeTranslationField);
 
 var activeTagsField = '<input type="checkbox" id="activeTagsField" name="activeTagsField" value="false">'+
                       '<label for="activeTagsField">&nbsp; Add Tags</label><br></br>'+
@@ -408,9 +408,9 @@ function activeMorphSentenceField (value, name) {
   }
 }
 
-$("#activeTranslationField").click(function() {
-  activeTranslationLangs();
-});
+// $("#activeTranslationField").click(function() {
+//   activeTranslationLangs();
+// });
 
 function activeTranslationLangs() {
   var x = document.getElementById("translationlangs");
@@ -423,9 +423,9 @@ function activeTranslationLangs() {
   }
 }
 
-$("#activeTagsField").click(function() {
-  activeTags();
-});
+// $("#activeTagsField").click(function() {
+//   activeTags();
+// });
 
 function activeTags() {
     var x = document.getElementById("tags");
@@ -678,9 +678,6 @@ function myFunction(newData) {
   // var activeAudioFilename = JSON.parse(localStorage.getItem('AudioFilePath')).split('/')[2];
   var activeAudioFilename = newData["AudioFilePath"].split('/')[2];
   // console.log(activeAudioFilename)
-  if (activeAudioFilename === undefined) {
-    activeAudioFilename = '';
-  }
   var inpt = '<strong>Audio Filename: </strong><strong id="audioFilename">'+ activeAudioFilename +'</strong>'
   $(".defaultfield").append(inpt);
   lastActiveId = newData["lastActiveId"]
@@ -701,56 +698,56 @@ function myFunction(newData) {
           $('.lexemelang').append(inpt);
           inpt = '';         
         }
-    else if (key === 'Transcription Script') {
-      var transcriptionScriptLocalStorage = []
-      var transcriptionScript = newData[key];
-      var interLinearGlossLang = ''
-      var interLinearGlossScript = ''
-        for (var i = 0; i < transcriptionScript.length; i++) {
-          if (transcriptionScript[i].includes('_')) {
-            // console.log(transcriptionScript[i]);
-            lScript = transcriptionScript[i].replace('_', ' ');
-          }
-          else {
-            lScript = transcriptionScript[i];
-          }
-          inpt += '<div class="form-group">';
-          if (i === 0) {
-            inpt += '<input type="radio" id="TranscriptionRadioBtn'+ transcriptionScript[i] +'" name="activeTranscriptionScript"'+
-                    'value="Transcription_'+ transcriptionScript[i] +'" checked>';
-          }
-          else {
-            inpt += '<input type="radio" id="TranscriptionRadioBtn'+ transcriptionScript[i] +'" name="activeTranscriptionScript"'+
-                    'value="Transcription_'+ transcriptionScript[i] +'">';
-          }                
-          inpt += '<label for="Transcription_'+ transcriptionScript[i] +'">Transcription in '+ lScript +'</label>'+
-                '<input type="text" class="form-control" id="Transcription_'+ transcriptionScript[i] +'"'+ 
-                'placeholder="Transcription '+ lScript +'" name="Transcription_'+ transcriptionScript[i] +'">'+
-                '</div></div>';
-          transcriptionScriptLocalStorage.push(transcriptionScript[i]);
-        }
-        $('.transcription').append(inpt);
-        inpt = '';
-        localStorage.setItem("Transcription Script", JSON.stringify(transcriptionScriptLocalStorage));
-    }
-    else if (key === 'Translation Language') {
-      translationLang = newData[key];
-        for (var i = 0; i < translationLang.length; i++) {
-          inpt += '<div class="form-group">'+
-                  '<label for="'+ translationLang[i] +'Translation">Translation in '+ translationLang[i] +'</label>'+
-                  '<input type="text" class="form-control" id="'+ translationLang[i] +'Translation"'+ 
-                  'placeholder="Translation '+ translationLang[i] +'" name="Translation '+ translationLang[i] + '">'+
-                  '</div></div>';          
-        }
-      $('#translationlangs').append(inpt);
-      inpt = '';
-    }
-    else if (key === 'Interlinear Gloss Language') {
-      interLinearGlossLang = newData[key]
-    }
-    else if (key === 'Interlinear Gloss Script') {
-      interLinearGlossScript = newData[key]
-    }
+    // else if (key === 'Transcription Script') {
+    //   var transcriptionScriptLocalStorage = []
+    //   var transcriptionScript = newData[key];
+    //   var interLinearGlossLang = ''
+    //   var interLinearGlossScript = ''
+    //     for (var i = 0; i < transcriptionScript.length; i++) {
+    //       if (transcriptionScript[i].includes('_')) {
+    //         // console.log(transcriptionScript[i]);
+    //         lScript = transcriptionScript[i].replace('_', ' ');
+    //       }
+    //       else {
+    //         lScript = transcriptionScript[i];
+    //       }
+    //       inpt += '<div class="form-group">';
+    //       if (i === 0) {
+    //         inpt += '<input type="radio" id="TranscriptionRadioBtn'+ transcriptionScript[i] +'" name="activeTranscriptionScript"'+
+    //                 'value="Transcription_'+ transcriptionScript[i] +'" checked>';
+    //       }
+    //       else {
+    //         inpt += '<input type="radio" id="TranscriptionRadioBtn'+ transcriptionScript[i] +'" name="activeTranscriptionScript"'+
+    //                 'value="Transcription_'+ transcriptionScript[i] +'">';
+    //       }                
+    //       inpt += '<label for="Transcription_'+ transcriptionScript[i] +'">Transcription in '+ lScript +'</label>'+
+    //             '<input type="text" class="form-control" id="Transcription_'+ transcriptionScript[i] +'"'+ 
+    //             'placeholder="Transcription '+ lScript +'" name="Transcription_'+ transcriptionScript[i] +'">'+
+    //             '</div></div>';
+    //       transcriptionScriptLocalStorage.push(transcriptionScript[i]);
+    //     }
+    //     $('.transcription').append(inpt);
+    //     inpt = '';
+    //     localStorage.setItem("Transcription Script", JSON.stringify(transcriptionScriptLocalStorage));
+    // }
+    // else if (key === 'Translation Language') {
+    //   translationLang = newData[key];
+    //     for (var i = 0; i < translationLang.length; i++) {
+    //       inpt += '<div class="form-group">'+
+    //               '<label for="'+ translationLang[i] +'Translation">Translation in '+ translationLang[i] +'</label>'+
+    //               '<input type="text" class="form-control" id="'+ translationLang[i] +'Translation"'+ 
+    //               'placeholder="Translation '+ translationLang[i] +'" name="Translation '+ translationLang[i] + '">'+
+    //               '</div></div>';          
+    //     }
+    //   $('#translationlangs').append(inpt);
+    //   inpt = '';
+    // }
+    // else if (key === 'Interlinear Gloss Language') {
+    //   interLinearGlossLang = newData[key]
+    // }
+    // else if (key === 'Interlinear Gloss Script') {
+    //   interLinearGlossScript = newData[key]
+    // }
   }
   // interLinearGlossLangScriptMapping = mapArrays(interLinearGlossLang, interLinearGlossScript)
   // localStorage.setItem("Interlinear Gloss Lang Script", JSON.stringify(interLinearGlossLangScriptMapping));
