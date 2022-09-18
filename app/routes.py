@@ -160,15 +160,18 @@ def enternewsentences():
             activeprojectform['lastActiveId'] = audio_id
             activeprojectform['transcriptionDetails'] = transcription_details
             activeprojectform['AudioFilePath'] = file_path
-            transcription_regions = audiodetails.getaudiotranscriptiondetails(transcriptions, audio_id)
+            transcription_regions, gloss = audiodetails.getaudiotranscriptiondetails(transcriptions, audio_id)
             activeprojectform['transcriptionRegions'] = transcription_regions
+            if (len(gloss) != 0):
+                activeprojectform['glossDetails'] = gloss
             speakerids = projects.find_one({"projectname": activeprojectname},
                                             {"_id": 0, "speakerIds."+current_user.username: 1}
                                         )["speakerIds"][current_user.username]
             scriptCode = readJSONFile.readJSONFile(scriptCodeJSONFilePath)
-            activeprojectform['scriptCode'] = scriptCode                                      
+            activeprojectform['scriptCode'] = scriptCode
             # print('currentuserprojectsname', currentuserprojectsname)
             # print('speakerids', speakerids)
+            # pprint(activeprojectform)
             return render_template('enternewsentences.html',
                                     projectName=activeprojectname,
                                     newData=activeprojectform,

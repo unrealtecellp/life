@@ -11,6 +11,7 @@ from pprint import pprint
 import gridfs
 from flask import flash
 from pprint import pprint
+import pandas as pd
 
 def saveaudiofiles(mongo,
                     projects,
@@ -264,15 +265,17 @@ def getaudiotranscriptiondetails(transcriptions, audio_id):
     """
     transcription_data = {}
     transcription_regions = []
+    gloss = {}
     t_data = transcriptions.find_one({ 'audioId': audio_id },
                                     { '_id': 0, 'textGrid.sentence': 1 })
     # print('t_data!!!!!', t_data)
     if t_data is not None:
         transcription_data = t_data['textGrid']
-    pprint(transcription_data)
+    # pprint(transcription_data)
     sentence = transcription_data['sentence']
     for key, value in sentence.items():
         transcription_region = {}
+        # gloss = {}
         # transcription_region['sentence'] = {}
         transcription_region['data'] = {}
         transcription_region['boundaryID'] = key
@@ -280,8 +283,20 @@ def getaudiotranscriptiondetails(transcriptions, audio_id):
         transcription_region['end'] = sentence[key]['end']
         # transcription_region['sentence'] = {key: value}
         transcription_region['data'] = {'sentence': {key: value}}
+        try:
+            print('!@!#!@!#!@!#!@!#!@!##!@!#!#!@!#!@!#!@!#!@!#!@!##!@!#!#', gloss)
+            tempgloss = sentence[key]['gloss']
+            print('!@!#!@!#!@!#!@!#!@!##!@!#!#!@!#!@!#!@!#!@!#!@!##!@!#!#', tempgloss)
+            gloss[key] = pd.json_normalize(tempgloss, sep='.').to_dict(orient='records')[0]
+            print('!@!#!@!#!@!#!@!#!@!##!@!#!#!@!#!@!#!@!#!@!#!@!##!@!#!#', gloss)
 
-        pprint(transcription_region)
+            print('288', gloss)
+        except:
+            print('=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=', gloss)
+            gloss = {}
+
+
+        # pprint(transcription_region)
     #     if (key == 'speakerId' or
     #         key == 'sentenceId'):
     #         continue
@@ -292,8 +307,9 @@ def getaudiotranscriptiondetails(transcriptions, audio_id):
     #     transcription_region['data']['sentence'] = sentence
         transcription_regions.append(transcription_region)
     # print(transcription_regions)
+    print('303', gloss)
 
-    return transcription_regions
+    return (transcription_regions, gloss)
 
 def savetranscription(transcriptions,
                         activeprojectform,
@@ -352,8 +368,9 @@ def savetranscription(transcriptions,
             # transcription_details['textGrid'] = text_grid
             # transcriptions.insert(transcription_details)
             print("'sentence' in transcription_boundary")
+            print('371', sentence)
             pprint(sentence)
-            transcriptions.update_one({ 'audioId': audio_id },
-                                        {'$set': { 'textGrid.sentence': sentence,
-                                                    'updatedBy': current_username,
-                                                    'transcriptionFLAG': 1 }})
+    transcriptions.update_one({ 'audioId': audio_id },
+                                {'$set': { 'textGrid.sentence': sentence,
+                                            'updatedBy': current_username,
+                                            'transcriptionFLAG': 1 }})

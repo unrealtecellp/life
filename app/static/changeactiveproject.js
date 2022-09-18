@@ -22,18 +22,18 @@ if (projectname !== null){
     };
 }
 
-// function changeActiveProject(pName) {
-//   //  alert(pName);
-//    $.ajax({
-//     data : {
-//       a : pName
-//     },
-//     type : 'GET',
-//     url : '/activeprojectname'
-//   }).done(function(){
-//       // window.location.reload();
-//       loc = window.location.href
-//       window.location.assign(loc)
+function changeActiveProject(pName) {
+  //  alert(pName);
+   $.ajax({
+    data : {
+      a : pName
+    },
+    type : 'GET',
+    url : '/activeprojectname'
+  }).done(function(){
+      // window.location.reload();
+      loc = window.location.href
+      window.location.assign(loc)
 
-//   });
-// }
+  });
+}
