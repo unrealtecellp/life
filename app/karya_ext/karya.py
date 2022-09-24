@@ -1,6 +1,8 @@
 from curses import meta
 from lib2to3.pytree import convert
+
 from xml.sax.handler import feature_namespace_prefixes
+from xxlimited import new
 from flask import Blueprint, flash, redirect, render_template, url_for, request, json, jsonify, send_file
 from pymongo import database
 from werkzeug.urls import url_parse
@@ -9,7 +11,8 @@ from werkzeug.security import generate_password_hash
 # from karya_plugin.forms import UserLoginForm, RegistrationForm
 # from karya_plugin.models import UserLogin
 from app import app, mongo
-from app.controller import getdbcollections
+from app.controller import getdbcollections, getactiveprojectname, getcurrentuserprojects, getprojectowner
+from app.controller import audiodetails
 # from app.forms import UserLoginForm, RegistrationForm
 # from app.models import UserLogin
 import pandas as pd
@@ -21,6 +24,7 @@ from werkzeug.utils import secure_filename
 from werkzeug.datastructures import FileStorage
 
 from app.routes import activeprojectname
+import wave
 
 #############################################################################
 #############################################################################
@@ -38,8 +42,25 @@ karya_bp = Blueprint('karya_bp', __name__, template_folder='templates', static_f
 
 @karya_bp.route('/home_insert')
 def home_insert():
-        return render_template("home_insert.html")
+    return render_template("home_insert.html")
 
+
+##################################################################################
+#########################################################################################################
+##################################################################################
+import gridfs
+import os
+import glob
+from pathlib import Path
+import sys
+import requests
+import gzip
+import tarfile
+from io import BytesIO
+import requests
+import gzip
+import tarfile
+from io import BytesIO
 import io
 import numpy as np
 import scipy.io.wavfile
@@ -48,70 +69,187 @@ from pymongo import MongoClient
 import requests
 from io import BytesIO
 from scipy.io.wavfile import read, write
+import json
+import os
+
 @karya_bp.route('/fetch_karya_audio')
 def fetch_karya_audio():
     karyaaudiodetails, = getdbcollections.getdbcollections(mongo, 'fetchkaryaaudio')
-    urll = 'https://karyanltmbox.centralindia.cloudapp.azure.com/assignment/281474976733174/input_file'
-    hederr= {'karya-id-token':'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImExNWE0MGQ0In0.eyJzdWIiOiIyODE0NzQ5NzY3MTA3MDMiLCJlbnRpdHkiOiJ3b3JrZXIiLCJpYXQiOjE2NjI5MDI1NTIsImV4cCI6MTY2NTQ5NDU1MiwiYXVkIjoia2FyeWEtc2VydmVyIiwiaXNzIjoia2FyeWEtc2VydmVyIn0.Dvq44bd0RDdQeAGBP39bU-Hsedd_PJs2XpIbPNuTeR0'}
-    r_api= requests.get(url = urll, headers = hederr)
-    print(r_api)
-    request_data = r_api.conten
-    # rate, data = scipy.io.wavfile.read(request_data)
-    # b = np.array(request_data)
 
-    # print(request_data)
-    # # convert binary to FileStorage
-    # convertedFile = FileStorage(stream=request_data, filename='convertedFilename')
-    # print(type(convertedFile))
-    # print(convertedFile)
 
-    projects, userprojects, transcriptions = getdbcollections.getdbcollections(mongo, 'projects', 'userprojects', 'transcriptions')
-    projectowner = 'neerav'
-    activeprojectname = 'hindi'
-    current_username = 'neerav'
-    new_audio_file = {'filename': request_data}
-    speakerId = '1234567890'
+    urll = 'https://karyanltmbox.centralindia.cloudapp.azure.com/assignments?type=new&from=2021-05-11T07:23:40.654Z'
+    # hederr= {'karya-id-token':'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImExNWE0MGQ0In0.eyJzdWIiOiIyODE0NzQ5NzY3MTA3MDMiLCJlbnRpdHkiOiJ3b3JrZXIiLCJpYXQiOjE2NjI5MDI1NTIsImV4cCI6MTY2NTQ5NDU1MiwiYXVkIjoia2FyeWEtc2VydmVyIiwiaXNzIjoia2FyeWEtc2VydmVyIn0.Dvq44bd0RDdQeAGBP39bU-Hsedd_PJs2XpIbPNuTeR0'}
+    hederr = {'karya-id-token':'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImExNWE0MGQ0In0.eyJzdWIiOiIxNjc3NzIzNSIsImVudGl0eSI6IndvcmtlciIsImlhdCI6MTY2MzU5MDA2NiwiZXhwIjoxNjY2MTgyMDY2LCJhdWQiOiJrYXJ5YS1zZXJ2ZXIiLCJpc3MiOiJrYXJ5YS1zZXJ2ZXIifQ.UGpR4dGasm-FQNjHMHT3Ivx3-noKAF-R04vdFOAXJiE'}
+    r = requests.get(headers = hederr, url = urll) 
 
-    saveaudiofiles(mongo,
-                        projects,
-                        userprojects,
-                        transcriptions,
-                        projectowner,
-                        activeprojectname,
-                        current_username,
-                        speakerId,
-                        new_audio_file)
+    # r.json()["assignments"]
+    r_j = r.json()
 
-        """mapping of this function is with the 'uploadaudiofiles' route.
-        Args:
-            mongo: instance of PyMongo
-            projects: instance of 'projects' collection.
-            userprojects: instance of 'userprojects' collection.
-            transcriptions: instance of 'transcriptions' collection.
-            projectowner: owner of the project.
-            activeprojectname: name of the project activated by current active user.
-            current_username: name of the current active user.
-            speakerId: speaker ID for this audio.
-            new_audio_file: uploaded audio file details."""
+    
 
-    # audioformat_dict = {
-    #                     "projects": "", "userprojects": "",
-    #                     "transcriptions":"",
-    #                     "activeprojectname":"",
-    #                     "current_username": "",
-    #                     "speakerId":"",
-    #                     "new_audio_files":""}
 
-    # # data, samplerate = sf.read(io.BytesIO(response))
-    # data, samplerate = sf.read(io.BytesIO(request_data))
-    # rate, data = read(BytesIO(request_data))
-    # karyaaccesscodedetails.insert_one({"rate": rate,"data": data.tolist()})
-    # return_audio_obj = karyaaudiodetails.insert (audioformat_dict)
-    # print ('Return object', return_audio_obj)
-    # mongodb_info = mongo.db.fetchkaryaaudio
-    # update_audio_data = {"new_audio_files": request_data}
-    # print ('Update Data', update_audio_data)
-    # mongodb_info.update_one({}, {"$set": update_audio_data})
+#########################################################  
+    '''worker ID'''
+    # list_workerID = []
+    # getWorker_id = r_j['microtasks']
+    # for findWorker_id in getWorker_id:
+    #     workerid = findWorker_id["input"]["chain"]
+    #     worker_id = workerid["workerId"]
+    #     tt = list_workerID.append[worker_id]
+    # print(list_workerID)  
+    workerId_list = []
+    for micro_metadata in r_j["microtasks"]:
+        sentences = micro_metadata["input"]["data"]
+        findWorker_id = micro_metadata["input"]["chain"]
+        worker_id = findWorker_id["workerId"]
+        workerId_list.append(worker_id)
+    # print(workerId_list)
+        
+    sentence = []
+    for micro_metadata in r_j["microtasks"]:
+        sentences = micro_metadata["input"]["data"]
+        sentence.append(sentences)
+###################################################################
+    id_find = r_j['assignments']
+    speakerID = [item['id'] for item in id_find] #new_dict
+    # print(len(new_dict))
+
+###################################################################
+    # res = {workerId_list: new_dict}
+    # print(res)
+    # res = dict(zip(workerId_list, new_dict))
+    # print(res)
+    audio_speaker_merge = {key:value for key, value in zip(speakerID , workerId_list)}
+    # print(audio_speaker_merge)
+    # print(audio_speaker_merge.keys())
+
+
+
+
+
+    # answer = ", ".join(new_dict)
+    # answer
+    hederr= {'karya-id-token':'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImExNWE0MGQ0In0.eyJzdWIiOiIxNjc3NzIzNSIsImVudGl0eSI6IndvcmtlciIsImlhdCI6MTY2MzU5MDA2NiwiZXhwIjoxNjY2MTgyMDY2LCJhdWQiOiJrYXJ5YS1zZXJ2ZXIiLCJpc3MiOiJrYXJ5YS1zZXJ2ZXIifQ.UGpR4dGasm-FQNjHMHT3Ivx3-noKAF-R04vdFOAXJiE'}
+
+    rl = 'https://karyanltmbox.centralindia.cloudapp.azure.com/assignment/id/input_file'
+    for new_d in audio_speaker_merge.keys():
+        new_url = rl.replace("id", new_d )
+        # print(new_url)
+        ra = requests.get(url = new_url, headers = hederr) 
+        filebytes= ra.content
+        # print(filebytes)
+
+
+        projects, userprojects, transcriptions = getdbcollections.getdbcollections(mongo, 'projects', 'userprojects', 'transcriptions')
+        projectowner = 'nmathur54'
+        activeprojectname = 'PROJECT_1'
+        current_username = 'nmathur54'
+
+        #####################################################
+        '''DATA'''
+        with BytesIO(gzip.decompress(filebytes)) as fh:
+            fileAudio = tarfile.TarFile(fileobj=fh)
+            extracted_audio = fileAudio.extractall('/home/kmi/Desktop/Sid')
+            # audio_read = extracted_audio.read()
+            # print(audio_read)
+        # zero = []
+    path = "/home/kmi/Desktop/sid"
+    files = os.listdir(path)
+
+    # for filename in sorted(os.listdir(path)):
+    for filename in glob.glob(os.path.join(path, '*.wav')):
+        filePath = os.path.join(path, filename)
+        with open(filePath, 'rb') as f:
+        # input_wav = wave.open(filePath, 'rb')
+            input_wav = f.read()
+        # print(input_wav)
+
+    
+####################################################################################################################
+# ############################        ###############################    #################      ###################################             
+
+    # def read_text_file(file_path):
+    #     with open(file_path, 'rb') as f:
+    #         print(f.read())
+
+    # # iterate through all file
+    # for file in os.listdir():
+    #     # Check whether file is in text format or not
+    #     if file.endswith(".wav"):
+    #         file_path = f"{path}/{file}"
+
+    # # call read text file function
+    # input_wav = read_text_file(file_path) 
+
+# here, input_wav is a bytes object representing the wav object
+        # rate, data = read(io.BytesIO(input_wav))
+        # bytes_wav = bytes()
+        # byte_io = io.BytesIO(bytes_wav)
+        # # write(byte_io, rate, reversed_data)
+        # write(byte_io, rate, data)
+        # output_wav = byte_io.read() # and back to bytes, tadaaa
+        # # output_wav can be written to a file, of sent over the network as a binary
+        # print(output_wav)
+        # filedata = FileStorage(output_wav, filename =  filename)
+########################################################################################################################
+# #############################    ############################# #########################   ################################## 
+        # db = mongo.db
+        # fs = gridfs.GridFS(db)
+        # filedata = fs.put(input_wav, filename = filename)
+
+        filedata = FileStorage(stream = input_wav , filename= filename)
+        # print("##################################","Filedatr", filedata , "################################")
+
+    # # with BytesIO(gzip.decompress(filebytes)) as fh:
+    # #     filedata = tarfile.TarFile(fileobj=fh)
+    # #     # tf.extractall('/home/kmi/Desktop/test')
+        new_audio_file = {'audiofile': filedata}
+##################################################################################################################
+        speakerId = worker_id
+        # print(speakerId)
+
+
+        # print(type(filedata))
+        # print(new_audio_file)
+############################################################################################################
+        audiodetails.saveaudiofiles(mongo,
+                            projects,
+                            userprojects,
+                            transcriptions,
+                            projectowner,
+                            activeprojectname,
+                            current_username,
+                            speakerId,
+                            new_audio_file)
+
+
+#################################################################################################
+        # mapping of this function is with the 'uploadaudiofiles' route.
+            
+    # print("File Saved")
+
+
+
+
+
+
+        # audioformat_dict = {
+        #                         "projects": "", 
+        #                         "userprojects": "",
+        #                         "transcriptions":"",
+        #                         "activeprojectname":"",
+        #                         "current_username": "",
+        #                         "speakerId":"",
+        #                         "new_audio_files":""}
+
+
+
+
+
+
+
+
+
 
 
 
@@ -125,7 +263,9 @@ def fetch_karya_audio():
 
 
 
-
+##################################################################################
+#########################################################################################################
+##################################################################################
 
 
 
@@ -202,11 +342,7 @@ def uploadfile():
                                                 "educationmediumafter12": "", "speakerspeaklanguage" :"", 
                                                 "recordingplace": "", "typeofrecordingplace" : "", 
                                                 "activeAccessCode": ""}, "current_date":current_dt},
-                        "previous": {"speakerMetadata": {"name": "", "agegroup": "", "gender": "", 
-                                                "educationlevel": "", "educationmediumupto12": "", 
-                                                "educationmediumafter12": "", "speakerspeaklanguage" :"", 
-                                                "recordingplace": "", "typeofrecordingplace" : "", 
-                                                "activeAccessCode": ""}, "previous_date":current_dt},
+                        "previous": {},
                         "isActive": 0}
                         
                     
@@ -233,6 +369,11 @@ def uploadfile():
 #     name = mongo.db.StringField()
 #     agegroup = mongo.db.StringField()
 #     gender = mongo.db.StringField()
+############################################################################
+###############################################################################################################
+###########################################################################
+
+
 
 
 @karya_bp.route('/homespeaker')
@@ -251,7 +392,8 @@ def homespeaker():
     
     #accesscode
     karyaaccesscode = mongodb_info.find({"isActive":1},{"lifespeakerid":1,"_id" :0})
-    for data in karyaaccesscode:                                     
+    for data in karyaaccesscode:   
+        codes = data["lifespeakerid"]                                  
         speaker_data_accesscode.append(data)
         # speaker_data_accesscode.append(data["lifespeakerid"])
     print(speaker_data_accesscode)
@@ -283,7 +425,7 @@ def homespeaker():
         speaker_data_name.append(speaker_name)
     print(speaker_data_name)
 
-    #age
+    #age"
     age = mongodb_info.find({"isActive":1},{"current.speakerMetadata.agegroup":1,"_id" :0})
     for data in age:   
         # speaker_age = data["karya_info"]["current"]["speaker_info"]["speakerMetadata"]["agegroup"]
@@ -305,14 +447,19 @@ def homespeaker():
     data_table = [[speaker_data_accesscode[i], speaker_data_name[i], speaker_data_age[i], speaker_data_gender[i]] for i in range(0, len(speaker_data_accesscode))]
     
     print(data_table)
-    
+    # for i in range(0, len(speaker_data_accesscode)):
+ 
+ 
+
     # print("this list\n",list(table_data))
     # for speaker_data in speaker_data:
     #     data = speaker_data
     return render_template('homespeaker.html', data = data_table)
 
 
-
+#######################################################################################
+#####################################################################################################################
+#######################################################################################
 
 
 
@@ -322,6 +469,9 @@ def homespeaker():
 def add():
     print ('Adding speaker info into server')
     mongodb_info = mongo.db.accesscodedetails
+    
+    accesscodedetails, = getdbcollections.getdbcollections(mongo, "accesscodedetails")
+
     remaingkaryaaccesscode = mongodb_info.find({"isActive":0},{"lifespeakerid":1, "_id" :0})
 
     # formremaingkaryaaccesscode = ', '.join([data['lifespeakerid'] for data in remaingkaryaaccesscode])
@@ -331,14 +481,15 @@ def add():
     # print(str(op))
     # values = list(all_values(remaingkaryaaccesscode) )
     # print(values)
-########################################################################################
-    karyaaccesscode = mongodb_info.find_one({"isActive":0},{"lifespeakerid":1, "_id" :0})
-    if karyaaccesscode != None:
-        accesscode = karyaaccesscode['lifespeakerid']
-    else:
-        accesscode = ''
-    print ('Karya access code', accesscode)
 
+    # mongodb_info.update_one(
+    #                                 { "lifespeakerid" : "678" },
+    #                                 {
+    #                                     "$set": { "current.speakerMetadata.name": "$previous.speakerMetadata.name"},
+    #                                 })
+
+    
+########################################################################################
     
     # jp = karyaaccesscode["lifespeakerid"]
     print ('Request method', request.method)
@@ -349,11 +500,21 @@ def add():
     speaker_data_age = []
     speaker_data_gender = []
     mongodb_info = mongo.db.accesscodedetails
+
+    #access-code
+    # accode = mongodb_info.find({"isActive":1},{"current.speakerMetadata.lifespeakerid":1,"_id" :0})
+    # for data in accode:   
+    #     speaker_accode = data["current"]["speakerMetadata"]["lifespeakerid"]                                    
+    #     speaker_data_accesscode.append(speaker_accode)
+    # print(speaker_data_accesscode)   
+
+    #speaker_name
     name = mongodb_info.find({"isActive":1},{"current.speakerMetadata.name" :1,"_id" :0})
     for data in name:
         speaker_name = data["current"]["speakerMetadata"]["name"]                                     
         speaker_data_name.append(speaker_name)
     print(speaker_data_name)
+
     #age
     age = mongodb_info.find({"isActive":1},{"current.speakerMetadata.agegroup":1,"_id" :0})
     for data in age:   
@@ -381,19 +542,116 @@ def add():
     print(speaker_data_accesscode)
     
 
-    if request.method =='POST' and accesscode != '':
+    if request.method =='POST':
+    
         # accesscode = request.form.get('accesscode')
         #remaingkaryaaccesscode = request.form.get('remaingkaryaaccesscode')
-        # print("####################################################### \n",remaingkaryaaccesscode, "\n##########################################")
+        print("####################################################### \n", "\n##########################################")
+        accesscode = request.form.get('accode')
+        print("this acc code at line 428", accesscode)
         fname = request.form.get('sname') 
+        print(fname)
         fage = request.form.get('sagegroup')
         fgender = request.form.get('sgender')
         educlvl = request.form.get('educationalevel')
+
         moe12 = request.form.getlist('moe12')
         moea12 = request.form.getlist('moea12')
+        # moe12 = request.form.get('moe12')
+        # moea12 = request.form.get('moea12')
+        
         sols = request.form.getlist('sols')
         por = request.form.get('por')
         toc = request.form.get('toc')
+
+        update_data = {"current.speakerMetadata.name": fname, 
+                                                    "current.speakerMetadata.agegroup": fage, 
+                                                    "current.speakerMetadata.gender": fgender,
+                                                    "current.speakerMetadata.educationlevel": educlvl,
+                                                    "current.speakerMetadata.educationmediumupto12": moe12,
+                                                    "current.speakerMetadata.educationmediumafter12": moea12,
+                                                    "current.speakerMetadata.speakerspeaklanguage": sols,
+                                                    "current.speakerMetadata.recordingplace": por,
+                                                    "current.speakerMetadata.typeofrecordingplace": toc,
+                                                    "isActive": 1}
+        
+        # accesscode = request.form.get('accode')
+#########################################################################################################################
+#########################################################################################################################
+        accesscode = request.form.get('accode')
+        print("=======================> ",accesscode )
+#########################################################################################################################
+##########################################################################################################################
+
+        print("this acc code at line 460", accesscode)
+        if accesscode == '':
+            karyaaccesscode = mongodb_info.find_one({"isActive":0},{"lifespeakerid":1, "_id" :0})
+            if karyaaccesscode != None:
+                accesscode = karyaaccesscode['lifespeakerid']
+            else:
+                accesscode = ''
+                print ('Karya access code', accesscode)
+            
+                print ('445 Update Data', update_data)
+            mongodb_info.update_one({"lifespeakerid": accesscode}, {"$set": update_data})
+        else:
+            previous_speakerdetails = mongodb_info.find_one({"lifespeakerid": accesscode},
+                                                {"current.speakerMetadata": 1, "_id": 0,})
+
+            ###########################################
+            ## TOdo: Add date to the previous metadata
+            ###########################################
+
+
+            # the document's content will change to this:
+            # new_val = {"some text": "ObjectRocket: Database Management and Hosting"}
+
+            # pass the 'new_val' obj to the method call
+            
+            date_of_modified = str(datetime.now()).replace(".", ":" )
+
+            # update_date = mongodb_info.insert(current_date)
+
+            
+            # previous_update_data = {"previous.current_date."+current_date+".name": previous_speakerdetails["current.speakerMetadata.name"], 
+            #                                         "previous."+current_date+".speakerMetadata.agegroup": previous_speakerdetails["current.speakerMetadata.agegroup"], 
+            #                                         "previous."+current_date+".speakerMetadata.gender": previous_speakerdetails["current.speakerMetadata.gender"],
+            #                                         "previous."+current_date+".speakerMetadata.educationlevel": previous_speakerdetails["current.speakerMetadata.educationlevel"],
+            #                                         "previous."+current_date+".speakerMetadata.educationmediumupto12": previous_speakerdetails["current.speakerMetadata.educationmediumupto12"],
+            #                                         "previous."+current_date+".speakerMetadata.educationmediumafter12": previous_speakerdetails["current.speakerMetadata.educationmediumafter12"],
+            #                                         "previous."+current_date+".speakerMetadata.speakerspeaklanguage": previous_speakerdetails["current.speakerMetadata.speakerspeaklanguage"],
+            #                                         "previous."+current_date+".speakerMetadata.recordingplace": previous_speakerdetails["current.speakerMetadata.recordingplace"],
+            #                                         "isActive": 1}
+            update_old_data = {"previous."+date_of_modified+".name": previous_speakerdetails["current"]["speakerMetadata"]["name"], 
+                                                    "previous."+date_of_modified+".speakerMetadata.agegroup": previous_speakerdetails["current"]["speakerMetadata"]["agegroup"], 
+                                                    "previous."+date_of_modified+".speakerMetadata.gender": previous_speakerdetails["current"]["speakerMetadata"]["gender"],
+                                                    "previous."+date_of_modified+".speakerMetadata.educationlevel": previous_speakerdetails["current"]["speakerMetadata"]["educationlevel"],
+                                                    "previous."+date_of_modified+".speakerMetadata.educationmediumupto12": previous_speakerdetails["current"]["speakerMetadata"]["educationmediumupto12"],
+                                                    "previous."+date_of_modified+".speakerMetadata.educationmediumafter12": previous_speakerdetails["current"]["speakerMetadata"]["educationmediumafter12"],
+                                                    "previous."+date_of_modified+".speakerMetadata.speakerspeaklanguage": previous_speakerdetails["current"]["speakerMetadata"]["speakerspeaklanguage"],
+                                                    "previous."+date_of_modified+".speakerMetadata.recordingplace": previous_speakerdetails["current"]["speakerMetadata"]["recordingplace"]
+                                                    }
+
+            # update_old_data = {"previous.speakerMetadata": previous_speakerdetails["current"]["speakerMetadata"]}
+        
+            # mongodb_info.find().forEach(function(x){db.getSiblingDB['previous']['current'].insert(x);});     
+            # mongodb_info.find().forEach(function(result) 
+            #                         { 
+            #                         db.<collectionName>.update({"_id" : result._id}, {$set : {"slug_url" : result.name}}); 
+            #                         })   
+            # # mongodb_info.update_one(
+            #                         { "lifespeakerid" : "678" },
+            #                         [{
+            #                             "$set": { "current.speakerMetadata.name": "previous.speakerMetadata.$name"},
+            #                         }])
+            
+                               
+            mongodb_info.update_one({"lifespeakerid": accesscode}, {"$set": update_old_data}) # Edit_old_user_info
+            mongodb_info.update_one({"lifespeakerid": accesscode}, {"$set": update_data}) #new_user_info
+
+        # acode = request.form.get('accode')
+
+        
         # print("\n#################################\n ", toc)
 
         # {
@@ -411,19 +669,8 @@ def add():
     #                                             "activeAccessCode": ""}, "previous_date":current_dt},
     #                     "isActive": 0}
    
-      
-        update_data = {"current.speakerMetadata.name": fname, 
-                                                    "current.speakerMetadata.agegroup": fage, 
-                                                    "current.speakerMetadata.gender": fgender,
-                                                    "current.speakerMetadata.educationlevel": educlvl,
-                                                    "current.speakerMetadata.educationmediumupto12": moe12,
-                                                    "current.speakerMetadata.educationmediumafter12": moea12,
-                                                    "current.speakerMetadata.speakerspeaklanguage": sols,
-                                                    "current.speakerMetadata.recordingplace": por,
-                                                    "current.speakerMetadata.typeofrecordingplace": toc,
-                                                    "isActive": 1}
-        print ('Update Data', update_data)
-        mongodb_info.update_one({"lifespeakerid": accesscode}, {"$set": update_data})
+        # print("line 444 name ==", fname)
+        
 
         # msg = "Your access code is {} ".format(accesscode)
         # print(msg)
@@ -431,7 +678,9 @@ def add():
         # flash(msg)
     return redirect(url_for('karya_bp.homespeaker'))
     
-
+######################################################################################
+##############################################################################################################################
+######################################################################################
 
 
 # # edit user data 
@@ -460,7 +709,7 @@ def getonespeakerdetails():
     # speakerdetails = speakerdetails["karya_info"]["current"]["speaker_info"]["speakerMetadata"]
     print(f"SPEAKER DETAILS: {speakerdetails}")                                                
 
-
+    # speakerdetails['accesscode'] = asycaccesscode
     return jsonify(speakerdetails=speakerdetails)
 
 
@@ -478,31 +727,49 @@ def getonespeakerdetails():
 
 
 
-# @karya_bp.route('/edituserdetails', methods=['GET', 'POST'])
-# def edituserdetails():
-#     mongodb_info = mongo.db.accesscodedetails
-#     karyaaccesscode = mongodb_info.find_one({"isActive":0},{"accesscode":1, "_id" :0})
-#     #print("thissss isss ############################# \n \n",type(karyaaccesscode))
+@karya_bp.route('/edituserdetails', methods=['GET', 'POST'])
+def edituserdetails():
+    mongodb_info = mongo.db.accesscodedetails
+    karyaaccesscode = mongodb_info.find_one({"isActive":0},{"accesscode":1, "_id" :0})
+    #print("thissss isss ############################# \n \n",type(karyaaccesscode))
 
-#     if request.method =='POST':
-#         accesscode = request.form.get('accesscode')
-#         fname = request.form.get('sname')
-#         fage = request.form.get('sage')
-#         fgender = request.form.get('sgender')
-#         mongodb_info = mongo.db.accesscodedetails
+    if request.method =='POST':
+        # accesscode = request.form.get('accesscode')
+        # fname = request.form.get('sname')
+        # fage = request.form.get('sage')
+        # fgender = request.form.get('sgender')
+        # mongodb_info = mongo.db.accesscodedetails
 
+        fname = request.form.get('sname') 
+        fage = request.form.get('sagegroup')
+        fgender = request.form.get('sgender')
+        educlvl = request.form.get('educationalevel')
+        moe12 = request.form.getlist('moe12')
+        moea12 = request.form.getlist('moea12')
+        sols = request.form.getlist('sols')
+        por = request.form.get('por')
+        toc = request.form.get('toc')
+        # print("\n####################)
+        mongodb_info = mongo.db.accesscodedetails
+        edit_data = {"current.speakerMetadata.name": fname, 
+                                                    "current.speakerMetadata.agegroup": fage, 
+                                                    "current.speakerMetadata.gender": fgender,
+                                                    "current.speakerMetadata.educationlevel": educlvl,
+                                                    "current.speakerMetadata.educationmediumupto12": moe12,
+                                                    "current.speakerMetadata.educationmediumafter12": moea12,
+                                                    "current.speakerMetadata.speakerspeaklanguage": sols,
+                                                    "current.speakerMetadata.recordingplace": por,
+                                                    "current.speakerMetadata.typeofrecordingplace": toc
+                                                    }
 
-
-#         mongodb_info.update_one({"accesscode": accesscode}, 
-#                                                 {"$set": {"trap": {"name":fname, 
-#                                                     "age": fage, 
-#                                                         "gender": fgender}}})
+        mongodb_info.update_one({"accesscode": accesscode}, 
+                                                {"$set": edit_data})
                                                 
 
 
-#         return redirect(url_for('karya_bp.home_insert'))
-#     #rendring to main page
-#     return render_template("edituserdetails.html", code = karyaaccesscode)
+        return redirect(url_for('karya_bp.home_insert'))
+    #rendring to main page
+    return render_template("edituserdetails.html", code = karyaaccesscode)
 
 
 

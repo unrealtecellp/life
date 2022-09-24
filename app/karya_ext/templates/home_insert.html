@@ -1,32 +1,78 @@
 <!DOCTYPE html>
 <html>
 
-
+  <style>
+    input[type=text], select {
+      width: 100%;
+      padding: 12px 20px;
+      margin: 8px 0;
+      display: inline-block;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    
+    input[type=submit] {
+      width: 100%;
+      background-color: #4CAF50;
+      color: white;
+      padding: 14px 20px;
+      margin: 8px 0;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    
+    input[type=button]:hover {
+      background-color: #f846c3b0;
+      background-color: #5288ec;
+      border: 70%;
+      border-radius: 50%;
+      color: white;
+      padding: 15px 32px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      margin: 4px 2px;
+      cursor: pointer;
+    }
+    
+    div {
+      border-radius: 20px;
+      background-color: rgba(250, 168, 60, 0.253);
+      padding: 10px;
+    }
+    </style>
+  
 <body>
-
+  <div>
   <meta name="viewport" content="width=device-width, initial-scale=1">  
   <title>Save form Data in a Text File using JavaScript</title>
 <h1>LiFe</h1>
 
-
+<br><br><br><br>
 
 
 <h2>Fetch access code or upload access code file</h2>
   <input type="button" value="Fetch/upload access code" onclick="window.location.href='{{url_for('karya_bp.uploadfile')}}';"> <br><br>
-
+  <br><br><br><br><br><br><br>
 
 
  
 
 <h2>Manage Access Code</h2>
 <input type="button" value="Manage Access Code" onclick="window.location.href='{{url_for('karya_bp.homespeaker')}}'; window"> <br><br>
-
-
+<br><br><br><br><br><br><br><br>
 
 <h2>Fetch Audio File</h2>
 <input type="button" value="Fetch/upload Audio" onclick="window.location.href='{{url_for('karya_bp.fetch_karya_audio')}}'; window"> <br><br>
+<br><br><br><br>
+
+</div>
 
 </body>
+
 </html>
 
 

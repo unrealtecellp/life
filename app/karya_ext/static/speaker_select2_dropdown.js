@@ -137,8 +137,15 @@ var scripts =
     }
 ];
 
-var OtherLanguagesSpeakerCouldSpeak = [
+var OtherLanguagesSpeakerCouldSpeak = 
+[
   {"id": "", "text": ""},
+  {"id": "Bodo", "text": "Bodo"},
+  {"id": "Meetei", "text": "Meetei"},
+  {"id": "Chokri", "text": "Chokri"},
+  {"id": "Kokborok", "text": "Kokborok"},
+  {"id": "Nyishi", "text": "Nyishi"},
+  {"id": "Toto", "text": "Toto"},
   {"id": "Assamese", "text": "Assamese"},
   {"id": "Awadhi", "text": "Awadhi"},
   {"id": "Bangla", "text": "Bangla"},
@@ -164,14 +171,43 @@ var OtherLanguagesSpeakerCouldSpeak = [
   {"id": "Telugu", "text": "Telugu"}
 ];
 
-var EducationMedium = [
+var EducationMedium = 
+[
   {"id": "", "text": ""},
   {"id": "English", "text": "English"},
-  {"id": "Native Language", "text": "Awadhi"},
-  {"id": "Regional Language", "text": "Regional Language"}
+  {"id": "Bodo", "text": "Bodo"},
+  {"id": "Meetei", "text": "Meetei"},
+  {"id": "Chokri", "text": "Chokri"},
+  {"id": "Kokborok", "text": "Kokborok"},
+  {"id": "Nyishi", "text": "Nyishi"},
+  {"id": "Toto", "text": "Toto"},
+  {"id": "Assamese", "text": "Assamese"},
+  {"id": "Awadhi", "text": "Awadhi"},
+  {"id": "Bangla", "text": "Bangla"},
+  {"id": "Bhojpuri", "text": "Bhojpuri"},
+  {"id": "Bodo", "text": "Bodo"},
+  {"id": "Braj", "text": "Braj"},
+  {"id": "Bundeli", "text": "Bundeli"},
+  {"id": "Gujarati", "text": "Gujarati"},
+  {"id": "Haryanvi", "text": "Haryanvi"},
+  {"id": "Hindi", "text": "Hindi"},
+  {"id": "Kannada", "text": "Kannada"},
+  {"id": "Konkani", "text": "Konkani"},
+  {"id": "Magahi", "text": "Magahi"},
+  {"id": "Maithili", "text": "Maithili"},
+  {"id": "Malayalam", "text": "Malayalam"},
+  {"id": "Marathi", "text": "Marathi"},
+  {"id": "Meitei", "text": "Meitei"},
+  {"id": "Nepali", "text": "Nepali"},
+  {"id": "Odia", "text": "Odia"},
+  {"id": "Punjabi", "text": "Punjabi"},
+  {"id": "Santali", "text": "Santali"},
+  {"id": "Tamil", "text": "Tamil"},
+  {"id": "Telugu", "text": "Telugu"}
 ];
 
-var EducationLevel = [
+var EducationLevel = 
+[
   {"id": "", "text": ""},
   {"id": "No Schooling", "text": "No Schooling"},
   {"id": "Upto 12ᵗʰ", "text": "Upto 12ᵗʰ"},
@@ -180,7 +216,8 @@ var EducationLevel = [
   {"id": "Above PG", "text": "Above PG"},
 ];
 
-var gender = [
+var gender = 
+[
   {"id": "", "text": ""},
   {"id": "Female", "text": "Female"},
   {"id": "Male", "text": "Male"},
@@ -189,7 +226,7 @@ var gender = [
 
 var AgeGroup = [
   {"id": "", "text": ""},
-  {"id": "16-25", "text": "16-25"},
+  {"id": "18-25", "text": "18-25"},
   {"id": "25-60", "text": "25-60"},
   {"id": "60+", "text": "60+"}
 ];
@@ -202,7 +239,7 @@ var TypeOfCity = [
 
 $(document).ready(function () {
   $('.typeofcity').select2({
-    //tags: true,
+    // tags: true,
     placeholder: '--Type Of City:--',
     data: TypeOfCity ,
     allowClear: true,
@@ -224,7 +261,7 @@ $(document).ready(function () {
   });
 
   $('.educationlvl').select2({
-    //tags: true,
+    // tags: true,
     placeholder: '--Educational Level:--',
     data:  EducationLevel ,
     allowClear: true
@@ -251,62 +288,62 @@ $(document).ready(function () {
     allowClear: true
   });
 
-$('.lexemelanguage').select2({
-  tags: true,
-  placeholder: 'Lexeme Languages',
-  data: languages,
-  allowClear: true
-});
+// $('.lexemelanguage').select2({
+//   // tags: true,
+//   placeholder: 'Lexeme Languages',
+//   data: languages,
+//   allowClear: true
+// });
 
-$('.lexemeformscript').select2({
-  // tags: true,
-  placeholder: 'Lexeme Scripts',
-  data: scripts,
-  allowClear: true,
-  // sorter: false
-});
+// $('.lexemeformscript').select2({
+//   tags: true,
+//   placeholder: 'Lexeme Scripts',
+//   data: scripts,
+//   allowClear: true,
+//   // sorter: false
+// });
 
-// partial solution to the select2 multiselect
-$("select").on("select2:select", function (evt) {
-  var element = evt.params.data.element;
-  console.log(element);
-  var $element = $(element);
-  $element.detach();
-  $(this).append($element);
-  $(this).trigger("change");
-});
+// // partial solution to the select2 multiselect
+// $("select").on("select2:select", function (evt) {
+//   var element = evt.params.data.element;
+//   console.log(element);
+//   var $element = $(element);
+//   $element.detach();
+//   $(this).append($element);
+//   $(this).trigger("change");
+// });
 
-$('.glosslanguage').select2({
-  // tags: true,
-  placeholder: 'Gloss Languages',
-  data: languages,
-  allowClear: true
-});
+// $('.glosslanguage').select2({
+//   // tags: true,
+//   placeholder: 'Gloss Languages',
+//   data: languages,
+//   allowClear: true
+// });
 
 
-$('.transcriptionscript').select2({
-  // tags: true,
-  placeholder: 'Transcription Scripts',
-  data: scripts,
-  allowClear: true,
-  // sorter: false
-});
+// $('.transcriptionscript').select2({
+//   // tags: true,
+//   placeholder: 'Transcription Scripts',
+//   data: scripts,
+//   allowClear: true,
+//   // sorter: false
+// });
 
-$('.translationlanguage').select2({
-  // tags: true,
-  placeholder: 'Translation Languages',
-  data: languages,
-  allowClear: true,
-  // sorter: false
-});
+// $('.translationlanguage').select2({
+//   // tags: true,
+//   placeholder: 'Translation Languages',
+//   data: languages,
+//   allowClear: true,
+//   // sorter: false
+// });
 
-$('.translationscript').select2({
-  // tags: true,
-  placeholder: 'Translation Scripts',
-  data: scripts,
-  allowClear: true,
-  // sorter: false
-});
+// $('.translationscript').select2({
+//   // tags: true,
+//   placeholder: 'Translation Scripts',
+//   data: scripts,
+//   allowClear: true,
+//   // sorter: false
+// });
 // var fListItems = '<option value="">Field Type</option>';
 
 // for (var i = 0; i < fieldType.length; i++) {
