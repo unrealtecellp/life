@@ -43,7 +43,7 @@ from app.controller import getdbcollections, getcurrentuserprojects, getactivepr
 from app.controller import getprojectowner, getactiveprojectform, savenewsentence
 from app.controller import readJSONFile, createdummylexemeentry, getactivespeakerid
 from app.controller import savenewproject, updateuserprojects, savenewprojectform
-from app.controller import audiodetails
+from app.controller import audiodetails, getcurrentusername
 import shutil, traceback
 
 
@@ -59,6 +59,7 @@ print(f'{"#"*80}Base directory:\n{basedir}\n{"#"*80}')
 @app.route('/home', methods=['GET', 'POST'])
 @login_required
 def home():
+    # print('----------', getcurrentusername.getcurrentusername())
     userprojects, = getdbcollections.getdbcollections(mongo, 'userprojects')
     currentuserprojectsname = getcurrentuserprojects.getcurrentuserprojects(current_user.username,
                                 userprojects)
@@ -3439,7 +3440,8 @@ def uploadaudiofiles():
                                     activeprojectname,
                                     current_user.username,
                                     speakerId,
-                                    new_audio_file)
+                                    new_audio_file
+                                    )
 
     return redirect(url_for('enternewsentences'))
 

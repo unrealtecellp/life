@@ -86,3 +86,6 @@
     - one audio can be transcribe by mutiple user.
         - save each user transcription seperately in the audio document.
 
+24 September 2022
+---------------------------------------------------------------
+- download and save wavesurfer to use in offline mode too

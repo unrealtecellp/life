@@ -10,7 +10,6 @@ import re
 from pprint import pprint
 import gridfs
 from flask import flash
-from pprint import pprint
 import pandas as pd
 
 def saveaudiofiles(mongo,
@@ -21,7 +20,8 @@ def saveaudiofiles(mongo,
                     activeprojectname,
                     current_username,
                     speakerId,
-                    new_audio_file,):
+                    new_audio_file,
+                    **kwargs):
     """mapping of this function is with the 'uploadaudiofiles' route.
 
     Args:
@@ -53,6 +53,9 @@ def saveaudiofiles(mongo,
         "prompt": "",
         "speakerId": speakerId
     }
+    for kwargs_key, kwargs_value in kwargs.items():
+        new_audio_details[kwargs_key] = kwargs_value
+
     if new_audio_file['audiofile'].filename != '':
         audio_filename = new_audio_file['audiofile'].filename
         audio_id = 'A'+re.sub(r'[-: \.]', '', str(datetime.now()))
@@ -185,6 +188,7 @@ def getaudiofilefromfs(mongo,
     Returns:
         _type_: _description_
     """
+    print(file_type, file_id)
     fs =  gridfs.GridFS(mongo.db)                       # creating GridFS instance to get required files                
     file = fs.find_one({ file_type: file_id })
     audioFolder = os.path.join(basedir, 'static/audio')

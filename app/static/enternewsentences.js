@@ -368,7 +368,7 @@ $("#activeSentenceMorphemicBreak").click(function() {
 });
 
 function activeMorphSentenceField (value, name) {
-  console.log(value, name);
+  // console.log(value, name);
   var drow = '<div class="container containerremovesentencefield">';
               // '<div class="row removesentencefield' + sentenceField + '">';
 
@@ -449,18 +449,18 @@ document.getElementById("addSentenceField").disabled = false;
 // var morphemePOS;
 
 function getWordPos(morphemicSplitSentence, name) {
-  console.log('getWordPos');
+  // console.log('getWordPos');
 
   $.getJSON('/predictPOSNaiveBayes', {
 
   a:String(morphemicSplitSentence)
   }, function(data) {
   // morphemePOS = data.predictedPOS;
-  console.log(data.predictedPOS);
+  // console.log(data.predictedPOS);
   morphemeFields(morphemicSplitSentence, name, data.predictedPOS);
   
   });
-  return false; 
+  return false;
 }
 
 
@@ -468,7 +468,7 @@ function getWordPos(morphemicSplitSentence, name) {
 // get the sentence enter by the user when green check button is clicked and 
 // create the boxes for words and morphemes
 function getSentence(value, name) {
-  console.log(value, name);
+  // console.log(value, name);
   // document.getElementById("checkSentenceField").disabled = true; 
   // console.log(transcriptionkey, transcriptionvalue)
   
@@ -512,7 +512,7 @@ function getSentence(value, name) {
   // }
 
 
-  console.log(sentence, sentence_morphemic_break)
+  // console.log(sentence, sentence_morphemic_break)
 
   if (sentence.length === 1 && sentence[0] === "") {
   alert('No input given!');
@@ -530,8 +530,8 @@ function getSentence(value, name) {
     morph_len = (sentence_morphemic_break_full.match(/-/g)||[]).length;
     boundary_len = (sentence_morphemic_break_full.match(/#/g)||[]).length;
 
-    console.log(morph_len)
-    console.log(boundary_len)
+    // console.log(morph_len)
+    // console.log(boundary_len)
     
     if (boundary_len > morph_len) {
       alert("Number of # ("+boundary_len+") should be less than or equal to number of - ("+morph_len+") in the morphemic break")
@@ -667,8 +667,8 @@ function morphemeFields(morphemicSplitSentence, name, morphemePOS) {
   // add the input elements below that sentence
   // $(".containerremovesentencefield"+sid).append(morphemeinput);
   // $(".containerremovesentencefield").append(morphemeinput);
-  console.log(morphemeinput)
-  console.log(".morphemicDetail_"+name)
+  // console.log(morphemeinput)
+  // console.log(".morphemicDetail_"+name)
   $(".morphemefield_"+name).remove();
   $("#morphemicDetail_"+name).append(morphemeinput);
 
@@ -737,7 +737,7 @@ function morphemeFields(morphemicSplitSentence, name, morphemePOS) {
 
 
 function editMorphemicBreakSentence(transcriptionvalue, transcriptionkey) {
-  console.log(transcriptionkey, transcriptionvalue)
+  // console.log(transcriptionkey, transcriptionvalue)
   document.getElementById("sentenceMorphemicBreak_"+transcriptionkey).readOnly = false;
   var checkBtn = '<button class="btn btn-success" type="button" id="checkSentenceField"'+
               'onclick="getSentence(\''+transcriptionvalue+'\', \''+transcriptionkey+'\');">'+
@@ -747,13 +747,13 @@ function editMorphemicBreakSentence(transcriptionvalue, transcriptionkey) {
 }
 
 $("#save").click(function() {
-  console.log('sending transcription and morphemic details to the server');
+  // console.log('sending transcription and morphemic details to the server');
   var transcriptionData = Object()
   var transcriptionRegions = localStorage.regions
   var lastActiveId = document.getElementById("lastActiveId").value;
   transcriptionData['lastActiveId'] = lastActiveId
   transcriptionData['transcriptionRegions'] = transcriptionRegions
-  console.log(transcriptionData)
+  // console.log(transcriptionData)
   $.getJSON('/savetranscription', {
   
   a:JSON.stringify(transcriptionData)
@@ -765,7 +765,7 @@ $("#save").click(function() {
 
 function myFunction(newData) {
   localStorage.setItem("activeprojectform", JSON.stringify(newData));
-  console.log(newData);
+  // console.log(newData);
   localStorage.setItem("regions", JSON.stringify(newData['transcriptionRegions']));
   // var activeAudioFilename = JSON.parse(localStorage.getItem('AudioFilePath')).split('/')[2];
   var activeAudioFilename = newData["AudioFilePath"].split('/')[2];
@@ -876,7 +876,7 @@ function displayRadioValue() {
   
 function previousAudio() {
   var lastActiveId = document.getElementById("lastActiveId").value;
-  console.log(lastActiveId)
+  // console.log(lastActiveId)
     $.ajax({
         url: '/loadpreviousaudio',
         type: 'GET',
@@ -920,7 +920,7 @@ function unAnnotated() {
       success: function(response){
           allunanno = response.allunanno;
           allanno = response.allanno;
-          console.log(allanno)
+          // console.log(allanno)
           var inpt = '';
           inpt += '<select class="col-sm-3 allanno" id="allanno" onchange="loadAnnoText()">'+
                   '<option selected disabled>All Annotated</option>';
@@ -943,7 +943,7 @@ function unAnnotated() {
 
 function loadUnAnnoText() {
   newAudioFilename = document.getElementById('allunanno').value;
-  console.log(newAudioFilename)
+  // console.log(newAudioFilename)
   loadRandomAudio(newAudioFilename)
   // $.ajax({
   //     url: '/loadunannotext',
@@ -959,7 +959,7 @@ function loadUnAnnoText() {
 
 function loadAnnoText() {
   newAudioFilename = document.getElementById('allanno').value;
-  console.log(newAudioFilename)
+  // console.log(newAudioFilename)
   loadRandomAudio(newAudioFilename)
   // $.ajax({
   //     url: '/loadunannotext',
