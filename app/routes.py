@@ -43,7 +43,7 @@ from app.controller import getdbcollections, getcurrentuserprojects, getactivepr
 from app.controller import getprojectowner, getactiveprojectform, savenewsentence
 from app.controller import readJSONFile, createdummylexemeentry, getactivespeakerid
 from app.controller import savenewproject, updateuserprojects, savenewprojectform
-from app.controller import audiodetails
+from app.controller import audiodetails, getcurrentusername
 import shutil, traceback
 
 
@@ -59,6 +59,7 @@ print(f'{"#"*80}Base directory:\n{basedir}\n{"#"*80}')
 @app.route('/home', methods=['GET', 'POST'])
 @login_required
 def home():
+    # print('----------', getcurrentusername.getcurrentusername())
     userprojects, = getdbcollections.getdbcollections(mongo, 'userprojects')
     currentuserprojectsname = getcurrentuserprojects.getcurrentuserprojects(current_user.username,
                                 userprojects)
@@ -160,15 +161,18 @@ def enternewsentences():
             activeprojectform['lastActiveId'] = audio_id
             activeprojectform['transcriptionDetails'] = transcription_details
             activeprojectform['AudioFilePath'] = file_path
-            transcription_regions = audiodetails.getaudiotranscriptiondetails(transcriptions, audio_id)
+            transcription_regions, gloss = audiodetails.getaudiotranscriptiondetails(transcriptions, audio_id)
             activeprojectform['transcriptionRegions'] = transcription_regions
+            if (len(gloss) != 0):
+                activeprojectform['glossDetails'] = gloss
             speakerids = projects.find_one({"projectname": activeprojectname},
                                             {"_id": 0, "speakerIds."+current_user.username: 1}
                                         )["speakerIds"][current_user.username]
             scriptCode = readJSONFile.readJSONFile(scriptCodeJSONFilePath)
-            activeprojectform['scriptCode'] = scriptCode                                      
+            activeprojectform['scriptCode'] = scriptCode
             # print('currentuserprojectsname', currentuserprojectsname)
             # print('speakerids', speakerids)
+            # pprint(activeprojectform)
             return render_template('enternewsentences.html',
                                     projectName=activeprojectname,
                                     newData=activeprojectform,
@@ -3436,7 +3440,8 @@ def uploadaudiofiles():
                                     activeprojectname,
                                     current_user.username,
                                     speakerId,
-                                    new_audio_file)
+                                    new_audio_file
+                                    )
 
     return redirect(url_for('enternewsentences'))
 

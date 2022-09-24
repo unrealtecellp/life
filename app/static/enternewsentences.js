@@ -368,7 +368,7 @@ $("#activeSentenceMorphemicBreak").click(function() {
 });
 
 function activeMorphSentenceField (value, name) {
-  console.log(value, name);
+  // console.log(value, name);
   var drow = '<div class="container containerremovesentencefield">';
               // '<div class="row removesentencefield' + sentenceField + '">';
 
@@ -456,10 +456,11 @@ function getWordPos(morphemicSplitSentence, name) {
   a:String(morphemicSplitSentence)
   }, function(data) {
   // morphemePOS = data.predictedPOS;
-  morphemeFields(morphemicSplitSentence, name, data.predictedPOS);
   // console.log(data.predictedPOS);
+  morphemeFields(morphemicSplitSentence, name, data.predictedPOS);
+  
   });
-  return false; 
+  return false;
 }
 
 
@@ -467,8 +468,10 @@ function getWordPos(morphemicSplitSentence, name) {
 // get the sentence enter by the user when green check button is clicked and 
 // create the boxes for words and morphemes
 function getSentence(value, name) {
-  console.log(value, name);
-  document.getElementById("checkSentenceField").disabled = true; 
+  // console.log(value, name);
+  // document.getElementById("checkSentenceField").disabled = true; 
+  // console.log(transcriptionkey, transcriptionvalue)
+  
   // document.getElementById("sentenceField" + sentenceField).readonly = true; 
   // document.getElementById("sentenceMorphemicBreak" + sentenceField).readonly = true; 
   // document.getElementById("submitSentenceField" + sid).disabled = false;
@@ -485,16 +488,36 @@ function getSentence(value, name) {
   // sentence = document.getElementById("note").value.trim().split(' '); // Find the text
   // sentence_morphemic_break_full = document.getElementById("sentenceMorphemicBreak" + sentenceField).value.trim(); // Find the text
   // sentence_morphemic_break = document.getElementById("sentenceMorphemicBreak" + sentenceField).value.trim().split(' '); // Find the text
+  if (value === '') {
+    value = document.getElementById("Transcription_" + name).value.trim();
+  }
   sentence = value.trim().split(' ');
-  sentence_morphemic_break_full = document.getElementById("sentenceMorphemicBreak" + name).value.trim(); // Find the text
-  sentence_morphemic_break = document.getElementById("sentenceMorphemicBreak" + name).value.trim().split(' '); // Find the text
+  sentence_morphemic_break_full = document.getElementById("sentenceMorphemicBreak_" + name).value.trim(); // Find the text
+  sentence_morphemic_break = document.getElementById("sentenceMorphemicBreak_" + name).value.trim().split(' '); // Find the text
+
+  replaceObj = new RegExp('[#-]', 'g')
+
+  // if (value !== sentence_morphemic_break_full.replaceall('#', '').replaceall('-', '')) {
+  if (value !== sentence_morphemic_break_full.replace(replaceObj, '')) {
+    alert('Sentence do not match to: '+value)
+    return false;
+  }
+  // else {
+  //   // disableEditIcon(name, value);
+  //   document.getElementById("sentenceMorphemicBreak_"+name).readOnly = true;
+  //   var checkBtn = '<button class="btn btn-warning" type="button" id="editSentenceField"'+
+  //               'onclick="editMorphemicBreakSentence(\''+value+'\', \''+name+'\');">'+
+  //               '<span class="glyphicon glyphicon-edit" aria-hidden="true"></span></button>';
+  //   $("#editsentmorpbreak").html(checkBtn);
+  // }
 
 
   // console.log(sentence, sentence_morphemic_break)
 
   if (sentence.length === 1 && sentence[0] === "") {
   alert('No input given!');
-  document.getElementById("checkSentenceField" + sid).disabled = false;
+  // document.getElementById("checkSentenceField" + sid).disabled = false;
+  document.getElementById("checkSentenceField").disabled = false;
   return false;
   }
   if (sentence_morphemic_break.length === 1 && sentence_morphemic_break[0] === "") {
@@ -506,31 +529,82 @@ function getSentence(value, name) {
   if (sentence_morphemic_break_full.includes('-')) {
     morph_len = (sentence_morphemic_break_full.match(/-/g)||[]).length;
     boundary_len = (sentence_morphemic_break_full.match(/#/g)||[]).length;
+
     // console.log(morph_len)
     // console.log(boundary_len)
-    if (morph_len != boundary_len) {
-      alert("Number of # ("+boundary_len+") not equal to numer of - ("+morph_len+") in the morphemic break")
-      document.getElementById("checkSentenceField" + sid).disabled = false;
+    
+    if (boundary_len > morph_len) {
+      alert("Number of # ("+boundary_len+") should be less than or equal to number of - ("+morph_len+") in the morphemic break")
+      // document.getElementById("checkSentenceField" + sid).disabled = false;
+      document.getElementById("checkSentenceField").disabled = false;
       return false;
     }
+
+
 
     // alert('No input given!');
     // document.getElementById("checkSentenceField" + sid).disabled = false;
     // return false;
-    }
+  }
   // sentence_morphemic_break = document.getElementById("sentenceMorphemicBreak" + sentenceField).value.trim().split(' '); // Find the text
 
   for (i = 0; i < sentence_morphemic_break.length; i++) {
-  if (sentence_morphemic_break[i].includes('#')) {
-  morphSplit = sentence_morphemic_break[i].split('#')
-  for (j = 0; j < morphSplit.length; j++) {
-  morphemicSplitSentence.push(morphSplit[j]);
-  }  
+    if (sentence_morphemic_break[i].includes('#') || sentence_morphemic_break[i].includes('-')) {
+      if (sentence_morphemic_break[i].includes('#') && sentence_morphemic_break[i].includes('-')) {
+        morphSplit = sentence_morphemic_break[i].split('#')
+
+        if (morphSplit.length <= 3) {
+          for (j = 0; j < morphSplit.length; j++) {
+            var currentMorph = morphSplit[j]
+            if (currentMorph.includes("-")) {
+              var dashIndex = currentMorph.indexOf("-")
+              var morphemes = currentMorph.split("-")
+
+              for (k = 0; k < morphemes.length; k++){
+                if (morphemes[k].trim() !== "") {
+                  if (dashIndex == 0) {
+                    morphemicSplitSentence.push("-"+morphemes[k]);
+                  }
+                  else{
+                    morphemicSplitSentence.push(morphemes[k]+"-");
+                  }
+                }
+              }
+            }
+            else if (currentMorph.trim() !== "") {
+              morphemicSplitSentence.push(currentMorph);
+            }
+          }
+        }
+        else {
+          alert("Number of # should be less than or equal to 2 in <<"+ sentence_morphemic_break[i] + ">>");
+          document.getElementById("checkSentenceField").disabled = false;
+          return false;
+        } 
+      }
+      else {
+        if (sentence_morphemic_break[i].includes('#')) {
+          alert("- is missing in the morphemic break in <<"+ sentence_morphemic_break[i] + ">>");
+        }
+        else {
+          alert("# is missing in the morphemic break in <<"+ sentence_morphemic_break[i] + ">>");
+        }
+      // document.getElementById("checkSentenceField" + sid).disabled = false;
+        document.getElementById("checkSentenceField").disabled = false;
+        return false;
+      }
+    }
+    else {
+      morphemicSplitSentence.push(sentence_morphemic_break[i]);
+    }
   }
-  else {
-  morphemicSplitSentence.push(sentence_morphemic_break[i]);
-  }
-  }
+  console.log('morphemicSplitSentence', morphemicSplitSentence)
+
+  document.getElementById("sentenceMorphemicBreak_"+name).readOnly = true;
+  var checkBtn = '<button class="btn btn-warning" type="button" id="editSentenceField"'+
+              'onclick="editMorphemicBreakSentence(\''+value+'\', \''+name+'\');">'+
+              '<span class="glyphicon glyphicon-edit" aria-hidden="true"></span></button><br>';
+  $("#editsentmorpbreak").html(checkBtn);
 
   //   morphemePOS = getWordPos(morphemicSplitSentence)
   //   setTimeout(function(){
@@ -546,7 +620,7 @@ function getSentence(value, name) {
 function morphemeFields(morphemicSplitSentence, name, morphemePOS) {
 
   // console.log(morphemePOS);
-  var morphemeinput = '</br><div class="morphemefield' + name + '">';
+  var morphemeinput = '<div class="morphemefield_' + name + '">';
   morphemeinput += '<div class="row">'+
   '<div class="col-sm-3"><strong>Morphemes</strong></div>'+
   '<div class="col-sm-3"><strong>Gloss</strong></div>'+
@@ -592,7 +666,13 @@ function morphemeFields(morphemicSplitSentence, name, morphemePOS) {
   morphemeinput += ' <input type="text" id="morphcount" name="morphcount'+ name +'" value="'+ morphemeCount +'" hidden>'
   // add the input elements below that sentence
   // $(".containerremovesentencefield"+sid).append(morphemeinput);
-  $(".containerremovesentencefield").append(morphemeinput);
+  // $(".containerremovesentencefield").append(morphemeinput);
+  // console.log(morphemeinput)
+  // console.log(".morphemicDetail_"+name)
+  $(".morphemefield_"+name).remove();
+  $("#morphemicDetail_"+name).append(morphemeinput);
+
+
 
   // var sentenceTraslationField = '<input type="checkbox" id="activeSentenceMorphemicBreak" name="activeSentenceMorphemicBreak" value="false" onclick="activeTranscriptionScript()">'+
   // '<label for="activeSentenceMorphemicBreak">&nbsp; Add Translation</label><br></br>'
@@ -655,14 +735,25 @@ function morphemeFields(morphemicSplitSentence, name, morphemePOS) {
   // document.getElementById("submitSentenceField" + sid).disabled = false;
 }
 
+
+function editMorphemicBreakSentence(transcriptionvalue, transcriptionkey) {
+  // console.log(transcriptionkey, transcriptionvalue)
+  document.getElementById("sentenceMorphemicBreak_"+transcriptionkey).readOnly = false;
+  var checkBtn = '<button class="btn btn-success" type="button" id="checkSentenceField"'+
+              'onclick="getSentence(\''+transcriptionvalue+'\', \''+transcriptionkey+'\');">'+
+              '<span class="glyphicon glyphicon-ok" aria-hidden="true"></span></button>';
+
+  $("#editsentmorpbreak").html(checkBtn);
+}
+
 $("#save").click(function() {
-  console.log('sending transcription and morphemic details to the server');
+  // console.log('sending transcription and morphemic details to the server');
   var transcriptionData = Object()
   var transcriptionRegions = localStorage.regions
   var lastActiveId = document.getElementById("lastActiveId").value;
   transcriptionData['lastActiveId'] = lastActiveId
   transcriptionData['transcriptionRegions'] = transcriptionRegions
-  console.log(transcriptionData)
+  // console.log(transcriptionData)
   $.getJSON('/savetranscription', {
   
   a:JSON.stringify(transcriptionData)
@@ -673,7 +764,8 @@ $("#save").click(function() {
 });
 
 function myFunction(newData) {
-  console.log(newData);
+  localStorage.setItem("activeprojectform", JSON.stringify(newData));
+  // console.log(newData);
   localStorage.setItem("regions", JSON.stringify(newData['transcriptionRegions']));
   // var activeAudioFilename = JSON.parse(localStorage.getItem('AudioFilePath')).split('/')[2];
   var activeAudioFilename = newData["AudioFilePath"].split('/')[2];
@@ -784,7 +876,7 @@ function displayRadioValue() {
   
 function previousAudio() {
   var lastActiveId = document.getElementById("lastActiveId").value;
-  console.log(lastActiveId)
+  // console.log(lastActiveId)
     $.ajax({
         url: '/loadpreviousaudio',
         type: 'GET',
@@ -828,7 +920,7 @@ function unAnnotated() {
       success: function(response){
           allunanno = response.allunanno;
           allanno = response.allanno;
-          console.log(allanno)
+          // console.log(allanno)
           var inpt = '';
           inpt += '<select class="col-sm-3 allanno" id="allanno" onchange="loadAnnoText()">'+
                   '<option selected disabled>All Annotated</option>';
@@ -851,7 +943,7 @@ function unAnnotated() {
 
 function loadUnAnnoText() {
   newAudioFilename = document.getElementById('allunanno').value;
-  console.log(newAudioFilename)
+  // console.log(newAudioFilename)
   loadRandomAudio(newAudioFilename)
   // $.ajax({
   //     url: '/loadunannotext',
@@ -867,7 +959,7 @@ function loadUnAnnoText() {
 
 function loadAnnoText() {
   newAudioFilename = document.getElementById('allanno').value;
-  console.log(newAudioFilename)
+  // console.log(newAudioFilename)
   loadRandomAudio(newAudioFilename)
   // $.ajax({
   //     url: '/loadunannotext',

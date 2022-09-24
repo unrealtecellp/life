@@ -99,8 +99,20 @@ document.addEventListener('DOMContentLoaded', function() {
         let form = document.forms.edit;
         let regionId = form.dataset.region;
         if (regionId) {
+            let region = wavesurfer.regions.list[regionId];
             wavesurfer.regions.list[regionId].remove();
+            
             form.reset();
+            rid = region.start.toString().slice(0, 4).replace('.', '').concat(region.end.toString().slice(0, 4).replace('.', ''));
+            localStorageRegions = JSON.parse(localStorage.regions)
+            for (let [key, value] of Object.entries(localStorageRegions)) {
+                // console.log(key, value)
+                if (localStorageRegions[key]['boundaryID'] === rid) {
+                    localStorageRegions.splice(key, 1)
+                    // console.log(localStorageRegions)
+                    localStorage.setItem("regions", JSON.stringify(localStorageRegions));
+                }
+            }
         }
     });
 });
@@ -230,7 +242,7 @@ function randomColor(alpha) {
  * Edit annotation for a region.
  */
 function editAnnotation(region) {
-    console.log('editAnnotation(region)')
+    // console.log('editAnnotation(region)')
     // console.log(region)
     let form = document.forms.edit;
     // let id = form.dataset.region;
@@ -238,18 +250,18 @@ function editAnnotation(region) {
     // console.log(wavesurferregion)
 
     var sentence = getActiveRegionSentence(region);
-    console.log(sentence)
+    // console.log(sentence)
     rid = region.start.toString().slice(0, 4).replace('.', '').concat(region.end.toString().slice(0, 4).replace('.', ''));
     if (sentence === undefined) {
         sentence = updateSentenceDetails(rid, sentence, region)
-        console.log(sentence)
-        createSentenceForm(sentence[rid])
+        // console.log(sentence)
+        createSentenceForm(sentence[rid], rid)
         
     }
     else {
-        console.log('elseeeee', sentence)
+        // console.log('elseeeee', sentence)
         sentence = updateSentenceDetails(rid, sentence, region)
-        createSentenceForm(sentence[rid])
+        createSentenceForm(sentence[rid], rid)
     }
     // sentence = updateSentenceDetails(rid, sentence, region)
     // console.log(sentence)
@@ -279,7 +291,7 @@ function editAnnotation(region) {
 
 // save partial transcription details
 function formOnSubmit(form, region) {
-    console.log('formOnSubmit(form, region) region', region)
+    // console.log('formOnSubmit(form, region) region', region)
     form.onsubmit = function(e) {
         e.preventDefault();
         // morphData = morphemeDetails();
@@ -295,7 +307,7 @@ function formOnSubmit(form, region) {
         // $(".containerremovesentencefield1").remove();
         // document.getElementById("activeSentenceMorphemicBreak").checked = false;
         // rid = region.start.toFixed(2);
-        console.log('formOnSubmit(form, region) form', form)
+        // console.log('formOnSubmit(form, region) form', form)
         let regions = JSON.parse(localStorage.regions)
         for (i=0; i<regions.length; i++) {
             if (regions[i]['start'] === region.start &&
@@ -305,7 +317,7 @@ function formOnSubmit(form, region) {
                     sentece = updateSentenceDetailsOnSaveBoundary(rid, sentence, region, form)
                 }
             }
-        console.log('formOnSubmit(form, region) sentence', sentence)  
+        // console.log('formOnSubmit(form, region) sentence', sentence)  
         // localStorage.setItem("regions", JSON.stringify(regions));
         // console.log('regions', regions)
 
@@ -337,14 +349,14 @@ function showNote(region) {
 
 function updateSentenceDetailsOnSaveBoundary(boundaryID, sentence, region, form) {
 
-    console.log(boundaryID);
-    console.log(sentence);
-    console.log(region);
-    console.log(form);
+    // console.log(boundaryID);
+    // console.log(sentence);
+    // console.log(region);
+    // console.log(form);
     // console.log(document.forms.edit.elements);
 
     for (let [key, value] of Object.entries(sentence[boundaryID])) {
-        console.log(key, value)
+        // console.log(key, value)
         if (key === 'transcription') {
             for (let [k, v] of Object.entries(sentence[boundaryID][key])) {
                 // console.log(k, v)
@@ -360,6 +372,13 @@ function updateSentenceDetailsOnSaveBoundary(boundaryID, sentence, region, form)
                 sentence[boundaryID][key][k] = form[eleName].value
             }
         }
+        else if (key === 'sentencemorphemicbreak') {
+            for (let [k, v] of Object.entries(sentence[boundaryID][key])) {
+                // console.log(k, v)
+                eleName = 'morphsentenceMorphemicBreak_'+k
+                sentence[boundaryID][key][k] = form[eleName].value
+            }
+        }
         else if (key === 'morphemes') {
             // console.log('morphemes!!!!!!!!!!!!!!')
             for (let [k, v] of Object.entries(sentence[boundaryID][key])) {
@@ -368,16 +387,25 @@ function updateSentenceDetailsOnSaveBoundary(boundaryID, sentence, region, form)
                     morphCount = form['morphcount'].value
                     morphemeFor = k
                     actualTranscription = form['Transcription_'+morphemeFor].value.split(" ")
-                    morphemicBreakTranscription = form['morphsentenceMorphemicBreakTranscription_'+morphemeFor].value
-                    console.log(morphCount, morphemeFor, actualTranscription, morphemicBreakTranscription)
+                    // console.log(actualTranscription)
+                    morphemicBreakTranscription = form['morphsentenceMorphemicBreak_'+morphemeFor].value
+                    // console.log(morphCount, morphemeFor, actualTranscription, morphemicBreakTranscription)
                     sentence[boundaryID][key][k] = morphemeDetails(actualTranscription, morphemicBreakTranscription)
                     
+                    sentenceId = sentence[boundaryID]['sentenceId']
+                    console.log("sentence[boundaryID]['sentenceId']", sentenceId)
                     morphemeIdMap = morphemeidMap(actualTranscription, morphemicBreakTranscription)
-                    sentence[boundaryID]['gloss'][k] = glossDetails(morphCount,
-                                                            morphemeFor,
-                                                            form,
-                                                            morphemeIdMap)
-                    console.log(sentence)
+                    // console.log(morphemeIdMap);
+                    glossAndpos = glossDetails(morphCount,
+                                                morphemeFor,
+                                                form,
+                                                morphemeIdMap,
+                                                sentenceId,
+                                                actualTranscription)
+                    // console.log(glossAndpos)
+                    sentence[boundaryID]['gloss'][k] = glossAndpos[0]
+                    sentence[boundaryID]['pos'] = glossAndpos[1]
+                    // console.log(sentence)
                 }
                 // tk = k.split('-')[1]
                 // eleName = 'translation_'+tk
@@ -404,7 +432,7 @@ function updateSentenceDetailsOnSaveBoundary(boundaryID, sentence, region, form)
         //     }
         // }
     }
-    console.log(sentence);
+    // console.log(sentence);
 
     let regions = JSON.parse(localStorage.regions)
     for (i=0; i<regions.length; i++) {
@@ -414,8 +442,8 @@ function updateSentenceDetailsOnSaveBoundary(boundaryID, sentence, region, form)
             }
         }
     localStorage.setItem("regions", JSON.stringify(regions));
-    console.log('regions', regions)
-    console.log('updateSentenceDetails(boundaryID, sentence, region, form)', sentence)
+    // console.log('regions', regions)
+    // console.log('updateSentenceDetails(boundaryID, sentence, region, form)', sentence)
 
     return sentence
 }
@@ -434,9 +462,11 @@ function updateSentenceDetails(boundaryID, sentence, region) {
         sentence = new Object()
         transcription = {}
         translation = {}
+        sentencemorphemicbreak = {}
         morphemes = {}
         gloss = {}
         activeprojectform= JSON.parse(localStorage.getItem('activeprojectform'));
+        // console.log('activeprojectform', activeprojectform)
         scriptCode = activeprojectform['scriptCode']
         
         // console.log(activeprojectform)
@@ -449,6 +479,7 @@ function updateSentenceDetails(boundaryID, sentence, region) {
             // console.log(lang_code)
             // console.log(script_code)
             transcription[script_code] = ''
+            sentencemorphemicbreak[script_code] = ''
             morphemes[script_code] = {}
             gloss[script_code] = {}
         }
@@ -464,6 +495,7 @@ function updateSentenceDetails(boundaryID, sentence, region) {
             'end': region.end,
             'transcription': transcription,
             'translation': translation,
+            'sentencemorphemicbreak': sentencemorphemicbreak,
             'morphemes': morphemes,
             'gloss': gloss,
             'pos': pos,
@@ -482,8 +514,8 @@ function updateSentenceDetails(boundaryID, sentence, region) {
         // console.log('updateSentenceDetails(boundaryID, sentence, region)', sentence)
     }
     else {
-        console.log(boundaryID)
-        console.log(sentence)
+        // console.log(boundaryID)
+        // console.log(sentence)
         tempSentence = sentence
         sentence = new Object()
         sentence[boundaryID] = tempSentence
@@ -498,16 +530,16 @@ function updateSentenceDetails(boundaryID, sentence, region) {
                 }
             }
         localStorage.setItem("regions", JSON.stringify(regions));
-        console.log('regions', regions)
-        console.log('updateSentenceDetails(boundaryID, sentence, region)', sentence)
-    console.log('return sentence', sentence)
+    //     console.log('regions', regions)
+    //     console.log('updateSentenceDetails(boundaryID, sentence, region)', sentence)
+    // console.log('return sentence', sentence)
     return sentence
 
 }
 
 function sentenceDetails(sentenceData) {
     // console.log(sentenceData);
-    console.log(document.forms.edit.elements)
+    // console.log(document.forms.edit.elements)
     formData = document.forms.edit.elements
     // console.log(typeof formData)
     // let sentenceData = new Object();
@@ -534,10 +566,10 @@ function sentenceDetails(sentenceData) {
             ename = value.name.replace(activetranscriptionscript, '');
             // console.log(eleName, ename)
             if (eleName !== '') {
-                console.log(key, value.name, formData[eleName].value);
+                // console.log(key, value.name, formData[eleName].value);
 
                 if (ename.includes('Transcription') && !ename.includes('active')) {
-                    console.log('!!!!!!!!!!!!!!!', key, value.name, formData[eleName].value);
+                    // console.log('!!!!!!!!!!!!!!!', key, value.name, formData[eleName].value);
                     transcriptionData[value.name] = formData[eleName].value;
                 }
                 else if (ename.includes('Translation') && !ename.includes('active')) {
@@ -567,7 +599,7 @@ function sentenceDetails(sentenceData) {
                 //     morphData[value.name] = formData[eleName].value;
                 // }
                 else {
-                    console.log(key, value.name, formData[eleName].value);
+                    // console.log(key, value.name, formData[eleName].value);
                     sentenceData[value.name] = formData[eleName].value;
                 }
 
@@ -587,32 +619,56 @@ function sentenceDetails(sentenceData) {
 }
 
 function morphemeDetails(actualTranscription, morphemicBreakTranscription) {
-    console.log('morphemeDetails!!!!!!!!!')
-    morphemicBreakTranscription = morphemicBreakTranscription.replace('#', '').split(" ")
+    // console.log('morphemeDetails!!!!!!!!!')
+    replaceObj = new RegExp('[#]', 'g')
+    // morphemicBreakTranscription = morphemicBreakTranscription.replace('#', '').split(" ")
+    morphemicBreakTranscription = morphemicBreakTranscription.replace(replaceObj, '').split(" ")
     morphemeData = mapArrays(actualTranscription, morphemicBreakTranscription)
 
-    return morphemeData
     // console.log(morphemeData);
+
+    return morphemeData
 }
 
-function glossDetails(morphCount, morphemeFor, formData, actualTranscription, morphemicBreakTranscription) {
+// function glossDetails(morphCount, morphemeFor, formData, actualTranscription, morphemicBreakTranscription) {
+function glossDetails(morphCount,
+                        morphemeFor,
+                        formData,
+                        morphemeIdMap,
+                        sentenceId,
+                        actualTranscription) {
+
     // console.log(actualTranscription, morphemicBreakTranscription)
+    // console.log(formData)
     let glossData = new Object();
+    // for (i=1; i<=actualTranscription.length; i++) {
+    //     wordId = 'W00'+String(i)
+    //     glossData[wordId] = {}
+    // }
+    console.log(glossData);
+    let pos = new Object();
     for (i=1; i<=morphCount; i++) {
-        let morpheme = ''
         let glossSubData = new Object();
+        glossSubData[i] = {}
+        let morpheme = ''
         let lexgloss = ''
         let lextype = ''
         for (let [key, value] of Object.entries(formData)) {
-            eleName = value.name;
+            // console.log(key, value)
+            if (value !== undefined) {
+                eleName = value.name;
+            }
+            else {
+                eleName = ''
+            }
+            // console.log(eleName)
             if (eleName.includes(i) &&
                 eleName.includes(morphemeFor)) {
                 // console.log(eleName);
                 if (eleName.includes('morpheme')) {
                     morpheme = formData[eleName].value
-                    console.log(morpheme)
+                    // console.log(morpheme)
                 }
-                
                 else if (eleName.includes('gloss')) {
                     lexgloss = {
                         "eng-Latn": formData[eleName].value
@@ -621,6 +677,9 @@ function glossDetails(morphCount, morphemeFor, formData, actualTranscription, mo
                 else if (eleName.includes('lextype')) {
                     lextype = formData[eleName].value
                 }
+                else if (eleName.includes('pos')) {
+                    pos[morphemeIdMap[i]] = formData[eleName].value
+                }
                 // else if (eleName.includes('gloss')) {
                     
                 // }
@@ -628,34 +687,59 @@ function glossDetails(morphCount, morphemeFor, formData, actualTranscription, mo
         }
         // datetime = new Date()
         // console.log(datetime.toJSON());
-        glossSubData[morpheme] = {
-            'lexemeId': 'L'+String(i),
+        glossSubData[i][morpheme] = {
+            'lexemeId': sentenceId+'L'+String(i),
             'lexgloss': lexgloss,
             'lextype': lextype
         }
-        console.log(glossSubData);
-        if (morphemeIdMap[i] in glossData) {
-            Object.assign(glossData[morphemeIdMap[i]], glossSubData)
+        // console.log(glossSubData);
+        // console.log(morphemeIdMap[i]);
+        // if (morphemeIdMap[i] in glossData) {
+        //     Object.assign(glossData[morphemeIdMap[i]], glossSubData)
+        // }
+        // else {
+        //     glossData[morphemeIdMap[i]] = glossSubData
+        // }
+        morphemeIdWord = morphemeIdMap[i][0]
+        wordId = morphemeIdMap[i][1]
+        // console.log(i, morphemeIdMap[i], morphemeIdWord, wordId)
+        if (wordId in glossData) {
+            // if (morphemeIdWord in glossData[wordId]) {
+            //     Object.assign(glossData[wordId][morphemeIdWord], glossSubData)
+            // }
+            // else {
+            //     glossData[wordId][morphemeIdWord] = glossSubData
+            // }
         }
         else {
-            glossData[morphemeIdMap[i]] = glossSubData
+            glossData[wordId] = {}
         }
+        if (morphemeIdWord in glossData[wordId]) {
+            Object.assign(glossData[wordId][morphemeIdWord], glossSubData)
+        }
+        else {
+            glossData[wordId][morphemeIdWord] = glossSubData
+        }
+        // console.log(glossData);
     }
-    console.log(glossData);
+    // console.log(glossData);
+    // console.log(pos)
 
-    return glossData
+    return [glossData, pos]
 }
 
-function morphemeidMap() {
+function morphemeidMap(actualTranscription, morphemicBreakTranscription) {
     morphemicBreakTranscription = morphemicBreakTranscription.split(" ")
     glossDataMapping = mapArrays(actualTranscription, morphemicBreakTranscription)
     // console.log(glossDataMapping);
     // let glossData = new Object();
     let morphemeIdMap = new Object();
     mCount = 0;
+    wCount = 1
     for (let [key, value] of Object.entries(glossDataMapping)) {
-        // console.log(key, value);
+        console.log(key, value);
         // let glossSubData = new Object();
+        wordId = 'W00'+String(wCount)
         if (value.includes('#')) {
             v = value.replace('#', '').replace('-', '')
             value = value.split('#')
@@ -663,15 +747,16 @@ function morphemeidMap() {
                 // glossSubData[value[i]] = {}
                 // glossData[key] = glossSubData
                 mCount += 1
-                morphemeIdMap[mCount] = v
+                morphemeIdMap[mCount] = [v, wordId]
             }
         }
         else {
             // glossSubData[value] = {}
             // glossData[key] = glossSubData
             mCount += 1
-            morphemeIdMap[mCount] = value
+            morphemeIdMap[mCount] = [value, wordId]
         }
+        wCount += 1
     }
     // console.log(glossData);
     console.log(morphemeIdMap)
@@ -684,48 +769,101 @@ function mapArrays(array_1, array_2) {
         array_2.length == 0) {
         return null;
        }
-       let mappedData = new Object();
-         
+    let mappedData = new Object();
+    
+    function mapping(item, index, arr) {
+        // console.log(item, index, arr);
+        wordmap = new Object();
+        wordmap[item] = array_2[index]
+        mappedData['W00'+String(index+1)] = wordmap
+    }
+
      // Using the foreach method
-     array_1.forEach((k, i) => {mappedData[k] = array_2[i]})
-       return mappedData;
+    // array_1.forEach((k, i) => {mappedData[k] = array_2[i]})
+    // array_1.forEach((k, i) => { mappedData['W00'+String(i+1)] = {k: array_2[i]} })
+    array_1.forEach(mapping);
+
+    return mappedData;
 }
 
-function createSentenceForm(formElement) {
+function createSentenceForm(formElement, boundaryID) {
     // var activeSentenceMorphemicBreak = '<input type="checkbox" id="activeSentenceMorphemicBreak" name="activeSentenceMorphemicBreak" value="false" onclick="">'+
     //                                     '<label for="activeSentenceMorphemicBreak">&nbsp; Add Interlinear Gloss</label><br></br>'
     // // document.getElementById("sentencefield2").innerHTML = "";                                        
     // $(".sentencefield").html(activeSentenceMorphemicBreak);
-    console.log('createSentenceForm(formElement)', formElement)
+    // console.log('createSentenceForm(formElement)', formElement)
     inpt = '';
     for (let [key, value] of Object.entries(formElement)) {
-        console.log(key, value)
+        // console.log(key, value)
         if (key === 'transcription') {
             var transcriptionScript = formElement[key];
-            console.log('Object.keys(transcriptionScript)[0]', Object.keys(transcriptionScript)[0]);
+            // console.log('Object.keys(transcriptionScript)[0]', Object.keys(transcriptionScript)[0]);
             firstTranscriptionScript = Object.keys(transcriptionScript)[0]
             for (let [transcriptionkey, transcriptionvalue] of Object.entries(transcriptionScript)) {
+                sentencemorphemicbreakvalue = formElement['sentencemorphemicbreak'][transcriptionkey]
+                // console.log("formElement['sentencemorphemicbreak']", sentencemorphemicbreakvalue)
                 inpt += '<div class="form-group">';
                 inpt += '<label for="Transcription_'+ transcriptionkey +'">Transcription in '+ transcriptionkey +'</label>'+
                         '<input type="text" class="form-control" id="Transcription_'+ transcriptionkey +'"'+ 
                         'placeholder="Transcription '+ transcriptionkey +'" name="transcription_'+ transcriptionkey +'"'+
-                        'value="'+ transcriptionvalue +'">'+
-                        '</div></div>';
-                inpt += '<div id="morphemicDetail">'+
-                        '<p><strong>Give Morphemic Break</strong></p>'+
-                        '<p><strong>**(use "#" for word boundary(if there are affixes in the word) and "-" for morphemic break)</strong></p>'+
-                        '<div class="form-group"><div class="input-group">'+
-                        '<input type="text" class="form-control" name="morphsentenceMorphemicBreak_' + transcriptionkey +'"'+
-                        'placeholder="e.g. I have re-#write#-en the paper#-s"'+
-                        'id="sentenceMorphemicBreak_' + transcriptionkey +'" value="'+transcriptionvalue+'">';
+                        'value="'+ transcriptionvalue +'"><br>';
+                        // '</div></div>';
                 if (transcriptionkey === firstTranscriptionScript) {
+                    activeprojectform = JSON.parse(localStorage.activeprojectform)
+                    if ('glossDetails' in activeprojectform &&
+                        boundaryID in activeprojectform['glossDetails']) {
+                        glossdetails = activeprojectform['glossDetails'][boundaryID]
+                        // console.log(glossdetails)
+                        inpt += '<div id="morphemicDetail_'+transcriptionkey+'">'+
+                                '<p><strong>Give Morphemic Break</strong></p>'+
+                                '<p><strong>**(use "#" for word boundary(if there are affixes in the word) and "-" for morphemic break)</strong></p>'+
+                                '<div class="form-group"><div class="input-group">'+
+                                '<input type="text" class="form-control" name="morphsentenceMorphemicBreak_' + transcriptionkey +'"'+
+                                'placeholder="e.g. I have re-#write#-en the paper#-s"'+
+                                'id="sentenceMorphemicBreak_' + transcriptionkey +'" value="'+sentencemorphemicbreakvalue+'" readonly>';
+
+                        inpt += '<div class="input-group-btn" id="editsentmorpbreak">'+
+                                '<button class="btn btn-warning" type="button" id="editSentenceField"'+
+                                'onclick="editMorphemicBreakSentence(\''+transcriptionvalue+'\', \''+transcriptionkey+'\');">'+
+                                '<span class="glyphicon glyphicon-edit" aria-hidden="true"></span>'+ 
+                                '</button></div>';
+                        createEditableGlossForm(transcriptionvalue,
+                                                transcriptionkey,
+                                                sentencemorphemicbreakvalue,
+                                                glossdetails,
+                                                boundaryID)
+                    }
+                    else {
+                        inpt += '<div id="morphemicDetail_'+transcriptionkey+'">'+
+                            '<p><strong>Give Morphemic Break</strong></p>'+
+                            '<p><strong>**(use "#" for word boundary(if there are affixes in the word) and "-" for morphemic break)</strong></p>'+
+                            '<div class="form-group"><div class="input-group">'+
+                            '<input type="text" class="form-control" name="morphsentenceMorphemicBreak_' + transcriptionkey +'"'+
+                            'placeholder="e.g. I have re-#write#-en the paper#-s"'+
+                            'id="sentenceMorphemicBreak_' + transcriptionkey +'" value="'+sentencemorphemicbreakvalue+'">';
+
+                        inpt += '<div class="input-group-btn"  id="editsentmorpbreak">'+
+                                '<button class="btn btn-success" type="button" id="checkSentenceField"'+
+                                'onclick="getSentence(\''+transcriptionvalue+'\', \''+transcriptionkey+'\');">'+
+                                '<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>'+ 
+                                '</button></div>';
+                    }
+                }
+                else {
+                    inpt += '<div id="morphemicDetail_'+transcriptionkey+'">'+
+                            '<p><strong>Give Morphemic Break</strong></p>'+
+                            '<p><strong>**(use "#" for word boundary(if there are affixes in the word) and "-" for morphemic break)</strong></p>'+
+                            '<div class="form-group"><div class="input-group">'+
+                            '<input type="text" class="form-control" name="morphsentenceMorphemicBreak_' + transcriptionkey +'"'+
+                            'placeholder="e.g. I have re-#write#-en the paper#-s"'+
+                            'id="sentenceMorphemicBreak_' + transcriptionkey +'" value="'+sentencemorphemicbreakvalue+'">';
                     inpt += '<div class="input-group-btn">'+
                             '<button class="btn btn-success" type="button" id="checkSentenceField"'+
-                            'onclick="getSentence(\''+transcriptionvalue+'\', \''+transcriptionkey+'\');">'+
-                            '<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>'+ 
+                            'onclick="getSentence(\''+transcriptionvalue+'\', \''+transcriptionkey+'\');" disabled>'+
+                            '<span class="glyphicon glyphicon-unchecked" aria-hidden="true"></span>'+ 
                             '</button></div>';
                 }
-                inpt += '</div></div>';
+                inpt += '</div></div></div></div>';
             }
             document.getElementById("transcription2").innerHTML = "";
             $('.transcription1').append(inpt);
@@ -738,7 +876,7 @@ function createSentenceForm(formElement) {
         document.getElementById("translationfield2").innerHTML = "";                                
         $(".translationfield1").append(activeTranslationField);
         translationLang = formElement[key];
-        console.log(translationLang)
+        // console.log(translationLang)
         for (let [translationkey, translationvalue] of Object.entries(translationLang)) {
             translationkey = translationkey.split('-')[1]
             inpt += '<div class="form-group">'+
@@ -751,6 +889,9 @@ function createSentenceForm(formElement) {
         document.getElementById("translationlangs").innerHTML = "";
         $('#translationlangs').append(inpt);
         inpt = '';
+        }
+        else if (key === 'pos') {
+
         }
         else if (key === 'tags') {
         var tagsData = formElement[key]
@@ -769,15 +910,24 @@ function createSentenceForm(formElement) {
         $(".tagsfield1").append(activeTagsField);
         inpt = '';
         }
-        else if (key == 'morphemes' ||
-                    key == 'gloss' ||
-                    key == 'pos') {
-                        inpt = '';
-                    }
-        else if (key == 'start' ||
-                    key == 'end') {
-                        inpt = '';
-                    }
+        // else if (key === 'gloss') {
+        //     activeprojectform = JSON.parse(localStorage.activeprojectform)
+        //     glossDetail = activeprojectform['glossDetails']
+        //     console.log("glossDetails['glossDetails']", glossDetails)
+        //     console.log("glossDetails['glossDetails']", glossDetails['glossDetails'])
+        //     inpt = '';
+        //     inpt = createEditableGlossForm(glossDetails)
+
+        //             }
+        // else if (key == 'morphemes' ||
+        //             key == 'gloss' ||
+        //             key == 'pos') {
+        //                 inpt = '';
+        //             }
+        // else if (key == 'start' ||
+        //             key == 'end') {
+        //                 inpt = '';
+        //             }
     }
 
     $("#activeSentenceMorphemicBreak").click(function() {
@@ -792,6 +942,207 @@ function createSentenceForm(formElement) {
           activeMorphSentenceField(activetranscriptionscriptvalue, eleid);
         }
       });
+}
+
+function createEditableGlossForm(value,
+                                    name,
+                                    sentencemorphemicbreakvalue,
+                                    glossdetails,
+                                    boundaryID) {
+    // console.log(value, name);
+    var morphemicSplitSentence = [];
+
+    sentence = value.trim().split(' ');
+    sentence_morphemic_break_full = sentencemorphemicbreakvalue.trim(); // Find the text
+    sentence_morphemic_break = sentencemorphemicbreakvalue.trim().split(' '); // Find the text
+
+
+    // console.log(sentence, sentence_morphemic_break)
+
+    if (sentence.length === 1 && sentence[0] === "") {
+        alert('No input given!');
+        document.getElementById("checkSentenceField" + sid).disabled = false;
+        return false;
+    }
+    if (sentence_morphemic_break.length === 1 && sentence_morphemic_break[0] === "") {
+        alert('No input given!');
+        document.getElementById("checkSentenceField").disabled = false;
+        return false;
+    }
+
+    if (sentence_morphemic_break_full.includes('-')) {
+        morph_len = (sentence_morphemic_break_full.match(/-/g)||[]).length;
+        boundary_len = (sentence_morphemic_break_full.match(/#/g)||[]).length;
+        // console.log(morph_len)
+        // console.log(boundary_len)
+        if (morph_len != boundary_len) {
+            alert("Number of # ("+boundary_len+") not equal to numer of - ("+morph_len+") in the morphemic break")
+            document.getElementById("checkSentenceField" + sid).disabled = false;
+            return false;
+        }
+    }
+
+    for (i = 0; i < sentence_morphemic_break.length; i++) {
+        if (sentence_morphemic_break[i].includes('#')) {
+            morphSplit = sentence_morphemic_break[i].split('#')
+            for (j = 0; j < morphSplit.length; j++) {
+                morphemicSplitSentence.push(morphSplit[j]);
+            }  
+        }
+        else {
+            morphemicSplitSentence.push(sentence_morphemic_break[i]);
+        }
+    }
+    // console.log('morphemicSplitSentence', morphemicSplitSentence);
+    // getEditableWordPos(morphemicSplitSentence, name);
+    morphemepos = getEditableWordPos(morphemicSplitSentence, name, boundaryID);
+    // console.log(morphemepos);
+    // morphemeEditableFields(morphemicSplitSentence, name, morphemepos, glossdetails);
+}  
+
+function getEditableWordPos(morphemicSplitSentence, name, boundaryID) {
+    $.getJSON('/predictPOSNaiveBayes', {
+
+        a:String(morphemicSplitSentence)
+        }, function(data) {
+            // console.log(data.predictedPOS);
+            
+
+            var morphemePOS = data.predictedPOS;
+            // activeprojectform= JSON.parse(localStorage.getItem('activeprojectform'));
+            // editablePOS = activeprojectform['transcriptionDetails']['data']['sentence'][boundaryID]['pos']
+            // // console.log(editablePOS);
+            // for (let [morph, morphpos] of Object.entries(editablePOS)) {
+            //     morphemePOS.push([morph, morphpos])
+            // }
+            // console.log(morphemePOS);
+            morphemeEditableFields(morphemicSplitSentence, name, morphemePOS, glossdetails);
+        });   
+        return false; 
+}
+
+function morphemeEditableFields(morphemicSplitSentence, name, morphemePOS, glossdetails) {
+
+  // console.log(morphemePOS);
+  var morphemeinput = '</br><div class="morphemefield_' + name + '">';
+  morphemeinput += '<div class="row">'+
+  '<div class="col-sm-3"><strong>Morphemes</strong></div>'+
+  '<div class="col-sm-3"><strong>Gloss</strong></div>'+
+  '<div class="col-sm-3"><strong>Morph Type</strong></div>'+
+  '<div class="col-sm-3"><strong>POS</strong></div>'+
+  '</div>';
+  // var morphemeinput = '';
+  morphemeCount = morphemicSplitSentence.length
+  for(let i = 0; i < morphemeCount; i++) {
+    morphemicgloss = ''
+    morphemiclextype = ''
+    // console.log(morphemePOS[i]);
+    // console.log(sentence[i]);
+    // console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!morph_gloss_' + name + '_' +  (i+1))
+    for (let [morphkey, morphvalue] of Object.entries(glossdetails)) {
+        // console.log(i+1, morphkey, morphvalue, morphemicSplitSentence[i])
+        morphkey = morphkey.split('.')
+        // console.log(i+1, morphkey, morphvalue, morphemicSplitSentence[i])
+        // console.log(morphkey[2], morphkey[3], morphkey[4])
+        if (morphkey[2] === String(i+1) && morphkey[3] === morphemicSplitSentence[i]) {
+            // console.log(morphkey[2], morphkey[3], morphkey[4])
+            if (morphkey[4].includes('gloss')) {
+                // console.log(morphkey[2], morphkey[3], morphkey[4])
+                // console.log(i+1, morphkey, morphvalue, morphemicSplitSentence[i])
+                morphemicgloss = morphvalue
+                
+            }
+            else if (morphkey[4].includes('lextype')) {
+                // console.log(morphkey[2], morphkey[3], morphkey[4])
+                // console.log(i+1, morphkey, morphvalue, morphemicSplitSentence[i])
+                morphemiclextype = morphvalue
+            }
+            // console.log(i, morphkey, morphvalue)
+        }
+        // console.log(morphemicSplitSentence[i], morphemicgloss)
+    }
+    // console.log('morphemicgloss', morphemicgloss)
+    if (morphemicSplitSentence[i].includes('-')) {
+        // console.log(morphemicSplitSentence[i], morphemicgloss)
+        morphemeinput += '<div class="input-group">'+
+            '<input type="text" class="form-control" name="morph_morpheme_' + name + '_' +  (i+1) +'"'+
+            'placeholder="'+ morphemicSplitSentence[i] +'" value="'+morphemicSplitSentence[i]+'"'+
+            'id="morphemeField' + name + (i+1) +'" readonly/>'+
+
+            '<span class="input-group-btn" style="width:50px;"></span>'+
+            '<select class="morphemicgloss' + name + (i+1) +'" name="morph_gloss_' + name + '_' +  (i+1) +'"'+
+            ' multiple="multiple" style="width: 210px">';
+        if (morphemicgloss != '') {
+            morphemeinput += '<option value="'+morphemicgloss+'" selected>'+morphemicgloss+'</option>';
+        }
+        morphemeinput += '</select>'+
+
+            '<span class="input-group-btn" style="width:50px;"></span>'+
+            '<select class="lextype' + name + (i+1) +'" name="morph_lextype_' + name + '_' +  (i+1) +'"'+
+            ' style="width: 210px">';
+        morphemeinput += '<option value="'+morphemiclextype+'" selected>'+morphemiclextype+'</option>';
+        morphemeinput += '</select>'+
+
+            '<span class="input-group-btn" style="width:50px;"></span></div><br>';
+        // console.log(morphemeinput);                  
+    }
+    else {
+        morphemeinput += '<div class="input-group">'+
+        '<input type="text" class="form-control" name="morph_morpheme_' + name + '_' +  (i+1) +'"'+
+        'placeholder="'+ morphemicSplitSentence[i] +'" value="'+ morphemicSplitSentence[i] +'"'+
+        'id="morphemeField' + name + (i+1) +'" readonly/>'+
+
+        '<span class="input-group-btn" style="width:50px;"></span>'+
+        '<input type="text" class="form-control" name="morph_gloss_' + name + '_' +  (i+1) +'"'+
+        ' id="morphemicgloss' + name + (i+1) +'" value="'+morphemicgloss+'"/>'+
+
+        '<span class="input-group-btn" style="width:50px;"></span>'+
+        '<select class="lextype' + name + (i+1) +'" name="morph_lextype_' + name + '_' +  (i+1) +'"'+
+        ' style="width: 210px"';
+        // console.log(morphemicSplitSentence[i], morphemePOS[i][1])
+        morphemeinput += '<option value="'+morphemiclextype+'" selected>'+morphemiclextype+'</option>';
+        morphemeinput += '</select>'+
+
+        
+        '<span class="input-group-btn" style="width:50px;"></span>'+
+        '<select class="pos' + name + (i+1) +'" name="morph_pos_' + name + '_' +  (i+1) +'" style="width: 210px">'+
+        '<option value="'+ morphemePOS[i][1] +'" selected>'+ morphemePOS[i][1] +'</option>'+
+        '</select></div><br>';
+
+    }
+  }
+  morphemeinput += ' <input type="text" id="morphcount" name="morphcount'+ name +'" value="'+ morphemeCount +'" hidden>'
+//   console.log(morphemeinput)
+//   console.log(".morphemicDetail_"+name)
+  $("#morphemicDetail_"+name).append(morphemeinput);
+
+  for(let i = 0; i < morphemicSplitSentence.length; i++) {
+    $('.morphemicgloss'+ name +(i+1)).select2({
+    tags: true,
+    placeholder: 'Gloss',
+    data: morphemicGloss,
+    allowClear: true
+    // sorter: false
+    });
+  
+    $('.lextype'+ name +(i+1)).select2({
+    tags: true,
+    placeholder: 'Morph Type',
+    data: morphType
+    // allowClear: true,
+    // sorter: false
+    });
+  
+    $('.pos'+ name +(i+1)).select2({
+    tags: true,
+    placeholder: 'POS',
+    data: posCategories
+    // allowClear: true,
+    // sorter: false
+    // width: 'element'
+    });
+  
+    }
 }
 
 function createMorphemeForm(form, region) {
@@ -908,19 +1259,19 @@ function getActiveRegionSentence(region) {
     for (i=0; i<regions.length; i++) {
         if (regions[i]['start'] === region.start &&
             regions[i]['end'] === region.end) {
-                console.log('getActiveRegionSentence(region)', regions[i])
+                // console.log('getActiveRegionSentence(region)', regions[i])
                 // if ('sentence' in regions[i]) {
                 //     console.log("'sentence' in Object.values(regions[i])")
                 //     sentence = Object.values(regions[i]['sentence'])[0]
                 //     console.log('sentence getActiveRegionSentence(region)', sentence)    
                 // }
                 if ('sentence' in regions[i]['data']) {
-                    console.log("'sentence' in Object.values(regions[i])")
+                    // console.log("'sentence' in Object.values(regions[i])")
                     sentence = Object.values(regions[i]['data']['sentence'])[0]
-                    console.log('sentence YES getActiveRegionSentence(region)', sentence)    
+                    // console.log('sentence YES getActiveRegionSentence(region)', sentence)    
                 }
                 else {
-                    console.log('sentence NOT getActiveRegionSentence(region)', sentence)   
+                    // console.log('sentence NOT getActiveRegionSentence(region)', sentence)
                     sentence = undefined
                 }
                 return sentence

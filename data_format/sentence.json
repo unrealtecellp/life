@@ -25,9 +25,16 @@
                 },
                 "morphemes": {
                     "ipa": {
-                        "I": "I",
-                        "have": "have",
-                        "rewritten": "re-write-en"
+                        "W001": {
+                            "I": "I"
+                        },
+                        "W002": {
+                            "have": "have"
+                        },
+                        "W003": {
+                            "rewritten": "re-write-en"
+                        }
+                        
                     },
                     "Latn": {
                         "I": "I",
@@ -36,48 +43,54 @@
                     }
                 },
                 "gloss": {                    
-                    "ipa": {                        
-                        "I": {
-                            "1": {                           
-                                "I": {
-                                    "lexgloss": {
-                                        "eng-Latn": "I"
+                    "ipa": {
+                        "W001":{                        
+                            "I": {
+                                "1": {                           
+                                    "I": {
+                                        "lexgloss": {
+                                            "eng-Latn": "I"
+                                        },
+                                        "lexemeID": "T20220524145355758839L1",
+                                        "lextype": "lemma"
+                                    }
+                                }
+                            }
+                        },
+                        "W002": {
+                            "have": {
+                                "have": {
+                                    "lexgloss":  {
+                                        "eng-Latn": "has.PL"
                                     },
-                                    "lexemeID": "T20220524145355758839L1",
+                                    "lexemeID": "T20220524145355758839L2",
                                     "lextype": "lemma"
                                 }
                             }
                         },
-                        "have": {
-                            "have": {
-                                "lexgloss":  {
-                                    "eng-Latn": "has.PL"
+                        "W003": {
+                            "rewritten": {
+                                "re-": {
+                                    "lexgloss":  {
+                                        "eng-Latn": "postModifier"
+                                    },
+                                    "lexemeID": "T20220524145355758839L3",
+                                    "lextype": "affix"
                                 },
-                                "lexemeID": "T20220524145355758839L2",
-                                "lextype": "lemma"
-                            }
-                        },
-                        "rewritten": {
-                            "re-": {
-                                "lexgloss":  {
-                                    "eng-Latn": "postModifier"
+                                "write": {
+                                    "lexgloss":  {
+                                        "eng-Latn": "write"
+                                    },
+                                    "lexemeID": "T20220524145355758839L4",
+                                    "lextype": "lemma"
                                 },
-                                "lexemeID": "T20220524145355758839L3",
-                                "lextype": "affix"
-                            },
-                            "write": {
-                                "lexgloss":  {
-                                    "eng-Latn": "write"
-                                },
-                                "lexemeID": "T20220524145355758839L4",
-                                "lextype": "lemma"
-                            },
-                            "-en": {
-                                "lexgloss":  {
-                                    "eng-Latn": "postModifier"
-                                },
-                                "lexemeID": "T20220524145355758839L5",
-                                "lextype": "affix"
+                                "-en": {
+                                    "lexgloss":  {
+                                        "eng-Latn": "postModifier"
+                                    },
+                                    "lexemeID": "T20220524145355758839L5",
+                                    "lextype": "affix"
+                                }
                             }
                         }
                     },
@@ -126,9 +139,15 @@
                     }
                 },
                 "pos": {
-                    "I": "Determiner",
-                    "have": "Particle",
-                    "rewritten": "Verb"
+                    "W001": {
+                        "I": "Determiner"
+                    },
+                    "W002": {
+                        "have": "Particle"
+                    },
+                    "W003": {
+                        "rewritten": "Verb"
+                    }
                 },
                 "translation": {
                     "eng-Latn": "I have rewritten",

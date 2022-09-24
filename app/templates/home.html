@@ -77,6 +77,9 @@ Home
               <div class="form-group">
                 <select name="" id="shareProjectSelect"  multiple="multiple" style="width: 100%">
                 </select>
+                <br>
+                <br>
+                <div class="sharemode"></div>
               </div>
             </div>
           </div>
@@ -123,6 +126,7 @@ Home
 {% block scripts %}
 {{super()}}
 <script src="{{url_for('.static', filename='shareproject.js')}}"></script>
+<script src="{{url_for('.static', filename='sharemode.js')}}"></script>
 <script src="{{url_for('.static', filename='shareprojectwith.js')}}"></script>
 <script src="{{url_for('.static', filename='assignkaryaaccesscode.js')}}"></script>
 <script src="{{url_for('.static', filename='home.js')}}"></script>

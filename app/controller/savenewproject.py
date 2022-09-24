@@ -20,9 +20,7 @@ def savenewproject(projects,
             "lexemeDeleted" : 0,
             "sharedwith": current_username,
             "lastActiveId": {
-                current_username: {
-                    "audioId": ''
-                }
+                current_username: {}
             },
             "projectdeleteFLAG" : 0
         }
