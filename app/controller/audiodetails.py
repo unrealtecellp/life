@@ -270,6 +270,7 @@ def getaudiotranscriptiondetails(transcriptions, audio_id):
     transcription_data = {}
     transcription_regions = []
     gloss = {}
+    pos = {}
     t_data = transcriptions.find_one({ 'audioId': audio_id },
                                     { '_id': 0, 'textGrid.sentence': 1 })
     # print('t_data!!!!!', t_data)
@@ -293,11 +294,14 @@ def getaudiotranscriptiondetails(transcriptions, audio_id):
             print('!@!#!@!#!@!#!@!#!@!##!@!#!#!@!#!@!#!@!#!@!#!@!##!@!#!#', tempgloss)
             gloss[key] = pd.json_normalize(tempgloss, sep='.').to_dict(orient='records')[0]
             print('!@!#!@!#!@!#!@!#!@!##!@!#!#!@!#!@!#!@!#!@!#!@!##!@!#!#', gloss)
+            temppos = sentence[key]['pos']
+            pos[key] = pd.json_normalize(temppos, sep='.').to_dict(orient='records')[0]
 
             print('288', gloss)
         except:
             print('=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=', gloss)
             gloss = {}
+            pos = {}
 
 
         # pprint(transcription_region)
@@ -311,9 +315,9 @@ def getaudiotranscriptiondetails(transcriptions, audio_id):
     #     transcription_region['data']['sentence'] = sentence
         transcription_regions.append(transcription_region)
     # print(transcription_regions)
-    print('303', gloss)
+    print('303', gloss, pos)
 
-    return (transcription_regions, gloss)
+    return (transcription_regions, gloss, pos)
 
 def savetranscription(transcriptions,
                         activeprojectform,
