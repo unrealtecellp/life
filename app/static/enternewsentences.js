@@ -332,6 +332,7 @@ var posCategories =
 {"id": "Verb", "text": "Verb"}
 ];
 
+
 // var activeSentenceMorphemicBreak = '<input type="checkbox" id="activeSentenceMorphemicBreak" name="activeSentenceMorphemicBreak" value="false">'+
 //                                   '<label for="activeSentenceMorphemicBreak">&nbsp; Add Interlinear Gloss</label><br></br>'
 // $(".sentencefield").append(activeSentenceMorphemicBreak);
@@ -943,34 +944,34 @@ function unAnnotated() {
 
 function loadUnAnnoText() {
   newAudioFilename = document.getElementById('allunanno').value;
-  // console.log(newAudioFilename)
-  loadRandomAudio(newAudioFilename)
-  // $.ajax({
-  //     url: '/loadunannotext',
-  //     type: 'GET',
-  //     data: {'data': JSON.stringify(textId)},
-  //     contentType: "application/json; charset=utf-8", 
-  //     success: function(response){
-  //         window.location.reload();
-  //     }
-  // });
-  // return false;
+  console.log(newAudioFilename)
+  // loadRandomAudio(newAudioFilename)
+  $.ajax({
+      url: '/loadunannotext',
+      type: 'GET',
+      data: {'data': JSON.stringify(newAudioFilename)},
+      contentType: "application/json; charset=utf-8", 
+      success: function(response){
+          window.location.reload();
+      }
+  });
+  return false;
 }
 
 function loadAnnoText() {
   newAudioFilename = document.getElementById('allanno').value;
-  // console.log(newAudioFilename)
-  loadRandomAudio(newAudioFilename)
-  // $.ajax({
-  //     url: '/loadunannotext',
-  //     type: 'GET',
-  //     data: {'data': JSON.stringify(textId)},
-  //     contentType: "application/json; charset=utf-8", 
-  //     success: function(response){
-  //         window.location.reload();
-  //     }
-  // });
-  // return false;
+  console.log(newAudioFilename)
+  // loadRandomAudio(newAudioFilename)
+  $.ajax({
+      url: '/loadunannotext',
+      type: 'GET',
+      data: {'data': JSON.stringify(newAudioFilename)},
+      contentType: "application/json; charset=utf-8", 
+      success: function(response){
+          window.location.reload();
+      }
+  });
+  return false;
 }
 
 function loadRandomAudio(newAudioFilename) {

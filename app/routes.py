@@ -43,7 +43,8 @@ from app.controller import getdbcollections, getcurrentuserprojects, getactivepr
 from app.controller import getprojectowner, getactiveprojectform, savenewsentence
 from app.controller import readJSONFile, createdummylexemeentry, getactivespeakerid
 from app.controller import savenewproject, updateuserprojects, savenewprojectform
-from app.controller import audiodetails, getcurrentusername
+from app.controller import audiodetails, getcurrentusername, getcommentstats
+from app.controller import unannotatedfilename
 import shutil, traceback
 
 
@@ -149,6 +150,12 @@ def enternewsentences():
         try:
             # , audio_file_path, transcription_details
             activespeakerid = getactivespeakerid.getactivespeakerid(userprojects, current_user.username)
+            total_comments, annotated_comments, remaining_comments = getcommentstats.getcommentstats(projects,
+                                                                                                        transcriptions,
+                                                                                                        activeprojectname,
+                                                                                                        activespeakerid,
+                                                                                                        'audio')
+            commentstats = [total_comments, annotated_comments, remaining_comments]                                                                                                        
             audio_id = audiodetails.getactiveaudioid(projects,
                                                         activeprojectname,
                                                         activespeakerid,
@@ -172,6 +179,8 @@ def enternewsentences():
                                         )["speakerIds"][current_user.username]
             scriptCode = readJSONFile.readJSONFile(scriptCodeJSONFilePath)
             activeprojectform['scriptCode'] = scriptCode
+            langScript = readJSONFile.readJSONFile(langScriptJSONFilePath)
+            activeprojectform['langScript'] = langScript
             # print('currentuserprojectsname', currentuserprojectsname)
             # print('speakerids', speakerids)
             # pprint(activeprojectform)
@@ -180,7 +189,8 @@ def enternewsentences():
                                     newData=activeprojectform,
                                     data=currentuserprojectsname,
                                     speakerids=speakerids,
-                                    activespeakerid=activespeakerid)
+                                    activespeakerid=activespeakerid,
+                                    commentstats=commentstats)
         except Exception as e:
             traceback.print_exc()
             flash('Upload first audio file.')
@@ -3412,12 +3422,47 @@ def getAudioFilename(lastActiveFilename, whichOne):
 # it could be use by the user to move to (load) some random audio using the filename
 @app.route('/allunannotated', methods=['GET', 'POST'])
 def allunannotated():
-    audioFilesPath = 'static/audio'
-    baseAudioFilesPath = os.path.join(basedir, audioFilesPath)
-    audioFilesList = sorted(os.listdir(baseAudioFilesPath))
+    userprojects, transcriptions = getdbcollections.getdbcollections(mongo, 'userprojects', 'transcriptions')
 
-    return jsonify(allunanno=audioFilesList, allanno=audioFilesList)
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username,
+                                                                    userprojects)
+    activespeakerid = getactivespeakerid.getactivespeakerid(userprojects, current_user.username)
+    # audioFilesPath = 'static/audio'
+    # baseAudioFilesPath = os.path.join(basedir, audioFilesPath)
+    # audioFilesList = sorted(os.listdir(baseAudioFilesPath))
+    annotated, unannotated = unannotatedfilename.unannotatedfilename(transcriptions,
+                                                                        activeprojectname,
+                                                                        activespeakerid,
+                                                                        'audio')
 
+    return jsonify(allanno=annotated, allunanno=unannotated)
+
+@app.route('/loadunannotext', methods=['GET'])
+@login_required
+def loadunannotext():
+    projects, userprojects, transcriptions = getdbcollections.getdbcollections(mongo, 'projects',
+    'userprojects', 'transcriptions')
+
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username,
+                                                                    userprojects)
+    activespeakerid = getactivespeakerid.getactivespeakerid(userprojects, current_user.username)
+
+    # print(f'{"="*80}\nUn-Anno\n{"="*80}')
+
+    lastActiveId = request.args.get('data')
+    lastActiveId = eval(lastActiveId)
+    print(lastActiveId)
+    updateactivespeakeraudioid = 'lastActiveId.'+current_user.username+'.'+activespeakerid+'.audioId'
+    print(updateactivespeakeraudioid)
+
+    projects.update_one({"projectname": activeprojectname},
+        { '$set' : { updateactivespeakeraudioid: lastActiveId }})
+
+    # if (project_type == 'text'):
+    #     return redirect(url_for('textAnno'))
+    # elif (project_type == 'image'):
+    #     return redirect(url_for('imageAnno'))
+    return 'OK'  
 
 # uploadaudiofiles route
 @app.route('/uploadaudiofiles', methods=['GET', 'POST'])

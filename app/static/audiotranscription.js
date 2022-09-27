@@ -499,6 +499,7 @@ function updateSentenceDetails(boundaryID, sentence, region) {
         scripts = activeprojectform["Transcription Script"]
         translationscripts = activeprojectform["Translation Script"]
         translationlang = activeprojectform["Translation Language"]
+        console.log(translationlang);
         for (i=0; i<scripts.length; i++) {
             script_code = scriptCode[scripts[i]]
             // console.log(lang_code)
@@ -853,6 +854,16 @@ function mapArrays(array_1, array_2) {
     return mappedData;
 }
 
+function scriptCodeToLang(transcriptionkey, scriptCode, langScript) {
+    let script = '';
+    let lang = '';
+    for (let [key, value] of Object.entries(scriptCode)) {
+        if (value === transcriptionkey) {
+            script = key
+        }
+    }
+}
+
 function createSentenceForm(formElement, boundaryID) {
     // var activeSentenceMorphemicBreak = '<input type="checkbox" id="activeSentenceMorphemicBreak" name="activeSentenceMorphemicBreak" value="false" onclick="">'+
     //                                     '<label for="activeSentenceMorphemicBreak">&nbsp; Add Interlinear Gloss</label><br></br>'
@@ -867,13 +878,18 @@ function createSentenceForm(formElement, boundaryID) {
             // console.log('Object.keys(transcriptionScript)[0]', Object.keys(transcriptionScript)[0]);
             firstTranscriptionScript = Object.keys(transcriptionScript)[0]
             for (let [transcriptionkey, transcriptionvalue] of Object.entries(transcriptionScript)) {
+                // activeprojectform = JSON.parse(localStorage.getItem('activeprojectform'));
+                // // console.log('activeprojectform', activeprojectform)
+                // scriptCode = activeprojectform['scriptCode']
+                // langScript = activeprojectform['langScript']
+                // lang = scriptCodeToLang(transcriptionkey, scriptCode, langScript)
                 sentencemorphemicbreakvalue = formElement['sentencemorphemicbreak'][transcriptionkey]
                 // console.log("formElement['sentencemorphemicbreak']", sentencemorphemicbreakvalue)
                 inpt += '<div class="form-group">';
                 inpt += '<label for="Transcription_'+ transcriptionkey +'">Transcription in '+ transcriptionkey +'</label>'+
                         '<input type="text" class="form-control" id="Transcription_'+ transcriptionkey +'"'+ 
                         'placeholder="Transcription '+ transcriptionkey +'" name="transcription_'+ transcriptionkey +'"'+
-                        'value="'+ transcriptionvalue +'"><br>';
+                        'value="'+ transcriptionvalue +'" required><br>';
                         // '</div></div>';
                 if (transcriptionkey === firstTranscriptionScript) {
                     activeprojectform = JSON.parse(localStorage.activeprojectform)
@@ -883,7 +899,7 @@ function createSentenceForm(formElement, boundaryID) {
                         posdetails = activeprojectform['posDetails'][boundaryID]
                         // console.log(glossdetails)
                         // console.log(posdetails)
-                        inpt += '<div id="morphemicDetail_'+transcriptionkey+'">'+
+                        inpt += '<div id="morphemicDetail_'+transcriptionkey+'" style="display: none;">'+
                                 '<p><strong>Give Morphemic Break</strong></p>'+
                                 '<p><strong>**(use "#" for word boundary(if there are affixes in the word) and "-" for morphemic break)</strong></p>'+
                                 '<div class="form-group"><div class="input-group">'+
@@ -904,7 +920,7 @@ function createSentenceForm(formElement, boundaryID) {
                                                 boundaryID)
                     }
                     else {
-                        inpt += '<div id="morphemicDetail_'+transcriptionkey+'">'+
+                        inpt += '<div id="morphemicDetail_'+transcriptionkey+'" style="display: none;">'+
                             '<p><strong>Give Morphemic Break</strong></p>'+
                             '<p><strong>**(use "#" for word boundary(if there are affixes in the word) and "-" for morphemic break)</strong></p>'+
                             '<div class="form-group"><div class="input-group">'+
@@ -920,7 +936,7 @@ function createSentenceForm(formElement, boundaryID) {
                     }
                 }
                 else {
-                    inpt += '<div id="morphemicDetail_'+transcriptionkey+'">'+
+                    inpt += '<div id="morphemicDetail_'+transcriptionkey+'" style="display: none;">'+
                             '<p><strong>Give Morphemic Break</strong></p>'+
                             '<p><strong>**(use "#" for word boundary(if there are affixes in the word) and "-" for morphemic break)</strong></p>'+
                             '<div class="form-group"><div class="input-group">'+
@@ -940,20 +956,21 @@ function createSentenceForm(formElement, boundaryID) {
             inpt = '';
         }
         else if (key === 'translation') {
-        var activeTranslationField = '<input type="checkbox" id="activeTranslationField" name="activeTranslationField" value="false" onclick="activeTranslationLangs()">'+
+        var activeTranslationField = '<input type="checkbox" id="activeTranslationField" name="activeTranslationField" value="false" onclick="activeTranslationLangs()" checked disabled>'+
                                         '<label for="activeTranslationField">&nbsp; Add Translation</label><br></br>'+
-                                        '<div id="translationlangs" style="display: none;"></div>';
+                                        '<div id="translationlangs" style="display: block;"></div>';
         document.getElementById("translationfield2").innerHTML = "";                                
         $(".translationfield1").append(activeTranslationField);
         translationLang = formElement[key];
         // console.log(translationLang)
         for (let [translationkey, translationvalue] of Object.entries(translationLang)) {
+            console.log(translationkey, translationvalue);
             translationkey = translationkey.split('-')[1]
             inpt += '<div class="form-group">'+
                     '<label for="Translation_'+ translationkey +'">Translation in '+ translationkey +'</label>'+
                     '<input type="text" class="form-control" id="Translation_'+ translationkey +'"'+ 
                     'placeholder="Translation '+ translationkey +'" name="translation_'+ translationkey + '"'+
-                    'value="'+ translationvalue +'">'+
+                    'value="'+ translationvalue +'" required>'+
                     '</div></div>';          
         }
         document.getElementById("translationlangs").innerHTML = "";
@@ -976,8 +993,8 @@ function createSentenceForm(formElement, boundaryID) {
                             '<label for="Tags">Tags</label>'+
                             '<input type="text" class="form-control" id="Tags" name="Tags" value="'+value+'">'+
                             '</div></div></div>';
-        document.getElementById("tagsfield2").innerHTML = "";          
-        $(".tagsfield1").append(activeTagsField);
+        // document.getElementById("tagsfield2").innerHTML = "";          
+        // $(".tagsfield1").append(activeTagsField);
         inpt = '';
         }
         // else if (key === 'gloss') {

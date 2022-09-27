@@ -28,6 +28,7 @@
         {% endfor %}
     </select>
     {% endif %}
+    
   </div>
   <div class="col-sm-3">
     <form name="newaudioupload" action="/uploadaudiofiles" method="POST" enctype="multipart/form-data">
@@ -70,6 +71,13 @@
       <div class="col-sm-7 commentIDs">
           <button type="button" id="uNAnnotated" class="btn btn-light" onclick="unAnnotated()">All Filename</button>
       </div>
+      {% if commentstats is defined %}
+        <div class="col-sm-3 commentStats pull-right">
+          <strong>Total Comments: {{ commentstats[0] }}</strong><br> 
+          <strong>Annotated Comments: {{ commentstats[1] }}</strong><br>
+          <strong>Remaining Comments: {{ commentstats[2] }}</strong><br>
+        </div>
+      {% endif %}
     </div>
     <br>
     <div class="defaultfield">
@@ -98,12 +106,12 @@
     <form id="boundaryForm" role="form" name="edit" style="display: none; margin: 30px 0;">
         <div class="form-group">
             <label for="start">Boundary Start Time</label>
-            <input class="form-control" id="start" name="start" />
+            <input class="form-control" id="start" name="start" required/>
         </div>
 
         <div class="form-group">
             <label for="end">Boundary End Time</label>
-            <input class="form-control" id="end" name="end" />
+            <input class="form-control" id="end" name="end" required/>
         </div>
 
         <!-- <div class="form-group transcription"></div> -->
@@ -111,9 +119,9 @@
         <!-- <div class="form-group sentencefield"></div> -->
         <!-- <div class="form-group tagsfield"></div> -->
         <div class="form-group transcription1" id="transcription2"></div>
-        <div class="form-group sentencefield" id="sentencefield2"></div>
+        <!-- <div class="form-group sentencefield" id="sentencefield2"></div> -->
         <div class="form-group translationfield1" id="translationfield2"></div>
-        <div class="form-group tagsfield1" id="tagsfield2"></div>
+        <!-- <div class="form-group tagsfield1" id="tagsfield2"></div> -->
         <br>
         <button type="submit" class="btn btn-success btn-block saveTempTranscription">Save Boundary</button>
         <center><i>or</i></center>

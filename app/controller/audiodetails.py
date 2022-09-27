@@ -70,7 +70,7 @@ def saveaudiofiles(mongo,
     # save audio file details and speaker ID in projects collection
     speakerIds = projects.find_one({ 'projectname': activeprojectname },
                                         { '_id': 0, 'speakerIds': 1 })
-    print(f"SPEAKER IDS: {speakerIds}")                                        
+    # print(f"SPEAKER IDS: {speakerIds}")
     if len(speakerIds) != 0:
         speakerIds = speakerIds['speakerIds']
         if current_username in speakerIds:
@@ -83,12 +83,12 @@ def saveaudiofiles(mongo,
         speakerIds = {
             current_username: [speakerId]
         }
-        print(speakerIds)
+        # print(speakerIds)
 
     speaker_audio_ids = projects.find_one({'projectname': activeprojectname},
                                     {'_id': 0, 'speakersAudioIds': 1})
-    print(len(speaker_audio_ids))
-    print(speaker_audio_ids)
+    # print(len(speaker_audio_ids))
+    # print(speaker_audio_ids)
     if len(speaker_audio_ids) != 0:
         speaker_audio_ids = speaker_audio_ids['speakersAudioIds']
         print('speaker_audio_ids', speaker_audio_ids)
@@ -289,17 +289,17 @@ def getaudiotranscriptiondetails(transcriptions, audio_id):
         # transcription_region['sentence'] = {key: value}
         transcription_region['data'] = {'sentence': {key: value}}
         try:
-            print('!@!#!@!#!@!#!@!#!@!##!@!#!#!@!#!@!#!@!#!@!#!@!##!@!#!#', gloss)
+            # print('!@!#!@!#!@!#!@!#!@!##!@!#!#!@!#!@!#!@!#!@!#!@!##!@!#!#', gloss)
             tempgloss = sentence[key]['gloss']
-            print('!@!#!@!#!@!#!@!#!@!##!@!#!#!@!#!@!#!@!#!@!#!@!##!@!#!#', tempgloss)
+            # print('!@!#!@!#!@!#!@!#!@!##!@!#!#!@!#!@!#!@!#!@!#!@!##!@!#!#', tempgloss)
             gloss[key] = pd.json_normalize(tempgloss, sep='.').to_dict(orient='records')[0]
-            print('!@!#!@!#!@!#!@!#!@!##!@!#!#!@!#!@!#!@!#!@!#!@!##!@!#!#', gloss)
+            # print('!@!#!@!#!@!#!@!#!@!##!@!#!#!@!#!@!#!@!#!@!#!@!##!@!#!#', gloss)
             temppos = sentence[key]['pos']
             pos[key] = pd.json_normalize(temppos, sep='.').to_dict(orient='records')[0]
 
-            print('288', gloss)
+            # print('288', gloss)
         except:
-            print('=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=', gloss)
+            # print('=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=', gloss)
             gloss = {}
             pos = {}
 
@@ -315,7 +315,7 @@ def getaudiotranscriptiondetails(transcriptions, audio_id):
     #     transcription_region['data']['sentence'] = sentence
         transcription_regions.append(transcription_region)
     # print(transcription_regions)
-    print('303', gloss, pos)
+    # print('303', gloss, pos)
 
     return (transcription_regions, gloss, pos)
 
