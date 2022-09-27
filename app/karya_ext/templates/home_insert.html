@@ -2,46 +2,28 @@
 <html>
 
   <style>
-    input[type=text], select {
-      width: 100%;
-      padding: 12px 20px;
-      margin: 8px 0;
-      display: inline-block;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      box-sizing: border-box;
-    }
-    
-    input[type=submit] {
-      width: 100%;
-      background-color: #4CAF50;
-      color: white;
-      padding: 14px 20px;
-      margin: 8px 0;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    
+  
+    h1 {text-align: center;}
+
     input[type=button]:hover {
-      background-color: #f846c3b0;
-      background-color: #5288ec;
-      border: 70%;
-      border-radius: 50%;
+      background-color: #f3f5e0b0;
+      background-color: blue;
+      border: 56%;
+      border-radius: 10%;
       color: white;
-      padding: 15px 32px;
+      padding: 1px 1px;
       text-align: center;
       text-decoration: none;
       display: inline-block;
-      font-size: 16px;
+      font-size: 14px;
       margin: 4px 2px;
       cursor: pointer;
     }
     
     div {
       border-radius: 20px;
-      background-color: rgba(250, 168, 60, 0.253);
-      padding: 10px;
+      background-color: rgba(247, 235, 220, 0.253);
+      padding: 1px;
     }
     </style>
   
@@ -56,18 +38,28 @@
 
 <h2>Fetch access code or upload access code file</h2>
   <input type="button" value="Fetch/upload access code" onclick="window.location.href='{{url_for('karya_bp.uploadfile')}}';"> <br><br>
-  <br><br><br><br><br><br><br>
+  <br><br><br><br><br>
 
-
- 
 
 <h2>Manage Access Code</h2>
 <input type="button" value="Manage Access Code" onclick="window.location.href='{{url_for('karya_bp.homespeaker')}}'; window"> <br><br>
-<br><br><br><br><br><br><br><br>
+<br><br><br><br><br>
 
 <h2>Fetch Audio File</h2>
-<input type="button" value="Fetch/upload Audio" onclick="window.location.href='{{url_for('karya_bp.fetch_karya_audio')}}'; window"> <br><br>
-<br><br><br><br>
+<input type="button" value="Fetch/upload Audio" onclick="window.location.href='{{url_for('karya_bp.fetch_karya_audio')}}'; window"> <br>
+<form action="{{ url_for('karya_bp.fetch_karya_audio') }}" method="POST" enctype="multipart/form-data">
+
+  <!-- <h2>Fetch access code with metadata</h2>
+      <a href="register_user.html">
+        <button>Fetch access code</button>
+      </a>
+       -->
+         
+  <h4>Click on the "Choose File" button to upload a zip file the audio*:</h4>
+    <input type="file" id="accesscodefile" name="accesscodefile"><br>
+  
+    <input class="btn btn-lg btn-primary create" id="submit" type="submit" value="Submit" >
+  </form>
 
 </div>
 

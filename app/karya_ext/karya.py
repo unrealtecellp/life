@@ -1,8 +1,13 @@
 from curses import meta
+from inspect import getmembers
 from lib2to3.pytree import convert
+from operator import ne
+from types import MemberDescriptorType
 
 from xml.sax.handler import feature_namespace_prefixes
+from xmlrpc.client import gzip_decode
 from xxlimited import new
+from zipfile import ZipFile
 from flask import Blueprint, flash, redirect, render_template, url_for, request, json, jsonify, send_file
 from pymongo import database
 from werkzeug.urls import url_parse
@@ -11,7 +16,8 @@ from werkzeug.security import generate_password_hash
 # from karya_plugin.forms import UserLoginForm, RegistrationForm
 # from karya_plugin.models import UserLogin
 from app import app, mongo
-from app.controller import getdbcollections, getactiveprojectname, getcurrentuserprojects, getprojectowner
+from app.controller import getdbcollections, getactiveprojectname, getcurrentuserprojects
+from app.controller import getprojectowner, getcurrentusername
 from app.controller import audiodetails
 # from app.forms import UserLoginForm, RegistrationForm
 # from app.models import UserLogin
@@ -25,6 +31,7 @@ from werkzeug.datastructures import FileStorage
 
 from app.routes import activeprojectname
 import wave
+from zipfile import ZipFile
 
 #############################################################################
 #############################################################################
@@ -71,8 +78,11 @@ from io import BytesIO
 from scipy.io.wavfile import read, write
 import json
 import os
+import zipfile
 
-@karya_bp.route('/fetch_karya_audio')
+
+
+@karya_bp.route('/fetch_karya_audio', methods=['GET', 'POST'])
 def fetch_karya_audio():
     karyaaudiodetails, = getdbcollections.getdbcollections(mongo, 'fetchkaryaaudio')
 
@@ -82,12 +92,82 @@ def fetch_karya_audio():
     hederr = {'karya-id-token':'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImExNWE0MGQ0In0.eyJzdWIiOiIxNjc3NzIzNSIsImVudGl0eSI6IndvcmtlciIsImlhdCI6MTY2MzU5MDA2NiwiZXhwIjoxNjY2MTgyMDY2LCJhdWQiOiJrYXJ5YS1zZXJ2ZXIiLCJpc3MiOiJrYXJ5YS1zZXJ2ZXIifQ.UGpR4dGasm-FQNjHMHT3Ivx3-noKAF-R04vdFOAXJiE'}
     r = requests.get(headers = hederr, url = urll) 
 
+
     # r.json()["assignments"]
     r_j = r.json()
 
-    
+    projects, userprojects, transcriptions = getdbcollections.getdbcollections(mongo, 'projects', 'userprojects', 'transcriptions')
+    current_username = getcurrentusername.getcurrentusername()
+    print(current_username)
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_username, userprojects)
+    projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
+    if request.method == "POST":
+        listWorkerId = []
+        listrecording = []
+        audioZipUpload = request.files['accesscodefile']
+        print(type(audioZipUpload))
+        # for audioZipUpload in audioZipUpload:
+        fileAudio = tarfile.open(fileobj=audioZipUpload, mode= 'r')
+        files = fileAudio.getmembers()
+        # for j in files:
+        f = fileAudio.extractfile(files[0]) # if your docs.json is in the 0th position
+        file_data_json = f.read().decode("latin-1")
+        # print(type(file_data_json))
+        file_data_json = json.loads(file_data_json)
+        jsonWorkerId = file_data_json['worker_id']
+        jsonrecording = file_data_json['recording']
+        # print(list(jsonrecording," : ",jsonWorkerId)
+        listWorkerId.append(jsonWorkerId)
+        listrecording.append(jsonrecording)
+        workeridRecordingDict = {listrecording[i]: listWorkerId[i] for i in range(len(listrecording))}
+        print(workeridRecordingDict)
+      #create loop to extract data 
+      
 
 
+        # file_data = audioZipUpload.read().decode("latin-1")
+        # print(file_data)
+        # file_data_json = json.loads(file_data)
+        # print(type(file_data_json)) 
+        # file_data = audioZipUpload.read().decode("latin-1")
+        # print(file_data)
+        # file_data_json = json.loads(file_data)
+        # print(type(file_data_json))
+
+        # jsonWorkerId = file_data_json['worker_id']
+        # jsonrecording = file_data_json['recording']
+        # # print(list(jsonrecording," : ",jsonWorkerId)
+        # listWorkerId.append(jsonWorkerId)
+        # listrecording.append(jsonrecording)
+        # workeridRecordingDict = {listrecording[i]: listWorkerId[i] for i in range(len(listrecording))}
+        
+        print(workeridRecordingDict.keys()) # speaker_ID
+        print(workeridRecordingDict.values()) #new_audio_file
+        speakerId = workeridRecordingDict.values()
+        
+
+
+        for member in fileAudio.getmembers(): 
+            f=fileAudio.extractfile(member)
+            content=f.read()
+            new_audio_file = {}
+            new_audio_file['audiofile'] = FileStorage(content, filename =  fileAudio.getnames()[1])
+            print(new_audio_file["audiofile"])
+            print(new_audio_file)
+        # audiodetails.saveaudiofiles(mongo,
+        #                 projects,
+        #                 userprojects,
+        #                 transcriptions,
+        #                 projectowner,
+        #                 activeprojectname,
+        #                 current_username,
+        #                 speakerId,
+        #                 new_audio_file,
+        #                 karyainfo = file_data_json,
+        #                 karya_speaker_id=listWorkerId)
+     
+
+        return redirect(url_for('karya_bp.home_insert'))
 #########################################################  
     '''worker ID'''
     # list_workerID = []
@@ -123,96 +203,71 @@ def fetch_karya_audio():
     # print(audio_speaker_merge)
     # print(audio_speaker_merge.keys())
 
-
-
-
-
-    # answer = ", ".join(new_dict)
-    # answer
     hederr= {'karya-id-token':'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImExNWE0MGQ0In0.eyJzdWIiOiIxNjc3NzIzNSIsImVudGl0eSI6IndvcmtlciIsImlhdCI6MTY2MzU5MDA2NiwiZXhwIjoxNjY2MTgyMDY2LCJhdWQiOiJrYXJ5YS1zZXJ2ZXIiLCJpc3MiOiJrYXJ5YS1zZXJ2ZXIifQ.UGpR4dGasm-FQNjHMHT3Ivx3-noKAF-R04vdFOAXJiE'}
 
     rl = 'https://karyanltmbox.centralindia.cloudapp.azure.com/assignment/id/input_file'
     for new_d in audio_speaker_merge.keys():
         new_url = rl.replace("id", new_d )
         # print(new_url)
-        ra = requests.get(url = new_url, headers = hederr) 
+        ra = requests.get(url = new_url, headers = hederr)
+        print(type(ra))
         filebytes= ra.content
-        # print(filebytes)
+        print(type(filebytes))
 
+        # # testing easyAnno save files code
+        # with ZipFile(gzip.decompress(filebytes)) as myzip:
+        #     for file_name in myzip.namelist():
+        #         with myzip.open(file_name) as myfile:
+        #             # print(myfile.read())
+        #             # if (not file_name.endswith('.tsv')):
+        #             print(file_name)
+        #             # project_name = proj_name
+        #             # if projects.find_one({"projectName": project_name}, {'_id' : 0, "projectName": 1}) != None:
+        #             #     flash(f'File Name : {project_name} already exist!', 'warning')
+        #             #     return redirect(url_for('home'))
+
+        #             # image_anno_detail = {}
+        #             image_id = 'I'+re.sub(r'[-: \.]', '', str(datetime.now()))
+        #             image_file = io.BytesIO(myfile.read())
+        #             # store images to mongodb fs collection
+        #             mongo.save_file(file_name, image_file, imageId = image_id)
+        #             return redirect(url_for('karya_bp.home_insert'))
 
         projects, userprojects, transcriptions = getdbcollections.getdbcollections(mongo, 'projects', 'userprojects', 'transcriptions')
-        projectowner = 'nmathur54'
-        activeprojectname = 'PROJECT_1'
-        current_username = 'nmathur54'
+        
+        current_username = getcurrentusername.getcurrentusername()
+        activeprojectname = getactiveprojectname.getactiveprojectname(current_username, userprojects)
+        projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
+        
+        speakerId = audio_speaker_merge[new_d]
 
         #####################################################
         '''DATA'''
-        with BytesIO(gzip.decompress(filebytes)) as fh:
-            fileAudio = tarfile.TarFile(fileobj=fh)
-            extracted_audio = fileAudio.extractall('/home/kmi/Desktop/Sid')
-            # audio_read = extracted_audio.read()
-            # print(audio_read)
-        # zero = []
-    path = "/home/kmi/Desktop/sid"
-    files = os.listdir(path)
-
-    # for filename in sorted(os.listdir(path)):
-    for filename in glob.glob(os.path.join(path, '*.wav')):
-        filePath = os.path.join(path, filename)
-        with open(filePath, 'rb') as f:
-        # input_wav = wave.open(filePath, 'rb')
-            input_wav = f.read()
-        # print(input_wav)
-
+        # print("###################################\n",filebytes.getmembers())
+        ''' zip_path = ""
+                with BytesIO(gzip.decompress(zip_path)) as zp:
+                '''
+   
     
-####################################################################################################################
-# ############################        ###############################    #################      ###################################             
 
-    # def read_text_file(file_path):
-    #     with open(file_path, 'rb') as f:
-    #         print(f.read())
-
-    # # iterate through all file
-    # for file in os.listdir():
-    #     # Check whether file is in text format or not
-    #     if file.endswith(".wav"):
-    #         file_path = f"{path}/{file}"
-
-    # # call read text file function
-    # input_wav = read_text_file(file_path) 
-
-# here, input_wav is a bytes object representing the wav object
-        # rate, data = read(io.BytesIO(input_wav))
-        # bytes_wav = bytes()
-        # byte_io = io.BytesIO(bytes_wav)
-        # # write(byte_io, rate, reversed_data)
-        # write(byte_io, rate, data)
-        # output_wav = byte_io.read() # and back to bytes, tadaaa
-        # # output_wav can be written to a file, of sent over the network as a binary
-        # print(output_wav)
-        # filedata = FileStorage(output_wav, filename =  filename)
-########################################################################################################################
-# #############################    ############################# #########################   ################################## 
-        # db = mongo.db
-        # fs = gridfs.GridFS(db)
-        # filedata = fs.put(input_wav, filename = filename)
-
-        filedata = FileStorage(stream = input_wav , filename= filename)
-        # print("##################################","Filedatr", filedata , "################################")
-
-    # # with BytesIO(gzip.decompress(filebytes)) as fh:
-    # #     filedata = tarfile.TarFile(fileobj=fh)
-    # #     # tf.extractall('/home/kmi/Desktop/test')
-        new_audio_file = {'audiofile': filedata}
-##################################################################################################################
-        speakerId = worker_id
-        # print(speakerId)
-
-
-        # print(type(filedata))
-        # print(new_audio_file)
-############################################################################################################
-        audiodetails.saveaudiofiles(mongo,
+        with BytesIO(gzip.decompress(filebytes)) as fh: #1
+            fileAudio = tarfile.TarFile(fileobj=fh) #2
+            print('1', type(fileAudio))
+            print('2', fileAudio.getnames()) #3
+            print('3', fileAudio.getmembers()) #4
+            for member in fileAudio.getmembers(): 
+                f=fileAudio.extractfile(member)
+                content=f.read()
+                print('4', type(member))
+                print('5', type(content))
+                print ('6', member, content.count)
+                print ('7', member, content.count)
+                print ('8', member, len(content))
+                # mongo.save_file(fileAudio.getnames()[0], io.BytesIO(content), audioID='1234567890')
+                new_audio_file = {}
+                new_audio_file['audiofile'] = FileStorage(io.BytesIO(content), filename =  fileAudio.getnames()[0])
+                print('9', new_audio_file['audiofile'], type(new_audio_file['audiofile']))
+                audiodetails.saveaudiofiles(mongo,
                             projects,
                             userprojects,
                             transcriptions,
@@ -220,27 +275,102 @@ def fetch_karya_audio():
                             activeprojectname,
                             current_username,
                             speakerId,
-                            new_audio_file)
+                            new_audio_file,
+                            karyainfo = r_j,
+                            karya_peaker_id=speakerId)
+    return redirect(url_for('karya_bp.home_insert'))
+#             # extracted_audio = fileAudio.extractall('/home/kmi/Desktop/Sid')
+#             # audio_read = extracted_audio.read()
+#             # print(audio_read)
+#         # zero = []
+#     # path = "/home/kmi/Desktop/sid"
+#     # files = os.listdir(path)
+
+#     # # for filename in sorted(os.listdir(path)):
+#     # for filename in glob.glob(os.path.join(path, '*.wav')):
+#     #     filePath = os.path.join(path, filename)
+#     #     with open(filePath, 'rb') as f:
+#     #     # input_wav = wave.open(filePath, 'rb')
+#     #         input_wav = f.read()
+#         # print(input_wav)
+
+    
+# ####################################################################################################################
+# # ############################        ###############################    #################      ###################################             
+
+#     # def read_text_file(file_path):
+#     #     with open(file_path, 'rb') as f:
+#     #         print(f.read())
+
+#     # # iterate through all file
+#     # for file in os.listdir():
+#     #     # Check whether file is in text format or not
+#     #     if file.endswith(".wav"):
+#     #         file_path = f"{path}/{file}"
+
+#     # # call read text file function
+#     # input_wav = read_text_file(file_path) 
+
+# # here, input_wav is a bytes object representing the wav object
+#         # rate, data = read(io.BytesIO(input_wav))
+#         # bytes_wav = bytes()
+#         # byte_io = io.BytesIO(bytes_wav)
+#         # # write(byte_io, rate, reversed_data)
+#         # write(byte_io, rate, data)
+#         # output_wav = byte_io.read() # and back to bytes, tadaaa
+#         # # output_wav can be written to a file, of sent over the network as a binary
+#         # print(output_wav)
+#         # filedata = FileStorage(output_wav, filename =  filename)
+# ########################################################################################################################
+# # #############################    ############################# #########################   ################################## 
+#         # db = mongo.db
+#         # fs = gridfs.GridFS(db)
+#         # filedata = fs.put(input_wav, filename = filename)
+
+#         filedata = FileStorage(stream = input_wav , filename= filename)
+#         # print("##################################","Filedatr", filedata , "################################")
+
+#     # # with BytesIO(gzip.decompress(filebytes)) as fh:
+#     # #     filedata = tarfile.TarFile(fileobj=fh)
+#     # #     # tf.extractall('/home/kmi/Desktop/test')
+#         new_audio_file = {'audiofile': filedata}
+# ##################################################################################################################
+#         speakerId = worker_id
+#         # print(speakerId)
 
 
-#################################################################################################
-        # mapping of this function is with the 'uploadaudiofiles' route.
+#         # print(type(filedata))
+#         # print(new_audio_file)
+# ############################################################################################################
+#         audiodetails.saveaudiofiles(mongo,
+#                             projects,
+#                             userprojects,
+#                             transcriptions,
+#                             projectowner,
+#                             activeprojectname,
+#                             current_username,
+#                             speakerId,
+#                             new_audio_file)
+
+
+# #################################################################################################
+#         # mapping of this function is with the 'uploadaudiofiles' route.
             
-    # print("File Saved")
+#     # print("File Saved")
 
 
 
 
 
 
-        # audioformat_dict = {
-        #                         "projects": "", 
-        #                         "userprojects": "",
-        #                         "transcriptions":"",
-        #                         "activeprojectname":"",
-        #                         "current_username": "",
-        #                         "speakerId":"",
-        #                         "new_audio_files":""}
+#         # audioformat_dict = {
+#         #                         "projects": "", 
+#         #                         "userprojects": "",
+#         #                         "transcriptions":"",
+#         #                         "activeprojectname":"",
+#         #                         "current_username": "",
+#         #                         "speakerId":"",
+#         #                         "new_audio_files":""}
 
 
 
@@ -622,7 +752,7 @@ def add():
             #                                         "previous."+current_date+".speakerMetadata.speakerspeaklanguage": previous_speakerdetails["current.speakerMetadata.speakerspeaklanguage"],
             #                                         "previous."+current_date+".speakerMetadata.recordingplace": previous_speakerdetails["current.speakerMetadata.recordingplace"],
             #                                         "isActive": 1}
-            update_old_data = {"previous."+date_of_modified+".name": previous_speakerdetails["current"]["speakerMetadata"]["name"], 
+            update_old_data = {"previous."+date_of_modified+".speakerMetadata.name": previous_speakerdetails["current"]["speakerMetadata"]["name"], 
                                                     "previous."+date_of_modified+".speakerMetadata.agegroup": previous_speakerdetails["current"]["speakerMetadata"]["agegroup"], 
                                                     "previous."+date_of_modified+".speakerMetadata.gender": previous_speakerdetails["current"]["speakerMetadata"]["gender"],
                                                     "previous."+date_of_modified+".speakerMetadata.educationlevel": previous_speakerdetails["current"]["speakerMetadata"]["educationlevel"],

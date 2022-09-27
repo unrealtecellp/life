@@ -89,3 +89,6 @@
 24 September 2022
 ---------------------------------------------------------------
 - download and save wavesurfer to use in offline mode too
+- If the tasks are chained, in the Output files that are generated, whose worker_id is given there - the one who recorded the data 
+or the one who verified the data or both??
+------ upload audio zip file 
