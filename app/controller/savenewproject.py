@@ -18,7 +18,7 @@ def savenewproject(projects,
             "projectOwner" : current_username,
             "lexemeInserted" : 0,
             "lexemeDeleted" : 0,
-            "sharedwith": current_username,
+            "sharedwith": [current_username],
             "lastActiveId": {
                 current_username: {}
             },

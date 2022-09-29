@@ -22,7 +22,7 @@ Home
     <h3>Active Project: {{ activeproject }}</h3>
     
     <div>    
-        <button type="button" class="btn btn-lg btn-primary" onclick="window.location.href='{{ url_for('dictionaryview') }}';">View/Edit Project</button>
+        <button type="button" class="btn btn-lg btn-primary" onclick="window.location.href='{{ url_for('enternewsentences') }}';">View/Edit Project</button>
         <button type="button" class="btn btn-lg btn-danger" data-toggle="modal" data-target="#myShareProjectModal">
             Share Project
         </button>
@@ -79,11 +79,7 @@ Home
                 </select>
                 <br>
                 <br>
-                <select name="" id="shareSpeaker"  class="form-control" style="width: 100%">
-                  <option value="speaker_1">speaker_1</option>
-                  <option value="speaker_2">speaker_2</option>
-                  <option value="speaker_3">speaker_3</option>
-                  <option value="speaker_4">speaker_4</option>
+                <select name="" id="shareSpeakerSelect"  multiple="multiple" style="width: 100%">
                 </select>
                 <br>
                 <br>

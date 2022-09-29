@@ -144,15 +144,18 @@ def getactiveaudioid(projects,
         _type_: _description_
     """
 
-    last_active_audio_id = projects.find_one({'projectname': activeprojectname},
-                                                {
-                                                    '_id': 0,
-                                                    'lastActiveId.'+current_username+'.'+activespeakerId+'.audioId': 1
-                                                }
-                                            )
-    # print(last_active_audio_id)
-    if len(last_active_audio_id) != 0:
-        last_active_audio_id = last_active_audio_id['lastActiveId'][current_username][activespeakerId]['audioId']
+    try:
+        last_active_audio_id = projects.find_one({'projectname': activeprojectname},
+                                                    {
+                                                        '_id': 0,
+                                                        'lastActiveId.'+current_username+'.'+activespeakerId+'.audioId': 1
+                                                    }
+                                                )
+        # print(last_active_audio_id)
+        if len(last_active_audio_id) != 0:
+            last_active_audio_id = last_active_audio_id['lastActiveId'][current_username][activespeakerId]['audioId']
+    except:
+        last_active_audio_id = ''
 
     return last_active_audio_id
 
@@ -271,38 +274,38 @@ def getaudiotranscriptiondetails(transcriptions, audio_id):
     transcription_regions = []
     gloss = {}
     pos = {}
-    t_data = transcriptions.find_one({ 'audioId': audio_id },
-                                    { '_id': 0, 'textGrid.sentence': 1 })
-    # print('t_data!!!!!', t_data)
-    if t_data is not None:
-        transcription_data = t_data['textGrid']
-    # pprint(transcription_data)
-    sentence = transcription_data['sentence']
-    for key, value in sentence.items():
-        transcription_region = {}
-        # gloss = {}
-        # transcription_region['sentence'] = {}
-        transcription_region['data'] = {}
-        transcription_region['boundaryID'] = key
-        transcription_region['start'] = sentence[key]['start']
-        transcription_region['end'] = sentence[key]['end']
-        # transcription_region['sentence'] = {key: value}
-        transcription_region['data'] = {'sentence': {key: value}}
-        try:
-            # print('!@!#!@!#!@!#!@!#!@!##!@!#!#!@!#!@!#!@!#!@!#!@!##!@!#!#', gloss)
-            tempgloss = sentence[key]['gloss']
-            # print('!@!#!@!#!@!#!@!#!@!##!@!#!#!@!#!@!#!@!#!@!#!@!##!@!#!#', tempgloss)
-            gloss[key] = pd.json_normalize(tempgloss, sep='.').to_dict(orient='records')[0]
-            # print('!@!#!@!#!@!#!@!#!@!##!@!#!#!@!#!@!#!@!#!@!#!@!##!@!#!#', gloss)
-            temppos = sentence[key]['pos']
-            pos[key] = pd.json_normalize(temppos, sep='.').to_dict(orient='records')[0]
+    try:
+        t_data = transcriptions.find_one({ 'audioId': audio_id },
+                                        { '_id': 0, 'textGrid.sentence': 1 })
+        # print('t_data!!!!!', t_data)
+        if t_data is not None:
+            transcription_data = t_data['textGrid']
+        # pprint(transcription_data)
+        sentence = transcription_data['sentence']
+        for key, value in sentence.items():
+            transcription_region = {}
+            # gloss = {}
+            # transcription_region['sentence'] = {}
+            transcription_region['data'] = {}
+            transcription_region['boundaryID'] = key
+            transcription_region['start'] = sentence[key]['start']
+            transcription_region['end'] = sentence[key]['end']
+            # transcription_region['sentence'] = {key: value}
+            transcription_region['data'] = {'sentence': {key: value}}
+            try:
+                # print('!@!#!@!#!@!#!@!#!@!##!@!#!#!@!#!@!#!@!#!@!#!@!##!@!#!#', gloss)
+                tempgloss = sentence[key]['gloss']
+                # print('!@!#!@!#!@!#!@!#!@!##!@!#!#!@!#!@!#!@!#!@!#!@!##!@!#!#', tempgloss)
+                gloss[key] = pd.json_normalize(tempgloss, sep='.').to_dict(orient='records')[0]
+                # print('!@!#!@!#!@!#!@!#!@!##!@!#!#!@!#!@!#!@!#!@!#!@!##!@!#!#', gloss)
+                temppos = sentence[key]['pos']
+                pos[key] = pd.json_normalize(temppos, sep='.').to_dict(orient='records')[0]
 
-            # print('288', gloss)
-        except:
-            # print('=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=', gloss)
-            gloss = {}
-            pos = {}
-
+                # print('288', gloss)
+            except:
+                # print('=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=', gloss)
+                gloss = {}
+                pos = {}
 
         # pprint(transcription_region)
     #     if (key == 'speakerId' or
@@ -316,6 +319,8 @@ def getaudiotranscriptiondetails(transcriptions, audio_id):
         transcription_regions.append(transcription_region)
     # print(transcription_regions)
     # print('303', gloss, pos)
+    except:
+        pass
 
     return (transcription_regions, gloss, pos)
 

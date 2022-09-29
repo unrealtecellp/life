@@ -1,5 +1,7 @@
 """Module to get the active project name of the current user"""
 
+from flask import flash
+
 def getactiveprojectname(current_username, userprojects):
     """
     INPUT:
@@ -15,6 +17,7 @@ def getactiveprojectname(current_username, userprojects):
     if len(activeprojectname) != 0:
         activeprojectname = activeprojectname['activeprojectname']
     else:
-        activeprojectname = ''    
+        activeprojectname = ''
+        
 
     return activeprojectname

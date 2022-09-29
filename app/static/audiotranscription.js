@@ -875,7 +875,7 @@ function createSentenceForm(formElement, boundaryID) {
         // console.log(key, value)
         if (key === 'transcription') {
             var transcriptionScript = formElement[key];
-            // console.log('Object.keys(transcriptionScript)[0]', Object.keys(transcriptionScript)[0]);
+            console.log('Object.keys(transcriptionScript)[0]', Object.keys(transcriptionScript)[0]);
             firstTranscriptionScript = Object.keys(transcriptionScript)[0]
             for (let [transcriptionkey, transcriptionvalue] of Object.entries(transcriptionScript)) {
                 // activeprojectform = JSON.parse(localStorage.getItem('activeprojectform'));
@@ -1370,6 +1370,22 @@ function getActiveRegionSentence(region) {
                     sentence = undefined
                 }
                 return sentence
+        }
+    }
+}
+
+function ipaFocus(x) {
+    ipaString = document.getElementById('ipa').value
+    console.log(ipaString);
+    activeprojectform = JSON.parse(localStorage.activeprojectform)
+    ipaToMeetei = activeprojectform['ipaToMeetei']
+    console.log(ipaToMeetei);
+    ipaStringList = ipaString.split()
+    for (p=0; p<ipaStringList[p].length; i++) {
+        for (i=0; i<ipaString.length; i++) {
+            if (ipaString[i] in ipaToMeetei) {
+                console.log(ipaString[i], ipaToMeetei[ipaString[i]])
+            }
         }
     }
 }

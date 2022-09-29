@@ -16,8 +16,11 @@ def getcurrentuserprojects(current_username, userprojects):
     try:
         userprojects  = userprojects.find_one({ 'username' : current_username })
         myproject = userprojects['myproject']
+        myprojectlist = list(myproject.keys())
         projectsharedwithme = userprojects['projectsharedwithme']
-        userprojectsname = set(myproject + projectsharedwithme)
+        projectsharedwithmelist = list(projectsharedwithme.keys())
+        # userprojectsname = set(myproject + projectsharedwithme)
+        userprojectsname = set(myprojectlist + projectsharedwithmelist)
     except:
         flash('Please create your first project.')
     # print(userprojectsname)
