@@ -283,6 +283,7 @@ def getaudiotranscriptiondetails(transcriptions, audio_id):
         # pprint(transcription_data)
         sentence = transcription_data['sentence']
         for key, value in sentence.items():
+            # print(key, value)
             transcription_region = {}
             # gloss = {}
             # transcription_region['sentence'] = {}
@@ -292,6 +293,7 @@ def getaudiotranscriptiondetails(transcriptions, audio_id):
             transcription_region['end'] = sentence[key]['end']
             # transcription_region['sentence'] = {key: value}
             transcription_region['data'] = {'sentence': {key: value}}
+            # pprint(transcription_region)
             try:
                 # print('!@!#!@!#!@!#!@!#!@!##!@!#!#!@!#!@!#!@!#!@!#!@!##!@!#!#', gloss)
                 tempgloss = sentence[key]['gloss']
@@ -316,8 +318,8 @@ def getaudiotranscriptiondetails(transcriptions, audio_id):
     #         transcription_region[k] = v
     #         sentence[k] = v
     #     transcription_region['data']['sentence'] = sentence
-        transcription_regions.append(transcription_region)
-    # print(transcription_regions)
+            transcription_regions.append(transcription_region)
+        # pprint(transcription_regions)
     # print('303', gloss, pos)
     except:
         pass

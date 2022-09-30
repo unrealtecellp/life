@@ -170,9 +170,11 @@ def enternewsentences():
                                                         'audioId')
             activeprojectform['lastActiveId'] = audio_id
             activeprojectform['transcriptionDetails'] = transcription_details
+            # print(transcription_details)
             activeprojectform['AudioFilePath'] = file_path
             transcription_regions, gloss, pos = audiodetails.getaudiotranscriptiondetails(transcriptions, audio_id)
             activeprojectform['transcriptionRegions'] = transcription_regions
+            # print(transcription_regions)
             if (len(gloss) != 0):
                 activeprojectform['glossDetails'] = gloss
             if (len(pos) != 0):
