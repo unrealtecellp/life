@@ -1,7 +1,3 @@
-
-
-
-
 var dictionaryFields = [{
   "name": "Pronunciation",
   "value": "Pronunciation"
@@ -222,10 +218,12 @@ var gender =
   {"id": "Non-Binary", "text": "Non-Binary"}
 ];
 
+
 var AgeGroup = [
   {"id": "", "text": ""},
-  {"id": "18-25", "text": "18-25"},
-  {"id": "25-60", "text": "25-60"},
+  {"id": "18-30", "text": "18-30"},
+  {"id": "30-45", "text": "30-45"},
+  {"id": "45-60", "text": "45-60"},
   {"id": "60+", "text": "60+"}
 ];
 var TypeOfCity = [
@@ -234,6 +232,8 @@ var TypeOfCity = [
   {"id": "Village", "text": "Village"},
   {"id": "City", "text": "City"}
 ];
+
+
 
 $(document).ready(function () {
   $('.typeofcity').select2({

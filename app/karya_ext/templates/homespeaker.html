@@ -62,7 +62,7 @@
   <input id="myInput" type="text" placeholder="Search">
   <div class="btn-group" role="group">
       <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        Download Lexicon
+        Download
         <span class="caret"></span>
       </button>
       <ul class="dropdown-menu">
@@ -145,8 +145,11 @@
                         // $('#idage').html(ageOption)
                         $('#idage').val(agroup).trigger('change');
                         // $('#idgender').select2("val", "25-60");
-                        
                         console.log (agroup)
+
+
+                        
+
 
                         gender = metadata.gender
                         // genderOption = '<option value="'+gender+'" selected="selected">'+gender+'</option>'
@@ -255,9 +258,9 @@
           <div id="formdisplay" style="display: none;">
             <form role="form" method="post" action="{{url_for('karya_bp.add')}}">
               
-              <button class="pull-right btn-danger" type="button" id="editbutton">Edit</button><br/>
+              <button class="pull-right btn-danger" type="button" id ="editbutton">Edit</button><br/>
               
-              <input type ="hidden" id="accesscode" name = "accode" value = {{accode}}>
+              <input type ="hidden" id = "accesscode" name = "accode" value = {{accode}}>
               
               
               
@@ -275,10 +278,10 @@
               <label for="sagegroup">Age Group: </label> <br> 
               <select class="age" id="idage" name="sagegroup" style="width:55%" required>
               <!-- <div id="ageoptions"></div> -->
-                
               </select><br>
                 </div>
 
+ 
             <div class="form-group">                    
             <label for="sgender">Gender: </label>  <br>
             <select class="gender" id="idgender" name="sgender" style="width:55%" required>
@@ -291,7 +294,6 @@
             <div class="form-group">
             <label for="educationalevel">Educational Level: </label> <br>
             <select class="educationlvl" id="idelevel" name="educationalevel" style="width:55%" required>
-             
             </select><br>
             </div>
           
@@ -349,9 +351,10 @@
           <!-- <th onclick="sortTable(0)">id</th> -->
           <th><input type="checkbox" id="headcheckbox" onchange="checkAllLexeme(this)" name="chk[]" checked/>&nbsp;</th>
           <th onclick="sortTable(1)">Access Code</th>
-          <th onclick="sortTable(2)">Name</th>
-          <th onclick="sortTable(3)">Age Group</th>
-          <th onclick="sortTable(4)">Gender</th>
+          <th onclick="sortTable(2)">Speaker ID</th>
+          <th onclick="sortTable(3)">Name</th>
+          <th onclick="sortTable(4)">Age Group</th>
+          <th onclick="sortTable(5)">Gender</th>
           <th>View</th>
           <!-- <th>Edit</th> -->
 
@@ -364,9 +367,9 @@
                <td><input type="checkbox" id="lexemecheckbox" onchange="checkLexeme(this)" name="name1" checked/></td> 
                   {% for item in row %}
                   
-                  <td> {{item['lifespeakerid']}} {{item['name']}} {{item['agegroup']}} {{item['gender']}}</td>     
+                  <td>  {{item['karyaspeakerid']}} {{item['lifeid']}} {{item['name']}} {{item['agegroup']}} {{item['gender']}}</td>     
                   {% endfor %}
-                  <td><button type="button" class="btn btn-primary lexemeview" id="{{row[0]['lifespeakerid']}}" data-toggle="modal" data-target="#exampleModal">View</button></td>
+                  <td><button type="button" class="btn btn-primary lexemeview" id="{{row[0]['karyaspeakerid']}}" data-toggle="modal" data-target="#exampleModal">View</button></td>
                   <!-- <td><button type="button" class="btn btn-warning lexemeedit" id="{{row[0]}}" data-toggle="modal" data-target="#exampleModal">Edit</button></td> -->
                   <!-- <p> id="{{row[0]}}"</p> -->
                 
