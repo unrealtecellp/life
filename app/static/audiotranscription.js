@@ -1375,17 +1375,35 @@ function getActiveRegionSentence(region) {
 }
 
 function ipaFocus(x) {
+    console.log('------------------------')
+    meeteiString = ''
     ipaString = document.getElementById('ipa').value
     console.log(ipaString);
     activeprojectform = JSON.parse(localStorage.activeprojectform)
     ipaToMeetei = activeprojectform['ipaToMeetei']
     console.log(ipaToMeetei);
-    ipaStringList = ipaString.split()
-    for (p=0; p<ipaStringList[p].length; i++) {
-        for (i=0; i<ipaString.length; i++) {
-            if (ipaString[i] in ipaToMeetei) {
-                console.log(ipaString[i], ipaToMeetei[ipaString[i]])
+    ipaStringList = ipaString.split(' ')
+    console.log(ipaStringList, ipaStringList.length)
+    meeteiStringList = []
+    for (p=0; p<ipaStringList.length; p++) {
+        
+        meeteiChar = ''
+        console.log(ipaStringList[p], ipaStringList[p].length)
+        for (i=0; i<ipaStringList[p].length; i++) {
+            ipaChar = ipaStringList[p]
+            console.log(ipaChar[i])
+            if (ipaChar[i] in ipaToMeetei) {
+                console.log(ipaChar[i], ipaToMeetei[ipaChar[i]])
+                // meeteiString += ipaToMeetei[ipaChar[i]]
+                meeteiChar += ipaToMeetei[ipaChar[i]]
+            }
+            else {
+                meeteiChar += ipaChar[i]
             }
         }
+        meeteiStringList.push(meeteiChar)
     }
+    console.log(meeteiStringList.join(' '))
+    meeteiString = meeteiStringList.join(' ')
+    document.getElementById('meetei').value = meeteiString
 }
