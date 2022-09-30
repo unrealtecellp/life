@@ -14,9 +14,12 @@ def updateuserprojects(userprojects,
     """
 
     # get curent user project list and update
-    userprojectnamelist = userprojects.find_one({'username' : current_username})["myproject"]
-    userprojectnamelist.append(projectname)
+    # userprojectnamelist = userprojects.find_one({'username' : current_username})["myproject"]
+    # userprojectnamelist.append(projectname)
+
+    userprojectnamedict = userprojects.find_one({'username' : current_username})["myproject"]
+    userprojectnamedict[projectname] = {'sharemode': 4}
     # when testing comment these to avoid any database update/changes
     userprojects.update_one({ 'username' : current_username },
-                            { '$set' : { 'myproject' : userprojectnamelist,
+                            { '$set' : { 'myproject' : userprojectnamedict,
                                         'activeprojectname' :  projectname }})

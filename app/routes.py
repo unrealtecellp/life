@@ -1,4 +1,3 @@
-from email.mime import audio
 from flask import flash, redirect, render_template, url_for, request, json, jsonify, send_file
 from pymongo import database
 from werkzeug.urls import url_parse
@@ -51,6 +50,7 @@ import shutil, traceback
 basedir = os.path.abspath(os.path.dirname(__file__))
 scriptCodeJSONFilePath = os.path.join(basedir, 'static/json/scriptCode.json')
 langScriptJSONFilePath = os.path.join(basedir, 'static/json/langScript.json')
+ipatomeeteiFilePath = os.path.join(basedir, 'static/json/ipatomeetei.json')
 
 print(f'{"#"*80}Base directory:\n{basedir}\n{"#"*80}')
 
@@ -127,6 +127,9 @@ def enternewsentences():
                                 userprojects)
     activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username,
                             userprojects)
+    if (activeprojectname == ''):
+        flash(f"select a project from 'All Projects' to work on!")
+        return redirect(url_for('home'))
     if request.method == 'POST':
         newSentencesData = dict(request.form.lists())
         newSentencesFiles = request.files.to_dict()
@@ -174,13 +177,18 @@ def enternewsentences():
                 activeprojectform['glossDetails'] = gloss
             if (len(pos) != 0):
                 activeprojectform['posDetails'] = pos
-            speakerids = projects.find_one({"projectname": activeprojectname},
-                                            {"_id": 0, "speakerIds."+current_user.username: 1}
-                                        )["speakerIds"][current_user.username]
+            try:
+                speakerids = projects.find_one({"projectname": activeprojectname},
+                                                {"_id": 0, "speakerIds."+current_user.username: 1}
+                                            )["speakerIds"][current_user.username]
+            except:
+                speakerids = ''
             scriptCode = readJSONFile.readJSONFile(scriptCodeJSONFilePath)
             activeprojectform['scriptCode'] = scriptCode
             langScript = readJSONFile.readJSONFile(langScriptJSONFilePath)
             activeprojectform['langScript'] = langScript
+            ipaToMeetei = readJSONFile.readJSONFile(ipatomeeteiFilePath)
+            activeprojectform['ipaToMeetei'] = ipaToMeetei
             # print('currentuserprojectsname', currentuserprojectsname)
             # print('speakerids', speakerids)
             # pprint(activeprojectform)
@@ -2679,72 +2687,101 @@ def downloadjson():
 # edit button on dictionary view table
 @app.route('/userslist', methods=['GET', 'POST'])
 def userslist():
-    ## SQLite Database 
-    # con = sqlite3.connect('app.db')
-    # cur = con.cursor()
 
-    # usersList = []
-    # for user in cur.execute('SELECT username FROM UserLogin'):
-    #     usersList.append(user[0])
-    #     # print(user)
-    # usersList.remove(current_user.username)
-    # # print(usersList)
-    # MongoDB Database
-    userlogin = mongo.db.userlogin                          # collection of users and their login details
-    usersList = []
-    for user in userlogin.find({}, {"_id": 0, "username": 1}):
-        # print(user)
-        usersList.append(user["username"])
-        # print(user)
-    usersList.remove(current_user.username)
-    print(usersList)
-    return jsonify(usersList=usersList)
+    userlogin, projects, userprojects = getdbcollections.getdbcollections(mongo,
+                                                                            'userlogin',
+                                                                            'projects',
+                                                                            'userprojects')
+    try:                                                                            
+        activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username,
+                                userprojects)
+
+        usersList = []
+        speakersList = []
+        for user in userlogin.find({}, {"_id": 0, "username": 1}):
+            # print(user)
+            usersList.append(user["username"])
+            # print(user)
+        usersList.remove(current_user.username)
+        print(usersList)
+        speakersDict = projects.find_one({'projectname': activeprojectname},
+                                            {'_id':0, 'speakerIds.'+current_user.username: 1})
+        speakersList = speakersDict['speakerIds'][current_user.username]
+        print(speakersList)
+    except:
+        # return redirect(url_for('home'))
+        pass
+
+    return jsonify(usersList=sorted(usersList), speakersList=sorted(speakersList))
 
 # modal view with complete detail of a lexeme for edit
 # edit button on dictionary view table
 @app.route('/shareprojectwith', methods=['GET', 'POST'])
 def shareprojectwith():
-    # getting the collections
-    projectsform = mongo.db.projectsform                # collection of project specific form created by the user
-    lexemes = mongo.db.lexemes                          # collection containing entry of each lexeme and its details
-    userprojects = mongo.db.userprojects              # collection of users and their respective projects
-    projects = mongo.db.projects              # collection of users and their respective projects
+    projects, userprojects = getdbcollections.getdbcollections(mongo,
+                                                                'projects',
+                                                                'userprojects')
+    
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username, userprojects)
 
-    users = request.args.get('a').split(',')                    # data through ajax
-    print(users)
-    activeprojectname = userprojects.find_one({ 'username' : current_user.username })['activeproject']
-    #get _id and project name in the collection projects
-    activeprojectdetails = projects.find_one({}, {"_id" : 1, activeprojectname : 1})
-    project_id = activeprojectdetails["_id"]
-    project_name = activeprojectdetails[activeprojectname]
-    projectsharedwith = project_name["sharedwith"]
-    # # print(activeprojectname)
-    if (len(users[0]) != 0):
+    # data through ajax
+    data = request.args.get('data')
+    data = eval(data)
+    # print(data)
+    users = data['sharewithusers']
+    # print(type(users))
+    speakers = data['sharespeakers']
+    sharemode = data['sharemode']
+    sharechecked = str(data['sharechecked'])
+    print('123', users, speakers, sharemode, sharechecked)
+    print('456', speakers[-1])
+    
+    if (len(users) != 0):
         for user in users:
+            # print(user)
+            userdict = {}
             # get list of projects shared with the user
-            usershareprojectsname = userprojects.find_one({ 'username' : user })['projectsharedwithme']
-            # update list of projects shared with the user
-            usershareprojectsname.append(activeprojectname)
-            usershareprojectsname = list(set(usershareprojectsname))
+            usershareprojectsname = userprojects.find_one({ 'username' : user },
+                                                            {'_id': 0, 'projectsharedwithme': 1})
+            usershareprojectsname = usershareprojectsname['projectsharedwithme']
+            usershareprojectsname[activeprojectname] = {'sharemode': sharemode,
+                                                        'sharechecked': sharechecked}
+            # print(usershareprojectsname)
+            projectdetails = projects.find_one({'projectname': activeprojectname},
+                                                {'_id': 0,
+                                                'sharedwith': 1,
+                                                'lastActiveId': 1,
+                                                'speakerIds': 1})
+            print(projectdetails)
+            projectdetails['sharedwith'].append(user)
+            # print(projectdetails)
             # update list of projects shared with the user in collection
-            userprojects.update_one({ 'username' : user }, { '$set' : { 'projectsharedwithme' : usershareprojectsname}})
-            # userprojectsname = userprojects.find_one({ 'username' : user })
-            # print(userprojectsname)
+            userprojects.update_one({ 'username' : user },
+                                    { '$set': { 'projectsharedwithme' : usershareprojectsname,
+                                          'activespeakerId': speakers[-1]}})
+            projects.update_one({'projectname': activeprojectname},
+                                {'$set': {'sharedwith': projectdetails['sharedwith']}})
+            
+            if (len(speakers) != 0):
+                # projectdetails['speakerIds'][user] = speakers
+                projects.update_one({'projectname': activeprojectname},
+                                {'$set': {'speakerIds.'+user: speakers}})
+                for speaker in speakers:
+                    userlastactiveId = projectdetails['lastActiveId'][current_user.username][speaker]['audioId']
+                    # print(userlastactiveId)
+                    # if (user in projectdetails['lastActiveId']):
+                        # projectdetails['lastActiveId'][user][speaker] = {'audioId': userlastactiveId}
+                    projects.update_one({'projectname': activeprojectname},
+                                {'$set': {'lastActiveId.'+user+'.'+speaker+'.audioId': userlastactiveId}})
+                    # else:
+                    #     # userdict[speaker] = {'audioId': userlastactiveId}
+                    #     # projectdetails['lastActiveId'][user] = userdict
 
-            # update active project sharedwith list
-            projectsharedwith.append(user)
-            projectsharedwith = list(set(projectsharedwith))
+                    #     projects.update_one({'projectname': activeprojectname},
+                    #             {'$set': {'lastActiveId.'+user: userdict}})
+            # print(projectdetails)       
 
-    #     projectForm['username'] = current_user.username
-    # update projects collection
-    project_name["sharedwith"] = projectsharedwith
-    projects.update_one({ "_id" : project_id }, { '$set' : { activeprojectname : project_name }})
-    # print(project_id)
-    # print(activeprojectname)
-    # print(project_name)
-    # print(projectsharedwith)
-    # return jsonify(users=users)
-    # return render_template('dictionaryview.html')
+    
     return 'OK'
 
 # modal view with complete detail of a lexeme
@@ -2876,7 +2913,7 @@ def lexemeupdate():
             "Kannada": "Knda",
             "Latin": "Latn",
             "Malayalam": "Mlym",
-            "Meitei_Mayek": "Mtei",
+            "Meitei-Mayek": "Mtei",
             "Odia": "Orya",
             "Ol_Chiki": "Olck",
             "Tamil": "Taml",
@@ -2902,7 +2939,7 @@ def lexemeupdate():
             "Maithili": "Devanagari",
             "Malayalam": "Malayalam",
             "Marathi": "Devanagari",
-            "Meitei": "Meitei_Mayek",
+            "Meitei": "Meitei-Mayek",
             "Nepali": "Devanagari",
             "Odia": "Odia",
             "Punjabi": "Gurumukhi",
@@ -3260,8 +3297,10 @@ def register():
         userlogin.insert({"username": form.username.data, "password": password})
 
         userprojects = mongo.db.userprojects              # collection of users and their respective projectlist
-        userprojects.insert({'username' : form.username.data, 'myproject': [], \
-            'projectsharedwithme': [], 'activeproject' : ''})
+        # userprojects.insert({'username' : form.username.data, 'myproject': [], \
+        #     'projectsharedwithme': [], 'activeprojectname' : ''})
+        userprojects.insert({'username' : form.username.data, 'myproject': {}, \
+            'projectsharedwithme': {}, 'activeprojectname' : ''})
 
         flash('Congratulations, you are now a registered user!')
         return redirect(url_for('login'))

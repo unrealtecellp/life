@@ -112,7 +112,7 @@ var scripts =
         "text": "Malayalam"
       },
       {
-        "id": "Meitei_Mayek", 
+        "id": "Meitei-Mayek", 
         "text": "Meitei Mayek"
       },
       {
