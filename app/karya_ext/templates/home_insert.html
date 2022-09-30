@@ -45,7 +45,7 @@
                       // alert('DOne!')
                       console.log(document.getElementById("getotpid").hidden);
                       document.getElementById("getotpid").hidden=true;
-                      document.getElementById("fetchaudioid").hidden=false;
+                      document.getElementById("fetchaudioid").disabled=false;
                       document.getElementById("karyaotp").hidden=false;
                     });
                     return false;
@@ -62,13 +62,13 @@
 
 
 <h2>Fetch access code or upload access code file</h2>
-  <input type="button" value="Fetch/upload access code" onclick="window.location.href='{{url_for('karya_bp.uploadfile')}}';"> <br><br>
-  <br><br><br><br><br>
+  <input type="button" class="btn btn-lg btn-primary create" value="Fetch/upload access code" onclick="window.location.href='{{url_for('karya_bp.uploadfile')}}';"> <br><br>
+  <br><br><hr><br><br><br>
 
 
 <h2>Manage Access Code</h2>
-<input type="button" value="Manage Access Code" onclick="window.location.href='{{url_for('karya_bp.homespeaker')}}'; window"> <br><br>
-<br><br><br><br><br>
+<input type="button" value="Manage Access Code" class="btn btn-lg btn-primary create" onclick="window.location.href='{{url_for('karya_bp.homespeaker')}}'; window"> <br><br>
+<br><br><hr><br><br><br>
 
 <h2>Fetch Audio File</h2>
 
@@ -77,15 +77,17 @@
 <input type="text" name="access_code" id="piaccesscode" />
 <input type="number" name = "mobile_number" id="pimobilenumber" />
 
-<input type="button" id="getotpid" value="Get OTP"> <br>
+<input type="button" class="btn btn-primary create" id="getotpid" value="Get OTP"> <br>
 
-<h3>Enter OTP</h3>
+<label for="karyaotp"><h3>Enter OTP</h3></label>
 <input type = "text" name = "karya_otp" id="karyaotp" hidden/>
 
-<input type="submit" id="fetchaudioid" value="Fetch Audio" hidden> <br>
+<input type="submit" class="btn btn-primary create" id="fetchaudioid" value="Fetch Audio"> <br>
 
 </form>
 
+<br/>
+<hr>
 <form action="{{ url_for('karya_bp.fetch_karya_audio') }}" method="POST" enctype="multipart/form-data">
 
   <!-- <h2>Fetch access code with metadata</h2>
@@ -93,7 +95,7 @@
         <button>Fetch access code</button>
       </a>
        -->
-         
+  <h2>Upload Karya Recordings</h3>        
   <h4>Click on the "Choose File" button to upload a zip file*:</h4>
     <input type="file" id="accesscodefile" name="accesscodefile"><br>
   

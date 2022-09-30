@@ -113,7 +113,7 @@ def uploadfile():
             current_dt = str(datetime.now()).replace('.', ':')
 
             insert_dict = {
-                        "lifespeakerid": item["id"], "karyaspeakerid": item["access_code"], "lifeid": "",
+                        "karyaspeakerid": item["id"], "karyaaccesscode": item["access_code"], "lifespeakerid": "",
                         "karya_info":{"username": "", "projectname": ""}, 
                         "current": {"speakerMetadata": {"name": "", "agegroup": "", "gender": "", 
                                                 "educationlevel": "", "educationmediumupto12": "", 
@@ -215,17 +215,17 @@ def add():
         por = request.form.get('por')
         toc = request.form.get('toc')
         #############################################################################################
-        namekaryaID = mongodb_info.find_one({"isActive":0},{"lifespeakerid":1, "_id" :0})
+        namekaryaID = mongodb_info.find_one({"isActive":0},{"karyaspeakerid":1, "_id" :0})
         # namekaryaIDDOB = mongodb_info.find_one({"isActive":0},{"current.speakerMetadata.agegroup":1 , "_id" :0})
         # rDOB = namekaryaIDDOB["current"]["speakerMetadata"]["agegroup"]
         # renameInFormDOB = rDOB.replace("-","")
-        
+        print(namekaryaID)
         # for lidata in namekaryaID:
         #     print("574 ", lidata)  
         namekaryaIDDOB = fage
         renameInFormDOB = namekaryaIDDOB.replace("-","")
         print("227  ==========================================>>>>>>>>>>   ", renameInFormDOB)
-        codes = namekaryaID["lifespeakerid"]
+        codes = namekaryaID["karyaspeakerid"]
         print(codes)
         nameInForm = fname 
         print(nameInForm)
@@ -241,7 +241,7 @@ def add():
         # print("587 ",namekaryaAddID)
 
 
-        update_data = {"lifeid": renameCode,
+        update_data = {"lifespeakerid": renameCode,
                                     "current.speakerMetadata.name": fname, 
                                     "current.speakerMetadata.agegroup": fage, 
                                     "current.speakerMetadata.gender": fgender,
@@ -263,17 +263,17 @@ def add():
 
         print("this acc code at line 460", accesscode)
         if accesscode == '':
-            karyaaccesscode = mongodb_info.find_one({"isActive":0},{"karyaspeakerid":1, "_id" :0})
+            karyaaccesscode = mongodb_info.find_one({"isActive":0},{"karyaaccesscode":1, "_id" :0})
             if karyaaccesscode != None:
-                accesscode = karyaaccesscode['karyaspeakerid']
+                accesscode = karyaaccesscode['karyaaccesscode']
             else:
                 accesscode = ''
                 print ('Karya access code', accesscode)
             
                 print ('445 Update Data', update_data)
-            mongodb_info.update_one({"karyaspeakerid": accesscode}, {"$set": update_data})
+            mongodb_info.update_one({"karyaaccesscode": accesscode}, {"$set": update_data})
         else:
-            previous_speakerdetails = mongodb_info.find_one({"karyaspeakerid": accesscode},
+            previous_speakerdetails = mongodb_info.find_one({"karyaaccesscode": accesscode},
                                                 {"current.speakerMetadata": 1, "_id": 0,})
 
             ###########################################
@@ -300,8 +300,8 @@ def add():
                                                     }
 
 
-            mongodb_info.update_one({"karyaspeakerid": accesscode}, {"$set": update_old_data}) # Edit_old_user_info
-            mongodb_info.update_one({"karyaspeakerid": accesscode}, {"$set": update_data}) #new_user_info
+            mongodb_info.update_one({"karyaaccesscode": accesscode}, {"$set": update_old_data}) # Edit_old_user_info
+            mongodb_info.update_one({"karyaaccesscode": accesscode}, {"$set": update_data}) #new_user_info
 
     return redirect(url_for('karya_bp.homespeaker'))
 
@@ -332,23 +332,23 @@ def homespeaker():
     # print(mongodb_info)
     
 ##################################3 LifeID + Accesscode #####################################################################
-    namekaryaID = mongodb_info.find({"isActive":1},{"lifeid":1, "_id" :0})
+    namekaryaID = mongodb_info.find({"isActive":1},{"lifespeakerid":1, "_id" :0})
     for lidata in namekaryaID:
         namekaryaAddID.append(lidata)
         # speaker_data_accesscode.append(data["lifespeakerid"])
     print("587 ",namekaryaAddID)
 
-    lifeaccesscode = mongodb_info.find({"isActive":1},{"lifespeakerid":1, "_id" :0})
+    lifeaccesscode = mongodb_info.find({"isActive":1},{"karyaaccesscode":1, "_id" :0})
     for data in lifeaccesscode:   
-        codes = data["lifespeakerid"]
+        codes = data["karyaaccesscode"]
         speaker_data_accesscode.append(data)
         # speaker_data_accesscode.append(data["lifespeakerid"])
     print(speaker_data_accesscode)
 
 ############## Access Code - KaryaID ###############################################################
-    karyaaccesscode = mongodb_info.find({"isActive":1},{"karyaspeakerid":1,"_id" :0})
+    karyaaccesscode = mongodb_info.find({"isActive":1},{"karyaaccesscode":1,"_id" :0})
     for karyadata in karyaaccesscode:   
-        karyacodes = karyadata["karyaspeakerid"]
+        karyacodes = karyadata["karyaaccesscode"]
         karya_accesscode.append(karyadata)
         
         # speaker_data_accesscode.append(data["lifespeakerid"])
@@ -402,7 +402,7 @@ def getonespeakerdetails():
     # data through ajax
     asycaccesscode = request.args.get('asycaccesscode')
     print(f"{'='*80}\nasycaccesscode: {asycaccesscode}\n{'='*80}")
-    speakerdetails = accesscodedetails.find_one({"karyaspeakerid": asycaccesscode},
+    speakerdetails = accesscodedetails.find_one({"karyaaccesscode": asycaccesscode},
                                                 {"_id": 0,
                                                 "current.speakerMetadata": 1})
     # mongodb_info = mongo.db.accesscodedetails
@@ -493,7 +493,7 @@ def fetch_karya_audio():
 
         projects, userprojects, transcriptions = getdbcollections.getdbcollections(mongo, 'projects', 'userprojects', 'transcriptions')
         current_username = getcurrentusername.getcurrentusername()
-        print(current_username)
+        print('curent user', current_username)
         activeprojectname = getactiveprojectname.getactiveprojectname(current_username, userprojects)
         projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
 
@@ -583,7 +583,7 @@ def fetch_karya_audio():
         # res = dict(zip(workerId_list, new_dict))
         # print(res)
         audio_speaker_merge = {key:value for key, value in zip(speakerID , workerId_list)}
-        # print(audio_speaker_merge)
+        print(audio_speaker_merge)
         # print(audio_speaker_merge.keys())
 
         hederr= {'karya-id-token':getTokenid_assignment_hedder}
@@ -598,13 +598,15 @@ def fetch_karya_audio():
             filebytes= ra.content
             print(type(filebytes))
 
-            projects, userprojects, transcriptions = getdbcollections.getdbcollections(mongo, 'projects', 'userprojects', 'transcriptions')
+            projects, userprojects, transcriptions, accesscodedetails = getdbcollections.getdbcollections(mongo, 'projects', 'userprojects', 'transcriptions', 'accesscodedetails')
             
             current_username = getcurrentusername.getcurrentusername()
             activeprojectname = getactiveprojectname.getactiveprojectname(current_username, userprojects)
             projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
             
-            speakerId = audio_speaker_merge[new_d]
+            karyaspeakerId = audio_speaker_merge[new_d]
+
+            lifespeakerid = accesscodedetails.find_one({'karyaspeakerid': karyaspeakerId}, {'_id': 0, 'lifespeakerid': 1})['lifespeakerid']
 
             #####################################################
             '''DATA'''
@@ -640,10 +642,10 @@ def fetch_karya_audio():
                             projectowner,
                             activeprojectname,
                             current_username,
-                            speakerId,
+                            lifespeakerid,
                             new_audio_file,
                             karyainfo=r_j,
-                            karya_peaker_id=speakerId)
+                            karya_peaker_id=karyaspeakerId)
                 
         return redirect(url_for('karya_bp.home_insert'))
 
