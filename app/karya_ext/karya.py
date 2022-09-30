@@ -430,92 +430,210 @@ def getonespeakerdetails():
 ##############################################################################################################
 ##############################################################################################################
 
+@karya_bp.route('/fetch_karya_otp', methods=['GET', 'POST'])
+def fetch_karya_otp():
+    ##Registration
+    registeruser_urll = 'https://karyanltmbox.centralindia.cloudapp.azure.com/worker/otp/generate'
+    access_code = request.args.get("acode")
+    phone_number = request.args.get("mob")
+
+    registeruser_hederr= {'access-code':access_code, 'phone-number':phone_number}
+    register_request = requests.put(url = registeruser_urll, headers = registeruser_hederr)
+
+    return jsonify(result="False")
+
+
+
 @karya_bp.route('/fetch_karya_audio', methods=['GET', 'POST'])
 def fetch_karya_audio():
     karyaaudiodetails, = getdbcollections.getdbcollections(mongo, 'fetchkaryaaudio')
 
-#     ##Registration
-#     registeruser_urll = 'https://karyanltmbox.centralindia.cloudapp.azure.com/worker/otp/generate'
-#     access_code = ""
-#     phone_number = ""
-
-#     registeruser_hederr= {'access-code':access_code, 'phone-number':phone_number}
-#     register_request = requests.put(url = registeruser_urll, headers = registeruser_hederr) 
 
 # ############################   verify OTP
-#     # access_code = ""
-#     # phone_number = ""
-#     otp = ""
-#     verifyotp_urll = 'https://karyanltmbox.centralindia.cloudapp.azure.com/worker/otp/verify'
-#     verifyotp_hederr= {'access-code':access_code, 'phone-number':phone_number, 'otp':otp}
-#     verifyPh_request = requests.put(url = verifyotp_urll, headers = verifyotp_hederr) 
-#     getTokenid_assignment_hedder = verifyPh_request.json()['id_token']
+    if request.method == 'POST':
+        access_code = request.form.get("access_code")
+        phone_number = request.form.get("mobile_number")
+        otp = request.form.get("karya_otp")
 
-    
-#     ###get new assignment
-#     import requests
-#     # karya_tokenid = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImExNWE0MGQ0In0.eyJzdWIiOiIyODE0NzQ5NzY3MTA3MDMiLCJlbnRpdHkiOiJ3b3JrZXIiLCJpYXQiOjE2NjI5MDI1NTIsImV4cCI6MTY2NTQ5NDU1MiwiYXVkIjoia2FyeWEtc2VydmVyIiwiaXNzIjoia2FyeWEtc2VydmVyIn0.Dvq44bd0RDdQeAGBP39bU-Hsedd_PJs2XpIbPNuTeR0'
-#     assignment_urll = 'https://karyanltmbox.centralindia.cloudapp.azure.com/assignments?type=new&from=2021-05-11T07:23:40.654Z'
-#     # hederr= {'karya-id-token':'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImExNWE0MGQ0In0.eyJzdWIiOiIyODE0NzQ5NzY3MTA3MDMiLCJlbnRpdHkiOiJ3b3JrZXIiLCJpYXQiOjE2NjI5MDI1NTIsImV4cCI6MTY2NTQ5NDU1MiwiYXVkIjoia2FyeWEtc2VydmVyIiwiaXNzIjoia2FyeWEtc2VydmVyIn0.Dvq44bd0RDdQeAGBP39bU-Hsedd_PJs2XpIbPNuTeR0'}
-#     # assignment_hederr = {'karya-id-token':'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImExNWE0MGQ0In0.eyJzdWIiOiIxNjc3NzIzNSIsImVudGl0eSI6IndvcmtlciIsImlhdCI6MTY2MzU5MDA2NiwiZXhwIjoxNjY2MTgyMDY2LCJhdWQiOiJrYXJ5YS1zZXJ2ZXIiLCJpc3MiOiJrYXJ5YS1zZXJ2ZXIifQ.UGpR4dGasm-FQNjHMHT3Ivx3-noKAF-R04vdFOAXJiE'}
-#     assignment_request = requests.get(headers = {'karya-id-token': getTokenid_assignment_hedder}, url = assignment_urll) 
-#     assignmentRequest_json = assignment_request.json()["assignments"]
-#     assignment_request_json = assignmentRequest_json.json()    
+        print ("OTP", otp)
+        print ("access_code", access_code)
+        print ("Mobile", phone_number)
+
+        verifyotp_urll = 'https://karyanltmbox.centralindia.cloudapp.azure.com/worker/otp/verify'
+        verifyotp_hederr= {'access-code':access_code, 'phone-number':phone_number, 'otp':otp}
+        verifyPh_request = requests.put(url = verifyotp_urll, headers = verifyotp_hederr) 
+        print (verifyPh_request.json())
+        ##TODO: Put check for verifying if the OTP was correct or not. If correct then proceed otherwise send error
+        getTokenid_assignment_hedder = verifyPh_request.json()['id_token']
+        print ("ID token", getTokenid_assignment_hedder)
+        
+    #     ###get new assignment
+    #     import requests
+    #     # karya_tokenid = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImExNWE0MGQ0In0.eyJzdWIiOiIyODE0NzQ5NzY3MTA3MDMiLCJlbnRpdHkiOiJ3b3JrZXIiLCJpYXQiOjE2NjI5MDI1NTIsImV4cCI6MTY2NTQ5NDU1MiwiYXVkIjoia2FyeWEtc2VydmVyIiwiaXNzIjoia2FyeWEtc2VydmVyIn0.Dvq44bd0RDdQeAGBP39bU-Hsedd_PJs2XpIbPNuTeR0'
+        assignment_urll = 'https://karyanltmbox.centralindia.cloudapp.azure.com/assignments?type=new&from=2021-05-11T07:23:40.654Z'
+        # hederr= {'karya-id-token':'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImExNWE0MGQ0In0.eyJzdWIiOiIyODE0NzQ5NzY3MTA3MDMiLCJlbnRpdHkiOiJ3b3JrZXIiLCJpYXQiOjE2NjI5MDI1NTIsImV4cCI6MTY2NTQ5NDU1MiwiYXVkIjoia2FyeWEtc2VydmVyIiwiaXNzIjoia2FyeWEtc2VydmVyIn0.Dvq44bd0RDdQeAGBP39bU-Hsedd_PJs2XpIbPNuTeR0'}
+        # assignment_hederr = {'karya-id-token':'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImExNWE0MGQ0In0.eyJzdWIiOiIxNjc3NzIzNSIsImVudGl0eSI6IndvcmtlciIsImlhdCI6MTY2MzU5MDA2NiwiZXhwIjoxNjY2MTgyMDY2LCJhdWQiOiJrYXJ5YS1zZXJ2ZXIiLCJpc3MiOiJrYXJ5YS1zZXJ2ZXIifQ.UGpR4dGasm-FQNjHMHT3Ivx3-noKAF-R04vdFOAXJiE'}
+        assignment_request = requests.get(headers = {'karya-id-token': getTokenid_assignment_hedder}, url = assignment_urll) 
+        # assignment_request_json = assignmentRequest_json.json()
+        
+        # assignmentRequest_json = assignment_request.json()["assignments"]
+            
 
 
-    ################################
-    urll = 'https://karyanltmbox.centralindia.cloudapp.azure.com/assignments?type=new&from=2021-05-11T07:23:40.654Z'
-    # hederr= {'karya-id-token':'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImExNWE0MGQ0In0.eyJzdWIiOiIyODE0NzQ5NzY3MTA3MDMiLCJlbnRpdHkiOiJ3b3JrZXIiLCJpYXQiOjE2NjI5MDI1NTIsImV4cCI6MTY2NTQ5NDU1MiwiYXVkIjoia2FyeWEtc2VydmVyIiwiaXNzIjoia2FyeWEtc2VydmVyIn0.Dvq44bd0RDdQeAGBP39bU-Hsedd_PJs2XpIbPNuTeR0'}
-    hederr = {'karya-id-token':'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImExNWE0MGQ0In0.eyJzdWIiOiIxNjc3NzIzNSIsImVudGl0eSI6IndvcmtlciIsImlhdCI6MTY2MzU5MDA2NiwiZXhwIjoxNjY2MTgyMDY2LCJhdWQiOiJrYXJ5YS1zZXJ2ZXIiLCJpc3MiOiJrYXJ5YS1zZXJ2ZXIifQ.UGpR4dGasm-FQNjHMHT3Ivx3-noKAF-R04vdFOAXJiE'}
-    r = requests.get(headers = hederr, url = urll) 
+        ################################
+        # urll = 'https://karyanltmbox.centralindia.cloudapp.azure.com/assignments?type=new&from=2021-05-11T07:23:40.654Z'
+        # # hederr= {'karya-id-token':'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImExNWE0MGQ0In0.eyJzdWIiOiIyODE0NzQ5NzY3MTA3MDMiLCJlbnRpdHkiOiJ3b3JrZXIiLCJpYXQiOjE2NjI5MDI1NTIsImV4cCI6MTY2NTQ5NDU1MiwiYXVkIjoia2FyeWEtc2VydmVyIiwiaXNzIjoia2FyeWEtc2VydmVyIn0.Dvq44bd0RDdQeAGBP39bU-Hsedd_PJs2XpIbPNuTeR0'}
+        # hederr = {'karya-id-token':'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImExNWE0MGQ0In0.eyJzdWIiOiIxNjc3NzIzNSIsImVudGl0eSI6IndvcmtlciIsImlhdCI6MTY2MzU5MDA2NiwiZXhwIjoxNjY2MTgyMDY2LCJhdWQiOiJrYXJ5YS1zZXJ2ZXIiLCJpc3MiOiJrYXJ5YS1zZXJ2ZXIifQ.UGpR4dGasm-FQNjHMHT3Ivx3-noKAF-R04vdFOAXJiE'}
+        # r = requests.get(headers = hederr, url = urll) 
 
 
-    # r.json()["assignments"]
-    r_j = r.json()
+        # r.json()["assignments"]
+        r_j = assignment_request.json()
+        print ('Lenght of JSON', len(r_j))
 
-    projects, userprojects, transcriptions = getdbcollections.getdbcollections(mongo, 'projects', 'userprojects', 'transcriptions')
-    current_username = getcurrentusername.getcurrentusername()
-    print(current_username)
-    activeprojectname = getactiveprojectname.getactiveprojectname(current_username, userprojects)
-    projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
+        projects, userprojects, transcriptions = getdbcollections.getdbcollections(mongo, 'projects', 'userprojects', 'transcriptions')
+        current_username = getcurrentusername.getcurrentusername()
+        print(current_username)
+        activeprojectname = getactiveprojectname.getactiveprojectname(current_username, userprojects)
+        projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
 
     #################################################################################################
     ########################################## Zip File #############################################
     #################################################################################################
-    if request.method == "POST":
-        listWorkerId = []
-        listrecording = []
-        audioZipUpload = request.files['accesscodefile']
-        print(type(audioZipUpload))
-        # for audioZipUpload in audioZipUpload:
-        fileAudio = tarfile.open(fileobj=audioZipUpload, mode= 'r')
-        print(type(fileAudio))
-        print('1', type(fileAudio))
-        print('2', fileAudio.getnames()) #3
-        print('3', fileAudio.getmembers()) #4
-        for filename in fileAudio.getnames():
-            if (filename.endswith('.json')):
-                print(filename)
-                member = fileAudio.getmember(filename)
-                f=fileAudio.extractfile(member)
-                content=f.read()
-                print('4', type(member))
-                print('5', type(content))
-                jsondata = json.load(io.BytesIO(content))
-                print(jsondata)
-                speakerId = jsondata['worker_id']
-                wavfilename = jsondata['recording']
-                wavmember = fileAudio.getmember(wavfilename)
-                wavf=fileAudio.extractfile(wavmember)
-                wavcontent=wavf.read()
-                print('4', type(wavmember))
-                print('5', type(wavcontent))
-                wavdata = io.BytesIO(wavcontent)
+    # if request.method == "POST":
+    #     listWorkerId = []
+    #     listrecording = []
+    #     audioZipUpload = request.files['accesscodefile']
+    #     print(type(audioZipUpload))
+    #     # for audioZipUpload in audioZipUpload:
+    #     fileAudio = tarfile.open(fileobj=audioZipUpload, mode= 'r')
+    #     print(type(fileAudio))
+    #     print('1', type(fileAudio))
+    #     print('2', fileAudio.getnames()) #3
+    #     print('3', fileAudio.getmembers()) #4
+    #     for filename in fileAudio.getnames():
+    #         if (filename.endswith('.json')):
+    #             print(filename)
+    #             member = fileAudio.getmember(filename)
+    #             f=fileAudio.extractfile(member)
+    #             content=f.read()
+    #             print('4', type(member))
+    #             print('5', type(content))
+    #             jsondata = json.load(io.BytesIO(content))
+    #             print(jsondata)
+    #             speakerId = jsondata['worker_id']
+    #             wavfilename = jsondata['recording']
+    #             wavmember = fileAudio.getmember(wavfilename)
+    #             wavf=fileAudio.extractfile(wavmember)
+    #             wavcontent=wavf.read()
+    #             print('4', type(wavmember))
+    #             print('5', type(wavcontent))
+    #             wavdata = io.BytesIO(wavcontent)
 
-                new_audio_file = {}
-                new_audio_file['audiofile'] = FileStorage(wavdata, filename=wavfilename)
-                print('9', new_audio_file['audiofile'], type(new_audio_file['audiofile']))
-                audiodetails.saveaudiofiles(mongo,
+    #             new_audio_file = {}
+    #             new_audio_file['audiofile'] = FileStorage(wavdata, filename=wavfilename)
+    #             print('9', new_audio_file['audiofile'], type(new_audio_file['audiofile']))
+    #             audiodetails.saveaudiofiles(mongo,
+    #                         projects,
+    #                         userprojects,
+    #                         transcriptions,
+    #                         projectowner,
+    #                         activeprojectname,
+    #                         current_username,
+    #                         speakerId,
+    #                         new_audio_file,
+    #                         karyainfo=jsondata,
+    #                         karya_peaker_id=speakerId)
+
+     
+
+    #     return redirect(url_for('karya_bp.home_insert'))
+
+###################################################################################
+##############################  API Fetch Audio   #################################
+###################################################################################
+        '''worker ID'''
+        # list_workerID = []
+        # getWorker_id = r_j['microtasks']
+        # for findWorker_id in getWorker_id:
+        #     workerid = findWorker_id["input"]["chain"]
+        #     worker_id = workerid["workerId"]
+        #     tt = list_workerID.append[worker_id]
+        # print(list_workerID)  
+        workerId_list = []
+        for micro_metadata in r_j["microtasks"]:
+            sentences = micro_metadata["input"]["data"]
+            findWorker_id = micro_metadata["input"]["chain"]
+            worker_id = findWorker_id["workerId"]
+            workerId_list.append(worker_id)
+        # print(workerId_list)
+            
+        sentence = []
+        for micro_metadata in r_j["microtasks"]:
+            sentences = micro_metadata["input"]["data"]
+            sentence.append(sentences)
+    ###################################################################
+        id_find = r_j['assignments']
+        speakerID = [item['id'] for item in id_find] #new_dict
+        # print(len(new_dict))
+
+    ###################################################################
+        # res = {workerId_list: new_dict}
+        # print(res)
+        # res = dict(zip(workerId_list, new_dict))
+        # print(res)
+        audio_speaker_merge = {key:value for key, value in zip(speakerID , workerId_list)}
+        # print(audio_speaker_merge)
+        # print(audio_speaker_merge.keys())
+
+        hederr= {'karya-id-token':getTokenid_assignment_hedder}
+
+        rl = 'https://karyanltmbox.centralindia.cloudapp.azure.com/assignment/id/input_file'
+        for new_d in list(audio_speaker_merge.keys()):
+            print(f"0 {new_d}")
+            new_url = rl.replace("id", new_d )
+            # print(new_url)
+            ra = requests.get(url = new_url, headers = hederr)
+            print(type(ra))
+            filebytes= ra.content
+            print(type(filebytes))
+
+            projects, userprojects, transcriptions = getdbcollections.getdbcollections(mongo, 'projects', 'userprojects', 'transcriptions')
+            
+            current_username = getcurrentusername.getcurrentusername()
+            activeprojectname = getactiveprojectname.getactiveprojectname(current_username, userprojects)
+            projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
+            
+            speakerId = audio_speaker_merge[new_d]
+
+            #####################################################
+            '''DATA'''
+            # print("###################################\n",filebytes.getmembers())
+            ''' zip_path = ""
+                    with BytesIO(gzip.decompress(zip_path)) as zp:
+                    '''
+    
+        
+
+            with BytesIO(gzip.decompress(filebytes)) as fh: #1
+                fileAudio = tarfile.TarFile(fileobj=fh) #2
+                print('1', type(fileAudio))
+                print('2', fileAudio.getnames()) #3
+                print('2.1', len(fileAudio.getnames())) #3
+                print('3', fileAudio.getmembers()) #4
+                for member in fileAudio.getmembers(): 
+                    f=fileAudio.extractfile(member)
+                    content=f.read()
+                    print('4', type(member))
+                    print('5', type(content))
+                    print ('6', member, content.count)
+                    print ('7', member, content.count)
+                    print ('8', member, len(content))
+                    # mongo.save_file(fileAudio.getnames()[0], io.BytesIO(content), audioID='1234567890')
+                    new_audio_file = {}
+                    new_audio_file['audiofile'] = FileStorage(io.BytesIO(content), filename =  fileAudio.getnames()[0])
+                    print('9', new_audio_file['audiofile'], type(new_audio_file['audiofile']))
+                    audiodetails.saveaudiofiles(mongo,
                             projects,
                             userprojects,
                             transcriptions,
@@ -524,96 +642,9 @@ def fetch_karya_audio():
                             current_username,
                             speakerId,
                             new_audio_file,
-                            karyainfo=jsondata,
+                            karyainfo=r_j,
                             karya_peaker_id=speakerId)
-
-     
-
-        return redirect(url_for('karya_bp.home_insert'))
-
-###################################################################################
-##############################  API Fetch Audio   #################################
-###################################################################################
-    '''worker ID'''
-    # list_workerID = []
-    # getWorker_id = r_j['microtasks']
-    # for findWorker_id in getWorker_id:
-    #     workerid = findWorker_id["input"]["chain"]
-    #     worker_id = workerid["workerId"]
-    #     tt = list_workerID.append[worker_id]
-    # print(list_workerID)  
-    workerId_list = []
-    for micro_metadata in r_j["microtasks"]:
-        sentences = micro_metadata["input"]["data"]
-        findWorker_id = micro_metadata["input"]["chain"]
-        worker_id = findWorker_id["workerId"]
-        workerId_list.append(worker_id)
-    # print(workerId_list)
-        
-    sentence = []
-    for micro_metadata in r_j["microtasks"]:
-        sentences = micro_metadata["input"]["data"]
-        sentence.append(sentences)
-###################################################################
-    id_find = r_j['assignments']
-    speakerID = [item['id'] for item in id_find] #new_dict
-    # print(len(new_dict))
-
-###################################################################
-    # res = {workerId_list: new_dict}
-    # print(res)
-    # res = dict(zip(workerId_list, new_dict))
-    # print(res)
-    audio_speaker_merge = {key:value for key, value in zip(speakerID , workerId_list)}
-    # print(audio_speaker_merge)
-    # print(audio_speaker_merge.keys())
-
-    hederr= {'karya-id-token':'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImExNWE0MGQ0In0.eyJzdWIiOiIxNjc3NzIzNSIsImVudGl0eSI6IndvcmtlciIsImlhdCI6MTY2MzU5MDA2NiwiZXhwIjoxNjY2MTgyMDY2LCJhdWQiOiJrYXJ5YS1zZXJ2ZXIiLCJpc3MiOiJrYXJ5YS1zZXJ2ZXIifQ.UGpR4dGasm-FQNjHMHT3Ivx3-noKAF-R04vdFOAXJiE'}
-
-    rl = 'https://karyanltmbox.centralindia.cloudapp.azure.com/assignment/id/input_file'
-    for new_d in audio_speaker_merge.keys():
-        new_url = rl.replace("id", new_d )
-        # print(new_url)
-        ra = requests.get(url = new_url, headers = hederr)
-        print(type(ra))
-        filebytes= ra.content
-        print(type(filebytes))
-
-        projects, userprojects, transcriptions = getdbcollections.getdbcollections(mongo, 'projects', 'userprojects', 'transcriptions')
-        
-        current_username = getcurrentusername.getcurrentusername()
-        activeprojectname = getactiveprojectname.getactiveprojectname(current_username, userprojects)
-        projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
-        
-        speakerId = audio_speaker_merge[new_d]
-
-        #####################################################
-        '''DATA'''
-        # print("###################################\n",filebytes.getmembers())
-        ''' zip_path = ""
-                with BytesIO(gzip.decompress(zip_path)) as zp:
-                '''
-   
-    
-
-        with BytesIO(gzip.decompress(filebytes)) as fh: #1
-            fileAudio = tarfile.TarFile(fileobj=fh) #2
-            print('1', type(fileAudio))
-            print('2', fileAudio.getnames()) #3
-            print('3', fileAudio.getmembers()) #4
-            for member in fileAudio.getmembers(): 
-                f=fileAudio.extractfile(member)
-                content=f.read()
-                print('4', type(member))
-                print('5', type(content))
-                print ('6', member, content.count)
-                print ('7', member, content.count)
-                print ('8', member, len(content))
-                # mongo.save_file(fileAudio.getnames()[0], io.BytesIO(content), audioID='1234567890')
-                new_audio_file = {}
-                new_audio_file['audiofile'] = FileStorage(io.BytesIO(content), filename =  fileAudio.getnames()[0])
-                print('9', new_audio_file['audiofile'], type(new_audio_file['audiofile']))
-              
+                
         return redirect(url_for('karya_bp.home_insert'))
 
     return render_template("fetch_karya_audio.html")

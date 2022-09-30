@@ -1,6 +1,16 @@
 <!DOCTYPE html>
 <html>
 
+<head>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
+  <script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap.min.js"></script>  
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css" />
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.1/bootstrap3-editable/css/bootstrap-editable.css" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.1/bootstrap3-editable/js/bootstrap-editable.js"></script>
+
   <style>
   
     h1 {text-align: center;}
@@ -16,7 +26,33 @@
     }
     </style>
   
+</head>
+
+  
 <body>
+  <script>
+    $(document).ready(function() {
+                $('#getotpid').click(function() {
+                  // alert('Clicked')
+                  var acode = document.getElementById("piaccesscode").value;
+                  var mob = document.getElementById("pimobilenumber").value;
+                  console.log(acode)
+                  console.log(mob)
+                  $.getJSON("{{url_for('karya_bp.fetch_karya_otp')}}", {
+                    acode:String(acode), mob:String(mob)
+                    }, function(data) {
+                      console.log(data)
+                      // alert('DOne!')
+                      console.log(document.getElementById("getotpid").hidden);
+                      document.getElementById("getotpid").hidden=true;
+                      document.getElementById("fetchaudioid").hidden=false;
+                      document.getElementById("karyaotp").hidden=false;
+                    });
+                    return false;
+                });
+              })
+
+  </script>
   <div>
   <meta name="viewport" content="width=device-width, initial-scale=1">  
   <title>Save form Data in a Text File using JavaScript</title>
@@ -35,7 +71,21 @@
 <br><br><br><br><br>
 
 <h2>Fetch Audio File</h2>
-<input type="button" value="Fetch/upload Audio" onclick="window.location.href='{{url_for('karya_bp.fetch_karya_audio')}}'; window"> <br>
+
+<form name="fetchdata" method="POST" action="{{url_for('karya_bp.fetch_karya_audio')}}">
+
+<input type="text" name="access_code" id="piaccesscode" />
+<input type="number" name = "mobile_number" id="pimobilenumber" />
+
+<input type="button" id="getotpid" value="Get OTP"> <br>
+
+<h3>Enter OTP</h3>
+<input type = "text" name = "karya_otp" id="karyaotp" hidden/>
+
+<input type="submit" id="fetchaudioid" value="Fetch Audio" hidden> <br>
+
+</form>
+
 <form action="{{ url_for('karya_bp.fetch_karya_audio') }}" method="POST" enctype="multipart/form-data">
 
   <!-- <h2>Fetch access code with metadata</h2>
