@@ -43,7 +43,7 @@ from app.controller import getprojectowner, getactiveprojectform, savenewsentenc
 from app.controller import readJSONFile, createdummylexemeentry, getactivespeakerid
 from app.controller import savenewproject, updateuserprojects, savenewprojectform
 from app.controller import audiodetails, getcurrentusername, getcommentstats
-from app.controller import unannotatedfilename
+from app.controller import unannotatedfilename, getsharinginfo
 import shutil, traceback
 
 
@@ -66,11 +66,13 @@ def home():
                                 userprojects)
     activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username,
                             userprojects)
+    shareinfo = getsharinginfo.getsharinginfo(userprojects, current_user.username, activeprojectname)
+    # print(shareinfo)
 
     return render_template('home.html',
                             data=currentuserprojectsname,
-                            activeproject=activeprojectname)
-
+                            activeproject=activeprojectname,
+                            shareinfo=shareinfo)
 
 # new project route
 # create lexeme entry form for the new project
@@ -127,6 +129,8 @@ def enternewsentences():
                                 userprojects)
     activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username,
                             userprojects)
+    shareinfo = getsharinginfo.getsharinginfo(userprojects, current_user.username, activeprojectname)
+
     if (activeprojectname == ''):
         flash(f"select a project from 'All Projects' to work on!")
         return redirect(url_for('home'))
@@ -200,7 +204,8 @@ def enternewsentences():
                                     data=currentuserprojectsname,
                                     speakerids=speakerids,
                                     activespeakerid=activespeakerid,
-                                    commentstats=commentstats)
+                                    commentstats=commentstats,
+                                    shareinfo=shareinfo)
         except Exception as e:
             traceback.print_exc()
             flash('Upload first audio file.')
@@ -2697,6 +2702,8 @@ def userslist():
     try:                                                                            
         activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username,
                                 userprojects)
+        shareinfo = getsharinginfo.getsharinginfo(userprojects, current_user.username, activeprojectname)
+        sharemode = shareinfo['sharemode']
 
         usersList = []
         speakersList = []
@@ -2714,7 +2721,9 @@ def userslist():
         # return redirect(url_for('home'))
         pass
 
-    return jsonify(usersList=sorted(usersList), speakersList=sorted(speakersList))
+    return jsonify(usersList=sorted(usersList),
+                    speakersList=sorted(speakersList),
+                    sharemode=sharemode)
 
 # modal view with complete detail of a lexeme for edit
 # edit button on dictionary view table
@@ -2734,9 +2743,12 @@ def shareprojectwith():
     # print(type(users))
     speakers = data['sharespeakers']
     sharemode = data['sharemode']
+    print(sharemode)
+    if (sharemode == ''):
+        sharemode = 0
     sharechecked = str(data['sharechecked'])
     print('123', users, speakers, sharemode, sharechecked)
-    print('456', speakers[-1])
+    # print('456', speakers[-1])
     
     if (len(users) != 0):
         for user in users:
@@ -2754,18 +2766,19 @@ def shareprojectwith():
                                                 'sharedwith': 1,
                                                 'lastActiveId': 1,
                                                 'speakerIds': 1})
-            print(projectdetails)
+            # print(projectdetails)
             projectdetails['sharedwith'].append(user)
             # print(projectdetails)
             # update list of projects shared with the user in collection
             userprojects.update_one({ 'username' : user },
-                                    { '$set': { 'projectsharedwithme' : usershareprojectsname,
-                                          'activespeakerId': speakers[-1]}})
+                                    { '$set': { 'projectsharedwithme' : usershareprojectsname}})
             projects.update_one({'projectname': activeprojectname},
-                                {'$set': {'sharedwith': projectdetails['sharedwith']}})
+                                {'$set': {'sharedwith': list(set(projectdetails['sharedwith']))}})
             
             if (len(speakers) != 0):
                 # projectdetails['speakerIds'][user] = speakers
+                userprojects.update_one({ 'username' : user },
+                                    { '$set': { 'activespeakerId': speakers[-1] }})
                 projects.update_one({'projectname': activeprojectname},
                                 {'$set': {'speakerIds.'+user: speakers}})
                 for speaker in speakers:
@@ -2781,7 +2794,10 @@ def shareprojectwith():
 
                     #     projects.update_one({'projectname': activeprojectname},
                     #             {'$set': {'lastActiveId.'+user: userdict}})
-            # print(projectdetails)       
+            # print(projectdetails)
+            else:
+                projects.update_one({'projectname': activeprojectname},
+                                {'$set': {'lastActiveId.'+user: {}}})
 
     
     return 'OK'
@@ -3232,7 +3248,7 @@ def deletemultiplelexemes():
 # save active project name for active user
 @app.route('/activeprojectname', methods=['GET', 'POST'])
 def activeprojectname():
-    userprojects = mongo.db.userprojects                # collection containing username and his/her last seen project name
+    userprojects, = getdbcollections.getdbcollections(mongo, 'userprojects')
     
     projectname = str(request.args.get('a'))            # data through ajax
 
@@ -3241,8 +3257,9 @@ def activeprojectname():
     # else:
     #     activeprojectnames.update_one({ 'username' : current_user.username }, {'$set' : { 'projectname' : projectname }})
 
-    userprojects.update_one({ 'username' : current_user.username }, \
+    userprojects.update_one({ 'username' : current_user.username },
             { '$set' : { 'activeprojectname' :  projectname}})
+
     return 'OK'
 
 
@@ -3321,8 +3338,17 @@ def dummyUserandProject():
     userprojects = mongo.db.userprojects                # collection of users and their projectlist and active project
     projects = mongo.db.projects                        # collection containing projects name
     if len(mongo.db.list_collection_names()) == 0:
-        userprojects.insert({'username' : "dummyUser", 'myproject': ["dummyProject1"], \
-            'projectsharedwithme': [], 'activeprojectname' : "dummyActiveProject"})
+        userprojects.insert({'username' : "dummyUser",
+                            'myproject': 
+                                {"dummyProject1": 
+                                    {
+                                        'sharemode': 0,
+                                        'sharechecked': "false"
+                                    }
+                                },
+                            'projectsharedwithme': {},
+                            'activeprojectname' : "dummyActiveProject"
+                            })
         projects.insert({"projectname": "dummyProject1",
                         "projectOwner" : "dummyUser",
                         "lexemeInserted" : 0,
