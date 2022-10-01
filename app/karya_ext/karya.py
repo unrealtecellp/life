@@ -24,14 +24,10 @@ from app.controller import audiodetails
 # from app.models import UserLogin
 import pandas as pd
 from flask_login import current_user, login_user, logout_user, login_required
-from io import StringIO
 import re
 from flask import Flask, render_template, request
-from werkzeug.utils import secure_filename
 from werkzeug.datastructures import FileStorage
 
-from app.routes import activeprojectname
-import wave
 from zipfile import ZipFile
 
 #############################################################################
@@ -56,11 +52,6 @@ def home_insert():
 ##################################################################################
 #########################################################################################################
 ##################################################################################
-import gridfs
-import os
-import glob
-from pathlib import Path
-import sys
 import requests
 import gzip
 import tarfile
@@ -70,16 +61,10 @@ import gzip
 import tarfile
 from io import BytesIO
 import io
-import numpy as np
-import scipy.io.wavfile
-import soundfile as sf
-from pymongo import MongoClient
 import requests
 from io import BytesIO
-from scipy.io.wavfile import read, write
 import json
 import os
-import zipfile
 
 
 
