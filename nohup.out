@@ -1,0 +1,716 @@
+ * Serving Flask app 'project.py' (lazy loading)
+ * Environment: production
+   WARNING: This is a development server. Do not use it in a production deployment.
+   Use a production WSGI server instead.
+ * Debug mode: on
+ * Running on all addresses.
+   WARNING: This is a development server. Do not use it in a production deployment.
+ * Running on http://10.145.73.130:5000/ (Press CTRL+C to quit)
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 134-281-328
+10.145.41.149 - - [30/Sep/2022 23:25:53] "GET /login?next=%2Fhome HTTP/1.1" 200 -
+10.145.41.149 - - [30/Sep/2022 23:25:53] "GET /static/changeactiveproject.js HTTP/1.1" 200 -
+10.145.41.149 - - [30/Sep/2022 23:25:54] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+10.145.41.149 - - [30/Sep/2022 23:25:58] "GET /login?next=%2Fhome HTTP/1.1" 200 -
+10.145.41.149 - - [30/Sep/2022 23:25:58] "[36mGET /static/changeactiveproject.js HTTP/1.1[0m" 304 -
+10.145.92.147 - - [30/Sep/2022 23:26:11] "GET /login?next=%2Fhome HTTP/1.1" 200 -
+10.145.92.147 - - [30/Sep/2022 23:26:11] "GET /static/changeactiveproject.js HTTP/1.1" 200 -
+10.145.92.147 - - [30/Sep/2022 23:26:12] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+10.145.41.149 - - [30/Sep/2022 23:26:41] "[32mPOST /login?next=%2Fhome HTTP/1.1[0m" 302 -
+10.145.41.149 - - [30/Sep/2022 23:26:41] "GET /login HTTP/1.1" 200 -
+10.145.41.149 - - [30/Sep/2022 23:26:41] "[36mGET /static/changeactiveproject.js HTTP/1.1[0m" 304 -
+10.145.96.232 - - [30/Sep/2022 23:26:45] "GET /login?next=%2Fhome HTTP/1.1" 200 -
+10.145.96.232 - - [30/Sep/2022 23:26:45] "GET /static/changeactiveproject.js HTTP/1.1" 200 -
+10.145.96.232 - - [30/Sep/2022 23:26:45] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+10.145.96.232 - - [30/Sep/2022 23:27:05] "GET /register HTTP/1.1" 200 -
+10.145.96.232 - - [30/Sep/2022 23:27:05] "[36mGET /static/changeactiveproject.js HTTP/1.1[0m" 304 -
+10.145.92.147 - - [30/Sep/2022 23:27:15] "GET /register HTTP/1.1" 200 -
+10.145.92.147 - - [30/Sep/2022 23:27:15] "[36mGET /static/changeactiveproject.js HTTP/1.1[0m" 304 -
+10.145.92.147 - - [30/Sep/2022 23:27:33] "[32mPOST /register HTTP/1.1[0m" 302 -
+10.145.92.147 - - [30/Sep/2022 23:27:33] "GET /login HTTP/1.1" 200 -
+10.145.92.147 - - [30/Sep/2022 23:27:34] "[36mGET /static/changeactiveproject.js HTTP/1.1[0m" 304 -
+10.145.41.149 - - [30/Sep/2022 23:27:39] "GET /login?next=%2Fhome HTTP/1.1" 200 -
+10.145.41.149 - - [30/Sep/2022 23:27:39] "[36mGET /static/changeactiveproject.js HTTP/1.1[0m" 304 -
+10.145.92.147 - - [30/Sep/2022 23:27:44] "[32mPOST /login HTTP/1.1[0m" 302 -
+10.145.92.147 - - [30/Sep/2022 23:27:45] "GET /home HTTP/1.1" 200 -
+10.145.92.147 - - [30/Sep/2022 23:27:45] "GET /static/home.css HTTP/1.1" 200 -
+10.145.92.147 - - [30/Sep/2022 23:27:45] "GET /static/shareproject.js HTTP/1.1" 200 -
+10.145.92.147 - - [30/Sep/2022 23:27:45] "GET /static/assignkaryaaccesscode.js HTTP/1.1" 200 -
+10.145.92.147 - - [30/Sep/2022 23:27:45] "[36mGET /static/changeactiveproject.js HTTP/1.1[0m" 304 -
+10.145.92.147 - - [30/Sep/2022 23:27:45] "GET /static/home.js HTTP/1.1" 200 -
+10.145.92.147 - - [30/Sep/2022 23:27:45] "GET /static/shareprojectwith.js HTTP/1.1" 200 -
+10.145.92.147 - - [30/Sep/2022 23:27:45] "GET /static/sharemode.js HTTP/1.1" 200 -
+10.145.92.147 - - [30/Sep/2022 23:27:45] "GET /userslist HTTP/1.1" 200 -
+10.145.92.147 - - [30/Sep/2022 23:27:45] "[32mGET /assignkaryaaccesscode HTTP/1.1[0m" 302 -
+10.145.92.147 - - [30/Sep/2022 23:27:45] "GET /home HTTP/1.1" 200 -
+ * Serving Flask app 'project.py' (lazy loading)
+ * Environment: production
+   WARNING: This is a development server. Do not use it in a production deployment.
+   Use a production WSGI server instead.
+ * Debug mode: on
+################################################################################Base directory:
+/home/kmi/Documents/lifetestapp/app
+################################################################################
+Traceback (most recent call last):
+  File "/home/kmi/Documents/lifetestapp/venv/bin/flask", line 8, in <module>
+    sys.exit(main())
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask/cli.py", line 994, in main
+    cli.main(args=sys.argv[1:])
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask/cli.py", line 600, in main
+    return super().main(*args, **kwargs)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/click/core.py", line 1053, in main
+    rv = self.invoke(ctx)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/click/core.py", line 1659, in invoke
+    return _process_result(sub_ctx.command.invoke(sub_ctx))
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/click/core.py", line 1395, in invoke
+    return ctx.invoke(self.callback, **ctx.params)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/click/core.py", line 754, in invoke
+    return __callback(*args, **kwargs)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/click/decorators.py", line 84, in new_func
+    return ctx.invoke(f, obj, *args, **kwargs)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/click/core.py", line 754, in invoke
+    return __callback(*args, **kwargs)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask/cli.py", line 853, in run_command
+    run_simple(
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/serving.py", line 984, in run_simple
+    s.bind(server_address)
+OSError: [Errno 98] Address already in use
+10.145.92.147 - - [30/Sep/2022 23:31:59] "GET /home HTTP/1.1" 200 -
+10.145.92.147 - - [30/Sep/2022 23:31:59] "[36mGET /static/changeactiveproject.js HTTP/1.1[0m" 304 -
+10.145.92.147 - - [30/Sep/2022 23:31:59] "[36mGET /static/sharemode.js HTTP/1.1[0m" 304 -
+10.145.92.147 - - [30/Sep/2022 23:31:59] "[36mGET /static/shareproject.js HTTP/1.1[0m" 304 -
+10.145.92.147 - - [30/Sep/2022 23:31:59] "[36mGET /static/home.js HTTP/1.1[0m" 304 -
+10.145.92.147 - - [30/Sep/2022 23:31:59] "[36mGET /static/shareprojectwith.js HTTP/1.1[0m" 304 -
+10.145.92.147 - - [30/Sep/2022 23:31:59] "[36mGET /static/assignkaryaaccesscode.js HTTP/1.1[0m" 304 -
+10.145.92.147 - - [30/Sep/2022 23:31:59] "[36mGET /static/home.css HTTP/1.1[0m" 304 -
+10.145.92.147 - - [30/Sep/2022 23:31:59] "[32mGET /assignkaryaaccesscode HTTP/1.1[0m" 302 -
+10.145.92.147 - - [30/Sep/2022 23:31:59] "GET /userslist HTTP/1.1" 200 -
+10.145.92.147 - - [30/Sep/2022 23:32:00] "GET /home HTTP/1.1" 200 -
+10.145.116.64 - - [30/Sep/2022 23:35:04] "GET /login?next=%2Fhome HTTP/1.1" 200 -
+10.145.116.64 - - [30/Sep/2022 23:35:04] "GET /static/changeactiveproject.js HTTP/1.1" 200 -
+10.145.116.64 - - [30/Sep/2022 23:35:04] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+10.145.116.64 - - [30/Sep/2022 23:35:09] "GET /register HTTP/1.1" 200 -
+10.145.116.64 - - [30/Sep/2022 23:35:09] "[36mGET /static/changeactiveproject.js HTTP/1.1[0m" 304 -
+10.145.116.64 - - [30/Sep/2022 23:35:47] "GET /login?next=%2Fhome HTTP/1.1" 200 -
+10.145.116.64 - - [30/Sep/2022 23:35:47] "GET /static/changeactiveproject.js HTTP/1.1" 200 -
+10.145.116.64 - - [30/Sep/2022 23:35:47] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+10.145.116.64 - - [30/Sep/2022 23:35:53] "GET /register HTTP/1.1" 200 -
+10.145.116.64 - - [30/Sep/2022 23:35:53] "[36mGET /static/changeactiveproject.js HTTP/1.1[0m" 304 -
+10.145.116.64 - - [30/Sep/2022 23:36:05] "[32mPOST /register HTTP/1.1[0m" 302 -
+10.145.116.64 - - [30/Sep/2022 23:36:05] "GET /login HTTP/1.1" 200 -
+10.145.116.64 - - [30/Sep/2022 23:36:05] "[36mGET /static/changeactiveproject.js HTTP/1.1[0m" 304 -
+10.145.116.64 - - [30/Sep/2022 23:36:17] "[32mPOST /login HTTP/1.1[0m" 302 -
+10.145.116.64 - - [30/Sep/2022 23:36:17] "GET /home HTTP/1.1" 200 -
+10.145.116.64 - - [30/Sep/2022 23:36:17] "GET /static/home.css HTTP/1.1" 200 -
+10.145.116.64 - - [30/Sep/2022 23:36:17] "[36mGET /static/changeactiveproject.js HTTP/1.1[0m" 304 -
+10.145.116.64 - - [30/Sep/2022 23:36:17] "GET /static/shareproject.js HTTP/1.1" 200 -
+10.145.116.64 - - [30/Sep/2022 23:36:17] "GET /static/shareprojectwith.js HTTP/1.1" 200 -
+10.145.116.64 - - [30/Sep/2022 23:36:17] "GET /static/assignkaryaaccesscode.js HTTP/1.1" 200 -
+10.145.116.64 - - [30/Sep/2022 23:36:17] "GET /static/sharemode.js HTTP/1.1" 200 -
+10.145.116.64 - - [30/Sep/2022 23:36:17] "GET /static/home.js HTTP/1.1" 200 -
+10.145.116.64 - - [30/Sep/2022 23:36:17] "[32mGET /assignkaryaaccesscode HTTP/1.1[0m" 302 -
+10.145.116.64 - - [30/Sep/2022 23:36:17] "GET /userslist HTTP/1.1" 200 -
+10.145.116.64 - - [30/Sep/2022 23:36:17] "GET /home HTTP/1.1" 200 -
+10.145.116.64 - - [30/Sep/2022 23:36:19] "GET /newproject HTTP/1.1" 200 -
+10.145.116.64 - - [30/Sep/2022 23:36:19] "[36mGET /static/changeactiveproject.js HTTP/1.1[0m" 304 -
+10.145.116.64 - - [30/Sep/2022 23:36:19] "GET /static/newproject.css HTTP/1.1" 200 -
+10.145.116.64 - - [30/Sep/2022 23:36:19] "GET /static/newproject.js HTTP/1.1" 200 -
+10.145.116.64 - - [30/Sep/2022 23:37:56] "GET /login?next=%2Fhome HTTP/1.1" 200 -
+10.145.116.64 - - [30/Sep/2022 23:37:56] "[36mGET /static/changeactiveproject.js HTTP/1.1[0m" 304 -
+10.145.116.64 - - [30/Sep/2022 23:39:00] "GET /karyaext/home_insert HTTP/1.1" 200 -
+10.145.116.64 - - [30/Sep/2022 23:39:01] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+127.0.0.1 - - [30/Sep/2022 23:39:26] "GET /karyaext/home_insert HTTP/1.1" 200 -
+10.145.92.147 - - [30/Sep/2022 23:40:26] "GET /newproject HTTP/1.1" 200 -
+10.145.92.147 - - [30/Sep/2022 23:40:26] "GET /static/newproject.css HTTP/1.1" 200 -
+10.145.92.147 - - [30/Sep/2022 23:40:26] "GET /static/newproject.js HTTP/1.1" 200 -
+10.145.92.147 - - [30/Sep/2022 23:40:26] "[36mGET /static/changeactiveproject.js HTTP/1.1[0m" 304 -
+10.145.92.147 - - [30/Sep/2022 23:42:10] "[32mPOST /newproject HTTP/1.1[0m" 302 -
+10.145.92.147 - - [30/Sep/2022 23:42:10] "GET /home HTTP/1.1" 200 -
+10.145.92.147 - - [30/Sep/2022 23:42:10] "[36mGET /static/changeactiveproject.js HTTP/1.1[0m" 304 -
+10.145.92.147 - - [30/Sep/2022 23:42:10] "[36mGET /static/home.css HTTP/1.1[0m" 304 -
+10.145.92.147 - - [30/Sep/2022 23:42:10] "[36mGET /static/assignkaryaaccesscode.js HTTP/1.1[0m" 304 -
+10.145.92.147 - - [30/Sep/2022 23:42:10] "[36mGET /static/shareproject.js HTTP/1.1[0m" 304 -
+10.145.92.147 - - [30/Sep/2022 23:42:10] "[36mGET /static/sharemode.js HTTP/1.1[0m" 304 -
+10.145.92.147 - - [30/Sep/2022 23:42:10] "[36mGET /static/shareprojectwith.js HTTP/1.1[0m" 304 -
+10.145.92.147 - - [30/Sep/2022 23:42:10] "[36mGET /static/home.js HTTP/1.1[0m" 304 -
+10.145.92.147 - - [30/Sep/2022 23:42:10] "[32mGET /assignkaryaaccesscode HTTP/1.1[0m" 302 -
+10.145.92.147 - - [30/Sep/2022 23:42:10] "GET /userslist HTTP/1.1" 200 -
+10.145.92.147 - - [30/Sep/2022 23:42:10] "GET /home HTTP/1.1" 200 -
+10.145.92.147 - - [30/Sep/2022 23:42:18] "GET /enternewsentences HTTP/1.1" 200 -
+10.145.92.147 - - [30/Sep/2022 23:42:18] "GET /static/enternewsentences.css HTTP/1.1" 200 -
+10.145.92.147 - - [30/Sep/2022 23:42:18] "GET /static/audiotranscription.css HTTP/1.1" 200 -
+10.145.92.147 - - [30/Sep/2022 23:42:18] "[36mGET /static/changeactiveproject.js HTTP/1.1[0m" 304 -
+10.145.92.147 - - [30/Sep/2022 23:42:18] "GET /static/enternewsentences.js HTTP/1.1" 200 -
+10.145.92.147 - - [30/Sep/2022 23:42:18] "GET /static/audiotranscription.js HTTP/1.1" 200 -
+10.145.92.147 - - [30/Sep/2022 23:42:18] "GET /static/changeactivespeaker.js HTTP/1.1" 200 -
+10.145.92.147 - - [30/Sep/2022 23:42:28] "GET /home HTTP/1.1" 200 -
+10.145.92.147 - - [30/Sep/2022 23:42:28] "[36mGET /static/shareproject.js HTTP/1.1[0m" 304 -
+10.145.92.147 - - [30/Sep/2022 23:42:28] "[36mGET /static/changeactiveproject.js HTTP/1.1[0m" 304 -
+10.145.92.147 - - [30/Sep/2022 23:42:28] "[36mGET /static/sharemode.js HTTP/1.1[0m" 304 -
+10.145.92.147 - - [30/Sep/2022 23:42:28] "[36mGET /static/assignkaryaaccesscode.js HTTP/1.1[0m" 304 -
+10.145.92.147 - - [30/Sep/2022 23:42:28] "[36mGET /static/home.js HTTP/1.1[0m" 304 -
+10.145.92.147 - - [30/Sep/2022 23:42:28] "[36mGET /static/shareprojectwith.js HTTP/1.1[0m" 304 -
+10.145.92.147 - - [30/Sep/2022 23:42:28] "[36mGET /static/home.css HTTP/1.1[0m" 304 -
+10.145.92.147 - - [30/Sep/2022 23:42:28] "GET /userslist HTTP/1.1" 200 -
+10.145.92.147 - - [30/Sep/2022 23:42:28] "[32mGET /assignkaryaaccesscode HTTP/1.1[0m" 302 -
+10.145.92.147 - - [30/Sep/2022 23:42:29] "GET /home HTTP/1.1" 200 -
+10.145.92.147 - - [30/Sep/2022 23:42:58] "GET /karyaext/home_insert HTTP/1.1" 200 -
+10.148.4.45 - - [30/Sep/2022 23:51:58] "GET /login?next=%2Fhome HTTP/1.1" 200 -
+10.148.4.45 - - [30/Sep/2022 23:51:58] "GET /static/changeactiveproject.js HTTP/1.1" 200 -
+10.148.4.45 - - [30/Sep/2022 23:51:59] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+10.148.4.45 - - [30/Sep/2022 23:52:03] "GET /register HTTP/1.1" 200 -
+10.148.4.45 - - [30/Sep/2022 23:52:04] "[36mGET /static/changeactiveproject.js HTTP/1.1[0m" 304 -
+10.148.4.171 - - [30/Sep/2022 23:52:19] "GET /login?next=%2Fhome HTTP/1.1" 200 -
+10.148.4.171 - - [30/Sep/2022 23:52:20] "GET /static/changeactiveproject.js HTTP/1.1" 200 -
+10.148.4.171 - - [30/Sep/2022 23:52:20] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+10.148.4.45 - - [30/Sep/2022 23:52:32] "[32mPOST /register HTTP/1.1[0m" 302 -
+10.148.4.45 - - [30/Sep/2022 23:52:32] "GET /login HTTP/1.1" 200 -
+10.148.4.45 - - [30/Sep/2022 23:52:32] "[36mGET /static/changeactiveproject.js HTTP/1.1[0m" 304 -
+10.148.4.45 - - [30/Sep/2022 23:52:43] "[32mPOST /login HTTP/1.1[0m" 302 -
+10.148.4.45 - - [30/Sep/2022 23:52:43] "GET /home HTTP/1.1" 200 -
+10.148.4.45 - - [30/Sep/2022 23:52:43] "GET /static/home.css HTTP/1.1" 200 -
+10.148.4.45 - - [30/Sep/2022 23:52:43] "GET /static/shareproject.js HTTP/1.1" 200 -
+10.148.4.45 - - [30/Sep/2022 23:52:43] "GET /static/assignkaryaaccesscode.js HTTP/1.1" 200 -
+10.148.4.45 - - [30/Sep/2022 23:52:43] "[36mGET /static/changeactiveproject.js HTTP/1.1[0m" 304 -
+10.148.4.45 - - [30/Sep/2022 23:52:43] "GET /static/shareprojectwith.js HTTP/1.1" 200 -
+10.148.4.45 - - [30/Sep/2022 23:52:43] "GET /static/home.js HTTP/1.1" 200 -
+10.148.4.45 - - [30/Sep/2022 23:52:43] "GET /static/sharemode.js HTTP/1.1" 200 -
+10.148.4.45 - - [30/Sep/2022 23:52:43] "[32mGET /assignkaryaaccesscode HTTP/1.1[0m" 302 -
+10.148.4.45 - - [30/Sep/2022 23:52:43] "GET /userslist HTTP/1.1" 200 -
+10.148.4.45 - - [30/Sep/2022 23:52:43] "GET /home HTTP/1.1" 200 -
+10.148.4.45 - - [30/Sep/2022 23:52:46] "GET /newproject HTTP/1.1" 200 -
+10.148.4.45 - - [30/Sep/2022 23:52:46] "GET /static/newproject.css HTTP/1.1" 200 -
+10.148.4.45 - - [30/Sep/2022 23:52:46] "GET /static/newproject.js HTTP/1.1" 200 -
+10.148.4.45 - - [30/Sep/2022 23:52:46] "[36mGET /static/changeactiveproject.js HTTP/1.1[0m" 304 -
+10.145.92.147 - - [30/Sep/2022 23:52:57] "GET /karyaext/home_insert HTTP/1.1" 200 -
+10.148.4.171 - - [30/Sep/2022 23:52:59] "[32mPOST /login?next=%2Fhome HTTP/1.1[0m" 302 -
+10.145.92.147 - - [30/Sep/2022 23:52:59] "GET /karyaext/uploadfile HTTP/1.1" 200 -
+10.148.4.171 - - [30/Sep/2022 23:53:00] "GET /login HTTP/1.1" 200 -
+10.148.4.171 - - [30/Sep/2022 23:53:00] "[36mGET /static/changeactiveproject.js HTTP/1.1[0m" 304 -
+10.148.4.171 - - [30/Sep/2022 23:53:06] "GET /register HTTP/1.1" 200 -
+10.148.4.171 - - [30/Sep/2022 23:53:06] "[36mGET /static/changeactiveproject.js HTTP/1.1[0m" 304 -
+10.148.4.171 - - [30/Sep/2022 23:53:31] "[32mPOST /register HTTP/1.1[0m" 302 -
+10.148.4.171 - - [30/Sep/2022 23:53:31] "GET /login HTTP/1.1" 200 -
+10.148.4.171 - - [30/Sep/2022 23:53:31] "[36mGET /static/changeactiveproject.js HTTP/1.1[0m" 304 -
+10.148.4.171 - - [30/Sep/2022 23:54:15] "[32mPOST /login HTTP/1.1[0m" 302 -
+10.148.4.171 - - [30/Sep/2022 23:54:15] "GET /home HTTP/1.1" 200 -
+10.148.4.171 - - [30/Sep/2022 23:54:15] "GET /static/home.css HTTP/1.1" 200 -
+10.148.4.171 - - [30/Sep/2022 23:54:15] "[36mGET /static/changeactiveproject.js HTTP/1.1[0m" 304 -
+10.148.4.171 - - [30/Sep/2022 23:54:15] "GET /static/sharemode.js HTTP/1.1" 200 -
+10.148.4.171 - - [30/Sep/2022 23:54:15] "GET /static/assignkaryaaccesscode.js HTTP/1.1" 200 -
+10.148.4.171 - - [30/Sep/2022 23:54:15] "GET /static/shareproject.js HTTP/1.1" 200 -
+10.148.4.171 - - [30/Sep/2022 23:54:15] "GET /static/shareprojectwith.js HTTP/1.1" 200 -
+10.148.4.171 - - [30/Sep/2022 23:54:15] "GET /static/home.js HTTP/1.1" 200 -
+10.148.4.171 - - [30/Sep/2022 23:54:16] "GET /userslist HTTP/1.1" 200 -
+10.148.4.171 - - [30/Sep/2022 23:54:16] "[32mGET /assignkaryaaccesscode HTTP/1.1[0m" 302 -
+10.148.4.171 - - [30/Sep/2022 23:54:16] "GET /home HTTP/1.1" 200 -
+10.148.4.171 - - [30/Sep/2022 23:54:31] "GET /newproject HTTP/1.1" 200 -
+10.148.4.171 - - [30/Sep/2022 23:54:31] "GET /static/newproject.css HTTP/1.1" 200 -
+10.148.4.171 - - [30/Sep/2022 23:54:31] "[36mGET /static/changeactiveproject.js HTTP/1.1[0m" 304 -
+10.148.4.171 - - [30/Sep/2022 23:54:31] "GET /static/newproject.js HTTP/1.1" 200 -
+10.148.4.45 - - [30/Sep/2022 23:54:39] "GET /newproject HTTP/1.1" 200 -
+10.148.4.45 - - [30/Sep/2022 23:54:39] "[36mGET /static/newproject.css HTTP/1.1[0m" 304 -
+10.148.4.45 - - [30/Sep/2022 23:54:39] "[36mGET /static/changeactiveproject.js HTTP/1.1[0m" 304 -
+10.148.4.45 - - [30/Sep/2022 23:54:39] "[36mGET /static/newproject.js HTTP/1.1[0m" 304 -
+10.148.4.45 - - [30/Sep/2022 23:55:43] "[32mGET /login HTTP/1.1[0m" 302 -
+10.148.4.45 - - [30/Sep/2022 23:55:58] "[32mGET /register HTTP/1.1[0m" 302 -
+10.145.126.251 - - [30/Sep/2022 23:55:58] "GET /login?next=%2Fhome HTTP/1.1" 200 -
+10.145.126.251 - - [30/Sep/2022 23:55:59] "GET /static/changeactiveproject.js HTTP/1.1" 200 -
+10.145.126.251 - - [30/Sep/2022 23:55:59] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+10.148.4.45 - - [30/Sep/2022 23:55:59] "[32mGET /login?next=%2Fhome HTTP/1.1[0m" 302 -
+10.148.4.45 - - [30/Sep/2022 23:56:35] "[32mGET /login?next=%2Fhome HTTP/1.1[0m" 302 -
+10.148.4.45 - - [30/Sep/2022 23:56:35] "GET /home HTTP/1.1" 200 -
+10.148.4.45 - - [30/Sep/2022 23:56:35] "[36mGET /static/home.css HTTP/1.1[0m" 304 -
+10.148.4.45 - - [30/Sep/2022 23:56:35] "[36mGET /static/shareproject.js HTTP/1.1[0m" 304 -
+10.148.4.45 - - [30/Sep/2022 23:56:35] "[36mGET /static/assignkaryaaccesscode.js HTTP/1.1[0m" 304 -
+10.148.4.45 - - [30/Sep/2022 23:56:35] "[36mGET /static/changeactiveproject.js HTTP/1.1[0m" 304 -
+10.148.4.45 - - [30/Sep/2022 23:56:35] "[36mGET /static/shareprojectwith.js HTTP/1.1[0m" 304 -
+10.148.4.45 - - [30/Sep/2022 23:56:35] "[36mGET /static/sharemode.js HTTP/1.1[0m" 304 -
+10.148.4.45 - - [30/Sep/2022 23:56:35] "[36mGET /static/home.js HTTP/1.1[0m" 304 -
+10.148.4.45 - - [30/Sep/2022 23:56:35] "GET /userslist HTTP/1.1" 200 -
+10.148.4.45 - - [30/Sep/2022 23:56:35] "[32mGET /assignkaryaaccesscode HTTP/1.1[0m" 302 -
+10.148.4.45 - - [30/Sep/2022 23:56:35] "GET /home HTTP/1.1" 200 -
+10.148.4.45 - - [30/Sep/2022 23:56:36] "GET /newproject HTTP/1.1" 200 -
+10.148.4.45 - - [30/Sep/2022 23:56:36] "[36mGET /static/newproject.css HTTP/1.1[0m" 304 -
+10.148.4.45 - - [30/Sep/2022 23:56:36] "[36mGET /static/changeactiveproject.js HTTP/1.1[0m" 304 -
+10.148.4.45 - - [30/Sep/2022 23:56:36] "[36mGET /static/newproject.js HTTP/1.1[0m" 304 -
+10.145.171.241 - - [30/Sep/2022 23:56:38] "GET /login?next=%2Fhome HTTP/1.1" 200 -
+10.145.171.241 - - [30/Sep/2022 23:56:38] "GET /static/changeactiveproject.js HTTP/1.1" 200 -
+10.145.171.241 - - [30/Sep/2022 23:56:39] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+10.145.171.241 - - [30/Sep/2022 23:56:41] "GET /register HTTP/1.1" 200 -
+10.145.171.241 - - [30/Sep/2022 23:56:41] "[36mGET /static/changeactiveproject.js HTTP/1.1[0m" 304 -
+10.145.92.147 - - [30/Sep/2022 23:56:57] "GET /karyaext/homespeaker HTTP/1.1" 200 -
+10.145.92.147 - - [30/Sep/2022 23:56:57] "[33mGET /karyaext/static/dictionaryview.css HTTP/1.1[0m" 404 -
+10.145.92.147 - - [30/Sep/2022 23:56:57] "[33mGET /karyaext/static/sorttable.js HTTP/1.1[0m" 404 -
+10.145.92.147 - - [30/Sep/2022 23:56:57] "[33mGET /karyaext/static/lexemeview.js HTTP/1.1[0m" 404 -
+10.145.92.147 - - [30/Sep/2022 23:56:57] "[33mGET /karyaext/static/changeactiveproject.js HTTP/1.1[0m" 404 -
+10.145.92.147 - - [30/Sep/2022 23:56:57] "[33mGET /karyaext/static/dictionaryview.js HTTP/1.1[0m" 404 -
+10.145.92.147 - - [30/Sep/2022 23:56:57] "GET /karyaext/static/search.js HTTP/1.1" 200 -
+10.145.92.147 - - [30/Sep/2022 23:56:57] "[33mGET /karyaext/static/editlexeme.js HTTP/1.1[0m" 404 -
+10.145.92.147 - - [30/Sep/2022 23:56:57] "[33mGET /karyaext/static/lexemedelete.js HTTP/1.1[0m" 404 -
+10.145.92.147 - - [30/Sep/2022 23:56:57] "[33mGET /karyaext/static/shareproject.js HTTP/1.1[0m" 404 -
+10.145.92.147 - - [30/Sep/2022 23:56:57] "[33mGET /karyaext/static/shareprojectwith.js HTTP/1.1[0m" 404 -
+10.145.92.147 - - [30/Sep/2022 23:56:57] "[33mGET /karyaext/static/lexemeedit.js HTTP/1.1[0m" 404 -
+10.145.92.147 - - [30/Sep/2022 23:56:57] "[33mGET /karyaext/static/sorttable.js HTTP/1.1[0m" 404 -
+10.145.92.147 - - [30/Sep/2022 23:56:57] "GET /karyaext/static/speaker_select2_dropdown.js HTTP/1.1" 200 -
+10.145.92.147 - - [30/Sep/2022 23:56:57] "[33mGET /karyaext/static/lexemeview.js HTTP/1.1[0m" 404 -
+10.145.92.147 - - [30/Sep/2022 23:56:57] "[33mGET /karyaext/static/lexemeedit.js HTTP/1.1[0m" 404 -
+10.145.92.147 - - [30/Sep/2022 23:56:57] "[33mGET /karyaext/static/editlexeme.js HTTP/1.1[0m" 404 -
+10.145.92.147 - - [30/Sep/2022 23:56:57] "[33mGET /karyaext/static/lexemedelete.js HTTP/1.1[0m" 404 -
+10.145.92.147 - - [30/Sep/2022 23:56:57] "[33mGET /karyaext/static/shareproject.js HTTP/1.1[0m" 404 -
+10.145.92.147 - - [30/Sep/2022 23:56:57] "[33mGET /karyaext/static/shareprojectwith.js HTTP/1.1[0m" 404 -
+10.145.171.241 - - [30/Sep/2022 23:56:59] "[32mPOST /register HTTP/1.1[0m" 302 -
+10.145.171.241 - - [30/Sep/2022 23:56:59] "GET /login HTTP/1.1" 200 -
+10.145.171.241 - - [30/Sep/2022 23:56:59] "[36mGET /static/changeactiveproject.js HTTP/1.1[0m" 304 -
+10.145.92.147 - - [30/Sep/2022 23:57:07] "GET /home HTTP/1.1" 200 -
+10.145.92.147 - - [30/Sep/2022 23:57:07] "[36mGET /static/home.css HTTP/1.1[0m" 304 -
+10.145.92.147 - - [30/Sep/2022 23:57:07] "[36mGET /static/changeactiveproject.js HTTP/1.1[0m" 304 -
+10.145.92.147 - - [30/Sep/2022 23:57:07] "[36mGET /static/shareproject.js HTTP/1.1[0m" 304 -
+10.145.92.147 - - [30/Sep/2022 23:57:07] "[36mGET /static/assignkaryaaccesscode.js HTTP/1.1[0m" 304 -
+10.145.92.147 - - [30/Sep/2022 23:57:07] "[36mGET /static/shareprojectwith.js HTTP/1.1[0m" 304 -
+10.145.92.147 - - [30/Sep/2022 23:57:07] "[36mGET /static/sharemode.js HTTP/1.1[0m" 304 -
+10.145.92.147 - - [30/Sep/2022 23:57:07] "[36mGET /static/home.js HTTP/1.1[0m" 304 -
+10.145.92.147 - - [30/Sep/2022 23:57:07] "[32mGET /assignkaryaaccesscode HTTP/1.1[0m" 302 -
+10.145.92.147 - - [30/Sep/2022 23:57:07] "GET /userslist HTTP/1.1" 200 -
+10.145.92.147 - - [30/Sep/2022 23:57:07] "GET /home HTTP/1.1" 200 -
+10.145.171.241 - - [30/Sep/2022 23:57:10] "[32mPOST /login HTTP/1.1[0m" 302 -
+10.145.171.241 - - [30/Sep/2022 23:57:10] "GET /home HTTP/1.1" 200 -
+10.145.171.241 - - [30/Sep/2022 23:57:10] "GET /static/home.css HTTP/1.1" 200 -
+10.145.171.241 - - [30/Sep/2022 23:57:10] "GET /static/shareproject.js HTTP/1.1" 200 -
+10.145.171.241 - - [30/Sep/2022 23:57:10] "GET /static/shareprojectwith.js HTTP/1.1" 200 -
+10.145.171.241 - - [30/Sep/2022 23:57:10] "GET /static/home.js HTTP/1.1" 200 -
+10.145.171.241 - - [30/Sep/2022 23:57:10] "GET /static/sharemode.js HTTP/1.1" 200 -
+10.145.171.241 - - [30/Sep/2022 23:57:10] "[36mGET /static/changeactiveproject.js HTTP/1.1[0m" 304 -
+10.145.171.241 - - [30/Sep/2022 23:57:10] "GET /static/assignkaryaaccesscode.js HTTP/1.1" 200 -
+10.145.171.241 - - [30/Sep/2022 23:57:10] "GET /userslist HTTP/1.1" 200 -
+10.145.171.241 - - [30/Sep/2022 23:57:10] "[32mGET /assignkaryaaccesscode HTTP/1.1[0m" 302 -
+10.145.171.241 - - [30/Sep/2022 23:57:10] "GET /home HTTP/1.1" 200 -
+10.145.171.241 - - [30/Sep/2022 23:57:21] "GET /home HTTP/1.1" 200 -
+10.145.171.241 - - [30/Sep/2022 23:57:21] "[36mGET /static/home.css HTTP/1.1[0m" 304 -
+10.145.171.241 - - [30/Sep/2022 23:57:21] "[36mGET /static/shareproject.js HTTP/1.1[0m" 304 -
+10.145.171.241 - - [30/Sep/2022 23:57:21] "[36mGET /static/assignkaryaaccesscode.js HTTP/1.1[0m" 304 -
+10.145.171.241 - - [30/Sep/2022 23:57:21] "[36mGET /static/changeactiveproject.js HTTP/1.1[0m" 304 -
+10.145.171.241 - - [30/Sep/2022 23:57:21] "[36mGET /static/shareprojectwith.js HTTP/1.1[0m" 304 -
+10.145.171.241 - - [30/Sep/2022 23:57:21] "[36mGET /static/sharemode.js HTTP/1.1[0m" 304 -
+10.145.171.241 - - [30/Sep/2022 23:57:21] "[36mGET /static/home.js HTTP/1.1[0m" 304 -
+10.145.171.241 - - [30/Sep/2022 23:57:21] "[32mGET /assignkaryaaccesscode HTTP/1.1[0m" 302 -
+10.145.171.241 - - [30/Sep/2022 23:57:21] "GET /userslist HTTP/1.1" 200 -
+10.145.171.241 - - [30/Sep/2022 23:57:21] "GET /home HTTP/1.1" 200 -
+10.145.171.241 - - [30/Sep/2022 23:57:25] "GET /newproject HTTP/1.1" 200 -
+10.145.171.241 - - [30/Sep/2022 23:57:25] "GET /static/newproject.css HTTP/1.1" 200 -
+10.145.171.241 - - [30/Sep/2022 23:57:25] "[36mGET /static/changeactiveproject.js HTTP/1.1[0m" 304 -
+10.145.171.241 - - [30/Sep/2022 23:57:25] "GET /static/newproject.js HTTP/1.1" 200 -
+10.145.92.147 - - [30/Sep/2022 23:57:26] "GET /karyaext/fetch_karya_otp?acode=6579558311269085&mob=8826124114 HTTP/1.1" 200 -
+10.145.126.251 - - [30/Sep/2022 23:57:40] "[32mPOST /login?next=%2Fhome HTTP/1.1[0m" 302 -
+10.145.126.251 - - [30/Sep/2022 23:57:40] "GET /login HTTP/1.1" 200 -
+10.145.126.251 - - [30/Sep/2022 23:57:41] "[36mGET /static/changeactiveproject.js HTTP/1.1[0m" 304 -
+10.145.126.251 - - [30/Sep/2022 23:57:53] "GET /register HTTP/1.1" 200 -
+10.145.126.251 - - [30/Sep/2022 23:57:53] "[36mGET /static/changeactiveproject.js HTTP/1.1[0m" 304 -
+10.145.92.147 - - [30/Sep/2022 23:58:15] "[35m[1mPOST /karyaext/fetch_karya_audio HTTP/1.1[0m" 500 -
+Traceback (most recent call last):
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask/app.py", line 2091, in __call__
+    return self.wsgi_app(environ, start_response)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask/app.py", line 2076, in wsgi_app
+    response = self.handle_exception(e)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask/app.py", line 2073, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask/app.py", line 1518, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask/app.py", line 1516, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask/app.py", line 1502, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**req.view_args)
+  File "/home/kmi/Documents/lifetestapp/app/karya_ext/karya.py", line 566, in fetch_karya_audio
+    findWorker_id = micro_metadata["input"]["chain"]
+KeyError: 'chain'
+10.145.92.147 - - [30/Sep/2022 23:58:16] "GET /karyaext/fetch_karya_audio?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1" 200 -
+10.145.92.147 - - [30/Sep/2022 23:58:16] "GET /karyaext/fetch_karya_audio?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1" 200 -
+10.145.92.147 - - [30/Sep/2022 23:58:16] "GET /karyaext/fetch_karya_audio?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+10.145.92.147 - - [30/Sep/2022 23:58:16] "GET /karyaext/fetch_karya_audio?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+10.145.126.251 - - [30/Sep/2022 23:58:29] "[32mPOST /register HTTP/1.1[0m" 302 -
+10.145.126.251 - - [30/Sep/2022 23:58:29] "GET /login HTTP/1.1" 200 -
+10.145.126.251 - - [30/Sep/2022 23:58:30] "[36mGET /static/changeactiveproject.js HTTP/1.1[0m" 304 -
+10.148.4.45 - - [30/Sep/2022 23:58:32] "GET /newproject HTTP/1.1" 200 -
+10.148.4.45 - - [30/Sep/2022 23:58:32] "[36mGET /static/newproject.css HTTP/1.1[0m" 304 -
+10.148.4.45 - - [30/Sep/2022 23:58:32] "[36mGET /static/changeactiveproject.js HTTP/1.1[0m" 304 -
+10.148.4.45 - - [30/Sep/2022 23:58:32] "[36mGET /static/newproject.js HTTP/1.1[0m" 304 -
+10.145.126.251 - - [30/Sep/2022 23:58:54] "[32mPOST /login HTTP/1.1[0m" 302 -
+10.145.126.251 - - [30/Sep/2022 23:58:54] "GET /home HTTP/1.1" 200 -
+10.145.126.251 - - [30/Sep/2022 23:58:54] "GET /static/home.css HTTP/1.1" 200 -
+10.145.126.251 - - [30/Sep/2022 23:58:54] "GET /static/sharemode.js HTTP/1.1" 200 -
+10.145.126.251 - - [30/Sep/2022 23:58:54] "GET /static/shareproject.js HTTP/1.1" 200 -
+10.145.126.251 - - [30/Sep/2022 23:58:54] "GET /static/shareprojectwith.js HTTP/1.1" 200 -
+10.145.126.251 - - [30/Sep/2022 23:58:54] "GET /static/home.js HTTP/1.1" 200 -
+10.145.126.251 - - [30/Sep/2022 23:58:54] "GET /static/assignkaryaaccesscode.js HTTP/1.1" 200 -
+10.145.126.251 - - [30/Sep/2022 23:58:54] "[36mGET /static/changeactiveproject.js HTTP/1.1[0m" 304 -
+10.145.126.251 - - [30/Sep/2022 23:58:54] "[32mGET /assignkaryaaccesscode HTTP/1.1[0m" 302 -
+################################################################################Base directory:
+/home/kmi/Documents/lifetestapp/app
+################################################################################
+Creates dummy user and project if the database has no collection
+Creates dummy user and project if the database has no collection
+Creates dummy user and project if the database has no collection
+Creates dummy user and project if the database has no collection
+Creates dummy user and project if the database has no collection
+Creates dummy user and project if the database has no collection
+Creates dummy user and project if the database has no collection
+Creates dummy user and project if the database has no collection
+Creates dummy user and project if the database has no collection
+Creates dummy user and project if the database has no collection
+Creates dummy user and project if the database has no collection
+Creates dummy user and project if the database has no collection
+['nmathur54', 'meiraba', 'user_1']
+['nmathur54', 'meiraba', 'user_1']
+Creates dummy user and project if the database has no collection
+Creates dummy user and project if the database has no collection
+Creates dummy user and project if the database has no collection
+Creates dummy user and project if the database has no collection
+Creates dummy user and project if the database has no collection
+Creates dummy user and project if the database has no collection
+Creates dummy user and project if the database has no collection
+['nmathur54', 'meiraba', 'user_1', 'siddharth']
+Creates dummy user and project if the database has no collection
+siddharth_project_1
+################################################################################
+projectFormData
+{'projectname': ['siddharth_project_1'], 'Pronunciation': ['text'], 'Lexeme Language': ['Chokri'], 'Lexeme Form Script': ['IPA', 'Devanagari']}
+{'username': 'siddharth', 'projectname': 'siddharth_project_1', 'Pronunciation': 'text', 'Lexeme Language': 'Chokri', 'Lexeme Form Script': ['IPA', 'Devanagari'], 'Gloss Language': ['English'], 'Gloss Script': ['Latin'], 'Interlinear Gloss Language': ['English'], 'Interlinear Gloss Script': ['Latin'], 'Sentence Language': 'Chokri', 'Transcription Script': ['IPA', 'Devanagari'], 'Translation Language': ['English'], 'Translation Script': ['Latin']}
+['nmathur54', 'meiraba', 'user_1', 'shyam']
+siddharth_project_1
+audioId 
+['nmathur54', 'meiraba', 'user_1', 'shyam']
+Creates dummy user and project if the database has no collection
+Creates dummy user and project if the database has no collection
+Creates dummy user and project if the database has no collection
+Creates dummy user and project if the database has no collection
+Creates dummy user and project if the database has no collection
+Creates dummy user and project if the database has no collection
+['nmathur54', 'meiraba', 'user_1', 'siddharth', 'shyam']
+Creates dummy user and project if the database has no collection
+Creates dummy user and project if the database has no collection
+Creates dummy user and project if the database has no collection
+Creates dummy user and project if the database has no collection
+Creates dummy user and project if the database has no collection
+Creates dummy user and project if the database has no collection
+['nmathur54', 'meiraba', 'user_1', 'siddharth', 'shyam', 'Ruvezo Tetseo']
+Creates dummy user and project if the database has no collection
+Creates dummy user and project if the database has no collection
+Creates dummy user and project if the database has no collection
+Creates dummy user and project if the database has no collection
+Creates dummy user and project if the database has no collection
+['nmathur54', 'meiraba', 'user_1', 'siddharth', 'shyam', 'Dinkur']
+Creates dummy user and project if the database has no collection
+Creates dummy user and project if the database has no collection
+587  [{'lifespeakerid': 'shantitoto3045_16777258'}, {'lifespeakerid': 'laishramniranjanadevi3045_16777260'}, {'lifespeakerid': 'ruvezotetseo1830_16777262'}, {'lifespeakerid': 'siddharth1830_16777230'}, {'lifespeakerid': 'dinkur1830_16777256'}]
+[{'karyaaccesscode': '2844531326554845'}, {'karyaaccesscode': '1962244073333469'}, {'karyaaccesscode': '7913121580532445'}, {'karyaaccesscode': '6470792758694621'}, {'karyaaccesscode': '7696174540727005'}]
+596    #######################################  [{'karyaaccesscode': '2844531326554845'}, {'karyaaccesscode': '1962244073333469'}, {'karyaaccesscode': '7913121580532445'}, {'karyaaccesscode': '6470792758694621'}, {'karyaaccesscode': '7696174540727005'}]
+<pymongo.cursor.Cursor object at 0x7f0f05e0c940>
+[{'name': 'Shanti Toto'}, {'name': 'Laishram Niranjana Devi'}, {'name': 'Ruvezo Tetseo'}, {'name': 'Siddharth'}, {'name': 'dinkur'}]
+[{'agegroup': '30-45'}, {'agegroup': '30-45'}, {'agegroup': '18-30'}, {'agegroup': '18-30'}, {'agegroup': '18-30'}]
+[{'gender': 'Female'}, {'gender': 'Female'}, {'gender': 'Male'}, {'gender': 'Male'}, {'gender': 'Male'}]
+[[{'karyaaccesscode': '2844531326554845'}, {'lifespeakerid': 'shantitoto3045_16777258'}, {'name': 'Shanti Toto'}, {'agegroup': '30-45'}, {'gender': 'Female'}], [{'karyaaccesscode': '1962244073333469'}, {'lifespeakerid': 'laishramniranjanadevi3045_16777260'}, {'name': 'Laishram Niranjana Devi'}, {'agegroup': '30-45'}, {'gender': 'Female'}], [{'karyaaccesscode': '7913121580532445'}, {'lifespeakerid': 'ruvezotetseo1830_16777262'}, {'name': 'Ruvezo Tetseo'}, {'agegroup': '18-30'}, {'gender': 'Male'}], [{'karyaaccesscode': '6470792758694621'}, {'lifespeakerid': 'siddharth1830_16777230'}, {'name': 'Siddharth'}, {'agegroup': '18-30'}, {'gender': 'Male'}], [{'karyaaccesscode': '7696174540727005'}, {'lifespeakerid': 'dinkur1830_16777256'}, {'name': 'dinkur'}, {'agegroup': '18-30'}, {'gender': 'Male'}]]
+Creates dummy user and project if the database has no collection
+Creates dummy user and project if the database has no collection
+['nmathur54', 'meiraba', 'user_1', 'shyam', 'Ruvezo Tetseo', 'Dinkur', 'yogesh_dawer']
+Creates dummy user and project if the database has no collection
+['nmathur54', 'meiraba', 'user_1', 'siddharth', 'shyam', 'Ruvezo Tetseo', 'Dinkur']
+['nmathur54', 'meiraba', 'user_1', 'siddharth', 'shyam', 'Ruvezo Tetseo', 'Dinkur']
+Creates dummy user and project if the database has no collection
+Creates dummy user and project if the database has no collection
+Creates dummy user and project if the database has no collection
+OTP 556021
+access_code 6579558311269085
+Mobile 8826124114
+{'id': '16777267', 'box_id': '1', 'local_id': '16777267', 'access_code': '6579558311269085', 'registered_at': '2022-09-30T18:28:14.595Z', 'reg_mechanism': 'phone-otp', 'phone_number': '8826124114', 'otp': None, 'otp_generated_at': {'otp_generated_at': []}, 'auth_id': None, 'id_token': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImExNWE0MGQ0In0.eyJzdWIiOiIxNjc3NzI2NyIsImVudGl0eSI6IndvcmtlciIsImlhdCI6MTY2NDU2MjQ5NCwiZXhwIjoxNjY3MTU0NDk0LCJhdWQiOiJrYXJ5YS1zZXJ2ZXIiLCJpc3MiOiJrYXJ5YS1zZXJ2ZXIifQ.eL5820m8jnfAUY7Gl2HIz7YzHpXaLq2H60NNTaPgh1k', 'full_name': None, 'year_of_birth': None, 'gender': None, 'language': 'NRI', 'profile': None, 'profile_updated_at': '2022-09-30T18:28:14.595Z', 'wgroup': None, 'tags': {'tags': ['all', 'narration', 'questionnaire', 'chokri', 'translation', 'all', 'verification', 'life-cycle', 'agriculture', 'science & technology', 'education', 'healthcare', 'sports', 'culture', 'general-oral-history']}, 'tags_updated_at': '2022-09-30T11:19:43.472Z', 'sent_to_server_at': '2022-09-30T12:00:03.923Z', 'extras': None, 'created_at': '2022-09-30T11:19:43.473Z', 'last_updated_at': '2022-09-30T18:28:14.595Z'}
+ID token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImExNWE0MGQ0In0.eyJzdWIiOiIxNjc3NzI2NyIsImVudGl0eSI6IndvcmtlciIsImlhdCI6MTY2NDU2MjQ5NCwiZXhwIjoxNjY3MTU0NDk0LCJhdWQiOiJrYXJ5YS1zZXJ2ZXIiLCJpc3MiOiJrYXJ5YS1zZXJ2ZXIifQ.eL5820m8jnfAUY7Gl2HIz7YzHpXaLq2H60NNTaPgh1k
+Lenght of JSON 3
+curent user siddharth
+siddharth_project_1
+Creates dummy user and project if the database has no collection
+Creates dummy user and project if the database has no collection
+Creates dummy user and project if the database has no collection
+10.145.126.251 - - [30/Sep/2022 23:58:54] "GET /userslist HTTP/1.1" 200 -
+10.145.126.251 - - [30/Sep/2022 23:58:54] "GET /home HTTP/1.1" 200 -
+10.145.126.251 - - [30/Sep/2022 23:59:08] "GET /newproject HTTP/1.1" 200 -
+10.145.126.251 - - [30/Sep/2022 23:59:08] "GET /static/newproject.css HTTP/1.1" 200 -
+10.145.126.251 - - [30/Sep/2022 23:59:08] "GET /static/newproject.js HTTP/1.1" 200 -
+10.145.126.251 - - [30/Sep/2022 23:59:08] "[36mGET /static/changeactiveproject.js HTTP/1.1[0m" 304 -
+10.148.4.171 - - [01/Oct/2022 00:00:09] "[32mPOST /newproject HTTP/1.1[0m" 302 -
+10.148.4.171 - - [01/Oct/2022 00:00:09] "GET /home HTTP/1.1" 200 -
+10.148.4.171 - - [01/Oct/2022 00:00:09] "[36mGET /static/changeactiveproject.js HTTP/1.1[0m" 304 -
+10.148.4.171 - - [01/Oct/2022 00:00:09] "[36mGET /static/shareproject.js HTTP/1.1[0m" 304 -
+10.148.4.171 - - [01/Oct/2022 00:00:09] "[36mGET /static/home.css HTTP/1.1[0m" 304 -
+10.148.4.171 - - [01/Oct/2022 00:00:09] "[36mGET /static/sharemode.js HTTP/1.1[0m" 304 -
+10.148.4.171 - - [01/Oct/2022 00:00:09] "[36mGET /static/shareprojectwith.js HTTP/1.1[0m" 304 -
+10.148.4.171 - - [01/Oct/2022 00:00:09] "[36mGET /static/assignkaryaaccesscode.js HTTP/1.1[0m" 304 -
+10.148.4.171 - - [01/Oct/2022 00:00:09] "[36mGET /static/home.js HTTP/1.1[0m" 304 -
+10.148.4.171 - - [01/Oct/2022 00:00:09] "[32mGET /assignkaryaaccesscode HTTP/1.1[0m" 302 -
+10.148.4.171 - - [01/Oct/2022 00:00:09] "GET /userslist HTTP/1.1" 200 -
+10.148.4.171 - - [01/Oct/2022 00:00:09] "GET /home HTTP/1.1" 200 -
+10.148.4.171 - - [01/Oct/2022 00:01:54] "GET /activeprojectname?a=Bodo HTTP/1.1" 200 -
+10.148.4.171 - - [01/Oct/2022 00:01:54] "GET /home HTTP/1.1" 200 -
+10.148.4.171 - - [01/Oct/2022 00:01:55] "[36mGET /static/home.css HTTP/1.1[0m" 304 -
+10.148.4.171 - - [01/Oct/2022 00:01:55] "[36mGET /static/shareproject.js HTTP/1.1[0m" 304 -
+10.148.4.171 - - [01/Oct/2022 00:01:55] "[36mGET /static/sharemode.js HTTP/1.1[0m" 304 -
+10.148.4.171 - - [01/Oct/2022 00:01:55] "[36mGET /static/changeactiveproject.js HTTP/1.1[0m" 304 -
+10.148.4.171 - - [01/Oct/2022 00:01:55] "[36mGET /static/shareprojectwith.js HTTP/1.1[0m" 304 -
+10.148.4.171 - - [01/Oct/2022 00:01:55] "[36mGET /static/assignkaryaaccesscode.js HTTP/1.1[0m" 304 -
+10.148.4.171 - - [01/Oct/2022 00:01:55] "[36mGET /static/home.js HTTP/1.1[0m" 304 -
+10.148.4.171 - - [01/Oct/2022 00:01:55] "GET /userslist HTTP/1.1" 200 -
+10.148.4.171 - - [01/Oct/2022 00:01:55] "[32mGET /assignkaryaaccesscode HTTP/1.1[0m" 302 -
+10.148.4.171 - - [01/Oct/2022 00:01:55] "GET /home HTTP/1.1" 200 -
+10.148.4.171 - - [01/Oct/2022 00:01:57] "GET /activeprojectname?a=Bodo HTTP/1.1" 200 -
+10.148.4.171 - - [01/Oct/2022 00:01:58] "GET /home HTTP/1.1" 200 -
+10.148.4.171 - - [01/Oct/2022 00:01:58] "[36mGET /static/home.css HTTP/1.1[0m" 304 -
+10.148.4.171 - - [01/Oct/2022 00:01:58] "[36mGET /static/shareprojectwith.js HTTP/1.1[0m" 304 -
+10.148.4.171 - - [01/Oct/2022 00:01:58] "[36mGET /static/shareproject.js HTTP/1.1[0m" 304 -
+10.148.4.171 - - [01/Oct/2022 00:01:58] "[36mGET /static/changeactiveproject.js HTTP/1.1[0m" 304 -
+10.148.4.171 - - [01/Oct/2022 00:01:58] "[36mGET /static/sharemode.js HTTP/1.1[0m" 304 -
+10.148.4.171 - - [01/Oct/2022 00:01:58] "[36mGET /static/assignkaryaaccesscode.js HTTP/1.1[0m" 304 -
+10.148.4.171 - - [01/Oct/2022 00:01:58] "[36mGET /static/home.js HTTP/1.1[0m" 304 -
+10.148.4.171 - - [01/Oct/2022 00:01:58] "[32mGET /assignkaryaaccesscode HTTP/1.1[0m" 302 -
+10.148.4.171 - - [01/Oct/2022 00:01:58] "GET /userslist HTTP/1.1" 200 -
+10.148.4.171 - - [01/Oct/2022 00:01:58] "GET /home HTTP/1.1" 200 -
+10.148.4.171 - - [01/Oct/2022 00:02:00] "GET /newproject HTTP/1.1" 200 -
+10.148.4.171 - - [01/Oct/2022 00:02:00] "[36mGET /static/newproject.css HTTP/1.1[0m" 304 -
+10.148.4.171 - - [01/Oct/2022 00:02:00] "[36mGET /static/changeactiveproject.js HTTP/1.1[0m" 304 -
+10.148.4.171 - - [01/Oct/2022 00:02:00] "[36mGET /static/newproject.js HTTP/1.1[0m" 304 -
+10.148.4.171 - - [01/Oct/2022 00:02:14] "[35m[1mGET /downloaddictionary HTTP/1.1[0m" 500 -
+Traceback (most recent call last):
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask/app.py", line 2091, in __call__
+    return self.wsgi_app(environ, start_response)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask/app.py", line 2076, in wsgi_app
+    response = self.handle_exception(e)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask/app.py", line 2073, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask/app.py", line 1518, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask/app.py", line 1516, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask/app.py", line 1502, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**req.view_args)
+  File "/home/kmi/Documents/lifetestapp/app/routes.py", line 2458, in downloaddictionary
+    activeprojectname = userprojects.find_one({ 'username' : current_user.username })['activeproject']
+KeyError: 'activeproject'
+10.148.4.171 - - [01/Oct/2022 00:02:14] "GET /downloaddictionary?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1" 200 -
+10.148.4.171 - - [01/Oct/2022 00:02:14] "GET /downloaddictionary?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1" 200 -
+10.148.4.171 - - [01/Oct/2022 00:02:14] "GET /downloaddictionary?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+10.148.4.171 - - [01/Oct/2022 00:02:14] "GET /downloaddictionary?__debugger__=yes&cmd=resource&f=ubuntu.ttf HTTP/1.1" 200 -
+10.148.4.171 - - [01/Oct/2022 00:02:15] "GET /downloaddictionary?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+10.148.4.171 - - [01/Oct/2022 00:02:26] "[35m[1mGET /downloadproject HTTP/1.1[0m" 500 -
+Traceback (most recent call last):
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask/app.py", line 2091, in __call__
+    return self.wsgi_app(environ, start_response)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask/app.py", line 2076, in wsgi_app
+    response = self.handle_exception(e)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask/app.py", line 2073, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask/app.py", line 1518, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask/app.py", line 1516, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask/app.py", line 1502, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**req.view_args)
+  File "/home/kmi/Documents/lifetestapp/app/routes.py", line 2372, in downloadproject
+    activeprojectname = userprojects.find_one({ 'username' : current_user.username })['activeproject']
+KeyError: 'activeproject'
+10.148.4.171 - - [01/Oct/2022 00:02:26] "GET /downloadproject?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1" 200 -
+10.148.4.171 - - [01/Oct/2022 00:02:26] "GET /downloadproject?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1" 200 -
+10.148.4.171 - - [01/Oct/2022 00:02:26] "GET /downloadproject?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+10.148.4.171 - - [01/Oct/2022 00:02:26] "GET /downloadproject?__debugger__=yes&cmd=resource&f=ubuntu.ttf HTTP/1.1" 200 -
+10.148.4.171 - - [01/Oct/2022 00:02:26] "GET /downloadproject?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+10.148.4.171 - - [01/Oct/2022 00:02:29] "[35m[1mGET /downloaddictionary HTTP/1.1[0m" 500 -
+Traceback (most recent call last):
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask/app.py", line 2091, in __call__
+    return self.wsgi_app(environ, start_response)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask/app.py", line 2076, in wsgi_app
+    response = self.handle_exception(e)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask/app.py", line 2073, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask/app.py", line 1518, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask/app.py", line 1516, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask/app.py", line 1502, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**req.view_args)
+  File "/home/kmi/Documents/lifetestapp/app/routes.py", line 2458, in downloaddictionary
+    activeprojectname = userprojects.find_one({ 'username' : current_user.username })['activeproject']
+KeyError: 'activeproject'
+10.148.4.171 - - [01/Oct/2022 00:02:29] "GET /downloaddictionary?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1" 200 -
+10.148.4.171 - - [01/Oct/2022 00:02:29] "GET /downloaddictionary?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1" 200 -
+10.148.4.171 - - [01/Oct/2022 00:02:29] "GET /downloaddictionary?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+10.148.4.171 - - [01/Oct/2022 00:02:29] "GET /downloaddictionary?__debugger__=yes&cmd=resource&f=ubuntu.ttf HTTP/1.1" 200 -
+10.145.126.251 - - [01/Oct/2022 00:02:42] "[32mPOST /newproject HTTP/1.1[0m" 302 -
+10.145.126.251 - - [01/Oct/2022 00:02:42] "GET /newproject HTTP/1.1" 200 -
+10.145.126.251 - - [01/Oct/2022 00:02:42] "[36mGET /static/newproject.css HTTP/1.1[0m" 304 -
+10.145.126.251 - - [01/Oct/2022 00:02:42] "[36mGET /static/changeactiveproject.js HTTP/1.1[0m" 304 -
+10.145.126.251 - - [01/Oct/2022 00:02:42] "[36mGET /static/newproject.js HTTP/1.1[0m" 304 -
+10.148.4.171 - - [01/Oct/2022 00:02:43] "GET /enternewsentences HTTP/1.1" 200 -
+10.148.4.171 - - [01/Oct/2022 00:02:43] "GET /static/enternewsentences.css HTTP/1.1" 200 -
+10.148.4.171 - - [01/Oct/2022 00:02:43] "GET /static/audiotranscription.css HTTP/1.1" 200 -
+10.148.4.171 - - [01/Oct/2022 00:02:43] "[36mGET /static/changeactiveproject.js HTTP/1.1[0m" 304 -
+10.148.4.171 - - [01/Oct/2022 00:02:43] "GET /static/changeactivespeaker.js HTTP/1.1" 200 -
+10.148.4.171 - - [01/Oct/2022 00:02:43] "GET /static/audiotranscription.js HTTP/1.1" 200 -
+10.148.4.171 - - [01/Oct/2022 00:02:43] "GET /static/enternewsentences.js HTTP/1.1" 200 -
+10.145.92.147 - - [01/Oct/2022 00:08:02] "GET /karyaext/fetch_karya_audio HTTP/1.1" 200 -
+10.145.92.147 - - [01/Oct/2022 00:08:03] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+10.145.92.147 - - [01/Oct/2022 00:08:08] "[32mGET / HTTP/1.1[0m" 302 -
+10.145.92.147 - - [01/Oct/2022 00:08:08] "GET /login?next=%2F HTTP/1.1" 200 -
+10.145.92.147 - - [01/Oct/2022 00:08:08] "GET /static/changeactiveproject.js HTTP/1.1" 200 -
+10.145.92.147 - - [01/Oct/2022 00:08:16] "[32mPOST /login?next=%2F HTTP/1.1[0m" 302 -
+10.145.92.147 - - [01/Oct/2022 00:08:16] "GET / HTTP/1.1" 200 -
+10.145.92.147 - - [01/Oct/2022 00:08:16] "GET /static/home.css HTTP/1.1" 200 -
+10.145.92.147 - - [01/Oct/2022 00:08:16] "GET /static/shareproject.js HTTP/1.1" 200 -
+10.145.92.147 - - [01/Oct/2022 00:08:16] "GET /static/assignkaryaaccesscode.js HTTP/1.1" 200 -
+10.145.92.147 - - [01/Oct/2022 00:08:16] "GET /static/sharemode.js HTTP/1.1" 200 -
+10.145.92.147 - - [01/Oct/2022 00:08:16] "[36mGET /static/changeactiveproject.js HTTP/1.1[0m" 304 -
+10.145.92.147 - - [01/Oct/2022 00:08:16] "GET /static/shareprojectwith.js HTTP/1.1" 200 -
+10.145.92.147 - - [01/Oct/2022 00:08:16] "GET /static/home.js HTTP/1.1" 200 -
+10.145.92.147 - - [01/Oct/2022 00:08:16] "GET /userslist HTTP/1.1" 200 -
+10.145.92.147 - - [01/Oct/2022 00:08:16] "[32mGET /assignkaryaaccesscode HTTP/1.1[0m" 302 -
+10.145.92.147 - - [01/Oct/2022 00:08:16] "GET /home HTTP/1.1" 200 -
+10.145.92.147 - - [01/Oct/2022 00:08:28] "[32mGET /logout HTTP/1.1[0m" 302 -
+10.145.92.147 - - [01/Oct/2022 00:08:28] "[32mGET /home HTTP/1.1[0m" 302 -
+10.145.92.147 - - [01/Oct/2022 00:08:28] "GET /login?next=%2Fhome HTTP/1.1" 200 -
+10.145.92.147 - - [01/Oct/2022 00:08:28] "[36mGET /static/changeactiveproject.js HTTP/1.1[0m" 304 -
+10.145.126.251 - - [01/Oct/2022 00:09:07] "GET /newproject HTTP/1.1" 200 -
+10.145.126.251 - - [01/Oct/2022 00:09:08] "[32mGET /login HTTP/1.1[0m" 302 -
+10.145.126.251 - - [01/Oct/2022 00:09:08] "GET /home HTTP/1.1" 200 -
+10.145.126.251 - - [01/Oct/2022 00:09:08] "[32mGET /assignkaryaaccesscode HTTP/1.1[0m" 302 -
+10.145.126.251 - - [01/Oct/2022 00:09:08] "GET /userslist HTTP/1.1" 200 -
+10.145.126.251 - - [01/Oct/2022 00:09:10] "GET /newproject HTTP/1.1" 200 -
+10.145.126.251 - - [01/Oct/2022 00:09:10] "[36mGET /static/changeactiveproject.js HTTP/1.1[0m" 304 -
+10.145.126.251 - - [01/Oct/2022 00:09:10] "[36mGET /static/newproject.css HTTP/1.1[0m" 304 -
+10.145.126.251 - - [01/Oct/2022 00:09:10] "[36mGET /static/newproject.js HTTP/1.1[0m" 304 -
+10.148.4.45 - - [01/Oct/2022 00:12:23] "[32mGET /login?next=%2Fhome HTTP/1.1[0m" 302 -
+10.148.4.45 - - [01/Oct/2022 00:12:23] "GET /home HTTP/1.1" 200 -
+10.148.4.45 - - [01/Oct/2022 00:12:23] "[36mGET /static/home.css HTTP/1.1[0m" 304 -
+10.148.4.45 - - [01/Oct/2022 00:12:23] "[36mGET /static/shareproject.js HTTP/1.1[0m" 304 -
+10.148.4.45 - - [01/Oct/2022 00:12:23] "[36mGET /static/changeactiveproject.js HTTP/1.1[0m" 304 -
+10.148.4.45 - - [01/Oct/2022 00:12:23] "[36mGET /static/sharemode.js HTTP/1.1[0m" 304 -
+10.148.4.45 - - [01/Oct/2022 00:12:23] "[36mGET /static/home.js HTTP/1.1[0m" 304 -
+10.148.4.45 - - [01/Oct/2022 00:12:23] "[36mGET /static/assignkaryaaccesscode.js HTTP/1.1[0m" 304 -
+10.148.4.45 - - [01/Oct/2022 00:12:23] "[36mGET /static/shareprojectwith.js HTTP/1.1[0m" 304 -
+10.148.4.45 - - [01/Oct/2022 00:12:23] "[32mGET /assignkaryaaccesscode HTTP/1.1[0m" 302 -
+10.148.4.45 - - [01/Oct/2022 00:12:23] "GET /userslist HTTP/1.1" 200 -
+10.148.4.45 - - [01/Oct/2022 00:12:24] "GET /home HTTP/1.1" 200 -
+10.148.4.45 - - [01/Oct/2022 00:12:24] "GET /newproject HTTP/1.1" 200 -
+10.148.4.45 - - [01/Oct/2022 00:12:24] "[36mGET /static/changeactiveproject.js HTTP/1.1[0m" 304 -
+10.148.4.45 - - [01/Oct/2022 00:12:24] "[36mGET /static/newproject.css HTTP/1.1[0m" 304 -
+10.148.4.45 - - [01/Oct/2022 00:12:24] "[36mGET /static/newproject.js HTTP/1.1[0m" 304 -
+10.148.4.45 - - [01/Oct/2022 00:13:06] "[32mGET /login?next=%2Fhome HTTP/1.1[0m" 302 -
+10.148.4.45 - - [01/Oct/2022 00:13:06] "GET /home HTTP/1.1" 200 -
+10.148.4.45 - - [01/Oct/2022 00:13:06] "[36mGET /static/home.css HTTP/1.1[0m" 304 -
+10.148.4.45 - - [01/Oct/2022 00:13:06] "[36mGET /static/changeactiveproject.js HTTP/1.1[0m" 304 -
+10.148.4.45 - - [01/Oct/2022 00:13:06] "[36mGET /static/shareprojectwith.js HTTP/1.1[0m" 304 -
+10.148.4.45 - - [01/Oct/2022 00:13:06] "[36mGET /static/sharemode.js HTTP/1.1[0m" 304 -
+10.148.4.45 - - [01/Oct/2022 00:13:06] "[36mGET /static/shareproject.js HTTP/1.1[0m" 304 -
+10.148.4.45 - - [01/Oct/2022 00:13:06] "[36mGET /static/assignkaryaaccesscode.js HTTP/1.1[0m" 304 -
+10.148.4.45 - - [01/Oct/2022 00:13:06] "[36mGET /static/home.js HTTP/1.1[0m" 304 -
+10.148.4.45 - - [01/Oct/2022 00:13:06] "GET /userslist HTTP/1.1" 200 -
+10.148.4.45 - - [01/Oct/2022 00:13:06] "[32mGET /assignkaryaaccesscode HTTP/1.1[0m" 302 -
+10.148.4.45 - - [01/Oct/2022 00:13:06] "GET /home HTTP/1.1" 200 -
+10.148.4.45 - - [01/Oct/2022 00:13:07] "GET /newproject HTTP/1.1" 200 -
+10.148.4.45 - - [01/Oct/2022 00:13:07] "[36mGET /static/newproject.css HTTP/1.1[0m" 304 -
+10.148.4.45 - - [01/Oct/2022 00:13:07] "[36mGET /static/newproject.js HTTP/1.1[0m" 304 -
+10.148.4.45 - - [01/Oct/2022 00:13:07] "[36mGET /static/changeactiveproject.js HTTP/1.1[0m" 304 -
+10.148.4.171 - - [01/Oct/2022 00:14:48] "[35m[1mGET /downloaddictionary HTTP/1.1[0m" 500 -
+Traceback (most recent call last):
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask/app.py", line 2091, in __call__
+    return self.wsgi_app(environ, start_response)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask/app.py", line 2076, in wsgi_app
+    response = self.handle_exception(e)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask/app.py", line 2073, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask/app.py", line 1518, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask/app.py", line 1516, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask/app.py", line 1502, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**req.view_args)
+  File "/home/kmi/Documents/lifetestapp/app/routes.py", line 2458, in downloaddictionary
+    activeprojectname = userprojects.find_one({ 'username' : current_user.username })['activeproject']
+KeyError: 'activeproject'
+10.148.4.171 - - [01/Oct/2022 00:14:49] "GET /downloaddictionary?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1" 200 -
+10.148.4.171 - - [01/Oct/2022 00:14:49] "GET /downloaddictionary?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1" 200 -
+10.148.4.171 - - [01/Oct/2022 00:14:49] "GET /downloaddictionary?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+10.148.4.171 - - [01/Oct/2022 00:14:49] "GET /downloaddictionary?__debugger__=yes&cmd=resource&f=ubuntu.ttf HTTP/1.1" 200 -
+10.148.4.171 - - [01/Oct/2022 00:14:54] "[35m[1mGET /downloadproject HTTP/1.1[0m" 500 -
+Traceback (most recent call last):
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask/app.py", line 2091, in __call__
+    return self.wsgi_app(environ, start_response)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask/app.py", line 2076, in wsgi_app
+    response = self.handle_exception(e)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask/app.py", line 2073, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask/app.py", line 1518, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask/app.py", line 1516, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask/app.py", line 1502, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**req.view_args)
+  File "/home/kmi/Documents/lifetestapp/app/routes.py", line 2372, in downloadproject
+    activeprojectname = userprojects.find_one({ 'username' : current_user.username })['activeproject']
+KeyError: 'activeproject'
+10.148.4.171 - - [01/Oct/2022 00:14:54] "GET /downloadproject?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1" 200 -
+10.148.4.171 - - [01/Oct/2022 00:14:54] "GET /downloadproject?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1" 200 -
+10.148.4.171 - - [01/Oct/2022 00:14:54] "GET /downloadproject?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+10.148.4.171 - - [01/Oct/2022 00:14:54] "GET /downloadproject?__debugger__=yes&cmd=resource&f=ubuntu.ttf HTTP/1.1" 200 -
+10.148.4.171 - - [01/Oct/2022 00:14:58] "[35m[1mGET /downloaddictionary HTTP/1.1[0m" 500 -
+Traceback (most recent call last):
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask/app.py", line 2091, in __call__
+    return self.wsgi_app(environ, start_response)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask/app.py", line 2076, in wsgi_app
+    response = self.handle_exception(e)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask/app.py", line 2073, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask/app.py", line 1518, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask/app.py", line 1516, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask/app.py", line 1502, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**req.view_args)
+  File "/home/kmi/Documents/lifetestapp/app/routes.py", line 2458, in downloaddictionary
+    activeprojectname = userprojects.find_one({ 'username' : current_user.username })['activeproject']
+KeyError: 'activeproject'
+10.148.4.171 - - [01/Oct/2022 00:14:58] "GET /downloaddictionary?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1" 200 -
+10.148.4.171 - - [01/Oct/2022 00:14:58] "GET /downloaddictionary?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1" 200 -
+10.148.4.171 - - [01/Oct/2022 00:14:58] "GET /downloaddictionary?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+10.148.4.171 - - [01/Oct/2022 00:14:58] "GET /downloaddictionary?__debugger__=yes&cmd=resource&f=ubuntu.ttf HTTP/1.1" 200 -
+10.148.4.171 - - [01/Oct/2022 00:14:59] "[35m[1mGET /downloaddictionary HTTP/1.1[0m" 500 -
+Traceback (most recent call last):
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask/app.py", line 2091, in __call__
+    return self.wsgi_app(environ, start_response)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask/app.py", line 2076, in wsgi_app
+    response = self.handle_exception(e)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask/app.py", line 2073, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask/app.py", line 1518, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask/app.py", line 1516, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask/app.py", line 1502, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**req.view_args)
+  File "/home/kmi/Documents/lifetestapp/app/routes.py", line 2458, in downloaddictionary
+    activeprojectname = userprojects.find_one({ 'username' : current_user.username })['activeproject']
+KeyError: 'activeproject'
+10.148.4.171 - - [01/Oct/2022 00:14:59] "GET /downloaddictionary?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1" 200 -
+10.148.4.171 - - [01/Oct/2022 00:14:59] "GET /downloaddictionary?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1" 200 -
+10.148.4.171 - - [01/Oct/2022 00:14:59] "GET /downloaddictionary?__debugger__=yes&cmd=resource&f=ubuntu.ttf HTTP/1.1" 200 -
+10.148.4.171 - - [01/Oct/2022 00:14:59] "GET /downloaddictionary?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+10.148.4.171 - - [01/Oct/2022 00:14:59] "GET /downloaddictionary?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+10.148.4.171 - - [01/Oct/2022 00:15:11] "GET /home HTTP/1.1" 200 -
+10.148.4.171 - - [01/Oct/2022 00:15:11] "[36mGET /static/home.css HTTP/1.1[0m" 304 -
+10.148.4.171 - - [01/Oct/2022 00:15:11] "[36mGET /static/shareproject.js HTTP/1.1[0m" 304 -
+10.148.4.171 - - [01/Oct/2022 00:15:11] "[36mGET /static/assignkaryaaccesscode.js HTTP/1.1[0m" 304 -
+10.148.4.171 - - [01/Oct/2022 00:15:11] "[36mGET /static/shareprojectwith.js HTTP/1.1[0m" 304 -
+10.148.4.171 - - [01/Oct/2022 00:15:11] "[36mGET /static/changeactiveproject.js HTTP/1.1[0m" 304 -
+10.148.4.171 - - [01/Oct/2022 00:15:11] "[36mGET /static/home.js HTTP/1.1[0m" 304 -
+10.148.4.171 - - [01/Oct/2022 00:15:11] "[36mGET /static/sharemode.js HTTP/1.1[0m" 304 -
+10.148.4.171 - - [01/Oct/2022 00:15:11] "GET /userslist HTTP/1.1" 200 -
+10.148.4.171 - - [01/Oct/2022 00:15:11] "[32mGET /assignkaryaaccesscode HTTP/1.1[0m" 302 -
+10.148.4.171 - - [01/Oct/2022 00:15:11] "GET /home HTTP/1.1" 200 -
+################################################################################Base directory:
+/home/kmi/Documents/lifetestapp/app
+################################################################################

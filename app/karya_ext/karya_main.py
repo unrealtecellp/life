@@ -322,8 +322,8 @@ def homespeaker():
     # acc = request.form.get('accessid') 
     # print("fname", acc)
     namekaryaAddID = []
-    # namekaryaAddIDtuple = tuple(namekaryaAddID)
-    # speaker_data_accesscode = []
+    namekaryaAddIDtuple = tuple(namekaryaAddID)
+    speaker_data_accesscode = []
     karya_accesscode = []
     speaker_data_name = []
     speaker_data_age = []
@@ -341,9 +341,9 @@ def homespeaker():
     lifeaccesscode = mongodb_info.find({"isActive":1},{"karyaaccesscode":1, "_id" :0})
     for data in lifeaccesscode:   
         codes = data["karyaaccesscode"]
-        karya_accesscode.append(data)
+        speaker_data_accesscode.append(data)
         # speaker_data_accesscode.append(data["lifespeakerid"])
-    print(karya_accesscode)
+    print(speaker_data_accesscode)
 
 ############## Access Code - KaryaID ###############################################################
     karyaaccesscode = mongodb_info.find({"isActive":1},{"karyaaccesscode":1,"_id" :0})
