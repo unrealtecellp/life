@@ -15,7 +15,11 @@ Home
    <h2>Linguistic Field Data Management and Analysis System<br>[LiFE]</h2><br/><hr/>
    <div>
    <div id="activeProject">
+    {% if  shareinfo['sharemode']|int > 3 %}
     <button type="button" class="btn btn-lg btn-success" onclick="window.location.href='{{ url_for('newproject') }}';">Create New Project</button>
+      <!-- <p>{{ shareinfo['sharemode'] }}</p> -->
+    {% endif %}
+    <!-- <button type="button" class="btn btn-lg btn-success" onclick="window.location.href='{{ url_for('newproject') }}';">Create New Project</button> -->
     <br/><br/>
     <hr/>
     {% if data|length > 0 %}

@@ -43,7 +43,7 @@ from app.controller import getprojectowner, getactiveprojectform, savenewsentenc
 from app.controller import readJSONFile, createdummylexemeentry, getactivespeakerid
 from app.controller import savenewproject, updateuserprojects, savenewprojectform
 from app.controller import audiodetails, getcurrentusername, getcommentstats
-from app.controller import unannotatedfilename
+from app.controller import unannotatedfilename, getsharinginfo
 import shutil, traceback
 
 
@@ -66,11 +66,13 @@ def home():
                                 userprojects)
     activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username,
                             userprojects)
+    shareinfo = getsharinginfo.getsharinginfo(userprojects, current_user.username, activeprojectname)
+    print(shareinfo)
 
     return render_template('home.html',
                             data=currentuserprojectsname,
-                            activeproject=activeprojectname)
-
+                            activeproject=activeprojectname,
+                            shareinfo=shareinfo)
 
 # new project route
 # create lexeme entry form for the new project
