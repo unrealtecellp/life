@@ -18,7 +18,11 @@ def updateuserprojects(userprojects,
     # userprojectnamelist.append(projectname)
 
     userprojectnamedict = userprojects.find_one({'username' : current_username})["myproject"]
-    userprojectnamedict[projectname] = {'sharemode': 4, 'sharechecked': "true"}
+    userprojectnamedict[projectname] = {
+                                            'sharemode': 4,
+                                            'sharechecked': "true",
+                                            'activespeakerId': ''
+                                        }
     # when testing comment these to avoid any database update/changes
     userprojects.update_one({ 'username' : current_username },
                             { '$set' : { 'myproject' : userprojectnamedict,

@@ -12,6 +12,7 @@
 {% endblock %}
 
 {% block app_content %}
+<!-- <p>{{ shareinfo['sharemode'] }}</p> -->
 <div class="row">
   <div class="col-sm-9">
     {% if projectName is defined %}
@@ -30,17 +31,19 @@
     {% endif %}
     
   </div>
-  <div class="col-sm-3">
-    <form name="newaudioupload" action="/uploadaudiofiles" method="POST" enctype="multipart/form-data">
-      <div class="col upload">
-        <input type="text" class="form-control" placeholder="Speaker ID" name="speakerId" required>
-        <br>
-        <input type="file" id="audiofile" name="audiofile" required>
-        <br>
-        <input class="btn btn-primary uploadbtn" type="submit" value="Upload Audio Files">
-      </div>
-    </form>
-  </div>
+  {% if  shareinfo['sharemode']|int >= 3 %}
+    <div class="col-sm-3">
+      <form name="newaudioupload" action="/uploadaudiofiles" method="POST" enctype="multipart/form-data">
+        <div class="col upload">
+          <input type="text" class="form-control" placeholder="Speaker ID" name="speakerId" required>
+          <br>
+          <input type="file" id="audiofile" name="audiofile" required>
+          <br>
+          <input class="btn btn-primary uploadbtn" type="submit" value="Upload Audio Files">
+        </div>
+      </form>
+    </div>
+  {% endif %}
 </div>
 <hr>
   {% for data in sdata %}
@@ -66,16 +69,15 @@
   <!-- </div> -->
   <br>
   <hr>
-    <!-- <p><strong>Audio Filename: 1. AD1.wav</strong></p> -->
     <div class="row">
       <div class="col-sm-7 commentIDs">
           <button type="button" id="uNAnnotated" class="btn btn-light" onclick="unAnnotated()">All Filename</button>
       </div>
       {% if commentstats is defined %}
         <div class="col-sm-3 commentStats pull-right">
-          <strong>Total Comments: {{ commentstats[0] }}</strong><br> 
-          <strong>Annotated Comments: {{ commentstats[1] }}</strong><br>
-          <strong>Remaining Comments: {{ commentstats[2] }}</strong><br>
+          <strong>Total Files: {{ commentstats[0] }}</strong><br> 
+          <strong>Annotated Files: {{ commentstats[1] }}</strong><br>
+          <strong>Remaining Files: {{ commentstats[2] }}</strong><br>
         </div>
       {% endif %}
     </div>

@@ -1,0 +1,27 @@
+[
+    {
+        "sharemode": "number",
+        "view": 0,
+        "download": 1,
+        "edit": 2,
+        "add": 3,
+        "delete": 4
+    },
+    {
+        "sharechecked": "true"
+    },
+    {
+        "buttonname": "enableOnShareMode",
+        "home page": {
+            "Create New Project": "4",
+            "View/Edit Project": "0",
+            "Share Project": "true",
+            "Download Project": "1",
+            "Download Dictionary": "1"
+        },
+        "enternewsentences page": {
+            "Upload Audio Files": "2"
+        }
+        
+    } 
+]

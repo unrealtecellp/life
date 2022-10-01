@@ -770,6 +770,9 @@ function myFunction(newData) {
   localStorage.setItem("regions", JSON.stringify(newData['transcriptionRegions']));
   // var activeAudioFilename = JSON.parse(localStorage.getItem('AudioFilePath')).split('/')[2];
   var activeAudioFilename = newData["AudioFilePath"].split('/')[2];
+  if (activeAudioFilename === undefined) {
+    activeAudioFilename = '';
+  }
   // console.log(activeAudioFilename)
   var inpt = '<strong>Audio Filename: </strong><strong id="audioFilename">'+ activeAudioFilename +'</strong>'
   $(".defaultfield").append(inpt);
