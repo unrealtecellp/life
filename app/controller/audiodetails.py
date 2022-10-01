@@ -195,7 +195,8 @@ def getaudiofilefromfs(mongo,
     fs =  gridfs.GridFS(mongo.db)                       # creating GridFS instance to get required files                
     file = fs.find_one({ file_type: file_id })
     audioFolder = os.path.join(basedir, 'static/audio')
-    shutil.rmtree(audioFolder)
+    if (os.path.exists(audioFolder)):
+        shutil.rmtree(audioFolder)
     os.mkdir(audioFolder)
     if (file is not None and
         'audio' in file.contentType):
