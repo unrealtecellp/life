@@ -67,7 +67,7 @@ def home():
     activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username,
                             userprojects)
     shareinfo = getsharinginfo.getsharinginfo(userprojects, current_user.username, activeprojectname)
-    # print(shareinfo)
+    print(shareinfo)
 
     return render_template('home.html',
                             data=currentuserprojectsname,
@@ -130,6 +130,7 @@ def enternewsentences():
     activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username,
                             userprojects)
     shareinfo = getsharinginfo.getsharinginfo(userprojects, current_user.username, activeprojectname)
+    print(shareinfo)
 
     if (activeprojectname == ''):
         flash(f"select a project from 'All Projects' to work on!")
