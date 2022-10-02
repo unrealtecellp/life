@@ -1,23 +1,24 @@
-"""Module to get the share info of the project."""
+"""Module to get the user project info of the project."""
 
 
-def getsharinginfo(userprojects, current_username, activeprojectname):
+def getuserprojectinfo(userprojects, current_username, activeprojectname):
 
     projectinfo = userprojects.find_one({'username' : current_username},
                                         {'_id': 0, 'myproject': 1, 'projectsharedwithme': 1})
 
     # print(projectinfo)
-    shareinfo = {}
+    userprojectinfo = {}
     for key, value in projectinfo.items():
         if (len(value) != 0):
             if (activeprojectname in value):
                 # print(key, value, value[activeprojectname])
-                shareinfo = value[activeprojectname]
+                userprojectinfo = value[activeprojectname]
                 # print(shareinfo)
-    if (len(shareinfo) == 0):
-        shareinfo = {
+    if (len(userprojectinfo) == 0):
+        userprojectinfo = {
                         'sharemode': 100,
-                        'sharechecked': "false"
+                        'sharechecked': "false",
+                        'activespeakerId': ""
                     }
 
-    return shareinfo
+    return userprojectinfo

@@ -65,6 +65,8 @@ def saveaudiofiles(mongo,
                                     audio_filename)
         new_audio_details['audioFilename'] = updated_audio_filename
     new_audio_details["textGrid"] = text_grid
+    new_audio_details[current_username] = {}
+    new_audio_details[current_username]["textGrid"] = text_grid
     pprint(new_audio_details)
 
     # save audio file details and speaker ID in projects collection
@@ -91,13 +93,13 @@ def saveaudiofiles(mongo,
     # print(speaker_audio_ids)
     if len(speaker_audio_ids) != 0:
         speaker_audio_ids = speaker_audio_ids['speakersAudioIds']
-        print('speaker_audio_ids', speaker_audio_ids)
+        # print('speaker_audio_ids', speaker_audio_ids)
         if speakerId in speaker_audio_ids:
             speaker_audio_idskeylist = speaker_audio_ids[speakerId]
             speaker_audio_idskeylist.append(audio_id)
             speaker_audio_ids[speakerId] = speaker_audio_idskeylist
         else:
-            print('speakerId', speakerId)
+            # print('speakerId', speakerId)
             speaker_audio_ids[speakerId] = [audio_id]
         pprint(speaker_audio_ids)
     else:
@@ -113,9 +115,18 @@ def saveaudiofiles(mongo,
                     'speakersAudioIds': speaker_audio_ids
                 }})
         # update active speaker ID in userprojects collection
+        projectinfo = userprojects.find_one({'username' : current_username},
+                                        {'_id': 0, 'myproject': 1, 'projectsharedwithme': 1})
+
+        # print(projectinfo)
+        userprojectinfo = ''
+        for key, value in projectinfo.items():
+            if len(value) != 0:
+                if activeprojectname in value:
+                    userprojectinfo = key+'.'+activeprojectname+".activespeakerId"
         userprojects.update_one({"username": current_username},
                                 { "$set": {
-                                    "activespeakerId": speakerId
+                                    userprojectinfo: speakerId
                                 }})
         transcriptions.insert(new_audio_details)
         # save audio file details in fs collection
@@ -355,7 +366,7 @@ def savetranscription(transcriptions,
             transcription_boundary = transcription_boundary['data']
             if 'sentence' in transcription_boundary:
                 for key, value in transcription_boundary['sentence'].items():
-                    print(f"KEY: {key}\nVALUE: {value}")
+                    # print(f"KEY: {key}\nVALUE: {value}")
                     value["speakerId"] = activespeakerId
                     value["sentenceId"] = audio_id
                     sentence[key] = value
@@ -383,10 +394,15 @@ def savetranscription(transcriptions,
             # print(text_grid)
             # transcription_details['textGrid'] = text_grid
             # transcriptions.insert(transcription_details)
-            print("'sentence' in transcription_boundary")
-            print('371', sentence)
-            pprint(sentence)
+            # print("'sentence' in transcription_boundary")
+            # print('371', sentence)
+            # pprint(sentence)
     transcriptions.update_one({ 'audioId': audio_id },
-                                {'$set': { 'textGrid.sentence': sentence,
-                                            'updatedBy': current_username,
-                                            'transcriptionFLAG': 1 }})
+                                {'$set':
+                                    {
+                                        'textGrid.sentence': sentence,
+                                        'updatedBy': current_username,
+                                        'transcriptionFLAG': 1,
+                                        current_username+'.textGrid.sentence': sentence
+                                    }
+                                })
