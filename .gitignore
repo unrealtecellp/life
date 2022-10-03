@@ -1,5 +1,6 @@
 __pycache__
 .vscode
+.flaskenv
 venv
 app/static/audio
 download.zip
@@ -16,3 +17,4 @@ static
 testmyfile.tar
 testmyfile.tgz
 staticdummy_karya_access_code.txt
+nohup.out
