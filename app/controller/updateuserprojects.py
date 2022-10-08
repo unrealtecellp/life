@@ -19,7 +19,9 @@ def updateuserprojects(userprojects,
 
     userprojectnamedict = userprojects.find_one({'username' : current_username})["myproject"]
     userprojectnamedict[projectname] = {
-                                            'sharemode': 4,
+                                            'sharemode': 10,
+                                            'tomesharedby': [],
+                                            'isharedwith': [],
                                             'sharechecked': "true",
                                             'activespeakerId': ''
                                         }

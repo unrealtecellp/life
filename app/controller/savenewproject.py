@@ -22,7 +22,10 @@ def savenewproject(projects,
             "lastActiveId": {
                 current_username: {}
             },
-            "projectdeleteFLAG" : 0
+            "projectdeleteFLAG" : 0,
+            "isPublic": 0,
+            "derivedFromProject": [],
+            "projectDerivatives": []
         }
         projects.insert(project_details)
     else:

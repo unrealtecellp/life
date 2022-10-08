@@ -127,9 +127,9 @@ def enternewsentences():
                                 userprojects)
     activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username, userprojects)
     shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects, current_user.username, activeprojectname)
-    print(shareinfo)
+    # print(shareinfo)
 
-    if (activeprojectname == ''):
+    if activeprojectname == '':
         flash(f"select a project from 'All Projects' to work on!")
         return redirect(url_for('home'))
     if request.method == 'POST':
@@ -163,7 +163,7 @@ def enternewsentences():
                                                                                                         activeprojectname,
                                                                                                         activespeakerid,
                                                                                                         'audio')
-            commentstats = [total_comments, annotated_comments, remaining_comments]                                                                                                        
+            commentstats = [total_comments, annotated_comments, remaining_comments]
             audio_id = audiodetails.getactiveaudioid(projects,
                                                         activeprojectname,
                                                         activespeakerid,
@@ -2708,10 +2708,6 @@ def userslist():
     sharemode = 0
     try:                                                                            
         activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username, userprojects)
-        # print('activeprojectname', activeprojectname)
-        # if (len(activeprojectname) == 0):
-        #     flash(f"select a project from 'All Projects' to work on!")
-        #     return redirect(url_for('home'))
         projectowner = getprojectowner.getprojectowner(projects, activeprojectname)                                
         shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects, current_user.username, activeprojectname)
         sharemode = shareinfo['sharemode']
@@ -2733,7 +2729,7 @@ def userslist():
                                                                                 activeprojectname
                                                                             )['sharemode']
                 print(usersharemode)                                                            
-                if (sharemode < usersharemode):
+                if (sharemode <= usersharemode):
                     usersList.remove(username)
         print(usersList)
         speakersDict = projects.find_one({'projectname': activeprojectname},
@@ -2741,7 +2737,6 @@ def userslist():
         speakersList = speakersDict['speakerIds'][current_user.username]
         print(speakersList)
     except:
-        # return redirect(url_for('home'))
         pass
 
     return jsonify(usersList=sorted(usersList),
@@ -2759,6 +2754,8 @@ def shareprojectwith():
     activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username, userprojects)
     print('activeprojectname', activeprojectname)
 
+    projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
+
     # data through ajax
     data = request.args.get('data')
     data = eval(data)
@@ -2771,10 +2768,11 @@ def shareprojectwith():
     if (sharemode == ''):
         sharemode = 0
     sharechecked = str(data['sharechecked'])
-    print('123', users, speakers, sharemode, sharechecked)
-    # print('456', speakers[-1])
+    # print('123', users, speakers, sharemode, sharechecked)
     
     if (len(users) != 0):
+        projectinfo = userprojects.find_one({'username' : current_user.username},
+                                        {'_id': 0, 'myproject': 1, 'projectsharedwithme': 1})
         for user in users:
             # print(user)
             userdict = {}
@@ -2782,10 +2780,24 @@ def shareprojectwith():
             usershareprojectsname = userprojects.find_one({ 'username' : user },
                                                             {'_id': 0, 'projectsharedwithme': 1})
             usershareprojectsname = usershareprojectsname['projectsharedwithme']
-            usershareprojectsname[activeprojectname] = {'sharemode': sharemode,
-                                                        'sharechecked': sharechecked,
-                                                        'activespeakerId': ''}
-            # print(usershareprojectsname)
+            if activeprojectname in usershareprojectsname:
+                tomesharedby = usershareprojectsname[activeprojectname]['tomesharedby']
+                tomesharedby.append(current_user.username)
+                usershareprojectsname[activeprojectname] = {
+                                                            'sharemode': sharemode,
+                                                            'tomesharedby': list(set(tomesharedby)),
+                                                            'isharedwith': [],
+                                                            'sharechecked': sharechecked,
+                                                            'activespeakerId': ''
+                                                            }
+            else:                                                        
+                usershareprojectsname[activeprojectname] = {
+                                                            'sharemode': sharemode,
+                                                            'tomesharedby': [current_user.username],
+                                                            'isharedwith': [],
+                                                            'sharechecked': sharechecked,
+                                                            'activespeakerId': ''
+                                                            }
             projectdetails = projects.find_one({'projectname': activeprojectname},
                                                 {'_id': 0,
                                                 'sharedwith': 1,
@@ -2801,13 +2813,6 @@ def shareprojectwith():
                                 {'$set': {'sharedwith': list(set(projectdetails['sharedwith']))}})
             
             if (len(speakers) != 0):
-                # projectdetails['speakerIds'][user] = speakers
-                # userprojects.update_one({ 'username' : user },
-                #                     { '$set': { 'activespeakerId': speakers[-1] }})
-                projectinfo = userprojects.find_one({'username' : current_user.username},
-                                        {'_id': 0, 'myproject': 1, 'projectsharedwithme': 1})
-
-                # print(projectinfo)
                 userprojectinfo = ''
                 for key, value in projectinfo.items():
                     if len(value) != 0:
@@ -2817,27 +2822,31 @@ def shareprojectwith():
                                         { "$set": {
                                             userprojectinfo: speakers[-1]
                                         }})
-                projects.update_one({'projectname': activeprojectname},
-                                {'$set': {'speakerIds.'+user: speakers}})
+                
                 for speaker in speakers:
+                    print(speaker)
+                    projects.update_one({'projectname': activeprojectname},
+                                {'$addToSet': {'speakerIds.'+user: speaker}})
                     userlastactiveId = projectdetails['lastActiveId'][current_user.username][speaker]['audioId']
-                    # print(userlastactiveId)
-                    # if (user in projectdetails['lastActiveId']):
-                        # projectdetails['lastActiveId'][user][speaker] = {'audioId': userlastactiveId}
                     projects.update_one({'projectname': activeprojectname},
                                 {'$set': {'lastActiveId.'+user+'.'+speaker+'.audioId': userlastactiveId}})
-                    # else:
-                    #     # userdict[speaker] = {'audioId': userlastactiveId}
-                    #     # projectdetails['lastActiveId'][user] = userdict
-
-                    #     projects.update_one({'projectname': activeprojectname},
-                    #             {'$set': {'lastActiveId.'+user: userdict}})
-            # print(projectdetails)
-            else:
+            elif user not in projectdetails['speakerIds']:
                 projects.update_one({'projectname': activeprojectname},
                                 {'$set': {'lastActiveId.'+user: {}}})
 
-    
+            for key, value in projectinfo.items():
+                if (len(value) != 0 and
+                    activeprojectname in value):
+                    userprojects.update_one({"username": current_user.username},
+                                        { "$addToSet": {
+                                            key+'.'+activeprojectname+'.isharedwith': user
+                                        }})
+                    if projectowner != current_user.username:
+                        userprojects.update_one({"username": projectowner},
+                                            { "$addToSet": {
+                                                'myproject.'+activeprojectname+'.isharedwith': user
+                                            }})
+
     return 'OK'
 
 # modal view with complete detail of a lexeme
@@ -3639,3 +3648,31 @@ def changespeakerid():
     #                         { '$set' : { 'activespeakerId' :  speakerId}})
 
     return 'OK'
+
+# get progress report
+@app.route('/progressreport', methods=['GET'])
+@login_required
+def progressreport():
+    projects, userprojects, transcriptions = getdbcollections.getdbcollections(mongo,
+                                                                                'projects',
+                                                                                'userprojects',
+                                                                                'transcriptions')
+    current_username = getcurrentusername.getcurrentusername()
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_username, userprojects)
+
+    progressreport = ''
+
+    # print(current_username, activeprojectname)
+    shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects, current_username, activeprojectname)
+    # print(shareinfo)
+
+    if 'isharedwith' in shareinfo:
+        isharedwith = shareinfo['isharedwith']
+        # print('isharedwith', isharedwith)
+        isharedwith.append(current_username)
+        # print('isharedwith_2', isharedwith)
+        progressreport = audiodetails.getaudioprogressreport(projects, transcriptions, activeprojectname, isharedwith)
+
+    # print(progressreport)
+
+    return jsonify(progressreport=progressreport)
