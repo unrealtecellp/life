@@ -2,7 +2,6 @@
 
 
 import json
-# from pprint import pprint
 import os
 import shutil
 from datetime import datetime
@@ -11,6 +10,7 @@ from pprint import pprint
 import gridfs
 from flask import flash
 import pandas as pd
+from app.controller import getcommentstats
 
 def saveaudiofiles(mongo,
                     projects,
@@ -67,7 +67,7 @@ def saveaudiofiles(mongo,
     new_audio_details["textGrid"] = text_grid
     new_audio_details[current_username] = {}
     new_audio_details[current_username]["textGrid"] = text_grid
-    pprint(new_audio_details)
+    # pprint(new_audio_details)
 
     # save audio file details and speaker ID in projects collection
     speakerIds = projects.find_one({ 'projectname': activeprojectname },
@@ -101,12 +101,12 @@ def saveaudiofiles(mongo,
         else:
             # print('speakerId', speakerId)
             speaker_audio_ids[speakerId] = [audio_id]
-        pprint(speaker_audio_ids)
+        # pprint(speaker_audio_ids)
     else:
         speaker_audio_ids = {
             speakerId: [audio_id]
         }
-    pprint(speaker_audio_ids)
+    # pprint(speaker_audio_ids)
     try:
         projects.update_one({ 'projectname' : activeprojectname },
                 { '$set' : {
@@ -361,7 +361,7 @@ def savetranscription(transcriptions,
     sentence = {}
     if transcription_regions is not None:
         transcription_regions = json.loads(transcription_regions)
-        pprint(transcription_regions)
+        # pprint(transcription_regions)
         for transcription_boundary in transcription_regions:
             transcription_boundary = transcription_boundary['data']
             if 'sentence' in transcription_boundary:
@@ -406,3 +406,26 @@ def savetranscription(transcriptions,
                                         current_username+'.textGrid.sentence': sentence
                                     }
                                 })
+
+def getaudioprogressreport(projects, transcriptions, activeprojectname, isharedwith):
+    datatoshow = {}
+    users_speaker_ids = projects.find_one({ 'projectname': activeprojectname },
+                                    { '_id': 0, 'speakerIds': 1 })['speakerIds']
+    # print('speaker_ids_1', users_speaker_ids)
+    if len(users_speaker_ids) != 0:
+        # print('speaker_ids_2', users_speaker_ids)
+        for username in isharedwith:
+            datatoshow[username] = {}
+            if username in users_speaker_ids:
+                for speakerid in users_speaker_ids[username]:
+                    total_comments, annotated_comments, remaining_comments = getcommentstats.getcommentstats(projects,
+                                                                                                        transcriptions,
+                                                                                                        activeprojectname,
+                                                                                                        speakerid,
+                                                                                                        'audio')
+                    commentstats = [total_comments, annotated_comments, remaining_comments]
+                    datatoshow[username][speakerid] = commentstats
+
+    # print('datatoshow', datatoshow)
+
+    return datatoshow

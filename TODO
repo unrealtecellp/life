@@ -89,3 +89,22 @@
 24 September 2022
 ---------------------------------------------------------------
 - download and save wavesurfer to use in offline mode too
+
+27 September 2022
+---------------------------------------------------------------
+- zoom in/out wavesurfer
+- textgrid download
+- customized download with audio properties intensity, pitch visibility, formant visibility (4th, 5th)
+- csv with duration of the audio
+- Aligner: https://montreal-forced-aligner.readthedocs.io/en/latest/first_steps/index.html
+- download audio
+    - only textgrid
+    - both audio and textgrid
+    - sliced audio and their textgrid
+- test by uploading large audio files
+- IPA to meetei script mapping
+
+03 September 2022
+---------------------------------------------------------------
+- change the name of the transcriptions collection to audio collection
+- 

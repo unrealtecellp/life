@@ -28,8 +28,11 @@ $(document).ready(function() {
         $('#shareProjectSelect').append(usersToShare)
         $('#shareSpeakerSelect').append(speakersToShare)
         for (i=0; i<=sharemodecount;i++) {
-          shareMode += '<input type="radio" id="'+shareModeList[i]+'" name="sharemode" value="'+i+'">'+
+          // console.log(shareModeList[i]);
+          if (shareModeList[i] !== undefined) {
+            shareMode += '<input type="radio" id="'+shareModeList[i]+'" name="sharemode" value="'+i+'">'+
                         '<label for="'+shareModeList[i]+'">&nbsp; '+shareModeList[i]+'</label><br>';
+          }
         }
         shareMode += '<input type="checkbox" id="sharechecked" name="sharechecked" value="">'+
                       '<label for="sharechecked">&nbsp; Share</label><br>';

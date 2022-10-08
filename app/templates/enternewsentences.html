@@ -18,6 +18,10 @@
         <h4>Project Name : {{ projectName }}</h4><br>
     {% endif %}
     {% if speakerids is defined %}
+    <button type="button" id="progressreport" class="btn btn-lg btn-warning" data-toggle="modal" data-target="#myProgressReportModal">
+      Progress Report
+    </button>
+    <br>
     <label for="speakeridsdropdown">Audio Files of Speaker: </label>
     <select class="custom-select custom-select-sm" id="speakeridsdropdown" style="margin-top:10px">
         <option selected disabled>{{ activespeakerid }}</option>
@@ -38,7 +42,7 @@
           <br>
           <input type="file" id="audiofile" name="audiofile" required>
           <br>
-          <input class="btn btn-primary uploadbtn" type="submit" value="Upload Audio Files">
+          <input class="btn btn-primary uploadbtn" type="submit" value="Upload Audio File">
         </div>
       </form>
     </div>
@@ -150,6 +154,34 @@
   <br>
   <div class="clear"></div>
 
+  <!-- Progress Report Modal -->
+  <div class="modal fade" id="myProgressReportModal" tabindex="-1" role="dialog" aria-labelledby="myProgressReportModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="myProgressReportModalLabel">Project Name: {{ projectName }}</h4>
+        </div>
+        <div class="modal-body">
+          <!-- <div class="col-xs-6"> -->
+            <input id="myInput" class="form-control" type="text" placeholder="Search">
+          <!-- </div> -->
+          <br>
+          <div class="row">
+            <div class="col-xs-12">
+              <div class="form-group">
+                <div class="progressreport"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- <label for="ipa">IPA</label>
   <input type="text" id="ipa" name="ipa"><br><br>
   <label for="meetei">Meetei</label>
@@ -165,5 +197,8 @@
 <script src="https://unpkg.com/wavesurfer.js/dist/plugin/wavesurfer.minimap.js"></script>
 <script src="{{url_for('.static', filename='audiotranscription.js')}}"></script>
 <script src="{{url_for('.static', filename='changeactivespeaker.js')}}"></script>
+<script src="{{url_for('.static', filename='progressreport.js')}}"></script>
+<script src="{{url_for('.static', filename='search.js')}}"></script>
+<script src="{{url_for('.static', filename='sorttable.js')}}"></script>
 <script type="text/javascript">myFunction({{ newData | tojson | safe }});</script>
 {% endblock %}

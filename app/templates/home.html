@@ -42,7 +42,6 @@ Home
           Assign Karya Access Code
         </button>
       </div> -->
-      <button type="button" class="btn btn-lg btn-info pull-right" onclick="window.location.href='{{ url_for('karya_bp.home_insert') }}';">Karya Extension</button>
         <!-- <button type="button" class="btn btn-lg btn-warning downloadProject">Download Project</button> -->
     </div>
     </div>
@@ -71,7 +70,7 @@ Home
 
    </div>     
    {% endif %}
-   <!-- Share Project Modal -->
+  <!-- Share Project Modal -->
   <div class="modal fade" id="myShareProjectModal" tabindex="-1" role="dialog" aria-labelledby="myShareProjectModalLabel">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
@@ -139,7 +138,7 @@ Home
 {% block scripts %}
 {{super()}}
 <script src="{{url_for('.static', filename='shareproject.js')}}"></script>
-<script src="{{url_for('.static', filename='sharemode.js')}}"></script>
+<!-- <script src="{{url_for('.static', filename='sharemode.js')}}"></script> -->
 <script src="{{url_for('.static', filename='shareprojectwith.js')}}"></script>
 <script src="{{url_for('.static', filename='assignkaryaaccesscode.js')}}"></script>
 <script src="{{url_for('.static', filename='home.js')}}"></script>
