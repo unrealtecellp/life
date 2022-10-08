@@ -103,3 +103,8 @@
     - sliced audio and their textgrid
 - test by uploading large audio files
 - IPA to meetei script mapping
+
+03 September 2022
+---------------------------------------------------------------
+- change the name of the transcriptions collection to audio collection
+- 
