@@ -50,7 +50,7 @@ scriptCodeJSONFilePath = os.path.join(basedir, 'static/json/scriptCode.json')
 langScriptJSONFilePath = os.path.join(basedir, 'static/json/langScript.json')
 ipatomeeteiFilePath = os.path.join(basedir, 'static/json/ipatomeetei.json')
 
-print(f'{"#"*80}Base directory:\n{basedir}\n{"#"*80}')
+print(f'{"#"*80}\nBase directory:\n{basedir}\n{"#"*80}')
 
 
 # home page route
