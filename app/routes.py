@@ -2720,7 +2720,7 @@ def userslist():
         if (current_user.username == projectowner):
             usersList.remove(projectowner)
         else:
-            print(usersList)
+            # print(usersList)
             usersList.remove(projectowner)
             usersList.remove(current_user.username)
             for username in usersList:
@@ -2728,14 +2728,14 @@ def userslist():
                                                                                 username,
                                                                                 activeprojectname
                                                                             )['sharemode']
-                print(usersharemode)                                                            
+                # print(usersharemode)
                 if (sharemode <= usersharemode):
                     usersList.remove(username)
-        print(usersList)
+        # print(usersList)
         speakersDict = projects.find_one({'projectname': activeprojectname},
                                             {'_id':0, 'speakerIds.'+current_user.username: 1})
         speakersList = speakersDict['speakerIds'][current_user.username]
-        print(speakersList)
+        # print(speakersList)
     except:
         pass
 
@@ -2752,7 +2752,7 @@ def shareprojectwith():
                                                                 'userprojects')
     
     activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username, userprojects)
-    print('activeprojectname', activeprojectname)
+    # print('activeprojectname', activeprojectname)
 
     projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
 
@@ -2764,7 +2764,7 @@ def shareprojectwith():
     # print(type(users))
     speakers = data['sharespeakers']
     sharemode = data['sharemode']
-    print(sharemode)
+    # print(sharemode)
     if (sharemode == ''):
         sharemode = 0
     sharechecked = str(data['sharechecked'])
@@ -2824,7 +2824,7 @@ def shareprojectwith():
                                         }})
                 
                 for speaker in speakers:
-                    print(speaker)
+                    # print(speaker)
                     projects.update_one({'projectname': activeprojectname},
                                 {'$addToSet': {'speakerIds.'+user: speaker}})
                     userlastactiveId = projectdetails['lastActiveId'][current_user.username][speaker]['audioId']
@@ -3676,3 +3676,11 @@ def progressreport():
     # print(progressreport)
 
     return jsonify(progressreport=progressreport)
+
+
+# get progress report
+@app.route('/test', methods=['GET'])
+@login_required
+def test():
+
+    return render_template('test.html')

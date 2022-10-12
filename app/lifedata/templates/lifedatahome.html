@@ -16,10 +16,27 @@ LiFe Data Home
   <br/>
   <hr/>
   <div id="activeProject">
-    <button type="button" class="btn btn-lg btn-success" onclick="window.location.href='{{ url_for('newproject') }}';">Create New Data</button>
+    <button type="button" id="createnewdatabtn" class="btn btn-lg btn-success">Create New Data Project</button>
+    <button type="button" id="derivefromdatabtn" class="btn btn-lg btn-success pull-right">Derived Data Project</button>
     <br/>
     <br/>
     <hr/>
+    <div id="createnewdatasubbtn" style="display: none;">
+      <button type="button" class="btn btn-lg btn-primary" onclick="window.location.href='{{ url_for('newproject') }}';">Manual Entry</button>
+      <button type="button" class="btn btn-lg btn-primary" onclick="window.location.href='{{ url_for('newproject') }}';">Crawler</button>
+      <button type="button" class="btn btn-lg btn-primary" onclick="window.location.href='#;">Karya Extention</button>
+    </div>
+    <div id="derivefromdatasubbtn" style="display: none;">
+      <div class="col-md-6">
+        <select name="" id="derivefromdataselect" style="width: 100%"></select>
+        <br>
+        <br>
+        <div id="derivefromdataform"></div>
+      </div>
+    </div>
+    <br>
+    <br>
+    <hr>
   </div> 
     
 {% endblock %}
