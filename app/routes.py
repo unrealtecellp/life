@@ -3596,7 +3596,6 @@ def loadunannotext():
 @app.route('/uploadaudiofiles', methods=['GET', 'POST'])
 @login_required
 def uploadaudiofiles():
-
     projects, userprojects, transcriptions = getdbcollections.getdbcollections(mongo,
                                                 'projects',
                                                 'userprojects',
@@ -3682,5 +3681,62 @@ def progressreport():
 @app.route('/test', methods=['GET'])
 @login_required
 def test():
+    projects, userprojects, projectsform, questionnaire, transcriptions = getdbcollections.getdbcollections(mongo,
+                                                                                                        'projects',
+                                                                                                        'userprojects',
+                                                                                                        'projectsform',
+                                                                                                        'questionnaire',
+                                                                                                        'transcriptions')
+    current_username = getcurrentusername.getcurrentusername()
+    currentuserprojectsname =  getcurrentuserprojects.getcurrentuserprojects(current_username,
+                                                                                userprojects)
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                    userprojects)
+    projectowner = getprojectowner.getprojectowner(projects,
+                                                    activeprojectname)
+    quesprojectform = getactiveprojectform.getactiveprojectform(projectsform,
+                                                                projectowner,
+                                                                activeprojectname)
+    shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
+                                                        current_username,
+                                                        activeprojectname)
 
-    return render_template('test.html')
+    print('current_username', current_username)
+    print('currentuserprojectsname', currentuserprojectsname)
+    print('activeprojectname', activeprojectname)
+    print('projectowner', projectowner)
+    print('quesprojectform', quesprojectform)
+    print('shareinfo', shareinfo)
+
+    return render_template('test.html',
+                            projectName=activeprojectname,
+                            quesprojectform=quesprojectform,
+                            data=currentuserprojectsname,
+                            shareinfo=shareinfo)
+
+# uploadquesfiles route
+@app.route('/uploadquesfiles', methods=['GET', 'POST'])
+@login_required
+def uploadquesfiles():
+    projects, userprojects, questionnaires = getdbcollections.getdbcollections(mongo,
+                                                'projects',
+                                                'userprojects',
+                                                'questionnaires')
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username,
+                            userprojects)
+    projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
+    if request.method == 'POST':
+        # speakerId = dict(request.form.lists())['speakerId'][0]
+        new_ques_file = request.files.to_dict()
+        audiodetails.saveaudiofiles(mongo,
+                                    projects,
+                                    userprojects,
+                                    transcriptions,
+                                    projectowner,
+                                    activeprojectname,
+                                    current_user.username,
+                                    speakerId,
+                                    new_audio_file
+                                    )
+
+    return redirect(url_for('enternewsentences'))

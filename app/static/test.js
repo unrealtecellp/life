@@ -1,11 +1,11 @@
 var questionaireprojectform = {
   "username": "alice",
   "projectname": "alice_project_1",
-  "Elicitation Method": ["select", ["Translation", "Agriculture", "Sports"]],
-  "Domain": ["multiselect", ["General", "Agriculture", "Sports"]],
   "Language": ["text", ["English", "Hindi"]],
   "Script": ["", ["latin", "devanagari"]],
   "Prompt Audio": ["file", ["audio"]],
+  "Domain": ["multiselect", ["General", "Agriculture", "Sports"]],
+  "Elicitation Method": ["select", ["Translation", "Agriculture", "Sports"]],
   "Target": ["multiselect", ["case", "classifier", "adposition"]]
 }
 
@@ -45,32 +45,65 @@ function createSelectElement(key, elevalue, type) {
   return qform;
 }
 
-var quesform = '';
-quesform += '<div class="col-md-6">';
-quesform += '<form action="{{ url_for(\'newproject\') }}" method="POST" enctype="multipart/form-data">';
-for (let [key, value] of Object.entries(questionaireprojectform)) {
-  // console.log(key, value, value[0], typeof value);
-  eletype = value[0];
-  elevalue = value[1];
-  if (eletype === 'text') {
-    quesform += createInputElement(key, elevalue, eletype)
+function createquesform(quesprojectform) {
+  quesprojectform = questionaireprojectform;
+  var quesform = '';
+  // quesform += '<div class="col-md-6">';
+  quesform += '<form action="{{ url_for(\'newproject\') }}" method="POST" enctype="multipart/form-data">';
+  for (let [key, value] of Object.entries(quesprojectform)) {
+    // console.log(key, value, value[0], typeof value);
+    eletype = value[0];
+    elevalue = value[1];
+    if (eletype === 'text') {
+      quesform += createInputElement(key, elevalue, eletype)
+    }
+    else if (eletype === 'file') {
+      quesform += createInputElement(key, elevalue, eletype)
+    }
+    else if (eletype === 'select') {
+      quesform += createSelectElement(key, elevalue, '')
+    }
+    else if (eletype === 'multiselect') {
+      quesform += createSelectElement(key, elevalue, 'multiple')
+    }
   }
-  else if (eletype === 'file') {
-    quesform += createInputElement(key, elevalue, eletype)
-  }
-  else if (eletype === 'select') {
-    quesform += createSelectElement(key, elevalue, '')
-  }
-  else if (eletype === 'multiselect') {
-    quesform += createSelectElement(key, elevalue, 'multiple')
-  }
+  // quesform += '<input class="btn btn-lg btn-primary" type="submit" value="Submit">';
+  quesform += '</form>'
+  // quesform += '</div>';
+  $('#quesform').html(quesform);
+  $('.quesselect').select2({
+    placeholder: 'select',
+    // data: usersList,
+    allowClear: true
+  });
 }
-quesform += '<input class="btn btn-lg btn-primary" type="submit" value="Submit">';
-quesform += '</form>'
-quesform += '</div>';
-$('#questionnaire').html(quesform);
-$('.quesselect').select2({
-  placeholder: 'select',
-  // data: usersList,
-  allowClear: true
-});
+
+function previousAudio() {
+  var lastActiveId = document.getElementById("lastActiveId").value;
+    $.ajax({
+        url: '/loadpreviousaudio',
+        type: 'GET',
+        data: {'data': JSON.stringify(lastActiveId)},
+        contentType: "application/json; charset=utf-8", 
+        success: function(response){
+          window.location.reload();
+        }
+    });
+    return false;
+}
+
+function nextAudio() {
+  var lastActiveId = document.getElementById("lastActiveId").value;
+    $.ajax({
+        url: '/loadnextaudio',
+        type: 'GET',
+        data: {'data': JSON.stringify(lastActiveId)},
+        contentType: "application/json; charset=utf-8", 
+        success: function(response){
+          window.location.reload();
+        }
+    });
+    return false;
+}
+
+createquesform()
