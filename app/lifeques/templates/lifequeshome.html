@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block title %}
+LiFe Questionnaire Home
+{% endblock title %}
+
+{% block styles %}
+{{super()}}
+<link href="{{url_for('.static', filename='lifequeshome.css')}}" rel="stylesheet" />
+{% endblock %}
+
+
+{% block app_content %}
+  <h2>LiFE - Questionnaire</h2>
+  <hr>
+  <div id="quesbtn">
+    <button type="button" id="createnewquesbtn" class="btn btn-lg btn-success">Create New Questionnaire Project</button>
+    <button type="button" id="derivefromquesbtn" class="btn btn-lg btn-primary pull-right">Derive Questionnaire Project</button>
+    <br/>
+    <br/>
+    <hr/>
+  </div>
+  <div id="quessubbtn">
+    <div id="createnewquessubbtn" style="display: none;">
+      <button type="button" id="quesmanualentrybtn" class="btn btn-lg btn-primary" >Manual Entry</button>
+      <button type="button" class="btn btn-lg btn-primary" onclick="window.location.href= #;">Crawler</button>
+      <button type="button" class="btn btn-lg btn-primary" onclick="window.location.href= #;">Karya Extention</button>
+    </div>
+    <div id="derivefromquessubbtn" style="display: none;">
+      <div class="col-md-6">
+        <select name="" id="derivefromquesselect" style="width: 100%"></select>
+        <br>
+        <br>
+        <div id="derivefromquesform"></div>
+      </div>
+    </div>
+    <br>
+    <hr>
+  </div>
+  <div id="quesform"  style="display: none;">
+    <h3>Create Form for your Project</h3>
+    <hr>
+    <form action="{{ url_for('lifeques.newquestionnaireform') }}" method="POST" enctype="multipart/form-data">
+      <div class="form-group">
+        <label for="idprojectname">Project Name</label>
+        <input type="text" class="form-control" id="idprojectname" placeholder="Project Name" name="projectname" style="width: 55%" required>
+      </div>
+
+      <div class="form-group">
+        <label for= "idabout">About the Project</label><br>                        
+        <textarea id="idabout" name="aboutproject" style="width:55%" required></textarea>
+      </div> 
+      <div class="row ">
+        <div class="col-md-3">
+          <label>Prompt Languages and Scripts</label>
+          <p>
+            <em>
+            *Select language(s) and their script(s) of the prompts included in the Questionnaire
+          </em>
+          </p>
+        </div>
+      </div>
+      <div class="row"> 
+        <div class="col-md-3">
+          <div class="form-group">
+                <button class="btn btn-success" type="button" id="addpromptlangscripts"> 
+                  <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 
+                </button>
+          </div>
+        </div>
+      </div>
+      <div class="promptlangscripts"></div>
+
+      <div class="form-group">
+        <label for="idprompttype">Prompt Type</label><br>                           
+        <select class="prompttype" id="idprompttype" name="Prompt Type" multiple="multiple" style="width:55%" required>
+        </select>
+      </div> 
+      <div class="form-group">
+        <input type="checkbox" id="idincludetranscription" name="Include Transcription">
+        <label for="idincludetranscription">Include Transcription</label><br>
+      </div>
+
+      <div class="form-group">
+        <input type="checkbox" id="idincludeinstruction" name="Include Instruction">
+        <label for="idincludeinstruction">Include Instruction</label><br>
+      </div>
+
+      <div class="form-group">
+        <label for="iddomain">Domain</label><br>                           
+        <select class="questionnairedomain" id="iddomain" name="Domain" multiple="multiple" style="width:55%" required></select><br>
+      </div>
+
+      <div class="form-group">
+          <label for="idem">Elicitation Method</label><br>                           
+          <select class="elicitationmethod" id="idem" name="Elicitation Method" multiple="multiple" style="width:55%" required></select><br>
+      </div>
+
+      <div class="form-group">
+        <input type="checkbox" id="idtarget" name="Target" required>
+        <label for="idtarget">Target</label><br>
+      </div>
+      <!-- <div class="form-group">
+        <label for="idtarget"> Target : </label><br>                           
+        <select class="target" id="idtarget" name="Target" multiple="multiple" style="width:55%" required></select><br>
+      </div>  -->
+
+      <div class="row">
+        <div class="col-md-3">
+          <p><strong>Add Custom Fields</strong></p>
+        </div>
+      </div>
+      <div class="row"> 
+        <div class="col-md-3">
+          <div class="form-group">
+            <button class="btn btn-success" type="button" id="quesaddCustomField"> 
+              <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="quescustomfield"></div>
+      <br>
+      <input class="btn btn-lg btn-primary create" id="submit" type="submit" value="Create Form">
+    </form>
+  </div>
+    
+{% endblock %}
+
+{% block scripts %}
+{{super()}}
+<script src="{{url_for('.static', filename='lifequeshome.js')}}"></script>
+<script src="{{url_for('.static', filename='newquestionnaireform.js')}}"></script>
+{% endblock %}

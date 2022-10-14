@@ -1,0 +1,19 @@
+{
+    "projectname": "",
+    "quesID": "",
+    "Q_Id": "",
+    "lastUpdatedBy": "",
+    "domain": "",
+    "elicitation method": "",
+    "target": "",
+    "prompt": {
+        "bhojpuri": "",
+        "awadhi": ""
+    },
+    "current_username": {
+        "prompt": {
+            "bhojpuri": "",
+            "awadhi": ""
+        }   
+    }
+}

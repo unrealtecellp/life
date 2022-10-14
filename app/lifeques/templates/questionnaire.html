@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block title %}
+  Questionnaire
+{% endblock title %}
+
+
+{% block styles %}
+{{super()}}
+{% endblock %}
+
+{% block app_content %}
+<div class="row">
+    <div class="col-sm-9">
+      {% if projectName is defined %}
+          <h4>Project Name : {{ projectName }}</h4><br>
+      {% endif %}
+      <button type="button" id="progressreport" class="btn btn-lg btn-warning" data-toggle="modal" data-target="#myProgressReportModal">
+        Progress Report
+      </button>
+      <br>
+    </div>
+    {% if  shareinfo['sharemode']|int >= 3 %}
+      <div class="col-sm-3">
+        <form name="newquesupload" action="/uploadquesfiles" method="POST" enctype="multipart/form-data">
+          <div class="col upload">
+            <input type="file" id="quesfile" name="quesfile" required>
+            <br>
+            <input class="btn btn-primary uploadbtn" type="submit" value="Upload Questionnaire">
+            <br>
+            <a href="https://docs.google.com/spreadsheets/d/17IHUcACEqrZL4AGMuX9dxt1tJST9gtmDocMmKXiy0AY/edit?usp=sharing" target="_blank">
+              Sample File
+            </a>
+          </div>
+        </form>
+      </div>
+    {% endif %}
+</div>
+<hr>
+<div id="questionnaire">
+    <div id="quesform"></div>
+    <hr>
+    <div id="quesformControl">
+        <button class="btn btn-info btn-lg" type="button" id="previous" onclick="previousAudio()">
+        <span class="previousaudio glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+        Previous
+        </button>
+        <button class="btn btn-info btn-lg pull-right" type="button" id="next" onclick="nextAudio()">
+        Next
+        <span class="nextaudio glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+        </button>
+        <br>
+        <br>
+        <button class="btn btn-warning btn-lg btn-block pull-right" id="saveques">
+          Save
+          <span class="saveaudio glyphicon glyphicon-floppy-save" aria-hidden="true"></span>
+        </button>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{super()}}
+<script src="{{url_for('.static', filename='questionnaire.js')}}"></script>
+<script type="text/javascript">createquesform({{ quesprojectform | tojson | safe }});</script>
+{% endblock %}

@@ -16,6 +16,7 @@ from zipfile import ZipFile
 import re
 from jsondiff import diff
 import pandas as pd
+import io
 
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.naive_bayes import MultinomialNB
@@ -42,6 +43,7 @@ from app.controller import readJSONFile, createdummylexemeentry
 from app.controller import savenewproject, updateuserprojects, savenewprojectform
 from app.controller import audiodetails, getcurrentusername, getcommentstats
 from app.controller import unannotatedfilename, getuserprojectinfo
+from app.controller import questionnairedetails
 import shutil, traceback
 
 
@@ -3672,10 +3674,31 @@ def progressreport():
         # print('isharedwith_2', isharedwith)
         progressreport = audiodetails.getaudioprogressreport(projects, transcriptions, activeprojectname, isharedwith)
 
-    # print(progressreport)
-
-<<<<<<<<< Temporary merge branch 1
-    return 'OK'
-=========
     return jsonify(progressreport=progressreport)
->>>>>>>>> Temporary merge branch 2
+
+# uploadquesfiles route
+@app.route('/uploadquesfiles', methods=['GET', 'POST'])
+@login_required
+def uploadquesfiles():
+    projects, userprojects, questionnaires = getdbcollections.getdbcollections(mongo,
+                                                'projects',
+                                                'userprojects',
+                                                'questionnaires')
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username,
+                            userprojects)
+    projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
+    if request.method == 'POST':
+        # speakerId = dict(request.form.lists())['speakerId'][0]
+        new_ques_file = request.files.to_dict()
+        audiodetails.saveaudiofiles(mongo,
+                                    projects,
+                                    userprojects,
+                                    transcriptions,
+                                    projectowner,
+                                    activeprojectname,
+                                    current_user.username,
+                                    speakerId,
+                                    new_audio_file
+                                    )
+
+    return redirect(url_for('enternewsentences'))
