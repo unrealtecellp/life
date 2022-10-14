@@ -52,7 +52,8 @@ karya_bp = Blueprint('karya_bp', __name__, template_folder='templates', static_f
 @karya_bp.route('/home_insert')
 def home_insert():
     return render_template("home_insert.html")
-
+    # return redirect(url_for('karya_bp.home_insert'))
+    # return render_template("uploadfile.html")
 
 ##################################################################################
 #########################################################################################################
@@ -569,7 +570,7 @@ def fetch_karya_audio():
             sentence.append(sentences)
     ###################################################################
         id_find = r_j['assignments']
-        speakerID = [item['id'] for item in id_find] #new_dict
+        fileID_list = [item['id'] for item in id_find] #new_dict
         # print(len(new_dict))
 
     ###################################################################
@@ -577,7 +578,10 @@ def fetch_karya_audio():
         # print(res)
         # res = dict(zip(workerId_list, new_dict))
         # print(res)
-        audio_speaker_merge = {key:value for key, value in zip(speakerID , workerId_list)}
+
+
+        #put check condiotn -> if the speakerId and fileID  previouls fetched or not / Fetch on the basis of fileID assign to speakerID
+        audio_speaker_merge = {key:value for key, value in zip(fileID_list , workerId_list)} #speakerID = fileID_list(fieldID)
         print(audio_speaker_merge)
         # print(audio_speaker_merge.keys())
 
@@ -708,3 +712,6 @@ def fetch_karya_audio_zip():
         # return redirect(url_for('karya_bp.home_insert'))
         return redirect(url_for('karya_bp.home_insert'))
     return render_template("karya_bp.fetch_karya_audio_zip")
+
+
+
