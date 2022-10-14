@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
+  <script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap.min.js"></script>  
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css" />
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.1/bootstrap3-editable/css/bootstrap-editable.css" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.1/bootstrap3-editable/js/bootstrap-editable.js"></script>
+
+
+
+  <style>
+  
+    h1 {text-align: center;}
+
+    input[type=button]:hover {
+      box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24),0 17px 50px 0 rgba(0,0,0,0.19);
+    }
+    
+    div {
+      border-radius: 20px;
+      background-color: rgba(247, 235, 220, 0.253);
+      padding: 1px;
+    }
+    </style>
+  
+</head>
+
+  
+<body>
+  {% extends "links.html" %}
+
+
+
+  {% block styles %}
+  {{super()}}
+  <link href="{{url_for('.static', filename='dictionaryview.css')}}" rel="stylesheet">
+  {% endblock %}
+  
+  {% block app_content %}
+  {% if projectName is defined %}
+    <h4>
+        Project Name : {{ projectName }}
+  
+    </h4><br>
+  {% endif %}
+  
+
+
+  <script>
+
+
+  </script>
+
+
+
+
+  <div>
+  <meta name="viewport" content="width=device-width, initial-scale=1">  
+  <title>Save form Data in a Text File using JavaScript</title>
+<h1><b>Life Questionnarie Integration</b></h1>
+
+<br><br><br><br>
+
+  <h2>Questionnaire form</h2>
+  <input type="button" class="btn btn-lg btn-primary create" value="Questionnaire Form" onclick="window.location.href='{{url_for('life_ques.questionnaireform')}}';"> 
+  <br><br><br><br><br>
+</div>
+
+<br><br><br><br>
+{% endblock %}
+</body>
+
+{% block scripts %}
+{{super()}}
+<script src="{{url_for('.static', filename='dictionaryview.js')}}"></script>
+<script src="{{url_for('.static', filename='search.js')}}"></script>
+<script src="{{url_for('.static', filename='sorttable.js')}}"></script>
+<script src="{{url_for('.static', filename='lexemeview.js')}}"></script>
+<script src="{{url_for('.static', filename='lexemeedit.js')}}"></script>
+<script src="{{url_for('.static', filename='editlexeme.js')}}"></script>
+<script src="{{url_for('.static', filename='lexemedelete.js')}}"></script>
+<script src="{{url_for('.static', filename='shareproject.js')}}"></script>
+<script src="{{url_for('.static', filename='shareprojectwith.js')}}"></script>
+<script src="{{url_for('.static', filename='speaker_select2_dropdown.js')}}"></script>
+{% endblock %} 
+</html>
+
+
+
+

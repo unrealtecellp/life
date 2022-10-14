@@ -115,6 +115,9 @@
                   activeform(buttonType)
                   $('#formdisplay').find('input, select').attr('disabled', true);
                   $('#editbutton').attr('hidden', false);
+                  // $('#idname').attr('hidden', true);
+                  // $('#idage').attr('hidden', true);
+                  
                   // sending accesscode using AJAX
                   // getting speaker details assigned to that accesscode
               
@@ -210,24 +213,31 @@
                 $('#editbutton').click(function() {
                   $('#formdisplay').find('input, select').attr('disabled', false);
                   $('#editbutton').attr('hidden', true);
-                })
+                  // $('#idname').hidden();
+                  // $('#idage').attr('hidden', false);
+                  document.getElementById('idname').disabled = true;
+                  document.getElementById('idage').disabled = true;
+                });
 
                 $('.assignaccesscode').click(function() {
                   buttonType = $(this).attr("id")
                   activeform(buttonType)
                   // activeform()
                   $('#editbutton').attr('hidden', true)
-
+                  // document.getElementById('idname').style.display = "block";
                   $('#formdisplay').find('input, select').attr('disabled', false);
 
                   // $("#formdisplay").trigger('clear');
                   // $('#formdisplay').reset();
-                  $('#idname').attr('value', '')
-                  $('#idplace').attr('value', '')
+                  // document.getElementById('idname').style.display = "block";
+                  // $('#idname').attr('hidden', true)
+                  $('#idname').attr('value', '');
+                  $('#idplace').attr('value', '');
                   // $('#formdisplay').find('input').attr('value', '')
 
                   // $('#formdisplay').find('select').attr('selected', false)
                   // $('#formdisplay').find('select2').val(null).trigger('change');
+
                   $('#idage').val(" ").trigger("change");
                   $('#idgender').val(" ").trigger("change");
                   $('#idelevel').val(" ").trigger("change");
@@ -388,49 +398,6 @@
       <br />
 
 
-<script>
-  function myFunction() {
-      var input, filter, table, tr, td, i;
-      input = document.getElementById("myInput");
-      filter = input.value.toUpperCase();
-      table = document.getElementById("data");
-      tr = table.getElementsByTagName("tr");
-      for (i = 0; i < tr.length; i++) {
-      td = tr[i].getElementsByTagName("td")[1];
-      if (td) {
-          txtValue = td.textContent || td.innerText;
-          if (txtValue.toUpperCase().indexOf(filter) > -1) {
-          tr[i].style.display = "";
-          } else {
-          tr[i].style.display = "none";
-          }
-      }
-      }
-  };
-// $('.lexemeview').click(function(){
-//   var accode = $(this).attr("id");
-//   console.log(accode)
-// });
-
-  function moea(source) {
-checkboxes = document.getElementsByName('moea12');
-for(var i=0, n=checkboxes.length;i<n;i++) {
-  checkboxes[i].checked = source.checked;
-}
-};
-
-function moe(source) {
-checkboxes = document.getElementsByName('moe12');
-for(var i=0, n=checkboxes.length;i<n;i++) {
-  checkboxes[i].checked = source.checked;
-}
-};
-function olscs(source) {
-checkboxes = document.getElementsByName('sols');
-for(var i=0, n=checkboxes.length;i<n;i++) {
-  checkboxes[i].checked = source.checked;
-}
-};
 
 
 </body>

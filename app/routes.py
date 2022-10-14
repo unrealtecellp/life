@@ -50,7 +50,7 @@ scriptCodeJSONFilePath = os.path.join(basedir, 'static/json/scriptCode.json')
 langScriptJSONFilePath = os.path.join(basedir, 'static/json/langScript.json')
 ipatomeeteiFilePath = os.path.join(basedir, 'static/json/ipatomeetei.json')
 
-print(f'{"#"*80}Base directory:\n{basedir}\n{"#"*80}')
+print(f'{"#"*80}\nBase directory:\n{basedir}\n{"#"*80}')
 
 
 # home page route
@@ -2720,7 +2720,7 @@ def userslist():
         if (current_user.username == projectowner):
             usersList.remove(projectowner)
         else:
-            print(usersList)
+            # print(usersList)
             usersList.remove(projectowner)
             usersList.remove(current_user.username)
             for username in usersList:
@@ -2728,14 +2728,14 @@ def userslist():
                                                                                 username,
                                                                                 activeprojectname
                                                                             )['sharemode']
-                print(usersharemode)                                                            
+                # print(usersharemode)
                 if (sharemode <= usersharemode):
                     usersList.remove(username)
-        print(usersList)
+        # print(usersList)
         speakersDict = projects.find_one({'projectname': activeprojectname},
                                             {'_id':0, 'speakerIds.'+current_user.username: 1})
         speakersList = speakersDict['speakerIds'][current_user.username]
-        print(speakersList)
+        # print(speakersList)
     except:
         pass
 
@@ -2752,7 +2752,7 @@ def shareprojectwith():
                                                                 'userprojects')
     
     activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username, userprojects)
-    print('activeprojectname', activeprojectname)
+    # print('activeprojectname', activeprojectname)
 
     projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
 
@@ -2764,7 +2764,7 @@ def shareprojectwith():
     # print(type(users))
     speakers = data['sharespeakers']
     sharemode = data['sharemode']
-    print(sharemode)
+    # print(sharemode)
     if (sharemode == ''):
         sharemode = 0
     sharechecked = str(data['sharechecked'])
@@ -2824,7 +2824,7 @@ def shareprojectwith():
                                         }})
                 
                 for speaker in speakers:
-                    print(speaker)
+                    # print(speaker)
                     projects.update_one({'projectname': activeprojectname},
                                 {'$addToSet': {'speakerIds.'+user: speaker}})
                     userlastactiveId = projectdetails['lastActiveId'][current_user.username][speaker]['audioId']
@@ -3596,7 +3596,6 @@ def loadunannotext():
 @app.route('/uploadaudiofiles', methods=['GET', 'POST'])
 @login_required
 def uploadaudiofiles():
-
     projects, userprojects, transcriptions = getdbcollections.getdbcollections(mongo,
                                                 'projects',
                                                 'userprojects',
@@ -3675,4 +3674,8 @@ def progressreport():
 
     # print(progressreport)
 
+<<<<<<<<< Temporary merge branch 1
+    return 'OK'
+=========
     return jsonify(progressreport=progressreport)
+>>>>>>>>> Temporary merge branch 2

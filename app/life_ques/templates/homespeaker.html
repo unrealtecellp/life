@@ -50,10 +50,10 @@
 
 
     
-    <script>    
+<script>    
 
       
-    </script>
+</script>
 
 
 
@@ -62,7 +62,7 @@
   <input id="myInput" type="text" placeholder="Search">
   <div class="btn-group" role="group">
       <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        Download Lexicon
+        Download
         <span class="caret"></span>
       </button>
       <ul class="dropdown-menu">
@@ -107,77 +107,150 @@
                 }
               }
 
+
+
               $(document).ready(function() {
                 $('.lexemeview').click(function() {
                   buttonType = $(this).attr("id")
                   activeform(buttonType)
                   $('#formdisplay').find('input, select').attr('disabled', true);
                   $('#editbutton').attr('hidden', false);
+                  // $('#idname').attr('hidden', true);
+                  // $('#idage').attr('hidden', true);
+                  
                   // sending accesscode using AJAX
                   // getting speaker details assigned to that accesscode
+              
                   var accode = $(this).attr("id");
                   console.log(accode)
                   $.getJSON("{{url_for('karya_bp.getonespeakerdetails')}}", {
                     asycaccesscode:String(accode)
                     }, function(data) {
                         console.log(data)
-                        metadata = data.speakerdetails.karya_info.current.speaker_info.speakerMetadata
+                        metadata = data.speakerdetails.current.speakerMetadata
                         console.log (metadata)
+                        // accesscode = data.speakerdetails.accesscode
+                        $('#accesscode').attr('value', accode)
 
+                       
                         name = metadata.name
                         $('#idname').attr('value', name)
+                        // 
+                        // 
+                 
+                      
+                        // 
+                        // 
 
                         agroup = metadata.agegroup
                         ageOption = '<option value="'+agroup+'" selected="selected">'+agroup+'</option>'
                         // document.getElementById('idage').innerHTML=""
-                        $('#idage').html(ageOption)
+                        // $('#idage').html(ageOption)
+                        $('#idage').val(agroup).trigger('change');
+                        // $('#idgender').select2("val", "25-60");
+                        console.log (agroup)
+
+
+                        
+
 
                         gender = metadata.gender
-                        genderOption = '<option value="'+gender+'" selected="selected">'+gender+'</option>'
-                        $('#idgender').html(genderOption)
+                        // genderOption = '<option value="'+gender+'" selected="selected">'+gender+'</option>'
+                        // $('#idgender').html(genderOption)
+                        $('#idgender').val(gender).trigger('change');
+                        console.log (gender)
                         
                         elevel = metadata.educationlevel
                         elevelOption = '<option value="'+elevel+'" selected="selected">'+elevel+'</option>'
-                        $('#idelevel').html(elevelOption)
-
+                        // $('#idelevel').html(elevelOption)
+                        $('#idelevel').val(elevel).trigger('change');
+                
                         // mediumpre = metadata.medium-of-education-after-12th
                         // mediumpost = metadata.medium-of-education-upto-12th
-                        
-                        otherlangs = metadata.otherlanguages
-                        otherlangsOption = ''
-                        for (i=0; i<otherlangs.length; i++) {
-                          otherlangsOption += '<option value="'+otherlangs[i]+'" selected="selected">'+otherlangs[i]+'</option>'
+
+                        mediumupto12 = metadata.educationmediumupto12
+                        mediumupto12option = ''
+                        for (i=0; i<mediumupto12.length; i++) {
+                          mediumupto12option += '<option value="'+mediumupto12[i]+'" selected="selected">'+mediumupto12[i]+'</option>'
                         }                        
-                        $('#idotherlangs').html(otherlangsOption)
+                        // $('#idmediumpre').html(mediumupto12option)
+                        $('#idmediumpre').val(mediumupto12).trigger('change');
 
-                        place = metadata.place-of-recording
-                        placeOption = '<option value="'+place+'" selected="selected">'+place+'</option>'
-                        $('#idplace').html(placeOption)
 
-                        ptype = metadata.type-of-place
+                        mediumafter12 = metadata.educationmediumafter12
+                        mediumafter12option = ''
+                        for (i=0; i<mediumafter12.length; i++) {
+                          mediumafter12option += '<option value="'+mediumafter12[i]+'" selected="selected">'+mediumafter12[i]+'</option>'
+                        }                        
+                        // $('#idmediumpost').html(mediumafter12option)
+                        $('#idmediumpost').val(mediumafter12).trigger('change');
+                        
+                        speakerotherlangs = metadata.speakerspeaklanguage
+                        speakerotherlangsOption = ''
+                        for (i=0; i<speakerotherlangs.length; i++) {
+                          speakerotherlangsOption += '<option value="'+speakerotherlangs[i]+'" selected="selected">'+speakerotherlangs[i]+'</option>'
+                        }                        
+                        // $('#idotherlangs').html(speakerotherlangsOption)
+                        $('#idotherlangs').val(speakerotherlangs).trigger('change');
+
+                        
+                        // name = metadata.name
+                        // $('#idname').attr('value', name)
+                        place = metadata.recordingplace
+                        // $('#idplace').attr('value', place)
+                        $('#idplace').val(place).trigger('change');
+
+                        ptype = metadata.typeofrecordingplace
                         ptypeOption = '<option value="'+ptype+'" selected="selected">'+ptype+'</option>'
-                        $('#idptype').html(ptypeOption)
+                        // $('#idptype').html(ptypeOption)
+                        $('#idptype').val(ptype).trigger('change');
 
-                        // $(#)
+                      
                     });
                     return false;            
                 });
+                
                 $('#editbutton').click(function() {
                   $('#formdisplay').find('input, select').attr('disabled', false);
-                  $('#editbutton').attr('hidden', true)
-                })
+                  $('#editbutton').attr('hidden', true);
+                  // $('#idname').hidden();
+                  // $('#idage').attr('hidden', false);
+                  document.getElementById('idname').disabled = true;
+                  document.getElementById('idage').disabled = true;
+                });
+
                 $('.assignaccesscode').click(function() {
                   buttonType = $(this).attr("id")
                   activeform(buttonType)
                   // activeform()
-                  $('#idname').attr('value', '')
-                  $('#idplace').attr('value', '')
-                  // $('#formdisplay').find('input').attr('value', '')
-                  // $('#formdisplay').find('select').attr('selected', false)
-                  $('#formdisplay').find('select').html("")
-
+                  $('#editbutton').attr('hidden', true)
+                  // document.getElementById('idname').style.display = "block";
                   $('#formdisplay').find('input, select').attr('disabled', false);
-                  $('#editbutton').attr('hidden', true)                  
+
+                  // $("#formdisplay").trigger('clear');
+                  // $('#formdisplay').reset();
+                  // document.getElementById('idname').style.display = "block";
+                  // $('#idname').attr('hidden', true)
+                  $('#idname').attr('value', '');
+                  $('#idplace').attr('value', '');
+                  // $('#formdisplay').find('input').attr('value', '')
+
+                  // $('#formdisplay').find('select').attr('selected', false)
+                  // $('#formdisplay').find('select2').val(null).trigger('change');
+
+                  $('#idage').val(" ").trigger("change");
+                  $('#idgender').val(" ").trigger("change");
+                  $('#idelevel').val(" ").trigger("change");
+                  $('#idmediumpre').val(" ").trigger("change");
+                  $('#idmediumpost').val(" ").trigger("change");
+                  $('#idotherlangs').val(" ").trigger("change");
+                  $('#idplace').val(" ").trigger("change");
+                  $('#idptype').val(" ").trigger("change");
+
+                  // $('#formdisplay').find('select').html("")
+                  // $('#formdisplay option:selected').removeAttr('selected')                  
+                  
+                  $('#accesscode').attr('value', '')                  
                 })
                 $('#closebutton').click(function() {
                   buttonType = $(this).attr("id")
@@ -186,7 +259,8 @@
                   // $('#formdisplay').find('input, select').attr('disabled', false);
                   // $('#editbutton').attr('hidden', true)
                 })
-              });
+              })
+              
           </script>
 
           <!-- Add/Edit Speaker button -->
@@ -194,30 +268,34 @@
           <div id="formdisplay" style="display: none;">
             <form role="form" method="post" action="{{url_for('karya_bp.add')}}">
               
-              <button class="pull-right btn-danger" type="button" id="editbutton">Edit</button><br/>
+              <button class="pull-right btn-danger" type="button" id ="editbutton">Edit</button><br/>
+              
+              <input type ="hidden" id = "accesscode" name = "accode" value = {{accode}}>
+              
+              
+              
               <div class="form-group">
 
                 <!-- return render_template('homespeaker.html', data = table_data, speaker_data_accesscode= speaker_data_accesscode, speaker_data_name = speaker_data_name, 
                                                               speaker_data_age =speaker_data_age, speaker_data_gender=speaker_data_gender) -->
                 <label class="col-form-label">Name:</label>
                 <input type="text" class="form-control" id="idname" name="sname" placeholder="--Speaker Name--" style="width:55%" value="" required >
-
-              
               </div>
 
+            
 
               <div class="form-group">
               <label for="sagegroup">Age Group: </label> <br> 
-              <select class="age" id="idage" name="sagegroup" multiple="multiple" style="width:55%" required>
-              <div id="ageoptions"></div>
-                
+              <select class="age" id="idage" name="sagegroup" style="width:55%" required>
+              <!-- <div id="ageoptions"></div> -->
               </select><br>
                 </div>
 
+ 
             <div class="form-group">                    
             <label for="sgender">Gender: </label>  <br>
-            <select class="gender" id="idgender" name="sgender" multiple="multiple" style="width:55%" required>
-              <div id="genderoptions"></div>
+            <select class="gender" id="idgender" name="sgender" style="width:55%" required>
+              <!-- <div id="genderoptions"></div> -->
             
             </select><br>
 
@@ -225,9 +303,7 @@
 
             <div class="form-group">
             <label for="educationalevel">Educational Level: </label> <br>
-            <select class="educationlvl" id="idelevel" name="educationalevel" multiple="multiple" style="width:55%" required>
-              <div id="eleveloptions"></div>
-
+            <select class="educationlvl" id="idelevel" name="educationalevel" style="width:55%" required>
             </select><br>
             </div>
           
@@ -235,8 +311,6 @@
             <div class="form-group">
                 <label for="moe12">Medium Of Education (upto 12ᵗʰ): </label><br>                           
                 <select class="educationmediumupto12" id="idmediumpre" name="moe12" multiple="multiple" style="width:55%" required>
-                
-                
                 </select><br>
             </div> 
             
@@ -245,22 +319,24 @@
                 <label for="moea12">Medium Of Education (After 12ᵗʰ): </label><br>                           
                 <select class="educationmediumafter12" id="idmediumpost" name="moea12" multiple="multiple" style="width:55%" required>
                 </select><br>
-            </div>                      
-                                                                
-
+            </div> 
+            
+            
             <div class="form-group">
                 <label for="sols">Other Languages Speaker Could Speak: </label><br>                           
                 <select class="speakerspeaklanguage" id="idotherlangs" name="sols" multiple="multiple" style="width:55%" required></select><br>
             </div> 
                                     
             <div class="form-group">
-              <label class="col-form-label">Place Of Recording:</label>
-              <input type="text" class="form-control" id="idplace" name="por" placeholder="--Place Of Recording--" style="width:55%" required >
+              <label class="col-form-label">Place Of Recording:</label><br>
+              <!-- <select class="typeofcity" id="idptype" name="toc" multiple="multiple" style="width:45%" required></select> -->
+              <input type="text" class="form-control" id="idplace" name="por" placeholder="--Place Of Recording--" style="width:55%;" required >
+           
             </div>                                                 
 
             <div class="form-group">   
-            <label for="toc">Type Of City: </label> <br>
-            <select class="typeofcity" id="idptype" name="toc" multiple="multiple" style="width:55%" required></select><br>
+            <label for="toc">Type Of Place: </label> <br>
+            <select class="typeofcity" id="idptype" name="toc"  style="width:55%" required></select><br>
             </div>                   
 
             <button type="button" id="closebutton" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -285,9 +361,10 @@
           <!-- <th onclick="sortTable(0)">id</th> -->
           <th><input type="checkbox" id="headcheckbox" onchange="checkAllLexeme(this)" name="chk[]" checked/>&nbsp;</th>
           <th onclick="sortTable(1)">Access Code</th>
-          <th onclick="sortTable(2)">Name</th>
-          <th onclick="sortTable(3)">Age Group</th>
-          <th onclick="sortTable(4)">Gender</th>
+          <th onclick="sortTable(2)">Speaker ID</th>
+          <th onclick="sortTable(3)">Name</th>
+          <th onclick="sortTable(4)">Age Group</th>
+          <th onclick="sortTable(5)">Gender</th>
           <th>View</th>
           <!-- <th>Edit</th> -->
 
@@ -300,9 +377,9 @@
                <td><input type="checkbox" id="lexemecheckbox" onchange="checkLexeme(this)" name="name1" checked/></td> 
                   {% for item in row %}
                   
-                  <td> {{item['lifespeakerid']}} {{item['name']}} {{item['agegroup']}} {{item['gender']}}</td>     
+                  <td>  {{item['karyaaccesscode']}} {{item['lifespeakerid']}} {{item['name']}} {{item['agegroup']}} {{item['gender']}}</td>     
                   {% endfor %}
-                  <td><button type="button" class="btn btn-primary lexemeview" id="{{row[0]['lifespeakerid']}}" data-toggle="modal" data-target="#exampleModal">View</button></td>
+                  <td><button type="button" class="btn btn-primary lexemeview" id="{{row[0]['karyaaccesscode']}}" data-toggle="modal" data-target="#exampleModal">View</button></td>
                   <!-- <td><button type="button" class="btn btn-warning lexemeedit" id="{{row[0]}}" data-toggle="modal" data-target="#exampleModal">Edit</button></td> -->
                   <!-- <p> id="{{row[0]}}"</p> -->
                 
@@ -321,54 +398,11 @@
       <br />
 
 
-<script>
-  function myFunction() {
-      var input, filter, table, tr, td, i;
-      input = document.getElementById("myInput");
-      filter = input.value.toUpperCase();
-      table = document.getElementById("data");
-      tr = table.getElementsByTagName("tr");
-      for (i = 0; i < tr.length; i++) {
-      td = tr[i].getElementsByTagName("td")[1];
-      if (td) {
-          txtValue = td.textContent || td.innerText;
-          if (txtValue.toUpperCase().indexOf(filter) > -1) {
-          tr[i].style.display = "";
-          } else {
-          tr[i].style.display = "none";
-          }
-      }
-      }
-  };
-// $('.lexemeview').click(function(){
-//   var accode = $(this).attr("id");
-//   console.log(accode)
-// });
-
-  function moea(source) {
-checkboxes = document.getElementsByName('moea12');
-for(var i=0, n=checkboxes.length;i<n;i++) {
-  checkboxes[i].checked = source.checked;
-}
-};
-
-function moe(source) {
-checkboxes = document.getElementsByName('moe12');
-for(var i=0, n=checkboxes.length;i<n;i++) {
-  checkboxes[i].checked = source.checked;
-}
-};
-function olscs(source) {
-checkboxes = document.getElementsByName('sols');
-for(var i=0, n=checkboxes.length;i<n;i++) {
-  checkboxes[i].checked = source.checked;
-}
-};
 
 
+</body>
 
-  </body>
-  {% block scripts %}
+{% block scripts %}
 {{super()}}
 <script src="{{url_for('.static', filename='dictionaryview.js')}}"></script>
 <script src="{{url_for('.static', filename='search.js')}}"></script>

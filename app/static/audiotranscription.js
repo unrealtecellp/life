@@ -26,9 +26,28 @@ document.addEventListener('DOMContentLoaded', function() {
             }),
             WaveSurfer.timeline.create({
                 container: '#wave-timeline'
+            }),
+            // WaveSurfer.cursor.create({
+            //     showTime: true,
+            //     opacity: 1,
+            //     customShowTimeStyle: {
+            //         'background-color': '#000',
+            //         color: '#fff',
+            //         padding: '2px',
+            //         'font-size': '10px'
+            //     }
+            // }),
+            WaveSurfer.spectrogram.create({
+                wavesurfer: wavesurfer,
+                container: "#wave-spectrogram",
+                labels: true,
+                height: 256,
             })
         ]
     });
+    document.querySelector('#slider').oninput = function () {
+        wavesurfer.zoom(Number(this.value));
+    };
 
     // wavesurfer.util
     //     .fetchFile({
@@ -1417,3 +1436,6 @@ function ipaFocus(x) {
     meeteiString = meeteiStringList.join(' ')
     document.getElementById('meetei').value = meeteiString
 }
+
+
+

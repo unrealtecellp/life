@@ -218,7 +218,6 @@ var gender =
   {"id": "Non-Binary", "text": "Non-Binary"}
 ];
 
-
 var AgeGroup = [
   {"id": "", "text": ""},
   {"id": "18-30", "text": "18-30"},
@@ -226,11 +225,41 @@ var AgeGroup = [
   {"id": "45-60", "text": "45-60"},
   {"id": "60+", "text": "60+"}
 ];
+
 var TypeOfCity = [
   {"id": "", "text": ""},
   {"id": "Town", "text": "Town"},
   {"id": "Village", "text": "Village"},
   {"id": "City", "text": "City"}
+];
+
+var QuestionnaireDomain = [
+  {"id": "", "text": ""},
+  {"id": "General", "text": "General"},
+  {"id": "Agriculture", "text": "Agriculture"},
+  {"id": "Science-Technology", "text": "Science-Technology"},
+  {"id": "Education", "text": "Education"}
+];
+
+
+var ElicitationMethod = [
+  {"id": "", "text": ""},
+  {"id": "Narration", "text": "Narration"},
+  {"id": "Translation", "text": "Translation"},
+  {"id": "Role-Play", "text": "Role-Play"},
+  {"id": "Interview", "text": "Interview"},
+  {"id": "Picture Book Narration", "text": "Picture Book Narration"},
+  {"id": "Video Narration", "text": "Video Narration"},
+  {"id": "Conversation", "text": "Conversation"}
+];
+
+
+var target = [
+  {"id": "", "text": ""},
+  {"id": "Anaphors", "text": "Anaphors"},
+  {"id": "Case", "text": "Case"},
+  {"id": "Oral", "text": "Oral"}
+
 ];
 
 
@@ -242,6 +271,38 @@ $(document).ready(function () {
     data: TypeOfCity ,
     allowClear: true,
     // console.log( "ready!" )
+  });
+
+
+  $('.target').select2({
+    tags: true,
+    placeholder: '-- Target --',
+    data: target ,
+    allowClear: true,
+    // console.log( "ready!" )
+  });
+
+
+  $('.elicitationmethod').select2({
+    tags: true,
+    placeholder: '--Elicitation Method--',
+    data: ElicitationMethod ,
+    allowClear: true,
+    // console.log( "ready!" )
+  });
+
+  $('.languages').select2({
+    tags: true,
+    placeholder: '-- Language --',
+    data: OtherLanguagesSpeakerCouldSpeak,
+    allowClear: true
+  });
+
+  $('.questionnairedomain').select2({
+    tags: true,
+    placeholder: '-- Questionnire Domain --',
+    data: QuestionnaireDomain  ,
+    allowClear: true
   });
 
   $('.age').select2({
@@ -260,31 +321,39 @@ $(document).ready(function () {
 
   $('.educationlvl').select2({
     // tags: true,
-    placeholder: '--Educational Level:--',
+    placeholder: '-- Educational Level --',
     data:  EducationLevel ,
     allowClear: true
   });
 
   $('.educationmediumafter12').select2({
     tags: true,
-    placeholder: '--Medium Of Education (After 12ᵗʰ)--',
+    placeholder: '-- Medium Of Education (After 12ᵗʰ) --',
     data:  EducationMedium ,
     allowClear: true
   });
 
   $('.educationmediumupto12').select2({
     tags: true,
-    placeholder: '--Medium Of Education (Upto 12ᵗʰ)--',
+    placeholder: '-- Medium Of Education (Upto 12ᵗʰ) --',
     data: EducationMedium ,
     allowClear: true
   });
 
   $('.speakerspeaklanguage').select2({
     tags: true,
-    placeholder: '--Other Languages Speaker Could Speak--',
+    placeholder: '-- Other Languages Speaker Could Speak --',
     data: OtherLanguagesSpeakerCouldSpeak,
     allowClear: true
   });
+
+  $('.transcriptionscript').select2({
+  tags: true,
+  placeholder: '-- Transcription Scripts --',
+  data: scripts,
+  allowClear: true,
+  // sorter: false 
+});
 
 // $('.lexemelanguage').select2({
 //   // tags: true,
