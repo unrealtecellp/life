@@ -3739,8 +3739,5 @@ def uploadquesfiles():
                                     new_audio_file
                                     )
 
-<<<<<<< HEAD
     return 'OK'
-=======
     return redirect(url_for('enternewsentences'))
->>>>>>> 5c6d7d9fd217b7df10129de6033b3f7f930f11e6
