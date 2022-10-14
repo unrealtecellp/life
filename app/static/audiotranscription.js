@@ -26,9 +26,28 @@ document.addEventListener('DOMContentLoaded', function() {
             }),
             WaveSurfer.timeline.create({
                 container: '#wave-timeline'
+            }),
+            // WaveSurfer.cursor.create({
+            //     showTime: true,
+            //     opacity: 1,
+            //     customShowTimeStyle: {
+            //         'background-color': '#000',
+            //         color: '#fff',
+            //         padding: '2px',
+            //         'font-size': '10px'
+            //     }
+            // }),
+            WaveSurfer.spectrogram.create({
+                wavesurfer: wavesurfer,
+                container: "#wave-spectrogram",
+                labels: true,
+                height: 256,
             })
         ]
     });
+    document.querySelector('#slider').oninput = function () {
+        wavesurfer.zoom(Number(this.value));
+    };
 
     // wavesurfer.util
     //     .fetchFile({
@@ -501,13 +520,18 @@ function updateSentenceDetails(boundaryID, sentence, region) {
         translationlang = activeprojectform["Translation Language"]
         console.log(translationlang);
         for (i=0; i<scripts.length; i++) {
+            script = scripts[i]
             script_code = scriptCode[scripts[i]]
             // console.log(lang_code)
-            // console.log(script_code)
-            transcription[script_code] = ''
-            sentencemorphemicbreak[script_code] = ''
-            morphemes[script_code] = {}
-            gloss[script_code] = {}
+            // console.log(scripts[i], script_code)
+            // transcription[script_code] = ''
+            // sentencemorphemicbreak[script_code] = ''
+            // morphemes[script_code] = {}
+            // gloss[script_code] = {}
+            transcription[script] = ''
+            sentencemorphemicbreak[script] = ''
+            morphemes[script] = {}
+            gloss[script] = {}
         }
         for (i=0; i<translationscripts.length; i++) {
             tscript_code = scriptCode[translationscripts[i]]
@@ -871,6 +895,7 @@ function createSentenceForm(formElement, boundaryID) {
     // $(".sentencefield").html(activeSentenceMorphemicBreak);
     console.log('createSentenceForm(formElement)', formElement)
     inpt = '';
+    activeprojectform = JSON.parse(localStorage.activeprojectform)
     for (let [key, value] of Object.entries(formElement)) {
         // console.log(key, value)
         if (key === 'transcription') {
@@ -892,7 +917,7 @@ function createSentenceForm(formElement, boundaryID) {
                         'value="'+ transcriptionvalue +'" required><br>';
                         // '</div></div>';
                 if (transcriptionkey === firstTranscriptionScript) {
-                    activeprojectform = JSON.parse(localStorage.activeprojectform)
+                    // activeprojectform = JSON.parse(localStorage.activeprojectform)
                     if ('glossDetails' in activeprojectform &&
                         boundaryID in activeprojectform['glossDetails']) {
                         glossdetails = activeprojectform['glossDetails'][boundaryID]
@@ -963,11 +988,15 @@ function createSentenceForm(formElement, boundaryID) {
         $(".translationfield1").append(activeTranslationField);
         translationLang = formElement[key];
         // console.log(translationLang)
+        translang = activeprojectform["Translation Language"]
+        // console.log(translang)
+        translangcount = -1
         for (let [translationkey, translationvalue] of Object.entries(translationLang)) {
+            translangcount += 1
             console.log(translationkey, translationvalue);
             translationkey = translationkey.split('-')[1]
             inpt += '<div class="form-group">'+
-                    '<label for="Translation_'+ translationkey +'">Translation in '+ translationkey +'</label>'+
+                    '<label for="Translation_'+ translationkey +'">Translation in '+ translang[translangcount] +'</label>'+
                     '<input type="text" class="form-control" id="Translation_'+ translationkey +'"'+ 
                     'placeholder="Translation '+ translationkey +'" name="translation_'+ translationkey + '"'+
                     'value="'+ translationvalue +'" required>'+
@@ -1407,3 +1436,6 @@ function ipaFocus(x) {
     meeteiString = meeteiStringList.join(' ')
     document.getElementById('meetei').value = meeteiString
 }
+
+
+

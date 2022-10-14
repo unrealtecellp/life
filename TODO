@@ -8,25 +8,25 @@
 
 -- - checkbox for active/inactive for 'Sentence with Morphemic Break'
 
-- print sentence form data
+-- - print sentence form data
 
 19 July 2022
 ---------------------------------------------------------------
-- save the sentence form data (morphemic details) in regions.data key in localstorage
+-- - save the sentence form data (morphemic details) in regions.data key in localstorage
 
-- recreate the morphemic details form if checkbox in true. Basically to edit the morphemic details.
+-- - recreate the morphemic details form if checkbox in true. Basically to edit the morphemic details.
 
-- send the morphemic details to backend through ajax. Use Save button.
+-- - send the morphemic details to backend through ajax. Use Save button.
 
 20 July 2022
 ---------------------------------------------------------------
-- Work on create new project and give options to add transcription and translation in multiple scripts
+-- - Work on create new project and give options to add transcription and translation in multiple scripts
 
-- based on number of scripts given for transcription, render the transcription and morphemic detail HTML form in sentence interface accordingly.
+-- - based on number of scripts given for transcription, render the transcription and morphemic detail HTML form in sentence interface accordingly.
 
 22 July 2022
 ---------------------------------------------------------------
-- create sentence interface HTML form using the form created by the user in Create New Project
+-- - create sentence interface HTML form using the form created by the user in Create New Project
 
 26 July 2022
 ---------------------------------------------------------------
@@ -39,29 +39,29 @@
         - All 'gloss' element as multiple select2
         -- - all 'morpheme' element as readonly
         - one more 'gloss' column for gloss apart from english
-- Karya Access Code assignment interface
-    - put limit max 50 access code fo one registered (in LiFE app) user
-    - dropdown to select max form to fill in one go (max 10)
-    - HTML button to activate HTML form to fill speaker metadata
-    - update the access code for a speaker in case the previous access code not working
+-- - Karya Access Code assignment interface
+--     - put limit max 50 access code fo one registered (in LiFE app) user
+--     - dropdown to select max form to fill in one go (max 10)
+--     - HTML button to activate HTML form to fill speaker metadata
+--     - update the access code for a speaker in case the previous access code not working
 
 11 August 2022
 ---------------------------------------------------------------
-- Refactoring the code
-- Divide the code in multiple modules
-- Add docstring to each modules
+-- - Refactoring the code
+-- - Divide the code in multiple modules
+-- - Add docstring to each modules
 
 22 August 2022
 ---------------------------------------------------------------
-- show/change form based on active radio button in transcription field.
-- multiple gloss lang script in interlinear gloss column.
-- each transcription has there own 'Add Interlinear Gloss'
+-- - show/change form based on active radio button in transcription field.
+-- - multiple gloss lang script in interlinear gloss column.
+-- - each transcription has there own 'Add Interlinear Gloss'
 
 30 August 2022
 ---------------------------------------------------------------
-- interface on the 'enternewsentences' route.
+-- - interface on the 'enternewsentences' route.
     -- - upload button
-    - for now only owner can upload audio files to the project.
+    -- - for now only owner can upload audio files to the project.
     --     - upload one audio file at a time.
     --     - save the audio file with relevant details.
     --         - SEE 'app/controller/saveaudiofiles.py'.
@@ -69,23 +69,45 @@
     --             - details related to file in 'transcriptions' collection
     --             - file ID 'audioId' in 'projects' collection 
     -- - after audio upload refresh the 'enternewsentences' page.
-    - load the uploaded audio file in the transcription part of the page.
-        - get the 'audioId' in 'lastactiveId' in projects collections for current user
-        - if 'audioId' is None
-            - get the 'audioId' of the first audio file in the project
-            - update it in the 'audioId' in 'lastactiveId' in projects collections for current user
-            - get the file from fs collections
-            - save it to 'static/audio folder'
-            - send 'audioId', 'audioFilePath' and 'transcriptionDetails'
+    -- - load the uploaded audio file in the transcription part of the page.
+    --     - get the 'audioId' in 'lastactiveId' in projects collections for current user
+    --     - if 'audioId' is None
+    --         - get the 'audioId' of the first audio file in the project
+    --         - update it in the 'audioId' in 'lastactiveId' in projects collections for current user
+    --         - get the file from fs collections
+    --         - save it to 'static/audio folder'
+    --         - send 'audioId', 'audioFilePath' and 'transcriptionDetails'
     
-- redefine 'projects' collection
+-- - redefine 'projects' collection
 --     - each project should be saved as one document in the collection.
     -- - 'audioIds' - list of all uploaded audios in the project.
 
-- audio transcription
-    - one audio can be transcribe by mutiple user.
-        - save each user transcription seperately in the audio document.
+-- - audio transcription
+--     - one audio can be transcribe by mutiple user.
+--         - save each user transcription seperately in the audio document.
 
 24 September 2022
 ---------------------------------------------------------------
 - download and save wavesurfer to use in offline mode too
+<<<<<<< HEAD
+=======
+
+27 September 2022
+---------------------------------------------------------------
+-- - zoom in/out wavesurfer
+- textgrid download
+- customized download with audio properties intensity, pitch visibility, formant visibility (4th, 5th)
+- csv with duration of the audio
+- Aligner: https://montreal-forced-aligner.readthedocs.io/en/latest/first_steps/index.html
+- download audio
+    - only textgrid
+    - both audio and textgrid
+    - sliced audio and their textgrid
+- test by uploading large audio files
+- IPA to meetei script mapping
+
+13 October 2022
+---------------------------------------------------------------
+- 
+- 
+>>>>>>> 5c6d7d9fd217b7df10129de6033b3f7f930f11e6

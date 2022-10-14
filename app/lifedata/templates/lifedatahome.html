@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block title %}
+LiFe Data Home
+{% endblock title %}
+
+{% block styles %}
+{{super()}}
+<link href="{{url_for('.static', filename='lifedatahome.css')}}" rel="stylesheet" />
+{% endblock %}
+
+
+{% block app_content %}
+  <h2>LiFE - Data</h2>
+  <br/>
+  <hr/>
+  <div id="activeProject">
+    <button type="button" id="createnewdatabtn" class="btn btn-lg btn-success">Create New Data Project</button>
+    <button type="button" id="derivefromdatabtn" class="btn btn-lg btn-success pull-right">Derived Data Project</button>
+    <br/>
+    <br/>
+    <hr/>
+    <div id="createnewdatasubbtn" style="display: none;">
+      <button type="button" class="btn btn-lg btn-primary" onclick="window.location.href='{{ url_for('newproject') }}';">Manual Entry</button>
+      <button type="button" class="btn btn-lg btn-primary" onclick="window.location.href='{{ url_for('newproject') }}';">Crawler</button>
+      <button type="button" class="btn btn-lg btn-primary" onclick="window.location.href='#;">Karya Extention</button>
+    </div>
+    <div id="derivefromdatasubbtn" style="display: none;">
+      <div class="col-md-6">
+        <select name="" id="derivefromdataselect" style="width: 100%"></select>
+        <br>
+        <br>
+        <div id="derivefromdataform"></div>
+      </div>
+    </div>
+    <br>
+    <br>
+    <hr>
+  </div> 
+    
+{% endblock %}
+
+{% block scripts %}
+{{super()}}
+<script src="{{url_for('.static', filename='lifedatahome.js')}}"></script>
+{% endblock %}

@@ -18,6 +18,10 @@
         <h4>Project Name : {{ projectName }}</h4><br>
     {% endif %}
     {% if speakerids is defined %}
+    <button type="button" id="progressreport" class="btn btn-lg btn-warning" data-toggle="modal" data-target="#myProgressReportModal">
+      Progress Report
+    </button>
+    <br>
     <label for="speakeridsdropdown">Audio Files of Speaker: </label>
     <select class="custom-select custom-select-sm" id="speakeridsdropdown" style="margin-top:10px">
         <option selected disabled>{{ activespeakerid }}</option>
@@ -30,17 +34,19 @@
     {% endif %}
     
   </div>
-  <div class="col-sm-3">
-    <form name="newaudioupload" action="/uploadaudiofiles" method="POST" enctype="multipart/form-data">
-      <div class="col upload">
-        <input type="text" class="form-control" placeholder="Speaker ID" name="speakerId" required>
-        <br>
-        <input type="file" id="audiofile" name="audiofile" required>
-        <br>
-        <input class="btn btn-primary uploadbtn" type="submit" value="Upload Audio Files">
-      </div>
-    </form>
-  </div>
+  {% if  shareinfo['sharemode']|int >= 3 %}
+    <div class="col-sm-3">
+      <form name="newaudioupload" action="/uploadaudiofiles" method="POST" enctype="multipart/form-data">
+        <div class="col upload">
+          <input type="text" class="form-control" placeholder="Speaker ID" name="speakerId" required>
+          <br>
+          <input type="file" id="audiofile" name="audiofile" required>
+          <br>
+          <input class="btn btn-primary uploadbtn" type="submit" value="Upload Audio File">
+        </div>
+      </form>
+    </div>
+  {% endif %}
 </div>
 <hr>
   {% for data in sdata %}
@@ -66,16 +72,15 @@
   <!-- </div> -->
   <br>
   <hr>
-    <!-- <p><strong>Audio Filename: 1. AD1.wav</strong></p> -->
     <div class="row">
       <div class="col-sm-7 commentIDs">
           <button type="button" id="uNAnnotated" class="btn btn-light" onclick="unAnnotated()">All Filename</button>
       </div>
       {% if commentstats is defined %}
         <div class="col-sm-3 commentStats pull-right">
-          <strong>Total Comments: {{ commentstats[0] }}</strong><br> 
-          <strong>Annotated Comments: {{ commentstats[1] }}</strong><br>
-          <strong>Remaining Comments: {{ commentstats[2] }}</strong><br>
+          <strong>Total Files: {{ commentstats[0] }}</strong><br> 
+          <strong>Annotated Files: {{ commentstats[1] }}</strong><br>
+          <strong>Remaining Files: {{ commentstats[2] }}</strong><br>
         </div>
       {% endif %}
     </div>
@@ -85,14 +90,19 @@
     <br>
     <div class="lexemelang"></div>
     <div class="lexemeform"></div>
-    <p id="subtitle" class="text-center text-info">&nbsp;</p>
-    <div id="wave-timeline"></div>
-    <div id="waveform" readonly></div>
-    <br>
+
     <p id="subtitle" class="text-center text-info">&nbsp;</p>
     <div id="wave-timeline"></div>
     <div id="waveform"></div>
-    <!-- <br> -->
+    <div id="wave-spectrogram" style="display: none;"></div>
+
+    <br>
+    <hr>
+    <div class="col-sm-3">
+      <input id="slider" data-action="zoom" type="range" min="0" max="5000" value="0" style="width: 100%">
+    </div>
+    <i class="glyphicon glyphicon-zoom-in"></i>
+
     <div class="pull-right">
       <button class="btn btn-danger" type="button" id="stopAudio">STOP
         <span class="audiostop glyphicon glyphicon-stop" aria-hidden="true"></span>
@@ -102,7 +112,8 @@
       </button>
     </div>
     <br>
-    <!-- <form id="boundaryForm" role="form" name="edit" style="opacity: 0; transition: opacity 300ms linear; margin: 30px 0;"> -->
+    <hr>
+
     <form id="boundaryForm" role="form" name="edit" style="display: none; margin: 30px 0;">
         <div class="form-group">
             <label for="start">Boundary Start Time</label>
@@ -113,15 +124,8 @@
             <label for="end">Boundary End Time</label>
             <input class="form-control" id="end" name="end" required/>
         </div>
-
-        <!-- <div class="form-group transcription"></div> -->
-        <!-- <div class="form-group translationfield"></div> -->
-        <!-- <div class="form-group sentencefield"></div> -->
-        <!-- <div class="form-group tagsfield"></div> -->
         <div class="form-group transcription1" id="transcription2"></div>
-        <!-- <div class="form-group sentencefield" id="sentencefield2"></div> -->
         <div class="form-group translationfield1" id="translationfield2"></div>
-        <!-- <div class="form-group tagsfield1" id="tagsfield2"></div> -->
         <br>
         <button type="submit" class="btn btn-success btn-block saveTempTranscription">Save Boundary</button>
         <center><i>or</i></center>
@@ -140,14 +144,44 @@
       </button>
       <br>
       <br>
-      <button class="btn btn-warning pull-right btn-lg" id="save">Save All Boundaries
-          <span class="saveaudio glyphicon glyphicon-floppy-save" aria-hidden="true"></span>
+      <button class="btn btn-warning btn-lg btn-block pull-right" id="save">
+        Save All Boundaries
+        <span class="saveaudio glyphicon glyphicon-floppy-save" aria-hidden="true"></span>
       </button>
   </div>
+  <br>
   <div class="interlineargloss"></div>
   <br>
   <br>
   <div class="clear"></div>
+
+  <!-- Progress Report Modal -->
+  <div class="modal fade" id="myProgressReportModal" tabindex="-1" role="dialog" aria-labelledby="myProgressReportModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="myProgressReportModalLabel">Project Name: {{ projectName }}</h4>
+        </div>
+        <div class="modal-body">
+          <!-- <div class="col-xs-6"> -->
+            <input id="myInput" class="form-control" type="text" placeholder="Search">
+          <!-- </div> -->
+          <br>
+          <div class="row">
+            <div class="col-xs-12">
+              <div class="form-group">
+                <div class="progressreport"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- <label for="ipa">IPA</label>
   <input type="text" id="ipa" name="ipa"><br><br>
@@ -162,7 +196,12 @@
 <script src="https://unpkg.com/wavesurfer.js/dist/plugin/wavesurfer.timeline.js"></script>
 <script src="https://unpkg.com/wavesurfer.js/dist/plugin/wavesurfer.regions.js"></script>
 <script src="https://unpkg.com/wavesurfer.js/dist/plugin/wavesurfer.minimap.js"></script>
+<!-- <script src="https://unpkg.com/wavesurfer.js/dist/plugin/wavesurfer.cursor.js"></script> -->
+<script src="https://unpkg.com/wavesurfer.js/dist/plugin/wavesurfer.spectrogram.js"></script>
 <script src="{{url_for('.static', filename='audiotranscription.js')}}"></script>
 <script src="{{url_for('.static', filename='changeactivespeaker.js')}}"></script>
+<script src="{{url_for('.static', filename='progressreport.js')}}"></script>
+<script src="{{url_for('.static', filename='search.js')}}"></script>
+<script src="{{url_for('.static', filename='sorttable.js')}}"></script>
 <script type="text/javascript">myFunction({{ newData | tojson | safe }});</script>
 {% endblock %}

@@ -2,7 +2,6 @@
 
 
 import json
-# from pprint import pprint
 import os
 import shutil
 from datetime import datetime
@@ -11,6 +10,7 @@ from pprint import pprint
 import gridfs
 from flask import flash
 import pandas as pd
+from app.controller import getcommentstats
 
 def saveaudiofiles(mongo,
                     projects,
@@ -65,7 +65,9 @@ def saveaudiofiles(mongo,
                                     audio_filename)
         new_audio_details['audioFilename'] = updated_audio_filename
     new_audio_details["textGrid"] = text_grid
-    pprint(new_audio_details)
+    new_audio_details[current_username] = {}
+    new_audio_details[current_username]["textGrid"] = text_grid
+    # pprint(new_audio_details)
 
     # save audio file details and speaker ID in projects collection
     speakerIds = projects.find_one({ 'projectname': activeprojectname },
@@ -91,20 +93,20 @@ def saveaudiofiles(mongo,
     # print(speaker_audio_ids)
     if len(speaker_audio_ids) != 0:
         speaker_audio_ids = speaker_audio_ids['speakersAudioIds']
-        print('speaker_audio_ids', speaker_audio_ids)
+        # print('speaker_audio_ids', speaker_audio_ids)
         if speakerId in speaker_audio_ids:
             speaker_audio_idskeylist = speaker_audio_ids[speakerId]
             speaker_audio_idskeylist.append(audio_id)
             speaker_audio_ids[speakerId] = speaker_audio_idskeylist
         else:
-            print('speakerId', speakerId)
+            # print('speakerId', speakerId)
             speaker_audio_ids[speakerId] = [audio_id]
-        pprint(speaker_audio_ids)
+        # pprint(speaker_audio_ids)
     else:
         speaker_audio_ids = {
             speakerId: [audio_id]
         }
-    pprint(speaker_audio_ids)
+    # pprint(speaker_audio_ids)
     try:
         projects.update_one({ 'projectname' : activeprojectname },
                 { '$set' : {
@@ -113,9 +115,18 @@ def saveaudiofiles(mongo,
                     'speakersAudioIds': speaker_audio_ids
                 }})
         # update active speaker ID in userprojects collection
+        projectinfo = userprojects.find_one({'username' : current_username},
+                                        {'_id': 0, 'myproject': 1, 'projectsharedwithme': 1})
+
+        # print(projectinfo)
+        userprojectinfo = ''
+        for key, value in projectinfo.items():
+            if len(value) != 0:
+                if activeprojectname in value:
+                    userprojectinfo = key+'.'+activeprojectname+".activespeakerId"
         userprojects.update_one({"username": current_username},
                                 { "$set": {
-                                    "activespeakerId": speakerId
+                                    userprojectinfo: speakerId
                                 }})
         transcriptions.insert(new_audio_details)
         # save audio file details in fs collection
@@ -195,7 +206,8 @@ def getaudiofilefromfs(mongo,
     fs =  gridfs.GridFS(mongo.db)                       # creating GridFS instance to get required files                
     file = fs.find_one({ file_type: file_id })
     audioFolder = os.path.join(basedir, 'static/audio')
-    shutil.rmtree(audioFolder)
+    if (os.path.exists(audioFolder)):
+        shutil.rmtree(audioFolder)
     os.mkdir(audioFolder)
     if (file is not None and
         'audio' in file.contentType):
@@ -349,12 +361,12 @@ def savetranscription(transcriptions,
     sentence = {}
     if transcription_regions is not None:
         transcription_regions = json.loads(transcription_regions)
-        pprint(transcription_regions)
+        # pprint(transcription_regions)
         for transcription_boundary in transcription_regions:
             transcription_boundary = transcription_boundary['data']
             if 'sentence' in transcription_boundary:
                 for key, value in transcription_boundary['sentence'].items():
-                    print(f"KEY: {key}\nVALUE: {value}")
+                    # print(f"KEY: {key}\nVALUE: {value}")
                     value["speakerId"] = activespeakerId
                     value["sentenceId"] = audio_id
                     sentence[key] = value
@@ -382,10 +394,38 @@ def savetranscription(transcriptions,
             # print(text_grid)
             # transcription_details['textGrid'] = text_grid
             # transcriptions.insert(transcription_details)
-            print("'sentence' in transcription_boundary")
-            print('371', sentence)
-            pprint(sentence)
+            # print("'sentence' in transcription_boundary")
+            # print('371', sentence)
+            # pprint(sentence)
     transcriptions.update_one({ 'audioId': audio_id },
-                                {'$set': { 'textGrid.sentence': sentence,
-                                            'updatedBy': current_username,
-                                            'transcriptionFLAG': 1 }})
+                                {'$set':
+                                    {
+                                        'textGrid.sentence': sentence,
+                                        'updatedBy': current_username,
+                                        'transcriptionFLAG': 1,
+                                        current_username+'.textGrid.sentence': sentence
+                                    }
+                                })
+
+def getaudioprogressreport(projects, transcriptions, activeprojectname, isharedwith):
+    datatoshow = {}
+    users_speaker_ids = projects.find_one({ 'projectname': activeprojectname },
+                                    { '_id': 0, 'speakerIds': 1 })['speakerIds']
+    # print('speaker_ids_1', users_speaker_ids)
+    if len(users_speaker_ids) != 0:
+        # print('speaker_ids_2', users_speaker_ids)
+        for username in isharedwith:
+            datatoshow[username] = {}
+            if username in users_speaker_ids:
+                for speakerid in users_speaker_ids[username]:
+                    total_comments, annotated_comments, remaining_comments = getcommentstats.getcommentstats(projects,
+                                                                                                        transcriptions,
+                                                                                                        activeprojectname,
+                                                                                                        speakerid,
+                                                                                                        'audio')
+                    commentstats = [total_comments, annotated_comments, remaining_comments]
+                    datatoshow[username][speakerid] = commentstats
+
+    # print('datatoshow', datatoshow)
+
+    return datatoshow

@@ -1,0 +1,67 @@
+[
+    
+    {
+        "sharemode": "number",
+        "view": 0,
+        "download": 1,
+        "edit": 2,
+        "add": 3,
+        "delete": 4
+    },
+    {
+        "sharechecked": "true"
+    },
+    {
+        "buttonname": "enableOnShareMode",
+        "comment0": "For questionnaire, maintain a separate collection and similar sharemode, etc will be maintained for that",
+        "comment": "No need to put condition on buttons that could be opened in sharemode 0",
+        "home page": {
+            "Create New Project": "0",
+            "View/Edit Project": "0",
+            "Share Project": "true",
+            "Download Project": "1",
+            "Download Dictionary": "1",
+            "Share Questionnaire": "questionnaire_true",
+            "Download Questionnaire": "questionnaire_1"
+        },
+        "comment2": "For audio and text page, all offline upload privileges will be enabled at level 3 ie at add level",
+        "comment3": "In general download buttons are enabled at level 1 and upload / new entry buttons are enabled at level 3",
+        "Audio page/Link": {
+            "Enabled": "0",
+            "Edit button": "2",
+            "Upload audio button": "3",
+            "Download offline TextGrid for edit": "3",
+            "Upload offline TextGrid after edit": "3"
+        },
+        "Text Page/Link" : {
+            "Enabled": "0",
+            "Edit button": "2",
+            "Add new lexeme button": "3",
+            "Download offline edit form": "3",
+            "Upload offline edit form": "3",
+            "Upload LiFT/CSV/other formats": "3"
+        },
+        "comment4a": "we will need to have a separate share button for questionnaire - ",
+        "comment4b": "the project data and the questionnaire itself need not have the same sharing status",
+        "Questionnaire": {
+            "Enabled": "0",
+            "Edit button": "2",
+            "Add new question/questionnaire button": "3",
+            "Download offline edit form": "3",
+            "Upload offline edit form": "3",
+            "Upload XLSX/CSV/other formats": "3"
+        },
+        "Browse": {
+            "View": "0",
+            "Edit": "2",
+            "Delete": "4",
+            "Download Lexicon": "1",
+            "Download TextGrid/Audio": "1",
+            "Download Questionnaires": "1"
+        },        
+        "Automation": {
+            "Train/Upload": "3",
+            "Map model to an element": "3"
+        }
+    } 
+]

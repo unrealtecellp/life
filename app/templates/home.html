@@ -15,7 +15,15 @@ Home
    <h2>Linguistic Field Data Management and Analysis System<br>[LiFE]</h2><br/><hr/>
    <div>
    <div id="activeProject">
+    
     <button type="button" class="btn btn-lg btn-success" onclick="window.location.href='{{ url_for('newproject') }}';">Create New Project</button>
+    <button type="button" class="btn btn-lg btn-success" onclick="window.location.href='{{ url_for('newproject') }}';">Derived New Project</button>
+
+    <button type="button" class="btn btn-lg btn-info" onclick="window.location.href='{{ url_for('lifedata.home') }}';">Data</button>
+    <button type="button" class="btn btn-lg btn-warning" onclick="window.location.href='{{ url_for('lifemodels.home') }}';">Models</button>
+      <!-- <p>{{ shareinfo['sharemode'] }}</p> -->
+    
+    <!-- <button type="button" class="btn btn-lg btn-success" onclick="window.location.href='{{ url_for('newproject') }}';">Create New Project</button> -->
     <br/><br/>
     <hr/>
     {% if data|length > 0 %}
@@ -23,11 +31,15 @@ Home
     
     <div>    
         <button type="button" class="btn btn-lg btn-primary" onclick="window.location.href='{{ url_for('enternewsentences') }}';">View/Edit Project</button>
-        <button type="button" class="btn btn-lg btn-danger" data-toggle="modal" data-target="#myShareProjectModal">
-            Share Project
-        </button>
+        {% if  shareinfo['sharechecked'] == 'true' %}
+          <button type="button" class="btn btn-lg btn-danger" data-toggle="modal" data-target="#myShareProjectModal">
+              Share Project
+          </button>
+        {% endif %}
+        {% if  shareinfo['sharemode']|int >= 1 %}
         <button type="button" class="btn btn-lg btn-warning" onclick="window.location.href='{{ url_for('downloadproject') }}';">Download Project</button>
         <button type="button" class="btn btn-lg btn-info" onclick="window.location.href='{{ url_for('downloaddictionary') }}';">Download Dictionary</button>
+        {% endif %}
         <!-- <div class="assignkaryaaccesscodecount pull-right"></div>
         <div>
         <button type="button" class="btn btn-lg btn-info pull-right assignkaryaaccesscodebtn" data-toggle="modal" data-target="#assignKaryaAccessCodeModal">
@@ -62,7 +74,7 @@ Home
 
    </div>     
    {% endif %}
-   <!-- Share Project Modal -->
+  <!-- Share Project Modal -->
   <div class="modal fade" id="myShareProjectModal" tabindex="-1" role="dialog" aria-labelledby="myShareProjectModalLabel">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
@@ -130,7 +142,7 @@ Home
 {% block scripts %}
 {{super()}}
 <script src="{{url_for('.static', filename='shareproject.js')}}"></script>
-<script src="{{url_for('.static', filename='sharemode.js')}}"></script>
+<!-- <script src="{{url_for('.static', filename='sharemode.js')}}"></script> -->
 <script src="{{url_for('.static', filename='shareprojectwith.js')}}"></script>
 <script src="{{url_for('.static', filename='assignkaryaaccesscode.js')}}"></script>
 <script src="{{url_for('.static', filename='home.js')}}"></script>

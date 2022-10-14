@@ -1,5 +1,4 @@
 from flask import flash, redirect, render_template, url_for, request, json, jsonify, send_file
-from pymongo import database
 from werkzeug.urls import url_parse
 from werkzeug.security import generate_password_hash
 from app import app, mongo
@@ -16,7 +15,6 @@ import glob
 from zipfile import ZipFile
 import re
 from jsondiff import diff
-# import sqlite3
 import pandas as pd
 
 from sklearn.feature_extraction.text import CountVectorizer
@@ -40,10 +38,10 @@ from xml.etree.ElementTree import ElementTree
 from app.controller import latex_generator as lg, savenewlexeme
 from app.controller import getdbcollections, getcurrentuserprojects, getactiveprojectname
 from app.controller import getprojectowner, getactiveprojectform, savenewsentence
-from app.controller import readJSONFile, createdummylexemeentry, getactivespeakerid
+from app.controller import readJSONFile, createdummylexemeentry
 from app.controller import savenewproject, updateuserprojects, savenewprojectform
 from app.controller import audiodetails, getcurrentusername, getcommentstats
-from app.controller import unannotatedfilename
+from app.controller import unannotatedfilename, getuserprojectinfo
 import shutil, traceback
 
 
@@ -52,7 +50,7 @@ scriptCodeJSONFilePath = os.path.join(basedir, 'static/json/scriptCode.json')
 langScriptJSONFilePath = os.path.join(basedir, 'static/json/langScript.json')
 ipatomeeteiFilePath = os.path.join(basedir, 'static/json/ipatomeetei.json')
 
-print(f'{"#"*80}Base directory:\n{basedir}\n{"#"*80}')
+print(f'{"#"*80}\nBase directory:\n{basedir}\n{"#"*80}')
 
 
 # home page route
@@ -66,11 +64,13 @@ def home():
                                 userprojects)
     activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username,
                             userprojects)
+    shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects, current_user.username, activeprojectname)
+    print(shareinfo)
 
     return render_template('home.html',
                             data=currentuserprojectsname,
-                            activeproject=activeprojectname)
-
+                            activeproject=activeprojectname,
+                            shareinfo=shareinfo)
 
 # new project route
 # create lexeme entry form for the new project
@@ -125,9 +125,11 @@ def enternewsentences():
                                                                                                         'transcriptions')
     currentuserprojectsname =  getcurrentuserprojects.getcurrentuserprojects(current_user.username,
                                 userprojects)
-    activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username,
-                            userprojects)
-    if (activeprojectname == ''):
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username, userprojects)
+    shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects, current_user.username, activeprojectname)
+    # print(shareinfo)
+
+    if activeprojectname == '':
         flash(f"select a project from 'All Projects' to work on!")
         return redirect(url_for('home'))
     if request.method == 'POST':
@@ -152,13 +154,16 @@ def enternewsentences():
     if activeprojectform is not None:
         try:
             # , audio_file_path, transcription_details
-            activespeakerid = getactivespeakerid.getactivespeakerid(userprojects, current_user.username)
+            # activespeakerid = getactivespeakerid.getactivespeakerid(userprojects, current_user.username)
+            activespeakerid = getuserprojectinfo.getuserprojectinfo(userprojects,
+                                                                    current_user.username,
+                                                                    activeprojectname)['activespeakerId']
             total_comments, annotated_comments, remaining_comments = getcommentstats.getcommentstats(projects,
                                                                                                         transcriptions,
                                                                                                         activeprojectname,
                                                                                                         activespeakerid,
                                                                                                         'audio')
-            commentstats = [total_comments, annotated_comments, remaining_comments]                                                                                                        
+            commentstats = [total_comments, annotated_comments, remaining_comments]
             audio_id = audiodetails.getactiveaudioid(projects,
                                                         activeprojectname,
                                                         activespeakerid,
@@ -200,7 +205,8 @@ def enternewsentences():
                                     data=currentuserprojectsname,
                                     speakerids=speakerids,
                                     activespeakerid=activespeakerid,
-                                    commentstats=commentstats)
+                                    commentstats=commentstats,
+                                    shareinfo=shareinfo)
         except Exception as e:
             traceback.print_exc()
             flash('Upload first audio file.')
@@ -231,7 +237,10 @@ def savetranscription():
     activeprojectform = getactiveprojectform.getactiveprojectform(projectsform,
                                                                     projectowner,
                                                                     activeprojectname)
-    activespeakerid = getactivespeakerid.getactivespeakerid(userprojects, current_user.username)                                                                    
+    # activespeakerid = getactivespeakerid.getactivespeakerid(userprojects, current_user.username)
+    activespeakerid = getuserprojectinfo.getuserprojectinfo(userprojects,
+                                                            current_user.username,
+                                                            activeprojectname)['activespeakerId']
     # data through ajax
     transcription_data = json.loads(request.args.get('a'))
     transcription_data = dict(transcription_data)
@@ -2694,27 +2703,45 @@ def userslist():
                                                                             'userlogin',
                                                                             'projects',
                                                                             'userprojects')
+    usersList = []
+    speakersList = []
+    sharemode = 0
     try:                                                                            
-        activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username,
-                                userprojects)
+        activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username, userprojects)
+        projectowner = getprojectowner.getprojectowner(projects, activeprojectname)                                
+        shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects, current_user.username, activeprojectname)
+        sharemode = shareinfo['sharemode']
 
-        usersList = []
-        speakersList = []
+        
         for user in userlogin.find({}, {"_id": 0, "username": 1}):
             # print(user)
             usersList.append(user["username"])
             # print(user)
-        usersList.remove(current_user.username)
-        print(usersList)
+        if (current_user.username == projectowner):
+            usersList.remove(projectowner)
+        else:
+            # print(usersList)
+            usersList.remove(projectowner)
+            usersList.remove(current_user.username)
+            for username in usersList:
+                usersharemode = getuserprojectinfo.getuserprojectinfo(userprojects,
+                                                                                username,
+                                                                                activeprojectname
+                                                                            )['sharemode']
+                # print(usersharemode)
+                if (sharemode <= usersharemode):
+                    usersList.remove(username)
+        # print(usersList)
         speakersDict = projects.find_one({'projectname': activeprojectname},
                                             {'_id':0, 'speakerIds.'+current_user.username: 1})
         speakersList = speakersDict['speakerIds'][current_user.username]
-        print(speakersList)
+        # print(speakersList)
     except:
-        # return redirect(url_for('home'))
         pass
 
-    return jsonify(usersList=sorted(usersList), speakersList=sorted(speakersList))
+    return jsonify(usersList=sorted(usersList),
+                    speakersList=sorted(speakersList),
+                    sharemode=sharemode)
 
 # modal view with complete detail of a lexeme for edit
 # edit button on dictionary view table
@@ -2725,6 +2752,9 @@ def shareprojectwith():
                                                                 'userprojects')
     
     activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username, userprojects)
+    # print('activeprojectname', activeprojectname)
+
+    projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
 
     # data through ajax
     data = request.args.get('data')
@@ -2734,11 +2764,15 @@ def shareprojectwith():
     # print(type(users))
     speakers = data['sharespeakers']
     sharemode = data['sharemode']
+    # print(sharemode)
+    if (sharemode == ''):
+        sharemode = 0
     sharechecked = str(data['sharechecked'])
-    print('123', users, speakers, sharemode, sharechecked)
-    print('456', speakers[-1])
+    # print('123', users, speakers, sharemode, sharechecked)
     
     if (len(users) != 0):
+        projectinfo = userprojects.find_one({'username' : current_user.username},
+                                        {'_id': 0, 'myproject': 1, 'projectsharedwithme': 1})
         for user in users:
             # print(user)
             userdict = {}
@@ -2746,44 +2780,73 @@ def shareprojectwith():
             usershareprojectsname = userprojects.find_one({ 'username' : user },
                                                             {'_id': 0, 'projectsharedwithme': 1})
             usershareprojectsname = usershareprojectsname['projectsharedwithme']
-            usershareprojectsname[activeprojectname] = {'sharemode': sharemode,
-                                                        'sharechecked': sharechecked}
-            # print(usershareprojectsname)
+            if activeprojectname in usershareprojectsname:
+                tomesharedby = usershareprojectsname[activeprojectname]['tomesharedby']
+                tomesharedby.append(current_user.username)
+                usershareprojectsname[activeprojectname] = {
+                                                            'sharemode': sharemode,
+                                                            'tomesharedby': list(set(tomesharedby)),
+                                                            'isharedwith': [],
+                                                            'sharechecked': sharechecked,
+                                                            'activespeakerId': ''
+                                                            }
+            else:                                                        
+                usershareprojectsname[activeprojectname] = {
+                                                            'sharemode': sharemode,
+                                                            'tomesharedby': [current_user.username],
+                                                            'isharedwith': [],
+                                                            'sharechecked': sharechecked,
+                                                            'activespeakerId': ''
+                                                            }
             projectdetails = projects.find_one({'projectname': activeprojectname},
                                                 {'_id': 0,
                                                 'sharedwith': 1,
                                                 'lastActiveId': 1,
                                                 'speakerIds': 1})
-            print(projectdetails)
+            # print(projectdetails)
             projectdetails['sharedwith'].append(user)
             # print(projectdetails)
             # update list of projects shared with the user in collection
             userprojects.update_one({ 'username' : user },
-                                    { '$set': { 'projectsharedwithme' : usershareprojectsname,
-                                          'activespeakerId': speakers[-1]}})
+                                    { '$set': { 'projectsharedwithme' : usershareprojectsname}})
             projects.update_one({'projectname': activeprojectname},
-                                {'$set': {'sharedwith': projectdetails['sharedwith']}})
+                                {'$set': {'sharedwith': list(set(projectdetails['sharedwith']))}})
             
             if (len(speakers) != 0):
-                # projectdetails['speakerIds'][user] = speakers
-                projects.update_one({'projectname': activeprojectname},
-                                {'$set': {'speakerIds.'+user: speakers}})
+                userprojectinfo = ''
+                for key, value in projectinfo.items():
+                    if len(value) != 0:
+                        if activeprojectname in value:
+                            userprojectinfo = key+'.'+activeprojectname+".activespeakerId"
+                userprojects.update_one({"username": current_user.username},
+                                        { "$set": {
+                                            userprojectinfo: speakers[-1]
+                                        }})
+                
                 for speaker in speakers:
+                    # print(speaker)
+                    projects.update_one({'projectname': activeprojectname},
+                                {'$addToSet': {'speakerIds.'+user: speaker}})
                     userlastactiveId = projectdetails['lastActiveId'][current_user.username][speaker]['audioId']
-                    # print(userlastactiveId)
-                    # if (user in projectdetails['lastActiveId']):
-                        # projectdetails['lastActiveId'][user][speaker] = {'audioId': userlastactiveId}
                     projects.update_one({'projectname': activeprojectname},
                                 {'$set': {'lastActiveId.'+user+'.'+speaker+'.audioId': userlastactiveId}})
-                    # else:
-                    #     # userdict[speaker] = {'audioId': userlastactiveId}
-                    #     # projectdetails['lastActiveId'][user] = userdict
+            elif user not in projectdetails['speakerIds']:
+                projects.update_one({'projectname': activeprojectname},
+                                {'$set': {'lastActiveId.'+user: {}}})
 
-                    #     projects.update_one({'projectname': activeprojectname},
-                    #             {'$set': {'lastActiveId.'+user: userdict}})
-            # print(projectdetails)       
+            for key, value in projectinfo.items():
+                if (len(value) != 0 and
+                    activeprojectname in value):
+                    userprojects.update_one({"username": current_user.username},
+                                        { "$addToSet": {
+                                            key+'.'+activeprojectname+'.isharedwith': user
+                                        }})
+                    if projectowner != current_user.username:
+                        userprojects.update_one({"username": projectowner},
+                                            { "$addToSet": {
+                                                'myproject.'+activeprojectname+'.isharedwith': user
+                                            }})
 
-    
     return 'OK'
 
 # modal view with complete detail of a lexeme
@@ -3232,7 +3295,7 @@ def deletemultiplelexemes():
 # save active project name for active user
 @app.route('/activeprojectname', methods=['GET', 'POST'])
 def activeprojectname():
-    userprojects = mongo.db.userprojects                # collection containing username and his/her last seen project name
+    userprojects, = getdbcollections.getdbcollections(mongo, 'userprojects')
     
     projectname = str(request.args.get('a'))            # data through ajax
 
@@ -3241,8 +3304,9 @@ def activeprojectname():
     # else:
     #     activeprojectnames.update_one({ 'username' : current_user.username }, {'$set' : { 'projectname' : projectname }})
 
-    userprojects.update_one({ 'username' : current_user.username }, \
+    userprojects.update_one({ 'username' : current_user.username },
             { '$set' : { 'activeprojectname' :  projectname}})
+
     return 'OK'
 
 
@@ -3321,8 +3385,17 @@ def dummyUserandProject():
     userprojects = mongo.db.userprojects                # collection of users and their projectlist and active project
     projects = mongo.db.projects                        # collection containing projects name
     if len(mongo.db.list_collection_names()) == 0:
-        userprojects.insert({'username' : "dummyUser", 'myproject': ["dummyProject1"], \
-            'projectsharedwithme': [], 'activeprojectname' : "dummyActiveProject"})
+        userprojects.insert({'username' : "dummyUser",
+                            'myproject': 
+                                {"dummyProject1": 
+                                    {
+                                        'sharemode': 0,
+                                        'sharechecked': "false"
+                                    }
+                                },
+                            'projectsharedwithme': {},
+                            'activeprojectname' : "dummyActiveProject"
+                            })
         projects.insert({"projectname": "dummyProject1",
                         "projectOwner" : "dummyUser",
                         "lexemeInserted" : 0,
@@ -3338,7 +3411,9 @@ def dummyUserandProject():
 def audiotranscription():
     userprojects = mongo.db.userprojects              # collection of users and their respective projects
 
-    currentuserprojectsname =  sorted(list(currentuserprojects()))
+    # currentuserprojectsname =  sorted(list(currentuserprojects()))
+    currentuserprojectsname = getcurrentuserprojects.getcurrentuserprojects(current_user.username,
+                                userprojects)
     activeprojectname = userprojects.find_one({ 'username' : current_user.username },\
                     {'_id' : 0, 'activeproject': 1})['activeproject']
 
@@ -3398,7 +3473,10 @@ def loadpreviousaudio():
                                                                 'userprojects')
     activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username,
                             userprojects)
-    activespeakerid = getactivespeakerid.getactivespeakerid(userprojects, current_user.username)
+    # activespeakerid = getactivespeakerid.getactivespeakerid(userprojects, current_user.username)
+    activespeakerid = getuserprojectinfo.getuserprojectinfo(userprojects,
+                                                            current_user.username,
+                                                            activeprojectname)['activespeakerId']
     # data through ajax
     lastActiveId = request.args.get('data')
     lastActiveId = eval(lastActiveId)
@@ -3425,7 +3503,10 @@ def loadnextaudio():
                                                                 'userprojects')
     activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username,
                             userprojects)
-    activespeakerid = getactivespeakerid.getactivespeakerid(userprojects, current_user.username)                            
+    # activespeakerid = getactivespeakerid.getactivespeakerid(userprojects, current_user.username)
+    activespeakerid = getuserprojectinfo.getuserprojectinfo(userprojects,
+                                                            current_user.username,
+                                                            activeprojectname)['activespeakerId']
     # data through ajax
     lastActiveId = request.args.get('data')
     lastActiveId = eval(lastActiveId)
@@ -3467,7 +3548,10 @@ def allunannotated():
 
     activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username,
                                                                     userprojects)
-    activespeakerid = getactivespeakerid.getactivespeakerid(userprojects, current_user.username)
+    # activespeakerid = getactivespeakerid.getactivespeakerid(userprojects, current_user.username)
+    activespeakerid = getuserprojectinfo.getuserprojectinfo(userprojects,
+                                                            current_user.username,
+                                                            activeprojectname)['activespeakerId']
     # audioFilesPath = 'static/audio'
     # baseAudioFilesPath = os.path.join(basedir, audioFilesPath)
     # audioFilesList = sorted(os.listdir(baseAudioFilesPath))
@@ -3486,7 +3570,10 @@ def loadunannotext():
 
     activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username,
                                                                     userprojects)
-    activespeakerid = getactivespeakerid.getactivespeakerid(userprojects, current_user.username)
+    # activespeakerid = getactivespeakerid.getactivespeakerid(userprojects, current_user.username)
+    activespeakerid = getuserprojectinfo.getuserprojectinfo(userprojects,
+                                                            current_user.username,
+                                                            activeprojectname)['activespeakerId']
 
     # print(f'{"="*80}\nUn-Anno\n{"="*80}')
 
@@ -3509,7 +3596,6 @@ def loadunannotext():
 @app.route('/uploadaudiofiles', methods=['GET', 'POST'])
 @login_required
 def uploadaudiofiles():
-
     projects, userprojects, transcriptions = getdbcollections.getdbcollections(mongo,
                                                 'projects',
                                                 'userprojects',
@@ -3537,13 +3623,124 @@ def uploadaudiofiles():
 @app.route('/changespeakerid', methods=['GET', 'POST'])
 @login_required
 def changespeakerid():
-    userprojects = mongo.db.userprojects
+    userprojects, = getdbcollections.getdbcollections(mongo, 'userprojects')
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username, userprojects)
 
     # data through ajax
     speakerId = str(request.args.get('a'))
     print(speakerId)
+    projectinfo = userprojects.find_one({'username' : current_user.username},
+                                        {'_id': 0, 'myproject': 1, 'projectsharedwithme': 1})
 
-    userprojects.update_one({ 'username' : current_user.username },
-                            { '$set' : { 'activespeakerId' :  speakerId}})
+    print(projectinfo)
+    userprojectinfo = ''
+    for key, value in projectinfo.items():
+        if len(value) != 0:
+            if activeprojectname in value:
+                userprojectinfo = key+'.'+activeprojectname+".activespeakerId"
+    print(userprojectinfo)            
+    userprojects.update_one({"username": current_user.username},
+                            { "$set": {
+                                userprojectinfo: speakerId
+                            }})
+    # userprojects.update_one({ 'username' : current_user.username },
+    #                         { '$set' : { 'activespeakerId' :  speakerId}})
 
     return 'OK'
+
+# get progress report
+@app.route('/progressreport', methods=['GET'])
+@login_required
+def progressreport():
+    projects, userprojects, transcriptions = getdbcollections.getdbcollections(mongo,
+                                                                                'projects',
+                                                                                'userprojects',
+                                                                                'transcriptions')
+    current_username = getcurrentusername.getcurrentusername()
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_username, userprojects)
+
+    progressreport = ''
+
+    # print(current_username, activeprojectname)
+    shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects, current_username, activeprojectname)
+    # print(shareinfo)
+
+    if 'isharedwith' in shareinfo:
+        isharedwith = shareinfo['isharedwith']
+        # print('isharedwith', isharedwith)
+        isharedwith.append(current_username)
+        # print('isharedwith_2', isharedwith)
+        progressreport = audiodetails.getaudioprogressreport(projects, transcriptions, activeprojectname, isharedwith)
+
+    # print(progressreport)
+
+    return jsonify(progressreport=progressreport)
+
+
+# get progress report
+@app.route('/test', methods=['GET'])
+@login_required
+def test():
+    projects, userprojects, projectsform, questionnaire, transcriptions = getdbcollections.getdbcollections(mongo,
+                                                                                                        'projects',
+                                                                                                        'userprojects',
+                                                                                                        'projectsform',
+                                                                                                        'questionnaire',
+                                                                                                        'transcriptions')
+    current_username = getcurrentusername.getcurrentusername()
+    currentuserprojectsname =  getcurrentuserprojects.getcurrentuserprojects(current_username,
+                                                                                userprojects)
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                    userprojects)
+    projectowner = getprojectowner.getprojectowner(projects,
+                                                    activeprojectname)
+    quesprojectform = getactiveprojectform.getactiveprojectform(projectsform,
+                                                                projectowner,
+                                                                activeprojectname)
+    shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
+                                                        current_username,
+                                                        activeprojectname)
+
+    print('current_username', current_username)
+    print('currentuserprojectsname', currentuserprojectsname)
+    print('activeprojectname', activeprojectname)
+    print('projectowner', projectowner)
+    print('quesprojectform', quesprojectform)
+    print('shareinfo', shareinfo)
+
+    return render_template('test.html',
+                            projectName=activeprojectname,
+                            quesprojectform=quesprojectform,
+                            data=currentuserprojectsname,
+                            shareinfo=shareinfo)
+
+# uploadquesfiles route
+@app.route('/uploadquesfiles', methods=['GET', 'POST'])
+@login_required
+def uploadquesfiles():
+    projects, userprojects, questionnaires = getdbcollections.getdbcollections(mongo,
+                                                'projects',
+                                                'userprojects',
+                                                'questionnaires')
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username,
+                            userprojects)
+    projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
+    if request.method == 'POST':
+        # speakerId = dict(request.form.lists())['speakerId'][0]
+        new_ques_file = request.files.to_dict()
+        audiodetails.saveaudiofiles(mongo,
+                                    projects,
+                                    userprojects,
+                                    transcriptions,
+                                    projectowner,
+                                    activeprojectname,
+                                    current_user.username,
+                                    speakerId,
+                                    new_audio_file
+                                    )
+
+<<<<<<< HEAD
+    return 'OK'
+=======
+    return redirect(url_for('enternewsentences'))
+>>>>>>> 5c6d7d9fd217b7df10129de6033b3f7f930f11e6
