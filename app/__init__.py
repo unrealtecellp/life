@@ -14,6 +14,9 @@ login.login_view = 'login'
 from app.lifedata.lifedataroutes import lifedata
 app.register_blueprint(lifedata, url_prefix='/lifedata')
 
+from app.lifeques.lifeques import lifeques
+app.register_blueprint(lifeques, url_prefix='/lifeques')
+
 from app.lifemodels.lifemodelsroutes import lifemodels
 app.register_blueprint(lifemodels, url_prefix='/lifemodels')
 
