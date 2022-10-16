@@ -1,3 +1,4 @@
+import pty
 from flask import Blueprint, redirect, render_template, url_for, request, flash
 from flask_login import login_required
 
@@ -7,7 +8,7 @@ from app.controller import getdbcollections, getactiveprojectname, getcurrentuse
 from app.controller import getprojectowner, getcurrentusername, getactiveprojectform
 from app.controller import savenewproject, updateuserprojects, getuserprojectinfo
 
-from app.lifeques.controller import savenewquestionnaireform
+from app.lifeques.controller import savenewquestionnaireform, createdummyques
 
 from pprint import pprint
 
@@ -27,36 +28,49 @@ def home():
 
 @lifeques.route('/newquestionnaireform', methods=['GET', 'POST'])
 def newquestionnaireform():
-    projects, userprojects, projectsform = getdbcollections.getdbcollections(mongo,
-                                                'projects',
-                                                'userprojects',
-                                                'projectsform')
+    projects, userprojects, projectsform, questionnaire = getdbcollections.getdbcollections(mongo,
+                                                                                            'projects',
+                                                                                            'userprojects',
+                                                                                            'projectsform',
+                                                                                            'questionnaire'
+                                                                                            )
     current_username = getcurrentusername.getcurrentusername()
     currentuserprojectsname =  getcurrentuserprojects.getcurrentuserprojects(current_username, userprojects)
 
     if request.method =='POST':
         new_ques_form = dict(request.form.lists())
-        # print(new_ques_form)
+        pprint(new_ques_form)
         projectname = 'Q_'+new_ques_form['projectname'][0]
         about_project = new_ques_form['aboutproject'][0]
-        project_type = "questionnaire"
+        project_type = "questionnaires"
 
-        savenewquestionnaireform.savenewquestionnaireform(projectsform,
-                                                            projectname,
-                                                            new_ques_form,
-                                                            current_username
-                                                        )
 
-        savenewproject.savenewproject(projects,
+        project_name = savenewproject.savenewproject(projects,
                                         projectname,
                                         current_username,
                                         aboutproject=about_project,
                                         projectType=project_type
-                                    )
+                                        )
+        if project_name == '':
+            flash(f'Project Name : "{projectname}" already exist!')
+            return redirect(url_for('lifeques.home'))
+
         updateuserprojects.updateuserprojects(userprojects,
                                                 projectname,
                                                 current_username
-                                            )
+                                                )
+
+        save_ques_form = savenewquestionnaireform.savenewquestionnaireform(projectsform,
+                                                                            projectname,
+                                                                            new_ques_form,
+                                                                            current_username
+                                                                            )
+    
+        createdummyques.createdummyques(questionnaire,
+                                        projectname,
+                                        save_ques_form,
+                                        current_username
+                                        )
 
         return redirect(url_for("lifeques.questionnaire"))
 
@@ -97,3 +111,29 @@ def questionnaire():
                             quesprojectform=quesprojectform,
                             data=currentuserprojectsname,
                             shareinfo=shareinfo)
+
+# uploadquesfiles route
+@lifeques.route('/uploadquesfiles', methods=['GET', 'POST'])
+@login_required
+def uploadquesfiles():
+    projects, userprojects, questionnaires = getdbcollections.getdbcollections(mongo,
+                                                'projects',
+                                                'userprojects',
+                                                'questionnaires')
+    current_username = getcurrentusername.getcurrentusername()
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                    userprojects)
+    projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
+    if request.method == 'POST':
+        new_ques_file = request.files.to_dict()
+        print(new_ques_file)
+
+    return redirect(url_for('lifeques.questionnaire'))
+
+# download questionnaire form in excel
+@lifeques.route('/downloadformexcel', methods=['GET', 'POST'])
+@login_required
+def downloadformexcel():
+    print(f"I download questionnaire form.")
+
+    return redirect(url_for('lifeques.questionnaire'))

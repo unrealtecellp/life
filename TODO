@@ -106,7 +106,14 @@
 - test by uploading large audio files
 - IPA to meetei script mapping
 
-13 October 2022
+15 October 2022
 ---------------------------------------------------------------
-- 
->>>>>>>>> Temporary merge branch 2
+- save dummy questionnaire (use 'questionnaire.json' format) document in 'questionnaires' collections 
+    when creating the new questionnaire project.
+- download blank excel questionnaire form using the dummy questionnaire.
+- upload questionnaire excel with data and save each row as document in 'questionnaires' collection.
+- create questionnaire form using the questionnaire project form.
+- create questionnaire form in edit mode using the questionnaire project form and data in questionnaire documents.
+- fetch audio from 'karya' app and save its details in the respective questionnaire document using the 'Q_Id'.
+- implement 'derive questionnaire project'.
+- add new ques button(on/off) in the questionnaire project

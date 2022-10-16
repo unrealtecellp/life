@@ -23,7 +23,9 @@ LiFe Questionnaire Home
   </div>
   <div id="quessubbtn">
     <div id="createnewquessubbtn" style="display: none;">
+      <a href="#quesform">
       <button type="button" id="quesmanualentrybtn" class="btn btn-lg btn-primary" >Manual Entry</button>
+      </a>
       <button type="button" class="btn btn-lg btn-primary" onclick="window.location.href= #;">Crawler</button>
       <button type="button" class="btn btn-lg btn-primary" onclick="window.location.href= #;">Karya Extention</button>
     </div>
@@ -39,6 +41,7 @@ LiFe Questionnaire Home
     <hr>
   </div>
   <div id="quesform"  style="display: none;">
+    <br>
     <h3>Create Form for your Project</h3>
     <hr>
     <form action="{{ url_for('lifeques.newquestionnaireform') }}" method="POST" enctype="multipart/form-data">
@@ -78,12 +81,12 @@ LiFe Questionnaire Home
         </select>
       </div> 
       <div class="form-group">
-        <input type="checkbox" id="idincludetranscription" name="Include Transcription">
+        <input type="checkbox" id="idincludetranscription" name="Transcription">
         <label for="idincludetranscription">Include Transcription</label><br>
       </div>
 
       <div class="form-group">
-        <input type="checkbox" id="idincludeinstruction" name="Include Instruction">
+        <input type="checkbox" id="idincludeinstruction" name="Instruction">
         <label for="idincludeinstruction">Include Instruction</label><br>
       </div>
 
@@ -93,12 +96,12 @@ LiFe Questionnaire Home
       </div>
 
       <div class="form-group">
-          <label for="idem">Elicitation Method</label><br>                           
-          <select class="elicitationmethod" id="idem" name="Elicitation Method" multiple="multiple" style="width:55%" required></select><br>
+          <label for="idelicitationmethod">Elicitation Method</label><br>                           
+          <select class="elicitationmethod" id="idelicitationmethod" name="Elicitation Method" multiple="multiple" style="width:55%" required></select><br>
       </div>
 
       <div class="form-group">
-        <input type="checkbox" id="idtarget" name="Target" required>
+        <input type="checkbox" id="idtarget" name="Target" checked>
         <label for="idtarget">Target</label><br>
       </div>
       <!-- <div class="form-group">
