@@ -18,7 +18,7 @@ def createdummyques(questionnaire,
     dummy_ques = {
             "username": current_username,
             "projectname": projectname,
-            "quesId": "",
+            "quesId": projectname+"_dummy_ques",
             "Q_Id": "",
             "lastUpdatedBy": "",
             "quesdeleteFLAG": "",
