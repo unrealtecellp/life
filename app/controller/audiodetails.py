@@ -128,17 +128,20 @@ def saveaudiofiles(mongo,
                                 { "$set": {
                                     userprojectinfo: speakerId
                                 }})
-        transcriptions.insert(new_audio_details)
+        transcription_doc_id = transcriptions.insert(new_audio_details)
         # save audio file details in fs collection
-        mongo.save_file(updated_audio_filename,
+        fs_file_id = mongo.save_file(updated_audio_filename,
                         new_audio_file['audiofile'],
                         audioId=audio_id,
                         username=projectowner,
                         projectname=activeprojectname,
                         updatedBy=current_username)
+
+        return (transcription_doc_id, fs_file_id)
+        
     except Exception as e:
         print(e)
-        flash(f"ERROR")                    
+        flash(f"ERROR")
 
 def getactiveaudioid(projects,
                     activeprojectname,

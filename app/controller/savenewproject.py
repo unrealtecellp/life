@@ -2,7 +2,8 @@
 
 def savenewproject(projects,
                     projectname,
-                    current_username):
+                    current_username,
+                    **kwargs):
     """
     Args:
         projects: instance of 'projects' collection.
@@ -25,8 +26,11 @@ def savenewproject(projects,
             "projectdeleteFLAG" : 0,
             "isPublic": 0,
             "derivedFromProject": [],
-            "projectDerivatives": []
+            "projectDerivatives": [],
         }
+        for key, value in kwargs.items():
+            project_details[key] = value
+            
         projects.insert(project_details)
     else:
         projectname = ''

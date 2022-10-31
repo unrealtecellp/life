@@ -42,25 +42,47 @@
     </div>
 </div>
 <hr>
+<div class="row">
+  <div class="col-sm-7 commentIDs">
+      <button type="button" id="uNAnnotated" class="btn btn-light" onclick="unAnnotated()">All Questionnaire Ids</button>
+  </div>
+  {% if commentstats is defined %}
+    <div class="col-sm-3 commentStats pull-right">
+      <strong>Total Files: {{ commentstats[0] }}</strong><br> 
+      <strong>Annotated Files: {{ commentstats[1] }}</strong><br>
+      <strong>Remaining Files: {{ commentstats[2] }}</strong><br>
+    </div>
+  {% endif %}
+</div>
+<br>
+<div class="defaultfield">
+</div>
+<br>
 <div id="questionnaire">
+  <form action="{{ url_for('lifeques.questranscriptionaudio') }}" method="POST" enctype="multipart/form-data">
+    <div id="questranscriptionaudio"></div>
+    <input class="btn btn-primary pull-right" id="submit" type="submit" value="Upload" >
+  </form>
+  <br>
+  <hr>
     <div id="quesform"></div>
-    <hr>
+    <!-- <hr>
     <div id="quesformControl">
-        <button class="btn btn-info btn-lg" type="button" id="previous" onclick="previousAudio()">
+        <button class="btn btn-info btn-lg" type="button" id="previous" onclick="previousQues()">
         <span class="previousaudio glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
         Previous
         </button>
-        <button class="btn btn-info btn-lg pull-right" type="button" id="next" onclick="nextAudio()">
+        <button class="btn btn-info btn-lg pull-right" type="button" id="next" onclick="nextQues()">
         Next
         <span class="nextaudio glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
         </button>
         <br>
         <br>
-        <button class="btn btn-warning btn-lg btn-block pull-right" id="saveques">
+        <button type="submit" class="btn btn-warning btn-lg btn-block pull-right" id="saveques">
           Save
-          <span class="saveaudio glyphicon glyphicon-floppy-save" aria-hidden="true"></span>
+          <span class="glyphicon glyphicon-floppy-save" aria-hidden="true"></span>
         </button>
-    </div>
+    </div> -->
 </div>
 {% endblock %}
 

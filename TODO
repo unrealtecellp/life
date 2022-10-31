@@ -104,7 +104,13 @@
 - test by uploading large audio files
 - IPA to meetei script mapping
 
-13 October 2022
+28 October 2022
 ---------------------------------------------------------------
-- 
+- save questionnaire audio.
+- show saved data in the questionnaire form.
+- save button in the questionnaire form.
+- show waveform in the questionnaire form.
+- edit saved questionnaire.
+- derive project from existing project.
+- add list of all the target in the questionnaire.
 - 
