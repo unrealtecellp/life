@@ -89,8 +89,6 @@
 24 September 2022
 ---------------------------------------------------------------
 - download and save wavesurfer to use in offline mode too
-<<<<<<<<< Temporary merge branch 1
-=========
 
 27 September 2022
 ---------------------------------------------------------------
@@ -106,6 +104,7 @@
 - test by uploading large audio files
 - IPA to meetei script mapping
 
+
 15 October 2022
 ---------------------------------------------------------------
 - save dummy questionnaire (use 'questionnaire.json' format) document in 'questionnaires' collections 
@@ -117,3 +116,14 @@
 - fetch audio from 'karya' app and save its details in the respective questionnaire document using the 'Q_Id'.
 - implement 'derive questionnaire project'.
 - add new ques button(on/off) in the questionnaire project
+
+28 October 2022
+---------------------------------------------------------------
+- save questionnaire audio.
+- show saved data in the questionnaire form.
+- save button in the questionnaire form.
+- show waveform in the questionnaire form.
+- edit saved questionnaire.
+- derive project from existing project.
+- add list of all the target in the questionnaire.
+- 

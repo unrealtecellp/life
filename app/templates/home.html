@@ -30,7 +30,7 @@ Home
     <h3>Active Project: {{ activeproject }}</h3>
     
     <div>    
-        <button type="button" class="btn btn-lg btn-primary" onclick="window.location.href='{{ url_for('enternewsentences') }}';">View/Edit Project</button>
+        <button type="button" class="btn btn-lg btn-primary" onclick="window.location.href='{{ url_for('lifeques.questionnaire') }}';">View/Edit Project</button>
         {% if  shareinfo['sharechecked'] == 'true' %}
           <button type="button" class="btn btn-lg btn-danger" data-toggle="modal" data-target="#myShareProjectModal">
               Share Project
