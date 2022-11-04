@@ -649,11 +649,6 @@ def fetch_karya_audio():
                     print('10', new_audio_file['audiofile'].filename)
 
                     ################################################################################################
-                    
-                    
-
-                    
-
                     audiodetails.saveaudiofiles(mongo,
                             projects,
                             userprojects,
@@ -718,6 +713,8 @@ def fetch_karya_audio_zip():
                 new_audio_file = {}
                 new_audio_file['audiofile'] = FileStorage(wavdata, filename=wavfilename)
                 print('9', new_audio_file['audiofile'], type(new_audio_file['audiofile']))
+
+
                 audiodetails.saveaudiofiles(mongo,
                             projects,
                             userprojects,
