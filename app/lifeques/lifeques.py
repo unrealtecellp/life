@@ -6,6 +6,7 @@ from app import mongo
 from app.controller import getdbcollections, getactiveprojectname, getcurrentuserprojects
 from app.controller import getprojectowner, getcurrentusername, getactiveprojectform
 from app.controller import savenewproject, updateuserprojects, getuserprojectinfo
+from app.controller import getprojecttype
 
 from app.lifeques.controller import savenewquestionnaireform, createdummyques, downloadquesformexcel
 from app.lifeques.controller import uploadquesdataexcel, getactivequestionnaireid, updatelatestquesid
@@ -29,7 +30,7 @@ def home():
         _type_: _description_
     """
     print('lifeques home')
-
+    
     return render_template("lifequeshome.html")
 
 @lifeques.route('/getprojectslist', methods=['GET', 'POST'])
@@ -158,6 +159,9 @@ def questionnaire():
     print(f"{inspect.currentframe().f_lineno}: {quesdata}")
     quesprojectform['quesdata'] = quesdata
     # print(f"{inspect.currentframe().f_lineno}: {quesprojectform}")
+
+    # project_type = getprojecttype.getprojecttype(projects, activeprojectname)
+    # print('project_type', project_type)
 
     return render_template('questionnaire.html',
                             projectName=activeprojectname,
