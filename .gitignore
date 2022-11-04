@@ -13,3 +13,6 @@ app/testliftXML.tsv
 app/lexemeEntry.json
 path_test.py
 nohup.out
+questionnaireform.zip
+app/lifeques/lifeUploadedFileContent.pkl
+app/lifeques/lifexlsxdf.tsv

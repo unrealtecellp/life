@@ -1,4 +1,3 @@
-from tracemalloc import start
 from flask import Blueprint, redirect, render_template, url_for, request, flash, send_file, jsonify
 from flask_login import login_required
 
@@ -11,6 +10,7 @@ from app.controller import savenewproject, updateuserprojects, getuserprojectinf
 from app.lifeques.controller import savenewquestionnaireform, createdummyques, downloadquesformexcel
 from app.lifeques.controller import uploadquesdataexcel, getactivequestionnaireid, updatelatestquesid
 from app.lifeques.controller import getnewquesid, quesunannotatedfilename, saveques, savequesaudiofiles
+from app.lifeques.controller import getderivedfromprojectform, copyquesfromparentproject
 
 import os
 from pprint import pprint
@@ -55,7 +55,7 @@ def newquestionnaireform():
 
     if request.method =='POST':
         new_ques_form = dict(request.form.lists())
-        pprint(new_ques_form)
+        # pprint(new_ques_form)
         projectname = 'Q_'+new_ques_form['projectname'][0]
         about_project = new_ques_form['aboutproject'][0]
         project_type = "questionnaires"
@@ -73,10 +73,37 @@ def newquestionnaireform():
             flash(f'Project Name : "{projectname}" already exist!')
             return redirect(url_for('lifeques.home'))
 
+        if ("derivefromproject" in new_ques_form):
+        #     print("line no: 76, derivefromproject in new_ques_form")
+            derive_from_project_name = new_ques_form["derivefromproject"][0]
+            projects.update_one({"projectname": derive_from_project_name},
+                                {"$addToSet": {
+                                    "projectDerivatives": project_name
+                                }})
+            projects.update_one({"projectname": project_name},
+                                {"$addToSet": {
+                                    "derivedFromProject": derive_from_project_name
+                                }})
+            # merge new project form and parent project form
+            derivedfromprojectform = getderivedfromprojectform.getderivedfromprojectform(projectsform,
+                                                                derive_from_project_name)
+            # pprint(derivedfromprojectform)
+            for key, value in new_ques_form.items():
+                if (key in derivedfromprojectform):
+                    derivedfromprojectformvalue = derivedfromprojectform[key][1]
+                    # print(key, value, derivedfromprojectformvalue)
+                    derivedfromprojectformvalue.extend(value)
+                    if (key == "Language" or key == "Script"):
+                        new_ques_form[key] = list(derivedfromprojectformvalue)
+                    else:
+                        new_ques_form[key] = list(set(derivedfromprojectformvalue))
+            
+        # pprint(new_ques_form)
         updateuserprojects.updateuserprojects(userprojects,
                                                 projectname,
                                                 current_username
                                                 )
+        
         save_ques_form = savenewquestionnaireform.savenewquestionnaireform(projectsform,
                                                                             projectname,
                                                                             new_ques_form,
@@ -87,6 +114,14 @@ def newquestionnaireform():
                                         save_ques_form,
                                         current_username
                                         )
+        if ("derivefromproject" in new_ques_form):
+        # copy all the ques from the "derivedfromproject" to "newproject"
+            copyquesfromparentproject.copyquesfromparentproject(projects,
+                                                                questionnaires,
+                                                                projectsform,
+                                                                derive_from_project_name,
+                                                                projectname,
+                                                                current_username)
 
         return redirect(url_for("lifeques.questionnaire"))
 
@@ -120,7 +155,7 @@ def questionnaire():
     quesdata = questionnaires.find_one({"quesId": last_active_ques_id}, {"_id": 0})
     # print(f"{inspect.currentframe().f_lineno}: {quesprojectform}")
     # print(f"{inspect.currentframe().f_lineno}: {type(quesdata)}")
-
+    print(f"{inspect.currentframe().f_lineno}: {quesdata}")
     quesprojectform['quesdata'] = quesdata
     # print(f"{inspect.currentframe().f_lineno}: {quesprojectform}")
 
