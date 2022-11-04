@@ -31,7 +31,7 @@ LiFe Questionnaire Home
     </div>
     <div id="derivefromquessubbtn" style="display: none;">
       <div class="col-md-6">
-        <select name="" id="derivefromquesselect" style="width: 100%"></select>
+        <select name="Derived From" id="derivefromquesselect" style="width: 100%"></select>
         <br>
         <br>
         <div id="derivefromquesform"></div>
@@ -45,14 +45,17 @@ LiFe Questionnaire Home
     <h3>Create Form for your Project</h3>
     <hr>
     <form action="{{ url_for('lifeques.newquestionnaireform') }}" method="POST" enctype="multipart/form-data">
+      <div id="beforefield" class="form-group"></div>
       <div class="form-group">
         <label for="idprojectname">Project Name</label>
-        <input type="text" class="form-control" id="idprojectname" placeholder="Project Name" name="projectname" style="width: 55%" required>
+        <!-- <input type="text" class="form-control" id="idprojectname" placeholder="Project Name" name="projectname" style="width: 55%" required> -->
+        <input type="text" class="form-control" id="idprojectname" placeholder="Project Name" name="projectname" style="width: 55%">
       </div>
 
       <div class="form-group">
-        <label for= "idabout">About the Project</label><br>                        
-        <textarea id="idabout" name="aboutproject" style="width:55%" required></textarea>
+        <label for= "idabout">About the Project</label><br>
+        <!-- <textarea id="idabout" name="aboutproject" style="width:55%" required></textarea> -->
+        <textarea id="idabout" name="aboutproject" style="width:55%"></textarea>
       </div> 
       <div class="row ">
         <div class="col-md-3">
@@ -77,7 +80,8 @@ LiFe Questionnaire Home
 
       <div class="form-group">
         <label for="idprompttype">Prompt Type</label><br>                           
-        <select class="prompttype" id="idprompttype" name="Prompt Type" multiple="multiple" style="width:55%" required>
+        <!-- <select class="prompttype" id="idprompttype" name="Prompt Type" multiple="multiple" style="width:55%" required> -->
+          <select class="prompttype" id="idprompttype" name="Prompt Type" multiple="multiple" style="width:55%"></select>
         </select>
       </div> 
       <div class="form-group">
@@ -92,12 +96,14 @@ LiFe Questionnaire Home
 
       <div class="form-group">
         <label for="iddomain">Domain</label><br>                           
-        <select class="questionnairedomain" id="iddomain" name="Domain" multiple="multiple" style="width:55%" required></select><br>
+        <!-- <select class="questionnairedomain" id="iddomain" name="Domain" multiple="multiple" style="width:55%" required></select><br> -->
+        <select class="questionnairedomain" id="iddomain" name="Domain" multiple="multiple" style="width:55%"></select><br>
       </div>
 
       <div class="form-group">
           <label for="idelicitationmethod">Elicitation Method</label><br>                           
-          <select class="elicitationmethod" id="idelicitationmethod" name="Elicitation Method" multiple="multiple" style="width:55%" required></select><br>
+          <!-- <select class="elicitationmethod" id="idelicitationmethod" name="Elicitation Method" multiple="multiple" style="width:55%" required></select><br> -->
+          <select class="elicitationmethod" id="idelicitationmethod" name="Elicitation Method" multiple="multiple" style="width:55%"></select><br>
       </div>
 
       <div class="form-group">

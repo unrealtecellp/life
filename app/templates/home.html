@@ -19,6 +19,7 @@ Home
     <button type="button" class="btn btn-lg btn-success" onclick="window.location.href='{{ url_for('newproject') }}';">Create New Project</button>
     <button type="button" class="btn btn-lg btn-success" onclick="window.location.href='{{ url_for('newproject') }}';">Derived New Project</button>
 
+    <button type="button" class="btn btn-lg btn-danger" onclick="window.location.href='{{ url_for('lifeques.home') }}';">Questionnaire</button>
     <button type="button" class="btn btn-lg btn-info" onclick="window.location.href='{{ url_for('lifedata.home') }}';">Data</button>
     <button type="button" class="btn btn-lg btn-warning" onclick="window.location.href='{{ url_for('lifemodels.home') }}';">Models</button>
       <!-- <p>{{ shareinfo['sharemode'] }}</p> -->
@@ -30,7 +31,7 @@ Home
     <h3>Active Project: {{ activeproject }}</h3>
     
     <div>    
-        <button type="button" class="btn btn-lg btn-primary" onclick="window.location.href='{{ url_for('enternewsentences') }}';">View/Edit Project</button>
+        <button type="button" class="btn btn-lg btn-primary" onclick="window.location.href='{{ url_for('lifeques.questionnaire') }}';">View/Edit Project</button>
         {% if  shareinfo['sharechecked'] == 'true' %}
           <button type="button" class="btn btn-lg btn-danger" data-toggle="modal" data-target="#myShareProjectModal">
               Share Project

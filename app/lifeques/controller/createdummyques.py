@@ -2,7 +2,7 @@
 
 from pprint import pprint
 
-def createdummyques(questionnaire,
+def createdummyques(questionnaires,
                     projectname,
                     save_ques_form,
                     current_username):
@@ -18,7 +18,7 @@ def createdummyques(questionnaire,
     dummy_ques = {
             "username": current_username,
             "projectname": projectname,
-            "quesId": "",
+            "quesId": projectname+"_dummy_ques",
             "Q_Id": "",
             "lastUpdatedBy": "",
             "quesdeleteFLAG": "",
@@ -75,5 +75,5 @@ def createdummyques(questionnaire,
     # print(dummy_ques)
     # pprint(dummy_ques)
 
-    questionnaire.insert(dummy_ques)
+    questionnaires.insert(dummy_ques)
     

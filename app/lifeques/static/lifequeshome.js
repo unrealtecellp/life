@@ -58,19 +58,31 @@ $("#quesmanualentrybtn").click(function() {
     var y = '';
     var z = '';
     hidedisplaydiv(x, y, z)
+    $('#beforefield').empty();
 });
 
 $("#derivefromquesselect").change(function(){
+    var derivedprojectvalue = document.getElementById("derivefromquesselect").value;
+    console.log(derivedprojectvalue)
     var derivedprojectform = '';
-    var derivemode = ['copy', 'edit', 'update']
-    var derivemodename = '';
-    derivedprojectform += '<form action="{{ url_for(\'newproject\') }}" method="POST" enctype="multipart/form-data">';
-    for (let i=0; i<derivemode.length; i++) {
-        derivemodename = derivemode[i]
-        derivedprojectform += '<input type="radio" id="'+derivemodename+'" name="derivemode" value="'+derivemodename+'">'+
-                                '&nbsp;<label for="'+derivemodename+'">'+derivemodename+'</label>&emsp;';
+    // var derivemode = ['copy', 'edit', 'update']
+    // var derivemodename = '';
+    // derivedprojectform += '<form action="{{ url_for(\'newproject\') }}" method="POST" enctype="multipart/form-data">';
+    // for (let i=0; i<derivemode.length; i++) {
+    //     derivemodename = derivemode[i]
+    //     derivedprojectform += '<input type="radio" id="'+derivemodename+'" name="derivemode" value="'+derivemodename+'">'+
+    //                             '&nbsp;<label for="'+derivemodename+'">'+derivemodename+'</label>&emsp;';
+    // }
+    // derivedprojectform += '<input class="btn btn-lg btn-primary" type="submit" value="Submit">';
+    // derivedprojectform += '</form>';
+
+    derivedprojectform += '<label for="derivefromproject">Derive From Project</label>'+
+                            '<input type="text" class="form-control" id="derivefromproject"'+
+                            'placeholder="Derive From Project" name="derivefromproject" value="'+derivedprojectvalue+'" style="width: 55%" readonly>'
+    $('#beforefield').html(derivedprojectform);
+    var x = document.getElementById("quesform");
+    if (x.style.display === "none") {
+        x.style.display = "block";
     }
-    derivedprojectform += '<input class="btn btn-lg btn-primary" type="submit" value="Submit">';
-    derivedprojectform += '</form>';
-    $('#derivefromquesform').html(derivedprojectform);
+    // $('#derivefromquesform').html(derivedprojectform);
   }); 

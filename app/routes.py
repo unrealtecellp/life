@@ -16,6 +16,7 @@ from zipfile import ZipFile
 import re
 from jsondiff import diff
 import pandas as pd
+import io
 
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.naive_bayes import MultinomialNB
@@ -42,6 +43,7 @@ from app.controller import readJSONFile, createdummylexemeentry
 from app.controller import savenewproject, updateuserprojects, savenewprojectform
 from app.controller import audiodetails, getcurrentusername, getcommentstats
 from app.controller import unannotatedfilename, getuserprojectinfo
+from app.controller import questionnairedetails
 import shutil, traceback
 
 
@@ -3701,12 +3703,12 @@ def test():
                                                         current_username,
                                                         activeprojectname)
 
-    print('current_username', current_username)
-    print('currentuserprojectsname', currentuserprojectsname)
-    print('activeprojectname', activeprojectname)
-    print('projectowner', projectowner)
-    print('quesprojectform', quesprojectform)
-    print('shareinfo', shareinfo)
+    # print('current_username', current_username)
+    # print('currentuserprojectsname', currentuserprojectsname)
+    # print('activeprojectname', activeprojectname)
+    # print('projectowner', projectowner)
+    # print('quesprojectform', quesprojectform)
+    # print('shareinfo', shareinfo)
 
     return render_template('test.html',
                             projectName=activeprojectname,
@@ -3725,19 +3727,31 @@ def uploadquesfiles():
     activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username,
                             userprojects)
     projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
+    current_username = getcurrentusername.getcurrentusername()
+
+    questionaireprojectform = {
+                                "username": "alice",
+                                "projectname": "alice_project_1",
+                                "Language": ["text", ["English", "Hindi"]],
+                                "Script": ["", ["latin", "devanagari"]],
+                                "Prompt Audio": ["file", ["audio"]],
+                                "Domain": ["multiselect", ["General", "Agriculture", "Sports"]],
+                                "Elicitation Method": ["select", ["Translation", "Agriculture", "Sports"]],
+                                "Target": ["multiselect", ["case", "classifier", "adposition"]]
+                                }
+                                
     if request.method == 'POST':
         # speakerId = dict(request.form.lists())['speakerId'][0]
         new_ques_file = request.files.to_dict()
-        audiodetails.saveaudiofiles(mongo,
-                                    projects,
-                                    userprojects,
-                                    transcriptions,
-                                    projectowner,
-                                    activeprojectname,
-                                    current_user.username,
-                                    speakerId,
-                                    new_audio_file
-                                    )
+        
+        questionnairedetails.savequesfiles(mongo,
+                                            projects,
+                                            userprojects,
+                                            questionnaires,
+                                            projectowner,
+                                            activeprojectname,
+                                            current_username,
+                                            new_ques_file
+                                        )
 
-    return 'OK'
-    return redirect(url_for('enternewsentences'))
+    return redirect(url_for('test'))

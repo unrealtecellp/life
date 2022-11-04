@@ -106,8 +106,16 @@
 - test by uploading large audio files
 - IPA to meetei script mapping
 
-13 October 2022
+28 October 2022
 ---------------------------------------------------------------
-- 
-- 
->>>>>>> 5c6d7d9fd217b7df10129de6033b3f7f930f11e6
+- save questionnaire audio. (currently it is working BUT using the "quesId").
+    - thinking How to make it work for the "Karya Ext".
+- show saved data in the questionnaire form.
+- save button in the questionnaire form.
+- show waveform in the questionnaire form.
+- edit saved questionnaire.
+- derive project from existing project.
+- add list of all the target in the questionnaire.
+- update the "derivedFromProject": [], list of the "new project" with the "project name" from which it has been derive.
+    and "projectDerivatives": [], list of the project which is being derived with the "project name" which is deriving.
+- create a function to get the "projectType" from the "projects" collection
