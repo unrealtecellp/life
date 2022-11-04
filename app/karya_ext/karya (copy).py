@@ -543,7 +543,7 @@ def fetch_karya_audio():
         r_j = assignment_request.json()
         print ('Lenght of JSON : ', len(r_j))
         # print("========================>>>>>>>>>>> ",r_j['tasks']['name'])
-        # print(r_j)
+        print(r_j)
         # op = assignment_request.json()
 
         
@@ -608,16 +608,16 @@ def fetch_karya_audio():
             filebytes= ra.content
             print(type(filebytes))
 
-            projects, userprojects, transcriptions, accesscodedetails = getdbcollections.getdbcollections(mongo, 'projects', 'userprojects', 'transcriptions', 'accesscodedetails')
+            projects, userprojects, transcriptions, accesscodedetails, questionnaire = getdbcollections.getdbcollections(mongo, 'projects', 'userprojects', 'transcriptions', 'accesscodedetails', 'questionnaire')
             
             current_username = getcurrentusername.getcurrentusername()
             activeprojectname = getactiveprojectname.getactiveprojectname(current_username, userprojects)
             projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
             
             karyaspeakerId = audio_speaker_merge[new_d]
-            print("Checking line no. 618: ", karyaspeakerId)
-            lifespeakerid = accesscodedetails.find_one({'karyaspeakerid': karyaspeakerId}, {'lifespeakerid': 1,'_id': 0})["lifespeakerid"]
-            print("lifespeakerid : ", lifespeakerid)
+            print("Checking line no. 604: \n", karyaspeakerId)
+            lifespeakerid = accesscodedetails.find_one({'karyaspeakerid': karyaspeakerId}, {'_id': 0, 'lifespeakerid': 1})['lifespeakerid']
+            print(lifespeakerid)
             # savedFiles = accesscodedetails.find_one({'karyaspeakerid': karyaspeakerId}, {'_id': 0, 'lifespeakerid': 1})['karyasavedfiles']
 
             #####################################################
@@ -649,22 +649,95 @@ def fetch_karya_audio():
                     print('10', new_audio_file['audiofile'].filename)
 
                     ################################################################################################
+                    ## saving audio file details to karya 
+                    # access_code = request.form.get("access_code")
+                    # mongodb_info = mongo.db.accesscodedetails
+                    # file_details = {"savedFiles":{"filename": new_audio_file['audiofile'], 
+                    #                                  "username":projectowner, 
+                    #                                  "projectname":activeprojectname, 
+                    #                                  "updatedBy":current_username}}
+                    # #
+                    # mongodb_info.insert({"karyaaccesscode": access_code},
+                    #                             {"$set": file_details}, upsert = True)
+                    ################################################################################################
+                    ## correct this 
+                    #mongodb_info = mongo.db.accesscodedetails
+                    #remaingkaryaaccesscode = mongodb_info.find({"isActive":0},{"karyaspeakerid":1, "_id" :0})
                     
-                    
+                    # if member not in savedFiles:
+                        # mongodb_info = mongo.db.fs.file
+                        # findAudioFile = mongodb_info.find({"savedFiles":fileAudio.getnames()},{"_id" :0}, {upsert: true})
+                        #findAudioFile = mongodb_info.update_one({"savedFiles":fileAudio.getnames()},{"_id" :0}, {upsert: true})
+                        ## save audio file details in fs collection
+                        # mongo.save_file(updated_audio_filename,
+                        #                 new_audio_file['audiofile'],
+                        #                 audioId=new_audio_details['audioId'] 
+                        #                 username=projectowner,
+                        #                 projectname=activeprojectname,
+                        #                 updatedBy=current_username)
+                        #
+                        # file_details = {"filename": new_audio_file['audiofile'], 
+                        #                             "username":projectowner, 
+                        #                             "projectname":activeprojectname, 
+                        #                             "updatedBy":current_username}
+
+                        #mongodb_info.save_file({"karyaaccesscode": accesscode, },
+                        #                        {"$set":"savedFiles": file_details},{upsert: true})
 
                     
 
-                    audiodetails.saveaudiofiles(mongo,
-                            projects,
-                            userprojects,
-                            transcriptions,
-                            projectowner,
-                            activeprojectname,
-                            current_username,
-                            lifespeakerid,
-                            new_audio_file,
-                            karyainfo=r_j,
-                            karya_peaker_id=karyaspeakerId)
+                                        
+                    def text_match(text):
+                            patterns = 'Questionnaire'
+                            if re.search(patterns,  text):
+                                quesmatch = quesaudiodetails.quessaveaudiofiles(mongo,
+                                                                        projects,
+                                                                        userprojects,
+                                                                        questionnaire,
+                                                                        projectowner,
+                                                                        activeprojectname,
+                                                                        current_username,
+                                                                        lifespeakerid,
+                                                                        new_audio_file,
+                                                                        karyainfo=r_j,
+                                                                        karya_peaker_id=karyaspeakerId)
+                                return ("11  Saving to Questtionnaire collection")
+                            else:
+                                transmatch  = audiodetails.saveaudiofiles(mongo,
+                                                                        projects,
+                                                                        userprojects,
+                                                                        transcriptions,
+                                                                        projectowner,
+                                                                        activeprojectname,
+                                                                        current_username,
+                                                                        lifespeakerid,
+                                                                        new_audio_file,
+                                                                        karyainfo=r_j,
+                                                                        karya_peaker_id=karyaspeakerId)
+                                return ("11  Saving to Trnascription collection")
+                                
+
+                for taskname in r_j['tasks']:
+                    task_name = taskname['name']
+        #             print(sentences)
+                    print(text_match(str(task_name)))
+
+
+            
+
+                    
+
+                    # audiodetails.saveaudiofiles(mongo,
+                    #         projects,
+                    #         userprojects,
+                    #         transcriptions,
+                    #         projectowner,
+                    #         activeprojectname,
+                    #         current_username,
+                    #         lifespeakerid,
+                    #         new_audio_file,
+                    #         karyainfo=r_j,
+                    #         karya_peaker_id=karyaspeakerId)
                         
                         ## Add filename in accesscodedetails -> karyasavedfiles
                     

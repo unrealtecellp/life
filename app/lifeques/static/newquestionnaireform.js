@@ -7,13 +7,12 @@ var fieldType = [{
     "value": "textarea"
     },
     {
-    "name": "multimedia",
-    "value": "multimedia"
+    "name": "file",
+    "value": "file"
     }
   ];
   
 var languages = [
-  {"id": "", "text": ""},
   {"id": "Assamese", "text": "Assamese"},
   {"id": "Awadhi", "text": "Awadhi"},
   {"id": "Bangla", "text": "Bangla"},
@@ -21,6 +20,7 @@ var languages = [
   {"id": "Bodo", "text": "Bodo"},
   {"id": "Braj", "text": "Braj"},
   {"id": "Bundeli", "text": "Bundeli"},
+  {"id": "English", "text": "English"},
   {"id": "Gujarati", "text": "Gujarati"},
   {"id": "Haryanvi", "text": "Haryanvi"},
   {"id": "Hindi", "text": "Hindi"},
@@ -40,7 +40,7 @@ var languages = [
 ]
 
 var scripts = 
-[     {"id": "", "text": ""},
+[    
       {
         "id": "Bengali", 
         "text": "Bengali"
@@ -64,6 +64,10 @@ var scripts =
       {
         "id": "Kannada", 
         "text": "Kannada"
+      },
+      {
+        "id": "Latin", 
+        "text": "Latin"
       },
       {
         "id": "Malayalam", 
@@ -95,30 +99,30 @@ var QuestionnaireDomain = [
   {"id": "", "text": ""},
   {"id": "General", "text": "General"},
   {"id": "Agriculture", "text": "Agriculture"},
-  {"id": "Science-Technology", "text": "Science-Technology"},
-  {"id": "Education", "text": "Education"}
+  {"id": "Education", "text": "Education"},
+  {"id": "Science-Technology", "text": "Science-Technology"}
 ];
 
 
 var ElicitationMethod = [
   {"id": "", "text": ""},
-  {"id": "Narration", "text": "Narration"},
-  {"id": "Translation", "text": "Translation"},
-  {"id": "Role-Play", "text": "Role-Play"},
+  {"id": "Conversation", "text": "Conversation"},
   {"id": "Interview", "text": "Interview"},
+  {"id": "Narration", "text": "Narration"},
   {"id": "Picture Book Narration", "text": "Picture Book Narration"},
-  {"id": "Video Narration", "text": "Video Narration"},
-  {"id": "Conversation", "text": "Conversation"}
+  {"id": "Role-Play", "text": "Role-Play"},
+  {"id": "Translation", "text": "Translation"},
+  {"id": "Video Narration", "text": "Video Narration"}  
 ];
 
 
-var target = [
-  {"id": "", "text": ""},
-  {"id": "Anaphors", "text": "Anaphors"},
-  {"id": "Case", "text": "Case"},
-  {"id": "Oral", "text": "Oral"}
+// var target = [
+//   {"id": "", "text": ""},
+//   {"id": "Anaphors", "text": "Anaphors"},
+//   {"id": "Case", "text": "Case"},
+//   {"id": "Oral", "text": "Oral"}
 
-];
+// ];
 
   
 var promptType = [
@@ -143,7 +147,7 @@ var promptType = [
 // });
 
 $('.prompttype').select2({
-  placeholder: '--Promt Type--',
+  placeholder: '--Prompt Type--',
   data: promptType,
   allowClear: true,
   // console.log( "ready!" )
@@ -164,26 +168,24 @@ $('.elicitationmethod').select2({
   // console.log( "ready!" )
 });
 
-$('.target').select2({
-  tags: true,
-  placeholder: '-- Target --',
-  data: target,
-  allowClear: true,
-  // console.log( "ready!" )
-});
+// $('.target').select2({
+//   tags: true,
+//   placeholder: '-- Target --',
+//   data: target,
+//   allowClear: true,
+//   // console.log( "ready!" )
+// });
 
 
-var glossField = 0;
-
+var langScriptPromptField = 0;
 $("#addpromptlangscripts").click(function(){
-  glossField++;
+  langScriptPromptField++;
   
-  var drow = '<div class="row removeglossfield' + glossField + '">';
+  var drow = '<div class="row removelangScriptPromptfield' + langScriptPromptField + '">';
 
   var fItems = '<div class="col-md-3"><div class="form-group">'+
-              // '<select class="form-control" name="Gloss Language' + glossField + '" required>';
               '<select class="form-control" name="Language"  required>';
-  // fItems += '<option value="" disabled>Language</option>';
+  fItems += '<option value="" selected disabled>Language</option>';
 
   for (var i = 0; i < languages.length; i++) {
     fItems += '<option value="' + languages[i].text + '">' + languages[i].id + '</option>';
@@ -192,9 +194,8 @@ $("#addpromptlangscripts").click(function(){
 
   fItems += '<div class="col-md-3"><div class="form-group">'+
               '<div class="input-group">'+
-              // '<select class="form-control" name="glossScriptField' + glossField + '" required>';
               '<select class="form-control" name="Script"  required>';
-  // fItems += '<option value="" disabled>Script</option>';
+  fItems += '<option value="" selected disabled>Script</option>';
 
   for (var i = 0; i < scripts.length; i++) {
     fItems += '<option value="' + scripts[i].text + '">' + scripts[i].id + '</option>';
@@ -202,32 +203,27 @@ $("#addpromptlangscripts").click(function(){
   fItems += '</select>';
 
   fItems += '<div class="input-group-btn">'+
-            '<button class="btn btn-danger" type="button" onclick="removeGlossFields('+ glossField +');">'+
+            '<button class="btn btn-danger" type="button" onclick="removelangScriptPromptFields('+ langScriptPromptField +');">'+
             '<span class="glyphicon glyphicon-minus" aria-hidden="true"></span></button></div></div></div></div>';
 
   drow += fItems;
   drow += '</div>'
-  $(".Sensefield").append(drow);
+  $(".promptlangscripts").append(drow);
 });
 
-
-
-// add new custom element
-// var customField = 1;
-var customField = 0;
-
+var quescustomField = 0;
 $("#quesaddCustomField").click(function(){
-  customField++;
+  quescustomField++;
   
-  var drow = '<div class="row removecustomfield' + customField + '">';
+  var drow = '<div class="row removequescustomfield' + quescustomField + '">';
 
   var dItems = '<div class="col-md-3"><div class="form-group">'+
               '<input type="text" class="form-control"'+
-              ' name="customField' + customField + '" placeholder="Custom Field" required></div></div>';
+              ' name="quescustomField' + quescustomField + '" placeholder="Custom Field" required></div></div>';
 
   var fItems = '<div class="col-md-3"><div class="form-group">'+
               '<div class="input-group">'+
-              '<select class="form-control" name="fieldType' + customField + '" required>';
+              '<select class="form-control" name="fieldType' + quescustomField + '" required>';
   fItems += '<option value="">Field Type</option>';
 
   for (var i = 0; i < fieldType.length; i++) {
@@ -235,25 +231,22 @@ $("#quesaddCustomField").click(function(){
   }
 
   fItems += '</select><div class="input-group-btn">'+
-            '<button class="btn btn-danger" type="button" onclick="removeCustomFields('+ customField +');">'+
+            '<button class="btn btn-danger" type="button" onclick="removequesCustomFields('+ quescustomField +');">'+
             '<span class="glyphicon glyphicon-minus" aria-hidden="true"></span></button></div></div></div></div>';
 
   //ddrow += '</div>';
 
   drow += dItems + fItems;
   drow += '</div>'
-  $(".customfield").append(drow);
+  $(".quescustomfield").append(drow);
   // console.log(drow)
 });
 
-
-
-// remove a interlineargloss element
-function removeGlossFields(rid) {
-    $(".removeglossfield"+rid).remove();
+function removelangScriptPromptFields(rid) {
+    $(".removelangScriptPromptfield"+rid).remove();
   }
 
 // remove a custom element
-function removeCustomFields(rid) {
-  $(".removecustomfield"+rid).remove();
+function removequesCustomFields(rid) {
+  $(".removequescustomfield"+rid).remove();
 }
