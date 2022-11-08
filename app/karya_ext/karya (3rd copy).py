@@ -580,18 +580,13 @@ def fetch_karya_audio():
             workerId_list.append(worker_id)
         # print(workerId_list)
             
-        fileID_sentence_list = []
+        sentence = []
         for micro_metadata in r_j["microtasks"]:
-            sentences = micro_metadata["input"]["data"]["sentence"]
-            find_file_name = micro_metadata["input"]["files"]["recording"]
-            id_find = r_j['assignments']
-            for item in id_find:
-                fileID_list = item['id'] 
-                fileID_sentence_list.append((fileID_list , sentences, find_file_name))
-        print(fileID_sentence_list)
+            sentences = micro_metadata["input"]["data"]
+            sentence.append(sentences)
     ###################################################################
-        # id_find = r_j['assignments']
-        # fileID_list = [item['id'] for item in id_find] #new_dict
+        id_find = r_j['assignments']
+        fileID_list = [item['id'] for item in id_find] #new_dict
         # print(len(new_dict))
 
     ###################################################################
@@ -602,18 +597,16 @@ def fetch_karya_audio():
 
 
         #put check condiotn -> if the speakerId and fileID  previouls fetched or not / Fetch on the basis of fileID assign to speakerID
-        audio_speaker_merge = {key:value for key, value in zip(fileID_sentence_list , workerId_list)} #speakerID = fileID_list(fieldID)
+        audio_speaker_merge = {key:value for key, value in zip(fileID_list , workerId_list)} #speakerID = fileID_list(fieldID)
         print(audio_speaker_merge)
         # print(audio_speaker_merge.keys())
 
         hederr= {'karya-id-token':getTokenid_assignment_hedder}
 
         rl = 'https://karyanltmbox.centralindia.cloudapp.azure.com/assignment/id/input_file'
-        for file_id_and_sent in list(audio_speaker_merge.keys()):
-            current_file_id = file_id_and_sent[0]
-            current_sentence = file_id_and_sent[1]
-            print(f"0 current_file_id : {current_file_id}")
-            new_url = rl.replace("id", current_file_id)
+        for new_d in list(audio_speaker_merge.keys()):
+            print(f"0 {new_d}")
+            new_url = rl.replace("id", new_d )
             print(new_url)
             ra = requests.get(url = new_url, headers = hederr)
             print(type(ra))
@@ -627,7 +620,7 @@ def fetch_karya_audio():
             
             projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
             
-            karyaspeakerId = audio_speaker_merge[file_id_and_sent]
+            karyaspeakerId = audio_speaker_merge[new_d]
             print("Checking line no. 618: ", karyaspeakerId)
             lifespeakerid = accesscodedetails.find_one({'karyaspeakerid': karyaspeakerId}, {'lifespeakerid': 1,'_id': 0})["lifespeakerid"]
             print("lifespeakerid : ", lifespeakerid)
@@ -660,8 +653,7 @@ def fetch_karya_audio():
                     new_audio_file['audiofile'] = FileStorage(io.BytesIO(content), filename =  fileAudio.getnames()[0])
                     print('9', new_audio_file['audiofile'], type(new_audio_file['audiofile']))
                     print('10', new_audio_file['audiofile'].filename)
-                    # if new_audio_file['audiofile'] == 
-                    print(new_audio_file)
+
                     ################################################################################################
                     ################################################################################################
                     ################################################################################################
@@ -670,21 +662,15 @@ def fetch_karya_audio():
                     projtyp = getprojecttype.getprojecttype(projects, activeprojectname)
                     # findqId = mongodb_qidinfo.find_one({"projectname": "Q_nmathur54_project_1"},
                     #  
-                    print("line 671 :",current_sentence)
+                    
                     findprojectname = getcurrentuserprojects.getcurrentuserprojects(current_username, userprojects)                                                          
                     #ques_id
-                    last_active_ques_id = mongodb_qidinfo.find_one({"projectname": activeprojectname,"prompt.text.content.English": current_sentence},{"_id":0, "quesId":1})
-                    # db.inventory.aggregate([{$project: {item: 1,description: { $ifNull: [ "$description", "Unspecified" ] }}} ])
-                    if last_active_ques_id != '':
-                        last_active_ques_id = last_active_ques_id["quesId"]
-                        print("line no, 663", last_active_ques_id)
-                    else: 
-                        print("quesId not present or sentene not availblie")
+                    last_active_ques_id = mongodb_qidinfo.find_one({"projectname": activeprojectname,"prompt.text.content.English": "A girl came to meet you."},{"_id":0, "quesId":1})
+                    last_active_ques_id = last_active_ques_id["quesId"]
+                    print("line no, 663", last_active_ques_id)
                     
                     
-                    # d = {'key1': 'aaa', 'key2': 'aaa', 'key3': 'bbb'}
-                    # keys = [k for k, v in d.items() if v == 'aaa']
-                    # find_sentence = [item['sentence'] for item in sentence]
+                    find_sentence = [item['sentence'] for item in sentence]
                     # print(find_sentence)
 
                     # if projtyp == "questionnaires":
