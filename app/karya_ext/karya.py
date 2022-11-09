@@ -32,17 +32,13 @@ from app.karya_ext import quesaudiodetails
 # from app.models import UserLogin
 import pandas as pd
 from flask_login import current_user, login_user, logout_user, login_required
-from io import StringIO
 import re
 from flask import Flask, render_template, request
-from werkzeug.utils import secure_filename
 from werkzeug.datastructures import FileStorage
 from app.lifeques.lifeques import questionnaire
 
 from app.lifeques.controller import savequesaudiofiles
 
-from app.routes import activeprojectname
-import wave
 from zipfile import ZipFile
 
 #############################################################################
@@ -68,11 +64,6 @@ def home_insert():
 ##################################################################################
 #########################################################################################################
 ##################################################################################
-import gridfs
-import os
-import glob
-from pathlib import Path
-import sys
 import requests
 import gzip
 import tarfile
@@ -84,14 +75,12 @@ from io import BytesIO
 import io
 import numpy as np
 import scipy.io.wavfile
-# import soundfile as sf
+import soundfile as sf
 from pymongo import MongoClient
 import requests
 from io import BytesIO
-from scipy.io.wavfile import read, write
 import json
 import os
-import zipfile
 
 
 
@@ -554,7 +543,12 @@ def fetch_karya_audio():
         
 
 
-        projects, userprojects, transcriptions, questionnaires = getdbcollections.getdbcollections(mongo, 'projects', 'userprojects', 'transcriptions', 'questionnaires')
+        projects, userprojects, projectsform, transcriptions, questionnaires = getdbcollections.getdbcollections(mongo,
+                                                                                                                    'projects',
+                                                                                                                    'userprojects',
+                                                                                                                    'projectsform',
+                                                                                                                    'transcriptions',
+                                                                                                                    'questionnaires')
         current_username = getcurrentusername.getcurrentusername()
         print('curent user : ', current_username)
         activeprojectname = getactiveprojectname.getactiveprojectname(current_username, userprojects)
@@ -579,18 +573,24 @@ def fetch_karya_audio():
             worker_id = findWorker_id["workerId"]
             workerId_list.append(worker_id)
         # print(workerId_list)
-            
-        fileID_sentence_list = []
+
+        
+        sentence_list = []
         for micro_metadata in r_j["microtasks"]:
             sentences = micro_metadata["input"]["data"]["sentence"]
-            find_file_name = micro_metadata["input"]["files"]["recording"]
-            id_find = r_j['assignments']
-            for item in id_find:
-                fileID_list = item['id'] 
-            fileID_sentence_list.append((fileID_list , sentences))
+            #find_file_name = micro_metadata["input"]["files"]["recording"]
+            sentence_list.append(sentences)
+
+        fileID_list = [] 
+        for item in r_j['assignments']:
+            fileID_lists = item['id'] 
+            fileID_list.append(fileID_lists)
+        # print(sentence_list)
+        # print(fileID_list)
+        fileID_sentence_list = tuple(zip(fileID_list, sentence_list))
         print(fileID_sentence_list)
 
-
+        
         # fileID_sentence_list = []
         # for micro_metadata in r_j["microtasks"]:
         #     sentences = micro_metadata["input"]["data"]["sentence"]
@@ -730,6 +730,7 @@ def fetch_karya_audio():
                         savequesaudiofiles.savequesaudiofiles(mongo,
                                                                 projects,
                                                                 userprojects,
+                                                                projectsform,
                                                                 questionnaires,
                                                                 projectowner,
                                                                 activeprojectname,
