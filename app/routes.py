@@ -3674,4 +3674,84 @@ def progressreport():
         # print('isharedwith_2', isharedwith)
         progressreport = audiodetails.getaudioprogressreport(projects, transcriptions, activeprojectname, isharedwith)
 
+    # print(progressreport)
+
     return jsonify(progressreport=progressreport)
+
+
+# get progress report
+@app.route('/test', methods=['GET'])
+@login_required
+def test():
+    projects, userprojects, projectsform, questionnaire, transcriptions = getdbcollections.getdbcollections(mongo,
+                                                                                                        'projects',
+                                                                                                        'userprojects',
+                                                                                                        'projectsform',
+                                                                                                        'questionnaire',
+                                                                                                        'transcriptions')
+    current_username = getcurrentusername.getcurrentusername()
+    currentuserprojectsname =  getcurrentuserprojects.getcurrentuserprojects(current_username,
+                                                                                userprojects)
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                    userprojects)
+    projectowner = getprojectowner.getprojectowner(projects,
+                                                    activeprojectname)
+    quesprojectform = getactiveprojectform.getactiveprojectform(projectsform,
+                                                                projectowner,
+                                                                activeprojectname)
+    shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
+                                                        current_username,
+                                                        activeprojectname)
+
+    # print('current_username', current_username)
+    # print('currentuserprojectsname', currentuserprojectsname)
+    # print('activeprojectname', activeprojectname)
+    # print('projectowner', projectowner)
+    # print('quesprojectform', quesprojectform)
+    # print('shareinfo', shareinfo)
+
+    return render_template('test.html',
+                            projectName=activeprojectname,
+                            quesprojectform=quesprojectform,
+                            data=currentuserprojectsname,
+                            shareinfo=shareinfo)
+
+# uploadquesfiles route
+@app.route('/uploadquesfiles', methods=['GET', 'POST'])
+@login_required
+def uploadquesfiles():
+    projects, userprojects, questionnaires = getdbcollections.getdbcollections(mongo,
+                                                'projects',
+                                                'userprojects',
+                                                'questionnaires')
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username,
+                            userprojects)
+    projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
+    current_username = getcurrentusername.getcurrentusername()
+
+    questionaireprojectform = {
+                                "username": "alice",
+                                "projectname": "alice_project_1",
+                                "Language": ["text", ["English", "Hindi"]],
+                                "Script": ["", ["latin", "devanagari"]],
+                                "Prompt Audio": ["file", ["audio"]],
+                                "Domain": ["multiselect", ["General", "Agriculture", "Sports"]],
+                                "Elicitation Method": ["select", ["Translation", "Agriculture", "Sports"]],
+                                "Target": ["multiselect", ["case", "classifier", "adposition"]]
+                                }
+                                
+    if request.method == 'POST':
+        # speakerId = dict(request.form.lists())['speakerId'][0]
+        new_ques_file = request.files.to_dict()
+        
+        questionnairedetails.savequesfiles(mongo,
+                                            projects,
+                                            userprojects,
+                                            questionnaires,
+                                            projectowner,
+                                            activeprojectname,
+                                            current_username,
+                                            new_ques_file
+                                        )
+
+    return redirect(url_for('test'))

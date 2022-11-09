@@ -32,13 +32,17 @@ from app.karya_ext import quesaudiodetails
 # from app.models import UserLogin
 import pandas as pd
 from flask_login import current_user, login_user, logout_user, login_required
+from io import StringIO
 import re
 from flask import Flask, render_template, request
+from werkzeug.utils import secure_filename
 from werkzeug.datastructures import FileStorage
 from app.lifeques.lifeques import questionnaire
 
 from app.lifeques.controller import savequesaudiofiles
 
+from app.routes import activeprojectname
+import wave
 from zipfile import ZipFile
 
 #############################################################################
@@ -64,6 +68,11 @@ def home_insert():
 ##################################################################################
 #########################################################################################################
 ##################################################################################
+import gridfs
+import os
+import glob
+from pathlib import Path
+import sys
 import requests
 import gzip
 import tarfile
@@ -75,12 +84,14 @@ from io import BytesIO
 import io
 import numpy as np
 import scipy.io.wavfile
-import soundfile as sf
+# import soundfile as sf
 from pymongo import MongoClient
 import requests
 from io import BytesIO
+from scipy.io.wavfile import read, write
 import json
 import os
+import zipfile
 
 
 
@@ -569,18 +580,17 @@ def fetch_karya_audio():
             workerId_list.append(worker_id)
         # print(workerId_list)
             
-        fileID_sentence_list = []
+        # sentences = []
+        fileID_list=[]
         for micro_metadata in r_j["microtasks"]:
-            sentences = micro_metadata["input"]["data"]["sentence"]
-            find_file_name = micro_metadata["input"]["files"]["recording"]
-            id_find = r_j['assignments']
-            for item in id_find:
-                fileID_list = item['id'] 
-                fileID_sentence_list.append((fileID_list , sentences, find_file_name))
-        # print(fileID_sentence_list)
+            sentence = micro_metadata["input"]["data"]['sentence']
+            fileAudioID = micro_metadata['id']
+            fileID_list.append((fileAudioID, sentence))
+            # sentences.append(sentences)
     ###################################################################
         # id_find = r_j['assignments']
         # fileID_list = [item['id'] for item in id_find] #new_dict
+        # sentence_list = [item['input']]
         # print(len(new_dict))
 
     ###################################################################
@@ -591,7 +601,7 @@ def fetch_karya_audio():
 
 
         #put check condiotn -> if the speakerId and fileID  previouls fetched or not / Fetch on the basis of fileID assign to speakerID
-        audio_speaker_merge = {key:value for key, value in zip(fileID_sentence_list , workerId_list)} #speakerID = fileID_list(fieldID)
+        audio_speaker_merge = {key:value for key, value in zip(fileID_list , workerId_list)} #speakerID = fileID_list(fieldID)
         print(audio_speaker_merge)
         # print(audio_speaker_merge.keys())
 
@@ -599,12 +609,12 @@ def fetch_karya_audio():
 
         rl = 'https://karyanltmbox.centralindia.cloudapp.azure.com/assignment/id/input_file'
         for file_id_and_sent in list(audio_speaker_merge.keys()):
-            current_file_id = file_id_and_sent[0]
+            new_d = file_id_and_sent[0]
             current_sentence = file_id_and_sent[1]
-            orginal_file_name = file_id_and_sent[2]
-            print(f"0 current_file_id : {current_file_id}")
-            new_url = rl.replace("id", current_file_id)
-            print(new_url)
+
+            print(f"0 {new_d}")
+            new_url = rl.replace("id", new_d )
+            # print(new_url)
             ra = requests.get(url = new_url, headers = hederr)
             print(type(ra))
             filebytes= ra.content
@@ -650,8 +660,7 @@ def fetch_karya_audio():
                     new_audio_file['audiofile'] = FileStorage(io.BytesIO(content), filename =  fileAudio.getnames()[0])
                     print('9', new_audio_file['audiofile'], type(new_audio_file['audiofile']))
                     print('10', new_audio_file['audiofile'].filename)
-                    # if new_audio_file['audiofile'] == 
-                    print(new_audio_file)
+
                     ################################################################################################
                     ################################################################################################
                     ################################################################################################
@@ -660,46 +669,19 @@ def fetch_karya_audio():
                     projtyp = getprojecttype.getprojecttype(projects, activeprojectname)
                     # findqId = mongodb_qidinfo.find_one({"projectname": "Q_nmathur54_project_1"},
                     #  
-                    print("line 671 :",current_sentence)
-                    findprojectname = getcurrentuserprojects.getcurrentuserprojects(current_username, userprojects) 
-
-                    c_sent = mongodb_qidinfo.find({},{"_id":0,"prompt.text.content":1}) # finding sentence from questtionaire collection 
-
-                    for c in c_sent: # breaking the nested path of the dict.
-                        # print("678 _____ = ", c)
-                        for key, val in c.items():
-                            for key, val in val.items():
-                                for key, vall in val.items():
-                                    sentence_dict = vall
-                                    reverse_sentence_dict= {value:key for key, value in vall.items()} 
-                                    # print(reverse_sentence_dict)
-                                    # print(sentence_dict)
-
-                    sentence_key = current_sentence
-                    for sent_key, sent_value in sentence_dict.items():  # for name, age in dictionary.iteritems():  (for Python 2.x)
-                        if sent_value == sentence_key:
-                            found_sent_key = sent_key
-                            # print(sent_key)
-
-                    sentence_condtion = "prompt.text.content.Any"
-                    sentence_condtion_found = sentence_condtion.replace("Any", found_sent_key)
-                    print(sentence_condtion_found, type(sentence_condtion_found))
+                    
+                    findprojectname = getcurrentuserprojects.getcurrentuserprojects(current_username, userprojects)                                                          
                     #ques_id
-                    last_active_ques_id = mongodb_qidinfo.find_one({"projectname": activeprojectname, sentence_condtion_found:current_sentence},{"_id":0, "quesId":1})
-                    # db.inventory.aggregate([{$project: {item: 1,description: { $ifNull: [ "$description", "Unspecified" ] }}} ])
-                    if last_active_ques_id != '':
-                        last_active_ques_id = last_active_ques_id["quesId"]
-                        print("line no, 663", last_active_ques_id)
-                    else: 
-                        print("quesId not present or sentene not availblie")
+
+
+                    # last_active_ques_id = mongodb_qidinfo.find_one({"projectname": activeprojectname,"prompt.text.content.English": "A girl came to meet you."},{"_id":0, "quesId":1})
+                    last_active_ques_id = mongodb_qidinfo.find_one({"projectname": activeprojectname,"prompt.text.content.English": current_sentence},{"_id":0, "quesId":1})
+                    last_active_ques_id = last_active_ques_id["quesId"]
+                    print("line no, 663", last_active_ques_id)
                     
-                    # fs = gridfs.GridFS(mongo.db)
-                    # find_file_name = "_"+orginal_file_name
-                    # query = fs.find({'filename': find_file_name})
-                    # for grid_out in query: 
-                    #     # data = grid_out.read()
-                    #     print(grid_out)
                     
+                    find_sentence = [item['sentence'] for item in sentence]
+                    print(find_sentence)
 
                     if projtyp == "questionnaires":
                         new_audio_file['Transcription Audio'] = new_audio_file['audiofile']
