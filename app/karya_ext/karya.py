@@ -587,7 +587,18 @@ def fetch_karya_audio():
             id_find = r_j['assignments']
             for item in id_find:
                 fileID_list = item['id'] 
-                fileID_sentence_list.append((fileID_list , sentences, find_file_name))
+            fileID_sentence_list.append((fileID_list , sentences))
+        print(fileID_sentence_list)
+
+
+        # fileID_sentence_list = []
+        # for micro_metadata in r_j["microtasks"]:
+        #     sentences = micro_metadata["input"]["data"]["sentence"]
+        #     find_file_name = micro_metadata["input"]["files"]["recording"]
+        #     id_find = r_j['assignments']
+        #     for item in id_find:
+        #         fileID_list = item['id'] 
+        #         fileID_sentence_list.append((fileID_list , sentences, find_file_name))
         # print(fileID_sentence_list)
     ###################################################################
         # id_find = r_j['assignments']
@@ -612,7 +623,6 @@ def fetch_karya_audio():
         for file_id_and_sent in list(audio_speaker_merge.keys()):
             current_file_id = file_id_and_sent[0]
             current_sentence = file_id_and_sent[1]
-            orginal_file_name = file_id_and_sent[2]
             print(f"0 current_file_id : {current_file_id}")
             new_url = rl.replace("id", current_file_id)
             print(new_url)
@@ -686,19 +696,21 @@ def fetch_karya_audio():
                                     # print(reverse_sentence_dict)
                                     # print(sentence_dict)
 
-                    sentence_key = current_sentence
-                    for sent_key, sent_value in sentence_dict.items():  # for name, age in dictionary.iteritems():  (for Python 2.x)
-                        if sent_value == sentence_key:
-                            found_sent_key = sent_key
-                            # print(sent_key)
-
+                    
+                                    for sent_key, sent_value in sentence_dict.items(): 
+                                        sentence_key = current_sentence # for name, age in dictionary.iteritems():  (for Python 2.x)
+                                        if sent_value == sentence_key:
+                                            found_sent_key = sent_key
+                                            print(found_sent_key)
                     sentence_condtion = "prompt.text.content.Any"
                     sentence_condtion_found = sentence_condtion.replace("Any", found_sent_key)
                     print(sentence_condtion_found, type(sentence_condtion_found))
                     #ques_id
                     last_active_ques_id = mongodb_qidinfo.find_one({"projectname": activeprojectname, sentence_condtion_found:current_sentence},{"_id":0, "quesId":1})
                     # db.inventory.aggregate([{$project: {item: 1,description: { $ifNull: [ "$description", "Unspecified" ] }}} ])
-                    if last_active_ques_id != '':
+                    # for last_active_ques_id in last_active_ques_id:
+                    print(last_active_ques_id)
+                    if last_active_ques_id != None:
                         last_active_ques_id = last_active_ques_id["quesId"]
                         print("line no, 663", last_active_ques_id)
                     else: 
