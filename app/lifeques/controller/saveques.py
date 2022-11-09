@@ -57,4 +57,9 @@ def saveques(questionnaires, ques_data, last_active_ques_id):
     pprint(quesdata)
 
     questionnaires.update_one({"quesId": last_active_ques_id},
-                                {"$set" : { 'prompt': prompt }})
+                                {"$set" : { 
+                                            'prompt': prompt,
+                                            'quessaveFLAG': 1
+                                            }
+                                }
+                            )

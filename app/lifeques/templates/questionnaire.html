@@ -16,7 +16,7 @@
       {% if projectName is defined %}
         <h4>Project Name : {{ projectName }}</h4><br>
       {% endif %}
-      <button type="button" id="progressreport" class="btn btn-lg btn-warning" data-toggle="modal" data-target="#myProgressReportModal">
+      <button type="button" id="quesprogressreport" class="btn btn-lg btn-warning" data-toggle="modal" data-target="#myProgressReportModal">
         Progress Report
       </button>
       <br>
@@ -46,11 +46,11 @@
   <div class="col-sm-7 commentIDs">
       <button type="button" id="uNAnnotated" class="btn btn-light" onclick="unAnnotated()">All Questionnaire Ids</button>
   </div>
-  {% if commentstats is defined %}
-    <div class="col-sm-3 commentStats pull-right">
-      <strong>Total Files: {{ commentstats[0] }}</strong><br> 
-      <strong>Annotated Files: {{ commentstats[1] }}</strong><br>
-      <strong>Remaining Files: {{ commentstats[2] }}</strong><br>
+  {% if quesstats is defined %}
+    <div class="col-sm-3 quesStats pull-right">
+      <strong>Total Files: {{ quesstats[0] }}</strong><br> 
+      <strong>Annotated Files: {{ quesstats[1] }}</strong><br>
+      <strong>Remaining Files: {{ quesstats[2] }}</strong><br>
     </div>
   {% endif %}
 </div>
@@ -90,6 +90,35 @@
   <hr>
     <div id="quesform"></div>
 </div>
+
+  <!-- Progress Report Modal -->
+  <div class="modal fade" id="myProgressReportModal" tabindex="-1" role="dialog" aria-labelledby="myProgressReportModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="myProgressReportModalLabel">Project Name: {{ projectName }}</h4>
+        </div>
+        <div class="modal-body">
+          <!-- <div class="col-xs-6"> -->
+            <input id="myInput" class="form-control" type="text" placeholder="Search">
+          <!-- </div> -->
+          <br>
+          <div class="row">
+            <div class="col-xs-12">
+              <div class="form-group">
+                <div class="progressreport"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 {% endblock %}
 
 {% block scripts %}

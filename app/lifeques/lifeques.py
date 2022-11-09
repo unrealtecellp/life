@@ -12,6 +12,7 @@ from app.lifeques.controller import savenewquestionnaireform, createdummyques, d
 from app.lifeques.controller import uploadquesdataexcel, getactivequestionnaireid, updatelatestquesid
 from app.lifeques.controller import getnewquesid, quesunannotatedfilename, saveques, savequesaudiofiles
 from app.lifeques.controller import getderivedfromprojectform, copyquesfromparentproject, questranscriptionaudiodetails
+from app.lifeques.controller import getquestionnairestats
 
 import os
 from pprint import pprint
@@ -185,10 +186,18 @@ def questionnaire():
     # project_type = getprojecttype.getprojecttype(projects, activeprojectname)
     # print('project_type', project_type)
 
+    total_ques, completed, notcompleted = getquestionnairestats.getquestionnairestats(projects,
+                                                                                        questionnaires,
+                                                                                        activeprojectname,
+                                                                                        'ID',
+                                                                                        'idtype')
+    quesstats = [total_ques, completed, notcompleted]
+
     return render_template('questionnaire.html',
                             projectName=activeprojectname,
                             quesprojectform=quesprojectform,
                             data=currentuserprojectsname,
+                            quesstats=quesstats,
                             shareinfo=shareinfo)
 
 @lifeques.route('/questranscriptionaudio', methods=['GET', 'POST'])
