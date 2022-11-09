@@ -8,6 +8,27 @@
 //   "Elicitation Method": ["select", ["Translation", "Agriculture", "Sports"]],
 //   "Target": ["multiselect", ["case", "classifier", "adposition"]]
 // }
+targets = [
+  {"id": "Simple and Complex", "text": "Simple and Complex"},
+  {"id": "Case", "text": "Case"},
+  {"id": "Classifiers", "text": "Classifiers"},
+  {"id": "Reflexives and Reciprocals", "text": "Reflexives and Reciprocals"},
+  {"id": "Interrogatives", "text": "Interrogatives"},
+  {"id": "Tag Questions", "text": "Tag Questions"},
+  {"id": "Tense Aspect Mood", "text": "Tense Aspect Mood"},
+  {"id": "Intransitive", "text": "Intransitive"},
+  {"id": "Transitive", "text": "Transitive"},
+  {"id": "Ditransitive", "text": "Ditransitive"},
+  {"id": "Additional", "text": "Additional"},
+  {"id": "ECV, Converbs, Serial Verbs", "text": "ECV, Converbs, Serial Verbs"},
+  {"id": "Negatives and Prohibitives", "text": "Negatives and Prohibitives"},
+  {"id": "Causatives and Passives", "text": "Causatives and Passives"},
+  {"id": "Reduplication, echo forms and binomials", "text": "Reduplication, echo forms and binomials"},
+  {"id": "Comparatives and Superlatives", "text": "Comparatives and Superlatives"},
+  {"id": "Sentences with Adverbs", "text": "Sentences with Adverbs"},
+  {"id": "Quantifiers and Intensifiers", "text": "Quantifiers and Intensifiers"},
+  {"id": "Miscellaneous", "text": "Miscellaneous"}
+]
 
 function createInputElement(key, elevalue, type, quesdatavalue) {
   var qform = '';
@@ -17,6 +38,9 @@ function createInputElement(key, elevalue, type, quesdatavalue) {
     var val = '';
     if (key === 'Language') {
       val = quesdatavalue[elevalue[i]];
+    }
+    else if (key === "Transcription") {
+      val = quesdatavalue;
     }
     
     qform += '<div class="form-group">'+
@@ -88,12 +112,36 @@ function createSelectElement(key, elevalue, type, quesdatavalue) {
 
 function createquesform(quesprojectform) {
   // quesprojectform = questionaireprojectform;
+  localStorage.setItem("quesactiveprojectform", JSON.stringify(quesprojectform));
+  // console.log(newData);
+  transcriptionRegions = quesprojectform['transcriptionRegions']
+  localStorage.setItem("regions", JSON.stringify(transcriptionRegions));
+  console.log(transcriptionRegions);
+  // var activeAudioFilename = JSON.parse(localStorage.getItem('AudioFilePath')).split('/')[2];
+  var activeAudioFilename = quesprojectform["QuesAudioFilePath"].split('/')[2];
+  if (activeAudioFilename === undefined) {
+    activeAudioFilename = '';
+  }
+  // console.log(activeAudioFilename)
+  // var inpt = '<strong>Audio Filename: </strong><strong id="audioFilename">'+ activeAudioFilename +'</strong>'
+  // $(".defaultfield").append(inpt);
+  // lastActiveId = newData["lastActiveId"]
+  // // console.log(lastActiveId)
+  // inpt = '<input type="hidden" id="lastActiveId" name="lastActiveId" value="'+lastActiveId+'">';
+  // $('.defaultfield').append(inpt);
+  // inpt = ''
+  // localStorage.removeItem('regions');
+  localStorage.setItem("transcriptionDetails", JSON.stringify([quesprojectform['transcriptionDetails']]));
+  localStorage.setItem("QuesAudioFilePath", JSON.stringify(quesprojectform['QuesAudioFilePath']));
+
   quesdata = quesprojectform['quesdata']
   console.log(quesdata);
   var quesform = '';
+  var transcriptionBoundaryForm = '';
   // let instructionmode = '';
   // quesform += '<div class="col-md-6">';
-  quesform += '<form action="/lifeques/savequestionnaire" method="POST" enctype="multipart/form-data">';
+  var qform = '<form action="/lifeques/savequestionnaire" method="POST" enctype="multipart/form-data">';
+
   for (let [key, value] of Object.entries(quesprojectform)) {
     console.log(key, value, value[0], typeof value, quesdata['prompt'][key]);
     
@@ -137,13 +185,50 @@ function createquesform(quesprojectform) {
       // quesform += createSelectElement(key, elevalue, 'multiple', quesdatavalue)
       if (quesdatavalue['audioId'] === '') {
         console.log('waveformmmm', eletype, elevalue, quesdatavalue)
+        var x = document.getElementById("questranscriptionsubmit");
+        console.log(x)
+        x.style.display = "block";
+        var x = document.getElementById("questranscriptionwaveform");
+        console.log(x)
+        x.style.display = "none";
+        
         quesTranscription += createInputElement(key, ['Audio'], 'file', quesdatavalue);
         $('#questranscriptionaudio').html(quesTranscription);
       }
       else {
+        start = transcriptionRegions[0]['start']
+        end = transcriptionRegions[0]['end']
+        boundaryId = transcriptionRegions[0]['boundaryID']
+        lang = quesdatavalue['audioLanguage']
+        val = transcriptionRegions[0]['data']['sentence'][boundaryId]['transcription'][lang]
+        if (val === undefined) {
+          val = '';
+        }
         console.log('generate waveformmmm')
+        var x = document.getElementById("questranscriptionsubmit");
+        console.log(x)
+        x.style.display = "none";
+        var x = document.getElementById("questranscriptionwaveform");
+        console.log(x)
+        x.style.display = "block";
+        console.log(quesdatavalue['audioLanguage'])
+        quesTranscription += createInputElement(key, quesdatavalue['audioLanguage'], 'text', val);
+        // $('#questranscription2').html(quesTranscription);
+        transcriptionBoundaryForm += '<div class="form-group">'+
+                                      '<label for="start">Boundary Start Time</label>'+
+                                      '<input class="form-control" id="start" name="start" value="'+start+'" required/>'+
+                                      '</div>'+
+                                      '<div class="form-group">'+
+                                      '<label for="end">Boundary End Time</label>'+
+                                      '<input class="form-control" id="end" name="end" value="'+end+'" required/>'+
+                                      '</div>';
+        transcriptionBoundaryForm += quesTranscription;
+        transcriptionBoundaryForm += // '<button type="submit" class="btn btn-success btn-block saveTempTranscription">Save Boundary</button>'+
+                                      // '<center><i>or</i></center>'+
+                                      '<button type="button" class="btn btn-danger btn-block" data-action="delete-region">Delete Boundary</button>';
+        
+
       }
-      
     }
   }
   // quesform += '<input class="btn btn-lg btn-primary" type="submit" value="Submit">';
@@ -164,12 +249,20 @@ function createquesform(quesprojectform) {
                     '<span class="glyphicon glyphicon-floppy-save" aria-hidden="true"></span>'+
                   '</button>'+
               '</div>';
-  quesform += '</form>'
+  
+  qform += transcriptionBoundaryForm + '<br><hr>' + quesform;
+  qform += '</form>'
   // quesform += '</div>';
-  $('#quesform').html(quesform);
+  
+  $('#quesform').html(qform);
   $('.quesselect').select2({
     placeholder: 'select',
     // data: usersList,
+    allowClear: true
+  });
+  $('#Target').select2({
+    placeholder: 'select',
+    data: targets,
     allowClear: true
   });
 
@@ -277,19 +370,19 @@ function loadAnnoQues() {
   return false;
 }
 
-$("#saveques").click(function() {
-  // console.log('sending transcription and morphemic details to the server');
-  var transcriptionData = Object()
-  var transcriptionRegions = localStorage.regions
-  var lastActiveId = document.getElementById("lastActiveId").value;
-  transcriptionData['lastActiveId'] = lastActiveId
-  transcriptionData['transcriptionRegions'] = transcriptionRegions
-  // console.log(transcriptionData)
-  $.getJSON('/savetranscription', {
+// $("#saveques").click(function() {
+//   // console.log('sending transcription and morphemic details to the server');
+//   var transcriptionData = Object()
+//   var transcriptionRegions = localStorage.quesregions
+//   var lastActiveId = document.getElementById("lastActiveId").value;
+//   transcriptionData['lastActiveId'] = lastActiveId
+//   transcriptionData['transcriptionRegions'] = transcriptionRegions
+//   // console.log(transcriptionData)
+//   $.getJSON('/savetranscription', {
   
-  a:JSON.stringify(transcriptionData)
-  }, function(data) {
-      window.location.reload();
-  });
-  return false; 
-});
+//   a:JSON.stringify(transcriptionData)
+//   }, function(data) {
+//       window.location.reload();
+//   });
+//   return false;
+// });

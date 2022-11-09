@@ -58,36 +58,47 @@
 <div class="defaultfield">
 </div>
 <br>
+<div id="questranscriptionwaveform" style="display: none;">
+  <div id="wave-timeline"></div>
+  <div id="waveform"></div>
+  <div id="wave-spectrogram" style="display: none;"></div>
+  <br>
+  <hr>
+  <div class="col-sm-3">
+    <input id="slider" data-action="zoom" type="range" min="0" max="5000" value="0" style="width: 100%">
+  </div>
+  <i class="glyphicon glyphicon-zoom-in"></i>
+
+  <div class="pull-right">
+    <button class="btn btn-danger" type="button" id="stopAudio">STOP
+      <span class="audiostop glyphicon glyphicon-stop" aria-hidden="true"></span>
+    </button>
+    <button class="btn btn-primary" type="button" id="playPauseAudio">PLAY/PAUSE
+      <span class="audioplaypause glyphicon glyphicon-play" aria-hidden="true"></span>
+    </button>
+  </div>
+  <br>
+  <hr>
+</div>
+<br>
 <div id="questionnaire">
   <form action="{{ url_for('lifeques.questranscriptionaudio') }}" method="POST" enctype="multipart/form-data">
     <div id="questranscriptionaudio"></div>
-    <input class="btn btn-primary pull-right" id="submit" type="submit" value="Upload" >
+    <input class="btn btn-primary pull-right" id="questranscriptionsubmit" type="submit" value="Upload" style="display: none;">
   </form>
   <br>
   <hr>
     <div id="quesform"></div>
-    <!-- <hr>
-    <div id="quesformControl">
-        <button class="btn btn-info btn-lg" type="button" id="previous" onclick="previousQues()">
-        <span class="previousaudio glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
-        Previous
-        </button>
-        <button class="btn btn-info btn-lg pull-right" type="button" id="next" onclick="nextQues()">
-        Next
-        <span class="nextaudio glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
-        </button>
-        <br>
-        <br>
-        <button type="submit" class="btn btn-warning btn-lg btn-block pull-right" id="saveques">
-          Save
-          <span class="glyphicon glyphicon-floppy-save" aria-hidden="true"></span>
-        </button>
-    </div> -->
 </div>
 {% endblock %}
 
 {% block scripts %}
 {{super()}}
 <script src="{{url_for('.static', filename='questionnaire.js')}}"></script>
+<script src="https://unpkg.com/wavesurfer.js"></script>
+<script src="https://unpkg.com/wavesurfer.js/dist/plugin/wavesurfer.timeline.js"></script>
+<script src="https://unpkg.com/wavesurfer.js/dist/plugin/wavesurfer.regions.js"></script>
+<script src="https://unpkg.com/wavesurfer.js/dist/plugin/wavesurfer.minimap.js"></script>
+<script src="{{url_for('.static', filename='quesaudiowaveform.js')}}"></script>
 <script type="text/javascript">createquesform({{ quesprojectform | tojson | safe }});</script>
 {% endblock %}

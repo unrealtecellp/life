@@ -13,6 +13,8 @@ var fieldType = [{
   ];
   
 var languages = [
+
+  {"id": "", "text": ""},
   {"id": "Assamese", "text": "Assamese"},
   {"id": "Awadhi", "text": "Awadhi"},
   {"id": "Bangla", "text": "Bangla"},
@@ -41,6 +43,10 @@ var languages = [
 
 var scripts = 
 [    
+      {
+        "id": "",
+        "text": ""
+      },
       {
         "id": "Bengali", 
         "text": "Bengali"
@@ -145,6 +151,19 @@ var promptType = [
 //   data: scripts,
 //   allowClear: true
 // });
+$('.translang').select2({
+  placeholder: 'Transcription Language',
+  data: languages,
+  allowClear: true,
+  // console.log( "ready!" )
+});
+
+$('.transscript').select2({
+  placeholder: 'Transcription Script',
+  data: scripts,
+  allowClear: true,
+  // console.log( "ready!" )
+});
 
 $('.prompttype').select2({
   placeholder: '--Prompt Type--',
@@ -188,7 +207,9 @@ $("#addpromptlangscripts").click(function(){
   fItems += '<option value="" selected disabled>Language</option>';
 
   for (var i = 0; i < languages.length; i++) {
-    fItems += '<option value="' + languages[i].text + '">' + languages[i].id + '</option>';
+    if (languages[i].id !== '' && languages[i].text !== '') {
+      fItems += '<option value="' + languages[i].text + '">' + languages[i].id + '</option>';
+    }
   }
   fItems += '</select></div></div>';
 
@@ -198,7 +219,9 @@ $("#addpromptlangscripts").click(function(){
   fItems += '<option value="" selected disabled>Script</option>';
 
   for (var i = 0; i < scripts.length; i++) {
-    fItems += '<option value="' + scripts[i].text + '">' + scripts[i].id + '</option>';
+    if (scripts[i].id !== '' && scripts[i].text) {
+      fItems += '<option value="' + scripts[i].text + '">' + scripts[i].id + '</option>';
+    }
   }
   fItems += '</select>';
 
@@ -209,6 +232,17 @@ $("#addpromptlangscripts").click(function(){
   drow += fItems;
   drow += '</div>'
   $(".promptlangscripts").append(drow);
+});
+
+var transcriptioncheckbox = document.getElementById("idincludetranscription")
+
+transcriptioncheckbox.addEventListener('change', function() {
+  translangscriptid =  document.getElementById("idtranscriptionlangscript")
+  if (this.checked) {
+    translangscriptid.style.display = "block";
+  } else {
+    translangscriptid.style.display = "none";
+  }
 });
 
 var quescustomField = 0;

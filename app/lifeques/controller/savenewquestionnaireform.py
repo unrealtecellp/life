@@ -28,6 +28,10 @@ def savenewquestionnaireform(projectsform,
             save_ques_form[key] = ["", value]
         elif key == 'Prompt Type':
             save_ques_form[key] = ["file", value]
+        elif key == 'Transcription Language':
+            save_ques_form[key] = ["", value]
+        elif key == 'Transcription Script':
+            save_ques_form[key] = ["", value]
         elif key == 'Domain':
             save_ques_form[key] = ["multiselect", value]
         elif key == 'Elicitation Method':
@@ -37,7 +41,7 @@ def savenewquestionnaireform(projectsform,
         elif 'customField' in key:
             save_ques_form['Custom Field '+value[0]] = [new_ques_form['fieldType'+key[-1]][0], value]
     if 'Transcription' in new_ques_form:
-        save_ques_form['Transcription'] = ['waveform', new_ques_form['Transcription']]
+        save_ques_form['Transcription'] = ['waveform', new_ques_form['Transcription Language']]
     # else:
     #     save_ques_form['Transcription'] = ['', []]
     if 'Instruction' in new_ques_form:

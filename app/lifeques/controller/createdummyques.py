@@ -50,13 +50,21 @@ def createdummyques(questionnaires,
         elif key == 'Elicitation Method':
             dummy_ques['prompt'][key] = ''
         elif (key == 'Transcription'):
+            transcription_lang = {}
+            for lang in save_ques_form["Transcription"][1]:
+                transcription_lang[lang] = ''
             transcription = {
                 "audioId": "",
                 "audioFilename": "",
+                "audioLanguage": [],
                 "speakerId": "",
                 "textGrid": {
                     "sentence": {
-                        "000000": prompt_lang
+                        "000000": {
+                            "start": 0.00,
+                            "end": 0.00,
+                            "transcription": transcription_lang
+                        }
                     }
                 }
             }
