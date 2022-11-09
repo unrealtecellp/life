@@ -118,3 +118,8 @@
     and "projectDerivatives": [], list of the project which is being derived with the "project name" which is deriving.
 - create a function to get the "projectType" from the "projects" collection
 
+04 November 2022
+---------------------------------------------------------------
+- show waveform of the transcription audio in the questionnaire
+    - load the audio in the local storage.
+    - create js of the audio in the questionnaire interface.

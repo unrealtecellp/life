@@ -264,6 +264,7 @@ function editAnnotation(region) {
     // console.log('editAnnotation(region)')
     // console.log(region)
     let form = document.forms.edit;
+    // console.log(form);
     // let id = form.dataset.region;
     // let wavesurferregion = wavesurfer.regions.list[id];
     // console.log(wavesurferregion)

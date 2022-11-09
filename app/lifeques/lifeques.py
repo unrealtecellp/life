@@ -11,7 +11,7 @@ from app.controller import getprojecttype
 from app.lifeques.controller import savenewquestionnaireform, createdummyques, downloadquesformexcel
 from app.lifeques.controller import uploadquesdataexcel, getactivequestionnaireid, updatelatestquesid
 from app.lifeques.controller import getnewquesid, quesunannotatedfilename, saveques, savequesaudiofiles
-from app.lifeques.controller import getderivedfromprojectform, copyquesfromparentproject
+from app.lifeques.controller import getderivedfromprojectform, copyquesfromparentproject, questranscriptionaudiodetails
 
 import os
 from pprint import pprint
@@ -89,17 +89,24 @@ def newquestionnaireform():
             derivedfromprojectform = getderivedfromprojectform.getderivedfromprojectform(projectsform,
                                                                 derive_from_project_name)
             # pprint(derivedfromprojectform)
-            for key, value in new_ques_form.items():
+            all_keys = set(list(derivedfromprojectform.keys()) + list(new_ques_form.keys()))
+            # for key, value in derivedfromprojectform.items():
+            print(all_keys)
+            for key in all_keys:
                 if (key in derivedfromprojectform):
                     derivedfromprojectformvalue = derivedfromprojectform[key][1]
-                    # print(key, value, derivedfromprojectformvalue)
-                    derivedfromprojectformvalue.extend(value)
-                    if (key == "Language" or key == "Script"):
-                        new_ques_form[key] = list(derivedfromprojectformvalue)
-                    else:
-                        new_ques_form[key] = list(set(derivedfromprojectformvalue))
+                    print(key, derivedfromprojectformvalue)
+                    if isinstance(derivedfromprojectformvalue, list):
+                        if (key in new_ques_form):
+                            derivedfromprojectformvalue.extend(new_ques_form[key])
+                        print(key, derivedfromprojectformvalue)
+                        if("Transcription" in key): continue
+                        if (key == "Language" or key == "Script"):
+                            new_ques_form[key] = list(derivedfromprojectformvalue)
+                        else:
+                            new_ques_form[key] = list(set(derivedfromprojectformvalue))
             
-        # pprint(new_ques_form)
+        pprint(new_ques_form)
         updateuserprojects.updateuserprojects(userprojects,
                                                 projectname,
                                                 current_username
@@ -156,8 +163,23 @@ def questionnaire():
     quesdata = questionnaires.find_one({"quesId": last_active_ques_id}, {"_id": 0})
     # print(f"{inspect.currentframe().f_lineno}: {quesprojectform}")
     # print(f"{inspect.currentframe().f_lineno}: {type(quesdata)}")
-    print(f"{inspect.currentframe().f_lineno}: {quesdata}")
+    # print(f"{inspect.currentframe().f_lineno}: {quesdata}")
     quesprojectform['quesdata'] = quesdata
+    print(f"{inspect.currentframe().f_lineno}: {quesdata}")
+    file_path = ''
+    if (quesdata is not None):
+        audio_id = quesdata['prompt']['Transcription']['audioId']
+        if (audio_id != ''):
+            file_path = questranscriptionaudiodetails.getquesaudiofilefromfs(mongo,
+                                                                            basedir,
+                                                                            audio_id,
+                                                                            'audioId')
+    # print('file_path', type(file_path), file_path)
+    quesprojectform['QuesAudioFilePath'] = file_path
+
+    transcription_regions = questranscriptionaudiodetails.getquesaudiotranscriptiondetails(questionnaires, last_active_ques_id)
+    print(type(transcription_regions))
+    quesprojectform['transcriptionRegions'] = transcription_regions
     # print(f"{inspect.currentframe().f_lineno}: {quesprojectform}")
 
     # project_type = getprojecttype.getprojecttype(projects, activeprojectname)
@@ -183,6 +205,7 @@ def questranscriptionaudio():
                                                                     userprojects)
     projectowner = getprojectowner.getprojectowner(projects,
                                                     activeprojectname)
+    
     ques_audio_file = request.files.to_dict()
     print(ques_audio_file)
     last_active_ques_id = getactivequestionnaireid.getactivequestionnaireid(projects,
@@ -191,6 +214,7 @@ def questranscriptionaudio():
     savequesaudiofiles.savequesaudiofiles(mongo,
                                             projects,
                                             userprojects,
+                                            projectsform,
                                             questionnaires,
                                             projectowner,
                                             activeprojectname,
@@ -215,6 +239,7 @@ def savequestionnaire():
 
     if request.method =='POST':
         ques_data = dict(request.form.lists())
+        print('LINE 241: ')
         pprint(ques_data)
         ques_data_file = request.files.to_dict()
         # pprint(ques_data_file)

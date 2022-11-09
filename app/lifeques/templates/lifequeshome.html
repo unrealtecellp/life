@@ -44,7 +44,7 @@ LiFe Questionnaire Home
     <br>
     <h3>Create Form for your Project</h3>
     <hr>
-    <form action="{{ url_for('lifeques.newquestionnaireform') }}" method="POST" enctype="multipart/form-data">
+    <form id="newquestionnaireform" action="{{ url_for('lifeques.newquestionnaireform') }}" method="POST" enctype="multipart/form-data">
       <div id="beforefield" class="form-group"></div>
       <div class="form-group">
         <label for="idprojectname">Project Name</label>
@@ -79,16 +79,29 @@ LiFe Questionnaire Home
       <div class="promptlangscripts"></div>
 
       <div class="form-group">
+        <input type="checkbox" id="idincludetranscription" name="Transcription">
+        <label for="idincludetranscription">Include Transcription</label><br>
+        <div class="row" id="idtranscriptionlangscript"  style="display: none;"> 
+          <div class="col-md-3">
+            <div class="form-group">
+              <select class="form-control translang" id="idtranslang" name="Transcription Language" style="width:100%"></select>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group">
+              <select class="form-control transscript" id="idtransscript" name="Transcription Script" style="width:100%"></select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
         <label for="idprompttype">Prompt Type</label><br>                           
         <!-- <select class="prompttype" id="idprompttype" name="Prompt Type" multiple="multiple" style="width:55%" required> -->
           <select class="prompttype" id="idprompttype" name="Prompt Type" multiple="multiple" style="width:55%"></select>
         </select>
       </div> 
-      <div class="form-group">
-        <input type="checkbox" id="idincludetranscription" name="Transcription">
-        <label for="idincludetranscription">Include Transcription</label><br>
-      </div>
-
+      
       <div class="form-group">
         <input type="checkbox" id="idincludeinstruction" name="Instruction">
         <label for="idincludeinstruction">Include Instruction</label><br>

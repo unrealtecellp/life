@@ -25,6 +25,7 @@ def copyquesfromparentproject(projects,
         questionnaireIds = []
 
         for derived_ques in all_derived_ques:
+            if ("dummy" in derived_ques['quesId']): continue
             print('line 25: ', derived_ques)
             del derived_ques["_id"]
 
@@ -33,6 +34,10 @@ def copyquesfromparentproject(projects,
             derived_ques["lastUpdatedBy"] = current_username
             derived_ques["quesdeleteFLAG"] = 0
             derived_ques["quessaveFLAG"] = 0
+            derived_ques["derivedfromprojectdetails"] = {
+                "derivedfromprojectname": derivedfromprojectname,
+                "quesId": derived_ques["quesId"]
+            }
             quesId = quesmetadata()
             derived_ques["quesId"] = quesId
             questionnaireIds.append(quesId)
@@ -40,6 +45,7 @@ def copyquesfromparentproject(projects,
             # pprint(testquesdata)
             derived_quesprompt = derived_ques['prompt']
             langlist = projectform['Language'][1]
+            transcriptionlanglist = projectform['Transcription Language'][1]
             print()
 
             for key, value in projectform.items():
@@ -58,16 +64,25 @@ def copyquesfromparentproject(projects,
                             if ("instruction" in projectform):
                                 pt['instruction'] = ''
                         derived_quesprompt[ptype] = pt
-                if ("Transcription" in derived_quesprompt and
-                    "Transcription" not in projectform):
+                
+                # ("Transcription" not in derived_quesprompt or
+                #     "Transcription" in derived_quesprompt)):
+                if ("Transcription" in projectform):
+                    
                     derived_quesprompt["Transcription"] = {
                                     'audioFilename': '',
                                     'audioId': '',
+                                    'audioLanguage': transcriptionlanglist,
                                     'speakerId': '',
                                     'textGrid': {'sentence': {'000000': {}}}
                     }
-                    for l in langlist:
-                        derived_quesprompt["Transcription"]['textGrid']['sentence']['000000'][l] = ''
+                    derived_quesprompt["Transcription"]['textGrid']['sentence']['000000']['start'] = ''
+                    derived_quesprompt["Transcription"]['textGrid']['sentence']['000000']['end'] = ''
+                    transcription = {}
+                    for l in transcriptionlanglist:
+                        transcription[l] = ''
+                    derived_quesprompt["Transcription"]['textGrid']['sentence']['000000']['transcription'] = transcription
+                
                 if ("Target" in derived_quesprompt and
                     "Target" not in projectform):
                     derived_quesprompt["Target"] = {[]}
@@ -80,7 +95,8 @@ def copyquesfromparentproject(projects,
         projects.update_one({"projectname": newprojectname},
                             {
                                 "$set":{
-                                    "questionnaireIds": questionnaireIds
+                                    "questionnaireIds": questionnaireIds,
+                                    "lastActiveId."+current_username+"."+newprojectname: questionnaireIds[-1]
                                 }
                             })
     except:

@@ -6,6 +6,7 @@ from pprint import pprint
 def savequesaudiofiles(mongo,
                     projects,
                     userprojects,
+                    projectsform,
                     questionnaires,
                     projectowner,
                     activeprojectname,
@@ -27,8 +28,9 @@ def savequesaudiofiles(mongo,
         new_audio_file: uploaded audio file details.
     """
 
-    print(last_active_ques_id)
-
+    print("last_active_ques_id in savequesaudiofiles()", last_active_ques_id)
+    ques_form = projectsform.find_one({"projectname": activeprojectname}, {"_id": 0})
+    pprint(ques_form)
     new_audio_details = {}
     for kwargs_key, kwargs_value in kwargs.items():
         new_audio_details[kwargs_key] = kwargs_value
@@ -46,6 +48,7 @@ def savequesaudiofiles(mongo,
                                                             {"$set": { 
                                                                 "prompt.Transcription.audioFilename": updated_audio_filename,
                                                                 "prompt.Transcription.audioId": audio_id,
+                                                                "prompt.Transcription.audioLanguage": ques_form["Transcription"][1],
                                                                 "prompt.otherInfo": new_audio_details
                                                                 }})
         # save audio file details in fs collection
