@@ -136,6 +136,16 @@ function createquesform(quesprojectform) {
 
   quesdata = quesprojectform['quesdata']
   console.log(quesdata);
+  var quesformControlAbove = '<div id="quesformControlAbove">'+
+                              '<button class="btn btn-info btn-lg" type="button" id="previous" onclick="previousQues()">'+
+                              '<span class="previousaudio glyphicon glyphicon-chevron-left" aria-hidden="true"></span>'+
+                              'Previous'+
+                              '</button>'+
+                              '<button class="btn btn-info btn-lg pull-right" type="button" id="next" onclick="nextQues()">'+
+                              'Next'+
+                              '<span class="nextaudio glyphicon glyphicon-chevron-right" aria-hidden="true"></span>'+
+                              '</button>'+
+                            '</div>';
   var quesform = '';
   var transcriptionBoundaryForm = '';
   // let instructionmode = '';
@@ -223,9 +233,9 @@ function createquesform(quesprojectform) {
                                       '<input class="form-control" id="end" name="end" value="'+end+'" required/>'+
                                       '</div>';
         transcriptionBoundaryForm += quesTranscription;
-        transcriptionBoundaryForm += // '<button type="submit" class="btn btn-success btn-block saveTempTranscription">Save Boundary</button>'+
+        // transcriptionBoundaryForm += // '<button type="submit" class="btn btn-success btn-block saveTempTranscription">Save Boundary</button>'+
                                       // '<center><i>or</i></center>'+
-                                      '<button type="button" class="btn btn-danger btn-block" data-action="delete-region">Delete Boundary</button>';
+                                      // '<button type="button" class="btn btn-danger btn-block" data-action="delete-region">Delete Boundary</button>';
         
 
       }
@@ -233,7 +243,7 @@ function createquesform(quesprojectform) {
   }
   // quesform += '<input class="btn btn-lg btn-primary" type="submit" value="Submit">';
   quesform += '<hr>'+
-              '<div id="quesformControl">'+
+              '<div id="quesformControlBelow">'+
                   '<button class="btn btn-info btn-lg" type="button" id="previous" onclick="previousQues()">'+
                   '<span class="previousaudio glyphicon glyphicon-chevron-left" aria-hidden="true"></span>'+
                   'Previous'+
@@ -250,7 +260,7 @@ function createquesform(quesprojectform) {
                   '</button>'+
               '</div>';
   
-  qform += transcriptionBoundaryForm + '<br><hr>' + quesform;
+  qform += quesformControlAbove + '<br>' + transcriptionBoundaryForm + '<hr>' + quesform;
   qform += '</form>'
   // quesform += '</div>';
   

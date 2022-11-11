@@ -149,6 +149,19 @@ def questionnaire():
                                                                                 userprojects)
     activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
                                                                     userprojects)
+    
+    lastActiveIdDetails = projects.find_one({"projectname": activeprojectname},
+                                        {'_id': 0, 'lastActiveId': 1, "questionnaireIds": 1})
+    
+    if (current_username not in lastActiveIdDetails['lastActiveId']):
+        lastActiveId = lastActiveIdDetails['questionnaireIds'][0]
+        print(lastActiveId)
+        updatequesid = 'lastActiveId.'+current_username+'.'+activeprojectname
+        print(updatequesid)
+
+        projects.update_one({"projectname": activeprojectname},
+            { '$set' : { updatequesid: lastActiveId }})
+
     projectowner = getprojectowner.getprojectowner(projects,
                                                     activeprojectname)
     quesprojectform = getactiveprojectform.getactiveprojectform(projectsform,
@@ -168,7 +181,7 @@ def questionnaire():
     quesprojectform['quesdata'] = quesdata
     print(f"{inspect.currentframe().f_lineno}: {quesdata}")
     file_path = ''
-    if (quesdata is not None):
+    if (quesdata is not None and 'Transcription' in quesdata['prompt']):
         audio_id = quesdata['prompt']['Transcription']['audioId']
         if (audio_id != ''):
             file_path = questranscriptionaudiodetails.getquesaudiofilefromfs(mongo,

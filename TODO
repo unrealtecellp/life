@@ -123,3 +123,8 @@
 -- - show waveform of the transcription audio in the questionnaire
     -- - load the audio in the local storage.
     -- - create js of the audio in the questionnaire interface.
+
+09 November 2022
+---------------------------------------------------------------
+- positioning and functioning of 'delete' button in questionnaire interface.
+- update 'lastactivequesid' in 'projects' collection for the user with whom the project is shared.
