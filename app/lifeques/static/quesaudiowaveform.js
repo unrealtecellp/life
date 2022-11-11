@@ -72,26 +72,34 @@
          '[data-action="delete-region"]'
      ).addEventListener('click', function() {
         //  let form = document.forms.edit;
-         let form = document.forms[2];
-         let regionId = form.dataset.region;
-         if (regionId) {
-             let region = wavesurfer.regions.list[regionId];
-             wavesurfer.regions.list[regionId].remove();
-             
-             form.reset();
-             rid = region.start.toString().slice(0, 4).replace('.', '').concat(region.end.toString().slice(0, 4).replace('.', ''));
-             localStorageRegions = JSON.parse(localStorage.regions)
-             for (let [key, value] of Object.entries(localStorageRegions)) {
-                 // console.log(key, value)
-                 if (localStorageRegions[key]['boundaryID'] === rid) {
-                     localStorageRegions.splice(key, 1)
-                     // console.log(localStorageRegions)
-                     localStorage.setItem("regions", JSON.stringify(localStorageRegions));
-                 }
-             }
-         }
-     });
- });
+        let form = document.forms[document.forms.length-1];
+        let regionId = form.dataset.region;
+
+        form.elements[2].setAttribute("value", '0');
+        form.elements[3].setAttribute("value", '0');
+        form.elements[4].setAttribute("value", '');
+        // document.getElementById("end").setAttribute("value", '0');
+        document.getElementById("deleteboundary").disabled = true;
+
+        console.log(form, form.elements[2].value, regionId)
+        if (regionId) {
+            let region = wavesurfer.regions.list[regionId];
+            wavesurfer.regions.list[regionId].remove();
+
+            form.reset();
+            rid = region.start.toString().slice(0, 4).replace('.', '').concat(region.end.toString().slice(0, 4).replace('.', ''));
+            localStorageRegions = JSON.parse(localStorage.regions)
+            for (let [key, value] of Object.entries(localStorageRegions)) {
+                // console.log(key, value)
+                if (localStorageRegions[key]['boundaryID'] === rid) {
+                    localStorageRegions.splice(key, 1)
+                    // console.log(localStorageRegions)
+                    localStorage.setItem("regions", JSON.stringify(localStorageRegions));
+                }
+            }
+        }
+    });
+});
  
  /**
   * Save annotations to localStorage.
@@ -217,7 +225,8 @@
  function editAnnotation(region) {
      // console.log('editAnnotation(region)')
      // console.log(region)
-     let form = document.forms[2]
+     document.getElementById("deleteboundary").disabled = false;
+     let form = document.forms[document.forms.length-1]
      console.log(form);
      (form.elements.start.value = region.start),
      (form.elements.end.value = region.end);
@@ -536,7 +545,7 @@
  
  function sentenceDetails(sentenceData) {
     //  formData = document.forms.edit.elements;
-    formData = document.forms[2].elements;
+    formData = document.forms[document.forms.length-1].elements;
      // console.log(typeof formData)
      // let sentenceData = new Object();
      let transcriptionData = new Object();
@@ -1248,7 +1257,7 @@
      activetranscriptionscript = displayRadioValue()
      // console.log(activetranscriptionscript);
     //  let form = document.forms.edit;
-     let form = document.forms[2];
+    let form = document.forms[document.forms.length-1];
      let id = form.dataset.region;
      let wavesurferregion = wavesurfer.regions.list[id];
      // console.log(wavesurferregion)

@@ -16,7 +16,7 @@
       {% if projectName is defined %}
         <h4>Project Name : {{ projectName }}</h4><br>
       {% endif %}
-      <button type="button" id="quesprogressreport" class="btn btn-lg btn-warning" data-toggle="modal" data-target="#myProgressReportModal">
+      <button type="button" id="quesprogressreport" class="btn btn-lg btn-warning" data-toggle="modal" data-target="#myProgressReportModal" disabled>
         Progress Report
       </button>
       <br>
@@ -44,7 +44,7 @@
 <hr>
 <div class="row">
   <div class="col-sm-7 commentIDs">
-      <button type="button" id="uNAnnotated" class="btn btn-light" onclick="unAnnotated()">All Questionnaire Ids</button>
+      <button type="button" id="uNAnnotated" class="btn btn-light" onclick="unAnnotated()">All Question Ids</button>
   </div>
   {% if quesstats is defined %}
     <div class="col-sm-3 quesStats pull-right">
@@ -68,8 +68,10 @@
     <input id="slider" data-action="zoom" type="range" min="0" max="5000" value="0" style="width: 100%">
   </div>
   <i class="glyphicon glyphicon-zoom-in"></i>
-
+  
   <div class="pull-right">
+    <button type="button" id="deleteboundary" class="btn btn-danger btn-block" data-action="delete-region" disabled>Delete Boundary</button>
+    <br>
     <button class="btn btn-danger" type="button" id="stopAudio">STOP
       <span class="audiostop glyphicon glyphicon-stop" aria-hidden="true"></span>
     </button>
