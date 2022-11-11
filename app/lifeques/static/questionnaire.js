@@ -281,7 +281,7 @@ function createquesform(quesprojectform) {
 
 function quesIdDetails(Q_Id, quesId) {
   inpt = "";
-  var inpt = '<strong>Questionnaire ID: </strong><strong id="Q_Id">'+ Q_Id +'</strong>'
+  var inpt = '<strong>Question ID: </strong><strong id="Q_Id">'+ Q_Id +'</strong>'
   $(".defaultfield").append(inpt);
   lastActiveId = quesId
   // console.log(lastActiveId)
