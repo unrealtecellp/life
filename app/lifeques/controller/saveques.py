@@ -4,16 +4,20 @@ from pprint import pprint
 
 def saveques(questionnaires, ques_data, last_active_ques_id):
 
-    print('saveques()', last_active_ques_id)
+    # print('saveques()', last_active_ques_id)
     quesdata = questionnaires.find_one({"quesId": last_active_ques_id}, {"_id": 0})
-    pprint(quesdata)
+    # pprint(quesdata)
+    # pprint(ques_data)
     prompt = quesdata['prompt']
     text = {}
     text_boundary_data = {}
     content = {}
     sentence = {}
-    start = ques_data['start'][0]
-    end = ques_data['end'][0]
+    start = '000'
+    end = '000'
+    if ('start' in ques_data and 'end' in ques_data):
+        start = ques_data['start'][0]
+        end = ques_data['end'][0]
     transcription_boundaryId = start[:4].replace('.', '') + end[:4].replace('.', '')
     transcription_boundary_data = {}
     transcription = ''
@@ -31,11 +35,12 @@ def saveques(questionnaires, ques_data, last_active_ques_id):
                                                                 }
                                                             }
             sentence = transcription_boundary_data
-            prompt['Transcription']['textGrid']['sentence'] = sentence
+            # prompt['Transcription']['textGrid']['sentence'] = sentence
+            prompt['Audio']['textGrid']['sentence'] = sentence
         if (key == 'Elicitation Method'):
             prompt[key] = value[0]
         if ('Language' in key):
-            lang_name = key.split(' ')[1]
+            lang_name = key.split(' ')[-1]
             value = ques_data[key][0]
             startindex = '0'
             endindex = str(len(value))
@@ -53,8 +58,8 @@ def saveques(questionnaires, ques_data, last_active_ques_id):
     text['content'] = content
     prompt['text'] = text
 
-    print('saveques()')
-    pprint(quesdata)
+    # print('saveques()')
+    # pprint(quesdata)
 
     questionnaires.update_one({"quesId": last_active_ques_id},
                                 {"$set" : { 

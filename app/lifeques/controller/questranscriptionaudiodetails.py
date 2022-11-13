@@ -18,7 +18,7 @@ def getquesaudiofilefromfs(mongo,
     Returns:
         _type_: _description_
     """
-    print(file_type, file_id)
+    # print(file_type, file_id)
     # creating GridFS instance to get required files
     fs =  gridfs.GridFS(mongo.db)
     file = fs.find_one({ file_type: file_id })
@@ -46,12 +46,15 @@ def getquesaudiotranscriptiondetails(questionnaires, quesId):
     transcription_regions = []
     gloss = {}
     pos = {}
-    print(quesId)
+    # print(quesId)
     try:
+        # t_data = questionnaires.find_one({ 'quesId': quesId },
+        #                                 { '_id': 0, 'prompt.Transcription.textGrid.sentence': 1 })
         t_data = questionnaires.find_one({ 'quesId': quesId },
-                                        { '_id': 0, 'prompt.Transcription.textGrid.sentence': 1 })
-        print('t_data!!!!!', t_data)
-        t_data = t_data['prompt']['Transcription']
+                                        { '_id': 0, 'prompt.Audio.textGrid.sentence': 1 })
+        # print('t_data!!!!!', t_data)
+        # t_data = t_data['prompt']['Transcription']
+        t_data = t_data['prompt']['Audio']
         if t_data is not None:
             transcription_data = t_data['textGrid']
         # pprint(transcription_data)
@@ -71,6 +74,6 @@ def getquesaudiotranscriptiondetails(questionnaires, quesId):
     except:
         pass
     
-    pprint(transcription_regions)
-    print(type(transcription_regions))
+    # pprint(transcription_regions)
+    # print(type(transcription_regions))
     return transcription_regions
