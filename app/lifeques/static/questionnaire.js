@@ -38,6 +38,7 @@ function createInputElement(key, elevalue, type, quesdatavalue) {
     var val = '';
     if (key === 'Language') {
       val = quesdatavalue[elevalue[i]];
+      eval = 'Prompt ' + eval
     }
     else if (key === "Transcription") {
       val = quesdatavalue;
@@ -70,7 +71,7 @@ function createTextareaElement(key, elevalue, type, quesdatavalue) {
 }
 
 function createSelectElement(key, elevalue, type, quesdatavalue) {
-  console.log(quesdatavalue)
+  // console.log(quesdatavalue)
   var qform = '';
   var keyid = key.replace(new RegExp(' ', 'g'), '_');
   qform += '<div class="form-group">'+
@@ -86,7 +87,7 @@ function createSelectElement(key, elevalue, type, quesdatavalue) {
   
   for (let i=0; i<elevalue.length; i++) {
     eval = elevalue[i]
-    console.log(eval, quesdatavalue, quesdatavalue.includes(eval))
+    // console.log(eval, quesdatavalue, quesdatavalue.includes(eval))
     if (type === 'multiple') {
       if (quesdatavalue.includes(eval)) {
         qform += '<option value="'+eval+'" selected>'+eval+'</option>';  
@@ -97,7 +98,7 @@ function createSelectElement(key, elevalue, type, quesdatavalue) {
     }
     else {
       if (quesdatavalue.includes(eval)) {
-        console.log(eval, quesdatavalue)
+        // console.log(eval, quesdatavalue)
         qform += '<option value="'+eval+'" selected>'+eval+'</option>';  
       }
       else {
@@ -116,7 +117,7 @@ function createquesform(quesprojectform) {
   // console.log(newData);
   transcriptionRegions = quesprojectform['transcriptionRegions']
   localStorage.setItem("regions", JSON.stringify(transcriptionRegions));
-  console.log(transcriptionRegions);
+  // console.log(transcriptionRegions);
   // var activeAudioFilename = JSON.parse(localStorage.getItem('AudioFilePath')).split('/')[2];
   var activeAudioFilename = quesprojectform["QuesAudioFilePath"].split('/')[2];
   if (activeAudioFilename === undefined) {
@@ -135,7 +136,7 @@ function createquesform(quesprojectform) {
   localStorage.setItem("QuesAudioFilePath", JSON.stringify(quesprojectform['QuesAudioFilePath']));
 
   quesdata = quesprojectform['quesdata']
-  console.log(quesdata);
+  // console.log(quesdata);
   var quesformControlAbove = '<div id="quesformControlAbove">'+
                               '<button class="btn btn-info btn-lg" type="button" id="previous" onclick="previousQues()">'+
                               '<span class="previousaudio glyphicon glyphicon-chevron-left" aria-hidden="true"></span>'+
@@ -153,7 +154,7 @@ function createquesform(quesprojectform) {
   var qform = '<form action="/lifeques/savequestionnaire" method="POST" enctype="multipart/form-data">';
 
   for (let [key, value] of Object.entries(quesprojectform)) {
-    console.log(key, value, value[0], typeof value, quesdata['prompt'][key]);
+    // console.log(key, value, value[0], typeof value, quesdata['prompt'][key]);
     
     if (key === 'Instruction') {
       continue;
@@ -190,57 +191,78 @@ function createquesform(quesprojectform) {
       }
       
     }
-    else if (eletype === 'waveform') {
-      quesTranscription = ''
-      // quesform += createSelectElement(key, elevalue, 'multiple', quesdatavalue)
-      if (quesdatavalue['audioId'] === '') {
-        console.log('waveformmmm', eletype, elevalue, quesdatavalue)
-        var x = document.getElementById("questranscriptionsubmit");
-        console.log(x)
-        x.style.display = "block";
-        var x = document.getElementById("questranscriptionwaveform");
-        console.log(x)
-        x.style.display = "none";
+    // else if (eletype === 'waveform') {
+    //   quesTranscription = ''
+    //   // quesform += createSelectElement(key, elevalue, 'multiple', quesdatavalue)
+    //   if (quesdatavalue['audioId'] === '') {
+    //     console.log('waveformmmm', eletype, elevalue, quesdatavalue)
+    //     var x = document.getElementById("questranscriptionsubmit");
+    //     console.log(x)
+    //     x.style.display = "block";
+    //     var x = document.getElementById("questranscriptionwaveform");
+    //     console.log(x)
+    //     x.style.display = "none";
         
-        quesTranscription += createInputElement(key, ['Audio'], 'file', quesdatavalue);
-        $('#questranscriptionaudio').html(quesTranscription);
-      }
-      else {
-        start = transcriptionRegions[0]['start']
-        end = transcriptionRegions[0]['end']
-        boundaryId = transcriptionRegions[0]['boundaryID']
-        lang = quesdatavalue['audioLanguage']
-        val = transcriptionRegions[0]['data']['sentence'][boundaryId]['transcription'][lang]
-        if (val === undefined) {
-          val = '';
-        }
-        console.log('generate waveformmmm')
-        var x = document.getElementById("questranscriptionsubmit");
-        console.log(x)
-        x.style.display = "none";
-        var x = document.getElementById("questranscriptionwaveform");
-        console.log(x)
-        x.style.display = "block";
-        console.log(quesdatavalue['audioLanguage'])
-        quesTranscription += createInputElement(key, quesdatavalue['audioLanguage'], 'text', val);
-        // $('#questranscription2').html(quesTranscription);
-        transcriptionBoundaryForm += '<div class="form-group">'+
-                                      '<label for="start">Boundary Start Time</label>'+
-                                      '<input class="form-control" id="start" name="start" value="'+start+'" required/>'+
-                                      '</div>'+
-                                      '<div class="form-group">'+
-                                      '<label for="end">Boundary End Time</label>'+
-                                      '<input class="form-control" id="end" name="end" value="'+end+'" required/>'+
-                                      '</div>';
-        transcriptionBoundaryForm += quesTranscription;
-        // transcriptionBoundaryForm += // '<button type="submit" class="btn btn-success btn-block saveTempTranscription">Save Boundary</button>'+
-                                      // '<center><i>or</i></center>'+
-                                      // '<button type="button" class="btn btn-danger btn-block" data-action="delete-region">Delete Boundary</button>';
+    //     quesTranscription += createInputElement(key, ['Audio'], 'file', quesdatavalue);
+    //     $('#questranscriptionaudio').html(quesTranscription);
+    //   }
+    //   else {
+    //     start = transcriptionRegions[0]['start']
+    //     end = transcriptionRegions[0]['end']
+    //     boundaryId = transcriptionRegions[0]['boundaryID']
+    //     lang = quesdatavalue['audioLanguage']
+    //     val = transcriptionRegions[0]['data']['sentence'][boundaryId]['transcription'][lang]
+    //     if (val === undefined) {
+    //       val = '';
+    //     }
+    //     console.log('generate waveformmmm')
+    //     var x = document.getElementById("questranscriptionsubmit");
+    //     console.log(x)
+    //     x.style.display = "none";
+    //     var x = document.getElementById("questranscriptionwaveform");
+    //     console.log(x)
+    //     x.style.display = "block";
+    //     console.log(quesdatavalue['audioLanguage'])
+    //     quesTranscription += createInputElement(key, quesdatavalue['audioLanguage'], 'text', val);
+    //     // $('#questranscription2').html(quesTranscription);
+    //     transcriptionBoundaryForm += '<div class="form-group">'+
+    //                                   '<label for="start">Boundary Start Time</label>'+
+    //                                   '<input class="form-control" id="start" name="start" value="'+start+'" required/>'+
+    //                                   '</div>'+
+    //                                   '<div class="form-group">'+
+    //                                   '<label for="end">Boundary End Time</label>'+
+    //                                   '<input class="form-control" id="end" name="end" value="'+end+'" required/>'+
+    //                                   '</div>';
+    //     transcriptionBoundaryForm += quesTranscription;
+    //     // transcriptionBoundaryForm += // '<button type="submit" class="btn btn-success btn-block saveTempTranscription">Save Boundary</button>'+
+    //                                   // '<center><i>or</i></center>'+
+    //                                   // '<button type="button" class="btn btn-danger btn-block" data-action="delete-region">Delete Boundary</button>';
         
 
-      }
+    //   }
+    // }
+    else if (eletype === 'prompt') {
+      // console.log(key, elevalue, eletype, quesdatavalue);
+      for (let [promptTypeKey, promptTypeValue] of Object.entries(elevalue)) {
+        quesdatavalue = quesdata['prompt'][promptTypeKey]
+        // console.log(promptTypeKey, promptTypeValue, quesdatavalue)
+        if (promptTypeKey === 'Audio' && promptTypeValue[0] === 'waveform') {
+          // console.log(promptTypeKey, promptTypeValue, quesdatavalue)
+          transcriptionBoundaryForm = waveFormFunction(key, promptTypeKey, promptTypeValue, quesdatavalue)
+          if (transcriptionBoundaryForm === undefined) {
+            transcriptionBoundaryForm = '';
+          }
+        }
+        else if (promptTypeKey === 'Audio' && promptTypeValue[0] === 'file') {
+          // console.log(promptTypeKey, promptTypeValue, quesdatavalue)
+          transcriptionBoundaryForm = promptFileFunction(key, promptTypeKey, promptTypeValue, quesdatavalue)
+          if (transcriptionBoundaryForm === undefined) {
+            transcriptionBoundaryForm = '';
+          }
+        }
     }
   }
+}
   // quesform += '<input class="btn btn-lg btn-primary" type="submit" value="Submit">';
   quesform += '<hr>'+
               '<div id="quesformControlBelow">'+
@@ -277,6 +299,114 @@ function createquesform(quesprojectform) {
   });
 
   quesIdDetails(quesdata['Q_Id'], quesdata['quesId'])
+}
+
+function waveFormFunction(key, promptTypeKey, promptTypeValue, quesdatavalue) {
+  // console.log(promptTypeKey, promptTypeValue, quesdatavalue)
+  let transcriptionBoundaryForm = '';
+  let quesTranscription = ''
+  // quesform += createSelectElement(key, elevalue, 'multiple', quesdatavalue)
+  if (quesdatavalue['fileId'] === '') {
+    // console.log('waveformmmm', promptTypeKey, promptTypeValue, quesdatavalue)
+    var x = document.getElementById("questranscriptionsubmit");
+    // console.log(x)
+    x.style.display = "block";
+    var x = document.getElementById("questranscriptionwaveform");
+    // console.log(x)
+    x.style.display = "none";
+    
+    quesTranscription += createInputElement(key, [promptTypeKey], 'file', quesdatavalue);
+    $('#questranscriptionaudio').html(quesTranscription);
+    
+  }
+  else {
+    start = transcriptionRegions[0]['start']
+    end = transcriptionRegions[0]['end']
+    boundaryId = transcriptionRegions[0]['boundaryID']
+    lang = quesdatavalue['fileLanguage']
+    val = transcriptionRegions[0]['data']['sentence'][boundaryId]['transcription'][lang]
+    if (val === undefined) {
+      val = '';
+    }
+    // console.log('generate waveformmmm')
+    var x = document.getElementById("questranscriptionsubmit");
+    // console.log(x)
+    x.style.display = "none";
+    var x = document.getElementById("questranscriptionwaveform");
+    // console.log(x)
+    x.style.display = "block";
+    // console.log(quesdatavalue['fileLanguage'])
+    quesTranscription += createInputElement('Transcription', quesdatavalue['fileLanguage'], 'text', val);
+    // $('#questranscription2').html(quesTranscription);
+    transcriptionBoundaryForm += '<div class="form-group">'+
+                                  '<label for="start">Boundary Start Time</label>'+
+                                  '<input class="form-control" id="start" name="start" value="'+start+'" required/>'+
+                                  '</div>'+
+                                  '<div class="form-group">'+
+                                  '<label for="end">Boundary End Time</label>'+
+                                  '<input class="form-control" id="end" name="end" value="'+end+'" required/>'+
+                                  '</div>';
+    transcriptionBoundaryForm += quesTranscription;
+    // transcriptionBoundaryForm += // '<button type="submit" class="btn btn-success btn-block saveTempTranscription">Save Boundary</button>'+
+                                  // '<center><i>or</i></center>'+
+                                  // '<button type="button" class="btn btn-danger btn-block" data-action="delete-region">Delete Boundary</button>';
+  return transcriptionBoundaryForm;    
+
+  }
+}
+
+function promptFileFunction(key, promptTypeKey, promptTypeValue, quesdatavalue) {
+  let transcriptionBoundaryForm = '';
+  let quesTranscription = ''
+  // quesform += createSelectElement(key, elevalue, 'multiple', quesdatavalue)
+  if (quesdatavalue['fileId'] === '') {
+    // console.log('waveformmmm', promptTypeKey, promptTypeValue, quesdatavalue)
+    var x = document.getElementById("questranscriptionsubmit");
+    // console.log(x)
+    x.style.display = "block";
+    var x = document.getElementById("questranscriptionwaveform");
+    // console.log(x)
+    x.style.display = "none";
+    
+    quesTranscription += createInputElement(key, [promptTypeKey], 'file', quesdatavalue);
+    $('#questranscriptionaudio').html(quesTranscription);
+    
+  }
+  else {
+    // start = transcriptionRegions[0]['start']
+    // end = transcriptionRegions[0]['end']
+    // boundaryId = transcriptionRegions[0]['boundaryID']
+    // lang = quesdatavalue['fileLanguage']
+    // val = transcriptionRegions[0]['data']['sentence'][boundaryId]['transcription'][lang]
+    // if (val === undefined) {
+    //   val = '';
+    // }
+    // console.log('generate embeded audio')
+    var x = document.getElementById("questranscriptionsubmit");
+    // console.log(x)
+    x.style.display = "none";
+    // var x = document.getElementById("questranscriptionwaveform");
+    // console.log(x)
+    // x.style.display = "block";
+    // console.log(quesdatavalue['fileLanguage'])
+    // quesTranscription += createInputElement('Transcription', quesdatavalue['fileLanguage'], 'text', val);
+    // $('#questranscription2').html(quesTranscription);
+    filePath = JSON.parse(localStorage.getItem('QuesAudioFilePath'));
+    fileCaption = key + ' ' + promptTypeKey
+    transcriptionBoundaryForm += '<div class="form-group">'+
+                                  '<label for="promptAudio">'+fileCaption+'</label><br>'+
+                                  '<audio id="promptAudio" controls autoplay>'+
+                                  '<source src="'+filePath+'" type="audio/wav">'+
+                                  'Your browser does not support the audio element.'+
+                                  '</audio>'+
+                                  '</div>';
+    transcriptionBoundaryForm += quesTranscription;
+    // transcriptionBoundaryForm += // '<button type="submit" class="btn btn-success btn-block saveTempTranscription">Save Boundary</button>'+
+                                  // '<center><i>or</i></center>'+
+                                  // '<button type="button" class="btn btn-danger btn-block" data-action="delete-region">Delete Boundary</button>';
+  return transcriptionBoundaryForm;    
+
+  }
 }
 
 function quesIdDetails(Q_Id, quesId) {
@@ -350,7 +480,7 @@ function unAnnotated() {
 
 function loadUnAnnoQues() {
   newQuesId = document.getElementById('allunanno').value;
-  console.log(newQuesId)
+  // console.log(newQuesId)
   // loadRandomAudio(newQuesId)
   $.ajax({
       url: '/lifeques/loadunannoques',
@@ -366,7 +496,7 @@ function loadUnAnnoQues() {
 
 function loadAnnoQues() {
   newQuesId = document.getElementById('allanno').value;
-  console.log(newQuesId)
+  // console.log(newQuesId)
   // loadRandomAudio(newQuesId)
   $.ajax({
       url: '/lifeques/loadunannoques',

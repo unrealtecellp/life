@@ -102,7 +102,7 @@ var scripts =
 ]
 
 var QuestionnaireDomain = [
-  {"id": "", "text": ""},
+  // {"id": "", "text": ""},
   {"id": "General", "text": "General"},
   {"id": "Agriculture", "text": "Agriculture"},
   {"id": "Education", "text": "Education"},
@@ -111,7 +111,7 @@ var QuestionnaireDomain = [
 
 
 var ElicitationMethod = [
-  {"id": "", "text": ""},
+  // {"id": "", "text": ""},
   {"id": "Conversation", "text": "Conversation"},
   {"id": "Interview", "text": "Interview"},
   {"id": "Narration", "text": "Narration"},
@@ -132,7 +132,7 @@ var ElicitationMethod = [
 
   
 var promptType = [
-  {"id": "", "text": ""},
+  // {"id": "", "text": ""},
   {"id": "Audio", "text": "Audio"},
   {"id": "Image", "text": "Image"},
   {"id": "Multimedia", "text": "Multimedia"}
@@ -235,6 +235,30 @@ $("#addpromptlangscripts").click(function(){
 });
 
 var transcriptioncheckbox = document.getElementById("idincludetranscription")
+var instructioncheckbox = document.getElementById("idincludeinstruction")
+
+$('#idprompttype').on('select2:select', function (e) {
+  var data = e.params.data;
+  // console.log(data);
+  // console.log(data['text']);
+  prompttype = data['text']
+  if (prompttype === 'Audio' || prompttype === 'Multimedia') {
+    transcriptioncheckbox.disabled = false;
+  }
+  instructioncheckbox.disabled = false;
+});
+
+$('#idprompttype').on('select2:unselect', function (e) {
+  var data = e.params.data;
+  // console.log(data);
+  // console.log(data['text']);
+  prompttype = data['text']
+  if (prompttype === 'Audio' || prompttype === 'Multimedia') {
+    transcriptioncheckbox.disabled = true;
+  }
+  instructioncheckbox.disabled = true;
+});
+
 
 transcriptioncheckbox.addEventListener('change', function() {
   translangscriptid =  document.getElementById("idtranscriptionlangscript")

@@ -12,7 +12,7 @@ def getactivequestionnaireid(projects,
     Returns:
         _type_: _description_
     """
-    print('lastActiveId.'+current_username+'.'+activeprojectname)
+    # print('lastActiveId.'+current_username+'.'+activeprojectname)
     try:
         last_active_ques_id = projects.find_one({'projectname': activeprojectname},
                                                     {

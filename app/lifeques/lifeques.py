@@ -106,8 +106,19 @@ def newquestionnaireform():
                             new_ques_form[key] = list(derivedfromprojectformvalue)
                         else:
                             new_ques_form[key] = list(set(derivedfromprojectformvalue))
-            
-        pprint(new_ques_form)
+                    if (key == "Prompt Type"):
+                        derivedfromprojectformvalue = list(derivedfromprojectform[key][1].keys())
+                        # new_ques_form[key] = derivedfromprojectformvalue
+                        if (key in new_ques_form):
+                            derivedfromprojectformvalue.extend(new_ques_form[key])
+                            new_ques_form[key] = list(set(derivedfromprojectformvalue))
+                            # print(new_ques_form[key])
+                        if ('Transcription' in derivedfromprojectform):
+                            new_ques_form['Transcription'] = derivedfromprojectform['Transcription'][1]
+                        if ('Instruction' in derivedfromprojectform):
+                            new_ques_form['Instruction'] = derivedfromprojectform['Instruction'][1]
+        # print('LINE: 109')
+        # pprint(new_ques_form)
         updateuserprojects.updateuserprojects(userprojects,
                                                 projectname,
                                                 current_username
@@ -155,9 +166,9 @@ def questionnaire():
     
     if (current_username not in lastActiveIdDetails['lastActiveId']):
         lastActiveId = lastActiveIdDetails['questionnaireIds'][0]
-        print(lastActiveId)
+        # print(lastActiveId)
         updatequesid = 'lastActiveId.'+current_username+'.'+activeprojectname
-        print(updatequesid)
+        # print(updatequesid)
 
         projects.update_one({"projectname": activeprojectname},
             { '$set' : { updatequesid: lastActiveId }})
@@ -173,16 +184,18 @@ def questionnaire():
     last_active_ques_id = getactivequestionnaireid.getactivequestionnaireid(projects,
                                                         activeprojectname,
                                                         current_username)
-    print(last_active_ques_id)
+    # print(last_active_ques_id)
     quesdata = questionnaires.find_one({"quesId": last_active_ques_id}, {"_id": 0})
     # print(f"{inspect.currentframe().f_lineno}: {quesprojectform}")
     # print(f"{inspect.currentframe().f_lineno}: {type(quesdata)}")
     # print(f"{inspect.currentframe().f_lineno}: {quesdata}")
     quesprojectform['quesdata'] = quesdata
-    print(f"{inspect.currentframe().f_lineno}: {quesdata}")
+    # print(f"{inspect.currentframe().f_lineno}: {quesdata}")
     file_path = ''
-    if (quesdata is not None and 'Transcription' in quesdata['prompt']):
-        audio_id = quesdata['prompt']['Transcription']['audioId']
+    # if (quesdata is not None and 'Transcription' in quesdata['prompt']):
+    if (quesdata is not None and 'Audio' in quesdata['prompt']):
+        # audio_id = quesdata['prompt']['Transcription']['audioId']
+        audio_id = quesdata['prompt']['Audio']['fileId']
         if (audio_id != ''):
             file_path = questranscriptionaudiodetails.getquesaudiofilefromfs(mongo,
                                                                             basedir,
@@ -192,7 +205,7 @@ def questionnaire():
     quesprojectform['QuesAudioFilePath'] = file_path
 
     transcription_regions = questranscriptionaudiodetails.getquesaudiotranscriptiondetails(questionnaires, last_active_ques_id)
-    print(type(transcription_regions))
+    # print(type(transcription_regions))
     quesprojectform['transcriptionRegions'] = transcription_regions
     # print(f"{inspect.currentframe().f_lineno}: {quesprojectform}")
 
@@ -229,10 +242,11 @@ def questranscriptionaudio():
                                                     activeprojectname)
     
     ques_audio_file = request.files.to_dict()
-    print(ques_audio_file)
+    # print(ques_audio_file)
     last_active_ques_id = getactivequestionnaireid.getactivequestionnaireid(projects,
                                                                             activeprojectname,
                                                                             current_username)
+    ques_audio_file['Transcription Audio'] = ques_audio_file['Prompt Type Audio']
     savequesaudiofiles.savequesaudiofiles(mongo,
                                             projects,
                                             userprojects,
