@@ -518,16 +518,7 @@ def fetch_karya_audio():
 
         for current_acodedoc in accesscodedocs:
             if access_code == current_acodedoc['karyaaccesscode']:
-                print("1", current_acodedoc['karyaaccesscode'])
-                print("2",access_code)
-                fetched_audio_list = mongodb_info.find_one({"karyaaccesscode":current_acodedoc['karyaaccesscode']},{'karyafetchedaudios':1, "_id" :0})
-                print("3: ", fetched_audio_list)
-                # speakerdetails = accesscodedetails.find_one({"karyaaccesscode": asycaccesscode},{"_id": 0,"current.speakerMetadata": 1})
-                # mongodb_info.update_one({"karyaaccesscode": accesscode}, {"$set": update_data})
-
-
-                # fetched_audio_list = current_acodedoc['karyafetchedaudios']
-                
+                fetched_audio_list = current_acodedoc['karyafetchedaudios']
 
                 verifyotp_urll = 'https://karyanltmbox.centralindia.cloudapp.azure.com/worker/otp/verify'
                 verifyotp_hederr= {'access-code':access_code, 'phone-number':phone_number, 'otp':otp}
@@ -590,9 +581,7 @@ def fetch_karya_audio():
                 #     workerid = findWorker_id["input"]["chain"]
                 #     worker_id = workerid["workerId"]
                 #     tt = list_workerID.append[worker_id]
-                # print(list_workerID)
-
-
+                # print(list_workerID)  
                 workerId_list = []
                 for micro_metadata in r_j["microtasks"]:
                     sentences = micro_metadata["input"]["data"]
@@ -694,8 +683,8 @@ def fetch_karya_audio():
                             print('2.1', len(fileAudio.getnames())) #3
                             print('3', fileAudio.getmembers()) #4
                             for member in fileAudio.getmembers():
-                                f = fileAudio.extractfile(member)
-                                content = f.read()
+                                f= fileAudio.extractfile(member)
+                                content=f.read()
                                 print('4', type(member))
                                 print('5', type(content))
                                 print ('6', member, content.count)
@@ -708,7 +697,6 @@ def fetch_karya_audio():
                                 print('10', new_audio_file['audiofile'].filename)
                                 # if new_audio_file['audiofile'] == 
                                 print(new_audio_file)
-                                
                                 ################################################################################################
                                 ################################################################################################
                                 ################################################################################################
@@ -720,15 +708,15 @@ def fetch_karya_audio():
                                 print("line 671 :",current_sentence)
                                 findprojectname = getcurrentuserprojects.getcurrentuserprojects(current_username, userprojects) 
 
-                                c_sent = mongodb_qidinfo.find({},{"_id":0,"prompt.text.content":1}) #finding sentence from questtionaire collection 
+                                c_sent = mongodb_qidinfo.find({},{"_id":0,"prompt.text.content":1}) # finding sentence from questtionaire collection 
 
-                                for c in c_sent: #breaking the nested path of the dict.
+                                for c in c_sent: # breaking the nested path of the dict.
                                     # print("678 _____ = ", c)
                                     for key, val in c.items():
                                         for key, val in val.items():
                                             for key, vall in val.items():
                                                 sentence_dict = vall
-                                                reverse_sentence_dict = {value:key for key, value in vall.items()} 
+                                                reverse_sentence_dict= {value:key for key, value in vall.items()} 
                                                 # print(reverse_sentence_dict)
                                                 # print(sentence_dict)
 
@@ -741,10 +729,8 @@ def fetch_karya_audio():
                                 sentence_condtion = "prompt.text.content.Any"
                                 sentence_condtion_found = sentence_condtion.replace("Any", found_sent_key)
                                 print(sentence_condtion_found, type(sentence_condtion_found))
-
                                 #ques_id
                                 last_active_ques_id = mongodb_qidinfo.find_one({"projectname": activeprojectname, sentence_condtion_found:current_sentence},{"_id":0, "quesId":1})
-
                                 # db.inventory.aggregate([{$project: {item: 1,description: { $ifNull: [ "$description", "Unspecified" ] }}} ])
                                 # for last_active_ques_id in last_active_ques_id:
                                 print(last_active_ques_id)
@@ -794,7 +780,7 @@ def fetch_karya_audio():
 
                                 if not save_status[0]:
                                     ## save in the list of fetched audios
-                                    mongodb_info.update_one({"karyaaccesscode": access_code}, {"$addToSet": {"karyafetchedaudios":current_file_id}})
+                                    mongodb_info.update_one({"karyaaccesscode": access_code}, {"$addToSet": current_file_id})
 
                                 # for everysentence in find_sentence:
                                 #     findqId = mongodb_qidinfo.find_one({"projectname": projectname, "prompt.text.content.english": str(everysentence)}, {"_id":0, "quesId":1} )
@@ -898,6 +884,7 @@ def fetch_karya_audio_zip():
         # return redirect(url_for('karya_bp.home_insert'))
         return redirect(url_for('karya_bp.home_insert'))
     return render_template("karya_bp.fetch_karya_audio_zip")
+
 
 
 
