@@ -1,5 +1,7 @@
 """Module to save new questionnaire project form in database."""
 
+from pprint import pprint
+
 def savenewquestionnaireform(projectsform,
                                 projectname,
                                 new_ques_form,
@@ -27,10 +29,11 @@ def savenewquestionnaireform(projectsform,
         elif key == 'Script':
             save_ques_form[key] = ["", value]
         elif key == 'Prompt Type':
-            save_ques_form[key] = ["file", value]
-        elif key == 'Transcription Language':
-            save_ques_form[key] = ["", value]
-        elif key == 'Transcription Script':
+            prompt_array = createpromptform(new_ques_form, value)
+            save_ques_form[key] = ["prompt", prompt_array]
+        elif ((key == 'Transcription Language' or
+            key == 'Transcription Script') and
+            'Transcription' in new_ques_form):
             save_ques_form[key] = ["", value]
         elif key == 'Domain':
             save_ques_form[key] = ["multiselect", value]
@@ -41,14 +44,16 @@ def savenewquestionnaireform(projectsform,
         elif 'customField' in key:
             save_ques_form['Custom Field '+value[0]] = [new_ques_form['fieldType'+key[-1]][0], value]
     if 'Transcription' in new_ques_form:
-        save_ques_form['Transcription'] = ['waveform', new_ques_form['Transcription Language']]
+        # save_ques_form['Transcription'] = ['waveform', new_ques_form['Transcription Language']]
+        save_ques_form['Transcription'] = ['', new_ques_form['Transcription']]
     # else:
     #     save_ques_form['Transcription'] = ['', []]
     if 'Instruction' in new_ques_form:
-        save_ques_form['Instruction'] = ['text', new_ques_form['Instruction']]
+        save_ques_form['Instruction'] = ['', new_ques_form['Instruction']]
+        # save_ques_form['Instruction'] = new_ques_form['Instruction']
     # else:
     #     save_ques_form['Instruction'] = ['', []]
-    # print(save_ques_form)
+    # pprint(save_ques_form)
 
     projectsform.insert(save_ques_form)
 
@@ -56,3 +61,31 @@ def savenewquestionnaireform(projectsform,
         del save_ques_form["_id"]
 
     return save_ques_form
+
+def createpromptform(new_ques_form, prompt_types_value):
+    # print(new_ques_form, prompt_type_value)
+    # prompt_array = []
+    prompt_type_dict = {}
+    for prompt_type in prompt_types_value:
+        # prompt_type_dict = {}
+        if (prompt_type == 'Audio' or
+            prompt_type == 'Multimedia'):
+            prompt_type_dict[prompt_type] = []
+            if ('Transcription' in new_ques_form):
+                prompt_type_dict[prompt_type].extend(('waveform', new_ques_form['Transcription Language']))
+            else:
+                prompt_type_dict[prompt_type].extend(('file', []))
+        elif (prompt_type == 'Image'):
+            prompt_type_dict[prompt_type] = []
+            if ('Transcription' in new_ques_form):
+                prompt_type_dict[prompt_type].extend(('text', new_ques_form['Transcription Language']))
+            else:
+                prompt_type_dict[prompt_type].extend(('file', []))
+        if ('Instruction' in new_ques_form):
+                prompt_type_dict[prompt_type].extend(('text',))
+        else:
+            prompt_type_dict[prompt_type].extend(('',))
+        # prompt_array.append(prompt_type_dict)
+    
+    # return prompt_array
+    return prompt_type_dict

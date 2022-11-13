@@ -56,42 +56,57 @@ def copyquesfromparentproject(projects,
                             if lang not in v:
                                 derived_quesprompt['text'][k][lang] = ''
                 elif (key == "Prompt Type"):
+                    # print('LINE 59:', key)
                     for ptype in value[1]:
-                        if (ptype in derived_quesprompt):
-                            continue
-                        else:
-                            pt = {'fileId': '', 'filename': ''}
-                            if ("instruction" in projectform):
-                                pt['instruction'] = ''
+                        # if (ptype in derived_quesprompt):
+                        #     print('LINE 62:', ptype)
+                        #     continue
+                        # else:
+                        print('LINE 63:', ptype)
+                        pt = {'fileId': '',
+                                'filename': '',
+                                'fileLanguage': transcriptionlanglist,
+                                'textGrid': {'sentence': {'000000': {}}}}
+                        if ("Transcription" in projectform):
+                            pt['textGrid']['sentence']['000000']['start'] = ''
+                            pt['textGrid']['sentence']['000000']['end'] = ''
+                            transcription = {}
+                            for l in transcriptionlanglist:
+                                transcription[l] = ''
+                            pt['textGrid']['sentence']['000000']['transcription'] = transcription
+                        if ("instruction" in projectform):
+                            pt['instruction'] = ''
                         derived_quesprompt[ptype] = pt
+                        print('LINE 78:', pt)
+                        print('LINE 79:', derived_quesprompt)
                 
                 # ("Transcription" not in derived_quesprompt or
                 #     "Transcription" in derived_quesprompt)):
-                if ("Transcription" in projectform):
+                # if ("Transcription" in projectform):
                     
-                    derived_quesprompt["Transcription"] = {
-                                    'audioFilename': '',
-                                    'audioId': '',
-                                    'audioLanguage': transcriptionlanglist,
-                                    'speakerId': '',
-                                    'textGrid': {'sentence': {'000000': {}}}
-                    }
-                    derived_quesprompt["Transcription"]['textGrid']['sentence']['000000']['start'] = ''
-                    derived_quesprompt["Transcription"]['textGrid']['sentence']['000000']['end'] = ''
-                    transcription = {}
-                    for l in transcriptionlanglist:
-                        transcription[l] = ''
-                    derived_quesprompt["Transcription"]['textGrid']['sentence']['000000']['transcription'] = transcription
+                #     derived_quesprompt["Transcription"] = {
+                #                     'audioFilename': '',
+                #                     'audioId': '',
+                #                     'audioLanguage': transcriptionlanglist,
+                #                     'speakerId': '',
+                #                     'textGrid': {'sentence': {'000000': {}}}
+                #     }
+                #     derived_quesprompt["Transcription"]['textGrid']['sentence']['000000']['start'] = ''
+                #     derived_quesprompt["Transcription"]['textGrid']['sentence']['000000']['end'] = ''
+                #     transcription = {}
+                #     for l in transcriptionlanglist:
+                #         transcription[l] = ''
+                #     derived_quesprompt["Transcription"]['textGrid']['sentence']['000000']['transcription'] = transcription
                 
                 if ("Target" in derived_quesprompt and
                     "Target" not in projectform):
                     derived_quesprompt["Target"] = {[]}
             
             derived_ques["prompt"] = derived_quesprompt
-            pprint(derived_ques)
+            # pprint(derived_ques)
 
             questionnaires.insert(derived_ques)
-        print('questionnaireIds', questionnaireIds)
+        # print('questionnaireIds', questionnaireIds)
         projects.update_one({"projectname": newprojectname},
                             {
                                 "$set":{
