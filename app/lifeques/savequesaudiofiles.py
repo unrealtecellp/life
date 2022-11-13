@@ -64,4 +64,3 @@ def savequesaudiofiles(mongo,
     except Exception as e:
         print(e)
         flash(f"ERROR")
-        return (False)
