@@ -139,5 +139,9 @@
 
 09 November 2022
 ---------------------------------------------------------------
-- positioning and functioning of 'delete' button in questionnaire interface.
-- update 'lastactivequesid' in 'projects' collection for the user with whom the project is shared.
+-- - positioning and functioning of 'delete' button in questionnaire interface.
+-- - update 'lastactivequesid' in 'projects' collection for the user with whom the project is shared.
+
+13 November 2022
+---------------------------------------------------------------
+- add download questionniare button(similar to download lexicon) to download the active questionnaire project.
