@@ -77,10 +77,11 @@ def createpromptform(new_ques_form, prompt_types_value):
                 prompt_type_dict[prompt_type].extend(('file', []))
         elif (prompt_type == 'Image'):
             prompt_type_dict[prompt_type] = []
+            prompt_type_dict[prompt_type].extend(('file', []))
             if ('Transcription' in new_ques_form):
                 prompt_type_dict[prompt_type].extend(('text', new_ques_form['Transcription Language']))
-            else:
-                prompt_type_dict[prompt_type].extend(('file', []))
+            # else:
+            #     prompt_type_dict[prompt_type].extend(('file', []))
         if ('Instruction' in new_ques_form):
                 prompt_type_dict[prompt_type].extend(('text',))
         else:

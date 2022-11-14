@@ -8,44 +8,65 @@
         "domain": [],
         "elicitation method": "",
         "target": [],
-        "text": {
-            "content": {
-                "bhojpuri": "",
-                "awadhi": ""
-            },
-            "txtboundaryspan": {
-                "startindex": "",
-                "endindex": "",
-                "bhojpuri": "",
-                "awadhi": ""
-            }
-        },
-        "transcription": {
-            "audioID": "",
-            "speakerID": "",
-            "textgrid": {
-                "sentence": {
-                    "audioboundarydur": {
-                        "bhojpuri": "",
-                        "awadhi": ""
+        "content": {
+            "Language1": {
+                "text": {
+                    "txtboundaryspan": {
+                        "startindex": "",
+                        "endindex": "",
+                        "textspan": {
+                            "script": ""
+                        }
+                    }
+                },
+                "audio": {
+                    "fileID": "",
+                    "filename": "",
+                    "instructions": "",
+                    "textgrid": {
+                        "sentence": {
+                            "audioboundarydur": {
+                                "startindex": "",
+                                "endindex": "",
+                                "transcription": {
+                                    "script": ""
+                                }
+                            }
+                        }
+                    }
+                },
+                "image": {
+                    "fileID": "",
+                    "filename": "",
+                    "instructions": "",
+                    "imagetext": {
+                        "txtboundaryspan": {
+                            "startindex": "",
+                            "endindex": "",
+                            "textspan": {
+                                "script": ""
+                            }   
+                        }
+                    }
+                },
+                "multimedia": {
+                    "filedID": "",
+                    "filename": "",
+                    "instructions": "",
+                    "textgrid": {
+                        "sentence": {
+                            "audioboundarydur": {
+                                "startindex": "",
+                                "endindex": "",
+                                "transcription": {
+                                    "script": ""
+                                }
+                            }
+                        }
                     }
                 }
             }
-        },
-        "audio": {
-            "fileID": "",
-            "filename": "",
-            "instructions": ""
-        },
-        "image": {
-            "fileID": "",
-            "filename": "",
-            "instructions": ""
-        },
-        "multimedia": {
-            "filedID": "",
-            "filename": "",
-            "instructions": ""
+
         }
     },
     "current_username": {
