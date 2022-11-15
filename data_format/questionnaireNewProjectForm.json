@@ -10,6 +10,12 @@
                 "Multimedia":["waveform/file","instruct"],
                 "Image":["","instruct"],
                 "Text":["text",""]
+            },
+            "Language2":{
+                "Audio":["waveform/file","instruct"],
+                "Multimedia":["waveform/file","instruct"],
+                "Image":["","instruct"],
+                "Text":["text",""]
             }
         }
     ],
