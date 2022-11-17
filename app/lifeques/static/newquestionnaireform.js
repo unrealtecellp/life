@@ -251,7 +251,7 @@ $("#addpromptlangscripts").click(function(){
   '<div class="row">';
 
   var fItems = '<div class="col-md-3"><div class="form-group">'+
-              '<select class="form-control" name="Language_"' + langScriptPromptField + '  required>';
+              '<select class="form-control" name="Language_' + langScriptPromptField + '"  required>';
   fItems += '<option value="" selected disabled>Language</option>';
 
   for (var i = 0; i < languages.length; i++) {
@@ -263,7 +263,7 @@ $("#addpromptlangscripts").click(function(){
 
   fItems += '<div class="col-md-3"><div class="form-group">'+
               '<div class="input-group">'+
-              '<select class="form-control" name="Script_"' + langScriptPromptField + '  required>';
+              '<select class="form-control" name="Script_' + langScriptPromptField + '"  required>';
   fItems += '<option value="" selected disabled>Script</option>';
 
   for (var i = 0; i < scripts.length; i++) {

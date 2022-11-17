@@ -57,7 +57,7 @@ def newquestionnaireform():
 
     if request.method =='POST':
         new_ques_form = dict(request.form.lists())
-        # pprint(new_ques_form)
+        # print('New ques form', new_ques_form)
         projectname = 'Q_'+new_ques_form['projectname'][0]
         about_project = new_ques_form['aboutproject'][0]
         project_type = "questionnaires"
@@ -92,7 +92,7 @@ def newquestionnaireform():
             # pprint(derivedfromprojectform)
             all_keys = set(list(derivedfromprojectform.keys()) + list(new_ques_form.keys()))
             # for key, value in derivedfromprojectform.items():
-            print(all_keys)
+            # print('All keys from both projects', all_keys)
             for key in all_keys:
                 if (key in derivedfromprojectform):
                     derivedfromprojectformvalue = derivedfromprojectform[key][1]
@@ -101,22 +101,40 @@ def newquestionnaireform():
                         if (key in new_ques_form):
                             derivedfromprojectformvalue.extend(new_ques_form[key])
                         print(key, derivedfromprojectformvalue)
-                        if("Transcription" in key): continue
-                        if (key == "Language" or key == "Script"):
-                            new_ques_form[key] = list(derivedfromprojectformvalue)
-                        else:
-                            new_ques_form[key] = list(set(derivedfromprojectformvalue))
+                        # if("Transcription" in key): continue
+                        # if (key == "Language" or key == "Script"):
+                        #     new_ques_form[key] = list(derivedfromprojectformvalue)
+                        # else:
+                        new_ques_form[key] = list(set(derivedfromprojectformvalue))
                     if (key == "Prompt Type"):
-                        derivedfromprojectformvalue = list(derivedfromprojectform[key][1].keys())
+                        # derivedfromprojectformvalue = list(derivedfromprojectform[key][1].keys())
+                        derivedfromprojectformvalues = dict(derivedfromprojectform[key][1])
+                        # new_ques_form[key][1].update(derivedfromprojectformvalues)
                         # new_ques_form[key] = derivedfromprojectformvalue
                         if (key in new_ques_form):
-                            derivedfromprojectformvalue.extend(new_ques_form[key])
-                            new_ques_form[key] = list(set(derivedfromprojectformvalue))
-                            # print(new_ques_form[key])
-                        if ('Transcription' in derivedfromprojectform):
-                            new_ques_form['Transcription'] = derivedfromprojectform['Transcription'][1]
-                        if ('Instruction' in derivedfromprojectform):
-                            new_ques_form['Instruction'] = derivedfromprojectform['Instruction'][1]
+                            new_ques_form[key][1].update(derivedfromprojectformvalues)
+                        else:
+                            new_ques_form[key] = ["prompt", derivedfromprojectformvalues]
+
+                    if (key == "LangScript"):
+                        # derivedfromprojectformvalue = list(derivedfromprojectform[key][1].keys())
+                        derivedfromprojectformvalues = dict(derivedfromprojectform[key][1])
+                        # new_ques_form[key][1].update(derivedfromprojectformvalues)
+                        # new_ques_form[key] = derivedfromprojectformvalue
+                        if (key in new_ques_form):
+                            new_ques_form[key][1].update(derivedfromprojectformvalues)
+                        else:
+                            new_ques_form[key] = ["", derivedfromprojectformvalues]
+
+                        #     derivedfromprojectformvalue.extend(new_ques_form[key])
+                        #     new_ques_form[key] = list(set(derivedfromprojectformvalue))
+                        #     # print(new_ques_form[key])
+                        # else:
+
+                        # if ('Transcription' in derivedfromprojectform):
+                        #     new_ques_form['Transcription'] = derivedfromprojectform['Transcription'][1]
+                        # if ('Instruction' in derivedfromprojectform):
+                        #     new_ques_form['Instruction'] = derivedfromprojectform['Instruction'][1]
         # print('LINE: 109')
         # pprint(new_ques_form)
         updateuserprojects.updateuserprojects(userprojects,
@@ -124,6 +142,7 @@ def newquestionnaireform():
                                                 current_username
                                                 )
         
+        # print('Intermediate New ques form', new_ques_form)
         save_ques_form = savenewquestionnaireform.savenewquestionnaireform(projectsform,
                                                                             projectname,
                                                                             new_ques_form,

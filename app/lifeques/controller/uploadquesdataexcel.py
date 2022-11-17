@@ -526,6 +526,7 @@ def enterquesfromuploadedfile(projects,
         else:
             questionnaires.insert(uploadedFileQues)
         print(f"{inspect.currentframe().f_lineno}: {uploadedFileQues}")
+        
         for column_name in list(quesdf.columns):
             print(f"{inspect.currentframe().f_lineno}: {column_name}")
             if (column_name not in uploadedFileQues):
@@ -552,10 +553,10 @@ def enterquesfromuploadedfile(projects,
                         value = startindex
                     if ('endindex' in column_name):
                         value = endindex
-                if ('Sense 1.Gloss.eng' in column_name):
-                    uploadedFileQues['gloss'] = value
-                if ('Sense 1.Grammatical Category' in column_name):
-                    uploadedFileQues['grammaticalcategory'] = value
+                # if ('Sense 1.Gloss.eng' in column_name):
+                #     uploadedFileQues['gloss'] = value
+                # if ('Sense 1.Grammatical Category' in column_name):
+                #     uploadedFileQues['grammaticalcategory'] = value
                 uploadedFileQues[column_name] = value
         
         projects.update_one({"projectname": activeprojectname},

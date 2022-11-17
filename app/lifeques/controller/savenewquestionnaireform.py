@@ -20,24 +20,44 @@ def savenewquestionnaireform(projectsform,
     """
     
     save_ques_form = {}
+    
+    if 'Prompt Type' in new_ques_form:
+        prompt_array = new_ques_form['Prompt Type'][1]
+    else:
+        prompt_array = {}
+    
+    if 'LangScript' in new_ques_form:
+        lang_script_array = new_ques_form['LangScript'][1]
+    else:
+        lang_script_array = {}
+
     save_ques_form['username'] = current_username
     save_ques_form['projectname'] = projectname
     
+    print (new_ques_form.items())
     for key, value in new_ques_form.items():
         # if key == 'Language':
+        
         if 'Language' in key:
             # save_ques_form[key] = ["text", value]
-            key_id = key[key.find('_'):]
+            key_id = key[key.find('_')+1:]
 
-            script_name = new_ques_form['Script_'+key_id]
-            lang_name = value+'-'+script_name
-            if 'Language_Script' in save_ques_form:
-                save_ques_form['Language_Script'][lang_name] = script_name
-            else:
-                save_ques_form['Language_Script'] = {lang_name: script_name}
+            script_name = new_ques_form['Script_'+key_id][0]
+
+            print ('Value', value[0], 'Script name', script_name)
+            lang_name = value[0]+'-'+script_name
+            lang_script_array.update({lang_name: script_name})
+            # if 'Language_Script' in save_ques_form:
+            #     save_ques_form['Language_Script'][lang_name] = script_name
+            # else:
+            #     save_ques_form['Language_Script'] = {lang_name: script_name}
             
-            prompt_array = createpromptform(new_ques_form, value, key_id)
-            save_ques_form['Prompt Type'] = ["prompt", prompt_array]
+            prompt_array.update(createpromptform(new_ques_form, lang_name, key_id))
+             
+            # if 'Prompt Type' in save_ques_form:
+            #     save_ques_form['Prompt Type'][1] = prompt_array
+            # else:
+            #     save_ques_form['Prompt Type'] = ["prompt", prompt_array]
 
         # elif key == 'Script':
         #     save_ques_form[key] = ["", value]
@@ -68,6 +88,8 @@ def savenewquestionnaireform(projectsform,
     # #     save_ques_form['Instruction'] = ['', []]
     # # pprint(save_ques_form)
 
+    save_ques_form['LangScript'] = ["", lang_script_array]
+    save_ques_form['Prompt Type'] = ["prompt", prompt_array]
     projectsform.insert(save_ques_form)
 
     if "_id" in save_ques_form:
@@ -80,7 +102,7 @@ def createpromptform(new_ques_form, lang_name, key_id):
     # prompt_array = []
     prompt_type_dict = {}
 
-    prompt_type_dict['Text'] = ['text', '']
+    prompt_type_dict['Text'] = ['text']
 
     if 'Audio_'+key_id in new_ques_form:
         if 'TranscriptionAudio_'+key_id in new_ques_form:
@@ -103,7 +125,7 @@ def createpromptform(new_ques_form, lang_name, key_id):
             prompt_type_dict['Multimedia Instruction'] = ["text"]
 
     if 'Image_'+key_id in new_ques_form:
-        prompt_type_dict['Image'] = ['']
+        prompt_type_dict['Image'] = ['file']
         
         if 'InstructionImage_'+key_id in new_ques_form:
             # prompt_type_dict['Image'].extend(['Instruction'])
