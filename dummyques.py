@@ -1,3 +1,148 @@
+"""
+INPUT
+--------------------
+"""
+questionaireprojectform = {
+  "_id":{"$oid":"6370f76bbf61c0a50d2a6ef9"},
+  "username":"alice",
+  "projectname":"Q_Derived_test_108",
+  "Prompt Type":[
+      "prompt",
+      {
+          "English":{
+              "Audio":["waveform",""],
+              "Multimedia":["file",""],
+              "Image":["file","text"],
+              "Text":["text",""]
+          },
+          "Hindi":{
+            "Audio":["waveform",""],
+            "Text":["text",""]
+          }
+      }
+  ],
+  "Language_Script":[
+      "",
+      {
+        "English":"Latin",
+        "Hindi": "Devanagari"
+      }
+  ],
+  "Target":["multiselect",["on"]],
+  "Elicitation Method":["select",["Translation","Narration","Role-Play"]],
+  "Domain":["multiselect",["General","Education","Agriculture","Science-Technology"]]
+}
+
+
+"""OUTPUT
+--------------
+"""
+testquesdata = {
+  "username": "",
+  "projectname": "",
+  "quesID": "",
+  "Q_Id": "",
+  "lastUpdatedBy": "",
+  "prompt": {
+      "Domain": [],
+      "Elicitation method": "",
+      "Target": [],
+      "content": {
+          "English": {
+              "text": {
+                  "000000": {
+                      "startindex": "",
+                      "endindex": "",
+                      "textspan": {
+                          "Latin": "This is english sentence."
+                      }
+                  }
+              },
+              "audio": {
+                  "fileId": "",
+                  "filename": "",
+                  "instructions": "",
+                  "textGrid": {
+                      "sentence": {
+                          "000000": {
+                              "startindex": "",
+                              "endindex": "",
+                              "transcription": {
+                                  "script": ""
+                              }
+                          }
+                      }
+                  }
+              },
+              "image": {
+                  "fileId": "",
+                  "filename": "",
+                  "instructions": "",
+                #   "imagetext": {
+                #       "000000": {
+                #           "startindex": "",
+                #           "endindex": "",
+                #           "textspan": {
+                #               "script": ""
+                #           }   
+                #       }
+                #   }
+              },
+              "multimedia": {
+                  "fileId": "",
+                  "filename": "",
+                  "instructions": "",
+                  "textGrid": {
+                      "sentence": {
+                          "000000": {
+                              "startindex": "",
+                              "endindex": "",
+                              "transcription": {
+                                  "script": ""
+                              }
+                          }
+                      }
+                  }
+              }
+          },
+          "Hindi": {
+            "text": {
+                "000000": {
+                    "startindex": "",
+                    "endindex": "",
+                    "textspan": {
+                        "Devanagari": "ye hindi sentence hai."
+                    }
+                }
+            },
+            "audio": {
+                "fileId": "",
+                "filename": "",
+                "instructions": "",
+                "textGrid": {
+                    "sentence": {
+                        "000000": {
+                            "startindex": "",
+                            "endindex": "",
+                            "transcription": {
+                                "script": ""
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+      }
+  },
+  "current_username": {
+      "prompt": {
+          "bhojpuri": "",
+          "awadhi": ""
+      }   
+  }
+}
+
 """Module to save a dummy ques in the 'questionnaires' collection for the newly created questionnaire project form."""
 
 from pprint import pprint
@@ -112,3 +257,8 @@ def createdummyques(questionnaires,
     pprint(dummy_ques)
 
     questionnaires.insert(dummy_ques)
+
+createdummyques("questionnaires",
+                    "projectname",
+                    questionaireprojectform,
+                    "current_username")
