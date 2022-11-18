@@ -12,7 +12,7 @@ from app.lifeques.controller import savenewquestionnaireform, createdummyques, d
 from app.lifeques.controller import uploadquesdataexcel, getactivequestionnaireid, updatelatestquesid
 from app.lifeques.controller import getnewquesid, quesunannotatedfilename, saveques, savequesaudiofiles
 from app.lifeques.controller import getderivedfromprojectform, copyquesfromparentproject, questranscriptionaudiodetails
-from app.lifeques.controller import getquestionnairestats
+from app.lifeques.controller import getquestionnairestats, savequespromptfile
 
 import os
 from pprint import pprint
@@ -299,20 +299,20 @@ def savequestionnaire():
         ques_data_file = request.files.to_dict()
         # pprint(ques_data_file)
 
-        last_active_ques_id = getactivequestionnaireid.getactivequestionnaireid(projects,
-                                                                                activeprojectname,
-                                                                                current_username)
-        saveques.saveques(questionnaires, ques_data, last_active_ques_id)
+        # last_active_ques_id = getactivequestionnaireid.getactivequestionnaireid(projects,
+        #                                                                         activeprojectname,
+        #                                                                         current_username)
+        # saveques.saveques(questionnaires, ques_data, last_active_ques_id)
 
-        # load next ques
-        latest_ques_id = getnewquesid.getnewquesid(projects,
-                                                activeprojectname,
-                                                last_active_ques_id,
-                                                'next')
-        updatelatestquesid.updatelatestquesid(projects,
-                                        activeprojectname,
-                                        latest_ques_id,
-                                        current_username)
+        # # load next ques
+        # latest_ques_id = getnewquesid.getnewquesid(projects,
+        #                                         activeprojectname,
+        #                                         last_active_ques_id,
+        #                                         'next')
+        # updatelatestquesid.updatelatestquesid(projects,
+        #                                 activeprojectname,
+        #                                 latest_ques_id,
+        #                                 current_username)
 
     return redirect(url_for("lifeques.questionnaire"))
 
@@ -467,3 +467,40 @@ def loadunannotext():
 
     return 'OK'  
 
+
+@lifeques.route('/quespromptfile', methods=['GET', 'POST'])
+@login_required
+def quespromptfile():
+    projects, userprojects, projectsform, questionnaires = getdbcollections.getdbcollections(mongo,
+                                                                                            'projects',
+                                                                                            'userprojects',
+                                                                                            'projectsform',
+                                                                                            'questionnaires'
+                                                                                            )
+    current_username = getcurrentusername.getcurrentusername()
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                    userprojects)
+    projectowner = getprojectowner.getprojectowner(projects,
+                                                    activeprojectname)
+    
+    ques_audio_file = request.files.to_dict()
+    # print(ques_audio_file)
+    last_active_ques_id = getactivequestionnaireid.getactivequestionnaireid(projects,
+                                                                            activeprojectname,
+                                                                            current_username)
+    
+    
+
+    # ques_audio_file['Transcription Audio'] = ques_audio_file['Prompt Type Audio']
+    # savequespromptfile.savequespromptfile(mongo,
+    #                                         projects,
+    #                                         userprojects,
+    #                                         projectsform,
+    #                                         questionnaires,
+    #                                         projectowner,
+    #                                         activeprojectname,
+    #                                         current_username,
+    #                                         last_active_ques_id,
+    #                                         ques_audio_file)
+
+    return redirect(url_for("lifeques.questionnaire"))

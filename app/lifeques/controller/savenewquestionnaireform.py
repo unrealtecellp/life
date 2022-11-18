@@ -102,34 +102,80 @@ def createpromptform(new_ques_form, lang_name, key_id):
     # prompt_array = []
     prompt_type_dict = {}
 
-    prompt_type_dict['Text'] = ['text']
+    prompt_type_dict['Text'] = ['text', '']
 
     if 'Audio_'+key_id in new_ques_form:
         if 'TranscriptionAudio_'+key_id in new_ques_form:
-            prompt_type_dict['Audio'] = ['waveform']
+            if ('Audio' in prompt_type_dict):
+                prompt_type_dict['Audio'].insert(0, 'waveform')
+            else:
+                prompt_type_dict['Audio'] = ['waveform']
         else:
-            prompt_type_dict['Audio'] = ['file']
+            # prompt_type_dict['Audio'] = ['file']
+            if ('Audio' in prompt_type_dict):
+                prompt_type_dict['Audio'].insert(0, 'file')
+            else:
+                prompt_type_dict['Audio'] = ['file']
         
         if 'InstructionAudio_'+key_id in new_ques_form:
             # prompt_type_dict['Audio'].extend(['Instruction'])
-            prompt_type_dict['Audio Instruction'] = ["text"]
+            # prompt_type_dict['Audio Instruction'] = ["text"]
+            if ('Audio' in prompt_type_dict):
+                prompt_type_dict['Audio'].insert(1, 'text')
+            else:
+                prompt_type_dict['Audio'] = ['text']
+        else:
+            # prompt_type_dict['Audio'] = ['file']
+            if ('Audio' in prompt_type_dict):
+                prompt_type_dict['Audio'].insert(1, '')
+            else:
+                prompt_type_dict['Audio'] = ['']
         
     if 'Multimedia_'+key_id in new_ques_form:
         if 'TranscriptionMM_'+key_id in new_ques_form:
-            prompt_type_dict['Multimedia'] = ['waveform']
+            if ('Multimedia' in prompt_type_dict):
+                prompt_type_dict['Multimedia'].insert(0, 'waveform')
+            else:
+                prompt_type_dict['Multimedia'] = ['waveform']
         else:
-            prompt_type_dict['Multimedia'] = ['file']
+            if ('Multimedia' in prompt_type_dict):
+                prompt_type_dict['Multimedia'].insert(0, 'file')
+            else:
+                prompt_type_dict['Multimedia'] = ['file']
         
         if 'InstructionMM_'+key_id in new_ques_form:
             # prompt_type_dict['Multimedia'].extend(['Instruction'])
-            prompt_type_dict['Multimedia Instruction'] = ["text"]
+            # prompt_type_dict['Multimedia Instruction'] = ["text"]
+            if ('Multimedia' in prompt_type_dict):
+                prompt_type_dict['Multimedia'].insert(1, 'text')
+            else:
+                prompt_type_dict['Multimedia'] = ['text']
+        else:
+            if ('Multimedia' in prompt_type_dict):
+                prompt_type_dict['Multimedia'].insert(1, '')
+            else:
+                prompt_type_dict['Multimedia'] = ['']
 
     if 'Image_'+key_id in new_ques_form:
-        prompt_type_dict['Image'] = ['file']
+        if ('Image' in prompt_type_dict):
+            prompt_type_dict['Image'].insert(0, 'file')
+        else:
+            prompt_type_dict['Image'] = ['file']
         
         if 'InstructionImage_'+key_id in new_ques_form:
             # prompt_type_dict['Image'].extend(['Instruction'])
-            prompt_type_dict['Image Instruction'] = ["text"]
+            # prompt_type_dict['Image Instruction'] = ["text"]
+            if ('Image' in prompt_type_dict):
+                prompt_type_dict['Image'].insert(1, 'text')
+            else:
+                prompt_type_dict['Image'] = ['text']
+        else:
+            if ('Image' in prompt_type_dict):
+                prompt_type_dict['Image'].insert(1, '')
+            else:
+                prompt_type_dict['Image'] = ['']
+    print(lang_name)
+    pprint(prompt_type_dict)
 
     return {lang_name: prompt_type_dict}
 

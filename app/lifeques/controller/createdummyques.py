@@ -14,7 +14,7 @@ def createdummyques(questionnaires,
         save_ques_form (_type_): _description_
         current_username (_type_): _description_
     """
-
+    pprint(save_ques_form);
     dummy_ques = {
             "username": current_username,
             "projectname": projectname,
@@ -42,7 +42,7 @@ def createdummyques(questionnaires,
             for prompt_key, prompt_value in value[1].items():
                 # print(prompt_key, prompt_value)
                 prompt_lang = prompt_key
-                prompt_lang_script = save_ques_form['Language_Script'][1][prompt_lang]
+                prompt_lang_script = save_ques_form['LangScript'][1][prompt_lang]
                 content[prompt_lang] = {}
                 # print(prompt_lang, prompt_lang_script, content)
                 for prompt_type_key, prompt_type_value in prompt_value.items():
@@ -109,6 +109,6 @@ def createdummyques(questionnaires,
         # else:
         #     dummy_ques['prompt'][key] = ''
     # print(dummy_ques)
-    pprint(dummy_ques)
+    # pprint(dummy_ques)
 
     questionnaires.insert(dummy_ques)
