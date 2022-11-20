@@ -487,24 +487,27 @@ def quespromptfile():
     projectowner = getprojectowner.getprojectowner(projects,
                                                     activeprojectname)
     
-    ques_audio_file = request.files.to_dict()
+    # ques_audio_file = request.files
     # print(ques_audio_file)
     last_active_ques_id = getactivequestionnaireid.getactivequestionnaireid(projects,
                                                                             activeprojectname,
                                                                             current_username)
     
-    
-
+    if request.method == "POST":
+        prompt_file = request.files.to_dict()
+        print('line no. 494', prompt_file, type(prompt_file))
+        prompt_type = list(prompt_file.keys())[0].split('_')[1]
+        print(prompt_type)
     # ques_audio_file['Transcription Audio'] = ques_audio_file['Prompt Type Audio']
-    # savequespromptfile.savequespromptfile(mongo,
-    #                                         projects,
-    #                                         userprojects,
-    #                                         projectsform,
-    #                                         questionnaires,
-    #                                         projectowner,
-    #                                         activeprojectname,
-    #                                         current_username,
-    #                                         last_active_ques_id,
-    #                                         ques_audio_file)
+    savequespromptfile.savequespromptfile(mongo,
+                                            projects,
+                                            userprojects,
+                                            projectsform,
+                                            questionnaires,
+                                            projectowner,
+                                            activeprojectname,
+                                            current_username,
+                                            last_active_ques_id,
+                                            prompt_file)
 
     return redirect(url_for("lifeques.questionnaire"))

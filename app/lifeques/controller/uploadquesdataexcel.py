@@ -6,6 +6,7 @@ import json
 from datetime import datetime
 import re
 import inspect
+<<<<<<< HEAD
 from zipfile import ZipFile
 import io
 # import savequespromptfile
@@ -13,6 +14,9 @@ import io
 from app.lifeques.controller import savequespromptfile
 from werkzeug.datastructures import FileStorage
 
+=======
+from pprint import pprint
+>>>>>>> ce8344fb1bfcee2f9e58ba0574cfda6fdb852b37
 
 def quesmetadata():
     # create quesId
@@ -555,7 +559,22 @@ def enterquesfromuploadedfile(mongo, projects,
                     print(f"{inspect.currentframe().f_lineno}: {value}")
                 elif (value == 'nan'):
                     value = ''
-                if ('content' in column_name):
+                # if ('content' in column_name):
+                #     startindex = '0'
+                #     endindex = str(len(value))
+                #     for p in range(3):
+                #         if (len(startindex) < 3):
+                #             startindex = '0'+startindex
+                #         if (len(endindex) < 3):
+                #             endindex = '0'+endindex
+                #     text_boundary_id = startindex+endindex
+                # if ('text.000000' in column_name):
+                #     column_name = column_name.replace('000000', text_boundary_id)
+                #     if ('startindex' in column_name):
+                #         value = startindex
+                #     if ('endindex' in column_name):
+                #         value = endindex
+                if ('text.000000' in column_name and 'textspan' in column_name):
                     startindex = '0'
                     endindex = str(len(value))
                     for p in range(3):
@@ -564,12 +583,11 @@ def enterquesfromuploadedfile(mongo, projects,
                         if (len(endindex) < 3):
                             endindex = '0'+endindex
                     text_boundary_id = startindex+endindex
-                if ('text.000000' in column_name):
                     column_name = column_name.replace('000000', text_boundary_id)
-                    if ('startindex' in column_name):
-                        value = startindex
-                    if ('endindex' in column_name):
-                        value = endindex
+                    column_name_startindex = '.'.join(column_name.split('.')[:-2])+'.startindex'
+                    column_name_endindex = '.'.join(column_name.split('.')[:-2])+'.endindex'
+                    uploadedFileQues[column_name_startindex] = startindex
+                    uploadedFileQues[column_name_endindex] = endindex
                 # if ('Sense 1.Gloss.eng' in column_name):
                 #     uploadedFileQues['gloss'] = value
                 # if ('Sense 1.Grammatical Category' in column_name):
@@ -591,7 +609,13 @@ def enterquesfromuploadedfile(mongo, projects,
                         print ('Upload file name', uploadfilename)                        
                         filesToBeUploaded[file_type] = uploadfilename
                                   
-        
+        pprint(uploadedFileQues)
+        uploadedFileQuesKeysList = list(uploadedFileQues.keys())
+        for ak in uploadedFileQuesKeysList:
+            if ('text.000000' in ak and
+                ('startindex' in ak or 'endindex' in ak)):
+                del uploadedFileQues[ak]
+
         projects.update_one({"projectname": activeprojectname},
                             {
                                 "$set": {
@@ -605,6 +629,7 @@ def enterquesfromuploadedfile(mongo, projects,
         questionnaires.update_one({ 'quesId': quesId },
                                     { '$set' : uploadedFileQues })
 
+        # for upload of file
         with ZipFile(mainfile) as myzip:        
             for fileType, fileName in filesToBeUploaded.items():            
                 with myzip.open(fileName) as myfile:
