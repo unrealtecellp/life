@@ -320,10 +320,12 @@ def savequestionnaire():
 @lifeques.route('/uploadquesfiles', methods=['GET', 'POST'])
 @login_required
 def uploadquesfiles():
-    projects, userprojects, questionnaires = getdbcollections.getdbcollections(mongo,
-                                                'projects',
-                                                'userprojects',
-                                                'questionnaires')
+    projects, userprojects, projectsform, questionnaires = getdbcollections.getdbcollections(mongo,
+                                                                                            'projects',
+                                                                                            'userprojects',
+                                                                                            'projectsform',
+                                                                                            'questionnaires'
+                                                                                            )
     current_username = getcurrentusername.getcurrentusername()
     activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
                                                                     userprojects)
@@ -347,8 +349,10 @@ def uploadquesfiles():
                 basedir,
                 new_ques_file,
                 current_username)
-        quesstate, quesextra = uploadquesdataexcel.queskeymapping(projects,
+        quesstate, quesextra = uploadquesdataexcel.queskeymapping(mongo,
+                                                                    projects,
                                                                     userprojects,
+                                                                    projectsform,
                                                                     questionnaires,
                                                                     activeprojectname,
                                                                     projectowner,
