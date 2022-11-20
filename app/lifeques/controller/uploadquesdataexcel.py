@@ -6,17 +6,13 @@ import json
 from datetime import datetime
 import re
 import inspect
-<<<<<<< HEAD
 from zipfile import ZipFile
 import io
 # import savequespromptfile
 # import savequespromptfile
 from app.lifeques.controller import savequespromptfile
 from werkzeug.datastructures import FileStorage
-
-=======
 from pprint import pprint
->>>>>>> ce8344fb1bfcee2f9e58ba0574cfda6fdb852b37
 
 def quesmetadata():
     # create quesId
