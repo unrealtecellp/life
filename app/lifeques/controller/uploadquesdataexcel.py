@@ -6,6 +6,7 @@ import json
 from datetime import datetime
 import re
 import inspect
+from pprint import pprint
 
 def quesmetadata():
     # create quesId
@@ -538,7 +539,22 @@ def enterquesfromuploadedfile(projects,
                     print(f"{inspect.currentframe().f_lineno}: {value}")
                 elif (value == 'nan'):
                     value = ''
-                if ('content' in column_name):
+                # if ('content' in column_name):
+                #     startindex = '0'
+                #     endindex = str(len(value))
+                #     for p in range(3):
+                #         if (len(startindex) < 3):
+                #             startindex = '0'+startindex
+                #         if (len(endindex) < 3):
+                #             endindex = '0'+endindex
+                #     text_boundary_id = startindex+endindex
+                # if ('text.000000' in column_name):
+                #     column_name = column_name.replace('000000', text_boundary_id)
+                #     if ('startindex' in column_name):
+                #         value = startindex
+                #     if ('endindex' in column_name):
+                #         value = endindex
+                if ('text.000000' in column_name and 'textspan' in column_name):
                     startindex = '0'
                     endindex = str(len(value))
                     for p in range(3):
@@ -547,18 +563,23 @@ def enterquesfromuploadedfile(projects,
                         if (len(endindex) < 3):
                             endindex = '0'+endindex
                     text_boundary_id = startindex+endindex
-                if ('text.000000' in column_name):
                     column_name = column_name.replace('000000', text_boundary_id)
-                    if ('startindex' in column_name):
-                        value = startindex
-                    if ('endindex' in column_name):
-                        value = endindex
+                    column_name_startindex = '.'.join(column_name.split('.')[:-2])+'.startindex'
+                    column_name_endindex = '.'.join(column_name.split('.')[:-2])+'.endindex'
+                    uploadedFileQues[column_name_startindex] = startindex
+                    uploadedFileQues[column_name_endindex] = endindex
                 # if ('Sense 1.Gloss.eng' in column_name):
                 #     uploadedFileQues['gloss'] = value
                 # if ('Sense 1.Grammatical Category' in column_name):
                 #     uploadedFileQues['grammaticalcategory'] = value
                 uploadedFileQues[column_name] = value
-        
+        pprint(uploadedFileQues)
+        uploadedFileQuesKeysList = list(uploadedFileQues.keys())
+        for ak in uploadedFileQuesKeysList:
+            if ('text.000000' in ak and
+                ('startindex' in ak or 'endindex' in ak)):
+                del uploadedFileQues[ak]
+
         projects.update_one({"projectname": activeprojectname},
                             {
                                 "$set": {

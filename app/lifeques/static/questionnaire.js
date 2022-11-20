@@ -418,6 +418,7 @@ function createquesform(quesprojectform) {
       var testquesform = ''
       // testtype = questionaireprojectform[key][0];
       // testvalue = questionaireprojectform[key][1];
+      testquesdata = quesdata;
       testtype = eletype
       testvalue = elevalue
       // console.log(questionaireprojectform[key], testtype, testvalue);
@@ -438,7 +439,7 @@ function createquesform(quesprojectform) {
         langData = testquesdata['prompt']['content'][testpromptTypeKey]
         langText = testquesdata['prompt']['content'][testpromptTypeKey]['text']
         langTextBoundary = Object.keys(langText)[0]
-        langScript = quesprojectform['Language_Script'][1][testpromptTypeKey]
+        langScript = quesprojectform['LangScript'][1][testpromptTypeKey]
         console.log(langText, langTextBoundary, langScript);
         promptquesdatavalue[testpromptTypeKey] = langText[langTextBoundary]['textspan'][langScript]
         console.log(key, elevalue, eletype, quesdatavalue, promptquesdatavalue);
@@ -539,19 +540,19 @@ function testwaveFormFunction(key, promptTypeKey, promptTypeValue, quesdatavalue
   let quesTranscription = ''
   if (quesdatavalue['fileId'] === '') {
     console.log('waveformmmm', promptTypeKey, promptTypeValue, quesdatavalue)
-    var uploadFormId = 'ques'+key.toLowerCase()+promptTypeKey.toLowerCase()
-    uploadFormId = uploadFormId.replace(new RegExp(' ', 'g'), '');
+    var uploadFormId = 'ques'+key+' '+promptTypeKey
+    uploadFormId = uploadFormId.replace(new RegExp(' ', 'g'), '_');
     // quesTranscription += '<form action="{{ url_for(\'lifeques.quespromptfile\') }}" method="POST" enctype="multipart/form-data">';
     quesTranscription +=  '<div id="'+uploadFormId+'">';
     quesTranscription += createInputElement(key, [promptTypeKey], 'file', quesdatavalue);
     
-    quesTranscription += '<input class="btn btn-primary pull-right" id="'+uploadFormId+'submit" type="submit" formaction="{{ url_for(\'lifeques.quespromptfile\') }}" value="Upload">';
+    // quesTranscription += '<input class="btn btn-primary pull-right" id="'+uploadFormId+'submit" type="submit" formaction="{{ url_for(\'lifeques.quespromptfile\') }}" value="Upload">';
+    quesTranscription += '<input class="btn btn-primary pull-right" id="'+uploadFormId+'submit" type="button" value="Upload" onclick="uploadPromptFile(this);">';
     quesTranscription += '</div>';
     // quesTranscription += '</form>';
     quesTranscription += '<br>';
 
     return quesTranscription;
-    
   }
   else {
     start = transcriptionRegions[0]['start']
@@ -588,22 +589,23 @@ function testpromptFileFunction(key, promptTypeKey, promptTypeValue, quesdataval
   console.log(quesdatavalue['fileId'])
   if (quesdatavalue['fileId'] === '') {
     console.log('waveformmmm', promptTypeKey, promptTypeValue, quesdatavalue)
-      var uploadFormId = 'ques'+key.toLowerCase()+promptTypeKey.toLowerCase()
-      uploadFormId = uploadFormId.replace(new RegExp(' ', 'g'), '');
-      
-      // quesTranscription += '<form action="{{ url_for(\'lifeques.quespromptfile\') }}" method="POST" enctype="multipart/form-data">';
-      quesTranscription += '<div id="'+uploadFormId+'">';
-      quesTranscription += createInputElement(key, [promptTypeKey], 'file', quesdatavalue);
-      quesTranscription += '<input class="btn btn-primary pull-right" id="'+uploadFormId+'submit" type="submit" formaction="{{ url_for(\'lifeques.quespromptfile\') }}" value="Upload">';
-      quesTranscription += '</div>';
-      // quesTranscription += '</form>';
-      quesTranscription += '<br>';
+    var uploadFormId = 'ques'+key+' '+promptTypeKey
+    uploadFormId = uploadFormId.replace(new RegExp(' ', 'g'), '_');
+    
+    // quesTranscription += '<form action="{{ url_for(\'lifeques.quespromptfile\') }}" method="POST" enctype="multipart/form-data">';
+    quesTranscription += '<div id="'+uploadFormId+'">';
+    quesTranscription += createInputElement(key, [promptTypeKey], 'file', quesdatavalue);
+    // quesTranscription += '<input class="btn btn-primary pull-right" id="'+uploadFormId+'submit" type="submit" formaction="{{ url_for(\'lifeques.quespromptfile\') }}" value="Upload">';
+    quesTranscription += '<input class="btn btn-primary pull-right" id="'+uploadFormId+'submit" type="button" value="Upload" onclick="uploadPromptFile(this);">';
+    quesTranscription += '</div>';
+    // quesTranscription += '</form>';
+    quesTranscription += '<br>';
 
     return quesTranscription;
   }
   else {
-    var x = document.getElementById("questranscriptionsubmit");
-    x.style.display = "none";
+    // var x = document.getElementById("questranscriptionsubmit");
+    // x.style.display = "none";
     filePath = JSON.parse(localStorage.getItem('QuesAudioFilePath'));
     fileCaption = key + ' ' + promptTypeKey
     var audioId = fileCaption.replace(new RegExp(' ', 'g'), '');
@@ -857,3 +859,26 @@ function collapsePrompt(eleClass) {
 //   });
 //   return false;
 // });
+
+function uploadPromptFile(btn) {
+  console.log(btn, btn.id);
+  promptFileUploadBtnId = btn.id
+  promptFileId = promptFileUploadBtnId.replace(new RegExp('ques|submit', 'g'), '');
+  // console.log(promptFileId);
+  const file = document.getElementById(promptFileId).files[0];
+  var formData = new FormData();
+  formData.append(promptFileId, file);
+  $.ajax({
+    url: '/lifeques/quespromptfile',
+    type: 'POST',
+    data: formData,
+    contentType: false,
+    cache: false,
+    processData: false,
+    success: function(data) {
+        console.log('Success!');
+        // window.location.reload();
+    },
+  });
+  return false;
+}
