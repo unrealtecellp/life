@@ -648,7 +648,7 @@ def enterquesfromuploadedfile(mongo, projects,
                                     upload_file_full)
 
 
-    return (4, '', quesId)
+    return (4, '')
 
 
 
@@ -671,6 +671,7 @@ def queskeymapping(mongo, projects,
     
     print(f"allques: {allques}")
     key = 'uploadquesfile'
+    print ('New ques file', new_ques_file)
 
     if new_ques_file[key].filename != '':
         current_file = new_ques_file[key]
@@ -679,32 +680,32 @@ def queskeymapping(mongo, projects,
         print("Filename", cur_filename)
         file_format = cur_filename.rsplit('.', 1)[-1]
         if (file_format == 'xlsx'):
-            processExcelUpload(mongo, projects,
-                    userprojects,
-                    projectsform,
-                    questionnaires,
-                    activeprojectname,
-                    projectowner,
-                    basedir,
-                    current_file,
-                    allques,
-                    current_username)
+            quesstate, quesextra = processExcelUpload(mongo, projects,
+                                            userprojects,
+                                            projectsform,
+                                            questionnaires,
+                                            activeprojectname,
+                                            projectowner,
+                                            basedir,
+                                            current_file,
+                                            allques,
+                                            current_username)
             
         elif (file_format == 'zip'):
-            processZipUpload(mongo, projects,
-                    userprojects,
-                    projectsform,
-                    questionnaires,
-                    activeprojectname,
-                    projectowner,
-                    basedir,
-                    current_file,
-                    allques,
-                    current_username)
+            quesstate, quesextra = processZipUpload(mongo, projects,
+                                            userprojects,
+                                            projectsform,
+                                            questionnaires,
+                                            activeprojectname,
+                                            projectowner,
+                                            basedir,
+                                            current_file,
+                                            allques,
+                                            current_username)
         else:
             return (1, '')
 
-
+    return (quesstate, quesextra)
 
 
 
@@ -782,7 +783,7 @@ def processZipUpload(mongo, projects,
                                             new_ques_file,
                                             current_username)
 
-                            # return (quesstate, quesextra)
+    return (quesstate, quesextra)
     
     
     
