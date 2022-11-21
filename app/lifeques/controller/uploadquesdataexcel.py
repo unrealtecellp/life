@@ -6,6 +6,13 @@ import json
 from datetime import datetime
 import re
 import inspect
+from zipfile import ZipFile
+import io
+# import savequespromptfile
+# import savequespromptfile
+from app.lifeques.controller import savequespromptfile
+from werkzeug.datastructures import FileStorage
+from pprint import pprint
 
 def quesmetadata():
     # create quesId
@@ -488,17 +495,26 @@ def lifeuploader(fileFormat, uploadedFileContent, basedir, allques, field_map = 
 
     return upload_lexicon(allques, upload_file, format, field_map)
 
-def enterquesfromuploadedfile(projects,
+def enterquesfromuploadedfile(mongo, projects,
                                 userprojects,
+                                projectsform,
                                 questionnaires,
                                 projectowner,
                                 activeprojectname,
                                 quesdf,
+                                mainfile,
                                 current_username):
     projectname = activeprojectname
     project = projects.find_one({}, {projectname : 1})
 
+    mainfile_name = mainfile.filename
+    allFilesInZip=[]
+    if mainfile_name.endswith('.zip'):
+        with ZipFile(mainfile) as myzip:
+            allFilesInZip = myzip.namelist()
+
     for index, row in quesdf.iterrows():
+        filesToBeUploaded = {}
         uploadedFileQues = {
             "username": projectowner,
             "projectname": activeprojectname,
@@ -526,7 +542,9 @@ def enterquesfromuploadedfile(projects,
         else:
             questionnaires.insert(uploadedFileQues)
         print(f"{inspect.currentframe().f_lineno}: {uploadedFileQues}")
-        for column_name in list(quesdf.columns):
+        
+        all_columns = list(quesdf.columns)
+        for column_name in all_columns:            
             print(f"{inspect.currentframe().f_lineno}: {column_name}")
             if (column_name not in uploadedFileQues):
                 value = str(row[column_name])
@@ -537,7 +555,22 @@ def enterquesfromuploadedfile(projects,
                     print(f"{inspect.currentframe().f_lineno}: {value}")
                 elif (value == 'nan'):
                     value = ''
-                if ('content' in column_name):
+                # if ('content' in column_name):
+                #     startindex = '0'
+                #     endindex = str(len(value))
+                #     for p in range(3):
+                #         if (len(startindex) < 3):
+                #             startindex = '0'+startindex
+                #         if (len(endindex) < 3):
+                #             endindex = '0'+endindex
+                #     text_boundary_id = startindex+endindex
+                # if ('text.000000' in column_name):
+                #     column_name = column_name.replace('000000', text_boundary_id)
+                #     if ('startindex' in column_name):
+                #         value = startindex
+                #     if ('endindex' in column_name):
+                #         value = endindex
+                if ('text.000000' in column_name and 'textspan' in column_name):
                     startindex = '0'
                     endindex = str(len(value))
                     for p in range(3):
@@ -546,18 +579,39 @@ def enterquesfromuploadedfile(projects,
                         if (len(endindex) < 3):
                             endindex = '0'+endindex
                     text_boundary_id = startindex+endindex
-                if ('text.000000' in column_name):
                     column_name = column_name.replace('000000', text_boundary_id)
-                    if ('startindex' in column_name):
-                        value = startindex
-                    if ('endindex' in column_name):
-                        value = endindex
-                if ('Sense 1.Gloss.eng' in column_name):
-                    uploadedFileQues['gloss'] = value
-                if ('Sense 1.Grammatical Category' in column_name):
-                    uploadedFileQues['grammaticalcategory'] = value
+                    column_name_startindex = '.'.join(column_name.split('.')[:-2])+'.startindex'
+                    column_name_endindex = '.'.join(column_name.split('.')[:-2])+'.endindex'
+                    uploadedFileQues[column_name_startindex] = startindex
+                    uploadedFileQues[column_name_endindex] = endindex
+                # if ('Sense 1.Gloss.eng' in column_name):
+                #     uploadedFileQues['gloss'] = value
+                # if ('Sense 1.Grammatical Category' in column_name):
+                #     uploadedFileQues['grammaticalcategory'] = value
                 uploadedFileQues[column_name] = value
-        
+
+                ## for upload of file
+                if ('filename' in column_name):
+                    uploadfilename = str(row[column_name])
+                    if uploadfilename in allFilesInZip:
+                        file_type_info = column_name.split('.')
+                        data_type = file_type_info[-2]
+                        lang_script = file_type_info[2]
+                        file_type = "_".join([
+                            file_type_info[0], 
+                            data_type, 
+                            lang_script])
+                        print ("File type", file_type)
+                        print ('Upload file name', uploadfilename)                        
+                        filesToBeUploaded[file_type] = uploadfilename
+                                  
+        pprint(uploadedFileQues)
+        uploadedFileQuesKeysList = list(uploadedFileQues.keys())
+        for ak in uploadedFileQuesKeysList:
+            if ('text.000000' in ak and
+                ('startindex' in ak or 'endindex' in ak)):
+                del uploadedFileQues[ak]
+
         projects.update_one({"projectname": activeprojectname},
                             {
                                 "$set": {
@@ -571,10 +625,36 @@ def enterquesfromuploadedfile(projects,
         questionnaires.update_one({ 'quesId': quesId },
                                     { '$set' : uploadedFileQues })
 
+        # for upload of file
+        with ZipFile(mainfile) as myzip:        
+            for fileType, fileName in filesToBeUploaded.items():            
+                with myzip.open(fileName) as myfile:
+                    upload_file_full = {}
+                    file_content = io.BytesIO(myfile.read())
+                    print ('ZIP file', mainfile)
+                    print ("File content", file_content)
+                    print ("Upload key", fileType)
+                    upload_file_full[fileType] = FileStorage(file_content, filename = fileName)
+                    print ("Upload file", upload_file_full)
+                    savequespromptfile.savequespromptfile(mongo,
+                                    projects,
+                                    userprojects,
+                                    projectsform,
+                                    questionnaires,
+                                    projectowner,
+                                    activeprojectname,
+                                    current_username,
+                                    quesId,
+                                    upload_file_full)
+
+
     return (4, '')
 
-def queskeymapping(projects,
+
+
+def queskeymapping(mongo, projects,
                     userprojects,
+                    projectsform,
                     questionnaires,
                     activeprojectname,
                     projectowner,
@@ -588,16 +668,144 @@ def queskeymapping(projects,
                                         'quesdeleteFLAG': 0},
                                         {"_id": 0}):
         allques.append(ques)
+    
     print(f"allques: {allques}")
     key = 'uploadquesfile'
+    print ('New ques file', new_ques_file)
+
     if new_ques_file[key].filename != '':
-        filename = new_ques_file[key].filename
-        # print(filename)
-        file_format = filename.rsplit('.', 1)[-1]
+        current_file = new_ques_file[key]
+        # print ("Filepath", filepath)
+        cur_filename = current_file.filename            
+        print("Filename", cur_filename)
+        file_format = cur_filename.rsplit('.', 1)[-1]
         if (file_format == 'xlsx'):
-            uploaded_file_content = new_ques_file[key].read()
+            quesstate, quesextra = processExcelUpload(mongo, projects,
+                                            userprojects,
+                                            projectsform,
+                                            questionnaires,
+                                            activeprojectname,
+                                            projectowner,
+                                            basedir,
+                                            current_file,
+                                            allques,
+                                            current_username)
+            
+        elif (file_format == 'zip'):
+            quesstate, quesextra = processZipUpload(mongo, projects,
+                                            userprojects,
+                                            projectsform,
+                                            questionnaires,
+                                            activeprojectname,
+                                            projectowner,
+                                            basedir,
+                                            current_file,
+                                            allques,
+                                            current_username)
         else:
             return (1, '')
+
+    return (quesstate, quesextra)
+
+
+
+
+def processExcelUpload(mongo, projects,
+                    userprojects,
+                    projectsform,
+                    questionnaires,
+                    activeprojectname,
+                    projectowner,
+                    basedir,
+                    new_ques_file,
+                    allques,
+                    current_username):
+    file_format = 'xlsx'
+    uploaded_file_content = new_ques_file.read()
+    headword_mapped, all_mapped, field_map, df = lifeuploader(file_format, uploaded_file_content, basedir, allques, field_map={})
+    print(f"{'-'*80}\nIN lexemekeymapping() FUNCTION\n\nheadword_mapped\n{headword_mapped}\n\nall_mapped:\n{all_mapped}\n\nfield_map:\n{field_map}\n\ndf:\n{df}")
+    print(f"{'-'*80}\nIN lexemekeymapping() FUNCTION\n\nheadword_mapped\n{type(headword_mapped)}\n\nall_mapped:\n{type(all_mapped)}\n\nfield_map:\n{type(field_map)}\n\ndf:\n{type(df)}")
+    life_xlsx_root_path = os.path.join(basedir, 'lifexlsxdf.tsv')
+    df.to_csv(life_xlsx_root_path, sep='\t', index=False)
+    quesstate, quesextra = enterquesfromuploadedfile(mongo,projects,
+                                            userprojects,
+                                            projectsform,
+                                            questionnaires,
+                                            projectowner,
+                                            activeprojectname,
+                                            df,
+                                            new_ques_file,
+                                            current_username)
+
+    return (quesstate, quesextra)
+    
+def processZipUpload(mongo, projects,
+                    userprojects,
+                    projectsform,
+                    questionnaires,
+                    activeprojectname,
+                    projectowner,
+                    basedir,
+                    new_ques_file,
+                    allques,
+                    current_username):
+
+    # fnames_dict = {}
+    
+    # all_files = []
+    # with ZipFile(new_ques_file) as myzip:        
+    #     for full_file_name in myzip.namelist():
+    #         if (not full_file_name.endswith('.xlsx')):
+    #             all_files.append(full_file_name)
+ 
+    
+    with ZipFile(new_ques_file) as myzip:
+        for file_name in myzip.namelist():
+            if (file_name.endswith('.xlsx')):
+                with myzip.open(file_name) as myfile:
+                    file_format = 'xlsx'
+                    uploaded_file_content = myfile.read()
+                    headword_mapped, all_mapped, field_map, df = lifeuploader(file_format, uploaded_file_content, basedir, allques, field_map={})
+                    print(f"{'-'*80}\nIN lexemekeymapping() FUNCTION\n\nheadword_mapped\n{headword_mapped}\n\nall_mapped:\n{all_mapped}\n\nfield_map:\n{field_map}\n\ndf:\n{df}")
+                    print(f"{'-'*80}\nIN lexemekeymapping() FUNCTION\n\nheadword_mapped\n{type(headword_mapped)}\n\nall_mapped:\n{type(all_mapped)}\n\nfield_map:\n{type(field_map)}\n\ndf:\n{type(df)}")
+                    life_xlsx_root_path = os.path.join(basedir, 'lifexlsxdf.tsv')
+                    df.to_csv(life_xlsx_root_path, sep='\t', index=False)
+
+                    # df, fnames_dict = drop_filenames (df)
+
+                    quesstate, quesextra = enterquesfromuploadedfile(mongo, projects,
+                                            userprojects,
+                                            projectsform,
+                                            questionnaires,
+                                            projectowner,
+                                            activeprojectname,
+                                            df,
+                                            new_ques_file,
+                                            current_username)
+
+    return (quesstate, quesextra)
+    
+    
+    
+                # file_name = full_file_name[:full_file_name.rfind('.')]
+                
+                # if file_name in audio_files:
+                #     image_id = 'I'+re.sub(r'[-: \.]', '', str(datetime.now()))
+                #     image_file = io.BytesIO(myfile.read())
+                    
+                # elif file_name in image_files:
+                #     image_id = 'I'+re.sub(r'[-: \.]', '', str(datetime.now()))
+                #     image_file = io.BytesIO(myfile.read())
+                    
+                # elif file_name in mm_files:
+                    
+
+
+
+
+
+    
+        
         # print(f"uploaded_file_content: {uploaded_file_content}")
 
     # save uploaded file details in pickle file for future use
@@ -607,20 +815,7 @@ def queskeymapping(projects,
     life_uploaded_file_content_path = os.path.join(basedir, 'lifeUploadedFileContent.pkl')
     with open(life_uploaded_file_content_path, 'wb') as file:
         pickle.dump(store_uploaded_file_content, file)
-    if (file_format == 'xlsx'):
-        headword_mapped, all_mapped, field_map, df = lifeuploader(file_format, uploaded_file_content, basedir, allques, field_map={})
-        print(f"{'-'*80}\nIN lexemekeymapping() FUNCTION\n\nheadword_mapped\n{headword_mapped}\n\nall_mapped:\n{all_mapped}\n\nfield_map:\n{field_map}\n\ndf:\n{df}")
-        print(f"{'-'*80}\nIN lexemekeymapping() FUNCTION\n\nheadword_mapped\n{type(headword_mapped)}\n\nall_mapped:\n{type(all_mapped)}\n\nfield_map:\n{type(field_map)}\n\ndf:\n{type(df)}")
-        life_xlsx_root_path = os.path.join(basedir, 'lifexlsxdf.tsv')
-        df.to_csv(life_xlsx_root_path, sep='\t', index=False)
-        quesstate, quesextra = enterquesfromuploadedfile(projects,
-                                userprojects,
-                                questionnaires,
-                                projectowner,
-                                activeprojectname,
-                                df,
-                                current_username)
-        return (quesstate, quesextra)
+    
 
     # if (not headword_mapped):
     #     return (2, '')
@@ -632,3 +827,27 @@ def queskeymapping(projects,
     # else:
     #     if (file_format == 'xlsx'):
     #         enterquesfromuploadedfile(df)
+
+# def drop_filenames(df):
+#     columns = df.columns
+#     drop_cols = [c for c in df.columns if c.endswith('.filename')]
+
+#     filename_df = df[drop_cols]
+#     filename_cols = filename_df.columns
+#     renamed_cols = []
+
+#     for filename_col in filename_cols:
+#         if 'audio' in filename_col:
+#             renamed_cols.append('audio')
+#         elif 'multimedia' in filename_col:
+#             renamed_cols.append('multimedia')
+#         elif 'image' in filename_col:
+#             renamed_cols.append('image')
+    
+#     filename_df.columns = renamed_cols
+#     filename_dict = filename_df.to_dict('list')
+#     print ('Filenames of the upload', filename_dict)
+
+#     df.drop(columns=drop_cols, inplace=True)
+
+#     return df, filename_dict

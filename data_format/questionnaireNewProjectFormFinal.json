@@ -1,0 +1,117 @@
+{
+    "_id": {
+      "$oid": "637521f01d87ea613f11dbeb"
+    },
+    "username": "ritesh",
+    "projectname": "Q_der_test08i",
+    "Domain": [
+      "multiselect",
+      [
+        "Education",
+        "General",
+        "Agriculture"
+      ]
+    ],
+    "Elicitation Method": [
+      "select",
+      [
+        "Narration",
+        "Picture Book Narration",
+        "Role-Play"
+      ]
+    ],
+    "Target": [
+      "multiselect",
+      [
+        "on"
+      ]
+    ],
+    "LangScript": [
+      "",
+      {
+        "Konkani-Ol Chiki": "Ol Chiki",
+        "Malayalam-Ol Chiki": "Ol Chiki",
+        "Bhojpuri-Latin": "Latin",
+        "Kannada-Ol Chiki": "Ol Chiki",
+        "Santali-Telugu": "Telugu"
+      }
+    ],
+    "Prompt Type": [
+      "prompt",
+      {
+        "Konkani-Ol Chiki": {
+          "Text": [
+            "text"
+          ],
+          "Audio": [
+            "waveform"
+          ],
+          "Audio Instruction": [
+            "text"
+          ],
+          "Multimedia": [
+            "waveform"
+          ],
+          "Multimedia Instruction": [
+            "text"
+          ],
+          "Image": [
+            "file"
+          ],
+          "Image Instruction": [
+            "text"
+          ]
+        },
+        "Malayalam-Ol Chiki": {
+          "Text": [
+            "text"
+          ]
+        },
+        "Bhojpuri-Latin": {
+          "Text": [
+            "text"
+          ],
+          "Audio": [
+            "file"
+          ],
+          "Multimedia": [
+            "file"
+          ],
+          "Image": [
+            "file"
+          ]
+        },
+        "Kannada-Ol Chiki": {
+          "Text": [
+            "text"
+          ],
+          "Audio": [
+            "waveform"
+          ],
+          "Multimedia": [
+            "file"
+          ],
+          "Multimedia Instruction": [
+            "text"
+          ]
+        },
+        "Santali-Telugu": {
+          "Text": [
+            "text"
+          ],
+          "Audio": [
+            "waveform"
+          ],
+          "Audio Instruction": [
+            "text"
+          ],
+          "Multimedia": [
+            "file"
+          ],
+          "Image": [
+            "file"
+          ]
+        }
+      }
+    ]
+  }

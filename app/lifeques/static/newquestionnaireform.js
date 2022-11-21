@@ -195,15 +195,63 @@ $('.elicitationmethod').select2({
 //   // console.log( "ready!" )
 // });
 
+// For checking and unchecking the instructions and transcription checkbox based on
+// audio, mm or image is checked or not in new questionnaire form
+$(document).ready(function(){
+  $(document).on('change', 'input[type="checkbox"]', function(){
+// $('input[type="checkbox"]').click(function(){
+    var checkId = $(this).attr('id');
+    var both = true;
+    if (checkId.indexOf("idprompt") > -1) {
+      var checkIdNumber = checkId.substring(checkId.indexOf("_"));
+      if (checkId.indexOf("idpromptaudio") > -1) {
+        var transboxId = "idincludeaudiotranscription"+checkIdNumber;
+        console.log('transboxId', transboxId);
+        var transCheckbox = document.getElementById(transboxId);
+        console.log('transboxCheckbox', transCheckbox);
+
+        var instboxId = "idincludeaudioinstruction"+checkIdNumber;
+        var instCheckbox = document.getElementById(instboxId);
+        
+      }
+      else if (checkId.indexOf("idpromptmm") > -1) {
+        var transboxId = "idincludemmtranscription"+checkIdNumber;
+        var transCheckbox = document.getElementById(transboxId);
+
+        var instboxId = "idincludemminstruction"+checkIdNumber;
+        var instCheckbox = document.getElementById(instboxId);
+      }
+      else {
+        var instboxId = "idincludeimageinstruction"+checkIdNumber;
+        var instCheckbox = document.getElementById(instboxId);
+        both = false;
+      }
+      
+      if (this.checked) {
+        if (both) {
+          transCheckbox.disabled=false;
+        }
+        instCheckbox.disabled=false;
+      }
+      else {
+        if (both) {
+          transCheckbox.disabled=true;
+        }
+        instCheckbox.disabled=true;
+      }
+    }
+  })
+});
 
 var langScriptPromptField = 0;
 $("#addpromptlangscripts").click(function(){
   langScriptPromptField++;
   
-  var drow = '<div class="row removelangScriptPromptfield' + langScriptPromptField + '">';
+  var drow = '<div class="row removelangScriptPromptfield' + langScriptPromptField + '">'+
+  '<div class="row">';
 
   var fItems = '<div class="col-md-3"><div class="form-group">'+
-              '<select class="form-control" name="Language"  required>';
+              '<select class="form-control" name="Language_' + langScriptPromptField + '"  required>';
   fItems += '<option value="" selected disabled>Language</option>';
 
   for (var i = 0; i < languages.length; i++) {
@@ -215,7 +263,7 @@ $("#addpromptlangscripts").click(function(){
 
   fItems += '<div class="col-md-3"><div class="form-group">'+
               '<div class="input-group">'+
-              '<select class="form-control" name="Script"  required>';
+              '<select class="form-control" name="Script_' + langScriptPromptField + '"  required>';
   fItems += '<option value="" selected disabled>Script</option>';
 
   for (var i = 0; i < scripts.length; i++) {
@@ -227,8 +275,35 @@ $("#addpromptlangscripts").click(function(){
 
   fItems += '<div class="input-group-btn">'+
             '<button class="btn btn-danger" type="button" onclick="removelangScriptPromptFields('+ langScriptPromptField +');">'+
-            '<span class="glyphicon glyphicon-minus" aria-hidden="true"></span></button></div></div></div></div>';
+            '<span class="glyphicon glyphicon-minus" aria-hidden="true"></span></button></div></div></div></div></div>';
 
+
+  fItems += '<div class="row"><div class="col-md-3"><div class="form-group">'+
+  '<input class="mmcheck" type="checkbox" id="idpromptaudio_' + langScriptPromptField + '" name="Audio_' + langScriptPromptField + '">'+
+  '<label for="idpromptaudio_' + langScriptPromptField + '">Audio</label>'+
+  '<input type="checkbox" id="idincludeaudiotranscription_' + langScriptPromptField + '" name="TranscriptionAudio_' + langScriptPromptField + '" disabled>'+
+  '<label for="idincludeaudiotranscription_' + langScriptPromptField + '">Include Transcription</label>'+
+  '<input type="checkbox" id="idincludeaudioinstruction_' + langScriptPromptField + '" name="InstructionAudio_' + langScriptPromptField + '" disabled>'+
+  '<label for="idincludeaudioinstruction_' + langScriptPromptField + '">Include Instruction</label><br>'+
+  '</div></div>';
+
+  fItems += '<div class="col-md-3"><div class="form-group">'+
+  '<input class="mmcheck" type="checkbox" id="idpromptmm_' + langScriptPromptField + '"name="Multimedia_' + langScriptPromptField + '">'+
+  '<label for="idpromptmm_' + langScriptPromptField + '">Multimedia</label>'+
+  '<input type="checkbox" id="idincludemmtranscription_' + langScriptPromptField + '" name="TranscriptionMM_' + langScriptPromptField + '" disabled>'+
+  '<label for="idincludemmtranscription_' + langScriptPromptField + '">Include Transcription</label>'+
+  '<input type="checkbox" id="idincludemminstruction_' + langScriptPromptField + '" name="InstructionMM_' + langScriptPromptField + '" disabled>'+
+  '<label for="idincludemminstruction_' + langScriptPromptField + '">Include Instruction</label>'+
+  '</div></div>';
+
+  fItems += '<div class="col-md-3"><div class="form-group">'+
+  '<input class="mmcheck" type="checkbox" id="idpromptimage_' + langScriptPromptField + '" name="Image_' + langScriptPromptField + '">'+
+  '<label for="idpromptimage_' + langScriptPromptField + '">Image</label>'+
+  '<input type="checkbox" id="idincludeimageinstruction_' + langScriptPromptField + '" name="InstructionImage_' + langScriptPromptField + '" disabled>'+
+  '<label for="idincludeimageinstruction_' + langScriptPromptField + '">Include Instruction</label>'+
+  '</div></div>';
+
+  
   drow += fItems;
   drow += '</div>'
   $(".promptlangscripts").append(drow);
@@ -288,7 +363,9 @@ $("#quesaddCustomField").click(function(){
     fItems += '<option value="' + fieldType[i].value + '">' + fieldType[i].name + '</option>';
   }
 
-  fItems += '</select><div class="input-group-btn">'+
+  fItems += '</select>';
+
+  fItems += '<div class="input-group-btn">'+
             '<button class="btn btn-danger" type="button" onclick="removequesCustomFields('+ quescustomField +');">'+
             '<span class="glyphicon glyphicon-minus" aria-hidden="true"></span></button></div></div></div></div>';
 

@@ -10,7 +10,7 @@ def saveques(questionnaires, ques_data, last_active_ques_id):
     # pprint(ques_data)
     prompt = quesdata['prompt']
     text = {}
-    text_boundary_data = {}
+    
     content = {}
     sentence = {}
     start = '000'
@@ -25,23 +25,29 @@ def saveques(questionnaires, ques_data, last_active_ques_id):
         if (key in prompt):
             prompt[key] = value
         if ('Transcription' in key):
-            transcription_lang = key.split()[1]
+            # transcription_lang = key.split()[1]
+            prompt_type = key.split()[1]
+            lang_name = key.split()[-1]
+            transcription_script = lang_name.split('-')[1]
             transcription = value[0]
             transcription_boundary_data[transcription_boundaryId] =  {
-                                                                "start": start,
-                                                                "end": end,
+                                                                "startindex": start,
+                                                                "endindex": end,
                                                                 "transcription": {
-                                                                    transcription_lang: transcription
+                                                                    transcription_script: transcription
                                                                 }
                                                             }
             sentence = transcription_boundary_data
             # prompt['Transcription']['textGrid']['sentence'] = sentence
-            prompt['Audio']['textGrid']['sentence'] = sentence
+            prompt['content'][lang_name][prompt_type.lower()]['textGrid']['sentence'] = sentence
         if (key == 'Elicitation Method'):
             prompt[key] = value[0]
         if ('Language' in key):
+            text_boundary_data = {}
             lang_name = key.split(' ')[-1]
+            lang_script = lang_name.split('-')[1]
             value = ques_data[key][0]
+            print(key, lang_name, lang_script, value)
             startindex = '0'
             endindex = str(len(value))
             for p in range(3):
@@ -50,13 +56,21 @@ def saveques(questionnaires, ques_data, last_active_ques_id):
                 if (len(endindex) < 3):
                     endindex = '0'+endindex
             text_boundary_id = startindex+endindex
-            text_boundary_data[lang_name] = value
-            content[lang_name] = value
-    text_boundary_data['startindex'] = startindex
-    text_boundary_data['endindex'] = endindex    
-    text[text_boundary_id] = text_boundary_data
-    text['content'] = content
-    prompt['text'] = text
+            text_boundary_data[text_boundary_id] = {
+                                                        "startindex": startindex,
+                                                        "endindex": endindex,
+                                                        "textspan": {
+                                                            lang_script: value
+                                                        }
+            }
+            print(text_boundary_data)
+            # content[lang_name] = value
+            prompt['content'][lang_name]['text'] = text_boundary_data
+    # text_boundary_data['startindex'] = startindex
+    # text_boundary_data['endindex'] = endindex    
+    # text[text_boundary_id] = text_boundary_data
+    # text['content'] = content
+    # prompt['text'] = text
 
     # print('saveques()')
     # pprint(quesdata)
