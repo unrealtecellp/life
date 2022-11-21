@@ -81,7 +81,7 @@ var scripts =
       },
       {
         "id": "Meitei-Mayek", 
-        "text": "Meitei Mayek"
+        "text": "Meitei@Mayek"
       },
       {
         "id": "Odia", 

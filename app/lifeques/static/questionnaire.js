@@ -427,14 +427,14 @@ function createquesform(quesprojectform) {
       for (let [testpromptTypeKey, testpromptTypeValue] of Object.entries(testvalue)) {
         transcriptionBoundaryForm = '';
         var promptquesdatavalue = Object();
-        // testquesform += '<fieldset class="form-group border">'+
-        //             '<legend class="col-form-label">'+
-        //             'Prompt'+' '+ testpromptTypeKey +
-        //             '<button class="btn btn-default pull-right" type="button" data-toggle="collapse"'+
-        //             'data-target=".sense' + testpromptTypeKey +'" aria-expanded="false" aria-controls="sense' + testpromptTypeKey +'" '+
-        //             'onclick="collapsePrompt('+testpromptTypeKey+')">'+
-        //             '<span class="glyphicon glyphicon-chevron-down s'+testpromptTypeKey+'" aria-hidden="true"></span>'+
-        //             '</button></legend>';
+        testquesform += '<fieldset class="form-group border">'+
+                    '<legend class="col-form-label">'+
+                    'Prompt'+' '+ testpromptTypeKey +
+                    '<button class="btn btn-default pull-right" type="button" data-toggle="collapse"'+
+                    'data-target=".sense' + testpromptTypeKey +'" aria-expanded="false" aria-controls="sense' + testpromptTypeKey +'" '+
+                    'onclick="collapsePrompt('+testpromptTypeKey+')">'+
+                    '<span class="glyphicon glyphicon-chevron-down s'+testpromptTypeKey+'" aria-hidden="true"></span>'+
+                    '</button></legend>';
         console.log(testpromptTypeKey, testpromptTypeValue);
         console.log(key, elevalue, eletype, quesdatavalue);
         langData = testquesdata['prompt']['content'][testpromptTypeKey]
@@ -471,7 +471,7 @@ function createquesform(quesprojectform) {
           }
           testquesform += transcriptionBoundaryForm;
         }
-        // testquesform += '</fieldset>';
+        testquesform += '</fieldset>';
         // console.log(testquesform);
       }
       // $('.testfield').html(testquesform);
