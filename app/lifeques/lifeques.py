@@ -212,20 +212,31 @@ def questionnaire():
     # print(f"{inspect.currentframe().f_lineno}: {quesdata}")
     file_path = ''
     # if (quesdata is not None and 'Transcription' in quesdata['prompt']):
-    if (quesdata is not None and 'Audio' in quesdata['prompt']):
+    ques_data_prompt = quesdata['prompt']
+    ques_data_prompt_content = quesdata['prompt']['content']
+    if (quesdata is not None and 'content' in ques_data_prompt):
         # audio_id = quesdata['prompt']['Transcription']['audioId']
-        audio_id = quesdata['prompt']['Audio']['fileId']
-        if (audio_id != ''):
-            file_path = questranscriptionaudiodetails.getquesaudiofilefromfs(mongo,
-                                                                            basedir,
-                                                                            audio_id,
-                                                                            'audioId')
-    # print('file_path', type(file_path), file_path)
-    quesprojectform['QuesAudioFilePath'] = file_path
-
-    transcription_regions = questranscriptionaudiodetails.getquesaudiotranscriptiondetails(questionnaires, last_active_ques_id)
-    # print(type(transcription_regions))
-    quesprojectform['transcriptionRegions'] = transcription_regions
+        for lang, lang_info in ques_data_prompt_content.items():
+            # print(lang, lang_info)
+            for prompt_type, prompt_type_info in lang_info.items():
+                # print(prompt_type, prompt_type_info)
+                if (prompt_type != 'text'):
+                    fileId = prompt_type_info['fileId']
+                    if (fileId != ''):
+                        file_path = questranscriptionaudiodetails.getquesfilefromfs(mongo,
+                                                                                        basedir,
+                                                                                        fileId,
+                                                                                        'fileId')
+                        # print('file_path', type(file_path), file_path)
+                        file_path_key = '_'.join([lang, prompt_type, 'FilePath'])
+                        quesprojectform[file_path_key] = file_path
+                        if ('textGrid' in prompt_type_info):
+                            quesprojectform['QuesAudioFilePath'] = file_path
+                            transcription_regions = questranscriptionaudiodetails.getquesfiletranscriptiondetails(questionnaires, last_active_ques_id, lang, prompt_type)
+                            # print(type(transcription_regions))
+                            quesprojectform['transcriptionRegions'] = transcription_regions
+        if ('QuesAudioFilePath' not in quesprojectform):
+            quesprojectform['QuesAudioFilePath'] = ''
     # print(f"{inspect.currentframe().f_lineno}: {quesprojectform}")
 
     # project_type = getprojecttype.getprojecttype(projects, activeprojectname)
@@ -296,23 +307,23 @@ def savequestionnaire():
         ques_data = dict(request.form.lists())
         print('LINE 241: ')
         pprint(ques_data)
-        ques_data_file = request.files.to_dict()
+        # ques_data_file = request.files.to_dict()
         # pprint(ques_data_file)
 
-        # last_active_ques_id = getactivequestionnaireid.getactivequestionnaireid(projects,
-        #                                                                         activeprojectname,
-        #                                                                         current_username)
-        # saveques.saveques(questionnaires, ques_data, last_active_ques_id)
+        last_active_ques_id = getactivequestionnaireid.getactivequestionnaireid(projects,
+                                                                                activeprojectname,
+                                                                                current_username)
+        saveques.saveques(questionnaires, ques_data, last_active_ques_id)
 
-        # # load next ques
-        # latest_ques_id = getnewquesid.getnewquesid(projects,
-        #                                         activeprojectname,
-        #                                         last_active_ques_id,
-        #                                         'next')
-        # updatelatestquesid.updatelatestquesid(projects,
-        #                                 activeprojectname,
-        #                                 latest_ques_id,
-        #                                 current_username)
+        # load next ques
+        latest_ques_id = getnewquesid.getnewquesid(projects,
+                                                activeprojectname,
+                                                last_active_ques_id,
+                                                'next')
+        updatelatestquesid.updatelatestquesid(projects,
+                                        activeprojectname,
+                                        latest_ques_id,
+                                        current_username)
 
     return redirect(url_for("lifeques.questionnaire"))
 

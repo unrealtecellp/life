@@ -200,9 +200,10 @@ targets = [
 ]
 
 function createInputElement(key, elevalue, type, quesdatavalue) {
+  console.log(key, elevalue, type, quesdatavalue);
   var qform = '';
   for (let i=0; i<elevalue.length; i++) {
-    // console.log(elevalue[i], quesdatavalue);
+    console.log(elevalue[i], quesdatavalue);
     eval = key + ' ' + elevalue[i]
     var keyid = eval.replace(new RegExp(' ', 'g'), '_');
     var val = '';
@@ -210,10 +211,10 @@ function createInputElement(key, elevalue, type, quesdatavalue) {
       val = quesdatavalue[elevalue[i]];
       eval = 'Prompt ' + eval
     }
-    else if (key === "Transcription") {
+    else if (key.includes("Transcription")) {
       val = quesdatavalue;
     }
-    
+    console.log(val);
     qform += '<div class="form-group">'+
               '<label for="'+ keyid +'">'+ eval +'</label>'+
               '<input type="'+type+'" class="form-control" id="'+ keyid +'"'+ 
@@ -324,7 +325,7 @@ function createquesform(quesprojectform) {
   var qform = '<form action="/lifeques/savequestionnaire" method="POST" enctype="multipart/form-data">';
 
   for (let [key, value] of Object.entries(quesprojectform)) {
-    // console.log(key, value, value[0], typeof value, quesdata['prompt'][key]);
+    console.log(key, value, value[0], typeof value, quesdata['prompt'][key]);
     
     if (key === 'Instruction') {
       continue;
@@ -452,14 +453,18 @@ function createquesform(quesprojectform) {
           testpromptTypeValueKey = testpromptTypeValueKey.toLowerCase();
           quesdatavalue = langData[testpromptTypeValueKey]
           console.log(langData[testpromptTypeValueKey])
+          let filePathKey = [testpromptTypeKey, testpromptTypeValueKey.toLocaleLowerCase(), 'FilePath'].join('_')
+          console.log(filePathKey);
+          let filePath = quesprojectform[filePathKey]
+          console.log(filePath);
           if (testpromptTypeValueInfo[0] === 'waveform') {
-            transcriptionBoundaryForm = testwaveFormFunction(update_key, testpromptTypeKey, testpromptTypeValue, quesdatavalue)
+            transcriptionBoundaryForm = testwaveFormFunction(update_key, testpromptTypeKey, testpromptTypeValue, quesdatavalue, filePath, langScript)
             if (transcriptionBoundaryForm === undefined) {
               transcriptionBoundaryForm = '';
             }
           }
           else if (testpromptTypeValueInfo[0] === 'file') {
-            transcriptionBoundaryForm = testpromptFileFunction(update_key, testpromptTypeKey, testpromptTypeValue, quesdatavalue)
+            transcriptionBoundaryForm = testpromptFileFunction(update_key, testpromptTypeKey, testpromptTypeValue, quesdatavalue, filePath)
             if (transcriptionBoundaryForm === undefined) {
               transcriptionBoundaryForm = '';
             }
@@ -533,9 +538,10 @@ function createquesform(quesprojectform) {
   quesIdDetails(quesdata['Q_Id'], quesdata['quesId'])
 }
 
-function testwaveFormFunction(key, promptTypeKey, promptTypeValue, quesdatavalue) {
-  console.log(promptTypeKey, promptTypeValue, quesdatavalue)
+function testwaveFormFunction(key, promptTypeKey, promptTypeValue, quesdatavalue, filePath, langScript) {
+  console.log(key, promptTypeKey, promptTypeValue, quesdatavalue, filePath, langScript);
   console.log(quesdatavalue['fileId']);
+  
   let transcriptionBoundaryForm = '';
   let quesTranscription = ''
   if (quesdatavalue['fileId'] === '') {
@@ -558,16 +564,18 @@ function testwaveFormFunction(key, promptTypeKey, promptTypeValue, quesdatavalue
     start = transcriptionRegions[0]['start']
     end = transcriptionRegions[0]['end']
     boundaryId = transcriptionRegions[0]['boundaryID']
-    lang = quesdatavalue['fileLanguage']
-    val = transcriptionRegions[0]['data']['sentence'][boundaryId]['transcription'][lang]
+    // lang = quesdatavalue['fileLanguage']
+    let lang = promptTypeKey
+    val = transcriptionRegions[0]['data']['sentence'][boundaryId]['transcription'][langScript]
     if (val === undefined) {
       val = '';
     }
-    var x = document.getElementById("questranscriptionsubmit");
-    x.style.display = "none";
+    console.log(val);
+    // var x = document.getElementById("questranscriptionsubmit");
+    // x.style.display = "none";
     var x = document.getElementById("questranscriptionwaveform");
     x.style.display = "block";
-    quesTranscription += createInputElement('Transcription', quesdatavalue['fileLanguage'], 'text', val);
+    quesTranscription += createInputElement(key+' Transcription', [lang], 'text', val);
     transcriptionBoundaryForm += '<div class="form-group">'+
                                   '<label for="start">Boundary Start Time</label>'+
                                   '<input class="form-control" id="start" name="start" value="'+start+'" required/>'+
@@ -582,10 +590,10 @@ function testwaveFormFunction(key, promptTypeKey, promptTypeValue, quesdatavalue
   }
 }
 
-function testpromptFileFunction(key, promptTypeKey, promptTypeValue, quesdatavalue) {
+function testpromptFileFunction(key, promptTypeKey, promptTypeValue, quesdatavalue, filePath) {
   console.log(key, promptTypeKey, promptTypeValue, quesdatavalue);
   let transcriptionBoundaryForm = '';
-  let quesTranscription = ''
+  let quesTranscription = '';
   console.log(quesdatavalue['fileId'])
   if (quesdatavalue['fileId'] === '') {
     console.log('waveformmmm', promptTypeKey, promptTypeValue, quesdatavalue)
@@ -606,16 +614,34 @@ function testpromptFileFunction(key, promptTypeKey, promptTypeValue, quesdataval
   else {
     // var x = document.getElementById("questranscriptionsubmit");
     // x.style.display = "none";
-    filePath = JSON.parse(localStorage.getItem('QuesAudioFilePath'));
+    // filePath = JSON.parse(localStorage.getItem('QuesAudioFilePath'));
     fileCaption = key + ' ' + promptTypeKey
-    var audioId = fileCaption.replace(new RegExp(' ', 'g'), '');
-    transcriptionBoundaryForm += '<div class="form-group">'+
-                                  '<label for="'+audioId+'">'+fileCaption+'</label><br>'+
-                                  '<audio id="'+audioId+'" controls autoplay>'+
-                                  '<source src="'+filePath+'" type="audio/wav">'+
-                                  'Your browser does not support the audio element.'+
-                                  '</audio>'+
-                                  '</div>';
+    var fileId = fileCaption.replace(new RegExp(' ', 'g'), '');
+    console.log(fileId);
+    if (fileId.includes('Audio')) {
+      transcriptionBoundaryForm += '<div class="form-group">'+
+                                    '<label for="'+fileId+'">'+fileCaption+'</label><br>'+
+                                    '<audio id="'+fileId+'" controls autoplay>'+
+                                    '<source src="'+filePath+'" type="audio/wav">'+
+                                    'Your browser does not support the audio element.'+
+                                    '</audio>'+
+                                    '</div>';
+    }
+    else if (fileId.includes('Image')) {
+      transcriptionBoundaryForm += '<div class="form-group">'+
+                                    '<label for="'+fileId+'">'+fileCaption+'</label><br>'+
+                                    '<img src="'+filePath+'" alt="'+filePath+'" width="400" height="341" />'+
+                                    '</div>';
+    }
+    else if (fileId.includes('Multimedia')) {
+      transcriptionBoundaryForm += '<div class="form-group">'+
+                                    '<label for="'+fileId+'">'+fileCaption+'</label><br>'+
+                                    '<video width="400" height="341" controls>'+
+                                    '<source src="'+filePath+'" type="video/mp4">'+
+                                    'Your browser does not support the video tag.'+
+                                    '</video> '+
+                                    '</div>';
+    }
     transcriptionBoundaryForm += quesTranscription;
 
   return transcriptionBoundaryForm;
@@ -877,7 +903,7 @@ function uploadPromptFile(btn) {
     processData: false,
     success: function(data) {
         console.log('Success!');
-        // window.location.reload();
+        window.location.reload();
     },
   });
   return false;
