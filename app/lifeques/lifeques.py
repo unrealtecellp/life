@@ -96,11 +96,11 @@ def newquestionnaireform():
             for key in all_keys:
                 if (key in derivedfromprojectform):
                     derivedfromprojectformvalue = derivedfromprojectform[key][1]
-                    print(key, derivedfromprojectformvalue)
+                    # print(key, derivedfromprojectformvalue)
                     if isinstance(derivedfromprojectformvalue, list):
                         if (key in new_ques_form):
                             derivedfromprojectformvalue.extend(new_ques_form[key])
-                        print(key, derivedfromprojectformvalue)
+                        # print(key, derivedfromprojectformvalue)
                         # if("Transcription" in key): continue
                         # if (key == "Language" or key == "Script"):
                         #     new_ques_form[key] = list(derivedfromprojectformvalue)
@@ -207,36 +207,38 @@ def questionnaire():
     quesdata = questionnaires.find_one({"quesId": last_active_ques_id}, {"_id": 0})
     # print(f"{inspect.currentframe().f_lineno}: {quesprojectform}")
     # print(f"{inspect.currentframe().f_lineno}: {type(quesdata)}")
-    # print(f"{inspect.currentframe().f_lineno}: {quesdata}")
+    print(f"{inspect.currentframe().f_lineno}: {quesdata}")
     quesprojectform['quesdata'] = quesdata
     # print(f"{inspect.currentframe().f_lineno}: {quesdata}")
     file_path = ''
     # if (quesdata is not None and 'Transcription' in quesdata['prompt']):
-    ques_data_prompt = quesdata['prompt']
-    ques_data_prompt_content = quesdata['prompt']['content']
-    if (quesdata is not None and 'content' in ques_data_prompt):
-        # audio_id = quesdata['prompt']['Transcription']['audioId']
-        for lang, lang_info in ques_data_prompt_content.items():
-            # print(lang, lang_info)
-            for prompt_type, prompt_type_info in lang_info.items():
-                # print(prompt_type, prompt_type_info)
-                if (prompt_type != 'text'):
-                    fileId = prompt_type_info['fileId']
-                    if (fileId != ''):
-                        file_path = questranscriptionaudiodetails.getquesfilefromfs(mongo,
-                                                                                        basedir,
-                                                                                        fileId,
-                                                                                        'fileId')
-                        # print('file_path', type(file_path), file_path)
-                        file_path_key = '_'.join([lang, prompt_type, 'FilePath'])
-                        quesprojectform[file_path_key] = file_path
-                        if ('textGrid' in prompt_type_info):
-                            quesprojectform['QuesAudioFilePath'] = file_path
-                            transcription_regions = questranscriptionaudiodetails.getquesfiletranscriptiondetails(questionnaires, last_active_ques_id, lang, prompt_type)
-                            # print(type(transcription_regions))
-                            quesprojectform['transcriptionRegions'] = transcription_regions
-        if ('QuesAudioFilePath' not in quesprojectform):
-            quesprojectform['QuesAudioFilePath'] = ''
+    
+    if (quesdata is not None):
+        ques_data_prompt = quesdata['prompt']
+        if ('content' in ques_data_prompt):
+            ques_data_prompt_content = quesdata['prompt']['content']
+            # audio_id = quesdata['prompt']['Transcription']['audioId']
+            for lang, lang_info in ques_data_prompt_content.items():
+                # print(lang, lang_info)
+                for prompt_type, prompt_type_info in lang_info.items():
+                    # print(prompt_type, prompt_type_info)
+                    if (prompt_type != 'text'):
+                        fileId = prompt_type_info['fileId']
+                        if (fileId != ''):
+                            file_path = questranscriptionaudiodetails.getquesfilefromfs(mongo,
+                                                                                            basedir,
+                                                                                            fileId,
+                                                                                            'fileId')
+                            # print('file_path', type(file_path), file_path)
+                            file_path_key = '_'.join([lang, prompt_type, 'FilePath'])
+                            quesprojectform[file_path_key] = file_path
+                            if ('textGrid' in prompt_type_info):
+                                quesprojectform['QuesAudioFilePath'] = file_path
+                                transcription_regions = questranscriptionaudiodetails.getquesfiletranscriptiondetails(questionnaires, last_active_ques_id, lang, prompt_type)
+                                # print(type(transcription_regions))
+                                quesprojectform['transcriptionRegions'] = transcription_regions
+    if ('QuesAudioFilePath' not in quesprojectform):
+        quesprojectform['QuesAudioFilePath'] = ''
     # print(f"{inspect.currentframe().f_lineno}: {quesprojectform}")
 
     # project_type = getprojecttype.getprojecttype(projects, activeprojectname)
