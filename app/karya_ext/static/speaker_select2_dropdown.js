@@ -209,7 +209,6 @@ var EducationLevel =
   {"id": "Post-Graduate", "text": "Post-Graduate"},
   {"id": "Above PG", "text": "Above PG"},
 ];
-
 var gender = 
 [
   {"id": "", "text": ""},
@@ -262,6 +261,13 @@ var target = [
 
 ];
 
+var task = [
+  {"id": "", "text": ""},
+  {"id": "SPEECH_DATA_COLLECTION", "text": "Data Collection"},
+  {"id": "SPEECH_VERIFICATION", "text": "Data Verification"},
+  {"id": "SPEECH_TRANSCRIPTION", "text": "Data Transcription"}
+];
+
 
 
 $(document).ready(function () {
@@ -273,7 +279,13 @@ $(document).ready(function () {
     // console.log( "ready!" )
   });
 
-
+  $('#idtask').select2({
+    placeholder: '--Task--',
+    data: task,
+    allowClear: true,
+    // console.log( "ready!" )
+  });
+  
   $('.target').select2({
     tags: true,
     placeholder: '-- Target --',
@@ -283,13 +295,13 @@ $(document).ready(function () {
   });
 
 
-  $('.elicitationmethod').select2({
-    tags: true,
-    placeholder: '--Elicitation Method--',
-    data: ElicitationMethod ,
-    allowClear: true,
-    // console.log( "ready!" )
-  });
+  // $('.elicitationmethod').select2({
+  //   tags: true,
+  //   placeholder: '--Elicitation Method--',
+  //   data: ElicitationMethod ,
+  //   allowClear: true,
+  //   // console.log( "ready!" )
+  // });
 
   $('.languages').select2({
     tags: true,

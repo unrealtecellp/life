@@ -55,7 +55,32 @@
       <br><br><br><br>
  
       <form action="{{ url_for('karya_bp.uploadfile') }}" method="POST" enctype="multipart/form-data"> 
+        
+        <div class="form-group"> 
+          <label for="lang">Language :</label><br>                           
+          <select class="languages" id="idlangs" name="lang" style="width:55%" required></select><br>
+       </div> 
+
+
+       <div class="form-group">
+        <label for="idtask">Task :</label><br>                           
+        <select class="task" id="idtask" name="task"  style="width:55%" required></select><br>
+      </div> 
+
+      <div class="form-group">
+        <label for="domain">Domain :</label><br>                           
+        <select class="domain" id="iddomain" name="domain" multiple="multiple" style="width:55%" ></select><br>
+      </div> 
+
+
+      <div class="form-group">
+        <label for="idelicitation">Elicitation Method :</label><br>                           
+        <select class="elicitation" id="idelicitation" name="elicitation" multiple="multiple" style="width:55%" ></select><br>
+      </div> 
+
+      <input type="number" name = "phase" id="idphase" placeholder="--Phase--"/>
       
+
         <input type="file" id="accesscodefile" name="accesscodefile"><br>
         <p>Click on the "Choose File" button to upload a file of access code and metadata*:</p>
         <input class="btn btn-lg btn-primary create" id="submit" type="submit" value="Submit" >
@@ -77,6 +102,7 @@
 <script src="{{url_for('.static', filename='shareproject.js')}}"></script>
 <script src="{{url_for('.static', filename='shareprojectwith.js')}}"></script>
 <script src="{{url_for('.static', filename='speaker_select2_dropdown.js')}}"></script>
+<script type="text/javascript">createquesform({{ uploadacesscodemetadata | tojson | safe }});</script>
 {% endblock %}
 
 

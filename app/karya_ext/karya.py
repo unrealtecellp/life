@@ -21,8 +21,7 @@ from werkzeug.security import generate_password_hash
 
 from app import app, mongo
 from app.controller import getdbcollections, getactiveprojectname, getcurrentuserprojects
-from app.controller import getprojectowner, getcurrentusername
-from app.controller import audiodetails
+from app.controller import getprojectowner, getcurrentusername, readJSONFile, audiodetails
 from app.controller import questionnairedetails 
 from app.controller import getprojecttype
 
@@ -37,7 +36,7 @@ from flask import Flask, render_template, request
 from werkzeug.datastructures import FileStorage
 from app.lifeques.lifeques import questionnaire
 
-from app.lifeques.controller import savequesaudiofiles, getquesfromprompttext
+from app.lifeques.controller import savequesaudiofiles, getquesfromprompttext, savequespromptfile
 
 from zipfile import ZipFile
 
@@ -96,7 +95,20 @@ import os
 from datetime import datetime
 @karya_bp.route('/uploadfile' , methods=['GET', 'POST'])
 def uploadfile():
-    karyaaccesscodedetails, = getdbcollections.getdbcollections(mongo, 'accesscodedetails')
+    karyaaccesscodedetails,userprojects,projectsform = getdbcollections.getdbcollections(mongo, 'accesscodedetails', 'userprojects','projectsform')
+    current_username = getcurrentusername.getcurrentusername()
+    print('curent user : ', current_username)
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_username, userprojects)
+    # projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
+
+
+    projectform = projectsform.find_one({"projectname" : activeprojectname})  #domain, elictationmethod ,langscript-[1]
+    langscript = list(projectform["LangScript"][1].keys())
+    domain = projectform["Domain"][1]
+    elicitation = projectform["Elicitation Method"][1]
+    print(langscript,domain,elicitation)
+    
+    # mongodb_info = mongo.db.accesscodedetails
 
     if request.method == "POST":
     
@@ -110,12 +122,25 @@ def uploadfile():
         # print(data["id"],df["access_code"],df["phone_number"])
         print(df["id"])
         print(df)
+  
         for index,item in df.iterrows(): 
+
             current_dt = str(datetime.now()).replace('.', ':')
 
+            checkaccesscode = item["access_code"]
+            accesscode_exist = karyaaccesscodedetails.find_one({"karyaaccesscode": checkaccesscode})
+            if  accesscode_exist is not None: continue
+            task = request.form.get('task')
+            language = request.form.get('lang') 
+            domain = request.form.getlist('domain')
+            phase =  request.form.get('phase') #=>numbers - 0,1,2,3, etc
+            elicitationmethod = request.form.getlist("elicitationmethod")
+
             insert_dict = {
-                        "karyaspeakerid": item["id"], "karyaaccesscode": item["access_code"], "lifespeakerid": "",
-                        "karya_info":{"username": "", "projectname": ""}, 
+                        "karyaspeakerid": item["id"], "karyaaccesscode": item["access_code"], "lifespeakerid": "", 
+                        "task":task,"language": language, "domain": domain, 
+                        "phase":phase, "elicitationmethod":elicitationmethod,
+                        "karya_info":{"username": "", "projectname": ""},
                         "current": {"speakerMetadata": {"name": "", "agegroup": "", "gender": "", 
                                                 "educationlevel": "", "educationmediumupto12": "", 
                                                 "educationmediumafter12": "", "speakerspeaklanguage" :"", 
@@ -133,11 +158,12 @@ def uploadfile():
 
 
             datafromdb = karyaaccesscodedetails.find({},{"_id" :0})
-        print(list(datafromdb))
+            print(list(datafromdb))
         
         # flash('Successfully added new lexeme')
         return redirect(url_for('karya_bp.home_insert'))
-    return render_template("uploadfile.html")
+
+    return render_template("uploadfile.html", uploadacesscodemetadata = {"langscript": langscript,"domain": domain,"elicitation": elicitation})
 
 
 
@@ -155,6 +181,16 @@ def add():
     
     accesscodedetails, = getdbcollections.getdbcollections(mongo, "accesscodedetails")
     remaingkaryaaccesscode = mongodb_info.find({"isActive":0},{"karyaspeakerid":1, "_id" :0})
+##########################
+##########################
+    # recordingremaingkaryaaccesscode = mongodb_info.find({"isActive":0, "taskname": "Recording"},{"karyaspeakerid":1, "_id" :0})
+    # verificationremaingkaryaaccesscode = mongodb_info.find({"isActive":0, "taskname": "Verification"},{"karyaspeakerid":1, "_id" :0})
+    # if task == "Recoding":
+    #     do someting
+    # else:
+    #     do this
+###############################
+###############################
     # jp = karyaaccesscode["lifespeakerid"]
     print ('Request method', request.method)
 
@@ -522,9 +558,12 @@ def fetch_karya_audio():
                 print("2",access_code)
 
                 find_fetched_audio_list = mongodb_info.find({"karyaaccesscode":current_acodedoc['karyaaccesscode']},{'karyafetchedaudios':1, "_id" :0})
+                language = mongodb_info.find_one({"karyaaccesscode":current_acodedoc['karyaaccesscode']},{"language":1, "_id" :0})['language']
+                
                 for f_a_l in find_fetched_audio_list:
                     fetched_audio_list = f_a_l['karyafetchedaudios']
                     print("3 : ", fetched_audio_list)
+                    
                     # fetched_audio_list = mongodb_info.find_one({"karyaaccesscode":current_acodedoc['karyaaccesscode']},{'karyafetchedaudios':1, "_id" :0})
                     # print("3: ", fetched_audio_list)
 
@@ -765,19 +804,21 @@ def fetch_karya_audio():
                                                                                         current_sentence)
 
 
-                                    if last_active_ques_id != None:
+                                    # if last_active_ques_id != None:
                                 
-                                        last_active_ques_id = last_active_ques_id["quesId"]
-                                        print("line no, 663", last_active_ques_id)
-                                    else: 
-                                        print("quesId not present or sentene not availblie")
-                                
-                               
+                                    #     last_active_ques_id = last_active_ques_id["quesId"]
+                                    #     print("line no, 663", last_active_ques_id)
+                                    # else: 
+                                    #     print("quesId not present or sentene not availblie")
+                                    # langScriptJSONFilePath = os.path.join(basedir, 'static/json/langScript.json') #i have to do this code
+                                    # langScript = readJSONFile.readJSONFile(langScriptJSONFilePath) #lang_script 
+                
 
                                     if projtyp == "questionnaires":
-                                        new_audio_file['Transcription Audio'] = new_audio_file['audiofile']
+                                        new_audio_file['Prompt_Audio'+"_"+language] = new_audio_file['audiofile'] # new_audio_file['Transcription Audio']  i have to do this code
                                         del new_audio_file['audiofile']
-                                        save_status = savequesaudiofiles.savequesaudiofiles(mongo,
+                                        #savequespromptfile
+                                        save_status = savequespromptfile.savequespromptfile(mongo,
                                                                                 projects,
                                                                                 userprojects,
                                                                                 projectsform,
