@@ -12,7 +12,7 @@ from app.lifeques.controller import savenewquestionnaireform, createdummyques, d
 from app.lifeques.controller import uploadquesdataexcel, getactivequestionnaireid, updatelatestquesid
 from app.lifeques.controller import getnewquesid, quesunannotatedfilename, saveques, savequesaudiofiles
 from app.lifeques.controller import getderivedfromprojectform, copyquesfromparentproject, questranscriptionaudiodetails
-from app.lifeques.controller import getquestionnairestats, savequespromptfile
+from app.lifeques.controller import getquestionnairestats, savequespromptfile, getquesfromprompttext
 
 import os
 from pprint import pprint
@@ -524,3 +524,16 @@ def quespromptfile():
                                             prompt_file)
 
     return redirect(url_for("lifeques.questionnaire"))
+
+# projectsform, userprojects, questionnaires = getdbcollections.getdbcollections(mongo,
+#                                                                                 "projectsform",
+#                                                                                 "userprojects",
+#                                                                                 "questionnaires"
+#                                                                                 )
+# # current_username = getcurrentusername.getcurrentusername()
+# # activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+# #                                                                     userprojects)
+# getquesfromprompttext.getquesfromprompttext(projectsform,
+#                                                 questionnaires,
+#                                                 "Q_test_Project", "What are the different ceremonies related to the birth of a child in your community?"
+#                                             )

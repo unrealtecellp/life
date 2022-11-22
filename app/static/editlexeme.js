@@ -15182,7 +15182,7 @@ scriptCode = {
 	"Kannada": "Knda",
 	"Latin": "Latn",
 	"Malayalam": "Mlym",
-	"Meitei_Mayek": "Mtei",
+	"Mayek": "Mtei",
 	"Odia": "Orya",
 	"Ol_Chiki": "Olck",
 	"Tamil": "Taml",
