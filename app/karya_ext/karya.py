@@ -37,7 +37,7 @@ from flask import Flask, render_template, request
 from werkzeug.datastructures import FileStorage
 from app.lifeques.lifeques import questionnaire
 
-from app.lifeques.controller import savequesaudiofiles
+from app.lifeques.controller import savequesaudiofiles, getquesfromprompttext
 
 from zipfile import ZipFile
 
@@ -730,35 +730,43 @@ def fetch_karya_audio():
                                     print("line 671 :",current_sentence)
                                     findprojectname = getcurrentuserprojects.getcurrentuserprojects(current_username, userprojects) 
 
-                                    c_sent = mongodb_qidinfo.find({},{"_id":0,"prompt.text.content":1}) #finding sentence from questtionaire collection 
+                                    # c_sent = mongodb_qidinfo.find({},{"_id":0,"prompt.text.content":1}) #finding sentence from questtionaire collection 
 
-                                    for c in c_sent: #breaking the nested path of the dict.
-                                        # print("678 _____ = ", c)
-                                        for key, val in c.items():
-                                            for key, val in val.items():
-                                                for key, vall in val.items():
-                                                    sentence_dict = vall
-                                                    reverse_sentence_dict = {value:key for key, value in vall.items()} 
-                                                    # print(reverse_sentence_dict)
-                                                    # print(sentence_dict)
+                                    # for c in c_sent: #breaking the nested path of the dict.
+                                    #     # print("678 _____ = ", c)
+                                    #     for key, val in c.items():
+                                    #         for key, val in val.items():
+                                    #             for key, vall in val.items():
+                                    #                 sentence_dict = vall
+                                    #                 reverse_sentence_dict = {value:key for key, value in vall.items()} 
+                                    #                 # print(reverse_sentence_dict)
+                                    #                 # print(sentence_dict)
 
                                     
-                                                    for sent_key, sent_value in sentence_dict.items(): 
-                                                        sentence_key = current_sentence # for name, age in dictionary.iteritems():  (for Python 2.x)
-                                                        if sent_value == sentence_key:
-                                                            found_sent_key = sent_key
-                                                            print(found_sent_key)
-                                    sentence_condtion = "prompt.text.content.Any"
-                                    sentence_condtion_found = sentence_condtion.replace("Any", found_sent_key)
-                                    print(sentence_condtion_found, type(sentence_condtion_found))
+                                    #                 for sent_key, sent_value in sentence_dict.items(): 
+                                    #                     sentence_key = current_sentence # for name, age in dictionary.iteritems():  (for Python 2.x)
+                                    #                     if sent_value == sentence_key:
+                                    #                         found_sent_key = sent_key
+                                    #                         print(found_sent_key)
+                                    # sentence_condtion = "prompt.text.content.Any"
+                                    # sentence_condtion_found = sentence_condtion.replace("Any", found_sent_key)
+                                    # print(sentence_condtion_found, type(sentence_condtion_found))
 
-                                    #ques_id
-                                    last_active_ques_id = mongodb_qidinfo.find_one({"projectname": activeprojectname, sentence_condtion_found:current_sentence},{"_id":0, "quesId":1})
+                                    # #ques_id
+                                    # last_active_ques_id = mongodb_qidinfo.find_one({"projectname": activeprojectname, sentence_condtion_found:current_sentence},{"_id":0, "quesId":1})
 
                                     # db.inventory.aggregate([{$project: {item: 1,description: { $ifNull: [ "$description", "Unspecified" ] }}} ])
                                     # for last_active_ques_id in last_active_ques_id:
-                                    print(last_active_ques_id)
+                                    # print(last_active_ques_id)
+                                    
+                                    last_active_ques_id =  getquesfromprompttext.getquesfromprompttext(projectsform,
+                                                                                        questionnaires,
+                                                                                        activeprojectname,
+                                                                                        current_sentence)
+
+
                                     if last_active_ques_id != None:
+                                
                                         last_active_ques_id = last_active_ques_id["quesId"]
                                         print("line no, 663", last_active_ques_id)
                                     else: 
