@@ -80,8 +80,8 @@ var scripts =
         "text": "Malayalam"
       },
       {
-        "id": "Meitei-Mayek", 
-        "text": "Meitei@Mayek"
+        "id": "Mayek", 
+        "text": "Mayek"
       },
       {
         "id": "Odia", 
