@@ -218,8 +218,8 @@ function createInputElement(key, elevalue, type, quesdatavalue) {
     qform += '<div class="form-group">'+
               '<label for="'+ keyid +'">'+ eval +'</label>'+
               '<input type="'+type+'" class="form-control" id="'+ keyid +'"'+ 
-              // 'placeholder="'+ eval +'" name="'+ eval +'" value="'+ val +'" required>'+
-              'placeholder="'+ eval +'" name="'+ eval +'" value="'+ val +'">'+
+              'placeholder="'+ eval +'" name="'+ eval +'" value="'+ val +'" required>'+
+              // 'placeholder="'+ eval +'" name="'+ eval +'" value="'+ val +'">'+
               '</div>';
   }
 
@@ -248,12 +248,12 @@ function createSelectElement(key, elevalue, type, quesdatavalue) {
   qform += '<div class="form-group">'+
             '<label for="'+keyid+'">'+key+'</label>';
   if (type === 'multiple') {
-    // qform += '<select class="quesselect" id="'+keyid+'" name="'+key+'" multiple="'+type+'" style="width: 100%" required>';
-    qform += '<select class="quesselect" id="'+keyid+'" name="'+key+'" multiple="'+type+'" style="width: 100%">';
+    qform += '<select class="quesselect" id="'+keyid+'" name="'+key+'" multiple="'+type+'" style="width: 100%" required>';
+    // qform += '<select class="quesselect" id="'+keyid+'" name="'+key+'" multiple="'+type+'" style="width: 100%">';
   }
   else {
-    // qform += '<select class="quesselect" id="'+keyid+'" name="'+key+'" style="width: 100%" required>';
-    qform += '<select class="quesselect" id="'+keyid+'" name="'+key+'" style="width: 100%">';
+    qform += '<select class="quesselect" id="'+keyid+'" name="'+key+'" style="width: 100%" required>';
+    // qform += '<select class="quesselect" id="'+keyid+'" name="'+key+'" style="width: 100%">';
   }
   
   for (let i=0; i<elevalue.length; i++) {
@@ -458,6 +458,8 @@ function createquesform(quesprojectform) {
           let filePath = quesprojectform[filePathKey]
           console.log(filePath);
           if (testpromptTypeValueInfo[0] === 'waveform') {
+            substr = createInputElement('Language', [testpromptTypeKey], 'text', promptquesdatavalue)
+            testquesform = testquesform.replace(substr, '');
             transcriptionBoundaryForm = testwaveFormFunction(update_key, testpromptTypeKey, testpromptTypeValue, quesdatavalue, filePath, langScript)
             if (transcriptionBoundaryForm === undefined) {
               transcriptionBoundaryForm = '';
