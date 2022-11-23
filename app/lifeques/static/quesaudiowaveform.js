@@ -75,13 +75,19 @@
         let form = document.forms[document.forms.length-1];
         let regionId = form.dataset.region;
 
-        form.elements[2].setAttribute("value", '0');
-        form.elements[3].setAttribute("value", '0');
-        form.elements[4].setAttribute("value", '');
+        // form.elements[2].setAttribute("value", '0');
+        // form.elements[3].setAttribute("value", '0');
+        // form.elements[4].setAttribute("value", '');
         // document.getElementById("end").setAttribute("value", '0');
         document.getElementById("deleteboundary").disabled = true;
 
-        console.log(form, form.elements[2].value, regionId)
+        console.log(form, typeof form, form.elements[2].value, regionId)
+        for (let [key, value] of Object.entries(form)) {
+            console.log(key, value, typeof value, value.id);
+            if (value.id === 'start' || value.id === 'end') {
+                form.elements[key].setAttribute("value", '0');
+            }
+        }
         if (regionId) {
             let region = wavesurfer.regions.list[regionId];
             wavesurfer.regions.list[regionId].remove();
