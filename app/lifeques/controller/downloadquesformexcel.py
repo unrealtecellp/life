@@ -78,6 +78,13 @@ def downloadquesformexcel(questionnaires,
     dummy_ques['quesId'] = ''
     # print('LINE: 79', dummy_ques)
     ques.append(dummy_ques)
+    all_ques = questionnaires.find({"projectname": activeprojectname}, {
+        "_id": 0,
+        "quesId": 1,
+        "Q_Id":1
+    })
+    for q in all_ques:
+        ques.append(q)
     working_dir = basedir+'/quesdownload'
     if (not os.path.exists(working_dir)):
         os.mkdir(working_dir)
