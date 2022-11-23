@@ -575,9 +575,34 @@ function testwaveFormFunction(key, promptTypeKey, promptTypeValue, quesdatavalue
     console.log(val);
     // var x = document.getElementById("questranscriptionsubmit");
     // x.style.display = "none";
-    var x = document.getElementById("questranscriptionwaveform");
-    x.style.display = "block";
+    // var x = document.getElementById("questranscriptionwaveform");
+    // x.style.display = "block";
     quesTranscription += createInputElement(key+' Transcription', [lang], 'text', val);
+
+    let waveform = '<div id="wave-timeline"></div>'+
+                    '<div id="waveform"></div>'+
+                    '<div id="wave-spectrogram" style="display: none;"></div>'+
+                    '<br>';
+
+    let waveformController = '<hr>'+
+                              '<div class="col-sm-3">'+
+                                '<input id="slider" data-action="zoom" type="range" min="0" max="5000" value="0" style="width: 100%">'+
+                              '</div>'+
+                              '<i class="glyphicon glyphicon-zoom-in"></i>'+
+                              
+                              '<div class="pull-right">'+
+                                '<button type="button" id="deleteboundary" class="btn btn-danger btn-block" data-action="delete-region" disabled>Delete Boundary</button>'+
+                                '<br>'+
+                                '<button class="btn btn-danger" type="button" id="stopAudio">STOP'+
+                                  '<span class="audiostop glyphicon glyphicon-stop" aria-hidden="true"></span>'+
+                                '</button>'+
+                                '<button class="btn btn-primary" type="button" id="playPauseAudio">PLAY/PAUSE'+
+                                  '<span class="audioplaypause glyphicon glyphicon-play" aria-hidden="true"></span>'+
+                                '</button>'+
+                              '</div><br><br><hr>';
+
+    transcriptionBoundaryForm += waveform + waveformController;
+    
     transcriptionBoundaryForm += '<div class="form-group">'+
                                   '<label for="start">Boundary Start Time</label>'+
                                   '<input class="form-control" id="start" name="start" value="'+start+'" required/>'+
