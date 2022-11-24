@@ -106,7 +106,7 @@ def uploadfile():
     langscript = list(projectform["LangScript"][1].keys())
     domain = projectform["Domain"][1]
     elicitation = projectform["Elicitation Method"][1]
-    print(langscript,domain,elicitation)
+    print(langscript, domain, elicitation)
     
     # mongodb_info = mongo.db.accesscodedetails
 
@@ -120,8 +120,8 @@ def uploadfile():
         df["access_code"] = df["access_code"].str[1:]
         df["phone_number"] = df["phone_number"].str[1:]
         # print(data["id"],df["access_code"],df["phone_number"])
-        print(df["id"])
-        print(df)
+        # print(df["id"])
+        # print(df)
   
         for index,item in df.iterrows(): 
 
@@ -131,34 +131,45 @@ def uploadfile():
             accesscode_exist = karyaaccesscodedetails.find_one({"karyaaccesscode": checkaccesscode})
             if  accesscode_exist is not None: continue
             task = request.form.get('task')
-            language = request.form.get('lang') 
+            language = request.form.get('langscript') 
             domain = request.form.getlist('domain')
             phase =  request.form.get('phase') #=>numbers - 0,1,2,3, etc
-            elicitationmethod = request.form.getlist("elicitationmethod")
+            elicitationmethod = request.form.getlist("elicitation")
+            fetch_data = request.form.get('fetchdata')
+
+            if fetch_data == 'on':
+                fetch_data = 1
+            else:
+                fetch_data = 0
+
+            print (fetch_data)
+            print(language, domain, elicitationmethod)
 
             insert_dict = {
                         "karyaspeakerid": item["id"], "karyaaccesscode": item["access_code"], "lifespeakerid": "", 
                         "task":task,"language": language, "domain": domain, 
                         "phase":phase, "elicitationmethod":elicitationmethod,
-                        "karya_info":{"username": "", "projectname": ""},
-                        "current": {"speakerMetadata": {"name": "", "agegroup": "", "gender": "", 
+                        "uploadedBy": {"username": current_username, "projectname": activeprojectname},
+                        "assignedBy":{"username": "", "projectname": ""},
+                        "current": {"workerMetadata": {"name": "", "agegroup": "", "gender": "", 
                                                 "educationlevel": "", "educationmediumupto12": "", 
                                                 "educationmediumafter12": "", "speakerspeaklanguage" :"", 
                                                 "recordingplace": "", "typeofrecordingplace" : "", 
                                                 "activeAccessCode": ""}, "current_date":current_dt},
                         "previous": {},
-                        "karyafetchedaudios":[],
+                        "fetchData": fetch_data,
+                        "karyafetchedaudios":[],                        
                         "isActive": 0}
                         
 
-            print ('Data to be inserted', insert_dict)
+            # print ('Data to be inserted', insert_dict)
             return_obj = karyaaccesscodedetails.insert(insert_dict)
-            print ('Return object', return_obj)
+            # print ('Return object', return_obj)
             # print (return_obj.inserted_id)
 
 
             datafromdb = karyaaccesscodedetails.find({},{"_id" :0})
-            print(list(datafromdb))
+            # print(list(datafromdb))
         
         # flash('Successfully added new lexeme')
         return redirect(url_for('karya_bp.home_insert'))
@@ -201,30 +212,30 @@ def add():
     mongodb_info = mongo.db.accesscodedetails
 
     #access-code
-    # accode = mongodb_info.find({"isActive":1},{"current.speakerMetadata.lifespeakerid":1,"_id" :0})
+    # accode = mongodb_info.find({"isActive":1},{"current.workerMetadata.lifespeakerid":1,"_id" :0})
     # for data in accode:   
-    #     speaker_accode = data["current"]["speakerMetadata"]["lifespeakerid"]                                    
+    #     speaker_accode = data["current"]["workerMetadata"]["lifespeakerid"]                                    
     #     speaker_data_accesscode.append(speaker_accode)
     # print(speaker_data_accesscode)   
 
     #speaker_name
-    name = mongodb_info.find({"isActive":1},{"current.speakerMetadata.name" :1,"_id" :0})
+    name = mongodb_info.find({"isActive":1},{"current.workerMetadata.name" :1,"_id" :0})
     for data in name:
-        speaker_name = data["current"]["speakerMetadata"]["name"]                                     
+        speaker_name = data["current"]["workerMetadata"]["name"]                                     
         speaker_data_name.append(speaker_name)
     print(speaker_data_name)
 
     #age
-    age = mongodb_info.find({"isActive":1},{"current.speakerMetadata.agegroup":1,"_id" :0})
+    age = mongodb_info.find({"isActive":1},{"current.workerMetadata.agegroup":1,"_id" :0})
     for data in age:   
-        speaker_age = data["current"]["speakerMetadata"]["agegroup"]                                    
+        speaker_age = data["current"]["workerMetadata"]["agegroup"]                                    
         speaker_data_age.append(speaker_age)
     print(speaker_data_age)    
 
     #gender
-    gender = mongodb_info.find({"isActive":1},{"current.speakerMetadata.gender":1,"_id" :0})
+    gender = mongodb_info.find({"isActive":1},{"current.workerMetadata.gender":1,"_id" :0})
     for data in gender:
-        speaker_gender = data["current"]["speakerMetadata"]["gender"]                                     
+        speaker_gender = data["current"]["workerMetadata"]["gender"]                                     
         speaker_data_gender.append(speaker_gender)
     print(speaker_data_gender)                                  
     print(speaker_data_accesscode)
@@ -257,8 +268,8 @@ def add():
         
         # lifeID = mongodb_info.find_one({"karyaaccesscode":accesscode},{"lifespeakerid":1, "_id" :0})
         # lIfeid = lifeID["lifespeakerid"]
-        # namekaryaIDDOB = mongodb_info.find_one({"isActive":0},{"current.speakerMetadata.agegroup":1 , "_id" :0})
-        # rDOB = namekaryaIDDOB["current"]["speakerMetadata"]["agegroup"]
+        # namekaryaIDDOB = mongodb_info.find_one({"isActive":0},{"current.workerMetadata.agegroup":1 , "_id" :0})
+        # rDOB = namekaryaIDDOB["current"]["workerMetadata"]["agegroup"]
         # renameInFormDOB = rDOB.replace("-","")
         print(namekaryaID)
         # for lidata in namekaryaID:
@@ -285,50 +296,50 @@ def add():
             print("line 583", renameCode)  
             # namekaryaAddID.append(renameCode)
             update_data = {"lifespeakerid": renameCode,
-                                    "current.speakerMetadata.name": fname, 
-                                    "current.speakerMetadata.agegroup": fage, 
-                                    "current.speakerMetadata.gender": fgender,
-                                    "current.speakerMetadata.educationlevel": educlvl,
-                                    "current.speakerMetadata.educationmediumupto12": moe12,
-                                    "current.speakerMetadata.educationmediumafter12": moea12,
-                                    "current.speakerMetadata.speakerspeaklanguage": sols,
-                                    "current.speakerMetadata.recordingplace": por,
-                                    "current.speakerMetadata.typeofrecordingplace": toc,
+                                    "current.workerMetadata.name": fname, 
+                                    "current.workerMetadata.agegroup": fage, 
+                                    "current.workerMetadata.gender": fgender,
+                                    "current.workerMetadata.educationlevel": educlvl,
+                                    "current.workerMetadata.educationmediumupto12": moe12,
+                                    "current.workerMetadata.educationmediumafter12": moea12,
+                                    "current.workerMetadata.speakerspeaklanguage": sols,
+                                    "current.workerMetadata.recordingplace": por,
+                                    "current.workerMetadata.typeofrecordingplace": toc,
                                     "isActive": 1}
         else:
-            update_data = {"current.speakerMetadata.gender": fgender,
-                                    "current.speakerMetadata.educationlevel": educlvl,
-                                    "current.speakerMetadata.educationmediumupto12": moe12,
-                                    "current.speakerMetadata.educationmediumafter12": moea12,
-                                    "current.speakerMetadata.speakerspeaklanguage": sols,
-                                    "current.speakerMetadata.recordingplace": por,
-                                    "current.speakerMetadata.typeofrecordingplace": toc,
+            update_data = {"current.workerMetadata.gender": fgender,
+                                    "current.workerMetadata.educationlevel": educlvl,
+                                    "current.workerMetadata.educationmediumupto12": moe12,
+                                    "current.workerMetadata.educationmediumafter12": moea12,
+                                    "current.workerMetadata.speakerspeaklanguage": sols,
+                                    "current.workerMetadata.recordingplace": por,
+                                    "current.workerMetadata.typeofrecordingplace": toc,
                                     "isActive": 1}                
                 # speaker_data_accesscode.append(data["lifespeakerid"])
         # print("587 ",namekaryaAddID)
 
 
         # update_data = {"lifespeakerid": renameCode,
-        #                             "current.speakerMetadata.name": fname, 
-        #                             "current.speakerMetadata.agegroup": fage, 
-        #                             "current.speakerMetadata.gender": fgender,
-        #                             "current.speakerMetadata.educationlevel": educlvl,
-        #                             "current.speakerMetadata.educationmediumupto12": moe12,
-        #                             "current.speakerMetadata.educationmediumafter12": moea12,
-        #                             "current.speakerMetadata.speakerspeaklanguage": sols,
-        #                             "current.speakerMetadata.recordingplace": por,
-        #                             "current.speakerMetadata.typeofrecordingplace": toc,
+        #                             "current.workerMetadata.name": fname, 
+        #                             "current.workerMetadata.agegroup": fage, 
+        #                             "current.workerMetadata.gender": fgender,
+        #                             "current.workerMetadata.educationlevel": educlvl,
+        #                             "current.workerMetadata.educationmediumupto12": moe12,
+        #                             "current.workerMetadata.educationmediumafter12": moea12,
+        #                             "current.workerMetadata.speakerspeaklanguage": sols,
+        #                             "current.workerMetadata.recordingplace": por,
+        #                             "current.workerMetadata.typeofrecordingplace": toc,
         #                             "isActive": 1}
         
-        # update_data = {"current.speakerMetadata.name": fname, 
-        #                              "current.speakerMetadata.agegroup": fage, 
-        #                              "current.speakerMetadata.gender": fgender,
-        #                              "current.speakerMetadata.educationlevel": educlvl,
-        #                              "current.speakerMetadata.educationmediumupto12": moe12,
-        #                              "current.speakerMetadata.educationmediumafter12": moea12,
-        #                              "current.speakerMetadata.speakerspeaklanguage": sols,
-        #                              "current.speakerMetadata.recordingplace": por,
-        #                              "current.speakerMetadata.typeofrecordingplace": toc,
+        # update_data = {"current.workerMetadata.name": fname, 
+        #                              "current.workerMetadata.agegroup": fage, 
+        #                              "current.workerMetadata.gender": fgender,
+        #                              "current.workerMetadata.educationlevel": educlvl,
+        #                              "current.workerMetadata.educationmediumupto12": moe12,
+        #                              "current.workerMetadata.educationmediumafter12": moea12,
+        #                              "current.workerMetadata.speakerspeaklanguage": sols,
+        #                              "current.workerMetadata.recordingplace": por,
+        #                              "current.workerMetadata.typeofrecordingplace": toc,
         #                              "isActive": 1}
         # accesscode = request.form.get('accode')
 #########################################################################################################################
@@ -356,7 +367,7 @@ def add():
 
         else:
             previous_speakerdetails = mongodb_info.find_one({"karyaaccesscode": accesscode},
-                                                {"current.speakerMetadata": 1, "_id": 0,})
+                                                {"current.workerMetadata": 1, "_id": 0,})
 
             ###########################################
             ## TOdo: Add date to the previous metadata
@@ -371,21 +382,21 @@ def add():
             date_of_modified = str(datetime.now()).replace(".", ":" )
 
 
-            # update_old_data = {"previous."+date_of_modified+".speakerMetadata.name": previous_speakerdetails["current"]["speakerMetadata"]["name"], 
-            #                                         "previous."+date_of_modified+".speakerMetadata.agegroup": previous_speakerdetails["current"]["speakerMetadata"]["agegroup"], 
-            #                                         "previous."+date_of_modified+".speakerMetadata.gender": previous_speakerdetails["current"]["speakerMetadata"]["gender"],
-            #                                         "previous."+date_of_modified+".speakerMetadata.educationlevel": previous_speakerdetails["current"]["speakerMetadata"]["educationlevel"],
-            #                                         "previous."+date_of_modified+".speakerMetadata.educationmediumupto12": previous_speakerdetails["current"]["speakerMetadata"]["educationmediumupto12"],
-            #                                         "previous."+date_of_modified+".speakerMetadata.educationmediumafter12": previous_speakerdetails["current"]["speakerMetadata"]["educationmediumafter12"],
-            #                                         "previous."+date_of_modified+".speakerMetadata.speakerspeaklanguage": previous_speakerdetails["current"]["speakerMetadata"]["speakerspeaklanguage"],
-            #                                         "previous."+date_of_modified+".speakerMetadata.recordingplace": previous_speakerdetails["current"]["speakerMetadata"]["recordingplace"]
+            # update_old_data = {"previous."+date_of_modified+".workerMetadata.name": previous_speakerdetails["current"]["workerMetadata"]["name"], 
+            #                                         "previous."+date_of_modified+".workerMetadata.agegroup": previous_speakerdetails["current"]["workerMetadata"]["agegroup"], 
+            #                                         "previous."+date_of_modified+".workerMetadata.gender": previous_speakerdetails["current"]["workerMetadata"]["gender"],
+            #                                         "previous."+date_of_modified+".workerMetadata.educationlevel": previous_speakerdetails["current"]["workerMetadata"]["educationlevel"],
+            #                                         "previous."+date_of_modified+".workerMetadata.educationmediumupto12": previous_speakerdetails["current"]["workerMetadata"]["educationmediumupto12"],
+            #                                         "previous."+date_of_modified+".workerMetadata.educationmediumafter12": previous_speakerdetails["current"]["workerMetadata"]["educationmediumafter12"],
+            #                                         "previous."+date_of_modified+".workerMetadata.speakerspeaklanguage": previous_speakerdetails["current"]["workerMetadata"]["speakerspeaklanguage"],
+            #                                         "previous."+date_of_modified+".workerMetadata.recordingplace": previous_speakerdetails["current"]["workerMetadata"]["recordingplace"]
             #                                         }
-            update_old_data = {"previous."+date_of_modified+".speakerMetadata.gender": previous_speakerdetails["current"]["speakerMetadata"]["gender"],
-                                                    "previous."+date_of_modified+".speakerMetadata.educationlevel": previous_speakerdetails["current"]["speakerMetadata"]["educationlevel"],
-                                                    "previous."+date_of_modified+".speakerMetadata.educationmediumupto12": previous_speakerdetails["current"]["speakerMetadata"]["educationmediumupto12"],
-                                                    "previous."+date_of_modified+".speakerMetadata.educationmediumafter12": previous_speakerdetails["current"]["speakerMetadata"]["educationmediumafter12"],
-                                                    "previous."+date_of_modified+".speakerMetadata.speakerspeaklanguage": previous_speakerdetails["current"]["speakerMetadata"]["speakerspeaklanguage"],
-                                                    "previous."+date_of_modified+".speakerMetadata.recordingplace": previous_speakerdetails["current"]["speakerMetadata"]["recordingplace"]
+            update_old_data = {"previous."+date_of_modified+".workerMetadata.gender": previous_speakerdetails["current"]["workerMetadata"]["gender"],
+                                                    "previous."+date_of_modified+".workerMetadata.educationlevel": previous_speakerdetails["current"]["workerMetadata"]["educationlevel"],
+                                                    "previous."+date_of_modified+".workerMetadata.educationmediumupto12": previous_speakerdetails["current"]["workerMetadata"]["educationmediumupto12"],
+                                                    "previous."+date_of_modified+".workerMetadata.educationmediumafter12": previous_speakerdetails["current"]["workerMetadata"]["educationmediumafter12"],
+                                                    "previous."+date_of_modified+".workerMetadata.speakerspeaklanguage": previous_speakerdetails["current"]["workerMetadata"]["speakerspeaklanguage"],
+                                                    "previous."+date_of_modified+".workerMetadata.recordingplace": previous_speakerdetails["current"]["workerMetadata"]["recordingplace"]
                                                     }
 
             mongodb_info.update_one({"karyaaccesscode": accesscode}, {"$set": update_old_data}) # Edit_old_user_info
@@ -437,30 +448,30 @@ def homespeaker():
     print("587 ===================================== >>>>>>>>>>>>>> ",lifeId)
 
 ############################################  Name #######################################################################
-    name = mongodb_info.find({"isActive":1},{"current.speakerMetadata.name" :1,"_id" :0})
+    name = mongodb_info.find({"isActive":1},{"current.workerMetadata.name" :1,"_id" :0})
     print(name)
     for data in name:
-        # speaker_name = data["karya_info"]["current"]["speaker_info"]["speakerMetadata"]["name"]  
-        # speaker_name = data["current"]["speakerMetadata"]["name"]  
-        speaker_name = data["current"]["speakerMetadata"]                                
+        # speaker_name = data["assignedBy"]["current"]["speaker_info"]["workerMetadata"]["name"]  
+        # speaker_name = data["current"]["workerMetadata"]["name"]  
+        speaker_name = data["current"]["workerMetadata"]                                
         speaker_data_name.append(speaker_name)
     print(speaker_data_name)
 
     ######################################  Age  ############################################################################
-    age = mongodb_info.find({"isActive":1},{"current.speakerMetadata.agegroup":1,"_id" :0})
+    age = mongodb_info.find({"isActive":1},{"current.workerMetadata.agegroup":1,"_id" :0})
     for data in age:   
-        # speaker_age = data["karya_info"]["current"]["speaker_info"]["speakerMetadata"]["agegroup"]
-        # speaker_age = data["current"]["speakerMetadata"]["agegroup"]  
-        speaker_age = data["current"]["speakerMetadata"]                                
+        # speaker_age = data["assignedBy"]["current"]["speaker_info"]["workerMetadata"]["agegroup"]
+        # speaker_age = data["current"]["workerMetadata"]["agegroup"]  
+        speaker_age = data["current"]["workerMetadata"]                                
         speaker_data_age.append(speaker_age)
     print(speaker_data_age)    
 
     #################################   Gender   ###############################################################
-    gender = mongodb_info.find({"isActive":1},{"current.speakerMetadata.gender":1,"_id" :0})
+    gender = mongodb_info.find({"isActive":1},{"current.workerMetadata.gender":1,"_id" :0})
     for data in gender:
-        # speaker_gender = data["karya_info"]["current"]["speaker_info"]["speakerMetadata"]["gender"] 
-        # speaker_gender = data["current"]["speakerMetadata"]["gender"] 
-        speaker_gender = data["current"]["speakerMetadata"]                                 
+        # speaker_gender = data["assignedBy"]["current"]["speaker_info"]["workerMetadata"]["gender"] 
+        # speaker_gender = data["current"]["workerMetadata"]["gender"] 
+        speaker_gender = data["current"]["workerMetadata"]                                 
         speaker_data_gender.append(speaker_gender)
     print(speaker_data_gender)                                  
   
@@ -486,20 +497,20 @@ def getonespeakerdetails():
     print(f"{'='*80}\nasycaccesscode: {asycaccesscode}\n{'='*80}")
     speakerdetails = accesscodedetails.find_one({"karyaaccesscode": asycaccesscode},
                                                 {"_id": 0,
-                                                "current.speakerMetadata": 1})
+                                                "current.workerMetadata": 1})
     # mongodb_info = mongo.db.accesscodedetails
 
-    # speakerdetails = mongodb_info.find_one({"lifespeakerid": asycaccesscode}, {"speaker_info.speakerMetadata.name": 1, 
-    #                                                 "karya_info.current.speaker_info.speakerMetadata.agegroup": 1, 
-    #                                                 "karya_info.current.speaker_info.speakerMetadata.gender": 1,
-    #                                                 "karya_info.current.speaker_info.speakerMetadata.educationlevel": 1,
-    #                                                 "karya_info.current.speaker_info.speakerMetadata.medium-of-education-upto-12th": 1,
-    #                                                 "karya_info.current.speaker_info.speakerMetadata.medium-of-education-after-12th": 1,
-    #                                                 "karya_info.current.speaker_info.speakerMetadata.other-languages-speaker-could-speak": 1,
-    #                                                 "karya_info.current.speaker_info.speakerMetadata.place-of-recording": 1,
-    #                                                 "karya_info.current.speaker_info.speakerMetadata.type-of-place": 1,"_id": 0})
+    # speakerdetails = mongodb_info.find_one({"lifespeakerid": asycaccesscode}, {"speaker_info.workerMetadata.name": 1, 
+    #                                                 "assignedBy.current.speaker_info.workerMetadata.agegroup": 1, 
+    #                                                 "assignedBy.current.speaker_info.workerMetadata.gender": 1,
+    #                                                 "assignedBy.current.speaker_info.workerMetadata.educationlevel": 1,
+    #                                                 "assignedBy.current.speaker_info.workerMetadata.medium-of-education-upto-12th": 1,
+    #                                                 "assignedBy.current.speaker_info.workerMetadata.medium-of-education-after-12th": 1,
+    #                                                 "assignedBy.current.speaker_info.workerMetadata.other-languages-speaker-could-speak": 1,
+    #                                                 "assignedBy.current.speaker_info.workerMetadata.place-of-recording": 1,
+    #                                                 "assignedBy.current.speaker_info.workerMetadata.type-of-place": 1,"_id": 0})
 
-    # speakerdetails = speakerdetails["karya_info"]["current"]["speaker_info"]["speakerMetadata"]
+    # speakerdetails = speakerdetails["assignedBy"]["current"]["speaker_info"]["workerMetadata"]
     print(f"SPEAKER DETAILS: {speakerdetails}")                                                
 
     # speakerdetails['accesscode'] = asycaccesscode
@@ -569,7 +580,7 @@ def fetch_karya_audio():
 
 
 
-                    # speakerdetails = accesscodedetails.find_one({"karyaaccesscode": asycaccesscode},{"_id": 0,"current.speakerMetadata": 1})
+                    # speakerdetails = accesscodedetails.find_one({"karyaaccesscode": asycaccesscode},{"_id": 0,"current.workerMetadata": 1})
                     # mongodb_info.update_one({"karyaaccesscode": accesscode}, {"$set": update_data})
 
 

@@ -232,25 +232,25 @@ var TypeOfCity = [
   {"id": "City", "text": "City"}
 ];
 
-var QuestionnaireDomain = [
-  {"id": "", "text": ""},
-  {"id": "General", "text": "General"},
-  {"id": "Agriculture", "text": "Agriculture"},
-  {"id": "Science-Technology", "text": "Science-Technology"},
-  {"id": "Education", "text": "Education"}
-];
+// var QuestionnaireDomain = [
+//   {"id": "", "text": ""},
+//   {"id": "General", "text": "General"},
+//   {"id": "Agriculture", "text": "Agriculture"},
+//   {"id": "Science-Technology", "text": "Science-Technology"},
+//   {"id": "Education", "text": "Education"}
+// ];
 
 
-var ElicitationMethod = [
-  {"id": "", "text": ""},
-  {"id": "Narration", "text": "Narration"},
-  {"id": "Translation", "text": "Translation"},
-  {"id": "Role-Play", "text": "Role-Play"},
-  {"id": "Interview", "text": "Interview"},
-  {"id": "Picture Book Narration", "text": "Picture Book Narration"},
-  {"id": "Video Narration", "text": "Video Narration"},
-  {"id": "Conversation", "text": "Conversation"}
-];
+// var ElicitationMethod = [
+//   {"id": "", "text": ""},
+//   {"id": "Narration", "text": "Narration"},
+//   {"id": "Translation", "text": "Translation"},
+//   {"id": "Role-Play", "text": "Role-Play"},
+//   {"id": "Interview", "text": "Interview"},
+//   {"id": "Picture Book Narration", "text": "Picture Book Narration"},
+//   {"id": "Video Narration", "text": "Video Narration"},
+//   {"id": "Conversation", "text": "Conversation"}
+// ];
 
 
 var target = [
@@ -303,19 +303,19 @@ $(document).ready(function () {
   //   // console.log( "ready!" )
   // });
 
-  $('.languages').select2({
-    tags: true,
-    placeholder: '-- Language --',
-    data: OtherLanguagesSpeakerCouldSpeak,
-    allowClear: true
-  });
+  // $('.languages').select2({
+  //   tags: true,
+  //   placeholder: '-- Language --',
+  //   data: OtherLanguagesSpeakerCouldSpeak,
+  //   allowClear: true
+  // });
 
-  $('.questionnairedomain').select2({
-    tags: true,
-    placeholder: '-- Questionnire Domain --',
-    data: QuestionnaireDomain  ,
-    allowClear: true
-  });
+  // $('.questionnairedomain').select2({
+  //   tags: true,
+  //   placeholder: '-- Questionnire Domain --',
+  //   data: QuestionnaireDomain  ,
+  //   allowClear: true
+  // });
 
   $('.age').select2({
     // tags: true,
