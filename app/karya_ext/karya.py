@@ -173,9 +173,9 @@ def uploadfile():
             insert_dict = {
                         "karyaspeakerid": item["id"], "karyaaccesscode": item["access_code"], "lifespeakerid": "", 
                         "task":task,"language": language, "domain": domain, 
-                        "phase":phase, "elicitationmethod":elicitationmethod,
-                        "uploadedBy": {"username": current_username, "projectname": activeprojectname},
-                        "assignedBy":{"username": "", "projectname": ""},
+                        "phase":phase, "elicitationmethod":elicitationmethod, "projectname": activeprojectname,
+                        "uploadedBy":current_username,
+                        "assignedBy":"",
                         "current": {"workerMetadata": {"name": "", "agegroup": "", "gender": "", 
                                                 "educationlevel": "", "educationmediumupto12": "", 
                                                 "educationmediumafter12": "", "speakerspeaklanguage" :"", 
@@ -267,6 +267,23 @@ def add():
     print(speaker_data_gender)                                  
     print(speaker_data_accesscode)
     
+    ##################################
+    #######################
+    karyaaccesscodedetails, userprojects, projectsform = getdbcollections.getdbcollections(mongo,
+                                                                                            'accesscodedetails',
+                                                                                            'userprojects',
+                                                                                            'projectsform')
+    current_username = getcurrentusername.getcurrentusername()          
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_username, userprojects)
+    
+    
+
+    karyaaccesscodedetails, userprojects, projectsform = getdbcollections.getdbcollections(mongo,
+                                                                                            'accesscodedetails',
+                                                                                            'userprojects',
+                                                                                            'projectsform')
+    current_username = getcurrentusername.getcurrentusername()          
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_username, userprojects)
 
     if request.method =='POST':
         # accesscode = request.form.get('accesscode')
@@ -288,10 +305,20 @@ def add():
         sols = request.form.getlist('sols')
         por = request.form.get('por')
         toc = request.form.get('toc')
+
+        accesscodefor = request.form.get('accesscodefor')
+        
+        task = request.form.get('task')
+        language = request.form.get('langscript') 
+        domain = request.form.getlist('domain')
+        elicitationmethod = request.form.getlist("elicitation")
         #############################################################################################
         # namekaryaID = mongodb_info.find_one({"karyaaccesscode":accesscode},{"karyaspeakerid":1, "_id" :0})
-        namekaryaID = mongodb_info.find_one({"isActive":0},{"karyaspeakerid":1, "_id" :0})
-        
+        # namekaryaID = mongodb_info.find_one({"isActive":0},{"karyaspeakerid":1, "_id" :0})
+        namekaryaID = mongodb_info.find_one({"isActive":0, "projectname":activeprojectname, 
+                            "accesscodefor":accesscodefor, "task":task, 
+                            "domain":domain, "elicitationmethod":elicitationmethod, 
+                            "language":language},{"karyaspeakerid":1, "_id" :0})
         
         # lifeID = mongodb_info.find_one({"karyaaccesscode":accesscode},{"lifespeakerid":1, "_id" :0})
         # lIfeid = lifeID["lifespeakerid"]
@@ -323,6 +350,7 @@ def add():
             print("line 583", renameCode)  
             # namekaryaAddID.append(renameCode)
             update_data = {"lifespeakerid": renameCode,
+                                        
                                     "current.workerMetadata.name": fname, 
                                     "current.workerMetadata.agegroup": fage, 
                                     "current.workerMetadata.gender": fgender,
@@ -430,6 +458,9 @@ def add():
             mongodb_info.update_one({"karyaaccesscode": accesscode}, {"$set": update_data}) #new_user_info
 
     return redirect(url_for('karya_bp.homespeaker'))
+    # return render_template("homespeaker.html",
+                            # projectName=activeprojectname,
+                            # uploadacesscodemetadata=uploadacesscodemetadata)
 
    
 ##############################################################################################################
@@ -443,13 +474,24 @@ def add():
 @karya_bp.route('/homespeaker')
 def homespeaker():
 
-    userprojects, = getdbcollections.getdbcollections(mongo,'userprojects')
+    userprojects, projectsform = getdbcollections.getdbcollections(mongo,'userprojects', 'projectsform')
 
     current_username = getcurrentusername.getcurrentusername()
     print('curent user : ', current_username)
     activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
                                                                     userprojects)
    
+    projectform = projectsform.find_one({"projectname" : activeprojectname})  #domain, elictationmethod ,langscript-[1]
+    langscript = list(projectform["LangScript"][1].keys())
+    domain = projectform["Domain"][1]
+    elicitation = projectform["Elicitation Method"][1]
+    print(langscript, domain, elicitation)
+    uploadacesscodemetadata = {
+                                "langscript": langscript,
+                                "domain": domain,
+                                "elicitation": elicitation
+                                }
+    
     # formremaingkaryaaccesscode = ', '.join([data['lifespeakerid'] for data in remaingkaryaaccesscode])
     # faccsess = formremaingkaryaaccesscode.count() 
     # acc = request.form.get('accessid') 
@@ -515,6 +557,7 @@ def homespeaker():
     print(data_table)
     return render_template('homespeaker.html',
                             projectName=activeprojectname,
+                            uploadacesscodemetadata = uploadacesscodemetadata,
                             data=data_table)
 
 

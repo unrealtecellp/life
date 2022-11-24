@@ -268,13 +268,24 @@ var task = [
   {"id": "SPEECH_TRANSCRIPTION", "text": "Data Transcription"}
 ];
 
-
+var accesscodefor = [
+  {"id": "", "text": ""},
+  {"id": "0", "text": "Collect Data"},
+  {"id": "1", "text": "Download Data"}
+];
 
 $(document).ready(function () {
   $('.typeofcity').select2({
     // tags: true,
     placeholder: '--Type Of City:--',
     data: TypeOfCity ,
+    allowClear: true,
+    // console.log( "ready!" )
+  });
+
+  $('#idaccesscodefor').select2({
+    placeholder: '--Access Code For--',
+    data: accesscodefor,
     allowClear: true,
     // console.log( "ready!" )
   });
