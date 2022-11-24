@@ -56,23 +56,41 @@ karya_bp = Blueprint('karya_bp', __name__, template_folder='templates', static_f
 
 @karya_bp.route('/home_insert')
 def home_insert():
-    projects, userprojects, projectsform, questionnaires = getdbcollections.getdbcollections(mongo,
-                                                                                            'projects',
-                                                                                            'userprojects',
-                                                                                            'projectsform',
-                                                                                            'questionnaires')
+    userprojects, accesscodedetails = getdbcollections.getdbcollections(mongo,
+                                                                        'userprojects',
+                                                                        'accesscodedetails')
     current_username = getcurrentusername.getcurrentusername()
-    currentuserprojectsname =  getcurrentuserprojects.getcurrentuserprojects(current_username,
-                                                                                userprojects)
     activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
                                                                     userprojects)
     shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
                                                         current_username,
                                                         activeprojectname)
 
+    fetch_access_codes = accesscodedetails.find({'projectname': activeprojectname,
+                                                'fetchData': 1
+                                                },
+                                                {
+                                                    '_id': 0,
+                                                    'karyaaccesscode': 1,
+                                                    'assignedBy': 1,
+                                                    'uploadedBy': 1
+                                                })
+
+
+    fetch_access_code_list = []
+
+    for fetch_access_code in fetch_access_codes:
+        if (fetch_access_code['assignedBy'] != ''):
+            if (fetch_access_code['assignedBy'] == current_username):
+                fetch_access_code_list.append(fetch_access_code['karyaaccesscode'])
+            else:
+                if (current_username == fetch_access_code['uploadedBy']):
+                    fetch_access_code_list.append(fetch_access_code['karyaaccesscode'])
+
     return render_template("home_insert.html",
                             projectName=activeprojectname,
-                            shareinfo=shareinfo
+                            shareinfo=shareinfo,
+                            fetchaccesscodelist=fetch_access_code_list
                         )
     # return redirect(url_for('karya_bp.home_insert'))
     # return render_template("uploadfile.html")
