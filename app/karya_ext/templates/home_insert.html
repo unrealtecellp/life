@@ -1,7 +1,9 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html>
 
 <head>
+
+  <title>Karya Extension</title>
   
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
@@ -14,7 +16,7 @@
 
 
 
-  <style>
+  <!-- <style>
   
     h1 {text-align: center;}
 
@@ -27,126 +29,133 @@
       background-color: rgba(247, 235, 220, 0.253);
       padding: 1px;
     }
-    </style>
+    </style> -->
   
-</head>
+<!-- </head> -->
+{% extends "links.html" %}
 
+{% block title %}
+  Karya Extension
+{% endblock title %}
+
+<!-- <body> -->
+
+
+
+
+{% block styles %}
+{{super()}}
+{% endblock %}
   
-<body>
-  {% extends "links.html" %}
-
-
-
-  {% block styles %}
-  {{super()}}
-  <link href="{{url_for('.static', filename='dictionaryview.css')}}" rel="stylesheet">
-  {% endblock %}
-  
-  {% block app_content %}
+{% block app_content %}
   {% if projectName is defined %}
     <h4>
         Project Name : {{ projectName }}
-  
-    </h4><br>
+    </h4>
+    <br>
+    <br>
   {% endif %}
-  
-
-
-  <script>
-    $(document).ready(function() {
-                $('#getotpid').click(function() {
-                  // alert('Clicked')
-                  var acode = document.getElementById("piaccesscode").value;
-                  var mob = document.getElementById("pimobilenumber").value;
-                  console.log(acode)
-                  console.log(mob)
-                  $.getJSON("{{url_for('karya_bp.fetch_karya_otp')}}", {
-                    acode:String(acode), mob:String(mob)
-                    }, function(data) {
-                      console.log(data)
-                      // alert('DOne!')
-                      console.log(document.getElementById("getotpid").hidden);
-                      document.getElementById("getotpid").hidden=true;
-                      document.getElementById("fetchaudioid").disabled=false;
-                      document.getElementById("karyaotp").hidden=false;
-                    });
-                    return false;
-                });
-              })
-
-  </script>
-
-
-
 
   <div>
-  <meta name="viewport" content="width=device-width, initial-scale=1">  
-  <title>Save form Data in a Text File using JavaScript</title>
-<h1><b>Karya-LiFe Integration</b></h1>
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1">   -->
+    <!-- <title>Save form Data in a Text File using JavaScript</title> -->
+    <!-- <title>Save form Data in a Text File using JavaScript</title> -->
+    <!-- <h1><b>Karya-LiFe Integration</b></h1> -->
 
-<br><br><br><br>
-
-
-<h2>Fetch access code or upload access code file</h2>
-  <input type="button" class="btn btn-lg btn-primary create" value="Fetch/upload access code" onclick="window.location.href='{{url_for('karya_bp.uploadfile')}}';"> <br><br>
-  <br><br><br><br><br>
+    <!-- <br><br><br><br> -->
 
 
-<h2>Manage Access Code</h2>
-<input type="button" value="Manage Access Code" class="btn btn-lg btn-primary create" onclick="window.location.href='{{url_for('karya_bp.homespeaker')}}'; window"> <br><br>
-<br><br><br><br><br>
+    <!-- <h5>Fetch access code or upload access code file</h5> -->
+    {% if  shareinfo['sharemode']|int >= 10 %}
+      <input type="button" class="btn btn-lg btn-primary" value="Fetch/Upload Access Code" onclick="window.location.href='{{url_for('karya_bp.uploadfile')}}';">
+    {% endif %}
+      <!-- <br><br><br><br><br> -->
 
-<h2>Fetch Audio File</h2>
+    <br>
+    <br>
+    <!-- <h5>Manage Access Code</h5> -->
+    {% if  shareinfo['sharemode']|int >= 2 %}
+      <input class="btn btn-lg btn-primary" type="button" value="Manage Access Code" onclick="window.location.href='{{url_for('karya_bp.homespeaker')}}'; window">
+    {% endif %}
+    <!-- <br><br><br><br><br> -->
+    <br>
+    <hr>
+    <div class="row karyaaudiodata">
+      {% if  shareinfo['sharemode']|int >= 3 %}
+        <div class="col-md-6 fetchkaryarecording">
+          <h4>Fetch Karya Recordings</h4>
 
-<form name="fetchdata" method="POST" action="{{url_for('karya_bp.fetch_karya_audio')}}">
+          <form name="fetchdata" method="POST" action="{{url_for('karya_bp.fetch_karya_audio')}}">
+            <label for="piaccesscode">Access Code: </label>
+            <input type="text" name="access_code" id="piaccesscode" placeholder="Enter Access Code"/>
+            <br>
+            <label for="pimobilenumber">Mobile Number: </label>
+            <input type="number" name = "mobile_number" id="pimobilenumber" placeholder="Enter Mobile Number"/>
+            <br>
+            <input type="button" class="btn btn-primary" id="getotpid" value="Get OTP">
+            <br>
+            <br>
+            <label for="karyaotp">Enter OTP</label>
+            <input type = "text" name = "karya_otp" id="karyaotp" hidden/>
+            <br>
+            <br>
+            <input type="submit" class="btn btn-primary" id="fetchaudioid" value="Fetch Audio"> <br>
 
-<input type="text" name="access_code" id="piaccesscode" placeholder="Enter Access Code"/>
-<input type="number" name = "mobile_number" id="pimobilenumber" placeholder="Enter Mobile Number"/>
+          </form>
+        </div>
+      {% endif %}
 
-<input type="button" class="btn btn-primary create" id="getotpid" value="Get OTP"> <br>
+      <!-- <br><br><br><br> -->
+      {% if  shareinfo['sharemode']|int >= 3 %}
+        <div class="col-md-6 uploadkaryarecording pull-right">
+          <h4>Upload Karya Recordings</h4>
+          <form action="{{ url_for('karya_bp.fetch_karya_audio_zip') }}" method="POST" enctype="multipart/form-data">
 
-<label for="karyaotp"><h3>Enter OTP</h3></label>
-<input type = "text" name = "karya_otp" id="karyaotp" hidden/>
+          <!-- <h2>Fetch access code with metadata</h2>
+              <a href="register_user.html">
+                <button>Fetch access code</button>
+              </a>
+              -->
+            
+              <p>Click on the "Choose File" button to upload a zip file*:<p>
+              <input type="file" id="accesscodefile" name="accesscodefile">
+              <br>
+          
+            <input class="btn btn-primary" id="submit" type="submit" value="Submit" >
+          </form>
+        </div>
+      {% endif %}
+    </div>
+  </div>
 
-<input type="submit" class="btn btn-primary create" id="fetchaudioid" value="Fetch Audio"> <br>
-
-</form>
-
-<br><br><br><br>    
-<form action="{{ url_for('karya_bp.fetch_karya_audio_zip') }}" method="POST" enctype="multipart/form-data">
-
-  <!-- <h2>Fetch access code with metadata</h2>
-      <a href="register_user.html">
-        <button>Fetch access code</button>
-      </a>
-       -->
-  <h2>Upload Karya Recordings</h3>        
-  <h4>Click on the "Choose File" button to upload a zip file*:</h4>
-    <input type="file" id="accesscodefile" name="accesscodefile"><br>
-  
-    <input class="btn btn-lg btn-primary create" id="submit" type="submit" value="Submit" >
-  </form>
-</div>
-
-<br><br><br><br>
+  <!-- <br><br><br><br> -->
 {% endblock %}
-</body>
+<!-- </body> -->
 
 {% block scripts %}
 {{super()}}
-<script src="{{url_for('.static', filename='dictionaryview.js')}}"></script>
-<script src="{{url_for('.static', filename='search.js')}}"></script>
-<script src="{{url_for('.static', filename='sorttable.js')}}"></script>
-<script src="{{url_for('.static', filename='lexemeview.js')}}"></script>
-<script src="{{url_for('.static', filename='lexemeedit.js')}}"></script>
-<script src="{{url_for('.static', filename='editlexeme.js')}}"></script>
-<script src="{{url_for('.static', filename='lexemedelete.js')}}"></script>
-<script src="{{url_for('.static', filename='shareproject.js')}}"></script>
-<script src="{{url_for('.static', filename='shareprojectwith.js')}}"></script>
 <script src="{{url_for('.static', filename='speaker_select2_dropdown.js')}}"></script>
+<script>
+  $(document).ready(function() {
+              $('#getotpid').click(function() {
+                // alert('Clicked')
+                var acode = document.getElementById("piaccesscode").value;
+                var mob = document.getElementById("pimobilenumber").value;
+                console.log(acode)
+                console.log(mob)
+                $.getJSON("{{url_for('karya_bp.fetch_karya_otp')}}", {
+                  acode:String(acode), mob:String(mob)
+                  }, function(data) {
+                    console.log(data)
+                    // alert('DOne!')
+                    console.log(document.getElementById("getotpid").hidden);
+                    document.getElementById("getotpid").hidden=true;
+                    document.getElementById("fetchaudioid").disabled=false;
+                    document.getElementById("karyaotp").hidden=false;
+                  });
+                  return false;
+              });
+            })
+
+</script>
 {% endblock %} 
-</html>
-
-
-
-

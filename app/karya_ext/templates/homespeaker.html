@@ -41,21 +41,12 @@
 {% endblock %}
 
 {% block app_content %}
-{% if projectName is defined %}
-  <h4>
-      Project Name : {{ projectName }}
-
-  </h4><br>
-{% endif %}
-
-
-    
-<script>    
-
-      
-</script>
-
-
+  {% if projectName is defined %}
+    <h4>
+        Project Name : {{ projectName }}
+    </h4>
+    <br>
+  {% endif %}
 
 <!-- 
 <div> -->

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html>
 <head>
   <meta name="viewport" content="width=device-width">
@@ -22,97 +22,94 @@
             <br />
         </div> -->
       
-      
-      <!--Siddharth Code Start-->
-      
-      
-      {% extends "links.html" %}
+  
       
       
-      
-      {% block styles %}
-      {{super()}}
-      <link href="{{url_for('.static', filename='dictionaryview.css')}}" rel="stylesheet">
-      {% endblock %}
-      
-      {% block app_content %}
-      {% if projectName is defined %}
-        <h4>
-            Project Name : {{ projectName }}
-      
-        </h4><br>
-      {% endif %}
-      
-      
-          
-      <script>    
-      
-            
-      </script>
-      
-      
-      <h1><center><b>Karya-LiFe Integration</b></center></h1>
-      <br><br><br><br>
- 
-      <form action="{{ url_for('karya_bp.uploadfile') }}" method="POST" enctype="multipart/form-data"> 
-        
-        <div id="uploadaccode"></div>
-        <!-- <div class="form-group"> 
-          <label for="lang">Language :</label><br>                           
-          <select class="languages" id="idlangs" name="lang" style="width:55%" required></select><br>
-       </div>  -->
+      <!-- <h1><center><b>Karya-LiFe Integration</b></center></h1>
+      <br><br><br><br> -->
+{% extends "links.html" %}
+
+{% block title %}
+  Upload Access Code
+{% endblock title %}
+
+<!-- <body> -->
 
 
-        <div class="form-group">
-          <label for="idtask">Task :</label><br>                           
-          <select class="task" id="idtask" name="task"  style="width:55%" required></select><br>
-        </div> 
-
-      <!-- <div class="form-group">
-        <label for="domain">Domain :</label><br>                           
-        <select class="domain" id="iddomain" name="domain" multiple="multiple" style="width:55%" ></select><br>
-      </div> 
 
 
-      <div class="form-group">
-        <label for="idelicitation">Elicitation Method :</label><br>                           
-        <select class="elicitation" id="idelicitation" name="elicitation" multiple="multiple" style="width:55%" ></select><br>
-      </div>  -->
-      <div class="form-group">
-        <label for="idphase">Phase :</label><br>
-        <input type="number" name = "phase" id="idphase" placeholder="--Phase--" required>
-      </div>
-      <div class="form-group">
-        <input type="checkbox" name = "fetchdata" id="idfetchdata">
-        <label for="idfetchdata">Check this for using the access code(s) to fetch data from Karya :</label>
-      </div>
-      <br>
-        <label for="idaccesscodefile">Upload Access Codes (in CSV format) :</label><br>
-        <input type="file" id="idaccesscodefile" name="accesscodefile" required>
-          <!-- <p>Click on the "Choose File" button to upload a file of access code and metadata*:</p> -->
-        <br>        
-        <input class="btn btn-lg btn-primary create" id="submit" type="submit" value="Submit" >
-      </form>
-      {% endblock %}
+{% block styles %}
+  {{super()}}
+{% endblock %}
+  
+{% block app_content %}
+  {% if projectName is defined %}
+    <h4>
+        Project Name : {{ projectName }}
+    </h4>
+    <br>
+    <br>
+  {% endif %}
+      
+  <form action="{{ url_for('karya_bp.uploadfile') }}" method="POST" enctype="multipart/form-data"> 
+    
+    <div id="uploadaccode"></div>
+    <!-- <div class="form-group"> 
+      <label for="lang">Language :</label><br>                           
+      <select class="languages" id="idlangs" name="lang" style="width:55%" required></select><br>
+    </div>  -->
 
-</body>
+
+    <div class="form-group">
+      <label for="idtask">Task :</label><br>                           
+      <select class="task" id="idtask" name="task"  style="width:55%" required></select><br>
+    </div> 
+
+    <!-- <div class="form-group">
+      <label for="domain">Domain :</label><br>                           
+      <select class="domain" id="iddomain" name="domain" multiple="multiple" style="width:55%" ></select><br>
+    </div> 
+
+
+    <div class="form-group">
+      <label for="idelicitation">Elicitation Method :</label><br>                           
+      <select class="elicitation" id="idelicitation" name="elicitation" multiple="multiple" style="width:55%" ></select><br>
+    </div>  -->
+    <div class="form-group">
+      <label for="idphase">Phase :</label><br>
+      <input type="number" name = "phase" id="idphase" placeholder="--Phase--" required>
+    </div>
+    <div class="form-group">
+      <input type="checkbox" name = "fetchdata" id="idfetchdata">
+      <label for="idfetchdata">Check this for using the access code(s) to fetch data from Karya :</label>
+    </div>
+    <br>
+    <label for="idaccesscodefile">Upload Access Codes (in CSV format) :</label><br>
+    <input type="file" id="idaccesscodefile" name="accesscodefile" required>
+      <!-- <p>Click on the "Choose File" button to upload a file of access code and metadata*:</p> -->
+    <br>        
+    <input class="btn btn-lg btn-primary create" id="submit" type="submit" value="Submit" >
+  </form>
+{% endblock %}
+
+<!-- </body> -->
 
 
 {% block scripts %}
-{{super()}}
-<script src="{{url_for('.static', filename='dictionaryview.js')}}"></script>
-<script src="{{url_for('.static', filename='search.js')}}"></script>
-<script src="{{url_for('.static', filename='sorttable.js')}}"></script>
-<script src="{{url_for('.static', filename='lexemeview.js')}}"></script>
-<script src="{{url_for('.static', filename='lexemeedit.js')}}"></script>
-<script src="{{url_for('.static', filename='editlexeme.js')}}"></script>
-<script src="{{url_for('.static', filename='lexemedelete.js')}}"></script>
-<script src="{{url_for('.static', filename='shareproject.js')}}"></script>
-<script src="{{url_for('.static', filename='shareprojectwith.js')}}"></script>
-<script src="{{url_for('.static', filename='speaker_select2_dropdown.js')}}"></script>
-<script src="{{url_for('.static', filename='uploadaccesscode.js')}}"></script>
-<script type="text/javascript">uploadaccesscodeform({{ uploadacesscodemetadata | tojson | safe }});</script>
+  {{super()}}
+  <script src="{{url_for('.static', filename='dictionaryview.js')}}"></script>
+  <script src="{{url_for('.static', filename='search.js')}}"></script>
+  <script src="{{url_for('.static', filename='sorttable.js')}}"></script>
+  <script src="{{url_for('.static', filename='lexemeview.js')}}"></script>
+  <script src="{{url_for('.static', filename='lexemeedit.js')}}"></script>
+  <script src="{{url_for('.static', filename='editlexeme.js')}}"></script>
+  <script src="{{url_for('.static', filename='lexemedelete.js')}}"></script>
+  <script src="{{url_for('.static', filename='shareproject.js')}}"></script>
+  <script src="{{url_for('.static', filename='shareprojectwith.js')}}"></script>
+  <script src="{{url_for('.static', filename='speaker_select2_dropdown.js')}}"></script>
+  <script src="{{url_for('.static', filename='uploadaccesscode.js')}}"></script>
+  <script type="text/javascript">uploadaccesscodeform({{ uploadacesscodemetadata | tojson | safe }});</script>
 {% endblock %}
 
 
-</html>
+<!-- </html> -->

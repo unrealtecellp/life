@@ -22,7 +22,7 @@ from werkzeug.security import generate_password_hash
 from app import app, mongo
 from app.controller import getdbcollections, getactiveprojectname, getcurrentuserprojects
 from app.controller import getprojectowner, getcurrentusername, readJSONFile, audiodetails
-from app.controller import questionnairedetails 
+from app.controller import questionnairedetails, getuserprojectinfo
 from app.controller import getprojecttype
 
 from app.karya_ext import quesaudiodetails
@@ -56,7 +56,24 @@ karya_bp = Blueprint('karya_bp', __name__, template_folder='templates', static_f
 
 @karya_bp.route('/home_insert')
 def home_insert():
-    return render_template("home_insert.html")
+    projects, userprojects, projectsform, questionnaires = getdbcollections.getdbcollections(mongo,
+                                                                                            'projects',
+                                                                                            'userprojects',
+                                                                                            'projectsform',
+                                                                                            'questionnaires')
+    current_username = getcurrentusername.getcurrentusername()
+    currentuserprojectsname =  getcurrentuserprojects.getcurrentuserprojects(current_username,
+                                                                                userprojects)
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                    userprojects)
+    shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
+                                                        current_username,
+                                                        activeprojectname)
+
+    return render_template("home_insert.html",
+                            projectName=activeprojectname,
+                            shareinfo=shareinfo
+                        )
     # return redirect(url_for('karya_bp.home_insert'))
     # return render_template("uploadfile.html")
 
@@ -95,7 +112,10 @@ import os
 from datetime import datetime
 @karya_bp.route('/uploadfile' , methods=['GET', 'POST'])
 def uploadfile():
-    karyaaccesscodedetails,userprojects,projectsform = getdbcollections.getdbcollections(mongo, 'accesscodedetails', 'userprojects','projectsform')
+    karyaaccesscodedetails, userprojects, projectsform = getdbcollections.getdbcollections(mongo,
+                                                                                            'accesscodedetails',
+                                                                                            'userprojects',
+                                                                                            'projectsform')
     current_username = getcurrentusername.getcurrentusername()
     print('curent user : ', current_username)
     activeprojectname = getactiveprojectname.getactiveprojectname(current_username, userprojects)
@@ -107,6 +127,11 @@ def uploadfile():
     domain = projectform["Domain"][1]
     elicitation = projectform["Elicitation Method"][1]
     print(langscript, domain, elicitation)
+    uploadacesscodemetadata = {
+                                "langscript": langscript,
+                                "domain": domain,
+                                "elicitation": elicitation
+                                }
     
     # mongodb_info = mongo.db.accesscodedetails
 
@@ -174,7 +199,9 @@ def uploadfile():
         # flash('Successfully added new lexeme')
         return redirect(url_for('karya_bp.home_insert'))
 
-    return render_template("uploadfile.html", uploadacesscodemetadata = {"langscript": langscript,"domain": domain,"elicitation": elicitation})
+    return render_template("uploadfile.html",
+                            projectName=activeprojectname,
+                            uploadacesscodemetadata=uploadacesscodemetadata)
 
 
 
@@ -415,6 +442,13 @@ def add():
 
 @karya_bp.route('/homespeaker')
 def homespeaker():
+
+    userprojects, = getdbcollections.getdbcollections(mongo,'userprojects')
+
+    current_username = getcurrentusername.getcurrentusername()
+    print('curent user : ', current_username)
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                    userprojects)
    
     # formremaingkaryaaccesscode = ', '.join([data['lifespeakerid'] for data in remaingkaryaaccesscode])
     # faccsess = formremaingkaryaaccesscode.count() 
@@ -479,7 +513,9 @@ def homespeaker():
     data_table = [[ karya_accesscode[i], lifeId[i], speaker_data_name[i], speaker_data_age[i], speaker_data_gender[i]] for i in range(0, len(karya_accesscode))]
     
     print(data_table)
-    return render_template('homespeaker.html', data = data_table)
+    return render_template('homespeaker.html',
+                            projectName=activeprojectname,
+                            data=data_table)
 
 
 ##############################################################################################################
