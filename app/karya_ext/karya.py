@@ -198,7 +198,7 @@ def uploadfile():
                                                 "educationlevel": "", "educationmediumupto12": "", 
                                                 "educationmediumafter12": "", "speakerspeaklanguage" :"", 
                                                 "recordingplace": "", "typeofrecordingplace" : "", 
-                                                "activeAccessCode": ""}, "current_date":current_dt},
+                                                "activeAccessCode": ""}, "updatedBy":"","current_date":current_dt},
                         "previous": {},
                         "fetchData": fetch_data,
                         "karyafetchedaudios":[],                        
@@ -324,8 +324,7 @@ def add():
         por = request.form.get('por')
         toc = request.form.get('toc')
 
-        accesscodefor = request.form.get('accesscodefor')
-        
+        accesscodefor = int(request.form.get('accesscodefor'))
         task = request.form.get('task')
         language = request.form.get('langscript') 
         domain = request.form.getlist('domain')
@@ -334,18 +333,27 @@ def add():
         # namekaryaID = mongodb_info.find_one({"karyaaccesscode":accesscode},{"karyaspeakerid":1, "_id" :0})
         # namekaryaID = mongodb_info.find_one({"isActive":0},{"karyaspeakerid":1, "_id" :0})
         namekaryaID = mongodb_info.find_one({"isActive":0, "projectname":activeprojectname, 
-                            "accesscodefor":accesscodefor, "task":task, 
+                            "fetchData":accesscodefor, "task":task, 
                             "domain":domain, "elicitationmethod":elicitationmethod, 
-                            "language":language},{"karyaspeakerid":1, "_id" :0})
+                            "language":language},{"karyaspeakerid":1,"karyaaccesscode":1 , "_id" :0})
         
         # lifeID = mongodb_info.find_one({"karyaaccesscode":accesscode},{"lifespeakerid":1, "_id" :0})
         # lIfeid = lifeID["lifespeakerid"]
         # namekaryaIDDOB = mongodb_info.find_one({"isActive":0},{"current.workerMetadata.agegroup":1 , "_id" :0})
         # rDOB = namekaryaIDDOB["current"]["workerMetadata"]["agegroup"]
         # renameInFormDOB = rDOB.replace("-","")
+        test = {"isActive":0, "projectname":activeprojectname, 
+                            "fetchData":accesscodefor, "task":task, 
+                            "domain":domain, "elicitationmethod":elicitationmethod, 
+                            "language":language}
+        print(test)                   
         print(namekaryaID)
         # for lidata in namekaryaID:
         #     print("574 ", lidata)
+        if namekaryaID is None: 
+            flash("Please Upload New Access Code")
+            return redirect(url_for('karya_bp.home_insert'))
+
         namekaryaIDDOB = fage
         nameInForm = fname 
         if namekaryaIDDOB and nameInForm is not None:  
@@ -368,7 +376,8 @@ def add():
             print("line 583", renameCode)  
             # namekaryaAddID.append(renameCode)
             update_data = {"lifespeakerid": renameCode,
-                                        
+                                    "assignedBy" :  current_username, 
+                                    "current.updatedBy" :  current_username,
                                     "current.workerMetadata.name": fname, 
                                     "current.workerMetadata.agegroup": fage, 
                                     "current.workerMetadata.gender": fgender,
@@ -380,7 +389,8 @@ def add():
                                     "current.workerMetadata.typeofrecordingplace": toc,
                                     "isActive": 1}
         else:
-            update_data = {"current.workerMetadata.gender": fgender,
+            update_data = {"current.updatedBy" :  current_username,
+                                "current.workerMetadata.gender": fgender,
                                     "current.workerMetadata.educationlevel": educlvl,
                                     "current.workerMetadata.educationmediumupto12": moe12,
                                     "current.workerMetadata.educationmediumafter12": moea12,
@@ -423,7 +433,9 @@ def add():
 ##########################################################################################################################
         print("this acc code at line 460", accesscode)
         if accesscode == '':
-            karyaaccesscode = mongodb_info.find_one({"isActive":0},{"karyaaccesscode":1, "_id" :0})
+            # karyaaccesscode = mongodb_info.find_one({"isActive":0},{"karyaaccesscode":1, "_id" :0})
+            
+            karyaaccesscode = {"karyaaccesscode":namekaryaID["karyaaccesscode"]}
             if karyaaccesscode != None:
                 accesscode = karyaaccesscode['karyaaccesscode']
             else:
@@ -440,7 +452,7 @@ def add():
 
         else:
             previous_speakerdetails = mongodb_info.find_one({"karyaaccesscode": accesscode},
-                                                {"current.workerMetadata": 1, "_id": 0,})
+                                                {"current.workerMetadata": 1, "current.updatedBy":1, "_id": 0,})
 
             ###########################################
             ## TOdo: Add date to the previous metadata
@@ -469,7 +481,8 @@ def add():
                                                     "previous."+date_of_modified+".workerMetadata.educationmediumupto12": previous_speakerdetails["current"]["workerMetadata"]["educationmediumupto12"],
                                                     "previous."+date_of_modified+".workerMetadata.educationmediumafter12": previous_speakerdetails["current"]["workerMetadata"]["educationmediumafter12"],
                                                     "previous."+date_of_modified+".workerMetadata.speakerspeaklanguage": previous_speakerdetails["current"]["workerMetadata"]["speakerspeaklanguage"],
-                                                    "previous."+date_of_modified+".workerMetadata.recordingplace": previous_speakerdetails["current"]["workerMetadata"]["recordingplace"]
+                                                    "previous."+date_of_modified+".workerMetadata.recordingplace": previous_speakerdetails["current"]["workerMetadata"]["recordingplace"],
+                                                    "previous."+date_of_modified+".updatedBy" : previous_speakerdetails["current"]["updatedBy"]
                                                     }
 
             mongodb_info.update_one({"karyaaccesscode": accesscode}, {"$set": update_old_data}) # Edit_old_user_info
