@@ -86,8 +86,9 @@
           <h4>Fetch Karya Recordings</h4>
 
           <form name="fetchdata" method="POST" action="{{url_for('karya_bp.fetch_karya_audio')}}">
-            <label for="piaccesscode">Access Code: </label>
-            <input type="text" name="access_code" id="piaccesscode" placeholder="Enter Access Code"/>
+            <!-- <label for="piaccesscode">Access Code: </label> -->
+            <!-- <input type="text" name="access_code" id="piaccesscode" placeholder="Enter Access Code"/> -->
+            <div id="piaccesscode"></div>
             <br>
             <label for="pimobilenumber">Mobile Number: </label>
             <input type="number" name = "mobile_number" id="pimobilenumber" placeholder="Enter Mobile Number"/>
@@ -135,6 +136,8 @@
 {% block scripts %}
 {{super()}}
 <script src="{{url_for('.static', filename='speaker_select2_dropdown.js')}}"></script>
+<script src="{{url_for('.static', filename='fetchaccesscodelist.js')}}"></script>
+<script type="text/javascript">fetchAccessCodeList({{ fetchaccesscodelist | tojson | safe }});</script>
 <script>
   $(document).ready(function() {
               $('#getotpid').click(function() {
