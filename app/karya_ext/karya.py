@@ -323,118 +323,109 @@ def add():
         sols = request.form.getlist('sols')
         por = request.form.get('por')
         toc = request.form.get('toc')
-
-        accesscodefor = int(request.form.get('accesscodefor'))
-        task = request.form.get('task')
-        language = request.form.get('langscript') 
-        domain = request.form.getlist('domain')
-        elicitationmethod = request.form.getlist("elicitation")
-        #############################################################################################
-        # namekaryaID = mongodb_info.find_one({"karyaaccesscode":accesscode},{"karyaspeakerid":1, "_id" :0})
-        # namekaryaID = mongodb_info.find_one({"isActive":0},{"karyaspeakerid":1, "_id" :0})
-        namekaryaID = mongodb_info.find_one({"isActive":0, "projectname":activeprojectname, 
-                            "fetchData":accesscodefor, "task":task, 
-                            "domain":domain, "elicitationmethod":elicitationmethod, 
-                            "language":language},{"karyaspeakerid":1,"karyaaccesscode":1 , "_id" :0})
-        
-        # lifeID = mongodb_info.find_one({"karyaaccesscode":accesscode},{"lifespeakerid":1, "_id" :0})
-        # lIfeid = lifeID["lifespeakerid"]
-        # namekaryaIDDOB = mongodb_info.find_one({"isActive":0},{"current.workerMetadata.agegroup":1 , "_id" :0})
-        # rDOB = namekaryaIDDOB["current"]["workerMetadata"]["agegroup"]
-        # renameInFormDOB = rDOB.replace("-","")
-        test = {"isActive":0, "projectname":activeprojectname, 
-                            "fetchData":accesscodefor, "task":task, 
-                            "domain":domain, "elicitationmethod":elicitationmethod, 
-                            "language":language}
-        print(test)                   
-        print(namekaryaID)
-        # for lidata in namekaryaID:
-        #     print("574 ", lidata)
-        if namekaryaID is None: 
-            flash("Please Upload New Access Code")
-            return redirect(url_for('karya_bp.home_insert'))
-
-        namekaryaIDDOB = fage
-        nameInForm = fname 
-        if namekaryaIDDOB and nameInForm is not None:  
+        if accesscode  == '':
+            accesscodefor = int(request.form.get('accesscodefor'))
+            task = request.form.get('task')
+            language = request.form.get('langscript') 
+            domain = request.form.getlist('domain')
+            elicitationmethod = request.form.getlist("elicitation")
+            #############################################################################################
+            # namekaryaID = mongodb_info.find_one({"karyaaccesscode":accesscode},{"karyaspeakerid":1, "_id" :0})
+            # namekaryaID = mongodb_info.find_one({"isActive":0},{"karyaspeakerid":1, "_id" :0})
+            namekaryaID = mongodb_info.find_one({"isActive":0, "projectname":activeprojectname, 
+                                "fetchData":accesscodefor, "task":task, 
+                                "domain":domain, "elicitationmethod":elicitationmethod, 
+                                "language":language},{"karyaspeakerid":1,"karyaaccesscode":1 , "_id" :0})
             
-            print("230 ========================== >>>>>>>>>>>>>>>>>>>>     ",nameInForm , type(nameInForm))
+            # lifeID = mongodb_info.find_one({"karyaaccesscode":accesscode},{"lifespeakerid":1, "_id" :0})
+            # lIfeid = lifeID["lifespeakerid"]
+            # namekaryaIDDOB = mongodb_info.find_one({"isActive":0},{"current.workerMetadata.agegroup":1 , "_id" :0})
+            # rDOB = namekaryaIDDOB["current"]["workerMetadata"]["agegroup"]
+            # renameInFormDOB = rDOB.replace("-","")
+            test = {"isActive":0, "projectname":activeprojectname, 
+                                "fetchData":accesscodefor, "task":task, 
+                                "domain":domain, "elicitationmethod":elicitationmethod, 
+                                "language":language}
+            print(test)                   
+            print(namekaryaID)
+            # for lidata in namekaryaID:
+            #     print("574 ", lidata)
+            if namekaryaID is None: 
+                flash("Please Upload New Access Code")
+                return redirect(url_for('karya_bp.home_insert'))
 
-            print("231 =========================  >>>>>>>>>>>>>>>>>>>>      ", namekaryaIDDOB, type(namekaryaIDDOB))
-            # if namekaryaID is not None:
-            #     try :
-            renameInFormDOB = namekaryaIDDOB.replace("-","")
-            print("227  ==========================================>>>>>>>>>>   ", renameInFormDOB)
-            codes = namekaryaID["karyaspeakerid"]
-            print(codes)
+            namekaryaIDDOB = fage
+            nameInForm = fname 
+            if namekaryaIDDOB and nameInForm is not None:  
+                
+                print("230 ========================== >>>>>>>>>>>>>>>>>>>>     ",nameInForm , type(nameInForm))
+
+                print("231 =========================  >>>>>>>>>>>>>>>>>>>>      ", namekaryaIDDOB, type(namekaryaIDDOB))
+                # if namekaryaID is not None:
+                #     try :
+                renameInFormDOB = namekaryaIDDOB.replace("-","")
+                print("227  ==========================================>>>>>>>>>>   ", renameInFormDOB)
+                codes = namekaryaID["karyaspeakerid"]
+                print(codes)
+                
+                renameInForm = nameInForm.replace(" ","")
+                lowerRenameInForm = renameInForm.lower()
+                renameDOB =  "".join([lowerRenameInForm,renameInFormDOB])
+                print("232 =========================>>>>>>>>>>>>    " , renameDOB)
+                renameCode ="_".join([renameDOB,codes])
+                print("line 583", renameCode)  
+                # namekaryaAddID.append(renameCode)
+                update_data = {"lifespeakerid": renameCode,
+                                        "assignedBy" :  current_username, 
+                                        "current.updatedBy" :  current_username,
+                                        "current.workerMetadata.name": fname, 
+                                        "current.workerMetadata.agegroup": fage, 
+                                        "current.workerMetadata.gender": fgender,
+                                        "current.workerMetadata.educationlevel": educlvl,
+                                        "current.workerMetadata.educationmediumupto12": moe12,
+                                        "current.workerMetadata.educationmediumafter12": moea12,
+                                        "current.workerMetadata.speakerspeaklanguage": sols,
+                                        "current.workerMetadata.recordingplace": por,
+                                        "current.workerMetadata.typeofrecordingplace": toc,
+                                        "isActive": 1}
+                         
+                    # speaker_data_accesscode.append(data["lifespeakerid"])
+            # print("587 ",namekaryaAddID)
+
+
+            # update_data = {"lifespeakerid": renameCode,
+            #                             "current.workerMetadata.name": fname, 
+            #                             "current.workerMetadata.agegroup": fage, 
+            #                             "current.workerMetadata.gender": fgender,
+            #                             "current.workerMetadata.educationlevel": educlvl,
+            #                             "current.workerMetadata.educationmediumupto12": moe12,
+            #                             "current.workerMetadata.educationmediumafter12": moea12,
+            #                             "current.workerMetadata.speakerspeaklanguage": sols,
+            #                             "current.workerMetadata.recordingplace": por,
+            #                             "current.workerMetadata.typeofrecordingplace": toc,
+            #                             "isActive": 1}
             
-            renameInForm = nameInForm.replace(" ","")
-            lowerRenameInForm = renameInForm.lower()
-            renameDOB =  "".join([lowerRenameInForm,renameInFormDOB])
-            print("232 =========================>>>>>>>>>>>>    " , renameDOB)
-            renameCode ="_".join([renameDOB,codes])
-            print("line 583", renameCode)  
-            # namekaryaAddID.append(renameCode)
-            update_data = {"lifespeakerid": renameCode,
-                                    "assignedBy" :  current_username, 
-                                    "current.updatedBy" :  current_username,
-                                    "current.workerMetadata.name": fname, 
-                                    "current.workerMetadata.agegroup": fage, 
-                                    "current.workerMetadata.gender": fgender,
-                                    "current.workerMetadata.educationlevel": educlvl,
-                                    "current.workerMetadata.educationmediumupto12": moe12,
-                                    "current.workerMetadata.educationmediumafter12": moea12,
-                                    "current.workerMetadata.speakerspeaklanguage": sols,
-                                    "current.workerMetadata.recordingplace": por,
-                                    "current.workerMetadata.typeofrecordingplace": toc,
-                                    "isActive": 1}
-        else:
-            update_data = {"current.updatedBy" :  current_username,
-                                "current.workerMetadata.gender": fgender,
-                                    "current.workerMetadata.educationlevel": educlvl,
-                                    "current.workerMetadata.educationmediumupto12": moe12,
-                                    "current.workerMetadata.educationmediumafter12": moea12,
-                                    "current.workerMetadata.speakerspeaklanguage": sols,
-                                    "current.workerMetadata.recordingplace": por,
-                                    "current.workerMetadata.typeofrecordingplace": toc,
-                                    "isActive": 1}                
-                # speaker_data_accesscode.append(data["lifespeakerid"])
-        # print("587 ",namekaryaAddID)
-
-
-        # update_data = {"lifespeakerid": renameCode,
-        #                             "current.workerMetadata.name": fname, 
-        #                             "current.workerMetadata.agegroup": fage, 
-        #                             "current.workerMetadata.gender": fgender,
-        #                             "current.workerMetadata.educationlevel": educlvl,
-        #                             "current.workerMetadata.educationmediumupto12": moe12,
-        #                             "current.workerMetadata.educationmediumafter12": moea12,
-        #                             "current.workerMetadata.speakerspeaklanguage": sols,
-        #                             "current.workerMetadata.recordingplace": por,
-        #                             "current.workerMetadata.typeofrecordingplace": toc,
-        #                             "isActive": 1}
-        
-        # update_data = {"current.workerMetadata.name": fname, 
-        #                              "current.workerMetadata.agegroup": fage, 
-        #                              "current.workerMetadata.gender": fgender,
-        #                              "current.workerMetadata.educationlevel": educlvl,
-        #                              "current.workerMetadata.educationmediumupto12": moe12,
-        #                              "current.workerMetadata.educationmediumafter12": moea12,
-        #                              "current.workerMetadata.speakerspeaklanguage": sols,
-        #                              "current.workerMetadata.recordingplace": por,
-        #                              "current.workerMetadata.typeofrecordingplace": toc,
-        #                              "isActive": 1}
-        # accesscode = request.form.get('accode')
-#########################################################################################################################
-#########################################################################################################################
-        accesscode = request.form.get('accode')
-        print("=======================> ",accesscode )
-#########################################################################################################################
-##########################################################################################################################
-        print("this acc code at line 460", accesscode)
-        if accesscode == '':
-            # karyaaccesscode = mongodb_info.find_one({"isActive":0},{"karyaaccesscode":1, "_id" :0})
-            
+            # update_data = {"current.workerMetadata.name": fname, 
+            #                              "current.workerMetadata.agegroup": fage, 
+            #                              "current.workerMetadata.gender": fgender,
+            #                              "current.workerMetadata.educationlevel": educlvl,
+            #                              "current.workerMetadata.educationmediumupto12": moe12,
+            #                              "current.workerMetadata.educationmediumafter12": moea12,
+            #                              "current.workerMetadata.speakerspeaklanguage": sols,
+            #                              "current.workerMetadata.recordingplace": por,
+            #                              "current.workerMetadata.typeofrecordingplace": toc,
+            #                              "isActive": 1}
+            # accesscode = request.form.get('accode')
+    #########################################################################################################################
+    #########################################################################################################################
+            accesscode = request.form.get('accode')
+            print("=======================> ",accesscode )
+    #########################################################################################################################
+    ##########################################################################################################################
+            print("this acc code at line 460", accesscode)
+            # if accesscode == '':
+                # karyaaccesscode = mongodb_info.find_one({"isActive":0},{"karyaaccesscode":1, "_id" :0})
+                
             karyaaccesscode = {"karyaaccesscode":namekaryaID["karyaaccesscode"]}
             if karyaaccesscode != None:
                 accesscode = karyaaccesscode['karyaaccesscode']
@@ -451,6 +442,15 @@ def add():
             
 
         else:
+            update_data = {"current.updatedBy" :  current_username,
+                                "current.workerMetadata.gender": fgender,
+                                    "current.workerMetadata.educationlevel": educlvl,
+                                    "current.workerMetadata.educationmediumupto12": moe12,
+                                    "current.workerMetadata.educationmediumafter12": moea12,
+                                    "current.workerMetadata.speakerspeaklanguage": sols,
+                                    "current.workerMetadata.recordingplace": por,
+                                    "current.workerMetadata.typeofrecordingplace": toc,
+                                    "isActive": 1}   
             previous_speakerdetails = mongodb_info.find_one({"karyaaccesscode": accesscode},
                                                 {"current.workerMetadata": 1, "current.updatedBy":1, "_id": 0,})
 

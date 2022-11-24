@@ -102,6 +102,11 @@
 
               $(document).ready(function() {
                 $('.lexemeview').click(function() {
+                  $('#accodeformheader').find('input, select').attr('disabled', true);
+                  $('#accodeformheader').find('input, select').attr('required', false);
+                  
+                  document.getElementById("accodeformheader").style.display = "none";
+                  
                   buttonType = $(this).attr("id")
                   activeform(buttonType)
                   $('#formdisplay').find('input, select').attr('disabled', true);
@@ -118,7 +123,7 @@
                     asycaccesscode:String(accode)
                     }, function(data) {
                         console.log(data)
-                        metadata = data.speakerdetails.current.speakerMetadata
+                        metadata = data.speakerdetails.current.workerMetadata
                         console.log (metadata)
                         // accesscode = data.speakerdetails.accesscode
                         $('#accesscode').attr('value', accode)
@@ -202,12 +207,14 @@
                 });
                 
                 $('#editbutton').click(function() {
+
                   $('#formdisplay').find('input, select').attr('disabled', false);
                   $('#editbutton').attr('hidden', true);
                   // $('#idname').hidden();
                   // $('#idage').attr('hidden', false);
                   document.getElementById('idname').disabled = true;
                   document.getElementById('idage').disabled = true;
+                  $('#accodeformheader').find('input, select').attr('disabled', true);
                 });
 
                 $('.assignaccesscode').click(function() {
@@ -263,6 +270,7 @@
               
               <input type ="hidden" id = "accesscode" name = "accode" value = {{accode}}>
 
+               <div id="accodeformheader" style="display: block;">
               <div class="form-group">
                 <label for="idaccesscodefor">Access Code For:</label><br>                           
                 <select class="accesscodefor" id="idaccesscodefor" name="accesscodefor" style="width:55%" required></select><br>
@@ -271,9 +279,10 @@
               <div class="form-group">
                 <label for="idtask">Task :</label><br>                           
                 <select class="task" id="idtask" name="task"  style="width:55%" required></select><br>
-              </div>  
-             <div id="uploadaccode"></div> 
-              
+              </div>
+
+             <div id="uploadaccode" style="display: block;"></div> 
+            </div>
               <div class="form-group">
 
                 <!-- return render_template('homespeaker.html', data = table_data, speaker_data_accesscode= speaker_data_accesscode, speaker_data_name = speaker_data_name, 
