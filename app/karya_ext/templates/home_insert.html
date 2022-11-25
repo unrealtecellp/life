@@ -45,6 +45,7 @@
 
 {% block styles %}
 {{super()}}
+  <link href="{{url_for('.static', filename='home_insert.css')}}" rel="stylesheet" />
 {% endblock %}
   
 {% block app_content %}
@@ -64,22 +65,25 @@
 
     <!-- <br><br><br><br> -->
 
+    <div id="uploadmanage">
+      <br>
+      <!-- <h5>Fetch access code or upload access code file</h5> -->
+      {% if  shareinfo['sharemode']|int >= 10 %}
+        <input type="button" class="btn btn-lg btn-danger" value="Fetch/Upload Access Code" onclick="window.location.href='{{url_for('karya_bp.uploadfile')}}';">
+      {% endif %}
+        <!-- <br><br><br><br><br> -->
 
-    <!-- <h5>Fetch access code or upload access code file</h5> -->
-    {% if  shareinfo['sharemode']|int >= 10 %}
-      <input type="button" class="btn btn-lg btn-primary" value="Fetch/Upload Access Code" onclick="window.location.href='{{url_for('karya_bp.uploadfile')}}';">
-    {% endif %}
+      <br>
+      <br>
+      <!-- <h5>Manage Access Code</h5> -->
+      {% if  shareinfo['sharemode']|int >= 2 %}
+        <input class="btn btn-lg btn-success" type="button" value="Manage Access Code" onclick="window.location.href='{{url_for('karya_bp.homespeaker')}}'; window">
+      {% endif %}
       <!-- <br><br><br><br><br> -->
-
-    <br>
-    <br>
-    <!-- <h5>Manage Access Code</h5> -->
-    {% if  shareinfo['sharemode']|int >= 2 %}
-      <input class="btn btn-lg btn-primary" type="button" value="Manage Access Code" onclick="window.location.href='{{url_for('karya_bp.homespeaker')}}'; window">
-    {% endif %}
-    <!-- <br><br><br><br><br> -->
-    <br>
-    <hr>
+      <br>
+      <hr>
+    </div>
+    
     <div class="row karyaaudiodata">
       {% if  shareinfo['sharemode']|int >= 3 %}
         <div class="col-md-6 fetchkaryarecording">
@@ -93,7 +97,7 @@
             <label for="pimobilenumber">Mobile Number: </label>
             <input type="number" name = "mobile_number" id="pimobilenumber" placeholder="Enter Mobile Number"/>
             <br>
-            <input type="button" class="btn btn-primary" id="getotpid" value="Get OTP">
+            <input type="button" class="btn btn-info" id="getotpid" value="Get OTP">
             <br>
             <br>
             <label for="karyaotp">Enter OTP</label>

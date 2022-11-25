@@ -752,14 +752,6 @@ def fetch_karya_audio():
             ##############################  API Fetch Audio   #################################
             ###################################################################################
                     '''worker ID'''
-                    # list_workerID = []
-                    # getWorker_id = r_j['microtasks']
-                    # for findWorker_id in getWorker_id:
-                    #     workerid = findWorker_id["input"]["chain"]
-                    #     worker_id = workerid["workerId"]
-                    #     tt = list_workerID.append[worker_id]
-                    # print(list_workerID)
-
 
                     workerId_list = []
                     for micro_metadata in r_j["microtasks"]:
@@ -784,28 +776,6 @@ def fetch_karya_audio():
                     # print(fileID_list)
                     fileID_sentence_list = tuple(zip(fileID_list, sentence_list))
                     print(fileID_sentence_list)
-
-                    
-                    # fileID_sentence_list = []
-                    # for micro_metadata in r_j["microtasks"]:
-                    #     sentences = micro_metadata["input"]["data"]["sentence"]
-                    #     find_file_name = micro_metadata["input"]["files"]["recording"]
-                    #     id_find = r_j['assignments']
-                    #     for item in id_find:
-                    #         fileID_list = item['id'] 
-                    #         fileID_sentence_list.append((fileID_list , sentences, find_file_name))
-                    # print(fileID_sentence_list)
-                ###################################################################
-                    # id_find = r_j['assignments']
-                    # fileID_list = [item['id'] for item in id_find] #new_dict
-                    # print(len(new_dict))
-
-                ###################################################################
-                    # res = {workerId_list: new_dict}
-                    # print(res)
-                    # res = dict(zip(workerId_list, new_dict))
-                    # print(res)
-
 
                     #put check condiotn -> if the speakerId and fileID  previouls fetched or not / Fetch on the basis of fileID assign to speakerID
                     audio_speaker_merge = {key:value for key, value in zip(fileID_sentence_list , workerId_list)} #speakerID = fileID_list(fieldID)
@@ -845,166 +815,97 @@ def fetch_karya_audio():
                             
                             karyaspeakerId = audio_speaker_merge[file_id_and_sent]
                             print("Checking line no. 618: ", karyaspeakerId)
-                            lifespeakerid = accesscodedetails.find_one({'karyaspeakerid': karyaspeakerId}, {'lifespeakerid': 1,'_id': 0})["lifespeakerid"]
-                            print("lifespeakerid : ", lifespeakerid)
-                            # savedFiles = accesscodedetails.find_one({'karyaspeakerid': karyaspeakerId}, {'_id': 0, 'lifespeakerid': 1})['karyasavedfiles']
+                            lifespeakerid = accesscodedetails.find_one({'karyaspeakerid': karyaspeakerId}, {'lifespeakerid': 1,'_id': 0})
+                            if lifespeakerid is not None:
+                                lifespeakerid = lifespeakerid["lifespeakerid"]
+                                print("lifespeakerid : ", lifespeakerid)
+                                # savedFiles = accesscodedetails.find_one({'karyaspeakerid': karyaspeakerId}, {'_id': 0, 'lifespeakerid': 1})['karyasavedfiles']
 
-                            #####################################################
-                            '''DATA'''
-                            # print("###################################\n",filebytes.getmembers())
-                            ''' zip_path = ""
-                                    with BytesIO(gzip.decompress(zip_path)) as zp:
-                                    '''
-
-
-                            with BytesIO(gzip.decompress(filebytes)) as fh: #1
-                                fileAudio = tarfile.TarFile(fileobj=fh) #2
-                                print('1', type(fileAudio))
-                                print('2', fileAudio.getnames()) #3
-                                print('2.1', len(fileAudio.getnames())) #3
-                                print('3', fileAudio.getmembers()) #4
-                                for member in fileAudio.getmembers():
-                                    f = fileAudio.extractfile(member)
-                                    content = f.read()
-                                    print('4', type(member))
-                                    print('5', type(content))
-                                    print ('6', member, content.count)
-                                    print ('7', member, content.count)
-                                    print ('8', member, len(content))
-                                    # mongo.save_file(fileAudio.getnames()[0], io.BytesIO(content), audioID='1234567890')
-                                    new_audio_file = {}
-                                    new_audio_file['audiofile'] = FileStorage(io.BytesIO(content), filename =  fileAudio.getnames()[0])
-                                    print('9', new_audio_file['audiofile'], type(new_audio_file['audiofile']))
-                                    print('10', new_audio_file['audiofile'].filename)
-                                    # if new_audio_file['audiofile'] == 
-                                    print(new_audio_file)
-                                    
-                                    ################################################################################################
-                                    ################################################################################################
-                                    ################################################################################################
-                                    ################################################################################################
-                                    mongodb_qidinfo = mongo.db.questionnaires
-                                    projtyp = getprojecttype.getprojecttype(projects, activeprojectname)
-                                    # findqId = mongodb_qidinfo.find_one({"projectname": "Q_nmathur54_project_1"},
-                                    #  
-                                    print("line 671 :",current_sentence)
-                                    findprojectname = getcurrentuserprojects.getcurrentuserprojects(current_username, userprojects) 
-
-                                    # c_sent = mongodb_qidinfo.find({},{"_id":0,"prompt.text.content":1}) #finding sentence from questtionaire collection 
-
-                                    # for c in c_sent: #breaking the nested path of the dict.
-                                    #     # print("678 _____ = ", c)
-                                    #     for key, val in c.items():
-                                    #         for key, val in val.items():
-                                    #             for key, vall in val.items():
-                                    #                 sentence_dict = vall
-                                    #                 reverse_sentence_dict = {value:key for key, value in vall.items()} 
-                                    #                 # print(reverse_sentence_dict)
-                                    #                 # print(sentence_dict)
-
-                                    
-                                    #                 for sent_key, sent_value in sentence_dict.items(): 
-                                    #                     sentence_key = current_sentence # for name, age in dictionary.iteritems():  (for Python 2.x)
-                                    #                     if sent_value == sentence_key:
-                                    #                         found_sent_key = sent_key
-                                    #                         print(found_sent_key)
-                                    # sentence_condtion = "prompt.text.content.Any"
-                                    # sentence_condtion_found = sentence_condtion.replace("Any", found_sent_key)
-                                    # print(sentence_condtion_found, type(sentence_condtion_found))
-
-                                    # #ques_id
-                                    # last_active_ques_id = mongodb_qidinfo.find_one({"projectname": activeprojectname, sentence_condtion_found:current_sentence},{"_id":0, "quesId":1})
-
-                                    # db.inventory.aggregate([{$project: {item: 1,description: { $ifNull: [ "$description", "Unspecified" ] }}} ])
-                                    # for last_active_ques_id in last_active_ques_id:
-                                    # print(last_active_ques_id)
-                                    
-                                    last_active_ques_id =  getquesfromprompttext.getquesfromprompttext(projectsform,
-                                                                                        questionnaires,
-                                                                                        activeprojectname,
-                                                                                        current_sentence)
+                                #####################################################
+                                '''DATA'''
+                                # print("###################################\n",filebytes.getmembers())
+                                ''' zip_path = ""
+                                        with BytesIO(gzip.decompress(zip_path)) as zp:
+                                        '''
 
 
-                                    # if last_active_ques_id != None:
-                                
-                                    #     last_active_ques_id = last_active_ques_id["quesId"]
-                                    #     print("line no, 663", last_active_ques_id)
-                                    # else: 
-                                    #     print("quesId not present or sentene not availblie")
-                                    # langScriptJSONFilePath = os.path.join(basedir, 'static/json/langScript.json') #i have to do this code
-                                    # langScript = readJSONFile.readJSONFile(langScriptJSONFilePath) #lang_script 
-                
+                                with BytesIO(gzip.decompress(filebytes)) as fh: #1
+                                    fileAudio = tarfile.TarFile(fileobj=fh) #2
+                                    print('1', type(fileAudio))
+                                    print('2', fileAudio.getnames()) #3
+                                    print('2.1', len(fileAudio.getnames())) #3
+                                    print('3', fileAudio.getmembers()) #4
+                                    for member in fileAudio.getmembers():
+                                        f = fileAudio.extractfile(member)
+                                        content = f.read()
+                                        print('4', type(member))
+                                        print('5', type(content))
+                                        print ('6', member, content.count)
+                                        print ('7', member, content.count)
+                                        print ('8', member, len(content))
+                                        # mongo.save_file(fileAudio.getnames()[0], io.BytesIO(content), audioID='1234567890')
+                                        new_audio_file = {}
+                                        new_audio_file['audiofile'] = FileStorage(io.BytesIO(content), filename =  fileAudio.getnames()[0])
+                                        print('9', new_audio_file['audiofile'], type(new_audio_file['audiofile']))
+                                        print('10', new_audio_file['audiofile'].filename)
+                                        # if new_audio_file['audiofile'] == 
+                                        print(new_audio_file)
+                                        
+                                        ################################################################################################
+                                        ################################################################################################
+                                        ################################################################################################
+                                        ################################################################################################
+                                        mongodb_qidinfo = mongo.db.questionnaires
+                                        projtyp = getprojecttype.getprojecttype(projects, activeprojectname)
+                                        # findqId = mongodb_qidinfo.find_one({"projectname": "Q_nmathur54_project_1"},
+                                        #  
+                                        print("line 671 :",current_sentence)
+                                        findprojectname = getcurrentuserprojects.getcurrentuserprojects(current_username, userprojects) 
 
-                                    if projtyp == "questionnaires":
-                                        new_audio_file['Prompt_Audio'+"_"+language] = new_audio_file['audiofile'] # new_audio_file['Transcription Audio']  i have to do this code
-                                        del new_audio_file['audiofile']
-                                        #savequespromptfile
-                                        save_status = savequespromptfile.savequespromptfile(mongo,
-                                                                                projects,
-                                                                                userprojects,
-                                                                                projectsform,
-                                                                                questionnaires,
-                                                                                projectowner,
-                                                                                activeprojectname,
-                                                                                current_username,
-                                                                                last_active_ques_id, 
-                                                                                new_audio_file)
-                                        print("last_active_ques_id: ", last_active_ques_id) 
-                                        print("activeprojectname :", activeprojectname)                                       
-                                        print("11  Saving to Questtionnaire collection")
-                                    else:
-                                        save_status = audiodetails.saveaudiofiles(mongo,
-                                                                        projects,
-                                                                        userprojects,
-                                                                        transcriptions,
-                                                                        projectowner,
-                                                                        activeprojectname,
-                                                                        current_username,
-                                                                        lifespeakerid,
-                                                                        new_audio_file,
-                                                                        karyainfo=r_j,
-                                                                        karya_peaker_id = karyaspeakerId)
-                                        print("11  Saving to Transcription collection")
-                                    print(file_id_list)
-                                    if save_status[0]:
-                                        ## save in the list of fetched audios
-                                        print("status of save_status : ", save_status)
-                                        mongodb_info.update_one({"karyaaccesscode": access_code}, {"$set": {"karyafetchedaudios":file_id_list}})
 
-                                # for everysentence in find_sentence:
-                                #     findqId = mongodb_qidinfo.find_one({"projectname": projectname, "prompt.text.content.english": str(everysentence)}, {"_id":0, "quesId":1} )
-                                #     print(everysentence)
-                                # questionnairedetails.savequesfiles(mongo,
-                                #                                         projects,
-                                #                                         userprojects,
-                                #                                         questionnaires,
-                                #                                         projectowner,
-                                #                                         activeprojectname,
-                                #                                         current_username,
-                                #                                         new_ques_file)
-                                
+                                        
+                                        last_active_ques_id =  getquesfromprompttext.getquesfromprompttext(projectsform,
+                                                                                            questionnaires,
+                                                                                            activeprojectname,
+                                                                                            current_sentence)
 
-            ######################################################################################################################
-            ######################################################################################################################
-            ######################################################################################################################
-                                # audiodetails.saveaudiofiles(mongo,
-                                #         projects,
-                                #         userprojects,
-                                #         transcriptions,
-                                #         projectowner,
-                                #         activeprojectname,
-                                #         current_username,
-                                #         lifespeakerid,
-                                #         new_audio_file,
-                                #         karyainfo=r_j,
-                                #         karya_peaker_id=karyaspeakerId)
-                                    
-                                    ## Add filename in accesscodedetails -> karyasavedfiles
-            ##############################################################################################                        
-                                # def text_match(text):
-                                #     # findprojtyp = str(projtyp)  # project type 
-                            
-            ###############################################################################################                
+
+                                        if projtyp == "questionnaires":
+                                            new_audio_file['Prompt_Audio'+"_"+language] = new_audio_file['audiofile'] # new_audio_file['Transcription Audio']  i have to do this code
+                                            del new_audio_file['audiofile']
+                                            #savequespromptfile
+                                            save_status = savequespromptfile.savequespromptfile(mongo,
+                                                                                    projects,
+                                                                                    userprojects,
+                                                                                    projectsform,
+                                                                                    questionnaires,
+                                                                                    projectowner,
+                                                                                    activeprojectname,
+                                                                                    current_username,
+                                                                                    last_active_ques_id, 
+                                                                                    new_audio_file)
+                                            print("last_active_ques_id: ", last_active_ques_id) 
+                                            print("activeprojectname :", activeprojectname)                                       
+                                            print("11  Saving to Questtionnaire collection")
+                                        else:
+                                            save_status = audiodetails.saveaudiofiles(mongo,
+                                                                            projects,
+                                                                            userprojects,
+                                                                            transcriptions,
+                                                                            projectowner,
+                                                                            activeprojectname,
+                                                                            current_username,
+                                                                            lifespeakerid,
+                                                                            new_audio_file,
+                                                                            karyainfo=r_j,
+                                                                            karya_peaker_id = karyaspeakerId)
+                                            print("11  Saving to Transcription collection")
+                                        print(file_id_list)
+                                        if save_status[0]:
+                                            ## save in the list of fetched audios
+                                            print("status of save_status : ", save_status)
+                                            mongodb_info.update_one({"karyaaccesscode": access_code}, {"$set": {"karyafetchedaudios":file_id_list}})
+
                     return redirect(url_for('karya_bp.home_insert'))
 
     return render_template("fetch_karya_audio.html")
