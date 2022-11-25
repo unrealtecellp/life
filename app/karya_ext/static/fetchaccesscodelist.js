@@ -42,7 +42,7 @@ function createSelectElement(key, elevalue, type, quesdatavalue) {
 function fetchAccessCodeList(fetchaccesscodelist) {
     console.log(fetchaccesscodelist);
     var fetchaccodeform = ''
-    fetchaccodeform += createSelectElement('Access Code', fetchaccesscodelist, '', [])
+    fetchaccodeform += createSelectElement('access_code', fetchaccesscodelist, '', [])
 
     $('#piaccesscode').html(fetchaccodeform);
     $('.fetchaccodeselect').select2({

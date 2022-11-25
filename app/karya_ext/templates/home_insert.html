@@ -142,9 +142,10 @@
   $(document).ready(function() {
               $('#getotpid').click(function() {
                 // alert('Clicked')
-                var acode = document.getElementById("piaccesscode").value;
+                // var acode = document.getElementById("piaccesscode").value;
+                var acode = document.getElementById("access_code").value;
                 var mob = document.getElementById("pimobilenumber").value;
-                console.log(acode)
+                console.log(acode);
                 console.log(mob)
                 $.getJSON("{{url_for('karya_bp.fetch_karya_otp')}}", {
                   acode:String(acode), mob:String(mob)
