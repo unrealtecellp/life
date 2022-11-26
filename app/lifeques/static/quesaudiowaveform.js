@@ -1226,13 +1226,24 @@
  
  }
  
- $("#stopAudio").click(function() {
-     wavesurfer.stop();
+//  $("#stopAudio").click(function() {
+//      wavesurfer.stop();
+//      playPauseState = $(".audioplaypause").attr('class');
+//      if (playPauseState.includes('glyphicon-pause')) {
+//          $(".audioplaypause").addClass('glyphicon-play').removeClass('glyphicon-pause');
+//      }
+//  });
+
+ document.querySelector(
+    '[data-action="stop-audio"]'
+).addEventListener('click', function() {
+    console.log('STOP-AUDIO');
+    wavesurfer.stop();
      playPauseState = $(".audioplaypause").attr('class');
      if (playPauseState.includes('glyphicon-pause')) {
          $(".audioplaypause").addClass('glyphicon-play').removeClass('glyphicon-pause');
      }
- });
+});
  
  $("#playPauseAudio").click(function() {
      wavesurfer.playPause();

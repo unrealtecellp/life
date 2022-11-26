@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 quesId	Q_Id	prompt.Domain	prompt.Elicitation Method	prompt.Target	prompt.content.English-Latin.text.000000.startindex	prompt.content.English-Latin.text.000000.endindex	prompt.content.English-Latin.text.000000.textspan.Latin	prompt.content.English-Latin.audio.fileId	prompt.content.English-Latin.audio.filename	prompt.content.English-Latin.audio.textGrid.sentence.000000.startindex	prompt.content.English-Latin.audio.textGrid.sentence.000000.endindex	prompt.content.English-Latin.audio.textGrid.sentence.000000.transcription.Latin	prompt.content.English-Latin.multimedia.fileId	prompt.content.English-Latin.multimedia.filename	prompt.content.English-Latin.multimedia.textGrid.sentence.000000.startindex	prompt.content.English-Latin.multimedia.textGrid.sentence.000000.endindex	prompt.content.English-Latin.multimedia.textGrid.sentence.000000.transcription.Latin	prompt.content.English-Latin.image.fileId	prompt.content.English-Latin.image.filename	prompt.content.Hindi-Devanagari.text.000000.startindex	prompt.content.Hindi-Devanagari.text.000000.endindex	prompt.content.Hindi-Devanagari.text.000000.textspan.Devanagari	prompt.content.Hindi-Devanagari.audio.fileId	prompt.content.Hindi-Devanagari.audio.filename	prompt.content.Hindi-Devanagari.audio.textGrid.sentence.000000.startindex	prompt.content.Hindi-Devanagari.audio.textGrid.sentence.000000.endindex	prompt.content.Hindi-Devanagari.audio.textGrid.sentence.000000.transcription.Devanagari	prompt.content.Hindi-Devanagari.multimedia.fileId	prompt.content.Hindi-Devanagari.multimedia.filename	prompt.content.Hindi-Devanagari.multimedia.textGrid.sentence.000000.startindex	prompt.content.Hindi-Devanagari.multimedia.textGrid.sentence.000000.endindex	prompt.content.Hindi-Devanagari.multimedia.textGrid.sentence.000000.transcription.Devanagari	prompt.content.Hindi-Devanagari.image.fileId	prompt.content.Hindi-Devanagari.image.filename
 	AG_1	[Agriculture]	Narration	[]			What kinds of crops are grown by the people of your community?					What kinds of crops are grown by the people of your community?										आपके समाज के लोग किस प्रकार की फसलें उगाते हैं?												
 	AG_2	[Agriculture]	Narration	[]			What are the people who grow crops called? Do they only grow crops or are they engaged in other activities as well? What kind of other activities are they engaged in?					What are the people who grow crops called? Do they only grow crops or are they engaged in other activities as well? What kind of other activities are they engaged in?										फसल उगाने वाले लोगों को क्या कहा जाता है?  क्या वे केवल फसल उगाते हैं या वे अन्य गतिविधियों में भी लगे हुए हैं? वे किस तरह की अन्य गतिविधियों में लगे हुए हैं?												
@@ -253,3 +254,56 @@ quesId	Q_Id	prompt.Domain	prompt.Elicitation Method	prompt.Target	prompt.content
 	AG_204	[Agriculture]	Narration	[]			how do you prepare food for the various animals that you have at home?					how do you prepare food for the various animals that you have at home?										आप अपने घर में विभिन्न जानवरों के लिए भोजन कैसे बनाते हैं?												
 	AG_205	[Agriculture]	Narration	[]			what roles does these animal play at home? what do they contribute?					what roles does these animal play at home? what do they contribute?										ये जानवर घर पर क्या भूमिका निभाते हैं? वे क्या योगदान करते हैं?												
 	AG_206	[Agriculture]	Narration	[]			Are these animals consumed? if so when and why?					Are these animals consumed? if so when and why?										क्या इन जानवरों का सेवन किया जाता है? यदि हां तो कब और क्यों?												
+=======
+prompt.Domain	Q_Id	prompt.content.Toto-Bengali.text.000000.textspan.Bengali	prompt.content.Toto-Bengali.audio.filename	quesId	prompt.Target	prompt.Elicitation Method	prompt.content.Toto-Bengali.text.000000.startindex	prompt.content.Toto-Bengali.text.000000.endindex	prompt.content.Toto-Bengali.audio.fileId	prompt.content.Toto-Bengali.audio.textGrid.sentence.000000.startindex	prompt.content.Toto-Bengali.audio.textGrid.sentence.000000.endindex	prompt.content.Toto-Bengali.audio.textGrid.sentence.000000.transcription.Bengali
+[General]	11. D9a	এই বাক্স খুব ভারী	D9a.aac		[]	Translation						এই বাক্স খুব ভারী
+[General]	70. D45	যে কেউ এই প্রশ্নের উওর দিতে পারেন	D45.aac		[]	Translation						যে কেউ এই প্রশ্নের উওর দিতে পারেন
+[General]	5. PN5	আমরা(পুরো পরিবার)বাজার যাচ্ছি	PN5.aac		[]	Translation						আমরা(পুরো পরিবার)বাজার যাচ্ছি
+[General]	14. PN14	 আমরা আপনাকে আমদের বাড়িতে আমন্ত্রন জানাই	PN14.aac		[]	Translation						 আমরা আপনাকে আমদের বাড়িতে আমন্ত্রন জানাই
+[General]	22. PN22	 আমি তোমাাদের সবাইকে সম্মান করি	PN22.aac		[]	Translation						 আমি তোমাাদের সবাইকে সম্মান করি
+[General]	40. PN40	 আপনি তাদের হারাতে পারবেন না(সে+সে)	PN40.aac		[]	Translation						 আপনি তাদের হারাতে পারবেন না(সে+সে)
+[General]	4. Case4	সে ঘুমোচ্ছে	case4.aac		[]	Translation						সে ঘুমোচ্ছে
+[General]	6. Case6	সে নদির কাছে চলে গিয়েছিল	case6.aac		[]	Translation						সে নদির কাছে চলে গিয়েছিল
+[General]	14. Case14	আমরা পেছনের উঠোনে তিনজন লোক কে দেখেছি	case14.aac		[]	Translation						আমরা পেছনের উঠোনে তিনজন লোক কে দেখেছি
+[General]	15. Case15	সিতা রাম এর সাথে বিকেলবেলা দেখা করবে	case15.aac		[]	Translation						সিতা রাম এর সাথে বিকেলবেলা দেখা করবে
+[General]	26. Case26	বিমল বাড়ির ছাঁদ থেকে নিচে পরে গেলো	case26.aac		[]	Translation						বিমল বাড়ির ছাঁদ থেকে নিচে পরে গেলো
+[General]	36. Case36	এটি আমার দাদুর বাড়ি	case36.aac		[]	Translation						এটি আমার দাদুর বাড়ি
+[General]	2.16_Case	 পাতাগুলো গাছ থেকে ঝরে পরছে	2.16.aac		[]	Translation						 পাতাগুলো গাছ থেকে ঝরে পরছে
+[General]	2.23_Case	 আমার বন্ধুর বোন অসুস্থ ছিল	2.23.aac		[]	Translation						 আমার বন্ধুর বোন অসুস্থ ছিল
+[General]	12. AD12	নিমা বলটা পুকুরে ফেলে দিল	AD12.aac		[]	Translation						নিমা বলটা পুকুরে ফেলে দিল
+[General]	16. AD16	কলম ব্যাগ এর বাইরে আছে	AD16.aac		[]	Translation						কলম ব্যাগ এর বাইরে আছে
+[General]	3. Pos3	 তোমার মাকে ডাক	Pos3.aac		[]	Translation						 তোমার মাকে ডাক
+[General]	7. Pos7	 সে আমার পেন্সিল ভেঙে দিয়েছে	Pos7.aac		[]	Translation						 সে আমার পেন্সিল ভেঙে দিয়েছে
+[General]	4. TAM4	তারা মাগার কথা বলে	TAM4.aac		[]	Translation						তারা মাগার কথা বলে
+[General]	23. TAM23	সে ঘুমিয়ে ছিল	TAM23.aac		[]	Translation						সে ঘুমিয়ে ছিল
+[General]	25. TAM25	গতবছর অক্টোবর এ বৃষ্টি হয়েছিল	TAM25.aac		[]	Translation						গতবছর অক্টোবর এ বৃষ্টি হয়েছিল
+[General]	46. TAM46	 আপনি নরকে যেতে পারেন	TAM46.aac		[]	Translation						 আপনি নরকে যেতে পারেন
+[General]	50. TAM50	আমাকে যেতে দাও	TAM50.aac		[]	Translation						আমাকে যেতে দাও
+[General]	3. AS23	সে কাঁদল	AS23.aac		[]	Translation						সে কাঁদল
+[General]	8. AS41	 মনি ফুল ফুটিয়েছে	AS41.aac		[]	Translation						 মনি ফুল ফুটিয়েছে
+[General]	2. AS76	দয়া করে যাও!	AS76.aac		[]	Translation						দয়া করে যাও!
+[General]	11. AS85	যাও!	AS85.aac		[]	Translation						যাও!
+[General]	4. AS105	মিলি ওকে মেরে দিয়েছে	AS105.aac		[]	Translation						মিলি ওকে মেরে দিয়েছে
+[General]	11. ADV11	নামচি যাওয়ার আগেই আমি খেয়ে নেব	ADV11.aac		[]	Translation						নামচি যাওয়ার আগেই আমি খেয়ে নেব
+[General]	2. ADV17	মিনা এখানে আছে(স্পিকারের কাছে)	ADV17.aac		[]	Translation						মিনা এখানে আছে(স্পিকারের কাছে)
+[General]	13. INT	তুমি কোথায় যাচ্ছ ?	INT7d.aac		[]	Translation						তুমি কোথায় যাচ্ছ ?
+[General]	39. INT31	 আমি জানি আপনার কোন রঙটি পছন্দের	INT31.aac		[]	Translation						 আমি জানি আপনার কোন রঙটি পছন্দের
+[General]	1. INT34	তুমি কি কালকে এখানে থাকবে?	INT34.aac		[]	Translation						তুমি কি কালকে এখানে থাকবে?
+[General]	5. RR22	 মায়াঙ্ক আর জেন একে অপরের পাশে বসে আছে	RR22.aac		[]	Translation						 মায়াঙ্ক আর জেন একে অপরের পাশে বসে আছে
+[General]	1. CS1	আমরা বলব যে দোকানদার নিজের দোষ স্বীকার করেছে	CS1.aac		[]	Translation						আমরা বলব যে দোকানদার নিজের দোষ স্বীকার করেছে
+[General]	4. CS4	বসু বুঝতে পেরেছিলেন যে বিল কাজ করতে সক্ষম	CS4.aac		[]	Translation						বসু বুঝতে পেরেছিলেন যে বিল কাজ করতে সক্ষম
+[General]	19. CS19	তিনি চান দর্শকরা তাদের বাচ্চাদের খেলতে দিন	CS19.aac		[]	Translation						তিনি চান দর্শকরা তাদের বাচ্চাদের খেলতে দিন
+[General]	4. Coo4	বিক্রম সিনেমা দেখল আর অজয় শিশুদের সাথে খেলল	coo4.aac		[]	Translation						বিক্রম সিনেমা দেখল আর অজয় শিশুদের সাথে খেলল
+[General]	8. Coo8	সে একজন ভাল মানুষ ,কিন্তু একজন খারাপ রাঁধুনি	coo8.aac		[]	Translation						সে একজন ভাল মানুষ ,কিন্তু একজন খারাপ রাঁধুনি
+[General]	15. Coo15	যতক্ষণ আপনি তাকে খাওয়াবেন ততক্ষণ শিশুটি কাঁদবে না	coo15.aac		[]	Translation						যতক্ষণ আপনি তাকে খাওয়াবেন ততক্ষণ শিশুটি কাঁদবে না
+[General]	24. Coo24	আজ যদি রমেশের বাবা মারা জেতেন,তাহলে এই দিন দেখতে হতো না	coo24.aac		[]	Translation						আজ যদি রমেশের বাবা মারা জেতেন,তাহলে এই দিন দেখতে হতো না
+[General]	26. Neg26	মেয়েরা কেউ আসেনি	Neg26.aac		[]	Translation						মেয়েরা কেউ আসেনি
+[General]	RED16	এখানে আবার পাখি আসবে	Neg50.aac		[]	Translation						এখানে আবার পাখি আসবে
+[General]	6.1.12_TAM_INTR	তুুমি বাজারে যাচ্ছ ।	6.1.12.aac		[]	Translation						তুুমি বাজারে যাচ্ছ ।
+[General]	6.2.5_TAM_TR	তুমি প্রত্যেকদিন ভাত খাও।	6.2.5.aac		[]	Translation						তুমি প্রত্যেকদিন ভাত খাও।
+[General]	6.3.6_TAM_DTR	তুুমি আগামিকাল তাকে বই দেবে	6.3.6.aac		[]	Translation						তুুমি আগামিকাল তাকে বই দেবে
+[General]	6.3.18_TAM_DTR	তুমি তাকে বাচ্চা দিচ্ছ	6.3.18.aac		[]	Translation						তুমি তাকে বাচ্চা দিচ্ছ
+[General]	6.4.14_TAM_ADD	সে বাড়িতেই আছে	6.4.14.aac		[]	Translation						সে বাড়িতেই আছে
+[General]	6.4.45_TAM_ADD	দয়া করে দরজা খলুন।	6.4.45.aac		[]	Translation						দয়া করে দরজা খলুন।
+[General]	6.4.62_TAM_ADD	আমাকে এই কাজটি করতে দাও	6.4.62.aac		[]	Translation						আমাকে এই কাজটি করতে দাও
+>>>>>>> 53fb27c19070081622f69e1c225ae1bd98482c82
