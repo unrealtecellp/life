@@ -137,7 +137,7 @@ def saveaudiofiles(mongo,
                         projectname=activeprojectname,
                         updatedBy=current_username)
 
-        return (transcription_doc_id, fs_file_id)
+        return (True,transcription_doc_id, fs_file_id)
         
     except Exception as e:
         print(e)

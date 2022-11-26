@@ -71,8 +71,9 @@ def savequespromptfile(mongo,
                         projectname=activeprojectname,
                         updatedBy=current_username)
 
-        return (questionnaire_doc_id, fs_file_id)
+        return (True, questionnaire_doc_id, fs_file_id)
 
     except Exception as e:
         print(e)
         flash(f"ERROR")
+        return(False)

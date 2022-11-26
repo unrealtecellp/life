@@ -2,7 +2,7 @@
 
 from pprint import pprint
 
-def getquesfromprompttext(projectsform,
+def getquesidlistofsavedaudios(projectsform,
                             questionnaires,
                             activeprojectname,
                             text,
