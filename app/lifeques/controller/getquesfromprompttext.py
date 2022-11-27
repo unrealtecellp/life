@@ -20,7 +20,7 @@ def getquesfromprompttext(projectsform,
                                         "prompt.content": 1,
                                         "quesId": 1
                                     })
-
+    foundText = 'text not found in the questionnaire'
     for ques in all_ques:
         # print(ques)
         for lang, lang_info in ques["prompt"]["content"].items():
@@ -30,12 +30,14 @@ def getquesfromprompttext(projectsform,
             for boundaryId in lang_info['text'].keys():
                 # print(boundaryId)
                 prompt_text = lang_info['text'][boundaryId]['textspan'][script]
-                if text not in exclude:
-                    if (text == prompt_text):
-                        quesId = ques['quesId']
-                        # pprint(ques)
-                        print(prompt_text, quesId)
+            
+                if (text == prompt_text):
+                    foundText = "text found but audio already available"
+                    quesId = ques['quesId']
+                    if quesId not in exclude:
+                    # pprint(ques)
+                        # print(prompt_text, quesId)
 
-                        return quesId
+                        return (quesId, '')
 
-    return False
+    return ('False', foundText)

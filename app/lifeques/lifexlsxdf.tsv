@@ -1,51 +1,636 @@
-prompt.Domain	Q_Id	prompt.content.Toto-Bengali.text.000000.textspan.Bengali	prompt.content.Toto-Bengali.audio.filename	quesId	prompt.Target	prompt.Elicitation Method	prompt.content.Toto-Bengali.text.000000.startindex	prompt.content.Toto-Bengali.text.000000.endindex	prompt.content.Toto-Bengali.audio.fileId	prompt.content.Toto-Bengali.audio.textGrid.sentence.000000.startindex	prompt.content.Toto-Bengali.audio.textGrid.sentence.000000.endindex	prompt.content.Toto-Bengali.audio.textGrid.sentence.000000.transcription.Bengali
-[General]	11. D9a	এই বাক্স খুব ভারী	D9a.aac		[]	Translation						এই বাক্স খুব ভারী
-[General]	70. D45	যে কেউ এই প্রশ্নের উওর দিতে পারেন	D45.aac		[]	Translation						যে কেউ এই প্রশ্নের উওর দিতে পারেন
-[General]	5. PN5	আমরা(পুরো পরিবার)বাজার যাচ্ছি	PN5.aac		[]	Translation						আমরা(পুরো পরিবার)বাজার যাচ্ছি
-[General]	14. PN14	 আমরা আপনাকে আমদের বাড়িতে আমন্ত্রন জানাই	PN14.aac		[]	Translation						 আমরা আপনাকে আমদের বাড়িতে আমন্ত্রন জানাই
-[General]	22. PN22	 আমি তোমাাদের সবাইকে সম্মান করি	PN22.aac		[]	Translation						 আমি তোমাাদের সবাইকে সম্মান করি
-[General]	40. PN40	 আপনি তাদের হারাতে পারবেন না(সে+সে)	PN40.aac		[]	Translation						 আপনি তাদের হারাতে পারবেন না(সে+সে)
-[General]	4. Case4	সে ঘুমোচ্ছে	case4.aac		[]	Translation						সে ঘুমোচ্ছে
-[General]	6. Case6	সে নদির কাছে চলে গিয়েছিল	case6.aac		[]	Translation						সে নদির কাছে চলে গিয়েছিল
-[General]	14. Case14	আমরা পেছনের উঠোনে তিনজন লোক কে দেখেছি	case14.aac		[]	Translation						আমরা পেছনের উঠোনে তিনজন লোক কে দেখেছি
-[General]	15. Case15	সিতা রাম এর সাথে বিকেলবেলা দেখা করবে	case15.aac		[]	Translation						সিতা রাম এর সাথে বিকেলবেলা দেখা করবে
-[General]	26. Case26	বিমল বাড়ির ছাঁদ থেকে নিচে পরে গেলো	case26.aac		[]	Translation						বিমল বাড়ির ছাঁদ থেকে নিচে পরে গেলো
-[General]	36. Case36	এটি আমার দাদুর বাড়ি	case36.aac		[]	Translation						এটি আমার দাদুর বাড়ি
-[General]	2.16_Case	 পাতাগুলো গাছ থেকে ঝরে পরছে	2.16.aac		[]	Translation						 পাতাগুলো গাছ থেকে ঝরে পরছে
-[General]	2.23_Case	 আমার বন্ধুর বোন অসুস্থ ছিল	2.23.aac		[]	Translation						 আমার বন্ধুর বোন অসুস্থ ছিল
-[General]	12. AD12	নিমা বলটা পুকুরে ফেলে দিল	AD12.aac		[]	Translation						নিমা বলটা পুকুরে ফেলে দিল
-[General]	16. AD16	কলম ব্যাগ এর বাইরে আছে	AD16.aac		[]	Translation						কলম ব্যাগ এর বাইরে আছে
-[General]	3. Pos3	 তোমার মাকে ডাক	Pos3.aac		[]	Translation						 তোমার মাকে ডাক
-[General]	7. Pos7	 সে আমার পেন্সিল ভেঙে দিয়েছে	Pos7.aac		[]	Translation						 সে আমার পেন্সিল ভেঙে দিয়েছে
-[General]	4. TAM4	তারা মাগার কথা বলে	TAM4.aac		[]	Translation						তারা মাগার কথা বলে
-[General]	23. TAM23	সে ঘুমিয়ে ছিল	TAM23.aac		[]	Translation						সে ঘুমিয়ে ছিল
-[General]	25. TAM25	গতবছর অক্টোবর এ বৃষ্টি হয়েছিল	TAM25.aac		[]	Translation						গতবছর অক্টোবর এ বৃষ্টি হয়েছিল
-[General]	46. TAM46	 আপনি নরকে যেতে পারেন	TAM46.aac		[]	Translation						 আপনি নরকে যেতে পারেন
-[General]	50. TAM50	আমাকে যেতে দাও	TAM50.aac		[]	Translation						আমাকে যেতে দাও
-[General]	3. AS23	সে কাঁদল	AS23.aac		[]	Translation						সে কাঁদল
-[General]	8. AS41	 মনি ফুল ফুটিয়েছে	AS41.aac		[]	Translation						 মনি ফুল ফুটিয়েছে
-[General]	2. AS76	দয়া করে যাও!	AS76.aac		[]	Translation						দয়া করে যাও!
-[General]	11. AS85	যাও!	AS85.aac		[]	Translation						যাও!
-[General]	4. AS105	মিলি ওকে মেরে দিয়েছে	AS105.aac		[]	Translation						মিলি ওকে মেরে দিয়েছে
-[General]	11. ADV11	নামচি যাওয়ার আগেই আমি খেয়ে নেব	ADV11.aac		[]	Translation						নামচি যাওয়ার আগেই আমি খেয়ে নেব
-[General]	2. ADV17	মিনা এখানে আছে(স্পিকারের কাছে)	ADV17.aac		[]	Translation						মিনা এখানে আছে(স্পিকারের কাছে)
-[General]	13. INT	তুমি কোথায় যাচ্ছ ?	INT7d.aac		[]	Translation						তুমি কোথায় যাচ্ছ ?
-[General]	39. INT31	 আমি জানি আপনার কোন রঙটি পছন্দের	INT31.aac		[]	Translation						 আমি জানি আপনার কোন রঙটি পছন্দের
-[General]	1. INT34	তুমি কি কালকে এখানে থাকবে?	INT34.aac		[]	Translation						তুমি কি কালকে এখানে থাকবে?
-[General]	5. RR22	 মায়াঙ্ক আর জেন একে অপরের পাশে বসে আছে	RR22.aac		[]	Translation						 মায়াঙ্ক আর জেন একে অপরের পাশে বসে আছে
-[General]	1. CS1	আমরা বলব যে দোকানদার নিজের দোষ স্বীকার করেছে	CS1.aac		[]	Translation						আমরা বলব যে দোকানদার নিজের দোষ স্বীকার করেছে
-[General]	4. CS4	বসু বুঝতে পেরেছিলেন যে বিল কাজ করতে সক্ষম	CS4.aac		[]	Translation						বসু বুঝতে পেরেছিলেন যে বিল কাজ করতে সক্ষম
-[General]	19. CS19	তিনি চান দর্শকরা তাদের বাচ্চাদের খেলতে দিন	CS19.aac		[]	Translation						তিনি চান দর্শকরা তাদের বাচ্চাদের খেলতে দিন
-[General]	4. Coo4	বিক্রম সিনেমা দেখল আর অজয় শিশুদের সাথে খেলল	coo4.aac		[]	Translation						বিক্রম সিনেমা দেখল আর অজয় শিশুদের সাথে খেলল
-[General]	8. Coo8	সে একজন ভাল মানুষ ,কিন্তু একজন খারাপ রাঁধুনি	coo8.aac		[]	Translation						সে একজন ভাল মানুষ ,কিন্তু একজন খারাপ রাঁধুনি
-[General]	15. Coo15	যতক্ষণ আপনি তাকে খাওয়াবেন ততক্ষণ শিশুটি কাঁদবে না	coo15.aac		[]	Translation						যতক্ষণ আপনি তাকে খাওয়াবেন ততক্ষণ শিশুটি কাঁদবে না
-[General]	24. Coo24	আজ যদি রমেশের বাবা মারা জেতেন,তাহলে এই দিন দেখতে হতো না	coo24.aac		[]	Translation						আজ যদি রমেশের বাবা মারা জেতেন,তাহলে এই দিন দেখতে হতো না
-[General]	26. Neg26	মেয়েরা কেউ আসেনি	Neg26.aac		[]	Translation						মেয়েরা কেউ আসেনি
-[General]	RED16	এখানে আবার পাখি আসবে	Neg50.aac		[]	Translation						এখানে আবার পাখি আসবে
-[General]	6.1.12_TAM_INTR	তুুমি বাজারে যাচ্ছ ।	6.1.12.aac		[]	Translation						তুুমি বাজারে যাচ্ছ ।
-[General]	6.2.5_TAM_TR	তুমি প্রত্যেকদিন ভাত খাও।	6.2.5.aac		[]	Translation						তুমি প্রত্যেকদিন ভাত খাও।
-[General]	6.3.6_TAM_DTR	তুুমি আগামিকাল তাকে বই দেবে	6.3.6.aac		[]	Translation						তুুমি আগামিকাল তাকে বই দেবে
-[General]	6.3.18_TAM_DTR	তুমি তাকে বাচ্চা দিচ্ছ	6.3.18.aac		[]	Translation						তুমি তাকে বাচ্চা দিচ্ছ
-[General]	6.4.14_TAM_ADD	সে বাড়িতেই আছে	6.4.14.aac		[]	Translation						সে বাড়িতেই আছে
-[General]	6.4.45_TAM_ADD	দয়া করে দরজা খলুন।	6.4.45.aac		[]	Translation						দয়া করে দরজা খলুন।
-[General]	6.4.62_TAM_ADD	আমাকে এই কাজটি করতে দাও	6.4.62.aac		[]	Translation						আমাকে এই কাজটি করতে দাও
+quesId	Q_Id	prompt.content.Chokri-Latin.text.000000.startindex	prompt.content.Chokri-Latin.text.000000.endindex	prompt.content.Chokri-Latin.text.000000.textspan.Latin	prompt.content.Chokri-Latin.audio.fileId	prompt.content.Chokri-Latin.audio.filename	prompt.content.Chokri-Latin.audio.textGrid.sentence.000000.startindex	prompt.content.Chokri-Latin.audio.textGrid.sentence.000000.endindex	prompt.content.Chokri-Latin.audio.textGrid.sentence.000000.transcription.Latin
+Q20221127180629325001	ED-01								n rüna mi ko thüma lesi phri zü ko mu phri kümo ko dipü bi no peyo?
+Q20221127180629325550	ED-02								lesi mhase hi n rüna lo vori zü hi dipü bi no mha küde vori?
+Q20221127180629326035	ED-03								Lesi ce hi no dipü bi no ma küde vori zü ngo?
+Q20221127180629326525	ED-04								Lesice ko n natsi ce dibi no bayo?
+Q20221127180629327021	ED-05								thazü dibi no mhase küza no vori?
+Q20221127180629327463	ED-06								lesi mhase hi tsü do ri ma uma ne me?
+Q20221127180629327904	ED-07								uko za lesi mhase mori lesice mi kükre mi za ce ri kree kü me? N külü posüte?
+Q20221127180629328260	ED-08								nko hi dipü bi no lesice mori lesi mhase hi thi-n veküta ?
+Q20221127180629328606	ED-09								no tsüdo hi lesice mori lesi mhase hi dipü ce ko vekü ta sizü ngo?
+Q20221127180629328941	ED-10								n rüna lo süno lesi phri kho müra thou? Mü pü n rüna mi la dipü thi vori?
+Q20221127180629329306	ED-11								lesi mhase hi dipu bi no küzüküve rüna mi ko dolü pü vori?
+Q20221127180629329666	ED-12								n külü lo dipü subject no zü küba hi küno n la veto ha?
+Q20221127180629330098	ED-13								Lesi mhase hi dipü bi no küdimi mu kütsakhumi ko krehi ba?
+Q20221127180629330486	ED-14								no homework hi dipu la n nü mu dipü la n nü yo mo?
+Q20221127180629330856	ED-15								no mhase sayi küto la dipü thi mosü?
+Q20221127180629331222	ED-16								lesi mhase hi dipü bi no küzü küve pü vori yo?
+Q20221127180629331565	ED-17								lesi mhase lo nu dipü bi no thüma mhase küsa mu mha do thi zü küsa seyo?
+Q20221127180629331905	ED-18								Dipü n lü thi müre no n vo küve thi ni sa küyo: marks küve me küsü?
+Q20221127180629332250	ED-19								nko lesi mhaseko hi kükro mi ko lübi do thi mosü me? Me u tho u rünami ko za ju ko ri phri mosü?
+Q20221127180629332588	ED-20								lesi mhase hi dipü la no seyi mosü?
+Q20221127180629332890	ED-21								dipü la no thüno thüpü küna zü mhase hi mütha yo mo?
+Q20221127180629333278	ED-22								
+Q20221127180629333708	ED-23								u cekhro mi ko hi lesi mhase lo dipü bi no khrü hi yo?
+Q20221127180629334167	ED-24								
+Q20221127180629334653	ED-25								matric exam hi dipü la no exam uma küri tho ta?
+Q20221127180629335289	ED-26								class room lo mha küke kükre zü dipü thiyo?
+Q20221127180629335707	ED-27								no mhatho dipü pü thi no, no unü kre-e no bayo?
+Q20221127180629336252	ED-28								lesi mhase hi dipü bi no n külhü thi kede wa?
+Q20221127180629336783	ED-29								lesi mhase hi dipü bi no nko külü mü nko mha müpe zü hi dipü bi no küde wa?
+Q20221127180629337386	ED-30								lesi mhase hi dipü bi no mi mhakra lo küde vori?
+Q20221127180629339257	ED-31								mobile phone mu internet hi dipü bi no lesi mhase lü küde ba?
+Q20221127180629340141	ED-32								thüma hi dipü bi no lesice lo mhase yo?
+Q20221127180629340644	ED-33								mhase se zü lo hi dipü hi n la kürü tho?
+Q20221127180629341155	ED-34								natsimine lesice lo di se yo?
+Q20221127180629341637	ED-35								shüye/tethi dipü lo lesice mori university küvetho ko ba? Dipü la no süko sü ve ta? Dipü la no püko kükre ko ce ri ve ta?
+Q20221127180629342122	ED-36								rüzü mu u mo mhatho ko hi la no lesice ko dipü khasü yo?
+Q20221127180629342704	ED-37								lesice ko lo hi government ko dipü thi mosü?
+Q20221127180629343258	ED-38								natsimine ko ütho ü jü lo mütha zü lesice lo di pü bizü ma kürü zü küsü yo?
+Q20221127180629344011	ED-39								natsimine ko hi lesice lo thüdo dipü bi se ba mosü?
+Q20221127180629344621	ED-40								english pozü lesice lo vozü ce natsimine ko ma kürü dipü bizü küsü yo?
+Q20221127180629345138	ED-41								mi tso mo zü ko la lesi küphri hi dipü bi no mi mütü ko wo phri-e küve thi mosü?
+Q20221127180629345609	ED-42								tsüdo tü hi pe küzü ce, lesi mhase hi müle kü me, me tezü mhase ?
+Q20221127180629346129	ED-43								celü mhase hi dipü bi no natsimi hi mi zü mükro zü hi khrü hi yo?
+Q20221127180629346572	ED-44								lesi mhase natsi zü ce nyo-I zü hi pethi pari no university kütso lo khrü hi yo. Hi hi jü n külü posüte?
+Q20221127180629346963	ED-45								thüma mhase zü hi dipü biyo? Thüma lesi mhase bazü ko dipu bi mosü?
+Q20221127180629347335	ED-46								public lesice mu private lesice jü hü posüte? Pü küve mu pü küsü posüte?
+Q20221127180629347686	ED-47								n külü lü zü u tho u jü hi doctorate kütso phri mosü me? Ye, si mütha, di la no?
+Q20221127180629348059	ED-48								n külü lü zü u tho u jü phri zü hi, u jo mu u nani küla pü hisa la khama ve me?
+Q20221127180629348478	ED-51								n la no dipü bi no u jü mu u jo mu u nani ko hi preserve thita?
+Q20221127180629348940	ED-52								no mhase cho la dipü lü yo? Hi dipü bi no mha kra mu küsühro küsühri lo khrühi yo?
+Q20221127180629349419	ED-54								küsa lesi mhase policy za hi no mha püri se me ma?
+Q20221127180629349964	ED-56								covid 19 hi bazü tü ce lesi mhase cho dipü bi ta n rüna lo?
+Q20221127180629350474	ED-61								jü kükre kükre küzü lo classroom lo mütha zü hi u kümve di pü ba?
+Q20221127180629350921	ED-62								n lesice lo dipü ce nü mi ce ri kükre ta?
+Q20221127180629351416	ED-63								vo küta tetse lo n lesice lo dipü kükre ta?
+Q20221127180629351869	ED-64								dipü bi no lesice hi phri küba mi ko mü ukrüne ko yo feedback khasü ta?
+Q20221127180629352287	ED-65								lesice ko hi u rüna mi ko dipü bi no khrü hi yo?
+Q20221127180629352723	ED-66								kümütha mi ko lesice lü dojü küyi ko po küha la sü küzü thi küthüpu süyo me?hi hi u küve mü u küsü posüte?
+Q20221127180629353192	ED-67								no lesi phri küra ce, lesice di du-u ba? No pethi pari zü ce dipü ko lo lesice küda küzü ngo?
+Q20221127180629353616	ED-69								Dipü bizü lo nu kümüthami ko müza zü ko thiyo?
+Q20221127180629354201	ED-70								n lesice lo n zü mathi zü mi ko mu lesice lo mathi zü mi ko jü kropü posüte?
+Q20221127180629354806	ED-71								no n lesice dipü bi no süyo zü jü ko kropü posüte?
+Q20221127180629355334	ED-72								nko lesice ko hi dipü bi no mi lesice ko zü kreyo?
+Q20221127180629355802	ED-73								kümütha mi ko dipü thi mükro yo? Püko ma küsü mori ma pe sü tü khasü yo me? Püko lesice te mho lo ri matho thi yo me?
+Q20221127180629356299	ED-74								grade no pemo no mhase zü lübi lo thiyo me? Pemo no mase-yi zü hi u küve mu u küsü posüte?
+Q20221127180629356702	ED-76								lesi mhaseko hi kükro mi ko lübi do thi mosü me? Me u tho u ma ko za ju ko ri phri mosü?
+Q20221127180629357248	ED-77								mi tso mo zü ko la u state hi mha thi kü hü-e sa mosü me?
+Q20221127180629358000	ED-78								celü cekro mi ko hi dipü thi mosü ba, u nune lesi kephri ko lano?
+Q20221127180629358822	ED-80								kümüthami mi ko dipü bi no lesi kephri ko zü müdu mu reni yo? Dipü bizü kütso yo mu sü no wo kütso yo?
+Q20221127180629359536	ED-81								dipü bi no lesi kephri mine ko kükri ta zü ko lü sajo khasü mosü?
+Q20221127180629360209	ED-82								lesice mhase mü tution lo mhase ngo zü za jü n külü posüte?
+Q20221127180629360686	ED-83								smart phone mu internet hi dipü lo nu lesi küphri ne ko khrühi mori bü mesü ri yo?
+Q20221127180629361178	ED-84								dipü bizü lo nu 'tha tüsozho ve' süzi no po ve?
+Q20221127180629361681	ED-85								August 15 hi n lesice lo dibi thenye thi yo?
+Q20221127180629362184	ED-86								no kümüthami thi zü hi lo dipü n nü yo?
+Q20221127180629362713	ED-87								kümüdu-u mori technology di pü bi no mi mütha zü hi khrühi or thi rü ba wa?
+Q20221127180629363161	ED-88								mid day meal za jü n külü posüte?
+Q20221127180629363548	ED-90								khüsü-u mu külhe-o class lo dipü kükre zü ngo yo?
+Q20221127180629363916	ED-92								thüma no dipü bi no mhaseyi yo?
+Q20221127180629364288	ED-94								thüma ko u kümütha mi ko yo thüdo mori u küve dipü pe yo?
+Q20221127180629364665	ED-95								Thüma hi pethi pari zü sa ri dipü se yo?
+Q20221127180629365009	ED-97								no n la no dipü bizü pü lo lesi küphri ne ko mhase küve tho thita?
+Q20221127180629365375	ED-100								n la no dipü bizü mi kha sü thüma mütse süzi no poyo?
+Q20221127180629365734	ED-102								offline mu online class za jü kropü posüte? U küve mü u kesü posüte?
+Q20221127180629366148	ED-104								tsüdo hi mha mütü ri online lo mha phri zü mhanyo ko ngo tso va de. N külü lü zü nko hiko lübi mülü ve me? Di la no?
+Q20221127180629366590	ED-106								dipü bi no lesi kephri ne ko wo u matho kethi ko seyi yo?
+Q20221127180629367068	ED-107								n külü lo dipü la no english hi pü no lesice lo mütha yo?
+Q20221127180629367698	ED-108								n külü lo dipü la no social science hi lesi küphri ne ko mütha yo?
+Q20221127180629368301	ED-109								n külü lo dipü la no science hi lesi küphri ne ko mütha yo?
+Q20221127180629368845	ED-110								lesice lo mhatho kükre kükre küzü u ma ne no dipü thiyo. Dipü bi no hiko lesice lo sü mosü ba?
+Q20221127180629369351	ED-111								dipü bi no mha küda zü hi mu mha se zü hi kükre ta?
+Q20221127180629369766	ED-114								dipü bi no natsi mi hi lesice lo küda yo?
+Q20221127180629370152	ED-117								cho sü no n classroom lo dipü küde nisa wa, küde-e ve mütha?
+Q20221127180629370585	ED-118								lesi phri rü zü mi n class lo bata mü tha no dipü bi no pü mütha ta?
+Q20221127180629371108	ED-119								kümü no kümü no mi mütha zü hi dipü la no müle ri?
+Q20221127180629371670	ED-120								thüsa vori tü ce no mha kürü dipü bizü zü küsü?
+Q20221127180629372232	ED-121								celü mütha mu lesice lo mütha zü hi no dipü seyi?
+Q20221127180629372714	ED-125								no dipu n nü mükro yo. Class discussion me small group matho?
+Q20221127180629373205	ED-128								n lesice lo mi mütha küto la dipü bizü mhanyo süyo?
+Q20221127180629373722	ED-131								n kümüthami,principal, headmaster mu kükre lesice lo mathi yo küba ko dipü pü bizü thiyo?
+Q20221127180629379929	ED-137								lesice lo n zü mi ko za ju kropü posüte?
+Q20221127180629380505	ED-138								n cekro ko n lesi küphri lo dipü bi no khühri sü yo?
+Q20221127180629380898	ED-142								lesi mhase hi no pethi pari zü ce no dipü se?
+Q20221127180629381323	ED-144								dipü bi no jü hi ma kümüle shü ta lesi mhase chou?
+Q20221127180629381704	ED-146								süno no n bo subject mori degree phri zü hi n inspire thi sü no lesi phri zü hi?
+Q20221127180629382126	ED-148								no lesice lo dipü se ni sa ba yo?
+Q20221127180629382555	ED-152								internet sü zü hi u küve mu u küsü posüte? Dipü bi no hi n lesi küphri lo effect thi ba?
+Q20221127180629383081	ED-160								no dipü la no lesi mhase hi se ba?
+Q20221127180629383628	ED-162								nani hi n lesi küphri matho ko lo effect thiyo me?
+Q20221127180629384220	ED-163								no jü ditsü se va? No dipü bi no hiko se ta?
+Q20221127180629384915	ED-164								Cekro za cesü cenyü hi dipu bi no lesi küphri ne ko yo effect thiyo?
+Q20221127180629385393	ED-167								lesice lo no dipü bizü matho ko thi n nyü tho ?
+Q20221127180629385808	ED-168								no lesice dipü bizü rüzü rüzü yo? N külü lü zü ce lesice ko rüzü mhanyo ko ujo thi no khasü me?
+Q20221127180629386297	ED-169								no dipü bi no lesice lo voyo? No khüshü chou zü lü nü lesice lo vo tso zü jü kropü posüte
+Q20221127180629386763	ED-172								no n külhü lo ujo thi no vori to zü mülü yo me? N hisa dipü thi nisa wa?
+Q20221127180629387236	AG_1								n thüma mori n rünami ko dipu bizü rhase ranye teyo?
+Q20221127180629387739	AG_2								thüma rhase ranye teyo zü mi kha dipu thi tsüyo? puko ga lübi teyo me mha kükre mhatho ri thiyo? mha kükre mhatho thiyo mütha , dipu thi yo?
+Q20221127180629388303	AG_3								ga kükre kükre zü n thüma ko mori rünami ko teyo zü posüte? kütsa tho lo ri uza se pungu posüte?
+Q20221127180629388790	AG_4								tekhri mori utu dibi zü ce ga hiko teyo?
+Q20221127180629389199	AG_5								dipu bi no ga hiko teyo?
+Q20221127180629389837	AG_6								mü küto la pütü didu-o yiyo?
+Q20221127180629390423	AG_7								ga hiko te zü ce, daru bizü sü yo me? me ga vo vekuto la udo kükre kro-o ba?
+Q20221127180629390935	AG_8								dipu bi no hiko mi kükremi ko ce zhu yo?
+Q20221127180629391427	AG_9								dipu bi no hiko cho no tiyo?
+Q20221127180629391855	AG_10								rhase kükre kükre zü n thüma mori rünami teyo zü posüte? kütsa tho lo ri uza se pungu posüte?
+Q20221127180629392740	AG_11								tekhri mori utu dibi zü ce rhase hiko teyo?
+Q20221127180629393594	AG_12								dipu bi no rhase hiko teyo?
+Q20221127180629394266	AG_13								mü küto la pütü didu-o yiyo?
+Q20221127180629394779	AG_14								rhase hiko te zü ce, daru bizü sü yo me? me rhase vo vekuto la udo kükre kro-o ba?
+Q20221127180629395282	AG_15								dipu bi no hiko mi kükremi ko che zhu yo?
+Q20221127180629395744	AG_16								dipu bi no hiko cho no tiyo?
+Q20221127180629396175	AG_17								lhako kükre kükre zü n thüma ko mori rüna mi teyo küzü uza küna-sü posüte?
+Q20221127180629396604	AG_18								tekhri mori utu dibi zü ce lhako hiko teyo?
+Q20221127180629397011	AG_19								dipu bi no lhako hiko teyo?
+Q20221127180629397388	AG_20								mü küto la pütü didu-o yiyo?
+Q20221127180629397776	AG_21								lhako hiko te zü ce, daru bizü sü yo me? me lhako vo vekuto la udo kükre kro-o ba?
+Q20221127180629398292	AG_22								dipu bi no hiko mi kükremi ko che zhu yo?
+Q20221127180629398960	AG_23								dipu bi no hiko cho no tiyo?
+Q20221127180629400090	AG_24								rhase rane kükre kükre zü n thüma ko mori rüna mi teyo küzü uza küna-sü posüte?
+Q20221127180629401116	AG_25								tekhri mori utu dibi zü ce rhase rane hiko teyo?
+Q20221127180629404206	AG_26								dipu bi no rhase rane hiko teyo?
+Q20221127180629406051	AG_27								mü küto la pütü didu-o yiyo?
+Q20221127180629406618	AG_28								rhase rane hiko te zü ce, daru bizü sü yo me? me lhako vo vekuto la udo kükre kro-o ba?
+Q20221127180629407042	AG_29								dipu bi no hiko mi kükremi ko ce zhu yo?
+Q20221127180629407505	AG_30								dipu bi no hiko cho no tiyo?
+Q20221127180629407984	AG_31								sübo kükre kükre zü n thüma ko mori rüna mi teyo küzü uza se pungu posüte?
+Q20221127180629408427	AG_32								sübo hiko pü no dipu thiyo?
+Q20221127180629408904	AG_33								dipu bi no sübo hiko teyo?
+Q20221127180629409303	AG_34								zho no pü mhathi-e küve pari küto la pütü didu-o yiyo?
+Q20221127180629409827	AG_35								sübo hiko te zü ce, daru bizü sü yo me? me sübo vo vekuto la udo kükre kro-o ba?
+Q20221127180629411070	AG_36								n thüma ko dipu bino mha te zü mathoko mi kükre mi ce ri khre ku zü ju khropu posüte?
+Q20221127180629412066	AG_37								vokuta tetse ko lü dipu bi no mha tezü matho ko kre no vori zü ngo?
+Q20221127180629412839	AG_38								
+Q20221127180629413545	AG_39								ma tezü matho ko la di pu bizü manyo khropu süyo?
+Q20221127180629414170	AG_40								manyo süko sü dipu bi no ma kükre kükre zü lo sü mathi yo?
+Q20221127180629414626	AG_41								mhanyo süko sü no di pu bino n thüma ko la matho thi reri wa?
+Q20221127180629415124	AG_42								n thüma ko mha tezü matho ko mori yi lo mathi keti ce manyo kükre khropu ala sü yo me?
+Q20221127180629415561	AG_43								manyo hiko di pu bi no süyo?
+Q20221127180629415949	AG_44								yi lo di pu bizü khünü sü yo?
+Q20221127180629416370	AG_45								n thüma ko la khünü sü zü uküve mu di pu bi no süyo zü ju khropu posüte?
+Q20221127180629416955	AG_112								dipü bi no jülü thi pü vo n khü mütsü ta-a?
+Q20221127180629417550	AG_113								Türü mo zü ce dipü bi no jü pu vori no n khü lo mütsü süyo?
+Q20221127180629419455	AG_114								N rüna lo dipü bizü bete teyo?
+Q20221127180629422252	AG_115								Dipü bizü bete no jü sü mükro mu jü sü mütsa yo?
+Q20221127180629422826	AG_116								Dipü bizü bete tüsü zü tü ce teyo?
+Q20221127180629423255	AG_117								Dipü bizü bete türü zü tü ce teyo?
+Q20221127180629423711	AG_118								Dipü bizü bete tü külü zü tü ce teyo?
+Q20221127180629424126	AG_119								n cekro ko n zü mathi yo mütha, dipü bizü matho thi küza sü yo?
+Q20221127180629424507	AG_120								Dipü bizü manyo sü no bete thiyo?
+Q20221127180629425064	AG_121								Dipü bizü daru bete ko la sü yo?
+Q20221127180629426186	AG_122								Dipü bizü bete lo metho bü süyo?
+Q20221127180629426699	AG_123								Süno n rüna lo fü ko thekü yo?
+Q20221127180629427136	AG_124								Süno n rüna lo thevü ko thekü yo?
+Q20221127180629427625	AG_125								Süno n rüna lo khunune ko thekü yo?
+Q20221127180629428118	AG_126								Süno n rüna lo tenyü ko thekü yo?
+Q20221127180629428570	AG_127								Süno n rüno lo teko ko thekü yo?
+Q20221127180629429016	AG_128								No jü thü bayo zü khunune dipu bizü thekü yo n rüna mi ko?
+Q20221127180629429518	AG_129								no methonojü pü no dipu thiyo?
+Q20221127180629429992	AG_130								No metho ko yo dipü vi yo?
+Q20221127180629430388	AG_131								Dipü bizü pulses ko te yo?
+Q20221127180629430773	AG_132								Dipü bizü ga kümüjo ko teyo?
+Q20221127180629431169	AG_133								Dipü bizü ga te yo?
+Q20221127180629431572	AG_134								ma teyo küzü ko dice kha ma müta yo?
+Q20221127180629431959	AG_135								Dipü bizü bete ko government pe yo?
+Q20221127180629432348	AG_276								dipü bi no thimü thi müso yo?
+Q20221127180629432733	AG_277								Dipü bi no ga ko thi müso yo?
+Q20221127180629433184	AG_278								Dipü bi no fü thi müso yo?
+Q20221127180629433674	AG_279								Dipü bi hezo thi yo?
+Q20221127180629434367	AG_280								Hezo thi küto la, di sü yo?
+Q20221127180629436968	AG_46								Talhako utsa kükre kükre zü dipü bizü teyo? Pu küve mu pu küsü posüte?
+Q20221127180629438567	AG_47								Talhako utsa kükre kükre zü dipü bizü teyo?
+Q20221127180629439157	AG_48								Tekhri mu utü dipu bizü te hiko teyo? Talhako hi sepu lübi teyo mütha, dipü la no sibi ta?
+Q20221127180629439647	AG_49								Dipu bi no talhako kükre kükre zü ko teyo? Sepu lübi zo ta mütha , u jü sü ri posüte?
+Q20221127180629440118	AG_50								mü küto pü tü dipü bizü yi yo?
+Q20221127180629440686	AG_51								Talhako hiko tezü ce, daru bizü kropu süyo me? Me talhako ko vo veküto la udo kükre kro-o ba me?
+Q20221127180629441842	AG_52								Dipu bi no mi ce ju yo?
+Q20221127180629442590	AG_53								Dipu bi no cho mu tiyo?
+Q20221127180629443063	AG_54								Sako utsa kükre kükre zü dipü bizü teyo? Pu küve mu pu küsü posüte?
+Q20221127180629443448	AG_55								Sako utsa kükre kükre zü dipü bizü teyo?
+Q20221127180629443827	AG_56								Tekhri mu utü dipu bizü ce sako hiko teyo? Sako hi utsa sepu lübi teyo mütha, dipü la no sibi ta?
+Q20221127180629444239	AG_57								Dipu bi no sako kükre kükre zü ko teyo? Sepu lübi zo ta mütha , u jü sü ri posüte?
+Q20221127180629444648	AG_58								mü küto pü tü dipü bizü yi yo?
+Q20221127180629445053	AG_59								Sako hiko tezü ce, daru bizü kropu süyo me? Me sako ko vo veküto la udo kükre kro-o ba me?
+Q20221127180629445440	AG_60								Dipu bi no mi ce ju yo?
+Q20221127180629445829	AG_61								Dipu bi no cho mu tiyo?
+Q20221127180629446238	AG_62								Thise utsa kükre kükre zü dipü bizü teyo? Pu küve mu pu küsü posüte?
+Q20221127180629446721	AG_63								Thise utsa kükre kükre zü dipü bizü teyo?
+Q20221127180629447182	AG_64								Tekhri mu utü dipu bizü ce thise hiko teyo? thise hi utsa sepu lübi teyo mütha, dipü la no sibi ta?
+Q20221127180629447626	AG_65								Dipu bi no sako kükre kükre zü ko teyo? Sepu lübi zo ta mütha , u jü sü ri posüte?
+Q20221127180629448016	AG_66								mü küto pü tü dipü bizü yi yo?
+Q20221127180629448385	AG_67								Thise hiko tezü ce, daru bizü kropu süyo me? Me thise ko vo veküto la udo kükre kro-o ba me?
+Q20221127180629448735	AG_68								Dipu bi no mi ce ju yo?
+Q20221127180629449118	AG_69								Dipu bi no cho mu tiyo?
+Q20221127180629449496	AG_70								Turmeric utsa kükre kükre zü dipü bizü teyo? Pu küve mu pu küsü posüte?
+Q20221127180629449987	AG_71								Turmeric utsa kükre kükre zü dipü bizü teyo?
+Q20221127180629450681	AG_72								Tekhri mu utü dipu bizü ce turmeric hiko teyo? turmeric hi utsa sepu lübi teyo mütha, dipü la no sibi ta?
+Q20221127180629451949	AG_73								Turmeric hiko te küto la udo dipu bizü süyo? Utsa sepü lubi teyo mütha, di pü la no sibi ta?
+Q20221127180629452868	AG_74								mü küto pü tü dipü bizü yi yo?
+Q20221127180629453815	AG_75								Turmeric hiko tezü ce, daru bizü kropu süyo me? Me turmeric ko vo veküto la udo kükre kro-o ba me?
+Q20221127180629455335	AG_76								Dipu bi no mi ce ju yo?
+Q20221127180629455969	AG_77								Dipu bi no cho mu tiyo?
+Q20221127180629456462	AG_78								alu utsa kükre kükre zü dipü bizü teyo? Pu küve mu pu küsü posüte?
+Q20221127180629456915	AG_79								alu utsa kükre kükre zü dipü bizü teyo?
+Q20221127180629457416	AG_80								Tekhri mu utü dipu bizü ce alu hiko teyo? alu hi utsa sepu lübi teyo mütha, dipü la no sibi ta?
+Q20221127180629457885	AG_81								Alu hiko te küto la udo dipu bizü süyo? Utsa sepü lubi teyo mütha, di pü la no sibi ta?
+Q20221127180629458388	AG_82								mü küto pü tü dipü bizü yi yo?
+Q20221127180629458876	AG_83								alu hiko tezü ce, daru bizü kropu süyo me? Me alu ko vo veküto la udo kükre kro-o ba me?
+Q20221127180629459286	AG_84								Dipu bi no mi ce ju yo?
+Q20221127180629459739	AG_85								Dipu bi no cho mu tiyo?
+Q20221127180629460107	AG_281								Chü utsa kükre kükre zü dipü bizü teyo? Pu küve mu pu küsü posüte?
+Q20221127180629460494	AG_282								Chü utsa kükre kükre zü dipü bizü teyo?
+Q20221127180629460909	AG_283								Tekhri mu utü dipu bizü ce chü hiko teyo? chü hi utsa sepu lübi teyo mütha, dipü la no sibi ta?
+Q20221127180629461306	AG_284								Chü hiko te küto la udo dipu bizü süyo? Utsa sepü lubi teyo mütha, di pü la no sibi ta?
+Q20221127180629461736	AG_285								mü küto pü tü dipü bizü yi yo?
+Q20221127180629462196	AG_286								chü hiko tezü ce, daru bizü kropu süyo me? Me chü ko vo veküto la udo kükre kro-o ba me?
+Q20221127180629462659	AG_287								Dipu bi no mi ce ju yo?
+Q20221127180629463153	AG_288								Dipu bi no cho mu tiyo?
+Q20221127180629463563	AG_289								küvü utsa kükre kükre zü dipü bizü teyo? Pu küve mu pu küsü posüte?
+Q20221127180629463968	AG_290								küvü utsa kükre kükre zü dipü bizü teyo?
+Q20221127180629464352	AG_291								Tekhri mu utü dipu bizü ce küvü hiko teyo? küvü hi utsa sepu lübi teyo mütha, dipü la no sibi ta?
+Q20221127180629464797	AG_292								küvü hiko te küto la udo dipu bizü süyo? Utsa sepü lubi teyo mütha, di pü la no sibi ta?
+Q20221127180629465224	AG_293								mü küto pü tü dipü bizü yi yo?
+Q20221127180629465653	AG_294								küvü hiko tezü ce, daru bizü kropu süyo me? Me küvü ko vo veküto la udo kükre kro-o ba me?
+Q20221127180629466076	AG_295								Dipu bi no mi ce ju yo?
+Q20221127180629466514	AG_296								Dipu bi no cho mu tiyo?
+Q20221127180629467039	AG_297								elaichi utsa kükre kükre zü dipü bizü teyo? Pu küve mu pu küsü posüte?
+Q20221127180629467582	AG_298								elaichi utsa kükre kükre zü dipü bizü teyo?
+Q20221127180629468688	AG_299								Tekhri mu utü dipu bizü ce elaichi hiko teyo? elaichi hi utsa sepu lübi teyo mütha, dipü la no sibi ta?
+Q20221127180629469606	AG_300								elaichi hiko te küto la udo dipu bizü süyo? Utsa sepü lubi teyo mütha, di pü la no sibi ta?
+Q20221127180629470403	AG_301								mü küto pü tü dipü bizü yi yo?
+Q20221127180629471799	AG_302								elaichi hiko tezü ce, daru bizü kropu süyo me? Me elaichi ko vo veküto la udo kükre kro-o ba me?
+Q20221127180629472684	AG_303								Dipu bi no mi ce ju yo?
+Q20221127180629473292	AG_304								Dipu bi no cho mu tiyo?
+Q20221127180629473822	AG_305								gakre utsa kükre kükre zü dipü bizü teyo? Pu küve mu pu küsü posüte?
+Q20221127180629474261	AG_306								gakre utsa kükre kükre zü dipü bizü teyo?
+Q20221127180629474650	AG_307								Tekhri mu utü dipu bizü ce gakre hiko teyo? gakre hi utsa sepu lübi teyo mütha, dipü la no sibi ta?
+Q20221127180629475020	AG_308								gakre hiko te küto la udo dipu bizü süyo? Utsa sepü lubi teyo mütha, di pü la no sibi ta?
+Q20221127180629475371	AG_309								mü küto pü tü dipü bizü yi yo?
+Q20221127180629475756	AG_310								gakre hiko tezü ce, daru bizü kropu süyo me? Me elaichi ko vo veküto la udo kükre kro-o ba me?
+Q20221127180629476083	AG_311								Dipu bi no mi ce ju yo?
+Q20221127180629476577	AG_312								Dipu bi no cho mu tiyo?
+Q20221127180629476969	AG_86								alu utsa kükre kükre zü dipü bizü teyo? Pu küve mu pu küsü posüte?
+Q20221127180629477402	AG_87								alu utsa kükre kükre zü dipü bizü teyo?
+Q20221127180629477833	AG_88								Tekhri mu utü dipu bizü ce alu hiko teyo? alu hi utsa sepu lübi teyo mütha, dipü la no sibi ta?
+Q20221127180629478276	AG_89								Alu hiko te küto la udo dipu bizü süyo? Utsa sepü lubi teyo mütha, di pü la no sibi ta?
+Q20221127180629478732	AG_90								mü küto pü tü dipü bizü yi yo?
+Q20221127180629479192	AG_91								alu hiko tezü ce, daru bizü kropu süyo me? Me alu ko vo veküto la udo kükre kro-o ba me?
+Q20221127180629479565	AG_92								Dipu bi no mi ce ju yo?
+Q20221127180629479893	AG_93								Dipu bi no cho mu tiyo?
+Q20221127180629480231	AG_94								thayese utsa kükre kükre zü dipü bizü teyo? Pu küve mu pu küsü posüte?
+Q20221127180629480549	AG_95								Thayese utsa kükre kükre zü dipü bizü teyo?
+Q20221127180629480856	AG_96								Tekhri mu utü dipu bizü ce thayese hiko teyo? thayese hi utsa sepu lübi teyo mütha, dipü la no sibi ta?
+Q20221127180629481156	AG_97								Thayese hiko te küto la udo dipu bizü süyo? Utsa sepü lubi teyo mütha, di pü la no sibi ta?
+Q20221127180629481534	AG_98								mü küto pü tü dipü bizü yi yo?
+Q20221127180629481910	AG_99								Thayese hiko tezü ce, daru bizü kropu süyo me? Me thayese ko vo veküto la udo kükre kro-o ba me?
+Q20221127180629482249	AG_100								Dipu bi no mi ce ju yo?
+Q20221127180629482575	AG_101								Dipu bi no cho mu tiyo?
+Q20221127180629482967	AG_102								Dipü bizü khunü ne n celü lo meri yo?
+Q20221127180629483486	AG_103								Dip bizü lo khünü hiko süyo?
+Q20221127180629484127	AG_104								Thüvo ko pü-u no dipü thiyo?
+Q20221127180629485327	AG_105								Dipü pü-u ucho thiyo?
+Q20221127180629486168	AG_106								Dipü bi no thüvo ko pe meri yo?
+Q20221127180629486851	AG_107								Thüsa mori rüce dipü bizü bayo?
+Q20221127180629488372	AG_108								Thüvo ko pü-u no dice meriyo?
+Q20221127180629489421	AG_109								Toto mi ko hi dipu bi no sako müri yo?
+Q20221127180629490008	AG_110								khothal hi di la no müri yo?
+Q20221127180629490495	AG_143								
+Q20221127180629490983	AG_144								
+Q20221127180629491491	AG_145								
+Q20221127180629492037	AG_146								
+Q20221127180629492603	AG_147								
+Q20221127180629493057	AG_148								
+Q20221127180629493482	AG_149								
+Q20221127180629493956	AG_150								
+Q20221127180629494334	AG_151								
+Q20221127180629494663	AG_152								
+Q20221127180629495048	AG_153								
+Q20221127180629495521	AG_154								
+Q20221127180629496026	AG_155								
+Q20221127180629496500	AG_156								
+Q20221127180629496983	AG_157								
+Q20221127180629497354	AG_158								
+Q20221127180629497788	AG_159								
+Q20221127180629498220	AG_160								
+Q20221127180629498597	AG_161								
+Q20221127180629499019	AG_162								
+Q20221127180629499472	AG_163								
+Q20221127180629499997	AG_164								
+Q20221127180629500582	AG_165								
+Q20221127180629501161	AG_166								
+Q20221127180629502438	AG_167								
+Q20221127180629503198	AG_168								
+Q20221127180629504222	AG_169								
+Q20221127180629505584	AG_170								
+Q20221127180629506187	AG_171								
+Q20221127180629506700	AG_172								
+Q20221127180629507244	AG_173								
+Q20221127180629507767	AG_174								
+Q20221127180629508294	AG_175								
+Q20221127180629508977	AG_176								
+Q20221127180629509447	AG_177								
+Q20221127180629509895	AG_178								
+Q20221127180629510279	AG_179								
+Q20221127180629510719	AG_180								
+Q20221127180629511173	AG_181								
+Q20221127180629511643	AG_182								
+Q20221127180629512096	AG_183								
+Q20221127180629512488	AG_184								
+Q20221127180629512917	AG_185								
+Q20221127180629513334	AG_186								
+Q20221127180629513712	AG_276								
+Q20221127180629514108	AG_277								
+Q20221127180629514511	AG_278								
+Q20221127180629514900	AG_279								
+Q20221127180629515296	AG_280								
+Q20221127180629515661	AG_281								
+Q20221127180629516034	AG_282								
+Q20221127180629516388	AG_283								
+Q20221127180629516869	AG_284								
+Q20221127180629517412	AG_285								
+Q20221127180629518968	AG_286								
+Q20221127180629519999	AG_287								
+Q20221127180629522469	AG_288								
+Q20221127180629524449	AG_289								
+Q20221127180629526051	AG_290								
+Q20221127180629527203	AG_291								
+Q20221127180629528579	AG_292								
+Q20221127180629529645	AG_293								
+Q20221127180629531508	AG_294								
+Q20221127180629532932	AG_295								
+Q20221127180629533912	AG_296								
+Q20221127180629534983	AG_187								
+Q20221127180629537369	AG_188								talhako kükre kükre zü ko za posüte?
+Q20221127180629540764	AG_189								tekhri mori utu dibi zü ce talhako hiko teyo?mu talhako hiko di pu bino kre ta?
+Q20221127180629541910	AG_190								di pu bi no talhako hiko teyo? talhako mütü ri khüma no teyo me?
+Q20221127180629542864	AG_191								hiko te zü ce, daru bizü sü yo me? me lhako vo vekuto la udo kükre kro-o ba?
+Q20221127180629543758	AG_192								mü küto la utü di tsü yi yo?
+Q20221127180629544751	AG_193								di pu bi no cho tiyo?
+Q20221127180629545738	AG_194								ma bu ditsü nyo yo vapu te zü yo lü? mi kükre mi ce ju yo me?
+Q20221127180629548117	AG_195								ganyo-gara kükre kükre zü za ko posüte?
+Q20221127180629549264	AG_196								tekhri mori utu dibi zü ce ganyo-gara hiko teyo?
+Q20221127180629550563	AG_197								di pu bi no hiko teyo?
+Q20221127180629551826	AG_198								hiko te zü ce, daru bizü sü yo me? me vekuto la udo kükre kro-o ba?
+Q20221127180629553023	AG_199								utü di pu bizü yiyo cho ti küve pari küto la?
+Q20221127180629554374	AG_200								dipubi no cho yo?
+Q20221127180629555788	AG_201								dipubi no mi ce ju yo?
+Q20221127180629557269	AG_202								khünune kükre kükre zü di pu kha celü kham müdayo?
+Q20221127180629558651	AG_203								dipu thi küto la kha ma yo?
+Q20221127180629559771	AG_204								dipu kha püko cho thi no vi yo?
+Q20221127180629560884	AG_205								khünu ko dipu dipu cho la no celü khama yo?
+Q20221127180629562521	AG_206								khünü meri zü ko mütü ti yo me? tiyo mü tha, di pu cho lü nu tiyo?
+Q20221127180629563752	AG_231								
+Q20221127180629564613	LC_1								thümane menü küyi tücie n suyie zholü dipü pü thi no puza tho yo?
+Q20221127180629565359	LC_2								utü mu uzho di pu bizü ce nani hiko thiyo?
+Q20221127180629566136	LC_3								thümane menü mu uza tho zü nami hi ditsü bi zü thiyo?
+Q20221127180629567091	LC_4								utü mu uzho di pu bi no che yo?
+Q20221127180629568197	LC_5								mi süno bizü ko cü yo?
+Q20221127180629569783	LC_6								mi vori küba ko ba kre yo me?
+Q20221127180629572136	LC_7								di pu bi no nami hi zü yo?
+Q20221127180629573984	LC_8								mhanyo di pu bizü sü yo?
+Q20221127180629575406	LC_9								süno thümane za tho sü yo?
+Q20221127180629576474	LC_10								süno vori no thümane münü zü nani matho ko küsü sü yo?
+Q20221127180629577733	LC_11								nami hi tso ta sa lü thenye mori thehü ko thiyo me?
+Q20221127180629578660	LC_12								süno cese cenye müpra yo ?
+Q20221127180629579368	LC_13								nani hi la no, no mahü posa ni sa me?
+Q20221127180629579986	LC_41								
+Q20221127180629580584	LC_14								neko rünami ko jo lü ceyo thi kü mo mojü ce theno-thepü kü sü ve me? 
+Q20221127180629581153	LC_15								neko ma mi ko thüno-thepü ceyo thi küto la dipü thiyo?
+Q20221127180629581716	LC_16								süno bo phü süyo?
+Q20221127180629582260	LC_17								nolü kükre kükre zü dipu süyo ceyo thi küto la?
+Q20221127180629582817	LC_18								utü mu tethi di pu ce ceyo ko thi yo?
+Q20221127180629583488	LC_19								nolü ditsü bizü bayo ceyo thizü ce? nolü za mu di pu la thiyo süko sü posüte?
+Q20221127180629584207	LC_20								utü mu uzho di pu bi no che yo?
+Q20221127180629584954	LC_21								thuma di pu bizü ko ceyo lo cü yo?
+Q20221127180629585811	LC_22								nolü tü ce di pu bi no thüma ko wo bayo?
+Q20221127180629586491	LC_23								di pubi no nolü thiyo?
+Q20221127180629587066	LC_24								dipu bizü manyo ko pu süno ceyo nolü thi yo?
+Q20221127180629587641	LC_25								süno ceyo nolü küsüsü yo?
+Q20221127180629588236	LC_26								ceyo thi kümo mojü mori ceyo thi zü ce mori ceyo sa lo thehü bayo me? di pu bizü lecho ko bayo?
+Q20221127180629588748	LC_27								ceyo thi zü ce dibi no thehü küsü yo?
+Q20221127180629589252	LC_28								ceyo nolü za ju kro pu ba mütha posa süni sa me?
+Q20221127180629589863	LC_42								
+Q20221127180629590522	LC_29								neko rami ko mi sa ta mütha di pu bizü küsa nye thi yo?
+Q20221127180629591141	LC_30								utü mu uzho di pu bizüce küsa nye ko thiyo?
+Q20221127180629591903	LC_31								küsa nye kükre kükre kütsü ditsü bizü bayo?
+Q20221127180629592513	LC_32								thüma di pu bizü ko cü yo?
+Q20221127180629593052	LC_33								küsa nye ce thüma ko dipu bi no thüba kolo bayo?
+Q20221127180629593601	LC_34								dipu bi no küsa nye thiyo?
+Q20221127180629594195	LC_35								dipu bizü manyo ko pu süno küsa nye thi yo?
+Q20221127180629594710	LC_36								süno küsa nye küsüsüyo?
+Q20221127180629595231	LC_37								küsa nye thi zü ce thehü bezü bayo me?
+Q20221127180629595727	LC_38								küsa nye thi zü la no sopü no u cesü-cenye müpra yo?
+Q20221127180629596178	LC_39								küsa nye ju basa lü mütha posa süni sawo me?
+Q20221127180629596651	LC_40								nani thi zü ce dipü hezo ko krayo?
+Q20221127180629597180	ST_1								Dipü bi no linguistics hi jüpo mü tho zü matho ko lo krühi to ha?
+Q20221127180629597700	ST_2								dipü bi no jü corpora hi language technology lo thi kühü sayi yo?
+Q20221127180629598170	ST_3								di la no corpora jü kükre kükre zü hi thi kühü pü linguistics lo ma küjo thi sa mosü ba?
+Q20221127180629598615	ST_4								Dipü bi no speech technology hi speech database thi kühü sayi yo?
+Q20221127180629599055	ST_5								Speech data base lo dipü bizü bayo?
+Q20221127180629599496	ST_6								Dipü bi no raw text hi corpora la khasü yo?
+Q20221127180629600049	ST_7								di la no ma tho küjü matho ko hi transcribe thi pü corpora lü sü mosü?
+Q20221127180629600621	ST_8								annoted version of a corpus lü dipü bayo? Dipü bi no annoted corpora hi jü ko phri zü lo khrühi ba?
+Q20221127180629601162	ST_9								Text corpora la no special design dipu la sü mosü ba?
+Q20221127180629602553	ST_10								Dialect corpora dipü thi yo? Hihi dipü bi no speech varieties ko pe mvü-ye ta,u shüye lo?
+Q20221127180629603613	ST_11								Comparable corpora hi dipü bi no thi kühü sa yo?
+Q20221127180629605159	ST_12								Databases ko maintain thi küto la dipü bizü matho ko lü nü thi shü dü yo?
+Q20221127180629606144	ST_13								language technology thi kühü küto la dipü sü mosü ba?
+Q20221127180629606709	ST_14								digital literacy za kümüle posüte?
+Q20221127180629607327	ST_15								Computational linguistics za kümüle jü posüte?
+Q20221127180629608004	ST_16								No natural language data lo dipü bizü analysis ko süyo?
+Q20221127180629608641	ST_17								Dipü lo nü speech sounds ko hi machine wo seyo?
+Q20221127180629609316	ST_18								dipü chode lo nü text ko hi linguistics analysis ütü kükre kükre zü lo process thiyo?
+Q20221127180629609919	ST_19								sentence splitting hi dipü bi no thiyo?
+Q20221127180629610389	ST_20								Dipü bi zü thüdo ko pü speech tagging lo sü yo?
+Q20221127180629610884	ST_21								Morph analysis jü ko kropü posü ve ma?
+Q20221127180629611314	ST_22								Syntactic analysis of words hi dipü bi no thiyo?
+Q20221127180629611740	ST_23								Syntactic parsing hi dipü bi zü thüdo sü no thiyo?
+Q20221127180629612149	ST_24								Dila no National Digital Literary mission shü dü sü?
+Q20221127180629612602	ST_25								dipü bi no uma jü pü küngü no sentence lo khasü yo? Dipü property ko sentence mu phrase ko hi khapü limit mosheri fixed length bayo sibi poyo?
+Q20221127180629613027	ST_26								Jü hi dipü bi no se yo? Jü mhase hi dipü bi no süyo?
+Q20221127180629613442	ST_27								phonetics mu phonology hi dipü bi no kre ta?
+Q20221127180629613870	ST_28								Speech sounds pari küto la no dipü bizü üta ümü mori ulünyo bizü ko sü no pari yo?
+Q20221127180629614291	ST_29								No IPA hi dipü bi no sü yo shi süsü po ve ma?
+Q20221127180629614697	ST_30								Language properties za design bezü bame ?
+Q20221127180629615102	ST_31								Morphemes ko hi di wa? Morpheme ju kümüle posüte?
+Q20221127180629615507	ST_32								Pulmonic mu non pulmonic hi dibi no kre ta?
+Q20221127180629615911	ST_33								Vowels sounds pari küto la ülünyo ko dipü bi no süyo?
+Q20221127180629616394	ST_34								Linguistics method sü no transcription hi jü pü lo nü jü pü lo süyo?
+Q20221127180629616976	ST_35								PRAAT hi analysis mu synthesis of speech la no didi no süyo?
+Q20221127180629617572	ST_36 (Scientific Research)								Scientific research hi dipü cho lo nü mha rhü no thi yo?
+Q20221127180629618435	ST_37								Scientific research thi kümo mozü ce dipü bizü matho ko thi mosü ba?
+Q20221127180629619046	ST_38								Dibi no scientific research classification hi research za structure design thi zü lo khrühi yo?
+Q20221127180629619550	ST_39								Observational data collection technique hi dipü lo nü experimental technique zü kre ta?
+Q20221127180629620070	ST_40								Scientific research hi dipü zho lü nü matho keti ko sü mhathi ve?
+Q20221127180629620582	ST_41								Classification of scientific research za descriptive mu analytical method za ju posüte?
+Q20221127180629621143	ST_42								Case report mü case series ne hi descriptive lü za kümüle ju posü ve ma?
+Q20221127180629621700	ST_43								dibi no analytical scientific research hi descriptive matho zü kreta?
+Q20221127180629622370	ST_44								Observational research hi dila no kükre research studies ko ce ri hüve kü ta?
+Q20221127180629622970	ST_45								Cohert research hi ucho dipü lo nü observational mü experimental studies zü mhathi yo?
+Q20221127180629623470	ST_46								no ucho kümüle case-control studies mu cross sectional studies za posü ve ma?
+Q20221127180629624076	ST_47								Interventional research hi ucho di wa?
+Q20221127180629624727	ST_48								Clinical research hi dibi no control group lo sü yo clinical case lo?
+Q20221127180629625346	ST_49								Clinical research hi di la no müleri?
+Q20221127180629625919	ST_50								randomisation mu blinding method hi dipü bi no clinical research lo sü yo?
+Q20221127180629626395	ST_51General								dzü püno di di thiyo? dzü filtration dibi no thiyo?
+Q20221127180629626892	ST_52								chlorination mü bleeching hine hi pü no dila dzü thi müsa yo?
+Q20221127180629627367	ST_53								Dila no dzü hi müsho no khaba müsü ba?
+Q20221127180629627794	ST_54								Dibi bi tükhra mülü ba süzi no müka ve?
+Q20221127180629628207	ST_55								Tükhra(oxygen) hi dila no thüma la no müle ri?
+Q20221127180629628675	ST_56								Deforestation hi diwa? Thüra ko mü fossil fuel hiko the tso mütha dibi ta?
+Q20221127180629629159	ST_57								Dila no mesocho(north) mü mekhrocho(south) hüne hü tüsü yo?
+Q20221127180629629651	ST_58								Thegi kükre kükre zü za posüte? Thegi hi pü no di thiyo?
+Q20221127180629630140	ST_59								matter kükre kükre zü za posüte?
+Q20221127180629630568	ST_60								thegi kümo ko za posüte? Hiko dice süyo?
+Q20221127180629630977	ST_61								evaporation lo nü dibi no terü thiyo?
+Q20221127180629631436	ST_62								Steam hi dibi no pai yo?
+Q20221127180629631770	ST_63								Life-cycle is dibi yo?
+Q20221127180629632077	ST_64								Terü jü küngü(harvest) yo zü hi diwa?
+Q20221127180629632377	ST_65								Mobile phone is dibi no süyo?
+Q20221127180629632672	ST_66								Dibi no mobile phone hi charge thiyo?
+Q20221127180629633087	ST_67								You-tube channel lo no di peyo?
+Q20221127180629633584	ST_68								No electricity lübi mo no kükre lo nü dice charge thiyo?
+Q20221127180629634147	ST_69								No ma kükre kükre zü dipü lo no light buld hi to yo?
+Q20221127180629635319	ST_70								Solar energy hi dibi no süyo?
+Q20221127180629636114	ST_71								Power source kükre kükre dibi no thi pari yo?
+Q20221127180629636711	ST_72								Dice lo nü jü pü no kra yo?
+Q20221127180629638459	ST_73								Dila no jü thi mülü no kra yo?
+Q20221127180629639581	ST_74								No mobile phone sü zü ce ma kürü dipü bizü küsü yo mü dibi no thin ve yo?
+Q20221127180629640121	ST_75								No mobile phone sü zü ce ma kürü dipü bizü küsü yo mü dibi no thin ve yo?
+Q20221127180629640586	ST_76								No dibi no shopping app kükre kükre zü ko süyo?
+Q20221127180629641062	ST_77								mobile phone hi pü no di di thiyo?
+Q20221127180629641506	ST_78								Dila terü shü zü ce light hi vori mota yo?
+Q20221127180629642034	ST_79								T.V kri zü ce mhanyo kükre kükre zü ko di ngoyo?
+Q20221127180629642576	ST_80								no dibi no t.v za set-top box hi recharge thiyo?
+Q20221127180629643200	ST_81								No dibi no mobile phone camera hi süyo? Dibi zü ce ko camera hi süyo?
+Q20221127180629643763	ST_82								Mobile phone bamo mozü ce dibi no mi zü kerithi yo?
+Q20221127180629644367	ST_83								vapü inverter hi charge thi ta mütha babü do ditsü sü ve?
+Q20221127180629644852	ST_84								thazü ce dibi no mha tho no tiyo?
+Q20221127180629645306	ST_85								ütü dibi no che yo?
+Q20221127180629645712	ST_86								Nace kükü hi pü di di thi ve?
+Q20221127180629646130	ST_87								Rainbow hi dibi no pari yo?
+Q20221127180629646552	ST_88								Cecesü hi dibi no pari yo?
+Q20221127180629646973	ST_89								thunder mü lightening hi dibi no pari wo?
+Q20221127180629647365	ST_90								No dibi no üthesü ha yo? Ülünyo kükre kükre zi ko pü no thüma dibi no üthesü ha yo?
+Q20221127180629647750	ST_91								Rhü(living) mü rhü kümo(non-living) ko hi diwa?
+Q20221127180629648136	ST_92								rhü(living) dibi bi zü n khü n mho lo bayo?
+Q20221127180629648569	ST_93								rhü kümo(non-living) dibi zü ko n khü n mho lo bayo?
+Q20221127180629649032	ST_94								Dibi no ükhri-e pari yo?
+Q20221127180629649454	ST_95								mati keti za ülünyo ko za posüte?
+Q20221127180629649937	ST_96								Gari dibi no start thiyo?
+Q20221127180629650620	OH_2								n po mu n zu künane ri rüna pu lo nü vori me? me kükre kükre zü rüna lo nu vori?
+Q20221127180629651350	OH_3								n cekro ko di pu nani züyo? nani hi celü zü yo me? zü mütha di pu bi no neko celu lo kürüshü matho thiyo?
+Q20221127180629651904	OH_6								no tsüdo n jüpo zü kümono küba tha posüte. No n jüpo po küba hi zü no n rünami jo zü kümüno küzü lü yo me?
+Q20221127180629652270	OH_7								no ba no pethi pari zü thi za ju posü. Phülü me town cho ta?
+Q20221127180629652582	OH_8								n tho n thüma kümo, dipu thümako no no bazü thi lo lhuyo?
+Q20221127180629652924	OH_9								
+Q20221127180629653243	OH_10								no n potsa mu n zutsa ju dipu n sase ba?
+Q20221127180629653593	OH_11								no pethi pari zü ce no sekümo ukrüne kürako za ju se vori ma?
+Q20221127180629653955	OH_12								no lhu vori zü ce utü kümüle tü zü küsü no vori ma? mu si bi zü ce no mu n cekro ko makürü zü küsüte me?
+Q20221127180629654317	OH_13								neko cekro za cesü-cenye dipu bi no vori? no n cekro ko cesü-cenye kürü zü küsü zü tü pu ri se ma?
+Q20221127180629654672	OH_14								no pethi pari zü ce dipu
+Q20221127180629655059	OH_16								no n sa-jüra ko ju posüte mu di pu bi no neko bayo? tetse kümüno me? lesice lo kümü za no vo me?
+Q20221127180629655485	OH_17								no khrüsa-reli thi zü ce n tü reri zü ce dipu thi no bayo?
+Q20221127180629655899	OH_18								n pethi pari zü ce dipu bizü küti nyo ko ti no vori?
+Q20221127180629656384	OH_20								n natsi ce, no pethi pari mütha dipu thi ni sa yo? mu di la na?
+Q20221127180629656903	OH_21								no tsi hi dipu thi ba? n ma thi zü thi dice bayo?
+Q20221127180629657553	OH_22								no dipu bi no n matho/kam hi thi vori? no tsü hi ri n matho/kam hi thi ni sa zo me?
+Q20221127180629658403	OH_23								n kam/matho hi thi zü ce makürü di pu bizü küsüyo?
+Q20221127180629659118	OH_24								n cekro ko tetse pu lo dipu bizü thenye nye yo
+Q20221127180629659920	OH_25								n zümi ko za ju hu posüte? n zü neko dipu bizü thi bayo?
+Q20221127180629660705	OH_26								no mi zü kümüza me, dipu bi no n zü-u/ züpü n ne küsü-e? di pu bino kümüza-a ta?
+Q20221127180629661666	OH_27								no ceyo thi te me? thi mütha, di pu bi no n ceyo nye ?
+Q20221127180629662933	OH_29								no dipu bizü rezhü mori merü ko thi bayo n tü reri zü ce ko?
+Q20221127180629664849	OH_30								no dipu bi no n küsürho-küsürhi pe bayo?
+Q20221127180629665444	OH_31								no u ramiko za mori u ma koza di pu bizü küticho ti n künütho-u thiyo?
+Q20221127180629666014	OH_32								no di pu bizü thema mi pu sü posüte? n küve ri posüte?
+Q20221127180629666616	OH_33								ma di pu n la no ma küjotho-u?
+Q20221127180629667236	OH_34								no mi zü kümüza küto la, mi za di pu bizü payo?
+Q20221127180629668320	OH_35								tezü lo ma küve thi zü ko dolü dipu n la no uma kürü tho?
+Q20221127180629672194	OH_36								no tsi hi dipu rhi ba n chekro ko la no?
+Q20221127180629673709	OH_37								no vokuto tü-o lo hi dipu rhi ba n chekro ko la no?
+Q20221127180629674454	OH_39								no n natsi lü nü tsü hi kütso n tho n jo rüle vapu ri küde vori ma? n natsi lü nü tsü kütso n rüna lü dipu bizü ko küde ta?
+Q20221127180629674943	OH_40								n jüpo lü dipu bizü lü, mi jüpo ce ri kre te süzi-e no po-o ve?
+Q20221127180629675375	OH_41								tsüdo khre ko kükre kükre küzü ko di pu bi no u jü lo kürüthi yo?
+Q20221127180629675924	OH_42								no n külü lo, hisa u jüko mu uko zho dipu bi no rüde/ küde vori ta?
+Q20221127180629676634	OH_43								no vori kuto natsi khre ko la no dipu po ni sawa?
+Q20221127180629678069	OH_45								tethi mori di pu bizü tü ce n jü lü thüju pozü se yo?
+Q20221127180629678735	OH_46								no n natsi ce rüni zü thüju khropu a ce po-o ve ma?
+Q20221127180629679237	OH_47								n ce thüju pozü ma humi bame, no tsü do ri lü küba n la no u mariye zü?
+Q20221127180629679729	OH_48								neko rami za li ko di pu bi no thiyo? mhanyo dipu bizü sü yo?
+Q20221127180629680236	OH_51								no dipu bizü tsale/ li rüni vori?
+Q20221127180629680744	OH_52								no dipu tü ce tsale rüni yo mu di pu bi lü nü rüni yo? no puko tsale thi zü hi u mhi lü nü ngo pe rüni yo me, me kükre mhanyo khro lü nü rüni yo?
+Q20221127180629681407	OH_54								n rüna lo ngo küve dipu bizü lecho mi vori mütha ti zü veto ha?
+Q20221127180629682015	OH_56								n rünami ko di pu bizü füne ko süyo?
+Q20221127180629682627	OH_57								no dipu bizü füne ko n natsi lü tsü kutso sü vori?
+Q20221127180629683293	OH_58								no tsü hi ri füne thazü mi ko sü tazü ko sü me? no hiko tü so nha sü yo me thenye bazü ce sü yo?
+Q20221127180629683942	OH_59								no n füne sü zü ko dolü di pu no n la no u ma küri tho mu di la no?
+Q20221127180629684643	OH_61								n rüna lü thünomi mu thüpumi ko di pu bizü matho ko thi mosü yo?
+Q20221127180629685298	OH_63								no tha mosheri n do ko dipu dipu thi no bayo?
+Q20221127180629685804	OH_64								no n füne di pu bizü sü no mathi no bayo?
+Q20221127180629686273	OH_65								no dipü bizü lü nü rüvü zü unyu yo? no rüvü zü unüyo ma? no dipu bi no n matho ko lo voyo?
+Q20221127180629686718	OH_66								thazü tü ce celü ko dipu biyo?
+Q20221127180629687148	OH_67								n rüna za physical geography ju posüte?
+Q20221127180629687645	OH_68								khünu dipu bizü ngo yo n rüna ce ko?
+Q20221127180629688106	OH_69								di pu bizü nhabo ko nyo yo n rüna ce ko?
+Q20221127180629688536	OH_70								no tsüdo mhanyo küsa dipu bizü nyoyi? mhanyo küsa ko dolü di pu no n la küvetho mu dila no
+Q20221127180629689025	OH_71								no mi zü kerethi mori küsu küto la di pu jü lo kerethi zü unükü? mu mi zü küsü mosheri kerethi zühi di pu bi no küde vori?
+Q20221127180629689963	OH_72								no mahu kükre n ju ko posa nyi sa me?
+Q20221127180629690754	HLT_1								nha daru za üküve posüte?
+Q20221127180629691202	HLT_2								Dila no nha daru süyo?
+Q20221127180629691637	HLT_3								nha daru mori di bizü nha ko süyo üva külha zü ce? Dibi no thiyo? Mü dibi no tiyo?
+Q20221127180629692114	HLT_4								no vapü ri nha daru sü ma? Üjü sepü posüte?
+Q20221127180629692527	HLT_5								nha daru kükre zü ko sü no ma kükre kükre pe yo küba , üza ko posüte? Dibi no thiyo mü dila no thiyo?
+Q20221127180629692950	HLT_6								no dibi no n pi mülo zü se yo? N pi mülo zü dipü bizü nha darü süyo?
+Q20221127180629693373	HLT_7								No mükhroro rüce zü ce dibi tayo? Nha daru dibi no ti mori kra yo?
+Q20221127180629693858	HLT_8								rüzae ta zü ce di thi no peyo? Nha daru khropü sü yo ma, kütsü kürü rüzae zü ce? Dibi no daru süko sü thiyo?
+Q20221127180629694379	HLT_9								No n mo wo surho ba küto la di thiyo?
+Q20221127180629694851	HLT_11								nha daru dibi zü ko sü yo pipa la no?
+Q20221127180629695262	HLT_12								n pitha la no dipü bizü daru süyo?
+Q20221127180629695652	HLT_13								nha daru dibi zü ko sü yo n mo thi zü ce?
+Q20221127180629696063	HLT_14								nha daru dibi zü ko sü yo n mo(muscle) thi zü ce?
+Q20221127180629696503	HLT_15								nha daru dibi zü ko sü yo n hu(teeth) thi zü ce?
+Q20221127180629696954	HLT_16								nha daru dibi zü ko sü yo n pi thi zü ce?
+Q20221127180629697357	HLT_17								nha daru dibi zü ko sü yo thüno mi ko kümüje tü ce(mensural pain/cramp)?
+Q20221127180629697798	HLT_18								Covid 19 bazü ce dibi zü nha daru sü mü kra yo?
+Q20221127180629698199	HLT_19								n hu(teeth) thi zü ce dibi zü nha daru sü yo?
+Q20221127180629698586	HLT_20								nha daru di bi zü ko sü uhu(teeth) küthi kükre kükre zü(decay,gum disease,sensitivity etc) ko la?
+Q20221127180629698975	HLT_21								neko rüna lo thuma mi pe yo zü(kobiraz) mi bayo ma? Püko dipü bizü thi no mi pe yo?
+Q20221127180629699346	SPR_1								Polo hi dibi no shüdu vori ?
+Q20221127180629699818	SPR_2								neko rüna lo thazü dipü bizü rüzü merü thino vori?
+Q20221127180629700451	SPR_3								rugby bizü rüzü kropu bame neko rüna lo?
+Q20221127180629701118	SPR_4								Dibi no rüzü hi u mo sürho thi bayo?
+Q20221127180629702508	SPR_5								No dibi zü rüzü ko rüzü yo? Dibi no rüzü yo?
+Q20221127180629703388	SPR_6								n natsi ce no di rüzü rüzü yo? No thazü rüzü zü bayo thuju kropü posüte?
+Q20221127180629705037	SPR_7								celü rüzü mu ceta rüzü küve posüte?
+Q20221127180629705855	SPR_8								wrestling bizü rüzü za posüte? Süno süko sü rüzü yo?
+Q20221127180629706359	SPR_9								board games rüzü za posüte? Ba mütha u za ko mü dipübi no rüzü yo?
+Q20221127180629706935	SPR_10								marble(guti) sü no rüzü yo ma? di bizü rüzü rüzü yo? dibi no rüzü yo?
+Q20221127180629707471	SPR_11								kütsü sü no dipü bizü rüzü rüzüyo? dibi no rüzü yo?
+Q20221127180629708004	SPR_12								rüzü pü ri küra müle zü ko mori thayese müle zü ko bayo ma?
+Q20221127180629708459	SPR_13								sü(stick) sü no rüzü pü ri bayo ma? Dibi no rüzü yo?
+Q20221127180629708915	SPR_14								celü lo rüzü za rüzü pü ri n rüna lo bayo ma? Dibi no rüzü yo?
+Q20221127180629709374	SPR_15								rü pü no rüzü zü za rüzü pü ri bayo ma? Ütü mü dibi no rüzü yo?
+Q20221127180629709859	SPR_16								yoga hi pü kümüve diwa?
+Q20221127180629710316	CLT_1								n rüna krüta ko dipü matho ko thi no rüna peyo?
+Q20221127180629710778	CLT_2								thüma dibi zü ko vo rüna krüta thiyo? mü püko di pü thi ba yo?
+Q20221127180629711201	CLT_3								Rüna za development committee hi di thiyo?
+Q20221127180629711572	CLT_4								n rüna mi dibi no u külhu mu u ujo dibi no lhüyo?
+Q20221127180629711942	CLT_5								Customary court hi n rüna lo dibi no ujo ko thiyo?
+Q20221127180629712303	CLT_6								Customary court hi sopü bizü mi wo süyo? Pü di pü bizü thiyo?
+Q20221127180629712620	CLT_7								n rüna mi ko za füne ju ko kropü posüte?
+Q20221127180629712933	CLT_8								uma kürü tho fü(shawl) za ulhu dibi yo?
+Q20221127180629713313	CLT_9								n rüna mi za bepa,ti, si bizü ko didi süyo?
+Q20221127180629713696	CLT_10								n rüna mi ko di matho thi mükroyo?
+Q20221127180629714152	CLT_11								n rüna mi ko di ti yo?
+Q20221127180629714543	CLT_12								n rüna mi ko di ti mükro yo?
+Q20221127180629714930	CLT_13								dibi no talhako hi teyo n rünami ko?
+Q20221127180629715344	CLT_14								n rünami ko lhako te ze la thenye kro-o thi yo me? Dibi no thenye hi thiyo?
+Q20221127180629715760	CLT_15								thenye dipü no kümele tho? Dibi no thenye nye yo?
+Q20221127180629716141	CLT_16								n rünami ko nasü zü(traditional dance) za ju posüte?
+Q20221127180629716586	CLT_17								n rünami ko dibi no ceyo thiyo?
+Q20221127180629717102	CLT_18								n rünami ko füne do zü hi za jü posüte?
+Q20221127180629717830	CLT_19								n rünami za kümüle marhe, lakho ko do zü ko, mefü, gale ko za posüte?
+Q20221127180629718555	CLT_20								küra ko pü no didi thiyo n rüna mi ko?
+Q20221127180629719014	CLT_21								n rüna mi za li(folk songs) kümüle ju posüte?
+Q20221127180629719417	CLT_22								dipü bizü tsale thi zü mhanyo ko sü yo tsale thi küto la?
+Q20221127180629719814	CLT_23								pethimi mhase (oral history) hi dibi no natsi khre ko zü küza no vori yo?
+Q20221127180629720219	CLT_24								n rüna mi ko hi dibi no vori?
+Q20221127180629720618	CLT_25								thazü thüju sepü posüte?
+Q20221127180629721114	CLT_26								thazu nane ko za jü kropü posüte?
+Q20221127180629721546	CLT_27								thazü mi ko dibi no fü tüyo?
+Q20221127180629721994	CLT_28								thazü tü ce dipü bizü mhanyo ko sü no rühü yo?
+Q20221127180629722485	CLT_29								thazü ma ko dibi no khünü mu müra küche thi no ma yo?
+Q20221127180629722978	CLT_30								tsüdo ri rünami ko thura lo rühü yo me? Dipü bizü thüjo ba rühü küto la?
+Q20221127180629723389	CLT_31								dipü bizü ornaments n rüna mi ko süyo?mu di pü no thi ?

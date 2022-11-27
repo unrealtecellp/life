@@ -37,8 +37,11 @@ from werkzeug.datastructures import FileStorage
 from app.lifeques.lifeques import questionnaire
 
 from app.lifeques.controller import savequesaudiofiles, getquesfromprompttext, savequespromptfile
+from app.lifeques.controller import getquesidlistofsavedaudios
 
 from zipfile import ZipFile
+
+from tqdm import tqdm
 
 #############################################################################
 #############################################################################
@@ -136,12 +139,17 @@ def uploadfile():
                                                                                             'projectsform')
     current_username = getcurrentusername.getcurrentusername()
     print('curent user : ', current_username)
+    currentuserprojectsname = getcurrentuserprojects.getcurrentuserprojects(current_username,
+                                                                                userprojects)
     activeprojectname = getactiveprojectname.getactiveprojectname(current_username, userprojects)
     # projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
 
-
+    langscript = []
     projectform = projectsform.find_one({"projectname" : activeprojectname})  #domain, elictationmethod ,langscript-[1]
-    langscript = list(projectform["LangScript"][1].keys())
+    langscripts = projectform["Prompt Type"][1]
+    for lang_script, lang_info in langscripts.items():
+        if ('Audio' in lang_info):
+            langscript.append(lang_script)
     domain = projectform["Domain"][1]
     elicitation = projectform["Elicitation Method"][1]
     print(langscript, domain, elicitation)
@@ -218,6 +226,7 @@ def uploadfile():
         return redirect(url_for('karya_bp.home_insert'))
 
     return render_template("uploadfile.html",
+                            data=currentuserprojectsname,
                             projectName=activeprojectname,
                             uploadacesscodemetadata=uploadacesscodemetadata)
 
@@ -508,12 +517,19 @@ def homespeaker():
     userprojects, projectsform = getdbcollections.getdbcollections(mongo,'userprojects', 'projectsform')
 
     current_username = getcurrentusername.getcurrentusername()
+    currentuserprojectsname = getcurrentuserprojects.getcurrentuserprojects(current_username,
+                                                                            userprojects)
+    
     print('curent user : ', current_username)
     activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
                                                                     userprojects)
    
     projectform = projectsform.find_one({"projectname" : activeprojectname})  #domain, elictationmethod ,langscript-[1]
-    langscript = list(projectform["LangScript"][1].keys())
+    langscript = []
+    langscripts = projectform["Prompt Type"][1]
+    for lang_script, lang_info in langscripts.items():
+        if ('Audio' in lang_info):
+            langscript.append(lang_script)
     domain = projectform["Domain"][1]
     elicitation = projectform["Elicitation Method"][1]
     print(langscript, domain, elicitation)
@@ -587,9 +603,10 @@ def homespeaker():
     
     print(data_table)
     return render_template('homespeaker.html',
+                            data=currentuserprojectsname,
                             projectName=activeprojectname,
                             uploadacesscodemetadata = uploadacesscodemetadata,
-                            data=data_table)
+                            data_table=data_table)
 
 
 ##############################################################################################################
@@ -674,7 +691,7 @@ def fetch_karya_audio():
                                                                                                             'questionnaires',
                                                                                                             'accesscodedetails')
     current_username = getcurrentusername.getcurrentusername()
-    print('curent user : ', current_username)
+    # print('curent user : ', current_username)
     activeprojectname = getactiveprojectname.getactiveprojectname(current_username, userprojects)
     projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
 
@@ -689,18 +706,18 @@ def fetch_karya_audio():
         phone_number = request.form.get("mobile_number")
         otp = request.form.get("karya_otp")
 
-        print ("OTP", otp)
+        # print ("OTP", otp)
         print ("access_code", access_code)
-        print ("Mobile", phone_number)
+        # print ("Mobile", phone_number)
 
         verifyotp_urll = 'https://karyanltmbox.centralindia.cloudapp.azure.com/worker/otp/verify'
         verifyotp_hederr= {'access-code':access_code, 'phone-number':phone_number, 'otp':otp}
         verifyPh_request = requests.put(url = verifyotp_urll, headers = verifyotp_hederr) 
-        print (verifyPh_request.json())
+        # print (verifyPh_request.json())
 
         ##TODO: Put check for verifying if the OTP was correct or not. If correct then proceed otherwise send error
         getTokenid_assignment_hedder = verifyPh_request.json()['id_token']
-        print ("ID token : ", getTokenid_assignment_hedder)
+        # print ("ID token : ", getTokenid_assignment_hedder)
         
         ###############################   Get Assignments    ##########################################
         hederr= {'karya-id-token':getTokenid_assignment_hedder}
@@ -708,7 +725,7 @@ def fetch_karya_audio():
         assignment_request = requests.get(headers = hederr, url = assignment_urll) 
    
         r_j = assignment_request.json()
-        print ('Lenght of JSON : ', len(r_j))        
+        # print ('Lenght of JSON : ', len(r_j))        
 
     
 ###################################################################################
@@ -736,42 +753,64 @@ def fetch_karya_audio():
             fileID_list.append(fileID_lists)
        
         fileID_sentence_list = tuple(zip(fileID_list, sentence_list))
-        print(fileID_sentence_list)
+        # print(fileID_sentence_list)
 
         #put check condiotn -> if the speakerId and fileID  previouls fetched or not / Fetch on the basis of fileID assign to speakerID
         audio_speaker_merge = {key:value for key, value in zip(fileID_sentence_list , workerId_list)} #speakerID = fileID_list(fieldID)
-        print(audio_speaker_merge)
-        # print(audio_speaker_merge.keys())        
+        print(len(audio_speaker_merge))
+        # print(audio_speaker_merge.keys())
+        language = accesscodedetails.find_one({"karyaaccesscode": access_code}, {'language': 1,'_id': 0})['language']
         exclude_ids = []
-        # file_id_list = []
+        exclude_ids = getquesidlistofsavedaudios.getquesidlistofsavedaudios(questionnaires,
+                                                                            activeprojectname,
+                                                                            language,
+                                                                            exclude_ids)
+
+        # print(f"LanguageScript: {language}\nExcludeIds: {exclude_ids}")
+        file_id_list = []
+        print(f"Length of fileIdList: {file_id_list}\nLength of fileIdSet: {set(file_id_list)}")
         for file_id_and_sent in list(audio_speaker_merge.keys()):
+            
             current_file_id = file_id_and_sent[0]
+            current_sentence = file_id_and_sent[1]
+
+            file_id_list.append(current_file_id)
 
             ### Checking if the file is already fetched or not
             if current_file_id not in fetched_audio_list:
+                
+                last_active_ques_id, message =  getquesfromprompttext.getquesfromprompttext(projectsform,
+                                                                                    questionnaires,
+                                                                                    activeprojectname,
+                                                                                    current_sentence,
+                                                                                    exclude_ids)
+                if last_active_ques_id == 'False': 
+                    print(f"{last_active_ques_id}: {message}: {current_sentence}")
+                    continue
+
                 rl = 'https://karyanltmbox.centralindia.cloudapp.azure.com/assignment/id/input_file'
                     
-                current_sentence = file_id_and_sent[1]
-                print(f"0 current_file_id : {current_file_id}")
+                # current_sentence = file_id_and_sent[1]
+                # print(f"0 current_file_id : {current_file_id}")
 
                 new_url = rl.replace("id", current_file_id)
-                print(new_url)
+                # print(new_url)
 
                 ## Fetching audio
                 ra = requests.get(url = new_url, headers = hederr)
-                print(type(ra))
+                # print(type(ra))
 
                 ##Audio Content
                 filebytes= ra.content
-                print(type(filebytes))
+                # print(type(filebytes))
 
                 karyaspeakerId = audio_speaker_merge[file_id_and_sent]
-                print("Checking line no. 618: ", karyaspeakerId)
+                # print("Checking line no. 618: ", karyaspeakerId)
                 lifespeakerid = accesscodedetails.find_one({'karyaspeakerid': karyaspeakerId}, {'lifespeakerid': 1,'_id': 0})
                 
                 if lifespeakerid is not None:
                     lifespeakerid = lifespeakerid["lifespeakerid"]
-                    print("lifespeakerid : ", lifespeakerid)
+                    # print("lifespeakerid : ", lifespeakerid)
                     # savedFiles = accesscodedetails.find_one({'karyaspeakerid': karyaspeakerId}, {'_id': 0, 'lifespeakerid': 1})['karyasavedfiles']
 
                     #####################################################
@@ -783,42 +822,42 @@ def fetch_karya_audio():
 
                     with BytesIO(gzip.decompress(filebytes)) as fh: #1
                         fileAudio = tarfile.TarFile(fileobj=fh) #2
-                        print('1', type(fileAudio))
-                        print('2', fileAudio.getnames()) #3
-                        print('2.1', len(fileAudio.getnames())) #3
-                        print('3', fileAudio.getmembers()) #4
+                        # print('1', type(fileAudio))
+                        # print('2', fileAudio.getnames()) #3
+                        # print('2.1', len(fileAudio.getnames())) #3
+                        # print('3', fileAudio.getmembers()) #4
 
                         for member in fileAudio.getmembers():
                             f = fileAudio.extractfile(member)
                             content = f.read()
-                            print('4', type(member))
-                            print('5', type(content))
-                            print ('6', member, content.count)
-                            print ('7', member, content.count)
-                            print ('8', member, len(content))
+                            # print('4', type(member))
+                            # print('5', type(content))
+                            # print ('6', member, content.count)
+                            # print ('7', member, content.count)
+                            # print ('8', member, len(content))
                             # mongo.save_file(fileAudio.getnames()[0], io.BytesIO(content), audioID='1234567890')
                             new_audio_file = {}
                             new_audio_file['audiofile'] = FileStorage(io.BytesIO(content), filename =  fileAudio.getnames()[0])
-                            print('9', new_audio_file['audiofile'], type(new_audio_file['audiofile']))
-                            print('10', new_audio_file['audiofile'].filename)
+                            # print('9', new_audio_file['audiofile'], type(new_audio_file['audiofile']))
+                            # print('10', new_audio_file['audiofile'].filename)
                             # if new_audio_file['audiofile'] == 
-                            print(new_audio_file)                            
+                            # print(new_audio_file)                            
                             
                             projtyp = getprojecttype.getprojecttype(projects, activeprojectname)
                             # findqId = mongodb_qidinfo.find_one({"projectname": "Q_nmathur54_project_1"},
                             #  
-                            print("line 671 :",current_sentence)
+                            # print("line 671 :",current_sentence)
                             # findprojectname = getcurrentuserprojects.getcurrentuserprojects(current_username, userprojects) 
                             
-                            last_active_ques_id =  getquesfromprompttext.getquesfromprompttext(projectsform,
-                                                                                questionnaires,
-                                                                                activeprojectname,
-                                                                                current_sentence,
-                                                                                exclude_ids)
+                            # last_active_ques_id =  getquesfromprompttext.getquesfromprompttext(projectsform,
+                            #                                                                     questionnaires,
+                            #                                                                     activeprojectname,
+                            #                                                                     current_sentence,
+                            #                                                                     exclude_ids)
 
 
                             if projtyp == "questionnaires":
-                                language = accesscodedetails.find_one({"karyaaccesscode": access_code}, {'language': 1,'_id': 0})['language']
+                                # language = accesscodedetails.find_one({"karyaaccesscode": access_code}, {'language': 1,'_id': 0})['language']
                                 new_audio_file['Prompt_Audio'+"_"+language] = new_audio_file['audiofile'] # new_audio_file['Transcription Audio']  i have to do this code
                                 del new_audio_file['audiofile']
                                 #savequespromptfile
@@ -832,9 +871,9 @@ def fetch_karya_audio():
                                                                         current_username,
                                                                         last_active_ques_id, 
                                                                         new_audio_file)
-                                print("last_active_ques_id: ", last_active_ques_id) 
-                                print("activeprojectname :", activeprojectname)                                       
-                                print("11  Saving to Questtionnaire collection")
+                                # print("last_active_ques_id: ", last_active_ques_id) 
+                                # print("activeprojectname :", activeprojectname)                                       
+                                # print("11  Saving to Questtionnaire collection")
                             else:
                                 save_status = audiodetails.saveaudiofiles(mongo,
                                                                 projects,
@@ -847,15 +886,20 @@ def fetch_karya_audio():
                                                                 new_audio_file,
                                                                 karyainfo=r_j,
                                                                 karya_peaker_id = karyaspeakerId)
-                                print("11  Saving to Transcription collection")
-                            print(exclude_ids)
+                                # print("11  Saving to Transcription collection")
+                            # print(exclude_ids)
 
                             if save_status[0]:
                                 ## save in the list of fetched audios
                                 exclude_ids.append(last_active_ques_id)
-                                print("status of save_status : ", save_status)
-                                accesscodedetails.update_one({"karyaaccesscode": access_code}, {"$set": {"karyafetchedaudios":current_file_id}})
+                                # print("status of save_status : ", save_status)
+                                accesscodedetails.update_one({"karyaaccesscode": access_code}, {"$addToSet": {"karyafetchedaudios":current_file_id}})
+                else:
+                    print(f"lifespeakerid not found!: {karyaspeakerId}")
+            else:
+                print(f"Audio already fetched: {current_sentence}")
 
+            print(f"Length of fileIdList: {len(file_id_list)}\nLength of fileIdSet: {len(set(file_id_list))}")
         return redirect(url_for('karya_bp.home_insert'))
 
     return render_template("fetch_karya_audio.html")
