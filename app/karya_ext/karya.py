@@ -772,7 +772,7 @@ def fetch_karya_audio():
         for file_id_and_sent in list(audio_speaker_merge.keys()):
             
             current_file_id = file_id_and_sent[0]
-            current_sentence = file_id_and_sent[1]
+            current_sentence = file_id_and_sent[1].strip()
 
             file_id_list.append(current_file_id)
 

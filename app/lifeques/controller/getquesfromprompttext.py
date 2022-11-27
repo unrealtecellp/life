@@ -29,7 +29,7 @@ def getquesfromprompttext(projectsform,
             # print(script)
             for boundaryId in lang_info['text'].keys():
                 # print(boundaryId)
-                prompt_text = lang_info['text'][boundaryId]['textspan'][script]
+                prompt_text = lang_info['text'][boundaryId]['textspan'][script].strip()
             
                 if (text == prompt_text):
                     foundText = "text found but audio already available"
