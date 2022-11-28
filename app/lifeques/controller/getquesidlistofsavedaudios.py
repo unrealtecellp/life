@@ -1,19 +1,14 @@
-"""Module to get the ques info from prompt text."""
+"""Module to get the ques IDs list for which fileId not empty."""
 
 from pprint import pprint
 
-def getquesidlistofsavedaudios(projectsform,
-                            questionnaires,
+def getquesidlistofsavedaudios(questionnaires,
                             activeprojectname,
-                            text,
+                            lang_script,
                             exclude):
 
     """_summary_
     """
-
-    projectform = projectsform.find_one({"projectname": activeprojectname}, {"_id": 0})
-    lang_script = projectform['LangScript'][1]
-    # print(lang_script)
     all_ques = questionnaires.find({"projectname": activeprojectname},
                                     {
                                         "_id": 0,
@@ -25,17 +20,12 @@ def getquesidlistofsavedaudios(projectsform,
         # print(ques)
         for lang, lang_info in ques["prompt"]["content"].items():
             # print(lang, lang_info)
-            script = lang_script[lang]
-            # print(script)
-            for boundaryId in lang_info['text'].keys():
-                # print(boundaryId)
-                prompt_text = lang_info['text'][boundaryId]['textspan'][script]
-                if text not in exclude:
-                    if (text == prompt_text):
-                        quesId = ques['quesId']
-                        # pprint(ques)
-                        print(prompt_text, quesId)
+            if (lang == lang_script):
+                prompt_audio_fileId = lang_info['audio']['fileId']
+                prompt_audio_filname = lang_info['audio']['filename']
+                if (prompt_audio_fileId != '' and
+                    prompt_audio_filname != ''):
+                    quesId = ques['quesId']
+                    exclude.append(quesId)
 
-                        return quesId
-
-    return False
+    return exclude

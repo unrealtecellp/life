@@ -592,13 +592,13 @@ function testwaveFormFunction(key, promptTypeKey, promptTypeValue, quesdatavalue
                               
                               '<div class="pull-right">'+
                                 '<button type="button" id="deleteboundary" class="btn btn-danger btn-block" data-action="delete-region" disabled>Delete Boundary</button>'+
-                                '<br>'+
-                                '<button class="btn btn-danger" type="button" id="stopAudio" data-action="stop-audio">STOP'+
-                                  '<span class="audiostop glyphicon glyphicon-stop" aria-hidden="true"></span>'+
-                                '</button>'+
-                                '<button class="btn btn-primary" type="button" id="playPauseAudio">PLAY/PAUSE'+
-                                  '<span class="audioplaypause glyphicon glyphicon-play" aria-hidden="true"></span>'+
-                                '</button>'+
+                                // '<br>'+
+                                // '<button class="btn btn-danger" type="button" id="stopAudio" data-action="stop-audio">STOP'+
+                                //   '<span class="audiostop glyphicon glyphicon-stop" aria-hidden="true"></span>'+
+                                // '</button>'+
+                                // '<button class="btn btn-primary" type="button" id="playPauseAudio">PLAY/PAUSE'+
+                                //   '<span class="audioplaypause glyphicon glyphicon-play" aria-hidden="true"></span>'+
+                                // '</button>'+
                               '</div><br><br><hr>';
 
     transcriptionBoundaryForm += waveform + waveformController;

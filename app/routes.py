@@ -2707,14 +2707,14 @@ def userslist():
                                                                             'userprojects')
     usersList = []
     speakersList = []
-    sharemode = 0
+    current_user_sharemode = 0
     try:                                                                            
         activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username, userprojects)
         projectowner = getprojectowner.getprojectowner(projects, activeprojectname)                                
         shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects, current_user.username, activeprojectname)
-        sharemode = shareinfo['sharemode']
+        current_user_sharemode = shareinfo['sharemode']
 
-        
+        # get list of all the users registered in the application LiFE
         for user in userlogin.find({}, {"_id": 0, "username": 1}):
             # print(user)
             usersList.append(user["username"])
@@ -2731,7 +2731,8 @@ def userslist():
                                                                                 activeprojectname
                                                                             )['sharemode']
                 # print(usersharemode)
-                if (sharemode <= usersharemode):
+                if (current_user_sharemode <= usersharemode):
+                    print(f"username!!!: {username}")
                     usersList.remove(username)
         # print(usersList)
         speakersDict = projects.find_one({'projectname': activeprojectname},
@@ -2743,7 +2744,7 @@ def userslist():
 
     return jsonify(usersList=sorted(usersList),
                     speakersList=sorted(speakersList),
-                    sharemode=sharemode)
+                    sharemode=current_user_sharemode)
 
 # modal view with complete detail of a lexeme for edit
 # edit button on dictionary view table
@@ -3374,13 +3375,6 @@ def register():
         return redirect(url_for('login'))
     return render_template('register.html', form=form)
 
-# Contact Us route
-# create contact us form for the LiFE
-@app.route('/contactus', methods=['GET', 'POST'])
-# @login_required
-def contactus():
-    return render_template('contactus.html')
-
 def dummyUserandProject():
     """ Creates dummy user and project if the database has no collection """
     print("Creates dummy user and project if the database has no collection")
@@ -3755,3 +3749,16 @@ def uploadquesfiles():
                                         )
 
     return redirect(url_for('test'))
+
+# Contact Us route
+# create contact us form for the LiFE
+@app.route('/contactus', methods=['GET', 'POST'])
+# @login_required
+def contactus():
+    return render_template('contactus.html')
+
+# LiFE Documentation route
+@app.route('/documentation', methods=['GET', 'POST'])
+# @login_required
+def documentation():
+    return render_template('documentation.html')

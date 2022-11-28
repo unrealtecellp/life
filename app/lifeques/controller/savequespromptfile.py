@@ -30,9 +30,9 @@ def savequespromptfile(mongo,
         new_file: uploaded audio file details.
     """
 
-    print("last_active_ques_id in savequesaudiofiles()", last_active_ques_id)
+    # print("last_active_ques_id in savequesaudiofiles()", last_active_ques_id)
     ques_form = projectsform.find_one({"projectname": activeprojectname}, {"_id": 0})
-    pprint(ques_form)
+    # pprint(ques_form)
     new_file_details = {}
     for kwargs_key, kwargs_value in kwargs.items():
         new_file_details[kwargs_key] = kwargs_value
@@ -40,7 +40,7 @@ def savequespromptfile(mongo,
     prompt_type_info = list(new_file.keys())[0]
     prompt_type = prompt_type_info.split('_')[1]
     prompt_lang = prompt_type_info.split('_')[-1]
-    print(prompt_type_info, prompt_type, prompt_lang)
+    # print(prompt_type_info, prompt_type, prompt_lang)
     if new_file[prompt_type_info].filename != '':
         filename = new_file[prompt_type_info].filename
         file_id = prompt_type[0]+re.sub(r'[-: \.]', '', str(datetime.now()))

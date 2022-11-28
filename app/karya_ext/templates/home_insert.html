@@ -68,7 +68,7 @@
     <div id="uploadmanage">
       <br>
       <!-- <h5>Fetch access code or upload access code file</h5> -->
-      {% if  shareinfo['sharemode']|int >= 10 %}
+      {% if  shareinfo['sharemode']|int >= 4 %}
         <input type="button" class="btn btn-lg btn-danger" value="Fetch/Upload Access Code" onclick="window.location.href='{{url_for('karya_bp.uploadfile')}}';">
       {% endif %}
         <!-- <br><br><br><br><br> -->
@@ -95,7 +95,7 @@
             <div id="piaccesscode"></div>
             <br>
             <label for="pimobilenumber">Mobile Number: </label>
-            <input type="number" name = "mobile_number" id="pimobilenumber" placeholder="Enter Mobile Number"/>
+            <input type="text" name = "mobile_number" id="pimobilenumber" placeholder="Enter Mobile Number"/>
             <br>
             <input type="button" class="btn btn-info" id="getotpid" value="Get OTP">
             <br>

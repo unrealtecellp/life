@@ -27,7 +27,9 @@
       
       <!-- <h1><center><b>Karya-LiFe Integration</b></center></h1>
       <br><br><br><br> -->
+
 {% extends "links.html" %}
+
 
 {% block title %}
   Upload Access Code
@@ -43,6 +45,7 @@
 {% endblock %}
   
 {% block app_content %}
+  <button type="button" class="btn btn-lg btn-info" onclick="window.location.href='{{ url_for('karya_bp.home_insert') }}';">Karya Extension</button>
   {% if projectName is defined %}
     <h4>
         Project Name : {{ projectName }}
