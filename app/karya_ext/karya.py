@@ -89,11 +89,25 @@ def home_insert():
             else:
                 if (current_username == fetch_access_code['uploadedBy']):
                     fetch_access_code_list.append(fetch_access_code['karyaaccesscode'])
+    
+    karya_speaker_ids = []
+
+    speaker_ids = accesscodedetails.find({'projectname': activeprojectname,
+                                                'fetchData': 0
+                                                },
+                                                {
+                                                    '_id': 0,
+                                                    'karyaspeakerid': 1
+                                                })
+    for speakerid in speaker_ids:
+        karyaspeakerid = speakerid['karyaspeakerid']
+        karya_speaker_ids.append(karyaspeakerid)
 
     return render_template("home_insert.html",
                             projectName=activeprojectname,
                             shareinfo=shareinfo,
-                            fetchaccesscodelist=fetch_access_code_list
+                            fetchaccesscodelist=fetch_access_code_list,
+                            karya_speaker_ids=karya_speaker_ids
                         )
     # return redirect(url_for('karya_bp.home_insert'))
     # return render_template("uploadfile.html")
@@ -197,20 +211,22 @@ def uploadfile():
             print(language, domain, elicitationmethod)
 
             insert_dict = {
-                        "karyaspeakerid": item["id"], "karyaaccesscode": item["access_code"], "lifespeakerid": "", 
-                        "task":task,"language": language, "domain": domain, 
-                        "phase":phase, "elicitationmethod":elicitationmethod, "projectname": activeprojectname,
-                        "uploadedBy":current_username,
-                        "assignedBy":"",
-                        "current": {"workerMetadata": {"name": "", "agegroup": "", "gender": "", 
-                                                "educationlevel": "", "educationmediumupto12": "", 
-                                                "educationmediumafter12": "", "speakerspeaklanguage" :"", 
-                                                "recordingplace": "", "typeofrecordingplace" : "", 
-                                                "activeAccessCode": ""}, "updatedBy":"","current_date":current_dt},
-                        "previous": {},
-                        "fetchData": fetch_data,
-                        "karyafetchedaudios":[],                        
-                        "isActive": 0}
+                            "karyaspeakerid": item["id"], "karyaaccesscode": item["access_code"], "lifespeakerid": "", 
+                            "task":task,"language": language, "domain": domain, 
+                            "phase":phase, "elicitationmethod":elicitationmethod, "projectname": activeprojectname,
+                            "uploadedBy":current_username,
+                            "assignedBy":"",
+                            "current": {"workerMetadata": {"name": "", "agegroup": "", "gender": "", 
+                                                    "educationlevel": "", "educationmediumupto12": "", 
+                                                    "educationmediumafter12": "", "speakerspeaklanguage" :"", 
+                                                    "recordingplace": "", "typeofrecordingplace" : "", 
+                                                    "activeAccessCode": ""}, "updatedBy":"","current_date":current_dt},
+                            "previous": {},
+                            "fetchData": fetch_data,
+                            "karyafetchedaudios":[],
+                            "isActive": 0,
+                            "additionalInfo": {}
+                        }
                         
 
             # print ('Data to be inserted', insert_dict)
@@ -699,11 +715,13 @@ def fetch_karya_audio():
     if request.method == 'POST':
         ###############################   verify OTP    ##########################################
         access_code = request.form.get("access_code")
+        for_worker_id = request.form.get("speaker_id")
 
          ###### Get already fetched audio list
         fetched_audio_list = get_fetched_audio_list (access_code)
 
         phone_number = request.form.get("mobile_number")
+
         otp = request.form.get("karya_otp")
 
         # print ("OTP", otp)
@@ -734,23 +752,42 @@ def fetch_karya_audio():
         '''worker ID'''
 
         workerId_list = []
-        for micro_metadata in r_j["microtasks"]:
-            sentences = micro_metadata["input"]["data"]
-            findWorker_id = micro_metadata["input"]["chain"]
-            worker_id = findWorker_id["workerId"]
-            workerId_list.append(worker_id)
+        sentence_list = []
+        # for micro_metadata in r_j["microtasks"]:
+        #     # sentences = micro_metadata["input"]["data"]
+        #     findWorker_id = micro_metadata["input"]["chain"]
+        #     worker_id = findWorker_id["workerId"]
+        #     workerId_list.append(worker_id)
+
+        #     sentences = micro_metadata["input"]["data"]["sentence"]
+        #     #find_file_name = micro_metadata["input"]["files"]["recording"]
+        #     sentence_list.append(sentences)
         # print(workerId_list)
         
-        sentence_list = []
-        for micro_metadata in r_j["microtasks"]:
-            sentences = micro_metadata["input"]["data"]["sentence"]
-            #find_file_name = micro_metadata["input"]["files"]["recording"]
-            sentence_list.append(sentences)
+        # sentence_list = []
+        # for micro_metadata in r_j["microtasks"]:
+        #     sentences = micro_metadata["input"]["data"]["sentence"]
+        #     #find_file_name = micro_metadata["input"]["files"]["recording"]
+        #     sentence_list.append(sentences)
+
+        micro_task_ids = dict((item['id'], item) for item in r_j["microtasks"])
 
         fileID_list = [] 
         for item in r_j['assignments']:
-            fileID_lists = item['id'] 
-            fileID_list.append(fileID_lists)
+            micro_task_id = item['microtask_id']
+            
+            findWorker_id = micro_task_ids[micro_task_id]["input"]["chain"]
+            worker_id = findWorker_id["workerId"]
+            if (worker_id == for_worker_id):
+                workerId_list.append(worker_id)
+                
+                sentences = micro_task_ids[micro_task_id]["input"]["data"]["sentence"]
+                sentence_list.append(sentences)
+
+                fileID_lists = item['id'] 
+                fileID_list.append(fileID_lists)
+
+            
        
         fileID_sentence_list = tuple(zip(fileID_list, sentence_list))
         # print(fileID_sentence_list)
