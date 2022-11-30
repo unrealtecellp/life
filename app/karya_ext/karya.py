@@ -41,8 +41,6 @@ from app.lifeques.controller import getquesidlistofsavedaudios
 
 from zipfile import ZipFile
 
-from tqdm import tqdm
-
 #############################################################################
 #############################################################################
 #############################################################################
@@ -193,8 +191,14 @@ def uploadfile():
             current_dt = str(datetime.now()).replace('.', ':')
 
             checkaccesscode = item["access_code"]
-            accesscode_exist = karyaaccesscodedetails.find_one({"karyaaccesscode": checkaccesscode})
+            accesscode_exist = karyaaccesscodedetails.find_one(
+                                                                {
+                                                                    "projectname": activeprojectname,
+                                                                    "karyaaccesscode": checkaccesscode
+                                                                }
+                                                            )
             if  accesscode_exist is not None: continue
+            
             task = request.form.get('task')
             language = request.form.get('langscript') 
             domain = request.form.getlist('domain')
