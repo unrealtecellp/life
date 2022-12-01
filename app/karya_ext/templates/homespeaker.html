@@ -379,20 +379,37 @@
           </tr>
       </thead>
       <tbody id="myTableBody">
-           {% for row in data_table %}
+           {% for item in data_table %}
            
-               <tr>
-               <td><input type="checkbox" id="lexemecheckbox" onchange="checkLexeme(this)" name="name1" checked/></td> 
-                  {% for item in row %}
+              <tr>
+                <td>
+                  <input type="checkbox" id="lexemecheckbox" onchange="checkLexeme(this)" name="name1" checked/>
+                </td>   
                   
-                  <td>  {{item['karyaaccesscode']}} {{item['lifespeakerid']}} {{item['name']}} {{item['agegroup']}} {{item['gender']}}</td>     
-                  {% endfor %}
-                  <td><button type="button" class="btn btn-primary lexemeview" id="{{row[0]['karyaaccesscode']}}" data-toggle="modal" data-target="#exampleModal">View</button></td>
-                  <!-- <td><button type="button" class="btn btn-warning lexemeedit" id="{{row[0]}}" data-toggle="modal" data-target="#exampleModal">Edit</button></td> -->
-                  <!-- <p> id="{{row[0]}}"</p> -->
+                <td> 
+                  {{item['karyaaccesscode']}}
+                </td>
+                <td>
+                  {{item['lifespeakerid']}}
+                </td>  
+                <td>
+                  {{item['current']['workerMetadata']['name']}}
+                </td>
+                <td>
+                  {{item['current']['workerMetadata']['agegroup']}}
+                </td>
+                <td>
+                  {{item['current']['workerMetadata']['gender']}}
+                </td>     
                 
-                </tr>
-                  {% endfor %}
+                <td>
+                  <button type="button" class="btn btn-primary lexemeview" id="{{item['karyaaccesscode']}}" data-toggle="modal" data-target="#exampleModal">
+                    View
+                  </button>
+                </td>
+                
+              </tr>
+            {% endfor %}
                   
               
           </tbody>
