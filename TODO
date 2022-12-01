@@ -149,5 +149,13 @@
 27 November 2022
 ---------------------------------------------------------------
 - check share feature
+    - remove access
+    - all rights
+    - only shared with one user not the list of users
 - Add select in "All Question Ids" button
 - Play/Pause/Stop not working for waveform
+- when blank project is dhared with other users in the app then onlt projectOwner is able to view/edit not the other users with whom project is shared.
+
+28 November 2022
+--------------------------------------------------------------
+- 
