@@ -81,6 +81,7 @@ def home_insert():
     fetch_access_code_list = []
 
     for fetch_access_code in fetch_access_codes:
+        print ('Current access code', fetch_access_code)
         if (fetch_access_code['assignedBy'] != ''):
             if (fetch_access_code['assignedBy'] == current_username):
                 fetch_access_code_list.append(fetch_access_code['karyaaccesscode'])
@@ -88,6 +89,8 @@ def home_insert():
                 if (current_username == fetch_access_code['uploadedBy']):
                     fetch_access_code_list.append(fetch_access_code['karyaaccesscode'])
     
+    print ("Access code list for", activeprojectname, current_username, fetch_access_code_list)
+
     karya_speaker_ids = []
 
     speaker_ids = accesscodedetails.find({'projectname': activeprojectname,
@@ -455,15 +458,19 @@ def add():
             # if accesscode == '':
                 # karyaaccesscode = mongodb_info.find_one({"isActive":0},{"karyaaccesscode":1, "_id" :0})
                 
-            karyaaccesscode = {"karyaaccesscode":namekaryaID["karyaaccesscode"]}
-            if karyaaccesscode != None:
-                accesscode = karyaaccesscode['karyaaccesscode']
-            else:
-                accesscode = ''
-                print ('Karya access code', accesscode)
-                print ('445 Update Data', update_data)
+            # karyaaccesscode = {"karyaaccesscode":namekaryaID["karyaaccesscode"]}
+            # if karyaaccesscode != None:
+            #     accesscode = karyaaccesscode['karyaaccesscode']
+            # else:
+            #     accesscode = ''
+            #     print ('Karya access code', accesscode)
+            #     print ('445 Update Data', update_data)
                 # "lifespeakerid": renameCode
-            mongodb_info.update_one({"karyaaccesscode": accesscode}, {"$set": update_data})
+            print ("Data before updating")
+            print ("Karya Access Code", namekaryaID["karyaaccesscode"])
+            print ("Update Data", update_data)
+            
+            mongodb_info.update_one({"karyaaccesscode": namekaryaID["karyaaccesscode"], "projectname": activeprojectname}, {"$set": update_data})
             
             # mongodb_info.insert_one({"karyaaccesscode": accesscode}, {"$set": update_data})
             # mongodb_info.update_one({"karyaaccesscode": accesscode},{"lifespeakerid": {"$exists": False}}, {"$set": {"lifespeakerid": renameCode}})
@@ -480,7 +487,7 @@ def add():
                                     "current.workerMetadata.recordingplace": por,
                                     "current.workerMetadata.typeofrecordingplace": toc,
                                     "isActive": 1}   
-            previous_speakerdetails = mongodb_info.find_one({"karyaaccesscode": accesscode},
+            previous_speakerdetails = mongodb_info.find_one({"karyaaccesscode": accesscode, "projectname": activeprojectname},
                                                 {"current.workerMetadata": 1, "current.updatedBy":1, "_id": 0,})
 
             ###########################################
@@ -514,8 +521,8 @@ def add():
                                                     "previous."+date_of_modified+".updatedBy" : previous_speakerdetails["current"]["updatedBy"]
                                                     }
 
-            mongodb_info.update_one({"karyaaccesscode": accesscode}, {"$set": update_old_data}) # Edit_old_user_info
-            mongodb_info.update_one({"karyaaccesscode": accesscode}, {"$set": update_data}) #new_user_info
+            mongodb_info.update_one({"karyaaccesscode": accesscode, "projectname": activeprojectname}, {"$set": update_old_data}) # Edit_old_user_info
+            mongodb_info.update_one({"karyaaccesscode": accesscode, "projectname": activeprojectname}, {"$set": update_data}) #new_user_info
 
     return redirect(url_for('karya_bp.homespeaker'))
     # return render_template("homespeaker.html",
@@ -576,57 +583,73 @@ def homespeaker():
     
 
 ################################## karya accesscode  #########################################################################
-    karyaaccesscode = mongodb_info.find({"isActive":1},{"karyaaccesscode":1, "_id" :0})
-    for data in karyaaccesscode:   
-        codes = data["karyaaccesscode"]
-        karya_accesscode.append(data)
-        # speaker_data_accesscode.append(data["lifespeakerid"])
-    print('596    ####################################### ',karya_accesscode)
+    karyaaccesscodedetails = mongodb_info.find({"isActive":1, "projectname": activeprojectname},{
+                                                        "karyaaccesscode":1, 
+                                                        "lifespeakerid":1,
+                                                        "current.workerMetadata.name" :1,
+                                                        "current.workerMetadata.agegroup":1,
+                                                        "current.workerMetadata.gender":1,
+                                                        "_id" :0})
+    
+    data_table = []
+    for data in karyaaccesscodedetails:
 
-##################################3 LifeID + Accesscode #####################################################################
-    namekaryaID = mongodb_info.find({"isActive":1},{"lifespeakerid":1, "_id" :0})
-    for lidata in namekaryaID:
-        lifeId.append(lidata)
-        # speaker_data_accesscode.append(data["lifespeakerid"])
-    print("587 ===================================== >>>>>>>>>>>>>> ",lifeId)
+        # p = data["current"]["workerMetadata"]
+        # print(type(data))
+        # p.update(data)
 
-############################################  Name #######################################################################
-    name = mongodb_info.find({"isActive":1},{"current.workerMetadata.name" :1,"_id" :0})
-    print(name)
-    for data in name:
-        # speaker_name = data["assignedBy"]["current"]["speaker_info"]["workerMetadata"]["name"]  
-        # speaker_name = data["current"]["workerMetadata"]["name"]  
-        speaker_name = data["current"]["workerMetadata"]                                
-        speaker_data_name.append(speaker_name)
-    print(speaker_data_name)
+        data_table.append(data)
+        # data_table.append(data["current"]["workerMetadata"])
+        
+#         codes = data["karyaaccesscode"]
+#         karya_accesscode.append(data)
+#         # speaker_data_accesscode.append(data["lifespeakerid"])
+#     print('596    ####################################### ',karya_accesscode)
 
-    ######################################  Age  ############################################################################
-    age = mongodb_info.find({"isActive":1},{"current.workerMetadata.agegroup":1,"_id" :0})
-    for data in age:   
-        # speaker_age = data["assignedBy"]["current"]["speaker_info"]["workerMetadata"]["agegroup"]
-        # speaker_age = data["current"]["workerMetadata"]["agegroup"]  
-        speaker_age = data["current"]["workerMetadata"]                                
-        speaker_data_age.append(speaker_age)
-    print(speaker_data_age)    
+# ##################################3 LifeID + Accesscode #####################################################################
+#     namekaryaID = mongodb_info.find({"isActive":1},{"lifespeakerid":1, "_id" :0})
+#     for lidata in namekaryaID:
+#         lifeId.append(lidata)
+#         # speaker_data_accesscode.append(data["lifespeakerid"])
+#     print("587 ===================================== >>>>>>>>>>>>>> ",lifeId)
 
-    #################################   Gender   ###############################################################
-    gender = mongodb_info.find({"isActive":1},{"current.workerMetadata.gender":1,"_id" :0})
-    for data in gender:
-        # speaker_gender = data["assignedBy"]["current"]["speaker_info"]["workerMetadata"]["gender"] 
-        # speaker_gender = data["current"]["workerMetadata"]["gender"] 
-        speaker_gender = data["current"]["workerMetadata"]                                 
-        speaker_data_gender.append(speaker_gender)
-    print(speaker_data_gender)                                  
+# ############################################  Name #######################################################################
+#     name = mongodb_info.find({"isActive":1},{"current.workerMetadata.name" :1,"_id" :0})
+#     print(name)
+#     for data in name:
+#         # speaker_name = data["assignedBy"]["current"]["speaker_info"]["workerMetadata"]["name"]  
+#         # speaker_name = data["current"]["workerMetadata"]["name"]  
+#         speaker_name = data["current"]["workerMetadata"]                                
+#         speaker_data_name.append(speaker_name)
+#     print(speaker_data_name)
+
+#     ######################################  Age  ############################################################################
+#     age = mongodb_info.find({"isActive":1},{"current.workerMetadata.agegroup":1,"_id" :0})
+#     for data in age:   
+#         # speaker_age = data["assignedBy"]["current"]["speaker_info"]["workerMetadata"]["agegroup"]
+#         # speaker_age = data["current"]["workerMetadata"]["agegroup"]  
+#         speaker_age = data["current"]["workerMetadata"]                                
+#         speaker_data_age.append(speaker_age)
+#     print(speaker_data_age)    
+
+#     #################################   Gender   ###############################################################
+#     gender = mongodb_info.find({"isActive":1},{"current.workerMetadata.gender":1,"_id" :0})
+#     for data in gender:
+#         # speaker_gender = data["assignedBy"]["current"]["speaker_info"]["workerMetadata"]["gender"] 
+#         # speaker_gender = data["current"]["workerMetadata"]["gender"] 
+#         speaker_gender = data["current"]["workerMetadata"]                                 
+#         speaker_data_gender.append(speaker_gender)
+#     print(speaker_data_gender)                                  
   
-    # speaker_data = [speaker_data_accesscode, speaker_data_name, speaker_data_age, speaker_data_gender]
-    data_table = [[ karya_accesscode[i], lifeId[i], speaker_data_name[i], speaker_data_age[i], speaker_data_gender[i]] for i in range(0, len(karya_accesscode))]
+#     # speaker_data = [speaker_data_accesscode, speaker_data_name, speaker_data_age, speaker_data_gender]
+#     data_table = [[ karya_accesscode[i], lifeId[i], speaker_data_name[i], speaker_data_age[i], speaker_data_gender[i]] for i in range(0, len(karya_accesscode))]
     
     print(data_table)
     return render_template('homespeaker.html',
                             data=currentuserprojectsname,
                             projectName=activeprojectname,
                             uploadacesscodemetadata = uploadacesscodemetadata,
-                            data_table=data_table)
+                            data_table= data_table)
 
 
 ##############################################################################################################
@@ -903,15 +926,17 @@ def fetch_karya_audio():
                                 del new_audio_file['audiofile']
                                 #savequespromptfile
                                 save_status = savequespromptfile.savequespromptfile(mongo,
-                                                                        projects,
-                                                                        userprojects,
-                                                                        projectsform,
-                                                                        questionnaires,
-                                                                        projectowner,
-                                                                        activeprojectname,
-                                                                        current_username,
-                                                                        last_active_ques_id, 
-                                                                        new_audio_file)
+                                                                                    projects,
+                                                                                    userprojects,
+                                                                                    projectsform,
+                                                                                    questionnaires,
+                                                                                    projectowner,
+                                                                                    activeprojectname,
+                                                                                    current_username,
+                                                                                    last_active_ques_id, 
+                                                                                    new_audio_file,
+                                                                                    karyaSpeakerId=karyaspeakerId
+                                                                                )
                                 # print("last_active_ques_id: ", last_active_ques_id) 
                                 # print("activeprojectname :", activeprojectname)                                       
                                 # print("11  Saving to Questtionnaire collection")
@@ -926,7 +951,7 @@ def fetch_karya_audio():
                                                                 lifespeakerid,
                                                                 new_audio_file,
                                                                 karyainfo=r_j,
-                                                                karya_peaker_id = karyaspeakerId)
+                                                                karya_peaker_id=karyaspeakerId)
                                 # print("11  Saving to Transcription collection")
                             # print(exclude_ids)
 
