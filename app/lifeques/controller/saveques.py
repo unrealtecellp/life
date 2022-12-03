@@ -2,7 +2,11 @@
 
 from pprint import pprint
 
-def saveques(questionnaires, ques_data, last_active_ques_id):
+def saveques(questionnaires,
+                ques_data,
+                last_active_ques_id,
+                current_username
+            ):
 
     # print('saveques()', last_active_ques_id)
     quesdata = questionnaires.find_one({"quesId": last_active_ques_id}, {"_id": 0})
@@ -78,7 +82,8 @@ def saveques(questionnaires, ques_data, last_active_ques_id):
     questionnaires.update_one({"quesId": last_active_ques_id},
                                 {"$set" : { 
                                             'prompt': prompt,
-                                            'quessaveFLAG': 1
+                                            'quessaveFLAG': 1,
+                                            'lastUpdatedBy': current_username
                                             }
                                 }
                             )

@@ -315,7 +315,11 @@ def savequestionnaire():
         last_active_ques_id = getactivequestionnaireid.getactivequestionnaireid(projects,
                                                                                 activeprojectname,
                                                                                 current_username)
-        saveques.saveques(questionnaires, ques_data, last_active_ques_id)
+        saveques.saveques(questionnaires,
+                            ques_data,
+                            last_active_ques_id,
+                            current_username
+                        )
 
         # load next ques
         latest_ques_id = getnewquesid.getnewquesid(projects,

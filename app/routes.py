@@ -2852,7 +2852,7 @@ def shareprojectwith():
                                         { "$addToSet": {
                                             key+'.'+activeprojectname+'.isharedwith': user
                                         }})
-                    if projectowner != current_user.username:
+                    if projectowner != current_username:
                         userprojects.update_one({"username": projectowner},
                                             { "$addToSet": {
                                                 'myproject.'+activeprojectname+'.isharedwith': user
