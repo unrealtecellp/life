@@ -458,15 +458,19 @@ def add():
             # if accesscode == '':
                 # karyaaccesscode = mongodb_info.find_one({"isActive":0},{"karyaaccesscode":1, "_id" :0})
                 
-            karyaaccesscode = {"karyaaccesscode":namekaryaID["karyaaccesscode"]}
-            if karyaaccesscode != None:
-                accesscode = karyaaccesscode['karyaaccesscode']
-            else:
-                accesscode = ''
-                print ('Karya access code', accesscode)
-                print ('445 Update Data', update_data)
+            # karyaaccesscode = {"karyaaccesscode":namekaryaID["karyaaccesscode"]}
+            # if karyaaccesscode != None:
+            #     accesscode = karyaaccesscode['karyaaccesscode']
+            # else:
+            #     accesscode = ''
+            #     print ('Karya access code', accesscode)
+            #     print ('445 Update Data', update_data)
                 # "lifespeakerid": renameCode
-            mongodb_info.update_one({"karyaaccesscode": accesscode}, {"$set": update_data})
+            print ("Data before updating")
+            print ("Karya Access Code", namekaryaID["karyaaccesscode"])
+            print ("Update Data", update_data)
+            
+            mongodb_info.update_one({"karyaaccesscode": namekaryaID["karyaaccesscode"], "projectname": activeprojectname}, {"$set": update_data})
             
             # mongodb_info.insert_one({"karyaaccesscode": accesscode}, {"$set": update_data})
             # mongodb_info.update_one({"karyaaccesscode": accesscode},{"lifespeakerid": {"$exists": False}}, {"$set": {"lifespeakerid": renameCode}})
@@ -483,7 +487,7 @@ def add():
                                     "current.workerMetadata.recordingplace": por,
                                     "current.workerMetadata.typeofrecordingplace": toc,
                                     "isActive": 1}   
-            previous_speakerdetails = mongodb_info.find_one({"karyaaccesscode": accesscode},
+            previous_speakerdetails = mongodb_info.find_one({"karyaaccesscode": accesscode, "projectname": activeprojectname},
                                                 {"current.workerMetadata": 1, "current.updatedBy":1, "_id": 0,})
 
             ###########################################
@@ -517,8 +521,8 @@ def add():
                                                     "previous."+date_of_modified+".updatedBy" : previous_speakerdetails["current"]["updatedBy"]
                                                     }
 
-            mongodb_info.update_one({"karyaaccesscode": accesscode}, {"$set": update_old_data}) # Edit_old_user_info
-            mongodb_info.update_one({"karyaaccesscode": accesscode}, {"$set": update_data}) #new_user_info
+            mongodb_info.update_one({"karyaaccesscode": accesscode, "projectname": activeprojectname}, {"$set": update_old_data}) # Edit_old_user_info
+            mongodb_info.update_one({"karyaaccesscode": accesscode, "projectname": activeprojectname}, {"$set": update_data}) #new_user_info
 
     return redirect(url_for('karya_bp.homespeaker'))
     # return render_template("homespeaker.html",
@@ -922,15 +926,17 @@ def fetch_karya_audio():
                                 del new_audio_file['audiofile']
                                 #savequespromptfile
                                 save_status = savequespromptfile.savequespromptfile(mongo,
-                                                                        projects,
-                                                                        userprojects,
-                                                                        projectsform,
-                                                                        questionnaires,
-                                                                        projectowner,
-                                                                        activeprojectname,
-                                                                        current_username,
-                                                                        last_active_ques_id, 
-                                                                        new_audio_file)
+                                                                                    projects,
+                                                                                    userprojects,
+                                                                                    projectsform,
+                                                                                    questionnaires,
+                                                                                    projectowner,
+                                                                                    activeprojectname,
+                                                                                    current_username,
+                                                                                    last_active_ques_id, 
+                                                                                    new_audio_file,
+                                                                                    karyaSpeakerId=karyaspeakerId
+                                                                                )
                                 # print("last_active_ques_id: ", last_active_ques_id) 
                                 # print("activeprojectname :", activeprojectname)                                       
                                 # print("11  Saving to Questtionnaire collection")
@@ -945,7 +951,7 @@ def fetch_karya_audio():
                                                                 lifespeakerid,
                                                                 new_audio_file,
                                                                 karyainfo=r_j,
-                                                                karya_peaker_id = karyaspeakerId)
+                                                                karya_peaker_id=karyaspeakerId)
                                 # print("11  Saving to Transcription collection")
                             # print(exclude_ids)
 

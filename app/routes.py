@@ -52,7 +52,7 @@ scriptCodeJSONFilePath = os.path.join(basedir, 'static/json/scriptCode.json')
 langScriptJSONFilePath = os.path.join(basedir, 'static/json/langScript.json')
 ipatomeeteiFilePath = os.path.join(basedir, 'static/json/ipatomeetei.json')
 
-print(f'{"#"*80}\nBase directory:\n{basedir}\n{"#"*80}')
+# print(f'{"#"*80}\nBase directory:\n{basedir}\n{"#"*80}')
 
 
 # home page route
@@ -60,14 +60,13 @@ print(f'{"#"*80}\nBase directory:\n{basedir}\n{"#"*80}')
 @app.route('/home', methods=['GET', 'POST'])
 @login_required
 def home():
-    # print('----------', getcurrentusername.getcurrentusername())
     userprojects, = getdbcollections.getdbcollections(mongo, 'userprojects')
-    currentuserprojectsname = getcurrentuserprojects.getcurrentuserprojects(current_user.username,
-                                userprojects)
-    activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username,
-                            userprojects)
-    shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects, current_user.username, activeprojectname)
-    print(shareinfo)
+    current_username = getcurrentusername.getcurrentusername()
+    print('USERNAME: ', current_username)
+    currentuserprojectsname = getcurrentuserprojects.getcurrentuserprojects(current_username, userprojects)
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_username, userprojects)
+    shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects, current_username, activeprojectname)
+    # print(shareinfo)
 
     return render_template('home.html',
                             data=currentuserprojectsname,
@@ -95,7 +94,7 @@ def newproject():
             flash(f'Project Name : {project_name} already exist!')
             return redirect(url_for('newproject'))
         else:
-            print(project_name)
+            # print(project_name)
             updateuserprojects.updateuserprojects(userprojects,
                                                     project_name,
                                                     current_user.username)
@@ -550,7 +549,7 @@ def enterlexemefromuploadedfile(lexemedf):
                                             {'_id' : 0, 'lexemeId' : 1, 'projectname': 1})
             # print(getlexemeId)
             if (getlexemeId == None):
-                print(f"lexemeId not in DB")
+                # print(f"lexemeId not in DB")
                 lexemeId, lexemeCount = lexmetadata()
             else:
                 if (getlexemeId['projectname'] != activeprojectname):
@@ -667,7 +666,7 @@ def lifeuploader(fileFormat, uploadedFileContent, field_map = {}):
         scripts_map = {}
         # print (lex_fields)
         for lex_field in lex_fields:
-            print ('Lex field', lex_field)
+            # print ('Lex field', lex_field)
             script_name = lex_field.split('.')[-1]
             if 'langscripts.headwordscript' in lex_field:
                 scripts_map['langscripts.headwordscript'] = script_name
@@ -682,14 +681,14 @@ def lifeuploader(fileFormat, uploadedFileContent, field_map = {}):
                 else:
                     scripts_map['langscripts.glosslangs']= [script_name]
                 # scripts_map.get('langscripts.glosslangs', []).append(script_name)
-        print(f"{'-'*80}\nIN get_scripts_map(lex_fields) function\n\nscript_map:\n{scripts_map}")
+        # print(f"{'-'*80}\nIN get_scripts_map(lex_fields) function\n\nscript_map:\n{scripts_map}")
         
         return scripts_map
 
 
 
     def map_lift(file_stream, field_map, lex_fields):
-        print(f"{'-'*80}\nIN map_lift(file_stream, field_map, lex_fields) function\n")
+        # print(f"{'-'*80}\nIN map_lift(file_stream, field_map, lex_fields) function\n")
         mapped_lift = {}
         all_mapped = True
 
@@ -699,18 +698,18 @@ def lifeuploader(fileFormat, uploadedFileContent, field_map = {}):
         if len(field_map) == 0:
             field_map = get_lift_map()
         
-        print(f"{'-'*80}\nget_lift_map():\n{field_map}")
-        print(f"{'-'*80}\nFILE STREAM TYPE:{type(file_stream)}")
+        # print(f"{'-'*80}\nget_lift_map():\n{field_map}")
+        # print(f"{'-'*80}\nFILE STREAM TYPE:{type(file_stream)}")
         # exit()
         # tree = ET.parse(file_stream)
         root = ET.fromstring(file_stream)
         # print(f"TYPE OF TREE: {type(tree)}")
         # exit()
         # root = tree.getroot()
-        print(f"{'-'*80}\nroot:\n{root}")
+        # print(f"{'-'*80}\nroot:\n{root}")
         # exit()
         entries = root.findall('.//entry')
-        print(f"entries:\n{entries}")
+        # print(f"entries:\n{entries}")
         # exit()
         mapped_life_langs_lexeme_form = []
         unmapped_lift_langs_lexeme_form = []
@@ -858,7 +857,7 @@ def lifeuploader(fileFormat, uploadedFileContent, field_map = {}):
         all_life_gloss_langs = set(life_gloss_langs)
         life_unmapped_gloss_langs = all_life_gloss_langs - mapped_life_langs_gloss_set
         # unmapped_lift_langs_gloss = []
-        print ('Unmapped gloss', unmapped_lift_langs_gloss)
+        # print ('Unmapped gloss', unmapped_lift_langs_gloss)
 
         headword_mapped = False
         life_all_mapped = mapped_lift.values()
@@ -874,13 +873,13 @@ def lifeuploader(fileFormat, uploadedFileContent, field_map = {}):
         for lift_unmapped_gloss in unmapped_lift_langs_gloss:
             mapped_lift[lift_unmapped_gloss] = list(life_unmapped_gloss_langs)
 
-        print (mapped_lift)
-        print (headword_mapped)
+        # print (mapped_lift)
+        # print (headword_mapped)
 
         if len (unmapped_lift_langs_lexeme_form) > 0 or len(unmapped_lift_langs_gloss) > 0:
             all_mapped = False
         
-        print(f"{'-'*80}\nheadword_mapped:\n{headword_mapped}\nall_mapped:\n{all_mapped}\nmapped_lift:\n{mapped_lift}\nroot:\n{root}")
+        # print(f"{'-'*80}\nheadword_mapped:\n{headword_mapped}\nall_mapped:\n{all_mapped}\nmapped_lift:\n{mapped_lift}\nroot:\n{root}")
 
         return headword_mapped, all_mapped, mapped_lift, root
 
@@ -896,7 +895,7 @@ def lifeuploader(fileFormat, uploadedFileContent, field_map = {}):
 
 
     def lift_to_df (root, field_map, lex_fields):
-        print(f"{'-'*80}\nIN lift_to_df (root, field_map, lex_fields) function\n")
+        # print(f"{'-'*80}\nIN lift_to_df (root, field_map, lex_fields) function\n")
         data = pd.DataFrame(columns=lex_fields)
         # lex_fields_without_sense = [lex_field for lex_field in lex_fields if 'sense' not in lex_field]
 
@@ -905,7 +904,7 @@ def lifeuploader(fileFormat, uploadedFileContent, field_map = {}):
 
         # if len(field_map) == 0:
         lift_life_field_map = get_lift_map()
-        print(f"{'-'*80}\nIN lift_to_df (root, field_map, lex_fields) function: get_lift_map():\n{lift_life_field_map}")
+        # print(f"{'-'*80}\nIN lift_to_df (root, field_map, lex_fields) function: get_lift_map():\n{lift_life_field_map}")
         
         # tree = ET.parse(file_stream)
         # root = tree.getroot()
@@ -1006,8 +1005,8 @@ def lifeuploader(fileFormat, uploadedFileContent, field_map = {}):
 
         # data.to_csv(os.path.join(basedir, 'testliftXML.tsv'), sep='\t', index=False)
 
-        print(f"{'-'*80}\nIN lift_to_df (root, field_map, lex_fields) FUNCTION\n\nheadword_mapped\n{headword_mapped}\n\nall_mapped:\n{all_mapped}\n\ndata:\n{data}\n\nroot:\n{root}")
-        print(f"{'-'*80}\nIN lift_to_df (root, field_map, lex_fields) FUNCTION\n\nheadword_mapped\n{type(headword_mapped)}\n\nall_mapped:\n{type(all_mapped)}\n\ndata:\n{type(data)}\n\nroot:\n{type(root)}")
+        # print(f"{'-'*80}\nIN lift_to_df (root, field_map, lex_fields) FUNCTION\n\nheadword_mapped\n{headword_mapped}\n\nall_mapped:\n{all_mapped}\n\ndata:\n{data}\n\nroot:\n{root}")
+        # print(f"{'-'*80}\nIN lift_to_df (root, field_map, lex_fields) FUNCTION\n\nheadword_mapped\n{type(headword_mapped)}\n\nall_mapped:\n{type(all_mapped)}\n\ndata:\n{type(data)}\n\nroot:\n{type(root)}")
 
         return headword_mapped, all_mapped, data, root
 
@@ -1044,36 +1043,36 @@ def lifeuploader(fileFormat, uploadedFileContent, field_map = {}):
         final_map = {}
         for key_col in key_cols:
             final_map[key_col] = list(val_cols)
-        print(f"{'-'*80}\nIN generate_all_possible_mappings(key_cols, val_cols) function\nFINAL MAP:\n{final_map}")
+        # print(f"{'-'*80}\nIN generate_all_possible_mappings(key_cols, val_cols) function\nFINAL MAP:\n{final_map}")
         return final_map
 
 
     def map_excel(file_stream, lex_fields):
-        print(f"{'-'*80}\nIN MAP EXCEL function map_excel(file_stream, lex_fields)")
+        # print(f"{'-'*80}\nIN MAP EXCEL function map_excel(file_stream, lex_fields)")
         excel_data = pd.read_excel(file_stream, engine="openpyxl")
-        print(excel_data)
+        # print(excel_data)
         excel_data_cols = set(excel_data.columns)
         lex_field_cols = set(lex_fields)
-        print(f"{'-'*80}\nexcel_data_cols:\n{excel_data.columns}")
-        print(f"{'-'*80}\nNUMBER OF ELEMENTS IN excel_data_cols: {len(excel_data_cols)}")
-        print(f"{'-'*80}\nNUMBER OF ELEMENTS IN lex_field_cols: {len(lex_field_cols)}")
+        # print(f"{'-'*80}\nexcel_data_cols:\n{excel_data.columns}")
+        # print(f"{'-'*80}\nNUMBER OF ELEMENTS IN excel_data_cols: {len(excel_data_cols)}")
+        # print(f"{'-'*80}\nNUMBER OF ELEMENTS IN lex_field_cols: {len(lex_field_cols)}")
 
-        print(f"{'-'*80}\nlex_field_cols-excel_data_cols:\n{lex_field_cols-excel_data_cols}")
+        # print(f"{'-'*80}\nlex_field_cols-excel_data_cols:\n{lex_field_cols-excel_data_cols}")
 
         if excel_data_cols == lex_field_cols:
-            print(f"{'-'*80}\nexcel_data_cols == lex_field_cols")
+            # print(f"{'-'*80}\nexcel_data_cols == lex_field_cols")
             mapped = True
             headword_mapped = True
             return headword_mapped, mapped, {}, excel_data
         else:
-            print(f"{'-'*80}\nexcel_data_cols != lex_field_cols")
+            # print(f"{'-'*80}\nexcel_data_cols != lex_field_cols")
             headword_mapped = True
             mapped = False
             excel_remaining = excel_data_cols - lex_field_cols
             lex_remaining = lex_field_cols - excel_data_cols
-            print(f"{'-'*80}\nexcel_remaining:\n{excel_remaining}\n{'-'*80}\nlex_remaining:\n{lex_remaining}")
+            # print(f"{'-'*80}\nexcel_remaining:\n{excel_remaining}\n{'-'*80}\nlex_remaining:\n{lex_remaining}")
             field_map = generate_all_possible_mappings(excel_remaining, lex_remaining)
-            print(f"{'-'*80}\nheadword_mapped\n{headword_mapped}\n\nmapped:\n{mapped}\n\nfield_map:\n{field_map}\n\nexcel_data:\n{excel_data}")
+            # print(f"{'-'*80}\nheadword_mapped\n{headword_mapped}\n\nmapped:\n{mapped}\n\nfield_map:\n{field_map}\n\nexcel_data:\n{excel_data}")
             return headword_mapped, mapped, field_map, excel_data
 
 
@@ -1088,42 +1087,42 @@ def lifeuploader(fileFormat, uploadedFileContent, field_map = {}):
 
     def upload_lexicon(lexicon, file_stream, format, field_map):
         lexicon = lexicon[1:]
-        print(f"{'-'*80}\nLEXICON:\n{lexicon}")
+        # print(f"{'-'*80}\nLEXICON:\n{lexicon}")
         norm_lex = prepare_lex(lexicon)
-        print(f"{'-'*80}\nNORM LEX:\n{norm_lex}")
+        # print(f"{'-'*80}\nNORM LEX:\n{norm_lex}")
         lex_fields = norm_lex.columns
-        print(f"{'-'*80}\nLEX FIELDS:\n{lex_fields}")
-        print(f"{'-'*80}\nFILE STREAM TYPE:{type(file_stream)}")
+        # print(f"{'-'*80}\nLEX FIELDS:\n{lex_fields}")
+        # print(f"{'-'*80}\nFILE STREAM TYPE:{type(file_stream)}")
 
         if format == 'lift-xml':
-            print(f"{'-'*80}\nFIELD MAP:\n{len(field_map)}")
+            # print(f"{'-'*80}\nFIELD MAP:\n{len(field_map)}")
             if len(field_map) == 0:
-                print(f"{'-'*80}\nlift-xml: len(field_map) == 0")
+                # print(f"{'-'*80}\nlift-xml: len(field_map) == 0")
                 
                 headword_mapped, all_mapped, field_map, root = map_lift(file_stream, field_map, lex_fields)
                 
                 if headword_mapped and all_mapped:
-                    print(f"{'-'*80}\nheadword_mapped and all_mapped")
+                    # print(f"{'-'*80}\nheadword_mapped and all_mapped")
                     headword_mapped, all_mapped, data, root = lift_to_df (root, field_map, lex_fields)
-                    print(f"{'-'*80}\nheadword_mapped:\n{type(headword_mapped)}\nall_mapped:\n{type(all_mapped)}\nmapped_lift/data:\n{type(data)}\nroot:\n{type(root)}")
+                    # print(f"{'-'*80}\nheadword_mapped:\n{type(headword_mapped)}\nall_mapped:\n{type(all_mapped)}\nmapped_lift/data:\n{type(data)}\nroot:\n{type(root)}")
                     return headword_mapped, all_mapped, data, root
                 else:
-                    print(f"{'-'*80}\nheadword_mapped and all_mapped: NOT")
-                    print(f"{'-'*80}\nheadword_mapped:\n{type(headword_mapped)}\nall_mapped:\n{type(all_mapped)}\nmapped_lift/data:\n{type(field_map)}\nroot:\n{type(root)}")
+                    # print(f"{'-'*80}\nheadword_mapped and all_mapped: NOT")
+                    # print(f"{'-'*80}\nheadword_mapped:\n{type(headword_mapped)}\nall_mapped:\n{type(all_mapped)}\nmapped_lift/data:\n{type(field_map)}\nroot:\n{type(root)}")
                     return headword_mapped, all_mapped, field_map, root
             else:
-                print(f"{'-'*80}\nlift-xml: len(field_map) != 0")
+                # print(f"{'-'*80}\nlift-xml: len(field_map) != 0")
                 headword_mapped, all_mapped, life_df, root = lift_to_df (file_stream, field_map, lex_fields)
                 # print (life_df.head())
-                print(life_df.loc[0,:])
+                # print(life_df.loc[0,:])
                 return headword_mapped, all_mapped, life_df
         elif format == 'xlsx':
             if len(field_map) == 0:
-                print(f"{'-'*80}\nxlsx: len(field_map) == 0")
+                # print(f"{'-'*80}\nxlsx: len(field_map) == 0")
                 headword_mapped, all_mapped, field_map, df = map_excel(file_stream, lex_fields)
                 return headword_mapped, all_mapped, field_map, df
             else:
-                print(f"{'-'*80}\nxlsx: len(field_map) != 0")
+                # print(f"{'-'*80}\nxlsx: len(field_map) != 0")
                 headword_mapped, all_mapped, data = upload_excel(file_stream, field_map, lex_fields)
                 return headword_mapped, all_mapped, data
 
@@ -1133,7 +1132,7 @@ def lifeuploader(fileFormat, uploadedFileContent, field_map = {}):
     # print(upload_file)
     # format = 'lift-xml'
     format = fileFormat
-    print(f"{'-'*80}\nFILE FORMAT:{fileFormat}")
+    # print(f"{'-'*80}\nFILE FORMAT:{fileFormat}")
     with open(os.path.join(working_dir, 'lexemeEntry.json')) as f_r:
         lex = json.load(f_r)
 
@@ -1145,13 +1144,13 @@ def uploadlexemeexcelliftxml():
     if request.method == 'POST':
         lexkeymapping = dict(request.form.lists())
         # lexkeymapping = lexkeymapping.keys().decode('unicode-escape')
-        print(lexkeymapping)
-        print(type(lexkeymapping))
+        # print(lexkeymapping)
+        # print(type(lexkeymapping))
         lexkeymappingNew = {}
         for key, value in lexkeymapping.items():
             key = key.replace('%22', '"')
             lexkeymappingNew[key] = value[0]
-        print(lexkeymappingNew)
+        # print(lexkeymappingNew)
         field_map = lexkeymappingNew
         life_uploaded_file_content_path = os.path.join(basedir, 'lifeUploadedFileContent.pkl')
         # Open the file in binary mode
@@ -1164,17 +1163,17 @@ def uploadlexemeexcelliftxml():
             life_lift_root_path = os.path.join(basedir, 'lifeliftroot.xml')
             tree = ET.parse(life_lift_root_path)
             root = tree.getroot()
-            print(f"{'-'*80}\nIN uploadlexemeexcelliftxml() FUNCTION\n\nfile_format\n{file_format}\n\nfield_map:\n{field_map}\n\nroot:\n{root}")
-            print(f"{'-'*80}\nIN uploadlexemeexcelliftxml() FUNCTION\n\nfile_format\n{type(file_format)}\n\nfield_map:\n{type(field_map)}\n\nroot:\n{type(root)}")
+            # print(f"{'-'*80}\nIN uploadlexemeexcelliftxml() FUNCTION\n\nfile_format\n{file_format}\n\nfield_map:\n{field_map}\n\nroot:\n{root}")
+            # print(f"{'-'*80}\nIN uploadlexemeexcelliftxml() FUNCTION\n\nfile_format\n{type(file_format)}\n\nfield_map:\n{type(field_map)}\n\nroot:\n{type(root)}")
             headword_mapped, all_mapped, life_df = lifeuploader(file_format, root, field_map)
-            print(f"{'-'*80}\nIN uploadlexemeexcelliftxml() FUNCTION\n\nheadword_mapped\n{headword_mapped}\n\nall_mapped:\n{all_mapped}\n\nlife_df:\n{life_df}\n\nroot:\n{root}")
-            print(f"{'-'*80}\nIN uploadlexemeexcelliftxml() FUNCTION\n\nheadword_mapped\n{type(headword_mapped)}\n\nall_mapped:\n{type(all_mapped)}\n\nlife_df:\n{type(life_df)}\n\nroot:\n{type(root)}")
+            # print(f"{'-'*80}\nIN uploadlexemeexcelliftxml() FUNCTION\n\nheadword_mapped\n{headword_mapped}\n\nall_mapped:\n{all_mapped}\n\nlife_df:\n{life_df}\n\nroot:\n{root}")
+            # print(f"{'-'*80}\nIN uploadlexemeexcelliftxml() FUNCTION\n\nheadword_mapped\n{type(headword_mapped)}\n\nall_mapped:\n{type(all_mapped)}\n\nlife_df:\n{type(life_df)}\n\nroot:\n{type(root)}")
         elif (file_format == 'xlsx'):
             life_xlsx_root_path = os.path.join(basedir, 'lifexlsxdf.tsv')
             df = pd.read_csv(life_xlsx_root_path, sep='\t', dtype=str)
             headword_mapped, all_mapped, data = lifeuploader(file_format, df, field_map)
-            print(f"{'-'*80}\nIN uploadlexemeexcelliftxml() FUNCTION\n\nheadword_mapped\n{headword_mapped}\n\nall_mapped:\n{all_mapped}\n\ndata:\n{data}\n\ndf:\n{df}")
-            print(f"{'-'*80}\nIN uploadlexemeexcelliftxml() FUNCTION\n\nheadword_mapped\n{type(headword_mapped)}\n\nall_mapped:\n{type(all_mapped)}\n\ndata:\n{type(data)}\n\ndf:\n{type(df)}")
+            # print(f"{'-'*80}\nIN uploadlexemeexcelliftxml() FUNCTION\n\nheadword_mapped\n{headword_mapped}\n\nall_mapped:\n{all_mapped}\n\ndata:\n{data}\n\ndf:\n{df}")
+            # print(f"{'-'*80}\nIN uploadlexemeexcelliftxml() FUNCTION\n\nheadword_mapped\n{type(headword_mapped)}\n\nall_mapped:\n{type(all_mapped)}\n\ndata:\n{type(data)}\n\ndf:\n{type(df)}")
 
         if (not headword_mapped):
             flash("headword is missing from the file")
@@ -1182,7 +1181,7 @@ def uploadlexemeexcelliftxml():
         
         elif (not all_mapped and len(field_map) != 0):
             not_mapped_data = field_map
-            print('create a modal/page where user can give the mapping of the columns')
+            # print('create a modal/page where user can give the mapping of the columns')
             return render_template('lexemekeymapping.html', not_mapped_data=not_mapped_data)
         else:
             if (file_format == 'lift-xml'):
@@ -1249,16 +1248,16 @@ def lexemekeymapping():
             pickle.dump(store_uploaded_file_content, file)
         if (file_format == 'lift-xml'):
             headword_mapped, all_mapped, field_map, root = lifeuploader(file_format, uploaded_file_content, field_map={})
-            print(f"{'-'*80}\nIN lexemekeymapping() FUNCTION\n\nheadword_mapped\n{headword_mapped}\n\nall_mapped:\n{all_mapped}\n\nfield_map:\n{field_map}\n\nroot:\n{root}")
-            print(f"{'-'*80}\nIN lexemekeymapping() FUNCTION\n\nheadword_mapped\n{type(headword_mapped)}\n\nall_mapped:\n{type(all_mapped)}\n\nfield_map:\n{type(field_map)}\n\nroot:\n{type(root)}")
+            # print(f"{'-'*80}\nIN lexemekeymapping() FUNCTION\n\nheadword_mapped\n{headword_mapped}\n\nall_mapped:\n{all_mapped}\n\nfield_map:\n{field_map}\n\nroot:\n{root}")
+            # print(f"{'-'*80}\nIN lexemekeymapping() FUNCTION\n\nheadword_mapped\n{type(headword_mapped)}\n\nall_mapped:\n{type(all_mapped)}\n\nfield_map:\n{type(field_map)}\n\nroot:\n{type(root)}")
             tree = ElementTree(root)
             life_lift_root_path = os.path.join(basedir, 'lifeliftroot.xml')
             with open(life_lift_root_path, 'wb') as f:
                 tree.write(f, encoding='utf-8')
         elif (file_format == 'xlsx'):
             headword_mapped, all_mapped, field_map, df = lifeuploader(file_format, uploaded_file_content, field_map={})
-            print(f"{'-'*80}\nIN lexemekeymapping() FUNCTION\n\nheadword_mapped\n{headword_mapped}\n\nall_mapped:\n{all_mapped}\n\nfield_map:\n{field_map}\n\ndf:\n{df}")
-            print(f"{'-'*80}\nIN lexemekeymapping() FUNCTION\n\nheadword_mapped\n{type(headword_mapped)}\n\nall_mapped:\n{type(all_mapped)}\n\nfield_map:\n{type(field_map)}\n\ndf:\n{type(df)}")
+            # print(f"{'-'*80}\nIN lexemekeymapping() FUNCTION\n\nheadword_mapped\n{headword_mapped}\n\nall_mapped:\n{all_mapped}\n\nfield_map:\n{field_map}\n\ndf:\n{df}")
+            # print(f"{'-'*80}\nIN lexemekeymapping() FUNCTION\n\nheadword_mapped\n{type(headword_mapped)}\n\nall_mapped:\n{type(all_mapped)}\n\nfield_map:\n{type(field_map)}\n\ndf:\n{type(df)}")
             life_xlsx_root_path = os.path.join(basedir, 'lifexlsxdf.tsv')
             df.to_csv(life_xlsx_root_path, sep='\t', index=False)
 
@@ -1277,7 +1276,7 @@ def lexemekeymapping():
             #     './sense/gloss[@lang="en"]': ['Odi', 'Ass', 'Eng']
             # }
             not_mapped_data = field_map
-            print('create a modal/page where user can give the mapping of the columns')
+            # print('create a modal/page where user can give the mapping of the columns')
             return render_template('lexemekeymapping.html', not_mapped_data=not_mapped_data)
         else:
             if (file_format == 'xlsx'):
@@ -2705,13 +2704,15 @@ def userslist():
                                                                             'userlogin',
                                                                             'projects',
                                                                             'userprojects')
+    current_username = getcurrentusername.getcurrentusername()
     usersList = []
     speakersList = []
     current_user_sharemode = 0
-    try:                                                                            
-        activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username, userprojects)
-        projectowner = getprojectowner.getprojectowner(projects, activeprojectname)                                
-        shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects, current_user.username, activeprojectname)
+    share_with_users_list = []
+    try:
+        activeprojectname = getactiveprojectname.getactiveprojectname(current_username, userprojects)
+        projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
+        shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects, current_username, activeprojectname)
         current_user_sharemode = shareinfo['sharemode']
 
         # get list of all the users registered in the application LiFE
@@ -2719,30 +2720,36 @@ def userslist():
             # print(user)
             usersList.append(user["username"])
             # print(user)
-        if (current_user.username == projectowner):
+        if (current_username == projectowner):
             usersList.remove(projectowner)
+            share_with_users_list = usersList
         else:
             # print(usersList)
             usersList.remove(projectowner)
-            usersList.remove(current_user.username)
+            usersList.remove(current_username)
+            # print(usersList)
             for username in usersList:
+                # print(username)
                 usersharemode = getuserprojectinfo.getuserprojectinfo(userprojects,
                                                                                 username,
                                                                                 activeprojectname
                                                                             )['sharemode']
-                # print(usersharemode)
+                # print(current_user.username, current_user_sharemode, username, usersharemode)
                 if (current_user_sharemode <= usersharemode):
-                    print(f"username!!!: {username}")
-                    usersList.remove(username)
-        # print(usersList)
+                    # print(f"username!!!: {username}")
+                    pass
+                    # usersList.remove(username)
+                else:
+                    share_with_users_list.append(username)
+        # print(usersList, share_with_users_list)
         speakersDict = projects.find_one({'projectname': activeprojectname},
-                                            {'_id':0, 'speakerIds.'+current_user.username: 1})
-        speakersList = speakersDict['speakerIds'][current_user.username]
+                                            {'_id':0, 'speakerIds.'+current_username: 1})
+        speakersList = speakersDict['speakerIds'][current_username]
         # print(speakersList)
     except:
         pass
 
-    return jsonify(usersList=sorted(usersList),
+    return jsonify(usersList=sorted(share_with_users_list),
                     speakersList=sorted(speakersList),
                     sharemode=current_user_sharemode)
 
@@ -2753,28 +2760,28 @@ def shareprojectwith():
     projects, userprojects = getdbcollections.getdbcollections(mongo,
                                                                 'projects',
                                                                 'userprojects')
-    
-    activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username, userprojects)
-    # print('activeprojectname', activeprojectname)
+    current_username = getcurrentusername.getcurrentusername()
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_username, userprojects)
+    print('2758: activeprojectname', activeprojectname)
 
     projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
 
     # data through ajax
     data = request.args.get('data')
     data = eval(data)
-    # print(data)
+    print('2765', data)
     users = data['sharewithusers']
-    # print(type(users))
+    print(type(users))
     speakers = data['sharespeakers']
     sharemode = data['sharemode']
-    # print(sharemode)
+    print(sharemode)
     if (sharemode == ''):
         sharemode = 0
     sharechecked = str(data['sharechecked'])
-    # print('123', users, speakers, sharemode, sharechecked)
+    print('123', users, speakers, sharemode, sharechecked)
     
     if (len(users) != 0):
-        projectinfo = userprojects.find_one({'username' : current_user.username},
+        projectinfo = userprojects.find_one({'username' : current_username},
                                         {'_id': 0, 'myproject': 1, 'projectsharedwithme': 1})
         for user in users:
             # print(user)
@@ -2785,7 +2792,7 @@ def shareprojectwith():
             usershareprojectsname = usershareprojectsname['projectsharedwithme']
             if activeprojectname in usershareprojectsname:
                 tomesharedby = usershareprojectsname[activeprojectname]['tomesharedby']
-                tomesharedby.append(current_user.username)
+                tomesharedby.append(current_username)
                 usershareprojectsname[activeprojectname] = {
                                                             'sharemode': sharemode,
                                                             'tomesharedby': list(set(tomesharedby)),
@@ -2815,36 +2822,37 @@ def shareprojectwith():
             projects.update_one({'projectname': activeprojectname},
                                 {'$set': {'sharedwith': list(set(projectdetails['sharedwith']))}})
             
-            if (len(speakers) != 0):
-                userprojectinfo = ''
-                for key, value in projectinfo.items():
-                    if len(value) != 0:
-                        if activeprojectname in value:
-                            userprojectinfo = key+'.'+activeprojectname+".activespeakerId"
-                userprojects.update_one({"username": current_user.username},
-                                        { "$set": {
-                                            userprojectinfo: speakers[-1]
-                                        }})
-                
-                for speaker in speakers:
-                    # print(speaker)
+            if ('speakerIds' in projectdetails):
+                if (len(speakers) != 0):
+                    userprojectinfo = ''
+                    for key, value in projectinfo.items():
+                        if len(value) != 0:
+                            if activeprojectname in value:
+                                userprojectinfo = key+'.'+activeprojectname+".activespeakerId"
+                    userprojects.update_one({"username": current_username},
+                                            { "$set": {
+                                                userprojectinfo: speakers[-1]
+                                            }})
+                    
+                    for speaker in speakers:
+                        # print(speaker)
+                        projects.update_one({'projectname': activeprojectname},
+                                    {'$addToSet': {'speakerIds.'+user: speaker}})
+                        userlastactiveId = projectdetails['lastActiveId'][current_username][speaker]['audioId']
+                        projects.update_one({'projectname': activeprojectname},
+                                    {'$set': {'lastActiveId.'+user+'.'+speaker+'.audioId': userlastactiveId}})
+                elif user not in projectdetails['speakerIds']:
                     projects.update_one({'projectname': activeprojectname},
-                                {'$addToSet': {'speakerIds.'+user: speaker}})
-                    userlastactiveId = projectdetails['lastActiveId'][current_user.username][speaker]['audioId']
-                    projects.update_one({'projectname': activeprojectname},
-                                {'$set': {'lastActiveId.'+user+'.'+speaker+'.audioId': userlastactiveId}})
-            elif user not in projectdetails['speakerIds']:
-                projects.update_one({'projectname': activeprojectname},
-                                {'$set': {'lastActiveId.'+user: {}}})
+                                    {'$set': {'lastActiveId.'+user: {}}})
 
             for key, value in projectinfo.items():
                 if (len(value) != 0 and
                     activeprojectname in value):
-                    userprojects.update_one({"username": current_user.username},
+                    userprojects.update_one({"username": current_username},
                                         { "$addToSet": {
                                             key+'.'+activeprojectname+'.isharedwith': user
                                         }})
-                    if projectowner != current_user.username:
+                    if projectowner != current_username:
                         userprojects.update_one({"username": projectowner},
                                             { "$addToSet": {
                                                 'myproject.'+activeprojectname+'.isharedwith': user
@@ -2863,7 +2871,7 @@ def lexemeview():
     projects = mongo.db.projects                        # collection of projects
 
     headword = request.args.get('a').split(',')                    # data through ajax
-    print(headword)
+    # print(headword)
 
     activeprojectname = userprojects.find_one({ 'username' : current_user.username })['activeproject']
     # print(activeprojectname)
@@ -2879,7 +2887,7 @@ def lexemeview():
     filen = {}
     if 'filesname' in lexeme:
         for key, filename in lexeme['filesname'].items():
-            print(key, filename)
+            # print(key, filename)
             filen[key] = url_for('retrieve', filename=filename)
 
 
@@ -2900,7 +2908,7 @@ def lexemeedit():
     projects = mongo.db.projects                        # collection of projects
 
     headword = request.args.get('a').split(',')                    # data through ajax
-    print(headword)
+    # print(headword)
 
     activeprojectname = userprojects.find_one({ 'username' : current_user.username })['activeproject']
     # print(activeprojectname)
@@ -2911,7 +2919,7 @@ def lexemeedit():
     if request.method == 'POST':
 
         newLexemeData = request.form.to_dict()
-        print(newLexemeData)
+        # print(newLexemeData)
         return redirect(url_for('dictionaryview'))
     
     # activeprojectname = userprojects.find_one({ 'username' : current_user.username },\
@@ -3195,7 +3203,7 @@ def lexemeupdate():
         # when testing comment these to avoid any database update/changes
         # saving files for the new lexeme to the database in fs collection
         for (filename, key) in zip(newLexemeFilesName.values(), newLexemeFiles):
-            print(filename, key, newLexemeFiles[key])
+            # print(filename, key, newLexemeFiles[key])
             mongo.save_file(filename, newLexemeFiles[key], lexemeId=lexemeId, username=current_user.username,\
                             projectname=lexemeFormData['projectname'], headword=lexemeFormData['headword'],\
                             updatedBy=current_user.username)       
@@ -3230,7 +3238,7 @@ def lexemeupdate():
             flash('Please create your first project')
             return redirect(url_for('home'))
     except:
-        print(f'{"#"*80}\nCurrent user details not in database!!!')
+        # print(f'{"#"*80}\nCurrent user details not in database!!!')
         flash('Please create your first project')
         return redirect(url_for('home'))
     # get the list of lexeme entries for current project to show in dictionary view table
@@ -3241,7 +3249,7 @@ def lexemeupdate():
     try:
         # print(activeprojectname)
         projectOwner = projects.find_one({}, {"_id" : 0, activeprojectname : 1})[activeprojectname]["projectOwner"]
-        print(projectOwner)
+        # print(projectOwner)
         for lexeme in lexemes.find({ 'username' : projectOwner, 'projectname' : activeprojectname, 'lexemedeleteFLAG' : 0 }, \
                                 {'_id' : 0, 'headword' : 1, 'gloss' : 1, 'grammaticalcategory' : 1, 'lexemeId' : 1}):
             # pprint(lexeme)
@@ -3440,8 +3448,8 @@ def audiotranscription():
             if newLexemeFiles[key].filename != '':
                 # adding microseconds of current time to differ two files of same name
                 newLexemeFilesName[key] = (datetime.now().strftime('%f')+'_'+newLexemeFiles[key].filename)
-        print(newLexemeFiles)
-        print(newLexemeFilesName)
+        # print(newLexemeFiles)
+        # print(newLexemeFilesName)
 
         return redirect(url_for('audiotranscription'))       
     
@@ -3458,7 +3466,7 @@ def assignkaryaaccesscode():
 @app.route('/datetimeasid', methods=['GET'])
 def datetimeasid():
     Id = re.sub(r'[-: \.]', '', str(datetime.now()))
-    print(Id)
+    # print(Id)
     return jsonify(Id=Id)
 
 @app.route('/loadpreviousaudio', methods=['GET', 'POST'])
@@ -3512,7 +3520,7 @@ def loadnextaudio():
                                                     lastActiveId,
                                                     activespeakerid,
                                                     'next')
-    print('latest_audio_id ROUTES', latest_audio_id)                                                    
+    # print('latest_audio_id ROUTES', latest_audio_id)
     audiodetails.updatelatestaudioid(projects,
                                         activeprojectname,
                                         latest_audio_id,
@@ -3526,7 +3534,7 @@ def getAudioFilename(lastActiveFilename, whichOne):
     audioFilesPath = 'static/audio'
     baseAudioFilesPath = os.path.join(basedir, audioFilesPath)
     audioFilesList = sorted(os.listdir(baseAudioFilesPath))
-    print(audioFilesList)
+    # print(audioFilesList)
     audioFileIndex = audioFilesList.index(lastActiveFilename)
     if (whichOne == 'next'):
         audioFileIndex = audioFileIndex + 1
@@ -3575,9 +3583,9 @@ def loadunannotext():
 
     lastActiveId = request.args.get('data')
     lastActiveId = eval(lastActiveId)
-    print(lastActiveId)
+    # print(lastActiveId)
     updateactivespeakeraudioid = 'lastActiveId.'+current_user.username+'.'+activespeakerid+'.audioId'
-    print(updateactivespeakeraudioid)
+    # print(updateactivespeakeraudioid)
 
     projects.update_one({"projectname": activeprojectname},
         { '$set' : { updateactivespeakeraudioid: lastActiveId }})
@@ -3624,17 +3632,17 @@ def changespeakerid():
 
     # data through ajax
     speakerId = str(request.args.get('a'))
-    print(speakerId)
+    # print(speakerId)
     projectinfo = userprojects.find_one({'username' : current_user.username},
                                         {'_id': 0, 'myproject': 1, 'projectsharedwithme': 1})
 
-    print(projectinfo)
+    # print(projectinfo)
     userprojectinfo = ''
     for key, value in projectinfo.items():
         if len(value) != 0:
             if activeprojectname in value:
                 userprojectinfo = key+'.'+activeprojectname+".activespeakerId"
-    print(userprojectinfo)            
+    # print(userprojectinfo)
     userprojects.update_one({"username": current_user.username},
                             { "$set": {
                                 userprojectinfo: speakerId
