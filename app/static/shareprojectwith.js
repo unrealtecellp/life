@@ -52,8 +52,9 @@ $(document).ready(function() {
     sharemode = ''
     for(i = 0; i < ele.length; i++) {
         if(ele[i].checked)
-          sharemode =  ele[i].value
+          sharemode =  ele[i].value - 1
     }
-    // console.log(sharemode)
+    console.log(sharemode)
+    
     return sharemode
   }

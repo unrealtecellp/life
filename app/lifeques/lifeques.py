@@ -207,7 +207,7 @@ def questionnaire():
     quesdata = questionnaires.find_one({"quesId": last_active_ques_id}, {"_id": 0})
     # print(f"{inspect.currentframe().f_lineno}: {quesprojectform}")
     # print(f"{inspect.currentframe().f_lineno}: {type(quesdata)}")
-    print(f"{inspect.currentframe().f_lineno}: {quesdata}")
+    # print(f"{inspect.currentframe().f_lineno}: {quesdata}")
     quesprojectform['quesdata'] = quesdata
     # print(f"{inspect.currentframe().f_lineno}: {quesdata}")
     file_path = ''

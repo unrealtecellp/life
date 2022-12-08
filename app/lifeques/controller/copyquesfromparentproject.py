@@ -32,7 +32,7 @@ def copyquesfromparentproject(projects,
 
         for derived_ques in all_derived_ques:
             if ("dummy" in derived_ques['quesId']): continue
-            print('line 31: ', derived_ques)
+            # print('line 31: ', derived_ques)
             del derived_ques["_id"]
 
             derived_ques["username"] = current_username
@@ -58,7 +58,7 @@ def copyquesfromparentproject(projects,
                 if (lang in derived_quesprompt_content): continue
                 else:
                     content = {}
-                    print(lang)
+                    # print(lang)
                     prompt_lang = lang
                     prompt_lang_script = lang_script[prompt_lang]
                     prompt_value = projectform['Prompt Type'][1][prompt_lang]
