@@ -1,671 +1,636 @@
-<<<<<<< HEAD
-quesId	Q_Id	prompt.Domain	prompt.Elicitation Method	prompt.content.English-Latin.text.000000.startindex	prompt.content.English-Latin.text.000000.endindex	prompt.content.English-Latin.text.000000.textspan.Latin	prompt.content.Hindi-Devanagari.text.000000.startindex	prompt.content.Hindi-Devanagari.text.000000.endindex	prompt.content.Hindi-Devanagari.text.000000.textspan.Devanagari
-	CLT_1	[Culture]	Narration			How is the administration of your village function?			आपके गाँव का प्रशासन कैसे काम करता है?
-	CLT_2	[Culture]	Narration			Who are the people associated with the administration of a village? What are his/her roles and duties?			गाँव के प्रशासन से जुड़े लोग कौन होते हैं? उनकी भूमिकाएँ और कर्तव्य क्या - क्या होते हैं?
-	CLT_3	[Culture]	Narration			What is the role of village development committee?			ग्राम विकास समिति की क्या भूमिका है?
-	CLT_4	[Culture]	Narration			Tell us about the traditions and lifestyle of your community.			हमें अपने समुदाय की परंपराओं और जीवन शैली के बारे में बताएं।
-	CLT_5	[Culture]	Narration			How is the customary court function in your village?			आपके गाँव में प्रथागत न्यायालय कैसे का करता है?
-	CLT_6	[Culture]	Narration			Who is the head of the customary court of your community? What are his/her roles and duties?			आपके समुदाय के प्रथागत न्यायालय का मुखिया कौन है? उनकी भूमिकाएँ और काम क्या हैं?
-	CLT_7	[Culture]	Narration			Describe about the traditional dress of your community?			अपने समुदाय की पारंपरिक पोशाक के बारे में बताएं?
-	CLT_8	[Culture]	Narration			Tell us about the design of the most important shawl of your community?			अपने समुदाय के सबसे महत्वपूर्ण शॉल के डिजाइन के बारे में बताएं?
-	CLT_9	[Culture]	Narration			What are some of the traditional ornaments, costumes and jewellery of your community?			आपके समुदाय के कुछ पारंपरिक आभूषण और कपड़ें क्या हैं?
-	CLT_10	[Culture]	Narration			What are the main occupations of your community?			आपके समुदाय के मुख्य व्यवसाय क्या हैं?
-	CLT_11	[Culture]	Narration			What is the food culture of your community?			आपके समुदाय की खाद्य संस्कृति क्या है?
-	CLT_12	[Culture]	Narration			Tell us about some of the most popular foods items of your community.			हमें अपने समुदाय के कुछ सबसे लोकप्रिय खाद्य पदार्थों के बारे में बताएं।
-	CLT_13	[Culture]	Narration			What are the various steps and process involved in cultivation?			खेती में शामिल विभिन्न चरण और प्रक्रिया क्या हैं?
-	CLT_14	[Culture]	Narration			Is there any festival related to cultivation of your community? How are they celebrated?			क्या आपके समुदाय में खेती से संबंधित कोई त्योहार है? उन्हें कैसे मनाया जाता है?
-	CLT_15	[Culture]	Narration			What is the most important festival of your community? How do that celebrate?			आपके समुदाय का सबसे महत्वपूर्ण त्योहार कौन सा है? वह कैसे मनाया जाता है?
-	CLT_16	[Culture]	Narration			Tell us something about the traditional dances of your community.			अपने समुदाय के पारंपरिक नृत्यों के बारे में कुछ बताएं।
-	CLT_17	[Culture]	Narration			Tell us something about the marriage culture of your community.			अपने समुदाय की विवाह संस्कृति के बारे में कुछ बताएं।
-	CLT_18	[Culture]	Narration			Tell us about the traditional art of weaving of your community.			अपने समुदाय की बुनाई की पारंपरिक कला के बारे में बताएं।
-	CLT_19	[Culture]	Narration			Tell us about some of the famous art and handicraft, woodcarving and pottery produced by your community.			अपने समुदाय द्वारा बनाई जाने वाली कुछ प्रसिद्ध कला और हस्तशिल्प, लकड़ी की नक्काशी और मिट्टी के बर्तनों के बारे में बताएं।
-	CLT_20	[Culture]	Narration			What are different types of bamboo and cane products made by your community?			आपके समुदाय द्वारा बनाए गए बांस और गन्ने के विभिन्न प्रकार के उत्पाद कौन-से हैं?
-	CLT_21	[Culture]	Narration			Tell us about some of the famous folk songs of your community.			अपने समुदाय के कुछ प्रसिद्ध लोक गीतों के बारे में बताएं।
-	CLT_22	[Culture]	Narration			Tell us about musical instruments used by your community.			हमें अपने समुदाय द्वारा उपयोग किए जाने वाले संगीत वाद्ययंत्रों के बारे में बताएं।
-	CLT_23	[Culture]	Narration			How is the oral history of your community passed down?			आपके समुदाय का मौखिक इतिहास कैसे लिखा जाता है?
-	CLT_24	[Culture]	Narration			Tell us about the origin of the name of your community.			हमें अपने समुदाय के नाम की उत्पत्ति के बारे में बताएं।
-	CLT_25	[Culture]	Narration			Tell us one short folk story of your community.			हमें अपने समुदाय की एक छोटी लोक कथा बताएं।
-	CLT_26	[Culture]	Narration			Tell us about the traditional religion or beliefs of your community.			हमें अपने समुदाय के पारंपरिक धर्म या मान्यताओं के बारे में बताएं।
-	CLT_27	[Culture]	Narration			Tell us about the traditional method of fishing of your community?			अपने समुदाय की मछली पकड़ने की पारंपरिक पद्धति के बारे में बताएं?
-	CLT_28	[Culture]	Narration			What are the traditional weapons and tools used in hunting?			शिकार में उपयोग किए जाने वाले पारंपरिक हथियार और उपकरण कौन से हैं?
-	CLT_29	[Culture]	Narration			Tell us about setting a traditional trap to catch animals and birds.			जानवरों और पक्षियों को पकड़ने के लिए पारंपरिक जाल लगाने के बारे में बताएं।
-	CLT_30	[Culture]	Narration			Is traditional hunting still practice in your village? What are the rules and regulations of hunting in your village?			क्या आपके गाँव में अभी भी पारंपरिक शिकार का चलन है? आपके गाँव में शिकार के नियम और कानून क्या हैं?
-	CLT_31	[Culture]	Narration			what kind of ornaments do you use in your community and how are they made ?			आप अपने समुदाय में किस प्रकार के आभूषणों का प्रयोग करते हैं और वे कैसे बनते हैं ?
-=======
-quesId	Q_Id	prompt.content.Chokri-Latin.text.000000.startindex	prompt.content.Chokri-Latin.text.000000.endindex	prompt.content.Chokri-Latin.text.000000.textspan.Latin	prompt.content.Chokri-Latin.audio.fileId	prompt.content.Chokri-Latin.audio.filename	prompt.content.Chokri-Latin.audio.textGrid.sentence.000000.startindex	prompt.content.Chokri-Latin.audio.textGrid.sentence.000000.endindex	prompt.content.Chokri-Latin.audio.textGrid.sentence.000000.transcription.Latin
-Q20221127180629325001	ED-01								n rüna mi ko thüma lesi phri zü ko mu phri kümo ko dipü bi no peyo?
-Q20221127180629325550	ED-02								lesi mhase hi n rüna lo vori zü hi dipü bi no mha küde vori?
-Q20221127180629326035	ED-03								Lesi ce hi no dipü bi no ma küde vori zü ngo?
-Q20221127180629326525	ED-04								Lesice ko n natsi ce dibi no bayo?
-Q20221127180629327021	ED-05								thazü dibi no mhase küza no vori?
-Q20221127180629327463	ED-06								lesi mhase hi tsü do ri ma uma ne me?
-Q20221127180629327904	ED-07								uko za lesi mhase mori lesice mi kükre mi za ce ri kree kü me? N külü posüte?
-Q20221127180629328260	ED-08								nko hi dipü bi no lesice mori lesi mhase hi thi-n veküta ?
-Q20221127180629328606	ED-09								no tsüdo hi lesice mori lesi mhase hi dipü ce ko vekü ta sizü ngo?
-Q20221127180629328941	ED-10								n rüna lo süno lesi phri kho müra thou? Mü pü n rüna mi la dipü thi vori?
-Q20221127180629329306	ED-11								lesi mhase hi dipu bi no küzüküve rüna mi ko dolü pü vori?
-Q20221127180629329666	ED-12								n külü lo dipü subject no zü küba hi küno n la veto ha?
-Q20221127180629330098	ED-13								Lesi mhase hi dipü bi no küdimi mu kütsakhumi ko krehi ba?
-Q20221127180629330486	ED-14								no homework hi dipu la n nü mu dipü la n nü yo mo?
-Q20221127180629330856	ED-15								no mhase sayi küto la dipü thi mosü?
-Q20221127180629331222	ED-16								lesi mhase hi dipü bi no küzü küve pü vori yo?
-Q20221127180629331565	ED-17								lesi mhase lo nu dipü bi no thüma mhase küsa mu mha do thi zü küsa seyo?
-Q20221127180629331905	ED-18								Dipü n lü thi müre no n vo küve thi ni sa küyo: marks küve me küsü?
-Q20221127180629332250	ED-19								nko lesi mhaseko hi kükro mi ko lübi do thi mosü me? Me u tho u rünami ko za ju ko ri phri mosü?
-Q20221127180629332588	ED-20								lesi mhase hi dipü la no seyi mosü?
-Q20221127180629332890	ED-21								dipü la no thüno thüpü küna zü mhase hi mütha yo mo?
-Q20221127180629333278	ED-22								
-Q20221127180629333708	ED-23								u cekhro mi ko hi lesi mhase lo dipü bi no khrü hi yo?
-Q20221127180629334167	ED-24								
-Q20221127180629334653	ED-25								matric exam hi dipü la no exam uma küri tho ta?
-Q20221127180629335289	ED-26								class room lo mha küke kükre zü dipü thiyo?
-Q20221127180629335707	ED-27								no mhatho dipü pü thi no, no unü kre-e no bayo?
-Q20221127180629336252	ED-28								lesi mhase hi dipü bi no n külhü thi kede wa?
-Q20221127180629336783	ED-29								lesi mhase hi dipü bi no nko külü mü nko mha müpe zü hi dipü bi no küde wa?
-Q20221127180629337386	ED-30								lesi mhase hi dipü bi no mi mhakra lo küde vori?
-Q20221127180629339257	ED-31								mobile phone mu internet hi dipü bi no lesi mhase lü küde ba?
-Q20221127180629340141	ED-32								thüma hi dipü bi no lesice lo mhase yo?
-Q20221127180629340644	ED-33								mhase se zü lo hi dipü hi n la kürü tho?
-Q20221127180629341155	ED-34								natsimine lesice lo di se yo?
-Q20221127180629341637	ED-35								shüye/tethi dipü lo lesice mori university küvetho ko ba? Dipü la no süko sü ve ta? Dipü la no püko kükre ko ce ri ve ta?
-Q20221127180629342122	ED-36								rüzü mu u mo mhatho ko hi la no lesice ko dipü khasü yo?
-Q20221127180629342704	ED-37								lesice ko lo hi government ko dipü thi mosü?
-Q20221127180629343258	ED-38								natsimine ko ütho ü jü lo mütha zü lesice lo di pü bizü ma kürü zü küsü yo?
-Q20221127180629344011	ED-39								natsimine ko hi lesice lo thüdo dipü bi se ba mosü?
-Q20221127180629344621	ED-40								english pozü lesice lo vozü ce natsimine ko ma kürü dipü bizü küsü yo?
-Q20221127180629345138	ED-41								mi tso mo zü ko la lesi küphri hi dipü bi no mi mütü ko wo phri-e küve thi mosü?
-Q20221127180629345609	ED-42								tsüdo tü hi pe küzü ce, lesi mhase hi müle kü me, me tezü mhase ?
-Q20221127180629346129	ED-43								celü mhase hi dipü bi no natsimi hi mi zü mükro zü hi khrü hi yo?
-Q20221127180629346572	ED-44								lesi mhase natsi zü ce nyo-I zü hi pethi pari no university kütso lo khrü hi yo. Hi hi jü n külü posüte?
-Q20221127180629346963	ED-45								thüma mhase zü hi dipü biyo? Thüma lesi mhase bazü ko dipu bi mosü?
-Q20221127180629347335	ED-46								public lesice mu private lesice jü hü posüte? Pü küve mu pü küsü posüte?
-Q20221127180629347686	ED-47								n külü lü zü u tho u jü hi doctorate kütso phri mosü me? Ye, si mütha, di la no?
-Q20221127180629348059	ED-48								n külü lü zü u tho u jü phri zü hi, u jo mu u nani küla pü hisa la khama ve me?
-Q20221127180629348478	ED-51								n la no dipü bi no u jü mu u jo mu u nani ko hi preserve thita?
-Q20221127180629348940	ED-52								no mhase cho la dipü lü yo? Hi dipü bi no mha kra mu küsühro küsühri lo khrühi yo?
-Q20221127180629349419	ED-54								küsa lesi mhase policy za hi no mha püri se me ma?
-Q20221127180629349964	ED-56								covid 19 hi bazü tü ce lesi mhase cho dipü bi ta n rüna lo?
-Q20221127180629350474	ED-61								jü kükre kükre küzü lo classroom lo mütha zü hi u kümve di pü ba?
-Q20221127180629350921	ED-62								n lesice lo dipü ce nü mi ce ri kükre ta?
-Q20221127180629351416	ED-63								vo küta tetse lo n lesice lo dipü kükre ta?
-Q20221127180629351869	ED-64								dipü bi no lesice hi phri küba mi ko mü ukrüne ko yo feedback khasü ta?
-Q20221127180629352287	ED-65								lesice ko hi u rüna mi ko dipü bi no khrü hi yo?
-Q20221127180629352723	ED-66								kümütha mi ko lesice lü dojü küyi ko po küha la sü küzü thi küthüpu süyo me?hi hi u küve mü u küsü posüte?
-Q20221127180629353192	ED-67								no lesi phri küra ce, lesice di du-u ba? No pethi pari zü ce dipü ko lo lesice küda küzü ngo?
-Q20221127180629353616	ED-69								Dipü bizü lo nu kümüthami ko müza zü ko thiyo?
-Q20221127180629354201	ED-70								n lesice lo n zü mathi zü mi ko mu lesice lo mathi zü mi ko jü kropü posüte?
-Q20221127180629354806	ED-71								no n lesice dipü bi no süyo zü jü ko kropü posüte?
-Q20221127180629355334	ED-72								nko lesice ko hi dipü bi no mi lesice ko zü kreyo?
-Q20221127180629355802	ED-73								kümütha mi ko dipü thi mükro yo? Püko ma küsü mori ma pe sü tü khasü yo me? Püko lesice te mho lo ri matho thi yo me?
-Q20221127180629356299	ED-74								grade no pemo no mhase zü lübi lo thiyo me? Pemo no mase-yi zü hi u küve mu u küsü posüte?
-Q20221127180629356702	ED-76								lesi mhaseko hi kükro mi ko lübi do thi mosü me? Me u tho u ma ko za ju ko ri phri mosü?
-Q20221127180629357248	ED-77								mi tso mo zü ko la u state hi mha thi kü hü-e sa mosü me?
-Q20221127180629358000	ED-78								celü cekro mi ko hi dipü thi mosü ba, u nune lesi kephri ko lano?
-Q20221127180629358822	ED-80								kümüthami mi ko dipü bi no lesi kephri ko zü müdu mu reni yo? Dipü bizü kütso yo mu sü no wo kütso yo?
-Q20221127180629359536	ED-81								dipü bi no lesi kephri mine ko kükri ta zü ko lü sajo khasü mosü?
-Q20221127180629360209	ED-82								lesice mhase mü tution lo mhase ngo zü za jü n külü posüte?
-Q20221127180629360686	ED-83								smart phone mu internet hi dipü lo nu lesi küphri ne ko khrühi mori bü mesü ri yo?
-Q20221127180629361178	ED-84								dipü bizü lo nu 'tha tüsozho ve' süzi no po ve?
-Q20221127180629361681	ED-85								August 15 hi n lesice lo dibi thenye thi yo?
-Q20221127180629362184	ED-86								no kümüthami thi zü hi lo dipü n nü yo?
-Q20221127180629362713	ED-87								kümüdu-u mori technology di pü bi no mi mütha zü hi khrühi or thi rü ba wa?
-Q20221127180629363161	ED-88								mid day meal za jü n külü posüte?
-Q20221127180629363548	ED-90								khüsü-u mu külhe-o class lo dipü kükre zü ngo yo?
-Q20221127180629363916	ED-92								thüma no dipü bi no mhaseyi yo?
-Q20221127180629364288	ED-94								thüma ko u kümütha mi ko yo thüdo mori u küve dipü pe yo?
-Q20221127180629364665	ED-95								Thüma hi pethi pari zü sa ri dipü se yo?
-Q20221127180629365009	ED-97								no n la no dipü bizü pü lo lesi küphri ne ko mhase küve tho thita?
-Q20221127180629365375	ED-100								n la no dipü bizü mi kha sü thüma mütse süzi no poyo?
-Q20221127180629365734	ED-102								offline mu online class za jü kropü posüte? U küve mü u kesü posüte?
-Q20221127180629366148	ED-104								tsüdo hi mha mütü ri online lo mha phri zü mhanyo ko ngo tso va de. N külü lü zü nko hiko lübi mülü ve me? Di la no?
-Q20221127180629366590	ED-106								dipü bi no lesi kephri ne ko wo u matho kethi ko seyi yo?
-Q20221127180629367068	ED-107								n külü lo dipü la no english hi pü no lesice lo mütha yo?
-Q20221127180629367698	ED-108								n külü lo dipü la no social science hi lesi küphri ne ko mütha yo?
-Q20221127180629368301	ED-109								n külü lo dipü la no science hi lesi küphri ne ko mütha yo?
-Q20221127180629368845	ED-110								lesice lo mhatho kükre kükre küzü u ma ne no dipü thiyo. Dipü bi no hiko lesice lo sü mosü ba?
-Q20221127180629369351	ED-111								dipü bi no mha küda zü hi mu mha se zü hi kükre ta?
-Q20221127180629369766	ED-114								dipü bi no natsi mi hi lesice lo küda yo?
-Q20221127180629370152	ED-117								cho sü no n classroom lo dipü küde nisa wa, küde-e ve mütha?
-Q20221127180629370585	ED-118								lesi phri rü zü mi n class lo bata mü tha no dipü bi no pü mütha ta?
-Q20221127180629371108	ED-119								kümü no kümü no mi mütha zü hi dipü la no müle ri?
-Q20221127180629371670	ED-120								thüsa vori tü ce no mha kürü dipü bizü zü küsü?
-Q20221127180629372232	ED-121								celü mütha mu lesice lo mütha zü hi no dipü seyi?
-Q20221127180629372714	ED-125								no dipu n nü mükro yo. Class discussion me small group matho?
-Q20221127180629373205	ED-128								n lesice lo mi mütha küto la dipü bizü mhanyo süyo?
-Q20221127180629373722	ED-131								n kümüthami,principal, headmaster mu kükre lesice lo mathi yo küba ko dipü pü bizü thiyo?
-Q20221127180629379929	ED-137								lesice lo n zü mi ko za ju kropü posüte?
-Q20221127180629380505	ED-138								n cekro ko n lesi küphri lo dipü bi no khühri sü yo?
-Q20221127180629380898	ED-142								lesi mhase hi no pethi pari zü ce no dipü se?
-Q20221127180629381323	ED-144								dipü bi no jü hi ma kümüle shü ta lesi mhase chou?
-Q20221127180629381704	ED-146								süno no n bo subject mori degree phri zü hi n inspire thi sü no lesi phri zü hi?
-Q20221127180629382126	ED-148								no lesice lo dipü se ni sa ba yo?
-Q20221127180629382555	ED-152								internet sü zü hi u küve mu u küsü posüte? Dipü bi no hi n lesi küphri lo effect thi ba?
-Q20221127180629383081	ED-160								no dipü la no lesi mhase hi se ba?
-Q20221127180629383628	ED-162								nani hi n lesi küphri matho ko lo effect thiyo me?
-Q20221127180629384220	ED-163								no jü ditsü se va? No dipü bi no hiko se ta?
-Q20221127180629384915	ED-164								Cekro za cesü cenyü hi dipu bi no lesi küphri ne ko yo effect thiyo?
-Q20221127180629385393	ED-167								lesice lo no dipü bizü matho ko thi n nyü tho ?
-Q20221127180629385808	ED-168								no lesice dipü bizü rüzü rüzü yo? N külü lü zü ce lesice ko rüzü mhanyo ko ujo thi no khasü me?
-Q20221127180629386297	ED-169								no dipü bi no lesice lo voyo? No khüshü chou zü lü nü lesice lo vo tso zü jü kropü posüte
-Q20221127180629386763	ED-172								no n külhü lo ujo thi no vori to zü mülü yo me? N hisa dipü thi nisa wa?
-Q20221127180629387236	AG_1								n thüma mori n rünami ko dipu bizü rhase ranye teyo?
-Q20221127180629387739	AG_2								thüma rhase ranye teyo zü mi kha dipu thi tsüyo? puko ga lübi teyo me mha kükre mhatho ri thiyo? mha kükre mhatho thiyo mütha , dipu thi yo?
-Q20221127180629388303	AG_3								ga kükre kükre zü n thüma ko mori rünami ko teyo zü posüte? kütsa tho lo ri uza se pungu posüte?
-Q20221127180629388790	AG_4								tekhri mori utu dibi zü ce ga hiko teyo?
-Q20221127180629389199	AG_5								dipu bi no ga hiko teyo?
-Q20221127180629389837	AG_6								mü küto la pütü didu-o yiyo?
-Q20221127180629390423	AG_7								ga hiko te zü ce, daru bizü sü yo me? me ga vo vekuto la udo kükre kro-o ba?
-Q20221127180629390935	AG_8								dipu bi no hiko mi kükremi ko ce zhu yo?
-Q20221127180629391427	AG_9								dipu bi no hiko cho no tiyo?
-Q20221127180629391855	AG_10								rhase kükre kükre zü n thüma mori rünami teyo zü posüte? kütsa tho lo ri uza se pungu posüte?
-Q20221127180629392740	AG_11								tekhri mori utu dibi zü ce rhase hiko teyo?
-Q20221127180629393594	AG_12								dipu bi no rhase hiko teyo?
-Q20221127180629394266	AG_13								mü küto la pütü didu-o yiyo?
-Q20221127180629394779	AG_14								rhase hiko te zü ce, daru bizü sü yo me? me rhase vo vekuto la udo kükre kro-o ba?
-Q20221127180629395282	AG_15								dipu bi no hiko mi kükremi ko che zhu yo?
-Q20221127180629395744	AG_16								dipu bi no hiko cho no tiyo?
-Q20221127180629396175	AG_17								lhako kükre kükre zü n thüma ko mori rüna mi teyo küzü uza küna-sü posüte?
-Q20221127180629396604	AG_18								tekhri mori utu dibi zü ce lhako hiko teyo?
-Q20221127180629397011	AG_19								dipu bi no lhako hiko teyo?
-Q20221127180629397388	AG_20								mü küto la pütü didu-o yiyo?
-Q20221127180629397776	AG_21								lhako hiko te zü ce, daru bizü sü yo me? me lhako vo vekuto la udo kükre kro-o ba?
-Q20221127180629398292	AG_22								dipu bi no hiko mi kükremi ko che zhu yo?
-Q20221127180629398960	AG_23								dipu bi no hiko cho no tiyo?
-Q20221127180629400090	AG_24								rhase rane kükre kükre zü n thüma ko mori rüna mi teyo küzü uza küna-sü posüte?
-Q20221127180629401116	AG_25								tekhri mori utu dibi zü ce rhase rane hiko teyo?
-Q20221127180629404206	AG_26								dipu bi no rhase rane hiko teyo?
-Q20221127180629406051	AG_27								mü küto la pütü didu-o yiyo?
-Q20221127180629406618	AG_28								rhase rane hiko te zü ce, daru bizü sü yo me? me lhako vo vekuto la udo kükre kro-o ba?
-Q20221127180629407042	AG_29								dipu bi no hiko mi kükremi ko ce zhu yo?
-Q20221127180629407505	AG_30								dipu bi no hiko cho no tiyo?
-Q20221127180629407984	AG_31								sübo kükre kükre zü n thüma ko mori rüna mi teyo küzü uza se pungu posüte?
-Q20221127180629408427	AG_32								sübo hiko pü no dipu thiyo?
-Q20221127180629408904	AG_33								dipu bi no sübo hiko teyo?
-Q20221127180629409303	AG_34								zho no pü mhathi-e küve pari küto la pütü didu-o yiyo?
-Q20221127180629409827	AG_35								sübo hiko te zü ce, daru bizü sü yo me? me sübo vo vekuto la udo kükre kro-o ba?
-Q20221127180629411070	AG_36								n thüma ko dipu bino mha te zü mathoko mi kükre mi ce ri khre ku zü ju khropu posüte?
-Q20221127180629412066	AG_37								vokuta tetse ko lü dipu bi no mha tezü matho ko kre no vori zü ngo?
-Q20221127180629412839	AG_38								
-Q20221127180629413545	AG_39								ma tezü matho ko la di pu bizü manyo khropu süyo?
-Q20221127180629414170	AG_40								manyo süko sü dipu bi no ma kükre kükre zü lo sü mathi yo?
-Q20221127180629414626	AG_41								mhanyo süko sü no di pu bino n thüma ko la matho thi reri wa?
-Q20221127180629415124	AG_42								n thüma ko mha tezü matho ko mori yi lo mathi keti ce manyo kükre khropu ala sü yo me?
-Q20221127180629415561	AG_43								manyo hiko di pu bi no süyo?
-Q20221127180629415949	AG_44								yi lo di pu bizü khünü sü yo?
-Q20221127180629416370	AG_45								n thüma ko la khünü sü zü uküve mu di pu bi no süyo zü ju khropu posüte?
-Q20221127180629416955	AG_112								dipü bi no jülü thi pü vo n khü mütsü ta-a?
-Q20221127180629417550	AG_113								Türü mo zü ce dipü bi no jü pu vori no n khü lo mütsü süyo?
-Q20221127180629419455	AG_114								N rüna lo dipü bizü bete teyo?
-Q20221127180629422252	AG_115								Dipü bizü bete no jü sü mükro mu jü sü mütsa yo?
-Q20221127180629422826	AG_116								Dipü bizü bete tüsü zü tü ce teyo?
-Q20221127180629423255	AG_117								Dipü bizü bete türü zü tü ce teyo?
-Q20221127180629423711	AG_118								Dipü bizü bete tü külü zü tü ce teyo?
-Q20221127180629424126	AG_119								n cekro ko n zü mathi yo mütha, dipü bizü matho thi küza sü yo?
-Q20221127180629424507	AG_120								Dipü bizü manyo sü no bete thiyo?
-Q20221127180629425064	AG_121								Dipü bizü daru bete ko la sü yo?
-Q20221127180629426186	AG_122								Dipü bizü bete lo metho bü süyo?
-Q20221127180629426699	AG_123								Süno n rüna lo fü ko thekü yo?
-Q20221127180629427136	AG_124								Süno n rüna lo thevü ko thekü yo?
-Q20221127180629427625	AG_125								Süno n rüna lo khunune ko thekü yo?
-Q20221127180629428118	AG_126								Süno n rüna lo tenyü ko thekü yo?
-Q20221127180629428570	AG_127								Süno n rüno lo teko ko thekü yo?
-Q20221127180629429016	AG_128								No jü thü bayo zü khunune dipu bizü thekü yo n rüna mi ko?
-Q20221127180629429518	AG_129								no methonojü pü no dipu thiyo?
-Q20221127180629429992	AG_130								No metho ko yo dipü vi yo?
-Q20221127180629430388	AG_131								Dipü bizü pulses ko te yo?
-Q20221127180629430773	AG_132								Dipü bizü ga kümüjo ko teyo?
-Q20221127180629431169	AG_133								Dipü bizü ga te yo?
-Q20221127180629431572	AG_134								ma teyo küzü ko dice kha ma müta yo?
-Q20221127180629431959	AG_135								Dipü bizü bete ko government pe yo?
-Q20221127180629432348	AG_276								dipü bi no thimü thi müso yo?
-Q20221127180629432733	AG_277								Dipü bi no ga ko thi müso yo?
-Q20221127180629433184	AG_278								Dipü bi no fü thi müso yo?
-Q20221127180629433674	AG_279								Dipü bi hezo thi yo?
-Q20221127180629434367	AG_280								Hezo thi küto la, di sü yo?
-Q20221127180629436968	AG_46								Talhako utsa kükre kükre zü dipü bizü teyo? Pu küve mu pu küsü posüte?
-Q20221127180629438567	AG_47								Talhako utsa kükre kükre zü dipü bizü teyo?
-Q20221127180629439157	AG_48								Tekhri mu utü dipu bizü te hiko teyo? Talhako hi sepu lübi teyo mütha, dipü la no sibi ta?
-Q20221127180629439647	AG_49								Dipu bi no talhako kükre kükre zü ko teyo? Sepu lübi zo ta mütha , u jü sü ri posüte?
-Q20221127180629440118	AG_50								mü küto pü tü dipü bizü yi yo?
-Q20221127180629440686	AG_51								Talhako hiko tezü ce, daru bizü kropu süyo me? Me talhako ko vo veküto la udo kükre kro-o ba me?
-Q20221127180629441842	AG_52								Dipu bi no mi ce ju yo?
-Q20221127180629442590	AG_53								Dipu bi no cho mu tiyo?
-Q20221127180629443063	AG_54								Sako utsa kükre kükre zü dipü bizü teyo? Pu küve mu pu küsü posüte?
-Q20221127180629443448	AG_55								Sako utsa kükre kükre zü dipü bizü teyo?
-Q20221127180629443827	AG_56								Tekhri mu utü dipu bizü ce sako hiko teyo? Sako hi utsa sepu lübi teyo mütha, dipü la no sibi ta?
-Q20221127180629444239	AG_57								Dipu bi no sako kükre kükre zü ko teyo? Sepu lübi zo ta mütha , u jü sü ri posüte?
-Q20221127180629444648	AG_58								mü küto pü tü dipü bizü yi yo?
-Q20221127180629445053	AG_59								Sako hiko tezü ce, daru bizü kropu süyo me? Me sako ko vo veküto la udo kükre kro-o ba me?
-Q20221127180629445440	AG_60								Dipu bi no mi ce ju yo?
-Q20221127180629445829	AG_61								Dipu bi no cho mu tiyo?
-Q20221127180629446238	AG_62								Thise utsa kükre kükre zü dipü bizü teyo? Pu küve mu pu küsü posüte?
-Q20221127180629446721	AG_63								Thise utsa kükre kükre zü dipü bizü teyo?
-Q20221127180629447182	AG_64								Tekhri mu utü dipu bizü ce thise hiko teyo? thise hi utsa sepu lübi teyo mütha, dipü la no sibi ta?
-Q20221127180629447626	AG_65								Dipu bi no sako kükre kükre zü ko teyo? Sepu lübi zo ta mütha , u jü sü ri posüte?
-Q20221127180629448016	AG_66								mü küto pü tü dipü bizü yi yo?
-Q20221127180629448385	AG_67								Thise hiko tezü ce, daru bizü kropu süyo me? Me thise ko vo veküto la udo kükre kro-o ba me?
-Q20221127180629448735	AG_68								Dipu bi no mi ce ju yo?
-Q20221127180629449118	AG_69								Dipu bi no cho mu tiyo?
-Q20221127180629449496	AG_70								Turmeric utsa kükre kükre zü dipü bizü teyo? Pu küve mu pu küsü posüte?
-Q20221127180629449987	AG_71								Turmeric utsa kükre kükre zü dipü bizü teyo?
-Q20221127180629450681	AG_72								Tekhri mu utü dipu bizü ce turmeric hiko teyo? turmeric hi utsa sepu lübi teyo mütha, dipü la no sibi ta?
-Q20221127180629451949	AG_73								Turmeric hiko te küto la udo dipu bizü süyo? Utsa sepü lubi teyo mütha, di pü la no sibi ta?
-Q20221127180629452868	AG_74								mü küto pü tü dipü bizü yi yo?
-Q20221127180629453815	AG_75								Turmeric hiko tezü ce, daru bizü kropu süyo me? Me turmeric ko vo veküto la udo kükre kro-o ba me?
-Q20221127180629455335	AG_76								Dipu bi no mi ce ju yo?
-Q20221127180629455969	AG_77								Dipu bi no cho mu tiyo?
-Q20221127180629456462	AG_78								alu utsa kükre kükre zü dipü bizü teyo? Pu küve mu pu küsü posüte?
-Q20221127180629456915	AG_79								alu utsa kükre kükre zü dipü bizü teyo?
-Q20221127180629457416	AG_80								Tekhri mu utü dipu bizü ce alu hiko teyo? alu hi utsa sepu lübi teyo mütha, dipü la no sibi ta?
-Q20221127180629457885	AG_81								Alu hiko te küto la udo dipu bizü süyo? Utsa sepü lubi teyo mütha, di pü la no sibi ta?
-Q20221127180629458388	AG_82								mü küto pü tü dipü bizü yi yo?
-Q20221127180629458876	AG_83								alu hiko tezü ce, daru bizü kropu süyo me? Me alu ko vo veküto la udo kükre kro-o ba me?
-Q20221127180629459286	AG_84								Dipu bi no mi ce ju yo?
-Q20221127180629459739	AG_85								Dipu bi no cho mu tiyo?
-Q20221127180629460107	AG_281								Chü utsa kükre kükre zü dipü bizü teyo? Pu küve mu pu küsü posüte?
-Q20221127180629460494	AG_282								Chü utsa kükre kükre zü dipü bizü teyo?
-Q20221127180629460909	AG_283								Tekhri mu utü dipu bizü ce chü hiko teyo? chü hi utsa sepu lübi teyo mütha, dipü la no sibi ta?
-Q20221127180629461306	AG_284								Chü hiko te küto la udo dipu bizü süyo? Utsa sepü lubi teyo mütha, di pü la no sibi ta?
-Q20221127180629461736	AG_285								mü küto pü tü dipü bizü yi yo?
-Q20221127180629462196	AG_286								chü hiko tezü ce, daru bizü kropu süyo me? Me chü ko vo veküto la udo kükre kro-o ba me?
-Q20221127180629462659	AG_287								Dipu bi no mi ce ju yo?
-Q20221127180629463153	AG_288								Dipu bi no cho mu tiyo?
-Q20221127180629463563	AG_289								küvü utsa kükre kükre zü dipü bizü teyo? Pu küve mu pu küsü posüte?
-Q20221127180629463968	AG_290								küvü utsa kükre kükre zü dipü bizü teyo?
-Q20221127180629464352	AG_291								Tekhri mu utü dipu bizü ce küvü hiko teyo? küvü hi utsa sepu lübi teyo mütha, dipü la no sibi ta?
-Q20221127180629464797	AG_292								küvü hiko te küto la udo dipu bizü süyo? Utsa sepü lubi teyo mütha, di pü la no sibi ta?
-Q20221127180629465224	AG_293								mü küto pü tü dipü bizü yi yo?
-Q20221127180629465653	AG_294								küvü hiko tezü ce, daru bizü kropu süyo me? Me küvü ko vo veküto la udo kükre kro-o ba me?
-Q20221127180629466076	AG_295								Dipu bi no mi ce ju yo?
-Q20221127180629466514	AG_296								Dipu bi no cho mu tiyo?
-Q20221127180629467039	AG_297								elaichi utsa kükre kükre zü dipü bizü teyo? Pu küve mu pu küsü posüte?
-Q20221127180629467582	AG_298								elaichi utsa kükre kükre zü dipü bizü teyo?
-Q20221127180629468688	AG_299								Tekhri mu utü dipu bizü ce elaichi hiko teyo? elaichi hi utsa sepu lübi teyo mütha, dipü la no sibi ta?
-Q20221127180629469606	AG_300								elaichi hiko te küto la udo dipu bizü süyo? Utsa sepü lubi teyo mütha, di pü la no sibi ta?
-Q20221127180629470403	AG_301								mü küto pü tü dipü bizü yi yo?
-Q20221127180629471799	AG_302								elaichi hiko tezü ce, daru bizü kropu süyo me? Me elaichi ko vo veküto la udo kükre kro-o ba me?
-Q20221127180629472684	AG_303								Dipu bi no mi ce ju yo?
-Q20221127180629473292	AG_304								Dipu bi no cho mu tiyo?
-Q20221127180629473822	AG_305								gakre utsa kükre kükre zü dipü bizü teyo? Pu küve mu pu küsü posüte?
-Q20221127180629474261	AG_306								gakre utsa kükre kükre zü dipü bizü teyo?
-Q20221127180629474650	AG_307								Tekhri mu utü dipu bizü ce gakre hiko teyo? gakre hi utsa sepu lübi teyo mütha, dipü la no sibi ta?
-Q20221127180629475020	AG_308								gakre hiko te küto la udo dipu bizü süyo? Utsa sepü lubi teyo mütha, di pü la no sibi ta?
-Q20221127180629475371	AG_309								mü küto pü tü dipü bizü yi yo?
-Q20221127180629475756	AG_310								gakre hiko tezü ce, daru bizü kropu süyo me? Me elaichi ko vo veküto la udo kükre kro-o ba me?
-Q20221127180629476083	AG_311								Dipu bi no mi ce ju yo?
-Q20221127180629476577	AG_312								Dipu bi no cho mu tiyo?
-Q20221127180629476969	AG_86								alu utsa kükre kükre zü dipü bizü teyo? Pu küve mu pu küsü posüte?
-Q20221127180629477402	AG_87								alu utsa kükre kükre zü dipü bizü teyo?
-Q20221127180629477833	AG_88								Tekhri mu utü dipu bizü ce alu hiko teyo? alu hi utsa sepu lübi teyo mütha, dipü la no sibi ta?
-Q20221127180629478276	AG_89								Alu hiko te küto la udo dipu bizü süyo? Utsa sepü lubi teyo mütha, di pü la no sibi ta?
-Q20221127180629478732	AG_90								mü küto pü tü dipü bizü yi yo?
-Q20221127180629479192	AG_91								alu hiko tezü ce, daru bizü kropu süyo me? Me alu ko vo veküto la udo kükre kro-o ba me?
-Q20221127180629479565	AG_92								Dipu bi no mi ce ju yo?
-Q20221127180629479893	AG_93								Dipu bi no cho mu tiyo?
-Q20221127180629480231	AG_94								thayese utsa kükre kükre zü dipü bizü teyo? Pu küve mu pu küsü posüte?
-Q20221127180629480549	AG_95								Thayese utsa kükre kükre zü dipü bizü teyo?
-Q20221127180629480856	AG_96								Tekhri mu utü dipu bizü ce thayese hiko teyo? thayese hi utsa sepu lübi teyo mütha, dipü la no sibi ta?
-Q20221127180629481156	AG_97								Thayese hiko te küto la udo dipu bizü süyo? Utsa sepü lubi teyo mütha, di pü la no sibi ta?
-Q20221127180629481534	AG_98								mü küto pü tü dipü bizü yi yo?
-Q20221127180629481910	AG_99								Thayese hiko tezü ce, daru bizü kropu süyo me? Me thayese ko vo veküto la udo kükre kro-o ba me?
-Q20221127180629482249	AG_100								Dipu bi no mi ce ju yo?
-Q20221127180629482575	AG_101								Dipu bi no cho mu tiyo?
-Q20221127180629482967	AG_102								Dipü bizü khunü ne n celü lo meri yo?
-Q20221127180629483486	AG_103								Dip bizü lo khünü hiko süyo?
-Q20221127180629484127	AG_104								Thüvo ko pü-u no dipü thiyo?
-Q20221127180629485327	AG_105								Dipü pü-u ucho thiyo?
-Q20221127180629486168	AG_106								Dipü bi no thüvo ko pe meri yo?
-Q20221127180629486851	AG_107								Thüsa mori rüce dipü bizü bayo?
-Q20221127180629488372	AG_108								Thüvo ko pü-u no dice meriyo?
-Q20221127180629489421	AG_109								Toto mi ko hi dipu bi no sako müri yo?
-Q20221127180629490008	AG_110								khothal hi di la no müri yo?
-Q20221127180629490495	AG_143								
-Q20221127180629490983	AG_144								
-Q20221127180629491491	AG_145								
-Q20221127180629492037	AG_146								
-Q20221127180629492603	AG_147								
-Q20221127180629493057	AG_148								
-Q20221127180629493482	AG_149								
-Q20221127180629493956	AG_150								
-Q20221127180629494334	AG_151								
-Q20221127180629494663	AG_152								
-Q20221127180629495048	AG_153								
-Q20221127180629495521	AG_154								
-Q20221127180629496026	AG_155								
-Q20221127180629496500	AG_156								
-Q20221127180629496983	AG_157								
-Q20221127180629497354	AG_158								
-Q20221127180629497788	AG_159								
-Q20221127180629498220	AG_160								
-Q20221127180629498597	AG_161								
-Q20221127180629499019	AG_162								
-Q20221127180629499472	AG_163								
-Q20221127180629499997	AG_164								
-Q20221127180629500582	AG_165								
-Q20221127180629501161	AG_166								
-Q20221127180629502438	AG_167								
-Q20221127180629503198	AG_168								
-Q20221127180629504222	AG_169								
-Q20221127180629505584	AG_170								
-Q20221127180629506187	AG_171								
-Q20221127180629506700	AG_172								
-Q20221127180629507244	AG_173								
-Q20221127180629507767	AG_174								
-Q20221127180629508294	AG_175								
-Q20221127180629508977	AG_176								
-Q20221127180629509447	AG_177								
-Q20221127180629509895	AG_178								
-Q20221127180629510279	AG_179								
-Q20221127180629510719	AG_180								
-Q20221127180629511173	AG_181								
-Q20221127180629511643	AG_182								
-Q20221127180629512096	AG_183								
-Q20221127180629512488	AG_184								
-Q20221127180629512917	AG_185								
-Q20221127180629513334	AG_186								
-Q20221127180629513712	AG_276								
-Q20221127180629514108	AG_277								
-Q20221127180629514511	AG_278								
-Q20221127180629514900	AG_279								
-Q20221127180629515296	AG_280								
-Q20221127180629515661	AG_281								
-Q20221127180629516034	AG_282								
-Q20221127180629516388	AG_283								
-Q20221127180629516869	AG_284								
-Q20221127180629517412	AG_285								
-Q20221127180629518968	AG_286								
-Q20221127180629519999	AG_287								
-Q20221127180629522469	AG_288								
-Q20221127180629524449	AG_289								
-Q20221127180629526051	AG_290								
-Q20221127180629527203	AG_291								
-Q20221127180629528579	AG_292								
-Q20221127180629529645	AG_293								
-Q20221127180629531508	AG_294								
-Q20221127180629532932	AG_295								
-Q20221127180629533912	AG_296								
-Q20221127180629534983	AG_187								
-Q20221127180629537369	AG_188								talhako kükre kükre zü ko za posüte?
-Q20221127180629540764	AG_189								tekhri mori utu dibi zü ce talhako hiko teyo?mu talhako hiko di pu bino kre ta?
-Q20221127180629541910	AG_190								di pu bi no talhako hiko teyo? talhako mütü ri khüma no teyo me?
-Q20221127180629542864	AG_191								hiko te zü ce, daru bizü sü yo me? me lhako vo vekuto la udo kükre kro-o ba?
-Q20221127180629543758	AG_192								mü küto la utü di tsü yi yo?
-Q20221127180629544751	AG_193								di pu bi no cho tiyo?
-Q20221127180629545738	AG_194								ma bu ditsü nyo yo vapu te zü yo lü? mi kükre mi ce ju yo me?
-Q20221127180629548117	AG_195								ganyo-gara kükre kükre zü za ko posüte?
-Q20221127180629549264	AG_196								tekhri mori utu dibi zü ce ganyo-gara hiko teyo?
-Q20221127180629550563	AG_197								di pu bi no hiko teyo?
-Q20221127180629551826	AG_198								hiko te zü ce, daru bizü sü yo me? me vekuto la udo kükre kro-o ba?
-Q20221127180629553023	AG_199								utü di pu bizü yiyo cho ti küve pari küto la?
-Q20221127180629554374	AG_200								dipubi no cho yo?
-Q20221127180629555788	AG_201								dipubi no mi ce ju yo?
-Q20221127180629557269	AG_202								khünune kükre kükre zü di pu kha celü kham müdayo?
-Q20221127180629558651	AG_203								dipu thi küto la kha ma yo?
-Q20221127180629559771	AG_204								dipu kha püko cho thi no vi yo?
-Q20221127180629560884	AG_205								khünu ko dipu dipu cho la no celü khama yo?
-Q20221127180629562521	AG_206								khünü meri zü ko mütü ti yo me? tiyo mü tha, di pu cho lü nu tiyo?
-Q20221127180629563752	AG_231								
-Q20221127180629564613	LC_1								thümane menü küyi tücie n suyie zholü dipü pü thi no puza tho yo?
-Q20221127180629565359	LC_2								utü mu uzho di pu bizü ce nani hiko thiyo?
-Q20221127180629566136	LC_3								thümane menü mu uza tho zü nami hi ditsü bi zü thiyo?
-Q20221127180629567091	LC_4								utü mu uzho di pu bi no che yo?
-Q20221127180629568197	LC_5								mi süno bizü ko cü yo?
-Q20221127180629569783	LC_6								mi vori küba ko ba kre yo me?
-Q20221127180629572136	LC_7								di pu bi no nami hi zü yo?
-Q20221127180629573984	LC_8								mhanyo di pu bizü sü yo?
-Q20221127180629575406	LC_9								süno thümane za tho sü yo?
-Q20221127180629576474	LC_10								süno vori no thümane münü zü nani matho ko küsü sü yo?
-Q20221127180629577733	LC_11								nami hi tso ta sa lü thenye mori thehü ko thiyo me?
-Q20221127180629578660	LC_12								süno cese cenye müpra yo ?
-Q20221127180629579368	LC_13								nani hi la no, no mahü posa ni sa me?
-Q20221127180629579986	LC_41								
-Q20221127180629580584	LC_14								neko rünami ko jo lü ceyo thi kü mo mojü ce theno-thepü kü sü ve me? 
-Q20221127180629581153	LC_15								neko ma mi ko thüno-thepü ceyo thi küto la dipü thiyo?
-Q20221127180629581716	LC_16								süno bo phü süyo?
-Q20221127180629582260	LC_17								nolü kükre kükre zü dipu süyo ceyo thi küto la?
-Q20221127180629582817	LC_18								utü mu tethi di pu ce ceyo ko thi yo?
-Q20221127180629583488	LC_19								nolü ditsü bizü bayo ceyo thizü ce? nolü za mu di pu la thiyo süko sü posüte?
-Q20221127180629584207	LC_20								utü mu uzho di pu bi no che yo?
-Q20221127180629584954	LC_21								thuma di pu bizü ko ceyo lo cü yo?
-Q20221127180629585811	LC_22								nolü tü ce di pu bi no thüma ko wo bayo?
-Q20221127180629586491	LC_23								di pubi no nolü thiyo?
-Q20221127180629587066	LC_24								dipu bizü manyo ko pu süno ceyo nolü thi yo?
-Q20221127180629587641	LC_25								süno ceyo nolü küsüsü yo?
-Q20221127180629588236	LC_26								ceyo thi kümo mojü mori ceyo thi zü ce mori ceyo sa lo thehü bayo me? di pu bizü lecho ko bayo?
-Q20221127180629588748	LC_27								ceyo thi zü ce dibi no thehü küsü yo?
-Q20221127180629589252	LC_28								ceyo nolü za ju kro pu ba mütha posa süni sa me?
-Q20221127180629589863	LC_42								
-Q20221127180629590522	LC_29								neko rami ko mi sa ta mütha di pu bizü küsa nye thi yo?
-Q20221127180629591141	LC_30								utü mu uzho di pu bizüce küsa nye ko thiyo?
-Q20221127180629591903	LC_31								küsa nye kükre kükre kütsü ditsü bizü bayo?
-Q20221127180629592513	LC_32								thüma di pu bizü ko cü yo?
-Q20221127180629593052	LC_33								küsa nye ce thüma ko dipu bi no thüba kolo bayo?
-Q20221127180629593601	LC_34								dipu bi no küsa nye thiyo?
-Q20221127180629594195	LC_35								dipu bizü manyo ko pu süno küsa nye thi yo?
-Q20221127180629594710	LC_36								süno küsa nye küsüsüyo?
-Q20221127180629595231	LC_37								küsa nye thi zü ce thehü bezü bayo me?
-Q20221127180629595727	LC_38								küsa nye thi zü la no sopü no u cesü-cenye müpra yo?
-Q20221127180629596178	LC_39								küsa nye ju basa lü mütha posa süni sawo me?
-Q20221127180629596651	LC_40								nani thi zü ce dipü hezo ko krayo?
-Q20221127180629597180	ST_1								Dipü bi no linguistics hi jüpo mü tho zü matho ko lo krühi to ha?
-Q20221127180629597700	ST_2								dipü bi no jü corpora hi language technology lo thi kühü sayi yo?
-Q20221127180629598170	ST_3								di la no corpora jü kükre kükre zü hi thi kühü pü linguistics lo ma küjo thi sa mosü ba?
-Q20221127180629598615	ST_4								Dipü bi no speech technology hi speech database thi kühü sayi yo?
-Q20221127180629599055	ST_5								Speech data base lo dipü bizü bayo?
-Q20221127180629599496	ST_6								Dipü bi no raw text hi corpora la khasü yo?
-Q20221127180629600049	ST_7								di la no ma tho küjü matho ko hi transcribe thi pü corpora lü sü mosü?
-Q20221127180629600621	ST_8								annoted version of a corpus lü dipü bayo? Dipü bi no annoted corpora hi jü ko phri zü lo khrühi ba?
-Q20221127180629601162	ST_9								Text corpora la no special design dipu la sü mosü ba?
-Q20221127180629602553	ST_10								Dialect corpora dipü thi yo? Hihi dipü bi no speech varieties ko pe mvü-ye ta,u shüye lo?
-Q20221127180629603613	ST_11								Comparable corpora hi dipü bi no thi kühü sa yo?
-Q20221127180629605159	ST_12								Databases ko maintain thi küto la dipü bizü matho ko lü nü thi shü dü yo?
-Q20221127180629606144	ST_13								language technology thi kühü küto la dipü sü mosü ba?
-Q20221127180629606709	ST_14								digital literacy za kümüle posüte?
-Q20221127180629607327	ST_15								Computational linguistics za kümüle jü posüte?
-Q20221127180629608004	ST_16								No natural language data lo dipü bizü analysis ko süyo?
-Q20221127180629608641	ST_17								Dipü lo nü speech sounds ko hi machine wo seyo?
-Q20221127180629609316	ST_18								dipü chode lo nü text ko hi linguistics analysis ütü kükre kükre zü lo process thiyo?
-Q20221127180629609919	ST_19								sentence splitting hi dipü bi no thiyo?
-Q20221127180629610389	ST_20								Dipü bi zü thüdo ko pü speech tagging lo sü yo?
-Q20221127180629610884	ST_21								Morph analysis jü ko kropü posü ve ma?
-Q20221127180629611314	ST_22								Syntactic analysis of words hi dipü bi no thiyo?
-Q20221127180629611740	ST_23								Syntactic parsing hi dipü bi zü thüdo sü no thiyo?
-Q20221127180629612149	ST_24								Dila no National Digital Literary mission shü dü sü?
-Q20221127180629612602	ST_25								dipü bi no uma jü pü küngü no sentence lo khasü yo? Dipü property ko sentence mu phrase ko hi khapü limit mosheri fixed length bayo sibi poyo?
-Q20221127180629613027	ST_26								Jü hi dipü bi no se yo? Jü mhase hi dipü bi no süyo?
-Q20221127180629613442	ST_27								phonetics mu phonology hi dipü bi no kre ta?
-Q20221127180629613870	ST_28								Speech sounds pari küto la no dipü bizü üta ümü mori ulünyo bizü ko sü no pari yo?
-Q20221127180629614291	ST_29								No IPA hi dipü bi no sü yo shi süsü po ve ma?
-Q20221127180629614697	ST_30								Language properties za design bezü bame ?
-Q20221127180629615102	ST_31								Morphemes ko hi di wa? Morpheme ju kümüle posüte?
-Q20221127180629615507	ST_32								Pulmonic mu non pulmonic hi dibi no kre ta?
-Q20221127180629615911	ST_33								Vowels sounds pari küto la ülünyo ko dipü bi no süyo?
-Q20221127180629616394	ST_34								Linguistics method sü no transcription hi jü pü lo nü jü pü lo süyo?
-Q20221127180629616976	ST_35								PRAAT hi analysis mu synthesis of speech la no didi no süyo?
-Q20221127180629617572	ST_36 (Scientific Research)								Scientific research hi dipü cho lo nü mha rhü no thi yo?
-Q20221127180629618435	ST_37								Scientific research thi kümo mozü ce dipü bizü matho ko thi mosü ba?
-Q20221127180629619046	ST_38								Dibi no scientific research classification hi research za structure design thi zü lo khrühi yo?
-Q20221127180629619550	ST_39								Observational data collection technique hi dipü lo nü experimental technique zü kre ta?
-Q20221127180629620070	ST_40								Scientific research hi dipü zho lü nü matho keti ko sü mhathi ve?
-Q20221127180629620582	ST_41								Classification of scientific research za descriptive mu analytical method za ju posüte?
-Q20221127180629621143	ST_42								Case report mü case series ne hi descriptive lü za kümüle ju posü ve ma?
-Q20221127180629621700	ST_43								dibi no analytical scientific research hi descriptive matho zü kreta?
-Q20221127180629622370	ST_44								Observational research hi dila no kükre research studies ko ce ri hüve kü ta?
-Q20221127180629622970	ST_45								Cohert research hi ucho dipü lo nü observational mü experimental studies zü mhathi yo?
-Q20221127180629623470	ST_46								no ucho kümüle case-control studies mu cross sectional studies za posü ve ma?
-Q20221127180629624076	ST_47								Interventional research hi ucho di wa?
-Q20221127180629624727	ST_48								Clinical research hi dibi no control group lo sü yo clinical case lo?
-Q20221127180629625346	ST_49								Clinical research hi di la no müleri?
-Q20221127180629625919	ST_50								randomisation mu blinding method hi dipü bi no clinical research lo sü yo?
-Q20221127180629626395	ST_51General								dzü püno di di thiyo? dzü filtration dibi no thiyo?
-Q20221127180629626892	ST_52								chlorination mü bleeching hine hi pü no dila dzü thi müsa yo?
-Q20221127180629627367	ST_53								Dila no dzü hi müsho no khaba müsü ba?
-Q20221127180629627794	ST_54								Dibi bi tükhra mülü ba süzi no müka ve?
-Q20221127180629628207	ST_55								Tükhra(oxygen) hi dila no thüma la no müle ri?
-Q20221127180629628675	ST_56								Deforestation hi diwa? Thüra ko mü fossil fuel hiko the tso mütha dibi ta?
-Q20221127180629629159	ST_57								Dila no mesocho(north) mü mekhrocho(south) hüne hü tüsü yo?
-Q20221127180629629651	ST_58								Thegi kükre kükre zü za posüte? Thegi hi pü no di thiyo?
-Q20221127180629630140	ST_59								matter kükre kükre zü za posüte?
-Q20221127180629630568	ST_60								thegi kümo ko za posüte? Hiko dice süyo?
-Q20221127180629630977	ST_61								evaporation lo nü dibi no terü thiyo?
-Q20221127180629631436	ST_62								Steam hi dibi no pai yo?
-Q20221127180629631770	ST_63								Life-cycle is dibi yo?
-Q20221127180629632077	ST_64								Terü jü küngü(harvest) yo zü hi diwa?
-Q20221127180629632377	ST_65								Mobile phone is dibi no süyo?
-Q20221127180629632672	ST_66								Dibi no mobile phone hi charge thiyo?
-Q20221127180629633087	ST_67								You-tube channel lo no di peyo?
-Q20221127180629633584	ST_68								No electricity lübi mo no kükre lo nü dice charge thiyo?
-Q20221127180629634147	ST_69								No ma kükre kükre zü dipü lo no light buld hi to yo?
-Q20221127180629635319	ST_70								Solar energy hi dibi no süyo?
-Q20221127180629636114	ST_71								Power source kükre kükre dibi no thi pari yo?
-Q20221127180629636711	ST_72								Dice lo nü jü pü no kra yo?
-Q20221127180629638459	ST_73								Dila no jü thi mülü no kra yo?
-Q20221127180629639581	ST_74								No mobile phone sü zü ce ma kürü dipü bizü küsü yo mü dibi no thin ve yo?
-Q20221127180629640121	ST_75								No mobile phone sü zü ce ma kürü dipü bizü küsü yo mü dibi no thin ve yo?
-Q20221127180629640586	ST_76								No dibi no shopping app kükre kükre zü ko süyo?
-Q20221127180629641062	ST_77								mobile phone hi pü no di di thiyo?
-Q20221127180629641506	ST_78								Dila terü shü zü ce light hi vori mota yo?
-Q20221127180629642034	ST_79								T.V kri zü ce mhanyo kükre kükre zü ko di ngoyo?
-Q20221127180629642576	ST_80								no dibi no t.v za set-top box hi recharge thiyo?
-Q20221127180629643200	ST_81								No dibi no mobile phone camera hi süyo? Dibi zü ce ko camera hi süyo?
-Q20221127180629643763	ST_82								Mobile phone bamo mozü ce dibi no mi zü kerithi yo?
-Q20221127180629644367	ST_83								vapü inverter hi charge thi ta mütha babü do ditsü sü ve?
-Q20221127180629644852	ST_84								thazü ce dibi no mha tho no tiyo?
-Q20221127180629645306	ST_85								ütü dibi no che yo?
-Q20221127180629645712	ST_86								Nace kükü hi pü di di thi ve?
-Q20221127180629646130	ST_87								Rainbow hi dibi no pari yo?
-Q20221127180629646552	ST_88								Cecesü hi dibi no pari yo?
-Q20221127180629646973	ST_89								thunder mü lightening hi dibi no pari wo?
-Q20221127180629647365	ST_90								No dibi no üthesü ha yo? Ülünyo kükre kükre zi ko pü no thüma dibi no üthesü ha yo?
-Q20221127180629647750	ST_91								Rhü(living) mü rhü kümo(non-living) ko hi diwa?
-Q20221127180629648136	ST_92								rhü(living) dibi bi zü n khü n mho lo bayo?
-Q20221127180629648569	ST_93								rhü kümo(non-living) dibi zü ko n khü n mho lo bayo?
-Q20221127180629649032	ST_94								Dibi no ükhri-e pari yo?
-Q20221127180629649454	ST_95								mati keti za ülünyo ko za posüte?
-Q20221127180629649937	ST_96								Gari dibi no start thiyo?
-Q20221127180629650620	OH_2								n po mu n zu künane ri rüna pu lo nü vori me? me kükre kükre zü rüna lo nu vori?
-Q20221127180629651350	OH_3								n cekro ko di pu nani züyo? nani hi celü zü yo me? zü mütha di pu bi no neko celu lo kürüshü matho thiyo?
-Q20221127180629651904	OH_6								no tsüdo n jüpo zü kümono küba tha posüte. No n jüpo po küba hi zü no n rünami jo zü kümüno küzü lü yo me?
-Q20221127180629652270	OH_7								no ba no pethi pari zü thi za ju posü. Phülü me town cho ta?
-Q20221127180629652582	OH_8								n tho n thüma kümo, dipu thümako no no bazü thi lo lhuyo?
-Q20221127180629652924	OH_9								
-Q20221127180629653243	OH_10								no n potsa mu n zutsa ju dipu n sase ba?
-Q20221127180629653593	OH_11								no pethi pari zü ce no sekümo ukrüne kürako za ju se vori ma?
-Q20221127180629653955	OH_12								no lhu vori zü ce utü kümüle tü zü küsü no vori ma? mu si bi zü ce no mu n cekro ko makürü zü küsüte me?
-Q20221127180629654317	OH_13								neko cekro za cesü-cenye dipu bi no vori? no n cekro ko cesü-cenye kürü zü küsü zü tü pu ri se ma?
-Q20221127180629654672	OH_14								no pethi pari zü ce dipu
-Q20221127180629655059	OH_16								no n sa-jüra ko ju posüte mu di pu bi no neko bayo? tetse kümüno me? lesice lo kümü za no vo me?
-Q20221127180629655485	OH_17								no khrüsa-reli thi zü ce n tü reri zü ce dipu thi no bayo?
-Q20221127180629655899	OH_18								n pethi pari zü ce dipu bizü küti nyo ko ti no vori?
-Q20221127180629656384	OH_20								n natsi ce, no pethi pari mütha dipu thi ni sa yo? mu di la na?
-Q20221127180629656903	OH_21								no tsi hi dipu thi ba? n ma thi zü thi dice bayo?
-Q20221127180629657553	OH_22								no dipu bi no n matho/kam hi thi vori? no tsü hi ri n matho/kam hi thi ni sa zo me?
-Q20221127180629658403	OH_23								n kam/matho hi thi zü ce makürü di pu bizü küsüyo?
-Q20221127180629659118	OH_24								n cekro ko tetse pu lo dipu bizü thenye nye yo
-Q20221127180629659920	OH_25								n zümi ko za ju hu posüte? n zü neko dipu bizü thi bayo?
-Q20221127180629660705	OH_26								no mi zü kümüza me, dipu bi no n zü-u/ züpü n ne küsü-e? di pu bino kümüza-a ta?
-Q20221127180629661666	OH_27								no ceyo thi te me? thi mütha, di pu bi no n ceyo nye ?
-Q20221127180629662933	OH_29								no dipu bizü rezhü mori merü ko thi bayo n tü reri zü ce ko?
-Q20221127180629664849	OH_30								no dipu bi no n küsürho-küsürhi pe bayo?
-Q20221127180629665444	OH_31								no u ramiko za mori u ma koza di pu bizü küticho ti n künütho-u thiyo?
-Q20221127180629666014	OH_32								no di pu bizü thema mi pu sü posüte? n küve ri posüte?
-Q20221127180629666616	OH_33								ma di pu n la no ma küjotho-u?
-Q20221127180629667236	OH_34								no mi zü kümüza küto la, mi za di pu bizü payo?
-Q20221127180629668320	OH_35								tezü lo ma küve thi zü ko dolü dipu n la no uma kürü tho?
-Q20221127180629672194	OH_36								no tsi hi dipu rhi ba n chekro ko la no?
-Q20221127180629673709	OH_37								no vokuto tü-o lo hi dipu rhi ba n chekro ko la no?
-Q20221127180629674454	OH_39								no n natsi lü nü tsü hi kütso n tho n jo rüle vapu ri küde vori ma? n natsi lü nü tsü kütso n rüna lü dipu bizü ko küde ta?
-Q20221127180629674943	OH_40								n jüpo lü dipu bizü lü, mi jüpo ce ri kre te süzi-e no po-o ve?
-Q20221127180629675375	OH_41								tsüdo khre ko kükre kükre küzü ko di pu bi no u jü lo kürüthi yo?
-Q20221127180629675924	OH_42								no n külü lo, hisa u jüko mu uko zho dipu bi no rüde/ küde vori ta?
-Q20221127180629676634	OH_43								no vori kuto natsi khre ko la no dipu po ni sawa?
-Q20221127180629678069	OH_45								tethi mori di pu bizü tü ce n jü lü thüju pozü se yo?
-Q20221127180629678735	OH_46								no n natsi ce rüni zü thüju khropu a ce po-o ve ma?
-Q20221127180629679237	OH_47								n ce thüju pozü ma humi bame, no tsü do ri lü küba n la no u mariye zü?
-Q20221127180629679729	OH_48								neko rami za li ko di pu bi no thiyo? mhanyo dipu bizü sü yo?
-Q20221127180629680236	OH_51								no dipu bizü tsale/ li rüni vori?
-Q20221127180629680744	OH_52								no dipu tü ce tsale rüni yo mu di pu bi lü nü rüni yo? no puko tsale thi zü hi u mhi lü nü ngo pe rüni yo me, me kükre mhanyo khro lü nü rüni yo?
-Q20221127180629681407	OH_54								n rüna lo ngo küve dipu bizü lecho mi vori mütha ti zü veto ha?
-Q20221127180629682015	OH_56								n rünami ko di pu bizü füne ko süyo?
-Q20221127180629682627	OH_57								no dipu bizü füne ko n natsi lü tsü kutso sü vori?
-Q20221127180629683293	OH_58								no tsü hi ri füne thazü mi ko sü tazü ko sü me? no hiko tü so nha sü yo me thenye bazü ce sü yo?
-Q20221127180629683942	OH_59								no n füne sü zü ko dolü di pu no n la no u ma küri tho mu di la no?
-Q20221127180629684643	OH_61								n rüna lü thünomi mu thüpumi ko di pu bizü matho ko thi mosü yo?
-Q20221127180629685298	OH_63								no tha mosheri n do ko dipu dipu thi no bayo?
-Q20221127180629685804	OH_64								no n füne di pu bizü sü no mathi no bayo?
-Q20221127180629686273	OH_65								no dipü bizü lü nü rüvü zü unyu yo? no rüvü zü unüyo ma? no dipu bi no n matho ko lo voyo?
-Q20221127180629686718	OH_66								thazü tü ce celü ko dipu biyo?
-Q20221127180629687148	OH_67								n rüna za physical geography ju posüte?
-Q20221127180629687645	OH_68								khünu dipu bizü ngo yo n rüna ce ko?
-Q20221127180629688106	OH_69								di pu bizü nhabo ko nyo yo n rüna ce ko?
-Q20221127180629688536	OH_70								no tsüdo mhanyo küsa dipu bizü nyoyi? mhanyo küsa ko dolü di pu no n la küvetho mu dila no
-Q20221127180629689025	OH_71								no mi zü kerethi mori küsu küto la di pu jü lo kerethi zü unükü? mu mi zü küsü mosheri kerethi zühi di pu bi no küde vori?
-Q20221127180629689963	OH_72								no mahu kükre n ju ko posa nyi sa me?
-Q20221127180629690754	HLT_1								nha daru za üküve posüte?
-Q20221127180629691202	HLT_2								Dila no nha daru süyo?
-Q20221127180629691637	HLT_3								nha daru mori di bizü nha ko süyo üva külha zü ce? Dibi no thiyo? Mü dibi no tiyo?
-Q20221127180629692114	HLT_4								no vapü ri nha daru sü ma? Üjü sepü posüte?
-Q20221127180629692527	HLT_5								nha daru kükre zü ko sü no ma kükre kükre pe yo küba , üza ko posüte? Dibi no thiyo mü dila no thiyo?
-Q20221127180629692950	HLT_6								no dibi no n pi mülo zü se yo? N pi mülo zü dipü bizü nha darü süyo?
-Q20221127180629693373	HLT_7								No mükhroro rüce zü ce dibi tayo? Nha daru dibi no ti mori kra yo?
-Q20221127180629693858	HLT_8								rüzae ta zü ce di thi no peyo? Nha daru khropü sü yo ma, kütsü kürü rüzae zü ce? Dibi no daru süko sü thiyo?
-Q20221127180629694379	HLT_9								No n mo wo surho ba küto la di thiyo?
-Q20221127180629694851	HLT_11								nha daru dibi zü ko sü yo pipa la no?
-Q20221127180629695262	HLT_12								n pitha la no dipü bizü daru süyo?
-Q20221127180629695652	HLT_13								nha daru dibi zü ko sü yo n mo thi zü ce?
-Q20221127180629696063	HLT_14								nha daru dibi zü ko sü yo n mo(muscle) thi zü ce?
-Q20221127180629696503	HLT_15								nha daru dibi zü ko sü yo n hu(teeth) thi zü ce?
-Q20221127180629696954	HLT_16								nha daru dibi zü ko sü yo n pi thi zü ce?
-Q20221127180629697357	HLT_17								nha daru dibi zü ko sü yo thüno mi ko kümüje tü ce(mensural pain/cramp)?
-Q20221127180629697798	HLT_18								Covid 19 bazü ce dibi zü nha daru sü mü kra yo?
-Q20221127180629698199	HLT_19								n hu(teeth) thi zü ce dibi zü nha daru sü yo?
-Q20221127180629698586	HLT_20								nha daru di bi zü ko sü uhu(teeth) küthi kükre kükre zü(decay,gum disease,sensitivity etc) ko la?
-Q20221127180629698975	HLT_21								neko rüna lo thuma mi pe yo zü(kobiraz) mi bayo ma? Püko dipü bizü thi no mi pe yo?
-Q20221127180629699346	SPR_1								Polo hi dibi no shüdu vori ?
-Q20221127180629699818	SPR_2								neko rüna lo thazü dipü bizü rüzü merü thino vori?
-Q20221127180629700451	SPR_3								rugby bizü rüzü kropu bame neko rüna lo?
-Q20221127180629701118	SPR_4								Dibi no rüzü hi u mo sürho thi bayo?
-Q20221127180629702508	SPR_5								No dibi zü rüzü ko rüzü yo? Dibi no rüzü yo?
-Q20221127180629703388	SPR_6								n natsi ce no di rüzü rüzü yo? No thazü rüzü zü bayo thuju kropü posüte?
-Q20221127180629705037	SPR_7								celü rüzü mu ceta rüzü küve posüte?
-Q20221127180629705855	SPR_8								wrestling bizü rüzü za posüte? Süno süko sü rüzü yo?
-Q20221127180629706359	SPR_9								board games rüzü za posüte? Ba mütha u za ko mü dipübi no rüzü yo?
-Q20221127180629706935	SPR_10								marble(guti) sü no rüzü yo ma? di bizü rüzü rüzü yo? dibi no rüzü yo?
-Q20221127180629707471	SPR_11								kütsü sü no dipü bizü rüzü rüzüyo? dibi no rüzü yo?
-Q20221127180629708004	SPR_12								rüzü pü ri küra müle zü ko mori thayese müle zü ko bayo ma?
-Q20221127180629708459	SPR_13								sü(stick) sü no rüzü pü ri bayo ma? Dibi no rüzü yo?
-Q20221127180629708915	SPR_14								celü lo rüzü za rüzü pü ri n rüna lo bayo ma? Dibi no rüzü yo?
-Q20221127180629709374	SPR_15								rü pü no rüzü zü za rüzü pü ri bayo ma? Ütü mü dibi no rüzü yo?
-Q20221127180629709859	SPR_16								yoga hi pü kümüve diwa?
-Q20221127180629710316	CLT_1								n rüna krüta ko dipü matho ko thi no rüna peyo?
-Q20221127180629710778	CLT_2								thüma dibi zü ko vo rüna krüta thiyo? mü püko di pü thi ba yo?
-Q20221127180629711201	CLT_3								Rüna za development committee hi di thiyo?
-Q20221127180629711572	CLT_4								n rüna mi dibi no u külhu mu u ujo dibi no lhüyo?
-Q20221127180629711942	CLT_5								Customary court hi n rüna lo dibi no ujo ko thiyo?
-Q20221127180629712303	CLT_6								Customary court hi sopü bizü mi wo süyo? Pü di pü bizü thiyo?
-Q20221127180629712620	CLT_7								n rüna mi ko za füne ju ko kropü posüte?
-Q20221127180629712933	CLT_8								uma kürü tho fü(shawl) za ulhu dibi yo?
-Q20221127180629713313	CLT_9								n rüna mi za bepa,ti, si bizü ko didi süyo?
-Q20221127180629713696	CLT_10								n rüna mi ko di matho thi mükroyo?
-Q20221127180629714152	CLT_11								n rüna mi ko di ti yo?
-Q20221127180629714543	CLT_12								n rüna mi ko di ti mükro yo?
-Q20221127180629714930	CLT_13								dibi no talhako hi teyo n rünami ko?
-Q20221127180629715344	CLT_14								n rünami ko lhako te ze la thenye kro-o thi yo me? Dibi no thenye hi thiyo?
-Q20221127180629715760	CLT_15								thenye dipü no kümele tho? Dibi no thenye nye yo?
-Q20221127180629716141	CLT_16								n rünami ko nasü zü(traditional dance) za ju posüte?
-Q20221127180629716586	CLT_17								n rünami ko dibi no ceyo thiyo?
-Q20221127180629717102	CLT_18								n rünami ko füne do zü hi za jü posüte?
-Q20221127180629717830	CLT_19								n rünami za kümüle marhe, lakho ko do zü ko, mefü, gale ko za posüte?
-Q20221127180629718555	CLT_20								küra ko pü no didi thiyo n rüna mi ko?
-Q20221127180629719014	CLT_21								n rüna mi za li(folk songs) kümüle ju posüte?
-Q20221127180629719417	CLT_22								dipü bizü tsale thi zü mhanyo ko sü yo tsale thi küto la?
-Q20221127180629719814	CLT_23								pethimi mhase (oral history) hi dibi no natsi khre ko zü küza no vori yo?
-Q20221127180629720219	CLT_24								n rüna mi ko hi dibi no vori?
-Q20221127180629720618	CLT_25								thazü thüju sepü posüte?
-Q20221127180629721114	CLT_26								thazu nane ko za jü kropü posüte?
-Q20221127180629721546	CLT_27								thazü mi ko dibi no fü tüyo?
-Q20221127180629721994	CLT_28								thazü tü ce dipü bizü mhanyo ko sü no rühü yo?
-Q20221127180629722485	CLT_29								thazü ma ko dibi no khünü mu müra küche thi no ma yo?
-Q20221127180629722978	CLT_30								tsüdo ri rünami ko thura lo rühü yo me? Dipü bizü thüjo ba rühü küto la?
-Q20221127180629723389	CLT_31								dipü bizü ornaments n rüna mi ko süyo?mu di pü no thi ?
->>>>>>> 3bdceb2b07b91497fabaae028247ac2d82fd05be
+quesId	Q_Id	prompt.Domain	prompt.Elicitation Method	prompt.content.English-Latin.text.000000.startindex	prompt.content.English-Latin.text.000000.endindex	prompt.content.English-Latin.text.000000.textspan.Latin	prompt.content.English-Latin.audio.fileId	prompt.content.English-Latin.audio.filename	prompt.content.Hindi-Devanagari.text.000000.startindex	prompt.content.Hindi-Devanagari.text.000000.endindex	prompt.content.Hindi-Devanagari.text.000000.textspan.Devanagari
+Q20221128143247703189	ED-01	[Education]	Narration			How do your community view people who attend school and who does not?					आपका समुदाय उन लोगों को कैसे देखता है जो स्कूल जाते हैं और जो नहीं जाते?
+Q20221128143247705576	ED-02	[Education]	Narration			Can you tell us something about how formal education brought changes into your community?					क्या आप हमें इस बारे में कुछ बता सकते हैं कि औपचारिक शिक्षा ने आपके समुदाय में कैसे बदलाव लाए?
+Q20221128143247707233	ED-03	[Education]	Narration			Can you tell us about the changes you witnessed in the educational institutions in your area as you grew up?					क्या आप हमें उन बदलाबों के बारे में बता सकते हैं जो आपने बड़े होने पर शैक्षणिक संस्थानों में देखे थे?
+Q20221128143247708376	ED-04	[Education]	Narration			What are the state of schools and colleges when you were young and how are they now? 					जब आप छोटे थे तो स्कूलों और कॉलेजों की क्या स्थिति थी और अब वे कैसे हैं?
+Q20221128143247709589	ED-05	[Education]	Narration			Can you tell us something about the formal/indigenous education system of your state/community?					क्या आप हमें अपने राज्य या समुदाय की औपचारिक या स्वदेशी शिक्षा प्रणाली के बारे में कुछ बता सकते हैं?
+Q20221128143247710918	ED-06	[Education]	Narration			How is your formal/indigenous education system valuable to the present society?					आपकी औपचारिक या स्वदेशी शिक्षा प्रणाली वर्तमान समाज के लिए किस प्रकार से मूल्यवान है?
+Q20221128143247712276	ED-07	[Education]	Narration			How do we evaluate your formal/indigenous education system?					हम आपकी औपचारिक या स्वदेशी शिक्षा प्रणाली का मूल्यांकन कैसे करते हैं?
+Q20221128143247713265	ED-08	[Education]	Narration			How should we improve our education system?					हमें अपनी शिक्षा प्रणाली में सुधार कैसे करना चाहिए?
+Q20221128143247714215	ED-09	[Education]	Narration			How do you passed indigenous education system to the next generation?					आपने अगली पीढ़ी को स्वदेशी शिक्षा प्रणाली कैसे दी?
+Q20221128143247715201	ED-10	[Education]	Narration			How do you inspired by educated / achievers of your community?					आप अपने समुदाय के शिक्षित या विजेताओं से कैसे प्रेरित होते हैं?
+Q20221128143247716300	ED-11	[Education]	Narration			How does education system promote peace and harmony in your community?					शिक्षा प्रणाली आपके समुदाय में शांति और सद्भाव को कैसे बढ़ावा देती है?
+Q20221128143247717540	ED-12	[Education]	Narration			Tell us in detail which subjects do you think are going to be useful for your future?					हमें विस्तार से बताएं कि आपके विचार से कौन से विषय आपके भविष्य के लिए उपयोगी होने वाले हैं?
+Q20221128143247718586	ED-13	[Education]	Narration			How far does the education system play in removing poverty?					गरीबी दूर करने में शिक्षा व्यवस्था की कितनी भूमिका है?
+Q20221128143247719573	ED-14	[Education]	Narration			What do you like and what do you dislike about homework assignments?					होमवर्क असाइनमेंटस के बारे में आपको क्या पसंद है और क्या नहीं पसंद है?
+Q20221128143247720537	ED-15	[Education]	Narration			What can you do to learn more effectively?					अधिक प्रभावी ढंग से सीखने के लिए आप क्या कर सकते हैं?
+Q20221128143247721703	ED-16	[Education]	Narration			What is the role of education in promoting unity in your community?					आपके समुदाय में एकता को बढ़ावा देने में शिक्षा की क्या भूमिका है?
+Q20221128143247722608	ED-17	[Education]	Narration			Tell us something about the outcomes of educational system based on innovative or creativity?					अभिनव या रचनात्मकता पर आधारित शिक्षा प्रणाली के परिणामों के बारे में कुछ बताएं?
+Q20221128143247724044	ED-18	[Education]	Narration			What motivates more: good or bad marks? Why?					क्या अधिक प्रेरित करता है: अच्छे या बुरे अंक? क्यों?
+Q20221128143247725609	ED-19	[Education]	Narration			Do we consider that education focused only on indigenous and why?					क्या हम मानते हैं कि शिक्षा केवल स्वदेशी पर केंद्रित है और क्यों?
+Q20221128143247726503	ED-20	[Education]	Narration			What is the sole purpose of education?					शिक्षा का एकमात्र उद्देश्य क्या है?
+Q20221128143247727224	ED-21	[Education]	Narration			Why is sex education considered to be taboo in rural areas?					ग्रामीण क्षेत्रों में यौन शिक्षा को वर्जित क्यों माना जाता है?
+Q20221128143247727899	ED-22	[Education]	Narration			What motivates young people to learn and develop their skills?					युवाओं को अपने कौशल को सीखने और विकसित करने के लिए क्या प्रेरित करता है?
+Q20221128143247728520	ED-23	[Education]	Narration			What role does your family play in education?					आपका परिवार शिक्षा में क्या भूमिका निभाता है?
+Q20221128143247729176	ED-24	[Education]	Narration			How one world views influence the type and quality of a persons education?					एक विश्व दृष्टिकोण किसी व्यक्ति की शिक्षा के प्रकार और गुणवत्ता को कैसे प्रभावित करता है?
+Q20221128143247729824	ED-25	[Education]	Narration			Why the first board exam considered to be one of the most important exam?					पहली बोर्ड परीक्षा को सबसे महत्वपूर्ण परीक्षाओं में से एक क्यों माना जाता है?
+Q20221128143247730589	ED-26	[Education]	Narration			Which activities in the classroom do you enjoy the most?					कक्षा में आपको कौन सी गतिविधियाँ सबसे अधिक पसंद हैं?
+Q20221128143247731547	ED-27	[Education]	Narration			What are the some education achievements you are proud of?					ऐसी कौन सी शिक्षा उपलब्धियां हैं जिन पर आपको गर्व है?
+Q20221128143247732446	ED-28	[Education]	Narration			How has education impacted your quality of life?					शिक्षा ने आपके जीवन की गुणवत्ता को कैसे प्रभावित किया है?
+Q20221128143247733496	ED-29	[Education]	Narration			In what way has education improved your way of thinking and decision making?					शिक्षा ने किस प्रकार आपके सोचने और निर्णय लेने के तरीके में सुधार किया है?
+Q20221128143247734269	ED-30	[Education]	Narration			How does education play a role in income generation?					आय सृजन में शिक्षा किस तरह भूमिका निभाती है?
+Q20221128143247734996	ED-31	[Education]	Narration			What are the impact of smartphone and internet in educational system?					शिक्षा प्रणाली में स्मार्टफोन और इंटरनेट का क्या प्रभाव है?
+Q20221128143247735865	ED-32	[Education]	Narration			 Tell us something about how people learn to read and write in school?					स्कूल में लोग पढ़ना और लिखना कैसे सीखते हैं, इसके बारे में कुछ बताएं?
+Q20221128143247736712	ED-33	[Education]	Narration			Which subject do you find most challenging in school?					स्कूल में आपको कौन सा विषय सबसे चुनौतीपूर्ण लगता है?
+Q20221128143247737517	ED-34	[Education]	Narration			What things children should learn from school?					बच्चों को स्कूल से कौन सी चीजें सीखनी चाहिए?
+Q20221128143247738337	ED-35	[Education]	Narration			Where are the best schools and colleges located in your region? Why are they considered good? What made them better than others? 					आपके क्षेत्र में सबसे अच्छे स्कूल और कॉलेज कहाँ स्थित हैं? उन्हें अच्छा क्यों माना जाता है? किस बात ने उन्हें दूसरों से बेहतर बनाया?
+Q20221128143247739450	ED-36	[Education]	Narration			What are the provisions for sports and physical activities in the school of your areas?					आपके क्षेत्र के स्कूल में खेलकूद और शारीरिक गतिविधियों के लिए क्या प्रावधान हैं?
+Q20221128143247740764	ED-37	[Education]	Narration			What role do you think government should play in education?					आपको क्या लगता है कि सरकार को शिक्षा में क्या भूमिका निभानी चाहिए?
+Q20221128143247742132	ED-38	[Education]	Narration			What are the problems faced by children when they go to Mother tongue medium school?					मातृभाषा माध्यम स्कूल में जाने पर बच्चों को किन समस्याओं का सामना करना पड़ता है?
+Q20221128143247742970	ED-39	[Education]	Narration			What are the life skills that students should learn from schools and colleges? 					छात्रों को स्कूलों और कॉलेजों से कौन से जीवन कौशल सीखने चाहिए?
+Q20221128143247743815	ED-40	[Education]	Narration			What are the problems faced by children when they go to English medium school?					अंग्रेजी माध्यम के स्कूल जाने पर बच्चों को किन समस्याओं का सामना करना पड़ता है?
+Q20221128143247744561	ED-41	[Education]	Narration			How do we ensure those without privilege have equal access to quality education and opportunities?					हम यह कैसे सुनिश्चित करते हैं कि बिना विशेषाधिकार वाले लोगों की गुणवत्तापूर्ण शिक्षा और अवसरों तक समान पहुंच हो?
+Q20221128143247745305	ED-42	[Education]	Narration			how do you think school based education and life skill learnings are related to each other?					आपको क्या लगता है कि स्कूल आधारित शिक्षा और जीवन कौशल सीखने का एक दूसरे से क्या संबंध है?
+Q20221128143247745978	ED-43	[Education]	Narration			how does school education help to develop social skills?					स्कूली शिक्षा सामाजिक कौशल विकसित करने में कैसे मदद करती है?
+Q20221128143247746765	ED-44	[Education]	Narration			how does school education help in shaping the life of a child?					स्कूली शिक्षा बच्चे के जीवन को आकार देने में कैसे मदद करती है?
+Q20221128143247747569	ED-45	[Education]	Narration			What qualities do you expect an educated individual should have?					आप एक शिक्षित व्यक्ति में किन गुणों की अपेक्षा करते हैं?
+Q20221128143247748556	ED-46	[Education]	Narration			Give merits and demerits of govt. school and private school? 					सरकारी स्कूल और निजी स्कूल के गुण और दोष बताएं?
+Q20221128143247749698	ED-47	[Education]	Narration			why should we include local language (MIL) as a part of cirriculum till doctoral?					हमें डॉक्टरेट तक पाठ्यक्रम के एक भाग के रूप में स्थानीय भाषा (MIL) को क्यों शामिल करना चाहिए?
+Q20221128143247750752	ED-48	[Education]	Narration			how does including local language (MIL) in the curriculum helps in preserving the culture and identity?					पाठ्यचर्या में स्थानीय भाषा (MIL) को शामिल करने से संस्कृति और पहचान को बनाए रखने में कैसे मदद मिलती है?
+Q20221128143247751516	ED-51	[Education]	Narration			what is the best way to preserve our local languages and culture?					हमारी स्थानीय भाषा और संस्कृति को संरक्षित करने का सबसे अच्छा तरीका क्या है?
+Q20221128143247752311	ED-52	[Education]	Narration			how did education help in busting covid myths during the pandamic?					महामारी के दौरान कोविड मिथकों को खत्म करने में शिक्षा ने कैसे मदद की?
+Q20221128143247753171	ED-54	[Education]	Narration			What is your idea on the New educational Policy?					नई शिक्षा नीति पर आपका क्या विचार है?
+Q20221128143247754108	ED-56	[Education]	Narration			Tell us something about the impact of Covid-19 on education in your community?					अपने समुदाय में शिक्षा पर कोविड -19 के प्रभाव के बारे में कुछ बताएं?
+Q20221128143247754888	ED-61	[Education]	Narration			What are the advantages of a multilingual classroom? 					बहुभाषी कक्षा के क्या लाभ हैं?
+Q20221128143247755692	ED-62	[Education]	Narration			Tell us some special features about your school?					अपने स्कूल के बारे में कुछ खास बातें बताएं?
+Q20221128143247756452	ED-63	[Education]	Narration			What changes have happened in your school in the last few years?					पिछले कुछ वर्षों में आपके विद्यालय में क्या परिवर्तन हुए हैं?
+Q20221128143247757251	ED-64	[Education]	Narration			Describe a parent teacher meeting.					अभिभावक शिक्षक की बैठक के बारे में बताएं।
+Q20221128143247758042	ED-65	[Education]	Narration			How does the school serve or contribute to the community?					विद्यालय समुदाय की सेवा या योगदान कैसे करता है?
+Q20221128143247758780	ED-66	[Education]	Narration			how are teachers encouraged to reflect on their classroom practice and how does it affect children positively and negatively?					शिक्षकों को उनके कक्षा अभ्यास पर चिंतन करने के लिए कैसे प्रोत्साहित किया जाता है और यह बच्चों को सकारात्मक और नकारात्मक कैसे प्रभावित करता है?
+Q20221128143247759424	ED-67	[Education]	Narration			Tell us something about the changes you saw in your school or colleges as you grew up?					बड़े होने पर आपने अपने स्कूल या कॉलेजों में जो बदलाव देखे, उनके बारे में कुछ बताएं?
+Q20221128143247760038	ED-69	[Education]	Narration			How are teachers recognized and appreciated for there contributions? 					शिक्षकों को उनके योगदान के लिए कैसे पहचाना और सराहा जाता है?
+Q20221128143247760689	ED-70	[Education]	Narration			Tell us something about your colleague/staff in schools and colleges?					स्कूल और कॉलेज में अपने सहयोगी/स्टाफ के बारे में कुछ बताएं?
+Q20221128143247761313	ED-71	[Education]	Narration			Tell us something about the education system of your state/community?					अपने राज्य/समुदाय की शिक्षा प्रणाली के बारे में कुछ बताएं?
+Q20221128143247761939	ED-72	[Education]	Narration			what are the differences between local language schools and english medium schools?					स्थानीय भाषा के स्कूलों और अंग्रेजी माध्यम के स्कूलों में क्या अंतर हैं?
+Q20221128143247762560	ED-73	[Education]	Narration			What are the official work assigned to teachers other than teaching?					शिक्षकों को शिक्षण के अलावा अन्य कौन से आधिकारिक काम सौंपे जाते हैं?
+Q20221128143247763226	ED-74	[Education]	Narration			Tell us something about the advantages and disadvantages of exams?					परीक्षा के फायदे और नुकसान के बारे में कुछ बताएं?
+Q20221128143247763905	ED-76	[Education]	Narration			What are the advantages and disadvantages of western based education system and indigenous cultural value system?					पश्चिमी आधारित शिक्षा प्रणाली और स्वदेशी सांस्कृतिक मूल्य प्रणाली के फायदे और नुकसान क्या हैं?
+Q20221128143247764559	ED-77	[Education]	Narration			what kind of improvement does your state needs for the education of the differently abled persons?					आपके राज्य को निःशक्तजनों की शिक्षा के लिए किस प्रकार के सुधार की आवश्यकता है?
+Q20221128143247765476	ED-78	[Education]	Narration			what role should a teacher play in a student's life?					एक शिक्षक को एक छात्र के जीवन में क्या भूमिका निभानी चाहिए?
+Q20221128143247766432	ED-80	[Education]	Narration			How should teachers talk to children in school? 					शिक्षकों को स्कूल में बच्चों से कैसे बात करनी चाहिए?
+Q20221128143247767407	ED-81	[Education]	Narration			How should children be reprimanded for their mistakes in the school?					बच्चों को स्कूल में उनकी गलतियों के लिए कैसे फटकार लगाई जानी चाहिए?
+Q20221128143247768209	ED-82	[Education]	Narration			What are your view on coaching centres and private tutions?					कोचिंग सेंटर और निजी ट्यूशन पर आपका क्या विचार है?
+Q20221128143247769010	ED-83	[Education]	Narration			What are the impact of smartphone and internet in educational domain?					शैक्षिक क्षेत्र में स्मार्टफोन और इंटरनेट का क्या प्रभाव है?
+Q20221128143247769870	ED-84	[Education]	Narration			What makes a ‘good day’ at school?					स्कूल में क्या 'अच्छा दिन' बनाता है?
+Q20221128143247770669	ED-85	[Education]	Narration			How do you celebrate 15th August in your school?					आप अपने विद्यालय में 15 अगस्त कैसे मनाते हैं?
+Q20221128143247771386	ED-86	[Education]	Narration			What do you like about teaching as a job?					नौकरी के रूप में पढ़ाने के बारे में आपको क्या पसंद है?
+Q20221128143247772108	ED-87	[Education]	Narration			How does technology make teaching simple or difficult?					तकनीकी शिक्षण को सरल या कठिन कैसे बनाती है?
+Q20221128143247772998	ED-88	[Education]	Narration			What are your opinions on mid day meal?					मिड डे मील पर आपकी क्या राय है?
+Q20221128143247773886	ED-90	[Education]	Narration			What differences do you see in students before break and after the break?					ब्रेक से पहले और ब्रेक के बाद आप छात्रों में क्या अंतर देखते हैं?
+Q20221128143247774683	ED-92	[Education]	Narration			 Tell us something about how people learn?					लोग कैसे सीखते हैं इसके बारे में कुछ बताएं?
+Q20221128143247775360	ED-94	[Education]	Narration			What are the qualities that people look for in teachers?					लोग शिक्षकों में कौन से गुण देखते हैं?
+Q20221128143247776016	ED-95	[Education]	Narration			What should people learn after they have become adults?					वयस्क होने के बाद लोगों को क्या सीखना चाहिए?
+Q20221128143247776609	ED-97	[Education]	Narration			What do you feel the a good learning environment would be?					आपको क्या लगता है कि सीखने का एक अच्छा माहौल क्या होगा?
+Q20221128143247777241	ED-100	[Education]	Narration			What according to you is a brilliant student?					आपके अनुसार मेधावी छात्र क्या है?
+Q20221128143247777843	ED-102	[Education]	Narration			What are the merits and demerits of offline and online classes? ?					ऑफलाइन और ऑनलाइन कक्षाओं के गुण और दोष क्या हैं?
+Q20221128143247778425	ED-104	[Education]	Narration			Why should we rely on educational imformation available on internet?					हमें इंटरनेट पर उपलब्ध शैक्षिक जानकारी पर क्यों भरोसा करना चाहिए?
+Q20221128143247778998	ED-106	[Education]	Narration			According to you what is the purpose of teaching maths to students?					आपके अनुसार विद्यार्थियों को गणित पढ़ाने का उद्देश्य क्या है?
+Q20221128143247779543	ED-107	[Education]	Narration			According to you what is the purpose of teaching English to students?					आपके अनुसार छात्रों को अंग्रेजी पढ़ाने का उद्देश्य क्या है?
+Q20221128143247780129	ED-108	[Education]	Narration			According to you what is the purpose of teaching social science to students?					आपके अनुसार छात्रों को सामाजिक विज्ञान पढ़ाने का उद्देश्य क्या है?
+Q20221128143247780700	ED-109	[Education]	Narration			According to you what is the purpose of teaching science to students?					आपके अनुसार विद्यार्थियों को विज्ञान पढ़ाने का उद्देश्य क्या है?
+Q20221128143247781254	ED-110	[Education]	Narration			In addition to teaching, what other kinds of activities do you do in school?					आप स्कूल में पढ़ाने के अलावा और किस तरह की गतिविधियाँ करते हैं?
+Q20221128143247782068	ED-111	[Education]	Narration			How is training different from learning?					प्रशिक्षण किस प्रकार सीखने से भिन्न है?
+Q20221128143247782972	ED-114	[Education]	Narration			Tell us something about the criteria and process of admitting new students in school and college.					स्कूल और कॉलेज में नए छात्रों के प्रवेश के मानदंड और प्रक्रिया के बारे में कुछ बताएं।
+Q20221128143247783745	ED-117	[Education]	Narration			What are three things that you can change about your class if you could?					यदि आप कर सकते हैं तो आप अपनी कक्षा के बारे में कौन सी तीन चीजें बदल सकते हैं?
+Q20221128143247784268	ED-118	[Education]	Narration			How teachers should help the students who are weak in studies?					जो छात्र पढ़ाई में कमजोर हैं, उनकी मदद शिक्षकों को कैसे करनी चाहिए?
+Q20221128143247784863	ED-119	[Education]	Narration			How important is face-face communication for you while Teaching and learning?					पढ़ाने और सीखने के दौरान आपके लिए आमने सामने का संवाद कितना महत्वपूर्ण है?
+Q20221128143247785411	ED-120	[Education]	Narration			How difficult was teaching during pandemic?					महामारी के दौरान पढ़ाना कितना मुश्किल था?
+Q20221128143247786106	ED-121	[Education]	Narration			How was your experience of teaching/learning through internet as compared to teaching at school?					स्कूल में पढ़ाने की तुलना में इंटरनेट के माध्यम से पढ़ाने/सीखने का आपका अनुभव कैसा रहा?
+Q20221128143247786621	ED-125	[Education]	Narration			What do you like most and least about class discussions and/or small group work?					कक्षा में चर्चा और/या छोटे समूह में काम के बारे में आपको सबसे अधिक और कम से कम क्या पसंद है?
+Q20221128143247787088	ED-128	[Education]	Narration			What kinds of tools and equipments are used in your school for teaching? What are the usage of these tools and equipments?					आपके विद्यालय में शिक्षण के लिए किस प्रकार के उपकरणों का प्रयोग किया जाता है? इन उपकरणों का क्या प्रयोग है?
+Q20221128143247787539	ED-131	[Education]	Narration			Tell us something about the role of Teachers, Principals, headmaster and other staff member in school?					स्कूल में शिक्षक, प्रधानाध्यापक, हेडमास्टर और अन्य स्टाफ सदस्य की भूमिका के बारे में कुछ बताएं?
+Q20221128143247796217	ED-137	[Education]	Narration			Tell us something about your friends in schools and colleges?					स्कूल और कॉलेज में अपने दोस्तों के बारे में कुछ बताएं?
+Q20221128143247797062	ED-138	[Education]	Narration			What role does your family play in your educations?					आपका परिवार आपकी शिक्षा में क्या भूमिका निभाता है?
+Q20221128143247797617	ED-142	[Education]	Narration			What has education taught you in your life as you grew up?					बड़े होने पर शिक्षा ने आपको अपने जीवन में क्या सिखाया है?
+Q20221128143247798276	ED-144	[Education]	Narration			In what way language plays an important role in education? (in the sense teaching in local dialect or english)					शिक्षा में भाषा किस प्रकार महत्वपूर्ण भूमिका निभाती है? (स्थानीय बोली या अंग्रेजी में अध्यापन के अर्थ में)
+Q20221128143247799069	ED-146	[Education]	Narration			Why did you choose the subject/degree you took as a student?					आपने एक छात्र के रूप में जो विषय/डिग्री ली थी, उसे आपने क्यों चुना?
+Q20221128143247799902	ED-148	[Education]	Narration			What do you want to learn about in shool/college?					आप स्कूल/कॉलेज में क्या सीखना चाहते हैं?
+Q20221128143247800525	ED-152	[Education]	Narration			What are the pros and cons of using internet? How far has it effected in your studies/productivity?					इंटरनेट का प्रयोग करने के फायदे और नुकसान क्या हैं? आपके अध्ययन/उत्पादकता पर इसका कितना प्रभाव पड़ा है?
+Q20221128143247801099	ED-160	[Education]	Narration			Why are you being educated?					आपको शिक्षित क्यों किया जा रहा है?
+Q20221128143247801641	ED-162	[Education]	Narration			How does your religion affect your education life?					आपका धर्म आपके शिक्षा जीवन को कैसे प्रभावित करता है?
+Q20221128143247802198	ED-163	[Education]	Narration			How many languages can you speak? Tell us how do you learn each language?					आप कितनी भाषाएं बोल सकते हैं? हमें बताएं कि आप प्रत्येक भाषा कैसे सीखते हैं?
+Q20221128143247803031	ED-164	[Education]	Narration			How does the family’s financial situation affect the education of a student?					परिवार की आर्थिक स्थिति विद्यार्थी की शिक्षा को किस प्रकार प्रभावित करती है?
+Q20221128143247803646	ED-167	[Education]	Narration			Which activities in class/school do you enjoy the most?					कक्षा/विद्यालय में आपको कौन सी गतिविधियों में सबसे अधिक आनंद आता है?
+Q20221128143247804322	ED-168	[Education]	Narration			What kind of sports do you play in school? Do you think that the school provides you with adequate sports facilities?					आप स्कूल में किस तरह के खेल खेलते हैं? क्या आपको लगता है कि स्कूल आपको पर्याप्त खेल सुविधाएं प्रदान करता है?
+Q20221128143247805071	ED-169	[Education]	Narration			How do you go to school? Tell us about your daily morning routine till you reach school					आप स्कूल कैसे जाते हैं? स्कूल पहुंचने तक अपनी दैनिक सुबह की दिनचर्या के बारे में बताएं
+Q20221128143247805679	ED-172	[Education]	Narration			What are your plans for your future?					आपके भविष्य के लिए आपकी क्या योजनाएं हैं?
+Q20221128143247806434	AG_1	[Agriculture]	Narration			What kinds of crops are grown by the people of your community?					आपके समाज के लोग किस प्रकार की फसलें उगाते हैं?
+Q20221128143247807157	AG_2	[Agriculture]	Narration			What are the people who grow crops called? Do they only grow crops or are they engaged in other activities as well? What kind of other activities are they engaged in?					फसल उगाने वाले लोगों को क्या कहा जाता है? क्या वे केवल फसल उगाते हैं या वे अन्य गतिविधियों में भी लगे हुए हैं? वे किस तरह की अन्य गतिविधियों में लगे हुए हैं?
+Q20221128143247807812	AG_3	[Agriculture]	Narration			Tell the names of at least 5 vegetables that are grown in your community					अपने समाज में उगाई जाने वाली कम से कम 5 सब्जियों के नाम बताइए?
+Q20221128143247808321	AG_4	[Agriculture]	Narration			In which months / seasons are these vegetables grown?					ये सब्जियां किन महीनों / मौसमों में उगाई जाती हैं?
+Q20221128143247808771	AG_5	[Agriculture]	Narration			What is the process of growing these vegetables?					इन सब्जियों को उगाने की प्रक्रिया क्या है?
+Q20221128143247809256	AG_6	[Agriculture]	Narration			How long do they take to mature?					उन्हें तैयार होने में कितना समय लगता है?
+Q20221128143247809707	AG_7	[Agriculture]	Narration			What kinds of special protection / care do they need (such as use of insecticide, pesticide or other such measures)?					उन्हें किस प्रकार की विशेष सुरक्षा / देखभाल की आवश्यकता है (जैसे कीटनाशक या ऐसे अन्य उपायों का उपयोग)?
+Q20221128143247810154	AG_8	[Agriculture]	Narration			How are they sold to other people?					वे अन्य लोगों को कैसे बेचे जाते हैं?
+Q20221128143247810616	AG_9	[Agriculture]	Narration			How are these cooked and eaten?					इन्हें कैसे पकाया और खाया जाता है?
+Q20221128143247811049	AG_10	[Agriculture]	Narration			Tell the names of at least 5 fruits that are grown in your community					अपने समाज में उगाए जाने वाले कम से कम 5 फलों के नाम बताइए?
+Q20221128143247811507	AG_11	[Agriculture]	Narration			In which months / seasons are these fruits grown?					ये फल किन महीनों / मौसमों में उगाए जाते हैं?
+Q20221128143247811946	AG_12	[Agriculture]	Narration			What is the process of growing these fruits?					इन फलों को उगाने की प्रक्रिया क्या है?
+Q20221128143247812366	AG_13	[Agriculture]	Narration			How long do they take to mature?					उन्हें तैयार होने में कितना समय लगता है?
+Q20221128143247812838	AG_14	[Agriculture]	Narration			What kinds of special protection / care do they need (such as use of insecticide, pesticide or other such measures)?					उन्हें किस प्रकार की विशेष सुरक्षा / देखभाल की आवश्यकता है (जैसे कीटनाशक या ऐसे अन्य उपायों का उपयोग)?
+Q20221128143247813392	AG_15	[Agriculture]	Narration			How are they sold to other people?					वे अन्य लोगों को कैसे बेचे जाते हैं?
+Q20221128143247813850	AG_16	[Agriculture]	Narration			How are these cooked and eaten?					इन्हें कैसे पकाया और खाया जाता है?
+Q20221128143247814268	AG_17	[Agriculture]	Narration			Tell the names of 2-3 cereals / grains that are grown in your community					अपने समाज में उगाए जाने वाले 2-3 अनाजों के नाम बताइए?
+Q20221128143247814877	AG_18	[Agriculture]	Narration			In which months / seasons are these cereals/grains grown?					ये अनाज किन महीनों / मौसमों में उगाए जाते हैं?
+Q20221128143247815549	AG_19	[Agriculture]	Narration			What is the process of growing these cereals/grains?					इन अनाजों को उगाने की प्रक्रिया क्या है?
+Q20221128143247816419	AG_20	[Agriculture]	Narration			How long do they take to mature?					उन्हें तैयार होने में कितना समय लगता है?
+Q20221128143247817034	AG_21	[Agriculture]	Narration			What kinds of special protection / care do they need (such as use of insecticide, pesticide or other such measures)?					उन्हें किस प्रकार की विशेष सुरक्षा / देखभाल की आवश्यकता है (जैसे कीटनाशक या ऐसे अन्य उपायों का उपयोग)?
+Q20221128143247817589	AG_22	[Agriculture]	Narration			How are they sold to other people?					वे अन्य लोगों को कैसे बेचे जाते हैं?
+Q20221128143247818248	AG_23	[Agriculture]	Narration			How are these cooked and eaten?					इन्हें कैसे पकाया और खाया जाता है?
+Q20221128143247818824	AG_24	[Agriculture]	Narration			Tell the names of 2-3 other crops that are grown in your community					अपने समाज में उगाई जाने वाली 2-3 अन्य फसलों के नाम बताएं
+Q20221128143247819365	AG_25	[Agriculture]	Narration			In which months / seasons are these crops grown?					ये फसलें किन महीनों / मौसमों में उगाई जाती हैं?
+Q20221128143247819832	AG_26	[Agriculture]	Narration			What is the process of growing these crops?					इन फसलों को उगाने की प्रक्रिया क्या है?
+Q20221128143247820249	AG_27	[Agriculture]	Narration			How long do they take to mature?					उन्हें तैयार होने में कितना समय लगता है?
+Q20221128143247820698	AG_28	[Agriculture]	Narration			What kinds of special protection / care do they need (such as use of insecticide, pesticide or other such measures)?					उन्हें किस प्रकार की विशेष सुरक्षा / देखभाल की आवश्यकता है (जैसे कीटनाशक या ऐसे अन्य उपायों का उपयोग)?
+Q20221128143247821183	AG_29	[Agriculture]	Narration			How are they sold to other people?					वे अन्य लोगों को कैसे बेचे जाते हैं?
+Q20221128143247821657	AG_30	[Agriculture]	Narration			How are these cooked and eaten?					इन्हें कैसे पकाया और खाया जाता है?
+Q20221128143247822129	AG_31	[Agriculture]	Narration			Tell the names of at least 5 trees that are grown in your community					अपने समाज में उगाए गए कम से कम 5 पेड़ों के नाम बताइए?
+Q20221128143247822648	AG_32	[Agriculture]	Narration			What are the usage of these trees?					इन पेड़ों का क्या उपयोग हैं?
+Q20221128143247823273	AG_33	[Agriculture]	Narration			What is the process of growing these trees?					इन पेड़ों को उगाने की प्रक्रिया क्या है?
+Q20221128143247823852	AG_34	[Agriculture]	Narration			How long do they take to mature?					उन्हें तैयार होने में कितना समय लगता है?
+Q20221128143247824383	AG_35	[Agriculture]	Narration			What kinds of special protection / care do they need (such as use of insecticide, pesticide or other such measures)?					उन्हें किस प्रकार की विशेष सुरक्षा / देखभाल की आवश्यकता है (जैसे कीटनाशक या ऐसे अन्य उपायों का उपयोग)?
+Q20221128143247825054	AG_36	[Agriculture]	Narration			Tell us some unique features of agricultural practice in your community?					हमें अपने समाज में कृषि पद्धति की कुछ अनूठी विशेषताओं के बारे में बताइए?
+Q20221128143247825535	AG_37	[Agriculture]	Narration			What changes have happened in the agricultural practice of your community in the last few years?					पिछले कुछ वर्षों में आपके समाज की कृषि पद्धति में क्या परिवर्तन हुए हैं?
+Q20221128143247825990	AG_38	[Agriculture]	Narration			Give us any other interesting / relevant information / comments about agriculture, its relevance and agricultural practices in your community?					हमें अपने समाज में कृषि, इसकी प्रासंगिकता और कृषि पद्धतियों के बारे में कोई अन्य रोचक/प्रासंगिक जानकारी/टिप्पणियां दीजिए
+Q20221128143247826476	AG_39	[Agriculture]	Narration			What kinds of machines are used in agriculture in your community?					आपके समाज में कृषि में किस प्रकार की मशीनों का उपयोग किया जाता है?
+Q20221128143247827172	AG_40	[Agriculture]	Narration			What are the usage of these machineries?					इन मशीनों का क्या उपयोग हैं?
+Q20221128143247827651	AG_41	[Agriculture]	Narration			How do they help in better management of agricultural activities in your community?					वे आपके समाज में कृषि गतिविधियों के बेहतर प्रबंधन में कैसे मदद करते हैं?
+Q20221128143247828110	AG_42	[Agriculture]	Narration			What kinds of other technologies are used for farming and agriculture in your community?					आपके समाज में खेती और कृषि के लिए किस प्रकार की अन्य तकनीकों का उपयोग किया जाता है?
+Q20221128143247828544	AG_43	[Agriculture]	Narration			How and for what purpose are they used?					उनका उपयोग कैसे और किस उद्देश्य के लिए किया जाता है?
+Q20221128143247829102	AG_44	[Agriculture]	Narration			What kinds of animals are used in farming in your community?					आपके समाज में खेती में किस प्रकार के जानवरों का उपयोग किया जाता है?
+Q20221128143247829541	AG_45	[Agriculture]	Narration			Tell us something about the role and relevance of animals in farming in your community?					अपने समाज में खेती में पशुओं की भूमिका और प्रासंगिकता के बारे में कुछ बताइए?
+Q20221128143247830037	AG_112	[Agriculture]	Narration			How do you irrigate your crops?					आप अपनी फसलों की सिंचाई कैसे करते हैं?
+Q20221128143247830478	AG_113	[Agriculture]	Narration			How do you irrigate crops when there is no rain?					जब वर्षा नहीं होती है तब आप फसलों की सिचाई कैसे करते हैं ?
+Q20221128143247830992	AG_114	[Agriculture]	Narration			What do you grow in your village?					आप अपने गाँव में क्या उगाते हैं?
+Q20221128143247831446	AG_115	[Agriculture]	Narration			Which of your crops requires more or less water?					आपकी किस फसल को कम या ज्यादा पानी चाहिए होता है?
+Q20221128143247831969	AG_116	[Agriculture]	Narration			Which crops do you plant in Winter season?					सर्दी के मौसम में कौन - कौन सी फसलें लगाते हैं?
+Q20221128143247832585	AG_117	[Agriculture]	Narration			Which crops do you plant in rainy season?					बरसात के मौसम में कौन - कौन सी फसलें लगाते हैं?
+Q20221128143247833209	AG_118	[Agriculture]	Narration			Which crops do you plant for all seasons?					आप सभी मौसमों में कौन - कौन सी फसलें लगाते हैं ?
+Q20221128143247833617	AG_119	[Agriculture]	Narration			How are work related to agriculture distributed among the family? 					खेती से संबंधित काम परिवार में किस तरह से बांटे जात हैं?
+Q20221128143247833981	AG_120	[Agriculture]	Narration			Which machines do you use for farming?					खेती के लिए आप किन मशीनों का प्रयोग करते हैं?
+Q20221128143247834451	AG_121	[Agriculture]	Narration			Which fertilizers do you use to grow crops?					फसलें उगाने के लिए आप कौन - कौन से खाद प्रयोग करते हैं?
+Q20221128143247834914	AG_122	[Agriculture]	Narration			For which crops do you use cow dung manure?					गोबर की खाद आप किन - किन फसलों को उगाने के लिए प्रयोग करते हैं?
+Q20221128143247835419	AG_123	[Agriculture]	Narration			Who does fishing in your community?					आपके समुदाय में मछली पालने या पकड़ने का काम कौन करता है?
+Q20221128143247836135	AG_124	[Agriculture]	Narration			Who does poultry farming in your community?					आपके समुदाय में मुर्गी पालन कौन करता है?
+Q20221128143247836494	AG_125	[Agriculture]	Narration			Who does animal husbandry in your community?					आपके समुदाय में पशुपालन कौन करता है?
+Q20221128143247836844	AG_126	[Agriculture]	Narration			Who does goat rearing in your community?					आपके समुदाय में बकरी पालन कौन करता है?
+Q20221128143247837211	AG_127	[Agriculture]	Narration			Who does sheep rearing in your community?					आपके समुदाय में भेड़ पालन कौन करता है?
+Q20221128143247837801	AG_128	[Agriculture]	Narration			Which milking animals do you keep?					आप कौन - कौन से दूध देने वाले पशू पालते हैं?
+Q20221128143247838169	AG_129	[Agriculture]	Narration			What do you make with milk?					आप दूध से क्या - क्या बनाते हैं?
+Q20221128143247838563	AG_130	[Agriculture]	Narration			What do you feed your dairy cattle?					आप अपने धुधारू पशुओं को क्या खिलाते हैं?
+Q20221128143247838975	AG_131	[Agriculture]	Narration			Which pulses do you grow?					आप कौन - कौन सी दालें उगाते हैं?
+Q20221128143247940816	AG_132	[Agriculture]	Narration			What green vegetables do you grow?					आप कौन - कौन सी हरी सब्जियां उगाते हैं?
+Q20221128143247941990	AG_133	[Agriculture]	Narration			Which vegetables do you grow?					आप कौन - कौन सी सब्जियां उगाते हैं?
+Q20221128143247943254	AG_134	[Agriculture]	Narration			Where do you keep your harvested crops?					फसलों को काटकर आप कहां रखते हैं?
+Q20221128143247944747	AG_135	[Agriculture]	Narration			Which crop insurance do you get from the government?					आपको सरकार की तरफ से कौन - कौन से फसल बीमा मिलते हैं?
+Q20221128143247945648	AG_276	[Agriculture]	Narration			How do you preserve meat?					आप मांस को कैसे संरक्षित करते हैं?
+Q20221128143247946234	AG_277	[Agriculture]	Narration			How do you preserve raw vegetables?					आप कच्ची सब्जियों को कैसे संरक्षित करते हैं?
+Q20221128143247946860	AG_278	[Agriculture]	Narration			How do you preserve fish?					आप मछली को कैसे संरक्षित करते हैं?
+Q20221128143247947473	AG_279	[Agriculture]	Narration			How do you prepare local wine?					आप देसी शराब कैसे बनाते हैं?
+Q20221128143247948172	AG_280	[Agriculture]	Narration			What are the ingredents used for preparing local wine?					देसी शराब बनाने के लिए किन सामग्रियों का प्रयोग किया जाता है?
+Q20221128143247948962	AG_46	[Agriculture]	Narration			What are the different kinds of seeds used for growing rice? What are their advantages and disadvantages?					चावल उगाने के लिए किस प्रकार के बीजों का प्रयोग किया जाता है? उनके फायदे और नुकसान क्या हैं?
+Q20221128143247949992	AG_47	[Agriculture]	Narration			What are the different varieties of rice grown?					चावल की विभिन्न किस्में कौन सी उगाई जाती हैं?
+Q20221128143247951792	AG_48	[Agriculture]	Narration			In which months / seasons are the different varieties of rice grown - if only one variety of rice is cultivated, tell us about that only?					चावल की विभिन्न किस्में किन महीनों / मौसमों में उगाई जाती हैं - अगर चावल की केवल एक ही किस्म की खेती की जाती है, तो उसके बारे में ही बताइए?
+Q20221128143247952787	AG_49	[Agriculture]	Narration			What is the process of growing different varieties of rice- if only one variety of rice is cultivated, tell us about that only?					चावल की विभिन्न किस्मों को उगाने की प्रक्रिया क्या है - अगर चावल की केवल एक किस्म की खेती की जाती है, तो हमें केवल उसके बारे में बताइए?
+Q20221128143247953352	AG_50	[Agriculture]	Narration			How long do they take to mature?					उन्हें तैयार होने में कितना समय लगता है?
+Q20221128143247953910	AG_51	[Agriculture]	Narration			What kinds of special protection / care do they need (such as use of insecticide, pesticide or other such measures)?					उन्हें किस प्रकार की विशेष सुरक्षा / देखभाल की आवश्यकता है (जैसे कीटनाशक या ऐसे अन्य उपायों का उपयोग)?
+Q20221128143247954469	AG_52	[Agriculture]	Narration			How are they sold to other people?					वे अन्य लोगों को कैसे बेचे जाते हैं?
+Q20221128143247955136	AG_53	[Agriculture]	Narration			How are these cooked and eaten?					इन्हें कैसे पकाया और खाया जाता है?
+Q20221128143247955945	AG_54	[Agriculture]	Narration			What are the different kinds of seeds used for growing maize? What are their advantages and disadvantages?					मक्का उगाने के लिए किस प्रकार के बीजों का प्रयोग किया जाता है? उनके फायदे और नुकसान क्या हैं?
+Q20221128143247957286	AG_55	[Agriculture]	Narration			What are the different varieties of maize grown?					मक्के की विभिन्न किस्में कौन सी उगाई जाती हैं?
+Q20221128143247958320	AG_56	[Agriculture]	Narration			In which months / seasons are the different varieties of maize grown - if only one variety of maize is cultivated, tell us about that only?					मक्के की विभिन्न किस्में किन महीनों / मौसमों में उगाई जाती हैं - अगर मक्के की केवल एक ही किस्म की खेती की जाती है, तो उसके बारे में ही बताइए?
+Q20221128143247959142	AG_57	[Agriculture]	Narration			What is the process of growing different varieties of maize- if only one variety of maize is cultivated, tell us about that only?					मक्के की विभिन्न किस्मों को उगाने की प्रक्रिया क्या है - अगर मक्के की केवल एक किस्म की खेती की जाती है, तो हमें केवल उसके बारे में बताइए?
+Q20221128143247959778	AG_58	[Agriculture]	Narration			How long do they take to mature?					उन्हें तैयार होने में कितना समय लगता है?
+Q20221128143247960471	AG_59	[Agriculture]	Narration			What kinds of special protection / care do they need (such as use of insecticide, pesticide or other such measures)?					उन्हें किस प्रकार की विशेष सुरक्षा / देखभाल की आवश्यकता है (जैसे कीटनाशक या ऐसे अन्य उपायों का उपयोग)?
+Q20221128143247961082	AG_60	[Agriculture]	Narration			How are they sold to other people?					वे अन्य लोगों को कैसे बेचे जाते हैं?
+Q20221128143247961629	AG_61	[Agriculture]	Narration			How are these cooked and eaten?					इन्हें कैसे पकाया और खाया जाता है?
+Q20221128143247962110	AG_62	[Agriculture]	Narration			What are the different kinds of seeds used for growing chilly? What are their advantages and disadvantages?					मिर्च उगाने के लिए किस प्रकार के बीजों का प्रयोग किया जाता है? उनके फायदे और नुकसान क्या हैं?
+Q20221128143247962606	AG_63	[Agriculture]	Narration			What are the different varieties of chilly grown?					मिर्च की विभिन्न किस्में कौन सी उगाई जाती हैं?
+Q20221128143247963091	AG_64	[Agriculture]	Narration			In which months / seasons are the different varieties of chilly grown - if only one variety of chilly is cultivated, tell us about that only?					मिर्च की विभिन्न किस्में किन महीनों / मौसमों में उगाई जाती हैं - अगर मिर्च की केवल एक ही किस्म की खेती की जाती है, तो उसके बारे में ही बताइए?
+Q20221128143247963683	AG_65	[Agriculture]	Narration			What is the process of growing different varieties of chilly- if only one variety of chilly is cultivated, tell us about that only?					मिर्च की विभिन्न किस्मों को उगाने की प्रक्रिया क्या है - अगर मिर्च की केवल एक किस्म की खेती की जाती है, तो हमें केवल उसके बारे में बताइए?
+Q20221128143247964210	AG_66	[Agriculture]	Narration			How long do they take to mature?					उन्हें तैयार होने में कितना समय लगता है?
+Q20221128143247964914	AG_67	[Agriculture]	Narration			What kinds of special protection / care do they need (such as use of insecticide, pesticide or other such measures)?					उन्हें किस प्रकार की विशेष सुरक्षा / देखभाल की आवश्यकता है (जैसे कीटनाशक या ऐसे अन्य उपायों का उपयोग)?
+Q20221128143247965797	AG_68	[Agriculture]	Narration			How are they sold to other people?					वे अन्य लोगों को कैसे बेचे जाते हैं?
+Q20221128143247966827	AG_69	[Agriculture]	Narration			How are these cooked and eaten?					इन्हें कैसे पकाया और खाया जाता है?
+Q20221128143247967597	AG_70	[Agriculture]	Narration			What are the different kinds of seeds used for growing turmeric? What are their advantages and disadvantages?					हल्दी उगाने के लिए किस प्रकार के बीजों का प्रयोग किया जाता है? उनके फायदे और नुकसान क्या हैं?
+Q20221128143247968354	AG_71	[Agriculture]	Narration			What are the different varieties of turmeric grown?					हल्दी की विभिन्न किस्में कौन सी उगाई जाती हैं?
+Q20221128143247969328	AG_72	[Agriculture]	Narration			In which months / seasons are the different varieties of turmeric grown - if only one variety of turmeric is cultivated, tell us about that only?					हल्दी की विभिन्न किस्में किन महीनों / मौसमों में उगाई जाती हैं - अगर हल्दी की केवल एक ही किस्म की खेती की जाती है, तो उसके बारे में ही बताइए?
+Q20221128143247970036	AG_73	[Agriculture]	Narration			What is the process of growing different varieties of turmeric- if only one variety of turmeric is cultivated, tell us about that only?					हल्दी की विभिन्न किस्मों को उगाने की प्रक्रिया क्या है - अगर हल्दी की केवल एक किस्म की खेती की जाती है, तो हमें केवल उसके बारे में बताइए?
+Q20221128143247970696	AG_74	[Agriculture]	Narration			How long do they take to mature?					उन्हें तैयार होने में कितना समय लगता है?
+Q20221128143247971403	AG_75	[Agriculture]	Narration			What kinds of special protection / care do they need (such as use of insecticide, pesticide or other such measures)?					उन्हें किस प्रकार की विशेष सुरक्षा / देखभाल की आवश्यकता है (जैसे कीटनाशक या ऐसे अन्य उपायों का उपयोग)?
+Q20221128143247972472	AG_76	[Agriculture]	Narration			How are they sold to other people?					वे अन्य लोगों को कैसे बेचे जाते हैं?
+Q20221128143247973952	AG_77	[Agriculture]	Narration			How are these cooked and eaten?					इन्हें कैसे पकाया और खाया जाता है?
+Q20221128143247974624	AG_78	[Agriculture]	Narration			What are the different kinds of seeds used for growing potato? What are their advantages and disadvantages?					आलू उगाने के लिए किस प्रकार के बीजों का प्रयोग किया जाता है? उनके फायदे और नुकसान क्या हैं?
+Q20221128143247975325	AG_79	[Agriculture]	Narration			What are the different varieties of potato grown?					आलू की विभिन्न किस्में कौन सी उगाई जाती हैं?
+Q20221128143247975917	AG_80	[Agriculture]	Narration			In which months / seasons are the different varieties of potato grown - if only one variety of potato is cultivated, tell us about that only?					आलू की विभिन्न किस्में किन महीनों / मौसमों में उगाई जाती हैं - अगर आलू की केवल एक ही किस्म की खेती की जाती है, तो उसके बारे में ही बताइए?
+Q20221128143247976457	AG_81	[Agriculture]	Narration			What is the process of growing different varieties of potato- if only one variety of potato is cultivated, tell us about that only?					आलू की विभिन्न किस्मों को उगाने की प्रक्रिया क्या है - अगर आलू की केवल एक किस्म की खेती की जाती है, तो हमें केवल उसके बारे में बताइए?
+Q20221128143247976977	AG_82	[Agriculture]	Narration			How long do they take to mature?					उन्हें तैयार होने में कितना समय लगता है?
+Q20221128143247977503	AG_83	[Agriculture]	Narration			What kinds of special protection / care do they need (such as use of insecticide, pesticide or other such measures)?					उन्हें किस प्रकार की विशेष सुरक्षा / देखभाल की आवश्यकता है (जैसे कीटनाशक या ऐसे अन्य उपायों का उपयोग)?
+Q20221128143247978010	AG_84	[Agriculture]	Narration			How are they sold to other people?					वे अन्य लोगों को कैसे बेचे जाते हैं?
+Q20221128143247978530	AG_85	[Agriculture]	Narration			How are these cooked and eaten?					इन्हें कैसे पकाया और खाया जाता है?
+Q20221128143247979049	AG_281	[Agriculture]	Narration			What are the different kinds of seeds used for growing millet? What are their advantages and disadvantages?					बाजरा उगाने के लिए किस प्रकार के बीजों का प्रयोग किया जाता है? उनके फायदे और नुकसान क्या हैं?
+Q20221128143247979546	AG_282	[Agriculture]	Narration			What are the different varieties of millet grown?					बाजरा की विभिन्न किस्में कौन सी उगाई जाती हैं?
+Q20221128143247980171	AG_283	[Agriculture]	Narration			In which months / seasons are the different varieties of millet grown - if only one variety of millet is cultivated, tell us about that only?					बाजरा की विभिन्न किस्में किन महीनों / मौसमों में उगाई जाती हैं - अगर बाजरा की केवल एक ही किस्म की खेती की जाती है, तो उसके बारे में ही बताइए?
+Q20221128143247980769	AG_284	[Agriculture]	Narration			What is the process of growing different varieties of millet - if only one variety of millet is cultivated, tell us about that only?					बाजरा की विभिन्न किस्मों को उगाने की प्रक्रिया क्या है - अगर बाजरा की केवल एक किस्म की खेती की जाती है, तो हमें केवल उसके बारे में बताइए?
+Q20221128143247981408	AG_285	[Agriculture]	Narration			How long do they take to mature?					उन्हें तैयार होने में कितना समय लगता है?
+Q20221128143247982151	AG_286	[Agriculture]	Narration			What kinds of special protection / care do they need (such as use of insecticide, pesticide or other such measures)?					उन्हें किस प्रकार की विशेष सुरक्षा / देखभाल की आवश्यकता है (जैसे कीटनाशक या ऐसे अन्य उपायों का उपयोग)?
+Q20221128143247983362	AG_287	[Agriculture]	Narration			How are they sold to other people?					वे अन्य लोगों को कैसे बेचे जाते हैं?
+Q20221128143247985617	AG_288	[Agriculture]	Narration			How are these cooked and eaten?					इन्हें कैसे पकाया और खाया जाता है?
+Q20221128143247986326	AG_289	[Agriculture]	Narration			What are the different kinds of seeds used for growing ginger? What are their advantages and disadvantages?					अदरक उगाने के लिए किस प्रकार के बीजों का प्रयोग किया जाता है? उनके फायदे और नुकसान क्या हैं?
+Q20221128143247986931	AG_290	[Agriculture]	Narration			What are the different varieties of ginger grown?					अदरक की विभिन्न किस्में कौन सी उगाई जाती हैं?
+Q20221128143247987571	AG_291	[Agriculture]	Narration			In which months / seasons are the different varieties of ginger grown - if only one variety of ginger is cultivated, tell us about that only?					अदरक की विभिन्न किस्में किन महीनों / मौसमों में उगाई जाती हैं - अगर अदरक की केवल एक ही किस्म की खेती की जाती है, तो उसके बारे में ही बताइए?
+Q20221128143247988295	AG_292	[Agriculture]	Narration			What is the process of growing different varieties of ginger - if only one variety of ginger is cultivated, tell us about that only?					अदरक की विभिन्न किस्मों को उगाने की प्रक्रिया क्या है - अगर अदरक की केवल एक किस्म की खेती की जाती है, तो हमें केवल उसके बारे में बताइए?
+Q20221128143247989107	AG_293	[Agriculture]	Narration			How long do they take to mature?					उन्हें तैयार होने में कितना समय लगता है?
+Q20221128143247990884	AG_294	[Agriculture]	Narration			What kinds of special protection / care do they need (such as use of insecticide, pesticide or other such measures)?					उन्हें किस प्रकार की विशेष सुरक्षा / देखभाल की आवश्यकता है (जैसे कीटनाशक या ऐसे अन्य उपायों का उपयोग)?
+Q20221128143247991648	AG_295	[Agriculture]	Narration			How are they sold to other people?					वे अन्य लोगों को कैसे बेचे जाते हैं?
+Q20221128143247992318	AG_296	[Agriculture]	Narration			How are these cooked and eaten?					इन्हें कैसे पकाया और खाया जाता है?
+Q20221128143247992772	AG_297	[Agriculture]	Narration			What are the different kinds of seeds used for growing large cardamom? What are their advantages and disadvantages?					बडी इलायची उगाने के लिए किस प्रकार के बीजों का प्रयोग किया जाता है? उनके फायदे और नुकसान क्या हैं?
+Q20221128143247993326	AG_298	[Agriculture]	Narration			What are the different varieties of large cardamom grown?					बडी इलायची की विभिन्न किस्में कौन सी उगाई जाती हैं?
+Q20221128143247993834	AG_299	[Agriculture]	Narration			In which months / seasons are the different varieties of large cardamom grown - if only one variety of large cardamom is cultivated, tell us about that only?					बडी इलायची की विभिन्न किस्में किन महीनों / मौसमों में उगाई जाती हैं - अगर बडी इलायची की केवल एक ही किस्म की खेती की जाती है, तो उसके बारे में ही बताइए?
+Q20221128143247994363	AG_300	[Agriculture]	Narration			What is the process of growing different varieties of large cardamom - if only one variety of large cardamom is cultivated, tell us about that only?					बडी इलायची की विभिन्न किस्मों को उगाने की प्रक्रिया क्या है - अगर बडी इलायची की केवल एक किस्म की खेती की जाती है, तो हमें केवल उसके बारे में बताइए?
+Q20221128143247994916	AG_301	[Agriculture]	Narration			How long do they take to mature?					उन्हें तैयार होने में कितना समय लगता है?
+Q20221128143247995381	AG_302	[Agriculture]	Narration			What kinds of special protection / care do they need (such as use of insecticide, pesticide or other such measures)?					उन्हें किस प्रकार की विशेष सुरक्षा / देखभाल की आवश्यकता है (जैसे कीटनाशक या ऐसे अन्य उपायों का उपयोग)?
+Q20221128143247995841	AG_303	[Agriculture]	Narration			How are they sold to other people?					वे अन्य लोगों को कैसे बेचे जाते हैं?
+Q20221128143247996281	AG_304	[Agriculture]	Narration			How are these cooked and eaten?					इन्हें कैसे पकाया और खाया जाता है?
+Q20221128143247996806	AG_305	[Agriculture]	Narration			What are the different kinds of seeds used for growing mustard? What are their advantages and disadvantages?					सरसों उगाने के लिए किस प्रकार के बीजों का प्रयोग किया जाता है? उनके फायदे और नुकसान क्या हैं?
+Q20221128143247997322	AG_306	[Agriculture]	Narration			What are the different varieties of mustard grown?					सरसों की विभिन्न किस्में कौन सी उगाई जाती हैं?
+Q20221128143247997800	AG_307	[Agriculture]	Narration			In which months / seasons are the different varieties of mustard grow - if only one variety of mustard is cultivated, tell us about that only?					सरसों की विभिन्न किस्में किन महीनों / मौसमों में उगाई जाती हैं - अगर सरसों की केवल एक ही किस्म की खेती की जाती है, तो उसके बारे में ही बताइए?
+Q20221128143247998650	AG_308	[Agriculture]	Narration			What is the process of growing different varieties of mustard - if only one variety of mustard is cultivated, tell us about that only?					सरसों की विभिन्न किस्मों को उगाने की प्रक्रिया क्या है - अगर सरसों की केवल एक किस्म की खेती की जाती है, तो हमें केवल उसके बारे में बताइए?
+Q20221128143247999579	AG_309	[Agriculture]	Narration			How long do they take to mature?					उन्हें तैयार होने में कितना समय लगता है?
+Q20221128143248000513	AG_310	[Agriculture]	Narration			What kinds of special protection / care do they need (such as use of insecticide, pesticide or other such measures)?					उन्हें किस प्रकार की विशेष सुरक्षा / देखभाल की आवश्यकता है (जैसे कीटनाशक या ऐसे अन्य उपायों का उपयोग)?
+Q20221128143248001229	AG_311	[Agriculture]	Narration			How are they sold to other people?					वे अन्य लोगों को कैसे बेचे जाते हैं?
+Q20221128143248001958	AG_312	[Agriculture]	Narration			How are these cooked and eaten?					इन्हें कैसे पकाया और खाया जाता है?
+Q20221128143248002600	AG_86	[Agriculture]	Narration			What are the different kinds of seeds used for growing potato? What are their advantages and disadvantages?					आलू उगाने के लिए किस प्रकार के बीजों का प्रयोग किया जाता है? उनके फायदे और नुकसान क्या हैं?
+Q20221128143248003245	AG_87	[Agriculture]	Narration			What are the different varieties of potato grown?					आलू की विभिन्न किस्में कौन सी उगाई जाती हैं?
+Q20221128143248003945	AG_88	[Agriculture]	Narration			In which months / seasons are the different varieties of potato grown - if only one variety of potato is cultivated, tell us about that only?					आलू की विभिन्न किस्में किन महीनों / मौसमों में उगाई जाती हैं - अगर आलू की केवल एक ही किस्म की खेती की जाती है, तो उसके बारे में ही बताइए?
+Q20221128143248004766	AG_89	[Agriculture]	Narration			What is the process of growing different varieties of potato- if only one variety of potato is cultivated, tell us about that only?					आलू की विभिन्न किस्मों को उगाने की प्रक्रिया क्या है - अगर आलू की केवल एक किस्म की खेती की जाती है, तो हमें केवल उसके बारे में बताइए?
+Q20221128143248005746	AG_90	[Agriculture]	Narration			How long do they take to mature?					उन्हें तैयार होने में कितना समय लगता है?
+Q20221128143248007399	AG_91	[Agriculture]	Narration			What kinds of special protection / care do they need (such as use of insecticide, pesticide or other such measures)?					उन्हें किस प्रकार की विशेष सुरक्षा / देखभाल की आवश्यकता है (जैसे कीटनाशक या ऐसे अन्य उपायों का उपयोग)?
+Q20221128143248008589	AG_92	[Agriculture]	Narration			How are they sold to other people?					वे अन्य लोगों को कैसे बेचे जाते हैं?
+Q20221128143248009278	AG_93	[Agriculture]	Narration			How are these cooked and eaten?					इन्हें कैसे पकाया और खाया जाता है?
+Q20221128143248009784	AG_94	[Agriculture]	Narration			What are the different kinds of seeds used for growing banana? What are their advantages and disadvantages?					केला उगाने के लिए किस प्रकार के बीजों का प्रयोग किया जाता है? उनके फायदे और नुकसान क्या हैं?
+Q20221128143248010239	AG_95	[Agriculture]	Narration			What are the different varieties of banana grown?					केला की विभिन्न किस्में कौन सी उगाई जाती हैं?
+Q20221128143248010694	AG_96	[Agriculture]	Narration			In which months / seasons are the different varieties of banana grown - if only one variety of banana is cultivated, tell us about that only?					केला की विभिन्न किस्में किन महीनों / मौसमों में उगाई जाती हैं - अगर केला की केवल एक ही किस्म की खेती की जाती है, तो उसके बारे में ही बताइए?
+Q20221128143248011152	AG_97	[Agriculture]	Narration			What is the process of growing different varieties of banana- if only one variety of banana is cultivated, tell us about that only?					केला की विभिन्न किस्मों को उगाने की प्रक्रिया क्या है - अगर केला की केवल एक किस्म की खेती की जाती है, तो हमें केवल उसके बारे में बताइए?
+Q20221128143248011601	AG_98	[Agriculture]	Narration			How long do they take to mature?					उन्हें तैयार होने में कितना समय लगता है?
+Q20221128143248012009	AG_99	[Agriculture]	Narration			What kinds of special protection / care do they need (such as use of insecticide, pesticide or other such measures)?					उन्हें किस प्रकार की विशेष सुरक्षा / देखभाल की आवश्यकता है (जैसे कीटनाशक या ऐसे अन्य उपायों का उपयोग)?
+Q20221128143248012391	AG_100	[Agriculture]	Narration			How are they sold to other people?					वे अन्य लोगों को कैसे बेचे जाते हैं?
+Q20221128143248012762	AG_101	[Agriculture]	Narration			How are these cooked and eaten?					इन्हें कैसे पकाया और खाया जाता है?
+Q20221128143248013167	AG_102	[Agriculture]	Narration			What kind of animals do you keep in your home?					आप अपने घर में किस तरह के जानवर रखते हैं?
+Q20221128143248013606	AG_103	[Agriculture]	Narration			What are they use for?					वे किस लिए उपयोग किए जा रहे हैं?
+Q20221128143248013993	AG_104	[Agriculture]	Narration			What all are pigs used for?					सूअरों का उपयोग किस लिए किया जाता है?
+Q20221128143248014434	AG_105	[Agriculture]	Narration			What kind of food is prepared and given to pigs?					सूअरों के लिए किस तरह का खाना बनाया और दिया जाता है?
+Q20221128143248015195	AG_106	[Agriculture]	Narration			How are the pigs taken care of?					सूअरों की देखभाल कैसे की जाती है?
+Q20221128143248015837	AG_107	[Agriculture]	Narration			What kinds of disease do the pigs suffer from?					सूअर किस प्रकार की बीमारी से पीड़ित होते हैं?
+Q20221128143248016393	AG_108	[Agriculture]	Narration			Where do pigs stay in the home?					सूअर घर में कहाँ रहते हैं?
+Q20221128143248017041	AG_109	[Agriculture]	Narration			How do Toto people grow maize?					टोटो लोग मक्का कैसे उगाते हैं?
+Q20221128143248017537	AG_110	[Agriculture]	Narration			How do you grow jackfruit?					आप कटहल कैसे उगाते हैं?
+Q20221128143248017952	AG_143	[Agriculture]	Narration			For Kok Borok					
+Q20221128143248018343	AG_144	[Agriculture]	Narration			What are the different kinds of seeds used for growing rice? What are their advantages and disadvantages?					चावल उगाने के लिए किस प्रकार के बीजों का उपयोग किया जाता है? उनके फायदे और नुकसान क्या हैं?
+Q20221128143248018736	AG_145	[Agriculture]	Narration			What are the different varieties of rice grown?					चावल की विभिन्न किस्में कौन सी उगाई जाती हैं?
+Q20221128143248019125	AG_146	[Agriculture]	Narration			In which months / seasons are the different varieties of rice grown - if only one variety of rice is cultivated, tell us about that only?					चावल की विभिन्न किस्में किन महीनों / मौसमों में उगाई जाती हैं - यदि चावल की केवल एक ही किस्म की खेती की जाती है, तो उसके बारे में ही बताइए?
+Q20221128143248019524	AG_147	[Agriculture]	Narration			What is the process of growing different varieties of rice- if only one variety of rice is cultivated, tell us about that only?					चावल की विभिन्न किस्मों को उगाने की प्रक्रिया क्या है - यदि चावल की केवल एक किस्म की खेती की जाती है, तो हमें केवल उसके बारे में बताइए?
+Q20221128143248019910	AG_148	[Agriculture]	Narration			How long do they take to mature?					उन्हें तैयार होने में कितना समय लगता है?
+Q20221128143248020305	AG_149	[Agriculture]	Narration			What kinds of special protection / care do they need (such as use of insecticide, pesticide or other such measures)?					उन्हें किस प्रकार की विशेष सुरक्षा / देखभाल की आवश्यकता है (जैसे कीटनाशक या ऐसे अन्य उपायों का प्रयोग)?
+Q20221128143248020682	AG_150	[Agriculture]	Narration			How are they sold to other people?					वे अन्य लोगों को कैसे बेचे जाते हैं?
+Q20221128143248021105	AG_151	[Agriculture]	Narration			How are these cooked and eaten?					इन्हें कैसे पकाया और खाया जाता है?
+Q20221128143248021565	AG_152	[Agriculture]	Narration			What are the different kinds of seeds used for growing wheat? What are their advantages and disadvantages?					गेहूं उगाने के लिए किस प्रकार के बीजों का प्रयोग किया जाता है? उनके फायदे और नुकसान क्या हैं?
+Q20221128143248022015	AG_153	[Agriculture]	Narration			What are the different varieties of wheat grown?					गेहूं की विभिन्न किस्में कौन सी उगाई जाती हैं?
+Q20221128143248022558	AG_154	[Agriculture]	Narration			In which months / seasons are the different varieties of wheat grown - if only one variety of wheat is cultivated, tell us about that only?					गेहूं की विभिन्न किस्में किन महीनों / मौसमों में उगाई जाती हैं - यदि गेहूं की केवल एक ही किस्म की खेती की जाती है, तो उसके बारे में ही बताइए?
+Q20221128143248023492	AG_155	[Agriculture]	Narration			What is the process of growing different varieties of wheat - if only one variety of wheat is cultivated, tell us about that only?					गेहूं की विभिन्न किस्मों को उगाने की प्रक्रिया क्या है - यदि गेहूं की केवल एक किस्म की खेती की जाती है, तो हमें केवल उसके बारे में बताइए?
+Q20221128143248024153	AG_156	[Agriculture]	Narration			How long do they take to mature?					उन्हें तैयार होने में कितना समय लगता है?
+Q20221128143248024617	AG_157	[Agriculture]	Narration			What kinds of special protection / care do they need (such as use of insecticide, pesticide or other such measures)?					उन्हें किस प्रकार की विशेष सुरक्षा / देखभाल की आवश्यकता है (जैसे कीटनाशक या ऐसे अन्य उपायों का उपयोग)?
+Q20221128143248025007	AG_158	[Agriculture]	Narration			How are they sold to other people?					वे अन्य लोगों को कैसे बेचे जाते हैं?
+Q20221128143248025483	AG_159	[Agriculture]	Narration			How are these cooked and eaten?					इन्हें कैसे पकाया और खाया जाता है?
+Q20221128143248025853	AG_160	[Agriculture]	Narration			What are the different kinds of seeds used for growing maize? What are their advantages and disadvantages?					मक्का उगाने के लिए किस प्रकार के बीजों का प्रयोग किया जाता है? उनके फायदे और नुकसान क्या हैं?
+Q20221128143248026217	AG_161	[Agriculture]	Narration			What are the different varieties of maize grown?					मक्का की विभिन्न किस्में कौन सी उगाई जाती हैं?
+Q20221128143248026591	AG_162	[Agriculture]	Narration			In which months / seasons are the different varieties of maize grown - if only one variety of maize is cultivated, tell us about that only?					मक्का की विभिन्न किस्में किन महीनों / मौसमों में उगाई जाती हैं - यदि मक्का की केवल एक ही किस्म की खेती की जाती है, तो उसके बारे में ही बताइए?
+Q20221128143248027041	AG_163	[Agriculture]	Narration			What is the process of growing different varieties of maize - if only one variety of maize is cultivated, tell us about that only?					मक्का की विभिन्न किस्मों को उगाने की प्रक्रिया क्या है - यदि मक्का की केवल एक किस्म की खेती की जाती है, तो हमें केवल उसके बारे में बताइए?
+Q20221128143248027418	AG_164	[Agriculture]	Narration			How long do they take to mature?					उन्हें तैयार होने में कितना समय लगता है?
+Q20221128143248027784	AG_165	[Agriculture]	Narration			What kinds of special protection / care do they need (such as use of insecticide, pesticide or other such measures)?					उन्हें किस प्रकार की विशेष सुरक्षा / देखभाल की आवश्यकता है (जैसे कीटनाशक या ऐसे अन्य उपायों का उपयोग)?
+Q20221128143248028147	AG_166	[Agriculture]	Narration			How are they sold to other people?					वे अन्य लोगों को कैसे बेचे जाते हैं?
+Q20221128143248028506	AG_167	[Agriculture]	Narration			How are these cooked and eaten?					इन्हें कैसे पकाया और खाया जाता है?
+Q20221128143248028965	AG_168	[Agriculture]	Narration			What are the different kinds of seeds used for growing pluses? What are their advantages and disadvantages?					दालें उगाने के लिए किस प्रकार के बीजों का प्रयोग किया जाता है? उनके फायदे और नुकसान क्या हैं?
+Q20221128143248029326	AG_169	[Agriculture]	Narration			What are the different varieties of pluses grown?					दालों की विभिन्न किस्में कौन सी उगाई जाती हैं?
+Q20221128143248356419	AG_170	[Agriculture]	Narration			In which months / seasons are the different varieties of pluses grown - if only one variety of pluses is cultivated, tell us about that only?					दालों की विभिन्न किस्में किन महीनों / मौसमों में उगाई जाती हैं - अगर दाल की केवल एक ही किस्म की खेती की जाती है, तो उसके बारे में ही बताइए?
+Q20221128143248357496	AG_171	[Agriculture]	Narration			What is the process of growing different varieties of pluses - if only one variety of pluses is cultivated, tell us about that only?					दालों की विभिन्न किस्मों को उगाने की प्रक्रिया क्या है - यदि दाल की केवल एक किस्म की खेती की जाती है, तो हमें केवल उसके बारे में बताइए?
+Q20221128143248358295	AG_172	[Agriculture]	Narration			How long do they take to mature?					उन्हें तैयार होने में कितना समय लगता है?
+Q20221128143248358947	AG_173	[Agriculture]	Narration			What kinds of special protection / care do they need (such as use of insecticide, pesticide or other such measures)?					उन्हें किस प्रकार की विशेष सुरक्षा / देखभाल की आवश्यकता है (जैसे कीटनाशक या ऐसे अन्य उपायों का उपयोग)?
+Q20221128143248359548	AG_174	[Agriculture]	Narration			How are they sold to other people?					वे अन्य लोगों को कैसे बेचे जाते हैं?
+Q20221128143248370031	AG_175	[Agriculture]	Narration			How are these cooked and eaten?					इन्हें कैसे पकाया और खाया जाता है?
+Q20221128143248370724	AG_176	[Agriculture]	Narration			What are the different kinds of seeds used for growing sugarcane? What are their advantages and disadvantages?					गन्ना उगाने के लिए किस प्रकार के बीजों का प्रयोग किया जाता है? उनके फायदे और नुकसान क्या हैं?
+Q20221128143248371336	AG_177	[Agriculture]	Narration			What are the different varieties of sugarcane grown?					गन्ना की विभिन्न किस्में कौन सी उगाई जाती हैं?
+Q20221128143248371884	AG_178	[Agriculture]	Narration			In which months / seasons are the different varieties of sugarcane grown - if only one variety of sugarcane is cultivated, tell us about that only?					गन्ना की विभिन्न किस्में किन महीनों / मौसमों में उगाई जाती हैं - अगर गन्ना की केवल एक ही किस्म की खेती की जाती है, तो उसके बारे में ही बताइए?
+Q20221128143248372480	AG_179	[Agriculture]	Narration			What is the process of growing different varieties of sugarcane - if only one variety of sugarcane is cultivated, tell us about that only?					गन्ना की विभिन्न किस्मों को उगाने की प्रक्रिया क्या है - अगर गन्ना की केवल एक किस्म की खेती की जाती है, तो हमें केवल उसके बारे में बताइए?
+Q20221128143248373118	AG_180	[Agriculture]	Narration			How long do they take to mature?					उन्हें तैयार होने में कितना समय लगता है?
+Q20221128143248373765	AG_181	[Agriculture]	Narration			What kinds of special protection / care do they need (such as use of insecticide, pesticide or other such measures)?					उन्हें किस प्रकार की विशेष सुरक्षा / देखभाल की आवश्यकता है (जैसे कीटनाशक या ऐसे अन्य उपायों का उपयोग)?
+Q20221128143248374412	AG_182	[Agriculture]	Narration			How are they sold to other people?					वे अन्य लोगों को कैसे बेचे जाते हैं?
+Q20221128143248375242	AG_183	[Agriculture]	Narration			How are these cooked and eaten?					इन्हें कैसे पकाया और खाया जाता है?
+Q20221128143248375830	AG_184	[Agriculture]	Narration			What are the different kinds of seeds used for growing cotton? What are their advantages and disadvantages?					कपास उगाने के लिए किस प्रकार के बीजों का प्रयोग किया जाता है? उनके फायदे और नुकसान क्या हैं?
+Q20221128143248376365	AG_185	[Agriculture]	Narration			What are the different varieties of cotton grown?					कपास की विभिन्न किस्में कौन सी उगाई जाती हैं?
+Q20221128143248376937	AG_186	[Agriculture]	Narration			In which months / seasons are the different varieties of cotton grown - if only one variety of cotton is cultivated, tell us about that only?					कपास की विभिन्न किस्में किन महीनों / मौसमों में उगाई जाती हैं - अगर कपास की केवल एक ही किस्म की खेती की जाती है, तो उसके बारे में ही बताइए?
+Q20221128143248377682	AG_276	[Agriculture]	Narration			What is the process of growing different varieties of cotton- if only one variety of cotton is cultivated, tell us about that only?					कपास की विभिन्न किस्मों को उगाने की प्रक्रिया क्या है - अगर कपास की केवल एक किस्म की खेती की जाती है, तो हमें केवल उसके बारे में बताइए?
+Q20221128143248378305	AG_277	[Agriculture]	Narration			How long do they take to mature?					उन्हें तैयार होने में कितना समय लगता है?
+Q20221128143248378965	AG_278	[Agriculture]	Narration			What kinds of special protection / care do they need (such as use of insecticide, pesticide or other such measures)?					उन्हें किस प्रकार की विशेष सुरक्षा / देखभाल की आवश्यकता है (जैसे कीटनाशक या ऐसे अन्य उपायों का उपयोग)?
+Q20221128143248379517	AG_279	[Agriculture]	Narration			How are they sold to other people?					वे अन्य लोगों को कैसे बेचे जाते हैं?
+Q20221128143248380204	AG_280	[Agriculture]	Narration			How are these cooked and eaten?					इन्हें कैसे पकाया और खाया जाता है?
+Q20221128143248380878	AG_281	[Agriculture]	Narration			What are the different kinds of seeds used for growing jute? What are their advantages and disadvantages?					जूट उगाने के लिए किस प्रकार के बीजों का प्रयोग किया जाता है? उनके फायदे और नुकसान क्या हैं?
+Q20221128143248381592	AG_282	[Agriculture]	Narration			What are the different varieties of jute grown?					जूट की विभिन्न किस्में कौन सी उगाई जाती हैं?
+Q20221128143248382345	AG_283	[Agriculture]	Narration			In which months / seasons are the different varieties of jute grown - if only one variety of jute is cultivated, tell us about that only?					जूट की विभिन्न किस्में किन महीनों / मौसमों में उगाई जाती हैं - अगर जूट की केवल एक ही किस्म की खेती की जाती है, तो उसके बारे में ही बताइए?
+Q20221128143248383323	AG_284	[Agriculture]	Narration			What is the process of growing different varieties of jute - if only one variety of jute is cultivated, tell us about that only?					जूट की विभिन्न किस्मों को उगाने की प्रक्रिया क्या है - अगर जूट की केवल एक किस्म की खेती की जाती है, तो हमें केवल उसके बारे में बताइए?
+Q20221128143248383931	AG_285	[Agriculture]	Narration			How long do they take to mature?					उन्हें तैयार होने में कितना समय लगता है?
+Q20221128143248384453	AG_286	[Agriculture]	Narration			What kinds of special protection / care do they need (such as use of insecticide, pesticide or other such measures)?					उन्हें किस प्रकार की विशेष सुरक्षा / देखभाल की आवश्यकता है (जैसे कीटनाशक या ऐसे अन्य उपायों का उपयोग)?
+Q20221128143248385143	AG_287	[Agriculture]	Narration			How are they sold to other people?					वे अन्य लोगों को कैसे बेचे जाते हैं?
+Q20221128143248385963	AG_288	[Agriculture]	Narration			How are these cooked and eaten?					इन्हें कैसे पकाया और खाया जाता है?
+Q20221128143248386596	AG_289	[Agriculture]	Narration			What are the different kinds of seeds used for growing mesta? What are their advantages and disadvantages?					मेस्टा उगाने के लिए किस प्रकार के बीजों का प्रयोग किया जाता है? उनके फायदे और नुकसान क्या हैं?
+Q20221128143248387200	AG_290	[Agriculture]	Narration			What are the different varieties of mesta grown?					मेस्टा की विभिन्न किस्में कौन सी उगाई जाती हैं?
+Q20221128143248387778	AG_291	[Agriculture]	Narration			In which months / seasons are the different varieties of mesta grown - if only one variety of mesta is cultivated, tell us about that only?					मेस्टा की विभिन्न किस्में किन महीनों / मौसमों में उगाई जाती हैं - अगर जूट की केवल एक ही किस्म की खेती की जाती है, तो उसके बारे में ही बताइए?
+Q20221128143248388327	AG_292	[Agriculture]	Narration			What is the process of growing different varieties of mesta- if only one variety of mesta is cultivated, tell us about that only?					मेस्टा की विभिन्न किस्मों को उगाने की प्रक्रिया क्या है - अगर जूट की केवल एक किस्म की खेती की जाती है, तो हमें केवल उसके बारे में बताइए?
+Q20221128143248388862	AG_293	[Agriculture]	Narration			How long do they take to mature?					उन्हें तैयार होने में कितना समय लगता है?
+Q20221128143248389467	AG_294	[Agriculture]	Narration			What kinds of special protection / care do they need (such as use of insecticide, pesticide or other such measures)?					उन्हें किस प्रकार की विशेष सुरक्षा / देखभाल की आवश्यकता है (जैसे कीटनाशक या ऐसे अन्य उपायों का उपयोग)?
+Q20221128143248390117	AG_295	[Agriculture]	Narration			How are they sold to other people?					वे अन्य लोगों को कैसे बेचे जाते हैं?
+Q20221128143248390770	AG_296	[Agriculture]	Narration			How are these cooked and eaten?					इन्हें कैसे पकाया और खाया जाता है?
+Q20221128143248391465	AG_187	[Agriculture]	Narration			For Chokri					
+Q20221128143248392064	AG_188	[Agriculture]	Narration			how many variety of rice are grown in your community? name them.					आपके समुदाय में चावल की कितनी किस्में उगाई जाती हैं? उन्हे नाम दो।
+Q20221128143248392656	AG_189	[Agriculture]	Narration			In which month or season are the different varieties of rice grown? and what are the difference between these variety of rice?					चावल की विभिन्न किस्में किस महीने या मौसम में उगाई जाती हैं? और चावल की इन किस्मों में क्या अंतर है?
+Q20221128143248393190	AG_190	[Agriculture]	Narration			Tell us something about the process of rice cultivation? are the process same for all the different variety? if different, explain?					चावल की खेती की प्रक्रिया के बारे में कुछ बताएं? क्या प्रक्रिया सभी विभिन्न किस्मों के लिए समान है? अगर अलग है, तो बताएं?
+Q20221128143248393674	AG_191	[Agriculture]	Narration			what are the method or the process used for protecting the rice from various harmful elements?					चावल को विभिन्न हानिकारक तत्वों से बचाने के लिए उपयोग की जाने वाली विधि या प्रक्रिया क्या है?
+Q20221128143248394562	AG_192	[Agriculture]	Narration			how long does it takes to mature?					तैयार होने में कितना समय लगता है?
+Q20221128143248395340	AG_193	[Agriculture]	Narration			how are they cooked and eaten?					उन्हें कैसे पकाया और खाया जाता है?
+Q20221128143248396043	AG_194	[Agriculture]	Narration			how many bags of rice can be harvested per cultivations? can it be used to sell it others?					प्रति खेती चावल के कितने बैग निकाले जा सकता है? क्या इसे दूसरों को बेचने के लिए इस्तेमाल किया जा सकता है?
+Q20221128143248396593	AG_195	[Agriculture]	Narration			how many variety of herbs and vegetables are grown in your community? name them?					आपके समुदाय में कितनी तरह की जड़ी-बूटियां और सब्जियां उगाई जाती हैं? उन्हे नाम दो?
+Q20221128143248397105	AG_196	[Agriculture]	Narration			In which month or season are the different variety of herbs/ vegetables grown?					विभिन्न प्रकार की जड़ी-बूटियाँ/सब्जियाँ किस महीने या मौसम में उगाई जाती हैं?
+Q20221128143248397604	AG_197	[Agriculture]	Narration			tell us something about the process of cultivating the different variety of herbs/vegetables?					विभिन्न प्रकार की जड़ी-बूटियों/सब्जियों को उगाने की प्रक्रिया के बारे में कुछ बताएं?
+Q20221128143248398244	AG_198	[Agriculture]	Narration			what kind of special protection/ care do they need (such as use of insecticide,pesticide)					उन्हें किस प्रकार की विशेष सुरक्षा/देखभाल की आवश्यकता है (जैसे कीटनाशक का उपयोग)
+Q20221128143248398819	AG_199	[Agriculture]	Narration			how long does the various variety of herbs and vegetables takes to mature?					विभिन्न प्रकार की जड़ी-बूटियों और सब्जियों को तैयार होने में कितना समय लगता है?
+Q20221128143248399505	AG_200	[Agriculture]	Narration			how are they cooked and eaten?					उन्हें कैसे पकाया और खाया जाता है?
+Q20221128143248400024	AG_201	[Agriculture]	Narration			how are they sold to others?					वे दूसरों को कैसे बेचे जाते हैं?
+Q20221128143248400529	AG_202	[Agriculture]	Narration			what are the different kinds of animal do you keep at home?					आप घर पर किस तरह के जानवर रखते हैं?
+Q20221128143248400996	AG_203	[Agriculture]	Narration			what are they used for?					उनका प्रयोग किस लिए हो रहा है?
+Q20221128143248401433	AG_204	[Agriculture]	Narration			how do you prepare food for the various animals that you have at home?					आप अपने घर में विभिन्न जानवरों के लिए भोजन कैसे बनाते हैं?
+Q20221128143248401828	AG_205	[Agriculture]	Narration			what roles does these animal play at home? what do they contribute?					ये जानवर घर पर क्या भूमिका निभाते हैं? वे क्या योगदान करते हैं?
+Q20221128143248402316	AG_206	[Agriculture]	Narration			Are these animals consumed? if so when and why?					क्या इन जानवरों का सेवन किया जाता है? यदि हां तो कब और क्यों?
+Q20221128143248402730	AG_231	[Agriculture]	Narration			For Bodo					
+Q20221128143248403147	LC_1	[Lifecycle]	Narration			What are the different ceremonies related to the birth of a child in your community?					आपके समाज में बच्चे के जन्म और नामकरण संस्कार से सम्बन्धित विभिन्न रस्म-रिवाज क्या हैं?
+Q20221128143248403540	LC_2	[Lifecycle]	Narration			Generally at what time and at what place do the ceremonies related to birth of a child take place?					समान्यतः बच्चे के जन्म व नामकरण संस्कार से सम्बन्धित रस्म-रिवाज कब और किस जगह होता है?
+Q20221128143248403957	LC_3	[Lifecycle]	Narration			How many ceremonies related to birth take place? What are their names and what are their purpose?					बच्चे के जन्म और नामकरण संस्कार से सम्बन्धित कितनी रस्में होती है ? उनके नाम और उद्देश्य क्या है ?
+Q20221128143248404353	LC_4	[Lifecycle]	Narration			How are the day and time of birth ceremonies decided?					जन्म व नामकरण संस्कार का दिन और समय कैसे निर्धारित होता है ? 
+Q20221128143248404785	LC_5	[Lifecycle]	Narration			Who all are invited to the birth ceremonies?					जन्म व नामकरण संस्कार में किन-किन को आमंत्रित किया जाता है ?
+Q20221128143248405438	LC_6	[Lifecycle]	Narration			How are people seated during the birth (any specific direction, etc)?					जन्म व नामकरण संस्कार के दौरान लोग कैसे बैठते है (कोई विशिष्ट दिशा इत्यादि)?
+Q20221128143248405910	LC_7	[Lifecycle]	Narration			What is the procedure of the birth ceremonies?					जन्म व नामकरण संस्कार की प्रक्रिया क्या है ?
+Q20221128143248406587	LC_8	[Lifecycle]	Narration			What materials and objects are used for the birth ceremonies?					जन्म व नामकरण संस्कार के लिए किन-किन पदार्थों और वस्तुओं का प्रयोग किया जाता है?
+Q20221128143248407262	LC_9	[Lifecycle]	Narration			Who gives the name to the child and how is it given?					बच्चे का नाम कौन रखता है और यह कैसे रखा जाता है ?
+Q20221128143248407882	LC_10	[Lifecycle]	Narration			Who performs the birth ceremony?					जन्म संस्कार कौन करता है?
+Q20221128143248408418	LC_11	[Lifecycle]	Narration			Is there a feast after the birth of a child? What kinds of food are served in the feast?					क्या जन्म व नामकरण संस्कार के बाद दावत होती है ? दावत मैं‌ किस प्रकार का भोजन परोसा जाता है ?
+Q20221128143248408952	LC_12	[Lifecycle]	Narration			Who makes arrangement for and pays for the expenses during the birth ceremonies?					जन्म व नामकरण संस्कार की वयवस्था और उसके खर्चे कौन करता है?
+Q20221128143248409636	LC_13	[Lifecycle]	Narration			Any other important details that you want to share about the birth and  ceremonies					जन्म व नामकरण संस्कार के बारे में और कोई महत्वपूर्ण बातें जो आप बताना चाहते हो ?
+Q20221128143248410141	LC_41	[Lifecycle]	Narration			What kind of food do you give to the new born for the first year of the child?					बच्चे होने के पहले साल में आप नवजात को किस तरह का खाना देते हैं?
+Q20221128143248410631	LC_14	[Lifecycle]	Narration			How do the prospective couple interact before the marriage in your community?					क्या आपके समाज में विवाह से पहले पति-पत्नी मिल सकते है?
+Q20221128143248411146	LC_15	[Lifecycle]	Narration			What is the process of finding a spouse in your community?					आपके समाज में‌ पति-पत्नी खोजने की क्या प्रक्रिया है?
+Q20221128143248411765	LC_16	[Lifecycle]	Narration			Who is primarily responsible for finding the spouse?					जीवनसाथी को खोजने के लिए मुख्य रूप से कौन जिम्मेदार होता है?
+Q20221128143248412247	LC_17	[Lifecycle]	Narration			What are the different ceremonies related to marriage in your community?					आपके समाज में विवाह से सम्बन्धित कौन-कौन सी विभिन्न रस्म-रिवाज है?
+Q20221128143248412728	LC_18	[Lifecycle]	Narration			Generally at what time and at what place do the marriage ceremony take place?					समान्यतः, विवाह से सम्बन्धित रस्म-रिवाज कब और किस जगह होती है?
+Q20221128143248413232	LC_19	[Lifecycle]	Narration			How many ceremonies related to marriage take place? What are their names and what are their purpose?					विवाह से सम्बन्धित कितनी रस्में होती है? उनके नाम व उद्देश्य क्या है?
+Q20221128143248413729	LC_20	[Lifecycle]	Narration			How are the day and time of marriage ceremonies decided?					वैवाहिक रस्मों का दिन व समय कैसे निर्धारित होता है? 
+Q20221128143248414307	LC_21	[Lifecycle]	Narration			Who all are invited to the marriage ceremonies?					वैवाहिक रस्मों में किन-किन को आमंत्रित किया जाता है?
+Q20221128143248414929	LC_22	[Lifecycle]	Narration			How are people seated during the marriage ceremonies (any specific direction, etc)?					वैवाहिक रस्मों के दौरान लोग कैसे बैठते है (कोई विशिष्ट दिशा इत्यादि)?
+Q20221128143248415430	LC_23	[Lifecycle]	Narration			What are the rituals prformed during the marriage ceremonies?					वैवाहिक रस्मों की प्रक्रिया क्या है?
+Q20221128143248415961	LC_24	[Lifecycle]	Narration			What materials and objects are used for the marriage ceremonies?					वैवाहिक रस्मों के लिए किन-किन पदार्थों व वस्तुओं का प्रयोग किया जाता है?
+Q20221128143248416683	LC_25	[Lifecycle]	Narration			How are rituals performed during the marriage ceremony?					शादी समारोह के दौरान अनुष्ठान कैसे किए जाते हैं?
+Q20221128143248417226	LC_26	[Lifecycle]	Narration			Is there a feast after, before or during the marriage ceremonies? What kind of food are served in the feast?					क्या वैवाहिक रस्मों के बाद, पहले या उसी समय दावत होती है ? दावत में किस प्रकार का भोजन परोसा जाता है?
+Q20221128143248417720	LC_27	[Lifecycle]	Narration			How is the feast/food prepared for during the marriage ceremonies?					विवाह समारोहों के दौरान दावत/भोजन कैसे तैयार किया जाता है?
+Q20221128143248418196	LC_28	[Lifecycle]	Narration			Any other important details that you want to share about the marriage ceremonies					वैवाहिक रस्मों के बारे में और कोई महत्वपूर्ण बातें जो आप बताना चाहते हो ? 
+Q20221128143248418744	LC_42	[Lifecycle]	Narration			How are the newly wedded couple welcomed to the community?					समुदाय में नवविवाहित जोड़े का स्वागत कैसे किया जाता है?
+Q20221128143248419436	LC_29	[Lifecycle]	Narration			What are the different ceremonies related to the death in your community?					तुम्हारे समाज मे अंतिम संस्कार से सम्बन्धित विभिन्न रस्म-रिवाज क्या है? 
+Q20221128143248419854	LC_30	[Lifecycle]	Narration			Generally at what time and at what place do the ceremony take place?					समान्यतः, अंतिम संस्कार से सम्बन्धित रस्म-रिवाज कब और किस जगह होता है
+Q20221128143248420262	LC_31	[Lifecycle]	Narration			How many ceremonies related to death take place? What are their names and what are their purpose?					अंतिम संस्कार से सम्बन्धित कितनी रस्में होती है ? उनके नाम और उद्देश्य क्या है ?
+Q20221128143248420711	LC_32	[Lifecycle]	Narration			Who all participate in the ceremonies related to death?					मृत्यु से संबंधित समारोहों में कौन सभी भाग लेते हैं?
+Q20221128143248421297	LC_33	[Lifecycle]	Narration			How are people seated during the ceremonies  related to death (any specific direction, etc)?					अंतिम संस्कार के दौरान लोग कैसे बैठते है (कोई विशेष दिशा इत्यादि)?
+Q20221128143248421715	LC_34	[Lifecycle]	Narration			What are the different rituals performed which are related to death?					अंतिम संस्कार से संबंधित विभिन्न रस्में कौन सी हैं?
+Q20221128143248422220	LC_35	[Lifecycle]	Narration			What materials and objects are used for the ceremonies related to death?					अंतिम संस्कार के लिए किन-किन पदार्थों और वस्तुओं का प्रयोग किया जाता है?
+Q20221128143248422823	LC_36	[Lifecycle]	Narration			How is it decided who will perform the ceremony related to death? (in case of infant, child, old people)					यह कैसे तय होता है कि मृत्यु से संबंधित रस्में कौन करेगा? (शिशु, बच्चे, वृद्ध लोगों के मामले में)
+Q20221128143248423516	LC_37	[Lifecycle]	Narration			What kind of food do you offer after, before or during the ceremonies related to death?					अंतिम संस्कार के बाद, पहले या उसके दौरान आप किस प्रकार का भोजन परोसते हैं? 
+Q20221128143248424108	LC_38	[Lifecycle]	Narration			How is the food arranged for and prepared for during the ceremonies related to death?					अंतिम संस्कार के दौरान भोजन की व्यवस्था और तैयारी कैसे की जाती है?
+Q20221128143248424576	LC_39	[Lifecycle]	Narration			Any other important details that you want to share about the ceremonies related to death					अंतिम संस्कार के बारे में और कोई महत्वपूर्ण बातें जो आप बताना चाहते हो ? 
+Q20221128143248425013	LC_40	[Lifecycle]	Narration			what are the ceremonies where you can serve wine ?					वे कौन से समारोह हैं जहां आप शराब परोस सकते हैं?
+Q20221128143248425378	ST_1	[Science-Technology]	Narration			How will linguistics help in developing a corpora from actual written and spoken text varieties?					भाषाविज्ञान वास्तविक लिखित और बोली जाने वाली पाठ किस्मों से एक कॉर्पोरा विकसित करने में कैसे मदद करेगा?
+Q20221128143248425885	ST_2	[Science-Technology]	Narration			How is  language corpora developed in the areas of language technology?					भाषा प्रौद्योगिकी के क्षेत्रों में भाषा कॉर्पोरा कैसे विकसित होता है?
+Q20221128143248426310	ST_3	[Science-Technology]	Narration			Why is their a need to develop corpora for various type of language to address the need of linguistic at large?					बडे़ रूप से भाषा की आवश्यकता को पूरा करने के लिए विभिन्न प्रकार की भाषा के लिए कॉर्पोरा विकसित करने की आवश्यकता क्यों है?
+Q20221128143248426741	ST_4	[Science-Technology]	Narration			In what ways speech technology serves as a means for developing speech databases?					वाक् प्रौद्योगिकी किस प्रकार वाक् डेटाबेस विकसित करने के साधन के रूप में कार्य करती है?
+Q20221128143248427117	ST_5	[Science-Technology]	Narration			What comprises contextual speech database?					कंटेक्सटुअल स्पीच डेटाबेस में क्या शामिल है?
+Q20221128143248427583	ST_6	[Science-Technology]	Narration			How are text in raw speech corpora presented? 					रॉ स्पीच कॉर्पोरा में टेक्स्ट कैसे प्रस्तुत किया जाता है?
+Q20221128143248427948	ST_7	[Science-Technology]	Narration			Why is their a need to transcribe spoken texts to generate spoken corpora?					स्पोकन कॉर्पोरा बनाने के लिए उन्हें स्पोकन टेक्स्ट को ट्रांसक्राइब करने की आवश्यकता क्यों है?
+Q20221128143248428311	ST_8	[Science-Technology]	Narration			What does annotated version of a corpus contains? How does annotated corpora helps in studying a langauge?					कॉर्पस के एनोटिट संस्करण में क्या शामिल है? एनोटिट कॉर्पस किसी भाषा का अध्ययन करने में किस प्रकार सहायता करता है?
+Q20221128143248428663	ST_9	[Science-Technology]	Narration			Can you tell us the need for designing special text corpora?					क्या आप हमें विशेष टेक्स्ट कॉरपोरा डिजाइन करने की आवश्यकता बता सकते हैं?
+Q20221128143248429125	ST_10	[Science-Technology]	Narration			What is the role of dialect corpora? How does it help to identify the total number of speech vareities used in the country?					किसी बोली के कॉर्पोरा की भूमिका क्या है? यह देश में प्रयोग की जाने वाली भाषण किस्मों की कुल संख्या की पहचान करने में कैसे मदद करती है?
+Q20221128143248429489	ST_11	[Science-Technology]	Narration			How is  the process of comparable corpora developed?					कम्पेरेबल कॉर्पोरा की प्रक्रिया कैसे विकसित की जाती है?
+Q20221128143248429903	ST_12	[Science-Technology]	Narration			What are the basic activities of the central bodies to maintain the databases?					डेटाबेस को बनाए रखने के लिए केंद्रीय निकायों की बुनियादी गतिविधियां क्या हैं?
+Q20221128143248430344	ST_13	[Science-Technology]	Narration			What is required for deloping devices of language technology?					भाषा प्रौद्योगिकी के उपकरणों को विकसित करने के लिए क्या आवश्यक है?
+Q20221128143248430862	ST_14	[Science-Technology]	Narration			Can you mention the importance of digital literacy?					क्या आप डिजिटल साक्षरता के महत्व का उल्लेख कर सकते हैं?
+Q20221128143248431276	ST_15	[Science-Technology]	Narration			Can you tell us the importance  of computational linguistics?					क्या आप हमें कम्प्यूटेशनल भाषाविज्ञान का महत्व बता सकते हैं?
+Q20221128143248431805	ST_16	[Science-Technology]	Narration			Can you mention  the type of analysis on a natural language data? 					क्या आप प्राकृतिक भाषा डेटा पर विश्लेषण के प्रकार का उल्लेख कर सकते हैं?
+Q20221128143248432393	ST_17	[Science-Technology]	Narration			How does a speech sound gets recognise by the machine?					मशीन द्वारा वाक् ध्वनि को कैसे पहचाना जाता है?
+Q20221128143248433092	ST_18	[Science-Technology]	Narration			What are the ways in which a text can be processed with various stages of linguistics analysis?					भाषाविज्ञान विश्लेषण के विभिन्न चरणों के साथ किसी पाठ को किस तरीके से संसाधित किया जा सकता है?
+Q20221128143248433579	ST_19	[Science-Technology]	Narration			Can you tell us the process of sentence splitting ?					क्या आप हमें वाक्य विभाजन की प्रक्रिया बता सकते हैं?
+Q20221128143248433980	ST_20	[Science-Technology]	Narration			What is the process involve in part of speech tagging?					स्पीच टैगिंग के भाग में शामिल प्रक्रिया क्या है?
+Q20221128143248434371	ST_21	[Science-Technology]	Narration			Can you mention the role of Morph analysis?					क्या आप मॉर्फ विश्लेषण की भूमिका का उल्लेख कर सकते हैं?
+Q20221128143248434764	ST_22	[Science-Technology]	Narration			How is syntactic analysis of words done?					शब्दों का वाक्यात्मक विश्लेषण कैसे किया जाता है?
+Q20221128143248435235	ST_23	[Science-Technology]	Narration			What process is involve in Syntactic parsing?					सिंटेक्टिक पार्सिंग में कौन सी प्रक्रिया शामिल है?
+Q20221128143248435731	ST_24	[Science-Technology]	Narration			Why is National Digital Literay Mission initiated? 					राष्ट्रीय डिजिटल साक्षरता मिशन क्यों शुरू किया गया है?
+Q20221128143248436226	ST_25	[Science-Technology]	Narration			How does a speaker of a langauge puts the words toegther to form a sentence?What property of language describes that sentence and phraces have no limit or fixed length?					एक भाषा का वक्ता वाक्य बनाने के लिए शब्दों को एक साथ कैसे रखता है? भाषा का कौन सा गुण बताता है कि वाक्य और वाक्यांशों की कोई सीमा या निश्चित लंबाई नहीं है?
+Q20221128143248436684	ST_26	[Science-Technology]	Narration			What constitutes learning a language? How is knowledge of langauge put into use?					भाषा सीखने से क्या बनता है? भाषा के ज्ञान को कैसे प्रयोग में लाया जाता है?
+Q20221128143248437110	ST_27	[Science-Technology]	Narration			Can you tell us  the difference between phonetics and phonology?					क्या आप हमें फॉनेटिक्स और फोनोलॉजी के बीच अंतर बता सकते हैं?
+Q20221128143248437507	ST_28	[Science-Technology]	Narration			How are speech sound organs and cavities  used for the production of speech sounds?					वाक् ध्वनि के उत्पादन के लिए वाक् ध्वनि अंगों और गुहाओं का प्रयोग कैसे किया जाता है?
+Q20221128143248437892	ST_29	[Science-Technology]	Narration			Can you mention the use of IPA ?					क्या आप आईपीए के प्रयोग का उल्लेख कर सकते हैं?
+Q20221128143248438274	ST_30	[Science-Technology]	Narration			Is their any design properties of a language?					क्या आप आईपीए के प्रयोग बता सकते हैं?
+Q20221128143248438654	ST_31	[Science-Technology]	Narration			What do you mean by morphemes? Can you give the importance of morpheme?					मॉरफीम्स से आप क्या समझते हैं? क्या आप मॉरफीम का महत्व बता सकते हैं?
+Q20221128143248439067	ST_32	[Science-Technology]	Narration			Can you mention the difference between pulmonic and non-pulmonic sounds.					क्या आप पल्मोनिक और नॉन-पल्मोनिक ध्वनियों के बीच अंतर बता सकते हैं?
+Q20221128143248439794	ST_33	[Science-Technology]	Narration			How is the vowel sound produced using the vocal organs?					स्वर अंगों का उपयोग करके स्वर ध्वनि कैसे उत्पन्न होती है?
+Q20221128143248440588	ST_34	[Science-Technology]	Narration			How are transcriptions carried out from one language to another using linguistic method?					भाषाई पद्धति का प्रयोग करके एक भाषा से दूसरी भाषा में ट्रांसक्रिप्शन कैसे किया जाता है?
+Q20221128143248441285	ST_35	[Science-Technology]	Narration			How  do you use PRAAT for analysis and synthesis of speech?					भाषण के विश्लेषण और संश्लेषण के लिए आप प्रात का प्रयोग कैसे करते हैं?
+Q20221128143248441927	ST_36 (Scientific Research)	[Science-Technology]	Narration			What is the purpose of conducting scientific research in a planned manner?					साइंटिफिक रिसर्च को योजनाबद्ध तरीके से संचालित करने का उद्देश्य क्या है?
+Q20221128143248442454	ST_37	[Science-Technology]	Narration			What are the necessary elements before beginning a scientific research?					साइंटिफिक रिसर्च शुरू करने से पहले आवश्यक तत्व क्या हैं?
+Q20221128143248442920	ST_38	[Science-Technology]	Narration			How are the classification of scientific research helpful in designing the structure of the research?					साइंटिफिक रिसर्च का वर्गीकरण रिसर्च की संरचना को डिजाइन करने में किस प्रकार सहायक होता है?
+Q20221128143249233330	ST_39	[Science-Technology]	Narration			How is the observational data collection technique different from experimental technique?					ऑब्ज़र्वेशनल डेटा संग्रह तकनीक एक्सपेरिमेंटल तकनीक से किस तरह अलग है?
+Q20221128143249234610	ST_40	[Science-Technology]	Narration			What are the mediums in which the scientific research can be applied?					साइंटिफिक रिसर्च को किन माध्यमों में लागू किया जा सकता है?
+Q20221128143249235845	ST_41	[Science-Technology]	Narration			Tell us the classification of scientific research according to its descriptive or analytical method?					साइंटिफिक रिसर्च का वर्गीकरण उसकी वर्णनात्मक या विश्लेषणात्मक पद्धति के अनुसार बताइए?
+Q20221128143249237190	ST_42	[Science-Technology]	Narration			Can you explain the importance of case report and case series in descriptive method of research?					क्या आप शोध की वर्णनात्मक पद्धति में केस रिपोर्ट और केस सीरीज के महत्व की व्याख्या कर सकते हैं?
+Q20221128143249238044	ST_43	[Science-Technology]	Narration			In what ways do you think  analytical scientific research is different from desriptve method?					आपके विचार से एनालिटिकल साइंटिफिक रिसर्च किस प्रकार से वर्णनात्मक विधि से अलग है?
+Q20221128143249238865	ST_44	[Science-Technology]	Narration			How is observational reserach more attractive than other research studies?					अन्य शोध अध्ययनों की तुलना में ऑब्ज़र्वेशनल संबंधी शोध कैसे अधिक आकर्षक है?
+Q20221128143249239451	ST_45	[Science-Technology]	Narration			What is the pupose of cohort research in both observational and experimental studies?					ऑब्ज़र्वेशनल और एक्सपेरिमेंटल दोनों अध्ययनों में कोहोर्ट रिसर्च का उद्देश्य क्या है?
+Q20221128143249240651	ST_46	[Science-Technology]	Narration			Can you mention the importance of Case-control studies and Cross sectional studies?					क्या आप केस-कंट्रोल स्टडीज और क्रॉस सेक्शनल स्टडीज का महत्व बता सकते हैं?
+Q20221128143249242095	ST_47	[Science-Technology]	Narration			What does interventional research mean?					इंटरवेंशनल रिसर्च का क्या मतलब है?
+Q20221128143249242749	ST_48	[Science-Technology]	Narration			How is clinical research carried out within a control group in a clinical case?					एक नैदानिक ​​मामले में एक नियंत्रण समूह के भीतर नैदानिक ​​अनुसंधान कैसे किया जाता है?
+Q20221128143249243288	ST_49	[Science-Technology]	Narration			Tell us the importance of clinical research?					क्लिनिकल रिसर्च का महत्व बताएं?
+Q20221128143249243833	ST_50	[Science-Technology]	Narration			How is randomisation and blinding method aplied in clinical research?					नैदानिक ​​अनुसंधान में रैंडमाइजेशन और ब्लाइंडिंग विधि कैसे लागू होती है?
+Q20221128143249244393	ST_51General	[Science-Technology]	Narration			What are the uses of water? Can you tell us the process of filtration?					पानी के उपयोग क्या हैं? क्या आप हमें छानने की प्रक्रिया बता सकते हैं?
+Q20221128143249244957	ST_52	[Science-Technology]	Narration			What is the usage of chlorination and bleaching in water purification?					पानी को साफ करने में क्लोरीनीकरण और ब्लीचिंग का क्या प्रयोग है?
+Q20221128143249245517	ST_53	[Science-Technology]	Narration			Can you tell us the need for water conservation?					क्या आप हमें जल संरक्षण की आवश्यकता बता सकते हैं?
+Q20221128143249246062	ST_54	[Science-Technology]	Narration			How can we show that air is moving?					हम कैसे दिखा सकते हैं कि हवा चल रही है?
+Q20221128143249246565	ST_55	[Science-Technology]	Narration			Can you mention importance of oxygen in our live?					क्या आप हमारे जीवन में ऑक्सीजन के महत्व का उल्लेख कर सकते हैं?
+Q20221128143249247116	ST_56	[Science-Technology]	Narration			What is deforestation? What happens when we burn forest and fossil fuel?					वनों की कटाई क्या है? क्या होता है जब हम जंगल और जीवाश्म ईंधन जलाते हैं?
+Q20221128143249247615	ST_57	[Science-Technology]	Narration			why does north and south pole of a magnet attract?					चुम्बक का उत्तरी और दक्षिणी ध्रुव क्यों आकर्षित करता है?
+Q20221128143249248235	ST_58	[Science-Technology]	Narration			what are the different types of metal? What different tools do you make from metals?					धातु के विभिन्न प्रकार क्या हैं? आप धातुओं से कौन से विभिन्न उपकरण बनाते हैं?
+Q20221128143249248929	ST_59	[Science-Technology]	Narration			what are the different types of matter?					विभिन्न प्रकार के पदार्थ क्या हैं?
+Q20221128143249249606	ST_60	[Science-Technology]	Narration			What is non-metal? Where do you use them?					अधातु क्या है? आप उनका प्रयोग कहां करते हैं?
+Q20221128143249250775	ST_61	[Science-Technology]	Narration			how does evaporation lead to rainfall?					वाष्पीकरण से वर्षा कैसे होती है?
+Q20221128143249251397	ST_62	[Science-Technology]	Narration			how is steam produced?					भाप का उत्पादन कैसे होता है?
+Q20221128143249251919	ST_63	[Science-Technology]	Narration			what is the life-cycle process?					जीवन-चक्र की प्रक्रिया क्या है?
+Q20221128143249252433	ST_64	[Science-Technology]	Narration			what is rain water-harvesting?					वर्षा जल संचयन क्या है?
+Q20221128143249252936	ST_65	[Science-Technology]	Narration			how does mobile phone work?					मोबाइल फोन कैसे काम करता है?
+Q20221128143249253642	ST_66	[Science-Technology]	Narration			how do you charge your mobile phone?					आप अपने मोबाइल फोन को कैसे चार्ज करते हैं?
+Q20221128143249254115	ST_67	[Science-Technology]	Narration			what do you watch in you-tube channels?					आप यू-ट्यूब चैनलों में क्या देखते हैं?
+Q20221128143249254622	ST_68	[Science-Technology]	Narration			do you have any other charging device other than electricity?					क्या आपके पास बिजली के अलावा कोई अन्य चार्जिंग डिवाइस है?
+Q20221128143249255111	ST_69	[Science-Technology]	Narration			what different power source do you use to light your bulbs?					आप अपने बल्बों को जलाने के लिए किस शक्ति के स्रोत का उपयोग करते हैं?
+Q20221128143249255856	ST_70	[Science-Technology]	Narration			how is solar energy produced?					सौर ऊर्जा कैसे पैदा की जाती है?
+Q20221128143249256561	ST_71	[Science-Technology]	Narration			how are different power sources set-up?					विभिन्न शक्ति के स्रोत कैसे लगाए जाते हैं?
+Q20221128143249257086	ST_72	[Science-Technology]	Narration			what are the sources of drinking water?					पीने के पानी के स्रोत क्या हैं?
+Q20221128143249257695	ST_73	[Science-Technology]	Narration			why should we boil water before drinking?					हमें पीने से पहले पानी क्यों उबालना चाहिए?
+Q20221128143249258294	ST_74	[Science-Technology]	Narration			how do we generate electricity from solar energy?					हम सौर ऊर्जा से बिजली कैसे उत्पन्न करते हैं?
+Q20221128143249258945	ST_75	[Science-Technology]	Narration			 what are the kinds of problem that you face with your mobile and how do you fix it?					आपको अपने मोबाइल में किस प्रकार की समस्या का सामना करना पड़ता है और आप इसे कैसे ठीक करते हैं?
+Q20221128143249259487	ST_76	[Science-Technology]	Narration			how do you access the different shopping apps?					आप विभिन्न शॉपिंग ऐप्स को कैसे एक्सेस करते हैं?
+Q20221128143249260034	ST_77	[Science-Technology]	Narration			what all do you do with your mobile phone?					आप अपने मोबाइल फोन के साथ क्या करते हैं?
+Q20221128143249260588	ST_78	[Science-Technology]	Narration			why does electricity cutts off when their is heavy rainfall?					भारी बारिश होने पर बिजली क्यों कट जाती है?
+Q20221128143249261185	ST_79	[Science-Technology]	Narration			what are the different accessorise that you get with television?					टेलीविज़न के साथ आपको कौन-कौन से विभिन्न एक्सेसरीज़ मिलते हैं?
+Q20221128143249261712	ST_80	[Science-Technology]	Narration			how do you recharge your set-top box for your television?					आप अपने टेलीविज़न के सेट-टॉप बॉक्स को कैसे रिचार्ज करते हैं?
+Q20221128143249262220	ST_81	[Science-Technology]	Narration			how do you use your phone camera and under what condition do you use it?					आप अपने फ़ोन के कैमरे का प्रयोग कैसे करते हैं और आप इसका प्रयोग किस स्थिति में करते हैं?
+Q20221128143249262753	ST_82	[Science-Technology]	Narration			how do you stay connected with people before mobile phones?					आप मोबाइल फोन से पहले लोगों से कैसे जुड़े रहे थे?
+Q20221128143249263414	ST_83	[Science-Technology]	Narration			how many hours of battery charge does an inverter helps in generating electricity?					एक इन्वर्टर कितने घंटे की बैटरी चार्ज करने से बिजली पैदा करने में मदद करता है?
+Q20221128143249264215	ST_84	[Science-Technology]	Narration			what are the traditional methods of grinding food?					भोजन पीसने के पारंपरिक तरीके क्या हैं?
+Q20221128143249265539	ST_85	[Science-Technology]	Narration			how do you keep time?					आप समय कैसे रखते हैं?
+Q20221128143249266492	ST_86	[Science-Technology]	Narration			what are the usage of sunlight?					सूर्य के प्रकाश का क्या जरूरत है?
+Q20221128143249267502	ST_87	[Science-Technology]	Narration			how are rainbows formed?					इंद्रधनुष कैसे बनते हैं?
+Q20221128143249268353	ST_88	[Science-Technology]	Narration			why does earthquake occur?					भूकंप क्यों आता है?
+Q20221128143249269105	ST_89	[Science-Technology]	Narration			how does thunder and lightening occur?					बादलों में गरज और बिजली कैसे बनती है?
+Q20221128143249269876	ST_90	[Science-Technology]	Narration			how do you breathe? what are the different organs used in breathing?					आप कैसे सांस लेते हैं? सांस लेने में उपयोग किए जाने वाले विभिन्न अंग कौन से हैं?
+Q20221128143249270478	ST_91	[Science-Technology]	Narration			what are living and non-living things?					सजीव और निर्जीव चीजें क्या हैं?
+Q20221128143249271018	ST_92	[Science-Technology]	Narration			describe some of the living things around you.					अपने आस-पास कुछ जीवित वस्तुओं का बारे में बताएं।
+Q20221128143249271807	ST_93	[Science-Technology]	Narration			describe some of the non-living things around you.					अपने आस-पास की कुछ निर्जीव वस्तुओं का बारे में बताएं।
+Q20221128143249272392	ST_94	[Science-Technology]	Narration			how do our reflection form?					हमारा प्रतिबिंब कैसे बनता है?
+Q20221128143249273004	ST_95	[Science-Technology]	Narration			what are the different organs in our digestive system?					हमारे पाचन तंत्र के विभिन्न अंग कौन से हैं?
+Q20221128143249273670	ST_96	[Science-Technology]	Narration			how do we start a vehicle?					हम एक वाहन कैसे चालू करते हैं?
+Q20221128143249274368	OH_2	[General-Oral-History]	Narration			What is your family’s cultural background? Do your mother and father come from the same caste or tribe or from different castes / tribes? Please describe in detail your caste and cultural background					आपके परिवार की सांस्कृतिक पृष्ठभूमि क्या है? (क्या आपके माता और पिता एक ही जाति या विभिन्न जातियों से आते हैं?) कृपया विस्तार से वर्णन करें।
+Q20221128143249275266	OH_3	[General-Oral-History]	Narration			What is your family’s religious background? Was religion observed in your home? If religion was observed in your home, how was it observed? Describe the daily / weekly / regular religious rituals that you follow					आपके परिवार की धार्मिक पृष्ठभूमि क्या है? क्या आपके घर में धर्म का पालन किया गया था? अगर आपके घर में धर्म का पालन किया जाता था, तो उसका पालन कैसे किया जाता था? उन दैनिक या साप्ताहिक या नियमित धार्मिक अनुष्ठानों के बारे में बताएं जिनका आप पालन करते हैं
+Q20221128143249275838	OH_6	[General-Oral-History]	Narration			Describe your current relationship with your language(s). Do you feel a strong cultural connection to any of the languages that you speak?					अपनी भाषा(ओं) के साथ अपने वर्तमान सामन्जस्य के बारे में बताएैं। क्या आप अपने द्वारा बोली जाने वाली किसी भी भाषा के साथ एक मजबूत सांस्कृतिक संबंध महसूस करते हैं?
+Q20221128143249276339	OH_7	[General-Oral-History]	Narration			Describe in detail the community (or communities) you grew up in. Was it urban or rural?					उस समुदाय (या समुदायों) के बारे में बताएैं जिसमें आप पले-बढ़े हैं। क्या वह शहरी था या ग्रामीण?
+Q20221128143249276863	OH_8	[General-Oral-History]	Narration			Other than your own cultural group, what other cultural groups lived in your community? Other groups can include people from different religions, ethnicities, castes, tribes, etc.					आपके अपने सांस्कृतिक समूह के अलावा, आपके समुदाय में और कौन से सांस्कृतिक समूह रहते थे? अन्य समूहों में विभिन्न धर्मों, जातियों, जनजातियों आदि के लोग शामिल हो सकते हैं।
+Q20221128143249277370	OH_9	[General-Oral-History]	Narration			Does your family originate from the place you grew up, or from a different place? What do you know about that place? Have you ever visited it?					क्या आपके परिवार की उत्पत्ति उस जगह से हुई है जहाँ आप पले-बढ़े हैं, या किसी दूसरी जगह से? आप उस जगह के बारे में क्या जानते हैं? क्या आप कभी वहाँ गए है?
+Q20221128143249277845	OH_10	[General-Oral-History]	Narration			What do you remember about your grandparents? Tell us something about them					आपको अपने दादा-दादी के बारे में क्या याद है? उनके बारे में हमें कुछ बताएं
+Q20221128143249278317	OH_11	[General-Oral-History]	Narration			Did you grow up hearing about any of your early ancestors whom you never met? What did you hear about them? Tell us something about that					क्या आप अपने किसी ऐसे पूर्वज के बारे में सुनकर बड़े हुए हैं जिनसे आप कभी नहीं मिले? आपने उनके बारे में क्या सुना? इसके बारे में हमें कुछ बताएं
+Q20221128143249278879	OH_12	[General-Oral-History]	Narration			Have you lived through any major historical events? Describe how you and your family were affected by these events.					क्या आप किसी बड़ी ऐतिहासिक घटना से गुजरे हैं? बताइए कि आप और आपका परिवार इन घटनाओं से कैसे प्रभावित हुए।
+Q20221128143249279349	OH_13	[General-Oral-History]	Narration			What were your family’s economic circumstances? Do you remember any times when your family faced economic difficulties? Please describe.					आपके परिवार की आर्थिक परिस्थितियाँ क्या थीं? क्या आपको कोई ऐसा समय याद है जब आपके परिवार को आर्थिक कठिनाइयों का सामना करना पड़ा हो? कृपया बताइए।
+Q20221128143249279790	OH_14	[General-Oral-History]	Narration			What skills and activities did you learn while you were growing up? Who taught you these skills? Skills and activities can include fishing, hunting, farming, cooking, carpentry, crafts, weaving, specific sports, and many other important things. Tell us something about what you learnt and how it is done.					जब आप बड़े हो रहे थे तब आपने कौन से हुनर और गतिविधियाँ सीखीं? आपको ये हुनर ​​किसने सिखाया? हुनर और गतिविधियों में मछली पकड़ना, शिकार करना, खेती करना, खाना बनाना, बढ़ईगीरी, शिल्प, बुनाई, विशेष खेल और कई अन्य महत्वपूर्ण चीजें शामिल हो सकती हैं। आपने क्या सीखा और इसे कैसे किया जाता है, इसके बारे में हमें कुछ बताएं।
+Q20221128143249280374	OH_16	[General-Oral-History]	Narration			Describe your sibling(s) and your interactions with them when you were young. Were you very close in age? Did you attend school together?					जब आप छोटे थे तब अपने भाई-बहनों और उनके साथ अपनी बातचीत के बारे में बताएैं। क्या आप उम्र में काफी करीब थे? क्या आप एक साथ स्कूल गए थे?
+Q20221128143249280836	OH_17	[General-Oral-History]	Narration			What did you do in your spare time during your adolescence? Disucss in detail					आप अपनी किशोरावस्था के दौरान अपने खाली समय में क्या करते थे? विस्तार से बताएं
+Q20221128143249281381	OH_18	[General-Oral-History]	Narration			What are some of the foods you ate when you were growing up? Discuss in detail.					जब आप बड़े हो रहे थे तब आप क्या - क्या खाना खाते थे? विस्तार मे बताएं
+Q20221128143249282300	OH_20	[General-Oral-History]	Narration			What occupation(s) did you want to pursue when you were a child? Why?					जब आप बच्चे थे तब आप किस व्यवसाय (व्यवसायों) को अपनाना चाहते थे? क्यों?
+Q20221128143249283377	OH_21	[General-Oral-History]	Narration			Describe your current occupation. Where do you work?					अपने वर्तमान व्यवसाय के बारे में बताएैं। आप कहा काम करते हैं ?
+Q20221128143249284160	OH_22	[General-Oral-History]	Narration			Describe how you chose your occupation. Do you wish to stay in this occupation? Why?					बताएं कि आपने अपना काम कैसे चुना। क्या आप इस काम में बने रहना चाहते हैं? क्यों?
+Q20221128143249284889	OH_23	[General-Oral-History]	Narration			What are some of the difficulties related to your job/employment?					आपकी नौकरी/रोजगार से संबंधित कुछ कठिनाइयाँ क्या हैं?
+Q20221128143249285522	OH_24	[General-Oral-History]	Narration			What festivals does your family celebrate in a normal year? Tell us about these in detail.					आपका परिवार एक सामान्य वर्ष में कौन से त्यौहार मनाता है? इनके बारे में हमें विस्तार से बताएं
+Q20221128143249286066	OH_25	[General-Oral-History]	Narration			Can you describe some of your local friends? What kinds of activities do you do together?					क्या आप अपने कुछ स्थानीय मित्रों के बारे में बता सकते हैं? आप एक साथ किस प्रकार की गतिविधियाँ करते हैं?
+Q20221128143249286933	OH_26	[General-Oral-History]	Narration			If you are in a relationship, how did you meet your current partner (husband, wife, boyfriend, girlfriend, significant other)? What brought you together?					यदि आप एक रिश्ते में हैं, तो आप अपने वर्तमान साथी (पति, पत्नी, प्रेमी, प्रेमिका, जरूरी अन्य) से कैसे मिले? आपको क्या साथ लाया?
+Q20221128143249287722	OH_27	[General-Oral-History]	Narration			Are you married? If so, describe your wedding celebration? If not, describe the marriage ceremony of someone you know					क्या आप शादीशुदा हैं? अगर हां, तो अपने विवाह समारोह के बारे में बताएं। अगर नहीं, तो अपने किसी जानने वाले के विवाह समारोह के बारे में बताएं।
+Q20221128143249288248	OH_29	[General-Oral-History]	Narration			What types of sports, games and pastimes have you been involved with in your life?					आप अपने जीवन में किस प्रकार के खेल और मनोरंजन से जुड़े रहे हैं?
+Q20221128143249288678	OH_30	[General-Oral-History]	Narration			How do you maintain your level of health?					आप अपने स्वास्थ्य के स्तर को कैसे बनाए रखते हैं?
+Q20221128143249289407	OH_31	[General-Oral-History]	Narration			What are your favorite foods that are unique to your culture or region? Tell us about these in detail.					आपके पसंदीदा खाने के पदार्थ कौन से हैं जो आपकी संस्कृति या क्षेत्र के लिए सबसे अलग हैं? इनके बारे में हमें विस्तार से बताएं।
+Q20221128143249289968	OH_32	[General-Oral-History]	Narration			Describe your personality. What are some of your strengths?					अपने व्यक्तित्व के बारे में कुछ बताएं। आपकी कुछ विशेषताएं क्या हैं?
+Q20221128143249290401	OH_33	[General-Oral-History]	Narration			What things in your life are the most important to you right now?					अभी आपके लिए आपके जीवन में कौन सी चीजें सबसे महत्वपूर्ण हैं?
+Q20221128143249290868	OH_34	[General-Oral-History]	Narration			What qualities do you look for in your friendships and relationships?					आप अपनी दोस्ती और रिश्तों में क्या गुण देखते हैं?
+Q20221128143249291432	OH_35	[General-Oral-History]	Narration			Are there any cultural or humanitarian causes that are important to you? Please describe.					क्या कोई सांस्कृतिक या मानवीय कारण हैं जो आपके लिए महत्वपूर्ण हैं? कृपया विस्तार में बताएं।
+Q20221128143249291865	OH_36	[General-Oral-History]	Narration			What are your immediate goals for the future?					भविष्य के लिए आपके अभी के लक्ष्य क्या हैं?
+Q20221128143249292279	OH_37	[General-Oral-History]	Narration			What are your long-term goals for yourself and your family?					अपने और अपने परिवार के लिए आपके लम्बे समय के लक्ष्य क्या हैं?
+Q20221128143249292680	OH_39	[General-Oral-History]	Narration			How have you changed since your childhood? How has your community changed since your childhood?					आप बचपन से कैसे बदल गए हैं? आपका समुदाय आपके बचपन से कैसे बदल गया है?
+Q20221128143249293213	OH_40	[General-Oral-History]	Narration			What aspects of your language do you find unique?					आपकी भाषा के कौन से पहलू आपको अद्वितीय लगते हैं?
+Q20221128143249293641	OH_41	[General-Oral-History]	Narration			How do different generations of your community interact with their language?					आपके समुदाय की विभिन्न पीढ़ियां अपनी भाषा के साथ कैसे पेश आते हैं?
+Q20221128143249294059	OH_42	[General-Oral-History]	Narration			What changes do you think might happen to your culture and language in the near future?					आपको क्या लगता है कि निकट भविष्य में आपकी संस्कृति और भाषा में क्या परिवर्तन हो सकते हैं?
+Q20221128143249294408	OH_43	[General-Oral-History]	Narration			What is your advice for future generations?					आने वाली पीढ़ियों के लिए आपकी क्या सलाह है?
+Q20221128143249294761	OH_45	[General-Oral-History]	Narration			In which places and during which events do you hear stories told in your language?					आप अपनी भाषा में किन-किन जगहों पर और किन-किन आयोजनों के दौरान कही गई कहानियाँ सुनते हैं?
+Q20221128143249295189	OH_46	[General-Oral-History]	Narration			Tell me a folktale that you remember hearing as a child or adolescent?					मुझे कोई ऐसी लोककथा बताईए जिसे आपने बचपन में या किशोरावस्था में सुना हो।
+Q20221128143249295517	OH_47	[General-Oral-History]	Narration			Are there any particular authors or storytellers in your language who are important to you? Please describe.					क्या आपकी भाषा में कोई विशेष लेखक या कहानीकार हैं जो आपके लिए महत्वपूर्ण हैं? कृपया विस्तार में बताएं।
+Q20221128143249295840	OH_48	[General-Oral-History]	Narration			Please describe the traditional music of your culture. What instruments are used?					कृपया अपनी संस्कृति के पारंपरिक संगीत का वर्णन करें। किन उपकरणों का उपयोग किया जाता है?
+Q20221128143249296155	OH_51	[General-Oral-History]	Narration			What other musical styles did you grow up listening to?					आप किन अन्य संगीत शैलियों को सुनकर बड़े हुए हैं?
+Q20221128143249296561	OH_52	[General-Oral-History]	Narration			When do you listen to music in your daily life, and how do you access it? Do you listen to musicians in person, or do you listen to recorded music?					आप अपने दैनिक जीवन में संगीत कब सुनते हैं, और आप इसे कैसे एक्सेस करते हैं? क्या आप संगीतकारों को व्यक्तिगत रूप से सुनते हैं, या आप रिकॉर्ड किया गया संगीत सुनते हैं?
+Q20221128143249296988	OH_54	[General-Oral-History]	Narration			What are some foods from your culture that you highly recommend?					आपकी संस्कृति के कुछ खाने के पदार्थ क्या हैं जिनकी आप अत्यधिक अनुशंसा करते हैं?
+Q20221128143249297343	OH_56	[General-Oral-History]	Narration			Describe the traditional clothing of your culture.					अपनी संस्कृति के पारंपरिक कपड़ो के बारे में बताऐं।
+Q20221128143249297746	OH_57	[General-Oral-History]	Narration			What clothing and clothing styles did you grow up with?					आप किन कपड़ों और कपड़ों की शैलियों के साथ बड़े हुए हैं?
+Q20221128143249298353	OH_58	[General-Oral-History]	Narration			Do you currently wear any traditional clothes? Please describe if you wear them everyday or for specific occasions. If on specific occasions, which occasions?					क्या आप वर्तमान में कोई पारंपरिक कपड़े पहनते हैं? कृपया बताऐं कि क्या आप उन्हें रोज़ पहनते हैं या विशेष अवसरों के लिए। यदि विशेष अवसरों पर, किन अवसरों पर?
+Q20221128143249299084	OH_59	[General-Oral-History]	Narration			Describe any pieces of clothing that hold a particular significance to you.					कपड़ों के किसी भी टुकड़े के बारे में बताऐं जो आपके लिए विशेष महत्व रखता है।
+Q20221128143249299936	OH_61	[General-Oral-History]	Narration			How are the different genders of your community expected to conduct themselves?					आपके समुदाय के अलग-अलग लिंगों के लोगों से कैसे व्यवहार करने की अपेक्षा की जाती है?
+Q20221128143249301620	OH_63	[General-Oral-History]	Narration			Describe a typical day in your life (this year).					अपने जीवन के एक आम दिन का वर्णन करें।
+Q20221128143249302964	OH_64	[General-Oral-History]	Narration			Describe your appearance and choice in clothing for daily activities.					दैनिक गतिविधियों के लिए कपड़ों में अपने रूपरंग और पसंद के बारे में बताऐं।
+Q20221128143249304222	OH_65	[General-Oral-History]	Narration			What are your preferred methods of transport? Do you enjoy traveling ? How do you get to work?					परिवहन के आपके पसंदीदा तरीके क्या हैं? क्या आपको यात्रा करने में मज़ा आता है? आप काम पर कैसे जाते हैं?
+Q20221128143249304977	OH_66	[General-Oral-History]	Narration			Describe the architecture of your area, as well as the traditional architecture of your culture.					अपने क्षेत्र की वास्तुकला के साथ-साथ अपनी संस्कृति की पारंपरिक वास्तुकला के बारे में बताइए।
+Q20221128143249305716	OH_67	[General-Oral-History]	Narration			Describe the physical geography of your area.					अपने क्षेत्र के भौतिक भूगोल के बारे में बताइए।
+Q20221128143249306440	OH_68	[General-Oral-History]	Narration			Describe the kinds of animals that live in your area.					अपने क्षेत्र में रहने वाले जानवरों के प्रकार के बारे में बताइए।
+Q20221128143249306849	OH_69	[General-Oral-History]	Narration			Describe the kinds of plants that live in your area.					अपने क्षेत्र में रहने वाले पौधों के प्रकारों के बारे में बताइए।
+Q20221128143249307222	OH_70	[General-Oral-History]	Narration			What big technological advancements have you experienced? Which have been the most meaningful to you and why?					आपने कौन सी बड़ी तकनीकी प्रगति का अनुभव किया है? आपके लिए सबसे अधिक अर्थपूर्ण कौन सा रहा है और क्यों?
+Q20221128143249307686	OH_71	[General-Oral-History]	Narration			What are your preferred modes of communication? How have methods of communication changed during your life?					संचार के आपके पसंदीदा तरीके क्या हैं? आपके जीवन के दौरान संचार के तरीके कैसे बदल गए हैं?
+Q20221128143249308181	OH_72	[General-Oral-History]	Narration			Is there any other information that you would like to share about your daily life?					क्या कोई अन्य जानकारी है जो आप अपने दैनिक जीवन के बारे में बताना चाहेंगे?
+Q20221128143249308597	HLT_1	[Healthcare]	Narration			What do you think about benefits of the traditional medicine?					पारंपरिक चिकित्सा के लाभों के बारे में आप क्या सोचते हैं?
+Q20221128143249309056	HLT_2	[Healthcare]	Narration			Why do you use traditional medicines ?					आप पारंपरिक दवाओं का उपयोग क्यों करते हैं?
+Q20221128143249309458	HLT_3	[Healthcare]	Narration			Which traditional medicine or herbs do you use for indigestion? what is the process of making such medicine and how do take it?					अपच के लिए आप किस पारंपरिक औषधि या जड़ी-बूटी का उपयोग करते हैं? ऐसी दवा बनाने की प्रक्रिया क्या है और इसे कैसे लेते हैं?
+Q20221128143249309874	HLT_4	[Healthcare]	Narration			Tell us a situation from your own experience of using traditonal medicine? 					पारंपरिक चिकित्सा के उपयोग के अपने स्वयं के अनुभव से हमें एक स्थिति बताएं?
+Q20221128143249310495	HLT_5	[Healthcare]	Narration			What are the other traditional medicines (that you know which are) used in different purposes? What are the processes of making those medicines and their purposes?					अन्य पारंपरिक दवाएं (जो आप जानते हैं कि कौन सी हैं) विभिन्न प्रयोजनों में उपयोग की जाती हैं? उन दवाओं और उनके उद्देश्यों को बनाने की प्रक्रिया क्या है?
+Q20221128143249310894	HLT_6	[Healthcare]	Narration			How do you know when you have fever? How do you treat fever using traditional medicine?					आपको कैसे पता चलेगा कि आपको बुखार है? आप पारंपरिक चिकित्सा का उपयोग करके बुखार का इलाज कैसे करते हैं?
+Q20221128143249311294	HLT_7	[Healthcare]	Narration			How do you feel when you get cold and cough? How do you treat it using traditional medicine?					सर्दी-खांसी होने पर आपको कैसा महसूस होता है? पारंपरिक चिकित्सा का उपयोग करके आप इसका इलाज कैसे करते हैं?
+Q20221128143249311700	HLT_8	[Healthcare]	Narration			How do you cure wounds ? Do you prefer any traditional medicines to cure minor wounds ? if you use how do you prepapre those medicines ?					आप घावों को कैसे ठीक करते हैं? क्या आप मामूली घावों को ठीक करने के लिए कोई पारंपरिक दवा पसंद करते हैं? यदि आप उपयोग करते हैं तो आप उन दवाओं को कैसे तैयार करते हैं?
+Q20221128143249312090	HLT_9	[Healthcare]	Narration			How do you care for your health to be healthy?					स्वस्थ रहने के लिए आप अपने स्वास्थ्य की देखभाल कैसे करते हैं?
+Q20221128143249312488	HLT_11	[Healthcare]	Narration			What traditional products do you use for hair care?					बालों की देखभाल के लिए आप किन पारंपरिक उत्पादों का उपयोग करती हैं?
+Q20221128143249312895	HLT_12	[Healthcare]	Narration			What are the natural products that you use for hair related problems(hair fall/dandruff/lice infection/grayng of hair)?					बालों से संबंधित समस्याओं (बालों का झड़ना / रूसी / जूँ का संक्रमण / बालों का सफेद होना) के लिए आप किन प्राकृतिक उत्पादों का उपयोग करते हैं?
+Q20221128143249313307	HLT_13	[Healthcare]	Narration			What traditional remedies do you use to relieve body pain?					शरीर के दर्द को दूर करने के लिए आप किन पारंपरिक उपचारों का उपयोग करते हैं?
+Q20221128143249313661	HLT_14	[Healthcare]	Narration			What traditional remedies do you use to relieve muscle pain?					मांसपेशियों के दर्द को दूर करने के लिए आप किन पारंपरिक उपायों का उपयोग करते हैं?
+Q20221128143249314043	HLT_15	[Healthcare]	Narration			What traditional remedies do you use to relieve tooth ache?					दांत दर्द से राहत पाने के लिए आप किन पारंपरिक उपायों का इस्तेमाल करते हैं?
+Q20221128143249314418	HLT_16	[Healthcare]	Narration			What traditional remedies do you use to relieve head ache?					सिर दर्द से राहत पाने के लिए आप किन पारंपरिक उपायों का इस्तेमाल करते हैं?
+Q20221128143249911116	HLT_17	[Healthcare]	Narration			What traditional remedies do you use to relieve mensural pain/cramp?					मासिक धर्म के दर्द/ऐंठन से राहत पाने के लिए आप किन पारंपरिक उपायों का उपयोग करती हैं?
+Q20221128143249912143	HLT_18	[Healthcare]	Narration			What traditional remedies do you use to protect from Covid 19?					कोविड 19 से बचाव के लिए आप किन पारंपरिक उपायों का उपयोग करते हैं?
+Q20221128143249912806	HLT_19	[Healthcare]	Narration			What traditional products do you use for teeth care?					दांतों की देखभाल के लिए आप किन पारंपरिक उत्पादों का उपयोग करते हैं?
+Q20221128143249913476	HLT_20	[Healthcare]	Narration			What are the natural products that you use for teeth related problems (teeth decay,  misalignment, gum disease, bad breath, sensitivity, root infection, enamel erosion, etc)?					दांतों से संबंधित समस्याओं (दांतों की सड़न, गलत संरेखण, मसूड़ों की बीमारी, सांसों की बदबू, संवेदनशीलता, जड़ संक्रमण, इनेमल क्षरण, आदि) के लिए आप किन प्राकृतिक उत्पादों का उपयोग करते हैं?
+Q20221128143249914066	HLT_21	[Healthcare]	Narration			Do you have traditional healthcare practitioners in your community? What ailments do they provide for treatment?					क्या आपके समुदाय में पारंपरिक स्वास्थ्य चिकित्सक हैं? वे उपचार के लिए कौन सी बीमारियाँ प्रदान करते हैं?
+Q20221128143249914723	SPR_1	[Sports]	Narration			Can you tell us something about the origin of Polo (Sagol Kangjei)?					क्या आप हमें पोलो (सगोल कांगजेई) की उत्पत्ति के बारे में कुछ बता सकते हैं?
+Q20221128143249915393	SPR_2	[Sports]	Narration			What are the trdaitional games in your community? 					आपके समुदाय में पारंपरिक खेल कौन से हैं?
+Q20221128143249916031	SPR_3	[Sports]	Narration			Is there a game similar to rugby? What is it called and how it is played?					क्या रग्बी के समान कोई खेल है? इसे क्या कहते हैं और इसे कैसे खेला जाता है?
+Q20221128143249916535	SPR_4	[Sports]	Narration			Can you explain how exercise/sports make us healthy?					क्या आप बता सकते हैं कि व्यायाम/खेल हमें कैसे स्वस्थ बनाता है?
+Q20221128143249917086	SPR_5	[Sports]	Narration			What games do you play ? What are the rules of those games?					तुम क्या क्या खेल खेलते हो? उन खेलों के नियम क्या हैं?
+Q20221128143249917516	SPR_6	[Sports]	Narration			Can you tell us about your childhood days games ? Can you share a memorable incident of your childhood days games ?					क्या आप हमें अपने बचपन के दिनों के खेल के बारे में बता सकते हैं? क्या आप अपने बचपन के दिनों के खेल की कोई यादगार घटना साझा कर सकते हैं?
+Q20221128143249917937	SPR_7	[Sports]	Narration			Can you explain the benefits of the indoor and outdoor games?					क्या आप इनडोर और आउटडोर खेलों के लाभों के बारे में बता सकते हैं?
+Q20221128143249918442	SPR_8	[Sports]	Narration			Give the name of any game related to wrestling? Who performs the game?					कुश्ती से संबंधित किसी खेल का नाम बताइए? खेल कौन करता है?
+Q20221128143249918934	SPR_9	[Sports]	Narration			Give the name of any traditional board game? If so, how is the game played and who plays the game?					किसी पारंपरिक बोर्ड गेम का नाम दें? यदि हां, तो खेल कैसे खेला जाता है और कौन खेलता है?
+Q20221128143249919406	SPR_10	[Sports]	Narration			What is the name of the game played with marble? What are the rules for playing marble?					संगमरमर से खेले जाने वाले खेल का नाम क्या है? मार्बल बजाने के क्या नियम हैं?
+Q20221128143249919893	SPR_11	[Sports]	Narration			Can you tell us the name of the game played with stone? How is it played?					क्या आप हमें पत्थर से खेले जाने वाले खेल का नाम बता सकते हैं? यह कैसे खेला जाता है?
+Q20221128143249920364	SPR_12	[Sports]	Narration			Is there a specific game related to climbing of bamboo tree or banana stem in your community? 					क्या आपके समुदाय में बांस के पेड़ या केले के तने पर चढ़ने से संबंधित कोई विशिष्ट खेल है?
+Q20221128143249920859	SPR_13	[Sports]	Narration			Give names of the game using sticks? How is it played?					लाठी से खेल के नाम बताइए? यह कैसे खेला जाता है?
+Q20221128143249921437	SPR_14	[Sports]	Narration			Give the name of any indoor game in your community? How is it played?					अपने समुदाय में किसी इनडोर खेल का नाम दें? यह कैसे खेला जाता है?
+Q20221128143249921986	SPR_15	[Sports]	Narration			What is the name of the game related to Boat Race? When and how is it played?					बोट रेस से संबंधित खेल का नाम क्या है? यह कब और कैसे खेला जाता है?
+Q20221128143249922617	SPR_16	[Sports]	Narration			Can you tell us some benefits of Yoga? 					क्या आप हमें योग के कुछ फायदे बता सकते हैं?
+Q20221128143249923232	CLT_1	[Culture]	Narration			How is the administration of your village function?					आपके गाँव का प्रशासन कैसे काम करता है?
+Q20221128143249923814	CLT_2	[Culture]	Narration			Who are the people associated with the administration of a village? What are his/her roles and duties?					गाँव के प्रशासन से जुड़े लोग कौन होते हैं? उनकी भूमिकाएँ और कर्तव्य क्या - क्या होते हैं?
+Q20221128143249924439	CLT_3	[Culture]	Narration			What is the role of village development committee?					ग्राम विकास समिति की क्या भूमिका है?
+Q20221128143249924963	CLT_4	[Culture]	Narration			Tell us about the traditions and lifestyle of your community.					हमें अपने समुदाय की परंपराओं और जीवन शैली के बारे में बताएं।
+Q20221128143249925482	CLT_5	[Culture]	Narration			How is the customary court function in your village?					आपके गाँव में प्रथागत न्यायालय कैसे का करता है?
+Q20221128143249926001	CLT_6	[Culture]	Narration			Who is the head of the customary court of your community? What are his/her roles and duties?					आपके समुदाय के प्रथागत न्यायालय का मुखिया कौन है? उनकी भूमिकाएँ और काम क्या हैं?
+Q20221128143249926452	CLT_7	[Culture]	Narration			Describe about the traditional dress of your community?					अपने समुदाय की पारंपरिक पोशाक के बारे में बताएं?
+Q20221128143249926938	CLT_8	[Culture]	Narration			Tell us about the design of the most important shawl of your community?					अपने समुदाय के सबसे महत्वपूर्ण शॉल के डिजाइन के बारे में बताएं?
+Q20221128143249927468	CLT_9	[Culture]	Narration			What are some of the traditional ornaments, costumes and jewellery of your community?					आपके समुदाय के कुछ पारंपरिक आभूषण और कपड़ें क्या हैं?
+Q20221128143249927997	CLT_10	[Culture]	Narration			What are the main occupations of your community?					आपके समुदाय के मुख्य व्यवसाय क्या हैं?
+Q20221128143249928500	CLT_11	[Culture]	Narration			What is the food culture of your community?					आपके समुदाय की खाद्य संस्कृति क्या है?
+Q20221128143249929043	CLT_12	[Culture]	Narration			Tell us about some of the most popular foods items of your community.					हमें अपने समुदाय के कुछ सबसे लोकप्रिय खाद्य पदार्थों के बारे में बताएं।
+Q20221128143249929567	CLT_13	[Culture]	Narration			What are the various steps and process involved in cultivation?					खेती में शामिल विभिन्न चरण और प्रक्रिया क्या हैं?
+Q20221128143249930143	CLT_14	[Culture]	Narration			Is there any festival related to cultivation of your community? How are they celebrated?					क्या आपके समुदाय में खेती से संबंधित कोई त्योहार है? उन्हें कैसे मनाया जाता है?
+Q20221128143249930674	CLT_15	[Culture]	Narration			What is the most important festival of your community? How do that celebrate?					आपके समुदाय का सबसे महत्वपूर्ण त्योहार कौन सा है? वह कैसे मनाया जाता है?
+Q20221128143249931212	CLT_16	[Culture]	Narration			Tell us something about the traditional dances of your community.					अपने समुदाय के पारंपरिक नृत्यों के बारे में कुछ बताएं।
+Q20221128143249932032	CLT_17	[Culture]	Narration			Tell us something about the marriage culture of your community.					अपने समुदाय की विवाह संस्कृति के बारे में कुछ बताएं।
+Q20221128143249932890	CLT_18	[Culture]	Narration			Tell us about the traditional art of weaving of your community.					अपने समुदाय की बुनाई की पारंपरिक कला के बारे में बताएं।
+Q20221128143249933650	CLT_19	[Culture]	Narration			Tell us about some of the famous art and handicraft, woodcarving and pottery produced by your community.					अपने समुदाय द्वारा बनाई जाने वाली कुछ प्रसिद्ध कला और हस्तशिल्प, लकड़ी की नक्काशी और मिट्टी के बर्तनों के बारे में बताएं।
+Q20221128143249934265	CLT_20	[Culture]	Narration			What are different types of bamboo and cane products made by your community?					आपके समुदाय द्वारा बनाए गए बांस और गन्ने के विभिन्न प्रकार के उत्पाद कौन-से हैं?
+Q20221128143249934942	CLT_21	[Culture]	Narration			Tell us about some of the famous folk songs of your community.					अपने समुदाय के कुछ प्रसिद्ध लोक गीतों के बारे में बताएं।
+Q20221128143249935822	CLT_22	[Culture]	Narration			Tell us about musical instruments used by your community.					हमें अपने समुदाय द्वारा उपयोग किए जाने वाले संगीत वाद्ययंत्रों के बारे में बताएं।
+Q20221128143249936501	CLT_23	[Culture]	Narration			How is the oral history of your community passed down?					आपके समुदाय का मौखिक इतिहास कैसे लिखा जाता है?
+Q20221128143249937189	CLT_24	[Culture]	Narration			Tell us about the origin of the name of your community.					हमें अपने समुदाय के नाम की उत्पत्ति के बारे में बताएं।
+Q20221128143249937706	CLT_25	[Culture]	Narration			Tell us one short folk story of your community.					हमें अपने समुदाय की एक छोटी लोक कथा बताएं।
+Q20221128143249938197	CLT_26	[Culture]	Narration			Tell us about the traditional religion or beliefs of your community.					हमें अपने समुदाय के पारंपरिक धर्म या मान्यताओं के बारे में बताएं।
+Q20221128143249938664	CLT_27	[Culture]	Narration			Tell us about the traditional method of fishing of your community?					अपने समुदाय की मछली पकड़ने की पारंपरिक पद्धति के बारे में बताएं?
+Q20221128143249939172	CLT_28	[Culture]	Narration			What are the traditional weapons and tools used in hunting?					शिकार में उपयोग किए जाने वाले पारंपरिक हथियार और उपकरण कौन से हैं?
+Q20221128143249939815	CLT_29	[Culture]	Narration			Tell us about setting a traditional trap to catch animals and birds.					जानवरों और पक्षियों को पकड़ने के लिए पारंपरिक जाल लगाने के बारे में बताएं।
+Q20221128143249940442	CLT_30	[Culture]	Narration			Is traditional hunting still practice in your village? What are the rules and regulations of hunting in your village?					क्या आपके गाँव में अभी भी पारंपरिक शिकार का चलन है? आपके गाँव में शिकार के नियम और कानून क्या हैं?
+Q20221128143249941087	CLT_31	[Culture]	Narration			what kind of ornaments do you use in your community and how are they made ?					आप अपने समुदाय में किस प्रकार के आभूषणों का प्रयोग करते हैं और वे कैसे बनते हैं ?
