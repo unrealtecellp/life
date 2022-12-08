@@ -2738,14 +2738,14 @@ def userslist():
 
         # get list of all the users registered in the application LiFE
         for user in userlogin.find({}, {"_id": 0, "username": 1}):
-            print(user)
+            # print(user)
             usersList.append(user["username"])
             # print(user)
         if (current_username == projectowner):
             usersList.remove(projectowner)
             share_with_users_list = usersList
         else:
-            print(usersList)
+            # print(usersList)
             usersList.remove(projectowner)
             usersList.remove(current_username)
             # print(usersList)
@@ -2763,7 +2763,7 @@ def userslist():
                     share_with_users_list.remove(username)
                 else:
                     share_with_users_list.append(username)
-        print(usersList, share_with_users_list)
+        # print(usersList, share_with_users_list)
         speakersDict = projects.find_one({'projectname': activeprojectname},
                                             {'_id':0, 'speakerIds.'+current_username: 1})
         speakersList = speakersDict['speakerIds'][current_username]
@@ -2784,23 +2784,23 @@ def shareprojectwith():
                                                                 'userprojects')
     current_username = getcurrentusername.getcurrentusername()
     activeprojectname = getactiveprojectname.getactiveprojectname(current_username, userprojects)
-    print('2758: activeprojectname', activeprojectname)
+    # print('2758: activeprojectname', activeprojectname)
 
     projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
 
     # data through ajax
     data = request.args.get('data')
     data = eval(data)
-    print('2765', data)
+    # print('2765', data)
     users = data['sharewithusers']
-    print(type(users))
+    # print(type(users))
     speakers = data['sharespeakers']
     sharemode = data['sharemode']
-    print(sharemode)
+    # print(sharemode)
     if (sharemode == ''):
         sharemode = 0
     sharechecked = str(data['sharechecked'])
-    print('123', users, speakers, sharemode, sharechecked)
+    # print('123', users, speakers, sharemode, sharechecked)
     
     if (len(users) != 0):
         # projectinfo of the user sharing the project

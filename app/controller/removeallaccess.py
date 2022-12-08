@@ -5,7 +5,7 @@ def removeallaccess(projects,
                     activeprojectname,
                     current_username,
                     user_to_remove):
-    print(f"In removeallaccess()")
+    # print(f"In removeallaccess()")
 
     projects.update_one({ "projectname": activeprojectname },
                         {
