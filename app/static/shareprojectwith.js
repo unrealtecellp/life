@@ -40,6 +40,7 @@ $(document).ready(function() {
         data: {'data': JSON.stringify(data)},
         contentType: "application/json; charset=utf-8", 
         success: function(response){
+          console.log(response);
         }
     });
     return false; 

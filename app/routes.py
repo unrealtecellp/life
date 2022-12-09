@@ -2733,8 +2733,10 @@ def userslist():
     try:
         activeprojectname = getactiveprojectname.getactiveprojectname(current_username, userprojects)
         projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
-        shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects, current_username, activeprojectname)
-        current_user_sharemode = shareinfo['sharemode']
+        shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
+                                                            current_username,
+                                                            activeprojectname)
+        current_user_sharemode = int(shareinfo['sharemode'])
 
         # get list of all the users registered in the application LiFE
         for user in userlogin.find({}, {"_id": 0, "username": 1}):
@@ -2753,22 +2755,27 @@ def userslist():
             # print(usersList)
             for username in usersList:
                 # print(username)
-                usersharemode = getuserprojectinfo.getuserprojectinfo(userprojects,
-                                                                                username,
-                                                                                activeprojectname
-                                                                            )['sharemode']
-                # print(current_user.username, current_user_sharemode, username, usersharemode)
+                usershareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
+                                                                        username,
+                                                                        activeprojectname)
+                usersharemode = int(usershareinfo['sharemode'])
+                # print(current_username, current_user_sharemode, username, usersharemode)
+                # print(current_username, type(current_user_sharemode), username, type(usersharemode))
                 if (current_user_sharemode <= usersharemode):
                     # print(f"username!!!: {username}")
-                    share_with_users_list.remove(username)
+                    # share_with_users_list.remove(username)
+                    pass
                 else:
+                    # print(f"username!!!: {username}")
                     share_with_users_list.append(username)
         # print(usersList, share_with_users_list)
         speakersDict = projects.find_one({'projectname': activeprojectname},
                                             {'_id':0, 'speakerIds.'+current_username: 1})
-        speakersList = speakersDict['speakerIds'][current_username]
+        if (len(speakersDict) != 0):
+            speakersList = speakersDict['speakerIds'][current_username]
         # print(speakersList)
-    except:
+    except Exception as e:
+        print(e)
         pass
 
     return jsonify(usersList=sorted(share_with_users_list),
@@ -2830,6 +2837,16 @@ def shareprojectwith():
                                                         )
             usershareprojectsname = usershareprojectsname['projectsharedwithme']
 
+            # if (sharemode == -1 and activeprojectname in usershareprojectsname):
+            #         removed_user = removeallaccess.removeallaccess(projects,
+            #                                         userprojects,
+            #                                         activeprojectname,
+            #                                         current_username,
+            #                                         user)
+            #         return removed_user
+            # else:
+            #     return f'This project: {activeprojectname} is not shared with this user: {user}'
+
             if activeprojectname in usershareprojectsname:
                 if (sharemode == -1):
                     removed_user = removeallaccess.removeallaccess(projects,
@@ -2849,7 +2866,10 @@ def shareprojectwith():
                                                                 'sharechecked': sharechecked,
                                                                 'activespeakerId': ''
                                                             }
-            else:                                                        
+            else:
+                if (sharemode == -1):
+                    return f'This project: {activeprojectname} is not shared with this user: {user}'
+                    
                 usershareprojectsname[activeprojectname] = {
                                                                 'sharemode': sharemode,
                                                                 'tomesharedby': [current_user.username],
