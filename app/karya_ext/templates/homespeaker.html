@@ -99,21 +99,25 @@
 
 
 
+
+
               $(document).ready(function() {
                 $('#idtask').change(function() {
                   var taskVal = $(this).val();
                   console.log("Current task value", taskVal);
                   if (taskVal === "SPEECH_DATA_COLLECTION") {
-                    // $('#idspeakerdetailsdiv').display="block";
-                    document.getElementById("idspeakerdetailsdiv").style.display = "block";
+                    $('#idspeakerdetailsdiv').show();
+                      $('#idspeakerdetailsdiv').attr('required', '');
+                      $('#idspeakerdetailsdiv').attr('data-error', 'This field is required.')
+                   
                   }
                   else {
-                    // if ($('#idspeakerdetailsdiv').display=="block") {
-                    // $('#idspeakerdetailsdiv').display="none";
-                    document.getElementById("idspeakerdetailsdiv").style.display = "none";
-                    // }
+                    $('#idspeakerdetailsdiv').hide();
+                      $('#idspeakerdetailsdiv').removeAttr('required');
+                      $('#idspeakerdetailsdiv').removeAttr('data-error');
                   }
-                })
+                });
+               
 
                 $('.lexemeview').click(function() {
                   $('#accodeformheader').find('input, select').attr('disabled', true);
@@ -315,7 +319,7 @@
             <div id="idspeakerdetailsdiv" style="display: none;">
                 <div class="form-group">                    
                 <label for="sgender">Gender: </label>  <br>
-                <select class="gender" id="idgender" name="sgender" style="width:55%" required>
+                <select class="gender" id="idgender" name="sgender" style="width:55%" >
                   <!-- <div id="genderoptions"></div> -->
                 
                 </select><br>
@@ -324,40 +328,42 @@
 
                 <div class="form-group">
                 <label for="educationalevel">Educational Level: </label> <br>
-                <select class="educationlvl" id="idelevel" name="educationalevel" style="width:55%" required>
+                <select class="educationlvl" id="idelevel" name="educationalevel" style="width:55%" >
                 </select><br>
                 </div>
               
 
                 <div class="form-group">
                     <label for="moe12">Medium Of Education (upto 12ᵗʰ): </label><br>                           
-                    <select class="educationmediumupto12" id="idmediumpre" name="moe12" multiple="multiple" style="width:55%" required>
+                    <select class="educationmediumupto12" id="idmediumpre" name="moe12" multiple="multiple" style="width:55%" >
                     </select><br>
                 </div> 
                 
                 
                 <div class="form-group">
                     <label for="moea12">Medium Of Education (After 12ᵗʰ): </label><br>                           
-                    <select class="educationmediumafter12" id="idmediumpost" name="moea12" multiple="multiple" style="width:55%" required>
+                    <select class="educationmediumafter12" id="idmediumpost" name="moea12" multiple="multiple" style="width:55%" >
                     </select><br>
                 </div> 
                 
                 
                 <div class="form-group">
                     <label for="sols">Other Languages Speaker Could Speak: </label><br>                           
-                    <select class="speakerspeaklanguage" id="idotherlangs" name="sols" multiple="multiple" style="width:55%" required></select><br>
+                    <select class="speakerspeaklanguage" id="idotherlangs" name="sols" multiple="multiple" style="width:55%" >
+                    </select><br>
                 </div> 
                                         
                 <div class="form-group">
                   <label class="col-form-label">Place Of Recording:</label><br>
                   <!-- <select class="typeofcity" id="idptype" name="toc" multiple="multiple" style="width:45%" required></select> -->
-                  <input type="text" class="form-control" id="idplace" name="por" placeholder="--Place Of Recording--" style="width:55%;" required >
+                  <input type="text" class="form-control" id="idplace" name="por" placeholder="--Place Of Recording--" style="width:55%;">
               
                 </div>                                                 
 
                 <div class="form-group">   
                 <label for="toc">Type Of Place: </label> <br>
-                <select class="typeofcity" id="idptype" name="toc"  style="width:55%" required></select><br>
+                <select class="typeofcity" id="idptype" name="toc"  style="width:55%" >
+                </select><br>
                 </div>
           </div>
 

@@ -342,25 +342,23 @@ def add():
         accesscode = request.form.get('accode')
         print("this acc code at line 428", accesscode)
         fname = request.form.get('sname') 
-        print(fname)
         fage = request.form.get('sagegroup')
         fgender = request.form.get('sgender')
         educlvl = request.form.get('educationalevel')
-
         moe12 = request.form.getlist('moe12')
         moea12 = request.form.getlist('moea12')
-        # moe12 = request.form.get('moe12')
-        # moea12 = request.form.get('moea12')
-        
         sols = request.form.getlist('sols')
         por = request.form.get('por')
         toc = request.form.get('toc')
+
+        print("Line 354: ,","Name: ", fname, "Age: ",fage, "Gender: ",fgender, "EducationLvl: ",educlvl, "MOE12: ",moe12, "MOEA12: ",moea12, "SOLS: ",sols, "Placeofrecording: ",por, "TOC: ",toc)  
         if accesscode  == '':
             accesscodefor = int(request.form.get('accesscodefor'))
             task = request.form.get('task')
             language = request.form.get('langscript') 
             domain = request.form.getlist('domain')
             elicitationmethod = request.form.getlist("elicitation")
+            print("line 361  => accesscodefor :" , accesscodefor, "Task: ",task, "Lang: ", language, "Domain: ", domain, "ElicMethod: ",elicitationmethod)
             #############################################################################################
             # namekaryaID = mongodb_info.find_one({"karyaaccesscode":accesscode},{"karyaspeakerid":1, "_id" :0})
             # namekaryaID = mongodb_info.find_one({"isActive":0},{"karyaspeakerid":1, "_id" :0})
