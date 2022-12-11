@@ -136,26 +136,26 @@ def getquesfiletranscriptiondetails(questionnaires, quesId, lang, prompt_type,):
         # print('t_data!!!!!', t_data)
         # t_data = t_data['prompt']['Transcription']
         t_data = t_data['prompt']['content'][lang][prompt_type]
-        print(t_data)
+        # print(t_data)
         if t_data is not None:
             transcription_data = t_data['textGrid']
         pprint(transcription_data)
         sentence = transcription_data['sentence']
         for key, value in sentence.items():
-            print(key, value)
+            # print(key, value)
             transcription_region = {}
             # gloss = {}
             # transcription_region['sentence'] = {}
-            print('155', transcription_region)
+            # print('155', transcription_region)
             transcription_region['data'] = {}
-            print('155', transcription_region)
+            # print('155', transcription_region)
             transcription_region['boundaryID'] = key
-            print('155', transcription_region)
+            # print('155', transcription_region)
             transcription_region['start'] = sentence[key]['startindex']
             transcription_region['end'] = sentence[key]['endindex']
             # transcription_region['sentence'] = {key: value}
             transcription_region['data'] = {'sentence': {key: value}}
-            print('155', transcription_region)
+            # print('155', transcription_region)
             transcription_regions.append(transcription_region)
     except Exception as e:
         print(e)

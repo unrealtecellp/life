@@ -36,14 +36,35 @@ from pylatex.package import Package
 import json
 from xml.etree import ElementTree as ET
 from xml.etree.ElementTree import ElementTree
-from app.controller import latex_generator as lg, savenewlexeme
-from app.controller import getdbcollections, getcurrentuserprojects, getactiveprojectname
-from app.controller import getprojectowner, getactiveprojectform, savenewsentence
-from app.controller import readJSONFile, createdummylexemeentry
-from app.controller import savenewproject, updateuserprojects, savenewprojectform
-from app.controller import audiodetails, getcurrentusername, getcommentstats
-from app.controller import unannotatedfilename, getuserprojectinfo
-from app.controller import questionnairedetails
+from app.controller import (
+                                audiodetails,
+                                createdummylexemeentry,
+                                getactiveprojectform,
+                                getactiveprojectname,
+                                getcommentstats,
+                                getcurrentusername,
+                                getcurrentuserprojects,
+                                getdbcollections,
+                                getprojectowner,
+                                getuserprojectinfo,
+                                latex_generator as lg,
+                                questionnairedetails,
+                                readJSONFile,
+                                removeallaccess,
+                                savenewlexeme,
+                                savenewproject,
+                                savenewprojectform,
+                                savenewsentence,
+                                unannotatedfilename,
+                                updateuserprojects
+                            )
+# from app.controller import getdbcollections, getcurrentuserprojects, getactiveprojectname
+# from app.controller import getprojectowner, getactiveprojectform, savenewsentence
+# from app.controller import readJSONFile, createdummylexemeentry
+# from app.controller import savenewproject, updateuserprojects, savenewprojectform
+# from app.controller import audiodetails, getcurrentusername, getcommentstats
+# from app.controller import unannotatedfilename, getuserprojectinfo
+# from app.controller import questionnairedetails, removeallaccess
 import shutil, traceback
 
 
@@ -2712,8 +2733,10 @@ def userslist():
     try:
         activeprojectname = getactiveprojectname.getactiveprojectname(current_username, userprojects)
         projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
-        shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects, current_username, activeprojectname)
-        current_user_sharemode = shareinfo['sharemode']
+        shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
+                                                            current_username,
+                                                            activeprojectname)
+        current_user_sharemode = int(shareinfo['sharemode'])
 
         # get list of all the users registered in the application LiFE
         for user in userlogin.find({}, {"_id": 0, "username": 1}):
@@ -2728,25 +2751,31 @@ def userslist():
             usersList.remove(projectowner)
             usersList.remove(current_username)
             # print(usersList)
+            # share_with_users_list = usersList
+            # print(usersList)
             for username in usersList:
                 # print(username)
-                usersharemode = getuserprojectinfo.getuserprojectinfo(userprojects,
-                                                                                username,
-                                                                                activeprojectname
-                                                                            )['sharemode']
-                # print(current_user.username, current_user_sharemode, username, usersharemode)
+                usershareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
+                                                                        username,
+                                                                        activeprojectname)
+                usersharemode = int(usershareinfo['sharemode'])
+                # print(current_username, current_user_sharemode, username, usersharemode)
+                # print(current_username, type(current_user_sharemode), username, type(usersharemode))
                 if (current_user_sharemode <= usersharemode):
                     # print(f"username!!!: {username}")
+                    # share_with_users_list.remove(username)
                     pass
-                    # usersList.remove(username)
                 else:
+                    # print(f"username!!!: {username}")
                     share_with_users_list.append(username)
         # print(usersList, share_with_users_list)
         speakersDict = projects.find_one({'projectname': activeprojectname},
                                             {'_id':0, 'speakerIds.'+current_username: 1})
-        speakersList = speakersDict['speakerIds'][current_username]
+        if (len(speakersDict) != 0):
+            speakersList = speakersDict['speakerIds'][current_username]
         # print(speakersList)
-    except:
+    except Exception as e:
+        print(e)
         pass
 
     return jsonify(usersList=sorted(share_with_users_list),
@@ -2762,65 +2791,129 @@ def shareprojectwith():
                                                                 'userprojects')
     current_username = getcurrentusername.getcurrentusername()
     activeprojectname = getactiveprojectname.getactiveprojectname(current_username, userprojects)
-    print('2758: activeprojectname', activeprojectname)
+    # print('2758: activeprojectname', activeprojectname)
 
     projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
 
     # data through ajax
     data = request.args.get('data')
     data = eval(data)
-    print('2765', data)
+    # print('2765', data)
     users = data['sharewithusers']
-    print(type(users))
+    # print(type(users))
     speakers = data['sharespeakers']
     sharemode = data['sharemode']
-    print(sharemode)
+    # print(sharemode)
     if (sharemode == ''):
         sharemode = 0
     sharechecked = str(data['sharechecked'])
-    print('123', users, speakers, sharemode, sharechecked)
+    # print('123', users, speakers, sharemode, sharechecked)
     
     if (len(users) != 0):
-        projectinfo = userprojects.find_one({'username' : current_username},
-                                        {'_id': 0, 'myproject': 1, 'projectsharedwithme': 1})
+        # projectinfo of the user sharing the project
+        projectinfo = userprojects.find_one(
+                                                {
+                                                    'username' : current_username
+                                                },
+                                                {
+                                                    '_id': 0,
+                                                    'myproject': 1,
+                                                    'projectsharedwithme': 1
+                                                }
+                                            )
+        # loop on users with whom the project is to be shared
         for user in users:
             # print(user)
             userdict = {}
             # get list of projects shared with the user
-            usershareprojectsname = userprojects.find_one({ 'username' : user },
-                                                            {'_id': 0, 'projectsharedwithme': 1})
+            usershareprojectsname = userprojects.find_one(
+                                                            {
+                                                                'username' : user
+                                                            },
+                                                            {
+                                                                '_id': 0,
+                                                                'projectsharedwithme': 1
+                                                            }
+                                                        )
             usershareprojectsname = usershareprojectsname['projectsharedwithme']
+
+            # if (sharemode == -1 and activeprojectname in usershareprojectsname):
+            #         removed_user = removeallaccess.removeallaccess(projects,
+            #                                         userprojects,
+            #                                         activeprojectname,
+            #                                         current_username,
+            #                                         user)
+            #         return removed_user
+            # else:
+            #     return f'This project: {activeprojectname} is not shared with this user: {user}'
+
             if activeprojectname in usershareprojectsname:
+                if (sharemode == -1):
+                    removed_user = removeallaccess.removeallaccess(projects,
+                                                    userprojects,
+                                                    activeprojectname,
+                                                    current_username,
+                                                    user)
+                    return removed_user
+
                 tomesharedby = usershareprojectsname[activeprojectname]['tomesharedby']
                 tomesharedby.append(current_username)
+                isharedwith = usershareprojectsname[activeprojectname]['isharedwith']
                 usershareprojectsname[activeprojectname] = {
-                                                            'sharemode': sharemode,
-                                                            'tomesharedby': list(set(tomesharedby)),
-                                                            'isharedwith': [],
-                                                            'sharechecked': sharechecked,
-                                                            'activespeakerId': ''
+                                                                'sharemode': sharemode,
+                                                                'tomesharedby': list(set(tomesharedby)),
+                                                                'isharedwith': isharedwith,
+                                                                'sharechecked': sharechecked,
+                                                                'activespeakerId': ''
                                                             }
-            else:                                                        
+            else:
+                if (sharemode == -1):
+                    return f'This project: {activeprojectname} is not shared with this user: {user}'
+                    
                 usershareprojectsname[activeprojectname] = {
-                                                            'sharemode': sharemode,
-                                                            'tomesharedby': [current_user.username],
-                                                            'isharedwith': [],
-                                                            'sharechecked': sharechecked,
-                                                            'activespeakerId': ''
+                                                                'sharemode': sharemode,
+                                                                'tomesharedby': [current_user.username],
+                                                                'isharedwith': [],
+                                                                'sharechecked': sharechecked,
+                                                                'activespeakerId': ''
                                                             }
-            projectdetails = projects.find_one({'projectname': activeprojectname},
-                                                {'_id': 0,
-                                                'sharedwith': 1,
-                                                'lastActiveId': 1,
-                                                'speakerIds': 1})
+            projectdetails = projects.find_one(
+                                                {
+                                                    'projectname': activeprojectname
+                                                },
+                                                {
+                                                    '_id': 0,
+                                                    'sharedwith': 1,
+                                                    'lastActiveId': 1,
+                                                    'speakerIds': 1
+                                                }
+                                            )
             # print(projectdetails)
             projectdetails['sharedwith'].append(user)
             # print(projectdetails)
             # update list of projects shared with the user in collection
-            userprojects.update_one({ 'username' : user },
-                                    { '$set': { 'projectsharedwithme' : usershareprojectsname}})
-            projects.update_one({'projectname': activeprojectname},
-                                {'$set': {'sharedwith': list(set(projectdetails['sharedwith']))}})
+            userprojects.update_one(
+                                        {
+                                            'username' : user
+                                        },
+                                        {
+                                            '$set': 
+                                                {
+                                                    'projectsharedwithme' : usershareprojectsname
+                                                }
+                                        }
+                                    )
+            projects.update_one(
+                                    {
+                                        'projectname': activeprojectname
+                                    },
+                                    {
+                                        '$set':
+                                            {
+                                                'sharedwith': list(set(projectdetails['sharedwith']))
+                                            }
+                                    }
+                                )
             
             if ('speakerIds' in projectdetails):
                 if (len(speakers) != 0):
@@ -2829,34 +2922,83 @@ def shareprojectwith():
                         if len(value) != 0:
                             if activeprojectname in value:
                                 userprojectinfo = key+'.'+activeprojectname+".activespeakerId"
-                    userprojects.update_one({"username": current_username},
-                                            { "$set": {
-                                                userprojectinfo: speakers[-1]
-                                            }})
+                    userprojects.update_one(
+                                                {
+                                                    "username": current_username
+                                                },
+                                                {
+                                                    "$set":
+                                                        {
+                                                            userprojectinfo: speakers[-1]
+                                                        }
+                                                }
+                                            )
                     
                     for speaker in speakers:
                         # print(speaker)
-                        projects.update_one({'projectname': activeprojectname},
-                                    {'$addToSet': {'speakerIds.'+user: speaker}})
+                        projects.update_one(
+                                                {
+                                                    'projectname': activeprojectname
+                                                },
+                                                {
+                                                    '$addToSet':
+                                                        {
+                                                            'speakerIds.'+user: speaker
+                                                        }
+                                                }
+                                            )
                         userlastactiveId = projectdetails['lastActiveId'][current_username][speaker]['audioId']
-                        projects.update_one({'projectname': activeprojectname},
-                                    {'$set': {'lastActiveId.'+user+'.'+speaker+'.audioId': userlastactiveId}})
+                        projects.update_one(
+                                                {
+                                                    'projectname': activeprojectname
+                                                },
+                                                {
+                                                    '$set': 
+                                                            {
+                                                                'lastActiveId.'+user+'.'+speaker+'.audioId': userlastactiveId
+                                                            }
+                                                }
+                                            )
                 elif user not in projectdetails['speakerIds']:
-                    projects.update_one({'projectname': activeprojectname},
-                                    {'$set': {'lastActiveId.'+user: {}}})
+                    projects.update_one(
+                                            {
+                                                'projectname': activeprojectname
+                                            },
+                                            {
+                                                '$set': 
+                                                    {
+                                                        'lastActiveId.'+user: {}
+                                                    }
+                                            }
+                                        )
 
+            # update "isharedwith" of the current user and the projectowner
             for key, value in projectinfo.items():
                 if (len(value) != 0 and
                     activeprojectname in value):
-                    userprojects.update_one({"username": current_username},
-                                        { "$addToSet": {
-                                            key+'.'+activeprojectname+'.isharedwith': user
-                                        }})
+                    userprojects.update_one(
+                                                {
+                                                    "username": current_username
+                                                },
+                                                {
+                                                    "$addToSet":
+                                                        {
+                                                            key+'.'+activeprojectname+'.isharedwith': user
+                                                        }
+                                                }
+                                            )
                     if projectowner != current_username:
-                        userprojects.update_one({"username": projectowner},
-                                            { "$addToSet": {
-                                                'myproject.'+activeprojectname+'.isharedwith': user
-                                            }})
+                        userprojects.update_one(
+                                                    {
+                                                        "username": projectowner
+                                                    },
+                                                    {
+                                                        "$addToSet":
+                                                            {
+                                                                'myproject.'+activeprojectname+'.isharedwith': user
+                                                            }
+                                                    }
+                                                )
 
     return 'OK'
 
