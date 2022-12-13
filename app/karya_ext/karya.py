@@ -81,7 +81,7 @@ def home_insert():
     fetch_access_code_list = []
 
     for fetch_access_code in fetch_access_codes:
-        print ('Current access code', fetch_access_code)
+        # print ('Current access code', fetch_access_code)
         if (fetch_access_code['assignedBy'] != ''):
             if (fetch_access_code['assignedBy'] == current_username):
                 fetch_access_code_list.append(fetch_access_code['karyaaccesscode'])
@@ -89,7 +89,7 @@ def home_insert():
                 if (current_username == fetch_access_code['uploadedBy']):
                     fetch_access_code_list.append(fetch_access_code['karyaaccesscode'])
     
-    print ("Access code list for", activeprojectname, current_username, fetch_access_code_list)
+    # print ("Access code list for", activeprojectname, current_username, fetch_access_code_list)
 
     karya_speaker_ids = []
 
@@ -153,7 +153,7 @@ def uploadfile():
                                                                                             'userprojects',
                                                                                             'projectsform')
     current_username = getcurrentusername.getcurrentusername()
-    print('curent user : ', current_username)
+    # print('curent user : ', current_username)
     currentuserprojectsname = getcurrentuserprojects.getcurrentuserprojects(current_username,
                                                                                 userprojects)
     activeprojectname = getactiveprojectname.getactiveprojectname(current_username, userprojects)
@@ -167,7 +167,7 @@ def uploadfile():
             langscript.append(lang_script)
     domain = projectform["Domain"][1]
     elicitation = projectform["Elicitation Method"][1]
-    print(langscript, domain, elicitation)
+    # print(langscript, domain, elicitation)
     uploadacesscodemetadata = {
                                 "langscript": langscript,
                                 "domain": domain,
@@ -214,8 +214,8 @@ def uploadfile():
             else:
                 fetch_data = 0
 
-            print (fetch_data)
-            print(language, domain, elicitationmethod)
+            # print (fetch_data)
+            # print(language, domain, elicitationmethod)
 
             insert_dict = {
                             "karyaspeakerid": item["id"], "karyaaccesscode": item["access_code"], "lifespeakerid": "", 
@@ -264,7 +264,7 @@ def uploadfile():
 
 @karya_bp.route('/add', methods=['GET', 'POST'])
 def add():
-    print ('Adding speaker info into server')
+    # print ('Adding speaker info into server')
     mongodb_info = mongo.db.accesscodedetails
     
     accesscodedetails, = getdbcollections.getdbcollections(mongo, "accesscodedetails")
@@ -280,7 +280,7 @@ def add():
 ###############################
 ###############################
     # jp = karyaaccesscode["lifespeakerid"]
-    print ('Request method', request.method)
+    # print ('Request method', request.method)
 
     speaker_data_accesscode = []
     speaker_data_name = []
@@ -300,22 +300,22 @@ def add():
     for data in name:
         speaker_name = data["current"]["workerMetadata"]["name"]                                     
         speaker_data_name.append(speaker_name)
-    print(speaker_data_name)
+    # print(speaker_data_name)
 
     #age
     age = mongodb_info.find({"isActive":1},{"current.workerMetadata.agegroup":1,"_id" :0})
     for data in age:   
         speaker_age = data["current"]["workerMetadata"]["agegroup"]                                    
         speaker_data_age.append(speaker_age)
-    print(speaker_data_age)    
+    # print(speaker_data_age) 
 
     #gender
     gender = mongodb_info.find({"isActive":1},{"current.workerMetadata.gender":1,"_id" :0})
     for data in gender:
-        speaker_gender = data["current"]["workerMetadata"]["gender"]                                     
+        speaker_gender = data["current"]["workerMetadata"]["gender"]
         speaker_data_gender.append(speaker_gender)
-    print(speaker_data_gender)                                  
-    print(speaker_data_accesscode)
+    # print(speaker_data_gender)
+    # print(speaker_data_accesscode)
     
     ##################################
     #######################
@@ -338,9 +338,9 @@ def add():
     if request.method =='POST':
         # accesscode = request.form.get('accesscode')
         #remaingkaryaaccesscode = request.form.get('remaingkaryaaccesscode')
-        print("####################################################### \n", "\n##########################################")
+        # print("####################################################### \n", "\n##########################################")
         accesscode = request.form.get('accode')
-        print("this acc code at line 428", accesscode)
+        # print("this acc code at line 428", accesscode)
         fname = request.form.get('sname') 
         fage = request.form.get('sagegroup')
         fgender = request.form.get('sgender')
@@ -351,14 +351,14 @@ def add():
         por = request.form.get('por')
         toc = request.form.get('toc')
 
-        print("Line 354: ,","Name: ", fname, "Age: ",fage, "Gender: ",fgender, "EducationLvl: ",educlvl, "MOE12: ",moe12, "MOEA12: ",moea12, "SOLS: ",sols, "Placeofrecording: ",por, "TOC: ",toc)  
+        # print("Line 354: ,","Name: ", fname, "Age: ",fage, "Gender: ",fgender, "EducationLvl: ",educlvl, "MOE12: ",moe12, "MOEA12: ",moea12, "SOLS: ",sols, "Placeofrecording: ",por, "TOC: ",toc)  
         if accesscode  == '':
             accesscodefor = int(request.form.get('accesscodefor'))
             task = request.form.get('task')
             language = request.form.get('langscript') 
             domain = request.form.getlist('domain')
             elicitationmethod = request.form.getlist("elicitation")
-            print("line 361  => accesscodefor :" , accesscodefor, "Task: ",task, "Lang: ", language, "Domain: ", domain, "ElicMethod: ",elicitationmethod)
+            # print("line 361  => accesscodefor :" , accesscodefor, "Task: ",task, "Lang: ", language, "Domain: ", domain, "ElicMethod: ",elicitationmethod)
             #############################################################################################
             # namekaryaID = mongodb_info.find_one({"karyaaccesscode":accesscode},{"karyaspeakerid":1, "_id" :0})
             # namekaryaID = mongodb_info.find_one({"isActive":0},{"karyaspeakerid":1, "_id" :0})
@@ -376,8 +376,8 @@ def add():
                                 "fetchData":accesscodefor, "task":task, 
                                 "domain":domain, "elicitationmethod":elicitationmethod, 
                                 "language":language}
-            print(test)                   
-            print(namekaryaID)
+            # print(test)
+            # print(namekaryaID)
             # for lidata in namekaryaID:
             #     print("574 ", lidata)
             if namekaryaID is None: 
@@ -388,22 +388,22 @@ def add():
             nameInForm = fname 
             if namekaryaIDDOB and nameInForm is not None:  
                 
-                print("230 ========================== >>>>>>>>>>>>>>>>>>>>     ",nameInForm , type(nameInForm))
+                # print("230 ========================== >>>>>>>>>>>>>>>>>>>>     ",nameInForm , type(nameInForm))
 
-                print("231 =========================  >>>>>>>>>>>>>>>>>>>>      ", namekaryaIDDOB, type(namekaryaIDDOB))
+                # print("231 =========================  >>>>>>>>>>>>>>>>>>>>      ", namekaryaIDDOB, type(namekaryaIDDOB))
                 # if namekaryaID is not None:
                 #     try :
                 renameInFormDOB = namekaryaIDDOB.replace("-","")
-                print("227  ==========================================>>>>>>>>>>   ", renameInFormDOB)
+                # print("227  ==========================================>>>>>>>>>>   ", renameInFormDOB)
                 codes = namekaryaID["karyaspeakerid"]
-                print(codes)
+                # print(codes)
                 
                 renameInForm = nameInForm.replace(" ","")
                 lowerRenameInForm = renameInForm.lower()
                 renameDOB =  "".join([lowerRenameInForm,renameInFormDOB])
-                print("232 =========================>>>>>>>>>>>>    " , renameDOB)
+                # print("232 =========================>>>>>>>>>>>>    " , renameDOB)
                 renameCode ="_".join([renameDOB,codes])
-                print("line 583", renameCode)  
+                # print("line 583", renameCode)  
                 # namekaryaAddID.append(renameCode)
                 update_data = {"lifespeakerid": renameCode,
                                         "assignedBy" :  current_username, 
@@ -449,10 +449,10 @@ def add():
     #########################################################################################################################
     #########################################################################################################################
             accesscode = request.form.get('accode')
-            print("=======================> ",accesscode )
+            # print("=======================> ",accesscode )
     #########################################################################################################################
     ##########################################################################################################################
-            print("this acc code at line 460", accesscode)
+            # print("this acc code at line 460", accesscode)
             # if accesscode == '':
                 # karyaaccesscode = mongodb_info.find_one({"isActive":0},{"karyaaccesscode":1, "_id" :0})
                 
@@ -464,9 +464,9 @@ def add():
             #     print ('Karya access code', accesscode)
             #     print ('445 Update Data', update_data)
                 # "lifespeakerid": renameCode
-            print ("Data before updating")
-            print ("Karya Access Code", namekaryaID["karyaaccesscode"])
-            print ("Update Data", update_data)
+            # print ("Data before updating")
+            # print ("Karya Access Code", namekaryaID["karyaaccesscode"])
+            # print ("Update Data", update_data)
             
             mongodb_info.update_one({"karyaaccesscode": namekaryaID["karyaaccesscode"], "projectname": activeprojectname}, {"$set": update_data})
             
@@ -557,7 +557,7 @@ def homespeaker():
             langscript.append(lang_script)
     domain = projectform["Domain"][1]
     elicitation = projectform["Elicitation Method"][1]
-    print(langscript, domain, elicitation)
+    # print(langscript, domain, elicitation)
     uploadacesscodemetadata = {
                                 "langscript": langscript,
                                 "domain": domain,
@@ -642,7 +642,7 @@ def homespeaker():
 #     # speaker_data = [speaker_data_accesscode, speaker_data_name, speaker_data_age, speaker_data_gender]
 #     data_table = [[ karya_accesscode[i], lifeId[i], speaker_data_name[i], speaker_data_age[i], speaker_data_gender[i]] for i in range(0, len(karya_accesscode))]
     
-    print(data_table)
+    # print(data_table)
     return render_template('homespeaker.html',
                             data=currentuserprojectsname,
                             projectName=activeprojectname,
@@ -662,7 +662,7 @@ def getonespeakerdetails():
     
     # data through ajax
     asycaccesscode = request.args.get('asycaccesscode')
-    print(f"{'='*80}\nasycaccesscode: {asycaccesscode}\n{'='*80}")
+    # print(f"{'='*80}\nasycaccesscode: {asycaccesscode}\n{'='*80}")
     speakerdetails = accesscodedetails.find_one({"karyaaccesscode": asycaccesscode},
                                                 {"_id": 0,
                                                 "current.workerMetadata": 1})
@@ -679,7 +679,7 @@ def getonespeakerdetails():
     #                                                 "assignedBy.current.speaker_info.workerMetadata.type-of-place": 1,"_id": 0})
 
     # speakerdetails = speakerdetails["assignedBy"]["current"]["speaker_info"]["workerMetadata"]
-    print(f"SPEAKER DETAILS: {speakerdetails}")                                                
+    # print(f"SPEAKER DETAILS: {speakerdetails}")
 
     # speakerdetails['accesscode'] = asycaccesscode
     return jsonify(speakerdetails=speakerdetails)
@@ -714,7 +714,7 @@ def get_fetched_audio_list(accesscode):
     mongodb_info = mongo.db.accesscodedetails  
     fetchedaudiodict = mongodb_info.find_one({"karyaaccesscode": accesscode},{"karyafetchedaudios":1, "_id" :0})   
     fetched_audio_list = fetchedaudiodict['karyafetchedaudios']
-    print("3 : ", fetched_audio_list)
+    # print("3 : ", fetched_audio_list)
     return fetched_audio_list
 
 
@@ -750,7 +750,7 @@ def fetch_karya_audio():
         otp = request.form.get("karya_otp")
 
         # print ("OTP", otp)
-        print ("access_code", access_code)
+        # print ("access_code", access_code)
         # print ("Mobile", phone_number)
 
         verifyotp_urll = 'https://karyanltmbox.centralindia.cloudapp.azure.com/worker/otp/verify'
@@ -819,7 +819,7 @@ def fetch_karya_audio():
 
         #put check condiotn -> if the speakerId and fileID  previouls fetched or not / Fetch on the basis of fileID assign to speakerID
         audio_speaker_merge = {key:value for key, value in zip(fileID_sentence_list , workerId_list)} #speakerID = fileID_list(fieldID)
-        print(len(audio_speaker_merge))
+        # print(len(audio_speaker_merge))
         # print(audio_speaker_merge.keys())
         language = accesscodedetails.find_one({"karyaaccesscode": access_code}, {'language': 1,'_id': 0})['language']
         exclude_ids = []
@@ -830,7 +830,7 @@ def fetch_karya_audio():
 
         # print(f"LanguageScript: {language}\nExcludeIds: {exclude_ids}")
         file_id_list = []
-        print(f"Length of fileIdList: {file_id_list}\nLength of fileIdSet: {set(file_id_list)}")
+        # print(f"Length of fileIdList: {file_id_list}\nLength of fileIdSet: {set(file_id_list)}")
         for file_id_and_sent in list(audio_speaker_merge.keys()):
             
             current_file_id = file_id_and_sent[0]
@@ -963,7 +963,7 @@ def fetch_karya_audio():
             else:
                 print(f"Audio already fetched: {current_sentence}")
 
-            print(f"Length of fileIdList: {len(file_id_list)}\nLength of fileIdSet: {len(set(file_id_list))}")
+            # print(f"Length of fileIdList: {len(file_id_list)}\nLength of fileIdSet: {len(set(file_id_list))}")
         return redirect(url_for('karya_bp.home_insert'))
 
     return render_template("fetch_karya_audio.html")
@@ -987,32 +987,32 @@ def fetch_karya_audio_zip():
         print(type(audioZipUpload))
         # for audioZipUpload in audioZipUpload:
         fileAudio = tarfile.open(fileobj=audioZipUpload, mode= 'r')
-        print(type(fileAudio))
-        print('1', type(fileAudio))
-        print('2', fileAudio.getnames()) #3
-        print('3', fileAudio.getmembers()) #4
+        # print(type(fileAudio))
+        # print('1', type(fileAudio))
+        # print('2', fileAudio.getnames()) #3
+        # print('3', fileAudio.getmembers()) #4
         for filename in fileAudio.getnames():
             if (filename.endswith('.json')):
-                print(filename)
+                # print(filename)
                 member = fileAudio.getmember(filename)
                 f=fileAudio.extractfile(member)
                 content=f.read()
-                print('4', type(member))
-                print('5', type(content))
+                # print('4', type(member))
+                # print('5', type(content))
                 jsondata = json.load(io.BytesIO(content))
-                print(jsondata)
+                # print(jsondata)
                 speakerId = jsondata['worker_id']
                 wavfilename = jsondata['recording']
                 wavmember = fileAudio.getmember(wavfilename)
                 wavf=fileAudio.extractfile(wavmember)
                 wavcontent=wavf.read()
-                print('4', type(wavmember))
-                print('5', type(wavcontent))
+                # print('4', type(wavmember))
+                # print('5', type(wavcontent))
                 wavdata = io.BytesIO(wavcontent)
 
                 new_audio_file = {}
                 new_audio_file['audiofile'] = FileStorage(wavdata, filename=wavfilename)
-                print('9', new_audio_file['audiofile'], type(new_audio_file['audiofile']))
+                # print('9', new_audio_file['audiofile'], type(new_audio_file['audiofile']))
 
 
                 audiodetails.saveaudiofiles(mongo,
