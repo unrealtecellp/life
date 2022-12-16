@@ -31,6 +31,8 @@ Home
     <!-- <button type="button" class="btn btn-lg btn-success" onclick="window.location.href='{{ url_for('newproject') }}';">Create New Project</button> -->
     <br/><br/>
     <hr/>
+    <div id="allprojectslist"></div>
+    <br>
     {% if data|length > 0 %}
     <h3>Active Project: {{ activeproject }}</h3>
     
@@ -56,11 +58,11 @@ Home
     </div>
     </br>
     </br>
-    <br>
+    <hr>
    <div id="allProjects">
-    <h3>All Projects</h3>
-    
-      <table class="table table-sm col-md-6">
+    <!-- <h3>All Projects</h3> -->
+
+      {# <table class="table table-sm col-md-6">
         <tbody>
             <tr>
         {% for d in data %}
@@ -69,15 +71,13 @@ Home
                         </tr>
                     </tbody>
                     <tbody>
-                        <tr>    
+                        <tr>
                 {% endif %}
         {% endfor %}
         </tr>
-    </tbody>
-    </table>
-
-
-   </div>     
+      </tbody>
+    </table> #}
+   </div>
    {% endif %}
   <!-- Share Project Modal -->
   <div class="modal fade" id="myShareProjectModal" tabindex="-1" role="dialog" aria-labelledby="myShareProjectModalLabel">
@@ -151,4 +151,5 @@ Home
 <script src="{{url_for('.static', filename='shareprojectwith.js')}}"></script>
 <script src="{{url_for('.static', filename='assignkaryaaccesscode.js')}}"></script>
 <script src="{{url_for('.static', filename='home.js')}}"></script>
+<script type="text/javascript">allProjects({{ data | tojson | safe }});</script>
 {% endblock %}
