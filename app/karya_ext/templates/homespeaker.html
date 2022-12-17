@@ -39,17 +39,16 @@
 {% endblock %}
 
 {% block app_content %}
-  <button type="button" class="btn btn-lg btn-info" onclick="window.location.href='{{ url_for('karya_bp.home_insert') }}';">Karya Extension</button>
+<button type="button" class="btn btn-lg btn-info" onclick="window.location.href='{{ url_for('karya_bp.home_insert') }}';">Karya Extension</button>
   {% if projectName is defined %}
     <h4>
-        Project Name : {{ projectName }}
+      Project Name : {{ projectName }}
     </h4>
-    <br>
   {% endif %}
-
+  
 <!-- 
 <div> -->
-  <input id="myInput" type="text" placeholder="Search">
+  <input  id="myInput" type="text" placeholder="Search">
   <div class="btn-group" role="group">
       <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         Download
@@ -96,10 +95,6 @@
                   x.style.display = "none";
                 }
               }
-
-
-
-
 
               $(document).ready(function() {
                 $('#idtask').change(function() {

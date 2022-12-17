@@ -68,16 +68,12 @@ def home_insert():
                                                         activeprojectname)
 
     fetch_access_codes = accesscodedetails.find({'projectname': activeprojectname,
-                                                'fetchData': 1
-                                                },
-                                                {
-                                                    '_id': 0,
+                                                'fetchData': 1},
+                                                {'_id': 0,
                                                     'karyaaccesscode': 1,
                                                     'assignedBy': 1,
-                                                    'uploadedBy': 1
-                                                })
-
-
+                                                    'uploadedBy': 1})
+                                              
     fetch_access_code_list = []
 
     for fetch_access_code in fetch_access_codes:
@@ -108,7 +104,7 @@ def home_insert():
                             projectName=activeprojectname,
                             shareinfo=shareinfo,
                             fetchaccesscodelist=fetch_access_code_list,
-                            karya_speaker_ids=karya_speaker_ids
+                            karya_speaker_ids=karya_speaker_ids,
                         )
     # return redirect(url_for('karya_bp.home_insert'))
     # return render_template("uploadfile.html")
@@ -267,8 +263,8 @@ def add():
     print ('Adding speaker info into server')
     mongodb_info = mongo.db.accesscodedetails
     
-    accesscodedetails, = getdbcollections.getdbcollections(mongo, "accesscodedetails")
-    remaingkaryaaccesscode = mongodb_info.find({"isActive":0},{"karyaspeakerid":1, "_id" :0})
+    # accesscodedetails, = getdbcollections.getdbcollections(mongo, "accesscodedetails")
+    # remaingkaryaaccesscode = mongodb_info.find({"isActive":0},{"karyaspeakerid":1, "_id" :0})
 ##########################
 ##########################
     # recordingremaingkaryaaccesscode = mongodb_info.find({"isActive":0, "taskname": "Recording"},{"karyaspeakerid":1, "_id" :0})
@@ -334,6 +330,8 @@ def add():
                                                                                             'projectsform')
     current_username = getcurrentusername.getcurrentusername()          
     activeprojectname = getactiveprojectname.getactiveprojectname(current_username, userprojects)
+
+   
 
     if request.method =='POST':
         # accesscode = request.form.get('accesscode')
@@ -521,7 +519,7 @@ def add():
 
             mongodb_info.update_one({"karyaaccesscode": accesscode, "projectname": activeprojectname}, {"$set": update_old_data}) # Edit_old_user_info
             mongodb_info.update_one({"karyaaccesscode": accesscode, "projectname": activeprojectname}, {"$set": update_data}) #new_user_info
-
+    
     return redirect(url_for('karya_bp.homespeaker'))
     # return render_template("homespeaker.html",
                             # projectName=activeprojectname,
@@ -538,7 +536,7 @@ def add():
 
 @karya_bp.route('/homespeaker')
 def homespeaker():
-
+    mongodb_info = mongo.db.accesscodedetails
     userprojects, projectsform = getdbcollections.getdbcollections(mongo,'userprojects', 'projectsform')
 
     current_username = getcurrentusername.getcurrentusername()
@@ -579,6 +577,7 @@ def homespeaker():
     mongodb_info = mongo.db.accesscodedetails
     # print(mongodb_info)
     
+     
 
 ################################## karya accesscode  #########################################################################
     karyaaccesscodedetails = mongodb_info.find({"isActive":1, "projectname": activeprojectname},{
@@ -641,13 +640,14 @@ def homespeaker():
   
 #     # speaker_data = [speaker_data_accesscode, speaker_data_name, speaker_data_age, speaker_data_gender]
 #     data_table = [[ karya_accesscode[i], lifeId[i], speaker_data_name[i], speaker_data_age[i], speaker_data_gender[i]] for i in range(0, len(karya_accesscode))]
-    
     print(data_table)
+
     return render_template('homespeaker.html',
                             data=currentuserprojectsname,
                             projectName=activeprojectname,
                             uploadacesscodemetadata = uploadacesscodemetadata,
-                            data_table= data_table)
+                            data_table= data_table
+                            )
 
 
 ##############################################################################################################
@@ -743,7 +743,7 @@ def fetch_karya_audio():
         for_worker_id = request.form.get("speaker_id")
 
          ###### Get already fetched audio list
-        fetched_audio_list = get_fetched_audio_list (access_code)
+        fetched_audio_list = get_fetched_audio_list(access_code)
 
         phone_number = request.form.get("mobile_number")
 
@@ -756,11 +756,17 @@ def fetch_karya_audio():
         verifyotp_urll = 'https://karyanltmbox.centralindia.cloudapp.azure.com/worker/otp/verify'
         verifyotp_hederr= {'access-code':access_code, 'phone-number':phone_number, 'otp':otp}
         verifyPh_request = requests.put(url = verifyotp_urll, headers = verifyotp_hederr) 
+        if verifyPh_request.status_code != int(200):
+            flash("Please Provide Correct OTP/Mobile Number")
+            return redirect(url_for('karya_bp.home_insert'))
+            
         # print (verifyPh_request.json())
-
+            
+        print("working on next code", verifyPh_request.json())
         ##TODO: Put check for verifying if the OTP was correct or not. If correct then proceed otherwise send error
         getTokenid_assignment_hedder = verifyPh_request.json()['id_token']
         # print ("ID token : ", getTokenid_assignment_hedder)
+         
         
         ###############################   Get Assignments    ##########################################
         hederr= {'karya-id-token':getTokenid_assignment_hedder}
