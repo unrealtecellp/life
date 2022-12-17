@@ -275,8 +275,8 @@ def savequestionnaire():
 
     if request.method =='POST':
         ques_data = dict(request.form.lists())
-        print('LINE 241: ')
-        pprint(ques_data)
+        # print('LINE 241: ')
+        # pprint(ques_data)
         ques_data_file = request.files.to_dict()
         # pprint(ques_data_file)
 

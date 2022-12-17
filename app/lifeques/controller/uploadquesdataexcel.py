@@ -605,7 +605,7 @@ def enterquesfromuploadedfile(mongo, projects,
                         # print ('Upload file name', uploadfilename)                        
                         filesToBeUploaded[file_type] = uploadfilename
                                   
-        pprint(uploadedFileQues)
+        # pprint(uploadedFileQues)
         uploadedFileQuesKeysList = list(uploadedFileQues.keys())
         for ak in uploadedFileQuesKeysList:
             if ('text.000000' in ak and

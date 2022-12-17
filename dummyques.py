@@ -254,7 +254,7 @@ def createdummyques(questionnaires,
         # else:
         #     dummy_ques['prompt'][key] = ''
     # print(dummy_ques)
-    pprint(dummy_ques)
+    # pprint(dummy_ques)
 
     questionnaires.insert(dummy_ques)
 

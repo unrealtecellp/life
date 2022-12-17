@@ -1,18 +1,46 @@
-from flask import Blueprint, redirect, render_template, url_for, request, flash, send_file, jsonify
+from flask import (
+                    Blueprint,
+                    redirect,
+                    render_template,
+                    url_for,
+                    request,
+                    flash,
+                    send_file,
+                    jsonify
+                )
 from flask_login import login_required
-
 from app import mongo
-
-from app.controller import getdbcollections, getactiveprojectname, getcurrentuserprojects
-from app.controller import getprojectowner, getcurrentusername, getactiveprojectform
-from app.controller import savenewproject, updateuserprojects, getuserprojectinfo
-from app.controller import getprojecttype
-
-from app.lifeques.controller import savenewquestionnaireform, createdummyques, downloadquesformexcel
-from app.lifeques.controller import uploadquesdataexcel, getactivequestionnaireid, updatelatestquesid
-from app.lifeques.controller import getnewquesid, quesunannotatedfilename, saveques, savequesaudiofiles
-from app.lifeques.controller import getderivedfromprojectform, copyquesfromparentproject, questranscriptionaudiodetails
-from app.lifeques.controller import getquestionnairestats, savequespromptfile, getquesfromprompttext
+from app.controller import (
+                            getdbcollections,
+                            getactiveprojectname,
+                            getcurrentuserprojects,
+                            getprojectowner,
+                            getcurrentusername,
+                            getactiveprojectform,
+                            savenewproject,
+                            updateuserprojects,
+                            getuserprojectinfo,
+                            getprojecttype
+                        )
+from app.lifeques.controller import (
+                                        downloadquestionnairein,
+                                        savenewquestionnaireform,
+                                        createdummyques,
+                                        downloadquesformexcel,
+                                        uploadquesdataexcel,
+                                        getactivequestionnaireid,
+                                        updatelatestquesid,
+                                        getnewquesid,
+                                        quesunannotatedfilename,
+                                        saveques,
+                                        savequesaudiofiles,
+                                        getderivedfromprojectform,
+                                        copyquesfromparentproject,
+                                        questranscriptionaudiodetails,
+                                        getquestionnairestats,
+                                        savequespromptfile,
+                                        getquesfromprompttext
+                                    )
 
 import os
 from pprint import pprint
@@ -307,8 +335,8 @@ def savequestionnaire():
 
     if request.method =='POST':
         ques_data = dict(request.form.lists())
-        print('LINE 241: ')
-        pprint(ques_data)
+        # print('LINE 241: ')
+        # pprint(ques_data)
         # ques_data_file = request.files.to_dict()
         # pprint(ques_data_file)
 
@@ -541,3 +569,30 @@ def quespromptfile():
 #                                                 questionnaires,
 #                                                 "Q_test_Project", "What are the different ceremonies related to the birth of a child in your community?"
 #                                             )
+
+@lifeques.route('/downloadquestionnaire', methods=['GET', 'POST'])
+@login_required
+def downloadquestionnaire():
+    projectsform, userprojects, questionnaires = getdbcollections.getdbcollections(mongo,
+                                                                                "projectsform",
+                                                                                "userprojects",
+                                                                                "questionnaires"
+                                                                                )
+    current_username = getcurrentusername.getcurrentusername()
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                    userprojects)
+    questionnaire_data = request.args.get('data')
+    questionnaire_data = eval(questionnaire_data)
+    print(questionnaire_data)
+    download_format = questionnaire_data['downloadFormat']
+
+    if (download_format == 'karyajson'):
+        downloadquestionnairein.karyajson(questionnaires,
+                                            activeprojectname)
+
+
+    return 'OK'
+
+@lifeques.route('/lifequesdownloadquestionnaire', methods=['GET', 'POST'])
+def lifequesdownloadquestionnaire():
+    return send_file('../download.zip', as_attachment=True)
