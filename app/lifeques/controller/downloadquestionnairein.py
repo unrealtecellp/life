@@ -5,7 +5,9 @@ from pprint import pprint
 def karyajson(questionnaires,
                 activeprojectname):
     print('karyajson')
-    karya_json_data = []
+    # dictionary containing lang-script as key and list of dictionaries(karya json format) as value
+    lang_wise_ques = {}
+    # karya_json_data = []
     saved_ques_data = questionnaires.find({'projectname': activeprojectname, 'quessaveFLAG': 1},
                                             {
                                                 "_id": 0,
@@ -32,3 +34,11 @@ def karyajson(questionnaires,
                     print(lang_script, lang_info)
                     for prompt_type, prompt_data in lang_info.items():
                         print(prompt_type, prompt_data)
+                        if (prompt_type == 'text'):
+                            pass
+                        elif (prompt_type == 'audio'):
+                            pass
+                        elif (prompt_type == 'multimedia'):
+                            pass
+                        elif (prompt_type == 'image'):
+                            pass
