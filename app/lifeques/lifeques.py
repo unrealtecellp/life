@@ -11,16 +11,17 @@ from flask import (
 from flask_login import login_required
 from app import mongo
 from app.controller import (
-                            getdbcollections,
+                            createzip,
                             getactiveprojectname,
-                            getcurrentuserprojects,
-                            getprojectowner,
-                            getcurrentusername,
                             getactiveprojectform,
-                            savenewproject,
-                            updateuserprojects,
+                            getcurrentusername,
+                            getcurrentuserprojects,
+                            getdbcollections,
+                            getprojectowner,
+                            getprojecttype,
                             getuserprojectinfo,
-                            getprojecttype
+                            savenewproject,
+                            updateuserprojects
                         )
 from app.lifeques.controller import (
                                         downloadquestionnairein,
@@ -48,7 +49,11 @@ import inspect
 
 lifeques = Blueprint('lifeques', __name__, template_folder='templates', static_folder='static')
 basedir = os.path.abspath(os.path.dirname(__file__))
-print(f"LINE 17: lifeques basedir: {basedir}")
+# print(f"LINE 17: lifeques basedir: {basedir}")
+lifeques_download_folder_path = os.path.join(basedir, 'lifequesdownload')
+if not os.path.exists(lifeques_download_folder_path):
+    # print('!!!!!', lifeques_download_folder_path)
+    os.mkdir(lifeques_download_folder_path)
 
 @lifeques.route('/', methods=['GET', 'POST'])
 @lifeques.route('/home', methods=['GET', 'POST'])
@@ -557,27 +562,13 @@ def quespromptfile():
 
     return redirect(url_for("lifeques.questionnaire"))
 
-# projectsform, userprojects, questionnaires = getdbcollections.getdbcollections(mongo,
-#                                                                                 "projectsform",
-#                                                                                 "userprojects",
-#                                                                                 "questionnaires"
-#                                                                                 )
-# # current_username = getcurrentusername.getcurrentusername()
-# # activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
-# #                                                                     userprojects)
-# getquesfromprompttext.getquesfromprompttext(projectsform,
-#                                                 questionnaires,
-#                                                 "Q_test_Project", "What are the different ceremonies related to the birth of a child in your community?"
-#                                             )
-
 @lifeques.route('/downloadquestionnaire', methods=['GET', 'POST'])
 @login_required
 def downloadquestionnaire():
-    projectsform, userprojects, questionnaires = getdbcollections.getdbcollections(mongo,
-                                                                                "projectsform",
-                                                                                "userprojects",
-                                                                                "questionnaires"
-                                                                                )
+    userprojects, questionnaires = getdbcollections.getdbcollections(mongo,
+                                                                        "userprojects",
+                                                                        "questionnaires"
+                                                                    )
     current_username = getcurrentusername.getcurrentusername()
     activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
                                                                     userprojects)
@@ -587,12 +578,24 @@ def downloadquestionnaire():
     download_format = questionnaire_data['downloadFormat']
 
     if (download_format == 'karyajson'):
-        downloadquestionnairein.karyajson(questionnaires,
-                                            activeprojectname)
-
+        project_folder_path = downloadquestionnairein.karyajson(mongo,
+                                                                    basedir,
+                                                                    questionnaires,
+                                                                    activeprojectname)
+    
+    zip_file_path = createzip.createzip(project_folder_path, activeprojectname)
 
     return 'OK'
 
 @lifeques.route('/lifequesdownloadquestionnaire', methods=['GET', 'POST'])
 def lifequesdownloadquestionnaire():
-    return send_file('../download.zip', as_attachment=True)
+    userprojects, = getdbcollections.getdbcollections(mongo,
+                                                        "userprojects"
+                                                    )
+    current_username = getcurrentusername.getcurrentusername()
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                    userprojects)
+
+    zip_file_path = os.path.join(basedir, 'lifequesdownload', activeprojectname, activeprojectname+'.zip')
+
+    return send_file(zip_file_path, as_attachment=True)
