@@ -5,7 +5,7 @@ import glob
 from zipfile import ZipFile
 
 def createzip(files_path, activeprojectname):
-    # printing the list of all files to be zipped 
+    # printing the list of all files to be zipped
     files = glob.glob(files_path+'/*')
     # print('Following files will be zipped:')
     # for file_name in files: 

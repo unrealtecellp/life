@@ -2,10 +2,11 @@
 
 from pprint import pprint
 from app.controller.createprojectdirectory import createprojectdirectory
-# from app.controller.createzip import createzip
+from app.controller.createzip import createzip
 from app.controller.getfilefromfs import getfilefromfs
 import os
 import json
+import shutil
 
 def karyajson(mongo,
                 base_dir,
@@ -41,6 +42,8 @@ def karyajson(mongo,
                     "Domain": domain,
                     "Elicitation Method": elicitation_method
                 }
+                audio_fileId = ''
+                audio_file_path = ''
                 if (prompt_type == 'text'):
                     lang_wise_ques_key = lang_script.replace('-', '_')+'_'+prompt_type
                     boundaryId = list(prompt_data.keys())[0]
@@ -54,7 +57,7 @@ def karyajson(mongo,
                     temp_dict['sentence'] = sentence
                     temp_dict['hint'] = prompt_data['filename']
                     audio_fileId = prompt_data['fileId']
-                    getfilefromfs(mongo,
+                    audio_file_path = getfilefromfs(mongo,
                                     project_folder_path,
                                     audio_fileId,
                                     'audio')
@@ -63,8 +66,13 @@ def karyajson(mongo,
                 elif (prompt_type == 'image'):
                     pass
                 
-                if not os.path.exists(lang_wise_ques_key):
-                    os.mkdir(lang_wise_ques_key)
+                lang_wise_ques_key_path = os.path.join(project_folder_path, lang_wise_ques_key)
+                if not os.path.exists(lang_wise_ques_key_path):
+                    os.mkdir(lang_wise_ques_key_path)
+                    lang_wise_ques_key_json_path = os.path.join(lang_wise_ques_key_path, 'json')
+                    os.mkdir(lang_wise_ques_key_json_path)
+                    lang_wise_ques_key_audio_path = os.path.join(lang_wise_ques_key_path, 'audio')
+                    os.mkdir(lang_wise_ques_key_audio_path)
 
                 if (lang_wise_ques_key in lang_wise_ques):
                     lang_wise_ques[lang_wise_ques_key].append(temp_dict)
@@ -72,20 +80,38 @@ def karyajson(mongo,
                     lang_wise_ques[lang_wise_ques_key] = [temp_dict]
                 
                 domain_wise_ques_key = lang_wise_ques_key+'_'+domain
-                if not os.path.exists(domain_wise_ques_key):
-                    os.mkdir(domain_wise_ques_key)
+                domain_wise_ques_key_path = os.path.join(project_folder_path, domain_wise_ques_key)
+                if not os.path.exists(domain_wise_ques_key_path):
+                    os.mkdir(domain_wise_ques_key_path)
+                    domain_wise_ques_key_json_path = os.path.join(domain_wise_ques_key_path, 'json')
+                    os.mkdir(domain_wise_ques_key_json_path)
+                    domain_wise_ques_key_audio_path = os.path.join(domain_wise_ques_key_path, 'audio')
+                    os.mkdir(domain_wise_ques_key_audio_path)
                 
                 if (domain_wise_ques_key in lang_wise_ques):
                     lang_wise_ques[domain_wise_ques_key].append(temp_dict)
                 else:
                     lang_wise_ques[domain_wise_ques_key] = [temp_dict]
+
+                if (audio_fileId != '' and audio_file_path != ''):
+                    shutil.copy2(audio_file_path, lang_wise_ques_key_audio_path)
+                    shutil.copy2(audio_file_path, domain_wise_ques_key_audio_path)
+                    os.remove(audio_file_path)
     pprint(lang_wise_ques)
 
     for key, value in lang_wise_ques.items():
         print(key, value)
         filename = key+'.json'
-        save_file_path = os.path.join(project_folder_path, filename)
+        save_file_path = os.path.join(project_folder_path, key, 'json', filename)
         with open(save_file_path, 'w') as json_file:
             json.dump(value, json_file, ensure_ascii=False, indent=2)
     
+    for folder_name in sorted(os.listdir(project_folder_path)):
+        print(folder_name)
+        json_folder_path = os.path.join(project_folder_path, folder_name, 'json')
+        zip_file_path = createzip(json_folder_path, folder_name+'_json')
+        audio_folder_path = os.path.join(project_folder_path, folder_name, 'audio')
+        zip_file_path = createzip(audio_folder_path, folder_name+'_recordings')
+        
+
     return project_folder_path
