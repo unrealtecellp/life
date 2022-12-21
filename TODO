@@ -156,6 +156,9 @@
 - Play/Pause/Stop not working for waveform
 - when blank project is dhared with other users in the app then onlt projectOwner is able to view/edit not the other users with whom project is shared.
 
-28 November 2022
+16 December 2022
 --------------------------------------------------------------
-- 
+- download questionnaire in 'Karya' format
+    - in activeproject if quessaveFLAG == 1
+    - loop on prompt->content
+    - if audio in the ques then crop the audio using librosa from start to end time

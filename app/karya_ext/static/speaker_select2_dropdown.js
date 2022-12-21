@@ -263,15 +263,15 @@ var target = [
 
 var task = [
   {"id": "", "text": ""},
-  {"id": "SPEECH_DATA_COLLECTION", "text": "Data Collection"},
-  {"id": "SPEECH_VERIFICATION", "text": "Data Verification"},
-  {"id": "SPEECH_TRANSCRIPTION", "text": "Data Transcription"}
+  {"id": "SPEECH_DATA_COLLECTION", "text": "Recording"},
+  {"id": "SPEECH_VERIFICATION", "text": "Verification of Recordings"},
+  {"id": "SPEECH_TRANSCRIPTION", "text": "Transcription of Recordings"}
 ];
 
 var accesscodefor = [
   {"id": "", "text": ""},
-  {"id": "0", "text": "Collect Data"},
-  {"id": "1", "text": "Download Data"}
+  {"id": "0", "text": "Data Collection Using Karya"},
+  {"id": "1", "text": "Syncing Karya Recording with LiFE"}
 ];
 
 $(document).ready(function () {

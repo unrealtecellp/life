@@ -110,7 +110,12 @@ var QuestionnaireDomain = [
   {"id": "General", "text": "General"},
   {"id": "Agriculture", "text": "Agriculture"},
   {"id": "Education", "text": "Education"},
-  {"id": "Science-Technology", "text": "Science-Technology"}
+  {"id": "Science-Technology", "text": "Science-Technology"},
+  {"id": "Culture", "text": "Culture"},
+  {"id": "Lifecycle", "text": "Lifecycle"},
+  {"id": "Healthcare", "text": "Healthcare"},
+  {"id": "Sports", "text": "Sports"},
+  {"id": "General-Oral-History", "text": "General-Oral-History"}
 ];
 
 
