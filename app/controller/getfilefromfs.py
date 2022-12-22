@@ -18,8 +18,9 @@ def getfilefromfs(mongo,
     Returns:
         _type_: _description_
     """
-    print(file_type, file_id)
-    fs =  gridfs.GridFS(mongo.db)                       # creating GridFS instance to get required files                
+    # print(file_type, file_id)
+    # creating GridFS instance to get required files
+    fs =  gridfs.GridFS(mongo.db)
     file = fs.find_one({ 'fileId': file_id })
     # audioFolder = os.path.join(basedir, 'static/audio')
     # if (os.path.exists(audioFolder)):

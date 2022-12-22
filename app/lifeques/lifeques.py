@@ -574,7 +574,7 @@ def downloadquestionnaire():
                                                                     userprojects)
     questionnaire_data = request.args.get('data')
     questionnaire_data = eval(questionnaire_data)
-    print(questionnaire_data)
+    # print(questionnaire_data)
     download_format = questionnaire_data['downloadFormat']
 
     if (download_format == 'karyajson'):
@@ -596,6 +596,6 @@ def lifequesdownloadquestionnaire():
     activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
                                                                     userprojects)
 
-    zip_file_path = os.path.join(basedir, 'lifequesdownload', activeprojectname, activeprojectname+'.zip')
+    zip_file_path = os.path.join(basedir, 'lifequesdownload', activeprojectname, activeprojectname+'.tgz')
 
     return send_file(zip_file_path, as_attachment=True)

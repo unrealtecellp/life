@@ -12,7 +12,7 @@ def karyajson(mongo,
                 base_dir,
                 questionnaires,
                 activeprojectname):
-    print('karyajson')
+    # print('karyajson')
     project_folder_path = createprojectdirectory(base_dir, activeprojectname)
     # dictionary containing lang-script as key and list of dictionaries(karya json format) as value
     lang_wise_ques = {}
@@ -31,9 +31,9 @@ def karyajson(mongo,
         content = prompt['content']
         for lang_script, lang_info in content.items():
             script = lang_script.split('-')[1]
-            print(lang_script, lang_info)
+            # print(lang_script, lang_info)
             for prompt_type, prompt_data in lang_info.items():
-                print(prompt_type, prompt_data)
+                # print(prompt_type, prompt_data)
                 domain = prompt['Domain'][0]
                 elicitation_method = prompt['Elicitation Method']
                 temp_dict = {
@@ -57,10 +57,16 @@ def karyajson(mongo,
                     temp_dict['sentence'] = sentence
                     temp_dict['hint'] = prompt_data['filename']
                     audio_fileId = prompt_data['fileId']
+                    # get the file to local storage from database 'fs' collection
                     audio_file_path = getfilefromfs(mongo,
                                     project_folder_path,
                                     audio_fileId,
                                     'audio')
+                    # crop audio from start to end time
+                    start_time = prompt_data['textGrid']['sentence'][boundaryId]['startindex']
+                    end_time = prompt_data['textGrid']['sentence'][boundaryId]['endindex']
+                    print(f"start time: {start_time}, end time: {end_time}")
+                    
                 elif (prompt_type == 'multimedia'):
                     pass
                 elif (prompt_type == 'image'):
@@ -97,17 +103,17 @@ def karyajson(mongo,
                     shutil.copy2(audio_file_path, lang_wise_ques_key_audio_path)
                     shutil.copy2(audio_file_path, domain_wise_ques_key_audio_path)
                     os.remove(audio_file_path)
-    pprint(lang_wise_ques)
+    # pprint(lang_wise_ques)
 
     for key, value in lang_wise_ques.items():
-        print(key, value)
+        # print(key, value)
         filename = key+'.json'
         save_file_path = os.path.join(project_folder_path, key, 'json', filename)
         with open(save_file_path, 'w') as json_file:
             json.dump(value, json_file, ensure_ascii=False, indent=2)
     
     for folder_name in sorted(os.listdir(project_folder_path)):
-        print(folder_name)
+        # print(folder_name)
         json_folder_path = os.path.join(project_folder_path, folder_name, 'json')
         zip_file_path = createzip(json_folder_path, folder_name+'_json')
         audio_folder_path = os.path.join(project_folder_path, folder_name, 'audio')
