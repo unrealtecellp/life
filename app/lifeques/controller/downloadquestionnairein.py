@@ -7,6 +7,7 @@ from app.controller.getfilefromfs import getfilefromfs
 import os
 import json
 import shutil
+import ffmpeg
 
 def karyajson(mongo,
                 base_dir,
@@ -14,6 +15,9 @@ def karyajson(mongo,
                 activeprojectname):
     # print('karyajson')
     project_folder_path = createprojectdirectory(base_dir, activeprojectname)
+    trimmed_audio_folder_path = os.path.join(project_folder_path, 'trimmed_audio')
+    if not os.path.exists(trimmed_audio_folder_path):
+        os.mkdir(trimmed_audio_folder_path)
     # dictionary containing lang-script as key and list of dictionaries(karya json format) as value
     lang_wise_ques = {}
     # karya_json_data = []
@@ -62,11 +66,22 @@ def karyajson(mongo,
                                     project_folder_path,
                                     audio_fileId,
                                     'audio')
+                    # print(audio_file_path)
                     # crop audio from start to end time
                     start_time = prompt_data['textGrid']['sentence'][boundaryId]['startindex']
                     end_time = prompt_data['textGrid']['sentence'][boundaryId]['endindex']
-                    print(f"start time: {start_time}, end time: {end_time}")
-                    
+                    # print(f"start time: {start_time}, end time: {end_time}")
+                    # TODO: use ffmpeg to trim audio. Try using 'ffmpeg-python' library
+                    # link: https://github.com/kkroening/ffmpeg-python
+                    actual_audio_file = ffmpeg.input(audio_file_path)
+                    # print(type(actual_audio_file))
+                    actual_audio_file = actual_audio_file.filter('atrim', start=start_time, end=end_time)
+                    # print(type(actual_audio_file))
+                    trimmed_audio_file_path = trimmed_audio_folder_path + '/'+audio_file_path.split('/')[-1]
+                    save_audio_file = ffmpeg.output(actual_audio_file, trimmed_audio_file_path)
+                    save_audio_file = ffmpeg.overwrite_output(save_audio_file)
+                    ffmpeg.run(save_audio_file)
+                    os.remove(audio_file_path)
                 elif (prompt_type == 'multimedia'):
                     pass
                 elif (prompt_type == 'image'):
@@ -100,9 +115,12 @@ def karyajson(mongo,
                     lang_wise_ques[domain_wise_ques_key] = [temp_dict]
 
                 if (audio_fileId != '' and audio_file_path != ''):
-                    shutil.copy2(audio_file_path, lang_wise_ques_key_audio_path)
-                    shutil.copy2(audio_file_path, domain_wise_ques_key_audio_path)
-                    os.remove(audio_file_path)
+                    # shutil.copy2(audio_file_path, lang_wise_ques_key_audio_path)
+                    # shutil.copy2(audio_file_path, domain_wise_ques_key_audio_path)
+                    # os.remove(audio_file_path)
+                    shutil.copy2(trimmed_audio_file_path, lang_wise_ques_key_audio_path)
+                    shutil.copy2(trimmed_audio_file_path, domain_wise_ques_key_audio_path)
+                    os.remove(trimmed_audio_file_path)
     # pprint(lang_wise_ques)
 
     for key, value in lang_wise_ques.items():
@@ -114,10 +132,12 @@ def karyajson(mongo,
     
     for folder_name in sorted(os.listdir(project_folder_path)):
         # print(folder_name)
+        if ('trimmed_audio' in folder_name): continue
         json_folder_path = os.path.join(project_folder_path, folder_name, 'json')
         zip_file_path = createzip(json_folder_path, folder_name+'_json')
         audio_folder_path = os.path.join(project_folder_path, folder_name, 'audio')
         zip_file_path = createzip(audio_folder_path, folder_name+'_recordings')
-        
+    
+    shutil.rmtree(trimmed_audio_folder_path)
 
     return project_folder_path
