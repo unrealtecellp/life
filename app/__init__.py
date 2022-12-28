@@ -19,7 +19,7 @@ from app.lifeques.lifeques import lifeques
 app.register_blueprint(lifeques, url_prefix='/lifeques')
 
 # lib_name = 'karya_routes'
-from app.lifedata.lifedataroutes import lifedata
+from app.lifedata.lifedata import lifedata
 app.register_blueprint(lifedata, url_prefix='/lifedata')
 
 from app.lifemodels.lifemodelsroutes import lifemodels

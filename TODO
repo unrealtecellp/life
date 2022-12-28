@@ -171,3 +171,7 @@
 - show 'questionnaire' interface even if the questionnaire is not uploaded.
     - add username in the 'lastActiveId'
 
+27 December 2022
+--------------------------------------------------------------
+- create json of buttons in the app and use jinja to make it appear disappear
+- check using ajax if project already exist in that type of project ('data', 'questionniare')

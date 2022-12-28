@@ -13,35 +13,90 @@ LiFe Data Home
 
 {% block app_content %}
   <h2>LiFE - Data</h2>
-  <br/>
-  <hr/>
-  <div id="activeProject">
+  <hr>
+  <div id="databtn">
     <button type="button" id="createnewdatabtn" class="btn btn-lg btn-success">Create New Data Project</button>
-    <button type="button" id="derivefromdatabtn" class="btn btn-lg btn-success pull-right">Derived Data Project</button>
+    <button type="button" id="derivefromdatabtn" class="btn btn-lg btn-primary pull-right">Derived Data Project</button>
     <br/>
     <br/>
     <hr/>
+  </div>
+  <div id="datasubbtn">
     <div id="createnewdatasubbtn" style="display: none;">
-      <button type="button" class="btn btn-lg btn-primary" onclick="window.location.href='{{ url_for('newproject') }}';">Manual Entry</button>
-      <button type="button" class="btn btn-lg btn-primary" onclick="window.location.href='{{ url_for('newproject') }}';">Crawler</button>
-      <button type="button" class="btn btn-lg btn-primary" onclick="window.location.href='#;">Karya Extention</button>
+      <a href="#dataform">
+      <button type="button" id="datamanualentrybtn" class="btn btn-lg btn-primary" >Manual Entry</button>
+      </a>
     </div>
     <div id="derivefromdatasubbtn" style="display: none;">
       <div class="col-md-6">
-        <select name="" id="derivefromdataselect" style="width: 100%"></select>
+        <select name="Derived From" id="derivefromdataselect" style="width: 100%"></select>
         <br>
         <br>
         <div id="derivefromdataform"></div>
       </div>
     </div>
     <br>
-    <br>
     <hr>
-  </div> 
+  </div>
+  <div id="dataform"  style="display: none;">
+    <br>
+    <h3>Create Form for your Project</h3>
+    <hr>
+  
+    <form id="newdataform" action="{{ url_for('lifedata.newdataform') }}" method="POST" enctype="multipart/form-data">
+      <div id="beforefield" class="form-group"></div>
+      <div class="form-group">
+        <label for="idprojecttype">Project Type</label><br>
+        <select class="dataprojecttype" id="idprojecttype" name="projectType" style="width:55%" required></select><br>
+      </div>
+      <div class="form-group">
+        <label for="idprojectname">Project Name</label>
+        <input type="text" class="form-control" id="idprojectname" placeholder="Project Name" name="projectname" style="width: 55%" required>
+        <!-- <input type="text" class="form-control" id="idprojectname" placeholder="Project Name" name="projectname" style="width: 55%"> -->
+      </div>
+
+      <div class="form-group">
+        <label for= "idabout">About the Project</label><br>
+        <textarea id="idabout" name="aboutproject" style="width:55%" required></textarea>
+        <!-- <textarea id="idabout" name="aboutproject" style="width:55%"></textarea> -->
+      </div>
+
+      <div id="transcriptiontypeproject" style="display: block;">
+        <div class="form-group">
+          <label for="iddatasentencelanguage">Sentence Language</label><br>
+          <select class="datasentencelanguageclass" id="iddatasentencelanguage" name="Sentence Language" style="width: 55%" required></select>
+        </div>  
+
+        <div class="form-group"> 
+          <label for="iddatatranscriptionscript">Transcription Scripts</label><br>
+          <select class="datatranscriptionscriptclass" id="iddatatranscriptionscript" name="Transcription Script" multiple="multiple" style="width: 55%" required></select>
+        </div>
+      </div>
+
+      <!-- <div class="row">
+        <div class="col-md-3">
+          <p><strong>Add Custom Fields</strong></p>
+        </div>
+      </div>
+      <div class="row"> 
+        <div class="col-md-3">
+          <div class="form-group">
+            <button class="btn btn-success" type="button" id="dataaddCustomField"> 
+              <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="datacustomfield"></div> -->
+      <br>
+      <input class="btn btn-lg btn-primary create" id="submit" type="submit" value="Create Form">
+    </form>
+  </div>
     
 {% endblock %}
 
 {% block scripts %}
 {{super()}}
 <script src="{{url_for('.static', filename='lifedatahome.js')}}"></script>
+<script src="{{url_for('.static', filename='newdataform.js')}}"></script>
 {% endblock %}
