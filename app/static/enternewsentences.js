@@ -927,13 +927,13 @@ function unAnnotated() {
           // console.log(allanno)
           var inpt = '';
           inpt += '<select class="col-sm-3 allanno" id="allanno" onchange="loadAnnoText()">'+
-                  '<option selected disabled>All Annotated</option>';
+                  '<option selected disabled>Completed</option>';
                   for (i=0; i<allanno.length; i++) {
                       inpt += '<option value="'+allanno[i]+'">'+allanno[i]+'</option>';
                   }
           inpt += '</select>';
           inpt += '<select class="pr-4 col-sm-3" id="allunanno" onchange="loadUnAnnoText()">'+
-                  '<option selected disabled>All Un-Annotated</option>';
+                  '<option selected disabled>Not Completed</option>';
                   for (i=0; i<allunanno.length; i++) {
                       inpt += '<option value="'+allunanno[i]+'">'+allunanno[i]+'</option>';
                   }

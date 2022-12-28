@@ -413,7 +413,7 @@ function updateSentenceDetailsOnSaveBoundary(boundaryID, sentence, region, form)
                     sentence[boundaryID][key][k] = morphemeDetails(actualTranscription, morphemicBreakTranscription)
                     
                     sentenceId = sentence[boundaryID]['sentenceId']
-                    console.log("sentence[boundaryID]['sentenceId']", sentenceId)
+                    // console.log("sentence[boundaryID]['sentenceId']", sentenceId)
                     morphemeIdMap = morphemeidMap(actualTranscription, morphemicBreakTranscription)
                     // console.log(morphemeIdMap);
                     glossAndpos = glossDetails(morphCount,
@@ -426,7 +426,7 @@ function updateSentenceDetailsOnSaveBoundary(boundaryID, sentence, region, form)
                     sentence[boundaryID]['gloss'][k] = glossAndpos[0]
                     var tempgloss = Object()
                     tempgloss[boundaryID] = flattenObject(sentence[boundaryID]['gloss'])
-                    console.log(tempgloss)
+                    // console.log(tempgloss)
                     var temppos = Object()
                     sentence[boundaryID]['pos'] = glossAndpos[1]
                     temppos[boundaryID] = flattenObject(sentence[boundaryID]['pos'])
@@ -503,7 +503,7 @@ function updateSentenceDetails(boundaryID, sentence, region) {
     //     }
     // }
     // else {
-    if (sentence === undefined ) {    
+    if (sentence === undefined ) {
         sentence = new Object()
         transcription = {}
         translation = {}
@@ -519,7 +519,7 @@ function updateSentenceDetails(boundaryID, sentence, region) {
         scripts = activeprojectform["Transcription Script"]
         translationscripts = activeprojectform["Translation Script"]
         translationlang = activeprojectform["Translation Language"]
-        console.log(translationlang);
+        // console.log(translationlang);
         for (i=0; i<scripts.length; i++) {
             script = scripts[i]
             script_code = scriptCode[scripts[i]]
@@ -534,10 +534,12 @@ function updateSentenceDetails(boundaryID, sentence, region) {
             morphemes[script] = {}
             gloss[script] = {}
         }
-        for (i=0; i<translationscripts.length; i++) {
-            tscript_code = scriptCode[translationscripts[i]]
-            lang_code = translationlang[i].slice(0, 3).toLowerCase()+'-'+tscript_code
-            translation[lang_code] = ''
+        if (translationscripts !== undefined) {
+            for (i=0; i<translationscripts.length; i++) {
+                tscript_code = scriptCode[translationscripts[i]]
+                lang_code = translationlang[i].slice(0, 3).toLowerCase()+'-'+tscript_code
+                translation[lang_code] = ''
+            }
         }
         pos = {}
         tags = {}
@@ -985,7 +987,7 @@ function createSentenceForm(formElement, boundaryID) {
         var activeTranslationField = '<input type="checkbox" id="activeTranslationField" name="activeTranslationField" value="false" onclick="activeTranslationLangs()" checked disabled>'+
                                         '<label for="activeTranslationField">&nbsp; Add Translation</label><br></br>'+
                                         '<div id="translationlangs" style="display: block;"></div>';
-        document.getElementById("translationfield2").innerHTML = "";                                
+        document.getElementById("translationfield2").innerHTML = "";
         $(".translationfield1").append(activeTranslationField);
         translationLang = formElement[key];
         // console.log(translationLang)
@@ -1433,7 +1435,7 @@ function ipaFocus(x) {
         }
         meeteiStringList.push(meeteiChar)
     }
-    console.log(meeteiStringList.join(' '))
+    // console.log(meeteiStringList.join(' '))
     meeteiString = meeteiStringList.join(' ')
     document.getElementById('meetei').value = meeteiString
 }

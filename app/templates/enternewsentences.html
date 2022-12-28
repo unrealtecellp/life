@@ -79,7 +79,7 @@
       {% if commentstats is defined %}
         <div class="col-sm-3 commentStats pull-right">
           <strong>Total Files: {{ commentstats[0] }}</strong><br> 
-          <strong>Annotated Files: {{ commentstats[1] }}</strong><br>
+          <strong>Completed Files: {{ commentstats[1] }}</strong><br>
           <strong>Remaining Files: {{ commentstats[2] }}</strong><br>
         </div>
       {% endif %}
@@ -87,6 +87,17 @@
     <br>
     <div class="defaultfield">
     </div>
+    <br>
+    <hr>
+    <button class="btn btn-info btn-lg" type="button" id="previous" onclick="previousAudio()">
+      <span class="previousaudio glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+      Previous Audio
+    </button>
+    <button class="btn btn-info pull-right btn-lg" type="button" id="next" onclick="nextAudio()">
+      Next Audio
+      <span class="nextaudio glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+    </button>
+    <br>
     <br>
     <div class="lexemelang"></div>
     <div class="lexemeform"></div>
@@ -125,7 +136,7 @@
             <input class="form-control" id="end" name="end" required/>
         </div>
         <div class="form-group transcription1" id="transcription2"></div>
-        <div class="form-group translationfield1" id="translationfield2"></div>
+        <div class="form-group translationfield1" id="translationfield2"  style="display: none;"></div>
         <br>
         <button type="submit" class="btn btn-success btn-block saveTempTranscription">Save Boundary</button>
         <center><i>or</i></center>

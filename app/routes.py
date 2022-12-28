@@ -216,11 +216,12 @@ def enternewsentences():
             activeprojectform['scriptCode'] = scriptCode
             langScript = readJSONFile.readJSONFile(langScriptJSONFilePath)
             activeprojectform['langScript'] = langScript
-            ipaToMeetei = readJSONFile.readJSONFile(ipatomeeteiFilePath)
-            activeprojectform['ipaToMeetei'] = ipaToMeetei
+            # ipaToMeetei = readJSONFile.readJSONFile(ipatomeeteiFilePath)
+            # activeprojectform['ipaToMeetei'] = ipaToMeetei
             # print('currentuserprojectsname', currentuserprojectsname)
             # print('speakerids', speakerids)
             # pprint(activeprojectform)
+            # print(activespeakerid, commentstats, shareinfo)
             return render_template('enternewsentences.html',
                                     projectName=activeprojectname,
                                     newData=activeprojectform,
@@ -3626,17 +3627,19 @@ def loadpreviousaudio():
     # data through ajax
     lastActiveId = request.args.get('data')
     lastActiveId = eval(lastActiveId)
+    latest_audio_id = ''
     # newAudioFilePath = getAudioFilename(lastActiveFilename, 'previous')
-    latest_audio_id = audiodetails.getnewaudioid(projects,
-                                                    activeprojectname,
-                                                    lastActiveId,
-                                                    activespeakerid,
-                                                    'previous')
-    audiodetails.updatelatestaudioid(projects,
-                                        activeprojectname,
-                                        latest_audio_id,
-                                        current_user.username,
-                                        activespeakerid)
+    if (len(lastActiveId) != 0):
+        latest_audio_id = audiodetails.getnewaudioid(projects,
+                                                        activeprojectname,
+                                                        lastActiveId,
+                                                        activespeakerid,
+                                                        'previous')
+        audiodetails.updatelatestaudioid(projects,
+                                            activeprojectname,
+                                            latest_audio_id,
+                                            current_user.username,
+                                            activespeakerid)
 
     return jsonify(newAudioId=latest_audio_id)
     # return jsonify(newAudioFilePath=newAudioFilePath)
@@ -3656,18 +3659,21 @@ def loadnextaudio():
     # data through ajax
     lastActiveId = request.args.get('data')
     lastActiveId = eval(lastActiveId)
+    # print('lastActiveId', type(lastActiveId), len(lastActiveId))
+    latest_audio_id = ''
+    if (len(lastActiveId) != 0):
     # newAudioFilePath = getAudioFilename(lastActiveFilename, 'previous')
-    latest_audio_id = audiodetails.getnewaudioid(projects,
-                                                    activeprojectname,
-                                                    lastActiveId,
-                                                    activespeakerid,
-                                                    'next')
-    # print('latest_audio_id ROUTES', latest_audio_id)
-    audiodetails.updatelatestaudioid(projects,
-                                        activeprojectname,
-                                        latest_audio_id,
-                                        current_user.username,
-                                        activespeakerid)
+        latest_audio_id = audiodetails.getnewaudioid(projects,
+                                                        activeprojectname,
+                                                        lastActiveId,
+                                                        activespeakerid,
+                                                        'next')
+        print('latest_audio_id ROUTES', latest_audio_id)
+        audiodetails.updatelatestaudioid(projects,
+                                            activeprojectname,
+                                            latest_audio_id,
+                                            current_user.username,
+                                            activespeakerid)
 
     return jsonify(newAudioId=latest_audio_id)
     # return jsonify(newAudioFilePath=newAudioFilePath)
@@ -3701,11 +3707,13 @@ def allunannotated():
     # audioFilesPath = 'static/audio'
     # baseAudioFilesPath = os.path.join(basedir, audioFilesPath)
     # audioFilesList = sorted(os.listdir(baseAudioFilesPath))
-    annotated, unannotated = unannotatedfilename.unannotatedfilename(transcriptions,
-                                                                        activeprojectname,
-                                                                        activespeakerid,
-                                                                        'audio')
-
+    annotated, unannotated = [], []
+    if (activespeakerid != ''):
+        annotated, unannotated = unannotatedfilename.unannotatedfilename(transcriptions,
+                                                                            activeprojectname,
+                                                                            activespeakerid,
+                                                                            'audio')
+    print(annotated, unannotated)
     return jsonify(allanno=annotated, allunanno=unannotated)
 
 @app.route('/loadunannotext', methods=['GET'])
