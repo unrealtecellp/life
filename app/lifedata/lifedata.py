@@ -10,10 +10,14 @@ from flask import (
     url_for
 )
 from app import mongo
+import os
 from app.controller import (
+    getactiveprojectname,
     getcurrentusername,
     getcurrentuserprojects,
     getdbcollections,
+    getprojecttype,
+    readJSONFile,
     savenewproject,
     updateuserprojects
 )
@@ -23,6 +27,9 @@ from app.lifedata.controller import (
 )
 
 lifedata = Blueprint('lifedata', __name__, template_folder='templates', static_folder='static')
+basedir = os.path.abspath(os.path.dirname(__file__))
+jsonfilesdir = '/'.join(basedir.split('/')[:-1]+['jsonfiles'])
+select2LanguagesJSONFilePath = os.path.join(jsonfilesdir, 'select2Languages.json')
 
 @lifedata.route('/', methods=['GET', 'POST'])
 @lifedata.route('/home', methods=['GET', 'POST'])
@@ -121,3 +128,27 @@ def newdataform():
         return redirect(url_for("enternewsentences"))
 
     return render_template("lifedatahome.html")
+
+@lifedata.route('/getlanguagelist', methods=['GET', 'POST'])
+def getlanguagelist():
+    """_summary_
+    """
+    projects, projectsform = getdbcollections.getdbcollections(mongo,
+                                                                'projects',
+                                                                'projectsform')
+    project_name = request.args.get('projectname')
+    project_type = getprojecttype.getprojecttype(projects, project_name)
+    languageslist = []
+    
+    if (project_type == 'transcriptions'):
+        languageslist = readJSONFile.readJSONFile(select2LanguagesJSONFilePath)
+    elif (project_type == "questionnaires"):
+        project_form = projectsform.find_one({"projectname" : project_name})
+        langscripts = project_form["Prompt Type"][1]
+        languageslist = [{"id": "", "text": ""}]
+        for lang_script, lang_info in langscripts.items():
+            languageslist.append({"id": lang_script, "text": lang_script})
+            # if ('Audio' in lang_info):
+            #     langscript.append(lang_script)
+
+    return jsonify(languageslist=languageslist)

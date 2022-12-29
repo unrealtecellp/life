@@ -184,7 +184,7 @@ $('.datatranscriptionscriptclass').select2({
 // partial solution to the select2 multiselect
 $("select").on("select2:select", function (evt) {
   var element = evt.params.data.element;
-  console.log(element);
+  // console.log(element);
   var $element = $(element);
   $element.detach();
   $(this).append($element);

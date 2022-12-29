@@ -38,6 +38,34 @@ function addprojectslist() {
 
 }
 
+function addlanguagelist(derivedprojectvalue) {
+    $.getJSON('getlanguagelist',
+        {
+            projectname: String(derivedprojectvalue)
+        }, 
+        function(data) {
+            var languageslisttoshow = [];
+            var languageslist = data.languageslist
+            // for (let i=0; i<languageslist.length; i++) {
+            //     languagename = languageslist[i]
+            //     languageslisttoshow.push({"id": languagename, "text": languagename})
+            // }
+            // console.log(languageslisttoshow)
+            console.log(languageslist)
+            var dataSentenceLanguage = '<label for="iddatasentencelanguage">Sentence Language</label><br>'+
+                                        '<select class="datasentencelanguageclass" id="iddatasentencelanguage" name="Sentence Language" style="width: 55%" required></select>'
+    
+            $('#datasentencelanguage').html(dataSentenceLanguage)
+            $('.datasentencelanguageclass').select2({
+                placeholder: 'Sentence Language',
+                data: languageslist
+                // allowClear: true
+            });
+        }
+    );
+
+}
+
 $("#createnewdatabtn").click(function() {
     var x = document.getElementById("createnewdatasubbtn");
     var y = document.getElementById("derivefromdatasubbtn");
@@ -77,6 +105,7 @@ $("#derivefromdataselect").change(function(){
                             '<input type="text" class="form-control" id="idderivefromproject"'+
                             'placeholder="Derive From Project" name="derivefromproject" value="'+derivedprojectvalue+'" style="width: 55%" readonly>'
     $('#beforefield').html(derivedprojectform);
+    addlanguagelist(derivedprojectvalue);
     var x = document.getElementById("dataform");
     if (x.style.display === "none") {
         x.style.display = "block";

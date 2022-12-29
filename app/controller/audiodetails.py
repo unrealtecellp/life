@@ -169,21 +169,8 @@ def updateaudiofiles(mongo,
         new_audio_file: uploaded audio file details.
     """
 
-    # text_grid = {
-    #         "discourse": {},
-    #         "sentence": {},
-    #         "word": {},
-    #         "phoneme": {}
-    #     }
     # save audio file details in transcriptions collection
     new_audio_details = {
-        # "username": projectowner,
-        # "projectname": activeprojectname,
-        # "updatedBy": current_username,
-        # "audiodeleteFLAG": 0,
-        # "audioverifiedFLAG": 0,
-        # "transcriptionFLAG": 0,
-        # "prompt": "",
         "speakerId": speakerId
     }
     for kwargs_key, kwargs_value in kwargs.items():
@@ -191,16 +178,10 @@ def updateaudiofiles(mongo,
 
     if new_audio_file['audiofile'].filename != '':
         audio_filename = new_audio_file['audiofile'].filename
-        # audio_id = 'A'+re.sub(r'[-: \.]', '', str(datetime.now()))
-        # new_audio_details['audioId'] = audio_id
         updated_audio_filename = (audio_id+
                                     '_'+
                                     audio_filename)
         new_audio_details['audioFilename'] = updated_audio_filename
-    # new_audio_details["textGrid"] = text_grid
-    # new_audio_details[current_username] = {}
-    # new_audio_details[current_username]["textGrid"] = text_grid
-    # pprint(new_audio_details)
 
     # save audio file details and speaker ID in projects collection
     speakerIds = projects.find_one({ 'projectname': activeprojectname },
@@ -218,7 +199,6 @@ def updateaudiofiles(mongo,
         speakerIds = {
             current_username: [speakerId]
         }
-        # print(speakerIds)
 
     speaker_audio_ids = projects.find_one({'projectname': activeprojectname},
                                     {'_id': 0, 'speakersAudioIds': 1})
@@ -567,3 +547,23 @@ def getaudioprogressreport(projects, transcriptions, activeprojectname, isharedw
     # print('datatoshow', datatoshow)
 
     return datatoshow
+
+def getaudioidforderivedtranscriptionproject(transcriptions,
+                                            activeprojectname,
+                                            derive_from_project_type,
+                                            search_id):
+    if (derive_from_project_type == 'questionnaires'):
+        search_id_key = 'quesId'
+    elif (derive_from_project_type == 'transcriptions'):
+        search_id_key = 'audioId'
+    all_transcription_data = transcriptions.find({"projectname": activeprojectname},
+                                                    {"_id": 0,
+                                                    "audioId": 1,
+                                                    "derivedfromprojectdetails": 1}
+                                                )
+    for transcription_data in all_transcription_data:
+        if (transcription_data["derivedfromprojectdetails"][search_id_key] == search_id):
+            audio_id = transcription_data['audioId']
+            return audio_id
+
+    return 'False'
