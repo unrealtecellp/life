@@ -27,9 +27,9 @@ function allProjects(allProjectsList) {
     $('#allprojectslist').html(projectslist);
 
     $('.allprojectslistselect').select2({
-        placeholder: 'select',
+        placeholder: 'select'
         // data: usersList,
-        allowClear: true
+        // allowClear: true
     });
 
     // event fire from thew home page all projects list select element

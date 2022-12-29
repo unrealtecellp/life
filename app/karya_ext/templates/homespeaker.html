@@ -17,21 +17,7 @@
 
 
 </head>
-
-
-<body>
-  
-
-  <!-- <div class="container">
-      <h3 align="center">DataTable Of User Deatils (Create, Read, Update)</h3>
-      <br />
-  </div> -->
-
-
-<!--Siddharth Code Start-->
-
 {% extends "links.html" %}
-
 
 {% block styles %}
 {{super()}}
@@ -67,20 +53,15 @@
           <li class="rdfxml"><a href="#">RDF/XML</a></li>
           <li class="rdfntriples"><a href="#">RDF/N-Triples</a></li>
           <li class="rdfn3"><a href="#">RDF/N3</a></li>
-          <!-- <li><a href="{{url_for('download')}}">.docx</a></li>
-          <li><a href="{{url_for('download')}}">.odt</a></li>
-          <li><a href="{{url_for('download')}}">.pdf</a></li>
-          <li><a href="{{url_for('download')}}">.xlxs</a></li>
-          <li><a href="{{url_for('download')}}">.ods</a></li> -->
       </ul>
   </div>
 <br>
 
       <div class="panel panel-default">
           <div class="panel-heading">
-          <button type="button" id="newcodebutton" class="btn btn-primary assignaccesscode" data-toggle="modal" data-target="#exampleModal">
-          Get New Access Code
-        </button>
+            <button type="button" id="newcodebutton" class="btn btn-primary assignaccesscode" data-toggle="modal" data-target="#exampleModal">
+              Get New Access Code
+            </button>
           </div>
 
           <script>
@@ -368,13 +349,8 @@
             
             </form>
           </div>
-
-<!--Form DIV-->
-
-
-
 <br>
-
+</div>
 <div class="row">
   <div class="col">
     <p id="totalrecords">Total Records:&nbsp;{{ count }}</p>
@@ -428,20 +404,11 @@
             {% endfor %}
                   
               
-          </tbody>
-          </table>
-      {% endblock %}
+      </tbody>
+    </table>
   </div>
- 
-      </div>
-      
-      <br />
-      <br />
-
-
-
-
-</body>
+</div>
+{% endblock %}
 
 {% block scripts %}
 {{super()}}
