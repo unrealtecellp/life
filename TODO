@@ -175,3 +175,11 @@
 --------------------------------------------------------------
 - create json of buttons in the app and use jinja to make it appear disappear
 - check using ajax if project already exist in that type of project ('data', 'questionniare')
+
+30 December 2022
+--------------------------------------------------------------
+- Accessibility
+- Security
+- Logging
+- Unit Testing
+- Refactoring

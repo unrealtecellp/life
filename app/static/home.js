@@ -1,5 +1,5 @@
 function createSelectElement(elevalue, activeprojectname) {
-    console.log(activeprojectname)
+    // console.log(activeprojectname)
     var qform = '';
     //   qform += '<select class="allprojectslistselect" id="'+keyid+'" name="'+key+'" style="width: 100%" required>';
     qform += '<select class="allprojectslistselect" id="allprojectslistselectid" style="width: 60%">';
@@ -51,3 +51,24 @@ function allProjects(allProjectsList) {
         });
     });
 }
+
+// event fire from thew home page to get the route for View/Edit Project button
+$("#idhomevieweditbtn").click(function() {
+
+        $.ajax({
+        data : {},
+        type : 'GET',
+        url : '/projecttype',
+        success: function(response){
+            projectType = response.projectType
+            pathname = window.location.pathname
+            console.log(projectType, window.location.href, pathname);
+            if (projectType === 'transcriptions') {
+                window.location.href = window.location.href.replace(pathname, "/enternewsentences");
+            }
+            else if (projectType === 'questionnaires') {
+                window.location.href = window.location.href.replace(pathname, '/lifeques/questionnaire');
+            }
+        }
+    })
+});

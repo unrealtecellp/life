@@ -46,6 +46,7 @@ from app.controller import (
                                 getcurrentuserprojects,
                                 getdbcollections,
                                 getprojectowner,
+                                getprojecttype,
                                 getuserprojectinfo,
                                 latex_generator as lg,
                                 questionnairedetails,
@@ -3920,3 +3921,15 @@ def contactus():
 # @login_required
 def documentation():
     return render_template('documentation.html')
+
+@app.route('/projecttype', methods=['GET', 'POST'])
+@login_required
+def projecttype():
+    projects, userprojects = getdbcollections.getdbcollections(mongo,
+                                                                'projects',
+                                                                'userprojects')
+    current_username = getcurrentusername.getcurrentusername()
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_username, userprojects)
+    project_type = getprojecttype.getprojecttype(projects, activeprojectname)
+
+    return jsonify(projectType=project_type)
