@@ -122,7 +122,13 @@ document.addEventListener('DOMContentLoaded', function() {
             wavesurfer.regions.list[regionId].remove();
             
             form.reset();
-            rid = region.start.toString().slice(0, 4).replace('.', '').concat(region.end.toString().slice(0, 4).replace('.', ''));
+            startId = region.start.toString().slice(0, 4).replace('.', '');
+            if (startId === '0') {
+                startId = '000';
+            }
+            endId = region.end.toString().slice(0, 4).replace('.', '');
+            console.log(startId, endId)
+            rid = startId.concat(endId);
             localStorageRegions = JSON.parse(localStorage.regions)
             for (let [key, value] of Object.entries(localStorageRegions)) {
                 // console.log(key, value)
@@ -145,7 +151,14 @@ function saveRegions() {
         Object.keys(wavesurfer.regions.list).map(function(id) {
             let region = wavesurfer.regions.list[id];
             // console.log(region)
-            rid = region.start.toString().slice(0, 4).replace('.', '').concat(region.end.toString().slice(0, 4).replace('.', ''));
+            startId = region.start.toString().slice(0, 4).replace('.', '');
+            if (startId === '0') {
+                startId = '000';
+            }
+            endId = region.end.toString().slice(0, 4).replace('.', '');
+            console.log(startId, endId)
+            rid = startId.concat(endId);
+            // rid = region.start.toString().slice(0, 4).replace('.', '').concat(region.end.toString().slice(0, 4).replace('.', ''));
              
             // console.log(rid)
             // sentence = getActiveRegionSentence(region);
@@ -271,7 +284,14 @@ function editAnnotation(region) {
 
     var sentence = getActiveRegionSentence(region);
     // console.log(sentence)
-    rid = region.start.toString().slice(0, 4).replace('.', '').concat(region.end.toString().slice(0, 4).replace('.', ''));
+    startId = region.start.toString().slice(0, 4).replace('.', '');
+    if (startId === '0') {
+        startId = '000';
+    }
+    endId = region.end.toString().slice(0, 4).replace('.', '');
+    console.log(startId, endId)
+    rid = startId.concat(endId);
+    // rid = region.start.toString().slice(0, 4).replace('.', '').concat(region.end.toString().slice(0, 4).replace('.', ''));
     if (sentence === undefined) {
         sentence = updateSentenceDetails(rid, sentence, region)
         // console.log(sentence)
@@ -332,7 +352,14 @@ function formOnSubmit(form, region) {
         for (i=0; i<regions.length; i++) {
             if (regions[i]['start'] === region.start &&
                 regions[i]['end'] === region.end) {
-                    rid = region.start.toString().slice(0, 4).replace('.', '').concat(region.end.toString().slice(0, 4).replace('.', ''));
+                    startId = region.start.toString().slice(0, 4).replace('.', '');
+                    if (startId === '0') {
+                        startId = '000';
+                    }
+                    endId = region.end.toString().slice(0, 4).replace('.', '');
+                    console.log(startId, endId)
+                    rid = startId.concat(endId);
+                    // rid = region.start.toString().slice(0, 4).replace('.', '').concat(region.end.toString().slice(0, 4).replace('.', ''));
                     sentence = regions[i]['data']['sentence']
                     sentece = updateSentenceDetailsOnSaveBoundary(rid, sentence, region, form)
                 }
@@ -896,14 +923,14 @@ function createSentenceForm(formElement, boundaryID) {
     //                                     '<label for="activeSentenceMorphemicBreak">&nbsp; Add Interlinear Gloss</label><br></br>'
     // // document.getElementById("sentencefield2").innerHTML = "";                                        
     // $(".sentencefield").html(activeSentenceMorphemicBreak);
-    console.log('createSentenceForm(formElement)', formElement)
+    // console.log('createSentenceForm(formElement)', formElement)
     inpt = '';
     activeprojectform = JSON.parse(localStorage.activeprojectform)
     for (let [key, value] of Object.entries(formElement)) {
         // console.log(key, value)
         if (key === 'transcription') {
             var transcriptionScript = formElement[key];
-            console.log('Object.keys(transcriptionScript)[0]', Object.keys(transcriptionScript)[0]);
+            // console.log('Object.keys(transcriptionScript)[0]', Object.keys(transcriptionScript)[0]);
             firstTranscriptionScript = Object.keys(transcriptionScript)[0]
             for (let [transcriptionkey, transcriptionvalue] of Object.entries(transcriptionScript)) {
                 // activeprojectform = JSON.parse(localStorage.getItem('activeprojectform'));

@@ -18,6 +18,7 @@ import io
 from io import BytesIO
 import json
 from datetime import datetime
+from pprint import pprint
 from app.controller import (
     getdbcollections,
     getactiveprojectname,
@@ -36,8 +37,11 @@ from app.lifeques.controller import (
 
 karya_bp = Blueprint('karya_bp', __name__, template_folder='templates', static_folder='static')
 
+print('starting...')
+
 @karya_bp.route('/home_insert')
 def home_insert():
+    print('starting...home')
     userprojects, accesscodedetails = getdbcollections.getdbcollections(mongo,
                                                                         'userprojects',
                                                                         'accesscodedetails')
@@ -529,7 +533,7 @@ def fetch_karya_audio():
                                                                                                             'questionnaires',
                                                                                                             'accesscodedetails')
     current_username = getcurrentusername.getcurrentusername()
-    # print('curent user : ', current_username)
+    print('curent user : ', current_username)
     activeprojectname = getactiveprojectname.getactiveprojectname(current_username, userprojects)
     projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
     project_type = getprojecttype.getprojecttype(projects, activeprojectname)
@@ -546,7 +550,7 @@ def fetch_karya_audio():
             if (derive_from_project_type == "questionnaires"):
                 derivefromprojectform = projectsform.find_one({"projectname" : derivedFromProjectName})
 
-
+    print('request.method', request.method)
     if request.method == 'POST':
         ###############################   verify OTP    ##########################################
         access_code = request.form.get("access_code")
@@ -558,6 +562,8 @@ def fetch_karya_audio():
         phone_number = request.form.get("mobile_number")
 
         otp = request.form.get("karya_otp")
+
+        print('access_code', access_code, 'for_worker_id', for_worker_id, 'otp', otp)
 
         verifyotp_urll = 'https://karyanltmbox.centralindia.cloudapp.azure.com/worker/otp/verify'
         verifyotp_hederr= {'access-code':access_code, 'phone-number':phone_number, 'otp':otp}
@@ -571,7 +577,7 @@ def fetch_karya_audio():
         # print("working on next code", verifyPh_request.json())
         ##TODO: Put check for verifying if the OTP was correct or not. If correct then proceed otherwise send error
         getTokenid_assignment_hedder = verifyPh_request.json()['id_token']
-        # print ("ID token : ", getTokenid_assignment_hedder)
+        print ("ID token : ", getTokenid_assignment_hedder)
          
         
         ###############################   Get Assignments    ##########################################
@@ -580,7 +586,7 @@ def fetch_karya_audio():
         assignment_request = requests.get(headers = hederr, url = assignment_urll) 
    
         r_j = assignment_request.json()
-        # print ('Lenght of JSON : ', len(r_j))        
+        print ('Lenght of JSON : ', len(r_j))
 
     
 ###################################################################################
@@ -593,12 +599,14 @@ def fetch_karya_audio():
 
         micro_task_ids = dict((item['id'], item) for item in r_j["microtasks"])
 
-        fileID_list = [] 
+        fileID_list = []
+        pprint(r_j)
         for item in r_j['assignments']:
             micro_task_id = item['microtask_id']
             
             findWorker_id = micro_task_ids[micro_task_id]["input"]["chain"]
             worker_id = findWorker_id["workerId"]
+            print('worker_id', worker_id, 'for_worker_id', for_worker_id)
             if (worker_id == for_worker_id):
                 workerId_list.append(worker_id)
                 
@@ -607,8 +615,6 @@ def fetch_karya_audio():
 
                 fileID_lists = item['id'] 
                 fileID_list.append(fileID_lists)
-
-            
        
         fileID_sentence_list = tuple(zip(fileID_list, sentence_list))
         # print(fileID_sentence_list)
@@ -626,12 +632,12 @@ def fetch_karya_audio():
                                                                                 exclude_ids)
         elif (project_type == 'transcriptions' and
                 derive_from_project_type == 'questionnaires'):
-            exclude_ids = getquesidlistofsavedaudios.getquesidlistofsavedaudios(questionnaires,
-                                                                                derivedFromProjectName,
-                                                                                language,
-                                                                                exclude_ids)
+            exclude_ids = audiodetails.getaudioidlistofsavedaudios(transcriptions,
+                                                                    activeprojectname,
+                                                                    language,
+                                                                    exclude_ids)
 
-        # print(f"LanguageScript: {language}\nExcludeIds: {exclude_ids}")
+        print(f"LanguageScript: {language}\nExcludeIds: {exclude_ids}\nLENGTH ExcludeIds: {len(exclude_ids)}")
         file_id_list = []
         # print(f"Length of fileIdList: {file_id_list}\nLength of fileIdSet: {set(file_id_list)}")
         for file_id_and_sent in list(audio_speaker_merge.keys()):
@@ -650,26 +656,19 @@ def fetch_karya_audio():
                                                                                                     current_sentence,
                                                                                                     exclude_ids)
                     if last_active_ques_id == 'False': 
-                        print(f"{last_active_ques_id}: {message}: {current_sentence}")
+                        print(f"661: {last_active_ques_id}: {message}: {current_sentence}")
                         continue
 
                 elif (project_type == 'transcriptions' and
                         derive_from_project_type == 'questionnaires'):
-                    last_active_ques_id, message =  getquesfromprompttext.getquesfromprompttext(projectsform,
-                                                                                                    questionnaires,
-                                                                                                    derivedFromProjectName,
-                                                                                                    current_sentence,
-                                                                                                    exclude_ids)
-                    if last_active_ques_id == 'False': 
-                        print(f"{last_active_ques_id}: {message}: {current_sentence}")
-                        continue
-                    else:
-                        transcription_audio_id  = audiodetails.getaudioidforderivedtranscriptionproject(transcriptions,
-                                                                                                        activeprojectname,
-                                                                                                        derive_from_project_type,
-                                                                                                        last_active_ques_id)
+                        transcription_audio_id, message  = audiodetails.getaudiofromprompttext(projectsform,
+                                                                                        transcriptions,
+                                                                                        derivedFromProjectName,
+                                                                                        activeprojectname,
+                                                                                        current_sentence,
+                                                                                        exclude_ids)
                         if transcription_audio_id == 'False': 
-                            print(f"{transcription_audio_id}: {message}: {current_sentence}: for quesId: {last_active_ques_id}")
+                            print(f"671: {transcription_audio_id}: {message}: {current_sentence}")
                             continue
 
                 # if last_active_ques_id == 'False': 
@@ -732,8 +731,8 @@ def fetch_karya_audio():
                                                                                 lifespeakerid,
                                                                                 new_audio_file,
                                                                                 transcription_audio_id,
-                                                                                karyainfo=r_j,
-                                                                                karya_peaker_id=karyaspeakerId)
+                                                                                karyaInfo='',
+                                                                                karyaSpeakerId=karyaspeakerId)
                                 else:
                                     save_status = audiodetails.saveaudiofiles(mongo,
                                                                                 projects,
@@ -744,14 +743,18 @@ def fetch_karya_audio():
                                                                                 current_username,
                                                                                 lifespeakerid,
                                                                                 new_audio_file,
-                                                                                karyainfo=r_j,
-                                                                                karya_peaker_id=karyaspeakerId)
+                                                                                karyaInfo='',
+                                                                                karyaSpeakerId=karyaspeakerId)
                                 # print("11  Saving to Transcription collection")
                             # print(exclude_ids)
 
                             if save_status[0]:
                                 ## save in the list of fetched audios
-                                exclude_ids.append(last_active_ques_id)
+                                if (project_type == 'questionnaires'):
+                                    exclude_ids.append(last_active_ques_id)
+                                elif (project_type == 'transcriptions' and
+                                        derive_from_project_type == 'questionnaires'):
+                                        exclude_ids.append(transcription_audio_id)
                                 # print("status of save_status : ", save_status)
                                 accesscodedetails.update_one({"karyaaccesscode": access_code}, {"$addToSet": {"karyafetchedaudios":current_file_id}})
                 else:

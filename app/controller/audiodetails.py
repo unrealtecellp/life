@@ -567,3 +567,84 @@ def getaudioidforderivedtranscriptionproject(transcriptions,
             return audio_id
 
     return 'False'
+
+def getaudioidlistofsavedaudios(transcriptions,
+                                activeprojectname,
+                                language,
+                                exclude):
+    
+    """_summary_
+    """
+    all_audio = transcriptions.find({"projectname": activeprojectname},
+                                    {
+                                        "_id": 0,
+                                        "audioId": 1,
+                                        "audioFilename": 1
+                                    })
+
+    for audio in all_audio:
+        audio_filename = audio['audioFilename']
+        if (audio_filename != ''):
+            audioId = audio['audioId']
+            exclude.append(audioId)
+
+    return exclude
+
+def getaudiofromprompttext(projectsform,
+                            transcriptions,
+                            derivedFromProjectName,
+                            activeprojectname,
+                            text,
+                            exclude):
+
+    """_summary_
+    """
+
+    projectform = projectsform.find_one({"projectname": derivedFromProjectName}, {"_id": 0})
+    lang_script = projectform['LangScript'][1]
+    # print(lang_script)
+    all_audio = transcriptions.find({"projectname": activeprojectname},
+                                    {
+                                        "_id": 0,
+                                        "prompt.content": 1,
+                                        "audioId": 1
+                                    })
+    foundText = 'text not found in the transcriptions'
+    for audio in all_audio:
+        # print(ques)
+        for lang, lang_info in audio["prompt"]["content"].items():
+            # print(lang, lang_info)
+            script = lang_script[lang]
+            # print(script)
+            for prompt_type, prompt_info in lang_info.items():
+                if (prompt_type == 'text'):
+                    for boundaryId in lang_info['text'].keys():
+                        # print(boundaryId)
+                        prompt_text = lang_info['text'][boundaryId]['textspan'][script].strip()
+                    
+                        if (text == prompt_text):
+                            foundText = "text found but audio already available"
+                            audioId = audio['audioId']
+                            if audioId not in exclude:
+                            # pprint(audio)
+                                # print(prompt_text, audioId)
+                                return (audioId, '')
+                elif(prompt_type == 'audio'):
+                    for boundaryId in lang_info['audio']['textGrid']['sentence'].keys():
+                        # print(boundaryId)
+                        prompt_text = lang_info['audio']['textGrid']['sentence'][boundaryId]['transcription'][script].strip()
+                    
+                        if (text == prompt_text):
+                            foundText = "text found but audio already available"
+                            audioId = audio['audioId']
+                            if audioId not in exclude:
+                            # pprint(audio)
+                                # print(prompt_text, audioId)
+                                return (audioId, '')
+                elif(prompt_type == 'image'):
+                    pass
+                elif(prompt_type == 'multimedia'):
+                    pass
+
+
+    return ('False', foundText)

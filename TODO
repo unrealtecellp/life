@@ -183,3 +183,6 @@
 - Logging
 - Unit Testing
 - Refactoring
+- boundaryId for audio transcription/questionnaire should be 6(even if it starts with 0) digit in all cases
+- fetch audio karya recording button activate when get otp button clicked
+- 
