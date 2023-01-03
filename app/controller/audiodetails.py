@@ -571,7 +571,8 @@ def getaudioidforderivedtranscriptionproject(transcriptions,
 def getaudioidlistofsavedaudios(transcriptions,
                                 activeprojectname,
                                 language,
-                                exclude):
+                                exclude,
+                                for_worker_id):
     
     """_summary_
     """
@@ -579,12 +580,15 @@ def getaudioidlistofsavedaudios(transcriptions,
                                     {
                                         "_id": 0,
                                         "audioId": 1,
-                                        "audioFilename": 1
+                                        "audioFilename": 1,
+                                        "speakerId": 1
                                     })
 
     for audio in all_audio:
         audio_filename = audio['audioFilename']
-        if (audio_filename != ''):
+        speaker_id = audio['speakerId']
+        if (audio_filename != '' and
+            for_worker_id in speaker_id):
             audioId = audio['audioId']
             exclude.append(audioId)
 
@@ -605,13 +609,15 @@ def getaudiofromprompttext(projectsform,
     # print(lang_script)
     all_audio = transcriptions.find({"projectname": activeprojectname},
                                     {
-                                        "_id": 0,
-                                        "prompt.content": 1,
-                                        "audioId": 1
+                                        "_id": 0
+                                        # "prompt.content": 1,
+                                        # "audioId": 1
                                     })
     foundText = 'text not found in the transcriptions'
     for audio in all_audio:
-        # print(ques)
+        # print(audio)
+        speaker_id = audio['speakerId']
+        # print(speaker_id)
         for lang, lang_info in audio["prompt"]["content"].items():
             # print(lang, lang_info)
             script = lang_script[lang]
@@ -622,9 +628,10 @@ def getaudiofromprompttext(projectsform,
                         # print(boundaryId)
                         prompt_text = lang_info['text'][boundaryId]['textspan'][script].strip()
                     
-                        if (text == prompt_text):
+                        if (text == prompt_text and speaker_id == ''):
                             foundText = "text found but audio already available"
-                            audioId = audio['audioId']
+                            # audioId = audio['audioId'
+                            audioId = copyofaudiodata(transcriptions, audio)
                             if audioId not in exclude:
                             # pprint(audio)
                                 # print(prompt_text, audioId)
@@ -633,10 +640,12 @@ def getaudiofromprompttext(projectsform,
                     for boundaryId in lang_info['audio']['textGrid']['sentence'].keys():
                         # print(boundaryId)
                         prompt_text = lang_info['audio']['textGrid']['sentence'][boundaryId]['transcription'][script].strip()
-                    
                         if (text == prompt_text):
+                            print('prompt_text: ', prompt_text, 'speaker_id:', speaker_id, audio['speakerId'])
+                        if (text == prompt_text and speaker_id == ''):
                             foundText = "text found but audio already available"
-                            audioId = audio['audioId']
+                            # audioId = audio['audioId']
+                            audioId = copyofaudiodata(transcriptions, audio)
                             if audioId not in exclude:
                             # pprint(audio)
                                 # print(prompt_text, audioId)
@@ -648,3 +657,12 @@ def getaudiofromprompttext(projectsform,
 
 
     return ('False', foundText)
+
+def copyofaudiodata(transcriptions,
+                    audio_data):
+    audio_id = 'A'+re.sub(r'[-: \.]', '', str(datetime.now()))
+    audio_data['audioId'] = audio_id
+
+    transcription_doc_id = transcriptions.insert(audio_data)
+
+    return audio_id

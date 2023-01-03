@@ -144,7 +144,7 @@
 
 13 November 2022
 ---------------------------------------------------------------
-- add download questionniare button(similar to download lexicon) to download the active questionnaire project.
+-- - add download questionniare button(similar to download lexicon) to download the active questionnaire project.
 
 27 November 2022
 ---------------------------------------------------------------
@@ -183,6 +183,21 @@
 - Logging
 - Unit Testing
 - Refactoring
-- boundaryId for audio transcription/questionnaire should be 6(even if it starts with 0) digit in all cases
-- fetch audio karya recording button activate when get otp button clicked
-- 
+-- - boundaryId for audio transcription/questionnaire should be 6(even if it starts with 0) digit in all cases
+-- - fetch audio karya recording button activate when get otp button clicked - NOT WORKING PROPERLY
+
+01 January 2023
+--------------------------------------------------------------
+- DELETE Project button for the project owner
+    - show only projects list whose projectdeleteFLAG is 0
+- Manage Access code table
+    - All access code assigned - show only to projectOwner/ and access code uploader/ further it can be modified based on the sharing mode.
+    - others could see only the access code they have assigned.
+- maintain sharing mode json in datrabase to show changes in the interface.
+-- - karyaInfo to add in the audio transcription
+easyAnno
+    - multimedia/video annotation
+    - span annotation
+- two speakers data in same derived project - fetch karya recordings
+- isPublic ON/OFF when sharing project
+- enable/disable ' access code(s) to download data from Karya' checkbox on 'Fetch/Upload Access Code' page

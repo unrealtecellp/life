@@ -108,7 +108,7 @@ def newproject():
                                 userprojects)
     if request.method == 'POST':
         project_form_data = dict(request.form.lists())
-        project_name = project_form_data['projectname'][0]
+        project_name = project_form_data['projectname'][0].strip()
         project_name = savenewproject.savenewproject(projects,
                                                         project_name,
                                                         current_user.username)
