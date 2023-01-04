@@ -12,7 +12,7 @@ def copydatafromquesproject(questionnaires,
     all_derived_ques = questionnaires.find({"projectname": derived_from_project_name, "quesdeleteFLAG": 0},
                                             {"_id": 0, "quesId": 1, "Q_Id": 1, "prompt": 1})
     for derived_ques in all_derived_ques:
-        print(derived_ques)
+        # print(derived_ques)
         quesId = derived_ques['quesId']
         Q_Id = derived_ques['Q_Id']
         prompt = derived_ques['prompt']

@@ -39,7 +39,7 @@ def home():
     Returns:
         _type_: _description_
     """
-    print('lifedata home')
+    # print('lifedata home')
 
     return render_template("lifedatahome.html")
 
@@ -60,7 +60,7 @@ def newdataform():
     Returns:
         _type_: _description_
     """
-    print('lifedata newdataform')
+    # print('lifedata newdataform')
     projects, userprojects, projectsform, questionnaires, transcriptions = getdbcollections.getdbcollections(mongo,
                                                                 'projects',
                                                                 'userprojects',
@@ -71,7 +71,7 @@ def newdataform():
 
     if request.method =='POST':
         new_data_form = dict(request.form.lists())
-        print('New Data form', new_data_form)
+        # print('New Data form', new_data_form)
         project_type = new_data_form['projectType'][0]
         projectname = 'D_'+new_data_form['projectname'][0]
         about_project = new_data_form['aboutproject'][0]

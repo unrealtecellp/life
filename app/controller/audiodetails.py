@@ -320,8 +320,9 @@ def getaudiofilefromfs(mongo,
     Returns:
         _type_: _description_
     """
-    print(file_type, file_id)
-    fs =  gridfs.GridFS(mongo.db)                       # creating GridFS instance to get required files                
+    # print(file_type, file_id)
+    # creating GridFS instance to get required files
+    fs =  gridfs.GridFS(mongo.db)
     file = fs.find_one({ file_type: file_id })
     audioFolder = os.path.join(basedir, 'static/audio')
     if (os.path.exists(audioFolder)):
@@ -640,8 +641,8 @@ def getaudiofromprompttext(projectsform,
                     for boundaryId in lang_info['audio']['textGrid']['sentence'].keys():
                         # print(boundaryId)
                         prompt_text = lang_info['audio']['textGrid']['sentence'][boundaryId]['transcription'][script].strip()
-                        if (text == prompt_text):
-                            print('prompt_text: ', prompt_text, 'speaker_id:', speaker_id, audio['speakerId'])
+                        # if (text == prompt_text):
+                        #     print('prompt_text: ', prompt_text, 'speaker_id:', speaker_id, audio['speakerId'])
                         if (text == prompt_text and speaker_id == ''):
                             foundText = "text found but audio already available"
                             # audioId = audio['audioId']

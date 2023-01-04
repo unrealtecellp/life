@@ -21,11 +21,12 @@
 
 {% block styles %}
 {{super()}}
-<link href="{{url_for('.static', filename='dictionaryview.css')}}" rel="stylesheet">
 {% endblock %}
 
 {% block app_content %}
 <button type="button" class="btn btn-lg btn-info" onclick="window.location.href='{{ url_for('karya_bp.home_insert') }}';">Karya Extension</button>
+<br>
+<br>
   {% if projectName is defined %}
     <h4>
       Project Name : {{ projectName }}
@@ -34,8 +35,8 @@
   
 <!-- 
 <div> -->
-  <input  id="myInput" type="text" placeholder="Search">
-  <div class="btn-group" role="group">
+
+  <!-- <div class="btn-group" role="group">
       <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         Download
         <span class="caret"></span>
@@ -43,18 +44,8 @@
       <ul class="dropdown-menu">
           <li class="json"><a href="#">JSON</a></li>
           <li class="csv"><a href="#">CSV</a></li>
-          <li class="xlsx"><a href="#">XLSX</a></li>
-          <li class="pdf"><a href="#">PDF</a></li>
-          <li class="markdown"><a href="#">MARKDOWN</a></li>
-          <li class="latex"><a href="#">LATEX</a></li>
-          <li class="html"><a href="#">HTML</a></li>
-          <!-- <li class="ods"><a href="#">ODS</a></li> -->
-          <li class="rdfturtle"><a href="#">RDF/Turtle</a></li>
-          <li class="rdfxml"><a href="#">RDF/XML</a></li>
-          <li class="rdfntriples"><a href="#">RDF/N-Triples</a></li>
-          <li class="rdfn3"><a href="#">RDF/N3</a></li>
       </ul>
-  </div>
+  </div> -->
 <br>
 
       <div class="panel panel-default">
@@ -68,7 +59,7 @@
             function activeform(buttonType) {
                 var x = document.getElementById("formdisplay");
                 // buttonType = $(this).attr("id");
-                console.log(buttonType)
+                // console.log(buttonType)
 
                 if (x.style.display === "none") {
                   x.style.display = "block";
@@ -112,11 +103,11 @@
                   // getting speaker details assigned to that accesscode
               
                   var accode = $(this).attr("id");
-                  console.log(accode)
+                  // console.log(accode)
                   $.getJSON("{{url_for('karya_bp.getonespeakerdetails')}}", {
                     asycaccesscode:String(accode)
                     }, function(data) {
-                        console.log(data)
+                        // console.log(data)
                         metadata = data.speakerdetails.current.workerMetadata
                         console.log (metadata)
                         // accesscode = data.speakerdetails.accesscode
@@ -138,7 +129,7 @@
                         // $('#idage').html(ageOption)
                         $('#idage').val(agroup).trigger('change');
                         // $('#idgender').select2("val", "25-60");
-                        console.log (agroup)
+                        // console.log (agroup)
 
 
                         
@@ -328,13 +319,13 @@
                     <select class="speakerspeaklanguage" id="idotherlangs" name="sols" multiple="multiple" style="width:55%" >
                     </select><br>
                 </div> 
-                                        
+
                 <div class="form-group">
                   <label class="col-form-label">Place Of Recording:</label><br>
                   <!-- <select class="typeofcity" id="idptype" name="toc" multiple="multiple" style="width:45%" required></select> -->
                   <input type="text" class="form-control" id="idplace" name="por" placeholder="--Place Of Recording--" style="width:55%;">
               
-                </div>                                                 
+                </div>
 
                 <div class="form-group">   
                 <label for="toc">Type Of Place: </label> <br>
@@ -353,8 +344,8 @@
 </div>
 <div class="row">
   <div class="col">
-    <p id="totalrecords">Total Records:&nbsp;{{ count }}</p>
-    
+    <p id="totalrecords"><strong>Total Records:</strong>&nbsp;{{ count }}</p>
+    <input  id="myInput" type="text" placeholder="Search">
     <table class="table table-striped " id="myTable">
       <thead>
           <tr>
@@ -365,6 +356,9 @@
           <th onclick="sortTable(3)">Name</th>
           <th onclick="sortTable(4)">Age Group</th>
           <th onclick="sortTable(5)">Gender</th>
+          <th onclick="sortTable(6)">Assigned By</th>
+          <th onclick="sortTable(7)">Assigned For</th>
+          <th onclick="sortTable(8)">Task</th>
           <th>View</th>
           <!-- <th>Edit</th> -->
 
@@ -392,7 +386,16 @@
                 </td>
                 <td>
                   {{item['current']['workerMetadata']['gender']}}
-                </td>     
+                </td>
+                <td>
+                  <strong>{{item['assignedBy']}}</strong>
+                </td> 
+                <td>
+                  {{item['fetchData']}}
+                </td> 
+                <td>
+                  {{item['task']}}
+                </td> 
                 
                 <td>
                   <button type="button" class="btn btn-primary lexemeview" id="{{item['karyaaccesscode']}}" data-toggle="modal" data-target="#exampleModal">
@@ -412,15 +415,8 @@
 
 {% block scripts %}
 {{super()}}
-<script src="{{url_for('.static', filename='dictionaryview.js')}}"></script>
 <script src="{{url_for('.static', filename='search.js')}}"></script>
 <script src="{{url_for('.static', filename='sorttable.js')}}"></script>
-<script src="{{url_for('.static', filename='lexemeview.js')}}"></script>
-<script src="{{url_for('.static', filename='lexemeedit.js')}}"></script>
-<script src="{{url_for('.static', filename='editlexeme.js')}}"></script>
-<script src="{{url_for('.static', filename='lexemedelete.js')}}"></script>
-<script src="{{url_for('.static', filename='shareproject.js')}}"></script>
-<script src="{{url_for('.static', filename='shareprojectwith.js')}}"></script>
 <script src="{{url_for('.static', filename='speaker_select2_dropdown.js')}}"></script>
 <script src="{{url_for('.static', filename='uploadaccesscode.js')}}"></script>
 <script type="text/javascript">uploadaccesscodeform({{ uploadacesscodemetadata | tojson | safe }});</script>

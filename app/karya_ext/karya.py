@@ -75,15 +75,21 @@ def home_insert():
     karya_speaker_ids = []
 
     speaker_ids = accesscodedetails.find({'projectname': activeprojectname,
-                                                'fetchData': 0
+                                                'fetchData': 0,
+                                                'isActive': 1
                                                 },
                                                 {
                                                     '_id': 0,
-                                                    'karyaspeakerid': 1
+                                                    'karyaspeakerid': 1,
+                                                    'lifespeakerid': 1
                                                 })
+
     for speakerid in speaker_ids:
         karyaspeakerid = speakerid['karyaspeakerid']
-        karya_speaker_ids.append(karyaspeakerid)
+        lifespeakerid = speakerid['lifespeakerid']
+        # karya_speaker_ids.append(karyaspeakerid)
+        karya_speaker_ids.append({"id": karyaspeakerid, "text": lifespeakerid})
+
 
     return render_template("home_insert.html",
                             projectName=activeprojectname,
@@ -164,8 +170,8 @@ def uploadfile():
                             "isActive": 0,
                             "additionalInfo": {}
                         }
-            return_obj = karyaaccesscodedetails.insert(insert_dict)
-            datafromdb = karyaaccesscodedetails.find({},{"_id" :0})
+            # return_obj = karyaaccesscodedetails.insert(insert_dict)
+            # datafromdb = karyaaccesscodedetails.find({},{"_id" :0})
 
         return redirect(url_for('karya_bp.home_insert'))
 
@@ -229,29 +235,28 @@ def add():
     current_username = getcurrentusername.getcurrentusername()          
     activeprojectname = getactiveprojectname.getactiveprojectname(current_username, userprojects)
 
-    speaker_data_accesscode = []
-    speaker_data_name = []
-    speaker_data_age = []
-    speaker_data_gender = []
-    mongodb_info = mongo.db.accesscodedetails
+    # speaker_data_accesscode = []
+    # speaker_data_name = []
+    # speaker_data_age = []
+    # speaker_data_gender = []
 
-    #speaker_name
-    name = mongodb_info.find({"isActive":1},{"current.workerMetadata.name" :1,"_id" :0})
-    for data in name:
-        speaker_name = data["current"]["workerMetadata"]["name"]                                     
-        speaker_data_name.append(speaker_name)
+    # #speaker_name
+    # name = mongodb_info.find({ "projectname": activeprojectname, "isActive":1},{"current.workerMetadata.name" :1,"_id" :0})
+    # for data in name:
+    #     speaker_name = data["current"]["workerMetadata"]["name"]
+    #     speaker_data_name.append(speaker_name)
 
-    #age
-    age = mongodb_info.find({"isActive":1},{"current.workerMetadata.agegroup":1,"_id" :0})
-    for data in age:   
-        speaker_age = data["current"]["workerMetadata"]["agegroup"]                                    
-        speaker_data_age.append(speaker_age)
+    # #age
+    # age = mongodb_info.find({ "projectname": activeprojectname, "isActive":1},{"current.workerMetadata.agegroup":1,"_id" :0})
+    # for data in age:   
+    #     speaker_age = data["current"]["workerMetadata"]["agegroup"]
+    #     speaker_data_age.append(speaker_age)
 
-    #gender
-    gender = mongodb_info.find({"isActive":1},{"current.workerMetadata.gender":1,"_id" :0})
-    for data in gender:
-        speaker_gender = data["current"]["workerMetadata"]["gender"]                                     
-        speaker_data_gender.append(speaker_gender)
+    # #gender
+    # gender = mongodb_info.find({ "projectname": activeprojectname, "isActive":1},{"current.workerMetadata.gender":1,"_id" :0})
+    # for data in gender:
+    #     speaker_gender = data["current"]["workerMetadata"]["gender"]
+    #     speaker_data_gender.append(speaker_gender)
 
     if request.method =='POST':
         # accesscode = request.form.get('accesscode')
@@ -434,23 +439,41 @@ def homespeaker():
         uploadacesscodemetadata = uploadfilefortranscription(projects, projectsform, activeprojectname)
 
 ################################## karya accesscode  #########################################################################
-    karyaaccesscodedetails = mongodb_info.find({"isActive":1, "projectname": activeprojectname, "assignedBy": current_username},{
+    karyaaccesscodedetails = mongodb_info.find({"isActive":1, "projectname": activeprojectname, "assignedBy": current_username},
+                                                    {
                                                         "karyaaccesscode":1, 
                                                         "lifespeakerid":1,
+                                                        "task": 1,
+                                                        "fetchData": 1,
+                                                        "assignedBy": 1,
                                                         "current.workerMetadata.name" :1,
                                                         "current.workerMetadata.agegroup":1,
                                                         "current.workerMetadata.gender":1,
-                                                        "_id" :0})
+                                                        "_id" :0
+                                                    }
+                                                )
     
     data_table = []
+    fetch_data = {
+        0: "Data Collection Using Karya",
+        1: "Syncing Karya Recording with LiFE"
+    }
+    task = {
+        "SPEECH_DATA_COLLECTION": "Recording",
+        "SPEECH_VERIFICATION": "Verification of Recordings",
+        "SPEECH_TRANSCRIPTION": "Transcription of Recordings"
+    }
     for data in karyaaccesscodedetails:
+        data['fetchData'] = fetch_data[data['fetchData']]
+        data['task'] = task[data['task']]
         data_table.append(data)
 
     return render_template('homespeaker.html',
                             data=currentuserprojectsname,
                             projectName=activeprojectname,
                             uploadacesscodemetadata = uploadacesscodemetadata,
-                            data_table= data_table
+                            data_table= data_table,
+                            count=len(data_table)
                             )
 
 
@@ -500,9 +523,16 @@ def getonespeakerdetails():
 
 @karya_bp.route('/fetch_karya_otp', methods=['GET', 'POST'])
 def fetch_karya_otp():
-    # accesscodedetails, = getdbcollections.getdbcollections(mongo, "accesscodedetails")
+    
+    userprojects, mongodb_info = getdbcollections.getdbcollections(mongo,
+                                                                    'userprojects',
+                                                                    'accesscodedetails')
+
+    current_username = getcurrentusername.getcurrentusername()
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_username, userprojects)
     mongodb_info = mongo.db.accesscodedetails  
-    accesscodedocs = mongodb_info.find({"isActive":1},{"karyaaccesscode":1, "_id" :0}) 
+    accesscodedocs = mongodb_info.find({ "projectname": activeprojectname, "isActive":1},
+                                        {"karyaaccesscode":1, "_id" :0}) 
 
     ##Registration
     registeruser_urll = 'https://karyanltmbox.centralindia.cloudapp.azure.com/worker/otp/generate'

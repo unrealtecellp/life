@@ -39,10 +39,10 @@ function createSelectElement(key, elevalue, type, quesdatavalue) {
   
 
 function uploadaccesscodeform(uploadacesscodemetadata) {
-    console.log(uploadacesscodemetadata);
+    // console.log(uploadacesscodemetadata);
     var uploadaccodeform = ''
     for (let [key, value] of Object.entries(uploadacesscodemetadata)) {
-        console.log(key, value);
+        // console.log(key, value);
         if (key === 'elicitation') {
             uploadaccodeform += createSelectElement(key, value, 'multiple', [])
         }

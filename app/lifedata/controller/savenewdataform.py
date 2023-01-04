@@ -10,7 +10,7 @@ def savenewdataform(projectsform,
                 ):
 
         
-    print(f'{"#"*80}\nprojectFormData\n{new_data_form}')
+    # print(f'{"#"*80}\nprojectFormData\n{new_data_form}')
     project_form = {}
     project_form['username'] = current_username
     project_form['projectname'] = projectname

@@ -56,28 +56,17 @@
   {% endif %}
 
   <div>
-    <!-- <meta name="viewport" content="width=device-width, initial-scale=1">   -->
-    <!-- <title>Save form Data in a Text File using JavaScript</title> -->
-    <!-- <title>Save form Data in a Text File using JavaScript</title> -->
-    <!-- <h1><b>Karya-LiFe Integration</b></h1> -->
-
-    <!-- <br><br><br><br> -->
 
     <div id="uploadmanage">
       <br>
-      <!-- <h5>Fetch access code or upload access code file</h5> -->
       {% if  shareinfo['sharemode']|int >= 4 %}
         <input type="button" class="btn btn-lg btn-danger" value="Fetch/Upload Access Code" onclick="window.location.href='{{url_for('karya_bp.uploadfile')}}';">
       {% endif %}
-        <!-- <br><br><br><br><br> -->
 
-      <br>
-      <br>
-      <!-- <h5>Manage Access Code</h5> -->
+      <br><br>
       {% if  shareinfo['sharemode']|int >= 2 %}
         <input class="btn btn-lg btn-success" type="button" value="Manage Access Code" onclick="window.location.href='{{url_for('karya_bp.homespeaker')}}'; window">
       {% endif %}
-      <!-- <br><br><br><br><br> -->
       <br>
       <hr>
     </div>
@@ -153,14 +142,14 @@
                 // var acode = document.getElementById("piaccesscode").value;
                 var acode = document.getElementById("access_code").value;
                 var mob = document.getElementById("pimobilenumber").value;
-                console.log(acode);
-                console.log(mob)
+                // console.log(acode);
+                // console.log(mob)
                 $.getJSON("{{url_for('karya_bp.fetch_karya_otp')}}", {
                   acode:String(acode), mob:String(mob)
                   }, function(data) {
-                    console.log(data)
+                    // console.log(data)
                     // alert('DOne!')
-                    console.log(document.getElementById("getotpid").hidden);
+                    // console.log(document.getElementById("getotpid").hidden);
                     document.getElementById("getotpid").hidden=true;
                     document.getElementById("fetchaudioid").disabled=false;
                     document.getElementById("karyaotp").hidden=false;

@@ -41,7 +41,7 @@ function createSelectElement(key, elevalue, type, quesdatavalue, classname) {
   }
 
 function fetchAccessCodeList(fetchaccesscodelist) {
-    console.log(fetchaccesscodelist);
+    // console.log(fetchaccesscodelist);
     var fetchaccodeform = ''
     fetchaccodeform += createSelectElement('access_code', fetchaccesscodelist, '', [], 'fetchaccodeselect')
 
@@ -54,15 +54,14 @@ function fetchAccessCodeList(fetchaccesscodelist) {
 }
 
 function karyaSpeakerIdsList(karya_speaker_ids) {
-  console.log(karya_speaker_ids);
+  // console.log(karya_speaker_ids);
   var karyaspeakeridform = ''
-  karyaspeakeridform += createSelectElement('speaker_id', karya_speaker_ids, '', [], 'karyaspeakeridselect')
+  karyaspeakeridform += createSelectElement('speaker_id', [], '', [], 'karyaspeakeridselect')
 
   $('#idforworker').html(karyaspeakeridform);
   $('.karyaspeakeridselect').select2({
       placeholder: 'select',
-      // data: usersList,
+      data: karya_speaker_ids,
       allowClear: true
   });
 }
-  
