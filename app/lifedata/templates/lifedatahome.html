@@ -52,13 +52,11 @@ LiFe Data Home
       <div class="form-group">
         <label for="idprojectname">Project Name</label>
         <input type="text" class="form-control" id="idprojectname" placeholder="Project Name" name="projectname" style="width: 55%" required>
-        <!-- <input type="text" class="form-control" id="idprojectname" placeholder="Project Name" name="projectname" style="width: 55%"> -->
       </div>
 
       <div class="form-group">
         <label for= "idabout">About the Project</label><br>
         <textarea id="idabout" name="aboutproject" style="width:55%" required></textarea>
-        <!-- <textarea id="idabout" name="aboutproject" style="width:55%"></textarea> -->
       </div>
 
       <div id="transcriptiontypeproject" style="display: block;">
@@ -70,6 +68,41 @@ LiFe Data Home
         <div class="form-group"> 
           <label for="iddatatranscriptionscript">Transcription Scripts</label><br>
           <select class="datatranscriptionscriptclass" id="iddatatranscriptionscript" name="Transcription Script" multiple="multiple" style="width: 55%" required></select>
+        </div>
+
+        <div class="translationlanguage">
+          <div class="form-group">
+            <label for="iddatatranslationlanguage">Add Languages and Scripts for Sentence Translation</label>
+            <p style="width: 55%">
+              <em>
+              *English will be automatically added to the sentence translation language.
+              If you want to use any sentence translation language in addition to English
+              then please select from the following list else leave it blank.
+            </em>
+            </p>
+          </div>
+          <div class="form-group">
+            <button class="btn btn-success" type="button" id="addTranslationLanguageField"> 
+              <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 
+            </button>
+          </div>
+        </div>  
+
+        <div class="interlinearglossfield">
+          <div class="form-group">
+            <label for="idinterlinearglossfield">Add Languages and Scripts for Interlinear Gloss</label>
+            <p><strong></strong></p>
+            <p style="width: 55%">
+              <em>
+              *English will be automatically added.
+            </em>
+            </p>
+          </div>
+          <div class="form-group">
+            <button class="btn btn-success" type="button" id="addInterlinearGlossField"> 
+              <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 
+            </button>
+          </div>
         </div>
       </div>
 

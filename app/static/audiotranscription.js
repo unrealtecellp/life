@@ -127,7 +127,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 startId = '000';
             }
             endId = region.end.toString().slice(0, 4).replace('.', '');
-            console.log(startId, endId)
+            // console.log(startId, endId)
             rid = startId.concat(endId);
             localStorageRegions = JSON.parse(localStorage.regions)
             for (let [key, value] of Object.entries(localStorageRegions)) {
@@ -156,7 +156,7 @@ function saveRegions() {
                 startId = '000';
             }
             endId = region.end.toString().slice(0, 4).replace('.', '');
-            console.log(startId, endId)
+            // console.log(startId, endId)
             rid = startId.concat(endId);
             // rid = region.start.toString().slice(0, 4).replace('.', '').concat(region.end.toString().slice(0, 4).replace('.', ''));
              
@@ -289,7 +289,7 @@ function editAnnotation(region) {
         startId = '000';
     }
     endId = region.end.toString().slice(0, 4).replace('.', '');
-    console.log(startId, endId)
+    // console.log(startId, endId)
     rid = startId.concat(endId);
     // rid = region.start.toString().slice(0, 4).replace('.', '').concat(region.end.toString().slice(0, 4).replace('.', ''));
     if (sentence === undefined) {
@@ -357,7 +357,7 @@ function formOnSubmit(form, region) {
                         startId = '000';
                     }
                     endId = region.end.toString().slice(0, 4).replace('.', '');
-                    console.log(startId, endId)
+                    // console.log(startId, endId)
                     rid = startId.concat(endId);
                     // rid = region.start.toString().slice(0, 4).replace('.', '').concat(region.end.toString().slice(0, 4).replace('.', ''));
                     sentence = regions[i]['data']['sentence']
@@ -1023,14 +1023,15 @@ function createSentenceForm(formElement, boundaryID) {
         translangcount = -1
         for (let [translationkey, translationvalue] of Object.entries(translationLang)) {
             translangcount += 1
-            console.log(translationkey, translationvalue);
+            // console.log(translationkey, translationvalue);
             translationkey = translationkey.split('-')[1]
             inpt += '<div class="form-group">'+
                     '<label for="Translation_'+ translationkey +'">Translation in '+ translang[translangcount] +'</label>'+
                     '<input type="text" class="form-control" id="Translation_'+ translationkey +'"'+ 
                     'placeholder="Translation '+ translationkey +'" name="translation_'+ translationkey + '"'+
-                    'value="'+ translationvalue +'" required>'+
-                    '</div></div>';          
+                    'value="'+ translationvalue +'">'+
+                    // 'value="'+ translationvalue +'" required>'+
+                    '</div></div>';
         }
         document.getElementById("translationlangs").innerHTML = "";
         $('#translationlangs').append(inpt);

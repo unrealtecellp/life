@@ -108,11 +108,6 @@ def newdataform():
                                                             new_data_form,
                                                             current_username
                                                         )
-        # createdummyques.createdummyques(questionnaires,
-        #                                 projectname,
-        #                                 save_ques_form,
-        #                                 current_username
-        #                                 )
         if ("derivefromproject" in new_data_form):
         # copy all the data from the "derivedfromproject" to "newproject"
             derive_from_project_type = projects.find_one({'projectname': derive_from_project_name},

@@ -44,14 +44,7 @@ function addlanguagelist(derivedprojectvalue) {
             projectname: String(derivedprojectvalue)
         }, 
         function(data) {
-            var languageslisttoshow = [];
             var languageslist = data.languageslist
-            // for (let i=0; i<languageslist.length; i++) {
-            //     languagename = languageslist[i]
-            //     languageslisttoshow.push({"id": languagename, "text": languagename})
-            // }
-            // console.log(languageslisttoshow)
-            console.log(languageslist)
             var dataSentenceLanguage = '<label for="iddatasentencelanguage">Sentence Language</label><br>'+
                                         '<select class="datasentencelanguageclass" id="iddatasentencelanguage" name="Sentence Language" style="width: 55%" required></select>'
     
