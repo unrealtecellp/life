@@ -61,13 +61,18 @@ $("#idhomevieweditbtn").click(function() {
         url : '/projecttype',
         success: function(response){
             projectType = response.projectType
+            windowHref = window.location.href
             pathname = window.location.pathname
-            console.log(projectType, window.location.href, pathname);
+            lastIndexOfPathname = windowHref.lastIndexOf(pathname)
             if (projectType === 'transcriptions') {
-                window.location.href = window.location.href.replace(pathname, "/enternewsentences");
+                window.location.href = windowHref.slice(0, lastIndexOfPathname) +  
+                                        windowHref.slice(lastIndexOfPathname).replace(pathname, "/enternewsentences");
+                
             }
             else if (projectType === 'questionnaires') {
-                window.location.href = window.location.href.replace(pathname, '/lifeques/questionnaire');
+                window.location.href = windowHref.slice(0, lastIndexOfPathname) +  
+                                        windowHref.slice(lastIndexOfPathname).replace(pathname, '/lifeques/questionnaire');
+                // window.location.href = window.location.href.replace(pathname, '/lifeques/questionnaire');
             }
         }
     })

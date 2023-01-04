@@ -158,7 +158,7 @@
 
 16 December 2022
 --------------------------------------------------------------
-- download questionnaire in 'Karya' format
+-- - download questionnaire in 'Karya' format
     -- - in activeproject if quessaveFLAG == 1
     -- - loop on prompt->content
     -- - if audio in the ques then crop the audio using librosa from start to end time
