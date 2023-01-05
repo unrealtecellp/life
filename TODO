@@ -104,6 +104,19 @@
 - test by uploading large audio files
 - IPA to meetei script mapping
 
+
+15 October 2022
+---------------------------------------------------------------
+- save dummy questionnaire (use 'questionnaire.json' format) document in 'questionnaires' collections 
+    when creating the new questionnaire project.
+- download blank excel questionnaire form using the dummy questionnaire.
+- upload questionnaire excel with data and save each row as document in 'questionnaires' collection.
+- create questionnaire form using the questionnaire project form.
+- create questionnaire form in edit mode using the questionnaire project form and data in questionnaire documents.
+- fetch audio from 'karya' app and save its details in the respective questionnaire document using the 'Q_Id'.
+- implement 'derive questionnaire project'.
+- add new ques button(on/off) in the questionnaire project
+
 28 October 2022
 ---------------------------------------------------------------
 -- - save questionnaire audio. (currently it is working BUT using the "quesId").
@@ -126,5 +139,65 @@
 
 09 November 2022
 ---------------------------------------------------------------
-- positioning and functioning of 'delete' button in questionnaire interface.
-- update 'lastactivequesid' in 'projects' collection for the user with whom the project is shared.
+-- - positioning and functioning of 'delete' button in questionnaire interface.
+-- - update 'lastactivequesid' in 'projects' collection for the user with whom the project is shared.
+
+13 November 2022
+---------------------------------------------------------------
+-- - add download questionniare button(similar to download lexicon) to download the active questionnaire project.
+
+27 November 2022
+---------------------------------------------------------------
+- check share feature
+    - remove access
+    - all rights
+    - only shared with one user not the list of users
+- Add select in "All Question Ids" button
+- Play/Pause/Stop not working for waveform
+- when blank project is dhared with other users in the app then onlt projectOwner is able to view/edit not the other users with whom project is shared.
+
+16 December 2022
+--------------------------------------------------------------
+-- - download questionnaire in 'Karya' format
+    -- - in activeproject if quessaveFLAG == 1
+    -- - loop on prompt->content
+    -- - if audio in the ques then crop the audio using librosa from start to end time
+
+22 December 2022
+    --------------------------------------------------------------
+-- - create 'tar.gz' file
+-- - if audio in the ques then crop the audio using librosa from start to end time
+-- - trim time to change?NO
+- show 'questionnaire' interface even if the questionnaire is not uploaded.
+    - add username in the 'lastActiveId'
+
+27 December 2022
+--------------------------------------------------------------
+- create json of buttons in the app and use jinja to make it appear disappear
+- check using ajax if project already exist in that type of project ('data', 'questionniare')
+
+30 December 2022
+--------------------------------------------------------------
+- Accessibility
+- Security
+- Logging
+- Unit Testing
+- Refactoring
+-- - boundaryId for audio transcription/questionnaire should be 6(even if it starts with 0) digit in all cases
+-- - fetch audio karya recording button activate when get otp button clicked - NOT WORKING PROPERLY
+
+01 January 2023
+--------------------------------------------------------------
+- DELETE Project button for the project owner
+    - show only projects list whose projectdeleteFLAG is 0
+- Manage Access code table
+    - All access code assigned - show only to projectOwner/ and access code uploader/ further it can be modified based on the sharing mode.
+    - others could see only the access code they have assigned.
+- maintain sharing mode json in datrabase to show changes in the interface.
+-- - karyaInfo to add in the audio transcription
+easyAnno
+    - multimedia/video annotation
+    - span annotation
+- two speakers data in same derived project - fetch karya recordings
+- isPublic ON/OFF when sharing project
+- enable/disable ' access code(s) to download data from Karya' checkbox on 'Fetch/Upload Access Code' page

@@ -14,7 +14,7 @@ def createdummyques(questionnaires,
         save_ques_form (_type_): _description_
         current_username (_type_): _description_
     """
-    pprint(save_ques_form);
+    # pprint(save_ques_form);
     dummy_ques = {
             "username": current_username,
             "projectname": projectname,

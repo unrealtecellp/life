@@ -174,8 +174,8 @@ def createpromptform(new_ques_form, lang_name, key_id):
                 prompt_type_dict['Image'].insert(1, '')
             else:
                 prompt_type_dict['Image'] = ['']
-    print(lang_name)
-    pprint(prompt_type_dict)
+    # print(lang_name)
+    # pprint(prompt_type_dict)
 
     return {lang_name: prompt_type_dict}
 

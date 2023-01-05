@@ -22,23 +22,27 @@ var languages = [
   {"id": "Bodo", "text": "Bodo"},
   {"id": "Braj", "text": "Braj"},
   {"id": "Bundeli", "text": "Bundeli"},
+  {"id": "Chokri", "text": "Chokri"},
   {"id": "English", "text": "English"},
   {"id": "Gujarati", "text": "Gujarati"},
   {"id": "Haryanvi", "text": "Haryanvi"},
   {"id": "Hindi", "text": "Hindi"},
   {"id": "Kannada", "text": "Kannada"},
   {"id": "Konkani", "text": "Konkani"},
+  {"id": "KokBorok", "text": "Kok Borok"},
   {"id": "Magahi", "text": "Magahi"},
   {"id": "Maithili", "text": "Maithili"},
   {"id": "Malayalam", "text": "Malayalam"},
   {"id": "Marathi", "text": "Marathi"},
   {"id": "Meitei", "text": "Meitei"},
   {"id": "Nepali", "text": "Nepali"},
+  {"id": "Nyishi", "text": "Nyishi"},
   {"id": "Odia", "text": "Odia"},
   {"id": "Punjabi", "text": "Punjabi"},
   {"id": "Santali", "text": "Santali"},
   {"id": "Tamil", "text": "Tamil"},
-  {"id": "Telugu", "text": "Telugu"}
+  {"id": "Telugu", "text": "Telugu"},
+  {"id": "Toto", "text": "Toto"}
 ]
 
 var scripts = 
@@ -88,7 +92,7 @@ var scripts =
         "text": "Odia"
       },
       {
-        "id": "Ol_Chiki", 
+        "id": "OlChiki", 
         "text": "Ol Chiki"
       },
       {
@@ -106,7 +110,12 @@ var QuestionnaireDomain = [
   {"id": "General", "text": "General"},
   {"id": "Agriculture", "text": "Agriculture"},
   {"id": "Education", "text": "Education"},
-  {"id": "Science-Technology", "text": "Science-Technology"}
+  {"id": "Science-Technology", "text": "Science-Technology"},
+  {"id": "Culture", "text": "Culture"},
+  {"id": "Lifecycle", "text": "Lifecycle"},
+  {"id": "Healthcare", "text": "Healthcare"},
+  {"id": "Sports", "text": "Sports"},
+  {"id": "General-Oral-History", "text": "General-Oral-History"}
 ];
 
 

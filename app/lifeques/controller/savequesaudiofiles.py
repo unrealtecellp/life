@@ -28,9 +28,9 @@ def savequesaudiofiles(mongo,
         new_audio_file: uploaded audio file details.
     """
 
-    print("last_active_ques_id in savequesaudiofiles()", last_active_ques_id)
+    # print("last_active_ques_id in savequesaudiofiles()", last_active_ques_id)
     ques_form = projectsform.find_one({"projectname": activeprojectname}, {"_id": 0})
-    pprint(ques_form)
+    # pprint(ques_form)
     new_audio_details = {}
     for kwargs_key, kwargs_value in kwargs.items():
         new_audio_details[kwargs_key] = kwargs_value
@@ -70,8 +70,9 @@ def savequesaudiofiles(mongo,
                         projectname=activeprojectname,
                         updatedBy=current_username)
 
-        return (questionnaire_doc_id, fs_file_id)
+        return (True, questionnaire_doc_id, fs_file_id)
 
     except Exception as e:
         print(e)
         flash(f"ERROR")
+        return (False)

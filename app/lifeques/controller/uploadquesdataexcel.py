@@ -90,7 +90,7 @@ def lifeuploader(fileFormat, uploadedFileContent, basedir, allques, field_map = 
         scripts_map = {}
         # print (lex_fields)
         for lex_field in lex_fields:
-            print ('Lex field', lex_field)
+            # print ('Lex field', lex_field)
             script_name = lex_field.split('.')[-1]
             if 'langscripts.headwordscript' in lex_field:
                 scripts_map['langscripts.headwordscript'] = script_name
@@ -105,35 +105,35 @@ def lifeuploader(fileFormat, uploadedFileContent, basedir, allques, field_map = 
                 else:
                     scripts_map['langscripts.glosslangs']= [script_name]
                 # scripts_map.get('langscripts.glosslangs', []).append(script_name)
-        print(f"{'-'*80}\nIN get_scripts_map(lex_fields) function\n\nscript_map:\n{scripts_map}")
+        # print(f"{'-'*80}\nIN get_scripts_map(lex_fields) function\n\nscript_map:\n{scripts_map}")
         
         return scripts_map
 
 
 
     def map_lift(file_stream, field_map, lex_fields):
-        print(f"{'-'*80}\nIN map_lift(file_stream, field_map, lex_fields) function\n")
+        # print(f"{'-'*80}\nIN map_lift(file_stream, field_map, lex_fields) function\n")
         mapped_lift = {}
         all_mapped = True
 
         life_scripts_map = get_scripts_map(lex_fields)
-        print (life_scripts_map)
+        # print (life_scripts_map)
 
         if len(field_map) == 0:
             field_map = get_lift_map()
         
-        print(f"{'-'*80}\nget_lift_map():\n{field_map}")
-        print(f"{'-'*80}\nFILE STREAM TYPE:{type(file_stream)}")
+        # print(f"{'-'*80}\nget_lift_map():\n{field_map}")
+        # print(f"{'-'*80}\nFILE STREAM TYPE:{type(file_stream)}")
         # exit()
         # tree = ET.parse(file_stream)
         root = ET.fromstring(file_stream)
         # print(f"TYPE OF TREE: {type(tree)}")
         # exit()
         # root = tree.getroot()
-        print(f"{'-'*80}\nroot:\n{root}")
+        # print(f"{'-'*80}\nroot:\n{root}")
         # exit()
         entries = root.findall('.//entry')
-        print(f"entries:\n{entries}")
+        # print(f"entries:\n{entries}")
         # exit()
         mapped_life_langs_lexeme_form = []
         unmapped_lift_langs_lexeme_form = []
@@ -201,7 +201,7 @@ def lifeuploader(fileFormat, uploadedFileContent, basedir, allques, field_map = 
                             elif sense_part_tag == 'grammatical-info':
                                 life_key = field_map.get(sense_part_tag, [])
                                 # lift_tag = './/entry/sense/'+sense_part_tag
-                                print (entry_part[0].tag)
+                                # print (entry_part[0].tag)
                                 # gram_categ = entry_part[0].attrib['value']
 
                                 lift_tag = './sense/'+sense_part_tag#+'[@value="'+gram_categ+'"]'
@@ -238,7 +238,7 @@ def lifeuploader(fileFormat, uploadedFileContent, basedir, allques, field_map = 
         all_life_gloss_langs = set(life_gloss_langs)
         life_unmapped_gloss_langs = all_life_gloss_langs - mapped_life_langs_gloss_set
         # unmapped_lift_langs_gloss = []
-        print ('Unmapped gloss', unmapped_lift_langs_gloss)
+        # print ('Unmapped gloss', unmapped_lift_langs_gloss)
 
         headword_mapped = False
         life_all_mapped = mapped_lift.values()
@@ -254,13 +254,13 @@ def lifeuploader(fileFormat, uploadedFileContent, basedir, allques, field_map = 
         for lift_unmapped_gloss in unmapped_lift_langs_gloss:
             mapped_lift[lift_unmapped_gloss] = list(life_unmapped_gloss_langs)
 
-        print (mapped_lift)
-        print (headword_mapped)
+        # print (mapped_lift)
+        # print (headword_mapped)
 
         if len (unmapped_lift_langs_lexeme_form) > 0 or len(unmapped_lift_langs_gloss) > 0:
             all_mapped = False
         
-        print(f"{'-'*80}\nheadword_mapped:\n{headword_mapped}\nall_mapped:\n{all_mapped}\nmapped_lift:\n{mapped_lift}\nroot:\n{root}")
+        # print(f"{'-'*80}\nheadword_mapped:\n{headword_mapped}\nall_mapped:\n{all_mapped}\nmapped_lift:\n{mapped_lift}\nroot:\n{root}")
 
         return headword_mapped, all_mapped, mapped_lift, root
 
@@ -276,20 +276,20 @@ def lifeuploader(fileFormat, uploadedFileContent, basedir, allques, field_map = 
 
 
     def lift_to_df (root, field_map, lex_fields):
-        print(f"{'-'*80}\nIN lift_to_df (root, field_map, lex_fields) function\n")
+        # print(f"{'-'*80}\nIN lift_to_df (root, field_map, lex_fields) function\n")
         data = pd.DataFrame(columns=lex_fields)
         # lex_fields_without_sense = [lex_field for lex_field in lex_fields if 'sense' not in lex_field]
 
         life_scripts_map = get_scripts_map(lex_fields)
-        print (life_scripts_map)
+        # print (life_scripts_map)
 
         # if len(field_map) == 0:
         lift_life_field_map = get_lift_map()
-        print(f"{'-'*80}\nIN lift_to_df (root, field_map, lex_fields) function: get_lift_map():\n{lift_life_field_map}")
+        # print(f"{'-'*80}\nIN lift_to_df (root, field_map, lex_fields) function: get_lift_map():\n{lift_life_field_map}")
         
         entries = root.findall('.//entry')
 
-        print (f"{'-'*80}\nIN lift_to_df (root, field_map, lex_fields) function: {field_map}")
+        # print (f"{'-'*80}\nIN lift_to_df (root, field_map, lex_fields) function: {field_map}")
 
         # highest_sense_num = 0
         for entry in entries:
@@ -366,14 +366,14 @@ def lifeuploader(fileFormat, uploadedFileContent, basedir, allques, field_map = 
         headword_mapped = True
         all_mapped = True
 
-        print(f"{'-'*80}\nIN lift_to_df (root, field_map, lex_fields) FUNCTION\n\nheadword_mapped\n{headword_mapped}\n\nall_mapped:\n{all_mapped}\n\ndata:\n{data}\n\nroot:\n{root}")
-        print(f"{'-'*80}\nIN lift_to_df (root, field_map, lex_fields) FUNCTION\n\nheadword_mapped\n{type(headword_mapped)}\n\nall_mapped:\n{type(all_mapped)}\n\ndata:\n{type(data)}\n\nroot:\n{type(root)}")
+        # print(f"{'-'*80}\nIN lift_to_df (root, field_map, lex_fields) FUNCTION\n\nheadword_mapped\n{headword_mapped}\n\nall_mapped:\n{all_mapped}\n\ndata:\n{data}\n\nroot:\n{root}")
+        # print(f"{'-'*80}\nIN lift_to_df (root, field_map, lex_fields) FUNCTION\n\nheadword_mapped\n{type(headword_mapped)}\n\nall_mapped:\n{type(all_mapped)}\n\ndata:\n{type(data)}\n\nroot:\n{type(root)}")
 
         return headword_mapped, all_mapped, data, root
 
 
     def prepare_lex(lexicon):
-        print(f"LINE 368: {lexicon}")
+        # print(f"LINE 368: {lexicon}")
         df = pd.json_normalize(lexicon)
         columns = df.columns
         # drop_cols = [c for c in df.columns if c.startswith('langscripts.')]
@@ -396,7 +396,7 @@ def lifeuploader(fileFormat, uploadedFileContent, basedir, allques, field_map = 
         drop_cols.extend(drop_oldscript)
         drop_cols.extend(drop_files)
 
-        print(f"drop_cols: {drop_cols}")
+        # print(f"drop_cols: {drop_cols}")
         df.drop(columns=drop_cols, inplace=True)
 
         return df
@@ -406,36 +406,36 @@ def lifeuploader(fileFormat, uploadedFileContent, basedir, allques, field_map = 
         final_map = {}
         for key_col in key_cols:
             final_map[key_col] = list(val_cols)
-        print(f"{'-'*80}\nIN generate_all_possible_mappings(key_cols, val_cols) function\nFINAL MAP:\n{final_map}")
+        # print(f"{'-'*80}\nIN generate_all_possible_mappings(key_cols, val_cols) function\nFINAL MAP:\n{final_map}")
         return final_map
 
 
     def map_excel(file_stream, lex_fields):
-        print(f"{'-'*80}\nIN MAP EXCEL function map_excel(file_stream, lex_fields)")
+        # print(f"{'-'*80}\nIN MAP EXCEL function map_excel(file_stream, lex_fields)")
         excel_data = pd.read_excel(file_stream, engine="openpyxl")
-        print(excel_data)
+        # print(excel_data)
         excel_data_cols = set(excel_data.columns)
         lex_field_cols = set(lex_fields)
-        print(f"{'-'*80}\nexcel_data_cols:\n{excel_data.columns}")
-        print(f"{'-'*80}\nNUMBER OF ELEMENTS IN excel_data_cols: {len(excel_data_cols)}")
-        print(f"{'-'*80}\nNUMBER OF ELEMENTS IN lex_field_cols: {len(lex_field_cols)}")
+        # print(f"{'-'*80}\nexcel_data_cols:\n{excel_data.columns}")
+        # print(f"{'-'*80}\nNUMBER OF ELEMENTS IN excel_data_cols: {len(excel_data_cols)}")
+        # print(f"{'-'*80}\nNUMBER OF ELEMENTS IN lex_field_cols: {len(lex_field_cols)}")
 
-        print(f"{'-'*80}\nlex_field_cols-excel_data_cols:\n{lex_field_cols-excel_data_cols}")
+        # print(f"{'-'*80}\nlex_field_cols-excel_data_cols:\n{lex_field_cols-excel_data_cols}")
 
         if excel_data_cols == lex_field_cols:
-            print(f"{'-'*80}\nexcel_data_cols == lex_field_cols")
+            # print(f"{'-'*80}\nexcel_data_cols == lex_field_cols")
             mapped = True
             headword_mapped = True
             return headword_mapped, mapped, {}, excel_data
         else:
-            print(f"{'-'*80}\nexcel_data_cols != lex_field_cols")
+            # print(f"{'-'*80}\nexcel_data_cols != lex_field_cols")
             headword_mapped = True
             mapped = False
             excel_remaining = excel_data_cols - lex_field_cols
             lex_remaining = lex_field_cols - excel_data_cols
-            print(f"{'-'*80}\nexcel_remaining:\n{excel_remaining}\n{'-'*80}\nlex_remaining:\n{lex_remaining}")
+            # print(f"{'-'*80}\nexcel_remaining:\n{excel_remaining}\n{'-'*80}\nlex_remaining:\n{lex_remaining}")
             field_map = generate_all_possible_mappings(excel_remaining, lex_remaining)
-            print(f"{'-'*80}\nheadword_mapped\n{headword_mapped}\n\nmapped:\n{mapped}\n\nfield_map:\n{field_map}\n\nexcel_data:\n{excel_data}")
+            # print(f"{'-'*80}\nheadword_mapped\n{headword_mapped}\n\nmapped:\n{mapped}\n\nfield_map:\n{field_map}\n\nexcel_data:\n{excel_data}")
             return headword_mapped, mapped, field_map, excel_data
 
 
@@ -450,12 +450,12 @@ def lifeuploader(fileFormat, uploadedFileContent, basedir, allques, field_map = 
 
     def upload_lexicon(lexicon, file_stream, format, field_map):
         lexicon = lexicon[1:]
-        print(f"{'-'*80}\nLEXICON:\n{lexicon}")
+        # print(f"{'-'*80}\nLEXICON:\n{lexicon}")
         norm_lex = prepare_lex(lexicon)
-        print(f"{'-'*80}\nNORM LEX:\n{norm_lex}")
+        # print(f"{'-'*80}\nNORM LEX:\n{norm_lex}")
         lex_fields = norm_lex.columns
-        print(f"{'-'*80}\nLEX FIELDS:\n{lex_fields}")
-        print(f"{'-'*80}\nFILE STREAM TYPE:{type(file_stream)}")
+        # print(f"{'-'*80}\nLEX FIELDS:\n{lex_fields}")
+        # print(f"{'-'*80}\nFILE STREAM TYPE:{type(file_stream)}")
 
         if format == 'lift-xml':
             print(f"{'-'*80}\nFIELD MAP:\n{len(field_map)}")
@@ -474,18 +474,18 @@ def lifeuploader(fileFormat, uploadedFileContent, basedir, allques, field_map = 
                     print(f"{'-'*80}\nheadword_mapped:\n{type(headword_mapped)}\nall_mapped:\n{type(all_mapped)}\nmapped_lift/data:\n{type(field_map)}\nroot:\n{type(root)}")
                     return headword_mapped, all_mapped, field_map, root
             else:
-                print(f"{'-'*80}\nlift-xml: len(field_map) != 0")
+                # print(f"{'-'*80}\nlift-xml: len(field_map) != 0")
                 headword_mapped, all_mapped, life_df, root = lift_to_df (file_stream, field_map, lex_fields)
                 # print (life_df.head())
-                print(life_df.loc[0,:])
+                # print(life_df.loc[0,:])
                 return headword_mapped, all_mapped, life_df
         elif format == 'xlsx':
             if len(field_map) == 0:
-                print(f"{'-'*80}\nxlsx: len(field_map) == 0")
+                # print(f"{'-'*80}\nxlsx: len(field_map) == 0")
                 headword_mapped, all_mapped, field_map, df = map_excel(file_stream, lex_fields)
                 return headword_mapped, all_mapped, field_map, df
             else:
-                print(f"{'-'*80}\nxlsx: len(field_map) != 0")
+                # print(f"{'-'*80}\nxlsx: len(field_map) != 0")
                 headword_mapped, all_mapped, data = upload_excel(file_stream, field_map, lex_fields)
                 return headword_mapped, all_mapped, data
 
@@ -541,18 +541,18 @@ def enterquesfromuploadedfile(mongo, projects,
             questionnaires.update_one({ 'quesId': quesId }, { '$set' : uploadedFileQues })
         else:
             questionnaires.insert(uploadedFileQues)
-        print(f"{inspect.currentframe().f_lineno}: {uploadedFileQues}")
+        # print(f"{inspect.currentframe().f_lineno}: {uploadedFileQues}")
         
         all_columns = list(quesdf.columns)
         for column_name in all_columns:            
-            print(f"{inspect.currentframe().f_lineno}: {column_name}")
+            # print(f"{inspect.currentframe().f_lineno}: {column_name}")
             if (column_name not in uploadedFileQues):
                 value = str(row[column_name])
-                print(f"{inspect.currentframe().f_lineno}: {value}")
+                # print(f"{inspect.currentframe().f_lineno}: {value}")
                 if ('[' in value and ']' in value):
                     if (value.startswith('[') and value.endswith(']')):
                         value = value.replace('[', '').replace(']', '').replace(' ', '').split(',')
-                    print(f"{inspect.currentframe().f_lineno}: {value}")
+                    # print(f"{inspect.currentframe().f_lineno}: {value}")
                 elif (value == 'nan'):
                     value = ''
                 # if ('content' in column_name):
@@ -601,11 +601,11 @@ def enterquesfromuploadedfile(mongo, projects,
                             file_type_info[0], 
                             data_type, 
                             lang_script])
-                        print ("File type", file_type)
-                        print ('Upload file name', uploadfilename)                        
+                        # print ("File type", file_type)
+                        # print ('Upload file name', uploadfilename)                        
                         filesToBeUploaded[file_type] = uploadfilename
                                   
-        pprint(uploadedFileQues)
+        # pprint(uploadedFileQues)
         uploadedFileQuesKeysList = list(uploadedFileQues.keys())
         for ak in uploadedFileQuesKeysList:
             if ('text.000000' in ak and
@@ -631,11 +631,11 @@ def enterquesfromuploadedfile(mongo, projects,
                 with myzip.open(fileName) as myfile:
                     upload_file_full = {}
                     file_content = io.BytesIO(myfile.read())
-                    print ('ZIP file', mainfile)
-                    print ("File content", file_content)
-                    print ("Upload key", fileType)
+                    # print ('ZIP file', mainfile)
+                    # print ("File content", file_content)
+                    # print ("Upload key", fileType)
                     upload_file_full[fileType] = FileStorage(file_content, filename = fileName)
-                    print ("Upload file", upload_file_full)
+                    # print ("Upload file", upload_file_full)
                     savequespromptfile.savequespromptfile(mongo,
                                     projects,
                                     userprojects,
@@ -669,15 +669,15 @@ def queskeymapping(mongo, projects,
                                         {"_id": 0}):
         allques.append(ques)
     
-    print(f"allques: {allques}")
+    # print(f"allques: {allques}")
     key = 'uploadquesfile'
-    print ('New ques file', new_ques_file)
+    # print ('New ques file', new_ques_file)
 
     if new_ques_file[key].filename != '':
         current_file = new_ques_file[key]
         # print ("Filepath", filepath)
-        cur_filename = current_file.filename            
-        print("Filename", cur_filename)
+        cur_filename = current_file.filename
+        # print("Filename", cur_filename)
         file_format = cur_filename.rsplit('.', 1)[-1]
         if (file_format == 'xlsx'):
             quesstate, quesextra = processExcelUpload(mongo, projects,
@@ -723,8 +723,8 @@ def processExcelUpload(mongo, projects,
     file_format = 'xlsx'
     uploaded_file_content = new_ques_file.read()
     headword_mapped, all_mapped, field_map, df = lifeuploader(file_format, uploaded_file_content, basedir, allques, field_map={})
-    print(f"{'-'*80}\nIN lexemekeymapping() FUNCTION\n\nheadword_mapped\n{headword_mapped}\n\nall_mapped:\n{all_mapped}\n\nfield_map:\n{field_map}\n\ndf:\n{df}")
-    print(f"{'-'*80}\nIN lexemekeymapping() FUNCTION\n\nheadword_mapped\n{type(headword_mapped)}\n\nall_mapped:\n{type(all_mapped)}\n\nfield_map:\n{type(field_map)}\n\ndf:\n{type(df)}")
+    # print(f"{'-'*80}\nIN lexemekeymapping() FUNCTION\n\nheadword_mapped\n{headword_mapped}\n\nall_mapped:\n{all_mapped}\n\nfield_map:\n{field_map}\n\ndf:\n{df}")
+    # print(f"{'-'*80}\nIN lexemekeymapping() FUNCTION\n\nheadword_mapped\n{type(headword_mapped)}\n\nall_mapped:\n{type(all_mapped)}\n\nfield_map:\n{type(field_map)}\n\ndf:\n{type(df)}")
     life_xlsx_root_path = os.path.join(basedir, 'lifexlsxdf.tsv')
     df.to_csv(life_xlsx_root_path, sep='\t', index=False)
     quesstate, quesextra = enterquesfromuploadedfile(mongo,projects,
@@ -766,8 +766,8 @@ def processZipUpload(mongo, projects,
                     file_format = 'xlsx'
                     uploaded_file_content = myfile.read()
                     headword_mapped, all_mapped, field_map, df = lifeuploader(file_format, uploaded_file_content, basedir, allques, field_map={})
-                    print(f"{'-'*80}\nIN lexemekeymapping() FUNCTION\n\nheadword_mapped\n{headword_mapped}\n\nall_mapped:\n{all_mapped}\n\nfield_map:\n{field_map}\n\ndf:\n{df}")
-                    print(f"{'-'*80}\nIN lexemekeymapping() FUNCTION\n\nheadword_mapped\n{type(headword_mapped)}\n\nall_mapped:\n{type(all_mapped)}\n\nfield_map:\n{type(field_map)}\n\ndf:\n{type(df)}")
+                    # print(f"{'-'*80}\nIN lexemekeymapping() FUNCTION\n\nheadword_mapped\n{headword_mapped}\n\nall_mapped:\n{all_mapped}\n\nfield_map:\n{field_map}\n\ndf:\n{df}")
+                    # print(f"{'-'*80}\nIN lexemekeymapping() FUNCTION\n\nheadword_mapped\n{type(headword_mapped)}\n\nall_mapped:\n{type(all_mapped)}\n\nfield_map:\n{type(field_map)}\n\ndf:\n{type(df)}")
                     life_xlsx_root_path = os.path.join(basedir, 'lifexlsxdf.tsv')
                     df.to_csv(life_xlsx_root_path, sep='\t', index=False)
 

@@ -47,10 +47,10 @@
         <span class="caret"></span>
       </button>
       <ul class="dropdown-menu">
-          <li class="json"><a href="#">JSON</a></li>
-          <li class="csv"><a href="#">CSV</a></li>
-          <li class="xlsx"><a href="#">XLSX</a></li>
-          <li class="karyajson"><a href="#">Karya JSON</a></li>
+          <li id="json"><a href="#">JSON</a></li>
+          <li id="csv"><a href="#">CSV</a></li>
+          <li id="xlsx"><a href="#">XLSX</a></li>
+          <li id="karyajson"><a href="#">Karya JSON</a></li>
       </ul>
     </div>
 </div>
@@ -146,5 +146,6 @@
 <script src="https://unpkg.com/wavesurfer.js/dist/plugin/wavesurfer.regions.js"></script>
 <script src="https://unpkg.com/wavesurfer.js/dist/plugin/wavesurfer.minimap.js"></script>
 <script src="{{url_for('.static', filename='quesaudiowaveform.js')}}"></script>
+<script src="{{url_for('.static', filename='downloadquestionnaire.js')}}"></script>
 <script type="text/javascript">createquesform({{ quesprojectform | tojson | safe }});</script>
 {% endblock %}
