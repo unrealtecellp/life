@@ -170,7 +170,7 @@ def uploadfile():
                             "isActive": 0,
                             "additionalInfo": {}
                         }
-            # return_obj = karyaaccesscodedetails.insert(insert_dict)
+            return_obj = karyaaccesscodedetails.insert(insert_dict)
             # datafromdb = karyaaccesscodedetails.find({},{"_id" :0})
 
         return redirect(url_for('karya_bp.home_insert'))
