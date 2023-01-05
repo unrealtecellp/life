@@ -44,7 +44,7 @@ function uploadaccesscodeform(uploadacesscodemetadata) {
     for (let [key, value] of Object.entries(uploadacesscodemetadata)) {
         // console.log(key, value);
         if (key === 'elicitation') {
-            uploadaccodeform += createSelectElement(key, value, 'multiple', [])
+            uploadaccodeform += createSelectElement(key, value, '', [])
         }
         else if (key === 'domain') {
           // console.log(value);

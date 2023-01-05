@@ -254,8 +254,8 @@
               <button class="pull-right btn-danger" type="button" id ="editbutton">Edit</button><br/>
               
               <input type ="hidden" id = "accesscode" name = "accode" value = {{accode}}>
-
-               <div id="accodeformheader" style="display: block;">
+              <h4>Access Code Metadata</h4>
+              <div id="accodeformheader" style="display: block;">
               <div class="form-group">
                 <label for="idaccesscodefor">Access Code For:</label><br>                           
                 <select class="accesscodefor" id="idaccesscodefor" name="accesscodefor" style="width:55%" required></select><br>
@@ -268,6 +268,8 @@
 
              <div id="uploadaccode" style="display: block;"></div> 
             </div>
+            <hr>
+            <h4>Speaker/Worker Metadata</h4>
               <div class="form-group">
 
                 <!-- return render_template('homespeaker.html', data = table_data, speaker_data_accesscode= speaker_data_accesscode, speaker_data_name = speaker_data_name, 
@@ -360,7 +362,6 @@
           <th onclick="sortTable(7)">Assigned For</th>
           <th onclick="sortTable(8)">Task</th>
           <th>View</th>
-          <!-- <th>Edit</th> -->
 
           </tr>
       </thead>
