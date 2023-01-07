@@ -206,6 +206,26 @@ easyAnno
 05 January 2023
 --------------------------------------------------------------
 - Karya
-    - create public ssh key of the laptop in ubuntu and share it with vivek
-    - Upload verification report to karya using API and mark the task as 'COMPLETE' in karya
-        - 
+    -- - create public ssh key of the laptop in ubuntu and share it with vivek
+    - Upload verification report (done on LiFE) to karya using API and mark the task as 'COMPLETE' in karya
+        - link : https://github.com/microsoft/rural-crowdsourcing-toolkit/blob/5a424ef9883ca3f579de9ea21a62a568623bfb6d/api/box-server-api.yaml#L365
+        - use end point at LINE NO. 365 in the link above
+            - /assignments:
+                put:
+        - make changes in LINE NO. - 527 ('status'), 529('completed_at'), 531('output') KEYS
+            - output: {
+                "accuracy": 0/1/2,
+                "volume": 0/1/2,
+                "quality": 0/1/2,
+                "fluency": 0/1/2
+            }
+    - Get verification report when verification of the recording done on the Karya platform
+            - when fetching the data from Karya to LiFE from trasnscription task chained to the verification task
+            the input of the metadata will contain report of the score given to  aparticular recording.
+            - check this on test task by fetching the data from transcription task whose verification is done on the Karya platform.
+    - create tasks on the karya platform and projects in the LiFE and start the recording.
+- Changes to be made in the 'fetch karya recordings'
+    - each access code for syncing ONLY on the first otp verification get the list of speaker/worker ids,
+    attached to that access code.
+    - put the list of ids in that access code inside key 'attachedSpeakerIds'
+    - then show this list to the list of speaker to fetch data for and this list will change based on the access code selected.
