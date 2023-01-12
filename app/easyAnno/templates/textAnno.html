@@ -1,0 +1,45 @@
+{% extends "links.html" %}
+
+{% block title %}
+textAnno
+{% endblock title %}
+
+{% block styles %}
+{{super()}}
+<link href="{{url_for('.static', filename='textAnno.css')}}" rel="stylesheet" />
+{% endblock %}
+
+
+{% block app_content %}
+    <div class="row">
+        {% if projectName is defined %}
+        <div class="col-sm-9">
+            <h4>File Name : {{ projectName }}</h4>
+        </div>
+        {% endif %}
+        {% if proj_data is defined %}
+        <div class="col-sm-3 commentStats">
+                <strong>Total Comments: {{ proj_data["totalComments"] }}</strong><br> 
+                <strong>Annotated Comments: {{ proj_data["annotatedComments"] }}</strong><br>
+                <strong>Remaining Comments: {{ proj_data["remainingComments"] }}</strong><br>
+        </div>
+        {% endif %}
+    </div>
+    <div class="row">
+        <div class="col-sm-7 commentIDs">
+            <button type="button" id="uNAnnotated" class="btn btn-light" onclick="unAnnotated()">All Text IDs</button>
+            {# <button type="button" id="randomText" class="btn btn-light" onclick="randomText()">Random Text ID</button> #}
+        </div>
+    </div>
+    <hr>
+   <div class="container textdata"></div>
+
+{% endblock %}
+
+{% block scripts %}
+{{super()}}
+<script src="{{url_for('.static', filename='textAnnoo.js')}}"></script>
+{% if proj_data is defined %}
+<script type="text/javascript">myFunction({{ proj_data | tojson | safe }});</script>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,118 @@
+{% extends "links.html" %}
+
+
+{% block title %}
+Home
+{% endblock title %}
+
+{% block styles %}
+{{super()}}
+<link href="{{url_for('.static', filename='home.css')}}" rel="stylesheet" />
+{% endblock %}
+
+
+{% block app_content %}
+<!-- <div class="shareAlert"></div> -->
+  <h2>Easy Annotation Tool<br/>[easyAnno]</h2><hr/>
+  <div>
+    <div class="row" id="activeProject">
+      <div class="col-sm-7">
+        <h3>Upload New File</h3>
+        
+        <!-- form to upload/create new project -->
+        <form name="createProject" action="/home" method="POST" enctype="multipart/form-data" onsubmit="return validateForm()">
+          <div class="col upload">
+          <input type="file" id="zipFile" name="zipFile">
+          <br>
+          <label for="fileType">File Type:&nbsp;&nbsp;</label>
+
+          <select name="fileType" id="fileType">
+            <option value="text">Text</option>
+            <option value="image">Image</option>
+          </select>
+          </div>
+          <br>
+          <input class="btn btn-primary uploadbtn" type="submit" value="Upload">
+        </form>
+        <br>
+        <a href="https://drive.google.com/drive/folders/1DoBGyDhjAkyXUdRGPMqXxIaHy8LH5swd?usp=sharing"target="_blank">Sample File</a>
+      {# <!-- <br/><br/><hr/> --> #}
+    </div>
+    <div class="col-sm-5">
+      {% if data|length > 0 %}
+      <h3>Currently Working On: {{ activeproject }}</h3>
+      <div>    
+          <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myShareProjectModal">
+              Share File
+          </button>
+          <br>
+          <br>
+          <button type="button" class="btn btn-primary btn-lg" onclick="window.location.href='{{ url_for('easyAnno.downloadannotationfile') }}';">Download Annotation File</button>
+      </div>
+    </div>
+    </div>
+    </br><hr/>
+    <div id="allProjects">
+     <h3>All Files : {{ data|length }}</h3>
+     <div>
+       <span class="completedtext" style="font-size: 12px">Completed : {{ projectcompleted["success"] }}</span><span class="tagcolor box success"></span>
+       <span class="completedtext" style="font-size: 12px">In Progress : {{ projectcompleted["warning"] }}</span><span class="tagcolor box warning"></span>
+       <span class="completedtext" style="font-size: 12px">Not Started : {{ projectcompleted["danger"] }}</span><span class="box danger"></span>
+      </div>
+     <input class="form-control" id="searchFile" type="text" placeholder="Search File">
+       <table class="table">
+         <tbody id="allFilesTableBody">
+             <tr>
+         {% for d in data %}
+         
+             <td><button type="button" class="btn btn-{{ projectcompleted[d] }}" id ="{{ d }}" onclick="changeActiveProject('{{ d }}')">{{ d }}</button></td>
+             {% if loop.index is divisibleby 3 %}
+                         </tr>
+                     </tbody>
+                     <tbody>
+                         <tr>    
+                 {% endif %}
+         {% endfor %}
+         </tr>
+     </tbody>
+     </table>
+    </div>     
+    {% endif %}
+    <!-- Share Project Modal -->
+   <div class="modal fade" id="myShareProjectModal" tabindex="-1" role="dialog" aria-labelledby="myShareProjectModalLabel">
+     <div class="modal-dialog" role="document">
+       <div class="modal-content">
+         <div class="modal-header">
+           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+           <h4 class="modal-title" id="myShareProjectModalLabel">File: {{ activeproject }}</h4>
+         </div>
+         <div class="modal-body">
+           <div class="row">
+             <!-- <div class="col-xs-12">Select A State</div> -->
+             <div class="col-xs-12">
+               <div class="form-group">
+                 <select name="" id="shareProjectSelect"  multiple="multiple" style="width: 100%">
+                 </select>
+               </div>
+             </div>
+           </div>
+         </div>
+         <div class="modal-footer">
+           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+           <button type="button" class="btn btn-primary shareprojectwith" data-dismiss="modal">Share</button>
+         </div>
+       </div>
+     </div>
+   </div>
+ 
+ </div>
+    
+{% endblock %}
+
+{% block scripts %}
+{{super()}}
+<script src="{{url_for('.static', filename='search.js')}}"></script>
+<script src="{{url_for('.static', filename='shareproject.js')}}"></script>
+<script src="{{url_for('.static', filename='shareprojectwith.js')}}"></script>
+<script src="{{url_for('.static', filename='home.js')}}"></script>
+{% endblock %}

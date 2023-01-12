@@ -1,0 +1,76 @@
+{% extends 'bootstrap/base.html' %}
+
+
+{% block title %}
+    {% if title %}{{ title }}{% else %}Welcome to easyAnno{% endif %}
+{% endblock %}
+
+{% block styles %}
+{{super()}}
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
+<!-- <link href="{{url_for('.static', filename='base.css')}}" rel="stylesheet" /> -->
+{% endblock %}
+
+{% block navbar %}
+    <nav class="navbar navbar-default">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+               <strong><a class="navbar-brand" href="{{ url_for('home') }}">easyAnno</a></strong>
+            </div>
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                
+                <ul class="nav navbar-nav navbar-right">
+                    {% if current_user.is_anonymous %}
+                    <li><a href="{{ url_for('login') }}">Login</a></li>
+                    {% else %}
+                        {% if data is defined %}
+                        <select class="custom-select custom-select-sm" id="a" style="margin-top:10px">
+                            <option selected disabled>Open Existing File</option>
+                            {% for d in data %}
+                            <option value="{{ d }}">{{ d }}</option>
+                            {% endfor %}
+                        </select>
+                        {% endif %}
+                    <li style="margin-top:15px ">Welcome,&nbsp</li>
+                    {# <li><a href="{{ current_user.username }}">{{ current_user.username }}</a></li> #}
+                    <li style="margin-top:15px">{{ current_user.username }}</li>
+                    <li><a href="{{ url_for('logout') }}">Logout</a></li>
+
+                    {% endif %}
+                </ul>{% block extra_nav %}{% endblock %}
+            </div>
+        </div>{% block base_navbar %}{% endblock %}
+    </nav>
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        {% with messages = get_flashed_messages(True) %}
+        {% if messages %}
+            {% for message in messages %}
+            {% if 'Please log in to access this page.' == message[1] %}
+                <div class="alert alert-info" role="alert">{{ message[1] }}</div>
+            {% else %}
+                <div class="alert alert-{{ message[0]}}" role="alert">{{ message[1] }}</div>
+            {% endif %}
+            
+            {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        {# application content needs to be provided in the app_content block #}
+        {% block app_content %}{% endblock %}
+    </div>
+{% endblock %}
+
+{% block scripts %}
+{{super()}}
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
+<script src="{{url_for('.static', filename='changeactiveproject.js')}}"></script>
+{% endblock %}

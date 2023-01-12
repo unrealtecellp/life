@@ -88,7 +88,7 @@ def home():
     currentuserprojectsname = getcurrentuserprojects.getcurrentuserprojects(current_username, userprojects)
     activeprojectname = getactiveprojectname.getactiveprojectname(current_username, userprojects)
     shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects, current_username, activeprojectname)
-    # print(shareinfo)
+    print(shareinfo)
 
     return render_template('home.html',
                             data=currentuserprojectsname,

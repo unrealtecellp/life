@@ -1,0 +1,45 @@
+{% extends "links.html" %}
+
+{% block title %}
+imageAnno
+{% endblock title %}
+
+{% block styles %}
+{{super()}}
+<link href="{{url_for('.static', filename='imageAnno.css')}}" rel="stylesheet" />
+{% endblock %}
+
+
+{% block app_content %}
+   <div class="row">
+      {% if projectName is defined %}
+         <div class="col-sm-9">
+            <h4>File Name : {{ projectName }}</h4>
+         </div>
+      {% endif %}
+      {% if proj_data is defined %}
+         <div class="col-sm-3 commentStats">
+               <strong>Total Images: {{ proj_data["totalImages"] }}</strong><br> 
+               <strong>Annotated Images: {{ proj_data["annotatedImages"] }}</strong><br>
+               <strong>Remaining Images: {{ proj_data["remainingImages"] }}</strong><br>
+         </div>
+      {% endif %}
+   </div>
+   <div class="row">
+      <div class="col-sm-7 commentIDs">
+          <button type="button" id="uNAnnotated" class="btn btn-light" onclick="unAnnotated()">All Images</button>
+          {# <button type="button" id="randomText" class="btn btn-light" onclick="randomText()">Random Text ID</button> #}
+      </div>
+  </div>
+   <hr>
+   <div class="container imagedata"></div>   
+    
+{% endblock %}
+
+{% block scripts %}
+{{super()}}
+<script src="{{url_for('.static', filename='imageAnnoo.js')}}"></script>
+{% if proj_data is defined %}
+<script type="text/javascript">imageJS({{ proj_data | tojson | safe }});</script>
+{% endif %}
+{% endblock %}

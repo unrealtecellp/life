@@ -199,6 +199,13 @@
 easyAnno
     - multimedia/video annotation
     - span annotation
+    - 'PREVIOUS'/'NEXT' also above text
+    - select project from dropdown to active/change 'current working file'
+    - 'Progress Report' rather than red/green/yellow button with filename on it
+    - ZOOM IN/OUT text in p tag
+    - browse page for reports and summary
+    - categorywise annotatorwise summary (view will be similar to the excel view) for completed files.
+
 -- - two speakers data in same derived project - fetch karya recordings
 - isPublic ON/OFF when sharing project
 - enable/disable ' access code(s) to download data from Karya' checkbox on 'Fetch/Upload Access Code' page
@@ -229,3 +236,8 @@ easyAnno
     attached to that access code.
     - put the list of ids in that access code inside key 'attachedSpeakerIds'
     - then show this list to the list of speaker to fetch data for and this list will change based on the access code selected.
+
+
+11 January 2023
+--------------------------------------------------------------
+- browse page
