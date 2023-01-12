@@ -433,13 +433,18 @@ def homespeaker():
    
     project_type = getprojecttype.getprojecttype(projects, activeprojectname)
 
+    shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
+                                                        current_username,
+                                                        activeprojectname)
+    share_level = shareinfo['sharemode']
     if (project_type == 'questionnaires'):
         uploadacesscodemetadata = uploadfileforquestionnaire(projectsform, activeprojectname)
     if (project_type == 'transcriptions'):
         uploadacesscodemetadata = uploadfilefortranscription(projects, projectsform, activeprojectname)
 
 ################################## karya accesscode  #########################################################################
-    karyaaccesscodedetails = mongodb_info.find({"isActive":1, "projectname": activeprojectname, "assignedBy": current_username},
+    if share_level == 10:
+        karyaaccesscodedetails = mongodb_info.find({"isActive":1, "projectname": activeprojectname},
                                                     {
                                                         "karyaaccesscode":1, 
                                                         "lifespeakerid":1,
@@ -449,6 +454,24 @@ def homespeaker():
                                                         "current.workerMetadata.name" :1,
                                                         "current.workerMetadata.agegroup":1,
                                                         "current.workerMetadata.gender":1,
+                                                        "domain": 1,
+                                                        "elicitationmethod": 1,
+                                                        "_id" :0
+                                                    }
+                                                )
+    else:
+        karyaaccesscodedetails = mongodb_info.find({"isActive":1, "projectname": activeprojectname, "assignedBy": current_username},
+                                                    {
+                                                        "karyaaccesscode":1, 
+                                                        "lifespeakerid":1,
+                                                        "task": 1,
+                                                        "fetchData": 1,
+                                                        "assignedBy": 1,
+                                                        "current.workerMetadata.name" :1,
+                                                        "current.workerMetadata.agegroup":1,
+                                                        "current.workerMetadata.gender":1,
+                                                        "domain": 1,
+                                                        "elicitationmethod": 1,
                                                         "_id" :0
                                                     }
                                                 )
@@ -485,9 +508,8 @@ def homespeaker():
 
 @karya_bp.route('/getsharelevel', methods=['GET', 'POST'])
 def getsharelevel():
-    userprojects, accesscodedetails = getdbcollections.getdbcollections(mongo,
-                                                                        'userprojects',
-                                                                        'accesscodedetails')
+    userprojects,  = getdbcollections.getdbcollections(mongo,
+                                                        'userprojects')
     current_username = getcurrentusername.getcurrentusername()
     activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
                                                                     userprojects)

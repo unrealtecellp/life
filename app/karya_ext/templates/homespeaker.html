@@ -201,6 +201,7 @@
                 });
 
                 $('.assignaccesscode').click(function() {
+                  document.getElementById("accodeformheader").style.display = "block";
                   buttonType = $(this).attr("id")
                   activeform(buttonType)
                   // activeform()
@@ -253,9 +254,9 @@
               
               <input type ="hidden" id = "accesscode" name = "accode" value = {{accode}}>
               
-              
-              <h4>Access Code Metadata</h4>
+
               <div id="accodeformheader" style="display: block;">
+              <h4>Access Code Metadata</h4>
               <div class="form-group">
                 <label for="idaccesscodefor">Access Code For:</label><br>                           
                 <select class="accesscodefor" id="idaccesscodefor" name="accesscodefor" style="width:55%" required></select><br>
@@ -267,13 +268,15 @@
               </div>
 
              <div id="uploadaccode" style="display: block;"></div> 
+             <hr>
             </div>
             
-            <hr>
             
             
-            <h4>Speaker/Worker Metadata</h4>
+            
+            
               <div class="form-group">
+                <h4>Speaker/Worker Metadata</h4>
 
                 <!-- return render_template('homespeaker.html', data = table_data, speaker_data_accesscode= speaker_data_accesscode, speaker_data_name = speaker_data_name, 
                                                               speaker_data_age =speaker_data_age, speaker_data_gender=speaker_data_gender) -->
@@ -364,6 +367,8 @@
           <th onclick="sortTable(6)">Assigned By</th>
           <th onclick="sortTable(7)">Assigned For</th>
           <th onclick="sortTable(8)">Task</th>
+          <th onclick="sortTable(9)">Domain</th>
+          <th onclick="sortTable(10)">Elicitation Method</th>
           <th>View</th>
 
           </tr>
@@ -400,7 +405,12 @@
                 <td>
                   {{item['task']}}
                 </td> 
-                
+                <td>
+                  {{item['domain']}}
+                </td>
+                <td>
+                  {{item['elicitationmethod']}}
+                </td>
                 <td>
                   <button type="button" class="btn btn-primary lexemeview" id="{{item['karyaaccesscode']}}" data-toggle="modal" data-target="#exampleModal">
                     View
