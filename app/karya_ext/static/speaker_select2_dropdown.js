@@ -278,12 +278,16 @@ $(document).ready(function () {
   $.getJSON("{{url_for('karya_bp.getsharelevel')}}", {
     asycaccesscode:String(accode)
     }, function(data) {
+
+      // Add Syncing Option for people with add and above privileges
       console.log(data)
       var shareLevel = data.shareinfo.sharemode
       if (shareLevel > 2) {
         accesscodefor.push({"id": "1", "text": "Syncing Karya Recording with LiFE"})
       }
       console.log(accesscodefor)
+      
+      
       $('.typeofcity').select2({
         // tags: true,
         placeholder: '--Type Of City:--',
