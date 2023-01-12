@@ -275,8 +275,8 @@ var accesscodefor = [
 ];
 
 $(document).ready(function () {
-  $.getJSON("{{url_for('karya_bp.getsharelevel')}}", {
-    asycaccesscode:String(accode)
+  $.getJSON(('/karyaext/getsharelevel'), {
+    // asycaccesscode:String(accode)
     }, function(data) {
 
       // Add Syncing Option for people with add and above privileges
