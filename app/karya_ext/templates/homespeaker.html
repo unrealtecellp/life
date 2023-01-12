@@ -112,79 +112,77 @@
                         console.log (metadata)
                         // accesscode = data.speakerdetails.accesscode
                         $('#accesscode').attr('value', accode)
-
                        
                         name = metadata.name
                         $('#idname').attr('value', name)
-                        // 
-                        // 
-                 
-                      
-                        // 
                         // 
 
                         agroup = metadata.agegroup
                         ageOption = '<option value="'+agroup+'" selected="selected">'+agroup+'</option>'
                         // document.getElementById('idage').innerHTML=""
-                        // $('#idage').html(ageOption)
+                        // $('#idage').html(ageOption)                        
                         $('#idage').val(agroup).trigger('change');
                         // $('#idgender').select2("val", "25-60");
                         // console.log (agroup)
 
+                        var taskVal = $("#idtask").val();
+                        console.log("Current task value", taskVal);
+                        if (taskVal === "SPEECH_DATA_COLLECTION") {
+                          $('#idspeakerdetailsdiv').show();
+                          $('#idspeakerdetailsdiv').attr('required', '');
+                          $('#idspeakerdetailsdiv').attr('data-error', 'This field is required.')
+                          
+                          gender = metadata.gender
+                          // genderOption = '<option value="'+gender+'" selected="selected">'+gender+'</option>'
+                          // $('#idgender').html(genderOption)
+                          $('#idgender').val(gender).trigger('change');
+                          console.log (gender)
+                          
+                          elevel = metadata.educationlevel
+                          elevelOption = '<option value="'+elevel+'" selected="selected">'+elevel+'</option>'
+                          // $('#idelevel').html(elevelOption)
+                          $('#idelevel').val(elevel).trigger('change');
+                  
+                          // mediumpre = metadata.medium-of-education-after-12th
+                          // mediumpost = metadata.medium-of-education-upto-12th
 
-                        
+                          mediumupto12 = metadata.educationmediumupto12
+                          mediumupto12option = ''
+                          for (i=0; i<mediumupto12.length; i++) {
+                            mediumupto12option += '<option value="'+mediumupto12[i]+'" selected="selected">'+mediumupto12[i]+'</option>'
+                          }                        
+                          // $('#idmediumpre').html(mediumupto12option)
+                          $('#idmediumpre').val(mediumupto12).trigger('change');
 
 
-                        gender = metadata.gender
-                        // genderOption = '<option value="'+gender+'" selected="selected">'+gender+'</option>'
-                        // $('#idgender').html(genderOption)
-                        $('#idgender').val(gender).trigger('change');
-                        console.log (gender)
-                        
-                        elevel = metadata.educationlevel
-                        elevelOption = '<option value="'+elevel+'" selected="selected">'+elevel+'</option>'
-                        // $('#idelevel').html(elevelOption)
-                        $('#idelevel').val(elevel).trigger('change');
-                
-                        // mediumpre = metadata.medium-of-education-after-12th
-                        // mediumpost = metadata.medium-of-education-upto-12th
+                          mediumafter12 = metadata.educationmediumafter12
+                          mediumafter12option = ''
+                          for (i=0; i<mediumafter12.length; i++) {
+                            mediumafter12option += '<option value="'+mediumafter12[i]+'" selected="selected">'+mediumafter12[i]+'</option>'
+                          }                        
+                          // $('#idmediumpost').html(mediumafter12option)
+                          $('#idmediumpost').val(mediumafter12).trigger('change');
+                          
+                          speakerotherlangs = metadata.speakerspeaklanguage
+                          speakerotherlangsOption = ''
+                          for (i=0; i<speakerotherlangs.length; i++) {
+                            speakerotherlangsOption += '<option value="'+speakerotherlangs[i]+'" selected="selected">'+speakerotherlangs[i]+'</option>'
+                          }                        
+                          // $('#idotherlangs').html(speakerotherlangsOption)
+                          $('#idotherlangs').val(speakerotherlangs).trigger('change');
 
-                        mediumupto12 = metadata.educationmediumupto12
-                        mediumupto12option = ''
-                        for (i=0; i<mediumupto12.length; i++) {
-                          mediumupto12option += '<option value="'+mediumupto12[i]+'" selected="selected">'+mediumupto12[i]+'</option>'
-                        }                        
-                        // $('#idmediumpre').html(mediumupto12option)
-                        $('#idmediumpre').val(mediumupto12).trigger('change');
+                          
+                          // name = metadata.name
+                          // $('#idname').attr('value', name)
+                          place = metadata.recordingplace
+                          // $('#idplace').attr('value', place)
+                          $('#idplace').val(place).trigger('change');
 
-
-                        mediumafter12 = metadata.educationmediumafter12
-                        mediumafter12option = ''
-                        for (i=0; i<mediumafter12.length; i++) {
-                          mediumafter12option += '<option value="'+mediumafter12[i]+'" selected="selected">'+mediumafter12[i]+'</option>'
-                        }                        
-                        // $('#idmediumpost').html(mediumafter12option)
-                        $('#idmediumpost').val(mediumafter12).trigger('change');
-                        
-                        speakerotherlangs = metadata.speakerspeaklanguage
-                        speakerotherlangsOption = ''
-                        for (i=0; i<speakerotherlangs.length; i++) {
-                          speakerotherlangsOption += '<option value="'+speakerotherlangs[i]+'" selected="selected">'+speakerotherlangs[i]+'</option>'
-                        }                        
-                        // $('#idotherlangs').html(speakerotherlangsOption)
-                        $('#idotherlangs').val(speakerotherlangs).trigger('change');
-
-                        
-                        // name = metadata.name
-                        // $('#idname').attr('value', name)
-                        place = metadata.recordingplace
-                        // $('#idplace').attr('value', place)
-                        $('#idplace').val(place).trigger('change');
-
-                        ptype = metadata.typeofrecordingplace
-                        ptypeOption = '<option value="'+ptype+'" selected="selected">'+ptype+'</option>'
-                        // $('#idptype').html(ptypeOption)
-                        $('#idptype').val(ptype).trigger('change');
+                          ptype = metadata.typeofrecordingplace
+                          ptypeOption = '<option value="'+ptype+'" selected="selected">'+ptype+'</option>'
+                          // $('#idptype').html(ptypeOption)
+                          $('#idptype').val(ptype).trigger('change');
+                        }
 
                       
                     });
@@ -254,6 +252,8 @@
               <button class="pull-right btn-danger" type="button" id ="editbutton">Edit</button><br/>
               
               <input type ="hidden" id = "accesscode" name = "accode" value = {{accode}}>
+              
+              
               <h4>Access Code Metadata</h4>
               <div id="accodeformheader" style="display: block;">
               <div class="form-group">
@@ -268,7 +268,10 @@
 
              <div id="uploadaccode" style="display: block;"></div> 
             </div>
+            
             <hr>
+            
+            
             <h4>Speaker/Worker Metadata</h4>
               <div class="form-group">
 

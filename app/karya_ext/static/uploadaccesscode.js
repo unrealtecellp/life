@@ -48,7 +48,7 @@ function uploadaccesscodeform(uploadacesscodemetadata) {
         }
         else if (key === 'domain') {
           // console.log(value);
-          value.splice(0, 0, 'all');
+          // value.splice(0, 0, 'all');
           // console.log(value);
           uploadaccodeform += createSelectElement(key, value, '', [])
         }

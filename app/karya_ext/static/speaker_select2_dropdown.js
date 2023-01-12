@@ -270,8 +270,8 @@ var task = [
 
 var accesscodefor = [
   {"id": "", "text": ""},
-  {"id": "0", "text": "Data Collection Using Karya"},
-  {"id": "1", "text": "Syncing Karya Recording with LiFE"}
+  {"id": "0", "text": "Data Collection Using Karya"}
+  //{"id": "1", "text": "Syncing Karya Recording with LiFE"}
 ];
 
 $(document).ready(function () {
