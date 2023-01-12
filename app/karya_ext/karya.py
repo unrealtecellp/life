@@ -483,6 +483,21 @@ def homespeaker():
 ##############################################################################################################
 ##############################################################################################################
 
+@karya_bp.route('/getsharelevel', methods=['GET', 'POST'])
+def getsharelevel():
+    userprojects, accesscodedetails = getdbcollections.getdbcollections(mongo,
+                                                                        'userprojects',
+                                                                        'accesscodedetails')
+    current_username = getcurrentusername.getcurrentusername()
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                    userprojects)
+    shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
+                                                        current_username,
+                                                        activeprojectname)
+
+    return jsonify(shareinfo=shareinfo)
+
+
 @karya_bp.route('/getonespeakerdetails', methods=['GET', 'POST'])
 def getonespeakerdetails():
     accesscodedetails, userprojects = getdbcollections.getdbcollections(mongo, "accesscodedetails", "userprojects")
