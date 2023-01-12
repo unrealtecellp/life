@@ -109,7 +109,8 @@
                     }, function(data) {
                         // console.log(data)
                         metadata = data.speakerdetails.current.workerMetadata
-                        console.log (metadata)
+                        task = data.speakerdetails.task
+                        console.log (metadata, task)
                         // accesscode = data.speakerdetails.accesscode
                         $('#accesscode').attr('value', accode)
                        
@@ -124,10 +125,9 @@
                         $('#idage').val(agroup).trigger('change');
                         // $('#idgender').select2("val", "25-60");
                         // console.log (agroup)
-
-                        var taskVal = $("#idtask").val();
-                        console.log("Current task value", taskVal);
-                        if (taskVal === "SPEECH_DATA_COLLECTION") {
+                        
+                        console.log("Current task value", task);
+                        if (task === "SPEECH_DATA_COLLECTION") {
                           $('#idspeakerdetailsdiv').show();
                           $('#idspeakerdetailsdiv').attr('required', '');
                           $('#idspeakerdetailsdiv').attr('data-error', 'This field is required.')

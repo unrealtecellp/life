@@ -496,6 +496,9 @@ def getonespeakerdetails():
     speakerdetails = accesscodedetails.find_one({"projectname": activeprojectname, "karyaaccesscode": asycaccesscode},
                                                 {"_id": 0,
                                                 "current.workerMetadata": 1})
+    accesscodetask = accesscodedetails.find_one({"projectname": activeprojectname, "karyaaccesscode": asycaccesscode},
+                                                {"_id": 0,
+                                                "task": 1})
     # mongodb_info = mongo.db.accesscodedetails
 
     # speakerdetails = mongodb_info.find_one({"lifespeakerid": asycaccesscode}, {"speaker_info.workerMetadata.name": 1, 
@@ -512,6 +515,7 @@ def getonespeakerdetails():
     # print(f"SPEAKER DETAILS: {speakerdetails}")
 
     # speakerdetails['accesscode'] = asycaccesscode
+    speakerdetails.update(accesscodetask)
     return jsonify(speakerdetails=speakerdetails)
 
 
