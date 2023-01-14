@@ -1,18 +1,18 @@
-{% extends "links.html" %}
+
+{% extends "easyannolinks.html" %}
 
 
 {% block title %}
-Home
+easyAnno Home
 {% endblock title %}
 
 {% block styles %}
 {{super()}}
-<link href="{{url_for('.static', filename='home.css')}}" rel="stylesheet" />
+<link href="{{url_for('.static', filename='easyannohome.css')}}" rel="stylesheet" />
 {% endblock %}
 
 
 {% block app_content %}
-<!-- <div class="shareAlert"></div> -->
   <h2>Easy Annotation Tool<br/>[easyAnno]</h2><hr/>
   <div>
     <div class="row" id="activeProject">
@@ -20,7 +20,7 @@ Home
         <h3>Upload New File</h3>
         
         <!-- form to upload/create new project -->
-        <form name="createProject" action="/home" method="POST" enctype="multipart/form-data" onsubmit="return validateForm()">
+        <form name="createProject" action="/easyAnno/home" method="POST" enctype="multipart/form-data" onsubmit="return validateForm()">
           <div class="col upload">
           <input type="file" id="zipFile" name="zipFile">
           <br>
@@ -114,5 +114,5 @@ Home
 <script src="{{url_for('.static', filename='search.js')}}"></script>
 <script src="{{url_for('.static', filename='shareproject.js')}}"></script>
 <script src="{{url_for('.static', filename='shareprojectwith.js')}}"></script>
-<script src="{{url_for('.static', filename='home.js')}}"></script>
+<script src="{{url_for('.static', filename='easyannohome.js')}}"></script>
 {% endblock %}

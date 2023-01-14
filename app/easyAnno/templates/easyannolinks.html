@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+
+{% block extra_nav %}
+    <ul class="nav navbar-nav">
+        <li><a href="{{ url_for('easyAnno.home') }}">easyAnno Home</a></li>
+        <li><a href="{{ url_for('easyAnno.imageAnno') }}">imageAnno</a></li>
+        <li><a href="{{ url_for('easyAnno.textAnno') }}">textAnno</a></li>
+    </ul>      
+{% endblock %}

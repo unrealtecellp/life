@@ -37,6 +37,7 @@ from app.controller import (
     getcurrentusername,
     getcurrentuserprojects,
     getdbcollections,
+    getprojectsnamebytype,
     getprojecttype,
     readJSONFile,
     savenewproject,
@@ -58,11 +59,16 @@ def home():
     # activeprojectname = userprojects.find_one({ 'username' : current_user.username },\
     #                 {'_id' : 0, 'activeprojectname': 1})['activeprojectname']
     # print(currentuserprojectsname, activeprojectname)
-    userprojects, = getdbcollections.getdbcollections(mongo,
-                                                        'userprojects')
+    projects, userprojects, = getdbcollections.getdbcollections(mongo,
+                                                                'projects',
+                                                                'userprojects')
     current_username = getcurrentusername.getcurrentusername()
     currentuserprojectsname =  getcurrentuserprojects.getcurrentuserprojects(current_username,
                                                                                 userprojects)
+    project_type_list = ['text', 'image']
+    currentuserprojectsname = getprojectsnamebytype.getprojectsnamebytype(projects,
+                                                                            currentuserprojectsname,
+                                                                            project_type_list)
     activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
                                                                     userprojects)
     # projectcompleted = project_comments_stats(currentuserprojectsname)
@@ -96,7 +102,7 @@ def home():
 def checkEmptyRowInID(text_data_df, project_name):
     if(text_data_df["ID"].isnull().any()):
         flash(f'File Name : {project_name}  have empty cell in "ID" column', 'warning')
-        return redirect(url_for('home'))
+        return redirect(url_for('easyAnno.home'))
 
 def userAlreadyAnnotated(project_name):
     textanno = mongo.db.textanno
@@ -104,7 +110,7 @@ def userAlreadyAnnotated(project_name):
     for ann_text in textanno.find({"projectname": project_name},{'_id' : 0, current_user.username: 1}):
         if current_user.username in ann_text.keys():
             flash(f'File Name : {project_name} already exist! and some data already annotated by you', 'warning')
-            return redirect(url_for('home'))
+            return redirect(url_for('easyAnno.home'))
 
 def compareTagSet(project_name, tag_set):
     projects = mongo.db.projects              # collection of users and their respective projects
@@ -116,7 +122,7 @@ def compareTagSet(project_name, tag_set):
     # if difference in both tagset
     if bool(tag_set_differ):
         flash(f'Missing some tags in categories: {list(tag_set_differ.keys())} in tagset file textAnno_tags.tsv', 'warning')
-        return redirect(url_for('home'))
+        return redirect(url_for('easyAnno.home'))
 
 def compareTagSetandFileColumn(text_data_df, tag_set, project_name):
     # check categories in the columns of the file and the tagset tsv file match or not
@@ -128,12 +134,12 @@ def compareTagSetandFileColumn(text_data_df, tag_set, project_name):
         tags_category_mismatch = list(set(uploaded_tagset_category) - set(uploaded_file_columns))
         if (len(tags_category_mismatch) != 0):
             flash(f'Missing categories: {tags_category_mismatch} in your data file: {project_name}.csv', 'warning')
-            return redirect(url_for('home'))
+            return redirect(url_for('easyAnno.home'))
     else:
         tags_category_mismatch = list(set(uploaded_file_columns) - set(uploaded_tagset_category))
         if (len(tags_category_mismatch) != 0):
             flash(f'Missing categories: {tags_category_mismatch} in your tagset file: textAnno_tags.tsv', 'warning')
-            return redirect(url_for('home'))
+            return redirect(url_for('easyAnno.home'))
 
 def checkTextIds(project_name, text_data_df):
     projects = mongo.db.projects              # collection of users and their respective projects
@@ -154,12 +160,12 @@ def checkTextIds(project_name, text_data_df):
         text_ids_mismatch = list(set(existing_text_ids) - set(uploaded_text_ids))
         if (len(text_ids_mismatch)) != 0:
             flash(f'Missing IDs: {text_ids_mismatch} in your data file: {project_name}.csv', 'warning')
-            return redirect(url_for('home'))
+            return redirect(url_for('easyAnno.home'))
     else:
         text_ids_mismatch = list(set(uploaded_text_ids) - set(existing_text_ids))
         if (len(text_ids_mismatch)) != 0:
             flash(f'Extra IDs: {text_ids_mismatch} in your data file: {project_name} compared to one already created', 'warning')
-            return redirect(url_for('home'))    
+            return redirect(url_for('easyAnno.home'))    
     # print(text_ids_mismatch)
 
 def saveNewProjectDetails(project_name, tag_set, text_data, tag_set_meta_data):
@@ -390,27 +396,27 @@ def createAnnotatedTextAnno(zipFile):
                         if projects.find_one({"projectname": project_name}, {'_id' : 0, "projectname": 1}) != None:
                             # check if file already exist then current user hasnt yet annotated any text/comment
                             if userAlreadyAnnotated(project_name):
-                                return redirect(url_for('home'))
+                                return redirect(url_for('easyAnno.home'))
 
                             # check if tag_set is empty
                             if bool(tag_set):
                                 # check if tagset given by user and one saved with the project details match or not
                                 if compareTagSet(project_name, tag_set):
-                                    return redirect(url_for('home'))
+                                    return redirect(url_for('easyAnno.home'))
 
                             text_data_df = pd.read_csv(io.BytesIO(myfile.read()), sep='\t', dtype=str)
 
                             # check if any row in ID column is empty
                             if checkEmptyRowInID(text_data_df, project_name):
-                                return redirect(url_for('home'))
+                                return redirect(url_for('easyAnno.home'))
 
                             # check categories in the columns of the file and the tagset tsv file match or not
                             if compareTagSetandFileColumn(text_data_df, tag_set, project_name):
-                                return redirect(url_for('home'))
+                                return redirect(url_for('easyAnno.home'))
 
                             # check the IDs in the uploaded file and the existing file match or not
                             if checkTextIds(project_name, text_data_df):
-                                return redirect(url_for('home'))
+                                return redirect(url_for('easyAnno.home'))
                             
                             
                             # when project/filename exist and all checks are passed
@@ -423,9 +429,9 @@ def createAnnotatedTextAnno(zipFile):
                             # print(text_data_df.head())
                             # check if any row in ID column is empty
                             if checkEmptyRowInID(text_data_df, project_name):
-                                return redirect(url_for('home'))
+                                return redirect(url_for('easyAnno.home'))
                             if compareTagSetandFileColumn(text_data_df, tag_set, project_name):
-                                return redirect(url_for('home'))
+                                return redirect(url_for('easyAnno.home'))
                             text_data = saveAnnotatedData(project_name, text_data_df)
                             saveNewProjectDetails(project_name, tag_set, text_data, tag_set_meta_data)
         
@@ -433,11 +439,11 @@ def createAnnotatedTextAnno(zipFile):
         # flash('Please check the imageAnno_tags.tsv file format!')
         flash('Please upload a zip file. Check the file format at the link provided for the Sample File', 'warning')
 
-        return redirect(url_for('home'))
+        return redirect(url_for('easyAnno.home'))
 
     flash('File created successfully :)', 'success')
 
-    return redirect(url_for('home'))
+    return redirect(url_for('easyAnno.home'))
 
 def createTextAnno(zipFile):
     projects = mongo.db.projects              # collection of users and their respective projects
@@ -487,7 +493,7 @@ def createTextAnno(zipFile):
                     existing_projects.append(project_name)
             if (len(existing_projects) > 0):
                 flash(f'File Name : {", ".join(existing_projects)} already exist!', 'warning')
-                return redirect(url_for('home'))
+                return redirect(url_for('easyAnno.home'))
 
             for file_name in myzip.namelist():    
                 # print(tag_set)
@@ -505,22 +511,22 @@ def createTextAnno(zipFile):
                             # for ann_text in textanno.find({"projectname": project_name},{'_id' : 0, current_user.username: 1}):
                             #     print(current_user.username in ann_text.keys())
                             flash(f'File Name : {project_name} already exist!', 'warning')
-                            return redirect(url_for('home'))
+                            return redirect(url_for('easyAnno.home'))
 
                         text_data_df = pd.read_csv(io.BytesIO(myfile.read()), sep='\t', dtype=str)
                         df_header = list(text_data_df.columns)
                         if ('ID' not in df_header):
                             # print(df_header)
                             flash(f'File Name : {project_name} do not have "ID" as column header', 'warning')
-                            return redirect(url_for('home'))
+                            return redirect(url_for('easyAnno.home'))
                         if ('Text' not in df_header):
                             # print(df_header)
                             flash(f'File Name : {project_name} do not have "Text" as column header', 'warning')
-                            return redirect(url_for('home'))    
+                            return redirect(url_for('easyAnno.home'))    
 
                         if(text_data_df["ID"].isnull().any()):
                             flash(f'File Name : {project_name}  have empty cell in "ID" column', 'warning')
-                            return redirect(url_for('home'))
+                            return redirect(url_for('easyAnno.home'))
 
                         # print(text_data_df.head())
                         for i in range(len(text_data_df)): 
@@ -580,12 +586,12 @@ def createTextAnno(zipFile):
     except:
         flash('Please upload a zip file. Check the file format at the link provided for the Sample File', 'warning')
 
-        return redirect(url_for('home'))
+        return redirect(url_for('easyAnno.home'))
 
     flash('File created successfully :)', 'success')
 
     # return render_template('home.html',  data=currentuserprojectsname, activeproject=activeprojectname)
-    return redirect(url_for('home'))
+    return redirect(url_for('easyAnno.home'))
 
 def createImageAnno(zipFile, proj_name):
     projects = mongo.db.projects              # collection of users and their respective projects
@@ -608,7 +614,7 @@ def createImageAnno(zipFile, proj_name):
                         project_name = proj_name
                         if projects.find_one({"projectname": project_name}, {'_id' : 0, "projectname": 1}) != None:
                             flash(f'File Name : {project_name} already exist!', 'warning')
-                            return redirect(url_for('home'))
+                            return redirect(url_for('easyAnno.home'))
 
                         image_anno_detail = {}
                         image_id = 'I'+re.sub(r'[-: \.]', '', str(datetime.now()))
@@ -667,12 +673,12 @@ def createImageAnno(zipFile, proj_name):
         # flash('Please upload a zip file') 
         flash('Please upload a zip file. Check the file format at the link provided for the Sample File', 'warning')
 
-        return redirect(url_for('home'))   
+        return redirect(url_for('easyAnno.home'))   
 
     flash('File created successfully :)', 'success')
 
     # return render_template('home.html',  data=currentuserprojectsname, activeproject=activeprojectname)
-    return redirect(url_for('home'))
+    return redirect(url_for('easyAnno.home'))
 
 @easyAnno.route('/textAnno', methods=['GET', 'POST'])
 @login_required
@@ -692,14 +698,14 @@ def textAnno():
         # print("my_projects shared_projects", my_projects, shared_projects)
         if  (my_projects+shared_projects)== 0:
             flash('Please create your first project', 'info')
-            return redirect(url_for('home'))
+            return redirect(url_for('easyAnno.home'))
         elif (my_projects == 0 and shared_projects >= 1 and activeprojectname == ""):
             flash('Please select your file from All Files', 'info')
-            return redirect(url_for('home'))    
+            return redirect(url_for('easyAnno.home'))    
     except:
         # print(f'{"#"*80}\nCurrent user details not in database!!!')
         flash('Please create your first project', 'info')
-        return redirect(url_for('home'))
+        return redirect(url_for('easyAnno.home'))
 
     project_details = projects.find_one({"projectname": activeprojectname}, \
                                         {"_id": 0, "projectType": 1, "tagSet": 1, "lastActiveId": 1})
@@ -707,7 +713,7 @@ def textAnno():
         # print(project_details)
         if (project_details["projectType"] != "text"):
             flash("Active file is 'image' type. Plese select 'text' file to annotate.", 'info')
-            return redirect(url_for('home'))
+            return redirect(url_for('easyAnno.home'))
 
         last_active_id = project_details["lastActiveId"][current_user.username]
         # print(project_details["textData"][last_active_id])
@@ -989,7 +995,7 @@ def imageAnno():
     
     # if (len(activeprojectname) == 0):
     #     flash('Please select your file from All Files')
-    #     return redirect(url_for('home'))
+    #     return redirect(url_for('easyAnno.home'))
 
     # get all the data for active project
     try:
@@ -998,14 +1004,14 @@ def imageAnno():
         # print("my_projects shared_projects", my_projects, shared_projects)
         if  (my_projects+shared_projects)== 0:
             flash('Please create your first project', 'info')
-            return redirect(url_for('home'))
+            return redirect(url_for('easyAnno.home'))
         elif (my_projects == 0 and shared_projects >= 1 and activeprojectname == ""):
             flash('Please select your file from All Files', 'info')
-            return redirect(url_for('home'))    
+            return redirect(url_for('easyAnno.home'))    
     except:
         # print(f'{"#"*80}\nCurrent user details not in database!!!')
         flash('Please create your first project', 'info')
-        return redirect(url_for('home'))
+        return redirect(url_for('easyAnno.home'))
 
     project_details = projects.find_one({"projectname": activeprojectname}, \
                                         {"_id": 0, "projectType": 1, "tagSet": 1, "lastActiveId": 1})
@@ -1013,7 +1019,7 @@ def imageAnno():
         # print(project_details)
         if (project_details["projectType"] != "image"):
             flash("Active file is 'text' type. Plese select 'image' file to annotate.", 'info')
-            return redirect(url_for('home'))
+            return redirect(url_for('easyAnno.home'))
 
         last_active_id = project_details["lastActiveId"][current_user.username]
         # print(project_details["textData"][last_active_id])
@@ -1307,7 +1313,7 @@ def activeprojectname():
 #     # userlogin = mongo.db.userlogin                          # collection of users and their login details
 #     dummyUserandProject()
 #     if current_user.is_authenticated:
-#         return redirect(url_for('home'))
+#         return redirect(url_for('easyAnno.home'))
 #     form = UserLoginForm()
 #     if form.validate_on_submit():
 #         # username = userlogin.find_one({"username": form.username.data})
@@ -1329,9 +1335,9 @@ def activeprojectname():
 # def logout():
 #     try:
 #         logout_user()
-#         return redirect(url_for('home'))
+#         return redirect(url_for('easyAnno.home'))
 #     except:
-#         return redirect(url_for('home'))    
+#         return redirect(url_for('easyAnno.home'))    
 
 # # MongoDB Database
 # # new user registration
@@ -1341,7 +1347,7 @@ def activeprojectname():
 #     dummyUserandProject()
 #     if current_user.is_authenticated:
 #         # print(current_user.get_id())
-#         return redirect(url_for('home'))
+#         return redirect(url_for('easyAnno.home'))
 #     form = RegistrationForm()
 #     if form.validate_on_submit():
 #         # user = UserLogin(username=form.username.data)
@@ -2064,7 +2070,7 @@ def downloadallusersallannotationfiles():
 
     else:
         print('You are not ritesh or siddharth :(', current_user.username)
-        return redirect(url_for('home'))
+        return redirect(url_for('easyAnno.home'))
 
 
 @easyAnno.route('/downloadoneuserallannotatedfiles/<username>')
@@ -2205,7 +2211,7 @@ def downloadoneuserallannotatedfiles(username):
         return send_file('../download.zip', as_attachment=True)
     else:
         print('You are not ritesh or ComMA :(', current_user.username)
-        return redirect(url_for('home'))
+        return redirect(url_for('easyAnno.home'))
 
 def get_file_data(db, file_name, file_type, username):
     '''
