@@ -6,7 +6,7 @@ function imageJS(projData) {
     accessedOnTime = projData["accessedOnTime"]
     currentUser = projData['currentUser']
     inpt += '<span class="imageFormAlert"></span><div class="row">'+
-            '<form name="saveimageanno" class="form-horizontal" action="/saveimageAnno" method="POST" onsubmit="return imagevalidateForm()">'+
+            '<form name="saveimageanno" class="form-horizontal" action="/easyAnno/saveimageAnno" method="POST" onsubmit="return imagevalidateForm()">'+
             '<div class="col-sm-6">'+
             '<input type="hidden" id="accessedOnTime" name="accessedOnTime" value="'+accessedOnTime+'">'+
             '<input type="hidden" id="lastActiveId" name="lastActiveId" value="'+lastActiveId+'">'+

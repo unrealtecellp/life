@@ -6,7 +6,7 @@ function myFunction(projData) {
     accessedOnTime = projData["accessedOnTime"]
     currentUser = projData['currentUser']
     inpt += '<span class="textFormAlert"></span><div class="row">'+
-            '<form name="savetextanno" class="form-horizontal" action="/savetextAnno" method="POST" onsubmit="return validateForm()">'+
+            '<form name="savetextanno" class="form-horizontal" action="/easyAnno/savetextAnno" method="POST" onsubmit="return validateForm()">'+
             '<div class="col-sm-6">';
     inpt += '<input type="hidden" id="accessedOnTime" name="accessedOnTime" value="'+accessedOnTime+'">'+
             '<input type="hidden" id="lastActiveId" name="lastActiveId" value="'+lastActiveId+'">'+

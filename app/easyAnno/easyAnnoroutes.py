@@ -71,8 +71,8 @@ def home():
                                                                             project_type_list)
     activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
                                                                     userprojects)
-    # projectcompleted = project_comments_stats(currentuserprojectsname)
-    projectcompleted = {'danger': 14, 'warning': 6, 'success': 1}
+    projectcompleted = project_comments_stats(currentuserprojectsname)
+    # projectcompleted = {'danger': 14, 'warning': 6, 'success': 1}
 
     if request.method == 'POST':
 
@@ -446,13 +446,27 @@ def createAnnotatedTextAnno(zipFile):
     return redirect(url_for('easyAnno.home'))
 
 def createTextAnno(zipFile):
-    projects = mongo.db.projects              # collection of users and their respective projects
-    userprojects = mongo.db.userprojects              # collection of users and their respective projects
-    textanno = mongo.db.textanno
+    # projects = mongo.db.projects              # collection of users and their respective projects
+    # userprojects = mongo.db.userprojects              # collection of users and their respective projects
+    # textanno = mongo.db.textanno
     
-    currentuserprojectsname =  sorted(list(currentuserprojects()))
-    activeprojectname = userprojects.find_one({ 'username' : current_user.username },\
-                    {'_id' : 0, 'activeprojectname': 1})['activeprojectname']
+    # currentuserprojectsname =  sorted(list(currentuserprojects()))
+    # activeprojectname = userprojects.find_one({ 'username' : current_user.username },\
+    #                 {'_id' : 0, 'activeprojectname': 1})['activeprojectname']
+
+    projects, userprojects, textanno = getdbcollections.getdbcollections(mongo,
+                                                                'projects',
+                                                                'userprojects',
+                                                                'textanno')
+    current_username = getcurrentusername.getcurrentusername()
+    currentuserprojectsname =  getcurrentuserprojects.getcurrentuserprojects(current_username,
+                                                                                userprojects)
+    project_type_list = ['text', 'image']
+    currentuserprojectsname = getprojectsnamebytype.getprojectsnamebytype(projects,
+                                                                            currentuserprojectsname,
+                                                                            project_type_list)
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                    userprojects)
 
     # print(type(zipFile))
     # print(zipFile)
@@ -576,11 +590,16 @@ def createTextAnno(zipFile):
 
                 projects.insert_one(project_details)
                 # get curent user project list and update
-                userprojectnamelist = userprojects.find_one({'username' : current_user.username})["myproject"]
-                # print(f'{"#"*80}\n{userprojectnamelist}')
-                userprojectnamelist.append(project_details['projectName'])
-                userprojects.update_one({ 'username' : current_user.username }, \
-                    { '$set' : { 'myproject' : userprojectnamelist, 'activeprojectname' :  project_details['projectName']}})
+                # userprojectnamelist = userprojects.find_one({'username' : current_user.username})["myproject"]
+                # # print(f'{"#"*80}\n{userprojectnamelist}')
+                # userprojectnamelist.append(project_details['projectName'])
+                # userprojects.update_one({ 'username' : current_user.username }, \
+                #     { '$set' : { 'myproject' : userprojectnamelist, 'activeprojectname' :  project_details['projectName']}})
+                projectname = project_details['projectname']
+                updateuserprojects.updateuserprojects(userprojects,
+                                                projectname,
+                                                current_username
+                                                )
 
                 # print(project_details)   
     except:
@@ -1283,13 +1302,13 @@ def currentuserprojects():
 
     # print(f'{"#"*80}\n{current_user.username}')
     userprojectsname = []
-    try:
-        userprojects  = userprojects.find_one({ 'username' : current_user.username })
-        myproject = userprojects['myproject']
-        projectsharedwithme = userprojects['projectsharedwithme']
-        userprojectsname = set(myproject + projectsharedwithme)
-    except:
-        flash('Please create your first project.', 'info')
+    # try:
+    userprojects  = userprojects.find_one({ 'username' : current_user.username })
+    myproject = userprojects['myproject']
+    projectsharedwithme = userprojects['projectsharedwithme']
+    userprojectsname = set(myproject + projectsharedwithme)
+    # except:
+        # flash('Please create your first project.', 'info')
 
     # print(f'{"#"*80}\n{userprojectsname}')
     
@@ -2230,3 +2249,13 @@ def get_file_data(db, file_name, file_type, username):
                         { "_id": 0, "imageId": 1, "filename": 1, username: 1 })
 
     return file_detail
+
+@easyAnno.route('/browse', methods=['GET', 'POST'])
+@login_required
+def browse():
+    return redirect(url_for('easyAnno.home'))
+
+@easyAnno.route('/multimediaAnno', methods=['GET', 'POST'])
+@login_required
+def multimediaAnno():
+    return redirect(url_for('easyAnno.home'))

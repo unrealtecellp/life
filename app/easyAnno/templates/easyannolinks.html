@@ -3,7 +3,9 @@
 {% block extra_nav %}
     <ul class="nav navbar-nav">
         <li><a href="{{ url_for('easyAnno.home') }}">easyAnno Home</a></li>
-        <li><a href="{{ url_for('easyAnno.imageAnno') }}">imageAnno</a></li>
         <li><a href="{{ url_for('easyAnno.textAnno') }}">textAnno</a></li>
+        <li><a href="{{ url_for('easyAnno.imageAnno') }}">imageAnno</a></li>
+        <!-- <li><a href="{{ url_for('easyAnno.multimediaAnno') }}">multimediaAnno</a></li> -->
+        <li><a href="{{ url_for('easyAnno.browse') }}">Browse</a></li>
     </ul>      
 {% endblock %}
