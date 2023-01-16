@@ -242,3 +242,9 @@ easyAnno
 --------------------------------------------------------------
 - browse page
 - download questionnaire button access
+- PACKAGES
+    - pip - https://pip.pypa.io/en/stable/user_guide/
+    - pip install xlsxwriter
+    - pip install ffmpeg-python - https://github.com/kkroening/ffmpeg-python
+    - install ffmpeg in ubuntu
+    - pip install openpyxl

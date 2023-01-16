@@ -702,13 +702,26 @@ def createImageAnno(zipFile, proj_name):
 @easyAnno.route('/textAnno', methods=['GET', 'POST'])
 @login_required
 def textAnno():
-    projects = mongo.db.projects              # collection of users and their respective projects
-    userprojects = mongo.db.userprojects              # collection of users and their respective projects
-    textanno = mongo.db.textanno
+    # projects = mongo.db.projects              # collection of users and their respective projects
+    # userprojects = mongo.db.userprojects              # collection of users and their respective projects
+    # textanno = mongo.db.textanno
     
-    currentuserprojectsname =  sorted(list(currentuserprojects()))
-    activeprojectname = userprojects.find_one({ 'username' : current_user.username },\
-                    {'_id' : 0, 'activeprojectname': 1})['activeprojectname']
+    # currentuserprojectsname =  sorted(list(currentuserprojects()))
+    # activeprojectname = userprojects.find_one({ 'username' : current_user.username },\
+    #                 {'_id' : 0, 'activeprojectname': 1})['activeprojectname']
+    projects, userprojects, textanno = getdbcollections.getdbcollections(mongo,
+                                                                'projects',
+                                                                'userprojects',
+                                                                'textanno')
+    current_username = getcurrentusername.getcurrentusername()
+    currentuserprojectsname =  getcurrentuserprojects.getcurrentuserprojects(current_username,
+                                                                                userprojects)
+    project_type_list = ['text']
+    currentuserprojectsname = getprojectsnamebytype.getprojectsnamebytype(projects,
+                                                                            currentuserprojectsname,
+                                                                            project_type_list)
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                    userprojects)
         
     # get all the data for active project
     try:
@@ -849,7 +862,7 @@ def savetextAnno():
                 projects.update_one({"projectname": activeprojectname}, \
                                     { '$set' : { 'lastActiveId.'+current_user.username: nextId }})
                 # print('matchedddddddddddddddddddddddd')
-                return redirect(url_for('textAnno'))
+                return redirect(url_for('easyAnno.textAnno'))
 
             lastUpdatedBy = current_user.username
 
@@ -890,23 +903,37 @@ def savetextAnno():
         projects.update_one({"projectname": activeprojectname}, \
                             { '$set' : { 'lastActiveId.'+current_user.username: nextId }})
 
-        return redirect(url_for('textAnno'))
+        return redirect(url_for('easyAnno.textAnno'))
 
-    return redirect(url_for('textAnno'))
+    return redirect(url_for('easyAnno.textAnno'))
 
 @easyAnno.route('/loadprevioustext', methods=['GET'])
 @login_required
 def loadprevioustext():
-    projects = mongo.db.projects              # collection of users and their respective projects
-    userprojects = mongo.db.userprojects              # collection of users and their respective projects
-    textanno = mongo.db.textanno
+    # projects = mongo.db.projects              # collection of users and their respective projects
+    # userprojects = mongo.db.userprojects              # collection of users and their respective projects
+    # textanno = mongo.db.textanno
 
-    currentuserprojectsname =  sorted(list(currentuserprojects()))
-    activeprojectname = userprojects.find_one({ 'username' : current_user.username },\
-                    {'_id' : 0, 'activeprojectname': 1})['activeprojectname']
+    # currentuserprojectsname =  sorted(list(currentuserprojects()))
+    # activeprojectname = userprojects.find_one({ 'username' : current_user.username },\
+    #                 {'_id' : 0, 'activeprojectname': 1})['activeprojectname']
     # print(currentuserprojectsname, activeprojectname)
 
     # print(f'{"="*80}\nPrevious\n{"="*80}')
+
+    projects, userprojects, textanno = getdbcollections.getdbcollections(mongo,
+                                                                'projects',
+                                                                'userprojects',
+                                                                'textanno')
+    current_username = getcurrentusername.getcurrentusername()
+    currentuserprojectsname =  getcurrentuserprojects.getcurrentuserprojects(current_username,
+                                                                                userprojects)
+    project_type_list = ['text']
+    currentuserprojectsname = getprojectsnamebytype.getprojectsnamebytype(projects,
+                                                                            currentuserprojectsname,
+                                                                            project_type_list)
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                    userprojects)
 
     lastActiveId = request.args.get('data')
     lastActiveId = eval(lastActiveId)
@@ -924,23 +951,37 @@ def loadprevioustext():
     #     print(previousText)
     #     # return render_template('textAnno.html', projectName=activeprojectname, proj_data=project_details, data=currentuserprojectsname)
     # else:
-    #     return redirect(url_for('textAnno'))
+    #     return redirect(url_for('easyAnno.textAnno'))
 
-    return redirect(url_for('textAnno'))
+    return redirect(url_for('easyAnno.textAnno'))
 
 @easyAnno.route('/loadnexttext', methods=['GET'])
 @login_required
 def loadnexttext():
-    projects = mongo.db.projects              # collection of users and their respective projects
-    userprojects = mongo.db.userprojects              # collection of users and their respective projects
-    textanno = mongo.db.textanno
+    # projects = mongo.db.projects              # collection of users and their respective projects
+    # userprojects = mongo.db.userprojects              # collection of users and their respective projects
+    # textanno = mongo.db.textanno
 
-    currentuserprojectsname =  sorted(list(currentuserprojects()))
-    activeprojectname = userprojects.find_one({ 'username' : current_user.username },\
-                    {'_id' : 0, 'activeprojectname': 1})['activeprojectname']
+    # currentuserprojectsname =  sorted(list(currentuserprojects()))
+    # activeprojectname = userprojects.find_one({ 'username' : current_user.username },\
+    #                 {'_id' : 0, 'activeprojectname': 1})['activeprojectname']
     # print(currentuserprojectsname, activeprojectname)
 
     # print(f'{"="*80}\nNext\n{"="*80}')
+    projects, userprojects, textanno = getdbcollections.getdbcollections(mongo,
+                                                                'projects',
+                                                                'userprojects',
+                                                                'textanno')
+    current_username = getcurrentusername.getcurrentusername()
+    currentuserprojectsname =  getcurrentuserprojects.getcurrentuserprojects(current_username,
+                                                                                userprojects)
+    project_type_list = ['text']
+    currentuserprojectsname = getprojectsnamebytype.getprojectsnamebytype(projects,
+                                                                            currentuserprojectsname,
+                                                                            project_type_list)
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                    userprojects)
+        
 
     lastActiveId = request.args.get('data')
     lastActiveId = eval(lastActiveId)
@@ -958,22 +999,36 @@ def loadnexttext():
     #     print(nextText)
     #     # return render_template('textAnno.html', projectName=activeprojectname, proj_data=project_details, data=currentuserprojectsname)
     # else:
-    #     return redirect(url_for('textAnno'))
+    #     return redirect(url_for('easyAnno.textAnno'))
 
-    return redirect(url_for('textAnno')) 
+    return redirect(url_for('easyAnno.textAnno')) 
 
 @easyAnno.route('/loadunannotext', methods=['GET'])
 @login_required
 def loadunannotext():
-    projects = mongo.db.projects              # collection of users and their respective projects
-    userprojects = mongo.db.userprojects              # collection of users and their respective projects
-    textanno = mongo.db.textanno
+    # projects = mongo.db.projects              # collection of users and their respective projects
+    # userprojects = mongo.db.userprojects              # collection of users and their respective projects
+    # textanno = mongo.db.textanno
 
-    currentuserprojectsname =  sorted(list(currentuserprojects()))
-    activeprojectname = userprojects.find_one({ 'username' : current_user.username },\
-                    {'_id' : 0, 'activeprojectname': 1})['activeprojectname']
-    # print(currentuserprojectsname, activeprojectname)
+    # currentuserprojectsname =  sorted(list(currentuserprojects()))
+    # activeprojectname = userprojects.find_one({ 'username' : current_user.username },\
+    #                 {'_id' : 0, 'activeprojectname': 1})['activeprojectname']
+    # # print(currentuserprojectsname, activeprojectname)
 
+    projects, userprojects, textanno = getdbcollections.getdbcollections(mongo,
+                                                                'projects',
+                                                                'userprojects',
+                                                                'textanno')
+    current_username = getcurrentusername.getcurrentusername()
+    currentuserprojectsname =  getcurrentuserprojects.getcurrentuserprojects(current_username,
+                                                                                userprojects)
+    project_type_list = ['text']
+    currentuserprojectsname = getprojectsnamebytype.getprojectsnamebytype(projects,
+                                                                            currentuserprojectsname,
+                                                                            project_type_list)
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                    userprojects)
+        
     project_type = projects.find_one({"projectname": activeprojectname}, \
                     {"_id": 0, "projectType": 1})["projectType"]
 
@@ -987,9 +1042,9 @@ def loadunannotext():
                         { '$set' : { 'lastActiveId.'+current_user.username: lastActiveId }})
 
     if (project_type == 'text'):
-        return redirect(url_for('textAnno'))
+        return redirect(url_for('easyAnno.textAnno'))
     elif (project_type == 'image'):
-        return redirect(url_for('imageAnno'))    
+        return redirect(url_for('easyAnno.imageAnno'))    
 
 @easyAnno.route('/imageAnno', methods=['GET', 'POST'])
 @login_required
@@ -1004,17 +1059,31 @@ def imageAnno():
     # return render_template('imageAnno.html')
 
 
-    projects = mongo.db.projects              # collection of users and their respective projects
-    userprojects = mongo.db.userprojects              # collection of users and their respective projects
-    imageanno = mongo.db.imageanno
+    # projects = mongo.db.projects              # collection of users and their respective projects
+    # userprojects = mongo.db.userprojects              # collection of users and their respective projects
+    # imageanno = mongo.db.imageanno
     
-    currentuserprojectsname =  sorted(list(currentuserprojects()))
-    activeprojectname = userprojects.find_one({ 'username' : current_user.username },\
-                    {'_id' : 0, 'activeprojectname': 1})['activeprojectname']
+    # currentuserprojectsname =  sorted(list(currentuserprojects()))
+    # activeprojectname = userprojects.find_one({ 'username' : current_user.username },\
+    #                 {'_id' : 0, 'activeprojectname': 1})['activeprojectname']
     
     # if (len(activeprojectname) == 0):
     #     flash('Please select your file from All Files')
     #     return redirect(url_for('easyAnno.home'))
+
+    projects, userprojects, imageanno = getdbcollections.getdbcollections(mongo,
+                                                                'projects',
+                                                                'userprojects',
+                                                                'imageanno')
+    current_username = getcurrentusername.getcurrentusername()
+    currentuserprojectsname =  getcurrentuserprojects.getcurrentuserprojects(current_username,
+                                                                                userprojects)
+    project_type_list = ['text']
+    currentuserprojectsname = getprojectsnamebytype.getprojectsnamebytype(projects,
+                                                                            currentuserprojectsname,
+                                                                            project_type_list)
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                    userprojects)
 
     # get all the data for active project
     try:
@@ -1172,7 +1241,7 @@ def saveimageAnno():
                 not bool(diff(currentAnnotatorTags, once_annotated[current_user.username])):
                 projects.update_one({"projectname": activeprojectname}, \
                                     { '$set' : { 'lastActiveId.'+current_user.username : nextId }})
-                return redirect(url_for('imageAnno'))
+                return redirect(url_for('easyAnno.imageAnno'))
 
             lastUpdatedBy = current_user.username
 
@@ -1221,23 +1290,38 @@ def saveimageAnno():
         projects.update_one({"projectname": activeprojectname}, \
                             { '$set' : { 'lastActiveId.'+current_user.username: nextId }})
 
-        return redirect(url_for('imageAnno'))
+        return redirect(url_for('easyAnno.imageAnno'))
 
-    return redirect(url_for('imageAnno'))
+    return redirect(url_for('easyAnno.imageAnno'))
 
 @easyAnno.route('/loadpreviousimage', methods=['GET'])
 @login_required
 def loadpreviousimage():
-    projects = mongo.db.projects              # collection of users and their respective projects
-    userprojects = mongo.db.userprojects              # collection of users and their respective projects
-    imageanno = mongo.db.imageanno
+    # projects = mongo.db.projects              # collection of users and their respective projects
+    # userprojects = mongo.db.userprojects              # collection of users and their respective projects
+    # imageanno = mongo.db.imageanno
 
-    currentuserprojectsname =  sorted(list(currentuserprojects()))
-    activeprojectname = userprojects.find_one({ 'username' : current_user.username },\
-                    {'_id' : 0, 'activeprojectname': 1})['activeprojectname']
+    # currentuserprojectsname =  sorted(list(currentuserprojects()))
+    # activeprojectname = userprojects.find_one({ 'username' : current_user.username },\
+    #                 {'_id' : 0, 'activeprojectname': 1})['activeprojectname']
     # print(currentuserprojectsname, activeprojectname)
 
     # print(f'{"="*80}\nPrevious\n{"="*80}')
+
+    projects, userprojects, imageanno = getdbcollections.getdbcollections(mongo,
+                                                                'projects',
+                                                                'userprojects',
+                                                                'imageanno')
+    current_username = getcurrentusername.getcurrentusername()
+    currentuserprojectsname =  getcurrentuserprojects.getcurrentuserprojects(current_username,
+                                                                                userprojects)
+    project_type_list = ['image']
+    currentuserprojectsname = getprojectsnamebytype.getprojectsnamebytype(projects,
+                                                                            currentuserprojectsname,
+                                                                            project_type_list)
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                    userprojects)
+        
 
     lastActiveId = request.args.get('data')
     lastActiveId = eval(lastActiveId)
@@ -1249,21 +1333,35 @@ def loadpreviousimage():
     projects.update_one({"projectname": activeprojectname}, \
                         { '$set' : { 'lastActiveId.'+current_user.username: previousId }})
 
-    return redirect(url_for('imageAnno'))
+    return redirect(url_for('easyAnno.imageAnno'))
 
 @easyAnno.route('/loadnextimage', methods=['GET'])
 @login_required
 def loadnextimage():
-    projects = mongo.db.projects              # collection of users and their respective projects
-    userprojects = mongo.db.userprojects              # collection of users and their respective projects
-    imageanno = mongo.db.imageanno
+    # projects = mongo.db.projects              # collection of users and their respective projects
+    # userprojects = mongo.db.userprojects              # collection of users and their respective projects
+    # imageanno = mongo.db.imageanno
 
-    currentuserprojectsname =  sorted(list(currentuserprojects()))
-    activeprojectname = userprojects.find_one({ 'username' : current_user.username },\
-                    {'_id' : 0, 'activeprojectname': 1})['activeprojectname']
+    # currentuserprojectsname =  sorted(list(currentuserprojects()))
+    # activeprojectname = userprojects.find_one({ 'username' : current_user.username },\
+    #                 {'_id' : 0, 'activeprojectname': 1})['activeprojectname']
     # print(currentuserprojectsname, activeprojectname)
 
     # print(f'{"="*80}\nNext\n{"="*80}')
+
+    projects, userprojects, imageanno = getdbcollections.getdbcollections(mongo,
+                                                                'projects',
+                                                                'userprojects',
+                                                                'imageanno')
+    current_username = getcurrentusername.getcurrentusername()
+    currentuserprojectsname =  getcurrentuserprojects.getcurrentuserprojects(current_username,
+                                                                                userprojects)
+    project_type_list = ['image']
+    currentuserprojectsname = getprojectsnamebytype.getprojectsnamebytype(projects,
+                                                                            currentuserprojectsname,
+                                                                            project_type_list)
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                    userprojects)
 
     lastActiveId = request.args.get('data')
     lastActiveId = eval(lastActiveId)
@@ -1275,7 +1373,7 @@ def loadnextimage():
     projects.update_one({"projectname": activeprojectname}, \
                         { '$set' : { 'lastActiveId.'+current_user.username: nextId }})
 
-    return redirect(url_for('imageAnno')) 
+    return redirect(url_for('easyAnno.imageAnno')) 
 
 def fetch_image_files(i_id):
     # print(i_id)

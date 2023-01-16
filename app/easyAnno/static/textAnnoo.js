@@ -560,7 +560,7 @@ function validateForm() {
 function previousText() {
     lastActiveId = document.forms["savetextanno"]["lastActiveId"].value
         $.ajax({
-            url: '/loadprevioustext',
+            url: '/easyAnno/loadprevioustext',
             type: 'GET',
             data: {'data': JSON.stringify(lastActiveId)},
             contentType: "application/json; charset=utf-8", 
@@ -574,7 +574,7 @@ function previousText() {
 function nextText() {
     lastActiveId = document.forms["savetextanno"]["lastActiveId"].value
         $.ajax({
-            url: '/loadnexttext',
+            url: '/easyAnno/loadnexttext',
             type: 'GET',
             data: {'data': JSON.stringify(lastActiveId)},
             contentType: "application/json; charset=utf-8", 
@@ -589,7 +589,7 @@ function unAnnotated() {
     unanno = '';
     $('#uNAnnotated').remove();
     $.ajax({
-        url: '/allunannotated',
+        url: '/easyAnno/allunannotated',
         type: 'GET',
         data: {'data': JSON.stringify(unanno)},
         contentType: "application/json; charset=utf-8", 
@@ -619,7 +619,7 @@ function unAnnotated() {
 function loadUnAnnoText() {
     textId = document.getElementById('allunanno').value;
     $.ajax({
-        url: '/loadunannotext',
+        url: '/easyAnno/loadunannotext',
         type: 'GET',
         data: {'data': JSON.stringify(textId)},
         contentType: "application/json; charset=utf-8", 
@@ -633,7 +633,7 @@ function loadUnAnnoText() {
 function loadAnnoText() {
     textId = document.getElementById('allanno').value;
     $.ajax({
-        url: '/loadunannotext',
+        url: '/easyAnno/loadunannotext',
         type: 'GET',
         data: {'data': JSON.stringify(textId)},
         contentType: "application/json; charset=utf-8", 
