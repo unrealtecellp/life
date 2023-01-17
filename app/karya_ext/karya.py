@@ -496,6 +496,7 @@ def homespeaker():
                             data=currentuserprojectsname,
                             projectName=activeprojectname,
                             uploadacesscodemetadata = uploadacesscodemetadata,
+                            projecttype=project_type,
                             data_table= data_table,
                             count=len(data_table)
                             )
