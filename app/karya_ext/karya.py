@@ -178,7 +178,8 @@ def uploadfile():
     return render_template("uploadfile.html",
                             data=currentuserprojectsname,
                             projectName=activeprojectname,
-                            uploadacesscodemetadata=uploadacesscodemetadata)
+                            uploadacesscodemetadata=uploadacesscodemetadata,
+                            projecttype=project_type)
 
 def uploadfilefortranscription(projects, projectsform, project_name):
     langscript = []
