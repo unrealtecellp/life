@@ -598,6 +598,17 @@ def get_fetched_audio_list(accesscode, activeprojectname):
     return fetched_audio_list
 
 
+#update audio metadata in transcription
+def update_audio_metadata_transcription(speakerid, activeprojectname, karya_audio_report):
+    mongodb_info = mongo.db.transcription
+
+    updated_audio_metadata = {"additionalInfo":"", "audio_metadata":{"Karya_verification_metadata": karya_audio_report, "verificationReport": karya_audio_report}}
+
+    audio_metadata_transcription = mongodb_info.update({'projectname': activeprojectname, 'speakerId': speakerid},
+                                                            {"$set": {updated_audio_metadata}}) 
+
+    return audio_metadata_transcription
+
 
 @karya_bp.route('/fetch_karya_audio', methods=['GET', 'POST'])
 def fetch_karya_audio():
@@ -671,7 +682,8 @@ def fetch_karya_audio():
 
         workerId_list = []
         sentence_list = []
-
+        karya_audio_report = []
+##todo : take nreport from karya api 
         micro_task_ids = dict((item['id'], item) for item in r_j["microtasks"])
 
         fileID_list = []
@@ -681,6 +693,7 @@ def fetch_karya_audio():
             
             findWorker_id = micro_task_ids[micro_task_id]["input"]["chain"]
             worker_id = findWorker_id["workerId"]
+            
             # print('worker_id', worker_id, 'for_worker_id', for_worker_id)
             if (worker_id == for_worker_id):
                 workerId_list.append(worker_id)
@@ -690,7 +703,26 @@ def fetch_karya_audio():
 
                 fileID_lists = item['id'] 
                 fileID_list.append(fileID_lists)
-       
+
+                #appending karya report to list
+                karyareport = micro_task_ids[micro_task_id]['input']["data"]['report']
+                karya_audio_report.append(karyareport)
+
+###########################################################################################################
+        #update audio meta data
+        # for workerid in workerId_list:
+        #     audio_metaData = transcriptions.find({'projectname': activeprojectname,
+        #                                             "spekerid": workerid
+        #                                         },
+        #                                         {
+        #                                             '_id': 0,
+        #                                             'audio_metadata': 1
+        #                                         })
+        #     if 'audio_metadata' not in audio_metaData.keys():
+        #         update_audio_metadata_transcription(speakerid, activeprojectname, karya_audio_report)
+#####################################################################################################################
+
+
         fileID_sentence_list = tuple(zip(fileID_list, sentence_list))
         # print(fileID_sentence_list)
 
@@ -713,6 +745,7 @@ def fetch_karya_audio():
                                                                     language,
                                                                     exclude_ids,
                                                                     for_worker_id)
+        
 
         # print(f"LanguageScript: {language}\nExcludeIds: {exclude_ids}\nLENGTH ExcludeIds: {len(exclude_ids)}")
         file_id_list = []
@@ -747,6 +780,8 @@ def fetch_karya_audio():
                         if transcription_audio_id == 'False': 
                             print(f"677: {transcription_audio_id}: {message}: {current_sentence}")
                             continue
+
+
 
                 # if last_active_ques_id == 'False': 
                 #     print(f"{last_active_ques_id}: {message}: {current_sentence}")
@@ -796,6 +831,7 @@ def fetch_karya_audio():
                                                                                     new_audio_file,
                                                                                     karyaSpeakerId=karyaspeakerId
                                                                                 )
+                            ##Todo: provied score                                                    
                             elif (project_type == 'transcriptions'):
                                 if (derive_from_project_type == 'questionnaires'):
                                     save_status = audiodetails.updateaudiofiles(mongo,
@@ -812,6 +848,7 @@ def fetch_karya_audio():
                                                                                         "karyaSpeakerId": karyaspeakerId,
                                                                                         "karyaFetchedAudioId": current_file_id
                                                                                     }
+                                                                                    
                                                                                 )
                                 else:
                                     save_status = audiodetails.saveaudiofiles(mongo,
