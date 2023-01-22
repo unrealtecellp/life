@@ -38,7 +38,7 @@ function createSelectElement(key, elevalue, type, quesdatavalue) {
   }
   
 
-function uploadaccesscodeform(uploadacesscodemetadata) {
+function uploadaccesscodeform(uploadacesscodemetadata, projecttype) {
     // console.log(uploadacesscodemetadata);
     var uploadaccodeform = ''
     for (let [key, value] of Object.entries(uploadacesscodemetadata)) {
@@ -47,6 +47,9 @@ function uploadaccesscodeform(uploadacesscodemetadata) {
             uploadaccodeform += createSelectElement(key, value, '', [])
         }
         else if (key === 'domain') {
+          if (projecttype === 'questionnaires') {
+            value.splice(0, 0, 'all');
+          }
           // console.log(value);
           // value.splice(0, 0, 'all');
           // console.log(value);

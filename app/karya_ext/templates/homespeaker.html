@@ -429,7 +429,7 @@
 <script src="{{url_for('.static', filename='sorttable.js')}}"></script>
 <script src="{{url_for('.static', filename='speaker_select2_dropdown.js')}}"></script>
 <script src="{{url_for('.static', filename='uploadaccesscode.js')}}"></script>
-<script type="text/javascript">uploadaccesscodeform({{ uploadacesscodemetadata | tojson | safe }});</script>
+<script type="text/javascript">uploadaccesscodeform({{ uploadacesscodemetadata | tojson | safe }}, {{ projecttype | tojson | safe }});</script>
 {% endblock %}
 </html>
 
