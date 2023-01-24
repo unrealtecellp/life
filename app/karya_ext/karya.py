@@ -604,7 +604,7 @@ def get_fetched_audio_list(accesscode, activeprojectname):
 def update_audio_metadata_transcription(speakerid, activeprojectname, karya_audio_report):
     mongodb_info = mongo.db.transcription
 
-    updated_audio_metadata = {"additionalInfo":"", "audio_metadata":{"Karya_verification_metadata": karya_audio_report, "verificationReport": karya_audio_report}}
+    updated_audio_metadata = {"additionalInfo":"", "audioMetadata":{"karyaVerificationMetadata": karya_audio_report, "verificationReport": karya_audio_report}}
 
     audio_metadata_transcription = mongodb_info.update({'projectname': activeprojectname, 'speakerId': speakerid},
                                                             {"$set": {updated_audio_metadata}}) 
@@ -711,17 +711,26 @@ def fetch_karya_audio():
                 karya_audio_report.append(karyareport)
 
 ###########################################################################################################
-        #update audio meta data
-        # for workerid in workerId_list:
-        #     audio_metaData = transcriptions.find({'projectname': activeprojectname,
-        #                                             "spekerid": workerid
-        #                                         },
-        #                                         {
-        #                                             '_id': 0,
-        #                                             'audio_metadata': 1
-        #                                         })
-        #     if 'audio_metadata' not in audio_metaData.keys():
-        #         update_audio_metadata_transcription(speakerid, activeprojectname, karya_audio_report)
+        # update audio meta data
+        if (project_type == 'transcriptions'):
+            for workerid in workerId_list:
+                audio_metaData = transcriptions.find({'projectname': activeprojectname,
+                                                        "spekerid": workerid
+                                                    },
+                                                    {
+                                                        '_id': 0,
+                                                        'audioMetadata': 1
+                                                    })
+                if 'audio_metadata' not in audio_metaData.keys():
+                    update_audio_metadata_transcription(workerid, activeprojectname, karya_audio_report)
+                else: 
+                    mongodb_info = mongo.db.transcription
+
+        # updated_audio_metadata = {"additionalInfo":"", "audioMetadata":{"karyaVerificationMetadata": karya_audio_report, "verificationReport": karya_audio_report}}
+
+                    audio_metadata_transcription = mongodb_info.update({'projectname': activeprojectname, 'speakerId': workerid},
+                                                                {"$set": {"audioMetadata":{"karyaVerificationMetadata": karya_audio_report, "verificationReport": karya_audio_report}}}) 
+                    continue
 #####################################################################################################################
 
 
