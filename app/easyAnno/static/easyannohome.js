@@ -38,3 +38,56 @@ function validateForm() {
         }
     }
   }
+
+function createSelectElement(elevalue, activeprojectname) {
+// console.log(activeprojectname)
+var qform = '';
+qform += '<select class="easyannoallfileslistselect" id="easyannoallfileslistselectid" style="width: 100%">';
+qform += '<option selected disabled>Change Active File</option>';
+
+for (let i=0; i<elevalue.length; i++) {
+    eval = elevalue[i]
+    if (activeprojectname.includes(eval)) {
+        qform += '<option value="'+eval+'" selected disabled>'+eval+'</option>';  
+    }
+    else {
+        qform += '<option value="'+eval+'">'+eval+'</option>';
+    }
+}
+qform += '</select></div>';
+
+return qform;
+}
+
+function allFiles(allFilesList) {
+    var projectslist = '';
+    // console.log(allFilesList);
+    projectslist += createSelectElement(allFilesList, []);
+
+    $('#easyannoallfileslist').html(projectslist);
+
+    $('.easyannoallfileslistselect').select2({
+        placeholder: 'select'
+        // data: usersList,
+        // allowClear: true
+    });
+
+    // event fire from thew home page all projects list select element
+    $("#easyannoallfileslistselectid").change(function() {
+        let projectname = document.getElementById('easyannoallfileslistselectid');
+        pname = projectname.value;
+
+        $.ajax({
+        data : {
+            a : pname
+        },
+        type : 'GET',
+        url : '/activeprojectname'
+        }).done(function(){
+            // window.location.reload();
+            loc = window.location.href
+            window.location.assign(loc)
+    
+        });
+    });
+}

@@ -14,7 +14,7 @@ easyAnno Home
   <h2>Easy Annotation Tool<br/>[easyAnno]</h2><hr/>
   <div>
     <div class="row" id="activeProject">
-      <div class="col-sm-7">
+      <div class="col-sm-6">
         <h3>Upload New File</h3>
         
         <!-- form to upload/create new project -->
@@ -36,22 +36,22 @@ easyAnno Home
         <a href="https://drive.google.com/drive/folders/1DoBGyDhjAkyXUdRGPMqXxIaHy8LH5swd?usp=sharing"target="_blank">Sample File</a>
       {# <!-- <br/><br/><hr/> --> #}
     </div>
-    <div class="col-sm-5">
+    <div class="col-sm-6">
+      <div id="easyannoallfileslist"></div>
       {% if data|length > 0 %}
       <h3>Currently Working On: {{ activeproject }}</h3>
       <div>    
           <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myShareProjectModal">
               Share File
           </button>
-          <br>
-          <br>
-          <button type="button" class="btn btn-primary btn-lg" onclick="window.location.href='{{ url_for('easyAnno.downloadannotationfile') }}';">Download Annotation File</button>
+          
+          <button type="button" class="btn btn-primary btn-lg" onclick="window.location.href='{{ url_for('easyAnno.downloadannotationfile') }}';">Download File</button>
       </div>
     </div>
     </div>
     </br><hr/>
     <div id="allProjects">
-     <h3>All Files : {{ data|length }}</h3>
+     {# <h3>All Files : {{ data|length }}</h3>
      <div>
        <span class="completedtext" style="font-size: 12px">Completed : {{ projectcompleted["success"] }}</span><span class="tagcolor box success"></span>
        <span class="completedtext" style="font-size: 12px">In Progress : {{ projectcompleted["warning"] }}</span><span class="tagcolor box warning"></span>
@@ -73,7 +73,7 @@ easyAnno Home
          {% endfor %}
          </tr>
      </tbody>
-     </table>
+     </table> #}
     </div>     
     {% endif %}
     <!-- Share Project Modal -->
@@ -110,7 +110,8 @@ easyAnno Home
 {% block scripts %}
 {{super()}}
 <script src="{{url_for('.static', filename='search.js')}}"></script>
-<script src="{{url_for('.static', filename='shareproject.js')}}"></script>
-<script src="{{url_for('.static', filename='shareprojectwith.js')}}"></script>
+<script src="{{url_for('static', filename='shareproject.js')}}"></script>
+<script src="{{url_for('static', filename='shareprojectwith.js')}}"></script>
 <script src="{{url_for('.static', filename='easyannohome.js')}}"></script>
+<script type="text/javascript">allFiles({{ data | tojson | safe }});</script>
 {% endblock %}

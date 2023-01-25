@@ -56,12 +56,12 @@ function myFunction(projData) {
                         select2Keys.push(key);
                         continue;
                     }
-                    else if (value[0] === 'TEXTAREA') {
-                        // console.log(value[0]);
-                        inpt += '<br><label for="'+key+'">'+key+': </label>'+
-                                '<textarea class="form-control" id="'+key+'" name="'+key+'" rows="5">'+projData[currentUser][key]+'</textarea>';
-                        continue;
-                    }
+                    // else if (value[0] === 'TEXTAREA') {
+                    //     // console.log(value[0]);
+                    //     inpt += '<br><label for="'+key+'">'+key+': </label>'+
+                    //             '<textarea class="form-control" id="'+key+'" name="'+key+'" rows="5">'+projData[currentUser][key]+'</textarea>';
+                    //     continue;
+                    // }
                     dependendTagLabel[key] = 0;
                     inpt += '<br><div class="col '+key+'"><strong>'+key+': </strong>';
                     for (let i=0; i<value.length; i++) {
@@ -72,7 +72,7 @@ function myFunction(projData) {
                             notInDepencyColFLAG = 1;
                             notInDepencyCol = undefined;
                             if (key in projData["tagSetMetaData"]["categoryDependency"]) {
-                                // console.log(key, value[i])
+                                // console.log(key, value[i], projData[currentUser][key])
                                 if (projData[currentUser][key] !== '') {
                                     // delStr = '<strong>'+key+': </strong>';
                                     // inpt = inpt.replace(delStr, '');
@@ -88,12 +88,26 @@ function myFunction(projData) {
                                     }
                                     if (projData[currentUser][key] === value[i]) {
                                         // console.log(key, value[i])
-                                        inpt += '<input class="form-check-input dependentTag '+categoryClass+'" type="radio" name="'+key+'" id="'+value[i]+'" value="'+value[i]+'" checked>'+
-                                                '<label class="form-check-label dependentTag" id="'+value[i]+'Label" for="'+value[i]+'">'+value[i]+'</label>';
+                                        if (value[i] === 'TEXTAREA') {
+                                            inpt += '<textarea class="form-check-input dependentTag '+categoryClass+'" name="'+key+'" id="'+key+'_'+value[i]+'" cols="50">'+projData[currentUser][key]+'</textarea>';
+                                            
+                                        }
+                                        else {
+                                            inpt += '<input class="form-check-input dependentTag '+categoryClass+'" type="radio" name="'+key+'" id="'+value[i]+'" value="'+value[i]+'" checked>'+
+                                                    '<label class="form-check-label dependentTag '+categoryClass+'" id="'+value[i]+'Label" for="'+value[i]+'">'+value[i]+'</label>';
+                                        }
+                                        
                                     }
                                     else {
-                                        inpt += '<input class="form-check-input dependentTag '+categoryClass+'" type="radio" name="'+key+'" id="'+value[i]+'" value="'+value[i]+'">'+
-                                                '<label class="form-check-label dependentTag" id="'+value[i]+'Label" for="'+value[i]+'">'+value[i]+'</label>';
+                                        // console.log(key, value[i]);
+                                        if (value[i] === 'TEXTAREA') {
+                                            inpt += '<textarea class="form-check-input dependentTag '+categoryClass+'" name="'+key+'" id="'+key+'_'+value[i]+'" cols="50">'+projData[currentUser][key]+'</textarea>';
+                                            
+                                        }
+                                        else {
+                                            inpt += '<input class="form-check-input dependentTag '+categoryClass+'" type="radio" name="'+key+'" id="'+value[i]+'" value="'+value[i]+'">'+
+                                                    '<label class="form-check-label dependentTag '+categoryClass+'" id="'+value[i]+'Label" for="'+value[i]+'">'+value[i]+'</label>';
+                                        }
                                     } 
                                 }
                                 else {
@@ -132,12 +146,26 @@ function myFunction(projData) {
                                             dependendTagLabel[key] = 1;
                                         }
                                         if (projData["tagSetMetaData"]["defaultCategoryTags"][key] == value[i]) {
-                                        inpt += '<input class="form-check-input dependentTag '+categoryClass+'" type="radio" name="'+key+'" id="'+value[i]+'" value="'+value[i]+'" checked>'+
-                                                '<label class="form-check-label dependentTag" id="'+value[i]+'Label" for="'+value[i]+'">'+value[i]+'</label>';    
+                                            if (value[i] === 'TEXTAREA') {
+                                                inpt += '<textarea class="form-check-input dependentTag '+categoryClass+'" name="'+key+'" id="'+key+'_'+value[i]+'" cols="50"></textarea>';
+                                                
+                                            }
+                                            else {
+                                                inpt += '<input class="form-check-input dependentTag '+categoryClass+'" type="radio" name="'+key+'" id="'+value[i]+'" value="'+value[i]+'" checked>'+
+                                                '<label class="form-check-label dependentTag '+categoryClass+'" id="'+value[i]+'Label" for="'+value[i]+'">'+value[i]+'</label>';    
+                                            }
+                                        
                                         }
                                         else {
-                                            inpt += '<input class="form-check-input dependentTag '+categoryClass+'" type="radio" name="'+key+'" id="'+value[i]+'" value="'+value[i]+'">'+
-                                                    '<label class="form-check-label dependentTag" id="'+value[i]+'Label" for="'+value[i]+'">'+value[i]+'</label>';
+                                            if (value[i] === 'TEXTAREA') {
+                                                inpt += '<textarea class="form-check-input dependentTag '+categoryClass+'" name="'+key+'" id="'+key+'_'+value[i]+'" cols="50"></textarea>';
+                                                
+                                            }
+                                            else {
+                                                inpt += '<input class="form-check-input dependentTag '+categoryClass+'" type="radio" name="'+key+'" id="'+value[i]+'" value="'+value[i]+'">'+
+                                                    '<label class="form-check-label dependentTag '+categoryClass+'" id="'+value[i]+'Label" for="'+value[i]+'">'+value[i]+'</label>';
+                                            }
+                                            
                                         }
                                     }
                                     else {
@@ -147,12 +175,26 @@ function myFunction(projData) {
                                         }
                                         if (projData["tagSetMetaData"]["defaultCategoryTags"][key] == value[i]) {
                                             // console.log(key, value[i])
-                                            inpt += '<input class="form-check-input dependentTag '+categoryClass+'" type="radio" name="'+key+'" id="'+value[i]+'" value="'+value[i]+'" checked disabled hidden>'+
-                                                    '<label class="form-check-label dependentTag" id="'+value[i]+'Label" for="'+value[i]+'" hidden>'+value[i]+'</label>';    
+                                            if (value[i] === 'TEXTAREA') {
+                                                inpt += '<textarea class="form-check-input dependentTag '+categoryClass+'" name="'+key+'" id="'+key+'_'+value[i]+'" cols="50" disabled hidden></textarea>';
+                                                
+                                            }
+                                            else {
+                                                inpt += '<input class="form-check-input dependentTag '+categoryClass+'" type="radio" name="'+key+'" id="'+value[i]+'" value="'+value[i]+'" checked disabled hidden>'+
+                                                    '<label class="form-check-label dependentTag '+categoryClass+'" id="'+value[i]+'Label" for="'+value[i]+'" hidden>'+value[i]+'</label>';    
+                                            }
+                                            
                                             }
                                         else {
-                                            inpt += '<input class="form-check-input dependentTag '+categoryClass+'" type="radio" name="'+key+'" id="'+value[i]+'" value="'+value[i]+'" disabled hidden>'+
-                                                    '<label class="form-check-label dependentTag" id="'+value[i]+'Label" for="'+value[i]+'" hidden>'+value[i]+'</label>';
+                                            if (value[i] === 'TEXTAREA') {
+                                                inpt += '<textarea class="form-check-input dependentTag '+categoryClass+'" name="'+key+'" id="'+key+'_'+value[i]+'" cols="50" disabled hidden></textarea>';
+                                                
+                                            }
+                                            else {
+                                                inpt += '<input class="form-check-input dependentTag '+categoryClass+'" type="radio" name="'+key+'" id="'+value[i]+'" value="'+value[i]+'" disabled hidden>'+
+                                                    '<label class="form-check-label dependentTag '+categoryClass+'" id="'+value[i]+'Label" for="'+value[i]+'" hidden>'+value[i]+'</label>';
+                                            }
+                                            
                                         }
                                     }
                                 }
@@ -195,8 +237,10 @@ function myFunction(projData) {
                                         alert('"=" not in dependency column of the tagset file!')
                                     }
                                 }
+                                // console.log(key, value[i])
                                 // Language
                                 if (categoryClass === undefined && notInDepencyCol === undefined) {
+                                    // console.log(key, value[i])
                                     if (projData[currentUser][key] == value[i]) {
                                         inpt += '<input class="form-check-input" type="radio" name="'+key+'" id="'+value[i]+'" value="'+value[i]+'" checked>'+
                                                 '<label class="form-check-label" for="'+value[i]+'">'+value[i]+'</label>';    
@@ -208,25 +252,40 @@ function myFunction(projData) {
                                 }
                                 // NHUM
                                 else if (categoryClass === undefined && notInDepencyCol !== undefined){
+                                    console.log(key, value[i])
                                     if (projData[currentUser][key] == value[i]) {
-                                        inpt += '<input class="form-check-input" type="radio" name="'+key+'" id="'+value[i]+'" value="'+value[i]+'" checked onclick="hideHideCategory()">'+
-                                            '<label class="form-check-label" for="'+value[i]+'">'+value[i]+'</label>';    
+                                        inpt += '<input class="form-check-input" type="radio" name="'+key+'" id="'+value[i]+'" value="'+value[i]+'" checked onclick="hideHideCategory(this)">'+
+                                                '<label class="form-check-label" for="'+value[i]+'">'+value[i]+'</label>';    
                                     }
                                     else {
-                                        inpt += '<input class="form-check-input" type="radio" name="'+key+'" id="'+value[i]+'" value="'+value[i]+'" onclick="hideHideCategory()">'+
+                                        inpt += '<input class="form-check-input" type="radio" name="'+key+'" id="'+value[i]+'" value="'+value[i]+'" onclick="hideHideCategory(this)">'+
                                                 '<label class="form-check-label" for="'+value[i]+'">'+value[i]+'</label>';
                                     }
 
                                 }
                                 // HUM/PDOW
                                 else if (categoryClass !== undefined){
+                                    // console.log(key, value[i])
                                     if (projData[currentUser][key] == value[i]) {
-                                        inpt += '<input class="form-check-input" type="radio" name="'+key+'" id="'+value[i]+'" value="'+value[i]+'" checked onclick="showHideCategory(\''+categoryClass+'\')">'+
-                                            '<label class="form-check-label" for="'+value[i]+'">'+value[i]+'</label>';    
+                                        // if (key === '01_who2') {
+                                        //     inpt += '<input class="form-check-input" type="checkbox" name="'+value[i]+'" id="'+value[i]+'" value="'+value[i]+'" checked onclick="showHideCategory(\''+categoryClass+'\')">'+
+                                        //         '<label class="form-check-label" for="'+value[i]+'">'+value[i]+'</label>';
+                                        // }
+                                        // else {
+                                            inpt += '<input class="form-check-input" type="radio" name="'+key+'" id="'+value[i]+'" value="'+value[i]+'" checked onclick="showHideCategory(\''+categoryClass+'\')">'+
+                                                '<label class="form-check-label" for="'+value[i]+'">'+value[i]+'</label>';
+                                        // }
+                                        
                                     }
                                     else {
-                                        inpt += '<input class="form-check-input" type="radio" name="'+key+'" id="'+value[i]+'" value="'+value[i]+'" onclick="showHideCategory(\''+categoryClass+'\')">'+
+                                        // if (key === '01_who2') {
+                                        //     inpt += '<input class="form-check-input" type="checkbox" name="'+value[i]+'" id="'+value[i]+'" value="'+value[i]+'" onclick="showHideCategory(\''+categoryClass+'\')">'+
+                                        //         '<label class="form-check-label" for="'+value[i]+'">'+value[i]+'</label>';
+                                        // }
+                                        // else {
+                                            inpt += '<input class="form-check-input" type="radio" name="'+key+'" id="'+value[i]+'" value="'+value[i]+'" onclick="showHideCategory(\''+categoryClass+'\')">'+
                                                 '<label class="form-check-label" for="'+value[i]+'">'+value[i]+'</label>';
+                                        // }
                                     }
                                 }
                             }
@@ -245,11 +304,6 @@ function myFunction(projData) {
                                         '<label class="form-check-label" for="'+value[i]+'">'+value[i]+'</label>';
                             }
                         }
-                        // else if (value[i].includes('TEXTAREA')) {
-                        //     console.log(value[i]);
-                        //     inpt += '<label for="'+key+'">'+key+'</label>'+
-                        //             '<textarea class="form-control" rows="5" id="'+key+'">'+projData[currentUser][key]+'</textarea>';
-                        // }
                         else {
                             inpt += '<input class="form-check-input" type="radio" name="'+key+'" id="'+value[i]+'" value="'+value[i]+'">'+
                                     '<label class="form-check-label" for="'+value[i]+'">'+value[i]+'</label>';
@@ -304,12 +358,12 @@ function myFunction(projData) {
                         select2Keys.push(key);
                         continue;
                     }
-                    else if (value[0] === 'TEXTAREA') {
-                        // console.log(value[0]);
-                        inpt += '<br><label for="'+key+'">'+key+': </label>'+
-                                '<textarea class="form-control" id="'+key+'" name="'+key+'" rows="5"></textarea>';
-                        continue;
-                    }
+                    // else if (value[0] === 'TEXTAREA') {
+                    //     // console.log(value[0]);
+                    //     inpt += '<br><label for="'+key+'">'+key+': </label>'+
+                    //             '<textarea class="form-control" id="'+key+'" name="'+key+'" rows="5"></textarea>';
+                    //     continue;
+                    // }
                     inpt += '<br><div class="col '+key+'"><strong>'+key+': </strong>';
                     for (let i=0; i<value.length; i++) {
                             // Show hide categories
@@ -333,12 +387,24 @@ function myFunction(projData) {
                                 }
 
                                 if (projData["tagSetMetaData"]["defaultCategoryTags"][key] == value[i]) {
-                                    inpt += '<input class="form-check-input dependentTag '+categoryClass+'" type="radio" name="'+key+'" id="'+value[i]+'" value="'+value[i]+'" checked disabled hidden>'+
-                                        '<label class="form-check-label dependentTag" id="'+value[i]+'Label" for="'+value[i]+'" hidden>'+value[i]+'</label>';    
+                                    if (value[i] === 'TEXTAREA') {
+                                        inpt += '<textarea class="form-check-input dependentTag '+categoryClass+'" name="'+key+'" id="'+key+'_'+value[i]+'" cols="50" disabled hidden></textarea>';
+                                        
+                                    }
+                                    else {
+                                        inpt += '<input class="form-check-input dependentTag '+categoryClass+'" type="radio" name="'+key+'" id="'+value[i]+'" value="'+value[i]+'" checked disabled hidden>'+
+                                        '<label class="form-check-label dependentTag '+categoryClass+'" id="'+value[i]+'Label" for="'+value[i]+'" hidden>'+value[i]+'</label>';    
+                                    }
                                 }
                                 else {
-                                    inpt += '<input class="form-check-input dependentTag '+categoryClass+'" type="radio" name="'+key+'" id="'+value[i]+'" value="'+value[i]+'" disabled hidden>'+
-                                            '<label class="form-check-label dependentTag" id="'+value[i]+'Label" for="'+value[i]+'" hidden>'+value[i]+'</label>';
+                                    if (value[i] === 'TEXTAREA') {
+                                        inpt += '<textarea class="form-check-input dependentTag '+categoryClass+'" name="'+key+'" id="'+key+'_'+value[i]+'" cols="50" disabled hidden></textarea>';
+                                        
+                                    }
+                                    else{
+                                        inpt += '<input class="form-check-input dependentTag '+categoryClass+'" type="radio" name="'+key+'" id="'+value[i]+'" value="'+value[i]+'" disabled hidden>'+
+                                            '<label class="form-check-label dependentTag '+categoryClass+'" id="'+value[i]+'Label" for="'+value[i]+'" hidden>'+value[i]+'</label>';
+                                    }
                                 }
                             }
                             else if (!(key in projData["tagSetMetaData"]["categoryDependency"])) {
@@ -401,11 +467,11 @@ function myFunction(projData) {
                                     // console.log(key, value);
                                     // console.log(key, categoryClass, value[i]);
                                     if (projData["tagSetMetaData"]["defaultCategoryTags"][key] == value[i]) {
-                                        inpt += '<input class="form-check-input" type="radio" name="'+key+'" id="'+value[i]+'" value="'+value[i]+'" checked onclick="hideHideCategory()">'+
+                                        inpt += '<input class="form-check-input" type="radio" name="'+key+'" id="'+value[i]+'" value="'+value[i]+'" checked onclick="hideHideCategory(this)">'+
                                             '<label class="form-check-label" for="'+value[i]+'">'+value[i]+'</label>';    
                                     }
                                     else {
-                                        inpt += '<input class="form-check-input" type="radio" name="'+key+'" id="'+value[i]+'" value="'+value[i]+'" onclick="hideHideCategory()">'+
+                                        inpt += '<input class="form-check-input" type="radio" name="'+key+'" id="'+value[i]+'" value="'+value[i]+'" onclick="hideHideCategory(this)">'+
                                                 '<label class="form-check-label" for="'+value[i]+'">'+value[i]+'</label>';
                                     }
 
@@ -645,35 +711,47 @@ function loadAnnoText() {
 }
 
 function showHideCategory(category) {
+    console.log(category);
     if (category === 'undefined'){
         return false;
     }
     
-    for (let [key, value] of Object.entries(document.getElementsByClassName('dependentTag'))) {
-            if (value.hidden === false) {
-                document.getElementById(value.id).hidden = true;
-            }
-            if (value.disabled == false) {    
-                document.getElementById(value.id).disabled = true;
-            }
-    }
+    // for (let [key, value] of Object.entries(document.getElementsByClassName('dependentTag'))) {
+    //         if (value.hidden === false) {
+    //             document.getElementById(value.id).hidden = true;
+    //         }
+    //         if (value.disabled == false) {    
+    //             document.getElementById(value.id).disabled = true;
+    //         }
+    // }
     for (let [key, value] of Object.entries(document.getElementsByClassName(category))) {
+        console.log(value);
         document.getElementById(value.id).hidden = false;
         document.getElementById(value.id).disabled = false;
-        document.getElementById(value.id).nextSibling.hidden = false;
+        // document.getElementById(value.id).nextSibling.hidden = false;
     }    
 
 }
 
 // hide all dependent categories
-function hideHideCategory() {
-    
-    for (let [key, value] of Object.entries(document.getElementsByClassName('dependentTag'))) {
-            if (value.hidden === false) {
-                document.getElementById(value.id).hidden = true;
-            }
-            if (value.disabled == false) {    
-                document.getElementById(value.id).disabled = true;
-            }
-    }
+function hideHideCategory(event) {
+    console.log(event);
+    console.log(event.id);
+    // console.log(category);
+    // if (category === 'undefined'){
+    //     return false;
+    // }
+    // for (let [key, value] of Object.entries(document.getElementsByClassName('dependentTag'))) {
+    //         if (value.hidden === false) {
+    //             document.getElementById(value.id).hidden = true;
+    //         }
+    //         if (value.disabled == false) {    
+    //             document.getElementById(value.id).disabled = true;
+    //         }
+    // }
+    // for (let [key, value] of Object.entries(document.getElementsByClassName(category))) {
+    //     document.getElementById(value.id).hidden = true;
+    //     document.getElementById(value.id).disabled = true;
+    //     document.getElementById(value.id).nextSibling.hidden = true;
+    // }
 }

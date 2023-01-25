@@ -248,3 +248,9 @@ easyAnno
     - pip install ffmpeg-python - https://github.com/kkroening/ffmpeg-python
     - install ffmpeg in ubuntu
     - pip install openpyxl
+
+21 January 2023
+--------------------------------------------------------------
+- textMetaData in easyAnno -textAnno collection
+- audioMetadata in trasnscriptionws collection
+- metaData key in projectsform collection similar to prompt format in the form

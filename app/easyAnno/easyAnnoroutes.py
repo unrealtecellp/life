@@ -46,7 +46,7 @@ from app.controller import (
 
 easyAnno = Blueprint('easyAnno', __name__, template_folder='templates', static_folder='static')
 basedir = os.path.abspath(os.path.dirname(__file__))
-
+project_type_list = ['text', 'image']
 # home page route
 @easyAnno.route('/', methods=['GET', 'POST'])
 @easyAnno.route('/home', methods=['GET', 'POST'])
@@ -73,6 +73,10 @@ def home():
                                                                     userprojects)
     projectcompleted = project_comments_stats(currentuserprojectsname)
     # projectcompleted = {'danger': 14, 'warning': 6, 'success': 1}
+
+    active_project_type = getprojecttype.getprojecttype(projects, activeprojectname)
+    if (active_project_type not in project_type_list):
+        activeprojectname = ''
 
     if request.method == 'POST':
 
@@ -182,8 +186,12 @@ def saveNewProjectDetails(project_name, tag_set, text_data, tag_set_meta_data):
     project_details["tagSetMetaData"] = tag_set_meta_data
     project_details["textData"] = text_data
     project_details["lastActiveId"] = lastActiveId
-    project_details["sharedWith"]  = [project_owner]
+    project_details["sharedwith"]  = [project_owner]
     project_details["projectdeleteFLAG"] = 0
+    project_details["isPublic"] = 0
+    project_details["derivedFromProject"] = []
+    project_details["projectDerivatives"] = []
+    project_details["aboutproject"] = ''
 
     # pprint(project_details)
     # get curent user project list and update
@@ -203,15 +211,15 @@ def updateProjectDetails(project_name, project_shared_with):
     userprojects = mongo.db.userprojects              # collection of users and their respective projects
 
     proj_detail_update = projects.find_one({ "projectname": project_name }, \
-                        { "sharedWith": 1 , "lastActiveId": 1, "textData": 1})
-    shared_with = proj_detail_update["sharedWith"]
+                        { "sharedwith": 1 , "lastActiveId": 1, "textData": 1})
+    shared_with = proj_detail_update["sharedwith"]
     shared_with.append(project_shared_with)
     lastActiveId = proj_detail_update["lastActiveId"]
     lastActiveId[current_user.username] = list(proj_detail_update["textData"].keys())[0]
     
     # print(shared_with, lastActiveId)
     projects.update_one({ "projectname": project_name }, \
-        { '$set' : { 'sharedWith' : list(set(shared_with)), "lastActiveId": lastActiveId}})
+        { '$set' : { 'sharedwith' : list(set(shared_with)), "lastActiveId": lastActiveId}})
     # get curent user project list and update
     userprojectnamelist = userprojects.find_one({'username' : current_user.username})["myproject"]
     # print(f'{"#"*80}\n{userprojectnamelist}')
@@ -499,6 +507,7 @@ def createTextAnno(zipFile):
                         defaultCategoryTags[tags_df.iloc[i, 0]] = re.sub(' ', '', tags_df.iloc[i, 3]).split(',')[0]
                     tag_set_meta_data['categoryDependency'] = categoryDependency
                     tag_set_meta_data['defaultCategoryTags'] = defaultCategoryTags
+                    # tag_set_meta_data['categoryFormType'] = defaultCategoryTags
 
             existing_projects = []
             for file_name in myzip.namelist():
@@ -585,16 +594,20 @@ def createTextAnno(zipFile):
                 project_details["tagSetMetaData"] = tag_set_meta_data
                 project_details["textData"] = text_data
                 project_details["lastActiveId"] = lastActiveId
-                project_details["sharedWith"]  = [project_owner]
+                project_details["sharedwith"]  = [project_owner]
                 project_details["projectdeleteFLAG"] = 0
+                project_details["isPublic"] = 0
+                project_details["derivedFromProject"] = []
+                project_details["projectDerivatives"] = []
+                project_details["aboutproject"] = ''
 
                 projects.insert_one(project_details)
                 # get curent user project list and update
                 # userprojectnamelist = userprojects.find_one({'username' : current_user.username})["myproject"]
                 # # print(f'{"#"*80}\n{userprojectnamelist}')
-                # userprojectnamelist.append(project_details['projectName'])
+                # userprojectnamelist.append(project_details['projectname'])
                 # userprojects.update_one({ 'username' : current_user.username }, \
-                #     { '$set' : { 'myproject' : userprojectnamelist, 'activeprojectname' :  project_details['projectName']}})
+                #     { '$set' : { 'myproject' : userprojectnamelist, 'activeprojectname' :  project_details['projectname']}})
                 projectname = project_details['projectname']
                 updateuserprojects.updateuserprojects(userprojects,
                                                 projectname,
@@ -676,17 +689,21 @@ def createImageAnno(zipFile, proj_name):
         project_details["tagSet"] = tag_set
         project_details["imageFiles"] = image_files
         project_details["lastActiveId"] = lastActiveId
-        project_details["sharedWith"]  = [project_owner]
+        project_details["sharedwith"]  = [project_owner]
         project_details["projectdeleteFLAG"] = 0
+        project_details["isPublic"] = 0
+        project_details["derivedFromProject"] = []
+        project_details["projectDerivatives"] = []
+        project_details["aboutproject"] = ''
 
         # print(project_details)
         projects.insert_one(project_details)
         # get curent user project list and update
         userprojectnamelist = userprojects.find_one({'username' : current_user.username})["myproject"]
         # print(f'{"#"*80}\n{userprojectnamelist}')
-        userprojectnamelist.append(project_details['projectName'])
+        userprojectnamelist.append(project_details['projectname'])
         userprojects.update_one({ 'username' : current_user.username }, \
-            { '$set' : { 'myproject' : userprojectnamelist, 'activeprojectname' :  project_details['projectName']}})
+            { '$set' : { 'myproject' : userprojectnamelist, 'activeprojectname' :  project_details['projectname']}})
 
     except:
         # flash('Please upload a zip file') 
@@ -722,7 +739,9 @@ def textAnno():
                                                                             project_type_list)
     activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
                                                                     userprojects)
-        
+    
+    project_details = projects.find_one({"projectname": activeprojectname},
+                                        {"_id": 0, "projectType": 1, "tagSet": 1, "lastActiveId": 1})
     # get all the data for active project
     try:
         my_projects = len(userprojects.find_one({'username' : current_user.username})["myproject"])
@@ -731,8 +750,11 @@ def textAnno():
         if  (my_projects+shared_projects)== 0:
             flash('Please create your first project', 'info')
             return redirect(url_for('easyAnno.home'))
-        elif (my_projects == 0 and shared_projects >= 1 and activeprojectname == ""):
-            flash('Please select your file from All Files', 'info')
+        elif (my_projects == 0 and
+                shared_projects >= 1 and
+                activeprojectname == "" or
+                project_details["projectType"] not in project_type_list):
+            flash('Please select your file from All Files/Change Active File', 'info')
             return redirect(url_for('easyAnno.home'))    
     except:
         # print(f'{"#"*80}\nCurrent user details not in database!!!')
@@ -746,12 +768,24 @@ def textAnno():
         if (project_details["projectType"] != "text"):
             flash("Active file is 'image' type. Plese select 'text' file to annotate.", 'info')
             return redirect(url_for('easyAnno.home'))
+        last_active_id_user = project_details["lastActiveId"]
+        if (current_username in last_active_id_user):
+            last_active_id = project_details["lastActiveId"][current_user.username]
+        else:
+            if (project_details["projectType"] == 'text'):
+                text_data = projects.find_one({"projectname": activeprojectname}, \
+                                    {"_id" : 0, "textData": 1 })
+            for id in text_data.values():
+                tIds = list(id.keys())
+            tIds = sorted(tIds)
+            last_active_id = tIds[0]
+            projects.update_one({ "projectname": activeprojectname },
+                            { '$set' : { "lastActiveId": {current_username: last_active_id} }})
 
-        last_active_id = project_details["lastActiveId"][current_user.username]
         # print(project_details["textData"][last_active_id])
         # print(last_active_id)
         
-        project_details = projects.find_one({"projectname": activeprojectname}, \
+        project_details = projects.find_one({"projectname": activeprojectname},
             {"_id": 0, "tagSet": 1, "tagSetMetaData": 1, "textData."+last_active_id: 1, "textData": 1})
         # print(project_details)
         total_comments = len(project_details["textData"])
@@ -1094,7 +1128,7 @@ def imageAnno():
             flash('Please create your first project', 'info')
             return redirect(url_for('easyAnno.home'))
         elif (my_projects == 0 and shared_projects >= 1 and activeprojectname == ""):
-            flash('Please select your file from All Files', 'info')
+            flash('Please select your file from All Files/Change Active File', 'info')
             return redirect(url_for('easyAnno.home'))    
     except:
         # print(f'{"#"*80}\nCurrent user details not in database!!!')
@@ -1481,97 +1515,98 @@ def activeprojectname():
 #         return redirect(url_for('login'))
 #     return render_template('register.html', form=form)
 
-@easyAnno.route('/userslist', methods=['GET', 'POST'])
-def userslist():
-    userlogin = mongo.db.userlogin                          # collection of users and their login details
-    projects = mongo.db.projects              # collection of users and their respective projects
-    userprojects = mongo.db.userprojects              # collection of users and their respective projects
+# @easyAnno.route('/userslist', methods=['GET', 'POST'])
+# def userslist():
+#     print('easyAnno userslist')
+#     userlogin = mongo.db.userlogin                          # collection of users and their login details
+#     projects = mongo.db.projects              # collection of users and their respective projects
+#     userprojects = mongo.db.userprojects              # collection of users and their respective projects
 
     
-    activeprojectname = userprojects.find_one({ 'username' : current_user.username },\
-                    {'_id' : 0, 'activeprojectname': 1})['activeprojectname']
+#     activeprojectname = userprojects.find_one({ 'username' : current_user.username },\
+#                     {'_id' : 0, 'activeprojectname': 1})['activeprojectname']
 
-    usersList = []
+#     usersList = []
 
-    proj_shared_with = projects.find({"projectname": activeprojectname}, \
-                        {"_id": 0, "sharedWith": 1})
+#     proj_shared_with = projects.find({"projectname": activeprojectname}, \
+#                         {"_id": 0, "sharedwith": 1})
     
-    for user in userlogin.find({}, {"_id": 0, "username": 1}):
-        # print(user)
-        usersList.append(user["username"])
-        # print(user)
-    # usersList.remove(current_user.username)
-    for sharer in proj_shared_with:
-        sharer  = sharer["sharedWith"]
-        usersList = [i for i in usersList if i not in sharer]
+#     for user in userlogin.find({}, {"_id": 0, "username": 1}):
+#         # print(user)
+#         usersList.append(user["username"])
+#         # print(user)
+#     # usersList.remove(current_user.username)
+#     for sharer in proj_shared_with:
+#         sharer  = sharer["sharedwith"]
+#         usersList = [i for i in usersList if i not in sharer]
         
-    # print(usersList)
-    return jsonify(usersList=usersList)
+#     # print(usersList)
+#     return jsonify(usersList=usersList)
 
-@easyAnno.route('/shareprojectwith', methods=['GET', 'POST'])
-def shareprojectwith():
-    # getting the collections
-    userprojects = mongo.db.userprojects              # collection of users and their respective projects
-    projects = mongo.db.projects              # collection of users and their respective projects
+# @easyAnno.route('/shareprojectwith', methods=['GET', 'POST'])
+# def shareprojectwith():
+#     # getting the collections
+#     userprojects = mongo.db.userprojects              # collection of users and their respective projects
+#     projects = mongo.db.projects              # collection of users and their respective projects
 
-    users = request.args.get('a').split(',')                    # data through ajax
-    # print(users)
-    activeprojectname = userprojects.find_one({ 'username' : current_user.username })['activeprojectname']
-    #get _id and project name in the collection projects
-    activeprojectdetails = projects.find_one({"projectname": activeprojectname}, \
-                            {"_id" : 1, "projectname" : 1, "sharedWith": 1, "projectType": 1, "lastActiveId": 1})
-    # print(activeprojectdetails)
-    project_id = activeprojectdetails["_id"]
-    project_name = activeprojectdetails["projectname"]
-    projectsharedwith = activeprojectdetails["sharedWith"]
-    # # print(activeprojectname)
-    lastActiveId = activeprojectdetails["lastActiveId"]
+#     users = request.args.get('a').split(',')                    # data through ajax
+#     # print(users)
+#     activeprojectname = userprojects.find_one({ 'username' : current_user.username })['activeprojectname']
+#     #get _id and project name in the collection projects
+#     activeprojectdetails = projects.find_one({"projectname": activeprojectname}, \
+#                             {"_id" : 1, "projectname" : 1, "sharedwith": 1, "projectType": 1, "lastActiveId": 1})
+#     # print(activeprojectdetails)
+#     project_id = activeprojectdetails["_id"]
+#     project_name = activeprojectdetails["projectname"]
+#     projectsharedwith = activeprojectdetails["sharedwith"]
+#     # # print(activeprojectname)
+#     lastActiveId = activeprojectdetails["lastActiveId"]
 
-    if (activeprojectdetails["projectType"] == 'text'):
-        text_data = projects.find_one({"projectname": activeprojectname}, \
-                            {"_id" : 0, "textData": 1 })
-    elif (activeprojectdetails["projectType"] == 'image'):
-            text_data = projects.find_one({"projectname": activeprojectname}, \
-                                {"_id" : 0, "imageFiles": 1 }) 
-    for id in text_data.values():
-        tIds = list(id.keys())
-    tIds = sorted(tIds)
-    # print(tIds[0])                          
+#     if (activeprojectdetails["projectType"] == 'text'):
+#         text_data = projects.find_one({"projectname": activeprojectname}, \
+#                             {"_id" : 0, "textData": 1 })
+#     elif (activeprojectdetails["projectType"] == 'image'):
+#             text_data = projects.find_one({"projectname": activeprojectname}, \
+#                                 {"_id" : 0, "imageFiles": 1 }) 
+#     for id in text_data.values():
+#         tIds = list(id.keys())
+#     tIds = sorted(tIds)
+#     # print(tIds[0])                          
     
-    if (len(users[0]) != 0):
-        for user in users:
-            # get list of projects shared with the user
-            usershareprojectsname = userprojects.find_one({ 'username' : user })['projectsharedwithme']
-            myproject = userprojects.find_one({ 'username' : user })['myproject']
-            # print(myproject, usershareprojectsname)
-            if (activeprojectname in usershareprojectsname or \
-                activeprojectname in myproject):
-                # print("=====================================================================$%$%$%$%$%$%$%")
-                continue
-            # update list of projects shared with the user
-            usershareprojectsname.append(activeprojectname)
-            usershareprojectsname = list(set(usershareprojectsname))
-            # update list of projects shared with the user in collection
-            userprojects.update_one({ 'username' : user }, { '$set' : { 'projectsharedwithme' : usershareprojectsname}})
-            # userprojectsname = userprojects.find_one({ 'username' : user })
-            # print(userprojectsname)
+#     if (len(users[0]) != 0):
+#         for user in users:
+#             # get list of projects shared with the user
+#             usershareprojectsname = userprojects.find_one({ 'username' : user })['projectsharedwithme']
+#             myproject = userprojects.find_one({ 'username' : user })['myproject']
+#             # print(myproject, usershareprojectsname)
+#             if (activeprojectname in usershareprojectsname or \
+#                 activeprojectname in myproject):
+#                 # print("=====================================================================$%$%$%$%$%$%$%")
+#                 continue
+#             # update list of projects shared with the user
+#             usershareprojectsname.append(activeprojectname)
+#             usershareprojectsname = list(set(usershareprojectsname))
+#             # update list of projects shared with the user in collection
+#             userprojects.update_one({ 'username' : user }, { '$set' : { 'projectsharedwithme' : usershareprojectsname}})
+#             # userprojectsname = userprojects.find_one({ 'username' : user })
+#             # print(userprojectsname)
 
-            # update active project sharedwith list
-            projectsharedwith.append(user)
-            projectsharedwith = list(set(projectsharedwith))
-            lastActiveId[user] = tIds[0]
-            # print("WHYYYYYYYYYYYYYYYYYYYYYYYYY?????????????????????????????????????")
+#             # update active project sharedwith list
+#             projectsharedwith.append(user)
+#             projectsharedwith = list(set(projectsharedwith))
+#             lastActiveId[user] = tIds[0]
+#             # print("WHYYYYYYYYYYYYYYYYYYYYYYYYY?????????????????????????????????????")
 
-    #     projectForm['username'] = current_user.username
-    # update projects collection
-    # activeprojectdetails["sharedwith"] = projectsharedwith
-        # flash(f"Project: {activeprojectname} is shared with {users}")
-    # print(lastActiveId)    
-    projects.update_one({ "_id" : project_id }, \
-        { '$set' : { "sharedWith": projectsharedwith, "lastActiveId": lastActiveId }})
+#     #     projectForm['username'] = current_user.username
+#     # update projects collection
+#     # activeprojectdetails["sharedwith"] = projectsharedwith
+#         # flash(f"Project: {activeprojectname} is shared with {users}")
+#     # print(lastActiveId)    
+#     projects.update_one({ "_id" : project_id }, \
+#         { '$set' : { "sharedwith": projectsharedwith, "lastActiveId": lastActiveId }})
 
-    # return "OK"
-    return jsonify(users=users)
+#     # return "OK"
+#     return jsonify(users=users)
 
 def dummyUserandProject():
 
@@ -1606,8 +1641,12 @@ def dummyUserandProject():
                     }
         project_details["textData"] = textData
         project_details["lastActiveId"] = {"dummyUser": "text_id_1"}
-        project_details["sharedWith"]  = ["dummyUser"]
+        project_details["sharedwith"]  = ["dummyUser"]
         project_details["projectdeleteFLAG"] = 0
+        project_details["isPublic"] = 0
+        project_details["derivedFromProject"] = []
+        project_details["projectDerivatives"] = []
+        project_details["aboutproject"] = ''
         projects.insert_one(project_details)
 
 def nextIdToAnnotate(projTIds, lastTId):
@@ -1653,23 +1692,37 @@ def previousIdToAnnotate(projTIds, lastTId):
 
 @easyAnno.route('/downloadannotationfile', methods=['GET', 'POST'])
 def downloadannotationfile():
-    projects = mongo.db.projects              # collection of users and their respective projects
-    userprojects = mongo.db.userprojects              # collection of users and their respective projects
-    textanno = mongo.db.textanno
-    imageanno = mongo.db.imageanno
-    fs =  gridfs.GridFS(mongo.db)                       # creating GridFS instance to get required files
+    # projects = mongo.db.projects              # collection of users and their respective projects
+    # userprojects = mongo.db.userprojects              # collection of users and their respective projects
+    # textanno = mongo.db.textanno
+    # imageanno = mongo.db.imageanno
+    # fs =  gridfs.GridFS(mongo.db)                       # creating GridFS instance to get required files
     
-    currentuserprojectsname =  sorted(list(currentuserprojects()))
-    activeprojectname = userprojects.find_one({ 'username' : current_user.username },\
-                        {'_id' : 0, 'activeprojectname': 1})['activeprojectname']
+    projects, userprojects, textanno, imageanno = getdbcollections.getdbcollections(mongo,
+                                                                'projects',
+                                                                'userprojects',
+                                                                'textanno',
+                                                                'imageanno')
+    current_username = getcurrentusername.getcurrentusername()
+    currentuserprojectsname =  getcurrentuserprojects.getcurrentuserprojects(current_username,
+                                                                                userprojects)
+    project_type_list = ['text', 'image']
+    currentuserprojectsname = getprojectsnamebytype.getprojectsnamebytype(projects,
+                                                                            currentuserprojectsname,
+                                                                            project_type_list)
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                    userprojects)
+    # currentuserprojectsname =  sorted(list(currentuserprojects()))
+    # activeprojectname = userprojects.find_one({ 'username' : current_user.username },\
+    #                     {'_id' : 0, 'activeprojectname': 1})['activeprojectname']
 
-    proj_detail = projects.find_one({'projectName': activeprojectname}, \
+    proj_detail = projects.find_one({'projectname': activeprojectname}, \
                     {"_id": 0, 'projectType': 1})
 
     # text_csv_columns = ['textId', 'ID', 'Text','Duplicate', 'annotatorComment']
 
     if (proj_detail["projectType"] == 'text'):
-        proj_detail = projects.find_one({'projectName': activeprojectname}, \
+        proj_detail = projects.find_one({'projectname': activeprojectname}, \
                     {"_id": 0, 'tagSet': 1, 'textData': 1}) 
         text_data = proj_detail["textData"]
         tag_set = proj_detail["tagSet"]
@@ -1715,7 +1768,7 @@ def downloadannotationfile():
                 df = df.append(annotated_text_df, ignore_index=True)
         # print(df.columns)
     elif (proj_detail["projectType"] == 'image'):
-        proj_detail = projects.find_one({'projectName': activeprojectname}, \
+        proj_detail = projects.find_one({'projectname': activeprojectname}, \
                     {"_id": 0, 'tagSet': 1, 'imageFiles': 1}) 
         image_data = proj_detail["imageFiles"]
         tag_set = proj_detail["tagSet"]
@@ -1917,14 +1970,14 @@ def downloadallannotationfiles():
     proj_count = 0
 
     projects_detail = projects.find({}, \
-                    {"_id": 0, "projectname": 1, "projectType": 1, "sharedWith": 1, \
+                    {"_id": 0, "projectname": 1, "projectType": 1, "sharedwith": 1, \
                         'tagSet': 1, 'textData': 1, 'imageFiles': 1})
 
     for proj_detail in projects_detail:
         projectname = proj_detail["projectname"]
-        print(projectname, proj_detail["sharedWith"], current_user.username, current_user.username in proj_detail["sharedWith"])
+        # print(projectname, proj_detail["sharedwith"], current_user.username, current_user.username in proj_detail["sharedwith"])
 
-        if current_user.username in proj_detail["sharedWith"]:
+        if current_user.username in proj_detail["sharedwith"]:
             # print(proj_count)  
             print(proj_detail["projectType"])            
             proj_count += 1
@@ -2055,15 +2108,15 @@ def downloadallusersallannotationfiles():
         proj_count = 0
 
         projects_detail = projects.find({}, \
-                        {"_id": 0, "projectname": 1, "projectType": 1, "sharedWith": 1, \
+                        {"_id": 0, "projectname": 1, "projectType": 1, "sharedwith": 1, \
                             'tagSet': 1, 'textData': 1, 'imageFiles': 1})
 
         for proj_detail in projects_detail:
             # print(proj_detail["projectType"])
             projectname = proj_detail["projectname"]
-            print(projectname, proj_detail["sharedWith"])
+            print(projectname, proj_detail["sharedwith"])
 
-            for username in proj_detail["sharedWith"]:
+            for username in proj_detail["sharedwith"]:
                 # print(proj_count)  
                 print(proj_detail["projectType"])            
                 proj_count += 1
@@ -2200,19 +2253,19 @@ def downloadoneuserallannotatedfiles(username):
         proj_count = 0
 
         projects_detail = projects.find({}, \
-                        {"_id": 0, "projectname": 1, "projectType": 1, "sharedWith": 1, \
+                        {"_id": 0, "projectname": 1, "projectType": 1, "sharedwith": 1, \
                             'tagSet': 1, 'textData': 1, 'imageFiles': 1})
 
         for proj_detail in projects_detail:
             projectname = proj_detail["projectname"]
             log += f"{'-'*80}\n"
-            log += f'Project Name: {projectname}, Shared With: {str(proj_detail["sharedWith"])},  Shared with {username}: {str(username in proj_detail["sharedWith"])}\n'
+            log += f'Project Name: {projectname}, Shared With: {str(proj_detail["sharedwith"])},  Shared with {username}: {str(username in proj_detail["sharedwith"])}\n'
             # print(os.listdir('download'))
             if projectname+'.csv' in os.listdir(basedir+'/download'): 
                 log += f'Already downloaded :)\n'
                 continue
             
-            if username in proj_detail["sharedWith"]:
+            if username in proj_detail["sharedwith"]:
                 # print(proj_count) 
                 project_type = proj_detail["projectType"]
                 log += f'{proj_detail["projectType"]}\n'
