@@ -7,10 +7,12 @@ def getprojecttype(projects,
     Args:
         projects (_type_): _description_
     """
+    try:
+        project_type = projects.find_one({"projectname": activeprojectname},
+                                            {"_id": 0, "projectType": 1})
 
-    project_type = projects.find_one({"projectname": activeprojectname},
-                                        {"_id": 0, "projectType": 1})
-
-    project_type = project_type["projectType"]
-
+        project_type = project_type["projectType"]
+    except:
+        project_type = ''
+        
     return project_type

@@ -261,3 +261,9 @@ easyAnno
     - talking to one or more users on the app
     - 
 - notification icon to show info about any new shared project and any new messages
+
+30 January 2023
+--------------------------------------------------------------
+- remove the transcription if delete boundary btn is clicked in questionnaire interface waveform
+- do not show the project in derive from project dropdown if the project do not have any data
+- derive one transcription project to other new transcription project
