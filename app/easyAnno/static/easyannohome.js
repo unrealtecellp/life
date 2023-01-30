@@ -59,6 +59,26 @@ qform += '</select></div>';
 return qform;
 }
 
+uploadFileTypes = [
+    {
+        'id': 'text',
+        'text': 'Text'
+    },
+    {
+        'id': 'image',
+        'text': 'Image'
+    }
+]
+function uploadFileType() {
+    $('#fileType').select2({
+        placeholder: 'select',
+        data: uploadFileTypes,
+        // allowClear: true
+    });
+}
+
+uploadFileType()
+
 function allFiles(allFilesList) {
     var projectslist = '';
     // console.log(allFilesList);
@@ -91,3 +111,11 @@ function allFiles(allFilesList) {
         });
     });
 }
+
+$("#zipFile").change(function() {
+    let zipFileElement = document.getElementById('zipFile');
+    zipFileName = zipFileElement.files[0];
+    console.log(zipFileName);
+    // displayZipFileName = '<p>'+zipFileName.name+'</p>';
+    $("#displayZipFileName").append(zipFileName.name);
+})

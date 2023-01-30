@@ -253,4 +253,11 @@ easyAnno
 --------------------------------------------------------------
 - textMetaData in easyAnno -textAnno collection
 - audioMetadata in trasnscriptionws collection
-- metaData key in projectsform collection similar to prompt format in the form
+- metaData key in projectsform collection similar to prompt format in the form.
+
+28 January 2023
+--------------------------------------------------------------
+- message app in LiFE
+    - talking to one or more users on the app
+    - 
+- notification icon to show info about any new shared project and any new messages

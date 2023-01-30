@@ -81,32 +81,33 @@ function myFunction(projData) {
                                     
                                     categoryClass = projData["tagSetMetaData"]["categoryDependency"][key];
                                     // console.log(categoryClass);
-                                    
+                                    categoryClassCategory = categoryClass.split('=')[0];
+                                    independentTag = 'independentTag_'+categoryClassCategory;
                                     if (dependendTagLabel[key] === 0) {
-                                        inpt += '<strong class="dependentTag '+categoryClass+'" id="'+categoryClass+key+'">'+key+': </strong>';
+                                        inpt += '<strong class="dependentTag '+categoryClass+' '+independentTag+'" id="'+categoryClass+key+'">'+key+': </strong>';
                                         dependendTagLabel[key] = 1;
                                     }
                                     if (projData[currentUser][key] === value[i]) {
                                         // console.log(key, value[i])
                                         if (value[i] === 'TEXTAREA') {
-                                            inpt += '<textarea class="form-check-input dependentTag '+categoryClass+'" name="'+key+'" id="'+key+'_'+value[i]+'" cols="50">'+projData[currentUser][key]+'</textarea>';
+                                            inpt += '<textarea class="form-check-input dependentTag '+categoryClass+' '+independentTag+'" name="'+key+'" id="'+key+'_'+value[i]+'" cols="50">'+projData[currentUser][key]+'</textarea>';
                                             
                                         }
                                         else {
-                                            inpt += '<input class="form-check-input dependentTag '+categoryClass+'" type="radio" name="'+key+'" id="'+value[i]+'" value="'+value[i]+'" checked>'+
-                                                    '<label class="form-check-label dependentTag '+categoryClass+'" id="'+value[i]+'Label" for="'+value[i]+'">'+value[i]+'</label>';
+                                            inpt += '<input class="form-check-input dependentTag '+categoryClass+' '+independentTag+'" type="radio" name="'+key+'" id="'+value[i]+'" value="'+value[i]+'" checked>'+
+                                                    '<label class="form-check-label dependentTag '+categoryClass+' '+independentTag+'" id="'+value[i]+'Label" for="'+value[i]+'">'+value[i]+'</label>';
                                         }
                                         
                                     }
                                     else {
                                         // console.log(key, value[i]);
                                         if (value[i] === 'TEXTAREA') {
-                                            inpt += '<textarea class="form-check-input dependentTag '+categoryClass+'" name="'+key+'" id="'+key+'_'+value[i]+'" cols="50">'+projData[currentUser][key]+'</textarea>';
+                                            inpt += '<textarea class="form-check-input dependentTag '+categoryClass+' '+independentTag+'" name="'+key+'" id="'+key+'_'+value[i]+'" cols="50">'+projData[currentUser][key]+'</textarea>';
                                             
                                         }
                                         else {
-                                            inpt += '<input class="form-check-input dependentTag '+categoryClass+'" type="radio" name="'+key+'" id="'+value[i]+'" value="'+value[i]+'">'+
-                                                    '<label class="form-check-label dependentTag '+categoryClass+'" id="'+value[i]+'Label" for="'+value[i]+'">'+value[i]+'</label>';
+                                            inpt += '<input class="form-check-input dependentTag '+categoryClass+' '+independentTag+'" type="radio" name="'+key+'" id="'+value[i]+'" value="'+value[i]+'">'+
+                                                    '<label class="form-check-label dependentTag '+categoryClass+' '+independentTag+'" id="'+value[i]+'Label" for="'+value[i]+'">'+value[i]+'</label>';
                                         }
                                     } 
                                 }
@@ -117,6 +118,8 @@ function myFunction(projData) {
                                     inpt = inpt.replace(delStr, '<div class="col '+key+'">');
                                     
                                     categoryClass = projData["tagSetMetaData"]["categoryDependency"][key];
+                                    categoryClassCategory = categoryClass.split('=')[0];
+                                    independentTag = 'independentTag_'+categoryClassCategory;
                                     // false disabled and hidden for the categories depending on their dependent
                                     // cTag contain the name of the category tag on which the dependent category depend
                                     // console.log(categoryClass.split('='));
@@ -142,57 +145,57 @@ function myFunction(projData) {
                                     }
                                     if (cTagFLAG === 1) {
                                         if (dependendTagLabel[key] === 0) {
-                                            inpt += '<strong class="dependentTag '+categoryClass+'" id="'+categoryClass+key+'">'+key+': </strong>';
+                                            inpt += '<strong class="dependentTag '+categoryClass+' '+independentTag+'" id="'+categoryClass+key+'">'+key+': </strong>';
                                             dependendTagLabel[key] = 1;
                                         }
                                         if (projData["tagSetMetaData"]["defaultCategoryTags"][key] == value[i]) {
                                             if (value[i] === 'TEXTAREA') {
-                                                inpt += '<textarea class="form-check-input dependentTag '+categoryClass+'" name="'+key+'" id="'+key+'_'+value[i]+'" cols="50"></textarea>';
+                                                inpt += '<textarea class="form-check-input dependentTag '+categoryClass+' '+independentTag+'" name="'+key+'" id="'+key+'_'+value[i]+'" cols="50"></textarea>';
                                                 
                                             }
                                             else {
-                                                inpt += '<input class="form-check-input dependentTag '+categoryClass+'" type="radio" name="'+key+'" id="'+value[i]+'" value="'+value[i]+'" checked>'+
-                                                '<label class="form-check-label dependentTag '+categoryClass+'" id="'+value[i]+'Label" for="'+value[i]+'">'+value[i]+'</label>';    
+                                                inpt += '<input class="form-check-input dependentTag '+categoryClass+' '+independentTag+'" type="radio" name="'+key+'" id="'+value[i]+'" value="'+value[i]+'" checked>'+
+                                                '<label class="form-check-label dependentTag '+categoryClass+' '+independentTag+'" id="'+value[i]+'Label" for="'+value[i]+'">'+value[i]+'</label>';    
                                             }
                                         
                                         }
                                         else {
                                             if (value[i] === 'TEXTAREA') {
-                                                inpt += '<textarea class="form-check-input dependentTag '+categoryClass+'" name="'+key+'" id="'+key+'_'+value[i]+'" cols="50"></textarea>';
+                                                inpt += '<textarea class="form-check-input dependentTag '+categoryClass+' '+independentTag+'" name="'+key+'" id="'+key+'_'+value[i]+'" cols="50"></textarea>';
                                                 
                                             }
                                             else {
-                                                inpt += '<input class="form-check-input dependentTag '+categoryClass+'" type="radio" name="'+key+'" id="'+value[i]+'" value="'+value[i]+'">'+
-                                                    '<label class="form-check-label dependentTag '+categoryClass+'" id="'+value[i]+'Label" for="'+value[i]+'">'+value[i]+'</label>';
+                                                inpt += '<input class="form-check-input dependentTag '+categoryClass+' '+independentTag+'" type="radio" name="'+key+'" id="'+value[i]+'" value="'+value[i]+'">'+
+                                                    '<label class="form-check-label dependentTag '+categoryClass+' '+independentTag+'" id="'+value[i]+'Label" for="'+value[i]+'">'+value[i]+'</label>';
                                             }
                                             
                                         }
                                     }
                                     else {
                                         if (dependendTagLabel[key] === 0) {
-                                            inpt += '<strong class="dependentTag '+categoryClass+'" id="'+categoryClass+key+'" hidden>'+key+': </strong>';
+                                            inpt += '<strong class="dependentTag '+categoryClass+' '+independentTag+'" id="'+categoryClass+key+'" hidden>'+key+': </strong>';
                                             dependendTagLabel[key] = 1;
                                         }
                                         if (projData["tagSetMetaData"]["defaultCategoryTags"][key] == value[i]) {
                                             // console.log(key, value[i])
                                             if (value[i] === 'TEXTAREA') {
-                                                inpt += '<textarea class="form-check-input dependentTag '+categoryClass+'" name="'+key+'" id="'+key+'_'+value[i]+'" cols="50" disabled hidden></textarea>';
+                                                inpt += '<textarea class="form-check-input dependentTag '+categoryClass+' '+independentTag+'" name="'+key+'" id="'+key+'_'+value[i]+'" cols="50" disabled hidden></textarea>';
                                                 
                                             }
                                             else {
-                                                inpt += '<input class="form-check-input dependentTag '+categoryClass+'" type="radio" name="'+key+'" id="'+value[i]+'" value="'+value[i]+'" checked disabled hidden>'+
-                                                    '<label class="form-check-label dependentTag '+categoryClass+'" id="'+value[i]+'Label" for="'+value[i]+'" hidden>'+value[i]+'</label>';    
+                                                inpt += '<input class="form-check-input dependentTag '+categoryClass+' '+independentTag+'" type="radio" name="'+key+'" id="'+value[i]+'" value="'+value[i]+'" checked disabled hidden>'+
+                                                    '<label class="form-check-label dependentTag '+categoryClass+' '+independentTag+'" id="'+value[i]+'Label" for="'+value[i]+'" hidden>'+value[i]+'</label>';    
                                             }
                                             
                                             }
                                         else {
                                             if (value[i] === 'TEXTAREA') {
-                                                inpt += '<textarea class="form-check-input dependentTag '+categoryClass+'" name="'+key+'" id="'+key+'_'+value[i]+'" cols="50" disabled hidden></textarea>';
+                                                inpt += '<textarea class="form-check-input dependentTag '+categoryClass+' '+independentTag+'" name="'+key+'" id="'+key+'_'+value[i]+'" cols="50" disabled hidden></textarea>';
                                                 
                                             }
                                             else {
-                                                inpt += '<input class="form-check-input dependentTag '+categoryClass+'" type="radio" name="'+key+'" id="'+value[i]+'" value="'+value[i]+'" disabled hidden>'+
-                                                    '<label class="form-check-label dependentTag '+categoryClass+'" id="'+value[i]+'Label" for="'+value[i]+'" hidden>'+value[i]+'</label>';
+                                                inpt += '<input class="form-check-input dependentTag '+categoryClass+' '+independentTag+'" type="radio" name="'+key+'" id="'+value[i]+'" value="'+value[i]+'" disabled hidden>'+
+                                                    '<label class="form-check-label dependentTag '+categoryClass+' '+independentTag+'" id="'+value[i]+'Label" for="'+value[i]+'" hidden>'+value[i]+'</label>';
                                             }
                                             
                                         }
@@ -252,13 +255,15 @@ function myFunction(projData) {
                                 }
                                 // NHUM
                                 else if (categoryClass === undefined && notInDepencyCol !== undefined){
-                                    console.log(key, value[i])
+                                    // console.log(key, value[i])
+                                    independentTagHide = 'independentTag_'+key;
+                                    console.log(independentTagHide);
                                     if (projData[currentUser][key] == value[i]) {
-                                        inpt += '<input class="form-check-input" type="radio" name="'+key+'" id="'+value[i]+'" value="'+value[i]+'" checked onclick="hideHideCategory(this)">'+
+                                        inpt += '<input class="form-check-input" type="radio" name="'+key+'" id="'+value[i]+'" value="'+value[i]+'" checked onclick="hideHideCategory(\''+independentTagHide+'\')">'+
                                                 '<label class="form-check-label" for="'+value[i]+'">'+value[i]+'</label>';    
                                     }
                                     else {
-                                        inpt += '<input class="form-check-input" type="radio" name="'+key+'" id="'+value[i]+'" value="'+value[i]+'" onclick="hideHideCategory(this)">'+
+                                        inpt += '<input class="form-check-input" type="radio" name="'+key+'" id="'+value[i]+'" value="'+value[i]+'" onclick="hideHideCategory(\''+independentTagHide+'\')">'+
                                                 '<label class="form-check-label" for="'+value[i]+'">'+value[i]+'</label>';
                                     }
 
@@ -380,30 +385,32 @@ function myFunction(projData) {
                                 inpt = inpt.replace(delStr, '<div class="col '+key+'">');
 
                                 categoryClass = projData["tagSetMetaData"]["categoryDependency"][key];
+                                categoryClassCategory = categoryClass.split('=')[0];
+                                independentTag = 'independentTag_'+categoryClassCategory;
 
                                 if (dependendTagLabel[key] === 0) {
-                                    inpt += '<strong class="dependentTag '+categoryClass+'" id="'+categoryClass+key+'" hidden>'+key+': </strong>';
+                                    inpt += '<strong class="dependentTag '+categoryClass+' '+independentTag+'" id="'+categoryClass+key+'" hidden>'+key+': </strong>';
                                     dependendTagLabel[key] = 1;
                                 }
 
                                 if (projData["tagSetMetaData"]["defaultCategoryTags"][key] == value[i]) {
                                     if (value[i] === 'TEXTAREA') {
-                                        inpt += '<textarea class="form-check-input dependentTag '+categoryClass+'" name="'+key+'" id="'+key+'_'+value[i]+'" cols="50" disabled hidden></textarea>';
+                                        inpt += '<textarea class="form-check-input dependentTag '+categoryClass+' '+independentTag+'" name="'+key+'" id="'+key+'_'+value[i]+'" cols="50" disabled hidden></textarea>';
                                         
                                     }
                                     else {
-                                        inpt += '<input class="form-check-input dependentTag '+categoryClass+'" type="radio" name="'+key+'" id="'+value[i]+'" value="'+value[i]+'" checked disabled hidden>'+
-                                        '<label class="form-check-label dependentTag '+categoryClass+'" id="'+value[i]+'Label" for="'+value[i]+'" hidden>'+value[i]+'</label>';    
+                                        inpt += '<input class="form-check-input dependentTag '+categoryClass+' '+independentTag+'" type="radio" name="'+key+'" id="'+value[i]+'" value="'+value[i]+'" checked disabled hidden>'+
+                                        '<label class="form-check-label dependentTag '+categoryClass+' '+independentTag+'" id="'+value[i]+'Label" for="'+value[i]+'" hidden>'+value[i]+'</label>';    
                                     }
                                 }
                                 else {
                                     if (value[i] === 'TEXTAREA') {
-                                        inpt += '<textarea class="form-check-input dependentTag '+categoryClass+'" name="'+key+'" id="'+key+'_'+value[i]+'" cols="50" disabled hidden></textarea>';
+                                        inpt += '<textarea class="form-check-input dependentTag '+categoryClass+' '+independentTag+'" name="'+key+'" id="'+key+'_'+value[i]+'" cols="50" disabled hidden></textarea>';
                                         
                                     }
                                     else{
-                                        inpt += '<input class="form-check-input dependentTag '+categoryClass+'" type="radio" name="'+key+'" id="'+value[i]+'" value="'+value[i]+'" disabled hidden>'+
-                                            '<label class="form-check-label dependentTag '+categoryClass+'" id="'+value[i]+'Label" for="'+value[i]+'" hidden>'+value[i]+'</label>';
+                                        inpt += '<input class="form-check-input dependentTag '+categoryClass+' '+independentTag+'" type="radio" name="'+key+'" id="'+value[i]+'" value="'+value[i]+'" disabled hidden>'+
+                                            '<label class="form-check-label dependentTag '+categoryClass+' '+independentTag+'" id="'+value[i]+'Label" for="'+value[i]+'" hidden>'+value[i]+'</label>';
                                     }
                                 }
                             }
@@ -466,12 +473,14 @@ function myFunction(projData) {
                                 else if (categoryClass === undefined && notInDepencyCol !== undefined){
                                     // console.log(key, value);
                                     // console.log(key, categoryClass, value[i]);
+                                    independentTagHide = 'independentTag_'+key;
+                                    console.log(independentTagHide);
                                     if (projData["tagSetMetaData"]["defaultCategoryTags"][key] == value[i]) {
-                                        inpt += '<input class="form-check-input" type="radio" name="'+key+'" id="'+value[i]+'" value="'+value[i]+'" checked onclick="hideHideCategory(this)">'+
+                                        inpt += '<input class="form-check-input" type="radio" name="'+key+'" id="'+value[i]+'" value="'+value[i]+'" checked onclick="hideHideCategory(\''+independentTagHide+'\')">'+
                                             '<label class="form-check-label" for="'+value[i]+'">'+value[i]+'</label>';    
                                     }
                                     else {
-                                        inpt += '<input class="form-check-input" type="radio" name="'+key+'" id="'+value[i]+'" value="'+value[i]+'" onclick="hideHideCategory(this)">'+
+                                        inpt += '<input class="form-check-input" type="radio" name="'+key+'" id="'+value[i]+'" value="'+value[i]+'" onclick="hideHideCategory(\''+independentTagHide+'\')">'+
                                                 '<label class="form-check-label" for="'+value[i]+'">'+value[i]+'</label>';
                                     }
 
@@ -729,14 +738,16 @@ function showHideCategory(category) {
         document.getElementById(value.id).hidden = false;
         document.getElementById(value.id).disabled = false;
         // document.getElementById(value.id).nextSibling.hidden = false;
-    }    
+    }
 
 }
 
 // hide all dependent categories
-function hideHideCategory(event) {
-    console.log(event);
-    console.log(event.id);
+function hideHideCategory(category) {
+    console.log(category);
+    if (category === 'undefined'){
+        return false;
+    }
     // console.log(category);
     // if (category === 'undefined'){
     //     return false;
@@ -749,9 +760,9 @@ function hideHideCategory(event) {
     //             document.getElementById(value.id).disabled = true;
     //         }
     // }
-    // for (let [key, value] of Object.entries(document.getElementsByClassName(category))) {
-    //     document.getElementById(value.id).hidden = true;
-    //     document.getElementById(value.id).disabled = true;
-    //     document.getElementById(value.id).nextSibling.hidden = true;
-    // }
+    for (let [key, value] of Object.entries(document.getElementsByClassName(category))) {
+        document.getElementById(value.id).hidden = true;
+        document.getElementById(value.id).disabled = true;
+        // document.getElementById(value.id).nextSibling.hidden = true;
+    }
 }

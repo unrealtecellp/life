@@ -20,13 +20,17 @@ easyAnno Home
         <!-- form to upload/create new project -->
         <form name="createProject" action="/easyAnno/home" method="POST" enctype="multipart/form-data" onsubmit="return validateForm()">
           <div class="col upload">
-          <input type="file" id="zipFile" name="zipFile">
-          <br>
+            <label class="btn btn-danger">
+              Select ZIP File <input type="file" id="zipFile" name="zipFile" accept="application/zip" hidden>
+          </label>
+          <p id="displayZipFileName"></p>
+          
+          <!-- <input type="file" id="zipFile" name="zipFile"> -->
           <label for="fileType">File Type:&nbsp;&nbsp;</label>
 
-          <select name="fileType" id="fileType">
-            <option value="text">Text</option>
-            <option value="image">Image</option>
+          <select name="fileType" id="fileType" style="width: 30%">
+            <!-- <option value="text">Text</option>
+            <option value="image">Image</option> -->
           </select>
           </div>
           <br>
