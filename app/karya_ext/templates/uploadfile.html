@@ -1,4 +1,4 @@
-{% extends "links.html" %}
+{% extends "karyaextlinks.html" %}
 
 {% block title %}
   Upload Access Code
@@ -9,9 +9,9 @@
 {% endblock %}
   
 {% block app_content %}
-  <button type="button" class="btn btn-lg btn-info" onclick="window.location.href='{{ url_for('karya_bp.home_insert') }}';">Karya Extension</button>
-  <br>
-  <br>
+  <!-- <button type="button" class="btn btn-lg btn-info" onclick="window.location.href='{{ url_for('karya_bp.home_insert') }}';">Karya Extension</button> -->
+  <!-- <br>
+  <br> -->
   {% if projectName is defined %}
   <h4>
       Project Name : {{ projectName }}   
