@@ -1,7 +1,6 @@
 __pycache__
 .flaskenv
 .vscode
-.gitignore
 venv
 app/static/audio
 download.zip
@@ -18,3 +17,5 @@ app/lifeques/lifeUploadedFileContent.pkl
 app/lifeques/lifexlsxdf.tsv
 app/lifeques/static/audio
 app/lifeques/lifequesdownload
+SSH_Public_Keys
+trainedModels
