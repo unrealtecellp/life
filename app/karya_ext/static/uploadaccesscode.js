@@ -3,12 +3,12 @@ function createSelectElement(key, elevalue, type, quesdatavalue) {
     var qform = '';
     var keyid = key.replace(new RegExp(' ', 'g'), '_');
     qform += '<div class="form-group">'+
-              '<label for="'+keyid+'">'+key+'</label>';
+              '<label for="'+keyid+'">'+key+'</label><br>';
     if (type === 'multiple') {
-      qform += '<select class="uploadaccodeselect" id="'+keyid+'" name="'+key+'" multiple="'+type+'" style="width: 100%" required>';
+      qform += '<select class="uploadaccodeselect" id="'+keyid+'" name="'+key+'" multiple="'+type+'" style="width: 55%" required>';
     }
     else {
-      qform += '<select class="uploadaccodeselect" id="'+keyid+'" name="'+key+'" style="width: 100%" required>';
+      qform += '<select class="uploadaccodeselect" id="'+keyid+'" name="'+key+'" style="width: 55%" required>';
     }
     
     for (let i=0; i<elevalue.length; i++) {
@@ -38,7 +38,7 @@ function createSelectElement(key, elevalue, type, quesdatavalue) {
   }
   
 
-function uploadaccesscodeform(uploadacesscodemetadata) {
+function uploadaccesscodeform(uploadacesscodemetadata, projecttype) {
     // console.log(uploadacesscodemetadata);
     var uploadaccodeform = ''
     for (let [key, value] of Object.entries(uploadacesscodemetadata)) {
@@ -47,8 +47,11 @@ function uploadaccesscodeform(uploadacesscodemetadata) {
             uploadaccodeform += createSelectElement(key, value, '', [])
         }
         else if (key === 'domain') {
+          if (projecttype === 'questionnaires') {
+            value.splice(0, 0, 'all');
+          }
           // console.log(value);
-          value.splice(0, 0, 'all');
+          // value.splice(0, 0, 'all');
           // console.log(value);
           uploadaccodeform += createSelectElement(key, value, '', [])
         }
@@ -61,7 +64,7 @@ function uploadaccesscodeform(uploadacesscodemetadata) {
     $('.uploadaccodeselect').select2({
         placeholder: 'select',
         // data: usersList,
-        allowClear: true
+        // allowClear: true
     });
 
 }

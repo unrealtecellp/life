@@ -124,8 +124,8 @@ def savenewlexeme(mongo,
 
     # create lexemeId
     projectname = newLexemeData['projectname'][0]
-    project = projects.find_one({}, {projectname : 1})
-    lexemeCount = projects.find_one({}, {projectname : 1})[projectname]['lexemeInserted']+1
+    project = projects.find_one({'projectname': projectname}, {'projectname' : 1, 'lexemeInserted' : 1})
+    lexemeCount = project['lexemeInserted']+1
     lexemeId = projectname+lexemeFormData['headword']+str(lexemeCount)
     Id = re.sub(r'[-: \.]', '', str(datetime.now()))
     lexemeId = 'L'+Id
@@ -221,5 +221,6 @@ def savenewlexeme(mongo,
     # saving data for that new lexeme to database in lexemes collection
     lexemes.insert(lexemeFormData)
     # update lexemeInserted count of the project in projects collection
-    project[projectname]['lexemeInserted'] = lexemeCount
-    projects.update_one({}, { '$set' : { projectname : project[projectname] }})
+    # project['lexemeInserted'] = lexemeCount
+    projects.update_one({'projectname': projectname}, { '$set' : { 'lexemeInserted' : lexemeCount }})
+    # projects.update_one({}, { '$set' : { projectname : project[projectname] }})

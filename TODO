@@ -199,6 +199,13 @@
 easyAnno
     - multimedia/video annotation
     - span annotation
+    - 'PREVIOUS'/'NEXT' also above text
+    - select project from dropdown to active/change 'current working file'
+    - 'Progress Report' rather than red/green/yellow button with filename on it
+    - ZOOM IN/OUT text in p tag
+    - browse page for reports and summary
+    - categorywise annotatorwise summary (view will be similar to the excel view) for completed files.
+
 -- - two speakers data in same derived project - fetch karya recordings
 - isPublic ON/OFF when sharing project
 - enable/disable ' access code(s) to download data from Karya' checkbox on 'Fetch/Upload Access Code' page
@@ -229,3 +236,38 @@ easyAnno
     attached to that access code.
     - put the list of ids in that access code inside key 'attachedSpeakerIds'
     - then show this list to the list of speaker to fetch data for and this list will change based on the access code selected.
+
+
+11 January 2023
+--------------------------------------------------------------
+- browse page
+- download questionnaire button access
+- PACKAGES
+    - pip - https://pip.pypa.io/en/stable/user_guide/
+    - pip install xlsxwriter
+    - pip install ffmpeg-python - https://github.com/kkroening/ffmpeg-python
+    - install ffmpeg in ubuntu
+    - pip install openpyxl
+
+21 January 2023
+--------------------------------------------------------------
+- textMetaData in easyAnno -textAnno collection
+- audioMetadata in trasnscriptionws collection
+- metaData key in projectsform collection similar to prompt format in the form.
+
+28 January 2023
+--------------------------------------------------------------
+- message app in LiFE
+    - talking to one or more users on the app
+    - 
+- notification icon to show info about any new shared project and any new messages
+
+30 January 2023
+--------------------------------------------------------------
+-- - remove the transcription if delete boundary btn is clicked in questionnaire interface waveform
+-- - do not show the project in derive from project dropdown if the project do not have any data
+- derive one transcription project to other new transcription project
+
+31 January 2023
+--------------------------------------------------------------
+- share access as projectOwner

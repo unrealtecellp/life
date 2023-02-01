@@ -88,11 +88,11 @@ def home():
     currentuserprojectsname = getcurrentuserprojects.getcurrentuserprojects(current_username, userprojects)
     activeprojectname = getactiveprojectname.getactiveprojectname(current_username, userprojects)
     shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects, current_username, activeprojectname)
-    # print(shareinfo)
+    print(shareinfo)
 
     return render_template('home.html',
                             data=currentuserprojectsname,
-                            activeproject=activeprojectname,
+                            activeprojectname=activeprojectname,
                             shareinfo=shareinfo)
 
 # new project route
@@ -543,7 +543,9 @@ def enterlexemefromuploadedfile(lexemedf):
     project = projects.find_one({}, {projectname : 1})
     def lexmetadata():
         # create lexemeId
-        lexemeCount = projects.find_one({}, {projectname : 1})[projectname]['lexemeInserted']+1
+        project = projects.find_one({'projectname': projectname}, {'projectname' : 1, 'lexemeInserted' : 1})
+        lexemeCount = project['lexemeInserted']+1
+        # lexemeCount = projects.find_one({}, {projectname : 1})[projectname]['lexemeInserted']+1
         # lexemeId = projectname+lexemeFormData['headword']+str(lexemeCount)
         Id = re.sub(r'[-: \.]', '', str(datetime.now()))
         lexemeId = 'L'+Id
@@ -587,9 +589,10 @@ def enterlexemefromuploadedfile(lexemedf):
         else:
             lexemes.insert(uploadedFileLexeme)
             # update lexemeInserted count of the project in projects collection
-            project[projectname]['lexemeInserted'] = lexemeCount
+            # project[projectname]['lexemeInserted'] = lexemeCount
             # print(f'{"#"*80}\n{project}')
-            projects.update_one({}, { '$set' : { projectname : project[projectname] }})
+            projects.update_one({'projectname': projectname}, { '$set' : { 'lexemeInserted' : lexemeCount }})
+            # projects.update_one({}, { '$set' : { projectname : project[projectname] }})
 
         for column_name in list(lexemedf.columns):
             if (column_name not in uploadedFileLexeme):
@@ -1218,7 +1221,7 @@ def uploadlexemeexcelliftxml():
 @app.route('/lexemekeymapping', methods=['GET', 'POST'])
 def lexemekeymapping():
     # getting the collections
-    userprojects, lexemes = getdbcollections.getdbcollections(mongo,
+    projects, userprojects, lexemes = getdbcollections.getdbcollections(mongo,
                                                 'projects',
                                                 'userprojects',
                                                 'lexemes')
@@ -1315,7 +1318,7 @@ def downloadlexemeformexcel():
     userprojects = mongo.db.userprojects              # collection of users and their respective projects
     lexemes = mongo.db.lexemes                          # collection containing entry of each lexeme and its details
 
-    activeprojectname = userprojects.find_one({ 'username' : current_user.username })['activeproject']
+    activeprojectname = userprojects.find_one({ 'username' : current_user.username })['activeprojectname']
     projectname =  activeprojectname
     lst = []
     lst.append({'projectname': activeprojectname})
@@ -1441,7 +1444,7 @@ def downloadselectedlexeme():
 
     print(f'{"="*80}\ndelete download format:\n {headwords}\n{"="*80}')
 
-    activeprojectname = userprojects.find_one({ 'username' : current_user.username })['activeproject']
+    activeprojectname = userprojects.find_one({ 'username' : current_user.username })['activeprojectname']
     lst.append({'projectname': activeprojectname})
     projectname =  activeprojectname
     
@@ -2402,7 +2405,7 @@ def downloadproject():
 
     lst = list()
 
-    activeprojectname = userprojects.find_one({ 'username' : current_user.username })['activeproject']
+    activeprojectname = userprojects.find_one({ 'username' : current_user.username })['activeprojectname']
     # lst.append(activeprojectname)
     projectname =  activeprojectname
 
@@ -2434,7 +2437,7 @@ def downloadproject():
     with open(basedir+"/download/lexicon_"+activeprojectname+".json", "w") as outfile:
         outfile.write(json_object)  
 
-    # get all sentences of the activeproject    
+    # get all sentences of the activeprojectname    
     sentenceLst = []
     for sentence in sentences.find({ 'projectname' : activeprojectname, 'sentencedeleteFLAG' : 0 }, \
                             {'_id' : 0}):
@@ -2488,7 +2491,7 @@ def downloaddictionary():
     fs =  gridfs.GridFS(mongo.db)                       # creating GridFS instance to get required files
     lst = list()
     download_format = 'pdf'
-    activeprojectname = userprojects.find_one({ 'username' : current_user.username })['activeproject']
+    activeprojectname = userprojects.find_one({ 'username' : current_user.username })['activeprojectname']
     lst.append({'projectname': activeprojectname})
     projectname =  activeprojectname
 
@@ -2674,7 +2677,7 @@ def download():
     lst = list()
 
     projectname =  userprojects.find_one({ 'username' : current_user.username },\
-                {'_id' : 0, 'activeproject': 1})['activeproject']
+                {'_id' : 0, 'activeprojectname': 1})['activeprojectname']
     lst.append(projectname)
     print(f'{"#"*80}\n{projectname}')
     for lexeme in lexemes.find({'username' : current_user.username, 'projectname' : projectname},\
@@ -3017,10 +3020,10 @@ def lexemeview():
     headword = request.args.get('a').split(',')                    # data through ajax
     # print(headword)
 
-    activeprojectname = userprojects.find_one({ 'username' : current_user.username })['activeproject']
+    activeprojectname = userprojects.find_one({ 'username' : current_user.username })['activeprojectname']
     # print(activeprojectname)
-    
-    projectOwner = projects.find_one({}, {"_id" : 0, activeprojectname : 1})[activeprojectname]["projectOwner"]
+    projectOwner = projects.find_one({'projectname': activeprojectname}, {'projectOwner' : 1})['projectOwner']
+    # projectOwner = projects.find_one({}, {"_id" : 0, activeprojectname : 1})[activeprojectname]["projectOwner"]
     # print(projectOwner)
     lexeme = lexemes.find_one({'username' : projectOwner, 'lexemeId' : headword[0], },\
                             {'_id' : 0, 'username' : 0})
@@ -3054,10 +3057,11 @@ def lexemeedit():
     headword = request.args.get('a').split(',')                    # data through ajax
     # print(headword)
 
-    activeprojectname = userprojects.find_one({ 'username' : current_user.username })['activeproject']
+    activeprojectname = userprojects.find_one({ 'username' : current_user.username })['activeprojectname']
     # print(activeprojectname)
     
-    projectOwner = projects.find_one({}, {"_id" : 0, activeprojectname : 1})[activeprojectname]["projectOwner"]
+    projectOwner = projects.find_one({'projectname': activeprojectname}, {'projectOwner' : 1})['projectOwner']
+    # projectOwner = projects.find_one({}, {"_id" : 0, activeprojectname : 1})[activeprojectname]["projectOwner"]
     # print(projectOwner)
 
     if request.method == 'POST':
@@ -3067,7 +3071,7 @@ def lexemeedit():
         return redirect(url_for('dictionaryview'))
     
     # activeprojectname = userprojects.find_one({ 'username' : current_user.username },\
-    #                 {'_id' : 0, 'activeproject': 1})['activeproject']
+    #                 {'_id' : 0, 'activeprojectname': 1})['activeprojectname']
     lexeme = lexemes.find_one({'username' : projectOwner, 'lexemeId' : headword[0], },\
                             {'_id' : 0, 'username' : 0})
 
@@ -3563,7 +3567,7 @@ def audiotranscription():
     currentuserprojectsname = getcurrentuserprojects.getcurrentuserprojects(current_user.username,
                                 userprojects)
     activeprojectname = userprojects.find_one({ 'username' : current_user.username },\
-                    {'_id' : 0, 'activeproject': 1})['activeproject']
+                    {'_id' : 0, 'activeprojectname': 1})['activeprojectname']
 
     fs =  gridfs.GridFS(mongo.db)                       # creating GridFS instance to get required files                
     files = fs.find({})
@@ -3597,7 +3601,7 @@ def audiotranscription():
 
         return redirect(url_for('audiotranscription'))       
     
-    return render_template('audiotranscription.html',  data=currentuserprojectsname, activeproject=activeprojectname, audiofile=str(file.read()))
+    return render_template('audiotranscription.html',  data=currentuserprojectsname, activeprojectname=activeprojectname, audiofile=str(file.read()))
 
 
 # karya access code assignment route

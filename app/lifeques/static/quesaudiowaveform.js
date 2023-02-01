@@ -87,6 +87,9 @@
             if (value.id === 'start' || value.id === 'end') {
                 form.elements[key].setAttribute("value", '0');
             }
+            else if (value.id.includes('Prompt_Audio_Transcription')) {
+                form.elements[key].setAttribute("value", '-');
+            }
         }
         if (regionId) {
             let region = wavesurfer.regions.list[regionId];

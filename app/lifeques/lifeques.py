@@ -71,11 +71,23 @@ def home():
 def getprojectslist():
     """_summary_
     """
-    userprojects, = getdbcollections.getdbcollections(mongo, 'userprojects')
+    projects, userprojects = getdbcollections.getdbcollections(mongo,
+                                                                'projects',
+                                                                'userprojects')
     current_username = getcurrentusername.getcurrentusername()
-    projectslist = getcurrentuserprojects.getcurrentuserprojects(current_username, userprojects)
+    projects_list = getcurrentuserprojects.getcurrentuserprojects(current_username, userprojects)
+    ques_projects_list = []
+    for project_name in projects_list:
+        project_type = getprojecttype.getprojecttype(projects, project_name)
+        # filter only questionnaires type project
+        if (project_type == 'questionnaires'):
+            questionnaireIds = projects.find_one({"projectname": project_name},
+                                        {'_id': 0, "questionnaireIds": 1})['questionnaireIds']
+            # filter only project have some data
+            if (len(questionnaireIds) != 0):
+                ques_projects_list.append(project_name)
 
-    return jsonify(projectslist=projectslist)
+    return jsonify(projectslist=ques_projects_list)
 
 @lifeques.route('/newquestionnaireform', methods=['GET', 'POST'])
 def newquestionnaireform():
