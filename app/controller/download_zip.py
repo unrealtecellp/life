@@ -61,12 +61,12 @@ def _generator_lexemes(projectname, format='json'):
 
     if headwords != None:
         headwords = eval(headwords)
-    print(f'{"="*80}\nheadwords from downloadselectedlexeme route:\n {headwords}\n{"="*80}')
+    # print(f'{"="*80}\nheadwords from downloadselectedlexeme route:\n {headwords}\n{"="*80}')
     
     download_format = headwords['downloadFormat']
 
     del headwords['downloadFormat']
-    print(f'{"="*80}\ndelete download format:\n {headwords}\n{"="*80}')
+    # print(f'{"="*80}\ndelete download format:\n {headwords}\n{"="*80}')
 
     for lexemeId in headwords.keys():
         lexeme = lexemes.find_one({'projectname' : projectname, 'lexemeId' : lexemeId},\
@@ -89,12 +89,12 @@ def _generator_lexeme_full(projectname, format='json', rdf_format='turtle'):
 
     if headwords != None:
         headwords = eval(headwords)
-    print(f'{"="*80}\nheadwords from downloadselectedlexeme route:\n {headwords}\n{"="*80}')
+    # print(f'{"="*80}\nheadwords from downloadselectedlexeme route:\n {headwords}\n{"="*80}')
     
     download_format = headwords['downloadFormat']
 
     del headwords['downloadFormat']
-    print(f'{"="*80}\ndelete download format:\n {headwords}\n{"="*80}')
+    # print(f'{"="*80}\ndelete download format:\n {headwords}\n{"="*80}')
 
     all_lexemes = []
     for lexemeId in headwords.keys():
@@ -543,10 +543,10 @@ def get_lexeme_files(projectname):
 
     if headwords != None:
         headwords = eval(headwords)
-    print(f'{"="*80}\nheadwords from downloadselectedlexeme route:\n {headwords}\n{"="*80}')
+    # print(f'{"="*80}\nheadwords from downloadselectedlexeme route:\n {headwords}\n{"="*80}')
     
     del headwords['downloadFormat']
-    print(f'{"="*80}\ndelete download format:\n {headwords}\n{"="*80}')
+    # print(f'{"="*80}\ndelete download format:\n {headwords}\n{"="*80}')
 
     all_files = {}
     for lexemeId in headwords.keys():
@@ -623,11 +623,11 @@ def downloadselectedlexeme():
 
     if headwords != None:
         headwords = eval(headwords)
-    print(f'{"="*80}\nheadwords from downloadselectedlexeme route:\n {headwords}\n{"="*80}')
+    # print(f'{"="*80}\nheadwords from downloadselectedlexeme route:\n {headwords}\n{"="*80}')
     
     download_format = headwords['downloadFormat']
     del headwords['downloadFormat']
-    print(f'{"="*80}\ndelete download format:\n {headwords}\n{"="*80}')
+    # print(f'{"="*80}\ndelete download format:\n {headwords}\n{"="*80}')
     
     
     if ('rdf' in download_format):
@@ -635,7 +635,7 @@ def downloadselectedlexeme():
         download_format = 'rdf'
         file_ext = file_ext_map[rdf_format]
         data = _generator_lexeme_full(proj_name, download_format, rdf_format)
-        print(rdf_format)
+        # print(rdf_format)
     else:
         file_ext = file_ext_map[download_format]
         data = _generator_lexeme_full(proj_name, download_format)

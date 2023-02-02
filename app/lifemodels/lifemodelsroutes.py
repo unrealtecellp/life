@@ -11,6 +11,6 @@ def home():
     Returns:
         _type_: _description_
     """
-    print('lifemodels home')
+    # print('lifemodels home')
 
     return render_template("lifemodelshome.html")

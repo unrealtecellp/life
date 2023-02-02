@@ -88,7 +88,7 @@ def home():
     currentuserprojectsname = getcurrentuserprojects.getcurrentuserprojects(current_username, userprojects)
     activeprojectname = getactiveprojectname.getactiveprojectname(current_username, userprojects)
     shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects, current_username, activeprojectname)
-    print(shareinfo)
+    # print(shareinfo)
 
     return render_template('home.html',
                             data=currentuserprojectsname,
@@ -132,7 +132,8 @@ def newproject():
 # get lexeme from sentences and save them to lexemes collection
 def sentence_lexeme_to_lexemes(oneSentenceDetail, oneLexemeDetail):
     for key, value in oneLexemeDetail.items():
-        print(key, ' : ', value)
+        # print(key, ' : ', value)
+        pass
 
 
 # enter new sentences route
@@ -1356,8 +1357,8 @@ def downloadlexemeformexcel():
         drop_cols.extend(drop_oldscript)
         drop_cols.extend(drop_files)
 
-        print(list(df.columns))
-        print(drop_cols)
+        # print(list(df.columns))
+        # print(drop_cols)
         df.drop(columns=drop_cols, inplace=True)
 
         return df
@@ -1404,7 +1405,7 @@ def downloadlexemeformexcel():
 
     # deleting all files from storage
     for f in files:
-        print(f)
+        # print(f)
         os.remove(f)
     
     return send_file('../download.zip', as_attachment=True)
@@ -1435,14 +1436,14 @@ def downloadselectedlexeme():
 
     if headwords != None:
         headwords = eval(headwords)
-    print(f'{"="*80}\nheadwords from downloadselectedlexeme route:\n {headwords}\n{"="*80}')
+    # print(f'{"="*80}\nheadwords from downloadselectedlexeme route:\n {headwords}\n{"="*80}')
     
     download_format = headwords['downloadFormat']
     # print(download_format)
 
     del headwords['downloadFormat']
 
-    print(f'{"="*80}\ndelete download format:\n {headwords}\n{"="*80}')
+    # print(f'{"="*80}\ndelete download format:\n {headwords}\n{"="*80}')
 
     activeprojectname = userprojects.find_one({ 'username' : current_user.username })['activeprojectname']
     lst.append({'projectname': activeprojectname})
@@ -2360,11 +2361,11 @@ def downloadselectedlexeme():
     with open(os.path.join(lexeme_dir, 'lexemeEntry.json')) as f_r:
         lex = json.load(f_r)
         out_form = download_format
-        print(out_form)
+        # print(out_form)
         if ('rdf' in out_form):
             rdf_format = out_form[3:]
             out_form = 'rdf'
-            print(rdf_format)
+            # print(rdf_format)
             download_lexicon(lex, working_dir, out_form, rdf_format=rdf_format)
         else:
             download_lexicon(lex, working_dir, out_form)
@@ -2387,7 +2388,7 @@ def downloadselectedlexeme():
 
     # deleting all files from storage
     for f in files:
-        print(f)
+        # print(f)
         os.remove(f)
     
     # return send_file('../download.zip', as_attachment=True)
@@ -2420,9 +2421,9 @@ def downloadproject():
                 files = fs.find({'projectname' : projectname, 'lexemeId' : lexvalue})
                 for file in files:
                     name = file.filename
-                    print(f'{"#"*80}')
+                    # print(f'{"#"*80}')
                     # print(basedir+'/app/download/'+name)
-                    print(f'{"#"*80}')
+                    # print(f'{"#"*80}')
                     # open(basedir+'/app/download/'+name, 'wb').write(file.read())
                     open(basedir+'/download/'+name, 'wb').write(file.read())
 
@@ -2474,7 +2475,7 @@ def downloadproject():
 
     # deleting all files from storage
     for f in files:
-        print(files)
+        # print(files)
         os.remove(f)
     
     return send_file('../download.zip', as_attachment=True)
@@ -2660,7 +2661,7 @@ def downloaddictionary():
 
     # deleting all files from storage
     for f in files:
-        print(f)
+        # print(f)
         os.remove(f)
     
     return send_file('../download.zip', as_attachment=True)
@@ -2679,7 +2680,7 @@ def download():
     projectname =  userprojects.find_one({ 'username' : current_user.username },\
                 {'_id' : 0, 'activeprojectname': 1})['activeprojectname']
     lst.append(projectname)
-    print(f'{"#"*80}\n{projectname}')
+    # print(f'{"#"*80}\n{projectname}')
     for lexeme in lexemes.find({'username' : current_user.username, 'projectname' : projectname},\
                             {'_id' : 0, 'username' : 0, 'projectname' : 0}):
         lst.append(lexeme)
@@ -3673,7 +3674,7 @@ def loadnextaudio():
                                                         lastActiveId,
                                                         activespeakerid,
                                                         'next')
-        print('latest_audio_id ROUTES', latest_audio_id)
+        # print('latest_audio_id ROUTES', latest_audio_id)
         audiodetails.updatelatestaudioid(projects,
                                             activeprojectname,
                                             latest_audio_id,
@@ -3718,7 +3719,7 @@ def allunannotated():
                                                                             activeprojectname,
                                                                             activespeakerid,
                                                                             'audio')
-    print(annotated, unannotated)
+    # print(annotated, unannotated)
     return jsonify(allanno=annotated, allunanno=unannotated)
 
 @app.route('/loadunannotext', methods=['GET'])

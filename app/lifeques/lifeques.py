@@ -63,7 +63,7 @@ def home():
     Returns:
         _type_: _description_
     """
-    print('lifeques home')
+    # print('lifeques home')
     
     return render_template("lifequeshome.html")
 
@@ -402,15 +402,15 @@ def uploadquesfiles():
                 }
     if request.method == 'POST':
         new_ques_file = request.files.to_dict()
-        print(new_ques_file)
-        print(projects,
-                userprojects,
-                questionnaires,
-                activeprojectname,
-                projectowner,
-                basedir,
-                new_ques_file,
-                current_username)
+        # print(new_ques_file)
+        # print(projects,
+        #         userprojects,
+        #         questionnaires,
+        #         activeprojectname,
+        #         projectowner,
+        #         basedir,
+        #         new_ques_file,
+        #         current_username)
         quesstate, quesextra = uploadquesdataexcel.queskeymapping(mongo,
                                                                     projects,
                                                                     userprojects,
@@ -461,7 +461,7 @@ def loadpreviousques():
     # data through ajax
     lastActiveId = request.args.get('data')
     lastActiveId = eval(lastActiveId)
-    print(lastActiveId)
+    # print(lastActiveId)
     latest_ques_id = getnewquesid.getnewquesid(projects,
                                                 activeprojectname,
                                                 lastActiveId,
@@ -485,7 +485,7 @@ def loadnextques():
     # data through ajax
     lastActiveId = request.args.get('data')
     lastActiveId = eval(lastActiveId)
-    print(lastActiveId)
+    # print(lastActiveId)
     latest_ques_id = getnewquesid.getnewquesid(projects,
                                                 activeprojectname,
                                                 lastActiveId,
@@ -524,9 +524,9 @@ def loadunannotext():
 
     lastActiveId = request.args.get('data')
     lastActiveId = eval(lastActiveId)
-    print(lastActiveId)
+    # print(lastActiveId)
     updatequesid = 'lastActiveId.'+current_username+'.'+activeprojectname
-    print(updatequesid)
+    # print(updatequesid)
 
     projects.update_one({"projectname": activeprojectname},
         { '$set' : { updatequesid: lastActiveId }})
@@ -557,9 +557,9 @@ def quespromptfile():
     
     if request.method == "POST":
         prompt_file = request.files.to_dict()
-        print('line no. 494', prompt_file, type(prompt_file))
+        # print('line no. 494', prompt_file, type(prompt_file))
         prompt_type = list(prompt_file.keys())[0].split('_')[1]
-        print(prompt_type)
+        # print(prompt_type)
     # ques_audio_file['Transcription Audio'] = ques_audio_file['Prompt Type Audio']
     savequespromptfile.savequespromptfile(mongo,
                                             projects,

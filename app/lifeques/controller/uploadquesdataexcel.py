@@ -458,20 +458,20 @@ def lifeuploader(fileFormat, uploadedFileContent, basedir, allques, field_map = 
         # print(f"{'-'*80}\nFILE STREAM TYPE:{type(file_stream)}")
 
         if format == 'lift-xml':
-            print(f"{'-'*80}\nFIELD MAP:\n{len(field_map)}")
+            # print(f"{'-'*80}\nFIELD MAP:\n{len(field_map)}")
             if len(field_map) == 0:
-                print(f"{'-'*80}\nlift-xml: len(field_map) == 0")
+                # print(f"{'-'*80}\nlift-xml: len(field_map) == 0")
                 
                 headword_mapped, all_mapped, field_map, root = map_lift(file_stream, field_map, lex_fields)
                 
                 if headword_mapped and all_mapped:
-                    print(f"{'-'*80}\nheadword_mapped and all_mapped")
+                    # print(f"{'-'*80}\nheadword_mapped and all_mapped")
                     headword_mapped, all_mapped, data, root = lift_to_df (root, field_map, lex_fields)
-                    print(f"{'-'*80}\nheadword_mapped:\n{type(headword_mapped)}\nall_mapped:\n{type(all_mapped)}\nmapped_lift/data:\n{type(data)}\nroot:\n{type(root)}")
+                    # print(f"{'-'*80}\nheadword_mapped:\n{type(headword_mapped)}\nall_mapped:\n{type(all_mapped)}\nmapped_lift/data:\n{type(data)}\nroot:\n{type(root)}")
                     return headword_mapped, all_mapped, data, root
                 else:
-                    print(f"{'-'*80}\nheadword_mapped and all_mapped: NOT")
-                    print(f"{'-'*80}\nheadword_mapped:\n{type(headword_mapped)}\nall_mapped:\n{type(all_mapped)}\nmapped_lift/data:\n{type(field_map)}\nroot:\n{type(root)}")
+                    # print(f"{'-'*80}\nheadword_mapped and all_mapped: NOT")
+                    # print(f"{'-'*80}\nheadword_mapped:\n{type(headword_mapped)}\nall_mapped:\n{type(all_mapped)}\nmapped_lift/data:\n{type(field_map)}\nroot:\n{type(root)}")
                     return headword_mapped, all_mapped, field_map, root
             else:
                 # print(f"{'-'*80}\nlift-xml: len(field_map) != 0")
