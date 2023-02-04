@@ -3,7 +3,7 @@ $(document).ready(function() {
     $(".shareprojectwith").click(function() {
       var $ele = Object.values(document.getElementsByClassName('select2-selection__choice'));
       // var $ele = document.getElementById('shareProjectSelect')
-      console.log($ele);
+      // console.log($ele);
       var $users = []
       // var $speakers = []
     for (i = 0; i < $ele.length; i++) {
@@ -29,17 +29,27 @@ $(document).ready(function() {
         sharespeakers.push(d)
       }
     }
+    // console.log(sharewithusers, sharespeakers, displayRadioValue())
     data['sharewithusers'] = sharewithusers
     data['sharespeakers'] = sharespeakers
     data['sharemode'] = displayRadioValue()
-    data['sharechecked'] = String(document.getElementById('sharechecked').checked)
-    console.log(data);
+    try {
+      sharechecked = document.getElementById('sharechecked').checked;
+    }
+    catch(err) {
+      // console.log(typeof err.message);
+      sharechecked = '';
+    }
+    
+    data['sharechecked'] = String(sharechecked)
+    // console.log(data);
       $.ajax({
         url: '/shareprojectwith',
         type: 'GET',
         data: {'data': JSON.stringify(data)},
         contentType: "application/json; charset=utf-8", 
         success: function(response){
+          // console.log(response);
         }
     });
     return false; 
@@ -52,8 +62,9 @@ $(document).ready(function() {
     sharemode = ''
     for(i = 0; i < ele.length; i++) {
         if(ele[i].checked)
-          sharemode =  ele[i].value
+          sharemode =  ele[i].value - 1
     }
     // console.log(sharemode)
+    
     return sharemode
   }

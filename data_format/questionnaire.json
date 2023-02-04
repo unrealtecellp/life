@@ -1,0 +1,78 @@
+{
+    "username": "",
+    "projectname": "",
+    "quesID": "",
+    "Q_Id": "",
+    "lastUpdatedBy": "",
+    "prompt": {
+        "domain": [],
+        "elicitation method": "",
+        "target": [],
+        "content": {
+            "Language1": {
+                "text": {
+                    "txtboundaryspan": {
+                        "startindex": "",
+                        "endindex": "",
+                        "textspan": {
+                            "script": ""
+                        }
+                    }
+                },
+                "audio": {
+                    "fileID": "",
+                    "filename": "",
+                    "instructions": "",
+                    "textgrid": {
+                        "sentence": {
+                            "audioboundarydur": {
+                                "startindex": "",
+                                "endindex": "",
+                                "transcription": {
+                                    "script": ""
+                                }
+                            }
+                        }
+                    }
+                },
+                "image": {
+                    "fileID": "",
+                    "filename": "",
+                    "instructions": "",
+                    "imagetext": {
+                        "txtboundaryspan": {
+                            "startindex": "",
+                            "endindex": "",
+                            "textspan": {
+                                "script": ""
+                            }   
+                        }
+                    }
+                },
+                "multimedia": {
+                    "filedID": "",
+                    "filename": "",
+                    "instructions": "",
+                    "textgrid": {
+                        "sentence": {
+                            "audioboundarydur": {
+                                "startindex": "",
+                                "endindex": "",
+                                "transcription": {
+                                    "script": ""
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+        }
+    },
+    "current_username": {
+        "prompt": {
+            "bhojpuri": "",
+            "awadhi": ""
+        }   
+    }
+}

@@ -8,7 +8,7 @@ def quesunannotatedfilename(questionnaires, activeprojectname, idtype):
                                         { "_id" : 0, "quessaveFLAG" : 1, 'quesId': 1, "Q_Id": 1 })
 
     for quessavedfile in quessavedfiles:
-        print(quessavedfile)
+        # print(quessavedfile)
         try:
             quesid = quessavedfile['quesId']
             Q_Id = quessavedfile['Q_Id']

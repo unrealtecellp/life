@@ -11,9 +11,11 @@ app/lifexlsxdf.tsv
 data_format/lexicon_Testing_32.xlsx
 app/testliftXML.tsv
 app/lexemeEntry.json
-path_test.py
 nohup.out
 questionnaireform.zip
 app/lifeques/lifeUploadedFileContent.pkl
 app/lifeques/lifexlsxdf.tsv
 app/lifeques/static/audio
+app/lifeques/lifequesdownload
+SSH_Public_Keys
+trainedModelsapp/lifeques/static/audio

@@ -122,7 +122,13 @@ document.addEventListener('DOMContentLoaded', function() {
             wavesurfer.regions.list[regionId].remove();
             
             form.reset();
-            rid = region.start.toString().slice(0, 4).replace('.', '').concat(region.end.toString().slice(0, 4).replace('.', ''));
+            startId = region.start.toString().slice(0, 4).replace('.', '');
+            if (startId === '0') {
+                startId = '000';
+            }
+            endId = region.end.toString().slice(0, 4).replace('.', '');
+            // console.log(startId, endId)
+            rid = startId.concat(endId);
             localStorageRegions = JSON.parse(localStorage.regions)
             for (let [key, value] of Object.entries(localStorageRegions)) {
                 // console.log(key, value)
@@ -145,7 +151,14 @@ function saveRegions() {
         Object.keys(wavesurfer.regions.list).map(function(id) {
             let region = wavesurfer.regions.list[id];
             // console.log(region)
-            rid = region.start.toString().slice(0, 4).replace('.', '').concat(region.end.toString().slice(0, 4).replace('.', ''));
+            startId = region.start.toString().slice(0, 4).replace('.', '');
+            if (startId === '0') {
+                startId = '000';
+            }
+            endId = region.end.toString().slice(0, 4).replace('.', '');
+            // console.log(startId, endId)
+            rid = startId.concat(endId);
+            // rid = region.start.toString().slice(0, 4).replace('.', '').concat(region.end.toString().slice(0, 4).replace('.', ''));
              
             // console.log(rid)
             // sentence = getActiveRegionSentence(region);
@@ -264,13 +277,21 @@ function editAnnotation(region) {
     // console.log('editAnnotation(region)')
     // console.log(region)
     let form = document.forms.edit;
+    // console.log(form);
     // let id = form.dataset.region;
     // let wavesurferregion = wavesurfer.regions.list[id];
     // console.log(wavesurferregion)
 
     var sentence = getActiveRegionSentence(region);
     // console.log(sentence)
-    rid = region.start.toString().slice(0, 4).replace('.', '').concat(region.end.toString().slice(0, 4).replace('.', ''));
+    startId = region.start.toString().slice(0, 4).replace('.', '');
+    if (startId === '0') {
+        startId = '000';
+    }
+    endId = region.end.toString().slice(0, 4).replace('.', '');
+    // console.log(startId, endId)
+    rid = startId.concat(endId);
+    // rid = region.start.toString().slice(0, 4).replace('.', '').concat(region.end.toString().slice(0, 4).replace('.', ''));
     if (sentence === undefined) {
         sentence = updateSentenceDetails(rid, sentence, region)
         // console.log(sentence)
@@ -331,7 +352,14 @@ function formOnSubmit(form, region) {
         for (i=0; i<regions.length; i++) {
             if (regions[i]['start'] === region.start &&
                 regions[i]['end'] === region.end) {
-                    rid = region.start.toString().slice(0, 4).replace('.', '').concat(region.end.toString().slice(0, 4).replace('.', ''));
+                    startId = region.start.toString().slice(0, 4).replace('.', '');
+                    if (startId === '0') {
+                        startId = '000';
+                    }
+                    endId = region.end.toString().slice(0, 4).replace('.', '');
+                    // console.log(startId, endId)
+                    rid = startId.concat(endId);
+                    // rid = region.start.toString().slice(0, 4).replace('.', '').concat(region.end.toString().slice(0, 4).replace('.', ''));
                     sentence = regions[i]['data']['sentence']
                     sentece = updateSentenceDetailsOnSaveBoundary(rid, sentence, region, form)
                 }
@@ -412,7 +440,7 @@ function updateSentenceDetailsOnSaveBoundary(boundaryID, sentence, region, form)
                     sentence[boundaryID][key][k] = morphemeDetails(actualTranscription, morphemicBreakTranscription)
                     
                     sentenceId = sentence[boundaryID]['sentenceId']
-                    console.log("sentence[boundaryID]['sentenceId']", sentenceId)
+                    // console.log("sentence[boundaryID]['sentenceId']", sentenceId)
                     morphemeIdMap = morphemeidMap(actualTranscription, morphemicBreakTranscription)
                     // console.log(morphemeIdMap);
                     glossAndpos = glossDetails(morphCount,
@@ -425,7 +453,7 @@ function updateSentenceDetailsOnSaveBoundary(boundaryID, sentence, region, form)
                     sentence[boundaryID]['gloss'][k] = glossAndpos[0]
                     var tempgloss = Object()
                     tempgloss[boundaryID] = flattenObject(sentence[boundaryID]['gloss'])
-                    console.log(tempgloss)
+                    // console.log(tempgloss)
                     var temppos = Object()
                     sentence[boundaryID]['pos'] = glossAndpos[1]
                     temppos[boundaryID] = flattenObject(sentence[boundaryID]['pos'])
@@ -502,7 +530,7 @@ function updateSentenceDetails(boundaryID, sentence, region) {
     //     }
     // }
     // else {
-    if (sentence === undefined ) {    
+    if (sentence === undefined ) {
         sentence = new Object()
         transcription = {}
         translation = {}
@@ -518,7 +546,7 @@ function updateSentenceDetails(boundaryID, sentence, region) {
         scripts = activeprojectform["Transcription Script"]
         translationscripts = activeprojectform["Translation Script"]
         translationlang = activeprojectform["Translation Language"]
-        console.log(translationlang);
+        // console.log(translationlang);
         for (i=0; i<scripts.length; i++) {
             script = scripts[i]
             script_code = scriptCode[scripts[i]]
@@ -533,10 +561,12 @@ function updateSentenceDetails(boundaryID, sentence, region) {
             morphemes[script] = {}
             gloss[script] = {}
         }
-        for (i=0; i<translationscripts.length; i++) {
-            tscript_code = scriptCode[translationscripts[i]]
-            lang_code = translationlang[i].slice(0, 3).toLowerCase()+'-'+tscript_code
-            translation[lang_code] = ''
+        if (translationscripts !== undefined) {
+            for (i=0; i<translationscripts.length; i++) {
+                tscript_code = scriptCode[translationscripts[i]]
+                lang_code = translationlang[i].slice(0, 3).toLowerCase()+'-'+tscript_code
+                translation[lang_code] = ''
+            }
         }
         pos = {}
         tags = {}
@@ -893,14 +923,14 @@ function createSentenceForm(formElement, boundaryID) {
     //                                     '<label for="activeSentenceMorphemicBreak">&nbsp; Add Interlinear Gloss</label><br></br>'
     // // document.getElementById("sentencefield2").innerHTML = "";                                        
     // $(".sentencefield").html(activeSentenceMorphemicBreak);
-    console.log('createSentenceForm(formElement)', formElement)
+    // console.log('createSentenceForm(formElement)', formElement)
     inpt = '';
     activeprojectform = JSON.parse(localStorage.activeprojectform)
     for (let [key, value] of Object.entries(formElement)) {
         // console.log(key, value)
         if (key === 'transcription') {
             var transcriptionScript = formElement[key];
-            console.log('Object.keys(transcriptionScript)[0]', Object.keys(transcriptionScript)[0]);
+            // console.log('Object.keys(transcriptionScript)[0]', Object.keys(transcriptionScript)[0]);
             firstTranscriptionScript = Object.keys(transcriptionScript)[0]
             for (let [transcriptionkey, transcriptionvalue] of Object.entries(transcriptionScript)) {
                 // activeprojectform = JSON.parse(localStorage.getItem('activeprojectform'));
@@ -984,7 +1014,7 @@ function createSentenceForm(formElement, boundaryID) {
         var activeTranslationField = '<input type="checkbox" id="activeTranslationField" name="activeTranslationField" value="false" onclick="activeTranslationLangs()" checked disabled>'+
                                         '<label for="activeTranslationField">&nbsp; Add Translation</label><br></br>'+
                                         '<div id="translationlangs" style="display: block;"></div>';
-        document.getElementById("translationfield2").innerHTML = "";                                
+        document.getElementById("translationfield2").innerHTML = "";
         $(".translationfield1").append(activeTranslationField);
         translationLang = formElement[key];
         // console.log(translationLang)
@@ -993,14 +1023,15 @@ function createSentenceForm(formElement, boundaryID) {
         translangcount = -1
         for (let [translationkey, translationvalue] of Object.entries(translationLang)) {
             translangcount += 1
-            console.log(translationkey, translationvalue);
+            // console.log(translationkey, translationvalue);
             translationkey = translationkey.split('-')[1]
             inpt += '<div class="form-group">'+
                     '<label for="Translation_'+ translationkey +'">Translation in '+ translang[translangcount] +'</label>'+
                     '<input type="text" class="form-control" id="Translation_'+ translationkey +'"'+ 
                     'placeholder="Translation '+ translationkey +'" name="translation_'+ translationkey + '"'+
-                    'value="'+ translationvalue +'" required>'+
-                    '</div></div>';          
+                    'value="'+ translationvalue +'">'+
+                    // 'value="'+ translationvalue +'" required>'+
+                    '</div></div>';
         }
         document.getElementById("translationlangs").innerHTML = "";
         $('#translationlangs').append(inpt);
@@ -1432,7 +1463,7 @@ function ipaFocus(x) {
         }
         meeteiStringList.push(meeteiChar)
     }
-    console.log(meeteiStringList.join(' '))
+    // console.log(meeteiStringList.join(' '))
     meeteiString = meeteiStringList.join(' ')
     document.getElementById('meetei').value = meeteiString
 }

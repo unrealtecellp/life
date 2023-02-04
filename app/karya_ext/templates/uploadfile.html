@@ -1,0 +1,54 @@
+{% extends "karyaextlinks.html" %}
+
+{% block title %}
+  Upload Access Code
+{% endblock title %}
+
+{% block styles %}
+  {{super()}}
+{% endblock %}
+  
+{% block app_content %}
+  <!-- <button type="button" class="btn btn-lg btn-info" onclick="window.location.href='{{ url_for('karya_bp.home_insert') }}';">Karya Extension</button> -->
+  <!-- <br>
+  <br> -->
+  {% if projectName is defined %}
+  <h4>
+      Project Name : {{ projectName }}   
+      <br> 
+      <br> 
+  </h4>
+  {% endif %}
+
+  <form action="{{ url_for('karya_bp.uploadfile') }}" method="POST" enctype="multipart/form-data"> 
+    
+    <div id="uploadaccode"></div>
+
+
+    <div class="form-group">
+      <label for="idtask">Task :</label><br>                           
+      <select class="task" id="idtask" name="task"  style="width:55%" required></select><br>
+    </div> 
+
+    <div class="form-group">
+      <label for="idphase">Phase :</label><br>
+      <input type="number" name = "phase" id="idphase" placeholder="--Phase--" required>
+    </div>
+    <div class="form-group">
+      <input type="checkbox" name = "fetchdata" id="idfetchdata">
+      <label for="idfetchdata">Check this if you will use these access code(s) to sync Karya data with LiFE</label>
+    </div>
+    
+    <label for="idaccesscodefile">Upload Access Codes (in CSV format) :</label><br>
+    <input type="file" id="idaccesscodefile" name="accesscodefile" required>
+    <br>        
+    <input class="btn btn-lg btn-primary create" id="submit" type="submit" value="Submit" >
+  </form>
+{% endblock %}
+
+{% block scripts %}
+  {{super()}}
+  <script src="{{url_for('.static', filename='speaker_select2_dropdown.js')}}"></script>
+  <script src="{{url_for('.static', filename='uploadaccesscode.js')}}"></script>
+  <script type="text/javascript">uploadaccesscodeform({{ uploadacesscodemetadata | tojson | safe }}, {{ projecttype | tojson | safe }});</script>
+{% endblock %}

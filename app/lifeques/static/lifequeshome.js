@@ -59,6 +59,13 @@ $("#quesmanualentrybtn").click(function() {
     var z = '';
     hidedisplaydiv(x, y, z)
     $('#beforefield').empty();
+    var transcriptioncheckbox = document.getElementById("idincludetranscription")
+    if (transcriptioncheckbox.checked) {
+        transcriptioncheckbox.checked = false;
+        translangscriptid =  document.getElementById("idtranscriptionlangscript")
+        translangscriptid.style.display = "none";
+    }
+    // document.getElementById("newquestionnaireform").reset();
 });
 
 $("#derivefromquesselect").change(function(){

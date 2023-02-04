@@ -14,7 +14,7 @@ def createdummyques(questionnaires,
         save_ques_form (_type_): _description_
         current_username (_type_): _description_
     """
-
+    # pprint(save_ques_form);
     dummy_ques = {
             "username": current_username,
             "projectname": projectname,
@@ -23,23 +23,11 @@ def createdummyques(questionnaires,
             "lastUpdatedBy": "",
             "quesdeleteFLAG": "",
             "quessaveFLAG": "",
-            "prompt": {
-                "text": {
-                    "content": {},
-                    "000000": {
-                        "startindex": "",
-                        "endindex": ""
-                    }
-                }
-            }
+            "prompt": {}
         }
-    prompt_lang = {}
-    for lang in save_ques_form['Language'][1]:
-        prompt_lang[lang] = ''
-        dummy_ques['prompt']['text']['content'][lang] = ''
-        dummy_ques['prompt']['text']['000000'][lang] = '' 
+
     for key, value in save_ques_form.items():
-        print(key, value)
+        # print(key, value)
         if (key == 'Script' or
             key == 'username' or
             key == 'projectname'):
@@ -49,25 +37,73 @@ def createdummyques(questionnaires,
             dummy_ques['prompt'][key] = []
         elif key == 'Elicitation Method':
             dummy_ques['prompt'][key] = ''
-        elif (key == 'Transcription'):
-            transcription = {
-                "audioId": "",
-                "audioFilename": "",
-                "speakerId": "",
-                "textGrid": {
-                    "sentence": {
-                        "000000": prompt_lang
-                    }
-                }
-            }
-            dummy_ques['prompt']['Transcription'] = transcription
         elif (key == 'Prompt Type'):
-            for ptype in value[1]:
-                dummy_ques['prompt'][ptype] = {
-                                                "fileId": "",
-                                                "filename": "",
-                                                "Instruction": ""
-                                            }
+            content = {}
+            for prompt_key, prompt_value in value[1].items():
+                # print(prompt_key, prompt_value)
+                prompt_lang = prompt_key
+                prompt_lang_script = save_ques_form['LangScript'][1][prompt_lang]
+                content[prompt_lang] = {}
+                # print(prompt_lang, prompt_lang_script, content)
+                for prompt_type_key, prompt_type_value in prompt_value.items():
+                    # print(prompt_type_key, prompt_type_value, prompt_type_value[0], prompt_type_value[1])
+                    if (prompt_type_key == 'Text'):
+                        content[prompt_lang]['text'] = {
+                                                        "000000": {
+                                                            "startindex": "",
+                                                            "endindex": "",
+                                                            "textspan": {
+                                                                prompt_lang_script: ""
+                                                            }
+                                                        }
+                                                    }
+                    elif (prompt_type_key == 'Audio'):
+                        content[prompt_lang]['audio'] =  {
+                                                            "fileId": "",
+                                                            "filename": ""
+                                                        }
+                        if (prompt_type_value[1] != '' and prompt_type_value[1] != 'text'):
+                            content[prompt_lang]['audio']['instructions'] = ''
+                        if (prompt_type_value[0] == 'waveform'):
+                            content[prompt_lang]['audio']['textGrid'] = {
+                                                                            "sentence": {
+                                                                                "000000": {
+                                                                                    "startindex": "",
+                                                                                    "endindex": "",
+                                                                                    "transcription": {
+                                                                                        prompt_lang_script: ""
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        }
+                    elif (prompt_type_key == 'Multimedia'):
+                        content[prompt_lang]['multimedia'] =  {
+                                                                "fileId": "",
+                                                                "filename": ""
+                                                            }
+                        if (prompt_type_value[1] != '' and prompt_type_value[1] != 'text'):
+                            content[prompt_lang]['multimedia']['instructions'] = ''
+                        if (prompt_type_value[0] == 'waveform'):
+                            content[prompt_lang]['multimedia']['textGrid'] = {
+                                                                                "sentence": {
+                                                                                    "000000": {
+                                                                                        "startindex": "",
+                                                                                        "endindex": "",
+                                                                                        "transcription": {
+                                                                                            prompt_lang_script: ""
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                            }
+                    elif (prompt_type_key == 'Image'):
+                        content[prompt_lang]['image'] =  {
+                                                                "fileId": "",
+                                                                "filename": ""
+                                                            }
+                        if (prompt_type_value[1] != '' and prompt_type_value[1] != 'text'):
+                            content[prompt_lang]['image']['instructions'] = ''
+                # pprint(content)
+            dummy_ques['prompt']['content'] = content
         elif ('Custom Field' in key):
             dummy_ques['prompt'][key] = ''
         # else:
@@ -76,4 +112,3 @@ def createdummyques(questionnaires,
     # pprint(dummy_ques)
 
     questionnaires.insert(dummy_ques)
-    

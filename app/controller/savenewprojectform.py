@@ -17,7 +17,7 @@ def savenewprojectform(projectsform,
         _type_: _description_
     """
     
-    print(f'{"#"*80}\nprojectFormData\n{project_form_data}')
+    # print(f'{"#"*80}\nprojectFormData\n{project_form_data}')
     project_form = {}
     project_form['username'] = current_username
     project_form['projectname'] = projectname
@@ -62,6 +62,6 @@ def savenewprojectform(projectsform,
     project_form['Transcription Script'] = project_form['Lexeme Form Script']
     project_form['Translation Language'] = project_form['Gloss Language']
     project_form['Translation Script']  = project_form['Gloss Script']
-    print(project_form)
+    # print(project_form)
     # when testing comment these to avoid any database update/changes
     projectsform.insert(project_form)

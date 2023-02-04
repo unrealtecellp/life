@@ -6,6 +6,7 @@ from pprint import pprint
 def savequesaudiofiles(mongo,
                     projects,
                     userprojects,
+                    projectsform,
                     questionnaires,
                     projectowner,
                     activeprojectname,
@@ -27,8 +28,9 @@ def savequesaudiofiles(mongo,
         new_audio_file: uploaded audio file details.
     """
 
-    print(last_active_ques_id)
-
+    # print("last_active_ques_id in savequesaudiofiles()", last_active_ques_id)
+    ques_form = projectsform.find_one({"projectname": activeprojectname}, {"_id": 0})
+    # pprint(ques_form)
     new_audio_details = {}
     for kwargs_key, kwargs_value in kwargs.items():
         new_audio_details[kwargs_key] = kwargs_value
@@ -39,13 +41,25 @@ def savequesaudiofiles(mongo,
         updated_audio_filename = (audio_id+
                                     '_'+
                                     audio_filename)
-        
+    
+    transcription_language = []
+    if ('Transcription Language' in ques_form):
+        transcription_language = ques_form["Transcription Language"][1]
+
     try:
         
+        # questionnaire_doc_id = questionnaires.update_one({'quesId': last_active_ques_id},
+        #                                                     {"$set": { 
+        #                                                         "prompt.Transcription.audioFilename": updated_audio_filename,
+        #                                                         "prompt.Transcription.audioId": audio_id,
+        #                                                         "prompt.Transcription.audioLanguage": ques_form["Transcription"][1],
+        #                                                         "prompt.otherInfo": new_audio_details
+        #                                                         }})
         questionnaire_doc_id = questionnaires.update_one({'quesId': last_active_ques_id},
                                                             {"$set": { 
-                                                                "prompt.Transcription.audioFilename": updated_audio_filename,
-                                                                "prompt.Transcription.audioId": audio_id,
+                                                                "prompt.Audio.filename": updated_audio_filename,
+                                                                "prompt.Audio.fileId": audio_id,
+                                                                "prompt.Audio.fileLanguage": transcription_language,
                                                                 "prompt.otherInfo": new_audio_details
                                                                 }})
         # save audio file details in fs collection
@@ -56,8 +70,9 @@ def savequesaudiofiles(mongo,
                         projectname=activeprojectname,
                         updatedBy=current_username)
 
-        return (questionnaire_doc_id, fs_file_id)
+        return (True, questionnaire_doc_id, fs_file_id)
 
     except Exception as e:
         print(e)
         flash(f"ERROR")
+        return (False)

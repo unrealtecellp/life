@@ -5,6 +5,7 @@ def getderivedfromprojectform(projectsform,
     derivedfromprojectform = projectsform.find_one({"projectname": derive_from_project_name},
                                                     {
                                                         "_id": 0,
+                                                        "username": 0,
                                                         "projectname": 0,
                                                         "aboutproject": 0
                                                     })

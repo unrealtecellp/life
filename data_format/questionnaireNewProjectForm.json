@@ -1,0 +1,32 @@
+{
+    "_id":{"$oid":"6370f76bbf61c0a50d2a6ef9"},
+    "username":"alice",
+    "projectname":"Q_Derived_test_108",
+    "Prompt Type":[
+        "prompt",
+        {
+            "Language1":{
+                "Audio":["waveform/file","instruct"],
+                "Multimedia":["waveform/file","instruct"],
+                "Image":["","instruct"],
+                "Text":["text",""]
+            },
+            "Language2":{
+                "Audio":["waveform/file","instruct"],
+                "Multimedia":["waveform/file","instruct"],
+                "Image":["","instruct"],
+                "Text":["text",""]
+            }
+        }
+    ],
+    "Language_Script":[
+        "",
+        {
+            "English":"Latin",
+            "Hindi": "Devanagari"
+        }
+    ],
+    "Target":["multiselect",["on"]],
+    "Elicitation Method":["select",["Translation","Narration","Role-Play"]],
+    "Domain":["multiselect",["General","Education","Agriculture","Science-Technology"]]
+}

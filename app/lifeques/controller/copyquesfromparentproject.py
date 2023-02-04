@@ -3,6 +3,7 @@
 from datetime import datetime
 import re
 from pprint import pprint
+import jsondiff
 
 def quesmetadata():
     # create quesId
@@ -18,14 +19,20 @@ def copyquesfromparentproject(projects,
                                 newprojectname,
                                 current_username):
 
-    try:
+    # try:
         # get "newproject" questionnaire form
         projectform = projectsform.find_one({"projectname": newprojectname}, {"_id": 0})
         all_derived_ques = questionnaires.find({"projectname": derivedfromprojectname})
+        # derivefromprojectform = projectsform.find_one({"projectname": derivedfromprojectname}, {"_id": 0})
         questionnaireIds = []
 
+        # print(jsondiff.diff(derivefromprojectform, projectform))
+
+        # print("LINE No. 27", projectform)
+
         for derived_ques in all_derived_ques:
-            print('line 25: ', derived_ques)
+            if ("dummy" in derived_ques['quesId']): continue
+            # print('line 31: ', derived_ques)
             del derived_ques["_id"]
 
             derived_ques["username"] = current_username
@@ -33,59 +40,160 @@ def copyquesfromparentproject(projects,
             derived_ques["lastUpdatedBy"] = current_username
             derived_ques["quesdeleteFLAG"] = 0
             derived_ques["quessaveFLAG"] = 0
+            derived_ques["derivedfromprojectdetails"] = {
+                "derivedfromprojectname": derivedfromprojectname,
+                "quesId": derived_ques["quesId"]
+            }
             quesId = quesmetadata()
             derived_ques["quesId"] = quesId
             questionnaireIds.append(quesId)
-            # testquesdata = questionnaires.find_one({"quesId": "Q20221030143006093877"}, {"_id": 0})
-            # pprint(testquesdata)
+        #     # testquesdata = questionnaires.find_one({"quesId": "Q20221030143006093877"}, {"_id": 0})
+        #     # pprint(testquesdata)
+        #     print("LINE NO. 48")
             derived_quesprompt = derived_ques['prompt']
-            langlist = projectform['Language'][1]
-            print()
+            derived_quesprompt_content = derived_quesprompt['content']
+            lang_script = projectform['LangScript'][1]
+            lang_list = list(lang_script.keys())
+            for lang in lang_list:
+                if (lang in derived_quesprompt_content): continue
+                else:
+                    content = {}
+                    # print(lang)
+                    prompt_lang = lang
+                    prompt_lang_script = lang_script[prompt_lang]
+                    prompt_value = projectform['Prompt Type'][1][prompt_lang]
+                    content[prompt_lang] = {}
+                    # print(prompt_lang, prompt_lang_script, content)
+                    for prompt_type_key, prompt_type_value in prompt_value.items():
+                        # print(prompt_type_key, prompt_type_value, prompt_type_value[0], prompt_type_value[1])
+                        if (prompt_type_key == 'Text'):
+                            content[prompt_lang]['text'] = {
+                                                            "000000": {
+                                                                "startindex": "",
+                                                                "endindex": "",
+                                                                "textspan": {
+                                                                    prompt_lang_script: ""
+                                                                }
+                                                            }
+                                                        }
+                        elif (prompt_type_key == 'Audio'):
+                            content[prompt_lang]['audio'] =  {
+                                                                "fileId": "",
+                                                                "filename": ""
+                                                            }
+                            if (prompt_type_value[1] != '' and prompt_type_value[1] != 'text'):
+                                content[prompt_lang]['audio']['instructions'] = ''
+                            if (prompt_type_value[0] == 'waveform'):
+                                content[prompt_lang]['audio']['textGrid'] = {
+                                                                                "sentence": {
+                                                                                    "000000": {
+                                                                                        "startindex": "",
+                                                                                        "endindex": "",
+                                                                                        "transcription": {
+                                                                                            prompt_lang_script: ""
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                            }
+                        elif (prompt_type_key == 'Multimedia'):
+                            content[prompt_lang]['multimedia'] =  {
+                                                                    "fileId": "",
+                                                                    "filename": ""
+                                                                }
+                            if (prompt_type_value[1] != '' and prompt_type_value[1] != 'text'):
+                                content[prompt_lang]['multimedia']['instructions'] = ''
+                            if (prompt_type_value[0] == 'waveform'):
+                                content[prompt_lang]['multimedia']['textGrid'] = {
+                                                                                    "sentence": {
+                                                                                        "000000": {
+                                                                                            "startindex": "",
+                                                                                            "endindex": "",
+                                                                                            "transcription": {
+                                                                                                prompt_lang_script: ""
+                                                                                            }
+                                                                                        }
+                                                                                    }
+                                                                                }
+                        elif (prompt_type_key == 'Image'):
+                            content[prompt_lang]['image'] =  {
+                                                                    "fileId": "",
+                                                                    "filename": ""
+                                                                }
+                            if (prompt_type_value[1] != '' and prompt_type_value[1] != 'text'):
+                                content[prompt_lang]['image']['instructions'] = ''
+                derived_ques['prompt']['content'][prompt_lang] = content[prompt_lang]
+        #     transcriptionlanglist = projectform['Transcription Language'][1]
+        #     print()
 
-            for key, value in projectform.items():
-                print(key, value)
-                if (key == "Language"):
-                    for k, v in derived_quesprompt['text'].items():
-                        for lang in value[1]:
-                            if lang not in v:
-                                derived_quesprompt['text'][k][lang] = ''
-                elif (key == "Prompt Type"):
-                    for ptype in value[1]:
-                        if (ptype in derived_quesprompt):
-                            continue
-                        else:
-                            pt = {'fileId': '', 'filename': ''}
-                            if ("instruction" in projectform):
-                                pt['instruction'] = ''
-                        derived_quesprompt[ptype] = pt
-                if ("Transcription" in derived_quesprompt and
-                    "Transcription" not in projectform):
-                    derived_quesprompt["Transcription"] = {
-                                    'audioFilename': '',
-                                    'audioId': '',
-                                    'speakerId': '',
-                                    'textGrid': {'sentence': {'000000': {}}}
-                    }
-                    for l in langlist:
-                        derived_quesprompt["Transcription"]['textGrid']['sentence']['000000'][l] = ''
-                if ("Target" in derived_quesprompt and
-                    "Target" not in projectform):
-                    derived_quesprompt["Target"] = {[]}
+        #     for key, value in projectform.items():
+        #         print("LINE NO. 54", key, value)
+        #         if (key == "Language"):
+        #             for k, v in derived_quesprompt['text'].items():
+        #                 for lang in value[1]:
+        #                     if lang not in v:
+        #                         derived_quesprompt['text'][k][lang] = ''
+        #         elif (key == "Prompt Type"):
+        #             # print('LINE 59:', key)
+        #             for ptype in value[1]:
+        #                 # if (ptype in derived_quesprompt):
+        #                 #     print('LINE 62:', ptype)
+        #                 #     continue
+        #                 # else:
+        #                 print('LINE 63:', ptype)
+        #                 pt = {'fileId': '',
+        #                         'filename': '',
+        #                         'fileLanguage': transcriptionlanglist,
+        #                         'textGrid': {'sentence': {'000000': {}}}}
+        #                 if ("Transcription" in projectform):
+        #                     pt['textGrid']['sentence']['000000']['start'] = ''
+        #                     pt['textGrid']['sentence']['000000']['end'] = ''
+        #                     transcription = {}
+        #                     for l in transcriptionlanglist:
+        #                         transcription[l] = ''
+        #                     pt['textGrid']['sentence']['000000']['transcription'] = transcription
+        #                 if ("instruction" in projectform):
+        #                     pt['instruction'] = ''
+        #                 derived_quesprompt[ptype] = pt
+        #                 print('LINE 78:', pt)
+        #                 print('LINE 79:', derived_quesprompt)
+                
+        #         # ("Transcription" not in derived_quesprompt or
+        #         #     "Transcription" in derived_quesprompt)):
+        #         # if ("Transcription" in projectform):
+                    
+        #         #     derived_quesprompt["Transcription"] = {
+        #         #                     'audioFilename': '',
+        #         #                     'audioId': '',
+        #         #                     'audioLanguage': transcriptionlanglist,
+        #         #                     'speakerId': '',
+        #         #                     'textGrid': {'sentence': {'000000': {}}}
+        #         #     }
+        #         #     derived_quesprompt["Transcription"]['textGrid']['sentence']['000000']['start'] = ''
+        #         #     derived_quesprompt["Transcription"]['textGrid']['sentence']['000000']['end'] = ''
+        #         #     transcription = {}
+        #         #     for l in transcriptionlanglist:
+        #         #         transcription[l] = ''
+        #         #     derived_quesprompt["Transcription"]['textGrid']['sentence']['000000']['transcription'] = transcription
+                
+        #         if ("Target" in derived_quesprompt and
+        #             "Target" not in projectform):
+        #             derived_quesprompt["Target"] = {[]}
             
-            derived_ques["prompt"] = derived_quesprompt
-            pprint(derived_ques)
+        #     derived_ques["prompt"] = derived_quesprompt
+        #     # pprint(derived_ques)
 
             questionnaires.insert(derived_ques)
-        print('questionnaireIds', questionnaireIds)
+        # # print('questionnaireIds', questionnaireIds)
         projects.update_one({"projectname": newprojectname},
                             {
                                 "$set":{
-                                    "questionnaireIds": questionnaireIds
+                                    "questionnaireIds": questionnaireIds,
+                                    "lastActiveId."+current_username+"."+newprojectname: questionnaireIds[-1]
                                 }
                             })
-    except:
-        pass
-    
+    # except Exception as e:
+    #     print(e)
+
         
         
 

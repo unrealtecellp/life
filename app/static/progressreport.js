@@ -7,7 +7,7 @@ $(document).ready(function() {
             progressreport = data.progressreport
             // console.log('qwaaszxzx');
             if (progressreport !== '') {
-                console.log(progressreport);
+                // console.log(progressreport);
                 progressreporttable = '';
                 count = 0;
                 progressreporttable += '<div class="row"><div class="col-xs-12">';
@@ -32,7 +32,7 @@ $(document).ready(function() {
                 remainingSum = 0;
                 for (let [username, usersharedetails] of Object.entries(progressreport)) {
                     for (let [speakername, commentstats] of Object.entries(usersharedetails)) {
-                        console.log(speakername, username, commentstats)
+                        // console.log(speakername, username, commentstats)
                         
                         total = commentstats[0]
                         totalSum += total
@@ -41,7 +41,7 @@ $(document).ready(function() {
                         remaining = commentstats[2]
                         remainingSum += remaining
                         percentcomplete = completed/total*100;
-                        console.log(percentcomplete);
+                        // console.log(percentcomplete);
                         if (percentcomplete <= 10) {
                             completioncolor = 'danger';
                         }

@@ -2,7 +2,7 @@ var usersToShare = ''
 var speakersToShare = ''
 var shareuserlist = []
 var sharespeakerlist = []
-var shareModeList = ['view', 'download', 'edit', 'add', 'delete']
+var shareModeList = ['removeallaccess', 'view', 'download', 'edit', 'add', 'delete']
 var shareMode = ''
 
 // share project button on dictionary view page
@@ -27,7 +27,7 @@ $(document).ready(function() {
         localStorage.setItem("sharespeakerlist", JSON.stringify(sharespeakerlist));
         $('#shareProjectSelect').append(usersToShare)
         $('#shareSpeakerSelect').append(speakersToShare)
-        for (i=0; i<=sharemodecount;i++) {
+        for (i=0; i<=sharemodecount+1;i++) {
           // console.log(shareModeList[i]);
           if (shareModeList[i] !== undefined) {
             shareMode += '<input type="radio" id="'+shareModeList[i]+'" name="sharemode" value="'+i+'">'+
