@@ -3510,17 +3510,31 @@ def logout():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     userlogin = mongo.db.userlogin                          # collection of users and their login details
+    userProfile = {}
+    excludeFormFields = ['username', 'password', 'password2', 'csrf_token', 'submit']
     dummyUserandProject()
     if current_user.is_authenticated:
         # print(current_user.get_id())
         return redirect(url_for('home'))
     form = RegistrationForm()
     if form.validate_on_submit():
+        print(form)
+        for form_data in form:
+            print(form_data)
+            print(type(form_data))
+            print(form_data.data)
+            if (form_data.name not in excludeFormFields):
+                userProfile[form_data.name] = form_data.data
+        print(userProfile)
         # user = UserLogin(username=form.username.data)
         password = generate_password_hash(form.password.data)
         # print(user, password)
 
-        userlogin.insert({"username": form.username.data, "password": password})
+        userlogin.insert({"username": form.username.data,
+                            "password": password, 
+                            'userProfile': userProfile,
+                            'userSince': datetime.now(), 
+                            'isActive': 0})
 
         userprojects = mongo.db.userprojects              # collection of users and their respective projectlist
         # userprojects.insert({'username' : form.username.data, 'myproject': [], \
