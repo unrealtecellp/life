@@ -3474,7 +3474,7 @@ def activeprojectname():
 # user login form route
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    # userlogin = mongo.db.userlogin                          # collection of users and their login details
+    userlogin = mongo.db.userlogin                          # collection of users and their login details
     dummyUserandProject()
     if current_user.is_authenticated:
         return redirect(url_for('home'))
@@ -3486,6 +3486,17 @@ def login():
         if user is None or not user.check_password(form.password.data):
             flash('Invalid username or password')
             return redirect(url_for('login'))
+        isUserActive = userlogin.find_one({'username': form.username.data }, {"_id": 0, "isActive": 1})
+        # print(len(isUserActive))
+        if (len(isUserActive) != 0):
+            isUserActive = isUserActive['isActive']
+            if (isUserActive):
+                pass
+                # print(isUserActive)
+                # print('123')
+            else:
+                flash('Please wait your account will be active in some time')
+                return redirect(url_for('login'))
         login_user(user, force=True)
         next_page = request.args.get('next')
         if not next_page or url_parse(next_page).netloc != '':
@@ -3518,14 +3529,14 @@ def register():
         return redirect(url_for('home'))
     form = RegistrationForm()
     if form.validate_on_submit():
-        print(form)
+        # print(form)
         for form_data in form:
-            print(form_data)
-            print(type(form_data))
-            print(form_data.data)
+            # print(form_data)
+            # print(type(form_data))
+            # print(form_data.data)
             if (form_data.name not in excludeFormFields):
                 userProfile[form_data.name] = form_data.data
-        print(userProfile)
+        # print(userProfile)
         # user = UserLogin(username=form.username.data)
         password = generate_password_hash(form.password.data)
         # print(user, password)
