@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block title %}
+Home
+{% endblock title %}
+
+{% block styles %}
+{{super()}}
+<link href="{{url_for('.static', filename='home.css')}}" rel="stylesheet" />
+{% endblock %}
+
+
+{% block app_content %}
+   <h2>Linguistic Field Data Management and Analysis System<br>[LiFE]</h2>
+   <br>
+   <hr>
+   <div>
+   <div id="activeProject">
+    <h3>Create New Project</h3>
+    
+    <!-- <button type="button" class="btn btn-lg btn-success" onclick="window.location.href='{{ url_for('newproject') }}';">Derived New Project</button> -->
+    
+    <button type="button" id="questionnaire" class="btn btn-lg btn-danger" onclick="window.location.href='{{ url_for('lifeques.home') }}';">Questionnaire</button>
+    <button type="button" id="data" class="btn btn-lg btn-info" onclick="window.location.href='{{ url_for('lifedata.home') }}';">Data</button>
+    <button type="button" id="lexicon" class="btn btn-lg btn-success" onclick="window.location.href='{{ url_for('newproject') }}';">Lexicon</button>
+    <button type="button" id="models" class="btn btn-lg btn-warning" onclick="window.location.href='{{ url_for('lifemodels.home') }}';">Models</button>
+    
+    <button type="button" id="karya" class="btn btn-lg btn-info pull-right" onclick="window.location.href='{{ url_for('karya_bp.home_insert') }}';">Karya Extension</button>
+    <button type="button" class="btn btn-lg btn-primary pull-right" onclick="window.location.href='{{ url_for('easyAnno.home') }}';" style="margin-right: 4px;">easyAnno</button>
+    
+    <br/><br/>
+    <hr/>
+    <div id="allprojectslist"></div>
+    <br>
+    {% if data|length > 0 %}
+    <h3>Active Project: {{ activeprojectname }}</h3>
+    
+    <div>    
+        <button type="button" class="btn btn-lg btn-primary" id="idhomevieweditbtn">View/Edit Project</button>
+        {% if  shareinfo['sharechecked'] == 'true' %}
+          <button type="button" id="shareproject" class="btn btn-lg btn-danger" data-toggle="modal" data-target="#myShareProjectModal">
+              Share Project
+          </button>
+        {% endif %}
+        {% if  shareinfo['sharemode']|int >= 1 %}
+        <button type="button" class="btn btn-lg btn-warning" onclick="window.location.href='{{ url_for('downloadproject') }}';">Download Project</button>
+        <button type="button" class="btn btn-lg btn-info" onclick="window.location.href='{{ url_for('downloaddictionary') }}';">Download Dictionary</button>
+        {% endif %}
+        <!-- <div class="assignkaryaaccesscodecount pull-right"></div>
+        <div>
+        <button type="button" class="btn btn-lg btn-info pull-right assignkaryaaccesscodebtn" data-toggle="modal" data-target="#assignKaryaAccessCodeModal">
+          Assign Karya Access Code
+        </button>
+      </div> -->
+        <!-- <button type="button" class="btn btn-lg btn-warning downloadProject">Download Project</button> -->
+    </div>
+    </div>
+    </br>
+    </br>
+    <hr>
+   <div id="allProjects">
+    <!-- <h3>All Projects</h3> -->
+
+      {# <table class="table table-sm col-md-6">
+        <tbody>
+            <tr>
+        {% for d in data %}
+            <td><button type="button" class="btn btn-info" id ="{{ d }}" onclick="changeActiveProject('{{ d }}')">{{ d }}</button></td>
+            {% if loop.index is divisibleby 3 %}
+                        </tr>
+                    </tbody>
+                    <tbody>
+                        <tr>
+                {% endif %}
+        {% endfor %}
+        </tr>
+      </tbody>
+    </table> #}
+   </div>
+   {% endif %}
+  <!-- Share Project Modal -->
+  <div class="modal fade" id="myShareProjectModal" tabindex="-1" role="dialog" aria-labelledby="myShareProjectModalLabel">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="myShareProjectModalLabel">Project Name: {{ activeproject }}</h4>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <!-- <div class="col-xs-12">Select A State</div> -->
+            <div class="col-xs-12">
+              <div class="form-group">
+                <select name="" id="shareProjectSelect"  multiple="multiple" style="width: 100%">
+                </select>
+                <br>
+                <br>
+                <select name="" id="shareSpeakerSelect"  multiple="multiple" style="width: 100%">
+                </select>
+                <br>
+                <br>
+                <div class="sharemode"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary shareprojectwith">Share</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Assign Karya Access Code Modal -->
+  <div class="modal fade" id="assignKaryaAccessCodeModal" tabindex="-1" role="dialog" aria-labelledby="assignKaryaAccessCodeModalLabel">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="assignKaryaAccessCodeModalLabel">Project Name: {{ activeproject }}</h4>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <!-- <div class="col-xs-12">Select A State</div> -->
+            <div class="col-xs-12">
+              <form action="{{ url_for('dictionaryview') }}" method="POST" enctype="multipart/form-data">
+                
+                <div id="speakerdetail" class="speakerdetail"></div>
+                <input class="btn btn-primary" id="submit" type="submit" value="Submit">
+              </form>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary savespeakerdata">Save Speaker Data</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- <p class="output"></p>
+<button type="button" class="btn btn-lg btn-primary" id="speak">
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-mic" viewBox="0 0 16 16">
+    <path d="M3.5 6.5A.5.5 0 0 1 4 7v1a4 4 0 0 0 8 0V7a.5.5 0 0 1 1 0v1a5 5 0 0 1-4.5 4.975V15h3a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1h3v-2.025A5 5 0 0 1 3 8V7a.5.5 0 0 1 .5-.5z"/>
+    <path d="M10 8a2 2 0 1 1-4 0V3a2 2 0 1 1 4 0v5zM8 0a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V3a3 3 0 0 0-3-3z"/>
+  </svg>
+  Speak
+</button> -->
+<br>
+<hr>
+
+{% endblock %}
+
+{% block scripts %}
+{{super()}}
+<script src="{{url_for('.static', filename='shareproject.js')}}"></script>
+<script src="{{url_for('.static', filename='shareprojectwith.js')}}"></script>
+<script src="{{url_for('.static', filename='assignkaryaaccesscode.js')}}"></script>
+<script src="{{url_for('.static', filename='home.js')}}"></script>
+<script src="{{url_for('.static', filename='speak.js')}}"></script>
+<script type="text/javascript">allProjects({{ data | tojson | safe }});</script>
+{% endblock %}

@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block title %}
+    New Project
+{% endblock title %}
+
+
+{% block styles %}
+{{super()}}
+<link href="{{url_for('.static', filename='newproject.css')}}" rel="stylesheet" />
+{% endblock %}
+
+{% block app_content %}
+  <h3>Create Form for your Project</h3>
+  <hr>
+  <form action="{{ url_for('newproject') }}" method="POST" enctype="multipart/form-data">
+    <div class="form-group">
+      <label for="projectname">Project Name</label>
+      <input type="text" class="form-control" placeholder="Project Name" name="projectname" required>
+    </div>
+    <br>
+    <div class="container defaultfield">
+    </div>
+    <br>
+    <div class="container LexemeLanguage">
+      <div class="row">
+        <div class="col-md-3">
+          <label for="Lexeme Language">Sentence/Lexeme Language</label>
+          <select class="lexemelanguage" name="Lexeme Language" style="width: 150%" required></select>
+        </div>
+      </div> 
+    </div>  
+    <br>
+    <div class="container Lexemeformscript">
+      <div class="row">
+        <div class="col-md-3"> 
+          <label for="Lexeme Form Script">Transcription/Lexeme Scripts </label>
+          <br>
+          <em>
+            *First option will be used as the headword in lexicon
+            and default script for morphemic break in sentences
+          </em>
+          <select class="lexemeformscript" name="Lexeme Form Script" multiple="multiple" style="width: 150%" required></select>
+        </div>
+      </div> 
+    </div>
+    <br>
+    <div class="container Sensefield">
+      <div class="row">
+        <div class="col-md-3">
+          <label for="Gloss Language">Add Languages and Scripts for Sentence Translation/Lexeme Gloss</label>
+          <p>
+            <em>
+            *English will be automatically added to the sentence translation/lexeme gloss language.
+            If you want to use any sentence translation/lexeme gloss language in addition to English
+            then please select from the following list else leave it blank.
+          </em>
+          </p>
+          <!-- <select class="glosslanguage" name="Gloss Language" multiple="multiple" style="width: 150%"></select> -->
+        </div>
+      </div>
+      <div class="row"> 
+        <div class="col-md-3">
+          <div class="form-group">
+                <button class="btn btn-success" type="button" id="addGlossField"> 
+                  <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 
+                </button>
+          </div>
+        </div>
+      </div>
+    </div>  
+    <br>
+    <div class="container interlinearglossfield">
+      <div class="row">
+        <div class="col-md-3">
+          <p><strong>Add Languages and Scripts for Interlinear Gloss</strong></p>
+          <p>
+            <em>
+            *English will be automatically added.
+          </em>
+          </p>
+        </div>
+      </div>
+      <div class="row"> 
+        <div class="col-md-3">
+          <div class="form-group">
+                <button class="btn btn-success" type="button" id="addInterlinearGlossField"> 
+                  <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 
+                </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <br>
+    <div class="container customfield">
+      <div class="row">
+        <div class="col-md-3">
+          <p><strong>Add Custom Fields for Lexicon</strong></p>
+        </div>
+      </div>
+      <div class="row"> 
+        <div class="col-md-3">
+          <div class="form-group">
+                <button class="btn btn-success" type="button" id="addCustomField"> 
+                  <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 
+                </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <br>
+    <input class="btn btn-lg btn-primary create" id="submit" type="submit" value="Create Form" >
+  </form>
+  <div class="clear"></div>      
+{% endblock %}
+
+{% block scripts %}
+{{super()}}
+<script src="{{url_for('.static', filename='newproject.js')}}"></script>
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block title %}
+    Contact Us
+{% endblock title %}
+
+
+{% block styles %}
+{{super()}}
+<!-- <link href="{{url_for('.static', filename='newproject.css')}}" rel="stylesheet" /> -->
+{% endblock %}
+
+{% block app_content %}
+  <h2>Connect With Us</h2>
+  <hr> 
+    <a href="https://groups.google.com/g/lifeapp" target="_blank">Join Our Google Group</a> 
+{% endblock %}
+
+{% block scripts %}
+{{super()}}
+<!-- <script src="{{url_for('.static', filename='newproject.js')}}"></script> -->
+{% endblock %}

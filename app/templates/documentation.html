@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block title %}
+  Documentation
+{% endblock title %}
+
+
+{% block styles %}
+{{super()}}
+<!-- <link href="{{url_for('.static', filename='newproject.css')}}" rel="stylesheet" /> -->
+{% endblock %}
+
+{% block app_content %}
+  <h2>LiFE - Documentation</h2>
+  <hr> 
+    <a href="https://docs.google.com/document/d/1F_LsKmzF9phZy-QwbzQ4VUVBhva7rb_9I3218RoBCXU/edit?usp=sharing" target="_blank">
+      Documentation
+    </a> 
+{% endblock %}
+
+{% block scripts %}
+{{super()}}
+<!-- <script src="{{url_for('.static', filename='newproject.js')}}"></script> -->
+{% endblock %}

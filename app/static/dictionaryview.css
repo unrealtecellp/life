@@ -1,0 +1,68 @@
+/* .btn {
+    font-size: 16px;
+    padding: 24px 16px;
+  }
+
+  .btn-lg {
+    width: 50%;
+  } */
+
+  /* #enl{
+    background-color: #006600;
+  }
+
+  #iml{
+    background-color: #661aff;
+  }
+
+  #nlfs{
+    background-color: #3399ff;
+  }
+
+  #nlfn{
+    background-color: #ff9933;
+  }
+
+  #dl{
+    background-color: #cc0000;
+  }
+
+  #ved{
+    background-color: #faa1a1;
+  }
+
+  #ped{
+    background-color: #996600;
+  }
+
+  #ee{
+    background-color: #cca300;
+  }
+
+  #sv{
+    background-color: #46d1ff;
+  } */
+
+
+table {
+  border-spacing: 0;
+  width: 100%;
+  border: 1px solid #ddd;
+}
+
+th {
+  cursor: pointer;
+}
+
+/* .download{
+  float: center;
+  margin: 10px;
+} */
+
+.deleteproject{
+  float: right;
+}
+
+.multipledelete{
+  float: right;
+}

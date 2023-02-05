@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block title %}
+  Questionnaire
+{% endblock title %}
+
+
+{% block styles %}
+{{super()}}
+{% endblock %}
+
+{% block app_content %}
+<div class="row">
+    <div class="col-md-9">
+      {% if projectName is defined %}
+        <h4>Project Name : {{ projectName }}</h4><br>
+      {% endif %}
+      <button type="button" id="quesprogressreport" class="btn btn-lg btn-warning" data-toggle="modal" data-target="#myProgressReportModal" disabled>
+        Progress Report
+      </button>
+      <br>
+    </div>
+    <div class="col-md-3 pull-right">
+      {% if  shareinfo['sharemode']|int >= 3 %}
+        <a href="{{url_for('lifeques.downloadformexcel')}}">
+          <button type="button" class="btn btn-primary downloadquesform">
+            Download Questionnaire Entry/Edit Form
+            <i class="fa fa-download" aria-hidden="true"></i>
+          </button>
+        </a>
+        <br>
+        <form name="newquesupload" action="{{url_for('lifeques.uploadquesfiles')}}" method="POST" enctype="multipart/form-data">
+          <input type="file" class="form-control" id="uploadquesfile" name="uploadquesfile" required>
+          <br>
+          <input class="btn btn-primary uploadbtn" type="submit" value="Upload Questionnaire">
+        </form>
+        <a href="https://docs.google.com/spreadsheets/d/17IHUcACEqrZL4AGMuX9dxt1tJST9gtmDocMmKXiy0AY/edit?usp=sharing" target="_blank">
+          Sample File
+        </a>
+      {% endif %}
+    </div>
+
+    <div class="btn-group" role="group">
+      <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        Download Questionnaire
+        <span class="caret"></span>
+      </button>
+      <ul class="dropdown-menu">
+          <li id="json"><a href="#">JSON</a></li>
+          <li id="csv"><a href="#">CSV</a></li>
+          <li id="xlsx"><a href="#">XLSX</a></li>
+          <li id="karyajson"><a href="#">Karya JSON</a></li>
+      </ul>
+    </div>
+</div>
+<hr>
+<div class="row">
+  <div class="col-sm-7 commentIDs">
+      <button type="button" id="uNAnnotated" class="btn btn-light" onclick="unAnnotated()">All Question Ids</button>
+  </div>
+  {% if quesstats is defined %}
+    <div class="col-sm-3 quesStats pull-right">
+      <strong>Total Files: {{ quesstats[0] }}</strong><br> 
+      <strong>Annotated Files: {{ quesstats[1] }}</strong><br>
+      <strong>Remaining Files: {{ quesstats[2] }}</strong><br>
+    </div>
+  {% endif %}
+</div>
+<br>
+<!-- <div class="testfield">
+</div> -->
+<div class="defaultfield">
+</div>
+<!-- <br>
+<div id="questranscriptionwaveform" style="display: none;">
+  <div id="wave-timeline"></div>
+  <div id="waveform"></div>
+  <div id="wave-spectrogram" style="display: none;"></div>
+  <br>
+  <hr>
+  <div class="col-sm-3">
+    <input id="slider" data-action="zoom" type="range" min="0" max="5000" value="0" style="width: 100%">
+  </div>
+  <i class="glyphicon glyphicon-zoom-in"></i>
+  
+  <div class="pull-right">
+    <button type="button" id="deleteboundary" class="btn btn-danger btn-block" data-action="delete-region" disabled>Delete Boundary</button>
+    <br>
+    <button class="btn btn-danger" type="button" id="stopAudio">STOP
+      <span class="audiostop glyphicon glyphicon-stop" aria-hidden="true"></span>
+    </button>
+    <button class="btn btn-primary" type="button" id="playPauseAudio">PLAY/PAUSE
+      <span class="audioplaypause glyphicon glyphicon-play" aria-hidden="true"></span>
+    </button>
+  </div>
+  <br>
+  <hr>
+</div>
+<br> -->
+<div id="questionnaire">
+  <!-- <form action="{{ url_for('lifeques.questranscriptionaudio') }}" method="POST" enctype="multipart/form-data">
+    <div id="questranscriptionaudio"></div>
+    <input class="btn btn-primary pull-right" id="questranscriptionsubmit" type="submit" value="Upload" style="display: none;">
+  </form> -->
+  <br>
+  <hr>
+    <div id="quesform"></div>
+</div>
+
+  <!-- Progress Report Modal -->
+  <div class="modal fade" id="myProgressReportModal" tabindex="-1" role="dialog" aria-labelledby="myProgressReportModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="myProgressReportModalLabel">Project Name: {{ projectName }}</h4>
+        </div>
+        <div class="modal-body">
+          <!-- <div class="col-xs-6"> -->
+            <input id="myInput" class="form-control" type="text" placeholder="Search">
+          <!-- </div> -->
+          <br>
+          <div class="row">
+            <div class="col-xs-12">
+              <div class="form-group">
+                <div class="progressreport"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}
+
+{% block scripts %}
+{{super()}}
+<script src="{{url_for('.static', filename='questionnaire.js')}}"></script>
+<script src="https://unpkg.com/wavesurfer.js"></script>
+<script src="https://unpkg.com/wavesurfer.js/dist/plugin/wavesurfer.timeline.js"></script>
+<script src="https://unpkg.com/wavesurfer.js/dist/plugin/wavesurfer.regions.js"></script>
+<script src="https://unpkg.com/wavesurfer.js/dist/plugin/wavesurfer.minimap.js"></script>
+<script src="{{url_for('.static', filename='quesaudiowaveform.js')}}"></script>
+<script src="{{url_for('.static', filename='downloadquestionnaire.js')}}"></script>
+<script type="text/javascript">createquesform({{ quesprojectform | tojson | safe }});</script>
+{% endblock %}

@@ -1,0 +1,162 @@
+<!-- <!DOCTYPE html>
+<html>
+
+<head>
+
+  <title>Karya Extension</title>
+  
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
+  <script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap.min.js"></script>  
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css" />
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.1/bootstrap3-editable/css/bootstrap-editable.css" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.1/bootstrap3-editable/js/bootstrap-editable.js"></script>
+
+
+
+  <style>
+  
+    h1 {text-align: center;}
+
+    input[type=button]:hover {
+      box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24),0 17px 50px 0 rgba(0,0,0,0.19);
+    }
+    
+    div {
+      border-radius: 20px;
+      background-color: rgba(247, 235, 220, 0.253);
+      padding: 1px;
+    }
+    </style> -->
+  
+<!-- </head> -->
+{% extends "karyaextlinks.html" %}
+
+{% block title %}
+  Karya Extension
+{% endblock title %}
+
+<!-- <body> -->
+
+
+
+
+{% block styles %}
+{{super()}}
+  <link href="{{url_for('.static', filename='home_insert.css')}}" rel="stylesheet" />
+{% endblock %}
+  
+{% block app_content %}
+  {% if projectName is defined %}
+    <h4>
+        Project Name : {{ projectName }}
+    </h4>
+  {% endif %}
+
+  <div>
+
+    <div id="uploadmanage">
+      <br>
+      {% if  shareinfo['sharemode']|int >= 4 %}
+        <input type="button" class="btn btn-lg btn-danger" value="Fetch/Upload Access Code" onclick="window.location.href='{{url_for('karya_bp.uploadfile')}}';">
+      {% endif %}
+
+      <br><br>
+      {% if  shareinfo['sharemode']|int >= 2 %}
+        <input class="btn btn-lg btn-success" type="button" value="Manage Access Code" onclick="window.location.href='{{url_for('karya_bp.homespeaker')}}'; window">
+      {% endif %}
+      <br>
+      <hr>
+    </div>
+    
+    <div class="row karyaaudiodata">
+      {% if  shareinfo['sharemode']|int >= 3 %}
+        <div class="col-md-6 fetchkaryarecording">
+          <h4>Fetch Karya Recordings</h4>
+
+          <form name="fetchdata" method="POST" action="{{url_for('karya_bp.fetch_karya_audio')}}">
+            <!-- <label for="piaccesscode">Access Code: </label> -->
+            <!-- <input type="text" name="access_code" id="piaccesscode" placeholder="Enter Access Code"/> -->
+            <div id="piaccesscode"></div>
+            <br>
+            <div id="idforworker"></div>
+            <br>
+            <!-- <label for="idfor_worker_id">For Speaker: </label>
+            <input type="text" name = "for_worker_id" id="idfor_worker_id" placeholder="Enter Speaker ID"/ required>
+            <br> -->
+            <label for="pimobilenumber">Mobile Number: </label>
+            <input type="text" name = "mobile_number" id="pimobilenumber" placeholder="Enter Mobile Number"/ required>
+            <br>
+            <input type="button" class="btn btn-info" id="getotpid" value="Get OTP">
+            <br>
+            <br>
+            <label for="karyaotp">Enter OTP</label>
+            <input type = "text" name = "karya_otp" id="karyaotp" hidden required/>
+            <br>
+            <br>
+            <input type="submit" class="btn btn-primary" id="fetchaudioid" value="Fetch Audio"> <br>
+
+          </form>
+        </div>
+      {% endif %}
+
+      <!-- <br><br><br><br> -->
+      {% if  shareinfo['sharemode']|int >= 3 %}
+        <div class="col-md-6 uploadkaryarecording pull-right">
+          <h4>Upload Karya Recordings</h4>
+          <form action="{{ url_for('karya_bp.fetch_karya_audio_zip') }}" method="POST" enctype="multipart/form-data">
+
+          <!-- <h2>Fetch access code with metadata</h2>
+              <a href="register_user.html">
+                <button>Fetch access code</button>
+              </a>
+              -->
+            
+              <p>Click on the "Choose File" button to upload a zip file*:<p>
+              <input type="file" id="accesscodefile" name="accesscodefile">
+              <br>
+          
+            <input class="btn btn-primary" id="submit" type="submit" value="Submit" >
+          </form>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- <br><br><br><br> -->
+{% endblock %}
+<!-- </body> -->
+
+{% block scripts %}
+{{super()}}
+<script src="{{url_for('.static', filename='speaker_select2_dropdown.js')}}"></script>
+<script src="{{url_for('.static', filename='fetchaccesscodelist.js')}}"></script>
+<script type="text/javascript">fetchAccessCodeList({{ fetchaccesscodelist | tojson | safe }});</script>
+<script type="text/javascript">karyaSpeakerIdsList({{ karya_speaker_ids | tojson | safe }});</script>
+<script>
+  $(document).ready(function() {
+              $('#getotpid').click(function() {
+                // alert('Clicked')
+                // var acode = document.getElementById("piaccesscode").value;
+                var acode = document.getElementById("access_code").value;
+                var mob = document.getElementById("pimobilenumber").value;
+                // console.log(acode);
+                // console.log(mob)
+                $.getJSON("{{url_for('karya_bp.fetch_karya_otp')}}", {
+                  acode:String(acode), mob:String(mob)
+                  }, function(data) {
+                    // console.log(data)
+                    // alert('DOne!')
+                    // console.log(document.getElementById("getotpid").hidden);
+                    document.getElementById("getotpid").hidden=true;
+                    document.getElementById("fetchaudioid").disabled=false;
+                    document.getElementById("karyaotp").hidden=false;
+                  });
+                  return false;
+              });
+            })
+
+</script>
+{% endblock %} 

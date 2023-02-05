@@ -1,0 +1,77 @@
+{% extends "links.html" %}
+
+{% block title %}
+    Audio Transcription
+{% endblock title %}
+
+
+{% block styles %}
+{{super()}}
+<link href="{{url_for('.static', filename='audiotranscription.css')}}" rel="stylesheet" />
+{% endblock %}
+
+{% block app_content %}
+{% if projectName is defined %}
+    <h4>Project Name : {{ projectName }}</h4><br>
+{% endif %}
+    <p id="subtitle" class="text-center text-info">&nbsp;</p>
+    <div id="wave-timeline"></div>
+    <div id="waveform"></div>
+    <br>
+    <form role="form" name="edit" style="opacity: 0; transition: opacity 300ms linear; margin: 30px 0;">
+        <div class="form-group">
+            <label for="start">Start</label>
+            <input class="form-control" id="start" name="start" />
+        </div>
+
+        <div class="form-group">
+            <label for="end">End</label>
+            <input class="form-control" id="end" name="end" />
+        </div>
+
+        <div class="form-group">
+            <label for="note">Transcription</label>
+            <textarea id="note" class="form-control" rows="3" name="transcription"></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-success btn-block">Save</button>
+        <center><i>or</i></center>
+        <button type="button" class="btn btn-danger btn-block" data-action="delete-region">Delete</button>
+    </form>
+    <form action="{{ url_for('audiotranscription') }}" method="POST" enctype="multipart/form-data">
+        <div class="form-group">
+        </div>    
+        <div id="waveformControl">
+            <button class="btn btn-info btn-lg" type="button" id="previous">
+                <span class="previousaudio glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+                Previous
+            </button>
+            <!-- <button class="btn btn-primary" type="button" id="playAudio">PLAY/PAUSE
+                <span class="audioplaypause glyphicon glyphicon-play" aria-hidden="true"></span>
+            </button>
+            <button class="btn btn-danger" type="button" id="stopAudio">STOP
+                <span class="audiostop glyphicon glyphicon-stop" aria-hidden="true"></span>
+            </button> -->
+            <button class="btn btn-info pull-right btn-lg" type="button" id="next">Next
+                <span class="nextaudio glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+            </button>
+            <br>
+            <br>
+            <button class="btn btn-warning pull-right btn-lg" type="submit" value="Submit" id="save">Save
+                <span class="saveaudio glyphicon glyphicon-floppy-save" aria-hidden="true"></span>
+            </button>
+        </div>
+    </form>
+
+{% endblock %}
+
+{% block scripts %}
+{{super()}}
+<script src="https://unpkg.com/wavesurfer.js"></script>
+<script src="https://unpkg.com/wavesurfer.js/dist/plugin/wavesurfer.timeline.js"></script>
+<script src="https://unpkg.com/wavesurfer.js/dist/plugin/wavesurfer.regions.js"></script>
+<script src="https://unpkg.com/wavesurfer.js/dist/plugin/wavesurfer.minimap.js"></script>
+<script src="{{url_for('.static', filename='audiotranscription.js')}}"></script>
+<script type="text/javascript">myFunction({{ audiofile | tojson | safe }});</script>
+
+{% endblock %}

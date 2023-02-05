@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block title %}
+Download
+{% endblock title %}
+
+
+{% block app_content %}
+<a href="{{url_for('download')}}">Download
+{#    <button type="button" class="btn btn-primary download">Download Project</button>  #}
+<img src="{{ filen }}"/>
+</a><br>
+<a href="{{ filen }}" download>Download
+    {#    <button type="button" class="btn btn-primary download">Download Project</button>  #}
+    <img src="{{ filen }}"/>
+    </a>
+{% endblock %}
