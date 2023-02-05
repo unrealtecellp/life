@@ -74,6 +74,9 @@ scriptCodeJSONFilePath = os.path.join(basedir, 'static/json/scriptCode.json')
 langScriptJSONFilePath = os.path.join(basedir, 'static/json/langScript.json')
 ipatomeeteiFilePath = os.path.join(basedir, 'static/json/ipatomeetei.json')
 
+ADMIN_USER = 'life_admin'
+admin_reminder = f'App admin <<{ADMIN_USER}>> user created! Please create new password for this account to login'
+
 # print(f'{"#"*80}\nBase directory:\n{basedir}\n{"#"*80}')
 
 
@@ -3469,12 +3472,23 @@ def activeprojectname():
 
     return 'OK'
 
+def adminfirstlogin(userlogin, string_password):
+    password = generate_password_hash(string_password)
+        # print(user, password)
 
+    userlogin.update_one({"username": ADMIN_USER},
+                        {'$set':{"password": password, 
+                        'userSince': datetime.now(), 
+                        'isActive': 1}})
+    
+    return password
 # MongoDB Database
 # user login form route
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    userlogin = mongo.db.userlogin                          # collection of users and their login details
+    userlogin = mongo.db.userlogin
+
+    generateadmin(userlogin)                          # collection of users and their login details
     dummyUserandProject()
     if current_user.is_authenticated:
         return redirect(url_for('home'))
@@ -3482,8 +3496,16 @@ def login():
     if form.validate_on_submit():
         # username = userlogin.find_one({"username": form.username.data})
         user = UserLogin(username=form.username.data)
+        password = form.password.data
+        print ('Original password', password)
         # print(user)
-        if user is None or not user.check_password(form.password.data):
+        if user.username == ADMIN_USER:
+            if user.password_hash == '':                                
+                admin_password = adminfirstlogin(userlogin, password)
+                user.password_hash = admin_password
+
+        # print ('Create password', password)
+        if user is None or not user.check_password(password):
             flash('Invalid username or password')
             return redirect(url_for('login'))
         isUserActive = userlogin.find_one({'username': form.username.data }, {"_id": 0, "isActive": 1})
@@ -3515,6 +3537,7 @@ def logout():
         return redirect(url_for('home'))
     except:
         return redirect(url_for('home'))    
+
 
 
 # MongoDB Database
@@ -3563,7 +3586,8 @@ def dummyUserandProject():
     """ Creates dummy user and project if the database has no collection """
     print("Creates dummy user and project if the database has no collection")
     userprojects = mongo.db.userprojects                # collection of users and their projectlist and active project
-    projects = mongo.db.projects                        # collection containing projects name
+    projects = mongo.db.projects
+                            # collection containing projects name
     if len(mongo.db.list_collection_names()) == 0:
         userprojects.insert({'username' : "dummyUser",
                             'myproject': 
@@ -3583,6 +3607,49 @@ def dummyUserandProject():
                         'sharedwith': ['dummyUser'],
                         'projectdeleteFLAG' : 0
                         })
+
+def insertadmin(userlogin):
+    
+    userprojects = mongo.db.userprojects        
+    
+    userlogin.insert ({
+            "username": ADMIN_USER,
+            "password": "",
+            "userProfile": {
+                "username": "",
+                "position": "",
+                "organisation_name": "",
+                "organisation_type": "",
+                "country": "",
+                "city": "",
+                "email": "",
+                "languages": "",
+                "memory_requirement": "",
+                "app_use_reason": ""
+            }
+        })
+
+    userprojects.insert({'username' : ADMIN_USER, 'myproject': {}, \
+        'projectsharedwithme': {}, 'activeprojectname' : ''})
+    
+    flash(admin_reminder)
+    
+
+
+def generateadmin(userlogin):
+    """ Creates admin if the database does not have an admin user """ 
+    
+    if len(mongo.db.list_collection_names()) == 0:
+        insertadmin(userlogin)
+    else:
+        admin_login = userlogin.find_one({'username':ADMIN_USER}, {'password': 1, '_id': 0})
+        if admin_login == None:
+            insertadmin(userlogin)
+        elif admin_login['password'] == '':
+            flash(admin_reminder)
+
+
+
 
 # audio transcription route
 @app.route('/', methods=['GET', 'POST'])
