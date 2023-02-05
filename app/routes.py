@@ -3495,7 +3495,8 @@ def login():
                 # print(isUserActive)
                 # print('123')
             else:
-                flash('Please wait your account will be active in some time')
+                flash('Your request for an account is successfully submitted and is currently under review.')
+                flash('If approved, your account will be active in some time.')
                 return redirect(url_for('login'))
         login_user(user, force=True)
         next_page = request.args.get('next')

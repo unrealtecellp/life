@@ -33,9 +33,9 @@ class RegistrationForm(FlaskForm):
     city = StringField(validators=[DataRequired()], render_kw={'placeholder': 'city'})
     email = StringField(validators=[DataRequired()], render_kw={'placeholder': 'email'})
     languages = StringField(validators=[DataRequired()], render_kw={'placeholder': 'languages'})
-    memory_requirement = RadioField(label='Memory Requirement', validators=[DataRequired()], choices=[('upto100Mb', 'upto 100Mb'), ('upto200Mb', 'upto 200Mb'), ('upto500Mb', 'upto 500Mb'), ('upto1Gb', 'upto 1Gb'), ('greaterThan1Gb', '> 1 Gb')], render_kw={'id': 'memory_requirement'})
-    app_use_reason = TextAreaField(validators=[DataRequired()], description='How you plan to use this app (Please specify clearly as this information will be crucial for creating your account)', render_kw={'placeholder': 'App Use Reason'})
-    submit = SubmitField('Add User')
+    storage_requirement = SelectField(label='Storage Requirement', validators=[DataRequired()], choices=[('upto100Mb', 'upto 100Mb'), ('upto200Mb', 'upto 200Mb'), ('upto500Mb', 'upto 500Mb'), ('upto1Gb', 'upto 1Gb'), ('greaterThan1Gb', '> 1 Gb')], render_kw={'placeholder': 'Storage Requirement'})
+    app_use_reason = TextAreaField(validators=[DataRequired()], description='How you plan to use this app? (Please specify clearly as this information will be crucial for creating your account)', render_kw={'placeholder': 'App Use Reason'})
+    submit = SubmitField('Request Account')
 
     def validate_username(self, username):
         user = userlogin.find_one({'username': username.data})
