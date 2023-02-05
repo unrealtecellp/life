@@ -63,7 +63,7 @@ def home():
     Returns:
         _type_: _description_
     """
-    print('lifeques home')
+    # print('lifeques home')
     
     return render_template("lifequeshome.html")
 
@@ -71,11 +71,23 @@ def home():
 def getprojectslist():
     """_summary_
     """
-    userprojects, = getdbcollections.getdbcollections(mongo, 'userprojects')
+    projects, userprojects = getdbcollections.getdbcollections(mongo,
+                                                                'projects',
+                                                                'userprojects')
     current_username = getcurrentusername.getcurrentusername()
-    projectslist = getcurrentuserprojects.getcurrentuserprojects(current_username, userprojects)
+    projects_list = getcurrentuserprojects.getcurrentuserprojects(current_username, userprojects)
+    ques_projects_list = []
+    for project_name in projects_list:
+        project_type = getprojecttype.getprojecttype(projects, project_name)
+        # filter only questionnaires type project
+        if (project_type == 'questionnaires'):
+            questionnaireIds = projects.find_one({"projectname": project_name},
+                                        {'_id': 0, "questionnaireIds": 1})['questionnaireIds']
+            # filter only project have some data
+            if (len(questionnaireIds) != 0):
+                ques_projects_list.append(project_name)
 
-    return jsonify(projectslist=projectslist)
+    return jsonify(projectslist=ques_projects_list)
 
 @lifeques.route('/newquestionnaireform', methods=['GET', 'POST'])
 def newquestionnaireform():
@@ -390,15 +402,15 @@ def uploadquesfiles():
                 }
     if request.method == 'POST':
         new_ques_file = request.files.to_dict()
-        print(new_ques_file)
-        print(projects,
-                userprojects,
-                questionnaires,
-                activeprojectname,
-                projectowner,
-                basedir,
-                new_ques_file,
-                current_username)
+        # print(new_ques_file)
+        # print(projects,
+        #         userprojects,
+        #         questionnaires,
+        #         activeprojectname,
+        #         projectowner,
+        #         basedir,
+        #         new_ques_file,
+        #         current_username)
         quesstate, quesextra = uploadquesdataexcel.queskeymapping(mongo,
                                                                     projects,
                                                                     userprojects,
@@ -449,7 +461,7 @@ def loadpreviousques():
     # data through ajax
     lastActiveId = request.args.get('data')
     lastActiveId = eval(lastActiveId)
-    print(lastActiveId)
+    # print(lastActiveId)
     latest_ques_id = getnewquesid.getnewquesid(projects,
                                                 activeprojectname,
                                                 lastActiveId,
@@ -473,7 +485,7 @@ def loadnextques():
     # data through ajax
     lastActiveId = request.args.get('data')
     lastActiveId = eval(lastActiveId)
-    print(lastActiveId)
+    # print(lastActiveId)
     latest_ques_id = getnewquesid.getnewquesid(projects,
                                                 activeprojectname,
                                                 lastActiveId,
@@ -512,9 +524,9 @@ def loadunannotext():
 
     lastActiveId = request.args.get('data')
     lastActiveId = eval(lastActiveId)
-    print(lastActiveId)
+    # print(lastActiveId)
     updatequesid = 'lastActiveId.'+current_username+'.'+activeprojectname
-    print(updatequesid)
+    # print(updatequesid)
 
     projects.update_one({"projectname": activeprojectname},
         { '$set' : { updatequesid: lastActiveId }})
@@ -545,9 +557,9 @@ def quespromptfile():
     
     if request.method == "POST":
         prompt_file = request.files.to_dict()
-        print('line no. 494', prompt_file, type(prompt_file))
+        # print('line no. 494', prompt_file, type(prompt_file))
         prompt_type = list(prompt_file.keys())[0].split('_')[1]
-        print(prompt_type)
+        # print(prompt_type)
     # ques_audio_file['Transcription Audio'] = ques_audio_file['Prompt Type Audio']
     savequespromptfile.savequespromptfile(mongo,
                                             projects,

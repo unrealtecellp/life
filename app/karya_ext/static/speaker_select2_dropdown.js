@@ -270,178 +270,191 @@ var task = [
 
 var accesscodefor = [
   {"id": "", "text": ""},
-  {"id": "0", "text": "Data Collection Using Karya"},
-  {"id": "1", "text": "Syncing Karya Recording with LiFE"}
+  {"id": "0", "text": "Data Collection Using Karya"}
+  //{"id": "1", "text": "Syncing Karya Recording with LiFE"}
 ];
 
 $(document).ready(function () {
-  $('.typeofcity').select2({
-    // tags: true,
-    placeholder: '--Type Of City:--',
-    data: TypeOfCity ,
-    allowClear: true,
-    // console.log( "ready!" )
+  $.getJSON(('/karyaext/getsharelevel'), {
+    // asycaccesscode:String(accode)
+    }, function(data) {
+
+      // Add Syncing Option for people with add and above privileges
+      console.log(data)
+      var shareLevel = data.shareinfo.sharemode
+      if (shareLevel > 2) {
+        accesscodefor.push({"id": "1", "text": "Syncing Karya Recording with LiFE"})
+      }
+      console.log(accesscodefor)
+      
+      
+      $('.typeofcity').select2({
+        // tags: true,
+        placeholder: '--Type Of City:--',
+        data: TypeOfCity ,
+        allowClear: true,
+        // console.log( "ready!" )
+      });
+
+      $('#idaccesscodefor').select2({
+        placeholder: '--Access Code For--',
+        data: accesscodefor,
+        // allowClear: true,
+        // console.log( "ready!" )
+      });
+
+      $('#idtask').select2({
+        placeholder: '--Task--',
+        data: task,
+        allowClear: true,
+        // console.log( "ready!" )
+      });
+      
+      $('.target').select2({
+        tags: true,
+        placeholder: '-- Target --',
+        data: target ,
+        allowClear: true,
+        // console.log( "ready!" )
+      });
+
+
+      // $('.elicitationmethod').select2({
+      //   tags: true,
+      //   placeholder: '--Elicitation Method--',
+      //   data: ElicitationMethod ,
+      //   allowClear: true,
+      //   // console.log( "ready!" )
+      // });
+
+      // $('.languages').select2({
+      //   tags: true,
+      //   placeholder: '-- Language --',
+      //   data: OtherLanguagesSpeakerCouldSpeak,
+      //   allowClear: true
+      // });
+
+      // $('.questionnairedomain').select2({
+      //   tags: true,
+      //   placeholder: '-- Questionnire Domain --',
+      //   data: QuestionnaireDomain  ,
+      //   allowClear: true
+      // });
+
+      $('.age').select2({
+        // tags: true,
+        placeholder: '--Age Group--',
+        data:  AgeGroup ,
+        allowClear: true
+      });
+
+      $('.gender').select2({
+        // tags: true,
+        placeholder: '--Gender--',
+        data:  gender,
+        allowClear: true
+      });
+
+      $('.educationlvl').select2({
+        // tags: true,
+        placeholder: '-- Educational Level --',
+        data:  EducationLevel ,
+        allowClear: true
+      });
+
+      $('.educationmediumafter12').select2({
+        tags: true,
+        placeholder: '-- Medium Of Education (After 12ᵗʰ) --',
+        data:  EducationMedium ,
+        allowClear: true
+      });
+
+      $('.educationmediumupto12').select2({
+        tags: true,
+        placeholder: '-- Medium Of Education (Upto 12ᵗʰ) --',
+        data: EducationMedium ,
+        allowClear: true
+      });
+
+      $('.speakerspeaklanguage').select2({
+        tags: true,
+        placeholder: '-- Other Languages Speaker Could Speak --',
+        data: OtherLanguagesSpeakerCouldSpeak,
+        allowClear: true
+      });
+
+      $('.transcriptionscript').select2({
+      tags: true,
+      placeholder: '-- Transcription Scripts --',
+      data: scripts,
+      allowClear: true,
+      // sorter: false 
+    });
+
+    // $('.lexemelanguage').select2({
+    //   // tags: true,
+    //   placeholder: 'Lexeme Languages',
+    //   data: languages,
+    //   allowClear: true
+    // });
+
+    // $('.lexemeformscript').select2({
+    //   tags: true,
+    //   placeholder: 'Lexeme Scripts',
+    //   data: scripts,
+    //   allowClear: true,
+    //   // sorter: false
+    // });
+
+    // // partial solution to the select2 multiselect
+    // $("select").on("select2:select", function (evt) {
+    //   var element = evt.params.data.element;
+    //   console.log(element);
+    //   var $element = $(element);
+    //   $element.detach();
+    //   $(this).append($element);
+    //   $(this).trigger("change");
+    // });
+
+    // $('.glosslanguage').select2({
+    //   // tags: true,
+    //   placeholder: 'Gloss Languages',
+    //   data: languages,
+    //   allowClear: true
+    // });
+
+
+    // $('.transcriptionscript').select2({
+    //   // tags: true,
+    //   placeholder: 'Transcription Scripts',
+    //   data: scripts,
+    //   allowClear: true,
+    //   // sorter: false
+    // });
+
+    // $('.translationlanguage').select2({
+    //   // tags: true,
+    //   placeholder: 'Translation Languages',
+    //   data: languages,
+    //   allowClear: true,
+    //   // sorter: false
+    // });
+
+    // $('.translationscript').select2({
+    //   // tags: true,
+    //   placeholder: 'Translation Scripts',
+    //   data: scripts,
+    //   allowClear: true,
+    //   // sorter: false
+    // });
+    // var fListItems = '<option value="">Field Type</option>';
+
+    // for (var i = 0; i < fieldType.length; i++) {
+    //     fListItems += "<option value='" + fieldType[i].value + "'>" + fieldType[i].name + "</option>";
+    // } 
+
+    // $("#fieldType1").html(fListItems);
   });
-
-  $('#idaccesscodefor').select2({
-    placeholder: '--Access Code For--',
-    data: accesscodefor,
-    allowClear: true,
-    // console.log( "ready!" )
-  });
-
-  $('#idtask').select2({
-    placeholder: '--Task--',
-    data: task,
-    allowClear: true,
-    // console.log( "ready!" )
-  });
-  
-  $('.target').select2({
-    tags: true,
-    placeholder: '-- Target --',
-    data: target ,
-    allowClear: true,
-    // console.log( "ready!" )
-  });
-
-
-  // $('.elicitationmethod').select2({
-  //   tags: true,
-  //   placeholder: '--Elicitation Method--',
-  //   data: ElicitationMethod ,
-  //   allowClear: true,
-  //   // console.log( "ready!" )
-  // });
-
-  // $('.languages').select2({
-  //   tags: true,
-  //   placeholder: '-- Language --',
-  //   data: OtherLanguagesSpeakerCouldSpeak,
-  //   allowClear: true
-  // });
-
-  // $('.questionnairedomain').select2({
-  //   tags: true,
-  //   placeholder: '-- Questionnire Domain --',
-  //   data: QuestionnaireDomain  ,
-  //   allowClear: true
-  // });
-
-  $('.age').select2({
-    // tags: true,
-    placeholder: '--Age Group--',
-    data:  AgeGroup ,
-    allowClear: true
-  });
-
-  $('.gender').select2({
-    // tags: true,
-    placeholder: '--Gender--',
-    data:  gender,
-    allowClear: true
-  });
-
-  $('.educationlvl').select2({
-    // tags: true,
-    placeholder: '-- Educational Level --',
-    data:  EducationLevel ,
-    allowClear: true
-  });
-
-  $('.educationmediumafter12').select2({
-    tags: true,
-    placeholder: '-- Medium Of Education (After 12ᵗʰ) --',
-    data:  EducationMedium ,
-    allowClear: true
-  });
-
-  $('.educationmediumupto12').select2({
-    tags: true,
-    placeholder: '-- Medium Of Education (Upto 12ᵗʰ) --',
-    data: EducationMedium ,
-    allowClear: true
-  });
-
-  $('.speakerspeaklanguage').select2({
-    tags: true,
-    placeholder: '-- Other Languages Speaker Could Speak --',
-    data: OtherLanguagesSpeakerCouldSpeak,
-    allowClear: true
-  });
-
-  $('.transcriptionscript').select2({
-  tags: true,
-  placeholder: '-- Transcription Scripts --',
-  data: scripts,
-  allowClear: true,
-  // sorter: false 
-});
-
-// $('.lexemelanguage').select2({
-//   // tags: true,
-//   placeholder: 'Lexeme Languages',
-//   data: languages,
-//   allowClear: true
-// });
-
-// $('.lexemeformscript').select2({
-//   tags: true,
-//   placeholder: 'Lexeme Scripts',
-//   data: scripts,
-//   allowClear: true,
-//   // sorter: false
-// });
-
-// // partial solution to the select2 multiselect
-// $("select").on("select2:select", function (evt) {
-//   var element = evt.params.data.element;
-//   console.log(element);
-//   var $element = $(element);
-//   $element.detach();
-//   $(this).append($element);
-//   $(this).trigger("change");
-// });
-
-// $('.glosslanguage').select2({
-//   // tags: true,
-//   placeholder: 'Gloss Languages',
-//   data: languages,
-//   allowClear: true
-// });
-
-
-// $('.transcriptionscript').select2({
-//   // tags: true,
-//   placeholder: 'Transcription Scripts',
-//   data: scripts,
-//   allowClear: true,
-//   // sorter: false
-// });
-
-// $('.translationlanguage').select2({
-//   // tags: true,
-//   placeholder: 'Translation Languages',
-//   data: languages,
-//   allowClear: true,
-//   // sorter: false
-// });
-
-// $('.translationscript').select2({
-//   // tags: true,
-//   placeholder: 'Translation Scripts',
-//   data: scripts,
-//   allowClear: true,
-//   // sorter: false
-// });
-// var fListItems = '<option value="">Field Type</option>';
-
-// for (var i = 0; i < fieldType.length; i++) {
-//     fListItems += "<option value='" + fieldType[i].value + "'>" + fieldType[i].name + "</option>";
-// } 
-
-// $("#fieldType1").html(fListItems);
- 
 });
 
 var glossField = 0;

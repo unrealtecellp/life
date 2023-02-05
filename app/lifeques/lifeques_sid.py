@@ -20,7 +20,7 @@ import inspect
 
 lifeques = Blueprint('lifeques', __name__, template_folder='templates', static_folder='static')
 basedir = os.path.abspath(os.path.dirname(__file__))
-print(f"LINE 17: lifeques basedir: {basedir}")
+# print(f"LINE 17: lifeques basedir: {basedir}")
 
 @lifeques.route('/', methods=['GET', 'POST'])
 @lifeques.route('/home', methods=['GET', 'POST'])
@@ -30,7 +30,7 @@ def home():
     Returns:
         _type_: _description_
     """
-    print('lifeques home')
+    # print('lifeques home')
     
     return render_template("lifequeshome.html")
 
@@ -92,15 +92,15 @@ def newquestionnaireform():
             # pprint(derivedfromprojectform)
             all_keys = set(list(derivedfromprojectform.keys()) + list(new_ques_form.keys()))
             # for key, value in derivedfromprojectform.items():
-            print(all_keys)
+            # print(all_keys)
             for key in all_keys:
                 if (key in derivedfromprojectform):
                     derivedfromprojectformvalue = derivedfromprojectform[key][1]
-                    print(key, derivedfromprojectformvalue)
+                    # print(key, derivedfromprojectformvalue)
                     if isinstance(derivedfromprojectformvalue, list):
                         if (key in new_ques_form):
                             derivedfromprojectformvalue.extend(new_ques_form[key])
-                        print(key, derivedfromprojectformvalue)
+                        # print(key, derivedfromprojectformvalue)
                         if("Transcription" in key): continue
                         if (key == "Language" or key == "Script"):
                             new_ques_form[key] = list(derivedfromprojectformvalue)
@@ -319,15 +319,15 @@ def uploadquesfiles():
                 }
     if request.method == 'POST':
         new_ques_file = request.files.to_dict()
-        print(new_ques_file)
-        print(projects,
-                userprojects,
-                questionnaires,
-                activeprojectname,
-                projectowner,
-                basedir,
-                new_ques_file,
-                current_username)
+        # print(new_ques_file)
+        # print(projects,
+        #         userprojects,
+        #         questionnaires,
+        #         activeprojectname,
+        #         projectowner,
+        #         basedir,
+        #         new_ques_file,
+        #         current_username)
         quesstate, quesextra = uploadquesdataexcel.queskeymapping(projects,
                                                                     userprojects,
                                                                     questionnaires,
@@ -376,7 +376,7 @@ def loadpreviousques():
     # data through ajax
     lastActiveId = request.args.get('data')
     lastActiveId = eval(lastActiveId)
-    print(lastActiveId)
+    # print(lastActiveId)
     latest_ques_id = getnewquesid.getnewquesid(projects,
                                                 activeprojectname,
                                                 lastActiveId,
@@ -400,7 +400,7 @@ def loadnextques():
     # data through ajax
     lastActiveId = request.args.get('data')
     lastActiveId = eval(lastActiveId)
-    print(lastActiveId)
+    # print(lastActiveId)
     latest_ques_id = getnewquesid.getnewquesid(projects,
                                                 activeprojectname,
                                                 lastActiveId,
@@ -439,9 +439,9 @@ def loadunannotext():
 
     lastActiveId = request.args.get('data')
     lastActiveId = eval(lastActiveId)
-    print(lastActiveId)
+    # print(lastActiveId)
     updatequesid = 'lastActiveId.'+current_username+'.'+activeprojectname
-    print(updatequesid)
+    # print(updatequesid)
 
     projects.update_one({"projectname": activeprojectname},
         { '$set' : { updatequesid: lastActiveId }})

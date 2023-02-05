@@ -51,7 +51,7 @@ def saveques(questionnaires,
             lang_name = key.split(' ')[-1]
             lang_script = lang_name.split('-')[1]
             value = ques_data[key][0]
-            print(key, lang_name, lang_script, value)
+            # print(key, lang_name, lang_script, value)
             startindex = '0'
             endindex = str(len(value))
             for p in range(3):
@@ -67,7 +67,7 @@ def saveques(questionnaires,
                                                             lang_script: value
                                                         }
             }
-            print(text_boundary_data)
+            # print(text_boundary_data)
             # content[lang_name] = value
             prompt['content'][lang_name]['text'] = text_boundary_data
     # text_boundary_data['startindex'] = startindex

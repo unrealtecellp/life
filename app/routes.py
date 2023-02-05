@@ -92,7 +92,7 @@ def home():
 
     return render_template('home.html',
                             data=currentuserprojectsname,
-                            activeproject=activeprojectname,
+                            activeprojectname=activeprojectname,
                             shareinfo=shareinfo)
 
 # new project route
@@ -132,7 +132,8 @@ def newproject():
 # get lexeme from sentences and save them to lexemes collection
 def sentence_lexeme_to_lexemes(oneSentenceDetail, oneLexemeDetail):
     for key, value in oneLexemeDetail.items():
-        print(key, ' : ', value)
+        # print(key, ' : ', value)
+        pass
 
 
 # enter new sentences route
@@ -543,7 +544,9 @@ def enterlexemefromuploadedfile(lexemedf):
     project = projects.find_one({}, {projectname : 1})
     def lexmetadata():
         # create lexemeId
-        lexemeCount = projects.find_one({}, {projectname : 1})[projectname]['lexemeInserted']+1
+        project = projects.find_one({'projectname': projectname}, {'projectname' : 1, 'lexemeInserted' : 1})
+        lexemeCount = project['lexemeInserted']+1
+        # lexemeCount = projects.find_one({}, {projectname : 1})[projectname]['lexemeInserted']+1
         # lexemeId = projectname+lexemeFormData['headword']+str(lexemeCount)
         Id = re.sub(r'[-: \.]', '', str(datetime.now()))
         lexemeId = 'L'+Id
@@ -587,9 +590,10 @@ def enterlexemefromuploadedfile(lexemedf):
         else:
             lexemes.insert(uploadedFileLexeme)
             # update lexemeInserted count of the project in projects collection
-            project[projectname]['lexemeInserted'] = lexemeCount
+            # project[projectname]['lexemeInserted'] = lexemeCount
             # print(f'{"#"*80}\n{project}')
-            projects.update_one({}, { '$set' : { projectname : project[projectname] }})
+            projects.update_one({'projectname': projectname}, { '$set' : { 'lexemeInserted' : lexemeCount }})
+            # projects.update_one({}, { '$set' : { projectname : project[projectname] }})
 
         for column_name in list(lexemedf.columns):
             if (column_name not in uploadedFileLexeme):
@@ -1218,7 +1222,7 @@ def uploadlexemeexcelliftxml():
 @app.route('/lexemekeymapping', methods=['GET', 'POST'])
 def lexemekeymapping():
     # getting the collections
-    userprojects, lexemes = getdbcollections.getdbcollections(mongo,
+    projects, userprojects, lexemes = getdbcollections.getdbcollections(mongo,
                                                 'projects',
                                                 'userprojects',
                                                 'lexemes')
@@ -1315,7 +1319,7 @@ def downloadlexemeformexcel():
     userprojects = mongo.db.userprojects              # collection of users and their respective projects
     lexemes = mongo.db.lexemes                          # collection containing entry of each lexeme and its details
 
-    activeprojectname = userprojects.find_one({ 'username' : current_user.username })['activeproject']
+    activeprojectname = userprojects.find_one({ 'username' : current_user.username })['activeprojectname']
     projectname =  activeprojectname
     lst = []
     lst.append({'projectname': activeprojectname})
@@ -1353,8 +1357,8 @@ def downloadlexemeformexcel():
         drop_cols.extend(drop_oldscript)
         drop_cols.extend(drop_files)
 
-        print(list(df.columns))
-        print(drop_cols)
+        # print(list(df.columns))
+        # print(drop_cols)
         df.drop(columns=drop_cols, inplace=True)
 
         return df
@@ -1401,7 +1405,7 @@ def downloadlexemeformexcel():
 
     # deleting all files from storage
     for f in files:
-        print(f)
+        # print(f)
         os.remove(f)
     
     return send_file('../download.zip', as_attachment=True)
@@ -1432,16 +1436,16 @@ def downloadselectedlexeme():
 
     if headwords != None:
         headwords = eval(headwords)
-    print(f'{"="*80}\nheadwords from downloadselectedlexeme route:\n {headwords}\n{"="*80}')
+    # print(f'{"="*80}\nheadwords from downloadselectedlexeme route:\n {headwords}\n{"="*80}')
     
     download_format = headwords['downloadFormat']
     # print(download_format)
 
     del headwords['downloadFormat']
 
-    print(f'{"="*80}\ndelete download format:\n {headwords}\n{"="*80}')
+    # print(f'{"="*80}\ndelete download format:\n {headwords}\n{"="*80}')
 
-    activeprojectname = userprojects.find_one({ 'username' : current_user.username })['activeproject']
+    activeprojectname = userprojects.find_one({ 'username' : current_user.username })['activeprojectname']
     lst.append({'projectname': activeprojectname})
     projectname =  activeprojectname
     
@@ -2357,11 +2361,11 @@ def downloadselectedlexeme():
     with open(os.path.join(lexeme_dir, 'lexemeEntry.json')) as f_r:
         lex = json.load(f_r)
         out_form = download_format
-        print(out_form)
+        # print(out_form)
         if ('rdf' in out_form):
             rdf_format = out_form[3:]
             out_form = 'rdf'
-            print(rdf_format)
+            # print(rdf_format)
             download_lexicon(lex, working_dir, out_form, rdf_format=rdf_format)
         else:
             download_lexicon(lex, working_dir, out_form)
@@ -2384,7 +2388,7 @@ def downloadselectedlexeme():
 
     # deleting all files from storage
     for f in files:
-        print(f)
+        # print(f)
         os.remove(f)
     
     # return send_file('../download.zip', as_attachment=True)
@@ -2402,7 +2406,7 @@ def downloadproject():
 
     lst = list()
 
-    activeprojectname = userprojects.find_one({ 'username' : current_user.username })['activeproject']
+    activeprojectname = userprojects.find_one({ 'username' : current_user.username })['activeprojectname']
     # lst.append(activeprojectname)
     projectname =  activeprojectname
 
@@ -2417,9 +2421,9 @@ def downloadproject():
                 files = fs.find({'projectname' : projectname, 'lexemeId' : lexvalue})
                 for file in files:
                     name = file.filename
-                    print(f'{"#"*80}')
+                    # print(f'{"#"*80}')
                     # print(basedir+'/app/download/'+name)
-                    print(f'{"#"*80}')
+                    # print(f'{"#"*80}')
                     # open(basedir+'/app/download/'+name, 'wb').write(file.read())
                     open(basedir+'/download/'+name, 'wb').write(file.read())
 
@@ -2434,7 +2438,7 @@ def downloadproject():
     with open(basedir+"/download/lexicon_"+activeprojectname+".json", "w") as outfile:
         outfile.write(json_object)  
 
-    # get all sentences of the activeproject    
+    # get all sentences of the activeprojectname    
     sentenceLst = []
     for sentence in sentences.find({ 'projectname' : activeprojectname, 'sentencedeleteFLAG' : 0 }, \
                             {'_id' : 0}):
@@ -2471,7 +2475,7 @@ def downloadproject():
 
     # deleting all files from storage
     for f in files:
-        print(files)
+        # print(files)
         os.remove(f)
     
     return send_file('../download.zip', as_attachment=True)
@@ -2488,7 +2492,7 @@ def downloaddictionary():
     fs =  gridfs.GridFS(mongo.db)                       # creating GridFS instance to get required files
     lst = list()
     download_format = 'pdf'
-    activeprojectname = userprojects.find_one({ 'username' : current_user.username })['activeproject']
+    activeprojectname = userprojects.find_one({ 'username' : current_user.username })['activeprojectname']
     lst.append({'projectname': activeprojectname})
     projectname =  activeprojectname
 
@@ -2657,7 +2661,7 @@ def downloaddictionary():
 
     # deleting all files from storage
     for f in files:
-        print(f)
+        # print(f)
         os.remove(f)
     
     return send_file('../download.zip', as_attachment=True)
@@ -2674,9 +2678,9 @@ def download():
     lst = list()
 
     projectname =  userprojects.find_one({ 'username' : current_user.username },\
-                {'_id' : 0, 'activeproject': 1})['activeproject']
+                {'_id' : 0, 'activeprojectname': 1})['activeprojectname']
     lst.append(projectname)
-    print(f'{"#"*80}\n{projectname}')
+    # print(f'{"#"*80}\n{projectname}')
     for lexeme in lexemes.find({'username' : current_user.username, 'projectname' : projectname},\
                             {'_id' : 0, 'username' : 0, 'projectname' : 0}):
         lst.append(lexeme)
@@ -3017,10 +3021,10 @@ def lexemeview():
     headword = request.args.get('a').split(',')                    # data through ajax
     # print(headword)
 
-    activeprojectname = userprojects.find_one({ 'username' : current_user.username })['activeproject']
+    activeprojectname = userprojects.find_one({ 'username' : current_user.username })['activeprojectname']
     # print(activeprojectname)
-    
-    projectOwner = projects.find_one({}, {"_id" : 0, activeprojectname : 1})[activeprojectname]["projectOwner"]
+    projectOwner = projects.find_one({'projectname': activeprojectname}, {'projectOwner' : 1})['projectOwner']
+    # projectOwner = projects.find_one({}, {"_id" : 0, activeprojectname : 1})[activeprojectname]["projectOwner"]
     # print(projectOwner)
     lexeme = lexemes.find_one({'username' : projectOwner, 'lexemeId' : headword[0], },\
                             {'_id' : 0, 'username' : 0})
@@ -3054,10 +3058,11 @@ def lexemeedit():
     headword = request.args.get('a').split(',')                    # data through ajax
     # print(headword)
 
-    activeprojectname = userprojects.find_one({ 'username' : current_user.username })['activeproject']
+    activeprojectname = userprojects.find_one({ 'username' : current_user.username })['activeprojectname']
     # print(activeprojectname)
     
-    projectOwner = projects.find_one({}, {"_id" : 0, activeprojectname : 1})[activeprojectname]["projectOwner"]
+    projectOwner = projects.find_one({'projectname': activeprojectname}, {'projectOwner' : 1})['projectOwner']
+    # projectOwner = projects.find_one({}, {"_id" : 0, activeprojectname : 1})[activeprojectname]["projectOwner"]
     # print(projectOwner)
 
     if request.method == 'POST':
@@ -3067,7 +3072,7 @@ def lexemeedit():
         return redirect(url_for('dictionaryview'))
     
     # activeprojectname = userprojects.find_one({ 'username' : current_user.username },\
-    #                 {'_id' : 0, 'activeproject': 1})['activeproject']
+    #                 {'_id' : 0, 'activeprojectname': 1})['activeprojectname']
     lexeme = lexemes.find_one({'username' : projectOwner, 'lexemeId' : headword[0], },\
                             {'_id' : 0, 'username' : 0})
 
@@ -3469,7 +3474,7 @@ def activeprojectname():
 # user login form route
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    # userlogin = mongo.db.userlogin                          # collection of users and their login details
+    userlogin = mongo.db.userlogin                          # collection of users and their login details
     dummyUserandProject()
     if current_user.is_authenticated:
         return redirect(url_for('home'))
@@ -3481,6 +3486,17 @@ def login():
         if user is None or not user.check_password(form.password.data):
             flash('Invalid username or password')
             return redirect(url_for('login'))
+        isUserActive = userlogin.find_one({'username': form.username.data }, {"_id": 0, "isActive": 1})
+        # print(len(isUserActive))
+        if (len(isUserActive) != 0):
+            isUserActive = isUserActive['isActive']
+            if (isUserActive):
+                pass
+                # print(isUserActive)
+                # print('123')
+            else:
+                flash('Please wait your account will be active in some time')
+                return redirect(url_for('login'))
         login_user(user, force=True)
         next_page = request.args.get('next')
         if not next_page or url_parse(next_page).netloc != '':
@@ -3505,17 +3521,31 @@ def logout():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     userlogin = mongo.db.userlogin                          # collection of users and their login details
+    userProfile = {}
+    excludeFormFields = ['username', 'password', 'password2', 'csrf_token', 'submit']
     dummyUserandProject()
     if current_user.is_authenticated:
         # print(current_user.get_id())
         return redirect(url_for('home'))
     form = RegistrationForm()
     if form.validate_on_submit():
+        # print(form)
+        for form_data in form:
+            # print(form_data)
+            # print(type(form_data))
+            # print(form_data.data)
+            if (form_data.name not in excludeFormFields):
+                userProfile[form_data.name] = form_data.data
+        # print(userProfile)
         # user = UserLogin(username=form.username.data)
         password = generate_password_hash(form.password.data)
         # print(user, password)
 
-        userlogin.insert({"username": form.username.data, "password": password})
+        userlogin.insert({"username": form.username.data,
+                            "password": password, 
+                            'userProfile': userProfile,
+                            'userSince': datetime.now(), 
+                            'isActive': 0})
 
         userprojects = mongo.db.userprojects              # collection of users and their respective projectlist
         # userprojects.insert({'username' : form.username.data, 'myproject': [], \
@@ -3563,7 +3593,7 @@ def audiotranscription():
     currentuserprojectsname = getcurrentuserprojects.getcurrentuserprojects(current_user.username,
                                 userprojects)
     activeprojectname = userprojects.find_one({ 'username' : current_user.username },\
-                    {'_id' : 0, 'activeproject': 1})['activeproject']
+                    {'_id' : 0, 'activeprojectname': 1})['activeprojectname']
 
     fs =  gridfs.GridFS(mongo.db)                       # creating GridFS instance to get required files                
     files = fs.find({})
@@ -3597,7 +3627,7 @@ def audiotranscription():
 
         return redirect(url_for('audiotranscription'))       
     
-    return render_template('audiotranscription.html',  data=currentuserprojectsname, activeproject=activeprojectname, audiofile=str(file.read()))
+    return render_template('audiotranscription.html',  data=currentuserprojectsname, activeprojectname=activeprojectname, audiofile=str(file.read()))
 
 
 # karya access code assignment route
@@ -3669,7 +3699,7 @@ def loadnextaudio():
                                                         lastActiveId,
                                                         activespeakerid,
                                                         'next')
-        print('latest_audio_id ROUTES', latest_audio_id)
+        # print('latest_audio_id ROUTES', latest_audio_id)
         audiodetails.updatelatestaudioid(projects,
                                             activeprojectname,
                                             latest_audio_id,
@@ -3714,7 +3744,7 @@ def allunannotated():
                                                                             activeprojectname,
                                                                             activespeakerid,
                                                                             'audio')
-    print(annotated, unannotated)
+    # print(annotated, unannotated)
     return jsonify(allanno=annotated, allunanno=unannotated)
 
 @app.route('/loadunannotext', methods=['GET'])
