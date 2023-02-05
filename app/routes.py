@@ -73,8 +73,14 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 scriptCodeJSONFilePath = os.path.join(basedir, 'static/json/scriptCode.json')
 langScriptJSONFilePath = os.path.join(basedir, 'static/json/langScript.json')
 ipatomeeteiFilePath = os.path.join(basedir, 'static/json/ipatomeetei.json')
+appConfigPath = os.path.join(basedir, 'jsonfiles/app_config.json')
 
-ADMIN_USER = 'life_admin'
+def get_admin_user():
+    with open (appConfigPath) as config_json_file:
+        config_json = json.load(config_json_file)
+    return config_json['ADMIN_USER']
+
+ADMIN_USER = get_admin_user()
 admin_reminder = f'App admin <<{ADMIN_USER}>> user created! Please create new password for this account to login'
 
 # print(f'{"#"*80}\nBase directory:\n{basedir}\n{"#"*80}')

@@ -1,5 +1,4 @@
-[
-    {
-        "ADMIN_USERS": ["life_admin"]
-    }
-]
+{
+        "ADMIN_USER": "life_admin",
+        "SUB-ADMINS": []
+}
