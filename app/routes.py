@@ -73,6 +73,15 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 scriptCodeJSONFilePath = os.path.join(basedir, 'static/json/scriptCode.json')
 langScriptJSONFilePath = os.path.join(basedir, 'static/json/langScript.json')
 ipatomeeteiFilePath = os.path.join(basedir, 'static/json/ipatomeetei.json')
+appConfigPath = os.path.join(basedir, 'jsonfiles/app_config.json')
+
+def get_admin_user():
+    with open (appConfigPath) as config_json_file:
+        config_json = json.load(config_json_file)
+    return config_json['ADMIN_USER']
+
+ADMIN_USER = get_admin_user()
+admin_reminder = f'App admin <<{ADMIN_USER}>> user created! Please create new password for this account to login'
 
 # print(f'{"#"*80}\nBase directory:\n{basedir}\n{"#"*80}')
 
@@ -88,7 +97,7 @@ def home():
     currentuserprojectsname = getcurrentuserprojects.getcurrentuserprojects(current_username, userprojects)
     activeprojectname = getactiveprojectname.getactiveprojectname(current_username, userprojects)
     shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects, current_username, activeprojectname)
-    print(shareinfo)
+    # print(shareinfo)
 
     return render_template('home.html',
                             data=currentuserprojectsname,
@@ -132,7 +141,8 @@ def newproject():
 # get lexeme from sentences and save them to lexemes collection
 def sentence_lexeme_to_lexemes(oneSentenceDetail, oneLexemeDetail):
     for key, value in oneLexemeDetail.items():
-        print(key, ' : ', value)
+        # print(key, ' : ', value)
+        pass
 
 
 # enter new sentences route
@@ -1356,8 +1366,8 @@ def downloadlexemeformexcel():
         drop_cols.extend(drop_oldscript)
         drop_cols.extend(drop_files)
 
-        print(list(df.columns))
-        print(drop_cols)
+        # print(list(df.columns))
+        # print(drop_cols)
         df.drop(columns=drop_cols, inplace=True)
 
         return df
@@ -1404,7 +1414,7 @@ def downloadlexemeformexcel():
 
     # deleting all files from storage
     for f in files:
-        print(f)
+        # print(f)
         os.remove(f)
     
     return send_file('../download.zip', as_attachment=True)
@@ -1435,14 +1445,14 @@ def downloadselectedlexeme():
 
     if headwords != None:
         headwords = eval(headwords)
-    print(f'{"="*80}\nheadwords from downloadselectedlexeme route:\n {headwords}\n{"="*80}')
+    # print(f'{"="*80}\nheadwords from downloadselectedlexeme route:\n {headwords}\n{"="*80}')
     
     download_format = headwords['downloadFormat']
     # print(download_format)
 
     del headwords['downloadFormat']
 
-    print(f'{"="*80}\ndelete download format:\n {headwords}\n{"="*80}')
+    # print(f'{"="*80}\ndelete download format:\n {headwords}\n{"="*80}')
 
     activeprojectname = userprojects.find_one({ 'username' : current_user.username })['activeprojectname']
     lst.append({'projectname': activeprojectname})
@@ -2360,11 +2370,11 @@ def downloadselectedlexeme():
     with open(os.path.join(lexeme_dir, 'lexemeEntry.json')) as f_r:
         lex = json.load(f_r)
         out_form = download_format
-        print(out_form)
+        # print(out_form)
         if ('rdf' in out_form):
             rdf_format = out_form[3:]
             out_form = 'rdf'
-            print(rdf_format)
+            # print(rdf_format)
             download_lexicon(lex, working_dir, out_form, rdf_format=rdf_format)
         else:
             download_lexicon(lex, working_dir, out_form)
@@ -2387,7 +2397,7 @@ def downloadselectedlexeme():
 
     # deleting all files from storage
     for f in files:
-        print(f)
+        # print(f)
         os.remove(f)
     
     # return send_file('../download.zip', as_attachment=True)
@@ -2420,9 +2430,9 @@ def downloadproject():
                 files = fs.find({'projectname' : projectname, 'lexemeId' : lexvalue})
                 for file in files:
                     name = file.filename
-                    print(f'{"#"*80}')
+                    # print(f'{"#"*80}')
                     # print(basedir+'/app/download/'+name)
-                    print(f'{"#"*80}')
+                    # print(f'{"#"*80}')
                     # open(basedir+'/app/download/'+name, 'wb').write(file.read())
                     open(basedir+'/download/'+name, 'wb').write(file.read())
 
@@ -2474,7 +2484,7 @@ def downloadproject():
 
     # deleting all files from storage
     for f in files:
-        print(files)
+        # print(files)
         os.remove(f)
     
     return send_file('../download.zip', as_attachment=True)
@@ -2660,7 +2670,7 @@ def downloaddictionary():
 
     # deleting all files from storage
     for f in files:
-        print(f)
+        # print(f)
         os.remove(f)
     
     return send_file('../download.zip', as_attachment=True)
@@ -2679,7 +2689,7 @@ def download():
     projectname =  userprojects.find_one({ 'username' : current_user.username },\
                 {'_id' : 0, 'activeprojectname': 1})['activeprojectname']
     lst.append(projectname)
-    print(f'{"#"*80}\n{projectname}')
+    # print(f'{"#"*80}\n{projectname}')
     for lexeme in lexemes.find({'username' : current_user.username, 'projectname' : projectname},\
                             {'_id' : 0, 'username' : 0, 'projectname' : 0}):
         lst.append(lexeme)
@@ -3468,12 +3478,23 @@ def activeprojectname():
 
     return 'OK'
 
+def adminfirstlogin(userlogin, string_password):
+    password = generate_password_hash(string_password)
+        # print(user, password)
 
+    userlogin.update_one({"username": ADMIN_USER},
+                        {'$set':{"password": password, 
+                        'userSince': datetime.now(), 
+                        'isActive': 1}})
+    
+    return password
 # MongoDB Database
 # user login form route
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    # userlogin = mongo.db.userlogin                          # collection of users and their login details
+    userlogin = mongo.db.userlogin
+
+    generateadmin(userlogin)                          # collection of users and their login details
     dummyUserandProject()
     if current_user.is_authenticated:
         return redirect(url_for('home'))
@@ -3481,10 +3502,30 @@ def login():
     if form.validate_on_submit():
         # username = userlogin.find_one({"username": form.username.data})
         user = UserLogin(username=form.username.data)
+        password = form.password.data
+        print ('Original password', password)
         # print(user)
-        if user is None or not user.check_password(form.password.data):
+        if user.username == ADMIN_USER:
+            if user.password_hash == '':                                
+                admin_password = adminfirstlogin(userlogin, password)
+                user.password_hash = admin_password
+
+        # print ('Create password', password)
+        if user is None or not user.check_password(password):
             flash('Invalid username or password')
             return redirect(url_for('login'))
+        isUserActive = userlogin.find_one({'username': form.username.data }, {"_id": 0, "isActive": 1})
+        # print(len(isUserActive))
+        if (len(isUserActive) != 0):
+            isUserActive = isUserActive['isActive']
+            if (isUserActive):
+                pass
+                # print(isUserActive)
+                # print('123')
+            else:
+                # flash('Your request for an account is successfully submitted and is currently under review.')
+                flash('Your request for an account is  currently under review. If approved, your account will be active in some time.')
+                return redirect(url_for('login'))
         login_user(user, force=True)
         next_page = request.args.get('next')
         if not next_page or url_parse(next_page).netloc != '':
@@ -3504,22 +3545,37 @@ def logout():
         return redirect(url_for('home'))    
 
 
+
 # MongoDB Database
 # new user registration
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     userlogin = mongo.db.userlogin                          # collection of users and their login details
+    userProfile = {}
+    excludeFormFields = ['username', 'password', 'password2', 'csrf_token', 'submit']
     dummyUserandProject()
     if current_user.is_authenticated:
         # print(current_user.get_id())
         return redirect(url_for('home'))
     form = RegistrationForm()
     if form.validate_on_submit():
+        # print(form)
+        for form_data in form:
+            # print(form_data)
+            # print(type(form_data))
+            # print(form_data.data)
+            if (form_data.name not in excludeFormFields):
+                userProfile[form_data.name] = form_data.data
+        # print(userProfile)
         # user = UserLogin(username=form.username.data)
         password = generate_password_hash(form.password.data)
         # print(user, password)
 
-        userlogin.insert({"username": form.username.data, "password": password})
+        userlogin.insert({"username": form.username.data,
+                            "password": password, 
+                            'userProfile': userProfile,
+                            'userSince': datetime.now(), 
+                            'isActive': 0})
 
         userprojects = mongo.db.userprojects              # collection of users and their respective projectlist
         # userprojects.insert({'username' : form.username.data, 'myproject': [], \
@@ -3527,7 +3583,8 @@ def register():
         userprojects.insert({'username' : form.username.data, 'myproject': {}, \
             'projectsharedwithme': {}, 'activeprojectname' : ''})
 
-        flash('Congratulations, you are now a registered user!')
+        # flash('Congratulations, you are now a registered user!')
+        flash('Your request for an account is successfully submitted and is currently under review.')
         return redirect(url_for('login'))
     return render_template('register.html', form=form)
 
@@ -3535,7 +3592,8 @@ def dummyUserandProject():
     """ Creates dummy user and project if the database has no collection """
     print("Creates dummy user and project if the database has no collection")
     userprojects = mongo.db.userprojects                # collection of users and their projectlist and active project
-    projects = mongo.db.projects                        # collection containing projects name
+    projects = mongo.db.projects
+                            # collection containing projects name
     if len(mongo.db.list_collection_names()) == 0:
         userprojects.insert({'username' : "dummyUser",
                             'myproject': 
@@ -3555,6 +3613,49 @@ def dummyUserandProject():
                         'sharedwith': ['dummyUser'],
                         'projectdeleteFLAG' : 0
                         })
+
+def insertadmin(userlogin):
+    
+    userprojects = mongo.db.userprojects        
+    
+    userlogin.insert ({
+            "username": ADMIN_USER,
+            "password": "",
+            "userProfile": {
+                "username": "",
+                "position": "",
+                "organisation_name": "",
+                "organisation_type": "",
+                "country": "",
+                "city": "",
+                "email": "",
+                "languages": "",
+                "memory_requirement": "",
+                "app_use_reason": ""
+            }
+        })
+
+    userprojects.insert({'username' : ADMIN_USER, 'myproject': {}, \
+        'projectsharedwithme': {}, 'activeprojectname' : ''})
+    
+    flash(admin_reminder)
+    
+
+
+def generateadmin(userlogin):
+    """ Creates admin if the database does not have an admin user """ 
+    
+    if len(mongo.db.list_collection_names()) == 0:
+        insertadmin(userlogin)
+    else:
+        admin_login = userlogin.find_one({'username':ADMIN_USER}, {'password': 1, '_id': 0})
+        if admin_login == None:
+            insertadmin(userlogin)
+        elif admin_login['password'] == '':
+            flash(admin_reminder)
+
+
+
 
 # audio transcription route
 @app.route('/', methods=['GET', 'POST'])
@@ -3673,7 +3774,7 @@ def loadnextaudio():
                                                         lastActiveId,
                                                         activespeakerid,
                                                         'next')
-        print('latest_audio_id ROUTES', latest_audio_id)
+        # print('latest_audio_id ROUTES', latest_audio_id)
         audiodetails.updatelatestaudioid(projects,
                                             activeprojectname,
                                             latest_audio_id,
@@ -3718,7 +3819,7 @@ def allunannotated():
                                                                             activeprojectname,
                                                                             activespeakerid,
                                                                             'audio')
-    print(annotated, unannotated)
+    # print(annotated, unannotated)
     return jsonify(allanno=annotated, allunanno=unannotated)
 
 @app.route('/loadunannotext', methods=['GET'])

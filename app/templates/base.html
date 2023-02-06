@@ -2,12 +2,13 @@
 
 
 {% block title %}
-    {% if title %}{{ title }}{% else %}Welcome to Dictionary Entry{% endif %}
+    {% if title %}{{ title }}{% else %}Welcome to LiFE{% endif %}
 {% endblock %}
 
 {% block styles %}
 {{super()}}
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
+<link href="{{url_for('.static', filename='base.css')}}" rel="stylesheet" />
 {% endblock %}
 
 {% block navbar %}
@@ -40,9 +41,16 @@
                     {# <li><a href="{{ current_user.username }}">{{ current_user.username }}</a></li> #}
                     <li style="margin-top:15px">{{ current_user.username }}</li>
                     <li><a href="{{ url_for('logout') }}">Logout</a></li>
-
+                    <!-- Rounded switch -->
+                    <!-- <li style="margin-top:14px">
+                        <label class="switch">
+                            <input type="checkbox" id="darkmodetoggleswitch">
+                            <span class="slider round"></span>
+                        </label>
+                    </li> -->
                     {% endif %}
-                </ul>{% block extra_nav %}{% endblock %}
+                </ul>
+                {% block extra_nav %}{% endblock %}
             </div>
         </div>{% block base_navbar %}{% endblock %}
     </nav>
@@ -67,4 +75,5 @@
 {{super()}}
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
 <script src="{{url_for('.static', filename='changeactiveproject.js')}}"></script>
+<script src="{{url_for('.static', filename='base.js')}}"></script>
 {% endblock %}

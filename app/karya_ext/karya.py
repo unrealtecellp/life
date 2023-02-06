@@ -633,7 +633,7 @@ def fetch_karya_audio():
                                                                                                             'questionnaires',
                                                                                                             'accesscodedetails')
     current_username = getcurrentusername.getcurrentusername()
-    print('curent user : ', current_username)
+    # print('curent user : ', current_username)
     activeprojectname = getactiveprojectname.getactiveprojectname(current_username, userprojects)
     projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
     project_type = getprojecttype.getprojecttype(projects, activeprojectname)

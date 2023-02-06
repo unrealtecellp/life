@@ -62,7 +62,7 @@ def createdummylexemeentry(projects,
                     newLexemeData['Semantic Domain Sense '+str(i+1)] = ['']
                     newLexemeData['Lexical Relation Sense '+str(i+1)] = ['']
             elif (key == 'Custom Fields'):
-                print(value)
+                # print(value)
                 for item in activeprojectform['Custom Fields']:
                     k = str(list(item.keys())[0])
                     v = str(list(item.values())[0])

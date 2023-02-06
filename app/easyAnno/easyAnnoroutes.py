@@ -397,7 +397,7 @@ def createAnnotatedTextAnno(zipFile):
                 with myzip.open(file_name) as myfile:
                     # print(myfile.read())
                     if (not file_name.endswith('.tsv')):
-                        print(file_name)
+                        # print(file_name)
                         project_name = file_name.split('.')[0]
 
                         # check project/file name do not already exist
@@ -1979,9 +1979,9 @@ def downloadallannotationfiles():
 
         if current_user.username in proj_detail["sharedwith"]:
             # print(proj_count)  
-            print(proj_detail["projectType"])            
+            # print(proj_detail["projectType"])
             proj_count += 1
-            print(proj_count, projectname)
+            # print(proj_count, projectname)
 
             if (proj_detail["projectType"] == 'text'):
                 text_data = proj_detail["textData"]
@@ -2114,16 +2114,16 @@ def downloadallusersallannotationfiles():
         for proj_detail in projects_detail:
             # print(proj_detail["projectType"])
             projectname = proj_detail["projectname"]
-            print(projectname, proj_detail["sharedwith"])
+            # print(projectname, proj_detail["sharedwith"])
 
             for username in proj_detail["sharedwith"]:
                 # print(proj_count)  
-                print(proj_detail["projectType"])            
+                # print(proj_detail["projectType"])
                 proj_count += 1
-                print(proj_count, projectname, username)
+                # print(proj_count, projectname, username)
 
                 if (projectname == 'dummyProject'): 
-                    print("dummyyyyyyy")
+                    # print("dummyyyyyyy")
                     continue
 
                 elif (proj_detail["projectType"] == 'text'):

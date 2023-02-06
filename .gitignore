@@ -1,8 +1,8 @@
 __pycache__
 .flaskenv
 .vscode
-.flaskenv
 venv
+data_format
 app/static/audio
 download.zip
 LiFE_Uploader_Downloader
@@ -12,14 +12,11 @@ app/lifexlsxdf.tsv
 data_format/lexicon_Testing_32.xlsx
 app/testliftXML.tsv
 app/lexemeEntry.json
-path_test.py
-0000_01_1.3gp
-testmyfile.tar
-testmyfile.tgz
-staticdummy_karya_access_code.txt
 nohup.out
 questionnaireform.zip
 app/lifeques/lifeUploadedFileContent.pkl
 app/lifeques/lifexlsxdf.tsv
 app/lifeques/static/audio
 app/lifeques/lifequesdownload
+trainedModelsapp/lifeques/static/audio
+TODO

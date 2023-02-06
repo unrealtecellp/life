@@ -53,10 +53,10 @@ def savequesfiles(mongo,
         "prompt": ""
     }
     try:
-        print(new_ques_file)
+        # print(new_ques_file)
         ques_data_df = pd.read_excel(io.BytesIO(new_ques_file['quesfile'].read()), dtype=str)
-        df_header = list(ques_data_df.columns)
-        print(df_header)
+        # df_header = list(ques_data_df.columns)
+        # print(df_header)
     except Exception as e:
         print(e)
         flash(f"ERROR")                    

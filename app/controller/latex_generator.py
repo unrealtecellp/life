@@ -93,12 +93,12 @@ def get_latex_entries(all_entries, fields, dict_headword, char_list, doc, headwo
     #     # escape = False
     #     # content_separator = "\n"
     eng_pattern = '[A-Za-z ]+'
-    print('Fields', fields)
+    # print('Fields', fields)
     headword_script = script_map[headwordscript]
     for character in char_list:
         cur_entries = all_entries[all_entries['firstchar'] == character]
         cur_entries_list = cur_entries.to_dict('records')
-        print(cur_entries_list[0])
+        # print(cur_entries_list[0])
         with doc.create(Section(NoEscape(headword_script+'{'+character+'}'), numbering=False)):
             with doc.create(Multicols(arguments='2')):
                 for cur_entry in cur_entries_list:
@@ -201,17 +201,17 @@ def expand_fields(lexicon, fields, max_entries=10):
 
 
 def get_relevant_data(lexicon, df, fields, dict_headword):
-    print('Fields', fields)
+    # print('Fields', fields)
     # df = pd.json_normalize(lexicon)
     columns = df.columns
 
     # print ('New field', new_field)
-    print('Old columns', columns, len(columns))
+    # print('Old columns', columns, len(columns))
     relevant_df = df[df.columns.intersection(fields)]
 
     # relevant_df = df[[new_field]]
-    print('Relevant df', relevant_df)
-    print('Headword col', dict_headword)
+    # print('Relevant df', relevant_df)
+    # print('Headword col', dict_headword)
 
     relevant_df.sort_values(by=[dict_headword], inplace=True)
     relevant_df = relevant_df.reset_index()
@@ -220,7 +220,7 @@ def get_relevant_data(lexicon, df, fields, dict_headword):
     # all_chars = df['firstchar'].unique()
     all_chars = relevant_df['firstchar'].drop_duplicates().sort_values()
 
-    print(all_chars)
+    # print(all_chars)
 
     return relevant_df, all_chars
 
