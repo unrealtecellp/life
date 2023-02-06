@@ -45,9 +45,9 @@ document.addEventListener('DOMContentLoaded', function() {
             })
         ]
     });
-    document.querySelector('#slider').oninput = function () {
-        wavesurfer.zoom(Number(this.value));
-    };
+    // document.querySelector('#slider').oninput = function () {
+    //     wavesurfer.zoom(Number(this.value));
+    // };
 
     // wavesurfer.util
     //     .fetchFile({

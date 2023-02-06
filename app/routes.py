@@ -37,38 +37,30 @@ import json
 from xml.etree import ElementTree as ET
 from xml.etree.ElementTree import ElementTree
 from app.controller import (
-    audiodetails,
-    createdummylexemeentry,
-    getactiveprojectform,
-    getactiveprojectname,
-    getcommentstats,
-    getcurrentusername,
-    getcurrentuserprojects,
-    getdbcollections,
-    getprojectowner,
-    getprojecttype,
-    getuserprojectinfo,
-    latex_generator as lg,
-    questionnairedetails,
-    readJSONFile,
-    removeallaccess,
-    savenewlexeme,
-    savenewproject,
-    savenewprojectform,
-    savenewsentence,
-    unannotatedfilename,
-    updateuserprojects,
-    userdetails
-)
-# from app.controller import getdbcollections, getcurrentuserprojects, getactiveprojectname
-# from app.controller import getprojectowner, getactiveprojectform, savenewsentence
-# from app.controller import readJSONFile, createdummylexemeentry
-# from app.controller import savenewproject, updateuserprojects, savenewprojectform
-# from app.controller import audiodetails, getcurrentusername, getcommentstats
-# from app.controller import unannotatedfilename, getuserprojectinfo
-# from app.controller import questionnairedetails, removeallaccess
-import shutil
-import traceback
+                                audiodetails,
+                                createdummylexemeentry,
+                                getactiveprojectform,
+                                getactiveprojectname,
+                                getcommentstats,
+                                getcurrentusername,
+                                getcurrentuserprojects,
+                                getdbcollections,
+                                getprojectowner,
+                                getprojecttype,
+                                getuserprojectinfo,
+                                latex_generator as lg,
+                                questionnairedetails,
+                                readJSONFile,
+                                removeallaccess,
+                                savenewlexeme,
+                                savenewproject,
+                                savenewprojectform,
+                                savenewsentence,
+                                unannotatedfilename,
+                                updateuserprojects,
+                                userdetails
+                            )
+import shutil, traceback
 
 
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -265,18 +257,18 @@ def sentence_lexeme_to_lexemes(oneSentenceDetail, oneLexemeDetail):
 @app.route('/enternewsentences', methods=['GET', 'POST'])
 @login_required
 def enternewsentences():
-    projects, userprojects, projectsform, sentences, transcriptions = getdbcollections.getdbcollections(mongo,
+    # print('1234321')
+    projects, userprojects, projectsform, sentences, transcriptions, speakerdetails = getdbcollections.getdbcollections(mongo,
                                                                                                         'projects',
                                                                                                         'userprojects',
                                                                                                         'projectsform',
                                                                                                         'sentences',
-                                                                                                        'transcriptions')
-    currentuserprojectsname = getcurrentuserprojects.getcurrentuserprojects(current_user.username,
-                                                                            userprojects)
-    activeprojectname = getactiveprojectname.getactiveprojectname(
-        current_user.username, userprojects)
-    shareinfo = getuserprojectinfo.getuserprojectinfo(
-        userprojects, current_user.username, activeprojectname)
+                                                                                                        'transcriptions',
+                                                                                                        'speakerdetails')
+    currentuserprojectsname =  getcurrentuserprojects.getcurrentuserprojects(current_user.username,
+                                userprojects)
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username, userprojects)
+    shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects, current_user.username, activeprojectname)
     # print(shareinfo)
 
     if activeprojectname == '':
@@ -338,11 +330,12 @@ def enternewsentences():
                 activeprojectform['posDetails'] = pos
             try:
                 speakerids = projects.find_one({"projectname": activeprojectname},
-                                               {"_id": 0, "speakerIds." +
-                                                   current_user.username: 1}
-                                               )["speakerIds"][current_user.username]
+                                                {"_id": 0, "speakerIds."+current_user.username: 1}
+                                            )["speakerIds"][current_user.username]
+                added_speaker_ids = audiodetails.addedspeakerids(speakerdetails, activeprojectname)
             except:
                 speakerids = ''
+                added_speaker_ids = ''
             scriptCode = readJSONFile.readJSONFile(scriptCodeJSONFilePath)
             activeprojectform['scriptCode'] = scriptCode
             langScript = readJSONFile.readJSONFile(langScriptJSONFilePath)
@@ -352,15 +345,16 @@ def enternewsentences():
             # print('currentuserprojectsname', currentuserprojectsname)
             # print('speakerids', speakerids)
             # pprint(activeprojectform)
-            # print(activespeakerid, commentstats, shareinfo)
+            print(activespeakerid, commentstats, shareinfo)
             return render_template('enternewsentences.html',
-                                   projectName=activeprojectname,
-                                   newData=activeprojectform,
-                                   data=currentuserprojectsname,
-                                   speakerids=speakerids,
-                                   activespeakerid=activespeakerid,
-                                   commentstats=commentstats,
-                                   shareinfo=shareinfo)
+                                    projectName=activeprojectname,
+                                    newData=activeprojectform,
+                                    data=currentuserprojectsname,
+                                    speakerids=speakerids,
+                                    addedspeakerids=added_speaker_ids,
+                                    activespeakerid=activespeakerid,
+                                    commentstats=commentstats,
+                                    shareinfo=shareinfo)
         except Exception as e:
             traceback.print_exc()
             flash('Upload first audio file.')
@@ -4119,6 +4113,94 @@ def loadunannotext():
     #     return redirect(url_for('imageAnno'))
     return 'OK'
 
+def generate_speaker_id(name, age=''):
+    name = name.replace(" ","").replace(".", "").lower()
+    age = age.replace("-","")
+    new_speaker_id = name+age+'_'+re.sub(r'[-: \.]', '', str(datetime.now()))
+
+    return new_speaker_id
+
+# add speaker details
+@app.route('/addnewspeakerdetails', methods=['GET', 'POST'])
+@login_required
+def addnewspeakerdetails():
+    projects, userprojects, speakerdetails = getdbcollections.getdbcollections(mongo,
+                                                'projects',
+                                                'userprojects',
+                                                'speakerdetails')
+    current_username = getcurrentusername.getcurrentusername()
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username,
+                            userprojects)
+    projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
+    if request.method == 'POST':
+        add_new_speaker_form_data = dict(request.form.lists())
+        print(add_new_speaker_form_data)
+        current_dt = str(datetime.now()).replace('.', ':')
+        audio_source = request.form.get('audiosource')
+        if (audio_source == 'field'):
+        #speaker metadata
+            fname = request.form.get('sname') 
+            fage = request.form.get('sagegroup')
+            source_id  =generate_speaker_id(fname, fage)
+            fgender = request.form.get('sgender')
+            educlvl = request.form.get('educationalevel')
+            moe12 = request.form.getlist('moe12')
+            moea12 = request.form.getlist('moea12')
+            sols = request.form.getlist('sols')
+            por = request.form.get('por')
+            toc = request.form.get('toc')
+            source_data = {"username":projectowner,
+                            "projectname": activeprojectname,
+                            "lifesourceid": source_id,
+                            "createdBy" : current_username, 
+                            "audioSource": audio_source,
+                            "current": {
+                                "updatedBy" : current_username,
+                                "sourceMetadata": {
+                                    "name": fname, 
+                                    "agegroup": fage, 
+                                    "gender": fgender,
+                                    "educationlevel": educlvl,
+                                    "educationmediumupto12": moe12,
+                                    "educationmediumafter12": moea12,
+                                    "speakerspeaklanguage": sols,
+                                    "recordingplace": por,
+                                    "typeofrecordingplace": toc
+                                },
+                                "current_date" : current_dt,
+                            },
+                            "isActive": 1}
+        elif(audio_source == 'internet'):
+            # internet sub source
+            audiosubsource = request.form.get('audiosubsource')
+            if (audiosubsource == 'youtube'):
+                channelname = request.form.get('ytchannelname')
+                channelurl = request.form.get('ytchannelurl')
+                source_id  =generate_speaker_id(channelname)
+                source_data = {"username":projectowner,
+                                "projectname": activeprojectname,
+                                "lifesourceid": source_id,
+                                "createdBy" : current_username, 
+                                "audioSource": audio_source,
+                                "audioSubSource": audiosubsource,
+                                "current": {
+                                    "updatedBy" : current_username,
+                                    "sourceMetadata": {
+                                        "channelName": channelname,
+                                        "channelUrl": channelurl
+                                    },
+                                    "current_date" : current_dt
+                                },
+                                "isActive": 1}
+        # pprint(source_data)
+        speakerdetails.insert(source_data, check_keys=False)
+        
+        flash('New speaker details added. Now you can upload the data for this user.')
+
+        return redirect(url_for('enternewsentences'))
+
+    return redirect(url_for('enternewsentences'))
+
 # uploadaudiofiles route
 @app.route('/uploadaudiofiles', methods=['GET', 'POST'])
 @login_required
@@ -4131,6 +4213,8 @@ def uploadaudiofiles():
                                                                   userprojects)
     projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
     if request.method == 'POST':
+        # data = dict(request.form.lists())
+        # print(data)
         speakerId = dict(request.form.lists())['speakerId'][0]
         new_audio_file = request.files.to_dict()
         audiodetails.saveaudiofiles(mongo,
