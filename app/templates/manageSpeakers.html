@@ -322,16 +322,10 @@
                     <!-- <th onclick="sortTable(0)">id</th> -->
                     <th><input type="checkbox" id="headcheckbox" onchange="checkAllLexeme(this)" name="chk[]"
                             checked />&nbsp;</th>
-                    <th onclick="sortTable(1)">Access Code</th>
                     <th onclick="sortTable(2)">Speaker ID</th>
                     <th onclick="sortTable(3)">Name</th>
                     <th onclick="sortTable(4)">Age Group</th>
                     <th onclick="sortTable(5)">Gender</th>
-                    <th onclick="sortTable(6)">Assigned By</th>
-                    <th onclick="sortTable(7)">Assigned For</th>
-                    <th onclick="sortTable(8)">Task</th>
-                    <th onclick="sortTable(9)">Domain</th>
-                    <th onclick="sortTable(10)">Elicitation Method</th>
                     <th>View</th>
 
                 </tr>
@@ -396,9 +390,11 @@
 <script src="{{url_for('.static', filename='search.js')}}"></script>
 <script src="{{url_for('.static', filename='sorttable.js')}}"></script>
 <script src="{{url_for('.static', filename='speaker_select2_dropdown.js')}}"></script>
-<script src="{{url_for('.static', filename='uploadaccesscode.js')}}"></script>
-<script
-    type="text/javascript">uploadaccesscodeform({{ uploadacesscodemetadata | tojson | safe }}, {{ projecttype | tojson | safe }});</script>
+<script src="{{url_for('.static', filename='addnewspeaker.js')}}"></script>
+<script src="{{url_for('.static', filename='speaker_select2_dropdown.js')}}"></script>
+<script src="{{url_for('.static', filename='search.js')}}"></script>
+<script src="{{url_for('.static', filename='sorttable.js')}}"></script>
+
 {% endblock %}
 
 </html>

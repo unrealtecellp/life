@@ -1,4 +1,8 @@
 {
         "SUPER_ADMIN": "life_admin",
-        "ADMINS": []
+        "ADMINS": [],
+        "SUPPORTED_FILE_FORMATS": [
+                "mp3",
+                "wav"
+        ]
 }

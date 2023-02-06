@@ -56,10 +56,13 @@ def getuserprofilestructure(userlogin):
     return list(set(all_profile_info))
 
 
-def get_user_type(current_username, ADMIN_USER, SUB_ADMINS):
-    if current_username == ADMIN_USER:
+def get_user_type(userlogin, current_username):
+    useraccess = userlogin.find_one(
+        {'username': current_username}, {'isAdmin': 1, 'isSuperAdmin': 1, '_id': 0})
+
+    if useraccess['isSuperAdmin'] == 1:
         usertype = 'SUPER-ADMIN'
-    elif current_username in SUB_ADMINS:
+    elif useraccess['isAdmin'] == 1:
         usertype = 'ADMIN'
     else:
         usertype = 'USER'
