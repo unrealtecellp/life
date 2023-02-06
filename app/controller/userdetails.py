@@ -5,14 +5,14 @@ def getuserdetails(userlogin, username=""):
 
     if username == '':
         userdata = userlogin.find(
-            {}, {'username': 1, 'userProfile': 1, 'isAdmin': 1, 'isActive': 1, 'userdeleteFLAG': 1, '_id': 0})
+            {}, {'username': 1, 'userProfile': 1, 'isAdmin': 1, 'isSuperAdmin': 1, 'isActive': 1, 'userdeleteFLAG': 1, '_id': 0})
         userDetails = []
         for current_userdata in userdata:
             userDetails.append(current_userdata)
     else:
         print('Username', username)
         userDetails = userlogin.find_one(
-            {'username': username}, {'username': 1, 'isAdmin': 1, 'userProfile': 1, '_id': 0})
+            {'username': username}, {'username': 1, 'isAdmin': 1, 'isSuperAdmin': 1, 'userdeleteFLAG': 1, 'userProfile': 1, '_id': 0})
 
     return userDetails
 

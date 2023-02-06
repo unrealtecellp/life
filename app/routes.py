@@ -128,7 +128,8 @@ def manageusers():
         return render_template(
             'manageUsers.html',
             allusers=allusers,
-            userprofilelist=userprofilelist
+            userprofilelist=userprofilelist,
+            usertype=usertype
         )
 
 
