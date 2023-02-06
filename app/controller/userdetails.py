@@ -70,10 +70,8 @@ def get_admin_users(userlogin):
     super_admin = userlogin.find_one(
         {'isSuperAdmin': 1}, {'username': 1, '_id': 0})
 
-    if super_admin is None:
-        super_admin = ''
-    else:
-        super_admin = super_admin
+    if super_admin is not None:
+        super_admin = super_admin['username']
 
     all_admins = userlogin.find(
         {'isAdmin': 1}, {'username': 1, '_id': 0})
