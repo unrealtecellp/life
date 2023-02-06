@@ -12,16 +12,22 @@ Home
 
 
 {% block app_content %}
-<h2>Linguistic Field Data Management and Analysis System<br>[LiFE]</h2>
+<div>
+  <h2>Linguistic Field Data Management and Analysis System<br>[LiFE]</h2>
+</div>
+{% if "ADMIN" in usertype %}
+<!-- <h3>ADMIN CONSOLE</h3> -->
+<div class="pull-right">
+  <button type="button" id="manageusers" class="btn btn-lg btn-danger pull-right"
+    onclick="window.location.href='{{ url_for('manageusers') }}';">Manage Users</button>
+</div>
+{% endif %}
 <br>
 <hr>
 <div>
   <div id="activeProject">
 
-    {% if "ADMIN" in usertype %}
-    <button type="button" id="manageusers" class="btn btn-lg btn-info pull-right"
-      onclick="window.location.href='{{ url_for('manageusers') }}';">Manage Users</button>
-    {% endif %}
+
 
     <h3>Create New Project</h3>
 
@@ -62,7 +68,7 @@ Home
       <button type="button" class="btn btn-lg btn-info"
         onclick="window.location.href='{{ url_for('downloaddictionary') }}';">Download Dictionary</button>
       {% endif %}
-      {% if shareinfo['sharemode']|int >= 3 %}
+      {% if shareinfo['sharemode']|int >= 1 %}
       <button type="button" class="btn btn-lg btn-warning"
         onclick="window.location.href='{{ url_for('manageproject') }}';">Manage Project</button>
       {% endif %}
