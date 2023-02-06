@@ -737,45 +737,38 @@ def fetch_karya_audio():
 
                 task = accesscodedetails.find_one({"projectname": activeprojectname, "karyaInfo.karyaSpeakerId": accesscode_speakerid,
                                                                 "karyaaccesscode": access_code},{'task': 1,'_id': 0})['task']
-                transcription_fileId = transcriptions.find({},{"audioId":1})['audioId']
 
-                #making file name and fileId dictionary
-                for transcript_fileId, karyafilename in transcription_fileId,karya_file_name :
-                    removedate_trans_fileId = transcript_fileId.split()
-                    if karyafilename in transcript_fileId:
-                        dict_filename_fileId = dict(transcript_fileId,karyafilename)
-                    elif karyafilename not in transcript_fileId:
-                        print(karyafilename, " not in the ", transcript_fileId)
+                # transcription_fileId = transcriptions.find({},{"audioId":1})['audioId']
+                # transcription_fileId = transcriptions.find({},{"audioId":1})['audioId']
+
+                # #making file name and fileId dictionary
+                # for transcript_fileId, karyafilename in transcription_fileId,karya_file_name :
+                #     removedate_trans_fileId = transcript_fileId.split()
+                #     if karyafilename in transcript_fileId:
+                #         dict_filename_fileId = dict(transcript_fileId,karyafilename)
+                #     elif karyafilename not in transcript_fileId:
+                #         print(karyafilename, " not in the ", transcript_fileId)
                     
-
-
-                
-
-
-
                 if (task == "SPEECH_TRANSCRIPTION"):
-                    for workerid, fileid, audiofilename in accesscode_speakerid, fileID_list, karya_file_name :
-
-                        filename_value = "A"+audiofilename.split(".")[0]
-                        audio_metaData = transcriptions.find({'projectname': activeprojectname,
-                                                                "karyaInfo.karyaSpeakerId": accesscode_speakerid, 
-                                                                'karyaInfo.karyaFetchedAudioId': fileid,
-                                                                'audioId' : filename_value
-                                                            },
-                                                            {
-                                                                '_id': 0,
-                                                                'audioMetadata': 1
-                                                            })
-
+                    for transcript_fileIds in fileID_list:
+                        audio_metaData = transcriptions.find({"projectname":activeprojectname, 
+                                                                    "speakerId":accesscode_speakerid,
+                                                                    "karyaInfo.karyaFetchedAudioId": transcript_fileIds},
+                                                                    {
+                                                                        '_id': 0,
+                                                                        'audioMetadata': 1
+                                                                            })
+                        print(audio_metaData)
                         if 'audioMetadata' not in audio_metaData.keys():
-                            update_audio_metadata_transcription(workerid, activeprojectname, karya_audio_report)
+                            update_audio_metadata_transcription(workerid, activeprojectname, karya_audio_report) #edit the function and debug this
                         else: 
                             mongodb_info = mongo.db.transcription
 
-                # updated_audio_metadata = {"additionalInfo":"", "audioMetadata":{"karyaVerificationMetadata": karya_audio_report, "verificationReport": karya_audio_report}}
+                        # updated_audio_metadata = {"additionalInfo":"", "audioMetadata":{"karyaVerificationMetadata": karya_audio_report, "verificationReport": karya_audio_report}}
 
                             audio_metadata_transcription = mongodb_info.update({'projectname': activeprojectname, 'speakerId': workerid},
                                                                         {"$set": {"audioMetadata":{"karyaVerificationMetadata": karya_audio_report, "verificationReport": karya_audio_report}}}) 
+
 
             except:
                 pass
@@ -789,6 +782,55 @@ def fetch_karya_audio():
 
                     fileID_lists = item['id'] 
                     fileID_list.append(fileID_lists)
+
+
+
+
+
+                    
+
+                    
+
+                
+
+
+
+            #     if (task == "SPEECH_TRANSCRIPTION"):
+            #         for workerid, fileid, audiofilename in accesscode_speakerid, fileID_list, karya_file_name :
+
+            #             filename_value = "A"+audiofilename.split(".")[0]
+            #             audio_metaData = transcriptions.find({'projectname': activeprojectname,
+            #                                                     "karyaInfo.karyaSpeakerId": accesscode_speakerid, 
+            #                                                     'karyaInfo.karyaFetchedAudioId': fileid,
+            #                                                     'audioId' : filename_value
+            #                                                 },
+            #                                                 {
+            #                                                     '_id': 0,
+            #                                                     'audioMetadata': 1
+            #                                                 })
+
+            #             if 'audioMetadata' not in audio_metaData.keys():
+            #                 update_audio_metadata_transcription(workerid, activeprojectname, karya_audio_report)
+            #             else: 
+            #                 mongodb_info = mongo.db.transcription
+
+            #     # updated_audio_metadata = {"additionalInfo":"", "audioMetadata":{"karyaVerificationMetadata": karya_audio_report, "verificationReport": karya_audio_report}}
+
+            #                 audio_metadata_transcription = mongodb_info.update({'projectname': activeprojectname, 'speakerId': workerid},
+            #                                                             {"$set": {"audioMetadata":{"karyaVerificationMetadata": karya_audio_report, "verificationReport": karya_audio_report}}}) 
+
+            # except:
+            #     pass
+
+            # else:
+            #     if (worker_id == for_worker_id):
+            #         workerId_list.append(worker_id)
+                    
+            #         sentences = micro_task_ids[micro_task_id]["input"]["data"]["sentence"]
+            #         sentence_list.append(sentences)
+
+            #         fileID_lists = item['id'] 
+            #         fileID_list.append(fileID_lists)
                     
 
                     # #appending karya report to list
