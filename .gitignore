@@ -18,5 +18,6 @@ app/lifeques/lifeUploadedFileContent.pkl
 app/lifeques/lifexlsxdf.tsv
 app/lifeques/static/audio
 app/lifeques/lifequesdownload
-trainedModelsapp/lifeques/static/audio
+trainedModels
+app/lifeques/static/audio
 TODO
