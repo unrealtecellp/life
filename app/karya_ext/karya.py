@@ -722,7 +722,6 @@ def fetch_karya_audio():
 
                     fileID_lists = item['id'] 
                     fileID_list.append(fileID_lists)
-                    
 
                     #appending karya report to list
                     karyareport = micro_task_ids[micro_task_id]['input']['data']['report']
@@ -747,6 +746,7 @@ def fetch_karya_audio():
                         dict_filename_fileId = dict(transcript_fileId,karyafilename)
                     elif karyafilename not in transcript_fileId:
                         print(karyafilename, " not in the ", transcript_fileId)
+                    
 
 
                 
