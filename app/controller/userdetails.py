@@ -46,19 +46,23 @@ def getuserprofilestructure(userlogin):
     userdata = userlogin.find(
         {'isActive': 1, 'userdeleteFLAG': 0}, {'userProfile': 1, '_id': 0})
 
+    # print ('User Data', userdata)
     all_profile_info = []
     for current_userdata in userdata:
-        # print(current_userdata['userProfile'])
+        # print(current_userdata, current_userdata['userProfile'])
         all_profile_info.extend(list(current_userdata['userProfile'].keys()))
 
     # print('Profile keys', list(all_profile_info))
     return list(set(all_profile_info))
 
 
-def get_user_type(current_username, ADMIN_USER, SUB_ADMINS):
-    if current_username == ADMIN_USER:
+def get_user_type(userlogin, current_username):
+    useraccess = userlogin.find_one(
+        {'username': current_username}, {'isAdmin': 1, 'isSuperAdmin': 1, '_id': 0})
+
+    if useraccess['isSuperAdmin'] == 1:
         usertype = 'SUPER-ADMIN'
-    elif current_username in SUB_ADMINS:
+    elif useraccess['isAdmin'] == 1:
         usertype = 'ADMIN'
     else:
         usertype = 'USER'
