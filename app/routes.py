@@ -200,8 +200,24 @@ def updateuserstatus():
 @app.route('/manageproject', methods=['GET', 'POST'])
 @login_required
 def manageproject():
+    userprojects, userlogin = getdbcollections.getdbcollections(
+        mongo, 'userprojects', 'userlogin')
+    current_username = getcurrentusername.getcurrentusername()
+    print('USERNAME: ', current_username)
+    usertype = userdetails.get_user_type(
+        userlogin, current_username)
+    currentuserprojectsname = getcurrentuserprojects.getcurrentuserprojects(
+        current_username, userprojects)
+    activeprojectname = getactiveprojectname.getactiveprojectname(
+        current_username, userprojects)
+    shareinfo = getuserprojectinfo.getuserprojectinfo(
+        userprojects, current_username, activeprojectname)
     return render_template(
-        'manageProject.html'
+        'manageProject.html',
+        data=currentuserprojectsname,
+        activeprojectname=activeprojectname,
+        shareinfo=shareinfo,
+        usertype=usertype
     )
 
 # Manage Speaker Metadata

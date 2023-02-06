@@ -29,11 +29,12 @@
 
 <div class="panel panel-default">
     <div class="panel-heading">
-        <button type="button" id="newcodebutton" class="btn btn-primary assignaccesscode" data-toggle="modal"
-            data-target="#exampleModal">
-            Get New Access Code
+        <button type="button" id="addnewspeaker" class="btn btn-lg btn-primary" data-toggle="modal"
+            data-target="#addNewSpeakerModal">
+            Add New Source
         </button>
     </div>
+
 
     <script>
         function activeform(buttonType) {
@@ -383,17 +384,48 @@
         </table>
     </div>
 </div>
+
+
+
+<!-- Add new Speaker Modal -->
+<div class="modal fade" id="addNewSpeakerModal" tabindex="-1" role="dialog" aria-labelledby="addNewSpeakerModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="addNewSpeakerModalLabel">Project Name: {{ projectName }}</h4>
+            </div>
+            <div class="modal-body">
+                <!-- <div class="col-xs-6"> -->
+                <!-- <input id="myInput" class="form-control" type="text" placeholder="Search"> -->
+                <!-- </div> -->
+                <br>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="form-group">
+                            <div id="addnewspeakerform"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 {% endblock %}
 
 {% block scripts %}
 {{super()}}
-<script src="{{url_for('.static', filename='search.js')}}"></script>
-<script src="{{url_for('.static', filename='sorttable.js')}}"></script>
 <script src="{{url_for('.static', filename='speaker_select2_dropdown.js')}}"></script>
 <script src="{{url_for('.static', filename='addnewspeaker.js')}}"></script>
 <script src="{{url_for('.static', filename='speaker_select2_dropdown.js')}}"></script>
 <script src="{{url_for('.static', filename='search.js')}}"></script>
 <script src="{{url_for('.static', filename='sorttable.js')}}"></script>
+
 
 {% endblock %}
 
