@@ -68,7 +68,13 @@ def get_user_type(current_username, ADMIN_USER, SUB_ADMINS):
 
 def get_admin_users(userlogin):
     super_admin = userlogin.find_one(
-        {'isSuperAdmin': 1}, {'username': 1, '_id': 0})['username']
+        {'isSuperAdmin': 1}, {'username': 1, '_id': 0})
+
+    if super_admin is None:
+        super_admin = ''
+    else:
+        super_admin = super_admin
+
     all_admins = userlogin.find(
         {'isAdmin': 1}, {'username': 1, '_id': 0})
 
