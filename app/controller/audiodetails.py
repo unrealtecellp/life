@@ -811,11 +811,12 @@ def copyofaudiodata(transcriptions,
 
 def addedspeakerids(speakerdetails,
                         activeprojectname):
+    # print('addedspeakerids')
     all_speaker_ids = speakerdetails.find({"projectname": activeprojectname, "isActive": 1},
                                             {"_id": 0, "lifesourceid": 1})
     added_speaker_ids = []
     for speaker_id in all_speaker_ids:
         s_id = speaker_id["lifesourceid"]
         added_speaker_ids.append(s_id)
-    print ("Added Speaker IDS", added_speaker_ids)
+    # print ("Added Speaker IDS", added_speaker_ids)
     return added_speaker_ids
