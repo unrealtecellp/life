@@ -46,9 +46,10 @@ def getuserprofilestructure(userlogin):
     userdata = userlogin.find(
         {'isActive': 1, 'userdeleteFLAG': 0}, {'userProfile': 1, '_id': 0})
 
+    # print ('User Data', userdata)
     all_profile_info = []
     for current_userdata in userdata:
-        # print(current_userdata['userProfile'])
+        # print(current_userdata, current_userdata['userProfile'])
         all_profile_info.extend(list(current_userdata['userProfile'].keys()))
 
     # print('Profile keys', list(all_profile_info))
