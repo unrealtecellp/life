@@ -986,4 +986,20 @@ function loadRandomAudio(newAudioFilename) {
   window.location.reload();
 }
 
+$('#speakeridsdropdown').select2({
+  // tags: true,
+  placeholder: 'select speaker',
+  // data: posCategories
+  // allowClear: true,
+  // sorter: false
+  // width: 'element'
+  });
 
+$('#speakeriduploaddropdown').select2({
+  // tags: true,
+  placeholder: 'select speaker',
+  // data: posCategories
+  // allowClear: true,
+  // sorter: false
+  // width: 'element'
+  });

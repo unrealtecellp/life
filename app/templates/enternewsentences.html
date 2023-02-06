@@ -37,7 +37,7 @@
     </div>
     <br>
     <br>
-    <label for="speakeridsdropdown">Audio Files of Speaker: </label>
+    <label for="speakeridsdropdown">Audio Files from Source: </label>
     <select class="custom-select custom-select-sm" id="speakeridsdropdown" style="margin-top:10px">
         <option selected disabled>{{ activespeakerid }}</option>
         {% for d in speakerids %}
@@ -53,8 +53,19 @@
     <div class="col-sm-3">
       <form name="newaudioupload" action="/uploadaudiofiles" method="POST" enctype="multipart/form-data">
         <div class="col upload">
-          <input type="text" class="form-control" placeholder="Speaker ID" name="speakerId" required>
-          <br>
+          <button type="button" id="addnewspeaker" class="btn btn-lg btn-primary" data-toggle="modal" data-target="#addNewSpeakerModal">
+            Add New Speaker
+          </button>
+          <br><br>
+          {# <input type="text" class="form-control" placeholder="Speaker ID" name="speakerId" required>
+          <br> #}
+          <select class="custom-select custom-select-sm" id="speakeriduploaddropdown" name="speakerId" style="width:100%" required>
+            <!-- <option selected disabled></option> -->
+            {% for d in addedspeakerids %}
+              <option value="{{ d }}">{{ d }}</option>
+            {% endfor %}
+          </select>
+          <br><br>
           <input type="file" id="audiofile" name="audiofile" required>
           <br>
           <input class="btn btn-primary uploadbtn" type="submit" value="Upload Audio File">
@@ -124,10 +135,10 @@
 
     <br>
     <hr>
-    <div class="col-sm-3">
+    <!-- <div class="col-sm-3">
       <input id="slider" data-action="zoom" type="range" min="0" max="5000" value="0" style="width: 100%">
-    </div>
-    <i class="glyphicon glyphicon-zoom-in"></i>
+    </div> -->
+    <!-- <i class="glyphicon glyphicon-zoom-in"></i> -->
 
     <div class="pull-right">
       <button class="btn btn-danger" type="button" id="stopAudio">STOP
@@ -209,6 +220,33 @@
     </div>
   </div>
 
+<!-- Add new Speaker Modal -->
+<div class="modal fade" id="addNewSpeakerModal" tabindex="-1" role="dialog" aria-labelledby="addNewSpeakerModalLabel">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="addNewSpeakerModalLabel">Project Name: {{ projectName }}</h4>
+      </div>
+      <div class="modal-body">
+        <!-- <div class="col-xs-6"> -->
+          <!-- <input id="myInput" class="form-control" type="text" placeholder="Search"> -->
+        <!-- </div> -->
+        <br>
+        <div class="row">
+          <div class="col-xs-12">
+            <div class="form-group">
+              <div id="addnewspeakerform"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
   <!-- <label for="ipa">IPA</label>
   <input type="text" id="ipa" name="ipa"><br><br>
   <label for="meetei">Meetei</label>
@@ -227,6 +265,8 @@
 <script src="{{url_for('.static', filename='audiotranscription.js')}}"></script>
 <script src="{{url_for('.static', filename='changeactivespeaker.js')}}"></script>
 <script src="{{url_for('.static', filename='progressreport.js')}}"></script>
+<script src="{{url_for('.static', filename='addnewspeaker.js')}}"></script>
+<script src="{{url_for('.static', filename='speaker_select2_dropdown.js')}}"></script>
 <script src="{{url_for('.static', filename='search.js')}}"></script>
 <script src="{{url_for('.static', filename='sorttable.js')}}"></script>
 <script type="text/javascript">myFunction({{ newData | tojson | safe }});</script>

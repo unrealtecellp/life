@@ -150,12 +150,13 @@ def sentence_lexeme_to_lexemes(oneSentenceDetail, oneLexemeDetail):
 @app.route('/enternewsentences', methods=['GET', 'POST'])
 @login_required
 def enternewsentences():
-    projects, userprojects, projectsform, sentences, transcriptions = getdbcollections.getdbcollections(mongo,
+    projects, userprojects, projectsform, sentences, transcriptions, speakerdetails = getdbcollections.getdbcollections(mongo,
                                                                                                         'projects',
                                                                                                         'userprojects',
                                                                                                         'projectsform',
                                                                                                         'sentences',
-                                                                                                        'transcriptions')
+                                                                                                        'transcriptions',
+                                                                                                        'speakerdetails')
     currentuserprojectsname =  getcurrentuserprojects.getcurrentuserprojects(current_user.username,
                                 userprojects)
     activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username, userprojects)
@@ -221,8 +222,11 @@ def enternewsentences():
                 speakerids = projects.find_one({"projectname": activeprojectname},
                                                 {"_id": 0, "speakerIds."+current_user.username: 1}
                                             )["speakerIds"][current_user.username]
+                added_speaker_ids = audiodetails.addedspeakerids(speakerdetails,
+                                                                    activeprojectname)
             except:
                 speakerids = ''
+                added_speaker_ids = ''
             scriptCode = readJSONFile.readJSONFile(scriptCodeJSONFilePath)
             activeprojectform['scriptCode'] = scriptCode
             langScript = readJSONFile.readJSONFile(langScriptJSONFilePath)
@@ -232,12 +236,13 @@ def enternewsentences():
             # print('currentuserprojectsname', currentuserprojectsname)
             # print('speakerids', speakerids)
             # pprint(activeprojectform)
-            # print(activespeakerid, commentstats, shareinfo)
+            print(activespeakerid, commentstats, shareinfo)
             return render_template('enternewsentences.html',
                                     projectName=activeprojectname,
                                     newData=activeprojectform,
                                     data=currentuserprojectsname,
                                     speakerids=speakerids,
+                                    addedspeakerids=added_speaker_ids,
                                     activespeakerid=activespeakerid,
                                     commentstats=commentstats,
                                     shareinfo=shareinfo)
@@ -3852,6 +3857,175 @@ def loadunannotext():
     #     return redirect(url_for('imageAnno'))
     return 'OK'  
 
+def generate_speaker_id(name, age=''):
+    name = name.replace(" ","").replace(".", "").lower()
+    age = age.replace("-","")
+    new_speaker_id = name+age+'_'+re.sub(r'[-: \.]', '', str(datetime.now()))
+
+    return new_speaker_id
+
+# add speaker details
+@app.route('/addnewspeakerdetails', methods=['GET', 'POST'])
+@login_required
+def addnewspeakerdetails():
+    projects, userprojects, speakerdetails = getdbcollections.getdbcollections(mongo,
+                                                'projects',
+                                                'userprojects',
+                                                'speakerdetails')
+    current_username = getcurrentusername.getcurrentusername()
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username,
+                            userprojects)
+    projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
+    if request.method == 'POST':
+        add_new_speaker_form_data = dict(request.form.lists())
+        print(add_new_speaker_form_data)
+        current_dt = str(datetime.now()).replace('.', ':')
+        audio_source = request.form.get('audiosource')
+        if (audio_source == 'field'):
+        #speaker metadata
+            fname = request.form.get('sname') 
+            fage = request.form.get('sagegroup')
+            source_id  =generate_speaker_id(fname, fage)
+            fgender = request.form.get('sgender')
+            educlvl = request.form.get('educationalevel')
+            moe12 = request.form.getlist('moe12')
+            moea12 = request.form.getlist('moea12')
+            sols = request.form.getlist('sols')
+            por = request.form.get('por')
+            toc = request.form.get('toc')
+            source_data = {"username":projectowner,
+                            "projectname": activeprojectname,
+                            "lifesourceid": source_id,
+                            "createdBy" : current_username, 
+                            "audioSource": audio_source,
+                            "current": {
+                                "updatedBy" : current_username,
+                                "sourceMetadata": {
+                                    "name": fname, 
+                                    "agegroup": fage, 
+                                    "gender": fgender,
+                                    "educationlevel": educlvl,
+                                    "educationmediumupto12": moe12,
+                                    "educationmediumafter12": moea12,
+                                    "speakerspeaklanguage": sols,
+                                    "recordingplace": por,
+                                    "typeofrecordingplace": toc
+                                },
+                                "current_date" : current_dt,
+                            },
+                            "isActive": 1}
+        elif(audio_source == 'internet'):
+            # internet sub source
+            audiosubsource = request.form.get('audiosubsource')
+            if (audiosubsource == 'youtube'):
+                channelname = request.form.get('ytchannelname')
+                channelurl = request.form.get('ytchannelurl')
+                source_id  =generate_speaker_id(channelname)
+                source_data = {"username":projectowner,
+                                "projectname": activeprojectname,
+                                "lifesourceid": source_id,
+                                "createdBy" : current_username, 
+                                "audioSource": audio_source,
+                                "audioSubSource": audiosubsource,
+                                "current": {
+                                    "updatedBy" : current_username,
+                                    "sourceMetadata": {
+                                        "channelName": channelname,
+                                        "channelUrl": channelurl
+                                    },
+                                    "current_date" : current_dt
+                                },
+                                "isActive": 1}
+
+        # if accesscode  == '':
+        #     accesscodefor = int(request.form.get('accesscodefor'))
+        #     task = request.form.get('task')
+        #     language = request.form.get('langscript') 
+        #     domain = request.form.getlist('domain')
+        #     elicitationmethod = request.form.getlist("elicitation")
+        #     namekaryaID = mongodb_info.find_one({"isActive":0, "projectname":activeprojectname, 
+        #                         "fetchData":accesscodefor, "task":task, 
+        #                         "domain":domain, "elicitationmethod":elicitationmethod, 
+        #                         "language":language},{"karyaspeakerid":1,"karyaaccesscode":1 , "_id" :0})
+            
+        #     if namekaryaID is None: 
+        #         flash("Please Upload New Access Code")
+        #         return redirect(url_for('karya_bp.home_insert'))
+
+        #     namekaryaIDDOB = fage
+        #     nameInForm = fname 
+        #     if namekaryaIDDOB and nameInForm is not None:  
+        #         renameInFormDOB = namekaryaIDDOB.replace("-","")
+        #         codes = namekaryaID["karyaspeakerid"]
+        #         # print(codes)
+                
+                # renameInForm = nameInForm.replace(" ","")
+        #         lowerRenameInForm = renameInForm.lower()
+        #         renameDOB =  "".join([lowerRenameInForm,renameInFormDOB])
+        #         renameCode ="_".join([renameDOB,codes])
+                # print("line 583", renameCode)  
+                # namekaryaAddID.append(renameCode)
+        pprint(source_data)
+        speakerdetails.insert(source_data, check_keys=False)
+    #########################################################################################################################
+    #########################################################################################################################
+            # accesscode = request.form.get('accode')
+            # print("=======================> ",accesscode )
+    #########################################################################################################################
+    ##########################################################################################################################
+            # print ("Data before updating")
+            # print ("Karya Access Code", namekaryaID["karyaaccesscode"])
+            # print ("Update Data", update_data)
+            
+            # mongodb_info.update_one({"karyaaccesscode": namekaryaID["karyaaccesscode"], "projectname": activeprojectname},
+            #                         {"$set": update_data}
+            #                         )
+            
+            # mongodb_info.insert_one({"karyaaccesscode": accesscode}, {"$set": update_data})
+            # mongodb_info.update_one({"karyaaccesscode": accesscode},{"lifespeakerid": {"$exists": False}}, {"$set": {"lifespeakerid": renameCode}})
+            # mongodb_info.update_one(filter={"karyaaccesscode": accesscode}, update={"$setOnInsert":{"lifespeakerid": ""},"$set":{"lifespeakerid": renameCode},})
+        # else:
+        #     update_data = {"current.updatedBy" :  current_username,
+        #                         "current.workerMetadata.gender": fgender,
+        #                             "current.workerMetadata.educationlevel": educlvl,
+        #                             "current.workerMetadata.educationmediumupto12": moe12,
+        #                             "current.workerMetadata.educationmediumafter12": moea12,
+        #                             "current.workerMetadata.speakerspeaklanguage": sols,
+        #                             "current.workerMetadata.recordingplace": por,
+        #                             "current.workerMetadata.typeofrecordingplace": toc,
+        #                             "isActive": 1}   
+        #     previous_speakerdetails = mongodb_info.find_one({"karyaaccesscode": accesscode, "projectname": activeprojectname},
+        #                                         {"current.workerMetadata": 1, "current.updatedBy":1, "_id": 0,})
+
+            ###########################################
+            ## TOdo: Add date to the previous metadata
+            ###########################################
+
+
+            # the document's content will change to this:
+            # new_val = {"some text": "ObjectRocket: Database Management and Hosting"}
+
+            # pass the 'new_val' obj to the method call
+            
+            # date_of_modified = str(datetime.now()).replace(".", ":" )
+
+            # update_old_data = {"previous."+date_of_modified+".workerMetadata.gender": previous_speakerdetails["current"]["workerMetadata"]["gender"],
+            #                                         "previous."+date_of_modified+".workerMetadata.educationlevel": previous_speakerdetails["current"]["workerMetadata"]["educationlevel"],
+            #                                         "previous."+date_of_modified+".workerMetadata.educationmediumupto12": previous_speakerdetails["current"]["workerMetadata"]["educationmediumupto12"],
+            #                                         "previous."+date_of_modified+".workerMetadata.educationmediumafter12": previous_speakerdetails["current"]["workerMetadata"]["educationmediumafter12"],
+            #                                         "previous."+date_of_modified+".workerMetadata.speakerspeaklanguage": previous_speakerdetails["current"]["workerMetadata"]["speakerspeaklanguage"],
+            #                                         "previous."+date_of_modified+".workerMetadata.recordingplace": previous_speakerdetails["current"]["workerMetadata"]["recordingplace"],
+            #                                         "previous."+date_of_modified+".updatedBy" : previous_speakerdetails["current"]["updatedBy"]
+            #                                         }
+
+            # mongodb_info.update_one({"karyaaccesscode": accesscode, "projectname": activeprojectname}, {"$set": update_old_data}) # Edit_old_user_info
+            # mongodb_info.update_one({"karyaaccesscode": accesscode, "projectname": activeprojectname}, {"$set": update_data}) #new_user_info
+        flash('New speaker details added. Now you can upload the data for this user.')
+
+        return redirect(url_for('enternewsentences'))
+
+    return redirect(url_for('enternewsentences'))
+
 # uploadaudiofiles route
 @app.route('/uploadaudiofiles', methods=['GET', 'POST'])
 @login_required
@@ -3864,6 +4038,8 @@ def uploadaudiofiles():
                             userprojects)
     projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
     if request.method == 'POST':
+        data = dict(request.form.lists())
+        print(data)
         speakerId = dict(request.form.lists())['speakerId'][0]
         new_audio_file = request.files.to_dict()
         audiodetails.saveaudiofiles(mongo,

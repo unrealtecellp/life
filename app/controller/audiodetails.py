@@ -1,4 +1,4 @@
-"""Module to save the uploaded audio file from 'enternewsenteces' route."""
+"""Module to save the uploaded audio file(s) from 'enternewsenteces' route."""
 
 
 import json
@@ -10,9 +10,149 @@ from pprint import pprint
 import gridfs
 from flask import flash
 import pandas as pd
+from zipfile import ZipFile
+from werkzeug.datastructures import FileStorage
+import io
 from app.controller import getcommentstats
 
+
+def get_file_format(current_file):
+    cur_filename = current_file.filename
+        # print("Filename", cur_filename)
+    file_format = cur_filename.rsplit('.', 1)[-1]
+    #TODO: Infer file format based on its header
+
+    return file_format
+
 def saveaudiofiles(mongo,
+                    projects,
+                    userprojects,
+                    transcriptions,
+                    projectowner,
+                    activeprojectname,
+                    current_username,
+                    speakerId,
+                    new_audio_file,
+                    **kwargs):
+    """mapping of this function is with the 'uploadaudiofiles' route.
+
+    Args:
+        mongo: instance of PyMongo
+        projects: instance of 'projects' collection.
+        userprojects: instance of 'userprojects' collection.
+        transcriptions: instance of 'transcriptions' collection.
+        projectowner: owner of the project.
+        activeprojectname: name of the project activated by current active user.
+        current_username: name of the current active user.
+        speakerId: speaker ID for this audio.
+        new_audio_file: uploaded audio file details.
+    """
+
+    key = 'audiofile'
+    # print ('New ques file', new_ques_file)
+    file_states = []
+    transcription_doc_ids = []
+    fs_file_ids = []
+
+    if new_audio_file[key].filename != '':
+        current_file = new_audio_file[key]
+        # print ("Filepath", filepath)
+        file_format = get_file_format(current_file)
+
+        if (file_format == 'wav'):
+            file_state,transcription_doc_id, fs_file_id = saveoneaudiofile(mongo,
+                                                            projects,
+                                                            userprojects,
+                                                            transcriptions,
+                                                            projectowner,
+                                                            activeprojectname,
+                                                            current_username,
+                                                            speakerId,
+                                                            new_audio_file)
+            file_states.append(file_state)
+            transcription_doc_ids.append(transcription_doc_id)
+            fs_file_ids.append(fs_file_id)
+            
+        elif (file_format == 'zip'):
+            file_states,transcription_doc_ids, fs_file_ids = savemultipleaudiofiles(mongo,
+                                                                projects,
+                                                                userprojects,
+                                                                transcriptions,
+                                                                projectowner,
+                                                                activeprojectname,
+                                                                current_username,
+                                                                speakerId,
+                                                                new_audio_file)
+        else:
+            return ([False], ['Unsupported file format'], ['File not stored'])
+
+    return (file_state,transcription_doc_id, fs_file_id)
+    
+
+def savemultipleaudiofiles(mongo,
+                    projects,
+                    userprojects,
+                    transcriptions,
+                    projectowner,
+                    activeprojectname,
+                    current_username,
+                    speakerId,
+                    all_audio_files,
+                    **kwargs):
+    """mapping of this function is with the 'uploadaudiofiles' route.
+
+    Args:
+        mongo: instance of PyMongo
+        projects: instance of 'projects' collection.
+        userprojects: instance of 'userprojects' collection.
+        transcriptions: instance of 'transcriptions' collection.
+        projectowner: owner of the project.
+        activeprojectname: name of the project activated by current active user.
+        current_username: name of the current active user.
+        speakerId: speaker ID for this audio.
+        all_audio_files: uploaded audio file details.
+    """
+    all_file_states=[]
+    transcription_doc_ids=[]
+    fs_file_ids=[]
+    new_audio_file = {}
+
+    try:        
+        with ZipFile(all_audio_files) as myzip:
+            for file_name in myzip.namelist():
+                if (file_name.endswith('.wav')):
+                    with myzip.open(file_name) as myfile:
+                        upload_file_full = {}
+                        file_content = io.BytesIO(myfile.read())
+                        # print ('ZIP file', mainfile)
+                        # print ("File content", file_content)
+                        # print ("Upload key", fileType)
+                        new_audio_file['audiofile'] = FileStorage(file_content, filename = file_name)
+                        file_state,transcription_doc_id, fs_file_id = saveoneaudiofile(mongo,
+                                                                                projects,
+                                                                                userprojects,
+                                                                                transcriptions,
+                                                                                projectowner,
+                                                                                activeprojectname,
+                                                                                current_username,
+                                                                                speakerId,
+                                                                                new_audio_file)
+                        
+                        all_file_states.append(file_state)
+                        transcription_doc_ids.append(transcription_doc_id)
+                        fs_file_ids.append(fs_file_id)        
+    except Exception as e:
+        print(e)
+        flash(f"ERROR")
+        all_file_states.append(False)
+        transcription_doc_ids.append('')
+        fs_file_ids.append('')
+        # return (False)
+
+    return (all_file_states,transcription_doc_ids, fs_file_ids)
+
+
+def saveoneaudiofile(mongo,
                     projects,
                     userprojects,
                     transcriptions,
@@ -142,7 +282,7 @@ def saveaudiofiles(mongo,
     except Exception as e:
         print(e)
         flash(f"ERROR")
-        return (False)
+        return (False, '', '')
 
 def updateaudiofiles(mongo,
                     projects,
@@ -667,3 +807,15 @@ def copyofaudiodata(transcriptions,
     transcription_doc_id = transcriptions.insert(audio_data)
 
     return audio_id
+
+
+def addedspeakerids(speakerdetails,
+                        activeprojectname):
+    all_speaker_ids = speakerdetails.find({"projectname": activeprojectname, "isActive": 1},
+                                            {"_id": 0, "lifesourceid": 1})
+    added_speaker_ids = []
+    for speaker_id in all_speaker_ids:
+        s_id = speaker_id["lifesourceid"]
+        added_speaker_ids.append(s_id)
+    print ("Added Speaker IDS", added_speaker_ids)
+    return added_speaker_ids
