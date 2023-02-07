@@ -4165,6 +4165,9 @@ def addnewspeakerdetails():
         print(add_new_speaker_form_data)
         current_dt = str(datetime.now()).replace('.', ':')
         audio_source = request.form.get('audiosource')
+        call_source = request.form.get('sourcecallpage')
+        print("Call source", call_source)
+
         if (audio_source == 'field'):
             # speaker metadata
             fname = request.form.get('sname')
@@ -4223,9 +4226,16 @@ def addnewspeakerdetails():
         # pprint(source_data)
         speakerdetails.insert(source_data, check_keys=False)
 
-        flash('New speaker details added. Now you can upload the data for this user.')
+        # TODO: Redirect to different pages based on button click
 
-        return redirect(url_for('enternewsentences'))
+        if "managepage" in call_source:
+            flash(
+                'New source details added. Now you can upload the data for this source.')
+            return redirect(url_for('managespeakermetadata'))
+        else:
+            flash(
+                'New source details added. Now you can upload the data for this source.')
+            return redirect(url_for('enternewsentences'))
 
     return redirect(url_for('enternewsentences'))
 

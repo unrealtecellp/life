@@ -1,7 +1,7 @@
 {% extends "enternewsentenceslinks.html" %}
 
 {% block title %}
-    Enter New Sentences
+Enter New Sentences
 {% endblock title %}
 
 
@@ -15,222 +15,232 @@
 <div class="row">
   <div class="col-sm-9">
     {% if projectName is defined %}
-        <h4>Project Name : {{ projectName }}</h4><br>
+    <h4>Project Name : {{ projectName }}</h4><br>
     {% endif %}
     {% if speakerids is defined %}
-    <button type="button" id="progressreport" class="btn btn-lg btn-warning" data-toggle="modal" data-target="#myProgressReportModal">
+    <button type="button" id="progressreport" class="btn btn-lg btn-warning" data-toggle="modal"
+      data-target="#myProgressReportModal">
       Progress Report
     </button>
     <br>
     <br>
     <div class="btn-group" role="group">
-      <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
+        aria-expanded="false">
         Download Transcription
         <span class="caret"></span>
       </button>
       <ul class="dropdown-menu">
-          <li id="json"><a href="#">JSON</a></li>
-          <li id="csv"><a href="#">CSV</a></li>
-          <li id="xlsx"><a href="#">XLSX</a></li>
-          <li id="praattexgrid"><a href="#">Praat Textgrid</a></li>
+        <li id="json"><a href="#">JSON</a></li>
+        <li id="csv"><a href="#">CSV</a></li>
+        <li id="xlsx"><a href="#">XLSX</a></li>
+        <li id="praattexgrid"><a href="#">Praat Textgrid</a></li>
       </ul>
     </div>
     <br>
     <br>
     <label for="speakeridsdropdown">Audio Files from Source: </label>
     <select class="custom-select custom-select-sm" id="speakeridsdropdown" style="width: 25%; margin-top:10px">
-        <option selected disabled>{{ activespeakerid }}</option>
-        {% for d in speakerids %}
-          {% if d != activespeakerid %}
-            <option value="{{ d }}">{{ d }}</option>
-          {% endif %}
-        {% endfor %}
+      <option selected disabled>{{ activespeakerid }}</option>
+      {% for d in speakerids %}
+      {% if d != activespeakerid %}
+      <option value="{{ d }}">{{ d }}</option>
+      {% endif %}
+      {% endfor %}
     </select>
     {% endif %}
-    
+
   </div>
-  {% if  shareinfo['sharemode']|int >= 3 %}
-    <div class="col-sm-3">
-      <form name="newaudioupload" action="/uploadaudiofiles" method="POST" enctype="multipart/form-data">
-        <div class="col upload">
-          <button type="button" id="addnewspeaker" class="btn btn-lg btn-primary" data-toggle="modal" data-target="#addNewSpeakerModal">
-            Add New Speaker
-          </button>
-          <br><br>
-          {# <input type="text" class="form-control" placeholder="Speaker ID" name="speakerId" required>
-          <br> #}
-          <select class="custom-select custom-select-sm" id="speakeriduploaddropdown" name="speakerId" style="width:100%" required>
-            <!-- <option selected disabled></option> -->
-            {% for d in addedspeakerids %}
-              <option value="{{ d }}">{{ d }}</option>
-            {% endfor %}
-          </select>
-          <br><br>
-          <input type="file" id="audiofile" name="audiofile" required>
-          <br>
-          <input class="btn btn-primary uploadbtn" type="submit" value="Upload Audio File">
-        </div>
-      </form>
-    </div>
+  {% if shareinfo['sharemode']|int >= 3 %}
+  <div class="col-sm-3">
+    <form name="newaudioupload" action="/uploadaudiofiles" method="POST" enctype="multipart/form-data">
+      <div class="col upload">
+        <button type="button" id="addnewspeakertranscriptionid" class="btn btn-lg btn-primary addnewspeaker"
+          data-toggle="modal" data-target="#addNewSpeakerModal">
+          Add New Speaker
+        </button>
+        <br><br>
+        {# <input type="text" class="form-control" placeholder="Speaker ID" name="speakerId" required>
+        <br> #}
+        <select class="custom-select custom-select-sm" id="speakeriduploaddropdown" name="speakerId" style="width:100%"
+          required>
+          <!-- <option selected disabled></option> -->
+          {% for d in addedspeakerids %}
+          <option value="{{ d }}">{{ d }}</option>
+          {% endfor %}
+        </select>
+        <br><br>
+        <input type="file" id="audiofile" name="audiofile" required>
+        <br>
+        <input class="btn btn-primary uploadbtn" type="submit" value="Upload Audio File">
+      </div>
+    </form>
+  </div>
   {% endif %}
 </div>
 <hr>
-  {% for data in sdata %}
-      {% if data['sentenceId'] is defined %}
-        {% if data['interlineargloss'] is defined %}
-          <p id='sentenceId'><strong>Sentence ID: </strong>{{ data['sentenceId'] }}</p>
-          <input type="text" class="form-control" placeholder="{{ data['interlineargloss']['level_1'] }}" name="interlinearglosslevel_1" value="{{ data['interlineargloss']['level_1'] }}" disabled>
-          <input type="text" class="form-control" placeholder="{{ data['interlineargloss']['level_2'] }}" name="interlinearglosslevel_2" value="{{ data['interlineargloss']['level_2'] }}" disabled>
-          <input type="text" class="form-control" placeholder="{{ data['interlineargloss']['level_3'] }}" name="interlinearglosslevel_3" value="{{ data['interlineargloss']['level_3'] }}" disabled>
-          <br>
-          <button type="button" class="btn btn-primary " onclick="editSentenceBtn()">Edit Sentence</button>
-          <hr>
-      {% endif %}
-    {% endif %}
-  {% endfor %}
-  <!-- <div class="row"> -->
-    <div class="col-md-12 btn-group btn-group-lg btn-primary">
-      <button type="button" class="btn btn-lg btn-primary">Discourse</button>
-      <button type="button" class="btn btn-lg btn-primary">Sentence</button>
-      <button type="button" class="btn btn-lg btn-primary">Word</button>
-      <button type="button" class="btn btn-lg btn-primary">Phone</button>
-    </div> 
-  <!-- </div> -->
-  <br>
-  <hr>
-    <div class="row">
-      <div class="col-sm-7 commentIDs">
-          <button type="button" id="uNAnnotated" class="btn btn-light" onclick="unAnnotated()">All Filename</button>
-      </div>
-      {% if commentstats is defined %}
-        <div class="col-sm-3 commentStats pull-right">
-          <strong>Total Files: {{ commentstats[0] }}</strong><br> 
-          <strong>Completed Files: {{ commentstats[1] }}</strong><br>
-          <strong>Remaining Files: {{ commentstats[2] }}</strong><br>
-        </div>
-      {% endif %}
-    </div>
-    <br>
-    <div class="defaultfield">
-    </div>
-    <br>
-    <hr>
-    <button class="btn btn-info btn-lg" type="button" id="previous" onclick="previousAudio()">
-      <span class="previousaudio glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
-      Previous Audio
-    </button>
-    <button class="btn btn-info pull-right btn-lg" type="button" id="next" onclick="nextAudio()">
-      Next Audio
-      <span class="nextaudio glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
-    </button>
-    <br>
-    <br>
-    <div class="lexemelang"></div>
-    <div class="lexemeform"></div>
+{% for data in sdata %}
+{% if data['sentenceId'] is defined %}
+{% if data['interlineargloss'] is defined %}
+<p id='sentenceId'><strong>Sentence ID: </strong>{{ data['sentenceId'] }}</p>
+<input type="text" class="form-control" placeholder="{{ data['interlineargloss']['level_1'] }}"
+  name="interlinearglosslevel_1" value="{{ data['interlineargloss']['level_1'] }}" disabled>
+<input type="text" class="form-control" placeholder="{{ data['interlineargloss']['level_2'] }}"
+  name="interlinearglosslevel_2" value="{{ data['interlineargloss']['level_2'] }}" disabled>
+<input type="text" class="form-control" placeholder="{{ data['interlineargloss']['level_3'] }}"
+  name="interlinearglosslevel_3" value="{{ data['interlineargloss']['level_3'] }}" disabled>
+<br>
+<button type="button" class="btn btn-primary " onclick="editSentenceBtn()">Edit Sentence</button>
+<hr>
+{% endif %}
+{% endif %}
+{% endfor %}
+<!-- <div class="row"> -->
+<div class="col-md-12 btn-group btn-group-lg btn-primary">
+  <button type="button" class="btn btn-lg btn-primary">Discourse</button>
+  <button type="button" class="btn btn-lg btn-primary">Sentence</button>
+  <button type="button" class="btn btn-lg btn-primary">Word</button>
+  <button type="button" class="btn btn-lg btn-primary">Phone</button>
+</div>
+<!-- </div> -->
+<br>
+<hr>
+<div class="row">
+  <div class="col-sm-7 commentIDs">
+    <button type="button" id="uNAnnotated" class="btn btn-light" onclick="unAnnotated()">All Filename</button>
+  </div>
+  {% if commentstats is defined %}
+  <div class="col-sm-3 commentStats pull-right">
+    <strong>Total Files: {{ commentstats[0] }}</strong><br>
+    <strong>Completed Files: {{ commentstats[1] }}</strong><br>
+    <strong>Remaining Files: {{ commentstats[2] }}</strong><br>
+  </div>
+  {% endif %}
+</div>
+<br>
+<div class="defaultfield">
+</div>
+<br>
+<hr>
+<button class="btn btn-info btn-lg" type="button" id="previous" onclick="previousAudio()">
+  <span class="previousaudio glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+  Previous Audio
+</button>
+<button class="btn btn-info pull-right btn-lg" type="button" id="next" onclick="nextAudio()">
+  Next Audio
+  <span class="nextaudio glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+</button>
+<br>
+<br>
+<div class="lexemelang"></div>
+<div class="lexemeform"></div>
 
-    <p id="subtitle" class="text-center text-info">&nbsp;</p>
-    <div id="wave-timeline"></div>
-    <div id="waveform"></div>
-    <div id="wave-spectrogram" style="display: none;"></div>
+<p id="subtitle" class="text-center text-info">&nbsp;</p>
+<div id="wave-timeline"></div>
+<div id="waveform"></div>
+<div id="wave-spectrogram" style="display: none;"></div>
 
-    <br>
-    <hr>
-    <!-- <div class="col-sm-3">
+<br>
+<hr>
+<!-- <div class="col-sm-3">
       <input id="slider" data-action="zoom" type="range" min="0" max="5000" value="0" style="width: 100%">
     </div> -->
-    <!-- <i class="glyphicon glyphicon-zoom-in"></i> -->
+<!-- <i class="glyphicon glyphicon-zoom-in"></i> -->
 
-    <div class="pull-right">
-      <button class="btn btn-danger" type="button" id="stopAudio">STOP
-        <span class="audiostop glyphicon glyphicon-stop" aria-hidden="true"></span>
-      </button>
-      <button class="btn btn-primary" type="button" id="playPauseAudio">PLAY/PAUSE
-        <span class="audioplaypause glyphicon glyphicon-play" aria-hidden="true"></span>
-      </button>
-    </div>
-    <br>
-    <hr>
+<div class="pull-right">
+  <button class="btn btn-danger" type="button" id="stopAudio">STOP
+    <span class="audiostop glyphicon glyphicon-stop" aria-hidden="true"></span>
+  </button>
+  <button class="btn btn-primary" type="button" id="playPauseAudio">PLAY/PAUSE
+    <span class="audioplaypause glyphicon glyphicon-play" aria-hidden="true"></span>
+  </button>
+</div>
+<br>
+<hr>
 
-    <form id="boundaryForm" role="form" name="edit" style="display: none; margin: 30px 0;">
-        <div class="form-group">
-            <label for="start">Boundary Start Time</label>
-            <input class="form-control" id="start" name="start" required/>
-        </div>
-
-        <div class="form-group">
-            <label for="end">Boundary End Time</label>
-            <input class="form-control" id="end" name="end" required/>
-        </div>
-        <div class="form-group transcription1" id="transcription2"></div>
-        <div class="form-group translationfield1" id="translationfield2"></div>
-        <br>
-        <button type="submit" class="btn btn-success btn-block saveTempTranscription">Save Boundary</button>
-        <center><i>or</i></center>
-        <button type="button" class="btn btn-danger btn-block" data-action="delete-region">Delete Boundary</button>
-    </form>
-    <br>
-    <br>
-    <div id="waveformControl">
-      <button class="btn btn-info btn-lg" type="button" id="previous" onclick="previousAudio()">
-        <span class="previousaudio glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
-        Previous Audio
-      </button>
-      <button class="btn btn-info pull-right btn-lg" type="button" id="next" onclick="nextAudio()">
-        Next Audio
-        <span class="nextaudio glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
-      </button>
-      <br>
-      <br>
-      <button class="btn btn-warning btn-lg btn-block pull-right" id="save">
-        Save All Boundaries
-        <span class="saveaudio glyphicon glyphicon-floppy-save" aria-hidden="true"></span>
-      </button>
+<form id="boundaryForm" role="form" name="edit" style="display: none; margin: 30px 0;">
+  <div class="form-group">
+    <label for="start">Boundary Start Time</label>
+    <input class="form-control" id="start" name="start" required />
   </div>
-  <br>
-  <div class="interlineargloss"></div>
-  <br>
-  <br>
-  <div class="clear"></div>
 
-  <!-- Progress Report Modal -->
-  <div class="modal fade" id="myProgressReportModal" tabindex="-1" role="dialog" aria-labelledby="myProgressReportModalLabel">
-    <div class="modal-dialog modal-lg" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-          <h4 class="modal-title" id="myProgressReportModalLabel">Project Name: {{ projectName }}</h4>
-        </div>
-        <div class="modal-body">
-          <!-- <div class="col-xs-6"> -->
-            <input id="myInput" class="form-control" type="text" placeholder="Search">
-          <!-- </div> -->
-          <br>
-          <div class="row">
-            <div class="col-xs-12">
-              <div class="form-group">
-                <div class="progressreport"></div>
-              </div>
+  <div class="form-group">
+    <label for="end">Boundary End Time</label>
+    <input class="form-control" id="end" name="end" required />
+  </div>
+  <div class="form-group transcription1" id="transcription2"></div>
+  <div class="form-group translationfield1" id="translationfield2"></div>
+  <br>
+  <button type="submit" class="btn btn-success btn-block saveTempTranscription">Save Boundary</button>
+  <center><i>or</i></center>
+  <button type="button" class="btn btn-danger btn-block" data-action="delete-region">Delete Boundary</button>
+</form>
+<br>
+<br>
+<div id="waveformControl">
+  <button class="btn btn-info btn-lg" type="button" id="previous" onclick="previousAudio()">
+    <span class="previousaudio glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+    Previous Audio
+  </button>
+  <button class="btn btn-info pull-right btn-lg" type="button" id="next" onclick="nextAudio()">
+    Next Audio
+    <span class="nextaudio glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+  </button>
+  <br>
+  <br>
+  <button class="btn btn-warning btn-lg btn-block pull-right" id="save">
+    Save All Boundaries
+    <span class="saveaudio glyphicon glyphicon-floppy-save" aria-hidden="true"></span>
+  </button>
+</div>
+<br>
+<div class="interlineargloss"></div>
+<br>
+<br>
+<div class="clear"></div>
+
+<!-- Progress Report Modal -->
+<div class="modal fade" id="myProgressReportModal" tabindex="-1" role="dialog"
+  aria-labelledby="myProgressReportModalLabel">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+            aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myProgressReportModalLabel">Project Name: {{ projectName }}</h4>
+      </div>
+      <div class="modal-body">
+        <!-- <div class="col-xs-6"> -->
+        <input id="myInput" class="form-control" type="text" placeholder="Search">
+        <!-- </div> -->
+        <br>
+        <div class="row">
+          <div class="col-xs-12">
+            <div class="form-group">
+              <div class="progressreport"></div>
             </div>
           </div>
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
       </div>
     </div>
   </div>
+</div>
 
 <!-- Add new Speaker Modal -->
 <div class="modal fade" id="addNewSpeakerModal" tabindex="-1" role="dialog" aria-labelledby="addNewSpeakerModalLabel">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+            aria-hidden="true">&times;</span></button>
         <h4 class="modal-title" id="addNewSpeakerModalLabel">Project Name: {{ projectName }}</h4>
       </div>
       <div class="modal-body">
         <!-- <div class="col-xs-6"> -->
-          <!-- <input id="myInput" class="form-control" type="text" placeholder="Search"> -->
+        <!-- <input id="myInput" class="form-control" type="text" placeholder="Search"> -->
         <!-- </div> -->
         <br>
         <div class="row">
@@ -247,7 +257,7 @@
     </div>
   </div>
 </div>
-  <!-- <label for="ipa">IPA</label>
+<!-- <label for="ipa">IPA</label>
   <input type="text" id="ipa" name="ipa"><br><br>
   <label for="meetei">Meetei</label>
   <input type="text" id="meetei" name="meetei" onfocusin="ipaFocus(this)"><br><br> -->
