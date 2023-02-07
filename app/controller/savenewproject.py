@@ -30,8 +30,11 @@ def savenewproject(projects,
         }
         for key, value in kwargs.items():
             project_details[key] = value
+            if (key == 'projectType' and value == 'transcriptions'):
+                project_details['speakerIds'] = {current_username: []}
             
         projects.insert(project_details)
+        # pprint(project_details)
     else:
         projectname = ''
 

@@ -1,4 +1,4 @@
-"""Module to save the uploaded audio file from 'enternewsenteces' route."""
+"""Module to save the uploaded audio file(s) from 'enternewsenteces' route."""
 
 
 import json
@@ -10,18 +10,176 @@ from pprint import pprint
 import gridfs
 from flask import flash
 import pandas as pd
+from zipfile import ZipFile
+from werkzeug.datastructures import FileStorage
+import io
 from app.controller import getcommentstats
 
+allowed_file_formats = ['mp3', 'wav']
+
+# appConfigPath = os.path.join(basedir, 'jsonfiles/app_config.json')
+
+# allowed_file_formats = get_allowed_file_formats()
+
+
+def get_file_format(current_file):
+    cur_filename = current_file.filename
+    # print("Filename", cur_filename)
+    file_format = cur_filename.rsplit('.', 1)[-1].lower()
+    # TODO: Infer file format based on its header
+
+    return file_format
+
+
 def saveaudiofiles(mongo,
-                    projects,
-                    userprojects,
-                    transcriptions,
-                    projectowner,
-                    activeprojectname,
-                    current_username,
-                    speakerId,
-                    new_audio_file,
-                    **kwargs):
+                   projects,
+                   userprojects,
+                   transcriptions,
+                   projectowner,
+                   activeprojectname,
+                   current_username,
+                   speakerId,
+                   new_audio_file,
+                   **kwargs):
+    """mapping of this function is with the 'uploadaudiofiles' route.
+
+    Args:
+        mongo: instance of PyMongo
+        projects: instance of 'projects' collection.
+        userprojects: instance of 'userprojects' collection.
+        transcriptions: instance of 'transcriptions' collection.
+        projectowner: owner of the project.
+        activeprojectname: name of the project activated by current active user.
+        current_username: name of the current active user.
+        speakerId: speaker ID for this audio.
+        new_audio_file: uploaded audio file details.
+    """
+
+    key = 'audiofile'
+    # print ('New ques file', new_ques_file)
+    file_states = []
+    transcription_doc_ids = []
+    fs_file_ids = []
+
+    if new_audio_file[key].filename != '':
+        current_file = new_audio_file[key]
+        print("Filepath", current_file)
+        file_format = get_file_format(current_file)
+
+        if (file_format in allowed_file_formats):
+            file_state, transcription_doc_id, fs_file_id = saveoneaudiofile(mongo,
+                                                                            projects,
+                                                                            userprojects,
+                                                                            transcriptions,
+                                                                            projectowner,
+                                                                            activeprojectname,
+                                                                            current_username,
+                                                                            speakerId,
+                                                                            new_audio_file)
+            file_states.append(file_state)
+            transcription_doc_ids.append(transcription_doc_id)
+            fs_file_ids.append(fs_file_id)
+
+        elif (file_format == 'zip'):
+            print('ZIP file format')
+            file_states, transcription_doc_ids, fs_file_ids = savemultipleaudiofiles(mongo,
+                                                                                     projects,
+                                                                                     userprojects,
+                                                                                     transcriptions,
+                                                                                     projectowner,
+                                                                                     activeprojectname,
+                                                                                     current_username,
+                                                                                     speakerId,
+                                                                                     new_audio_file)
+        else:
+            return ([False], ['Unsupported file format'], ['File not stored'])
+
+    return (file_states, transcription_doc_ids, fs_file_ids)
+
+
+def savemultipleaudiofiles(mongo,
+                           projects,
+                           userprojects,
+                           transcriptions,
+                           projectowner,
+                           activeprojectname,
+                           current_username,
+                           speakerId,
+                           all_audio_files,
+                           **kwargs):
+    """mapping of this function is with the 'uploadaudiofiles' route.
+
+    Args:
+        mongo: instance of PyMongo
+        projects: instance of 'projects' collection.
+        userprojects: instance of 'userprojects' collection.
+        transcriptions: instance of 'transcriptions' collection.
+        projectowner: owner of the project.
+        activeprojectname: name of the project activated by current active user.
+        current_username: name of the current active user.
+        speakerId: speaker ID for this audio.
+        all_audio_files: uploaded audio file details.
+    """
+    all_file_states = []
+    transcription_doc_ids = []
+    fs_file_ids = []
+    new_audio_file = {}
+
+    if all_audio_files['audiofile'].filename != '':
+        zip_audio_files = all_audio_files['audiofile']
+
+    try:
+        with ZipFile(zip_audio_files) as myzip:
+            print('File list', myzip.namelist())
+            for file_name in myzip.namelist():
+                # if (file_name.endswith('.wav')):
+                print('Current File name', file_name)
+                with myzip.open(file_name) as myfile:
+                    # file_format = get_file_format(myfile)
+                    file_format = file_name.rsplit('.', 1)[-1].lower()
+                    print('File format during upload', file_format)
+                    if file_format in allowed_file_formats:
+                        # upload_file_full = {}
+                        file_content = io.BytesIO(myfile.read())
+                        # print ('ZIP file', mainfile)
+                        # print ("File content", file_content)
+                        # print ("Upload key", fileType)
+                        new_audio_file['audiofile'] = FileStorage(
+                            file_content, filename=file_name)
+                        file_state, transcription_doc_id, fs_file_id = saveoneaudiofile(mongo,
+                                                                                        projects,
+                                                                                        userprojects,
+                                                                                        transcriptions,
+                                                                                        projectowner,
+                                                                                        activeprojectname,
+                                                                                        current_username,
+                                                                                        speakerId,
+                                                                                        new_audio_file)
+
+                        all_file_states.append(file_state)
+                        transcription_doc_ids.append(transcription_doc_id)
+                        fs_file_ids.append(fs_file_id)
+    except Exception as e:
+        print(e)
+        flash(f"ERROR")
+        all_file_states.append(False)
+        transcription_doc_ids.append('')
+        fs_file_ids.append('')
+        # return (False)
+
+    return (all_file_states, transcription_doc_ids, fs_file_ids)
+
+
+def saveoneaudiofile(mongo,
+                     projects,
+                     userprojects,
+                     transcriptions,
+                     projectowner,
+                     activeprojectname,
+                     current_username,
+                     speakerId,
+                     new_audio_file,
+                     **kwargs):
     """mapping of this function is with the 'uploadaudiofiles' route.
 
     Args:
@@ -37,11 +195,11 @@ def saveaudiofiles(mongo,
     """
 
     text_grid = {
-            "discourse": {},
-            "sentence": {},
-            "word": {},
-            "phoneme": {}
-        }
+        "discourse": {},
+        "sentence": {},
+        "word": {},
+        "phoneme": {}
+    }
     # save audio file details in transcriptions collection
     new_audio_details = {
         "username": projectowner,
@@ -60,9 +218,9 @@ def saveaudiofiles(mongo,
         audio_filename = new_audio_file['audiofile'].filename
         audio_id = 'A'+re.sub(r'[-: \.]', '', str(datetime.now()))
         new_audio_details['audioId'] = audio_id
-        updated_audio_filename = (audio_id+
-                                    '_'+
-                                    audio_filename)
+        updated_audio_filename = (audio_id +
+                                  '_' +
+                                  audio_filename)
         new_audio_details['audioFilename'] = updated_audio_filename
     new_audio_details["textGrid"] = text_grid
     new_audio_details[current_username] = {}
@@ -70,8 +228,8 @@ def saveaudiofiles(mongo,
     # pprint(new_audio_details)
 
     # save audio file details and speaker ID in projects collection
-    speakerIds = projects.find_one({ 'projectname': activeprojectname },
-                                        { '_id': 0, 'speakerIds': 1 })
+    speakerIds = projects.find_one({'projectname': activeprojectname},
+                                   {'_id': 0, 'speakerIds': 1})
     # print(f"SPEAKER IDS: {speakerIds}")
     if len(speakerIds) != 0:
         speakerIds = speakerIds['speakerIds']
@@ -88,7 +246,7 @@ def saveaudiofiles(mongo,
         # print(speakerIds)
 
     speaker_audio_ids = projects.find_one({'projectname': activeprojectname},
-                                    {'_id': 0, 'speakersAudioIds': 1})
+                                          {'_id': 0, 'speakersAudioIds': 1})
     # print(len(speaker_audio_ids))
     # print(speaker_audio_ids)
     if len(speaker_audio_ids) != 0:
@@ -108,15 +266,15 @@ def saveaudiofiles(mongo,
         }
     # pprint(speaker_audio_ids)
     try:
-        projects.update_one({ 'projectname' : activeprojectname },
-                { '$set' : {
-                    'lastActiveId.'+current_username+'.'+speakerId+'.audioId' :  audio_id,
-                    'speakerIds': speakerIds,
-                    'speakersAudioIds': speaker_audio_ids
-                }})
+        projects.update_one({'projectname': activeprojectname},
+                            {'$set': {
+                                'lastActiveId.'+current_username+'.'+speakerId+'.audioId':  audio_id,
+                                'speakerIds': speakerIds,
+                                'speakersAudioIds': speaker_audio_ids
+                            }})
         # update active speaker ID in userprojects collection
-        projectinfo = userprojects.find_one({'username' : current_username},
-                                        {'_id': 0, 'myproject': 1, 'projectsharedwithme': 1})
+        projectinfo = userprojects.find_one({'username': current_username},
+                                            {'_id': 0, 'myproject': 1, 'projectsharedwithme': 1})
 
         # print(projectinfo)
         userprojectinfo = ''
@@ -125,36 +283,37 @@ def saveaudiofiles(mongo,
                 if activeprojectname in value:
                     userprojectinfo = key+'.'+activeprojectname+".activespeakerId"
         userprojects.update_one({"username": current_username},
-                                { "$set": {
+                                {"$set": {
                                     userprojectinfo: speakerId
                                 }})
         transcription_doc_id = transcriptions.insert(new_audio_details)
         # save audio file details in fs collection
         fs_file_id = mongo.save_file(updated_audio_filename,
-                        new_audio_file['audiofile'],
-                        audioId=audio_id,
-                        username=projectowner,
-                        projectname=activeprojectname,
-                        updatedBy=current_username)
+                                     new_audio_file['audiofile'],
+                                     audioId=audio_id,
+                                     username=projectowner,
+                                     projectname=activeprojectname,
+                                     updatedBy=current_username)
 
-        return (True,transcription_doc_id, fs_file_id)
-        
+        return (True, transcription_doc_id, fs_file_id)
+
     except Exception as e:
         print(e)
         flash(f"ERROR")
-        return (False)
+        return (False, '', '')
+
 
 def updateaudiofiles(mongo,
-                    projects,
-                    userprojects,
-                    transcriptions,
-                    projectowner,
-                    activeprojectname,
-                    current_username,
-                    speakerId,
-                    new_audio_file,
-                    audio_id,
-                    **kwargs):
+                     projects,
+                     userprojects,
+                     transcriptions,
+                     projectowner,
+                     activeprojectname,
+                     current_username,
+                     speakerId,
+                     new_audio_file,
+                     audio_id,
+                     **kwargs):
     """mapping of this function is with the 'uploadaudiofiles' route.
 
     Args:
@@ -178,14 +337,14 @@ def updateaudiofiles(mongo,
 
     if new_audio_file['audiofile'].filename != '':
         audio_filename = new_audio_file['audiofile'].filename
-        updated_audio_filename = (audio_id+
-                                    '_'+
-                                    audio_filename)
+        updated_audio_filename = (audio_id +
+                                  '_' +
+                                  audio_filename)
         new_audio_details['audioFilename'] = updated_audio_filename
 
     # save audio file details and speaker ID in projects collection
-    speakerIds = projects.find_one({ 'projectname': activeprojectname },
-                                        { '_id': 0, 'speakerIds': 1 })
+    speakerIds = projects.find_one({'projectname': activeprojectname},
+                                   {'_id': 0, 'speakerIds': 1})
     # print(f"SPEAKER IDS: {speakerIds}")
     if len(speakerIds) != 0:
         speakerIds = speakerIds['speakerIds']
@@ -201,7 +360,7 @@ def updateaudiofiles(mongo,
         }
 
     speaker_audio_ids = projects.find_one({'projectname': activeprojectname},
-                                    {'_id': 0, 'speakersAudioIds': 1})
+                                          {'_id': 0, 'speakersAudioIds': 1})
     # print(len(speaker_audio_ids))
     # print(speaker_audio_ids)
     if len(speaker_audio_ids) != 0:
@@ -221,15 +380,15 @@ def updateaudiofiles(mongo,
         }
     # pprint(speaker_audio_ids)
     try:
-        projects.update_one({ 'projectname' : activeprojectname },
-                { '$set' : {
-                    'lastActiveId.'+current_username+'.'+speakerId+'.audioId' :  audio_id,
-                    'speakerIds': speakerIds,
-                    'speakersAudioIds': speaker_audio_ids
-                }})
+        projects.update_one({'projectname': activeprojectname},
+                            {'$set': {
+                                'lastActiveId.'+current_username+'.'+speakerId+'.audioId':  audio_id,
+                                'speakerIds': speakerIds,
+                                'speakersAudioIds': speaker_audio_ids
+                            }})
         # update active speaker ID in userprojects collection
-        projectinfo = userprojects.find_one({'username' : current_username},
-                                        {'_id': 0, 'myproject': 1, 'projectsharedwithme': 1})
+        projectinfo = userprojects.find_one({'username': current_username},
+                                            {'_id': 0, 'myproject': 1, 'projectsharedwithme': 1})
 
         # print(projectinfo)
         userprojectinfo = ''
@@ -238,30 +397,31 @@ def updateaudiofiles(mongo,
                 if activeprojectname in value:
                     userprojectinfo = key+'.'+activeprojectname+".activespeakerId"
         userprojects.update_one({"username": current_username},
-                                { "$set": {
+                                {"$set": {
                                     userprojectinfo: speakerId
                                 }})
         transcription_doc_id = transcriptions.update_one({"audioId": audio_id},
-                                                            { "$set": new_audio_details})
+                                                         {"$set": new_audio_details})
         # save audio file details in fs collection
         fs_file_id = mongo.save_file(updated_audio_filename,
-                        new_audio_file['audiofile'],
-                        audioId=audio_id,
-                        username=projectowner,
-                        projectname=activeprojectname,
-                        updatedBy=current_username)
+                                     new_audio_file['audiofile'],
+                                     audioId=audio_id,
+                                     username=projectowner,
+                                     projectname=activeprojectname,
+                                     updatedBy=current_username)
 
-        return (True,transcription_doc_id, fs_file_id)
-        
+        return (True, transcription_doc_id, fs_file_id)
+
     except Exception as e:
         print(e)
         flash(f"ERROR")
         return (False)
 
+
 def getactiveaudioid(projects,
-                    activeprojectname,
-                    activespeakerId,
-                    current_username):
+                     activeprojectname,
+                     activespeakerId,
+                     current_username):
     """get last active audio id for current user from projects collections
 
     Args:
@@ -275,18 +435,20 @@ def getactiveaudioid(projects,
 
     try:
         last_active_audio_id = projects.find_one({'projectname': activeprojectname},
-                                                    {
-                                                        '_id': 0,
-                                                        'lastActiveId.'+current_username+'.'+activespeakerId+'.audioId': 1
-                                                    }
-                                                )
+                                                 {
+            '_id': 0,
+            'lastActiveId.'+current_username+'.'+activespeakerId+'.audioId': 1
+        }
+        )
         # print(last_active_audio_id)
         if len(last_active_audio_id) != 0:
-            last_active_audio_id = last_active_audio_id['lastActiveId'][current_username][activespeakerId]['audioId']
+            last_active_audio_id = last_active_audio_id['lastActiveId'][
+                current_username][activespeakerId]['audioId']
     except:
         last_active_audio_id = ''
 
     return last_active_audio_id
+
 
 def getaudiofiletranscription(transcriptions, audio_id):
     """get the transcription details of the audio file
@@ -305,10 +467,11 @@ def getaudiofiletranscription(transcriptions, audio_id):
 
     return transcription_details
 
+
 def getaudiofilefromfs(mongo,
-                        basedir,
-                        file_id,
-                        file_type):
+                       basedir,
+                       file_id,
+                       file_type):
     """get file from fs collection save it to local storage 'static' folder
 
     Args:
@@ -322,14 +485,14 @@ def getaudiofilefromfs(mongo,
     """
     # print(file_type, file_id)
     # creating GridFS instance to get required files
-    fs =  gridfs.GridFS(mongo.db)
-    file = fs.find_one({ file_type: file_id })
+    fs = gridfs.GridFS(mongo.db)
+    file = fs.find_one({file_type: file_id})
     audioFolder = os.path.join(basedir, 'static/audio')
     if (os.path.exists(audioFolder)):
         shutil.rmtree(audioFolder)
     os.mkdir(audioFolder)
     if (file is not None and
-        'audio' in file.contentType):
+            'audio' in file.contentType):
         file_name = file.filename
         audiofile = fs.get_last_version(filename=file_name)
         audiofileBytes = audiofile.read()
@@ -342,11 +505,12 @@ def getaudiofilefromfs(mongo,
 
     return file_path
 
+
 def getnewaudioid(projects,
-                    activeprojectname,
-                    last_active_id,
-                    activespeakerId,
-                    which_one):
+                  activeprojectname,
+                  last_active_id,
+                  activespeakerId,
+                  which_one):
     """_summary_
 
     Args:
@@ -355,11 +519,11 @@ def getnewaudioid(projects,
         last_active_id (_type_): _description_
         which_one (_type_): _description_
     """
-    audio_ids_list = projects.find_one({ 'projectname': activeprojectname },
-                                        { '_id': 0, 'speakersAudioIds': 1 })
+    audio_ids_list = projects.find_one({'projectname': activeprojectname},
+                                       {'_id': 0, 'speakersAudioIds': 1})
     # print('audio_ids_list', audio_ids_list)
     if len(audio_ids_list) != 0:
-        audio_ids_list = audio_ids_list['speakersAudioIds'][activespeakerId]                                   
+        audio_ids_list = audio_ids_list['speakersAudioIds'][activespeakerId]
         # print('audio_ids_list', audio_ids_list)
     audio_id_index = audio_ids_list.index(last_active_id)
     # print('latestAudioId Index!!!!!!!', audio_id_index)
@@ -375,6 +539,7 @@ def getnewaudioid(projects,
 
     return latest_audio_id
 
+
 def updatelatestaudioid(projects,
                         activeprojectname,
                         latest_audio_id,
@@ -388,8 +553,9 @@ def updatelatestaudioid(projects,
         latest_audio_id (_type_): _description_
         current_username (_type_): _description_
     """
-    projects.update_one({ 'projectname' : activeprojectname }, \
-            { '$set' : { 'lastActiveId.'+current_username+'.'+activespeakerId+'.audioId' :  latest_audio_id }})
+    projects.update_one({'projectname': activeprojectname},
+                        {'$set': {'lastActiveId.'+current_username+'.'+activespeakerId+'.audioId':  latest_audio_id}})
+
 
 def getaudiotranscriptiondetails(transcriptions, audio_id):
     """_summary_
@@ -406,8 +572,8 @@ def getaudiotranscriptiondetails(transcriptions, audio_id):
     gloss = {}
     pos = {}
     try:
-        t_data = transcriptions.find_one({ 'audioId': audio_id },
-                                        { '_id': 0, 'textGrid.sentence': 1 })
+        t_data = transcriptions.find_one({'audioId': audio_id},
+                                         {'_id': 0, 'textGrid.sentence': 1})
         # print('t_data!!!!!', t_data)
         if t_data is not None:
             transcription_data = t_data['textGrid']
@@ -429,10 +595,12 @@ def getaudiotranscriptiondetails(transcriptions, audio_id):
                 # print('!@!#!@!#!@!#!@!#!@!##!@!#!#!@!#!@!#!@!#!@!#!@!##!@!#!#', gloss)
                 tempgloss = sentence[key]['gloss']
                 # print('!@!#!@!#!@!#!@!#!@!##!@!#!#!@!#!@!#!@!#!@!#!@!##!@!#!#', tempgloss)
-                gloss[key] = pd.json_normalize(tempgloss, sep='.').to_dict(orient='records')[0]
+                gloss[key] = pd.json_normalize(
+                    tempgloss, sep='.').to_dict(orient='records')[0]
                 # print('!@!#!@!#!@!#!@!#!@!##!@!#!#!@!#!@!#!@!#!@!#!@!##!@!#!#', gloss)
                 temppos = sentence[key]['pos']
-                pos[key] = pd.json_normalize(temppos, sep='.').to_dict(orient='records')[0]
+                pos[key] = pd.json_normalize(
+                    temppos, sep='.').to_dict(orient='records')[0]
 
                 # print('288', gloss)
             except:
@@ -457,13 +625,14 @@ def getaudiotranscriptiondetails(transcriptions, audio_id):
 
     return (transcription_regions, gloss, pos)
 
+
 def savetranscription(transcriptions,
-                        activeprojectform,
-                        scriptCode,
-                        current_username,
-                        transcription_regions,
-                        audio_id,
-                        activespeakerId):
+                      activeprojectform,
+                      scriptCode,
+                      current_username,
+                      transcription_regions,
+                      audio_id,
+                      activespeakerId):
     """Module to work on the sentence details (transcription and all) through ajax.
 
     Args:
@@ -516,20 +685,21 @@ def savetranscription(transcriptions,
             # print("'sentence' in transcription_boundary")
             # print('371', sentence)
             # pprint(sentence)
-    transcriptions.update_one({ 'audioId': audio_id },
-                                {'$set':
-                                    {
-                                        'textGrid.sentence': sentence,
-                                        'updatedBy': current_username,
-                                        'transcriptionFLAG': 1,
-                                        current_username+'.textGrid.sentence': sentence
-                                    }
-                                })
+    transcriptions.update_one({'audioId': audio_id},
+                              {'$set':
+                               {
+                                   'textGrid.sentence': sentence,
+                                   'updatedBy': current_username,
+                                   'transcriptionFLAG': 1,
+                                   current_username+'.textGrid.sentence': sentence
+                               }
+                               })
+
 
 def getaudioprogressreport(projects, transcriptions, activeprojectname, isharedwith):
     datatoshow = {}
-    users_speaker_ids = projects.find_one({ 'projectname': activeprojectname },
-                                    { '_id': 0, 'speakerIds': 1 })['speakerIds']
+    users_speaker_ids = projects.find_one({'projectname': activeprojectname},
+                                          {'_id': 0, 'speakerIds': 1})['speakerIds']
     # print('speaker_ids_1', users_speaker_ids)
     if len(users_speaker_ids) != 0:
         # print('speaker_ids_2', users_speaker_ids)
@@ -538,30 +708,32 @@ def getaudioprogressreport(projects, transcriptions, activeprojectname, isharedw
             if username in users_speaker_ids:
                 for speakerid in users_speaker_ids[username]:
                     total_comments, annotated_comments, remaining_comments = getcommentstats.getcommentstats(projects,
-                                                                                                        transcriptions,
-                                                                                                        activeprojectname,
-                                                                                                        speakerid,
-                                                                                                        'audio')
-                    commentstats = [total_comments, annotated_comments, remaining_comments]
+                                                                                                             transcriptions,
+                                                                                                             activeprojectname,
+                                                                                                             speakerid,
+                                                                                                             'audio')
+                    commentstats = [total_comments,
+                                    annotated_comments, remaining_comments]
                     datatoshow[username][speakerid] = commentstats
 
     # print('datatoshow', datatoshow)
 
     return datatoshow
 
+
 def getaudioidforderivedtranscriptionproject(transcriptions,
-                                            activeprojectname,
-                                            derive_from_project_type,
-                                            search_id):
+                                             activeprojectname,
+                                             derive_from_project_type,
+                                             search_id):
     if (derive_from_project_type == 'questionnaires'):
         search_id_key = 'quesId'
     elif (derive_from_project_type == 'transcriptions'):
         search_id_key = 'audioId'
     all_transcription_data = transcriptions.find({"projectname": activeprojectname},
-                                                    {"_id": 0,
-                                                    "audioId": 1,
-                                                    "derivedfromprojectdetails": 1}
-                                                )
+                                                 {"_id": 0,
+                                                     "audioId": 1,
+                                                     "derivedfromprojectdetails": 1}
+                                                 )
     for transcription_data in all_transcription_data:
         if (transcription_data["derivedfromprojectdetails"][search_id_key] == search_id):
             audio_id = transcription_data['audioId']
@@ -569,12 +741,12 @@ def getaudioidforderivedtranscriptionproject(transcriptions,
 
     return 'False'
 
+
 def getaudioidlistofsavedaudios(transcriptions,
                                 activeprojectname,
                                 language,
                                 exclude,
                                 for_worker_id):
-    
     """_summary_
     """
     all_audio = transcriptions.find({"projectname": activeprojectname},
@@ -583,29 +755,30 @@ def getaudioidlistofsavedaudios(transcriptions,
                                         "audioId": 1,
                                         "audioFilename": 1,
                                         "speakerId": 1
-                                    })
+    })
 
     for audio in all_audio:
         audio_filename = audio['audioFilename']
         speaker_id = audio['speakerId']
         if (audio_filename != '' and
-            for_worker_id in speaker_id):
+                for_worker_id in speaker_id):
             audioId = audio['audioId']
             exclude.append(audioId)
 
     return exclude
 
-def getaudiofromprompttext(projectsform,
-                            transcriptions,
-                            derivedFromProjectName,
-                            activeprojectname,
-                            text,
-                            exclude):
 
+def getaudiofromprompttext(projectsform,
+                           transcriptions,
+                           derivedFromProjectName,
+                           activeprojectname,
+                           text,
+                           exclude):
     """_summary_
     """
 
-    projectform = projectsform.find_one({"projectname": derivedFromProjectName}, {"_id": 0})
+    projectform = projectsform.find_one(
+        {"projectname": derivedFromProjectName}, {"_id": 0})
     lang_script = projectform['LangScript'][1]
     # print(lang_script)
     all_audio = transcriptions.find({"projectname": activeprojectname},
@@ -613,7 +786,7 @@ def getaudiofromprompttext(projectsform,
                                         "_id": 0
                                         # "prompt.content": 1,
                                         # "audioId": 1
-                                    })
+    })
     foundText = 'text not found in the transcriptions'
     for audio in all_audio:
         # print(audio)
@@ -627,20 +800,22 @@ def getaudiofromprompttext(projectsform,
                 if (prompt_type == 'text'):
                     for boundaryId in lang_info['text'].keys():
                         # print(boundaryId)
-                        prompt_text = lang_info['text'][boundaryId]['textspan'][script].strip()
-                    
+                        prompt_text = lang_info['text'][boundaryId]['textspan'][script].strip(
+                        )
+
                         if (text == prompt_text and speaker_id == ''):
                             foundText = "text found but audio already available"
                             # audioId = audio['audioId'
                             audioId = copyofaudiodata(transcriptions, audio)
                             if audioId not in exclude:
-                            # pprint(audio)
+                                # pprint(audio)
                                 # print(prompt_text, audioId)
                                 return (audioId, '')
                 elif(prompt_type == 'audio'):
                     for boundaryId in lang_info['audio']['textGrid']['sentence'].keys():
                         # print(boundaryId)
-                        prompt_text = lang_info['audio']['textGrid']['sentence'][boundaryId]['transcription'][script].strip()
+                        prompt_text = lang_info['audio']['textGrid']['sentence'][boundaryId]['transcription'][script].strip(
+                        )
                         # if (text == prompt_text):
                         #     print('prompt_text: ', prompt_text, 'speaker_id:', speaker_id, audio['speakerId'])
                         if (text == prompt_text and speaker_id == ''):
@@ -648,7 +823,7 @@ def getaudiofromprompttext(projectsform,
                             # audioId = audio['audioId']
                             audioId = copyofaudiodata(transcriptions, audio)
                             if audioId not in exclude:
-                            # pprint(audio)
+                                # pprint(audio)
                                 # print(prompt_text, audioId)
                                 return (audioId, '')
                 elif(prompt_type == 'image'):
@@ -656,8 +831,8 @@ def getaudiofromprompttext(projectsform,
                 elif(prompt_type == 'multimedia'):
                     pass
 
-
     return ('False', foundText)
+
 
 def copyofaudiodata(transcriptions,
                     audio_data):
@@ -667,3 +842,16 @@ def copyofaudiodata(transcriptions,
     transcription_doc_id = transcriptions.insert(audio_data)
 
     return audio_id
+
+
+def addedspeakerids(speakerdetails,
+                    activeprojectname):
+    # print('addedspeakerids')
+    all_speaker_ids = speakerdetails.find({"projectname": activeprojectname, "isActive": 1},
+                                          {"_id": 0, "lifesourceid": 1})
+    added_speaker_ids = []
+    for speaker_id in all_speaker_ids:
+        s_id = speaker_id["lifesourceid"]
+        added_speaker_ids.append(s_id)
+    # print ("Added Speaker IDS", added_speaker_ids)
+    return added_speaker_ids
