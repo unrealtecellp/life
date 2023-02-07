@@ -340,7 +340,7 @@ var posCategories =
 var activeTranslationField = '<input type="checkbox" id="activeTranslationField" name="activeTranslationField" value="false">'+
                             '<label for="activeTranslationField">&nbsp; Add Translation</label><br></br>'+
                             '<div id="translationlangs" style="display: none;"></div>';
-$(".translationfield1").append(activeTranslationField);
+// $(".translationfield1").append(activeTranslationField);
 
 var activeTagsField = '<input type="checkbox" id="activeTagsField" name="activeTagsField" value="false">'+
                       '<label for="activeTagsField">&nbsp; Add Tags</label><br></br>'+
