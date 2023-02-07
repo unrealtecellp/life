@@ -1011,31 +1011,34 @@ function createSentenceForm(formElement, boundaryID) {
             inpt = '';
         }
         else if (key === 'translation') {
-        var activeTranslationField = '<input type="checkbox" id="activeTranslationField" name="activeTranslationField" value="false" onclick="activeTranslationLangs()" checked disabled>'+
+            translationLang = formElement[key];
+            // console.log(translationLang, Object.keys(translationLang).length);
+            if (Object.keys(translationLang).length > 0) {
+                // console.log(translationLang, Object.keys(translationLang).length)
+                var activeTranslationField = '<input type="checkbox" id="activeTranslationField" name="activeTranslationField" value="false" onclick="activeTranslationLangs()" checked disabled>'+
                                         '<label for="activeTranslationField">&nbsp; Add Translation</label><br></br>'+
                                         '<div id="translationlangs" style="display: block;"></div>';
-        document.getElementById("translationfield2").innerHTML = "";
-        $(".translationfield1").append(activeTranslationField);
-        translationLang = formElement[key];
-        // console.log(translationLang)
-        translang = activeprojectform["Translation Language"]
-        // console.log(translang)
-        translangcount = -1
-        for (let [translationkey, translationvalue] of Object.entries(translationLang)) {
-            translangcount += 1
-            // console.log(translationkey, translationvalue);
-            translationkey = translationkey.split('-')[1]
-            inpt += '<div class="form-group">'+
-                    '<label for="Translation_'+ translationkey +'">Translation in '+ translang[translangcount] +'</label>'+
-                    '<input type="text" class="form-control" id="Translation_'+ translationkey +'"'+ 
-                    'placeholder="Translation '+ translationkey +'" name="translation_'+ translationkey + '"'+
-                    'value="'+ translationvalue +'">'+
-                    // 'value="'+ translationvalue +'" required>'+
-                    '</div></div>';
-        }
-        document.getElementById("translationlangs").innerHTML = "";
-        $('#translationlangs').append(inpt);
-        inpt = '';
+                document.getElementById("translationfield2").innerHTML = "";
+                $(".translationfield1").append(activeTranslationField);
+                translang = activeprojectform["Translation Language"]
+                // console.log(translang)
+                translangcount = -1
+                for (let [translationkey, translationvalue] of Object.entries(translationLang)) {
+                    translangcount += 1
+                    // console.log(translationkey, translationvalue);
+                    translationkey = translationkey.split('-')[1]
+                    inpt += '<div class="form-group">'+
+                            '<label for="Translation_'+ translationkey +'">Translation in '+ translang[translangcount] +'</label>'+
+                            '<input type="text" class="form-control" id="Translation_'+ translationkey +'"'+ 
+                            'placeholder="Translation '+ translationkey +'" name="translation_'+ translationkey + '"'+
+                            'value="'+ translationvalue +'">'+
+                            // 'value="'+ translationvalue +'" required>'+
+                            '</div></div>';
+                }
+                document.getElementById("translationlangs").innerHTML = "";
+                $('#translationlangs').append(inpt);
+                inpt = '';
+            }
         }
         else if (key === 'pos') {
 

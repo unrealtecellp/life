@@ -141,10 +141,6 @@
 {% block scripts %}
 {{super()}}
 <script src="{{url_for('.static', filename='questionnaire.js')}}"></script>
-<script src="https://unpkg.com/wavesurfer.js"></script>
-<script src="https://unpkg.com/wavesurfer.js/dist/plugin/wavesurfer.timeline.js"></script>
-<script src="https://unpkg.com/wavesurfer.js/dist/plugin/wavesurfer.regions.js"></script>
-<script src="https://unpkg.com/wavesurfer.js/dist/plugin/wavesurfer.minimap.js"></script>
 <script src="{{url_for('.static', filename='quesaudiowaveform.js')}}"></script>
 <script src="{{url_for('.static', filename='downloadquestionnaire.js')}}"></script>
 <script type="text/javascript">createquesform({{ quesprojectform | tojson | safe }});</script>
