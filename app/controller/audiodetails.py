@@ -65,7 +65,7 @@ def saveaudiofiles(mongo,
 
     if new_audio_file[key].filename != '':
         current_file = new_audio_file[key]
-        print("Filepath", current_file)
+        # print("Filepath", current_file)
         file_format = get_file_format(current_file)
 
         if (file_format in allowed_file_formats):
@@ -132,14 +132,14 @@ def savemultipleaudiofiles(mongo,
 
     try:
         with ZipFile(zip_audio_files) as myzip:
-            print('File list', myzip.namelist())
+            # print('File list', myzip.namelist())
             for file_name in myzip.namelist():
                 # if (file_name.endswith('.wav')):
-                print('Current File name', file_name)
+                # print('Current File name', file_name)
                 with myzip.open(file_name) as myfile:
                     # file_format = get_file_format(myfile)
                     file_format = file_name.rsplit('.', 1)[-1].lower()
-                    print('File format during upload', file_format)
+                    # print('File format during upload', file_format)
                     if file_format in allowed_file_formats:
                         # upload_file_full = {}
                         file_content = io.BytesIO(myfile.read())
@@ -358,12 +358,12 @@ def createaudiowaveform(audiowaveform_audio_path, audiowaveform_json_path, audio
     # audio_file.save(audio_filename)
     audio_filename = audio_filename[0:audio_filename.rfind('.')]
     json_filename = os.path.join(audiowaveform_json_path, audio_filename+'.json')
-    print('audio filename', audiowaveform_audio_path)
-    print('json_filename', json_filename)
+    # print('audio filename', audiowaveform_audio_path)
+    # print('json_filename', json_filename)
     subprocess.run(['audiowaveform', '-i', audiowaveform_audio_path, '-o',  json_filename])
     with open(json_filename, 'r') as jsonfile:
         read_json = json.load(jsonfile)
-    print(read_json)
+    # print(read_json)
 
     # shutil.rmtree(audiowaveform_json_path)
 
@@ -552,9 +552,9 @@ def getaudiowaveformfilefromfs(mongo,
     """
     # print(file_type, file_id)
     # creating GridFS instance to get required files
-    print('fs file:', basedir, folder_name,
-                       file_id,
-                       file_type)
+    # print('fs file:', basedir, folder_name,
+    #                    file_id,
+    #                    file_type)
     fs = gridfs.GridFS(mongo.db)
     file = fs.find_one({file_type: file_id})
     audioFolder = os.path.join(basedir, folder_name)
@@ -573,7 +573,7 @@ def getaudiowaveformfilefromfs(mongo,
         open(save_file_path, 'wb').write(audiofileBytes)
     else:
         file_path = ''
-    print('file_path', file_path)
+    # print('file_path', file_path)
     return file_path
 
 def getaudiofilefromfs(mongo,
@@ -593,9 +593,9 @@ def getaudiofilefromfs(mongo,
     """
     # print(file_type, file_id)
     # creating GridFS instance to get required files
-    print('fs file:', basedir,
-                       file_id,
-                       file_type)
+    # print('fs file:', basedir,
+    #                    file_id,
+    #                    file_type)
     fs = gridfs.GridFS(mongo.db)
     file = fs.find_one({file_type: file_id})
     audioFolder = os.path.join(basedir, 'static/audio')
