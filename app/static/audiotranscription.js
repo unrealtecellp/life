@@ -2,7 +2,16 @@
  * Create a WaveSurfer instance.
  */
 var wavesurfer; // eslint-disable-line no-var
-
+var activeprojectform = JSON.parse(localStorage.getItem('activeprojectform'));
+var audiowaveformData;
+try {
+    audiowaveformData = activeprojectform.audioMetadata.audiowaveform.data;
+  }
+  catch(err) {
+    // console.log(typeof err.message);
+    audiowaveformData = '';
+  }
+// console.log(audiowaveformData);
 /**
  * Init & load.
  */
@@ -45,9 +54,9 @@ document.addEventListener('DOMContentLoaded', function() {
             })
         ]
     });
-    // document.querySelector('#slider').oninput = function () {
-    //     wavesurfer.zoom(Number(this.value));
-    // };
+    document.querySelector('#slider').oninput = function () {
+        wavesurfer.zoom(Number(this.value));
+    };
 
     // wavesurfer.util
     //     .fetchFile({
@@ -65,7 +74,14 @@ document.addEventListener('DOMContentLoaded', function() {
     // localStorage.removeItem('regions');
     // localStorage.setItem("regions", JSON.stringify([]));
     filePath = JSON.parse(localStorage.getItem('AudioFilePath'));
-    wavesurfer.load(filePath)
+    if (audiowaveformData === '') {
+        wavesurfer.load(filePath);
+
+    }
+    else {
+        wavesurfer.load(filePath, audiowaveformData);
+    }
+
     wavesurfer.on('ready', function() {
         
         wavesurfer.enableDragSelection({
