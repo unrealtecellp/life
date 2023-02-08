@@ -704,7 +704,7 @@ def fetch_karya_audio():
         #     karyareport = item['input']['data']['report']
         #     print('line 692', karyareport)
 
-        fileID_list = []
+        fileID_list = [] # filname
         # pprint(r_j)
         for item in r_j['assignments']:
             micro_task_id = item['microtask_id']
@@ -760,7 +760,7 @@ def fetch_karya_audio():
                                                                             })
                         print(audio_metaData)
                         if 'audioMetadata' not in audio_metaData.keys():
-                            update_audio_metadata_transcription(workerid, activeprojectname, karya_audio_report) #edit the function and debug this
+                            update_audio_metadata_transcription(transcript_fileIds, activeprojectname, karya_audio_report) #edit the function and debug this
                         else: 
                             mongodb_info = mongo.db.transcription
 
