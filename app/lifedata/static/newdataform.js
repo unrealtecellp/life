@@ -104,7 +104,7 @@ $('.dataprojecttype').select2({
 
 $('.datasentencelanguageclass').select2({
   tags: true,
-  placeholder: 'Sentence Language',
+  placeholder: 'Audio Language',
   data: languages,
   allowClear: true
 });
