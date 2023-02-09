@@ -353,9 +353,10 @@ def enternewsentences():
                                                      current_user.username)
             # print(audio_id)
             transcription_details = audiodetails.getaudiofiletranscription(
-                                                    transcriptions, audio_id)
-            
-            audio_metadata = audiodetails.getaudiometadata(transcriptions, audio_id)
+                transcriptions, audio_id)
+
+            audio_metadata = audiodetails.getaudiometadata(
+                transcriptions, audio_id)
             # print('audio_metadata')
             # pprint(audio_metadata)
             activeprojectform['audioMetadata'] = audio_metadata['audioMetadata']
@@ -3952,7 +3953,7 @@ def generateadmin(userlogin):
     if len(mongo.db.list_collection_names()) == 0:
         insertadmin(userlogin)
     else:
-        admin_login = userlogin.find_one({'isSuperAdmin': 1}, {
+        admin_login = userlogin.find_one({'username': ADMIN_USER}, {
                                          'password': 1, '_id': 0})
         if admin_login == None:
             insertadmin(userlogin)
