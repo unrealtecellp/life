@@ -4,12 +4,16 @@
 var wavesurfer; // eslint-disable-line no-var
 var activeprojectform = JSON.parse(localStorage.getItem('activeprojectform'));
 var audiowaveformData;
+var boundaryCount;
+
 try {
     audiowaveformData = activeprojectform.audioMetadata.audiowaveform.data;
+    boundaryCount = activeprojectform.boundaryCount;
   }
   catch(err) {
     // console.log(typeof err.message);
     audiowaveformData = '';
+    boundaryCount = '';
   }
 // console.log(audiowaveformData);
 /**
@@ -19,39 +23,41 @@ document.addEventListener('DOMContentLoaded', function() {
     // Init wavesurfer
     wavesurfer = WaveSurfer.create({
         container: '#waveform',
-        height: 100,
+        height: 150,
         pixelRatio: 1,
         scrollParent: true,
         normalize: true,
-        minimap: true,
+        // minimap: true,
+        minPxPerSec: 10,
         backend: 'MediaElement',
+        // partialRender: true,
         plugins: [
             WaveSurfer.regions.create(),
-            WaveSurfer.minimap.create({
-                height: 30,
-                waveColor: '#ddd',
-                progressColor: '#999',
-                cursorColor: '#999'
-            }),
-            WaveSurfer.timeline.create({
-                container: '#wave-timeline'
-            }),
-            // WaveSurfer.cursor.create({
-            //     showTime: true,
-            //     opacity: 1,
-            //     customShowTimeStyle: {
-            //         'background-color': '#000',
-            //         color: '#fff',
-            //         padding: '2px',
-            //         'font-size': '10px'
-            //     }
+            // WaveSurfer.minimap.create({
+            //     height: 30,
+            //     waveColor: '#ddd',
+            //     progressColor: '#999',
+            //     cursorColor: '#999'
             // }),
-            WaveSurfer.spectrogram.create({
-                wavesurfer: wavesurfer,
-                container: "#wave-spectrogram",
-                labels: true,
-                height: 256,
-            })
+            // WaveSurfer.timeline.create({
+            //     container: '#wave-timeline'
+            // }),
+            WaveSurfer.cursor.create({
+                showTime: true,
+                opacity: 1,
+                customShowTimeStyle: {
+                    'background-color': '#000',
+                    color: '#fff',
+                    padding: '2px',
+                    // 'font-size': '10px'
+                }
+            }),
+            // WaveSurfer.spectrogram.create({
+            //     wavesurfer: wavesurfer,
+            //     container: "#wave-spectrogram",
+            //     labels: true,
+            //     height: 256,
+            // })
         ]
     });
     document.querySelector('#slider').oninput = function () {
@@ -74,6 +80,10 @@ document.addEventListener('DOMContentLoaded', function() {
     // localStorage.removeItem('regions');
     // localStorage.setItem("regions", JSON.stringify([]));
     filePath = JSON.parse(localStorage.getItem('AudioFilePath'));
+    getAudiDuration(filePath);
+    showBoundaryCount(boundaryCount);
+    
+    // wavesurfer.load(filePath);
     if (audiowaveformData === '') {
         wavesurfer.load(filePath);
 
@@ -89,7 +99,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         if (localStorage.regions) {
-            // console.log(localStorage.regions)
+            console.log(localStorage.regions)
             loadRegions(JSON.parse(localStorage.regions));
         }
         //  else {
@@ -111,6 +121,7 @@ document.addEventListener('DOMContentLoaded', function() {
         e.stopPropagation();
         // Play on click, loop on shift click
         e.shiftKey ? region.playLoop() : region.play();
+        // e.shiftKey ? region.play() : region.playLoop();
     });
     wavesurfer.on('region-click', editAnnotation);
     // wavesurfer.on('region-created', saveRegions);
@@ -290,16 +301,16 @@ function randomColor(alpha) {
  * Edit annotation for a region.
  */
 function editAnnotation(region) {
-    // console.log('editAnnotation(region)')
-    // console.log(region)
+    console.log('editAnnotation(region)')
+    console.log(region)
     let form = document.forms.edit;
-    // console.log(form);
+    console.log(form);
     // let id = form.dataset.region;
     // let wavesurferregion = wavesurfer.regions.list[id];
     // console.log(wavesurferregion)
 
     var sentence = getActiveRegionSentence(region);
-    // console.log(sentence)
+    console.log(sentence)
     startId = region.start.toString().slice(0, 4).replace('.', '');
     if (startId === '0') {
         startId = '000';
@@ -939,16 +950,17 @@ function createSentenceForm(formElement, boundaryID) {
     //                                     '<label for="activeSentenceMorphemicBreak">&nbsp; Add Interlinear Gloss</label><br></br>'
     // // document.getElementById("sentencefield2").innerHTML = "";                                        
     // $(".sentencefield").html(activeSentenceMorphemicBreak);
-    // console.log('createSentenceForm(formElement)', formElement)
+    console.log('createSentenceForm(formElement)', formElement, boundaryID)
     inpt = '';
     activeprojectform = JSON.parse(localStorage.activeprojectform)
     for (let [key, value] of Object.entries(formElement)) {
-        // console.log(key, value)
+        console.log(key, value)
         if (key === 'transcription') {
             var transcriptionScript = formElement[key];
-            // console.log('Object.keys(transcriptionScript)[0]', Object.keys(transcriptionScript)[0]);
+            console.log('Object.keys(transcriptionScript)[0]', Object.keys(transcriptionScript)[0]);
             firstTranscriptionScript = Object.keys(transcriptionScript)[0]
             for (let [transcriptionkey, transcriptionvalue] of Object.entries(transcriptionScript)) {
+                console.log(transcriptionkey, transcriptionvalue)
                 // activeprojectform = JSON.parse(localStorage.getItem('activeprojectform'));
                 // // console.log('activeprojectform', activeprojectform)
                 // scriptCode = activeprojectform['scriptCode']
@@ -962,6 +974,7 @@ function createSentenceForm(formElement, boundaryID) {
                         'placeholder="Transcription '+ transcriptionkey +'" name="transcription_'+ transcriptionkey +'"'+
                         'value="'+ transcriptionvalue +'" required><br>';
                         // '</div></div>';
+                console.log(inpt);
                 if (transcriptionkey === firstTranscriptionScript) {
                     // activeprojectform = JSON.parse(localStorage.activeprojectform)
                     if ('glossDetails' in activeprojectform &&
@@ -1022,8 +1035,12 @@ function createSentenceForm(formElement, boundaryID) {
                 }
                 inpt += '</div></div></div></div>';
             }
+            console.log(document.getElementById("transcription2").innerHTML)
             document.getElementById("transcription2").innerHTML = "";
-            $('.transcription1').append(inpt);
+            // document.getElementById("transcription2").value = "-";
+            // $('.transcription1').append(inpt);
+            $('#transcription2').append(inpt);
+            console.log(document.getElementById("transcription2").innerHTML)
             inpt = '';
         }
         else if (key === 'translation') {
@@ -1487,5 +1504,28 @@ function ipaFocus(x) {
     document.getElementById('meetei').value = meeteiString
 }
 
+function getAudiDuration(audiFilePath) {
+    function getDuration(src, cb) {
+        var audio = new Audio();
+        $(audio).on("loadedmetadata", function(){
+            cb(audio.duration);
+        });
+        audio.src = src;
+    }
+    getDuration(audiFilePath, function(length) {
+        // console.log('I got length ' + length, (length/60).toFixed(2));
+        audioDur = (length/60).toFixed(2)
+        audioDurMin = audioDur.split('.')[0]
+        audioDurSec = audioDur.split('.')[1]*60
+        // console.log(audioDur, audioDurMin, audioDurSec);
+        let showDur = '<br><span><strong>Duration: '+audioDur+' minutes<strong></span>';
+        // document.getElementById("idaudiometadata").append(showDur);
+        $('#idaudiometadata').append(showDur);
+    });
+}
 
-
+function showBoundaryCount(boundaryCount) {
+        let showBCount = '<span><strong>Boundary Count: '+boundaryCount+'<strong></span>';
+        // document.getElementById("idaudiometadata").append(showDur);
+        $('#idaudiometadata').append(showBCount);
+}

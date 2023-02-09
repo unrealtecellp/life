@@ -49,25 +49,25 @@ Manage Project
 {% endblock %}
 
 {% block app_content %}
-{% if projectName is defined %}
+{% if activeprojectname is defined %}
 <h4>
-    Project Name : {{ projectName }}
+  Project Name : {{ activeprojectname }}
 </h4>
 {% endif %}
 
 <div>
 
-    <div id="uploadmanage">
-        <br>
+  <div id="uploadmanage">
+    <br>
 
-        <br><br>
-        {% if shareinfo['sharemode']|int >= 2 %}
-        <input class="btn btn-lg btn-success" type="button" value="Manage Speaker Metadata"
-            onclick="window.location.href='{{url_for('managespeakermetadata')}}'; window">
-        {% endif %}
-        <br>
-        <hr>
-    </div>
+    <br><br>
+    {% if shareinfo['sharemode']|int >= 2 %}
+    <input class="btn btn-lg btn-success" type="button" value="Manage Speaker Metadata"
+      onclick="window.location.href='{{url_for('managespeakermetadata')}}'; window">
+    {% endif %}
+    <br>
+    <hr>
+  </div>
 
 </div>
 </div>

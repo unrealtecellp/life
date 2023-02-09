@@ -25,6 +25,11 @@
 {% endblock %}
 
 {% block app_content %}
+{% if activeprojectname is defined %}
+<h4>
+    Project Name : {{ activeprojectname }}
+</h4>
+{% endif %}
 
 
 <div class="panel panel-default">
