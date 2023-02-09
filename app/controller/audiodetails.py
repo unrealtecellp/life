@@ -689,6 +689,7 @@ def getaudiotranscriptiondetails(transcriptions, audio_id):
     transcription_regions = []
     gloss = {}
     pos = {}
+    boundary_count = 0
     try:
         t_data = transcriptions.find_one({'audioId': audio_id},
                                          {'_id': 0, 'textGrid.sentence': 1})
@@ -709,6 +710,7 @@ def getaudiotranscriptiondetails(transcriptions, audio_id):
             # transcription_region['sentence'] = {key: value}
             transcription_region['data'] = {'sentence': {key: value}}
             # pprint(transcription_region)
+            boundary_count += 1
             try:
                 # print('!@!#!@!#!@!#!@!#!@!##!@!#!#!@!#!@!#!@!#!@!#!@!##!@!#!#', gloss)
                 tempgloss = sentence[key]['gloss']
@@ -741,7 +743,7 @@ def getaudiotranscriptiondetails(transcriptions, audio_id):
     except:
         pass
 
-    return (transcription_regions, gloss, pos)
+    return (transcription_regions, gloss, pos, boundary_count)
 
 
 def savetranscription(transcriptions,
