@@ -58,7 +58,8 @@ from app.controller import (
     savenewsentence,
     unannotatedfilename,
     updateuserprojects,
-    userdetails
+    userdetails,
+    speakerdetails
 )
 import shutil
 import traceback
@@ -224,8 +225,27 @@ def manageproject():
 @app.route('/managespeakermetadata', methods=['GET', 'POST'])
 @login_required
 def managespeakermetadata():
+    userprojects, userlogin, speakermeta = getdbcollections.getdbcollections(
+        mongo, 'userprojects', 'userlogin', 'speakerdetails')
+    current_username = getcurrentusername.getcurrentusername()
+    print('USERNAME: ', current_username)
+    usertype = userdetails.get_user_type(
+        userlogin, current_username)
+    currentuserprojectsname = getcurrentuserprojects.getcurrentuserprojects(
+        current_username, userprojects)
+    activeprojectname = getactiveprojectname.getactiveprojectname(
+        current_username, userprojects)
+    shareinfo = getuserprojectinfo.getuserprojectinfo(
+        userprojects, current_username, activeprojectname)
+    allspeakerdetails = speakerdetails.getspeakerdetails(
+        activeprojectname, speakermeta)
+
     return render_template(
-        'manageSpeakers.html'
+        'manageSpeakers.html',
+        data=allspeakerdetails,
+        activeprojectname=activeprojectname,
+        shareinfo=shareinfo,
+        usertype=usertype
     )
 
 # new project route
