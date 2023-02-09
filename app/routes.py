@@ -351,8 +351,14 @@ def enternewsentences():
                                                      activeprojectname,
                                                      activespeakerid,
                                                      current_user.username)
+            # print(audio_id)
             transcription_details = audiodetails.getaudiofiletranscription(
-                transcriptions, audio_id)
+                                                    transcriptions, audio_id)
+            
+            audio_metadata = audiodetails.getaudiometadata(transcriptions, audio_id)
+            # print('audio_metadata')
+            # pprint(audio_metadata)
+            activeprojectform['audioMetadata'] = audio_metadata['audioMetadata']
             file_path = audiodetails.getaudiofilefromfs(mongo,
                                                         basedir,
                                                         audio_id,
@@ -388,7 +394,7 @@ def enternewsentences():
             # print('currentuserprojectsname', currentuserprojectsname)
             # print('speakerids', speakerids)
             # pprint(activeprojectform)
-            print(activespeakerid, commentstats, shareinfo)
+            # print(activespeakerid, commentstats, shareinfo)
             return render_template('enternewsentences.html',
                                    projectName=activeprojectname,
                                    newData=activeprojectform,

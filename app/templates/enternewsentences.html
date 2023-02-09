@@ -57,7 +57,7 @@ Enter New Sentences
       <div class="col upload">
         <button type="button" id="addnewspeakertranscriptionid" class="btn btn-lg btn-primary addnewspeaker"
           data-toggle="modal" data-target="#addNewSpeakerModal">
-          Add New Speaker
+          Add New Source
         </button>
         <br><br>
         {# <input type="text" class="form-control" placeholder="Speaker ID" name="speakerId" required>
@@ -142,10 +142,10 @@ Enter New Sentences
 
 <br>
 <hr>
-<!-- <div class="col-sm-3">
+<div class="col-sm-3">
       <input id="slider" data-action="zoom" type="range" min="0" max="5000" value="0" style="width: 100%">
-    </div> -->
-<!-- <i class="glyphicon glyphicon-zoom-in"></i> -->
+    </div>
+<i class="glyphicon glyphicon-zoom-in"></i>
 
 <div class="pull-right">
   <button class="btn btn-danger" type="button" id="stopAudio">STOP
@@ -266,7 +266,6 @@ Enter New Sentences
 {% block scripts %}
 {{super()}}
 <script src="{{url_for('.static', filename='enternewsentences.js')}}"></script>
-<script src="{{url_for('.static', filename='audiotranscription.js')}}"></script>
 <script src="{{url_for('.static', filename='changeactivespeaker.js')}}"></script>
 <script src="{{url_for('.static', filename='progressreport.js')}}"></script>
 <script src="{{url_for('.static', filename='addnewspeaker.js')}}"></script>
@@ -274,4 +273,5 @@ Enter New Sentences
 <script src="{{url_for('.static', filename='search.js')}}"></script>
 <script src="{{url_for('.static', filename='sorttable.js')}}"></script>
 <script type="text/javascript">myFunction({{ newData | tojson | safe }});</script>
+<script src="{{url_for('.static', filename='audiotranscription.js')}}"></script>
 {% endblock %}

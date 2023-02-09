@@ -14,6 +14,8 @@ from zipfile import ZipFile
 from werkzeug.datastructures import FileStorage
 import io
 from app.controller import getcommentstats
+import subprocess
+import shutil
 
 allowed_file_formats = ['mp3', 'wav']
 
@@ -63,7 +65,7 @@ def saveaudiofiles(mongo,
 
     if new_audio_file[key].filename != '':
         current_file = new_audio_file[key]
-        print("Filepath", current_file)
+        # print("Filepath", current_file)
         file_format = get_file_format(current_file)
 
         if (file_format in allowed_file_formats):
@@ -130,14 +132,14 @@ def savemultipleaudiofiles(mongo,
 
     try:
         with ZipFile(zip_audio_files) as myzip:
-            print('File list', myzip.namelist())
+            # print('File list', myzip.namelist())
             for file_name in myzip.namelist():
                 # if (file_name.endswith('.wav')):
-                print('Current File name', file_name)
+                # print('Current File name', file_name)
                 with myzip.open(file_name) as myfile:
                     # file_format = get_file_format(myfile)
                     file_format = file_name.rsplit('.', 1)[-1].lower()
-                    print('File format during upload', file_format)
+                    # print('File format during upload', file_format)
                     if file_format in allowed_file_formats:
                         # upload_file_full = {}
                         file_content = io.BytesIO(myfile.read())
@@ -193,7 +195,7 @@ def saveoneaudiofile(mongo,
         speakerId: speaker ID for this audio.
         new_audio_file: uploaded audio file details.
     """
-
+    audiowaveform_file = new_audio_file['audiofile']
     text_grid = {
         "discourse": {},
         "sentence": {},
@@ -209,7 +211,13 @@ def saveoneaudiofile(mongo,
         "audioverifiedFLAG": 0,
         "transcriptionFLAG": 0,
         "prompt": "",
-        "speakerId": speakerId
+        "speakerId": speakerId,
+        "additionalInfo": {},
+        "audioMetadata": {
+            "verificationReport": {},
+            "audiowaveform": {},
+            "audioWaveformNorm": {}
+        }
     }
     for kwargs_key, kwargs_value in kwargs.items():
         new_audio_details[kwargs_key] = kwargs_value
@@ -265,42 +273,101 @@ def saveoneaudiofile(mongo,
             speakerId: [audio_id]
         }
     # pprint(speaker_audio_ids)
-    try:
-        projects.update_one({'projectname': activeprojectname},
-                            {'$set': {
-                                'lastActiveId.'+current_username+'.'+speakerId+'.audioId':  audio_id,
-                                'speakerIds': speakerIds,
-                                'speakersAudioIds': speaker_audio_ids
+    # try:
+    projects.update_one({'projectname': activeprojectname},
+                        {'$set': {
+                            'lastActiveId.'+current_username+'.'+speakerId+'.audioId':  audio_id,
+                            'speakerIds': speakerIds,
+                            'speakersAudioIds': speaker_audio_ids
+                        }})
+    # update active speaker ID in userprojects collection
+    projectinfo = userprojects.find_one({'username': current_username},
+                                        {'_id': 0, 'myproject': 1, 'projectsharedwithme': 1})
+
+    # print(projectinfo)
+    userprojectinfo = ''
+    for key, value in projectinfo.items():
+        if len(value) != 0:
+            if activeprojectname in value:
+                userprojectinfo = key+'.'+activeprojectname+".activespeakerId"
+    userprojects.update_one({"username": current_username},
+                            {"$set": {
+                                userprojectinfo: speakerId
                             }})
-        # update active speaker ID in userprojects collection
-        projectinfo = userprojects.find_one({'username': current_username},
-                                            {'_id': 0, 'myproject': 1, 'projectsharedwithme': 1})
 
-        # print(projectinfo)
-        userprojectinfo = ''
-        for key, value in projectinfo.items():
-            if len(value) != 0:
-                if activeprojectname in value:
-                    userprojectinfo = key+'.'+activeprojectname+".activespeakerId"
-        userprojects.update_one({"username": current_username},
-                                {"$set": {
-                                    userprojectinfo: speakerId
-                                }})
-        transcription_doc_id = transcriptions.insert(new_audio_details)
-        # save audio file details in fs collection
-        fs_file_id = mongo.save_file(updated_audio_filename,
-                                     new_audio_file['audiofile'],
-                                     audioId=audio_id,
-                                     username=projectowner,
-                                     projectname=activeprojectname,
-                                     updatedBy=current_username)
+    
+    # print('new_audio_file', type(new_audio_file), new_audio_file)
+    # transcription_doc_id = transcriptions.insert(new_audio_details)
+    # save audio file details in fs collection
+    fs_file_id = mongo.save_file(updated_audio_filename,
+                                    new_audio_file['audiofile'],
+                                    audioId=audio_id,
+                                    username=projectowner,
+                                    projectname=activeprojectname,
+                                    updatedBy=current_username)
 
-        return (True, transcription_doc_id, fs_file_id)
+    # print('audioLength', new_audio_file['audiofile'].content_length)
+    json_basedir = os.path.abspath(os.path.dirname(__file__))
+    # print('json_basedir', json_basedir)
+    audiowaveform_json = '/'.join(json_basedir.split('/')[:-1])
+    # # audiowaveform_json_path = os.path.join(audiowaveform_json, 'audiowaveform_json')
+    audiowaveform_audio_path = os.path.join(audiowaveform_json, 'audiowaveform')
+    audiowaveform_json_path = os.path.join(audiowaveform_json, 'audiowaveform')
+    # print('audiowaveform_json', audiowaveform_json)
+    # print('audiowaveform_json_path', audiowaveform_json_path)
+    
+    # print('new_audio_file', type(new_audio_file), new_audio_file)
+    # audiowaveform_file = new_audio_file.stream.seek(0)
+    # audiowaveform_file.stream.seek(0)
+    # getaudiofilefromfs(mongo,
+    #                 audiowaveform_json,
+    #                 audio_id,
+    #                 'audio')
+    getaudiowaveformfilefromfs(mongo,
+                       audiowaveform_json,
+                       'audiowaveform',
+                       audio_id,
+                       'audioId')
+    # print('audiowaveform_audio_path', audiowaveform_audio_path)
+    # audiowaveform_audio_path = os.path.join(audiowaveform_audio_path, updated_audio_filename)
+    audiowaveform_audio_path = os.path.join(audiowaveform_audio_path, updated_audio_filename)
+    # print('audiowaveform_audio_path', audiowaveform_audio_path)
+    # print('audiowaveform_json_path', audiowaveform_json_path)
+    audiowaveform_json = createaudiowaveform(audiowaveform_audio_path, audiowaveform_json_path, updated_audio_filename)
+    new_audio_details['audioMetadata']['audiowaveform'] = audiowaveform_json
 
-    except Exception as e:
-        print(e)
-        flash(f"ERROR")
-        return (False, '', '')
+    transcription_doc_id = transcriptions.insert(new_audio_details)
+
+    return (True, transcription_doc_id, fs_file_id)
+
+    # except Exception as e:
+    #     print(e)
+    #     flash(f"ERROR")
+    #     return (False, '', '')
+
+
+def createaudiowaveform(audiowaveform_audio_path, audiowaveform_json_path, audio_filename):
+    # if os.path.exists(audiowaveform_json_path):
+    #     shutil.rmtree(audiowaveform_json_path)
+    #     os.mkdir(audiowaveform_json_path)
+    # else:
+    #     os.mkdir(audiowaveform_json_path)
+    # audio_file = io.BytesIO(audiowaveform_file['audiofile'])
+    # audio_file = audiowaveform_file['audiofile']
+    # audio_filename = os.path.join(audiowaveform_json_path, str(audio_file.filename))
+    # audio_file.save(audio_filename)
+    audio_filename = audio_filename[0:audio_filename.rfind('.')]
+    json_filename = os.path.join(audiowaveform_json_path, audio_filename+'.json')
+    # print('audio filename', audiowaveform_audio_path)
+    # print('json_filename', json_filename)
+    subprocess.run(['audiowaveform', '-i', audiowaveform_audio_path, '-o',  json_filename])
+    with open(json_filename, 'r') as jsonfile:
+        read_json = json.load(jsonfile)
+    # print(read_json)
+
+    # shutil.rmtree(audiowaveform_json_path)
+
+    return read_json
 
 
 def updateaudiofiles(mongo,
@@ -467,6 +534,47 @@ def getaudiofiletranscription(transcriptions, audio_id):
 
     return transcription_details
 
+def getaudiowaveformfilefromfs(mongo,
+                       basedir,
+                       folder_name,
+                       file_id,
+                       file_type):
+    """get file from fs collection save it to local storage 'static' folder
+
+    Args:
+        mongo (_type_): _description_
+        basedir (_type_): _description_
+        file_id (_type_): _description_
+        file_type (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """
+    # print(file_type, file_id)
+    # creating GridFS instance to get required files
+    # print('fs file:', basedir, folder_name,
+    #                    file_id,
+    #                    file_type)
+    fs = gridfs.GridFS(mongo.db)
+    file = fs.find_one({file_type: file_id})
+    audioFolder = os.path.join(basedir, folder_name)
+    if (os.path.exists(audioFolder)):
+        shutil.rmtree(audioFolder)
+    os.mkdir(audioFolder)
+    file_path = ''
+    if (file is not None and
+            'audio' in file.contentType):
+        file_name = file.filename
+        audiofile = fs.get_last_version(filename=file_name)
+        audiofileBytes = audiofile.read()
+        # if len(audiofileBytes) != 0:
+        file_path = os.path.join(folder_name, file_name)
+        save_file_path = os.path.join(basedir, file_path)
+        open(save_file_path, 'wb').write(audiofileBytes)
+    else:
+        file_path = ''
+    # print('file_path', file_path)
+    return file_path
 
 def getaudiofilefromfs(mongo,
                        basedir,
@@ -485,21 +593,25 @@ def getaudiofilefromfs(mongo,
     """
     # print(file_type, file_id)
     # creating GridFS instance to get required files
+    # print('fs file:', basedir,
+    #                    file_id,
+    #                    file_type)
     fs = gridfs.GridFS(mongo.db)
     file = fs.find_one({file_type: file_id})
     audioFolder = os.path.join(basedir, 'static/audio')
     if (os.path.exists(audioFolder)):
         shutil.rmtree(audioFolder)
     os.mkdir(audioFolder)
+    file_path = ''
     if (file is not None and
             'audio' in file.contentType):
         file_name = file.filename
         audiofile = fs.get_last_version(filename=file_name)
         audiofileBytes = audiofile.read()
-        if len(audiofileBytes) != 0:
-            file_path = os.path.join('static', 'audio', file_name)
-            save_file_path = os.path.join(basedir, file_path)
-            open(save_file_path, 'wb').write(audiofileBytes)
+        # if len(audiofileBytes) != 0:
+        file_path = os.path.join('static', 'audio', file_name)
+        save_file_path = os.path.join(basedir, file_path)
+        open(save_file_path, 'wb').write(audiofileBytes)
     else:
         file_path = ''
 
@@ -855,3 +967,20 @@ def addedspeakerids(speakerdetails,
         added_speaker_ids.append(s_id)
     # print ("Added Speaker IDS", added_speaker_ids)
     return added_speaker_ids
+
+def getaudiometadata(transcriptions, audio_id):
+    """get the audi metadata details of the audio file
+
+    Args:
+        transcriptions (_type_): _description_
+        file_id (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """
+    audio_metadata_details = dict({'audioMetadata': ''})
+    audio_metadata = transcriptions.find_one({'audioId': audio_id})
+    if audio_metadata is not None:
+        audio_metadata_details['audioMetadata'] = audio_metadata['audioMetadata']
+
+    return audio_metadata_details
