@@ -994,3 +994,21 @@ def getaudiometadata(transcriptions, audio_id):
         audio_metadata_details['audioMetadata'] = audio_metadata['audioMetadata']
 
     return audio_metadata_details
+
+def lastupdatedby(transcriptions, audio_id):
+    """get the transcription last updated by 
+
+    Args:
+        transcriptions (_type_): _description_
+        file_id (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """
+    last_updated_by_details = dict({'updatedBy': ''})
+    last_updated_by = transcriptions.find_one({'audioId': audio_id}, {'_id': 1, 'updatedBy': 1})
+    # print(last_updated_by)
+    if last_updated_by is not None and 'updatedBy' in last_updated_by:
+        last_updated_by_details['updatedBy'] = last_updated_by['updatedBy']
+
+    return last_updated_by_details
