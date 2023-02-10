@@ -355,11 +355,12 @@ def enternewsentences():
             transcription_details = audiodetails.getaudiofiletranscription(
                 transcriptions, audio_id)
 
-            audio_metadata = audiodetails.getaudiometadata(
-                transcriptions, audio_id)
+            audio_metadata = audiodetails.getaudiometadata(transcriptions, audio_id)
             # print('audio_metadata')
             # pprint(audio_metadata)
             activeprojectform['audioMetadata'] = audio_metadata['audioMetadata']
+            last_updated_by = audiodetails.lastupdatedby(transcriptions, audio_id)
+            activeprojectform['lastUpdatedBy'] = last_updated_by['updatedBy']
             file_path = audiodetails.getaudiofilefromfs(mongo,
                                                         basedir,
                                                         audio_id,

@@ -5,10 +5,12 @@ var wavesurfer; // eslint-disable-line no-var
 var activeprojectform = JSON.parse(localStorage.getItem('activeprojectform'));
 var audiowaveformData;
 var boundaryCount;
+var lstUpdatedBy;
 
 try {
     audiowaveformData = activeprojectform.audioMetadata.audiowaveform.data;
     boundaryCount = activeprojectform.boundaryCount;
+    lstUpdatedBy = activeprojectform.lastUpdatedBy;
 }
 catch (err) {
     // console.log(typeof err.message);
@@ -83,6 +85,7 @@ document.addEventListener('DOMContentLoaded', function () {
     filePath = JSON.parse(localStorage.getItem('AudioFilePath'));
     getAudiDuration(filePath);
     showBoundaryCount(boundaryCount);
+    lastUpdatedBy(lstUpdatedBy)
 
     // wavesurfer.load(filePath);
     if (audiowaveformData === '') {
@@ -120,10 +123,13 @@ document.addEventListener('DOMContentLoaded', function () {
         // }
     });
     wavesurfer.on('region-click', function (region, e) {
+        // region.color = boundaryColor(255, 255, 255, 0.1);
         e.stopPropagation();
+        // region.color = boundaryColor(255, 255, 255, 0.1);
         // Play on click, loop on shift click
         e.shiftKey ? region.playLoop() : region.play();
         // e.shiftKey ? region.play() : region.playLoop();
+        // region.color = boundaryColor(255, 255, 255, 0.1);
     });
     wavesurfer.on('region-click', editAnnotation);
     // wavesurfer.on('region-created', saveRegions);
@@ -151,6 +157,8 @@ document.addEventListener('DOMContentLoaded', function () {
             wavesurfer.regions.list[regionId].remove();
 
             form.reset();
+            transcriptionFormDisplay(form);
+            wavesurfer.pause();
             startId = region.start.toString().slice(0, 4).replace('.', '');
             if (startId === '0') {
                 startId = '000';
@@ -177,7 +185,8 @@ document.addEventListener('DOMContentLoaded', function () {
 /**
  * Save annotations to localStorage.
  */
-function saveRegions() {
+function saveRegions(region) {
+    region.color = boundaryColor(255, 255, 0, 0.1);
     // console.log('WHERE')
     localStorage.regions = JSON.stringify(
         Object.keys(wavesurfer.regions.list).map(function (id) {
@@ -309,6 +318,8 @@ function randomColor(alpha) {
  * Edit annotation for a region.
  */
 function editAnnotation(region) {
+    // wavesurfer.playPause();
+    region.color = boundaryColor(255, 255, 0, 0.1);
     // console.log('editAnnotation(region)')
     // console.log(region)
     let form = document.forms.edit;
@@ -350,7 +361,7 @@ function editAnnotation(region) {
     // (form.elements.start.value = Math.round(region.start * 10) / 10),
     // (form.elements.end.value = Math.round(region.end * 10) / 10);
     (form.elements.start.value = region.start),
-        (form.elements.end.value = region.end);
+    (form.elements.end.value = region.end);
     // form.elements.note.value = region.data.note || '';
     // document.getElementById("activeSentenceMorphemicBreak").checked = false;
     // $(".containerremovesentencefield1").remove();
@@ -359,19 +370,22 @@ function editAnnotation(region) {
     //     // console.log('true true');
     // }
     formOnSubmit(form, region)
-    form.onreset = function () {
-        // form.style.opacity = 0;
-        transcriptionFormDisplay(form);
-        form.dataset.region = null;
-    };
+    // form.onreset = function () {
+    //     // form.style.opacity = 0;
+    //     console.log('form reset');
+    //     transcriptionFormDisplay(form);
+    //     form.dataset.region = null;
+    // };
     form.dataset.region = region.id;
 }
 
 // save partial transcription details
 function formOnSubmit(form, region) {
-    region.color = boundaryColor(0, 0, 255, 0.1);
+    // region.color = boundaryColor(0, 0, 255, 0.1);
     // console.log('formOnSubmit(form, region) region', region)
     form.onsubmit = function (e) {
+        wavesurfer.pause();
+        region.color = boundaryColor(0, 0, 255, 0.1);
         e.preventDefault();
         // morphData = morphemeDetails();
         // let sentenceData = new Object();
@@ -430,6 +444,7 @@ function formOnSubmit(form, region) {
  * Display annotation.
  */
 function showNote(region) {
+    region.color = boundaryColor(255, 255, 0, 0.1);
     if (!showNote.el) {
         showNote.el = document.querySelector('#subtitle');
     }
@@ -1403,6 +1418,10 @@ $("#playPauseAudio").click(function () {
     }
 });
 
+// $("#saveTempTranscription").click(function () {
+//     region.color = boundaryColor(255, 255, 255, 0.1);
+// });
+
 function transcriptionFormDisplay(form, mode) {
     if (form.style.display === "none") {
         form.style.display = "block";
@@ -1548,6 +1567,12 @@ function showBoundaryCount(boundaryCount) {
     let showBCount = '<span><strong>Boundary Count: ' + boundaryCount + '<strong></span>';
     // document.getElementById("idaudiometadata").append(showDur);
     $('#idaudiometadata').append(showBCount);
+}
+
+function lastUpdatedBy(lstUpdatedBy) {
+    let lastUpdate = '<br><span><strong>Last Updated By: ' + lstUpdatedBy + '<strong></span>';
+    // document.getElementById("idaudiometadata").append(showDur);
+    $('#idaudiometadata').append(lastUpdate);
 }
 
 function autoSavetranscription(transcriptionField) {
