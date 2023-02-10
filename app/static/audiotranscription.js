@@ -16,6 +16,7 @@ catch (err) {
     // console.log(typeof err.message);
     audiowaveformData = '';
     boundaryCount = '';
+    lstUpdatedBy = '';
 }
 
 // console.log(audiowaveformData);
@@ -1570,9 +1571,13 @@ function showBoundaryCount(boundaryCount) {
 }
 
 function lastUpdatedBy(lstUpdatedBy) {
-    let lastUpdate = '<br><span><strong>Last Updated By: ' + lstUpdatedBy + '<strong></span>';
-    // document.getElementById("idaudiometadata").append(showDur);
-    $('#idaudiometadata').append(lastUpdate);
+    console.log(lstUpdatedBy);
+    // lstUpdatedBy = '';
+    if (lstUpdatedBy  !== '') {
+        let lastUpdate = '<br><span><strong>Last Updated By: ' + lstUpdatedBy + '<strong></span>';
+        // document.getElementById("idaudiometadata").append(showDur);
+        $('#idaudiometadata').append(lastUpdate);
+    }
 }
 
 function autoSavetranscription(transcriptionField) {
