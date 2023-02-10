@@ -97,7 +97,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         wavesurfer.enableDragSelection({
             // color: randomColor(0.1)
-            color: boundaryColor(255, 0, 0, 0.1)
+            color: boundaryColor(255, 255, 0, 0.1)
         });
 
         if (localStorage.regions) {
@@ -989,11 +989,11 @@ function createSentenceForm(formElement, boundaryID) {
                     'placeholder="Transcription ' + transcriptionkey + '" name="transcription_' + transcriptionkey + '"' +
                     'value="' + transcriptionvalue + '" required><br>';
                 // '</div></div>';
-                inpt += '<label for="Transcription_'+ transcriptionkey +'">Transcription in '+ transcriptionkey +'</label>'+
-                        '<input type="text" class="form-control" id="Transcription_'+ transcriptionkey +'"'+
-                        'placeholder="Transcription '+ transcriptionkey +'" name="transcription_'+ transcriptionkey +'"'+
-                        'value="'+ transcriptionvalue +'" required  onkeyup="autoSavetranscription(this);"><br>';
-                        // '</div></div>';
+                // inpt += '<label for="Transcription_' + transcriptionkey + '">Transcription in ' + transcriptionkey + '</label>' +
+                //         '<input type="text" class="form-control" id="Transcription_'+ transcriptionkey +'"'+
+                //         'placeholder="Transcription '+ transcriptionkey +'" name="transcription_'+ transcriptionkey +'"'+
+                //         'value="'+ transcriptionvalue +'" required  onkeyup="autoSavetranscription(this);"><br>';
+                //         // '</div></div>';
                 // console.log(inpt);
                 if (transcriptionkey === firstTranscriptionScript) {
                     // activeprojectform = JSON.parse(localStorage.activeprojectform)
