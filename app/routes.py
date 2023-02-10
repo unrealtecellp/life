@@ -454,16 +454,16 @@ def savetranscription():
                                    transcription_regions,
                                    lastActiveId,
                                    activespeakerid)
-    latest_audio_id = audiodetails.getnewaudioid(projects,
-                                                 activeprojectname,
-                                                 lastActiveId,
-                                                 activespeakerid,
-                                                 'next')
-    audiodetails.updatelatestaudioid(projects,
-                                     activeprojectname,
-                                     latest_audio_id,
-                                     current_user.username,
-                                     activespeakerid)
+    # latest_audio_id = audiodetails.getnewaudioid(projects,
+    #                                              activeprojectname,
+    #                                              lastActiveId,
+    #                                              activespeakerid,
+    #                                              'next')
+    # audiodetails.updatelatestaudioid(projects,
+    #                                  activeprojectname,
+    #                                  latest_audio_id,
+    #                                  current_user.username,
+    #                                  activespeakerid)
     sentenceFieldId = ''
     gloss = ''
     sentence = ''

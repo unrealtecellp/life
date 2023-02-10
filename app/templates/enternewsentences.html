@@ -80,31 +80,31 @@ Enter New Sentences
 </div>
 <hr>
 {% for data in sdata %}
-{% if data['sentenceId'] is defined %}
-{% if data['interlineargloss'] is defined %}
-<p id='sentenceId'><strong>Sentence ID: </strong>{{ data['sentenceId'] }}</p>
-<input type="text" class="form-control" placeholder="{{ data['interlineargloss']['level_1'] }}"
-  name="interlinearglosslevel_1" value="{{ data['interlineargloss']['level_1'] }}" disabled>
-<input type="text" class="form-control" placeholder="{{ data['interlineargloss']['level_2'] }}"
-  name="interlinearglosslevel_2" value="{{ data['interlineargloss']['level_2'] }}" disabled>
-<input type="text" class="form-control" placeholder="{{ data['interlineargloss']['level_3'] }}"
-  name="interlinearglosslevel_3" value="{{ data['interlineargloss']['level_3'] }}" disabled>
-<br>
-<button type="button" class="btn btn-primary " onclick="editSentenceBtn()">Edit Sentence</button>
-<hr>
-{% endif %}
-{% endif %}
+  {% if data['sentenceId'] is defined %}
+    {% if data['interlineargloss'] is defined %}
+      <p id='sentenceId'><strong>Sentence ID: </strong>{{ data['sentenceId'] }}</p>
+      <input type="text" class="form-control" placeholder="{{ data['interlineargloss']['level_1'] }}"
+        name="interlinearglosslevel_1" value="{{ data['interlineargloss']['level_1'] }}" disabled>
+      <input type="text" class="form-control" placeholder="{{ data['interlineargloss']['level_2'] }}"
+        name="interlinearglosslevel_2" value="{{ data['interlineargloss']['level_2'] }}" disabled>
+      <input type="text" class="form-control" placeholder="{{ data['interlineargloss']['level_3'] }}"
+        name="interlinearglosslevel_3" value="{{ data['interlineargloss']['level_3'] }}" disabled>
+      <br>
+      <button type="button" class="btn btn-primary " onclick="editSentenceBtn()">Edit Sentence</button>
+      <hr>
+    {% endif %}
+  {% endif %}
 {% endfor %}
 <!-- <div class="row"> -->
-<div class="col-md-12 btn-group btn-group-lg btn-primary">
+<!-- <div class="col-md-12 btn-group btn-group-lg btn-primary">
   <button type="button" class="btn btn-lg btn-primary">Discourse</button>
   <button type="button" class="btn btn-lg btn-primary">Sentence</button>
   <button type="button" class="btn btn-lg btn-primary">Word</button>
   <button type="button" class="btn btn-lg btn-primary">Phone</button>
-</div>
+</div> -->
 <!-- </div> -->
-<br>
-<hr>
+<!-- <br> -->
+<!-- <hr> -->
 <div class="row">
   <div class="col-sm-7 commentIDs">
     <button type="button" id="uNAnnotated" class="btn btn-light" onclick="unAnnotated()">All Filename</button>
@@ -147,12 +147,9 @@ Enter New Sentences
 <!-- <i class="glyphicon glyphicon-zoom-in"></i> -->
 <div class="row">
   <div class="col-sm-3" id="sliderdivid">
-    <input id="slider" data-action="zoom" type="range" min="20" max="100" value="0" style="width: 50%">
+    <input id="slider" data-action="zoom" type="range" min="0" max="100" value="0" style="width: 50%">
   </div>
-  <!-- <button type="button" class="btn btn-danger" data-action="delete-region">Delete Boundary</button> -->
-  >>>>>>> c067377887c8291c10b40b1c4065e37a2d25488b
-
-  <div class="pull-right">
+  <div class=" col-sm-3 pull-right">
     <button class="btn btn-danger" type="button" id="stopAudio">STOP
       <span class="audiostop glyphicon glyphicon-stop" aria-hidden="true"></span>
     </button>
@@ -168,27 +165,36 @@ Enter New Sentences
   <div class="row">
     <div class="form-group col-sm-6">
       <label for="start">Boundary Start Time</label>
-      <input class="form-control" id="start" name="start" required />
+      <input class="form-control" id="start" name="start" readonly required />
     </div>
 
     <div class="form-group col-sm-6">
       <label for="end">Boundary End Time</label>
-      <input class="form-control" id="end" name="end" required />
+      <input class="form-control" id="end" name="end" readonly required />
     </div>
   </div>
 
   <div class="form-group transcription1" id="transcription2"></div>
   <div class="form-group translationfield1" id="translationfield2"></div>
   <!-- <br> -->
-  <button type="submit" class="btn btn-success btn-block saveTempTranscription">Save Boundary</button>
-  <center><i>or</i></center>
-  <button type="button" class="btn btn-danger btn-block" data-action="delete-region">Delete Boundary</button>
+  <button type="submit" class="btn btn-success btn-lg pull-right saveTempTranscription">Save Boundary</button>
+  <!-- <center><i>or</i></center> -->
+  <button type="button" class="btn btn-danger" data-action="delete-region">Delete Boundary</button>
   <!-- <button type="submit" class="btn btn-success  pull-right saveTempTranscription">Save Boundary</button> -->
   <!-- <center><i>or</i></center> -->
   <!-- <button type="button" class="btn btn-danger" data-action="delete-region">Delete Boundary</button> -->
 </form>
 <!-- <br> -->
 <!-- <br> -->
+<div>
+  <button class="btn btn-warning btn-lg pull-right" id="save">
+    Save All Boundaries
+    <span class="saveaudio glyphicon glyphicon-floppy-save" aria-hidden="true"></span>
+  </button>
+</div>
+<br>
+<br>
+<br>
 <div id="waveformControl">
   <button class="btn btn-info btn-lg" type="button" id="previous" onclick="previousAudio()">
     <span class="previousaudio glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
@@ -198,17 +204,13 @@ Enter New Sentences
     Next Audio
     <span class="nextaudio glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
   </button>
-  <br>
-  <br>
-  <button class="btn btn-warning btn-lg btn-block pull-right" id="save">
-    Save All Boundaries
-    <span class="saveaudio glyphicon glyphicon-floppy-save" aria-hidden="true"></span>
-  </button>
+  <!-- <br> -->
+  <!-- <br> -->
 </div>
 <br>
 <div class="interlineargloss"></div>
-<br>
-<br>
+<!-- <br>
+<br> -->
 <div class="clear"></div>
 
 <!-- Progress Report Modal -->
