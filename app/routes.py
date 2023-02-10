@@ -4335,8 +4335,8 @@ def progressreport():
                                                                                'userprojects',
                                                                                'transcriptions')
     current_username = getcurrentusername.getcurrentusername()
-    activeprojectname = getactiveprojectname.getactiveprojectname(
-        current_username, userprojects)
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                    userprojects)
 
     progressreport = ''
 
@@ -4350,8 +4350,10 @@ def progressreport():
         # print('isharedwith', isharedwith)
         isharedwith.append(current_username)
         # print('isharedwith_2', isharedwith)
-        progressreport = audiodetails.getaudioprogressreport(
-            projects, transcriptions, activeprojectname, isharedwith)
+        progressreport = audiodetails.getaudioprogressreport(projects,
+                                                                transcriptions,
+                                                                activeprojectname, 
+                                                                isharedwith)
 
     # print(progressreport)
 
