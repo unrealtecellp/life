@@ -990,7 +990,7 @@ def getaudiometadata(transcriptions, audio_id):
     audio_metadata_details = dict({'audioMetadata': ''})
     audio_metadata = transcriptions.find_one({'audioId': audio_id}, {'_id': 1, 'audioMetadata': 1})
     # print(audio_metadata)
-    if 'audioMetadata' in audio_metadata:
+    if audio_metadata is not None and 'audioMetadata' in audio_metadata:
         audio_metadata_details['audioMetadata'] = audio_metadata['audioMetadata']
 
     return audio_metadata_details
