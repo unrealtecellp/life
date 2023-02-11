@@ -4,13 +4,21 @@
 var wavesurfer; // eslint-disable-line no-var
 var activeprojectform = JSON.parse(localStorage.getItem('activeprojectform'));
 var audiowaveformData;
+var boundaryCount;
+var lstUpdatedBy;
+
 try {
     audiowaveformData = activeprojectform.audioMetadata.audiowaveform.data;
+    boundaryCount = activeprojectform.boundaryCount;
+    lstUpdatedBy = activeprojectform.lastUpdatedBy;
 }
 catch (err) {
     // console.log(typeof err.message);
     audiowaveformData = '';
+    boundaryCount = '';
+    lstUpdatedBy = '';
 }
+
 // console.log(audiowaveformData);
 /**
  * Init & load.
@@ -19,41 +27,41 @@ document.addEventListener('DOMContentLoaded', function () {
     // Init wavesurfer
     wavesurfer = WaveSurfer.create({
         container: '#waveform',
-        height: 100,
+        height: 150,
         pixelRatio: 1,
         scrollParent: true,
         normalize: true,
-        minimap: true,
+        // minimap: true,
+        minPxPerSec: 10,
         backend: 'MediaElement',
-        renderer: 'MultiCanvas',
-        timeInterval: 30,
+        // partialRender: true,
         plugins: [
             WaveSurfer.regions.create(),
-            WaveSurfer.minimap.create({
-                height: 30,
-                waveColor: '#ddd',
-                progressColor: '#999',
-                cursorColor: '#999'
-            }),
-            WaveSurfer.timeline.create({
-                container: '#wave-timeline'
-            }),
-            // WaveSurfer.cursor.create({
-            //     showTime: true,
-            //     opacity: 1,
-            //     customShowTimeStyle: {
-            //         'background-color': '#000',
-            //         color: '#fff',
-            //         padding: '2px',
-            //         'font-size': '10px'
-            //     }
+            // WaveSurfer.minimap.create({
+            //     height: 30,
+            //     waveColor: '#ddd',
+            //     progressColor: '#999',
+            //     cursorColor: '#999'
             // }),
-            WaveSurfer.spectrogram.create({
-                wavesurfer: wavesurfer,
-                container: "#wave-spectrogram",
-                labels: true,
-                height: 256,
-            })
+            // WaveSurfer.timeline.create({
+            //     container: '#wave-timeline'
+            // }),
+            WaveSurfer.cursor.create({
+                showTime: true,
+                opacity: 1,
+                customShowTimeStyle: {
+                    'background-color': '#000',
+                    color: '#fff',
+                    padding: '2px',
+                    // 'font-size': '10px'
+                }
+            }),
+            // WaveSurfer.spectrogram.create({
+            //     wavesurfer: wavesurfer,
+            //     container: "#wave-spectrogram",
+            //     labels: true,
+            //     height: 256,
+            // })
         ]
     });
     document.querySelector('#slider').oninput = function () {
@@ -76,6 +84,11 @@ document.addEventListener('DOMContentLoaded', function () {
     // localStorage.removeItem('regions');
     // localStorage.setItem("regions", JSON.stringify([]));
     filePath = JSON.parse(localStorage.getItem('AudioFilePath'));
+    getAudiDuration(filePath);
+    showBoundaryCount(boundaryCount);
+    lastUpdatedBy(lstUpdatedBy)
+
+    // wavesurfer.load(filePath);
     if (audiowaveformData === '') {
         wavesurfer.load(filePath);
 
@@ -87,7 +100,8 @@ document.addEventListener('DOMContentLoaded', function () {
     wavesurfer.on('ready', function () {
 
         wavesurfer.enableDragSelection({
-            color: randomColor(0.1)
+            // color: randomColor(0.1)
+            color: boundaryColor(255, 255, 0, 0.1)
         });
 
         if (localStorage.regions) {
@@ -110,9 +124,13 @@ document.addEventListener('DOMContentLoaded', function () {
         // }
     });
     wavesurfer.on('region-click', function (region, e) {
+        // region.color = boundaryColor(255, 255, 255, 0.1);
         e.stopPropagation();
+        // region.color = boundaryColor(255, 255, 255, 0.1);
         // Play on click, loop on shift click
         e.shiftKey ? region.playLoop() : region.play();
+        // e.shiftKey ? region.play() : region.playLoop();
+        // region.color = boundaryColor(255, 255, 255, 0.1);
     });
     wavesurfer.on('region-click', editAnnotation);
     // wavesurfer.on('region-created', saveRegions);
@@ -140,11 +158,16 @@ document.addEventListener('DOMContentLoaded', function () {
             wavesurfer.regions.list[regionId].remove();
 
             form.reset();
+            transcriptionFormDisplay(form);
+            wavesurfer.pause();
             startId = region.start.toString().slice(0, 4).replace('.', '');
             if (startId === '0') {
                 startId = '000';
             }
             endId = region.end.toString().slice(0, 4).replace('.', '');
+            if (endId === '0') {
+                endId = '000';
+            }
             // console.log(startId, endId)
             rid = startId.concat(endId);
             localStorageRegions = JSON.parse(localStorage.regions)
@@ -163,7 +186,8 @@ document.addEventListener('DOMContentLoaded', function () {
 /**
  * Save annotations to localStorage.
  */
-function saveRegions() {
+function saveRegions(region) {
+    region.color = boundaryColor(255, 255, 0, 0.1);
     // console.log('WHERE')
     localStorage.regions = JSON.stringify(
         Object.keys(wavesurfer.regions.list).map(function (id) {
@@ -174,6 +198,9 @@ function saveRegions() {
                 startId = '000';
             }
             endId = region.end.toString().slice(0, 4).replace('.', '');
+            if (endId === '0') {
+                endId = '000';
+            }
             // console.log(startId, endId)
             rid = startId.concat(endId);
             // rid = region.start.toString().slice(0, 4).replace('.', '').concat(region.end.toString().slice(0, 4).replace('.', ''));
@@ -199,7 +226,7 @@ function saveRegions() {
 function loadRegions(regions) {
     // console.log(regions)
     regions.forEach(function (region) {
-        region.color = randomColor(0.1);
+        region.color = boundaryColor(0, 255, 0, 0.1);
         // console.log(region)
         wavesurfer.addRegion(region);
     });
@@ -292,6 +319,8 @@ function randomColor(alpha) {
  * Edit annotation for a region.
  */
 function editAnnotation(region) {
+    // wavesurfer.playPause();
+    region.color = boundaryColor(255, 255, 0, 0.1);
     // console.log('editAnnotation(region)')
     // console.log(region)
     let form = document.forms.edit;
@@ -307,6 +336,9 @@ function editAnnotation(region) {
         startId = '000';
     }
     endId = region.end.toString().slice(0, 4).replace('.', '');
+    if (endId === '0') {
+        endId = '000';
+    }
     // console.log(startId, endId)
     rid = startId.concat(endId);
     // rid = region.start.toString().slice(0, 4).replace('.', '').concat(region.end.toString().slice(0, 4).replace('.', ''));
@@ -339,18 +371,22 @@ function editAnnotation(region) {
     //     // console.log('true true');
     // }
     formOnSubmit(form, region)
-    form.onreset = function () {
-        // form.style.opacity = 0;
-        transcriptionFormDisplay(form);
-        form.dataset.region = null;
-    };
+    // form.onreset = function () {
+    //     // form.style.opacity = 0;
+    //     console.log('form reset');
+    //     transcriptionFormDisplay(form);
+    //     form.dataset.region = null;
+    // };
     form.dataset.region = region.id;
 }
 
 // save partial transcription details
 function formOnSubmit(form, region) {
+    // region.color = boundaryColor(0, 0, 255, 0.1);
     // console.log('formOnSubmit(form, region) region', region)
     form.onsubmit = function (e) {
+        wavesurfer.pause();
+        region.color = boundaryColor(0, 0, 255, 0.1);
         e.preventDefault();
         // morphData = morphemeDetails();
         // let sentenceData = new Object();
@@ -375,6 +411,9 @@ function formOnSubmit(form, region) {
                     startId = '000';
                 }
                 endId = region.end.toString().slice(0, 4).replace('.', '');
+                if (endId === '0') {
+                    endId = '000';
+                }
                 // console.log(startId, endId)
                 rid = startId.concat(endId);
                 // rid = region.start.toString().slice(0, 4).replace('.', '').concat(region.end.toString().slice(0, 4).replace('.', ''));
@@ -406,6 +445,7 @@ function formOnSubmit(form, region) {
  * Display annotation.
  */
 function showNote(region) {
+    region.color = boundaryColor(255, 255, 0, 0.1);
     if (!showNote.el) {
         showNote.el = document.querySelector('#subtitle');
     }
@@ -941,7 +981,7 @@ function createSentenceForm(formElement, boundaryID) {
     //                                     '<label for="activeSentenceMorphemicBreak">&nbsp; Add Interlinear Gloss</label><br></br>'
     // // document.getElementById("sentencefield2").innerHTML = "";                                        
     // $(".sentencefield").html(activeSentenceMorphemicBreak);
-    // console.log('createSentenceForm(formElement)', formElement)
+    // console.log('createSentenceForm(formElement)', formElement, boundaryID)
     inpt = '';
     activeprojectform = JSON.parse(localStorage.activeprojectform)
     for (let [key, value] of Object.entries(formElement)) {
@@ -951,6 +991,7 @@ function createSentenceForm(formElement, boundaryID) {
             // console.log('Object.keys(transcriptionScript)[0]', Object.keys(transcriptionScript)[0]);
             firstTranscriptionScript = Object.keys(transcriptionScript)[0]
             for (let [transcriptionkey, transcriptionvalue] of Object.entries(transcriptionScript)) {
+                // console.log(transcriptionkey, transcriptionvalue)
                 // activeprojectform = JSON.parse(localStorage.getItem('activeprojectform'));
                 // // console.log('activeprojectform', activeprojectform)
                 // scriptCode = activeprojectform['scriptCode']
@@ -1024,8 +1065,12 @@ function createSentenceForm(formElement, boundaryID) {
                 }
                 inpt += '</div></div></div></div>';
             }
+            // console.log(document.getElementById("transcription2").innerHTML)
             document.getElementById("transcription2").innerHTML = "";
-            $('.transcription1').append(inpt);
+            // document.getElementById("transcription2").value = "-";
+            // $('.transcription1').append(inpt);
+            $('#transcription2').append(inpt);
+            // console.log(document.getElementById("transcription2").innerHTML)
             inpt = '';
         }
         else if (key === 'translation') {
@@ -1368,6 +1413,10 @@ $("#playPauseAudio").click(function () {
     }
 });
 
+// $("#saveTempTranscription").click(function () {
+//     region.color = boundaryColor(255, 255, 255, 0.1);
+// });
+
 function transcriptionFormDisplay(form, mode) {
     if (form.style.display === "none") {
         form.style.display = "block";
@@ -1489,5 +1538,90 @@ function ipaFocus(x) {
     document.getElementById('meetei').value = meeteiString
 }
 
+function getAudiDuration(audiFilePath) {
+    function getDuration(src, cb) {
+        var audio = new Audio();
+        $(audio).on("loadedmetadata", function () {
+            cb(audio.duration);
+        });
+        audio.src = src;
+    }
+    getDuration(audiFilePath, function (length) {
+        // console.log('I got length ' + length, (length/60).toFixed(2));
+        audioDur = (length / 60).toFixed(2)
+        audioDurMin = audioDur.split('.')[0]
+        audioDurSec = audioDur.split('.')[1] * 60
+        // console.log(audioDur, audioDurMin, audioDurSec);
+        let showDur = '<br><span><strong>Duration: ' + audioDur + ' minutes<strong></span>';
+        // document.getElementById("idaudiometadata").append(showDur);
+        $('#idaudiometadata').append(showDur);
+    });
+}
 
+function showBoundaryCount(boundaryCount) {
+    let showBCount = '<span><strong>Boundary Count: ' + boundaryCount + '<strong></span>';
+    // document.getElementById("idaudiometadata").append(showDur);
+    $('#idaudiometadata').append(showBCount);
+}
 
+function lastUpdatedBy(lstUpdatedBy) {
+    console.log(lstUpdatedBy);
+    // lstUpdatedBy = '';
+    if (lstUpdatedBy !== '') {
+        let lastUpdate = '<br><span><strong>Last Updated By: ' + lstUpdatedBy + '<strong></span>';
+        // document.getElementById("idaudiometadata").append(showDur);
+        $('#idaudiometadata').append(lastUpdate);
+    }
+}
+
+function autoSavetranscription(transcriptionField) {
+    // console.log(transcriptionField, transcriptionField.id, transcriptionField.value);
+    activeTranscriptionFieldId = transcriptionField.id
+    transciptionLang = activeTranscriptionFieldId.split('_')[1]
+    activeTranscriptionFieldValue = transcriptionField.value
+    startTime = document.getElementById('start').value
+    endTime = document.getElementById('end').value
+    // console.log(startTime, endTime);
+    startTime = startTime.toString().slice(0, 4).replace('.', '');
+    if (startTime === '0') {
+        startTime = '000';
+    }
+    endTime = endTime.toString().slice(0, 4).replace('.', '');
+    if (endTime === '0') {
+        endTime = '000';
+    }
+    // console.log(startId, endId)
+    rid = startTime.concat(endTime);
+    // console.log(rid);
+    localStorageRegions = JSON.parse(localStorage.regions)
+    for (let [key, value] of Object.entries(localStorageRegions)) {
+        // console.log(key, value)
+        if (localStorageRegions[key]['boundaryID'] === rid) {
+            // localStorageRegions.splice(key, 1)
+            // console.log(localStorageRegions[key]);
+            // for (let [rkey, rvalue] of Object.entries(localStorageRegions[key]['data']['sentence'][rid]['transcription'][transciptionLang])) {
+            //     console.log(rkey, rvalue);
+
+            // }
+            // console.log(localStorageRegions[key]['data']['sentence'][rid]['transcription'][transciptionLang])
+            localStorageRegions[key]['data']['sentence'][rid]['transcription'][transciptionLang] = activeTranscriptionFieldValue
+            // console.log(localStorageRegions[key]['data']['sentence'][rid]['transcription'][transciptionLang])
+            // console.log(localStorageRegions[key]);
+
+            localStorage.setItem("regions", JSON.stringify(localStorageRegions));
+        }
+    }
+}
+
+function boundaryColor(r, g, b, alpha) {
+    return (
+        'rgba(' +
+        [
+            ~~(r),
+            ~~(g),
+            ~~(b),
+            alpha || 1
+        ] +
+        ')'
+    );
+}

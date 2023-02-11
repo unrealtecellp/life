@@ -295,27 +295,27 @@ def saveoneaudiofile(mongo,
                                 userprojectinfo: speakerId
                             }})
 
-    
     # print('new_audio_file', type(new_audio_file), new_audio_file)
     # transcription_doc_id = transcriptions.insert(new_audio_details)
     # save audio file details in fs collection
     fs_file_id = mongo.save_file(updated_audio_filename,
-                                    new_audio_file['audiofile'],
-                                    audioId=audio_id,
-                                    username=projectowner,
-                                    projectname=activeprojectname,
-                                    updatedBy=current_username)
+                                 new_audio_file['audiofile'],
+                                 audioId=audio_id,
+                                 username=projectowner,
+                                 projectname=activeprojectname,
+                                 updatedBy=current_username)
 
     # print('audioLength', new_audio_file['audiofile'].content_length)
     json_basedir = os.path.abspath(os.path.dirname(__file__))
     # print('json_basedir', json_basedir)
     audiowaveform_json = '/'.join(json_basedir.split('/')[:-1])
     # # audiowaveform_json_path = os.path.join(audiowaveform_json, 'audiowaveform_json')
-    audiowaveform_audio_path = os.path.join(audiowaveform_json, 'audiowaveform')
+    audiowaveform_audio_path = os.path.join(
+        audiowaveform_json, 'audiowaveform')
     audiowaveform_json_path = os.path.join(audiowaveform_json, 'audiowaveform')
     # print('audiowaveform_json', audiowaveform_json)
     # print('audiowaveform_json_path', audiowaveform_json_path)
-    
+
     # print('new_audio_file', type(new_audio_file), new_audio_file)
     # audiowaveform_file = new_audio_file.stream.seek(0)
     # audiowaveform_file.stream.seek(0)
@@ -324,16 +324,18 @@ def saveoneaudiofile(mongo,
     #                 audio_id,
     #                 'audio')
     getaudiowaveformfilefromfs(mongo,
-                       audiowaveform_json,
-                       'audiowaveform',
-                       audio_id,
-                       'audioId')
+                               audiowaveform_json,
+                               'audiowaveform',
+                               audio_id,
+                               'audioId')
     # print('audiowaveform_audio_path', audiowaveform_audio_path)
     # audiowaveform_audio_path = os.path.join(audiowaveform_audio_path, updated_audio_filename)
-    audiowaveform_audio_path = os.path.join(audiowaveform_audio_path, updated_audio_filename)
+    audiowaveform_audio_path = os.path.join(
+        audiowaveform_audio_path, updated_audio_filename)
     # print('audiowaveform_audio_path', audiowaveform_audio_path)
     # print('audiowaveform_json_path', audiowaveform_json_path)
-    audiowaveform_json = createaudiowaveform(audiowaveform_audio_path, audiowaveform_json_path, updated_audio_filename)
+    audiowaveform_json = createaudiowaveform(
+        audiowaveform_audio_path, audiowaveform_json_path, updated_audio_filename)
     new_audio_details['audioMetadata']['audiowaveform'] = audiowaveform_json
 
     transcription_doc_id = transcriptions.insert(new_audio_details)
@@ -357,10 +359,12 @@ def createaudiowaveform(audiowaveform_audio_path, audiowaveform_json_path, audio
     # audio_filename = os.path.join(audiowaveform_json_path, str(audio_file.filename))
     # audio_file.save(audio_filename)
     audio_filename = audio_filename[0:audio_filename.rfind('.')]
-    json_filename = os.path.join(audiowaveform_json_path, audio_filename+'.json')
-    # print('audio filename', audiowaveform_audio_path)
-    # print('json_filename', json_filename)
-    subprocess.run(['audiowaveform', '-i', audiowaveform_audio_path, '-o',  json_filename])
+    json_filename = os.path.join(
+        audiowaveform_json_path, audio_filename+'.json')
+    print('audio filename', audiowaveform_audio_path)
+    print('json_filename', json_filename)
+    subprocess.run(
+        ['audiowaveform', '-i', audiowaveform_audio_path, '-o',  json_filename])
     with open(json_filename, 'r') as jsonfile:
         read_json = json.load(jsonfile)
     # print(read_json)
@@ -534,11 +538,12 @@ def getaudiofiletranscription(transcriptions, audio_id):
 
     return transcription_details
 
+
 def getaudiowaveformfilefromfs(mongo,
-                       basedir,
-                       folder_name,
-                       file_id,
-                       file_type):
+                               basedir,
+                               folder_name,
+                               file_id,
+                               file_type):
     """get file from fs collection save it to local storage 'static' folder
 
     Args:
@@ -575,6 +580,7 @@ def getaudiowaveformfilefromfs(mongo,
         file_path = ''
     # print('file_path', file_path)
     return file_path
+
 
 def getaudiofilefromfs(mongo,
                        basedir,
@@ -683,6 +689,7 @@ def getaudiotranscriptiondetails(transcriptions, audio_id):
     transcription_regions = []
     gloss = {}
     pos = {}
+    boundary_count = 0
     try:
         t_data = transcriptions.find_one({'audioId': audio_id},
                                          {'_id': 0, 'textGrid.sentence': 1})
@@ -703,6 +710,7 @@ def getaudiotranscriptiondetails(transcriptions, audio_id):
             # transcription_region['sentence'] = {key: value}
             transcription_region['data'] = {'sentence': {key: value}}
             # pprint(transcription_region)
+            boundary_count += 1
             try:
                 # print('!@!#!@!#!@!#!@!#!@!##!@!#!#!@!#!@!#!@!#!@!#!@!##!@!#!#', gloss)
                 tempgloss = sentence[key]['gloss']
@@ -735,7 +743,7 @@ def getaudiotranscriptiondetails(transcriptions, audio_id):
     except:
         pass
 
-    return (transcription_regions, gloss, pos)
+    return (transcription_regions, gloss, pos, boundary_count)
 
 
 def savetranscription(transcriptions,
@@ -968,6 +976,7 @@ def addedspeakerids(speakerdetails,
     # print ("Added Speaker IDS", added_speaker_ids)
     return added_speaker_ids
 
+
 def getaudiometadata(transcriptions, audio_id):
     """get the audi metadata details of the audio file
 
@@ -979,8 +988,27 @@ def getaudiometadata(transcriptions, audio_id):
         _type_: _description_
     """
     audio_metadata_details = dict({'audioMetadata': ''})
-    audio_metadata = transcriptions.find_one({'audioId': audio_id})
-    if audio_metadata is not None:
+    audio_metadata = transcriptions.find_one({'audioId': audio_id}, {'_id': 1, 'audioMetadata': 1})
+    # print(audio_metadata)
+    if audio_metadata is not None and 'audioMetadata' in audio_metadata:
         audio_metadata_details['audioMetadata'] = audio_metadata['audioMetadata']
 
     return audio_metadata_details
+
+def lastupdatedby(transcriptions, audio_id):
+    """get the transcription last updated by 
+
+    Args:
+        transcriptions (_type_): _description_
+        file_id (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """
+    last_updated_by_details = dict({'updatedBy': ''})
+    last_updated_by = transcriptions.find_one({'audioId': audio_id}, {'_id': 1, 'updatedBy': 1})
+    # print(last_updated_by)
+    if last_updated_by is not None and 'updatedBy' in last_updated_by:
+        last_updated_by_details['updatedBy'] = last_updated_by['updatedBy']
+
+    return last_updated_by_details

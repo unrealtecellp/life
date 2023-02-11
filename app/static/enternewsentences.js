@@ -792,7 +792,7 @@ function myFunction(newData) {
                   '<input type="text" class="form-control" id="'+key+'" name="'+key+'" value="'+newData[key]+'" readonly>'+
                   '</div></div>'; 
           $('.lexemelang').append(inpt);
-          inpt = '';         
+          inpt = '';
         }
     // else if (key === 'Transcription Script') {
     //   var transcriptionScriptLocalStorage = []
@@ -877,7 +877,7 @@ function displayRadioValue() {
   return activetranscriptionscript
 }
 
-  
+
 function previousAudio() {
   var lastActiveId = document.getElementById("lastActiveId").value;
   // console.log(lastActiveId)
@@ -889,7 +889,7 @@ function previousAudio() {
         success: function(response){
           // console.log(response.newAudioFilePath)
           // localStorage.setItem("AudioFilePath", JSON.stringify(response.newAudioFilePath));
-          window.location.reload();
+          window.location.reload(); 
         }
     });
     return false;
@@ -1003,3 +1003,31 @@ $('#speakeriduploaddropdown').select2({
   // sorter: false
   // width: 'element'
   });
+
+$("#audiofile").change(function() {
+    let zipFileElement = document.getElementById('audiofile');
+    zipFileName = zipFileElement.files[0];
+    console.log(zipFileName);
+    // displayZipFileName = '<p>'+zipFileName.name+'</p>';
+    // $("#displayZipFileName").append(zipFileName.name);
+    zipFileSize = zipFileName.size
+    console.log(typeof zipFileSize, Math.round((zipFileSize/1024)));
+    if (! (zipFileSize <= 200000000)) {
+      
+      const size = (zipFileSize / 1000 / 1000).toFixed(2);
+      console.log(zipFileSize, size);
+      alert('Please upload file upto 200 MB. This file size is: ' + size + " MB");
+      window.location.reload(true);
+    }
+    
+})
+
+function replaceZoomSlider() {
+  // const element = document.getElementById("slider");
+  // element.remove();
+  // console.log('replaceZoomSlider()')
+  let slider = '<input id="slider" data-action="zoom" type="range" min="20" max="100" value="0" style="width: 50%">';
+  $("#sliderdivid").html(slider);
+}
+
+replaceZoomSlider();
