@@ -16,6 +16,7 @@ catch (err) {
     // console.log(typeof err.message);
     audiowaveformData = '';
     boundaryCount = '';
+    lstUpdatedBy = '';
 }
 
 // console.log(audiowaveformData);
@@ -224,7 +225,7 @@ function saveRegions(region) {
  */
 function loadRegions(regions) {
     // console.log(regions)
-    regions.forEach(function(region) {
+    regions.forEach(function (region) {
         region.color = boundaryColor(0, 255, 0, 0.1);
         // console.log(region)
         wavesurfer.addRegion(region);
@@ -361,7 +362,7 @@ function editAnnotation(region) {
     // (form.elements.start.value = Math.round(region.start * 10) / 10),
     // (form.elements.end.value = Math.round(region.end * 10) / 10);
     (form.elements.start.value = region.start),
-    (form.elements.end.value = region.end);
+        (form.elements.end.value = region.end);
     // form.elements.note.value = region.data.note || '';
     // document.getElementById("activeSentenceMorphemicBreak").checked = false;
     // $(".containerremovesentencefield1").remove();
@@ -405,21 +406,21 @@ function formOnSubmit(form, region) {
         for (i = 0; i < regions.length; i++) {
             if (regions[i]['start'] === region.start &&
                 regions[i]['end'] === region.end) {
-                    startId = region.start.toString().slice(0, 4).replace('.', '');
-                    if (startId === '0') {
-                        startId = '000';
-                    }
-                    endId = region.end.toString().slice(0, 4).replace('.', '');
-                    if (endId === '0') {
-                        endId = '000';
-                    }
-                    // console.log(startId, endId)
-                    rid = startId.concat(endId);
-                    // rid = region.start.toString().slice(0, 4).replace('.', '').concat(region.end.toString().slice(0, 4).replace('.', ''));
-                    sentence = regions[i]['data']['sentence']
-                    sentece = updateSentenceDetailsOnSaveBoundary(rid, sentence, region, form)
+                startId = region.start.toString().slice(0, 4).replace('.', '');
+                if (startId === '0') {
+                    startId = '000';
                 }
+                endId = region.end.toString().slice(0, 4).replace('.', '');
+                if (endId === '0') {
+                    endId = '000';
+                }
+                // console.log(startId, endId)
+                rid = startId.concat(endId);
+                // rid = region.start.toString().slice(0, 4).replace('.', '').concat(region.end.toString().slice(0, 4).replace('.', ''));
+                sentence = regions[i]['data']['sentence']
+                sentece = updateSentenceDetailsOnSaveBoundary(rid, sentence, region, form)
             }
+        }
         // console.log('formOnSubmit(form, region) sentence', sentence)  
         // localStorage.setItem("regions", JSON.stringify(regions));
         // console.log('regions', regions)
@@ -982,12 +983,14 @@ function createSentenceForm(formElement, boundaryID) {
     // $(".sentencefield").html(activeSentenceMorphemicBreak);
     // console.log('createSentenceForm(formElement)', formElement, boundaryID)
     inpt = '';
+    console.log('formElement', formElement)
     activeprojectform = JSON.parse(localStorage.activeprojectform)
     for (let [key, value] of Object.entries(formElement)) {
-        // console.log(key, value)
+        console.log('first', key, value)
         if (key === 'transcription') {
             var transcriptionScript = formElement[key];
-            // console.log('Object.keys(transcriptionScript)[0]', Object.keys(transcriptionScript)[0]);
+            console.log(transcriptionScript)
+            console.log('second', 'Object.keys(transcriptionScript)[0]', Object.keys(transcriptionScript)[0]);
             firstTranscriptionScript = Object.keys(transcriptionScript)[0]
             for (let [transcriptionkey, transcriptionvalue] of Object.entries(transcriptionScript)) {
                 // console.log(transcriptionkey, transcriptionvalue)
@@ -1004,12 +1007,6 @@ function createSentenceForm(formElement, boundaryID) {
                     'placeholder="Transcription ' + transcriptionkey + '" name="transcription_' + transcriptionkey + '"' +
                     'value="' + transcriptionvalue + '" required><br>';
                 // '</div></div>';
-                // inpt += '<label for="Transcription_' + transcriptionkey + '">Transcription in ' + transcriptionkey + '</label>' +
-                //         '<input type="text" class="form-control" id="Transcription_'+ transcriptionkey +'"'+
-                //         'placeholder="Transcription '+ transcriptionkey +'" name="transcription_'+ transcriptionkey +'"'+
-                //         'value="'+ transcriptionvalue +'" required  onkeyup="autoSavetranscription(this);"><br>';
-                //         // '</div></div>';
-                // console.log(inpt);
                 if (transcriptionkey === firstTranscriptionScript) {
                     // activeprojectform = JSON.parse(localStorage.activeprojectform)
                     if ('glossDetails' in activeprojectform &&
@@ -1570,9 +1567,13 @@ function showBoundaryCount(boundaryCount) {
 }
 
 function lastUpdatedBy(lstUpdatedBy) {
-    let lastUpdate = '<br><span><strong>Last Updated By: ' + lstUpdatedBy + '<strong></span>';
-    // document.getElementById("idaudiometadata").append(showDur);
-    $('#idaudiometadata').append(lastUpdate);
+    console.log(lstUpdatedBy);
+    // lstUpdatedBy = '';
+    if (lstUpdatedBy !== '') {
+        let lastUpdate = '<br><span><strong>Last Updated By: ' + lstUpdatedBy + '<strong></span>';
+        // document.getElementById("idaudiometadata").append(showDur);
+        $('#idaudiometadata').append(lastUpdate);
+    }
 }
 
 function autoSavetranscription(transcriptionField) {
