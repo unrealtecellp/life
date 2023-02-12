@@ -18,15 +18,15 @@
          backend: 'MediaElement',
          plugins: [
              WaveSurfer.regions.create(),
-             WaveSurfer.minimap.create({
-                 height: 30,
-                 waveColor: '#ddd',
-                 progressColor: '#999',
-                 cursorColor: '#999'
-             }),
-             WaveSurfer.timeline.create({
-                 container: '#wave-timeline'
-             })
+            //  WaveSurfer.minimap.create({
+            //      height: 30,
+            //      waveColor: '#ddd',
+            //      progressColor: '#999',
+            //      cursorColor: '#999'
+            //  }),
+            //  WaveSurfer.timeline.create({
+            //      container: '#wave-timeline'
+            //  })
          ]
      });
      document.querySelector('#slider').oninput = function () {
