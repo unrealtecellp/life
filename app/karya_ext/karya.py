@@ -429,7 +429,7 @@ def add():
 @karya_bp.route('/homespeaker')
 @login_required
 def homespeaker():
-    projects, userprojects, projectsform, mongodb_info = getdbcollections.getdbcollections(mongo,
+    projects, userprojects, projectsform, accesscode_info = getdbcollections.getdbcollections(mongo,
                                                                                             'projects',
                                                                                             'userprojects',
                                                                                             'projectsform',
@@ -452,7 +452,7 @@ def homespeaker():
 
 ################################## karya accesscode  #########################################################################
     if share_level == 10:
-        karyaaccesscodedetails = mongodb_info.find({"isActive":1, "projectname": activeprojectname},
+        karyaaccesscodedetails = accesscode_info.find({"isActive":1, "projectname": activeprojectname},
                                                     {
                                                         "karyaaccesscode":1, 
                                                         "lifespeakerid":1,
@@ -468,7 +468,7 @@ def homespeaker():
                                                     }
                                                 )
     else:
-        karyaaccesscodedetails = mongodb_info.find({"isActive":1, "projectname": activeprojectname, "assignedBy": current_username},
+        karyaaccesscodedetails = accesscode_info.find({"isActive":1, "projectname": activeprojectname, "assignedBy": current_username},
                                                     {
                                                         "karyaaccesscode":1, 
                                                         "lifespeakerid":1,

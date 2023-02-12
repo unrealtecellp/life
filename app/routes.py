@@ -240,12 +240,27 @@ def managespeakermetadata():
     allspeakerdetails = speakerdetails.getspeakerdetails(
         activeprojectname, speakermeta)
 
+    lifespeakerdetails = speakermeta.find({"isActive":1, "projectname": activeprojectname, "createdBy": current_username},
+                                                    {
+                                                        "sourceMetadata.lifesourceid":1,
+                                                        "sourceMetadata.name":1,
+                                                        "sourceMetadata.agegroup":1,
+                                                        "sourceMetadata.gender":1,
+                                                        "_id" :0
+                                                        }
+                                                        )
+    data_table = []
+    for data in lifespeakerdetails:
+        data_table.append(data.items())
+    print(data_table)
+
     return render_template(
         'manageSpeakers.html',
         data=allspeakerdetails,
         activeprojectname=activeprojectname,
         shareinfo=shareinfo,
-        usertype=usertype
+        usertype=usertype,
+        data_table = data_table
     )
 
 # new project route
