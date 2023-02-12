@@ -95,8 +95,8 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
     wavesurfer.on('region-click', function (region, e) {
-        console.log(wavesurfer);
-        console.log(region);
+        // console.log(wavesurfer);
+        // console.log(region);
         e.stopPropagation();
         // Play on click, loop on shift click
         e.shiftKey ? region.playLoop() : region.play();
@@ -109,13 +109,15 @@ document.addEventListener('DOMContentLoaded', function () {
     wavesurfer.on('region-in', showNote);
 
     wavesurfer.on('region-play', function (region) {
+        togglePlayPause(1);
         region.once('out', function () {
             wavesurfer.play(region.start);
             wavesurfer.pause();
         });
     });
     wavesurfer.on('finish', function () {
-        $(".audioplaypause").addClass('glyphicon-play').removeClass('glyphicon-pause');
+        // $(".audioplaypause").addClass('glyphicon-play').removeClass('glyphicon-pause');
+        togglePlayPause(0);
     });
 
     document.querySelector(
@@ -157,7 +159,7 @@ document.addEventListener('DOMContentLoaded', function () {
  * Save annotations to localStorage.
  */
 function saveRegions(region) {
-    // region.color = boundaryColor(255, 255, 0, 0.1);
+    // region.color =  boundaryColor(255, 0, 0, 0.1),
     console.log('WHERE')
     localStorage.regions = JSON.stringify(
         Object.keys(wavesurfer.regions.list).map(function (id) {
@@ -340,7 +342,8 @@ function editAnnotation(region) {
     //     createSentenceForm(form, region);
     //     // console.log('true true');
     // }
-    formOnSubmit(form, region)
+    // formOnSubmit(form, region)
+    saveBoundaryData(region, form)
     // form.onreset = function () {
     //     // form.style.opacity = 0;
     //     console.log('form reset');
@@ -348,15 +351,14 @@ function editAnnotation(region) {
     //     form.dataset.region = null;
     // };
     form.dataset.region = region.id;
+    // region.color = boundaryColor(255, 255, 0, 0.1);
 }
 
 // save partial transcription details
 function formOnSubmit(form, region) {
-    // region.color = boundaryColor(0, 0, 255, 0.1);
     // console.log('formOnSubmit(form, region) region', region)
     form.onsubmit = function (e) {
         wavesurfer.pause();
-        region.color = boundaryColor(0, 0, 255, 0.1);
         e.preventDefault();
         // morphData = morphemeDetails();
         // let sentenceData = new Object();
@@ -382,7 +384,7 @@ function formOnSubmit(form, region) {
 }
 
 function saveBoundaryData(region, form) {
-    console.log(region);
+    // console.log(region);
     let regions = JSON.parse(localStorage.regions)
     for (i = 0; i < regions.length; i++) {
         if (regions[i]['start'] === region.start &&
@@ -413,12 +415,24 @@ function saveBoundaryData(region, form) {
 /**
  * Display annotation.
  */
-function showNote(region) {
-    region.color = boundaryColor(255, 255, 0, 0.1);
-    if (!showNote.el) {
-        showNote.el = document.querySelector('#subtitle');
+function showNote() {
+    // console.log(showNote.el);
+    // if (!showNote.el) {
+    //     showNote.el = document.querySelector('#subtitle');
+    // }
+    // showNote.el.textContent = region.data.note || '–';
+    let form = document.forms.edit;
+    // console.log(form[2].id, form[2].value);
+    let firstTranscriptionFieldValue = form[2].value;
+    let subtitle = document.getElementById('subtitle');
+    // console.log(subtitle, firstTranscriptionFieldValue);
+    if (firstTranscriptionFieldValue !== '') {
+        subtitle.innerHTML = firstTranscriptionFieldValue
     }
-    showNote.el.textContent = region.data.note || '–';
+    else{
+        subtitle.innerHTML = '–'
+    }
+    
 }
 
 function updateSentenceDetailsOnSaveBoundary(boundaryID, sentence, region, form) {
@@ -952,14 +966,14 @@ function createSentenceForm(formElement, boundaryID) {
     // $(".sentencefield").html(activeSentenceMorphemicBreak);
     // console.log('createSentenceForm(formElement)', formElement, boundaryID)
     inpt = '';
-    console.log('formElement', formElement)
+    // console.log('formElement', formElement)
     activeprojectform = JSON.parse(localStorage.activeprojectform)
     for (let [key, value] of Object.entries(formElement)) {
-        console.log('first', key, value)
+        // console.log('first', key, value)
         if (key === 'transcription') {
             var transcriptionScript = formElement[key];
-            console.log(transcriptionScript)
-            console.log('second', 'Object.keys(transcriptionScript)[0]', Object.keys(transcriptionScript)[0]);
+            // console.log(transcriptionScript)
+            // console.log('second', 'Object.keys(transcriptionScript)[0]', Object.keys(transcriptionScript)[0]);
             firstTranscriptionScript = Object.keys(transcriptionScript)[0]
             for (let [transcriptionkey, transcriptionvalue] of Object.entries(transcriptionScript)) {
                 // console.log(transcriptionkey, transcriptionvalue)
@@ -1377,17 +1391,71 @@ $("#playPauseAudio").click(function () {
     playPauseState = $(".audioplaypause").attr('class');
     // console.log(playPauseState)
     if (playPauseState.includes('glyphicon-play')) {
-        $(".audioplaypause").addClass('glyphicon-pause').removeClass('glyphicon-play');
+        // $(".audioplaypause").addClass('glyphicon-pause').removeClass('glyphicon-play');
+        togglePlayPause(1);
     }
     else if (playPauseState.includes('glyphicon-pause')) {
-        $(".audioplaypause").addClass('glyphicon-play').removeClass('glyphicon-pause');
+        // $(".audioplaypause").addClass('glyphicon-play').removeClass('glyphicon-pause');
+        togglePlayPause(0);
     }
 });
 
-// $("#saveTempTranscription").click(function () {
-//     region.color = boundaryColor(255, 255, 255, 0.1);
-// });
+$("#playPauseBoundary").click(function () {
+    let form = document.forms.edit;
+    // console.log(form[2].id);
+    let regionId = form.dataset.region;
+    if (regionId) {
+        let region = wavesurfer.regions.list[regionId];
+        startTime = region.start
+        endTime = region.end
+        currentTime = wavesurfer.getCurrentTime();
+        console.log(startTime, endTime, currentTime);
+    }
+    if (currentTime !== startTime) {
+        if (wavesurfer.isPlaying()) {
+            wavesurfer.pause();
+            togglePlayPause(0);
+        }
+        else if (currentTime === endTime) {
+            console.log(startTime, endTime, currentTime);
+            wavesurfer.play(startTime, endTime);
+            togglePlayPause(1);
+        }
+        else {
+            wavesurfer.play(currentTime, endTime);
+            togglePlayPause(1);
+            }
+    }
+    else if (currentTime === startTime) {
+        wavesurfer.play(startTime, endTime);
+        togglePlayPause(1);
+    }
+    // wavesurfer.playPause();
+    // playPauseState = $(".playPauseBoundaryClass").attr('class');
+    // // console.log(playPauseState)
+    // // console.log(playPauseState.innerText);
+    // if (playPauseState.includes('glyphicon-play')) {
+    //     // $(".playPauseBoundaryClass").addClass('glyphicon-pause').removeClass('glyphicon-play');
+    //     // playPauseState.innerText = 'Play This Boundary'
+    //     togglePlayPause(1);
+    // }
+    // else if (playPauseState.includes('glyphicon-pause')) {
+    //     // $(".playPauseBoundaryClass").addClass('glyphicon-play').removeClass('glyphicon-pause');
+    //     // playPauseState.innerText = 'Pause This Boundary'
+    //     togglePlayPause(0);
+    // }
+});
 
+function togglePlayPause(state) {
+    if (state === 1) {
+        $(".audioplaypause").addClass('glyphicon-pause').removeClass('glyphicon-play');
+        $(".playPauseBoundaryClass").addClass('glyphicon-pause').removeClass('glyphicon-play');
+    }
+    else if (state === 0) {
+        $(".playPauseBoundaryClass").addClass('glyphicon-play').removeClass('glyphicon-pause');
+        $(".audioplaypause").addClass('glyphicon-play').removeClass('glyphicon-pause');
+    }
+}
 function transcriptionFormDisplay(form, mode) {
     if (form.style.display === "none") {
         form.style.display = "block";
@@ -1548,40 +1616,42 @@ function lastUpdatedBy(lstUpdatedBy) {
 }
 
 function autoSavetranscription(transcriptionField) {
-    console.log(wavesurfer, wavesurfer.regions);
-    console.log(transcriptionField, transcriptionField.id, transcriptionField.value);
-    let form = document.forms.edit;
-    let regionId = form.dataset.region;
-    if (regionId) {
-        let region = wavesurfer.regions.list[regionId];
-        console.log(region);
-    }
-
+    // console.log(wavesurfer, wavesurfer.regions);
+    // console.log(transcriptionField, transcriptionField.id, transcriptionField.value);
+    showNote();
     activeTranscriptionFieldId = transcriptionField.id
     transciptionLang = activeTranscriptionFieldId.split('_')[1]
     activeTranscriptionFieldValue = transcriptionField.value
-    startTime = document.getElementById('start').value
-    endTime = document.getElementById('end').value
-    // console.log(startTime, endTime);
-    startTime = startTime.toString().slice(0, 4).replace('.', '');
-    if (startTime === '0') {
-        startTime = '000';
+    let form = document.forms.edit;
+    // console.log(form[2].id);
+    let regionId = form.dataset.region;
+    if (regionId) {
+        let region = wavesurfer.regions.list[regionId];
+        // console.log(region);
+        saveBoundaryData(region, form);
     }
-    endTime = endTime.toString().slice(0, 4).replace('.', '');
-    if (endTime === '0') {
-        endTime = '000';
-    }
-    // console.log(startId, endId)
-    rid = startTime.concat(endTime);
-    // console.log(rid);
-    localStorageRegions = JSON.parse(localStorage.regions)
-    for (let [key, value] of Object.entries(localStorageRegions)) {
-        // console.log(key, value)
-        if (localStorageRegions[key]['boundaryID'] === rid) {
-            localStorageRegions[key]['data']['sentence'][rid]['transcription'][transciptionLang] = activeTranscriptionFieldValue
-            localStorage.setItem("regions", JSON.stringify(localStorageRegions));
-        }
-    }
+    // startTime = document.getElementById('start').value
+    // endTime = document.getElementById('end').value
+    // // console.log(startTime, endTime);
+    // startTime = startTime.toString().slice(0, 4).replace('.', '');
+    // if (startTime === '0') {
+    //     startTime = '000';
+    // }
+    // endTime = endTime.toString().slice(0, 4).replace('.', '');
+    // if (endTime === '0') {
+    //     endTime = '000';
+    // }
+    // // console.log(startId, endId)
+    // rid = startTime.concat(endTime);
+    // // console.log(rid);
+    // localStorageRegions = JSON.parse(localStorage.regions)
+    // for (let [key, value] of Object.entries(localStorageRegions)) {
+    //     // console.log(key, value)
+    //     if (localStorageRegions[key]['boundaryID'] === rid) {
+    //         localStorageRegions[key]['data']['sentence'][rid]['transcription'][transciptionLang] = activeTranscriptionFieldValue
+    //         localStorage.setItem("regions", JSON.stringify(localStorageRegions));
+    //     }
+    // }
 }
 
 function boundaryColor(r, g, b, alpha) {

@@ -72,7 +72,7 @@ def saveaudiofiles(mongo,
                    speakerId,
                    new_audio_file,
                    transcription_type='sentence',
-                   boundary_threshold=0.5,
+                   boundary_threshold=0.3,
                    slice_threshold=0.9,
                    **kwargs):
     """mapping of this function is with the 'uploadaudiofiles' route.
