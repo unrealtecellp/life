@@ -983,12 +983,14 @@ function createSentenceForm(formElement, boundaryID) {
     // $(".sentencefield").html(activeSentenceMorphemicBreak);
     // console.log('createSentenceForm(formElement)', formElement, boundaryID)
     inpt = '';
+    console.log('formElement', formElement)
     activeprojectform = JSON.parse(localStorage.activeprojectform)
     for (let [key, value] of Object.entries(formElement)) {
-        // console.log(key, value)
+        console.log('first', key, value)
         if (key === 'transcription') {
             var transcriptionScript = formElement[key];
-            // console.log('Object.keys(transcriptionScript)[0]', Object.keys(transcriptionScript)[0]);
+            console.log(transcriptionScript)
+            console.log('second', 'Object.keys(transcriptionScript)[0]', Object.keys(transcriptionScript)[0]);
             firstTranscriptionScript = Object.keys(transcriptionScript)[0]
             for (let [transcriptionkey, transcriptionvalue] of Object.entries(transcriptionScript)) {
                 // console.log(transcriptionkey, transcriptionvalue)
