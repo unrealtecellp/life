@@ -1081,34 +1081,50 @@ def get_new_boundaries(boundaries, max_pause, include_transcription=False, trans
     # print('Initial end boundary', boundaries[-1])
     # print('Initial second end boundary', boundaries[-2:-5])
 
-    for i in range(len(boundaries)-1):
-
-        if include_transcription:
-            current_transcription = transcriptions[i]
-
-        current_boundary = boundaries[i]
-        next_boundary = boundaries[i+1]
-        current_start = current_boundary['start']
-        # print(i, 'out of', len(boundaries), current_boundary)
-        # print(i+1, 'out of', len(boundaries), next_boundary)
-
-        if i == 0 or reset_start:
-            span_start = current_start
-            reset_start = False
-
+    if len(boundaries) > 1:
+        for i in range(len(boundaries)-1):
             if include_transcription:
-                span_transcription = current_transcription
+                current_transcription = transcriptions[i]
 
-        current_end = current_boundary['end']
-        next_start = next_boundary['start']
+            current_boundary = boundaries[i]
+            next_boundary = boundaries[i+1]
+            current_start = current_boundary['start']
+            # print(i, 'out of', len(boundaries), current_boundary)
+            # print(i+1, 'out of', len(boundaries), next_boundary)
 
-        if i == len(boundaries)-2:
-            span_end = next_boundary['end']
-        else:
-            span_end = current_end
+            if i == 0 or reset_start:
+                span_start = current_start
+                reset_start = False
 
-        if merge_boundary_with_next(current_end, next_start, max_pause):
-            if i == len(boundaries) - 2:
+                if include_transcription:
+                    span_transcription = current_transcription
+
+            current_end = current_boundary['end']
+            next_start = next_boundary['start']
+
+            if i == len(boundaries)-2:
+                span_end = next_boundary['end']
+            else:
+                span_end = current_end
+
+            if merge_boundary_with_next(current_end, next_start, max_pause):
+                if i == len(boundaries) - 2:
+                    new_boundaries.append({
+                        'start': span_start,
+                        'end': span_end
+                    })
+                    reset_start = True
+
+                    if include_transcription:
+                        span_transcription = span_transcription + ' ' + \
+                            current_transcription + ' ' + transcriptions[i+1]
+                        new_transcriptions.append(span_transcription)
+                        span_transcription = ''
+                else:
+                    if include_transcription:
+                        span_transcription = span_transcription + ' ' + current_transcription
+                continue
+            else:
                 new_boundaries.append({
                     'start': span_start,
                     'end': span_end
@@ -1116,28 +1132,25 @@ def get_new_boundaries(boundaries, max_pause, include_transcription=False, trans
                 reset_start = True
 
                 if include_transcription:
-                    span_transcription = span_transcription + ' ' + \
-                        current_transcription + ' ' + transcriptions[i+1]
                     new_transcriptions.append(span_transcription)
                     span_transcription = ''
-            else:
-                if include_transcription:
-                    span_transcription = span_transcription + ' ' + current_transcription
-            continue
-        else:
-            new_boundaries.append({
-                'start': span_start,
-                'end': span_end
-            })
-            reset_start = True
+    else:
+        current_boundary = boundaries[0]
 
-            if include_transcription:
-                new_transcriptions.append(span_transcription)
-                span_transcription = ''
+        new_boundaries.append({
+            'start': current_boundary['start'],
+            'end': current_boundary['end']
+        })
+        reset_start = True
+
+        if include_transcription:
+            new_transcriptions.append(transcriptions[0])
+            span_transcription = ''
 
     print('Final total boundaries', len(new_boundaries))
     print('Final start', new_boundaries[0])
     print('Final end', new_boundaries[-1])
+
     if include_transcription:
         return new_boundaries, new_transcriptions
     else:
