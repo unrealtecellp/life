@@ -345,35 +345,20 @@
                     </td>
 
                     <td>
-                        {{item['karyaaccesscode']}}
+                        {{item['lifesourceid']}}
+                    </td>
+
+                    <td>
+                        {{item['current']['sourceMetadata']['name']}}
+                    </td>
+
+                    <td>
+                        {{item['current']['sourceMetadata']['agegroup']}}
                     </td>
                     <td>
-                        {{item['lifespeakerid']}}
+                        {{item['current']['sourceMetadata']['gender']}}
                     </td>
-                    <td>
-                        {{item['current']['workerMetadata']['name']}}
-                    </td>
-                    <td>
-                        {{item['current']['workerMetadata']['agegroup']}}
-                    </td>
-                    <td>
-                        {{item['current']['workerMetadata']['gender']}}
-                    </td>
-                    <td>
-                        <strong>{{item['assignedBy']}}</strong>
-                    </td>
-                    <td>
-                        {{item['fetchData']}}
-                    </td>
-                    <td>
-                        {{item['task']}}
-                    </td>
-                    <td>
-                        {{item['domain']}}
-                    </td>
-                    <td>
-                        {{item['elicitationmethod']}}
-                    </td>
+
                     <td>
                         <button type="button" class="btn btn-primary lexemeview" id="{{item['karyaaccesscode']}}"
                             data-toggle="modal" data-target="#exampleModal">

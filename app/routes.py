@@ -233,25 +233,35 @@ def managespeakermetadata():
         userlogin, current_username)
     currentuserprojectsname = getcurrentuserprojects.getcurrentuserprojects(
         current_username, userprojects)
+    print("line 236 >>>>>>>>>>>> ",currentuserprojectsname)
     activeprojectname = getactiveprojectname.getactiveprojectname(
         current_username, userprojects)
+    print("line 236 >>>>>>>>>>>> ",activeprojectname)
     shareinfo = getuserprojectinfo.getuserprojectinfo(
         userprojects, current_username, activeprojectname)
     allspeakerdetails = speakerdetails.getspeakerdetails(
         activeprojectname, speakermeta)
 
-    lifespeakerdetails = speakermeta.find({"isActive":1, "projectname": activeprojectname, "createdBy": current_username},
-                                                    {
-                                                        "sourceMetadata.lifesourceid":1,
-                                                        "sourceMetadata.name":1,
-                                                        "sourceMetadata.agegroup":1,
-                                                        "sourceMetadata.gender":1,
-                                                        "_id" :0
-                                                        }
-                                                        )
+    # "createdBy": current_username
+    # {"sourceMetadata.lifesourceid":1,"sourceMetadata.name":1,
+    #                                         "sourceMetadata.agegroup":1,"sourceMetadata.gender":1,
+    #                                         "_id" :0}
+
+
+    
+    lifespeakerdetails = speakermeta.find({"isActive":1, "projectname": activeprojectname},
+                                            {"lifesourceid":1,
+                                            "current.sourceMetadata.lifesourceid":1,
+                                            "current.sourceMetadata.name":1,
+                                            "current.sourceMetadata.agegroup":1,
+                                            "current.sourceMetadata.gender":1,
+                                            "_id" :0})
+
+    # print("line 249 >>>>>>>>>>>>>>>>", lifespeakerdetails)
     data_table = []
     for data in lifespeakerdetails:
-        data_table.append(data.items())
+        print("line 256",data)
+        data_table.append(data)
     print(data_table)
 
     return render_template(
@@ -260,7 +270,8 @@ def managespeakermetadata():
         activeprojectname=activeprojectname,
         shareinfo=shareinfo,
         usertype=usertype,
-        data_table = data_table
+        data_table = data_table,
+        count=len(data_table)
     )
 
 # new project route
