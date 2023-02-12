@@ -1237,7 +1237,7 @@
 //      }
 //  });
 
- document.querySelector(
+document.querySelector(
     '[data-action="stop-audio"]'
 ).addEventListener('click', function() {
     console.log('STOP-AUDIO');

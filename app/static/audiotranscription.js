@@ -19,6 +19,11 @@ catch (err) {
     lstUpdatedBy = '';
 }
 
+filePath = JSON.parse(localStorage.getItem('AudioFilePath'));
+getAudiDuration(filePath);
+showBoundaryCount(boundaryCount);
+lastUpdatedBy(lstUpdatedBy)
+
 // console.log(audiowaveformData);
 /**
  * Init & load.
@@ -68,26 +73,6 @@ document.addEventListener('DOMContentLoaded', function () {
         wavesurfer.zoom(Number(this.value));
     };
 
-    // wavesurfer.util
-    //     .fetchFile({
-    //         responseType: 'json',
-    //         url: 'rashomon.json'
-    //     })
-    //     .on('success', function(data) {
-    //         wavesurfer.load(
-    //             'http://www.archive.org/download/mshortworks_001_1202_librivox/msw001_03_rashomon_akutagawa_mt_64kb.mp3',
-    //             data
-    //         );
-    //     });
-
-    /* Regions */
-    // localStorage.removeItem('regions');
-    // localStorage.setItem("regions", JSON.stringify([]));
-    filePath = JSON.parse(localStorage.getItem('AudioFilePath'));
-    getAudiDuration(filePath);
-    showBoundaryCount(boundaryCount);
-    lastUpdatedBy(lstUpdatedBy)
-
     // wavesurfer.load(filePath);
     if (audiowaveformData === '') {
         wavesurfer.load(filePath);
@@ -97,45 +82,30 @@ document.addEventListener('DOMContentLoaded', function () {
         wavesurfer.load(filePath, audiowaveformData);
     }
 
-    wavesurfer.on('ready', function () {
+    wavesurfer.on('ready', function (region) {
 
         wavesurfer.enableDragSelection({
             // color: randomColor(0.1)
-            color: boundaryColor(255, 255, 0, 0.1)
+            color: boundaryColor(255, 0, 0, 0.1),
         });
 
         if (localStorage.regions) {
             // console.log(localStorage.regions)
             loadRegions(JSON.parse(localStorage.regions));
         }
-        //  else {
-        //     // loadRegions(
-        //     //     extractRegions(
-        //     //         wavesurfer.backend.getPeaks(512),
-        //     //         wavesurfer.getDuration()
-        //     //     )
-        //     // );
-        //     fetch('annotations.json')
-        //         .then(r => r.json())
-        //         .then(data => {
-        //             loadRegions(data);
-        //             saveRegions();
-        //         });
-        // }
     });
     wavesurfer.on('region-click', function (region, e) {
-        // region.color = boundaryColor(255, 255, 255, 0.1);
+        console.log(wavesurfer);
+        console.log(region);
         e.stopPropagation();
-        // region.color = boundaryColor(255, 255, 255, 0.1);
         // Play on click, loop on shift click
         e.shiftKey ? region.playLoop() : region.play();
-        // e.shiftKey ? region.play() : region.playLoop();
-        // region.color = boundaryColor(255, 255, 255, 0.1);
     });
     wavesurfer.on('region-click', editAnnotation);
     // wavesurfer.on('region-created', saveRegions);
-    wavesurfer.on('region-updated', saveRegions);
     // wavesurfer.on('region-removed', saveRegions);
+    // wavesurfer.on('region-updated', saveRegions);
+    wavesurfer.on('region-update-end', saveRegions);
     wavesurfer.on('region-in', showNote);
 
     wavesurfer.on('region-play', function (region) {
@@ -187,8 +157,8 @@ document.addEventListener('DOMContentLoaded', function () {
  * Save annotations to localStorage.
  */
 function saveRegions(region) {
-    region.color = boundaryColor(255, 255, 0, 0.1);
-    // console.log('WHERE')
+    // region.color = boundaryColor(255, 255, 0, 0.1);
+    console.log('WHERE')
     localStorage.regions = JSON.stringify(
         Object.keys(wavesurfer.regions.list).map(function (id) {
             let region = wavesurfer.regions.list[id];
@@ -402,43 +372,42 @@ function formOnSubmit(form, region) {
         // document.getElementById("activeSentenceMorphemicBreak").checked = false;
         // rid = region.start.toFixed(2);
         // console.log('formOnSubmit(form, region) form', form)
-        let regions = JSON.parse(localStorage.regions)
-        for (i = 0; i < regions.length; i++) {
-            if (regions[i]['start'] === region.start &&
-                regions[i]['end'] === region.end) {
-                startId = region.start.toString().slice(0, 4).replace('.', '');
-                if (startId === '0') {
-                    startId = '000';
-                }
-                endId = region.end.toString().slice(0, 4).replace('.', '');
-                if (endId === '0') {
-                    endId = '000';
-                }
-                // console.log(startId, endId)
-                rid = startId.concat(endId);
-                // rid = region.start.toString().slice(0, 4).replace('.', '').concat(region.end.toString().slice(0, 4).replace('.', ''));
-                sentence = regions[i]['data']['sentence']
-                sentece = updateSentenceDetailsOnSaveBoundary(rid, sentence, region, form)
-            }
-        }
-        // console.log('formOnSubmit(form, region) sentence', sentence)  
-        // localStorage.setItem("regions", JSON.stringify(regions));
-        // console.log('regions', regions)
-
-        region.update({
-            start: form.elements.start.value,
-            end: form.elements.end.value,
-            data: {
-                // note: form.elements.note.value,
-                sentence: sentence
-            }
-        });
+        saveBoundaryData(region, form);
         // something = window.open("data:text/json," + encodeURIComponent(sentData),
         //                "_blank");
         // something.focus();
         // form.style.opacity = 0;
         transcriptionFormDisplay(form);
     };
+}
+
+function saveBoundaryData(region, form) {
+    console.log(region);
+    let regions = JSON.parse(localStorage.regions)
+    for (i = 0; i < regions.length; i++) {
+        if (regions[i]['start'] === region.start &&
+            regions[i]['end'] === region.end) {
+            startId = region.start.toString().slice(0, 4).replace('.', '');
+            if (startId === '0') {
+                startId = '000';
+            }
+            endId = region.end.toString().slice(0, 4).replace('.', '');
+            if (endId === '0') {
+                endId = '000';
+            }
+            rid = startId.concat(endId);
+            sentence = regions[i]['data']['sentence']
+            sentence = updateSentenceDetailsOnSaveBoundary(rid, sentence, region, form)
+        }
+    }
+    region.update({
+        start: form.elements.start.value,
+        end: form.elements.end.value,
+        data: {
+            // note: form.elements.note.value,
+            sentence: sentence
+        }
+    });
 }
 
 /**
@@ -1005,7 +974,7 @@ function createSentenceForm(formElement, boundaryID) {
                 inpt += '<label for="Transcription_' + transcriptionkey + '">Transcription in ' + transcriptionkey + '</label>' +
                     '<input type="text" class="form-control" id="Transcription_' + transcriptionkey + '"' +
                     'placeholder="Transcription ' + transcriptionkey + '" name="transcription_' + transcriptionkey + '"' +
-                    'value="' + transcriptionvalue + '" required><br>';
+                    'value="' + transcriptionvalue + '" onkeyup="autoSavetranscription(this)" required><br>';
                 // '</div></div>';
                 if (transcriptionkey === firstTranscriptionScript) {
                     // activeprojectform = JSON.parse(localStorage.activeprojectform)
@@ -1561,9 +1530,11 @@ function getAudiDuration(audiFilePath) {
 }
 
 function showBoundaryCount(boundaryCount) {
-    let showBCount = '<span><strong>Boundary Count: ' + boundaryCount + '<strong></span>';
-    // document.getElementById("idaudiometadata").append(showDur);
-    $('#idaudiometadata').append(showBCount);
+    if (boundaryCount !== '') {
+        let showBCount = '<span><strong>Boundary Count: ' + boundaryCount + '<strong></span>';
+        // document.getElementById("idaudiometadata").append(showDur);
+        $('#idaudiometadata').append(showBCount);
+    }
 }
 
 function lastUpdatedBy(lstUpdatedBy) {
@@ -1577,7 +1548,15 @@ function lastUpdatedBy(lstUpdatedBy) {
 }
 
 function autoSavetranscription(transcriptionField) {
-    // console.log(transcriptionField, transcriptionField.id, transcriptionField.value);
+    console.log(wavesurfer, wavesurfer.regions);
+    console.log(transcriptionField, transcriptionField.id, transcriptionField.value);
+    let form = document.forms.edit;
+    let regionId = form.dataset.region;
+    if (regionId) {
+        let region = wavesurfer.regions.list[regionId];
+        console.log(region);
+    }
+
     activeTranscriptionFieldId = transcriptionField.id
     transciptionLang = activeTranscriptionFieldId.split('_')[1]
     activeTranscriptionFieldValue = transcriptionField.value
@@ -1599,17 +1578,7 @@ function autoSavetranscription(transcriptionField) {
     for (let [key, value] of Object.entries(localStorageRegions)) {
         // console.log(key, value)
         if (localStorageRegions[key]['boundaryID'] === rid) {
-            // localStorageRegions.splice(key, 1)
-            // console.log(localStorageRegions[key]);
-            // for (let [rkey, rvalue] of Object.entries(localStorageRegions[key]['data']['sentence'][rid]['transcription'][transciptionLang])) {
-            //     console.log(rkey, rvalue);
-
-            // }
-            // console.log(localStorageRegions[key]['data']['sentence'][rid]['transcription'][transciptionLang])
             localStorageRegions[key]['data']['sentence'][rid]['transcription'][transciptionLang] = activeTranscriptionFieldValue
-            // console.log(localStorageRegions[key]['data']['sentence'][rid]['transcription'][transciptionLang])
-            // console.log(localStorageRegions[key]);
-
             localStorage.setItem("regions", JSON.stringify(localStorageRegions));
         }
     }

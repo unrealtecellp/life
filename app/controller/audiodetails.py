@@ -1193,10 +1193,12 @@ def update_text_grid(mongo, text_grid, new_boundaries, transcription_type, inclu
                 script_name: ""}
             text_grid[transcription_type][boundary_id]['gloss'] = {
                 script_name: ""}
-
-        for langscript_code, script_name in translation_langscripts.items():
-            text_grid[transcription_type][boundary_id]['translation'] = {
-                langscript_code: ""}
+        if (len(translation_langscripts) != 0):
+            for langscript_code, script_name in translation_langscripts.items():
+                text_grid[transcription_type][boundary_id]['translation'] = {
+                    langscript_code: ""}
+        else:
+            text_grid[transcription_type][boundary_id]['translation'] = {}
 
             # text_grid[boundary_id_key+'.transcription'] = ""
 
@@ -1268,24 +1270,28 @@ def get_current_translation_langscripts(mongo):
     current_project_scripts = projectsform.find_one({'projectname': activeprojectname}, {
         'Translation Script': 1, 'Translation Language': 1, '_id': 0})
 
-    translations_langs = current_project_scripts['Translation Language']
-    translation_scripts = current_project_scripts['Translation Script']
+    try:
+        translations_langs = current_project_scripts['Translation Language']
+        translation_scripts = current_project_scripts['Translation Script']
 
-    scriptCodeJSONFilePath = os.path.join(
-        basedir_parent, 'static/json/scriptCode.json')
-    langScriptJSONFilePath = os.path.join(
-        basedir_parent, 'static/json/langScript.json')
+        scriptCodeJSONFilePath = os.path.join(
+            basedir_parent, 'static/json/scriptCode.json')
+        langScriptJSONFilePath = os.path.join(
+            basedir_parent, 'static/json/langScript.json')
 
-    scriptCode = readJSONFile.readJSONFile(scriptCodeJSONFilePath)
-    langScript = readJSONFile.readJSONFile(langScriptJSONFilePath)
+        scriptCode = readJSONFile.readJSONFile(scriptCodeJSONFilePath)
+        langScript = readJSONFile.readJSONFile(langScriptJSONFilePath)
 
-    all_lang_scripts = {}
-    for current_lang, current_script in zip(translations_langs, translation_scripts):
-        current_script_code = scriptCode[current_script]
-        current_language_code = current_lang[0][:3].lower()
-        langscript_code = current_language_code + '-' + current_script_code
-        all_lang_scripts[langscript_code] = langscript_code
+        all_lang_scripts = {}
+        for current_lang, current_script in zip(translations_langs, translation_scripts):
+            current_script_code = scriptCode[current_script]
+            current_language_code = current_lang[0][:3].lower()
+            langscript_code = current_language_code + '-' + current_script_code
+            all_lang_scripts[langscript_code] = langscript_code
         return all_lang_scripts
+    except Exception as error:
+        print(error)
+        return dict()
 
 
 def get_current_transcription_langscripts(mongo):
