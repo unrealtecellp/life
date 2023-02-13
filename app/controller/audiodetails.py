@@ -864,27 +864,46 @@ def savetranscription(transcriptions,
                                })
 
 
-def getaudioprogressreport(projects, transcriptions, activeprojectname, isharedwith):
-    datatoshow = {}
+def getaudioprogressreport(projects,
+                            transcriptions, 
+                            speakerdetails,
+                            activeprojectname,
+                            isharedwith):
+    datatoshow = []
     users_speaker_ids = projects.find_one({'projectname': activeprojectname},
                                           {'_id': 0, 'speakerIds': 1})['speakerIds']
     # print('speaker_ids_1', users_speaker_ids)
     if len(users_speaker_ids) != 0:
         # print('speaker_ids_2', users_speaker_ids)
         for username in isharedwith:
-            datatoshow[username] = {}
+            user_datatoshow = {"01_speakerName": '',
+                                "02_createdBy": '',
+                                "03_assignedTo": '',
+                                "04_totalFiles": '',
+                                "05_completedFiles": '',
+                                "06_remainingFiles": ''}
             if username in users_speaker_ids:
+                user_datatoshow['03_assignedTo'] = username
                 for speakerid in users_speaker_ids[username]:
+                    user_datatoshow['01_speakerName'] = speakerid
+                    user_datatoshow['02_createdBy'] = speakerdetails.find_one(
+                                                            {"projectname": activeprojectname, "lifesourceid": speakerid,},
+                                                            {"_id": 0, "createdBy": 1})['createdBy']
                     total_comments, annotated_comments, remaining_comments = getcommentstats.getcommentstats(projects,
                                                                                                              transcriptions,
                                                                                                              activeprojectname,
                                                                                                              speakerid,
                                                                                                              'audio')
-                    commentstats = [total_comments,
-                                    annotated_comments, remaining_comments]
-                    datatoshow[username][speakerid] = commentstats
+                    # commentstats = [total_comments,annotated_comments, remaining_comments]
+                    # datatoshow[username][speakerid] = commentstats
+                    user_datatoshow['04_totalFiles'] = total_comments
+                    user_datatoshow['05_completedFiles'] = annotated_comments
+                    user_datatoshow['06_remainingFiles'] = remaining_comments
 
-    # print('datatoshow', datatoshow)
+                    datatoshow.append(user_datatoshow)
+
+
+    print('datatoshow', datatoshow)
 
     return datatoshow
 
