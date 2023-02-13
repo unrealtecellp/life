@@ -4356,10 +4356,11 @@ def changespeakerid():
 @app.route('/progressreport', methods=['GET'])
 @login_required
 def progressreport():
-    projects, userprojects, transcriptions = getdbcollections.getdbcollections(mongo,
+    projects, userprojects, transcriptions, speakerdetails = getdbcollections.getdbcollections(mongo,
                                                                                'projects',
                                                                                'userprojects',
-                                                                               'transcriptions')
+                                                                               'transcriptions',
+                                                                               'speakerdetails')
     current_username = getcurrentusername.getcurrentusername()
     activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
                                                                     userprojects)
@@ -4378,6 +4379,7 @@ def progressreport():
         # print('isharedwith_2', isharedwith)
         progressreport = audiodetails.getaudioprogressreport(projects,
                                                                 transcriptions,
+                                                                speakerdetails,
                                                                 activeprojectname, 
                                                                 isharedwith)
 

@@ -72,7 +72,7 @@ def saveaudiofiles(mongo,
                    speakerId,
                    new_audio_file,
                    transcription_type='sentence',
-                   boundary_threshold=0.5,
+                   boundary_threshold=0.3,
                    slice_threshold=0.9,
                    **kwargs):
     """mapping of this function is with the 'uploadaudiofiles' route.
@@ -864,27 +864,46 @@ def savetranscription(transcriptions,
                                })
 
 
-def getaudioprogressreport(projects, transcriptions, activeprojectname, isharedwith):
-    datatoshow = {}
+def getaudioprogressreport(projects,
+                            transcriptions, 
+                            speakerdetails,
+                            activeprojectname,
+                            isharedwith):
+    datatoshow = []
     users_speaker_ids = projects.find_one({'projectname': activeprojectname},
                                           {'_id': 0, 'speakerIds': 1})['speakerIds']
     # print('speaker_ids_1', users_speaker_ids)
     if len(users_speaker_ids) != 0:
         # print('speaker_ids_2', users_speaker_ids)
         for username in isharedwith:
-            datatoshow[username] = {}
+            user_datatoshow = {"01_speakerName": '',
+                                "02_createdBy": '',
+                                "03_assignedTo": '',
+                                "04_totalFiles": '',
+                                "05_completedFiles": '',
+                                "06_remainingFiles": ''}
             if username in users_speaker_ids:
+                user_datatoshow['03_assignedTo'] = username
                 for speakerid in users_speaker_ids[username]:
+                    user_datatoshow['01_speakerName'] = speakerid
+                    user_datatoshow['02_createdBy'] = speakerdetails.find_one(
+                                                            {"projectname": activeprojectname, "lifesourceid": speakerid,},
+                                                            {"_id": 0, "createdBy": 1})['createdBy']
                     total_comments, annotated_comments, remaining_comments = getcommentstats.getcommentstats(projects,
                                                                                                              transcriptions,
                                                                                                              activeprojectname,
                                                                                                              speakerid,
                                                                                                              'audio')
-                    commentstats = [total_comments,
-                                    annotated_comments, remaining_comments]
-                    datatoshow[username][speakerid] = commentstats
+                    # commentstats = [total_comments,annotated_comments, remaining_comments]
+                    # datatoshow[username][speakerid] = commentstats
+                    user_datatoshow['04_totalFiles'] = total_comments
+                    user_datatoshow['05_completedFiles'] = annotated_comments
+                    user_datatoshow['06_remainingFiles'] = remaining_comments
 
-    # print('datatoshow', datatoshow)
+                    datatoshow.append(user_datatoshow)
+
+
+    print('datatoshow', datatoshow)
 
     return datatoshow
 
@@ -1206,10 +1225,12 @@ def update_text_grid(mongo, text_grid, new_boundaries, transcription_type, inclu
                 script_name: ""}
             text_grid[transcription_type][boundary_id]['gloss'] = {
                 script_name: ""}
-
-        for langscript_code, script_name in translation_langscripts.items():
-            text_grid[transcription_type][boundary_id]['translation'] = {
-                langscript_code: ""}
+        if (len(translation_langscripts) != 0):
+            for langscript_code, script_name in translation_langscripts.items():
+                text_grid[transcription_type][boundary_id]['translation'] = {
+                    langscript_code: ""}
+        else:
+            text_grid[transcription_type][boundary_id]['translation'] = {}
 
             # text_grid[boundary_id_key+'.transcription'] = ""
 
@@ -1281,24 +1302,28 @@ def get_current_translation_langscripts(mongo):
     current_project_scripts = projectsform.find_one({'projectname': activeprojectname}, {
         'Translation Script': 1, 'Translation Language': 1, '_id': 0})
 
-    translations_langs = current_project_scripts['Translation Language']
-    translation_scripts = current_project_scripts['Translation Script']
+    try:
+        translations_langs = current_project_scripts['Translation Language']
+        translation_scripts = current_project_scripts['Translation Script']
 
-    scriptCodeJSONFilePath = os.path.join(
-        basedir_parent, 'static/json/scriptCode.json')
-    langScriptJSONFilePath = os.path.join(
-        basedir_parent, 'static/json/langScript.json')
+        scriptCodeJSONFilePath = os.path.join(
+            basedir_parent, 'static/json/scriptCode.json')
+        langScriptJSONFilePath = os.path.join(
+            basedir_parent, 'static/json/langScript.json')
 
-    scriptCode = readJSONFile.readJSONFile(scriptCodeJSONFilePath)
-    langScript = readJSONFile.readJSONFile(langScriptJSONFilePath)
+        scriptCode = readJSONFile.readJSONFile(scriptCodeJSONFilePath)
+        langScript = readJSONFile.readJSONFile(langScriptJSONFilePath)
 
-    all_lang_scripts = {}
-    for current_lang, current_script in zip(translations_langs, translation_scripts):
-        current_script_code = scriptCode[current_script]
-        current_language_code = current_lang[0][:3].lower()
-        langscript_code = current_language_code + '-' + current_script_code
-        all_lang_scripts[langscript_code] = langscript_code
+        all_lang_scripts = {}
+        for current_lang, current_script in zip(translations_langs, translation_scripts):
+            current_script_code = scriptCode[current_script]
+            current_language_code = current_lang[0][:3].lower()
+            langscript_code = current_language_code + '-' + current_script_code
+            all_lang_scripts[langscript_code] = langscript_code
         return all_lang_scripts
+    except Exception as error:
+        print(error)
+        return dict()
 
 
 def get_current_transcription_langscripts(mongo):
