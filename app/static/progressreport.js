@@ -7,7 +7,7 @@ $(document).ready(function() {
             progressreport = data.progressreport
             // console.log('qwaaszxzx');
             if (progressreport !== '') {
-                console.log(progressreport);
+                // console.log(progressreport);
                 progressreporttable = '';
                 count = 0;
                 progressreporttable += '<div class="row"><div class="col-xs-12">';
@@ -16,7 +16,7 @@ $(document).ready(function() {
                                         '<thead><tr>'+
                                         // '<th onclick="sortTable(0)">Id</th>'+
                                         // '<th><input type="checkbox" id="headcheckbox" onchange="checkAllLexeme(this)" name="chk[]" checked/>&nbsp;</th>'+
-                                        '<th class="text-center" onclick="sortTable(0)">Speaker Name</th>'+
+                                        '<th class="text-center" onclick="sortTable(0)">Speaker ID</th>'+
                                         '<th class="text-center" onclick="sortTable(1)">Created By</th>'+
                                         '<th class="text-center" onclick="sortTable(2)">Assigned To</th>'+
                                         '<th class="text-center" onclick="sortTable(3)">Total Files</th>'+

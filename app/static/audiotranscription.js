@@ -342,8 +342,8 @@ function editAnnotation(region) {
     //     createSentenceForm(form, region);
     //     // console.log('true true');
     // }
-    // formOnSubmit(form, region)
-    saveBoundaryData(region, form)
+    formOnSubmit(form, region)
+    // saveBoundaryData(region, form)
     // form.onreset = function () {
     //     // form.style.opacity = 0;
     //     console.log('form reset');
