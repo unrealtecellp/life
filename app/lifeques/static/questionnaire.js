@@ -385,7 +385,7 @@ function createquesform(quesprojectform) {
                     'onclick="collapsePrompt('+testpromptTypeKey+')">'+
                     '<span class="glyphicon glyphicon-chevron-down s'+testpromptTypeKey+'" aria-hidden="true"></span>'+
                     '</button></legend>';
-        // console.log(testpromptTypeKey, testpromptTypeValue);
+        console.log(testpromptTypeKey, testpromptTypeValue);
         // console.log(key, elevalue, eletype, quesdatavalue);
         langData = testquesdata['prompt']['content'][testpromptTypeKey]
         langText = testquesdata['prompt']['content'][testpromptTypeKey]['text']
