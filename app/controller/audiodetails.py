@@ -876,7 +876,7 @@ def getaudioprogressreport(projects,
     if len(users_speaker_ids) != 0:
         # print('speaker_ids_2', users_speaker_ids)
         for username in isharedwith:
-            user_datatoshow = {"01_speakerName": '',
+            user_datatoshow = {"01_speakerId": '',
                                 "02_createdBy": '',
                                 "03_assignedTo": '',
                                 "04_totalFiles": '',
@@ -885,7 +885,7 @@ def getaudioprogressreport(projects,
             if username in users_speaker_ids:
                 user_datatoshow['03_assignedTo'] = username
                 for speakerid in users_speaker_ids[username]:
-                    user_datatoshow['01_speakerName'] = speakerid
+                    user_datatoshow['01_speakerId'] = speakerid
                     user_datatoshow['02_createdBy'] = speakerdetails.find_one(
                                                             {"projectname": activeprojectname, "lifesourceid": speakerid,},
                                                             {"_id": 0, "createdBy": 1})['createdBy']
@@ -903,7 +903,7 @@ def getaudioprogressreport(projects,
                     datatoshow.append(user_datatoshow)
 
 
-    print('datatoshow', datatoshow)
+    # print('datatoshow', datatoshow)
 
     return datatoshow
 
