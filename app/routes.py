@@ -353,12 +353,14 @@ def enternewsentences():
                                                      current_user.username)
             # print(audio_id)
             transcription_details = audiodetails.getaudiofiletranscription(
-                                                    transcriptions, audio_id)
-            
+                transcriptions, audio_id)
+
             audio_metadata = audiodetails.getaudiometadata(transcriptions, audio_id)
             # print('audio_metadata')
             # pprint(audio_metadata)
             activeprojectform['audioMetadata'] = audio_metadata['audioMetadata']
+            last_updated_by = audiodetails.lastupdatedby(transcriptions, audio_id)
+            activeprojectform['lastUpdatedBy'] = last_updated_by['updatedBy']
             file_path = audiodetails.getaudiofilefromfs(mongo,
                                                         basedir,
                                                         audio_id,
@@ -367,10 +369,10 @@ def enternewsentences():
             activeprojectform['transcriptionDetails'] = transcription_details
             # print(transcription_details)
             activeprojectform['AudioFilePath'] = file_path
-            transcription_regions, gloss, pos = audiodetails.getaudiotranscriptiondetails(
-                transcriptions, audio_id)
+            transcription_regions, gloss, pos, boundary_count = audiodetails.getaudiotranscriptiondetails(transcriptions, audio_id)
             activeprojectform['transcriptionRegions'] = transcription_regions
             # print(transcription_regions)
+            activeprojectform['boundaryCount'] = boundary_count
             if (len(gloss) != 0):
                 activeprojectform['glossDetails'] = gloss
             if (len(pos) != 0):
@@ -453,16 +455,16 @@ def savetranscription():
                                    transcription_regions,
                                    lastActiveId,
                                    activespeakerid)
-    latest_audio_id = audiodetails.getnewaudioid(projects,
-                                                 activeprojectname,
-                                                 lastActiveId,
-                                                 activespeakerid,
-                                                 'next')
-    audiodetails.updatelatestaudioid(projects,
-                                     activeprojectname,
-                                     latest_audio_id,
-                                     current_user.username,
-                                     activespeakerid)
+    # latest_audio_id = audiodetails.getnewaudioid(projects,
+    #                                              activeprojectname,
+    #                                              lastActiveId,
+    #                                              activespeakerid,
+    #                                              'next')
+    # audiodetails.updatelatestaudioid(projects,
+    #                                  activeprojectname,
+    #                                  latest_audio_id,
+    #                                  current_user.username,
+    #                                  activespeakerid)
     sentenceFieldId = ''
     gloss = ''
     sentence = ''
@@ -3952,7 +3954,7 @@ def generateadmin(userlogin):
     if len(mongo.db.list_collection_names()) == 0:
         insertadmin(userlogin)
     else:
-        admin_login = userlogin.find_one({'isSuperAdmin': 1}, {
+        admin_login = userlogin.find_one({'username': ADMIN_USER}, {
                                          'password': 1, '_id': 0})
         if admin_login == None:
             insertadmin(userlogin)
@@ -4328,13 +4330,14 @@ def changespeakerid():
 @app.route('/progressreport', methods=['GET'])
 @login_required
 def progressreport():
-    projects, userprojects, transcriptions = getdbcollections.getdbcollections(mongo,
+    projects, userprojects, transcriptions, speakerdetails = getdbcollections.getdbcollections(mongo,
                                                                                'projects',
                                                                                'userprojects',
-                                                                               'transcriptions')
+                                                                               'transcriptions',
+                                                                               'speakerdetails')
     current_username = getcurrentusername.getcurrentusername()
-    activeprojectname = getactiveprojectname.getactiveprojectname(
-        current_username, userprojects)
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                    userprojects)
 
     progressreport = ''
 
@@ -4348,8 +4351,11 @@ def progressreport():
         # print('isharedwith', isharedwith)
         isharedwith.append(current_username)
         # print('isharedwith_2', isharedwith)
-        progressreport = audiodetails.getaudioprogressreport(
-            projects, transcriptions, activeprojectname, isharedwith)
+        progressreport = audiodetails.getaudioprogressreport(projects,
+                                                                transcriptions,
+                                                                speakerdetails,
+                                                                activeprojectname, 
+                                                                isharedwith)
 
     # print(progressreport)
 

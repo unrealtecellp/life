@@ -1,894 +1,353 @@
-<<<<<<< HEAD
-quesId	Q_Id	prompt.Domain	prompt.Elicitation Method	prompt.content.English-Latin.text.000000.startindex	prompt.content.English-Latin.text.000000.endindex	prompt.content.English-Latin.text.000000.textspan.Latin	prompt.content.Hindi-Devanagari.text.000000.startindex	prompt.content.Hindi-Devanagari.text.000000.endindex	prompt.content.Hindi-Devanagari.text.000000.textspan.Devanagari
-	ED-01	[Education]	Narration			How do your community view people who attend school and who does not?			आपका समुदाय उन लोगों को कैसे देखता है जो स्कूल जाते हैं और जो नहीं जाते?
-	ED-02	[Education]	Narration			Can you tell us something about how formal education brought changes into your community?			क्या आप हमें इस बारे में कुछ बता सकते हैं कि औपचारिक शिक्षा ने आपके समुदाय में कैसे बदलाव लाए?
-	ED-03	[Education]	Narration			Can you tell us about the changes you witnessed in the educational institutions in your area as you grew up?			क्या आप हमें उन बदलाबों के बारे में बता सकते हैं जो आपने बड़े होने पर शैक्षणिक संस्थानों में देखे थे?
-	ED-04	[Education]	Narration			What are the state of schools and colleges when you were young and how are they now? 			जब आप छोटे थे तो स्कूलों और कॉलेजों की क्या स्थिति थी और अब वे कैसे हैं?
-	ED-05	[Education]	Narration			Can you tell us something about the formal/indigenous education system of your state/community?			क्या आप हमें अपने राज्य या समुदाय की औपचारिक या स्वदेशी शिक्षा प्रणाली के बारे में कुछ बता सकते हैं?
-	ED-06	[Education]	Narration			How is your formal/indigenous education system valuable to the present society?			आपकी औपचारिक या स्वदेशी शिक्षा प्रणाली वर्तमान समाज के लिए किस प्रकार से मूल्यवान है?
-	ED-07	[Education]	Narration			How do we evaluate your formal/indigenous education system?			हम आपकी औपचारिक या स्वदेशी शिक्षा प्रणाली का मूल्यांकन कैसे करते हैं?
-	ED-08	[Education]	Narration			How should we improve our education system?			हमें अपनी शिक्षा प्रणाली में सुधार कैसे करना चाहिए?
-	ED-09	[Education]	Narration			How do you passed indigenous education system to the next generation?			आपने अगली पीढ़ी को स्वदेशी शिक्षा प्रणाली कैसे दी?
-	ED-10	[Education]	Narration			How do you inspired by educated / achievers of your community?			आप अपने समुदाय के शिक्षित या विजेताओं से कैसे प्रेरित होते हैं?
-	ED-11	[Education]	Narration			How does education system promote peace and harmony in your community?			शिक्षा प्रणाली आपके समुदाय में शांति और सद्भाव को कैसे बढ़ावा देती है?
-	ED-12	[Education]	Narration			Tell us in detail which subjects do you think are going to be useful for your future?			हमें विस्तार से बताएं कि आपके विचार से कौन से विषय आपके भविष्य के लिए उपयोगी होने वाले हैं?
-	ED-13	[Education]	Narration			How far does the education system play in removing poverty?			गरीबी दूर करने में शिक्षा व्यवस्था की कितनी भूमिका है?
-	ED-14	[Education]	Narration			What do you like and what do you dislike about homework assignments?			होमवर्क असाइनमेंटस के बारे में आपको क्या पसंद है और क्या नहीं पसंद है?
-	ED-15	[Education]	Narration			What can you do to learn more effectively?			अधिक प्रभावी ढंग से सीखने के लिए आप क्या कर सकते हैं?
-	ED-16	[Education]	Narration			What is the role of education in promoting unity in your community?			आपके समुदाय में एकता को बढ़ावा देने में शिक्षा की क्या भूमिका है?
-	ED-17	[Education]	Narration			Tell us something about the outcomes of educational system based on innovative or creativity?			अभिनव या रचनात्मकता पर आधारित शिक्षा प्रणाली के परिणामों के बारे में कुछ बताएं?
-	ED-18	[Education]	Narration			What motivates more: good or bad marks? Why?			क्या अधिक प्रेरित करता है: अच्छे या बुरे अंक? क्यों?
-	ED-19	[Education]	Narration			Do we consider that education focused only on indigenous and why?			क्या हम मानते हैं कि शिक्षा केवल स्वदेशी पर केंद्रित है और क्यों?
-	ED-20	[Education]	Narration			What is the sole purpose of education?			शिक्षा का एकमात्र उद्देश्य क्या है?
-	ED-21	[Education]	Narration			Why is sex education considered to be taboo in rural areas?			ग्रामीण क्षेत्रों में यौन शिक्षा को वर्जित क्यों माना जाता है?
-	ED-22	[Education]	Narration			What motivates young people to learn and develop their skills?			युवाओं को अपने कौशल को सीखने और विकसित करने के लिए क्या प्रेरित करता है?
-	ED-23	[Education]	Narration			What role does your family play in education?			आपका परिवार शिक्षा में क्या भूमिका निभाता है?
-	ED-24	[Education]	Narration			How one world views influence the type and quality of a persons education?			एक विश्व दृष्टिकोण किसी व्यक्ति की शिक्षा के प्रकार और गुणवत्ता को कैसे प्रभावित करता है?
-	ED-25	[Education]	Narration			Why the first board exam considered to be one of the most important exam?			पहली बोर्ड परीक्षा को सबसे महत्वपूर्ण परीक्षाओं में से एक क्यों माना जाता है?
-	ED-26	[Education]	Narration			Which activities in the classroom do you enjoy the most?			कक्षा में आपको कौन सी गतिविधियाँ सबसे अधिक पसंद हैं?
-	ED-27	[Education]	Narration			What are the some education achievements you are proud of?			ऐसी कौन सी शिक्षा उपलब्धियां हैं जिन पर आपको गर्व है?
-	ED-28	[Education]	Narration			How has education impacted your quality of life?			शिक्षा ने आपके जीवन की गुणवत्ता को कैसे प्रभावित किया है?
-	ED-29	[Education]	Narration			In what way has education improved your way of thinking and decision making?			शिक्षा ने किस प्रकार आपके सोचने और निर्णय लेने के तरीके में सुधार किया है?
-	ED-30	[Education]	Narration			How does education play a role in income generation?			आय सृजन में शिक्षा किस तरह भूमिका निभाती है?
-	ED-31	[Education]	Narration			What are the impact of smartphone and internet in educational system?			शिक्षा प्रणाली में स्मार्टफोन और इंटरनेट का क्या प्रभाव है?
-	ED-32	[Education]	Narration			 Tell us something about how people learn to read and write in school?			स्कूल में लोग पढ़ना और लिखना कैसे सीखते हैं, इसके बारे में कुछ बताएं?
-	ED-33	[Education]	Narration			Which subject do you find most challenging in school?			स्कूल में आपको कौन सा विषय सबसे चुनौतीपूर्ण लगता है?
-	ED-34	[Education]	Narration			What things children should learn from school?			बच्चों को स्कूल से कौन सी चीजें सीखनी चाहिए?
-	ED-35	[Education]	Narration			Where are the best schools and colleges located in your region? Why are they considered good? What made them better than others? 			आपके क्षेत्र में सबसे अच्छे स्कूल और कॉलेज कहाँ स्थित हैं? उन्हें अच्छा क्यों माना जाता है? किस बात ने उन्हें दूसरों से बेहतर बनाया?
-	ED-36	[Education]	Narration			What are the provisions for sports and physical activities in the school of your areas?			आपके क्षेत्र के स्कूल में खेलकूद और शारीरिक गतिविधियों के लिए क्या प्रावधान हैं?
-	ED-37	[Education]	Narration			What role do you think government should play in education?			आपको क्या लगता है कि सरकार को शिक्षा में क्या भूमिका निभानी चाहिए?
-	ED-38	[Education]	Narration			What are the problems faced by children when they go to Mother tongue medium school?			मातृभाषा माध्यम स्कूल में जाने पर बच्चों को किन समस्याओं का सामना करना पड़ता है?
-	ED-39	[Education]	Narration			What are the life skills that students should learn from schools and colleges? 			छात्रों को स्कूलों और कॉलेजों से कौन से जीवन कौशल सीखने चाहिए?
-	ED-40	[Education]	Narration			What are the problems faced by children when they go to English medium school?			अंग्रेजी माध्यम के स्कूल जाने पर बच्चों को किन समस्याओं का सामना करना पड़ता है?
-	ED-41	[Education]	Narration			How do we ensure those without privilege have equal access to quality education and opportunities?			हम यह कैसे सुनिश्चित करते हैं कि बिना विशेषाधिकार वाले लोगों की गुणवत्तापूर्ण शिक्षा और अवसरों तक समान पहुंच हो?
-	ED-42	[Education]	Narration			how do you think school based education and life skill learnings are related to each other?			आपको क्या लगता है कि स्कूल आधारित शिक्षा और जीवन कौशल सीखने का एक दूसरे से क्या संबंध है?
-	ED-43	[Education]	Narration			how does school education help to develop social skills?			स्कूली शिक्षा सामाजिक कौशल विकसित करने में कैसे मदद करती है?
-	ED-44	[Education]	Narration			how does school education help in shaping the life of a child?			स्कूली शिक्षा बच्चे के जीवन को आकार देने में कैसे मदद करती है?
-	ED-45	[Education]	Narration			What qualities do you expect an educated individual should have?			आप एक शिक्षित व्यक्ति में किन गुणों की अपेक्षा करते हैं?
-	ED-46	[Education]	Narration			Give merits and demerits of govt. school and private school? 			सरकारी स्कूल और निजी स्कूल के गुण और दोष बताएं?
-	ED-47	[Education]	Narration			why should we include local language (MIL) as a part of cirriculum till doctoral?			हमें डॉक्टरेट तक पाठ्यक्रम के एक भाग के रूप में स्थानीय भाषा (MIL) को क्यों शामिल करना चाहिए?
-	ED-48	[Education]	Narration			how does including local language (MIL) in the curriculum helps in preserving the culture and identity?			पाठ्यचर्या में स्थानीय भाषा (MIL) को शामिल करने से संस्कृति और पहचान को बनाए रखने में कैसे मदद मिलती है?
-	ED-51	[Education]	Narration			what is the best way to preserve our local languages and culture?			हमारी स्थानीय भाषा और संस्कृति को संरक्षित करने का सबसे अच्छा तरीका क्या है?
-	ED-52	[Education]	Narration			how did education help in busting covid myths during the pandamic?			महामारी के दौरान कोविड मिथकों को खत्म करने में शिक्षा ने कैसे मदद की?
-	ED-54	[Education]	Narration			What is your idea on the New educational Policy?			नई शिक्षा नीति पर आपका क्या विचार है?
-	ED-56	[Education]	Narration			Tell us something about the impact of Covid-19 on education in your community?			अपने समुदाय में शिक्षा पर कोविड -19 के प्रभाव के बारे में कुछ बताएं?
-	ED-61	[Education]	Narration			What are the advantages of a multilingual classroom? 			बहुभाषी कक्षा के क्या लाभ हैं?
-	ED-62	[Education]	Narration			Tell us some special features about your school?			अपने स्कूल के बारे में कुछ खास बातें बताएं?
-	ED-63	[Education]	Narration			What changes have happened in your school in the last few years?			पिछले कुछ वर्षों में आपके विद्यालय में क्या परिवर्तन हुए हैं?
-	ED-64	[Education]	Narration			Describe a parent teacher meeting.			अभिभावक शिक्षक की बैठक के बारे में बताएं।
-	ED-65	[Education]	Narration			How does the school serve or contribute to the community?			विद्यालय समुदाय की सेवा या योगदान कैसे करता है?
-	ED-66	[Education]	Narration			how are teachers encouraged to reflect on their classroom practice and how does it affect children positively and negatively?			शिक्षकों को उनके कक्षा अभ्यास पर चिंतन करने के लिए कैसे प्रोत्साहित किया जाता है और यह बच्चों को सकारात्मक और नकारात्मक कैसे प्रभावित करता है?
-	ED-67	[Education]	Narration			Tell us something about the changes you saw in your school or colleges as you grew up?			बड़े होने पर आपने अपने स्कूल या कॉलेजों में जो बदलाव देखे, उनके बारे में कुछ बताएं?
-	ED-69	[Education]	Narration			How are teachers recognized and appreciated for there contributions? 			शिक्षकों को उनके योगदान के लिए कैसे पहचाना और सराहा जाता है?
-	ED-70	[Education]	Narration			Tell us something about your colleague/staff in schools and colleges?			स्कूल और कॉलेज में अपने सहयोगी/स्टाफ के बारे में कुछ बताएं?
-	ED-71	[Education]	Narration			Tell us something about the education system of your state/community?			अपने राज्य/समुदाय की शिक्षा प्रणाली के बारे में कुछ बताएं?
-	ED-72	[Education]	Narration			what are the differences between local language schools and english medium schools?			स्थानीय भाषा के स्कूलों और अंग्रेजी माध्यम के स्कूलों में क्या अंतर हैं?
-	ED-73	[Education]	Narration			What are the official work assigned to teachers other than teaching?			शिक्षकों को शिक्षण के अलावा अन्य कौन से आधिकारिक काम सौंपे जाते हैं?
-	ED-74	[Education]	Narration			Tell us something about the advantages and disadvantages of exams?			परीक्षा के फायदे और नुकसान के बारे में कुछ बताएं?
-	ED-76	[Education]	Narration			What are the advantages and disadvantages of western based education system and indigenous cultural value system?			पश्चिमी आधारित शिक्षा प्रणाली और स्वदेशी सांस्कृतिक मूल्य प्रणाली के फायदे और नुकसान क्या हैं?
-	ED-77	[Education]	Narration			what kind of improvement does your state needs for the education of the differently abled persons?			आपके राज्य को निःशक्तजनों की शिक्षा के लिए किस प्रकार के सुधार की आवश्यकता है?
-	ED-78	[Education]	Narration			what role should a teacher play in a student's life?			एक शिक्षक को एक छात्र के जीवन में क्या भूमिका निभानी चाहिए?
-	ED-80	[Education]	Narration			How should teachers talk to children in school? 			शिक्षकों को स्कूल में बच्चों से कैसे बात करनी चाहिए?
-	ED-81	[Education]	Narration			How should children be reprimanded for their mistakes in the school?			बच्चों को स्कूल में उनकी गलतियों के लिए कैसे फटकार लगाई जानी चाहिए?
-	ED-82	[Education]	Narration			What are your view on coaching centres and private tutions?			कोचिंग सेंटर और निजी ट्यूशन पर आपका क्या विचार है?
-	ED-83	[Education]	Narration			What are the impact of smartphone and internet in educational domain?			शैक्षिक क्षेत्र में स्मार्टफोन और इंटरनेट का क्या प्रभाव है?
-	ED-84	[Education]	Narration			What makes a ‘good day’ at school?			स्कूल में क्या 'अच्छा दिन' बनाता है?
-	ED-85	[Education]	Narration			How do you celebrate 15th August in your school?			आप अपने विद्यालय में 15 अगस्त कैसे मनाते हैं?
-	ED-86	[Education]	Narration			What do you like about teaching as a job?			नौकरी के रूप में पढ़ाने के बारे में आपको क्या पसंद है?
-	ED-87	[Education]	Narration			How does technology make teaching simple or difficult?			तकनीकी शिक्षण को सरल या कठिन कैसे बनाती है?
-	ED-88	[Education]	Narration			What are your opinions on mid day meal?			मिड डे मील पर आपकी क्या राय है?
-	ED-90	[Education]	Narration			What differences do you see in students before break and after the break?			ब्रेक से पहले और ब्रेक के बाद आप छात्रों में क्या अंतर देखते हैं?
-	ED-92	[Education]	Narration			 Tell us something about how people learn?			लोग कैसे सीखते हैं इसके बारे में कुछ बताएं?
-	ED-94	[Education]	Narration			What are the qualities that people look for in teachers?			लोग शिक्षकों में कौन से गुण देखते हैं?
-	ED-95	[Education]	Narration			What should people learn after they have become adults?			वयस्क होने के बाद लोगों को क्या सीखना चाहिए?
-	ED-97	[Education]	Narration			What do you feel the a good learning environment would be?			आपको क्या लगता है कि सीखने का एक अच्छा माहौल क्या होगा?
-	ED-100	[Education]	Narration			What according to you is a brilliant student?			आपके अनुसार मेधावी छात्र क्या है?
-	ED-102	[Education]	Narration			What are the merits and demerits of offline and online classes? ?			ऑफलाइन और ऑनलाइन कक्षाओं के गुण और दोष क्या हैं?
-	ED-104	[Education]	Narration			Why should we rely on educational imformation available on internet?			हमें इंटरनेट पर उपलब्ध शैक्षिक जानकारी पर क्यों भरोसा करना चाहिए?
-	ED-106	[Education]	Narration			According to you what is the purpose of teaching maths to students?			आपके अनुसार विद्यार्थियों को गणित पढ़ाने का उद्देश्य क्या है?
-	ED-107	[Education]	Narration			According to you what is the purpose of teaching English to students?			आपके अनुसार छात्रों को अंग्रेजी पढ़ाने का उद्देश्य क्या है?
-	ED-108	[Education]	Narration			According to you what is the purpose of teaching social science to students?			आपके अनुसार छात्रों को सामाजिक विज्ञान पढ़ाने का उद्देश्य क्या है?
-	ED-109	[Education]	Narration			According to you what is the purpose of teaching science to students?			आपके अनुसार विद्यार्थियों को विज्ञान पढ़ाने का उद्देश्य क्या है?
-	ED-110	[Education]	Narration			In addition to teaching, what other kinds of activities do you do in school?			आप स्कूल में पढ़ाने के अलावा और किस तरह की गतिविधियाँ करते हैं?
-	ED-111	[Education]	Narration			How is training different from learning?			प्रशिक्षण किस प्रकार सीखने से भिन्न है?
-	ED-114	[Education]	Narration			Tell us something about the criteria and process of admitting new students in school and college.			स्कूल और कॉलेज में नए छात्रों के प्रवेश के मानदंड और प्रक्रिया के बारे में कुछ बताएं।
-	ED-117	[Education]	Narration			What are three things that you can change about your class if you could?			यदि आप कर सकते हैं तो आप अपनी कक्षा के बारे में कौन सी तीन चीजें बदल सकते हैं?
-	ED-118	[Education]	Narration			How teachers should help the students who are weak in studies?			जो छात्र पढ़ाई में कमजोर हैं, उनकी मदद शिक्षकों को कैसे करनी चाहिए?
-	ED-119	[Education]	Narration			How important is face-face communication for you while Teaching and learning?			पढ़ाने और सीखने के दौरान आपके लिए आमने सामने का संवाद कितना महत्वपूर्ण है?
-	ED-120	[Education]	Narration			How difficult was teaching during pandemic?			महामारी के दौरान पढ़ाना कितना मुश्किल था?
-	ED-121	[Education]	Narration			How was your experience of teaching/learning through internet as compared to teaching at school?			स्कूल में पढ़ाने की तुलना में इंटरनेट के माध्यम से पढ़ाने/सीखने का आपका अनुभव कैसा रहा?
-	ED-125	[Education]	Narration			What do you like most and least about class discussions and/or small group work?			कक्षा में चर्चा और/या छोटे समूह में काम के बारे में आपको सबसे अधिक और कम से कम क्या पसंद है?
-	ED-128	[Education]	Narration			What kinds of tools and equipments are used in your school for teaching? What are the usage of these tools and equipments?			आपके विद्यालय में शिक्षण के लिए किस प्रकार के उपकरणों का प्रयोग किया जाता है? इन उपकरणों का क्या प्रयोग है?
-	ED-131	[Education]	Narration			Tell us something about the role of Teachers, Principals, headmaster and other staff member in school?			स्कूल में शिक्षक, प्रधानाध्यापक, हेडमास्टर और अन्य स्टाफ सदस्य की भूमिका के बारे में कुछ बताएं?
-	ED-137	[Education]	Narration			Tell us something about your friends in schools and colleges?			स्कूल और कॉलेज में अपने दोस्तों के बारे में कुछ बताएं?
-	ED-138	[Education]	Narration			What role does your family play in your educations?			आपका परिवार आपकी शिक्षा में क्या भूमिका निभाता है?
-	ED-142	[Education]	Narration			What has education taught you in your life as you grew up?			बड़े होने पर शिक्षा ने आपको अपने जीवन में क्या सिखाया है?
-	ED-144	[Education]	Narration			In what way language plays an important role in education? (in the sense teaching in local dialect or english)			शिक्षा में भाषा किस प्रकार महत्वपूर्ण भूमिका निभाती है? (स्थानीय बोली या अंग्रेजी में अध्यापन के अर्थ में)
-	ED-146	[Education]	Narration			Why did you choose the subject/degree you took as a student?			आपने एक छात्र के रूप में जो विषय/डिग्री ली थी, उसे आपने क्यों चुना?
-	ED-148	[Education]	Narration			What do you want to learn about in shool/college?			आप स्कूल/कॉलेज में क्या सीखना चाहते हैं?
-	ED-152	[Education]	Narration			What are the pros and cons of using internet? How far has it effected in your studies/productivity?			इंटरनेट का प्रयोग करने के फायदे और नुकसान क्या हैं? आपके अध्ययन/उत्पादकता पर इसका कितना प्रभाव पड़ा है?
-	ED-160	[Education]	Narration			Why are you being educated?			आपको शिक्षित क्यों किया जा रहा है?
-	ED-162	[Education]	Narration			How does your religion affect your education life?			आपका धर्म आपके शिक्षा जीवन को कैसे प्रभावित करता है?
-	ED-163	[Education]	Narration			How many languages can you speak? Tell us how do you learn each language?			आप कितनी भाषाएं बोल सकते हैं? हमें बताएं कि आप प्रत्येक भाषा कैसे सीखते हैं?
-	ED-164	[Education]	Narration			How does the family’s financial situation affect the education of a student?			परिवार की आर्थिक स्थिति विद्यार्थी की शिक्षा को किस प्रकार प्रभावित करती है?
-	ED-167	[Education]	Narration			Which activities in class/school do you enjoy the most?			कक्षा/विद्यालय में आपको कौन सी गतिविधियों में सबसे अधिक आनंद आता है?
-	ED-168	[Education]	Narration			What kind of sports do you play in school? Do you think that the school provides you with adequate sports facilities?			आप स्कूल में किस तरह के खेल खेलते हैं? क्या आपको लगता है कि स्कूल आपको पर्याप्त खेल सुविधाएं प्रदान करता है?
-	ED-169	[Education]	Narration			How do you go to school? Tell us about your daily morning routine till you reach school			आप स्कूल कैसे जाते हैं? स्कूल पहुंचने तक अपनी दैनिक सुबह की दिनचर्या के बारे में बताएं
-	ED-172	[Education]	Narration			What are your plans for your future?			आपके भविष्य के लिए आपकी क्या योजनाएं हैं?
-	AG_1	[Agriculture]	Narration			What kinds of crops are grown by the people of your community?			आपके समाज के लोग किस प्रकार की फसलें उगाते हैं?
-	AG_2	[Agriculture]	Narration			What are the people who grow crops called? Do they only grow crops or are they engaged in other activities as well? What kind of other activities are they engaged in?			फसल उगाने वाले लोगों को क्या कहा जाता है? क्या वे केवल फसल उगाते हैं या वे अन्य गतिविधियों में भी लगे हुए हैं? वे किस तरह की अन्य गतिविधियों में लगे हुए हैं?
-	AG_3	[Agriculture]	Narration			Tell the names of at least 5 vegetables that are grown in your community			अपने समाज में उगाई जाने वाली कम से कम 5 सब्जियों के नाम बताइए?
-	AG_4	[Agriculture]	Narration			In which months / seasons are these vegetables grown?			ये सब्जियां किन महीनों / मौसमों में उगाई जाती हैं?
-	AG_5	[Agriculture]	Narration			What is the process of growing these vegetables?			इन सब्जियों को उगाने की प्रक्रिया क्या है?
-	AG_6	[Agriculture]	Narration			How long do they take to mature?			उन्हें तैयार होने में कितना समय लगता है?
-	AG_7	[Agriculture]	Narration			What kinds of special protection / care do they need (such as use of insecticide, pesticide or other such measures)?			उन्हें किस प्रकार की विशेष सुरक्षा / देखभाल की आवश्यकता है (जैसे कीटनाशक या ऐसे अन्य उपायों का उपयोग)?
-	AG_8	[Agriculture]	Narration			How are they sold to other people?			वे अन्य लोगों को कैसे बेचे जाते हैं?
-	AG_9	[Agriculture]	Narration			How are these cooked and eaten?			इन्हें कैसे पकाया और खाया जाता है?
-	AG_10	[Agriculture]	Narration			Tell the names of at least 5 fruits that are grown in your community			अपने समाज में उगाए जाने वाले कम से कम 5 फलों के नाम बताइए?
-	AG_11	[Agriculture]	Narration			In which months / seasons are these fruits grown?			ये फल किन महीनों / मौसमों में उगाए जाते हैं?
-	AG_12	[Agriculture]	Narration			What is the process of growing these fruits?			इन फलों को उगाने की प्रक्रिया क्या है?
-	AG_13	[Agriculture]	Narration			How long do they take to mature?			उन्हें तैयार होने में कितना समय लगता है?
-	AG_14	[Agriculture]	Narration			What kinds of special protection / care do they need (such as use of insecticide, pesticide or other such measures)?			उन्हें किस प्रकार की विशेष सुरक्षा / देखभाल की आवश्यकता है (जैसे कीटनाशक या ऐसे अन्य उपायों का उपयोग)?
-	AG_15	[Agriculture]	Narration			How are they sold to other people?			वे अन्य लोगों को कैसे बेचे जाते हैं?
-	AG_16	[Agriculture]	Narration			How are these cooked and eaten?			इन्हें कैसे पकाया और खाया जाता है?
-	AG_17	[Agriculture]	Narration			Tell the names of 2-3 cereals / grains that are grown in your community			अपने समाज में उगाए जाने वाले 2-3 अनाजों के नाम बताइए?
-	AG_18	[Agriculture]	Narration			In which months / seasons are these cereals/grains grown?			ये अनाज किन महीनों / मौसमों में उगाए जाते हैं?
-	AG_19	[Agriculture]	Narration			What is the process of growing these cereals/grains?			इन अनाजों को उगाने की प्रक्रिया क्या है?
-	AG_20	[Agriculture]	Narration			How long do they take to mature?			उन्हें तैयार होने में कितना समय लगता है?
-	AG_21	[Agriculture]	Narration			What kinds of special protection / care do they need (such as use of insecticide, pesticide or other such measures)?			उन्हें किस प्रकार की विशेष सुरक्षा / देखभाल की आवश्यकता है (जैसे कीटनाशक या ऐसे अन्य उपायों का उपयोग)?
-	AG_22	[Agriculture]	Narration			How are they sold to other people?			वे अन्य लोगों को कैसे बेचे जाते हैं?
-	AG_23	[Agriculture]	Narration			How are these cooked and eaten?			इन्हें कैसे पकाया और खाया जाता है?
-	AG_24	[Agriculture]	Narration			Tell the names of 2-3 other crops that are grown in your community			अपने समाज में उगाई जाने वाली 2-3 अन्य फसलों के नाम बताएं
-	AG_25	[Agriculture]	Narration			In which months / seasons are these crops grown?			ये फसलें किन महीनों / मौसमों में उगाई जाती हैं?
-	AG_26	[Agriculture]	Narration			What is the process of growing these crops?			इन फसलों को उगाने की प्रक्रिया क्या है?
-	AG_27	[Agriculture]	Narration			How long do they take to mature?			उन्हें तैयार होने में कितना समय लगता है?
-	AG_28	[Agriculture]	Narration			What kinds of special protection / care do they need (such as use of insecticide, pesticide or other such measures)?			उन्हें किस प्रकार की विशेष सुरक्षा / देखभाल की आवश्यकता है (जैसे कीटनाशक या ऐसे अन्य उपायों का उपयोग)?
-	AG_29	[Agriculture]	Narration			How are they sold to other people?			वे अन्य लोगों को कैसे बेचे जाते हैं?
-	AG_30	[Agriculture]	Narration			How are these cooked and eaten?			इन्हें कैसे पकाया और खाया जाता है?
-	AG_31	[Agriculture]	Narration			Tell the names of at least 5 trees that are grown in your community			अपने समाज में उगाए गए कम से कम 5 पेड़ों के नाम बताइए?
-	AG_32	[Agriculture]	Narration			What are the usage of these trees?			इन पेड़ों का क्या उपयोग हैं?
-	AG_33	[Agriculture]	Narration			What is the process of growing these trees?			इन पेड़ों को उगाने की प्रक्रिया क्या है?
-	AG_34	[Agriculture]	Narration			How long do they take to mature?			उन्हें तैयार होने में कितना समय लगता है?
-	AG_35	[Agriculture]	Narration			What kinds of special protection / care do they need (such as use of insecticide, pesticide or other such measures)?			उन्हें किस प्रकार की विशेष सुरक्षा / देखभाल की आवश्यकता है (जैसे कीटनाशक या ऐसे अन्य उपायों का उपयोग)?
-	AG_36	[Agriculture]	Narration			Tell us some unique features of agricultural practice in your community?			हमें अपने समाज में कृषि पद्धति की कुछ अनूठी विशेषताओं के बारे में बताइए?
-	AG_37	[Agriculture]	Narration			What changes have happened in the agricultural practice of your community in the last few years?			पिछले कुछ वर्षों में आपके समाज की कृषि पद्धति में क्या परिवर्तन हुए हैं?
-	AG_38	[Agriculture]	Narration			Give us any other interesting / relevant information / comments about agriculture, its relevance and agricultural practices in your community?			हमें अपने समाज में कृषि, इसकी प्रासंगिकता और कृषि पद्धतियों के बारे में कोई अन्य रोचक/प्रासंगिक जानकारी/टिप्पणियां दीजिए
-	AG_39	[Agriculture]	Narration			What kinds of machines are used in agriculture in your community?			आपके समाज में कृषि में किस प्रकार की मशीनों का उपयोग किया जाता है?
-	AG_40	[Agriculture]	Narration			What are the usage of these machineries?			इन मशीनों का क्या उपयोग हैं?
-	AG_41	[Agriculture]	Narration			How do they help in better management of agricultural activities in your community?			वे आपके समाज में कृषि गतिविधियों के बेहतर प्रबंधन में कैसे मदद करते हैं?
-	AG_42	[Agriculture]	Narration			What kinds of other technologies are used for farming and agriculture in your community?			आपके समाज में खेती और कृषि के लिए किस प्रकार की अन्य तकनीकों का उपयोग किया जाता है?
-	AG_43	[Agriculture]	Narration			How and for what purpose are they used?			उनका उपयोग कैसे और किस उद्देश्य के लिए किया जाता है?
-	AG_44	[Agriculture]	Narration			What kinds of animals are used in farming in your community?			आपके समाज में खेती में किस प्रकार के जानवरों का उपयोग किया जाता है?
-	AG_45	[Agriculture]	Narration			Tell us something about the role and relevance of animals in farming in your community?			अपने समाज में खेती में पशुओं की भूमिका और प्रासंगिकता के बारे में कुछ बताइए?
-	AG_112	[Agriculture]	Narration			How do you irrigate your crops?			आप अपनी फसलों की सिंचाई कैसे करते हैं?
-	AG_113	[Agriculture]	Narration			How do you irrigate crops when there is no rain?			जब वर्षा नहीं होती है तब आप फसलों की सिचाई कैसे करते हैं ?
-	AG_114	[Agriculture]	Narration			What do you grow in your village?			आप अपने गाँव में क्या उगाते हैं?
-	AG_115	[Agriculture]	Narration			Which of your crops requires more or less water?			आपकी किस फसल को कम या ज्यादा पानी चाहिए होता है?
-	AG_116	[Agriculture]	Narration			Which crops do you plant in Winter season?			सर्दी के मौसम में कौन - कौन सी फसलें लगाते हैं?
-	AG_117	[Agriculture]	Narration			Which crops do you plant in rainy season?			बरसात के मौसम में कौन - कौन सी फसलें लगाते हैं?
-	AG_118	[Agriculture]	Narration			Which crops do you plant for all seasons?			आप सभी मौसमों में कौन - कौन सी फसलें लगाते हैं ?
-	AG_119	[Agriculture]	Narration			How are work related to agriculture distributed among the family? 			खेती से संबंधित काम परिवार में किस तरह से बांटे जात हैं?
-	AG_120	[Agriculture]	Narration			Which machines do you use for farming?			खेती के लिए आप किन मशीनों का प्रयोग करते हैं?
-	AG_121	[Agriculture]	Narration			Which fertilizers do you use to grow crops?			फसलें उगाने के लिए आप कौन - कौन से खाद प्रयोग करते हैं?
-	AG_122	[Agriculture]	Narration			For which crops do you use cow dung manure?			गोबर की खाद आप किन - किन फसलों को उगाने के लिए प्रयोग करते हैं?
-	AG_123	[Agriculture]	Narration			Who does fishing in your community?			आपके समुदाय में मछली पालने या पकड़ने का काम कौन करता है?
-	AG_124	[Agriculture]	Narration			Who does poultry farming in your community?			आपके समुदाय में मुर्गी पालन कौन करता है?
-	AG_125	[Agriculture]	Narration			Who does animal husbandry in your community?			आपके समुदाय में पशुपालन कौन करता है?
-	AG_126	[Agriculture]	Narration			Who does goat rearing in your community?			आपके समुदाय में बकरी पालन कौन करता है?
-	AG_127	[Agriculture]	Narration			Who does sheep rearing in your community?			आपके समुदाय में भेड़ पालन कौन करता है?
-	AG_128	[Agriculture]	Narration			Which milking animals do you keep?			आप कौन - कौन से दूध देने वाले पशू पालते हैं?
-	AG_129	[Agriculture]	Narration			What do you make with milk?			आप दूध से क्या - क्या बनाते हैं?
-	AG_130	[Agriculture]	Narration			What do you feed your dairy cattle?			आप अपने धुधारू पशुओं को क्या खिलाते हैं?
-	AG_131	[Agriculture]	Narration			Which pulses do you grow?			आप कौन - कौन सी दालें उगाते हैं?
-	AG_132	[Agriculture]	Narration			What green vegetables do you grow?			आप कौन - कौन सी हरी सब्जियां उगाते हैं?
-	AG_133	[Agriculture]	Narration			Which vegetables do you grow?			आप कौन - कौन सी सब्जियां उगाते हैं?
-	AG_134	[Agriculture]	Narration			Where do you keep your harvested crops?			फसलों को काटकर आप कहां रखते हैं?
-	AG_135	[Agriculture]	Narration			Which crop insurance do you get from the government?			आपको सरकार की तरफ से कौन - कौन से फसल बीमा मिलते हैं?
-	AG_276	[Agriculture]	Narration			How do you preserve meat?			आप मांस को कैसे संरक्षित करते हैं?
-	AG_277	[Agriculture]	Narration			How do you preserve raw vegetables?			आप कच्ची सब्जियों को कैसे संरक्षित करते हैं?
-	AG_278	[Agriculture]	Narration			How do you preserve fish?			आप मछली को कैसे संरक्षित करते हैं?
-	AG_279	[Agriculture]	Narration			How do you prepare local wine?			आप देसी शराब कैसे बनाते हैं?
-	AG_280	[Agriculture]	Narration			What are the ingredents used for preparing local wine?			देसी शराब बनाने के लिए किन सामग्रियों का प्रयोग किया जाता है?
-	AG_46	[Agriculture]	Narration			What are the different kinds of seeds used for growing rice? What are their advantages and disadvantages?			चावल उगाने के लिए किस प्रकार के बीजों का प्रयोग किया जाता है? उनके फायदे और नुकसान क्या हैं?
-	AG_47	[Agriculture]	Narration			What are the different varieties of rice grown?			चावल की विभिन्न किस्में कौन सी उगाई जाती हैं?
-	AG_48	[Agriculture]	Narration			In which months / seasons are the different varieties of rice grown - if only one variety of rice is cultivated, tell us about that only?			चावल की विभिन्न किस्में किन महीनों / मौसमों में उगाई जाती हैं - अगर चावल की केवल एक ही किस्म की खेती की जाती है, तो उसके बारे में ही बताइए?
-	AG_49	[Agriculture]	Narration			What is the process of growing different varieties of rice- if only one variety of rice is cultivated, tell us about that only?			चावल की विभिन्न किस्मों को उगाने की प्रक्रिया क्या है - अगर चावल की केवल एक किस्म की खेती की जाती है, तो हमें केवल उसके बारे में बताइए?
-	AG_50	[Agriculture]	Narration			How long do they take to mature?			उन्हें तैयार होने में कितना समय लगता है?
-	AG_51	[Agriculture]	Narration			What kinds of special protection / care do they need (such as use of insecticide, pesticide or other such measures)?			उन्हें किस प्रकार की विशेष सुरक्षा / देखभाल की आवश्यकता है (जैसे कीटनाशक या ऐसे अन्य उपायों का उपयोग)?
-	AG_52	[Agriculture]	Narration			How are they sold to other people?			वे अन्य लोगों को कैसे बेचे जाते हैं?
-	AG_53	[Agriculture]	Narration			How are these cooked and eaten?			इन्हें कैसे पकाया और खाया जाता है?
-	AG_54	[Agriculture]	Narration			What are the different kinds of seeds used for growing maize? What are their advantages and disadvantages?			मक्का उगाने के लिए किस प्रकार के बीजों का प्रयोग किया जाता है? उनके फायदे और नुकसान क्या हैं?
-	AG_55	[Agriculture]	Narration			What are the different varieties of maize grown?			मक्के की विभिन्न किस्में कौन सी उगाई जाती हैं?
-	AG_56	[Agriculture]	Narration			In which months / seasons are the different varieties of maize grown - if only one variety of maize is cultivated, tell us about that only?			मक्के की विभिन्न किस्में किन महीनों / मौसमों में उगाई जाती हैं - अगर मक्के की केवल एक ही किस्म की खेती की जाती है, तो उसके बारे में ही बताइए?
-	AG_57	[Agriculture]	Narration			What is the process of growing different varieties of maize- if only one variety of maize is cultivated, tell us about that only?			मक्के की विभिन्न किस्मों को उगाने की प्रक्रिया क्या है - अगर मक्के की केवल एक किस्म की खेती की जाती है, तो हमें केवल उसके बारे में बताइए?
-	AG_58	[Agriculture]	Narration			How long do they take to mature?			उन्हें तैयार होने में कितना समय लगता है?
-	AG_59	[Agriculture]	Narration			What kinds of special protection / care do they need (such as use of insecticide, pesticide or other such measures)?			उन्हें किस प्रकार की विशेष सुरक्षा / देखभाल की आवश्यकता है (जैसे कीटनाशक या ऐसे अन्य उपायों का उपयोग)?
-	AG_60	[Agriculture]	Narration			How are they sold to other people?			वे अन्य लोगों को कैसे बेचे जाते हैं?
-	AG_61	[Agriculture]	Narration			How are these cooked and eaten?			इन्हें कैसे पकाया और खाया जाता है?
-	AG_62	[Agriculture]	Narration			What are the different kinds of seeds used for growing chilly? What are their advantages and disadvantages?			मिर्च उगाने के लिए किस प्रकार के बीजों का प्रयोग किया जाता है? उनके फायदे और नुकसान क्या हैं?
-	AG_63	[Agriculture]	Narration			What are the different varieties of chilly grown?			मिर्च की विभिन्न किस्में कौन सी उगाई जाती हैं?
-	AG_64	[Agriculture]	Narration			In which months / seasons are the different varieties of chilly grown - if only one variety of chilly is cultivated, tell us about that only?			मिर्च की विभिन्न किस्में किन महीनों / मौसमों में उगाई जाती हैं - अगर मिर्च की केवल एक ही किस्म की खेती की जाती है, तो उसके बारे में ही बताइए?
-	AG_65	[Agriculture]	Narration			What is the process of growing different varieties of chilly- if only one variety of chilly is cultivated, tell us about that only?			मिर्च की विभिन्न किस्मों को उगाने की प्रक्रिया क्या है - अगर मिर्च की केवल एक किस्म की खेती की जाती है, तो हमें केवल उसके बारे में बताइए?
-	AG_66	[Agriculture]	Narration			How long do they take to mature?			उन्हें तैयार होने में कितना समय लगता है?
-	AG_67	[Agriculture]	Narration			What kinds of special protection / care do they need (such as use of insecticide, pesticide or other such measures)?			उन्हें किस प्रकार की विशेष सुरक्षा / देखभाल की आवश्यकता है (जैसे कीटनाशक या ऐसे अन्य उपायों का उपयोग)?
-	AG_68	[Agriculture]	Narration			How are they sold to other people?			वे अन्य लोगों को कैसे बेचे जाते हैं?
-	AG_69	[Agriculture]	Narration			How are these cooked and eaten?			इन्हें कैसे पकाया और खाया जाता है?
-	AG_70	[Agriculture]	Narration			What are the different kinds of seeds used for growing turmeric? What are their advantages and disadvantages?			हल्दी उगाने के लिए किस प्रकार के बीजों का प्रयोग किया जाता है? उनके फायदे और नुकसान क्या हैं?
-	AG_71	[Agriculture]	Narration			What are the different varieties of turmeric grown?			हल्दी की विभिन्न किस्में कौन सी उगाई जाती हैं?
-	AG_72	[Agriculture]	Narration			In which months / seasons are the different varieties of turmeric grown - if only one variety of turmeric is cultivated, tell us about that only?			हल्दी की विभिन्न किस्में किन महीनों / मौसमों में उगाई जाती हैं - अगर हल्दी की केवल एक ही किस्म की खेती की जाती है, तो उसके बारे में ही बताइए?
-	AG_73	[Agriculture]	Narration			What is the process of growing different varieties of turmeric- if only one variety of turmeric is cultivated, tell us about that only?			हल्दी की विभिन्न किस्मों को उगाने की प्रक्रिया क्या है - अगर हल्दी की केवल एक किस्म की खेती की जाती है, तो हमें केवल उसके बारे में बताइए?
-	AG_74	[Agriculture]	Narration			How long do they take to mature?			उन्हें तैयार होने में कितना समय लगता है?
-	AG_75	[Agriculture]	Narration			What kinds of special protection / care do they need (such as use of insecticide, pesticide or other such measures)?			उन्हें किस प्रकार की विशेष सुरक्षा / देखभाल की आवश्यकता है (जैसे कीटनाशक या ऐसे अन्य उपायों का उपयोग)?
-	AG_76	[Agriculture]	Narration			How are they sold to other people?			वे अन्य लोगों को कैसे बेचे जाते हैं?
-	AG_77	[Agriculture]	Narration			How are these cooked and eaten?			इन्हें कैसे पकाया और खाया जाता है?
-	AG_78	[Agriculture]	Narration			What are the different kinds of seeds used for growing potato? What are their advantages and disadvantages?			आलू उगाने के लिए किस प्रकार के बीजों का प्रयोग किया जाता है? उनके फायदे और नुकसान क्या हैं?
-	AG_79	[Agriculture]	Narration			What are the different varieties of potato grown?			आलू की विभिन्न किस्में कौन सी उगाई जाती हैं?
-	AG_80	[Agriculture]	Narration			In which months / seasons are the different varieties of potato grown - if only one variety of potato is cultivated, tell us about that only?			आलू की विभिन्न किस्में किन महीनों / मौसमों में उगाई जाती हैं - अगर आलू की केवल एक ही किस्म की खेती की जाती है, तो उसके बारे में ही बताइए?
-	AG_81	[Agriculture]	Narration			What is the process of growing different varieties of potato- if only one variety of potato is cultivated, tell us about that only?			आलू की विभिन्न किस्मों को उगाने की प्रक्रिया क्या है - अगर आलू की केवल एक किस्म की खेती की जाती है, तो हमें केवल उसके बारे में बताइए?
-	AG_82	[Agriculture]	Narration			How long do they take to mature?			उन्हें तैयार होने में कितना समय लगता है?
-	AG_83	[Agriculture]	Narration			What kinds of special protection / care do they need (such as use of insecticide, pesticide or other such measures)?			उन्हें किस प्रकार की विशेष सुरक्षा / देखभाल की आवश्यकता है (जैसे कीटनाशक या ऐसे अन्य उपायों का उपयोग)?
-	AG_84	[Agriculture]	Narration			How are they sold to other people?			वे अन्य लोगों को कैसे बेचे जाते हैं?
-	AG_85	[Agriculture]	Narration			How are these cooked and eaten?			इन्हें कैसे पकाया और खाया जाता है?
-	AG_281	[Agriculture]	Narration			What are the different kinds of seeds used for growing millet? What are their advantages and disadvantages?			बाजरा उगाने के लिए किस प्रकार के बीजों का प्रयोग किया जाता है? उनके फायदे और नुकसान क्या हैं?
-	AG_282	[Agriculture]	Narration			What are the different varieties of millet grown?			बाजरा की विभिन्न किस्में कौन सी उगाई जाती हैं?
-	AG_283	[Agriculture]	Narration			In which months / seasons are the different varieties of millet grown - if only one variety of millet is cultivated, tell us about that only?			बाजरा की विभिन्न किस्में किन महीनों / मौसमों में उगाई जाती हैं - अगर बाजरा की केवल एक ही किस्म की खेती की जाती है, तो उसके बारे में ही बताइए?
-	AG_284	[Agriculture]	Narration			What is the process of growing different varieties of millet - if only one variety of millet is cultivated, tell us about that only?			बाजरा की विभिन्न किस्मों को उगाने की प्रक्रिया क्या है - अगर बाजरा की केवल एक किस्म की खेती की जाती है, तो हमें केवल उसके बारे में बताइए?
-	AG_285	[Agriculture]	Narration			How long do they take to mature?			उन्हें तैयार होने में कितना समय लगता है?
-	AG_286	[Agriculture]	Narration			What kinds of special protection / care do they need (such as use of insecticide, pesticide or other such measures)?			उन्हें किस प्रकार की विशेष सुरक्षा / देखभाल की आवश्यकता है (जैसे कीटनाशक या ऐसे अन्य उपायों का उपयोग)?
-	AG_287	[Agriculture]	Narration			How are they sold to other people?			वे अन्य लोगों को कैसे बेचे जाते हैं?
-	AG_288	[Agriculture]	Narration			How are these cooked and eaten?			इन्हें कैसे पकाया और खाया जाता है?
-	AG_289	[Agriculture]	Narration			What are the different kinds of seeds used for growing ginger? What are their advantages and disadvantages?			अदरक उगाने के लिए किस प्रकार के बीजों का प्रयोग किया जाता है? उनके फायदे और नुकसान क्या हैं?
-	AG_290	[Agriculture]	Narration			What are the different varieties of ginger grown?			अदरक की विभिन्न किस्में कौन सी उगाई जाती हैं?
-	AG_291	[Agriculture]	Narration			In which months / seasons are the different varieties of ginger grown - if only one variety of ginger is cultivated, tell us about that only?			अदरक की विभिन्न किस्में किन महीनों / मौसमों में उगाई जाती हैं - अगर अदरक की केवल एक ही किस्म की खेती की जाती है, तो उसके बारे में ही बताइए?
-	AG_292	[Agriculture]	Narration			What is the process of growing different varieties of ginger - if only one variety of ginger is cultivated, tell us about that only?			अदरक की विभिन्न किस्मों को उगाने की प्रक्रिया क्या है - अगर अदरक की केवल एक किस्म की खेती की जाती है, तो हमें केवल उसके बारे में बताइए?
-	AG_293	[Agriculture]	Narration			How long do they take to mature?			उन्हें तैयार होने में कितना समय लगता है?
-	AG_294	[Agriculture]	Narration			What kinds of special protection / care do they need (such as use of insecticide, pesticide or other such measures)?			उन्हें किस प्रकार की विशेष सुरक्षा / देखभाल की आवश्यकता है (जैसे कीटनाशक या ऐसे अन्य उपायों का उपयोग)?
-	AG_295	[Agriculture]	Narration			How are they sold to other people?			वे अन्य लोगों को कैसे बेचे जाते हैं?
-	AG_296	[Agriculture]	Narration			How are these cooked and eaten?			इन्हें कैसे पकाया और खाया जाता है?
-	AG_297	[Agriculture]	Narration			What are the different kinds of seeds used for growing large cardamom? What are their advantages and disadvantages?			बडी इलायची उगाने के लिए किस प्रकार के बीजों का प्रयोग किया जाता है? उनके फायदे और नुकसान क्या हैं?
-	AG_298	[Agriculture]	Narration			What are the different varieties of large cardamom grown?			बडी इलायची की विभिन्न किस्में कौन सी उगाई जाती हैं?
-	AG_299	[Agriculture]	Narration			In which months / seasons are the different varieties of large cardamom grown - if only one variety of large cardamom is cultivated, tell us about that only?			बडी इलायची की विभिन्न किस्में किन महीनों / मौसमों में उगाई जाती हैं - अगर बडी इलायची की केवल एक ही किस्म की खेती की जाती है, तो उसके बारे में ही बताइए?
-	AG_300	[Agriculture]	Narration			What is the process of growing different varieties of large cardamom - if only one variety of large cardamom is cultivated, tell us about that only?			बडी इलायची की विभिन्न किस्मों को उगाने की प्रक्रिया क्या है - अगर बडी इलायची की केवल एक किस्म की खेती की जाती है, तो हमें केवल उसके बारे में बताइए?
-	AG_301	[Agriculture]	Narration			How long do they take to mature?			उन्हें तैयार होने में कितना समय लगता है?
-	AG_302	[Agriculture]	Narration			What kinds of special protection / care do they need (such as use of insecticide, pesticide or other such measures)?			उन्हें किस प्रकार की विशेष सुरक्षा / देखभाल की आवश्यकता है (जैसे कीटनाशक या ऐसे अन्य उपायों का उपयोग)?
-	AG_303	[Agriculture]	Narration			How are they sold to other people?			वे अन्य लोगों को कैसे बेचे जाते हैं?
-	AG_304	[Agriculture]	Narration			How are these cooked and eaten?			इन्हें कैसे पकाया और खाया जाता है?
-	AG_305	[Agriculture]	Narration			What are the different kinds of seeds used for growing mustard? What are their advantages and disadvantages?			सरसों उगाने के लिए किस प्रकार के बीजों का प्रयोग किया जाता है? उनके फायदे और नुकसान क्या हैं?
-	AG_306	[Agriculture]	Narration			What are the different varieties of mustard grown?			सरसों की विभिन्न किस्में कौन सी उगाई जाती हैं?
-	AG_307	[Agriculture]	Narration			In which months / seasons are the different varieties of mustard grow - if only one variety of mustard is cultivated, tell us about that only?			सरसों की विभिन्न किस्में किन महीनों / मौसमों में उगाई जाती हैं - अगर सरसों की केवल एक ही किस्म की खेती की जाती है, तो उसके बारे में ही बताइए?
-	AG_308	[Agriculture]	Narration			What is the process of growing different varieties of mustard - if only one variety of mustard is cultivated, tell us about that only?			सरसों की विभिन्न किस्मों को उगाने की प्रक्रिया क्या है - अगर सरसों की केवल एक किस्म की खेती की जाती है, तो हमें केवल उसके बारे में बताइए?
-	AG_309	[Agriculture]	Narration			How long do they take to mature?			उन्हें तैयार होने में कितना समय लगता है?
-	AG_310	[Agriculture]	Narration			What kinds of special protection / care do they need (such as use of insecticide, pesticide or other such measures)?			उन्हें किस प्रकार की विशेष सुरक्षा / देखभाल की आवश्यकता है (जैसे कीटनाशक या ऐसे अन्य उपायों का उपयोग)?
-	AG_311	[Agriculture]	Narration			How are they sold to other people?			वे अन्य लोगों को कैसे बेचे जाते हैं?
-	AG_312	[Agriculture]	Narration			How are these cooked and eaten?			इन्हें कैसे पकाया और खाया जाता है?
-	AG_86	[Agriculture]	Narration			What are the different kinds of seeds used for growing potato? What are their advantages and disadvantages?			आलू उगाने के लिए किस प्रकार के बीजों का प्रयोग किया जाता है? उनके फायदे और नुकसान क्या हैं?
-	AG_87	[Agriculture]	Narration			What are the different varieties of potato grown?			आलू की विभिन्न किस्में कौन सी उगाई जाती हैं?
-	AG_88	[Agriculture]	Narration			In which months / seasons are the different varieties of potato grown - if only one variety of potato is cultivated, tell us about that only?			आलू की विभिन्न किस्में किन महीनों / मौसमों में उगाई जाती हैं - अगर आलू की केवल एक ही किस्म की खेती की जाती है, तो उसके बारे में ही बताइए?
-	AG_89	[Agriculture]	Narration			What is the process of growing different varieties of potato- if only one variety of potato is cultivated, tell us about that only?			आलू की विभिन्न किस्मों को उगाने की प्रक्रिया क्या है - अगर आलू की केवल एक किस्म की खेती की जाती है, तो हमें केवल उसके बारे में बताइए?
-	AG_90	[Agriculture]	Narration			How long do they take to mature?			उन्हें तैयार होने में कितना समय लगता है?
-	AG_91	[Agriculture]	Narration			What kinds of special protection / care do they need (such as use of insecticide, pesticide or other such measures)?			उन्हें किस प्रकार की विशेष सुरक्षा / देखभाल की आवश्यकता है (जैसे कीटनाशक या ऐसे अन्य उपायों का उपयोग)?
-	AG_92	[Agriculture]	Narration			How are they sold to other people?			वे अन्य लोगों को कैसे बेचे जाते हैं?
-	AG_93	[Agriculture]	Narration			How are these cooked and eaten?			इन्हें कैसे पकाया और खाया जाता है?
-	AG_94	[Agriculture]	Narration			What are the different kinds of seeds used for growing banana? What are their advantages and disadvantages?			केला उगाने के लिए किस प्रकार के बीजों का प्रयोग किया जाता है? उनके फायदे और नुकसान क्या हैं?
-	AG_95	[Agriculture]	Narration			What are the different varieties of banana grown?			केला की विभिन्न किस्में कौन सी उगाई जाती हैं?
-	AG_96	[Agriculture]	Narration			In which months / seasons are the different varieties of banana grown - if only one variety of banana is cultivated, tell us about that only?			केला की विभिन्न किस्में किन महीनों / मौसमों में उगाई जाती हैं - अगर केला की केवल एक ही किस्म की खेती की जाती है, तो उसके बारे में ही बताइए?
-	AG_97	[Agriculture]	Narration			What is the process of growing different varieties of banana- if only one variety of banana is cultivated, tell us about that only?			केला की विभिन्न किस्मों को उगाने की प्रक्रिया क्या है - अगर केला की केवल एक किस्म की खेती की जाती है, तो हमें केवल उसके बारे में बताइए?
-	AG_98	[Agriculture]	Narration			How long do they take to mature?			उन्हें तैयार होने में कितना समय लगता है?
-	AG_99	[Agriculture]	Narration			What kinds of special protection / care do they need (such as use of insecticide, pesticide or other such measures)?			उन्हें किस प्रकार की विशेष सुरक्षा / देखभाल की आवश्यकता है (जैसे कीटनाशक या ऐसे अन्य उपायों का उपयोग)?
-	AG_100	[Agriculture]	Narration			How are they sold to other people?			वे अन्य लोगों को कैसे बेचे जाते हैं?
-	AG_101	[Agriculture]	Narration			How are these cooked and eaten?			इन्हें कैसे पकाया और खाया जाता है?
-	AG_102	[Agriculture]	Narration			What kind of animals do you keep in your home?			आप अपने घर में किस तरह के जानवर रखते हैं?
-	AG_103	[Agriculture]	Narration			What are they use for?			वे किस लिए उपयोग किए जा रहे हैं?
-	AG_104	[Agriculture]	Narration			What all are pigs used for?			सूअरों का उपयोग किस लिए किया जाता है?
-	AG_105	[Agriculture]	Narration			What kind of food is prepared and given to pigs?			सूअरों के लिए किस तरह का खाना बनाया और दिया जाता है?
-	AG_106	[Agriculture]	Narration			How are the pigs taken care of?			सूअरों की देखभाल कैसे की जाती है?
-	AG_107	[Agriculture]	Narration			What kinds of disease do the pigs suffer from?			सूअर किस प्रकार की बीमारी से पीड़ित होते हैं?
-	AG_108	[Agriculture]	Narration			Where do pigs stay in the home?			सूअर घर में कहाँ रहते हैं?
-	AG_109	[Agriculture]	Narration			How do Toto people grow maize?			टोटो लोग मक्का कैसे उगाते हैं?
-	AG_110	[Agriculture]	Narration			How do you grow jackfruit?			आप कटहल कैसे उगाते हैं?
-	AG_143	[Agriculture]	Narration			For Kok Borok			
-	AG_144	[Agriculture]	Narration			What are the different kinds of seeds used for growing rice? What are their advantages and disadvantages?			चावल उगाने के लिए किस प्रकार के बीजों का उपयोग किया जाता है? उनके फायदे और नुकसान क्या हैं?
-	AG_145	[Agriculture]	Narration			What are the different varieties of rice grown?			चावल की विभिन्न किस्में कौन सी उगाई जाती हैं?
-	AG_146	[Agriculture]	Narration			In which months / seasons are the different varieties of rice grown - if only one variety of rice is cultivated, tell us about that only?			चावल की विभिन्न किस्में किन महीनों / मौसमों में उगाई जाती हैं - यदि चावल की केवल एक ही किस्म की खेती की जाती है, तो उसके बारे में ही बताइए?
-	AG_147	[Agriculture]	Narration			What is the process of growing different varieties of rice- if only one variety of rice is cultivated, tell us about that only?			चावल की विभिन्न किस्मों को उगाने की प्रक्रिया क्या है - यदि चावल की केवल एक किस्म की खेती की जाती है, तो हमें केवल उसके बारे में बताइए?
-	AG_148	[Agriculture]	Narration			How long do they take to mature?			उन्हें तैयार होने में कितना समय लगता है?
-	AG_149	[Agriculture]	Narration			What kinds of special protection / care do they need (such as use of insecticide, pesticide or other such measures)?			उन्हें किस प्रकार की विशेष सुरक्षा / देखभाल की आवश्यकता है (जैसे कीटनाशक या ऐसे अन्य उपायों का प्रयोग)?
-	AG_150	[Agriculture]	Narration			How are they sold to other people?			वे अन्य लोगों को कैसे बेचे जाते हैं?
-	AG_151	[Agriculture]	Narration			How are these cooked and eaten?			इन्हें कैसे पकाया और खाया जाता है?
-	AG_152	[Agriculture]	Narration			What are the different kinds of seeds used for growing wheat? What are their advantages and disadvantages?			गेहूं उगाने के लिए किस प्रकार के बीजों का प्रयोग किया जाता है? उनके फायदे और नुकसान क्या हैं?
-	AG_153	[Agriculture]	Narration			What are the different varieties of wheat grown?			गेहूं की विभिन्न किस्में कौन सी उगाई जाती हैं?
-	AG_154	[Agriculture]	Narration			In which months / seasons are the different varieties of wheat grown - if only one variety of wheat is cultivated, tell us about that only?			गेहूं की विभिन्न किस्में किन महीनों / मौसमों में उगाई जाती हैं - यदि गेहूं की केवल एक ही किस्म की खेती की जाती है, तो उसके बारे में ही बताइए?
-	AG_155	[Agriculture]	Narration			What is the process of growing different varieties of wheat - if only one variety of wheat is cultivated, tell us about that only?			गेहूं की विभिन्न किस्मों को उगाने की प्रक्रिया क्या है - यदि गेहूं की केवल एक किस्म की खेती की जाती है, तो हमें केवल उसके बारे में बताइए?
-	AG_156	[Agriculture]	Narration			How long do they take to mature?			उन्हें तैयार होने में कितना समय लगता है?
-	AG_157	[Agriculture]	Narration			What kinds of special protection / care do they need (such as use of insecticide, pesticide or other such measures)?			उन्हें किस प्रकार की विशेष सुरक्षा / देखभाल की आवश्यकता है (जैसे कीटनाशक या ऐसे अन्य उपायों का उपयोग)?
-	AG_158	[Agriculture]	Narration			How are they sold to other people?			वे अन्य लोगों को कैसे बेचे जाते हैं?
-	AG_159	[Agriculture]	Narration			How are these cooked and eaten?			इन्हें कैसे पकाया और खाया जाता है?
-	AG_160	[Agriculture]	Narration			What are the different kinds of seeds used for growing maize? What are their advantages and disadvantages?			मक्का उगाने के लिए किस प्रकार के बीजों का प्रयोग किया जाता है? उनके फायदे और नुकसान क्या हैं?
-	AG_161	[Agriculture]	Narration			What are the different varieties of maize grown?			मक्का की विभिन्न किस्में कौन सी उगाई जाती हैं?
-	AG_162	[Agriculture]	Narration			In which months / seasons are the different varieties of maize grown - if only one variety of maize is cultivated, tell us about that only?			मक्का की विभिन्न किस्में किन महीनों / मौसमों में उगाई जाती हैं - यदि मक्का की केवल एक ही किस्म की खेती की जाती है, तो उसके बारे में ही बताइए?
-	AG_163	[Agriculture]	Narration			What is the process of growing different varieties of maize - if only one variety of maize is cultivated, tell us about that only?			मक्का की विभिन्न किस्मों को उगाने की प्रक्रिया क्या है - यदि मक्का की केवल एक किस्म की खेती की जाती है, तो हमें केवल उसके बारे में बताइए?
-	AG_164	[Agriculture]	Narration			How long do they take to mature?			उन्हें तैयार होने में कितना समय लगता है?
-	AG_165	[Agriculture]	Narration			What kinds of special protection / care do they need (such as use of insecticide, pesticide or other such measures)?			उन्हें किस प्रकार की विशेष सुरक्षा / देखभाल की आवश्यकता है (जैसे कीटनाशक या ऐसे अन्य उपायों का उपयोग)?
-	AG_166	[Agriculture]	Narration			How are they sold to other people?			वे अन्य लोगों को कैसे बेचे जाते हैं?
-	AG_167	[Agriculture]	Narration			How are these cooked and eaten?			इन्हें कैसे पकाया और खाया जाता है?
-	AG_168	[Agriculture]	Narration			What are the different kinds of seeds used for growing pluses? What are their advantages and disadvantages?			दालें उगाने के लिए किस प्रकार के बीजों का प्रयोग किया जाता है? उनके फायदे और नुकसान क्या हैं?
-	AG_169	[Agriculture]	Narration			What are the different varieties of pluses grown?			दालों की विभिन्न किस्में कौन सी उगाई जाती हैं?
-	AG_170	[Agriculture]	Narration			In which months / seasons are the different varieties of pluses grown - if only one variety of pluses is cultivated, tell us about that only?			दालों की विभिन्न किस्में किन महीनों / मौसमों में उगाई जाती हैं - अगर दाल की केवल एक ही किस्म की खेती की जाती है, तो उसके बारे में ही बताइए?
-	AG_171	[Agriculture]	Narration			What is the process of growing different varieties of pluses - if only one variety of pluses is cultivated, tell us about that only?			दालों की विभिन्न किस्मों को उगाने की प्रक्रिया क्या है - यदि दाल की केवल एक किस्म की खेती की जाती है, तो हमें केवल उसके बारे में बताइए?
-	AG_172	[Agriculture]	Narration			How long do they take to mature?			उन्हें तैयार होने में कितना समय लगता है?
-	AG_173	[Agriculture]	Narration			What kinds of special protection / care do they need (such as use of insecticide, pesticide or other such measures)?			उन्हें किस प्रकार की विशेष सुरक्षा / देखभाल की आवश्यकता है (जैसे कीटनाशक या ऐसे अन्य उपायों का उपयोग)?
-	AG_174	[Agriculture]	Narration			How are they sold to other people?			वे अन्य लोगों को कैसे बेचे जाते हैं?
-	AG_175	[Agriculture]	Narration			How are these cooked and eaten?			इन्हें कैसे पकाया और खाया जाता है?
-	AG_176	[Agriculture]	Narration			What are the different kinds of seeds used for growing sugarcane? What are their advantages and disadvantages?			गन्ना उगाने के लिए किस प्रकार के बीजों का प्रयोग किया जाता है? उनके फायदे और नुकसान क्या हैं?
-	AG_177	[Agriculture]	Narration			What are the different varieties of sugarcane grown?			गन्ना की विभिन्न किस्में कौन सी उगाई जाती हैं?
-	AG_178	[Agriculture]	Narration			In which months / seasons are the different varieties of sugarcane grown - if only one variety of sugarcane is cultivated, tell us about that only?			गन्ना की विभिन्न किस्में किन महीनों / मौसमों में उगाई जाती हैं - अगर गन्ना की केवल एक ही किस्म की खेती की जाती है, तो उसके बारे में ही बताइए?
-	AG_179	[Agriculture]	Narration			What is the process of growing different varieties of sugarcane - if only one variety of sugarcane is cultivated, tell us about that only?			गन्ना की विभिन्न किस्मों को उगाने की प्रक्रिया क्या है - अगर गन्ना की केवल एक किस्म की खेती की जाती है, तो हमें केवल उसके बारे में बताइए?
-	AG_180	[Agriculture]	Narration			How long do they take to mature?			उन्हें तैयार होने में कितना समय लगता है?
-	AG_181	[Agriculture]	Narration			What kinds of special protection / care do they need (such as use of insecticide, pesticide or other such measures)?			उन्हें किस प्रकार की विशेष सुरक्षा / देखभाल की आवश्यकता है (जैसे कीटनाशक या ऐसे अन्य उपायों का उपयोग)?
-	AG_182	[Agriculture]	Narration			How are they sold to other people?			वे अन्य लोगों को कैसे बेचे जाते हैं?
-	AG_183	[Agriculture]	Narration			How are these cooked and eaten?			इन्हें कैसे पकाया और खाया जाता है?
-	AG_184	[Agriculture]	Narration			What are the different kinds of seeds used for growing cotton? What are their advantages and disadvantages?			कपास उगाने के लिए किस प्रकार के बीजों का प्रयोग किया जाता है? उनके फायदे और नुकसान क्या हैं?
-	AG_185	[Agriculture]	Narration			What are the different varieties of cotton grown?			कपास की विभिन्न किस्में कौन सी उगाई जाती हैं?
-	AG_186	[Agriculture]	Narration			In which months / seasons are the different varieties of cotton grown - if only one variety of cotton is cultivated, tell us about that only?			कपास की विभिन्न किस्में किन महीनों / मौसमों में उगाई जाती हैं - अगर कपास की केवल एक ही किस्म की खेती की जाती है, तो उसके बारे में ही बताइए?
-	AG_276	[Agriculture]	Narration			What is the process of growing different varieties of cotton- if only one variety of cotton is cultivated, tell us about that only?			कपास की विभिन्न किस्मों को उगाने की प्रक्रिया क्या है - अगर कपास की केवल एक किस्म की खेती की जाती है, तो हमें केवल उसके बारे में बताइए?
-	AG_277	[Agriculture]	Narration			How long do they take to mature?			उन्हें तैयार होने में कितना समय लगता है?
-	AG_278	[Agriculture]	Narration			What kinds of special protection / care do they need (such as use of insecticide, pesticide or other such measures)?			उन्हें किस प्रकार की विशेष सुरक्षा / देखभाल की आवश्यकता है (जैसे कीटनाशक या ऐसे अन्य उपायों का उपयोग)?
-	AG_279	[Agriculture]	Narration			How are they sold to other people?			वे अन्य लोगों को कैसे बेचे जाते हैं?
-	AG_280	[Agriculture]	Narration			How are these cooked and eaten?			इन्हें कैसे पकाया और खाया जाता है?
-	AG_281	[Agriculture]	Narration			What are the different kinds of seeds used for growing jute? What are their advantages and disadvantages?			जूट उगाने के लिए किस प्रकार के बीजों का प्रयोग किया जाता है? उनके फायदे और नुकसान क्या हैं?
-	AG_282	[Agriculture]	Narration			What are the different varieties of jute grown?			जूट की विभिन्न किस्में कौन सी उगाई जाती हैं?
-	AG_283	[Agriculture]	Narration			In which months / seasons are the different varieties of jute grown - if only one variety of jute is cultivated, tell us about that only?			जूट की विभिन्न किस्में किन महीनों / मौसमों में उगाई जाती हैं - अगर जूट की केवल एक ही किस्म की खेती की जाती है, तो उसके बारे में ही बताइए?
-	AG_284	[Agriculture]	Narration			What is the process of growing different varieties of jute - if only one variety of jute is cultivated, tell us about that only?			जूट की विभिन्न किस्मों को उगाने की प्रक्रिया क्या है - अगर जूट की केवल एक किस्म की खेती की जाती है, तो हमें केवल उसके बारे में बताइए?
-	AG_285	[Agriculture]	Narration			How long do they take to mature?			उन्हें तैयार होने में कितना समय लगता है?
-	AG_286	[Agriculture]	Narration			What kinds of special protection / care do they need (such as use of insecticide, pesticide or other such measures)?			उन्हें किस प्रकार की विशेष सुरक्षा / देखभाल की आवश्यकता है (जैसे कीटनाशक या ऐसे अन्य उपायों का उपयोग)?
-	AG_287	[Agriculture]	Narration			How are they sold to other people?			वे अन्य लोगों को कैसे बेचे जाते हैं?
-	AG_288	[Agriculture]	Narration			How are these cooked and eaten?			इन्हें कैसे पकाया और खाया जाता है?
-	AG_289	[Agriculture]	Narration			What are the different kinds of seeds used for growing mesta? What are their advantages and disadvantages?			मेस्टा उगाने के लिए किस प्रकार के बीजों का प्रयोग किया जाता है? उनके फायदे और नुकसान क्या हैं?
-	AG_290	[Agriculture]	Narration			What are the different varieties of mesta grown?			मेस्टा की विभिन्न किस्में कौन सी उगाई जाती हैं?
-	AG_291	[Agriculture]	Narration			In which months / seasons are the different varieties of mesta grown - if only one variety of mesta is cultivated, tell us about that only?			मेस्टा की विभिन्न किस्में किन महीनों / मौसमों में उगाई जाती हैं - अगर जूट की केवल एक ही किस्म की खेती की जाती है, तो उसके बारे में ही बताइए?
-	AG_292	[Agriculture]	Narration			What is the process of growing different varieties of mesta- if only one variety of mesta is cultivated, tell us about that only?			मेस्टा की विभिन्न किस्मों को उगाने की प्रक्रिया क्या है - अगर जूट की केवल एक किस्म की खेती की जाती है, तो हमें केवल उसके बारे में बताइए?
-	AG_293	[Agriculture]	Narration			How long do they take to mature?			उन्हें तैयार होने में कितना समय लगता है?
-	AG_294	[Agriculture]	Narration			What kinds of special protection / care do they need (such as use of insecticide, pesticide or other such measures)?			उन्हें किस प्रकार की विशेष सुरक्षा / देखभाल की आवश्यकता है (जैसे कीटनाशक या ऐसे अन्य उपायों का उपयोग)?
-	AG_295	[Agriculture]	Narration			How are they sold to other people?			वे अन्य लोगों को कैसे बेचे जाते हैं?
-	AG_296	[Agriculture]	Narration			How are these cooked and eaten?			इन्हें कैसे पकाया और खाया जाता है?
-	AG_187	[Agriculture]	Narration			For Chokri			
-	AG_188	[Agriculture]	Narration			how many variety of rice are grown in your community? name them.			आपके समुदाय में चावल की कितनी किस्में उगाई जाती हैं? उन्हे नाम दो।
-	AG_189	[Agriculture]	Narration			In which month or season are the different varieties of rice grown? and what are the difference between these variety of rice?			चावल की विभिन्न किस्में किस महीने या मौसम में उगाई जाती हैं? और चावल की इन किस्मों में क्या अंतर है?
-	AG_190	[Agriculture]	Narration			Tell us something about the process of rice cultivation? are the process same for all the different variety? if different, explain?			चावल की खेती की प्रक्रिया के बारे में कुछ बताएं? क्या प्रक्रिया सभी विभिन्न किस्मों के लिए समान है? अगर अलग है, तो बताएं?
-	AG_191	[Agriculture]	Narration			what are the method or the process used for protecting the rice from various harmful elements?			चावल को विभिन्न हानिकारक तत्वों से बचाने के लिए उपयोग की जाने वाली विधि या प्रक्रिया क्या है?
-	AG_192	[Agriculture]	Narration			how long does it takes to mature?			तैयार होने में कितना समय लगता है?
-	AG_193	[Agriculture]	Narration			how are they cooked and eaten?			उन्हें कैसे पकाया और खाया जाता है?
-	AG_194	[Agriculture]	Narration			how many bags of rice can be harvested per cultivations? can it be used to sell it others?			प्रति खेती चावल के कितने बैग निकाले जा सकता है? क्या इसे दूसरों को बेचने के लिए इस्तेमाल किया जा सकता है?
-	AG_195	[Agriculture]	Narration			how many variety of herbs and vegetables are grown in your community? name them?			आपके समुदाय में कितनी तरह की जड़ी-बूटियां और सब्जियां उगाई जाती हैं? उन्हे नाम दो?
-	AG_196	[Agriculture]	Narration			In which month or season are the different variety of herbs/ vegetables grown?			विभिन्न प्रकार की जड़ी-बूटियाँ/सब्जियाँ किस महीने या मौसम में उगाई जाती हैं?
-	AG_197	[Agriculture]	Narration			tell us something about the process of cultivating the different variety of herbs/vegetables?			विभिन्न प्रकार की जड़ी-बूटियों/सब्जियों को उगाने की प्रक्रिया के बारे में कुछ बताएं?
-	AG_198	[Agriculture]	Narration			what kind of special protection/ care do they need (such as use of insecticide,pesticide)			उन्हें किस प्रकार की विशेष सुरक्षा/देखभाल की आवश्यकता है (जैसे कीटनाशक का उपयोग)
-	AG_199	[Agriculture]	Narration			how long does the various variety of herbs and vegetables takes to mature?			विभिन्न प्रकार की जड़ी-बूटियों और सब्जियों को तैयार होने में कितना समय लगता है?
-	AG_200	[Agriculture]	Narration			how are they cooked and eaten?			उन्हें कैसे पकाया और खाया जाता है?
-	AG_201	[Agriculture]	Narration			how are they sold to others?			वे दूसरों को कैसे बेचे जाते हैं?
-	AG_202	[Agriculture]	Narration			what are the different kinds of animal do you keep at home?			आप घर पर किस तरह के जानवर रखते हैं?
-	AG_203	[Agriculture]	Narration			what are they used for?			उनका प्रयोग किस लिए हो रहा है?
-	AG_204	[Agriculture]	Narration			how do you prepare food for the various animals that you have at home?			आप अपने घर में विभिन्न जानवरों के लिए भोजन कैसे बनाते हैं?
-	AG_205	[Agriculture]	Narration			what roles does these animal play at home? what do they contribute?			ये जानवर घर पर क्या भूमिका निभाते हैं? वे क्या योगदान करते हैं?
-	AG_206	[Agriculture]	Narration			Are these animals consumed? if so when and why?			क्या इन जानवरों का सेवन किया जाता है? यदि हां तो कब और क्यों?
-	AG_231	[Agriculture]	Narration			For Bodo			
-	LC_1	[Lifecycle]	Narration			What are the different ceremonies related to the birth of a child in your community?			आपके समाज में बच्चे के जन्म और नामकरण संस्कार से सम्बन्धित विभिन्न रस्म-रिवाज क्या हैं?
-	LC_2	[Lifecycle]	Narration			Generally at what time and at what place do the ceremonies related to birth of a child take place?			समान्यतः बच्चे के जन्म व नामकरण संस्कार से सम्बन्धित रस्म-रिवाज कब और किस जगह होता है?
-	LC_3	[Lifecycle]	Narration			How many ceremonies related to birth take place? What are their names and what are their purpose?			बच्चे के जन्म और नामकरण संस्कार से सम्बन्धित कितनी रस्में होती है ? उनके नाम और उद्देश्य क्या है ?
-	LC_4	[Lifecycle]	Narration			How are the day and time of birth ceremonies decided?			जन्म व नामकरण संस्कार का दिन और समय कैसे निर्धारित होता है ? 
-	LC_5	[Lifecycle]	Narration			Who all are invited to the birth ceremonies?			जन्म व नामकरण संस्कार में किन-किन को आमंत्रित किया जाता है ?
-	LC_6	[Lifecycle]	Narration			How are people seated during the birth (any specific direction, etc)?			जन्म व नामकरण संस्कार के दौरान लोग कैसे बैठते है (कोई विशिष्ट दिशा इत्यादि)?
-	LC_7	[Lifecycle]	Narration			What is the procedure of the birth ceremonies?			जन्म व नामकरण संस्कार की प्रक्रिया क्या है ?
-	LC_8	[Lifecycle]	Narration			What materials and objects are used for the birth ceremonies?			जन्म व नामकरण संस्कार के लिए किन-किन पदार्थों और वस्तुओं का प्रयोग किया जाता है?
-	LC_9	[Lifecycle]	Narration			Who gives the name to the child and how is it given?			बच्चे का नाम कौन रखता है और यह कैसे रखा जाता है ?
-	LC_10	[Lifecycle]	Narration			Who performs the birth ceremony?			जन्म संस्कार कौन करता है?
-	LC_11	[Lifecycle]	Narration			Is there a feast after the birth of a child? What kinds of food are served in the feast?			क्या जन्म व नामकरण संस्कार के बाद दावत होती है ? दावत मैं‌ किस प्रकार का भोजन परोसा जाता है ?
-	LC_12	[Lifecycle]	Narration			Who makes arrangement for and pays for the expenses during the birth ceremonies?			जन्म व नामकरण संस्कार की वयवस्था और उसके खर्चे कौन करता है?
-	LC_13	[Lifecycle]	Narration			Any other important details that you want to share about the birth and  ceremonies			जन्म व नामकरण संस्कार के बारे में और कोई महत्वपूर्ण बातें जो आप बताना चाहते हो ?
-	LC_41	[Lifecycle]	Narration			What kind of food do you give to the new born for the first year of the child?			बच्चे होने के पहले साल में आप नवजात को किस तरह का खाना देते हैं?
-	LC_14	[Lifecycle]	Narration			How do the prospective couple interact before the marriage in your community?			क्या आपके समाज में विवाह से पहले पति-पत्नी मिल सकते है?
-	LC_15	[Lifecycle]	Narration			What is the process of finding a spouse in your community?			आपके समाज में‌ पति-पत्नी खोजने की क्या प्रक्रिया है?
-	LC_16	[Lifecycle]	Narration			Who is primarily responsible for finding the spouse?			जीवनसाथी को खोजने के लिए मुख्य रूप से कौन जिम्मेदार होता है?
-	LC_17	[Lifecycle]	Narration			What are the different ceremonies related to marriage in your community?			आपके समाज में विवाह से सम्बन्धित कौन-कौन सी विभिन्न रस्म-रिवाज है?
-	LC_18	[Lifecycle]	Narration			Generally at what time and at what place do the marriage ceremony take place?			समान्यतः, विवाह से सम्बन्धित रस्म-रिवाज कब और किस जगह होती है?
-	LC_19	[Lifecycle]	Narration			How many ceremonies related to marriage take place? What are their names and what are their purpose?			विवाह से सम्बन्धित कितनी रस्में होती है? उनके नाम व उद्देश्य क्या है?
-	LC_20	[Lifecycle]	Narration			How are the day and time of marriage ceremonies decided?			वैवाहिक रस्मों का दिन व समय कैसे निर्धारित होता है? 
-	LC_21	[Lifecycle]	Narration			Who all are invited to the marriage ceremonies?			वैवाहिक रस्मों में किन-किन को आमंत्रित किया जाता है?
-	LC_22	[Lifecycle]	Narration			How are people seated during the marriage ceremonies (any specific direction, etc)?			वैवाहिक रस्मों के दौरान लोग कैसे बैठते है (कोई विशिष्ट दिशा इत्यादि)?
-	LC_23	[Lifecycle]	Narration			What are the rituals prformed during the marriage ceremonies?			वैवाहिक रस्मों की प्रक्रिया क्या है?
-	LC_24	[Lifecycle]	Narration			What materials and objects are used for the marriage ceremonies?			वैवाहिक रस्मों के लिए किन-किन पदार्थों व वस्तुओं का प्रयोग किया जाता है?
-	LC_25	[Lifecycle]	Narration			How are rituals performed during the marriage ceremony?			शादी समारोह के दौरान अनुष्ठान कैसे किए जाते हैं?
-	LC_26	[Lifecycle]	Narration			Is there a feast after, before or during the marriage ceremonies? What kind of food are served in the feast?			क्या वैवाहिक रस्मों के बाद, पहले या उसी समय दावत होती है ? दावत में किस प्रकार का भोजन परोसा जाता है?
-	LC_27	[Lifecycle]	Narration			How is the feast/food prepared for during the marriage ceremonies?			विवाह समारोहों के दौरान दावत/भोजन कैसे तैयार किया जाता है?
-	LC_28	[Lifecycle]	Narration			Any other important details that you want to share about the marriage ceremonies			वैवाहिक रस्मों के बारे में और कोई महत्वपूर्ण बातें जो आप बताना चाहते हो ? 
-	LC_42	[Lifecycle]	Narration			How are the newly wedded couple welcomed to the community?			समुदाय में नवविवाहित जोड़े का स्वागत कैसे किया जाता है?
-	LC_29	[Lifecycle]	Narration			What are the different ceremonies related to the death in your community?			तुम्हारे समाज मे अंतिम संस्कार से सम्बन्धित विभिन्न रस्म-रिवाज क्या है? 
-	LC_30	[Lifecycle]	Narration			Generally at what time and at what place do the ceremony take place?			समान्यतः, अंतिम संस्कार से सम्बन्धित रस्म-रिवाज कब और किस जगह होता है
-	LC_31	[Lifecycle]	Narration			How many ceremonies related to death take place? What are their names and what are their purpose?			अंतिम संस्कार से सम्बन्धित कितनी रस्में होती है ? उनके नाम और उद्देश्य क्या है ?
-	LC_32	[Lifecycle]	Narration			Who all participate in the ceremonies related to death?			मृत्यु से संबंधित समारोहों में कौन सभी भाग लेते हैं?
-	LC_33	[Lifecycle]	Narration			How are people seated during the ceremonies  related to death (any specific direction, etc)?			अंतिम संस्कार के दौरान लोग कैसे बैठते है (कोई विशेष दिशा इत्यादि)?
-	LC_34	[Lifecycle]	Narration			What are the different rituals performed which are related to death?			अंतिम संस्कार से संबंधित विभिन्न रस्में कौन सी हैं?
-	LC_35	[Lifecycle]	Narration			What materials and objects are used for the ceremonies related to death?			अंतिम संस्कार के लिए किन-किन पदार्थों और वस्तुओं का प्रयोग किया जाता है?
-	LC_36	[Lifecycle]	Narration			How is it decided who will perform the ceremony related to death? (in case of infant, child, old people)			यह कैसे तय होता है कि मृत्यु से संबंधित रस्में कौन करेगा? (शिशु, बच्चे, वृद्ध लोगों के मामले में)
-	LC_37	[Lifecycle]	Narration			What kind of food do you offer after, before or during the ceremonies related to death?			अंतिम संस्कार के बाद, पहले या उसके दौरान आप किस प्रकार का भोजन परोसते हैं? 
-	LC_38	[Lifecycle]	Narration			How is the food arranged for and prepared for during the ceremonies related to death?			अंतिम संस्कार के दौरान भोजन की व्यवस्था और तैयारी कैसे की जाती है?
-	LC_39	[Lifecycle]	Narration			Any other important details that you want to share about the ceremonies related to death			अंतिम संस्कार के बारे में और कोई महत्वपूर्ण बातें जो आप बताना चाहते हो ? 
-	LC_40	[Lifecycle]	Narration			what are the ceremonies where you can serve wine ?			वे कौन से समारोह हैं जहां आप शराब परोस सकते हैं?
-	ST_1	[Science-Technology]	Narration			How will linguistics help in developing a corpora from actual written and spoken text varieties?			भाषाविज्ञान वास्तविक लिखित और बोली जाने वाली पाठ किस्मों से एक कॉर्पोरा विकसित करने में कैसे मदद करेगा?
-	ST_2	[Science-Technology]	Narration			How is  language corpora developed in the areas of language technology?			भाषा प्रौद्योगिकी के क्षेत्रों में भाषा कॉर्पोरा कैसे विकसित होता है?
-	ST_3	[Science-Technology]	Narration			Why is their a need to develop corpora for various type of language to address the need of linguistic at large?			बडे़ रूप से भाषा की आवश्यकता को पूरा करने के लिए विभिन्न प्रकार की भाषा के लिए कॉर्पोरा विकसित करने की आवश्यकता क्यों है?
-	ST_4	[Science-Technology]	Narration			In what ways speech technology serves as a means for developing speech databases?			वाक् प्रौद्योगिकी किस प्रकार वाक् डेटाबेस विकसित करने के साधन के रूप में कार्य करती है?
-	ST_5	[Science-Technology]	Narration			What comprises contextual speech database?			कंटेक्सटुअल स्पीच डेटाबेस में क्या शामिल है?
-	ST_6	[Science-Technology]	Narration			How are text in raw speech corpora presented? 			रॉ स्पीच कॉर्पोरा में टेक्स्ट कैसे प्रस्तुत किया जाता है?
-	ST_7	[Science-Technology]	Narration			Why is their a need to transcribe spoken texts to generate spoken corpora?			स्पोकन कॉर्पोरा बनाने के लिए उन्हें स्पोकन टेक्स्ट को ट्रांसक्राइब करने की आवश्यकता क्यों है?
-	ST_8	[Science-Technology]	Narration			What does annotated version of a corpus contains? How does annotated corpora helps in studying a langauge?			कॉर्पस के एनोटिट संस्करण में क्या शामिल है? एनोटिट कॉर्पस किसी भाषा का अध्ययन करने में किस प्रकार सहायता करता है?
-	ST_9	[Science-Technology]	Narration			Can you tell us the need for designing special text corpora?			क्या आप हमें विशेष टेक्स्ट कॉरपोरा डिजाइन करने की आवश्यकता बता सकते हैं?
-	ST_10	[Science-Technology]	Narration			What is the role of dialect corpora? How does it help to identify the total number of speech vareities used in the country?			किसी बोली के कॉर्पोरा की भूमिका क्या है? यह देश में प्रयोग की जाने वाली भाषण किस्मों की कुल संख्या की पहचान करने में कैसे मदद करती है?
-	ST_11	[Science-Technology]	Narration			How is  the process of comparable corpora developed?			कम्पेरेबल कॉर्पोरा की प्रक्रिया कैसे विकसित की जाती है?
-	ST_12	[Science-Technology]	Narration			What are the basic activities of the central bodies to maintain the databases?			डेटाबेस को बनाए रखने के लिए केंद्रीय निकायों की बुनियादी गतिविधियां क्या हैं?
-	ST_13	[Science-Technology]	Narration			What is required for deloping devices of language technology?			भाषा प्रौद्योगिकी के उपकरणों को विकसित करने के लिए क्या आवश्यक है?
-	ST_14	[Science-Technology]	Narration			Can you mention the importance of digital literacy?			क्या आप डिजिटल साक्षरता के महत्व का उल्लेख कर सकते हैं?
-	ST_15	[Science-Technology]	Narration			Can you tell us the importance  of computational linguistics?			क्या आप हमें कम्प्यूटेशनल भाषाविज्ञान का महत्व बता सकते हैं?
-	ST_16	[Science-Technology]	Narration			Can you mention  the type of analysis on a natural language data? 			क्या आप प्राकृतिक भाषा डेटा पर विश्लेषण के प्रकार का उल्लेख कर सकते हैं?
-	ST_17	[Science-Technology]	Narration			How does a speech sound gets recognise by the machine?			मशीन द्वारा वाक् ध्वनि को कैसे पहचाना जाता है?
-	ST_18	[Science-Technology]	Narration			What are the ways in which a text can be processed with various stages of linguistics analysis?			भाषाविज्ञान विश्लेषण के विभिन्न चरणों के साथ किसी पाठ को किस तरीके से संसाधित किया जा सकता है?
-	ST_19	[Science-Technology]	Narration			Can you tell us the process of sentence splitting ?			क्या आप हमें वाक्य विभाजन की प्रक्रिया बता सकते हैं?
-	ST_20	[Science-Technology]	Narration			What is the process involve in part of speech tagging?			स्पीच टैगिंग के भाग में शामिल प्रक्रिया क्या है?
-	ST_21	[Science-Technology]	Narration			Can you mention the role of Morph analysis?			क्या आप मॉर्फ विश्लेषण की भूमिका का उल्लेख कर सकते हैं?
-	ST_22	[Science-Technology]	Narration			How is syntactic analysis of words done?			शब्दों का वाक्यात्मक विश्लेषण कैसे किया जाता है?
-	ST_23	[Science-Technology]	Narration			What process is involve in Syntactic parsing?			सिंटेक्टिक पार्सिंग में कौन सी प्रक्रिया शामिल है?
-	ST_24	[Science-Technology]	Narration			Why is National Digital Literay Mission initiated? 			राष्ट्रीय डिजिटल साक्षरता मिशन क्यों शुरू किया गया है?
-	ST_25	[Science-Technology]	Narration			How does a speaker of a langauge puts the words toegther to form a sentence?What property of language describes that sentence and phraces have no limit or fixed length?			एक भाषा का वक्ता वाक्य बनाने के लिए शब्दों को एक साथ कैसे रखता है? भाषा का कौन सा गुण बताता है कि वाक्य और वाक्यांशों की कोई सीमा या निश्चित लंबाई नहीं है?
-	ST_26	[Science-Technology]	Narration			What constitutes learning a language? How is knowledge of langauge put into use?			भाषा सीखने से क्या बनता है? भाषा के ज्ञान को कैसे प्रयोग में लाया जाता है?
-	ST_27	[Science-Technology]	Narration			Can you tell us  the difference between phonetics and phonology?			क्या आप हमें फॉनेटिक्स और फोनोलॉजी के बीच अंतर बता सकते हैं?
-	ST_28	[Science-Technology]	Narration			How are speech sound organs and cavities  used for the production of speech sounds?			वाक् ध्वनि के उत्पादन के लिए वाक् ध्वनि अंगों और गुहाओं का प्रयोग कैसे किया जाता है?
-	ST_29	[Science-Technology]	Narration			Can you mention the use of IPA ?			क्या आप आईपीए के प्रयोग का उल्लेख कर सकते हैं?
-	ST_30	[Science-Technology]	Narration			Is their any design properties of a language?			क्या आप आईपीए के प्रयोग बता सकते हैं?
-	ST_31	[Science-Technology]	Narration			What do you mean by morphemes? Can you give the importance of morpheme?			मॉरफीम्स से आप क्या समझते हैं? क्या आप मॉरफीम का महत्व बता सकते हैं?
-	ST_32	[Science-Technology]	Narration			Can you mention the difference between pulmonic and non-pulmonic sounds.			क्या आप पल्मोनिक और नॉन-पल्मोनिक ध्वनियों के बीच अंतर बता सकते हैं?
-	ST_33	[Science-Technology]	Narration			How is the vowel sound produced using the vocal organs?			स्वर अंगों का उपयोग करके स्वर ध्वनि कैसे उत्पन्न होती है?
-	ST_34	[Science-Technology]	Narration			How are transcriptions carried out from one language to another using linguistic method?			भाषाई पद्धति का प्रयोग करके एक भाषा से दूसरी भाषा में ट्रांसक्रिप्शन कैसे किया जाता है?
-	ST_35	[Science-Technology]	Narration			How  do you use PRAAT for analysis and synthesis of speech?			भाषण के विश्लेषण और संश्लेषण के लिए आप प्रात का प्रयोग कैसे करते हैं?
-	ST_36 (Scientific Research)	[Science-Technology]	Narration			What is the purpose of conducting scientific research in a planned manner?			साइंटिफिक रिसर्च को योजनाबद्ध तरीके से संचालित करने का उद्देश्य क्या है?
-	ST_37	[Science-Technology]	Narration			What are the necessary elements before beginning a scientific research?			साइंटिफिक रिसर्च शुरू करने से पहले आवश्यक तत्व क्या हैं?
-	ST_38	[Science-Technology]	Narration			How are the classification of scientific research helpful in designing the structure of the research?			साइंटिफिक रिसर्च का वर्गीकरण रिसर्च की संरचना को डिजाइन करने में किस प्रकार सहायक होता है?
-	ST_39	[Science-Technology]	Narration			How is the observational data collection technique different from experimental technique?			ऑब्ज़र्वेशनल डेटा संग्रह तकनीक एक्सपेरिमेंटल तकनीक से किस तरह अलग है?
-	ST_40	[Science-Technology]	Narration			What are the mediums in which the scientific research can be applied?			साइंटिफिक रिसर्च को किन माध्यमों में लागू किया जा सकता है?
-	ST_41	[Science-Technology]	Narration			Tell us the classification of scientific research according to its descriptive or analytical method?			साइंटिफिक रिसर्च का वर्गीकरण उसकी वर्णनात्मक या विश्लेषणात्मक पद्धति के अनुसार बताइए?
-	ST_42	[Science-Technology]	Narration			Can you explain the importance of case report and case series in descriptive method of research?			क्या आप शोध की वर्णनात्मक पद्धति में केस रिपोर्ट और केस सीरीज के महत्व की व्याख्या कर सकते हैं?
-	ST_43	[Science-Technology]	Narration			In what ways do you think  analytical scientific research is different from desriptve method?			आपके विचार से एनालिटिकल साइंटिफिक रिसर्च किस प्रकार से वर्णनात्मक विधि से अलग है?
-	ST_44	[Science-Technology]	Narration			How is observational reserach more attractive than other research studies?			अन्य शोध अध्ययनों की तुलना में ऑब्ज़र्वेशनल संबंधी शोध कैसे अधिक आकर्षक है?
-	ST_45	[Science-Technology]	Narration			What is the pupose of cohort research in both observational and experimental studies?			ऑब्ज़र्वेशनल और एक्सपेरिमेंटल दोनों अध्ययनों में कोहोर्ट रिसर्च का उद्देश्य क्या है?
-	ST_46	[Science-Technology]	Narration			Can you mention the importance of Case-control studies and Cross sectional studies?			क्या आप केस-कंट्रोल स्टडीज और क्रॉस सेक्शनल स्टडीज का महत्व बता सकते हैं?
-	ST_47	[Science-Technology]	Narration			What does interventional research mean?			इंटरवेंशनल रिसर्च का क्या मतलब है?
-	ST_48	[Science-Technology]	Narration			How is clinical research carried out within a control group in a clinical case?			एक नैदानिक ​​मामले में एक नियंत्रण समूह के भीतर नैदानिक ​​अनुसंधान कैसे किया जाता है?
-	ST_49	[Science-Technology]	Narration			Tell us the importance of clinical research?			क्लिनिकल रिसर्च का महत्व बताएं?
-	ST_50	[Science-Technology]	Narration			How is randomisation and blinding method aplied in clinical research?			नैदानिक ​​अनुसंधान में रैंडमाइजेशन और ब्लाइंडिंग विधि कैसे लागू होती है?
-	ST_51General	[Science-Technology]	Narration			What are the uses of water? Can you tell us the process of filtration?			पानी के उपयोग क्या हैं? क्या आप हमें छानने की प्रक्रिया बता सकते हैं?
-	ST_52	[Science-Technology]	Narration			What is the usage of chlorination and bleaching in water purification?			पानी को साफ करने में क्लोरीनीकरण और ब्लीचिंग का क्या प्रयोग है?
-	ST_53	[Science-Technology]	Narration			Can you tell us the need for water conservation?			क्या आप हमें जल संरक्षण की आवश्यकता बता सकते हैं?
-	ST_54	[Science-Technology]	Narration			How can we show that air is moving?			हम कैसे दिखा सकते हैं कि हवा चल रही है?
-	ST_55	[Science-Technology]	Narration			Can you mention importance of oxygen in our live?			क्या आप हमारे जीवन में ऑक्सीजन के महत्व का उल्लेख कर सकते हैं?
-	ST_56	[Science-Technology]	Narration			What is deforestation? What happens when we burn forest and fossil fuel?			वनों की कटाई क्या है? क्या होता है जब हम जंगल और जीवाश्म ईंधन जलाते हैं?
-	ST_57	[Science-Technology]	Narration			why does north and south pole of a magnet attract?			चुम्बक का उत्तरी और दक्षिणी ध्रुव क्यों आकर्षित करता है?
-	ST_58	[Science-Technology]	Narration			what are the different types of metal? What different tools do you make from metals?			धातु के विभिन्न प्रकार क्या हैं? आप धातुओं से कौन से विभिन्न उपकरण बनाते हैं?
-	ST_59	[Science-Technology]	Narration			what are the different types of matter?			विभिन्न प्रकार के पदार्थ क्या हैं?
-	ST_60	[Science-Technology]	Narration			What is non-metal? Where do you use them?			अधातु क्या है? आप उनका प्रयोग कहां करते हैं?
-	ST_61	[Science-Technology]	Narration			how does evaporation lead to rainfall?			वाष्पीकरण से वर्षा कैसे होती है?
-	ST_62	[Science-Technology]	Narration			how is steam produced?			भाप का उत्पादन कैसे होता है?
-	ST_63	[Science-Technology]	Narration			what is the life-cycle process?			जीवन-चक्र की प्रक्रिया क्या है?
-	ST_64	[Science-Technology]	Narration			what is rain water-harvesting?			वर्षा जल संचयन क्या है?
-	ST_65	[Science-Technology]	Narration			how does mobile phone work?			मोबाइल फोन कैसे काम करता है?
-	ST_66	[Science-Technology]	Narration			how do you charge your mobile phone?			आप अपने मोबाइल फोन को कैसे चार्ज करते हैं?
-	ST_67	[Science-Technology]	Narration			what do you watch in you-tube channels?			आप यू-ट्यूब चैनलों में क्या देखते हैं?
-	ST_68	[Science-Technology]	Narration			do you have any other charging device other than electricity?			क्या आपके पास बिजली के अलावा कोई अन्य चार्जिंग डिवाइस है?
-	ST_69	[Science-Technology]	Narration			what different power source do you use to light your bulbs?			आप अपने बल्बों को जलाने के लिए किस शक्ति के स्रोत का उपयोग करते हैं?
-	ST_70	[Science-Technology]	Narration			how is solar energy produced?			सौर ऊर्जा कैसे पैदा की जाती है?
-	ST_71	[Science-Technology]	Narration			how are different power sources set-up?			विभिन्न शक्ति के स्रोत कैसे लगाए जाते हैं?
-	ST_72	[Science-Technology]	Narration			what are the sources of drinking water?			पीने के पानी के स्रोत क्या हैं?
-	ST_73	[Science-Technology]	Narration			why should we boil water before drinking?			हमें पीने से पहले पानी क्यों उबालना चाहिए?
-	ST_74	[Science-Technology]	Narration			how do we generate electricity from solar energy?			हम सौर ऊर्जा से बिजली कैसे उत्पन्न करते हैं?
-	ST_75	[Science-Technology]	Narration			 what are the kinds of problem that you face with your mobile and how do you fix it?			आपको अपने मोबाइल में किस प्रकार की समस्या का सामना करना पड़ता है और आप इसे कैसे ठीक करते हैं?
-	ST_76	[Science-Technology]	Narration			how do you access the different shopping apps?			आप विभिन्न शॉपिंग ऐप्स को कैसे एक्सेस करते हैं?
-	ST_77	[Science-Technology]	Narration			what all do you do with your mobile phone?			आप अपने मोबाइल फोन के साथ क्या करते हैं?
-	ST_78	[Science-Technology]	Narration			why does electricity cutts off when their is heavy rainfall?			भारी बारिश होने पर बिजली क्यों कट जाती है?
-	ST_79	[Science-Technology]	Narration			what are the different accessorise that you get with television?			टेलीविज़न के साथ आपको कौन-कौन से विभिन्न एक्सेसरीज़ मिलते हैं?
-	ST_80	[Science-Technology]	Narration			how do you recharge your set-top box for your television?			आप अपने टेलीविज़न के सेट-टॉप बॉक्स को कैसे रिचार्ज करते हैं?
-	ST_81	[Science-Technology]	Narration			how do you use your phone camera and under what condition do you use it?			आप अपने फ़ोन के कैमरे का प्रयोग कैसे करते हैं और आप इसका प्रयोग किस स्थिति में करते हैं?
-	ST_82	[Science-Technology]	Narration			how do you stay connected with people before mobile phones?			आप मोबाइल फोन से पहले लोगों से कैसे जुड़े रहे थे?
-	ST_83	[Science-Technology]	Narration			how many hours of battery charge does an inverter helps in generating electricity?			एक इन्वर्टर कितने घंटे की बैटरी चार्ज करने से बिजली पैदा करने में मदद करता है?
-	ST_84	[Science-Technology]	Narration			what are the traditional methods of grinding food?			भोजन पीसने के पारंपरिक तरीके क्या हैं?
-	ST_85	[Science-Technology]	Narration			how do you keep time?			आप समय कैसे रखते हैं?
-	ST_86	[Science-Technology]	Narration			what are the usage of sunlight?			सूर्य के प्रकाश का क्या जरूरत है?
-	ST_87	[Science-Technology]	Narration			how are rainbows formed?			इंद्रधनुष कैसे बनते हैं?
-	ST_88	[Science-Technology]	Narration			why does earthquake occur?			भूकंप क्यों आता है?
-	ST_89	[Science-Technology]	Narration			how does thunder and lightening occur?			बादलों में गरज और बिजली कैसे बनती है?
-	ST_90	[Science-Technology]	Narration			how do you breathe? what are the different organs used in breathing?			आप कैसे सांस लेते हैं? सांस लेने में उपयोग किए जाने वाले विभिन्न अंग कौन से हैं?
-	ST_91	[Science-Technology]	Narration			what are living and non-living things?			सजीव और निर्जीव चीजें क्या हैं?
-	ST_92	[Science-Technology]	Narration			describe some of the living things around you.			अपने आस-पास कुछ जीवित वस्तुओं का बारे में बताएं।
-	ST_93	[Science-Technology]	Narration			describe some of the non-living things around you.			अपने आस-पास की कुछ निर्जीव वस्तुओं का बारे में बताएं।
-	ST_94	[Science-Technology]	Narration			how do our reflection form?			हमारा प्रतिबिंब कैसे बनता है?
-	ST_95	[Science-Technology]	Narration			what are the different organs in our digestive system?			हमारे पाचन तंत्र के विभिन्न अंग कौन से हैं?
-	ST_96	[Science-Technology]	Narration			how do we start a vehicle?			हम एक वाहन कैसे चालू करते हैं?
-	OH_2	[General-Oral-History]	Narration			What is your family’s cultural background? Do your mother and father come from the same caste or tribe or from different castes / tribes? Please describe in detail your caste and cultural background			आपके परिवार की सांस्कृतिक पृष्ठभूमि क्या है? (क्या आपके माता और पिता एक ही जाति या विभिन्न जातियों से आते हैं?) कृपया विस्तार से वर्णन करें।
-	OH_3	[General-Oral-History]	Narration			What is your family’s religious background? Was religion observed in your home? If religion was observed in your home, how was it observed? Describe the daily / weekly / regular religious rituals that you follow			आपके परिवार की धार्मिक पृष्ठभूमि क्या है? क्या आपके घर में धर्म का पालन किया गया था? अगर आपके घर में धर्म का पालन किया जाता था, तो उसका पालन कैसे किया जाता था? उन दैनिक या साप्ताहिक या नियमित धार्मिक अनुष्ठानों के बारे में बताएं जिनका आप पालन करते हैं
-	OH_6	[General-Oral-History]	Narration			Describe your current relationship with your language(s). Do you feel a strong cultural connection to any of the languages that you speak?			अपनी भाषा(ओं) के साथ अपने वर्तमान सामन्जस्य के बारे में बताएैं। क्या आप अपने द्वारा बोली जाने वाली किसी भी भाषा के साथ एक मजबूत सांस्कृतिक संबंध महसूस करते हैं?
-	OH_7	[General-Oral-History]	Narration			Describe in detail the community (or communities) you grew up in. Was it urban or rural?			उस समुदाय (या समुदायों) के बारे में बताएैं जिसमें आप पले-बढ़े हैं। क्या वह शहरी था या ग्रामीण?
-	OH_8	[General-Oral-History]	Narration			Other than your own cultural group, what other cultural groups lived in your community? Other groups can include people from different religions, ethnicities, castes, tribes, etc.			आपके अपने सांस्कृतिक समूह के अलावा, आपके समुदाय में और कौन से सांस्कृतिक समूह रहते थे? अन्य समूहों में विभिन्न धर्मों, जातियों, जनजातियों आदि के लोग शामिल हो सकते हैं।
-	OH_9	[General-Oral-History]	Narration			Does your family originate from the place you grew up, or from a different place? What do you know about that place? Have you ever visited it?			क्या आपके परिवार की उत्पत्ति उस जगह से हुई है जहाँ आप पले-बढ़े हैं, या किसी दूसरी जगह से? आप उस जगह के बारे में क्या जानते हैं? क्या आप कभी वहाँ गए है?
-	OH_10	[General-Oral-History]	Narration			What do you remember about your grandparents? Tell us something about them			आपको अपने दादा-दादी के बारे में क्या याद है? उनके बारे में हमें कुछ बताएं
-	OH_11	[General-Oral-History]	Narration			Did you grow up hearing about any of your early ancestors whom you never met? What did you hear about them? Tell us something about that			क्या आप अपने किसी ऐसे पूर्वज के बारे में सुनकर बड़े हुए हैं जिनसे आप कभी नहीं मिले? आपने उनके बारे में क्या सुना? इसके बारे में हमें कुछ बताएं
-	OH_12	[General-Oral-History]	Narration			Have you lived through any major historical events? Describe how you and your family were affected by these events.			क्या आप किसी बड़ी ऐतिहासिक घटना से गुजरे हैं? बताइए कि आप और आपका परिवार इन घटनाओं से कैसे प्रभावित हुए।
-	OH_13	[General-Oral-History]	Narration			What were your family’s economic circumstances? Do you remember any times when your family faced economic difficulties? Please describe.			आपके परिवार की आर्थिक परिस्थितियाँ क्या थीं? क्या आपको कोई ऐसा समय याद है जब आपके परिवार को आर्थिक कठिनाइयों का सामना करना पड़ा हो? कृपया बताइए।
-	OH_14	[General-Oral-History]	Narration			What skills and activities did you learn while you were growing up? Who taught you these skills? Skills and activities can include fishing, hunting, farming, cooking, carpentry, crafts, weaving, specific sports, and many other important things. Tell us something about what you learnt and how it is done.			जब आप बड़े हो रहे थे तब आपने कौन से हुनर और गतिविधियाँ सीखीं? आपको ये हुनर ​​किसने सिखाया? हुनर और गतिविधियों में मछली पकड़ना, शिकार करना, खेती करना, खाना बनाना, बढ़ईगीरी, शिल्प, बुनाई, विशेष खेल और कई अन्य महत्वपूर्ण चीजें शामिल हो सकती हैं। आपने क्या सीखा और इसे कैसे किया जाता है, इसके बारे में हमें कुछ बताएं।
-	OH_16	[General-Oral-History]	Narration			Describe your sibling(s) and your interactions with them when you were young. Were you very close in age? Did you attend school together?			जब आप छोटे थे तब अपने भाई-बहनों और उनके साथ अपनी बातचीत के बारे में बताएैं। क्या आप उम्र में काफी करीब थे? क्या आप एक साथ स्कूल गए थे?
-	OH_17	[General-Oral-History]	Narration			What did you do in your spare time during your adolescence? Disucss in detail			आप अपनी किशोरावस्था के दौरान अपने खाली समय में क्या करते थे? विस्तार से बताएं
-	OH_18	[General-Oral-History]	Narration			What are some of the foods you ate when you were growing up? Discuss in detail.			जब आप बड़े हो रहे थे तब आप क्या - क्या खाना खाते थे? विस्तार मे बताएं
-	OH_20	[General-Oral-History]	Narration			What occupation(s) did you want to pursue when you were a child? Why?			जब आप बच्चे थे तब आप किस व्यवसाय (व्यवसायों) को अपनाना चाहते थे? क्यों?
-	OH_21	[General-Oral-History]	Narration			Describe your current occupation. Where do you work?			अपने वर्तमान व्यवसाय के बारे में बताएैं। आप कहा काम करते हैं ?
-	OH_22	[General-Oral-History]	Narration			Describe how you chose your occupation. Do you wish to stay in this occupation? Why?			बताएं कि आपने अपना काम कैसे चुना। क्या आप इस काम में बने रहना चाहते हैं? क्यों?
-	OH_23	[General-Oral-History]	Narration			What are some of the difficulties related to your job/employment?			आपकी नौकरी/रोजगार से संबंधित कुछ कठिनाइयाँ क्या हैं?
-	OH_24	[General-Oral-History]	Narration			What festivals does your family celebrate in a normal year? Tell us about these in detail.			आपका परिवार एक सामान्य वर्ष में कौन से त्यौहार मनाता है? इनके बारे में हमें विस्तार से बताएं
-	OH_25	[General-Oral-History]	Narration			Can you describe some of your local friends? What kinds of activities do you do together?			क्या आप अपने कुछ स्थानीय मित्रों के बारे में बता सकते हैं? आप एक साथ किस प्रकार की गतिविधियाँ करते हैं?
-	OH_26	[General-Oral-History]	Narration			If you are in a relationship, how did you meet your current partner (husband, wife, boyfriend, girlfriend, significant other)? What brought you together?			यदि आप एक रिश्ते में हैं, तो आप अपने वर्तमान साथी (पति, पत्नी, प्रेमी, प्रेमिका, जरूरी अन्य) से कैसे मिले? आपको क्या साथ लाया?
-	OH_27	[General-Oral-History]	Narration			Are you married? If so, describe your wedding celebration? If not, describe the marriage ceremony of someone you know			क्या आप शादीशुदा हैं? अगर हां, तो अपने विवाह समारोह के बारे में बताएं। अगर नहीं, तो अपने किसी जानने वाले के विवाह समारोह के बारे में बताएं।
-	OH_29	[General-Oral-History]	Narration			What types of sports, games and pastimes have you been involved with in your life?			आप अपने जीवन में किस प्रकार के खेल और मनोरंजन से जुड़े रहे हैं?
-	OH_30	[General-Oral-History]	Narration			How do you maintain your level of health?			आप अपने स्वास्थ्य के स्तर को कैसे बनाए रखते हैं?
-	OH_31	[General-Oral-History]	Narration			What are your favorite foods that are unique to your culture or region? Tell us about these in detail.			आपके पसंदीदा खाने के पदार्थ कौन से हैं जो आपकी संस्कृति या क्षेत्र के लिए सबसे अलग हैं? इनके बारे में हमें विस्तार से बताएं।
-	OH_32	[General-Oral-History]	Narration			Describe your personality. What are some of your strengths?			अपने व्यक्तित्व के बारे में कुछ बताएं। आपकी कुछ विशेषताएं क्या हैं?
-	OH_33	[General-Oral-History]	Narration			What things in your life are the most important to you right now?			अभी आपके लिए आपके जीवन में कौन सी चीजें सबसे महत्वपूर्ण हैं?
-	OH_34	[General-Oral-History]	Narration			What qualities do you look for in your friendships and relationships?			आप अपनी दोस्ती और रिश्तों में क्या गुण देखते हैं?
-	OH_35	[General-Oral-History]	Narration			Are there any cultural or humanitarian causes that are important to you? Please describe.			क्या कोई सांस्कृतिक या मानवीय कारण हैं जो आपके लिए महत्वपूर्ण हैं? कृपया विस्तार में बताएं।
-	OH_36	[General-Oral-History]	Narration			What are your immediate goals for the future?			भविष्य के लिए आपके अभी के लक्ष्य क्या हैं?
-	OH_37	[General-Oral-History]	Narration			What are your long-term goals for yourself and your family?			अपने और अपने परिवार के लिए आपके लम्बे समय के लक्ष्य क्या हैं?
-	OH_39	[General-Oral-History]	Narration			How have you changed since your childhood? How has your community changed since your childhood?			आप बचपन से कैसे बदल गए हैं? आपका समुदाय आपके बचपन से कैसे बदल गया है?
-	OH_40	[General-Oral-History]	Narration			What aspects of your language do you find unique?			आपकी भाषा के कौन से पहलू आपको अद्वितीय लगते हैं?
-	OH_41	[General-Oral-History]	Narration			How do different generations of your community interact with their language?			आपके समुदाय की विभिन्न पीढ़ियां अपनी भाषा के साथ कैसे पेश आते हैं?
-	OH_42	[General-Oral-History]	Narration			What changes do you think might happen to your culture and language in the near future?			आपको क्या लगता है कि निकट भविष्य में आपकी संस्कृति और भाषा में क्या परिवर्तन हो सकते हैं?
-	OH_43	[General-Oral-History]	Narration			What is your advice for future generations?			आने वाली पीढ़ियों के लिए आपकी क्या सलाह है?
-	OH_45	[General-Oral-History]	Narration			In which places and during which events do you hear stories told in your language?			आप अपनी भाषा में किन-किन जगहों पर और किन-किन आयोजनों के दौरान कही गई कहानियाँ सुनते हैं?
-	OH_46	[General-Oral-History]	Narration			Tell me a folktale that you remember hearing as a child or adolescent?			मुझे कोई ऐसी लोककथा बताईए जिसे आपने बचपन में या किशोरावस्था में सुना हो।
-	OH_47	[General-Oral-History]	Narration			Are there any particular authors or storytellers in your language who are important to you? Please describe.			क्या आपकी भाषा में कोई विशेष लेखक या कहानीकार हैं जो आपके लिए महत्वपूर्ण हैं? कृपया विस्तार में बताएं।
-	OH_48	[General-Oral-History]	Narration			Please describe the traditional music of your culture. What instruments are used?			कृपया अपनी संस्कृति के पारंपरिक संगीत का वर्णन करें। किन उपकरणों का उपयोग किया जाता है?
-	OH_51	[General-Oral-History]	Narration			What other musical styles did you grow up listening to?			आप किन अन्य संगीत शैलियों को सुनकर बड़े हुए हैं?
-	OH_52	[General-Oral-History]	Narration			When do you listen to music in your daily life, and how do you access it? Do you listen to musicians in person, or do you listen to recorded music?			आप अपने दैनिक जीवन में संगीत कब सुनते हैं, और आप इसे कैसे एक्सेस करते हैं? क्या आप संगीतकारों को व्यक्तिगत रूप से सुनते हैं, या आप रिकॉर्ड किया गया संगीत सुनते हैं?
-	OH_54	[General-Oral-History]	Narration			What are some foods from your culture that you highly recommend?			आपकी संस्कृति के कुछ खाने के पदार्थ क्या हैं जिनकी आप अत्यधिक अनुशंसा करते हैं?
-	OH_56	[General-Oral-History]	Narration			Describe the traditional clothing of your culture.			अपनी संस्कृति के पारंपरिक कपड़ो के बारे में बताऐं।
-	OH_57	[General-Oral-History]	Narration			What clothing and clothing styles did you grow up with?			आप किन कपड़ों और कपड़ों की शैलियों के साथ बड़े हुए हैं?
-	OH_58	[General-Oral-History]	Narration			Do you currently wear any traditional clothes? Please describe if you wear them everyday or for specific occasions. If on specific occasions, which occasions?			क्या आप वर्तमान में कोई पारंपरिक कपड़े पहनते हैं? कृपया बताऐं कि क्या आप उन्हें रोज़ पहनते हैं या विशेष अवसरों के लिए। यदि विशेष अवसरों पर, किन अवसरों पर?
-	OH_59	[General-Oral-History]	Narration			Describe any pieces of clothing that hold a particular significance to you.			कपड़ों के किसी भी टुकड़े के बारे में बताऐं जो आपके लिए विशेष महत्व रखता है।
-	OH_61	[General-Oral-History]	Narration			How are the different genders of your community expected to conduct themselves?			आपके समुदाय के अलग-अलग लिंगों के लोगों से कैसे व्यवहार करने की अपेक्षा की जाती है?
-	OH_63	[General-Oral-History]	Narration			Describe a typical day in your life (this year).			अपने जीवन के एक आम दिन का वर्णन करें।
-	OH_64	[General-Oral-History]	Narration			Describe your appearance and choice in clothing for daily activities.			दैनिक गतिविधियों के लिए कपड़ों में अपने रूपरंग और पसंद के बारे में बताऐं।
-	OH_65	[General-Oral-History]	Narration			What are your preferred methods of transport? Do you enjoy traveling ? How do you get to work?			परिवहन के आपके पसंदीदा तरीके क्या हैं? क्या आपको यात्रा करने में मज़ा आता है? आप काम पर कैसे जाते हैं?
-	OH_66	[General-Oral-History]	Narration			Describe the architecture of your area, as well as the traditional architecture of your culture.			अपने क्षेत्र की वास्तुकला के साथ-साथ अपनी संस्कृति की पारंपरिक वास्तुकला के बारे में बताइए।
-	OH_67	[General-Oral-History]	Narration			Describe the physical geography of your area.			अपने क्षेत्र के भौतिक भूगोल के बारे में बताइए।
-	OH_68	[General-Oral-History]	Narration			Describe the kinds of animals that live in your area.			अपने क्षेत्र में रहने वाले जानवरों के प्रकार के बारे में बताइए।
-	OH_69	[General-Oral-History]	Narration			Describe the kinds of plants that live in your area.			अपने क्षेत्र में रहने वाले पौधों के प्रकारों के बारे में बताइए।
-	OH_70	[General-Oral-History]	Narration			What big technological advancements have you experienced? Which have been the most meaningful to you and why?			आपने कौन सी बड़ी तकनीकी प्रगति का अनुभव किया है? आपके लिए सबसे अधिक अर्थपूर्ण कौन सा रहा है और क्यों?
-	OH_71	[General-Oral-History]	Narration			What are your preferred modes of communication? How have methods of communication changed during your life?			संचार के आपके पसंदीदा तरीके क्या हैं? आपके जीवन के दौरान संचार के तरीके कैसे बदल गए हैं?
-	OH_72	[General-Oral-History]	Narration			Is there any other information that you would like to share about your daily life?			क्या कोई अन्य जानकारी है जो आप अपने दैनिक जीवन के बारे में बताना चाहेंगे?
-	HLT_1	[Healthcare]	Narration			What do you think about benefits of the traditional medicine?			पारंपरिक चिकित्सा के लाभों के बारे में आप क्या सोचते हैं?
-	HLT_2	[Healthcare]	Narration			Why do you use traditional medicines ?			आप पारंपरिक दवाओं का उपयोग क्यों करते हैं?
-	HLT_3	[Healthcare]	Narration			Which traditional medicine or herbs do you use for indigestion? what is the process of making such medicine and how do take it?			अपच के लिए आप किस पारंपरिक औषधि या जड़ी-बूटी का उपयोग करते हैं? ऐसी दवा बनाने की प्रक्रिया क्या है और इसे कैसे लेते हैं?
-	HLT_4	[Healthcare]	Narration			Tell us a situation from your own experience of using traditonal medicine? 			पारंपरिक चिकित्सा के उपयोग के अपने स्वयं के अनुभव से हमें एक स्थिति बताएं?
-	HLT_5	[Healthcare]	Narration			What are the other traditional medicines (that you know which are) used in different purposes? What are the processes of making those medicines and their purposes?			अन्य पारंपरिक दवाएं (जो आप जानते हैं कि कौन सी हैं) विभिन्न प्रयोजनों में उपयोग की जाती हैं? उन दवाओं और उनके उद्देश्यों को बनाने की प्रक्रिया क्या है?
-	HLT_6	[Healthcare]	Narration			How do you know when you have fever? How do you treat fever using traditional medicine?			आपको कैसे पता चलेगा कि आपको बुखार है? आप पारंपरिक चिकित्सा का उपयोग करके बुखार का इलाज कैसे करते हैं?
-	HLT_7	[Healthcare]	Narration			How do you feel when you get cold and cough? How do you treat it using traditional medicine?			सर्दी-खांसी होने पर आपको कैसा महसूस होता है? पारंपरिक चिकित्सा का उपयोग करके आप इसका इलाज कैसे करते हैं?
-	HLT_8	[Healthcare]	Narration			How do you cure wounds ? Do you prefer any traditional medicines to cure minor wounds ? if you use how do you prepapre those medicines ?			आप घावों को कैसे ठीक करते हैं? क्या आप मामूली घावों को ठीक करने के लिए कोई पारंपरिक दवा पसंद करते हैं? यदि आप उपयोग करते हैं तो आप उन दवाओं को कैसे तैयार करते हैं?
-	HLT_9	[Healthcare]	Narration			How do you care for your health to be healthy?			स्वस्थ रहने के लिए आप अपने स्वास्थ्य की देखभाल कैसे करते हैं?
-	HLT_11	[Healthcare]	Narration			What traditional products do you use for hair care?			बालों की देखभाल के लिए आप किन पारंपरिक उत्पादों का उपयोग करती हैं?
-	HLT_12	[Healthcare]	Narration			What are the natural products that you use for hair related problems(hair fall/dandruff/lice infection/grayng of hair)?			बालों से संबंधित समस्याओं (बालों का झड़ना / रूसी / जूँ का संक्रमण / बालों का सफेद होना) के लिए आप किन प्राकृतिक उत्पादों का उपयोग करते हैं?
-	HLT_13	[Healthcare]	Narration			What traditional remedies do you use to relieve body pain?			शरीर के दर्द को दूर करने के लिए आप किन पारंपरिक उपचारों का उपयोग करते हैं?
-	HLT_14	[Healthcare]	Narration			What traditional remedies do you use to relieve muscle pain?			मांसपेशियों के दर्द को दूर करने के लिए आप किन पारंपरिक उपायों का उपयोग करते हैं?
-	HLT_15	[Healthcare]	Narration			What traditional remedies do you use to relieve tooth ache?			दांत दर्द से राहत पाने के लिए आप किन पारंपरिक उपायों का इस्तेमाल करते हैं?
-	HLT_16	[Healthcare]	Narration			What traditional remedies do you use to relieve head ache?			सिर दर्द से राहत पाने के लिए आप किन पारंपरिक उपायों का इस्तेमाल करते हैं?
-	HLT_17	[Healthcare]	Narration			What traditional remedies do you use to relieve mensural pain/cramp?			मासिक धर्म के दर्द/ऐंठन से राहत पाने के लिए आप किन पारंपरिक उपायों का उपयोग करती हैं?
-	HLT_18	[Healthcare]	Narration			What traditional remedies do you use to protect from Covid 19?			कोविड 19 से बचाव के लिए आप किन पारंपरिक उपायों का उपयोग करते हैं?
-	HLT_19	[Healthcare]	Narration			What traditional products do you use for teeth care?			दांतों की देखभाल के लिए आप किन पारंपरिक उत्पादों का उपयोग करते हैं?
-	HLT_20	[Healthcare]	Narration			What are the natural products that you use for teeth related problems (teeth decay,  misalignment, gum disease, bad breath, sensitivity, root infection, enamel erosion, etc)?			दांतों से संबंधित समस्याओं (दांतों की सड़न, गलत संरेखण, मसूड़ों की बीमारी, सांसों की बदबू, संवेदनशीलता, जड़ संक्रमण, इनेमल क्षरण, आदि) के लिए आप किन प्राकृतिक उत्पादों का उपयोग करते हैं?
-	HLT_21	[Healthcare]	Narration			Do you have traditional healthcare practitioners in your community? What ailments do they provide for treatment?			क्या आपके समुदाय में पारंपरिक स्वास्थ्य चिकित्सक हैं? वे उपचार के लिए कौन सी बीमारियाँ प्रदान करते हैं?
-	SPR_1	[Sports]	Narration			Can you tell us something about the origin of Polo (Sagol Kangjei)?			क्या आप हमें पोलो (सगोल कांगजेई) की उत्पत्ति के बारे में कुछ बता सकते हैं?
-	SPR_2	[Sports]	Narration			What are the trdaitional games in your community? 			आपके समुदाय में पारंपरिक खेल कौन से हैं?
-	SPR_3	[Sports]	Narration			Is there a game similar to rugby? What is it called and how it is played?			क्या रग्बी के समान कोई खेल है? इसे क्या कहते हैं और इसे कैसे खेला जाता है?
-	SPR_4	[Sports]	Narration			Can you explain how exercise/sports make us healthy?			क्या आप बता सकते हैं कि व्यायाम/खेल हमें कैसे स्वस्थ बनाता है?
-	SPR_5	[Sports]	Narration			What games do you play ? What are the rules of those games?			तुम क्या क्या खेल खेलते हो? उन खेलों के नियम क्या हैं?
-	SPR_6	[Sports]	Narration			Can you tell us about your childhood days games ? Can you share a memorable incident of your childhood days games ?			क्या आप हमें अपने बचपन के दिनों के खेल के बारे में बता सकते हैं? क्या आप अपने बचपन के दिनों के खेल की कोई यादगार घटना साझा कर सकते हैं?
-	SPR_7	[Sports]	Narration			Can you explain the benefits of the indoor and outdoor games?			क्या आप इनडोर और आउटडोर खेलों के लाभों के बारे में बता सकते हैं?
-	SPR_8	[Sports]	Narration			Give the name of any game related to wrestling? Who performs the game?			कुश्ती से संबंधित किसी खेल का नाम बताइए? खेल कौन करता है?
-	SPR_9	[Sports]	Narration			Give the name of any traditional board game? If so, how is the game played and who plays the game?			किसी पारंपरिक बोर्ड गेम का नाम दें? यदि हां, तो खेल कैसे खेला जाता है और कौन खेलता है?
-	SPR_10	[Sports]	Narration			What is the name of the game played with marble? What are the rules for playing marble?			संगमरमर से खेले जाने वाले खेल का नाम क्या है? मार्बल बजाने के क्या नियम हैं?
-	SPR_11	[Sports]	Narration			Can you tell us the name of the game played with stone? How is it played?			क्या आप हमें पत्थर से खेले जाने वाले खेल का नाम बता सकते हैं? यह कैसे खेला जाता है?
-	SPR_12	[Sports]	Narration			Is there a specific game related to climbing of bamboo tree or banana stem in your community? 			क्या आपके समुदाय में बांस के पेड़ या केले के तने पर चढ़ने से संबंधित कोई विशिष्ट खेल है?
-	SPR_13	[Sports]	Narration			Give names of the game using sticks? How is it played?			लाठी से खेल के नाम बताइए? यह कैसे खेला जाता है?
-	SPR_14	[Sports]	Narration			Give the name of any indoor game in your community? How is it played?			अपने समुदाय में किसी इनडोर खेल का नाम दें? यह कैसे खेला जाता है?
-	SPR_15	[Sports]	Narration			What is the name of the game related to Boat Race? When and how is it played?			बोट रेस से संबंधित खेल का नाम क्या है? यह कब और कैसे खेला जाता है?
-	SPR_16	[Sports]	Narration			Can you tell us some benefits of Yoga? 			क्या आप हमें योग के कुछ फायदे बता सकते हैं?
-	CLT_1	[Culture]	Narration			How is the administration of your village function?			आपके गाँव का प्रशासन कैसे काम करता है?
-	CLT_2	[Culture]	Narration			Who are the people associated with the administration of a village? What are his/her roles and duties?			गाँव के प्रशासन से जुड़े लोग कौन होते हैं? उनकी भूमिकाएँ और कर्तव्य क्या - क्या होते हैं?
-	CLT_3	[Culture]	Narration			What is the role of village development committee?			ग्राम विकास समिति की क्या भूमिका है?
-	CLT_4	[Culture]	Narration			Tell us about the traditions and lifestyle of your community.			हमें अपने समुदाय की परंपराओं और जीवन शैली के बारे में बताएं।
-	CLT_5	[Culture]	Narration			How is the customary court function in your village?			आपके गाँव में प्रथागत न्यायालय कैसे का करता है?
-	CLT_6	[Culture]	Narration			Who is the head of the customary court of your community? What are his/her roles and duties?			आपके समुदाय के प्रथागत न्यायालय का मुखिया कौन है? उनकी भूमिकाएँ और काम क्या हैं?
-	CLT_7	[Culture]	Narration			Describe about the traditional dress of your community?			अपने समुदाय की पारंपरिक पोशाक के बारे में बताएं?
-	CLT_8	[Culture]	Narration			Tell us about the design of the most important shawl of your community?			अपने समुदाय के सबसे महत्वपूर्ण शॉल के डिजाइन के बारे में बताएं?
-	CLT_9	[Culture]	Narration			What are some of the traditional ornaments, costumes and jewellery of your community?			आपके समुदाय के कुछ पारंपरिक आभूषण और कपड़ें क्या हैं?
-	CLT_10	[Culture]	Narration			What are the main occupations of your community?			आपके समुदाय के मुख्य व्यवसाय क्या हैं?
-	CLT_11	[Culture]	Narration			What is the food culture of your community?			आपके समुदाय की खाद्य संस्कृति क्या है?
-	CLT_12	[Culture]	Narration			Tell us about some of the most popular foods items of your community.			हमें अपने समुदाय के कुछ सबसे लोकप्रिय खाद्य पदार्थों के बारे में बताएं।
-	CLT_13	[Culture]	Narration			What are the various steps and process involved in cultivation?			खेती में शामिल विभिन्न चरण और प्रक्रिया क्या हैं?
-	CLT_14	[Culture]	Narration			Is there any festival related to cultivation of your community? How are they celebrated?			क्या आपके समुदाय में खेती से संबंधित कोई त्योहार है? उन्हें कैसे मनाया जाता है?
-	CLT_15	[Culture]	Narration			What is the most important festival of your community? How do that celebrate?			आपके समुदाय का सबसे महत्वपूर्ण त्योहार कौन सा है? वह कैसे मनाया जाता है?
-	CLT_16	[Culture]	Narration			Tell us something about the traditional dances of your community.			अपने समुदाय के पारंपरिक नृत्यों के बारे में कुछ बताएं।
-	CLT_17	[Culture]	Narration			Tell us something about the marriage culture of your community.			अपने समुदाय की विवाह संस्कृति के बारे में कुछ बताएं।
-	CLT_18	[Culture]	Narration			Tell us about the traditional art of weaving of your community.			अपने समुदाय की बुनाई की पारंपरिक कला के बारे में बताएं।
-	CLT_19	[Culture]	Narration			Tell us about some of the famous art and handicraft, woodcarving and pottery produced by your community.			अपने समुदाय द्वारा बनाई जाने वाली कुछ प्रसिद्ध कला और हस्तशिल्प, लकड़ी की नक्काशी और मिट्टी के बर्तनों के बारे में बताएं।
-	CLT_20	[Culture]	Narration			What are different types of bamboo and cane products made by your community?			आपके समुदाय द्वारा बनाए गए बांस और गन्ने के विभिन्न प्रकार के उत्पाद कौन-से हैं?
-	CLT_21	[Culture]	Narration			Tell us about some of the famous folk songs of your community.			अपने समुदाय के कुछ प्रसिद्ध लोक गीतों के बारे में बताएं।
-	CLT_22	[Culture]	Narration			Tell us about musical instruments used by your community.			हमें अपने समुदाय द्वारा उपयोग किए जाने वाले संगीत वाद्ययंत्रों के बारे में बताएं।
-	CLT_23	[Culture]	Narration			How is the oral history of your community passed down?			आपके समुदाय का मौखिक इतिहास कैसे लिखा जाता है?
-	CLT_24	[Culture]	Narration			Tell us about the origin of the name of your community.			हमें अपने समुदाय के नाम की उत्पत्ति के बारे में बताएं।
-	CLT_25	[Culture]	Narration			Tell us one short folk story of your community.			हमें अपने समुदाय की एक छोटी लोक कथा बताएं।
-	CLT_26	[Culture]	Narration			Tell us about the traditional religion or beliefs of your community.			हमें अपने समुदाय के पारंपरिक धर्म या मान्यताओं के बारे में बताएं।
-	CLT_27	[Culture]	Narration			Tell us about the traditional method of fishing of your community?			अपने समुदाय की मछली पकड़ने की पारंपरिक पद्धति के बारे में बताएं?
-	CLT_28	[Culture]	Narration			What are the traditional weapons and tools used in hunting?			शिकार में उपयोग किए जाने वाले पारंपरिक हथियार और उपकरण कौन से हैं?
-	CLT_29	[Culture]	Narration			Tell us about setting a traditional trap to catch animals and birds.			जानवरों और पक्षियों को पकड़ने के लिए पारंपरिक जाल लगाने के बारे में बताएं।
-	CLT_30	[Culture]	Narration			Is traditional hunting still practice in your village? What are the rules and regulations of hunting in your village?			क्या आपके गाँव में अभी भी पारंपरिक शिकार का चलन है? आपके गाँव में शिकार के नियम और कानून क्या हैं?
-	CLT_31	[Culture]	Narration			what kind of ornaments do you use in your community and how are they made ?			आप अपने समुदाय में किस प्रकार के आभूषणों का प्रयोग करते हैं और वे कैसे बनते हैं ?
-=======
-quesId	Q_Id	prompt.Domain	prompt.Elicitation Method	prompt.Target	prompt.content.English-Latin.text.000000.startindex	prompt.content.English-Latin.text.000000.endindex	prompt.content.English-Latin.text.000000.textspan.Latin	prompt.content.Hindi-Devanagari.text.000000.startindex	prompt.content.Hindi-Devanagari.text.000000.endindex	prompt.content.Hindi-Devanagari.text.000000.textspan.Devanagari
-	AG_1	[Agriculture]	Narration	[]			What kinds of crops are grown by the people of your community?			आपके समाज के लोग किस प्रकार की फसलें उगाते हैं?
-	AG_2	[Agriculture]	Narration	[]			What are the people who grow crops called? Do they only grow crops or are they engaged in other activities as well? What kind of other activities are they engaged in?			फसल उगाने वाले लोगों को क्या कहा जाता है? क्या वे केवल फसल उगाते हैं या वे अन्य गतिविधियों में भी लगे हुए हैं? वे किस तरह की अन्य गतिविधियों में लगे हुए हैं?
-	AG_3	[Agriculture]	Narration	[]			Tell the names of at least 5 vegetables that are grown in your community			अपने समाज में उगाई जाने वाली कम से कम 5 सब्जियों के नाम बताइए?
-	AG_4	[Agriculture]	Narration	[]			In which months / seasons are these vegetables grown?			ये सब्जियां किन महीनों / मौसमों में उगाई जाती हैं?
-	AG_5	[Agriculture]	Narration	[]			What is the process of growing these vegetables?			इन सब्जियों को उगाने की प्रक्रिया क्या है?
-	AG_6	[Agriculture]	Narration	[]			How long do they take to mature?			उन्हें तैयार होने में कितना समय लगता है?
-	AG_7	[Agriculture]	Narration	[]			What kinds of special protection / care do they need (such as use of insecticide, pesticide or other such measures)?			उन्हें किस प्रकार की विशेष सुरक्षा / देखभाल की आवश्यकता है (जैसे कीटनाशक या ऐसे अन्य उपायों का उपयोग)?
-	AG_8	[Agriculture]	Narration	[]			How are they sold to other people?			वे अन्य लोगों को कैसे बेचे जाते हैं?
-	AG_9	[Agriculture]	Narration	[]			How are these cooked and eaten?			इन्हें कैसे पकाया और खाया जाता है?
-	AG_10	[Agriculture]	Narration	[]			Tell the names of at least 5 fruits that are grown in your community			अपने समाज में उगाए जाने वाले कम से कम 5 फलों के नाम बताइए?
-	AG_11	[Agriculture]	Narration	[]			In which months / seasons are these fruits grown?			ये फल किन महीनों / मौसमों में उगाए जाते हैं?
-	AG_12	[Agriculture]	Narration	[]			What is the process of growing these fruits?			इन फलों को उगाने की प्रक्रिया क्या है?
-	AG_13	[Agriculture]	Narration	[]			How long do they take to mature?			उन्हें तैयार होने में कितना समय लगता है?
-	AG_14	[Agriculture]	Narration	[]			What kinds of special protection / care do they need (such as use of insecticide, pesticide or other such measures)?			उन्हें किस प्रकार की विशेष सुरक्षा / देखभाल की आवश्यकता है (जैसे कीटनाशक या ऐसे अन्य उपायों का उपयोग)?
-	AG_15	[Agriculture]	Narration	[]			How are they sold to other people?			वे अन्य लोगों को कैसे बेचे जाते हैं?
-	AG_16	[Agriculture]	Narration	[]			How are these cooked and eaten?			इन्हें कैसे पकाया और खाया जाता है?
-	AG_17	[Agriculture]	Narration	[]			Tell the names of 2-3 cereals / grains that are grown in your community			अपने समाज में उगाए जाने वाले 2-3 अनाजों के नाम बताइए?
-	AG_18	[Agriculture]	Narration	[]			In which months / seasons are these cereals/grains grown?			ये अनाज किन महीनों / मौसमों में उगाए जाते हैं?
-	AG_19	[Agriculture]	Narration	[]			What is the process of growing these cereals/grains?			इन अनाजों को उगाने की प्रक्रिया क्या है?
-	AG_20	[Agriculture]	Narration	[]			How long do they take to mature?			उन्हें तैयार होने में कितना समय लगता है?
-	AG_21	[Agriculture]	Narration	[]			What kinds of special protection / care do they need (such as use of insecticide, pesticide or other such measures)?			उन्हें किस प्रकार की विशेष सुरक्षा / देखभाल की आवश्यकता है (जैसे कीटनाशक या ऐसे अन्य उपायों का उपयोग)?
-	AG_22	[Agriculture]	Narration	[]			How are they sold to other people?			वे अन्य लोगों को कैसे बेचे जाते हैं?
-	AG_23	[Agriculture]	Narration	[]			How are these cooked and eaten?			इन्हें कैसे पकाया और खाया जाता है?
-	AG_24	[Agriculture]	Narration	[]			Tell the names of 2-3 other crops that are grown in your community			अपने समाज में उगाई जाने वाली 2-3 अन्य फसलों के नाम बताएं
-	AG_25	[Agriculture]	Narration	[]			In which months / seasons are these crops grown?			ये फसलें किन महीनों / मौसमों में उगाई जाती हैं?
-	AG_26	[Agriculture]	Narration	[]			What is the process of growing these crops?			इन फसलों को उगाने की प्रक्रिया क्या है?
-	AG_27	[Agriculture]	Narration	[]			How long do they take to mature?			उन्हें तैयार होने में कितना समय लगता है?
-	AG_28	[Agriculture]	Narration	[]			What kinds of special protection / care do they need (such as use of insecticide, pesticide or other such measures)?			उन्हें किस प्रकार की विशेष सुरक्षा / देखभाल की आवश्यकता है (जैसे कीटनाशक या ऐसे अन्य उपायों का उपयोग)?
-	AG_29	[Agriculture]	Narration	[]			How are they sold to other people?			वे अन्य लोगों को कैसे बेचे जाते हैं?
-	AG_30	[Agriculture]	Narration	[]			How are these cooked and eaten?			इन्हें कैसे पकाया और खाया जाता है?
-	AG_31	[Agriculture]	Narration	[]			Tell the names of at least 5 trees that are grown in your community			अपने समाज में उगाए गए कम से कम 5 पेड़ों के नाम बताइए?
-	AG_32	[Agriculture]	Narration	[]			What are the usage of these trees?			इन पेड़ों का क्या उपयोग हैं?
-	AG_33	[Agriculture]	Narration	[]			What is the process of growing these trees?			इन पेड़ों को उगाने की प्रक्रिया क्या है?
-	AG_34	[Agriculture]	Narration	[]			How long do they take to mature?			उन्हें तैयार होने में कितना समय लगता है?
-	AG_35	[Agriculture]	Narration	[]			What kinds of special protection / care do they need (such as use of insecticide, pesticide or other such measures)?			उन्हें किस प्रकार की विशेष सुरक्षा / देखभाल की आवश्यकता है (जैसे कीटनाशक या ऐसे अन्य उपायों का उपयोग)?
-	AG_36	[Agriculture]	Narration	[]			Tell us some unique features of agricultural practice in your community?			हमें अपने समाज में कृषि पद्धति की कुछ अनूठी विशेषताओं के बारे में बताइए?
-	AG_37	[Agriculture]	Narration	[]			What changes have happened in the agricultural practice of your community in the last few years?			पिछले कुछ वर्षों में आपके समाज की कृषि पद्धति में क्या परिवर्तन हुए हैं?
-	AG_38	[Agriculture]	Narration	[]			Give us any other interesting / relevant information / comments about agriculture, its relevance and agricultural practices in your community?			हमें अपने समाज में कृषि, इसकी प्रासंगिकता और कृषि पद्धतियों के बारे में कोई अन्य रोचक/प्रासंगिक जानकारी/टिप्पणियां दीजिए
-	AG_39	[Agriculture]	Narration	[]			What kinds of machines are used in agriculture in your community?			आपके समाज में कृषि में किस प्रकार की मशीनों का उपयोग किया जाता है?
-	AG_40	[Agriculture]	Narration	[]			What are the usage of these machineries?			इन मशीनों का क्या उपयोग हैं?
-	AG_41	[Agriculture]	Narration	[]			How do they help in better management of agricultural activities in your community?			वे आपके समाज में कृषि गतिविधियों के बेहतर प्रबंधन में कैसे मदद करते हैं?
-	AG_42	[Agriculture]	Narration	[]			What kinds of other technologies are used for farming and agriculture in your community?			आपके समाज में खेती और कृषि के लिए किस प्रकार की अन्य तकनीकों का उपयोग किया जाता है?
-	AG_43	[Agriculture]	Narration	[]			How and for what purpose are they used?			उनका उपयोग कैसे और किस उद्देश्य के लिए किया जाता है?
-	AG_44	[Agriculture]	Narration	[]			What kinds of animals are used in farming in your community?			आपके समाज में खेती में किस प्रकार के जानवरों का उपयोग किया जाता है?
-	AG_45	[Agriculture]	Narration	[]			Tell us something about the role and relevance of animals in farming in your community?			अपने समाज में खेती में पशुओं की भूमिका और प्रासंगिकता के बारे में कुछ बताइए?
-	AG_112	[Agriculture]	Narration	[]			How do you irrigate your crops?			आप अपनी फसलों की सिंचाई कैसे करते हैं?
-	AG_113	[Agriculture]	Narration	[]			How do you irrigate crops when there is no rain?			जब वर्षा नहीं होती है तब आप फसलों की सिचाई कैसे करते हैं ?
-	AG_114	[Agriculture]	Narration	[]			What do you grow in your village?			आप अपने गाँव में क्या उगाते हैं?
-	AG_115	[Agriculture]	Narration	[]			Which of your crops requires more or less water?			आपकी किस फसल को कम या ज्यादा पानी चाहिए होता है?
-	AG_116	[Agriculture]	Narration	[]			Which crops do you plant in Winter season?			सर्दी के मौसम में कौन - कौन सी फसलें लगाते हैं?
-	AG_117	[Agriculture]	Narration	[]			Which crops do you plant in rainy season?			बरसात के मौसम में कौन - कौन सी फसलें लगाते हैं?
-	AG_118	[Agriculture]	Narration	[]			Which crops do you plant for all seasons?			आप सभी मौसमों में कौन - कौन सी फसलें लगाते हैं ?
-	AG_119	[Agriculture]	Narration	[]			How are work related to agriculture distributed among the family? 			खेती से संबंधित काम परिवार में किस तरह से बांटे जात हैं?
-	AG_120	[Agriculture]	Narration	[]			Which machines do you use for farming?			खेती के लिए आप किन मशीनों का प्रयोग करते हैं?
-	AG_121	[Agriculture]	Narration	[]			Which fertilizers do you use to grow crops?			फसलें उगाने के लिए आप कौन - कौन से खाद प्रयोग करते हैं?
-	AG_122	[Agriculture]	Narration	[]			For which crops do you use cow dung manure?			गोबर की खाद आप किन - किन फसलों को उगाने के लिए प्रयोग करते हैं?
-	AG_123	[Agriculture]	Narration	[]			Who does fishing in your community?			आपके समुदाय में मछली पालने या पकड़ने का काम कौन करता है?
-	AG_124	[Agriculture]	Narration	[]			Who does poultry farming in your community?			आपके समुदाय में मुर्गी पालन कौन करता है?
-	AG_125	[Agriculture]	Narration	[]			Who does animal husbandry in your community?			आपके समुदाय में पशुपालन कौन करता है?
-	AG_126	[Agriculture]	Narration	[]			Who does goat rearing in your community?			आपके समुदाय में बकरी पालन कौन करता है?
-	AG_127	[Agriculture]	Narration	[]			Who does sheep rearing in your community?			आपके समुदाय में भेड़ पालन कौन करता है?
-	AG_128	[Agriculture]	Narration	[]			Which milking animals do you keep?			आप कौन - कौन से दूध देने वाले पशू पालते हैं?
-	AG_129	[Agriculture]	Narration	[]			What do you make with milk?			आप दूध से क्या - क्या बनाते हैं?
-	AG_130	[Agriculture]	Narration	[]			What do you feed your dairy cattle?			आप अपने धुधारू पशुओं को क्या खिलाते हैं?
-	AG_131	[Agriculture]	Narration	[]			Which pulses do you grow?			आप कौन - कौन सी दालें उगाते हैं?
-	AG_132	[Agriculture]	Narration	[]			What green vegetables do you grow?			आप कौन - कौन सी हरी सब्जियां उगाते हैं?
-	AG_133	[Agriculture]	Narration	[]			Which vegetables do you grow?			आप कौन - कौन सी सब्जियां उगाते हैं?
-	AG_134	[Agriculture]	Narration	[]			Where do you keep your harvested crops?			फसलों को काटकर आप कहां रखते हैं?
-	AG_135	[Agriculture]	Narration	[]			Which crop insurance do you get from the government?			आपको सरकार की तरफ से कौन - कौन से फसल बीमा मिलते हैं?
-	AG_276	[Agriculture]	Narration	[]			How do you preserve meat?			आप मांस को कैसे संरक्षित करते हैं?
-	AG_277	[Agriculture]	Narration	[]			How do you preserve raw vegetables?			आप कच्ची सब्जियों को कैसे संरक्षित करते हैं?
-	AG_278	[Agriculture]	Narration	[]			How do you preserve fish?			आप मछली को कैसे संरक्षित करते हैं?
-	AG_279	[Agriculture]	Narration	[]			How do you prepare local wine?			आप देसी शराब कैसे बनाते हैं?
-	AG_280	[Agriculture]	Narration	[]			What are the ingredents used for preparing local wine?			देसी शराब बनाने के लिए किन सामग्रियों का प्रयोग किया जाता है?
-	AG_46	[Agriculture]	Narration	[]			What are the different kinds of seeds used for growing rice? What are their advantages and disadvantages?			चावल उगाने के लिए किस प्रकार के बीजों का प्रयोग किया जाता है? उनके फायदे और नुकसान क्या हैं?
-	AG_47	[Agriculture]	Narration	[]			What are the different varieties of rice grown?			चावल की विभिन्न किस्में कौन सी उगाई जाती हैं?
-	AG_48	[Agriculture]	Narration	[]			In which months / seasons are the different varieties of rice grown - if only one variety of rice is cultivated, tell us about that only?			चावल की विभिन्न किस्में किन महीनों / मौसमों में उगाई जाती हैं - अगर चावल की केवल एक ही किस्म की खेती की जाती है, तो उसके बारे में ही बताइए?
-	AG_49	[Agriculture]	Narration	[]			What is the process of growing different varieties of rice- if only one variety of rice is cultivated, tell us about that only?			चावल की विभिन्न किस्मों को उगाने की प्रक्रिया क्या है - अगर चावल की केवल एक किस्म की खेती की जाती है, तो हमें केवल उसके बारे में बताइए?
-	AG_50	[Agriculture]	Narration	[]			How long do they take to mature?			उन्हें तैयार होने में कितना समय लगता है?
-	AG_51	[Agriculture]	Narration	[]			What kinds of special protection / care do they need (such as use of insecticide, pesticide or other such measures)?			उन्हें किस प्रकार की विशेष सुरक्षा / देखभाल की आवश्यकता है (जैसे कीटनाशक या ऐसे अन्य उपायों का उपयोग)?
-	AG_52	[Agriculture]	Narration	[]			How are they sold to other people?			वे अन्य लोगों को कैसे बेचे जाते हैं?
-	AG_53	[Agriculture]	Narration	[]			How are these cooked and eaten?			इन्हें कैसे पकाया और खाया जाता है?
-	AG_54	[Agriculture]	Narration	[]			What are the different kinds of seeds used for growing maize? What are their advantages and disadvantages?			मक्का उगाने के लिए किस प्रकार के बीजों का प्रयोग किया जाता है? उनके फायदे और नुकसान क्या हैं?
-	AG_55	[Agriculture]	Narration	[]			What are the different varieties of maize grown?			मक्के की विभिन्न किस्में कौन सी उगाई जाती हैं?
-	AG_56	[Agriculture]	Narration	[]			In which months / seasons are the different varieties of maize grown - if only one variety of maize is cultivated, tell us about that only?			मक्के की विभिन्न किस्में किन महीनों / मौसमों में उगाई जाती हैं - अगर मक्के की केवल एक ही किस्म की खेती की जाती है, तो उसके बारे में ही बताइए?
-	AG_57	[Agriculture]	Narration	[]			What is the process of growing different varieties of maize- if only one variety of maize is cultivated, tell us about that only?			मक्के की विभिन्न किस्मों को उगाने की प्रक्रिया क्या है - अगर मक्के की केवल एक किस्म की खेती की जाती है, तो हमें केवल उसके बारे में बताइए?
-	AG_58	[Agriculture]	Narration	[]			How long do they take to mature?			उन्हें तैयार होने में कितना समय लगता है?
-	AG_59	[Agriculture]	Narration	[]			What kinds of special protection / care do they need (such as use of insecticide, pesticide or other such measures)?			उन्हें किस प्रकार की विशेष सुरक्षा / देखभाल की आवश्यकता है (जैसे कीटनाशक या ऐसे अन्य उपायों का उपयोग)?
-	AG_60	[Agriculture]	Narration	[]			How are they sold to other people?			वे अन्य लोगों को कैसे बेचे जाते हैं?
-	AG_61	[Agriculture]	Narration	[]			How are these cooked and eaten?			इन्हें कैसे पकाया और खाया जाता है?
-	AG_62	[Agriculture]	Narration	[]			What are the different kinds of seeds used for growing chilly? What are their advantages and disadvantages?			मिर्च उगाने के लिए किस प्रकार के बीजों का प्रयोग किया जाता है? उनके फायदे और नुकसान क्या हैं?
-	AG_63	[Agriculture]	Narration	[]			What are the different varieties of chilly grown?			मिर्च की विभिन्न किस्में कौन सी उगाई जाती हैं?
-	AG_64	[Agriculture]	Narration	[]			In which months / seasons are the different varieties of chilly grown - if only one variety of chilly is cultivated, tell us about that only?			मिर्च की विभिन्न किस्में किन महीनों / मौसमों में उगाई जाती हैं - अगर मिर्च की केवल एक ही किस्म की खेती की जाती है, तो उसके बारे में ही बताइए?
-	AG_65	[Agriculture]	Narration	[]			What is the process of growing different varieties of chilly- if only one variety of chilly is cultivated, tell us about that only?			मिर्च की विभिन्न किस्मों को उगाने की प्रक्रिया क्या है - अगर मिर्च की केवल एक किस्म की खेती की जाती है, तो हमें केवल उसके बारे में बताइए?
-	AG_66	[Agriculture]	Narration	[]			How long do they take to mature?			उन्हें तैयार होने में कितना समय लगता है?
-	AG_67	[Agriculture]	Narration	[]			What kinds of special protection / care do they need (such as use of insecticide, pesticide or other such measures)?			उन्हें किस प्रकार की विशेष सुरक्षा / देखभाल की आवश्यकता है (जैसे कीटनाशक या ऐसे अन्य उपायों का उपयोग)?
-	AG_68	[Agriculture]	Narration	[]			How are they sold to other people?			वे अन्य लोगों को कैसे बेचे जाते हैं?
-	AG_69	[Agriculture]	Narration	[]			How are these cooked and eaten?			इन्हें कैसे पकाया और खाया जाता है?
-	AG_70	[Agriculture]	Narration	[]			What are the different kinds of seeds used for growing turmeric? What are their advantages and disadvantages?			हल्दी उगाने के लिए किस प्रकार के बीजों का प्रयोग किया जाता है? उनके फायदे और नुकसान क्या हैं?
-	AG_71	[Agriculture]	Narration	[]			What are the different varieties of turmeric grown?			हल्दी की विभिन्न किस्में कौन सी उगाई जाती हैं?
-	AG_72	[Agriculture]	Narration	[]			In which months / seasons are the different varieties of turmeric grown - if only one variety of turmeric is cultivated, tell us about that only?			हल्दी की विभिन्न किस्में किन महीनों / मौसमों में उगाई जाती हैं - अगर हल्दी की केवल एक ही किस्म की खेती की जाती है, तो उसके बारे में ही बताइए?
-	AG_73	[Agriculture]	Narration	[]			What is the process of growing different varieties of turmeric- if only one variety of turmeric is cultivated, tell us about that only?			हल्दी की विभिन्न किस्मों को उगाने की प्रक्रिया क्या है - अगर हल्दी की केवल एक किस्म की खेती की जाती है, तो हमें केवल उसके बारे में बताइए?
-	AG_74	[Agriculture]	Narration	[]			How long do they take to mature?			उन्हें तैयार होने में कितना समय लगता है?
-	AG_75	[Agriculture]	Narration	[]			What kinds of special protection / care do they need (such as use of insecticide, pesticide or other such measures)?			उन्हें किस प्रकार की विशेष सुरक्षा / देखभाल की आवश्यकता है (जैसे कीटनाशक या ऐसे अन्य उपायों का उपयोग)?
-	AG_76	[Agriculture]	Narration	[]			How are they sold to other people?			वे अन्य लोगों को कैसे बेचे जाते हैं?
-	AG_77	[Agriculture]	Narration	[]			How are these cooked and eaten?			इन्हें कैसे पकाया और खाया जाता है?
-	AG_78	[Agriculture]	Narration	[]			What are the different kinds of seeds used for growing potato? What are their advantages and disadvantages?			आलू उगाने के लिए किस प्रकार के बीजों का प्रयोग किया जाता है? उनके फायदे और नुकसान क्या हैं?
-	AG_79	[Agriculture]	Narration	[]			What are the different varieties of potato grown?			आलू की विभिन्न किस्में कौन सी उगाई जाती हैं?
-	AG_80	[Agriculture]	Narration	[]			In which months / seasons are the different varieties of potato grown - if only one variety of potato is cultivated, tell us about that only?			आलू की विभिन्न किस्में किन महीनों / मौसमों में उगाई जाती हैं - अगर आलू की केवल एक ही किस्म की खेती की जाती है, तो उसके बारे में ही बताइए?
-	AG_81	[Agriculture]	Narration	[]			What is the process of growing different varieties of potato- if only one variety of potato is cultivated, tell us about that only?			आलू की विभिन्न किस्मों को उगाने की प्रक्रिया क्या है - अगर आलू की केवल एक किस्म की खेती की जाती है, तो हमें केवल उसके बारे में बताइए?
-	AG_82	[Agriculture]	Narration	[]			How long do they take to mature?			उन्हें तैयार होने में कितना समय लगता है?
-	AG_83	[Agriculture]	Narration	[]			What kinds of special protection / care do they need (such as use of insecticide, pesticide or other such measures)?			उन्हें किस प्रकार की विशेष सुरक्षा / देखभाल की आवश्यकता है (जैसे कीटनाशक या ऐसे अन्य उपायों का उपयोग)?
-	AG_84	[Agriculture]	Narration	[]			How are they sold to other people?			वे अन्य लोगों को कैसे बेचे जाते हैं?
-	AG_85	[Agriculture]	Narration	[]			How are these cooked and eaten?			इन्हें कैसे पकाया और खाया जाता है?
-	AG_281	[Agriculture]	Narration	[]			What are the different kinds of seeds used for growing millet? What are their advantages and disadvantages?			बाजरा उगाने के लिए किस प्रकार के बीजों का प्रयोग किया जाता है? उनके फायदे और नुकसान क्या हैं?
-	AG_282	[Agriculture]	Narration	[]			What are the different varieties of millet grown?			बाजरा की विभिन्न किस्में कौन सी उगाई जाती हैं?
-	AG_283	[Agriculture]	Narration	[]			In which months / seasons are the different varieties of millet grown - if only one variety of millet is cultivated, tell us about that only?			बाजरा की विभिन्न किस्में किन महीनों / मौसमों में उगाई जाती हैं - अगर बाजरा की केवल एक ही किस्म की खेती की जाती है, तो उसके बारे में ही बताइए?
-	AG_284	[Agriculture]	Narration	[]			What is the process of growing different varieties of millet - if only one variety of millet is cultivated, tell us about that only?			बाजरा की विभिन्न किस्मों को उगाने की प्रक्रिया क्या है - अगर बाजरा की केवल एक किस्म की खेती की जाती है, तो हमें केवल उसके बारे में बताइए?
-	AG_285	[Agriculture]	Narration	[]			How long do they take to mature?			उन्हें तैयार होने में कितना समय लगता है?
-	AG_286	[Agriculture]	Narration	[]			What kinds of special protection / care do they need (such as use of insecticide, pesticide or other such measures)?			उन्हें किस प्रकार की विशेष सुरक्षा / देखभाल की आवश्यकता है (जैसे कीटनाशक या ऐसे अन्य उपायों का उपयोग)?
-	AG_287	[Agriculture]	Narration	[]			How are they sold to other people?			वे अन्य लोगों को कैसे बेचे जाते हैं?
-	AG_288	[Agriculture]	Narration	[]			How are these cooked and eaten?			इन्हें कैसे पकाया और खाया जाता है?
-	AG_289	[Agriculture]	Narration	[]			What are the different kinds of seeds used for growing ginger? What are their advantages and disadvantages?			अदरक उगाने के लिए किस प्रकार के बीजों का प्रयोग किया जाता है? उनके फायदे और नुकसान क्या हैं?
-	AG_290	[Agriculture]	Narration	[]			What are the different varieties of ginger grown?			अदरक की विभिन्न किस्में कौन सी उगाई जाती हैं?
-	AG_291	[Agriculture]	Narration	[]			In which months / seasons are the different varieties of ginger grown - if only one variety of ginger is cultivated, tell us about that only?			अदरक की विभिन्न किस्में किन महीनों / मौसमों में उगाई जाती हैं - अगर अदरक की केवल एक ही किस्म की खेती की जाती है, तो उसके बारे में ही बताइए?
-	AG_292	[Agriculture]	Narration	[]			What is the process of growing different varieties of ginger - if only one variety of ginger is cultivated, tell us about that only?			अदरक की विभिन्न किस्मों को उगाने की प्रक्रिया क्या है - अगर अदरक की केवल एक किस्म की खेती की जाती है, तो हमें केवल उसके बारे में बताइए?
-	AG_293	[Agriculture]	Narration	[]			How long do they take to mature?			उन्हें तैयार होने में कितना समय लगता है?
-	AG_294	[Agriculture]	Narration	[]			What kinds of special protection / care do they need (such as use of insecticide, pesticide or other such measures)?			उन्हें किस प्रकार की विशेष सुरक्षा / देखभाल की आवश्यकता है (जैसे कीटनाशक या ऐसे अन्य उपायों का उपयोग)?
-	AG_295	[Agriculture]	Narration	[]			How are they sold to other people?			वे अन्य लोगों को कैसे बेचे जाते हैं?
-	AG_296	[Agriculture]	Narration	[]			How are these cooked and eaten?			इन्हें कैसे पकाया और खाया जाता है?
-	AG_297	[Agriculture]	Narration	[]			What are the different kinds of seeds used for growing large cardamom? What are their advantages and disadvantages?			बडी इलायची उगाने के लिए किस प्रकार के बीजों का प्रयोग किया जाता है? उनके फायदे और नुकसान क्या हैं?
-	AG_298	[Agriculture]	Narration	[]			What are the different varieties of large cardamom grown?			बडी इलायची की विभिन्न किस्में कौन सी उगाई जाती हैं?
-	AG_299	[Agriculture]	Narration	[]			In which months / seasons are the different varieties of large cardamom grown - if only one variety of large cardamom is cultivated, tell us about that only?			बडी इलायची की विभिन्न किस्में किन महीनों / मौसमों में उगाई जाती हैं - अगर बडी इलायची की केवल एक ही किस्म की खेती की जाती है, तो उसके बारे में ही बताइए?
-	AG_300	[Agriculture]	Narration	[]			What is the process of growing different varieties of large cardamom - if only one variety of large cardamom is cultivated, tell us about that only?			बडी इलायची की विभिन्न किस्मों को उगाने की प्रक्रिया क्या है - अगर बडी इलायची की केवल एक किस्म की खेती की जाती है, तो हमें केवल उसके बारे में बताइए?
-	AG_301	[Agriculture]	Narration	[]			How long do they take to mature?			उन्हें तैयार होने में कितना समय लगता है?
-	AG_302	[Agriculture]	Narration	[]			What kinds of special protection / care do they need (such as use of insecticide, pesticide or other such measures)?			उन्हें किस प्रकार की विशेष सुरक्षा / देखभाल की आवश्यकता है (जैसे कीटनाशक या ऐसे अन्य उपायों का उपयोग)?
-	AG_303	[Agriculture]	Narration	[]			How are they sold to other people?			वे अन्य लोगों को कैसे बेचे जाते हैं?
-	AG_304	[Agriculture]	Narration	[]			How are these cooked and eaten?			इन्हें कैसे पकाया और खाया जाता है?
-	AG_305	[Agriculture]	Narration	[]			What are the different kinds of seeds used for growing mustard? What are their advantages and disadvantages?			सरसों उगाने के लिए किस प्रकार के बीजों का प्रयोग किया जाता है? उनके फायदे और नुकसान क्या हैं?
-	AG_306	[Agriculture]	Narration	[]			What are the different varieties of mustard grown?			सरसों की विभिन्न किस्में कौन सी उगाई जाती हैं?
-	AG_307	[Agriculture]	Narration	[]			In which months / seasons are the different varieties of mustard grow - if only one variety of mustard is cultivated, tell us about that only?			सरसों की विभिन्न किस्में किन महीनों / मौसमों में उगाई जाती हैं - अगर सरसों की केवल एक ही किस्म की खेती की जाती है, तो उसके बारे में ही बताइए?
-	AG_308	[Agriculture]	Narration	[]			What is the process of growing different varieties of mustard - if only one variety of mustard is cultivated, tell us about that only?			सरसों की विभिन्न किस्मों को उगाने की प्रक्रिया क्या है - अगर सरसों की केवल एक किस्म की खेती की जाती है, तो हमें केवल उसके बारे में बताइए?
-	AG_309	[Agriculture]	Narration	[]			How long do they take to mature?			उन्हें तैयार होने में कितना समय लगता है?
-	AG_310	[Agriculture]	Narration	[]			What kinds of special protection / care do they need (such as use of insecticide, pesticide or other such measures)?			उन्हें किस प्रकार की विशेष सुरक्षा / देखभाल की आवश्यकता है (जैसे कीटनाशक या ऐसे अन्य उपायों का उपयोग)?
-	AG_311	[Agriculture]	Narration	[]			How are they sold to other people?			वे अन्य लोगों को कैसे बेचे जाते हैं?
-	AG_312	[Agriculture]	Narration	[]			How are these cooked and eaten?			इन्हें कैसे पकाया और खाया जाता है?
-	AG_86	[Agriculture]	Narration	[]			What are the different kinds of seeds used for growing potato? What are their advantages and disadvantages?			आलू उगाने के लिए किस प्रकार के बीजों का प्रयोग किया जाता है? उनके फायदे और नुकसान क्या हैं?
-	AG_87	[Agriculture]	Narration	[]			What are the different varieties of potato grown?			आलू की विभिन्न किस्में कौन सी उगाई जाती हैं?
-	AG_88	[Agriculture]	Narration	[]			In which months / seasons are the different varieties of potato grown - if only one variety of potato is cultivated, tell us about that only?			आलू की विभिन्न किस्में किन महीनों / मौसमों में उगाई जाती हैं - अगर आलू की केवल एक ही किस्म की खेती की जाती है, तो उसके बारे में ही बताइए?
-	AG_89	[Agriculture]	Narration	[]			What is the process of growing different varieties of potato- if only one variety of potato is cultivated, tell us about that only?			आलू की विभिन्न किस्मों को उगाने की प्रक्रिया क्या है - अगर आलू की केवल एक किस्म की खेती की जाती है, तो हमें केवल उसके बारे में बताइए?
-	AG_90	[Agriculture]	Narration	[]			How long do they take to mature?			उन्हें तैयार होने में कितना समय लगता है?
-	AG_91	[Agriculture]	Narration	[]			What kinds of special protection / care do they need (such as use of insecticide, pesticide or other such measures)?			उन्हें किस प्रकार की विशेष सुरक्षा / देखभाल की आवश्यकता है (जैसे कीटनाशक या ऐसे अन्य उपायों का उपयोग)?
-	AG_92	[Agriculture]	Narration	[]			How are they sold to other people?			वे अन्य लोगों को कैसे बेचे जाते हैं?
-	AG_93	[Agriculture]	Narration	[]			How are these cooked and eaten?			इन्हें कैसे पकाया और खाया जाता है?
-	AG_94	[Agriculture]	Narration	[]			What are the different kinds of seeds used for growing banana? What are their advantages and disadvantages?			केला उगाने के लिए किस प्रकार के बीजों का प्रयोग किया जाता है? उनके फायदे और नुकसान क्या हैं?
-	AG_95	[Agriculture]	Narration	[]			What are the different varieties of banana grown?			केला की विभिन्न किस्में कौन सी उगाई जाती हैं?
-	AG_96	[Agriculture]	Narration	[]			In which months / seasons are the different varieties of banana grown - if only one variety of banana is cultivated, tell us about that only?			केला की विभिन्न किस्में किन महीनों / मौसमों में उगाई जाती हैं - अगर केला की केवल एक ही किस्म की खेती की जाती है, तो उसके बारे में ही बताइए?
-	AG_97	[Agriculture]	Narration	[]			What is the process of growing different varieties of banana- if only one variety of banana is cultivated, tell us about that only?			केला की विभिन्न किस्मों को उगाने की प्रक्रिया क्या है - अगर केला की केवल एक किस्म की खेती की जाती है, तो हमें केवल उसके बारे में बताइए?
-	AG_98	[Agriculture]	Narration	[]			How long do they take to mature?			उन्हें तैयार होने में कितना समय लगता है?
-	AG_99	[Agriculture]	Narration	[]			What kinds of special protection / care do they need (such as use of insecticide, pesticide or other such measures)?			उन्हें किस प्रकार की विशेष सुरक्षा / देखभाल की आवश्यकता है (जैसे कीटनाशक या ऐसे अन्य उपायों का उपयोग)?
-	AG_100	[Agriculture]	Narration	[]			How are they sold to other people?			वे अन्य लोगों को कैसे बेचे जाते हैं?
-	AG_101	[Agriculture]	Narration	[]			How are these cooked and eaten?			इन्हें कैसे पकाया और खाया जाता है?
-	AG_102	[Agriculture]	Narration	[]			What kind of animals do you keep in your home?			आप अपने घर में किस तरह के जानवर रखते हैं?
-	AG_103	[Agriculture]	Narration	[]			What are they use for?			वे किस लिए उपयोग किए जा रहे हैं?
-	AG_104	[Agriculture]	Narration	[]			What all are pigs used for?			सूअरों का उपयोग किस लिए किया जाता है?
-	AG_105	[Agriculture]	Narration	[]			What kind of food is prepared and given to pigs?			सूअरों के लिए किस तरह का खाना बनाया और दिया जाता है?
-	AG_106	[Agriculture]	Narration	[]			How are the pigs taken care of?			सूअरों की देखभाल कैसे की जाती है?
-	AG_107	[Agriculture]	Narration	[]			What kinds of disease do the pigs suffer from?			सूअर किस प्रकार की बीमारी से पीड़ित होते हैं?
-	AG_108	[Agriculture]	Narration	[]			Where do pigs stay in the home?			सूअर घर में कहाँ रहते हैं?
-	AG_109	[Agriculture]	Narration	[]			How do Toto people grow maize?			टोटो लोग मक्का कैसे उगाते हैं?
-	AG_110	[Agriculture]	Narration	[]			How do you grow jackfruit?			आप कटहल कैसे उगाते हैं?
-	AG_144	[Agriculture]	Narration	[]			What are the different kinds of seeds used for growing rice? What are their advantages and disadvantages?			चावल उगाने के लिए किस प्रकार के बीजों का उपयोग किया जाता है? उनके फायदे और नुकसान क्या हैं?
-	AG_145	[Agriculture]	Narration	[]			What are the different varieties of rice grown?			चावल की विभिन्न किस्में कौन सी उगाई जाती हैं?
-	AG_146	[Agriculture]	Narration	[]			In which months / seasons are the different varieties of rice grown - if only one variety of rice is cultivated, tell us about that only?			चावल की विभिन्न किस्में किन महीनों / मौसमों में उगाई जाती हैं - यदि चावल की केवल एक ही किस्म की खेती की जाती है, तो उसके बारे में ही बताइए?
-	AG_147	[Agriculture]	Narration	[]			What is the process of growing different varieties of rice- if only one variety of rice is cultivated, tell us about that only?			चावल की विभिन्न किस्मों को उगाने की प्रक्रिया क्या है - यदि चावल की केवल एक किस्म की खेती की जाती है, तो हमें केवल उसके बारे में बताइए?
-	AG_148	[Agriculture]	Narration	[]			How long do they take to mature?			उन्हें तैयार होने में कितना समय लगता है?
-	AG_149	[Agriculture]	Narration	[]			What kinds of special protection / care do they need (such as use of insecticide, pesticide or other such measures)?			उन्हें किस प्रकार की विशेष सुरक्षा / देखभाल की आवश्यकता है (जैसे कीटनाशक या ऐसे अन्य उपायों का प्रयोग)?
-	AG_150	[Agriculture]	Narration	[]			How are they sold to other people?			वे अन्य लोगों को कैसे बेचे जाते हैं?
-	AG_151	[Agriculture]	Narration	[]			How are these cooked and eaten?			इन्हें कैसे पकाया और खाया जाता है?
-	AG_152	[Agriculture]	Narration	[]			What are the different kinds of seeds used for growing wheat? What are their advantages and disadvantages?			गेहूं उगाने के लिए किस प्रकार के बीजों का प्रयोग किया जाता है? उनके फायदे और नुकसान क्या हैं?
-	AG_153	[Agriculture]	Narration	[]			What are the different varieties of wheat grown?			गेहूं की विभिन्न किस्में कौन सी उगाई जाती हैं?
-	AG_154	[Agriculture]	Narration	[]			In which months / seasons are the different varieties of wheat grown - if only one variety of wheat is cultivated, tell us about that only?			गेहूं की विभिन्न किस्में किन महीनों / मौसमों में उगाई जाती हैं - यदि गेहूं की केवल एक ही किस्म की खेती की जाती है, तो उसके बारे में ही बताइए?
-	AG_155	[Agriculture]	Narration	[]			What is the process of growing different varieties of wheat - if only one variety of wheat is cultivated, tell us about that only?			गेहूं की विभिन्न किस्मों को उगाने की प्रक्रिया क्या है - यदि गेहूं की केवल एक किस्म की खेती की जाती है, तो हमें केवल उसके बारे में बताइए?
-	AG_156	[Agriculture]	Narration	[]			How long do they take to mature?			उन्हें तैयार होने में कितना समय लगता है?
-	AG_157	[Agriculture]	Narration	[]			What kinds of special protection / care do they need (such as use of insecticide, pesticide or other such measures)?			उन्हें किस प्रकार की विशेष सुरक्षा / देखभाल की आवश्यकता है (जैसे कीटनाशक या ऐसे अन्य उपायों का उपयोग)?
-	AG_158	[Agriculture]	Narration	[]			How are they sold to other people?			वे अन्य लोगों को कैसे बेचे जाते हैं?
-	AG_159	[Agriculture]	Narration	[]			How are these cooked and eaten?			इन्हें कैसे पकाया और खाया जाता है?
-	AG_160	[Agriculture]	Narration	[]			What are the different kinds of seeds used for growing maize? What are their advantages and disadvantages?			मक्का उगाने के लिए किस प्रकार के बीजों का प्रयोग किया जाता है? उनके फायदे और नुकसान क्या हैं?
-	AG_161	[Agriculture]	Narration	[]			What are the different varieties of maize grown?			मक्का की विभिन्न किस्में कौन सी उगाई जाती हैं?
-	AG_162	[Agriculture]	Narration	[]			In which months / seasons are the different varieties of maize grown - if only one variety of maize is cultivated, tell us about that only?			मक्का की विभिन्न किस्में किन महीनों / मौसमों में उगाई जाती हैं - यदि मक्का की केवल एक ही किस्म की खेती की जाती है, तो उसके बारे में ही बताइए?
-	AG_163	[Agriculture]	Narration	[]			What is the process of growing different varieties of maize - if only one variety of maize is cultivated, tell us about that only?			मक्का की विभिन्न किस्मों को उगाने की प्रक्रिया क्या है - यदि मक्का की केवल एक किस्म की खेती की जाती है, तो हमें केवल उसके बारे में बताइए?
-	AG_164	[Agriculture]	Narration	[]			How long do they take to mature?			उन्हें तैयार होने में कितना समय लगता है?
-	AG_165	[Agriculture]	Narration	[]			What kinds of special protection / care do they need (such as use of insecticide, pesticide or other such measures)?			उन्हें किस प्रकार की विशेष सुरक्षा / देखभाल की आवश्यकता है (जैसे कीटनाशक या ऐसे अन्य उपायों का उपयोग)?
-	AG_166	[Agriculture]	Narration	[]			How are they sold to other people?			वे अन्य लोगों को कैसे बेचे जाते हैं?
-	AG_167	[Agriculture]	Narration	[]			How are these cooked and eaten?			इन्हें कैसे पकाया और खाया जाता है?
-	AG_168	[Agriculture]	Narration	[]			What are the different kinds of seeds used for growing pluses? What are their advantages and disadvantages?			दालें उगाने के लिए किस प्रकार के बीजों का प्रयोग किया जाता है? उनके फायदे और नुकसान क्या हैं?
-	AG_169	[Agriculture]	Narration	[]			What are the different varieties of pluses grown?			दालों की विभिन्न किस्में कौन सी उगाई जाती हैं?
-	AG_170	[Agriculture]	Narration	[]			In which months / seasons are the different varieties of pluses grown - if only one variety of pluses is cultivated, tell us about that only?			दालों की विभिन्न किस्में किन महीनों / मौसमों में उगाई जाती हैं - अगर दाल की केवल एक ही किस्म की खेती की जाती है, तो उसके बारे में ही बताइए?
-	AG_171	[Agriculture]	Narration	[]			What is the process of growing different varieties of pluses - if only one variety of pluses is cultivated, tell us about that only?			दालों की विभिन्न किस्मों को उगाने की प्रक्रिया क्या है - यदि दाल की केवल एक किस्म की खेती की जाती है, तो हमें केवल उसके बारे में बताइए?
-	AG_172	[Agriculture]	Narration	[]			How long do they take to mature?			उन्हें तैयार होने में कितना समय लगता है?
-	AG_173	[Agriculture]	Narration	[]			What kinds of special protection / care do they need (such as use of insecticide, pesticide or other such measures)?			उन्हें किस प्रकार की विशेष सुरक्षा / देखभाल की आवश्यकता है (जैसे कीटनाशक या ऐसे अन्य उपायों का उपयोग)?
-	AG_174	[Agriculture]	Narration	[]			How are they sold to other people?			वे अन्य लोगों को कैसे बेचे जाते हैं?
-	AG_175	[Agriculture]	Narration	[]			How are these cooked and eaten?			इन्हें कैसे पकाया और खाया जाता है?
-	AG_176	[Agriculture]	Narration	[]			What are the different kinds of seeds used for growing sugarcane? What are their advantages and disadvantages?			गन्ना उगाने के लिए किस प्रकार के बीजों का प्रयोग किया जाता है? उनके फायदे और नुकसान क्या हैं?
-	AG_177	[Agriculture]	Narration	[]			What are the different varieties of sugarcane grown?			गन्ना की विभिन्न किस्में कौन सी उगाई जाती हैं?
-	AG_178	[Agriculture]	Narration	[]			In which months / seasons are the different varieties of sugarcane grown - if only one variety of sugarcane is cultivated, tell us about that only?			गन्ना की विभिन्न किस्में किन महीनों / मौसमों में उगाई जाती हैं - अगर गन्ना की केवल एक ही किस्म की खेती की जाती है, तो उसके बारे में ही बताइए?
-	AG_179	[Agriculture]	Narration	[]			What is the process of growing different varieties of sugarcane - if only one variety of sugarcane is cultivated, tell us about that only?			गन्ना की विभिन्न किस्मों को उगाने की प्रक्रिया क्या है - अगर गन्ना की केवल एक किस्म की खेती की जाती है, तो हमें केवल उसके बारे में बताइए?
-	AG_180	[Agriculture]	Narration	[]			How long do they take to mature?			उन्हें तैयार होने में कितना समय लगता है?
-	AG_181	[Agriculture]	Narration	[]			What kinds of special protection / care do they need (such as use of insecticide, pesticide or other such measures)?			उन्हें किस प्रकार की विशेष सुरक्षा / देखभाल की आवश्यकता है (जैसे कीटनाशक या ऐसे अन्य उपायों का उपयोग)?
-	AG_182	[Agriculture]	Narration	[]			How are they sold to other people?			वे अन्य लोगों को कैसे बेचे जाते हैं?
-	AG_183	[Agriculture]	Narration	[]			How are these cooked and eaten?			इन्हें कैसे पकाया और खाया जाता है?
-	AG_184	[Agriculture]	Narration	[]			What are the different kinds of seeds used for growing cotton? What are their advantages and disadvantages?			कपास उगाने के लिए किस प्रकार के बीजों का प्रयोग किया जाता है? उनके फायदे और नुकसान क्या हैं?
-	AG_185	[Agriculture]	Narration	[]			What are the different varieties of cotton grown?			कपास की विभिन्न किस्में कौन सी उगाई जाती हैं?
-	AG_186	[Agriculture]	Narration	[]			In which months / seasons are the different varieties of cotton grown - if only one variety of cotton is cultivated, tell us about that only?			कपास की विभिन्न किस्में किन महीनों / मौसमों में उगाई जाती हैं - अगर कपास की केवल एक ही किस्म की खेती की जाती है, तो उसके बारे में ही बताइए?
-	AG_276	[Agriculture]	Narration	[]			What is the process of growing different varieties of cotton- if only one variety of cotton is cultivated, tell us about that only?			कपास की विभिन्न किस्मों को उगाने की प्रक्रिया क्या है - अगर कपास की केवल एक किस्म की खेती की जाती है, तो हमें केवल उसके बारे में बताइए?
-	AG_277	[Agriculture]	Narration	[]			How long do they take to mature?			उन्हें तैयार होने में कितना समय लगता है?
-	AG_278	[Agriculture]	Narration	[]			What kinds of special protection / care do they need (such as use of insecticide, pesticide or other such measures)?			उन्हें किस प्रकार की विशेष सुरक्षा / देखभाल की आवश्यकता है (जैसे कीटनाशक या ऐसे अन्य उपायों का उपयोग)?
-	AG_279	[Agriculture]	Narration	[]			How are they sold to other people?			वे अन्य लोगों को कैसे बेचे जाते हैं?
-	AG_280	[Agriculture]	Narration	[]			How are these cooked and eaten?			इन्हें कैसे पकाया और खाया जाता है?
-	AG_281	[Agriculture]	Narration	[]			What are the different kinds of seeds used for growing jute? What are their advantages and disadvantages?			जूट उगाने के लिए किस प्रकार के बीजों का प्रयोग किया जाता है? उनके फायदे और नुकसान क्या हैं?
-	AG_282	[Agriculture]	Narration	[]			What are the different varieties of jute grown?			जूट की विभिन्न किस्में कौन सी उगाई जाती हैं?
-	AG_283	[Agriculture]	Narration	[]			In which months / seasons are the different varieties of jute grown - if only one variety of jute is cultivated, tell us about that only?			जूट की विभिन्न किस्में किन महीनों / मौसमों में उगाई जाती हैं - अगर जूट की केवल एक ही किस्म की खेती की जाती है, तो उसके बारे में ही बताइए?
-	AG_284	[Agriculture]	Narration	[]			What is the process of growing different varieties of jute - if only one variety of jute is cultivated, tell us about that only?			जूट की विभिन्न किस्मों को उगाने की प्रक्रिया क्या है - अगर जूट की केवल एक किस्म की खेती की जाती है, तो हमें केवल उसके बारे में बताइए?
-	AG_285	[Agriculture]	Narration	[]			How long do they take to mature?			उन्हें तैयार होने में कितना समय लगता है?
-	AG_286	[Agriculture]	Narration	[]			What kinds of special protection / care do they need (such as use of insecticide, pesticide or other such measures)?			उन्हें किस प्रकार की विशेष सुरक्षा / देखभाल की आवश्यकता है (जैसे कीटनाशक या ऐसे अन्य उपायों का उपयोग)?
-	AG_287	[Agriculture]	Narration	[]			How are they sold to other people?			वे अन्य लोगों को कैसे बेचे जाते हैं?
-	AG_288	[Agriculture]	Narration	[]			How are these cooked and eaten?			इन्हें कैसे पकाया और खाया जाता है?
-	AG_289	[Agriculture]	Narration	[]			What are the different kinds of seeds used for growing mesta? What are their advantages and disadvantages?			मेस्टा उगाने के लिए किस प्रकार के बीजों का प्रयोग किया जाता है? उनके फायदे और नुकसान क्या हैं?
-	AG_290	[Agriculture]	Narration	[]			What are the different varieties of mesta grown?			मेस्टा की विभिन्न किस्में कौन सी उगाई जाती हैं?
-	AG_291	[Agriculture]	Narration	[]			In which months / seasons are the different varieties of mesta grown - if only one variety of mesta is cultivated, tell us about that only?			मेस्टा की विभिन्न किस्में किन महीनों / मौसमों में उगाई जाती हैं - अगर जूट की केवल एक ही किस्म की खेती की जाती है, तो उसके बारे में ही बताइए?
-	AG_292	[Agriculture]	Narration	[]			What is the process of growing different varieties of mesta- if only one variety of mesta is cultivated, tell us about that only?			मेस्टा की विभिन्न किस्मों को उगाने की प्रक्रिया क्या है - अगर जूट की केवल एक किस्म की खेती की जाती है, तो हमें केवल उसके बारे में बताइए?
-	AG_293	[Agriculture]	Narration	[]			How long do they take to mature?			उन्हें तैयार होने में कितना समय लगता है?
-	AG_294	[Agriculture]	Narration	[]			What kinds of special protection / care do they need (such as use of insecticide, pesticide or other such measures)?			उन्हें किस प्रकार की विशेष सुरक्षा / देखभाल की आवश्यकता है (जैसे कीटनाशक या ऐसे अन्य उपायों का उपयोग)?
-	AG_295	[Agriculture]	Narration	[]			How are they sold to other people?			वे अन्य लोगों को कैसे बेचे जाते हैं?
-	AG_296	[Agriculture]	Narration	[]			How are these cooked and eaten?			इन्हें कैसे पकाया और खाया जाता है?
-	AG_188	[Agriculture]	Narration	[]			how many variety of rice are grown in your community? name them.			आपके समुदाय में चावल की कितनी किस्में उगाई जाती हैं? उन्हे नाम दो।
-	AG_189	[Agriculture]	Narration	[]			In which month or season are the different varieties of rice grown? and what are the difference between these variety of rice?			चावल की विभिन्न किस्में किस महीने या मौसम में उगाई जाती हैं? और चावल की इन किस्मों में क्या अंतर है?
-	AG_190	[Agriculture]	Narration	[]			Tell us something about the process of rice cultivation? are the process same for all the different variety? if different, explain?			चावल की खेती की प्रक्रिया के बारे में कुछ बताएं? क्या प्रक्रिया सभी विभिन्न किस्मों के लिए समान है? अगर अलग है, तो बताएं?
-	AG_191	[Agriculture]	Narration	[]			what are the method or the process used for protecting the rice from various harmful elements?			चावल को विभिन्न हानिकारक तत्वों से बचाने के लिए उपयोग की जाने वाली विधि या प्रक्रिया क्या है?
-	AG_192	[Agriculture]	Narration	[]			how long does it takes to mature?			तैयार होने में कितना समय लगता है?
-	AG_193	[Agriculture]	Narration	[]			how are they cooked and eaten?			उन्हें कैसे पकाया और खाया जाता है?
-	AG_194	[Agriculture]	Narration	[]			how many bags of rice can be harvested per cultivations? can it be used to sell it others?			प्रति खेती चावल के कितने बैग निकाले जा सकता है? क्या इसे दूसरों को बेचने के लिए इस्तेमाल किया जा सकता है?
-	AG_195	[Agriculture]	Narration	[]			how many variety of herbs and vegetables are grown in your community? name them?			आपके समुदाय में कितनी तरह की जड़ी-बूटियां और सब्जियां उगाई जाती हैं? उन्हे नाम दो?
-	AG_196	[Agriculture]	Narration	[]			In which month or season are the different variety of herbs/ vegetables grown?			विभिन्न प्रकार की जड़ी-बूटियाँ/सब्जियाँ किस महीने या मौसम में उगाई जाती हैं?
-	AG_197	[Agriculture]	Narration	[]			tell us something about the process of cultivating the different variety of herbs/vegetables?			विभिन्न प्रकार की जड़ी-बूटियों/सब्जियों को उगाने की प्रक्रिया के बारे में कुछ बताएं?
-	AG_198	[Agriculture]	Narration	[]			what kind of special protection/ care do they need (such as use of insecticide,pesticide)			उन्हें किस प्रकार की विशेष सुरक्षा/देखभाल की आवश्यकता है (जैसे कीटनाशक का उपयोग)
-	AG_199	[Agriculture]	Narration	[]			how long does the various variety of herbs and vegetables takes to mature?			विभिन्न प्रकार की जड़ी-बूटियों और सब्जियों को तैयार होने में कितना समय लगता है?
-	AG_200	[Agriculture]	Narration	[]			how are they cooked and eaten?			उन्हें कैसे पकाया और खाया जाता है?
-	AG_201	[Agriculture]	Narration	[]			how are they sold to others?			वे दूसरों को कैसे बेचे जाते हैं?
-	AG_202	[Agriculture]	Narration	[]			what are the different kinds of animal do you keep at home?			आप घर पर किस तरह के जानवर रखते हैं?
-	AG_203	[Agriculture]	Narration	[]			what are they used for?			उनका प्रयोग किस लिए हो रहा है?
-	AG_204	[Agriculture]	Narration	[]			how do you prepare food for the various animals that you have at home?			आप अपने घर में विभिन्न जानवरों के लिए भोजन कैसे बनाते हैं?
-	AG_205	[Agriculture]	Narration	[]			what roles does these animal play at home? what do they contribute?			ये जानवर घर पर क्या भूमिका निभाते हैं? वे क्या योगदान करते हैं?
-	AG_206	[Agriculture]	Narration	[]			Are these animals consumed? if so when and why?			क्या इन जानवरों का सेवन किया जाता है? यदि हां तो कब और क्यों?
->>>>>>> f35171b929efdce1775993325d29363be49beffb
+quesId	Q_Id	prompt.Domain	prompt.Elicitation Method	prompt.content.English-Latin.text.000000.startindex	prompt.content.English-Latin.text.000000.endindex	prompt.content.English-Latin.text.000000.textspan.Latin	prompt.content.Hindi-Devanagari.text.000000.startindex	prompt.content.Hindi-Devanagari.text.000000.endindex	prompt.content.Hindi-Devanagari.text.000000.textspan.Devanagari	prompt.content.Chokri-Latin.text.000000.startindex	prompt.content.Chokri-Latin.text.000000.endindex	prompt.content.Chokri-Latin.text.000000.textspan.Latin	prompt.content.Chokri-Latin.audio.fileId	prompt.content.Chokri-Latin.audio.filename	prompt.content.Chokri-Latin.audio.textGrid.sentence.000000.startindex	prompt.content.Chokri-Latin.audio.textGrid.sentence.000000.endindex	prompt.content.Chokri-Latin.audio.textGrid.sentence.000000.transcription.Latin
+Q20230212230431734431	AG_1																n rüna mi ko thüma lesi phri zü ko mu phri kümo ko dipü bi no peyo?
+Q20230212230431735358	AG_2																lesi mhase hi n rüna lo vori zü hi dipü bi no mha küde vori?
+Q20230212230431735871	AG_3																Lesi ce hi no dipü bi no ma küde vori zü ngo?
+Q20230212230431736323	AG_4																Lesice ko n natsi ce dibi no bayo?
+Q20230212230431736760	AG_5																thazü dibi no mhase küza no vori?
+Q20230212230431737167	AG_6																lesi mhase hi tsü do ri ma uma ne me?
+Q20230212230431737531	AG_7																uko za lesi mhase mori lesice mi kükre mi za ce ri kree kü me? N külü posüte?
+Q20230212230431737855	AG_8																nko hi dipü bi no lesice mori lesi mhase hi thi-n veküta ?
+Q20230212230431738193	AG_9																no tsüdo hi lesice mori lesi mhase hi dipü ce ko vekü ta sizü ngo?
+Q20230212230431738523	AG_10																n rüna lo süno lesi phri kho müra thou? Mü pü n rüna mi la dipü thi vori?
+Q20230212230431738859	AG_11																lesi mhase hi dipu bi no küzüküve rüna mi ko dolü pü vori?
+Q20230212230431739221	AG_12																n külü lo dipü subject no zü küba hi küno n la veto ha?
+Q20230212230431739578	AG_13																Lesi mhase hi dipü bi no küdimi mu kütsakhumi ko krehi ba?
+Q20230212230431739938	AG_14																no homework hi dipu la n nü mu dipü la n nü yo mo?
+Q20230212230431740331	AG_15																no mhase sayi küto la dipü thi mosü?
+Q20230212230431740735	AG_16																lesi mhase hi dipü bi no küzü küve pü vori yo?
+Q20230212230431741183	AG_17																lesi mhase lo nu dipü bi no thüma mhase küsa mu mha do thi zü küsa seyo?
+Q20230212230431741724	AG_18																Dipü n lü thi müre no n vo küve thi ni sa küyo: marks küve me küsü?
+Q20230212230431742409	AG_19																nko lesi mhaseko hi kükro mi ko lübi do thi mosü me? Me u tho u rünami ko za ju ko ri phri mosü?
+Q20230212230431742989	AG_20																lesi mhase hi dipü la no seyi mosü?
+Q20230212230431744026	AG_21																dipü la no thüno thüpü küna zü mhase hi mütha yo mo?
+Q20230212230431744720	AG_22																
+Q20230212230431745380	AG_23																u cekhro mi ko hi lesi mhase lo dipü bi no khrü hi yo?
+Q20230212230431746130	AG_24																
+Q20230212230431747111	AG_25																matric exam hi dipü la no exam uma küri tho ta?
+Q20230212230431748384	AG_26																class room lo mha küke kükre zü dipü thiyo?
+Q20230212230431749089	AG_27																no mhatho dipü pü thi no, no unü kre-e no bayo?
+Q20230212230431749846	AG_28																lesi mhase hi dipü bi no n külhü thi kede wa?
+Q20230212230431750470	AG_29																lesi mhase hi dipü bi no nko külü mü nko mha müpe zü hi dipü bi no küde wa?
+Q20230212230431750907	AG_30																lesi mhase hi dipü bi no mi mhakra lo küde vori?
+Q20230212230431751342	AG_31																mobile phone mu internet hi dipü bi no lesi mhase lü küde ba?
+Q20230212230431751774	AG_32																thüma hi dipü bi no lesice lo mhase yo?
+Q20230212230431752204	AG_33																mhase se zü lo hi dipü hi n la kürü tho?
+Q20230212230431752577	AG_34																natsimine lesice lo di se yo?
+Q20230212230431752943	AG_35																shüye/tethi dipü lo lesice mori university küvetho ko ba? Dipü la no süko sü ve ta? Dipü la no püko kükre ko ce ri ve ta?
+Q20230212230431753305	AG_36																rüzü mu u mo mhatho ko hi la no lesice ko dipü khasü yo?
+Q20230212230431753696	AG_37																lesice ko lo hi government ko dipü thi mosü?
+Q20230212230431754069	AG_38																natsimine ko ütho ü jü lo mütha zü lesice lo di pü bizü ma kürü zü küsü yo?
+Q20230212230431754436	AG_39																natsimine ko hi lesice lo thüdo dipü bi se ba mosü?
+Q20230212230431754807	AG_40																english pozü lesice lo vozü ce natsimine ko ma kürü dipü bizü küsü yo?
+Q20230212230431755178	AG_41																mi tso mo zü ko la lesi küphri hi dipü bi no mi mütü ko wo phri-e küve thi mosü?
+Q20230212230431755531	AG_42																tsüdo tü hi pe küzü ce, lesi mhase hi müle kü me, me tezü mhase ?
+Q20230212230431755885	AG_43																celü mhase hi dipü bi no natsimi hi mi zü mükro zü hi khrü hi yo?
+Q20230212230431756265	AG_44																lesi mhase natsi zü ce nyo-I zü hi pethi pari no university kütso lo khrü hi yo. Hi hi jü n külü posüte?
+Q20230212230431756659	AG_45																thüma mhase zü hi dipü biyo? Thüma lesi mhase bazü ko dipu bi mosü?
+Q20230212230431757074	AG_112																public lesice mu private lesice jü hü posüte? Pü küve mu pü küsü posüte?
+Q20230212230431757415	AG_113																n külü lü zü u tho u jü hi doctorate kütso phri mosü me? Ye, si mütha, di la no?
+Q20230212230431757796	AG_114																n külü lü zü u tho u jü phri zü hi, u jo mu u nani küla pü hisa la khama ve me?
+Q20230212230431758142	AG_115																n la no dipü bi no u jü mu u jo mu u nani ko hi preserve thita?
+Q20230212230431758480	AG_116																no mhase cho la dipü lü yo? Hi dipü bi no mha kra mu küsühro küsühri lo khrühi yo?
+Q20230212230431758783	AG_117																küsa lesi mhase policy za hi no mha püri se me ma?
+Q20230212230431759078	AG_118																covid 19 hi bazü tü ce lesi mhase cho dipü bi ta n rüna lo?
+Q20230212230431759359	AG_119																jü kükre kükre küzü lo classroom lo mütha zü hi u kümve di pü ba?
+Q20230212230431759641	AG_120																n lesice lo dipü ce nü mi ce ri kükre ta?
+Q20230212230431759925	AG_121																vo küta tetse lo n lesice lo dipü kükre ta?
+Q20230212230431760201	AG_122																dipü bi no lesice hi phri küba mi ko mü ukrüne ko yo feedback khasü ta?
+Q20230212230431760478	AG_123																lesice ko hi u rüna mi ko dipü bi no khrü hi yo?
+Q20230212230431760775	AG_124																kümütha mi ko lesice lü dojü küyi ko po küha la sü küzü thi küthüpu süyo me?hi hi u küve mü u küsü posüte?
+Q20230212230431761128	AG_125																no lesi phri küra ce, lesice di du-u ba? No pethi pari zü ce dipü ko lo lesice küda küzü ngo?
+Q20230212230431761420	AG_126																Dipü bizü lo nu kümüthami ko müza zü ko thiyo?
+Q20230212230431761717	AG_127																n lesice lo n zü mathi zü mi ko mu lesice lo mathi zü mi ko jü kropü posüte?
+Q20230212230431761995	AG_128																no n lesice dipü bi no süyo zü jü ko kropü posüte?
+Q20230212230431762293	AG_129																nko lesice ko hi dipü bi no mi lesice ko zü kreyo?
+Q20230212230431762577	AG_130																kümütha mi ko dipü thi mükro yo? Püko ma küsü mori ma pe sü tü khasü yo me? Püko lesice te mho lo ri matho thi yo me?
+Q20230212230431762855	AG_131																grade no pemo no mhase zü lübi lo thiyo me? Pemo no mase-yi zü hi u küve mu u küsü posüte?
+Q20230212230431763144	AG_132																lesi mhaseko hi kükro mi ko lübi do thi mosü me? Me u tho u ma ko za ju ko ri phri mosü?
+Q20230212230431763422	AG_133																mi tso mo zü ko la u state hi mha thi kü hü-e sa mosü me?
+Q20230212230431763709	AG_134																celü cekro mi ko hi dipü thi mosü ba, u nune lesi kephri ko lano?
+Q20230212230431763987	AG_135																kümüthami mi ko dipü bi no lesi kephri ko zü müdu mu reni yo? Dipü bizü kütso yo mu sü no wo kütso yo?
+Q20230212230431764267	AG_276																dipü bi no lesi kephri mine ko kükri ta zü ko lü sajo khasü mosü?
+Q20230212230431764541	AG_277																lesice mhase mü tution lo mhase ngo zü za jü n külü posüte?
+Q20230212230431764816	AG_278																smart phone mu internet hi dipü lo nu lesi küphri ne ko khrühi mori bü mesü ri yo?
+Q20230212230431765112	AG_279																dipü bizü lo nu 'tha tüsozho ve' süzi no po ve?
+Q20230212230431765391	AG_280																August 15 hi n lesice lo dibi thenye thi yo?
+Q20230212230431765697	AG_46																no kümüthami thi zü hi lo dipü n nü yo?
+Q20230212230431766012	AG_47																kümüdu-u mori technology di pü bi no mi mütha zü hi khrühi or thi rü ba wa?
+Q20230212230431766295	AG_48																mid day meal za jü n külü posüte?
+Q20230212230431766590	AG_49																khüsü-u mu külhe-o class lo dipü kükre zü ngo yo?
+Q20230212230431766875	AG_50																thüma no dipü bi no mhaseyi yo?
+Q20230212230431767170	AG_51																thüma ko u kümütha mi ko yo thüdo mori u küve dipü pe yo?
+Q20230212230431767450	AG_52																Thüma hi pethi pari zü sa ri dipü se yo?
+Q20230212230431767734	AG_53																no n la no dipü bizü pü lo lesi küphri ne ko mhase küve tho thita?
+Q20230212230431768010	AG_54																n la no dipü bizü mi kha sü thüma mütse süzi no poyo?
+Q20230212230431768286	AG_55																offline mu online class za jü kropü posüte? U küve mü u kesü posüte?
+Q20230212230431768563	AG_56																tsüdo hi mha mütü ri online lo mha phri zü mhanyo ko ngo tso va de. N külü lü zü nko hiko lübi mülü ve me? Di la no?
+Q20230212230431768852	AG_57																dipü bi no lesi kephri ne ko wo u matho kethi ko seyi yo?
+Q20230212230431769172	AG_58																n külü lo dipü la no english hi pü no lesice lo mütha yo?
+Q20230212230431769445	AG_59																n külü lo dipü la no social science hi lesi küphri ne ko mütha yo?
+Q20230212230431769740	AG_60																n külü lo dipü la no science hi lesi küphri ne ko mütha yo?
+Q20230212230431770023	AG_61																lesice lo mhatho kükre kükre küzü u ma ne no dipü thiyo. Dipü bi no hiko lesice lo sü mosü ba?
+Q20230212230431770297	AG_62																dipü bi no mha küda zü hi mu mha se zü hi kükre ta?
+Q20230212230431770589	AG_63																dipü bi no natsi mi hi lesice lo küda yo?
+Q20230212230431770878	AG_64																cho sü no n classroom lo dipü küde nisa wa, küde-e ve mütha?
+Q20230212230431771157	AG_65																lesi phri rü zü mi n class lo bata mü tha no dipü bi no pü mütha ta?
+Q20230212230431771458	AG_66																kümü no kümü no mi mütha zü hi dipü la no müle ri?
+Q20230212230431771770	AG_67																thüsa vori tü ce no mha kürü dipü bizü zü küsü?
+Q20230212230431772046	AG_68																celü mütha mu lesice lo mütha zü hi no dipü seyi?
+Q20230212230431772319	AG_69																no dipu n nü mükro yo. Class discussion me small group matho?
+Q20230212230431772595	AG_70																n lesice lo mi mütha küto la dipü bizü mhanyo süyo?
+Q20230212230431772868	AG_71																n kümüthami,principal, headmaster mu kükre lesice lo mathi yo küba ko dipü pü bizü thiyo?
+Q20230212230431775272	AG_72																lesice lo n zü mi ko za ju kropü posüte?
+Q20230212230431775787	AG_73																n cekro ko n lesi küphri lo dipü bi no khühri sü yo?
+Q20230212230431776145	AG_74																lesi mhase hi no pethi pari zü ce no dipü se?
+Q20230212230431776436	AG_75																dipü bi no jü hi ma kümüle shü ta lesi mhase chou?
+Q20230212230431776730	AG_76																süno no n bo subject mori degree phri zü hi n inspire thi sü no lesi phri zü hi?
+Q20230212230431777021	AG_77																no lesice lo dipü se ni sa ba yo?
+Q20230212230431777305	AG_78																internet sü zü hi u küve mu u küsü posüte? Dipü bi no hi n lesi küphri lo effect thi ba?
+Q20230212230431777608	AG_79																no dipü la no lesi mhase hi se ba?
+Q20230212230431777892	AG_80																nani hi n lesi küphri matho ko lo effect thiyo me?
+Q20230212230431778175	AG_81																no jü ditsü se va? No dipü bi no hiko se ta?
+Q20230212230431778454	AG_82																Cekro za cesü cenyü hi dipu bi no lesi küphri ne ko yo effect thiyo?
+Q20230212230431778738	AG_83																lesice lo no dipü bizü matho ko thi n nyü tho ?
+Q20230212230431779044	AG_84																no lesice dipü bizü rüzü rüzü yo? N külü lü zü ce lesice ko rüzü mhanyo ko ujo thi no khasü me?
+Q20230212230431779337	AG_85																no dipü bi no lesice lo voyo? No khüshü chou zü lü nü lesice lo vo tso zü jü kropü posüte
+Q20230212230431779614	AG_281																no n külhü lo ujo thi no vori to zü mülü yo me? N hisa dipü thi nisa wa?
+Q20230212230431779903	AG_282																n thüma mori n rünami ko dipu bizü rhase ranye teyo?
+Q20230212230431780193	AG_283																thüma rhase ranye teyo zü mi kha dipu thi tsüyo? puko ga lübi teyo me mha kükre mhatho ri thiyo? mha kükre mhatho thiyo mütha , dipu thi yo?
+Q20230212230431780483	AG_284																ga kükre kükre zü n thüma ko mori rünami ko teyo zü posüte? kütsa tho lo ri uza se pungu posüte?
+Q20230212230431780784	AG_285																tekhri mori utu dibi zü ce ga hiko teyo?
+Q20230212230431781065	AG_286																dipu bi no ga hiko teyo?
+Q20230212230431781345	AG_287																mü küto la pütü didu-o yiyo?
+Q20230212230431781651	AG_288																ga hiko te zü ce, daru bizü sü yo me? me ga vo vekuto la udo kükre kro-o ba?
+Q20230212230431781932	AG_289																dipu bi no hiko mi kükremi ko ce zhu yo?
+Q20230212230431782213	AG_290																dipu bi no hiko cho no tiyo?
+Q20230212230431782490	AG_291																rhase kükre kükre zü n thüma mori rünami teyo zü posüte? kütsa tho lo ri uza se pungu posüte?
+Q20230212230431782771	AG_292																tekhri mori utu dibi zü ce rhase hiko teyo?
+Q20230212230431783490	AG_293																dipu bi no rhase hiko teyo?
+Q20230212230431783779	AG_294																mü küto la pütü didu-o yiyo?
+Q20230212230431784062	AG_295																rhase hiko te zü ce, daru bizü sü yo me? me rhase vo vekuto la udo kükre kro-o ba?
+Q20230212230431784346	AG_296																dipu bi no hiko mi kükremi ko che zhu yo?
+Q20230212230431784628	AG_297																dipu bi no hiko cho no tiyo?
+Q20230212230431784908	AG_298																lhako kükre kükre zü n thüma ko mori rüna mi teyo küzü uza küna-sü posüte?
+Q20230212230431785208	AG_299																tekhri mori utu dibi zü ce lhako hiko teyo?
+Q20230212230431785534	AG_300																dipu bi no lhako hiko teyo?
+Q20230212230431785889	AG_301																mü küto la pütü didu-o yiyo?
+Q20230212230431786233	AG_302																lhako hiko te zü ce, daru bizü sü yo me? me lhako vo vekuto la udo kükre kro-o ba?
+Q20230212230431786538	AG_303																dipu bi no hiko mi kükremi ko che zhu yo?
+Q20230212230431786869	AG_304																dipu bi no hiko cho no tiyo?
+Q20230212230431787512	AG_305																rhase rane kükre kükre zü n thüma ko mori rüna mi teyo küzü uza küna-sü posüte?
+Q20230212230431788608	AG_306																tekhri mori utu dibi zü ce rhase rane hiko teyo?
+Q20230212230431789991	AG_307																dipu bi no rhase rane hiko teyo?
+Q20230212230431790739	AG_308																mü küto la pütü didu-o yiyo?
+Q20230212230431791369	AG_309																rhase rane hiko te zü ce, daru bizü sü yo me? me lhako vo vekuto la udo kükre kro-o ba?
+Q20230212230431791953	AG_310																dipu bi no hiko mi kükremi ko ce zhu yo?
+Q20230212230431792635	AG_311																dipu bi no hiko cho no tiyo?
+Q20230212230431793281	AG_312																sübo kükre kükre zü n thüma ko mori rüna mi teyo küzü uza se pungu posüte?
+Q20230212230431793754	AG_86																sübo hiko pü no dipu thiyo?
+Q20230212230431794194	AG_87																dipu bi no sübo hiko teyo?
+Q20230212230431794616	AG_88																zho no pü mhathi-e küve pari küto la pütü didu-o yiyo?
+Q20230212230431794987	AG_89																sübo hiko te zü ce, daru bizü sü yo me? me sübo vo vekuto la udo kükre kro-o ba?
+Q20230212230431795339	AG_90																n thüma ko dipu bino mha te zü mathoko mi kükre mi ce ri khre ku zü ju khropu posüte?
+Q20230212230431795688	AG_91																vokuta tetse ko lü dipu bi no mha tezü matho ko kre no vori zü ngo?
+Q20230212230431796037	AG_92																
+Q20230212230431796382	AG_93																ma tezü matho ko la di pu bizü manyo khropu süyo?
+Q20230212230431796712	AG_94																manyo süko sü dipu bi no ma kükre kükre zü lo sü mathi yo?
+Q20230212230431797025	AG_95																mhanyo süko sü no di pu bino n thüma ko la matho thi reri wa?
+Q20230212230431797336	AG_96																n thüma ko mha tezü matho ko mori yi lo mathi keti ce manyo kükre khropu ala sü yo me?
+Q20230212230431797757	AG_97																manyo hiko di pu bi no süyo?
+Q20230212230431798122	AG_98																yi lo di pu bizü khünü sü yo?
+Q20230212230431798494	AG_99																n thüma ko la khünü sü zü uküve mu di pu bi no süyo zü ju khropu posüte?
+Q20230212230431798955	AG_100																dipü bi no jülü thi pü vo n khü mütsü ta-a?
+Q20230212230431799416	AG_101																Türü mo zü ce dipü bi no jü pu vori no n khü lo mütsü süyo?
+Q20230212230431799881	AG_102																N rüna lo dipü bizü bete teyo?
+Q20230212230431800347	AG_103																Dipü bizü bete no jü sü mükro mu jü sü mütsa yo?
+Q20230212230431800791	AG_104																Dipü bizü bete tüsü zü tü ce teyo?
+Q20230212230431801250	AG_105																Dipü bizü bete türü zü tü ce teyo?
+Q20230212230431801728	AG_106																Dipü bizü bete tü külü zü tü ce teyo?
+Q20230212230431802194	AG_107																n cekro ko n zü mathi yo mütha, dipü bizü matho thi küza sü yo?
+Q20230212230431802659	AG_108																Dipü bizü manyo sü no bete thiyo?
+Q20230212230431803135	AG_109																Dipü bizü daru bete ko la sü yo?
+Q20230212230431803599	AG_110																Dipü bizü bete lo metho bü süyo?
+Q20230212230431804078	AG_144																Süno n rüna lo fü ko thekü yo?
+Q20230212230431804554	AG_145																Süno n rüna lo thevü ko thekü yo?
+Q20230212230431804934	AG_146																Süno n rüna lo khunune ko thekü yo?
+Q20230212230431805265	AG_147																Süno n rüna lo tenyü ko thekü yo?
+Q20230212230431805569	AG_148																Süno n rüno lo teko ko thekü yo?
+Q20230212230431805911	AG_149																No jü thü bayo zü khunune dipu bizü thekü yo n rüna mi ko?
+Q20230212230431806270	AG_150																no methonojü pü no dipu thiyo?
+Q20230212230431806613	AG_151																No metho ko yo dipü vi yo?
+Q20230212230431806913	AG_152																Dipü bizü pulses ko te yo?
+Q20230212230431807200	AG_153																Dipü bizü ga kümüjo ko teyo?
+Q20230212230431807482	AG_154																Dipü bizü ga te yo?
+Q20230212230431807780	AG_155																ma teyo küzü ko dice kha ma müta yo?
+Q20230212230431808106	AG_156																Dipü bizü bete ko government pe yo?
+Q20230212230431808432	AG_157																dipü bi no thimü thi müso yo?
+Q20230212230431808745	AG_158																Dipü bi no ga ko thi müso yo?
+Q20230212230431809032	AG_159																Dipü bi no fü thi müso yo?
+Q20230212230431809311	AG_160																Dipü bi hezo thi yo?
+Q20230212230431809617	AG_161																Hezo thi küto la, di sü yo?
+Q20230212230431809970	AG_162																Talhako utsa kükre kükre zü dipü bizü teyo? Pu küve mu pu küsü posüte?
+Q20230212230431810321	AG_163																Talhako utsa kükre kükre zü dipü bizü teyo?
+Q20230212230431810612	AG_164																Tekhri mu utü dipu bizü te hiko teyo? Talhako hi sepu lübi teyo mütha, dipü la no sibi ta?
+Q20230212230431810898	AG_165																Dipu bi no talhako kükre kükre zü ko teyo? Sepu lübi zo ta mütha , u jü sü ri posüte?
+Q20230212230431811180	AG_166																mü küto pü tü dipü bizü yi yo?
+Q20230212230431811489	AG_167																Talhako hiko tezü ce, daru bizü kropu süyo me? Me talhako ko vo veküto la udo kükre kro-o ba me?
+Q20230212230431811763	AG_168																Dipu bi no mi ce ju yo?
+Q20230212230431812045	AG_169																Dipu bi no cho mu tiyo?
+Q20230212230431812322	AG_170																Sako utsa kükre kükre zü dipü bizü teyo? Pu küve mu pu küsü posüte?
+Q20230212230431812598	AG_171																Sako utsa kükre kükre zü dipü bizü teyo?
+Q20230212230431812878	AG_172																Tekhri mu utü dipu bizü ce sako hiko teyo? Sako hi utsa sepu lübi teyo mütha, dipü la no sibi ta?
+Q20230212230431813163	AG_173																Dipu bi no sako kükre kükre zü ko teyo? Sepu lübi zo ta mütha , u jü sü ri posüte?
+Q20230212230431813444	AG_174																mü küto pü tü dipü bizü yi yo?
+Q20230212230431813736	AG_175																Sako hiko tezü ce, daru bizü kropu süyo me? Me sako ko vo veküto la udo kükre kro-o ba me?
+Q20230212230431814021	AG_176																Dipu bi no mi ce ju yo?
+Q20230212230431814290	AG_177																Dipu bi no cho mu tiyo?
+Q20230212230431814649	AG_178																Thise utsa kükre kükre zü dipü bizü teyo? Pu küve mu pu küsü posüte?
+Q20230212230431815064	AG_179																Thise utsa kükre kükre zü dipü bizü teyo?
+Q20230212230431815447	AG_180																Tekhri mu utü dipu bizü ce thise hiko teyo? thise hi utsa sepu lübi teyo mütha, dipü la no sibi ta?
+Q20230212230431815848	AG_181																Dipu bi no sako kükre kükre zü ko teyo? Sepu lübi zo ta mütha , u jü sü ri posüte?
+Q20230212230431816246	AG_182																mü küto pü tü dipü bizü yi yo?
+Q20230212230431816622	AG_183																Thise hiko tezü ce, daru bizü kropu süyo me? Me thise ko vo veküto la udo kükre kro-o ba me?
+Q20230212230431816951	AG_184																Dipu bi no mi ce ju yo?
+Q20230212230431817268	AG_185																Dipu bi no cho mu tiyo?
+Q20230212230431817587	AG_186																Turmeric utsa kükre kükre zü dipü bizü teyo? Pu küve mu pu küsü posüte?
+Q20230212230431817926	AG_276																Turmeric utsa kükre kükre zü dipü bizü teyo?
+Q20230212230431818254	AG_277																Tekhri mu utü dipu bizü ce turmeric hiko teyo? turmeric hi utsa sepu lübi teyo mütha, dipü la no sibi ta?
+Q20230212230431818584	AG_278																Turmeric hiko te küto la udo dipu bizü süyo? Utsa sepü lubi teyo mütha, di pü la no sibi ta?
+Q20230212230431818918	AG_279																mü küto pü tü dipü bizü yi yo?
+Q20230212230431819212	AG_280																Turmeric hiko tezü ce, daru bizü kropu süyo me? Me turmeric ko vo veküto la udo kükre kro-o ba me?
+Q20230212230431819562	AG_281																Dipu bi no mi ce ju yo?
+Q20230212230431820011	AG_282																Dipu bi no cho mu tiyo?
+Q20230212230431820415	AG_283																alu utsa kükre kükre zü dipü bizü teyo? Pu küve mu pu küsü posüte?
+Q20230212230431820755	AG_284																alu utsa kükre kükre zü dipü bizü teyo?
+Q20230212230431821095	AG_285																Tekhri mu utü dipu bizü ce alu hiko teyo? alu hi utsa sepu lübi teyo mütha, dipü la no sibi ta?
+Q20230212230431821421	AG_286																Alu hiko te küto la udo dipu bizü süyo? Utsa sepü lubi teyo mütha, di pü la no sibi ta?
+Q20230212230431821767	AG_287																mü küto pü tü dipü bizü yi yo?
+Q20230212230431822104	AG_288																alu hiko tezü ce, daru bizü kropu süyo me? Me alu ko vo veküto la udo kükre kro-o ba me?
+Q20230212230431822428	AG_289																Dipu bi no mi ce ju yo?
+Q20230212230431822744	AG_290																Dipu bi no cho mu tiyo?
+Q20230212230431823060	AG_291																Chü utsa kükre kükre zü dipü bizü teyo? Pu küve mu pu küsü posüte?
+Q20230212230431823382	AG_292																Chü utsa kükre kükre zü dipü bizü teyo?
+Q20230212230431823708	AG_293																Tekhri mu utü dipu bizü ce chü hiko teyo? chü hi utsa sepu lübi teyo mütha, dipü la no sibi ta?
+Q20230212230431824023	AG_294																Chü hiko te küto la udo dipu bizü süyo? Utsa sepü lubi teyo mütha, di pü la no sibi ta?
+Q20230212230431824340	AG_295																mü küto pü tü dipü bizü yi yo?
+Q20230212230431824716	AG_296																chü hiko tezü ce, daru bizü kropu süyo me? Me chü ko vo veküto la udo kükre kro-o ba me?
+Q20230212230431825209	AG_188																Dipu bi no mi ce ju yo?
+Q20230212230431825668	AG_189																Dipu bi no cho mu tiyo?
+Q20230212230431826054	AG_190																küvü utsa kükre kükre zü dipü bizü teyo? Pu küve mu pu küsü posüte?
+Q20230212230431826399	AG_191																küvü utsa kükre kükre zü dipü bizü teyo?
+Q20230212230431826790	AG_192																Tekhri mu utü dipu bizü ce küvü hiko teyo? küvü hi utsa sepu lübi teyo mütha, dipü la no sibi ta?
+Q20230212230431827211	AG_193																küvü hiko te küto la udo dipu bizü süyo? Utsa sepü lubi teyo mütha, di pü la no sibi ta?
+Q20230212230431827581	AG_194																mü küto pü tü dipü bizü yi yo?
+Q20230212230431827920	AG_195																küvü hiko tezü ce, daru bizü kropu süyo me? Me küvü ko vo veküto la udo kükre kro-o ba me?
+Q20230212230431828250	AG_196																Dipu bi no mi ce ju yo?
+Q20230212230431828579	AG_197																Dipu bi no cho mu tiyo?
+Q20230212230431828910	AG_198																elaichi utsa kükre kükre zü dipü bizü teyo? Pu küve mu pu küsü posüte?
+Q20230212230431829244	AG_199																elaichi utsa kükre kükre zü dipü bizü teyo?
+Q20230212230431829575	AG_200																Tekhri mu utü dipu bizü ce elaichi hiko teyo? elaichi hi utsa sepu lübi teyo mütha, dipü la no sibi ta?
+Q20230212230431829964	AG_201																elaichi hiko te küto la udo dipu bizü süyo? Utsa sepü lubi teyo mütha, di pü la no sibi ta?
+Q20230212230431830283	AG_202																mü küto pü tü dipü bizü yi yo?
+Q20230212230431830597	AG_203																elaichi hiko tezü ce, daru bizü kropu süyo me? Me elaichi ko vo veküto la udo kükre kro-o ba me?
+Q20230212230431830911	AG_204																Dipu bi no mi ce ju yo?
+Q20230212230431831228	AG_205																Dipu bi no cho mu tiyo?
+Q20230212230431831543	AG_206																gakre utsa kükre kükre zü dipü bizü teyo? Pu küve mu pu küsü posüte?
+	LC_1																gakre utsa kükre kükre zü dipü bizü teyo?
+	LC_2																Tekhri mu utü dipu bizü ce gakre hiko teyo? gakre hi utsa sepu lübi teyo mütha, dipü la no sibi ta?
+	LC_3																gakre hiko te küto la udo dipu bizü süyo? Utsa sepü lubi teyo mütha, di pü la no sibi ta?
+	LC_4																mü küto pü tü dipü bizü yi yo?
+	LC_5																gakre hiko tezü ce, daru bizü kropu süyo me? Me elaichi ko vo veküto la udo kükre kro-o ba me?
+	LC_6																Dipu bi no mi ce ju yo?
+	LC_7																Dipu bi no cho mu tiyo?
+	LC_8																alu utsa kükre kükre zü dipü bizü teyo? Pu küve mu pu küsü posüte?
+	LC_9																alu utsa kükre kükre zü dipü bizü teyo?
+	LC_10																Tekhri mu utü dipu bizü ce alu hiko teyo? alu hi utsa sepu lübi teyo mütha, dipü la no sibi ta?
+	LC_11																Alu hiko te küto la udo dipu bizü süyo? Utsa sepü lubi teyo mütha, di pü la no sibi ta?
+	LC_12																mü küto pü tü dipü bizü yi yo?
+	LC_13																alu hiko tezü ce, daru bizü kropu süyo me? Me alu ko vo veküto la udo kükre kro-o ba me?
+	LC_41																Dipu bi no mi ce ju yo?
+	LC_14																Dipu bi no cho mu tiyo?
+	LC_15																thayese utsa kükre kükre zü dipü bizü teyo? Pu küve mu pu küsü posüte?
+	LC_16																Thayese utsa kükre kükre zü dipü bizü teyo?
+	LC_17																Tekhri mu utü dipu bizü ce thayese hiko teyo? thayese hi utsa sepu lübi teyo mütha, dipü la no sibi ta?
+	LC_18																Thayese hiko te küto la udo dipu bizü süyo? Utsa sepü lubi teyo mütha, di pü la no sibi ta?
+	LC_19																mü küto pü tü dipü bizü yi yo?
+	LC_20																Thayese hiko tezü ce, daru bizü kropu süyo me? Me thayese ko vo veküto la udo kükre kro-o ba me?
+	LC_21																Dipu bi no mi ce ju yo?
+	LC_22																Dipu bi no cho mu tiyo?
+	LC_23																Dipü bizü khunü ne n celü lo meri yo?
+	LC_24																Dip bizü lo khünü hiko süyo?
+	LC_25																Thüvo ko pü-u no dipü thiyo?
+	LC_26																Dipü pü-u ucho thiyo?
+	LC_27																Dipü bi no thüvo ko pe meri yo?
+	LC_28																Thüsa mori rüce dipü bizü bayo?
+	LC_42																Thüvo ko pü-u no dice meriyo?
+	LC_29																Toto mi ko hi dipu bi no sako müri yo?
+	LC_30																khothal hi di la no müri yo?
+	LC_31																
+	LC_32																
+	LC_33																
+	LC_34																
+	LC_35																
+	LC_36																
+	LC_37																
+	LC_38																
+	LC_39																
+	LC_40																
+	ST_1																
+	ST_2																
+	ST_3																
+	ST_4																
+	ST_5																
+	ST_6																
+	ST_7																
+	ST_8																
+	ST_9																
+	ST_10																
+	ST_11																
+	ST_12																
+	ST_13																
+	ST_14																
+	ST_15																
+	ST_16																
+	ST_17																
+	ST_18																
+	ST_19																
+	ST_20																
+	ST_21																
+	ST_22																
+	ST_23																
+	ST_24																
+	ST_25																
+	ST_26																
+	ST_27																
+	ST_28																
+	ST_29																
+	ST_30																
+	ST_31																
+	ST_32																
+	ST_33																
+	ST_34																
+	ST_35																
+	ST_36 (Scientific Research)																
+	ST_37																
+	ST_38																
+	ST_39																
+	ST_40																
+	ST_41																
+	ST_42																
+	ST_43																
+	ST_44																
+	ST_45																
+	ST_46																
+	ST_47																
+	ST_48																
+	ST_49																
+	ST_50																
+	ST_51General																
+	ST_52																
+	ST_53																
+	ST_54																
+	ST_55																
+	ST_56																
