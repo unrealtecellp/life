@@ -23,62 +23,63 @@ Enter New Sentences
       Progress Report
     </button>
     <br>
-    <br>
-    <div class="btn-group" role="group">
-      <button type="button" id="lifejson" class="btn btn-info dropdown-toggle" data-toggle="dropdown"
-        aria-haspopup="true" aria-expanded="false">
-        Download LiFE JSON
-      </button>
-    </div>
-    <div class="btn-group" role="group">
-      <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
-        aria-expanded="false">
-        Download Latest Transcriptions
-        <span class="caret"></span>
-      </button>
-      <ul class="dropdown-menu">
-        <li id="praattexgrid"><a href="#">Praat Textgrid</a></li>
-        <li id="csv"><a href="#">CSV</a></li>
-        <li id="tsv"><a href="#">TSV</a></li>
-        <li id="json"><a href="#">JSON</a></li>
-        <li id="xlsx"><a href="#">XLSX</a></li>
-        <li id="latex"><a href="#">LaTeX</a></li>
-        <li id="html"><a href="#">HTML</a></li>
-        <li id="markdown"><a href="#">Markdown</a></li>
-      </ul>
-    </div>
+    <hr>
+    <h4>Download:</h3>
+      <div class="btn-group" role="group">
+        <button type="b4tton" id="lifejson" class="btn btn-info dropdown-toggle" data-toggle="dropdown"
+          aria-haspopup="true" aria-expanded="false">
+          LiFE JSON
+        </button>
+      </div>
+      <div class="btn-group" role="group">
+        <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
+          aria-expanded="false">
+          Latest Transcriptions
+          <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu">
+          <li id="praattexgrid"><a href="#">Praat Textgrid</a></li>
+          <li id="csv"><a href="#">CSV</a></li>
+          <li id="tsv"><a href="#">TSV</a></li>
+          <li id="json"><a href="#">JSON</a></li>
+          <li id="xlsx"><a href="#">XLSX</a></li>
+          <li id="latex"><a href="#">LaTeX</a></li>
+          <li id="html"><a href="#">HTML</a></li>
+          <li id="markdown"><a href="#">Markdown</a></li>
+        </ul>
+      </div>
 
-    <div class="btn-group" role="group">
-      <button type="button" class="btn btn-warning dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
-        aria-expanded="false">
-        Download My Transcriptions
-        <span class="caret"></span>
-      </button>
-      <ul class="dropdown-menu">
-        <li id="mypraattexgrid"><a href="#">Praat Textgrid</a></li>
-        <li id="mycsv"><a href="#">CSV</a></li>
-        <li id="mytsv"><a href="#">TSV</a></li>
-        <li id="myjson"><a href="#">JSON</a></li>
-        <li id="myxlsx"><a href="#">XLSX</a></li>
-        <li id="mylatex"><a href="#">LaTeX</a></li>
-        <li id="myhtml"><a href="#">HTML</a></li>
-        <li id="mymarkdown"><a href="#">Markdown</a></li>
+      <div class="btn-group" role="group">
+        <button type="button" class="btn btn-warning dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
+          aria-expanded="false">
+          My Transcriptions
+          <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu">
+          <li id="mypraattexgrid"><a href="#">Praat Textgrid</a></li>
+          <li id="mycsv"><a href="#">CSV</a></li>
+          <li id="mytsv"><a href="#">TSV</a></li>
+          <li id="myjson"><a href="#">JSON</a></li>
+          <li id="myxlsx"><a href="#">XLSX</a></li>
+          <li id="mylatex"><a href="#">LaTeX</a></li>
+          <li id="myhtml"><a href="#">HTML</a></li>
+          <li id="mymarkdown"><a href="#">Markdown</a></li>
 
-      </ul>
-    </div>
+        </ul>
+      </div>
 
-    <br>
-    <br>
-    <label for="speakeridsdropdown">Audio Files from Source: </label>
-    <select class="custom-select custom-select-sm" id="speakeridsdropdown" style="width: 25%; margin-top:10px">
-      <option selected disabled>{{ activespeakerid }}</option>
-      {% for d in speakerids %}
-      {% if d != activespeakerid %}
-      <option value="{{ d }}">{{ d }}</option>
+      <br>
+      <br>
+      <label for="speakeridsdropdown">Audio Files from Source: </label>
+      <select class="custom-select custom-select-sm" id="speakeridsdropdown" style="width: 25%; margin-top:10px">
+        <option selected disabled>{{ activespeakerid }}</option>
+        {% for d in speakerids %}
+        {% if d != activespeakerid %}
+        <option value="{{ d }}">{{ d }}</option>
+        {% endif %}
+        {% endfor %}
+      </select>
       {% endif %}
-      {% endfor %}
-    </select>
-    {% endif %}
 
   </div>
   {% if shareinfo['sharemode']|int >= 3 %}
