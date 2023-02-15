@@ -18,25 +18,55 @@ Enter New Sentences
     <h4>Project Name : {{ projectName }}</h4><br>
     {% endif %}
     {% if speakerids is defined %}
-    <button type="button" id="progressreport" class="btn btn-lg btn-warning" data-toggle="modal"
+    <button type="button" id="progressreport" class="btn btn-lg btn-danger" data-toggle="modal"
       data-target="#myProgressReportModal">
       Progress Report
     </button>
     <br>
     <br>
     <div class="btn-group" role="group">
-      <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
+      <button type="button" id="lifejson" class="btn btn-info dropdown-toggle" data-toggle="dropdown"
+        aria-haspopup="true" aria-expanded="false">
+        Download LiFE JSON
+      </button>
+    </div>
+    <div class="btn-group" role="group">
+      <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
         aria-expanded="false">
-        Download Transcription
+        Download Latest Transcriptions
         <span class="caret"></span>
       </button>
       <ul class="dropdown-menu">
-        <li id="json"><a href="#">JSON</a></li>
-        <li id="csv"><a href="#">CSV</a></li>
-        <li id="xlsx"><a href="#">XLSX</a></li>
         <li id="praattexgrid"><a href="#">Praat Textgrid</a></li>
+        <li id="csv"><a href="#">CSV</a></li>
+        <li id="tsv"><a href="#">TSV</a></li>
+        <li id="json"><a href="#">JSON</a></li>
+        <li id="xlsx"><a href="#">XLSX</a></li>
+        <li id="latex"><a href="#">LaTeX</a></li>
+        <li id="html"><a href="#">HTML</a></li>
+        <li id="markdown"><a href="#">Markdown</a></li>
       </ul>
     </div>
+
+    <div class="btn-group" role="group">
+      <button type="button" class="btn btn-warning dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
+        aria-expanded="false">
+        Download My Transcriptions
+        <span class="caret"></span>
+      </button>
+      <ul class="dropdown-menu">
+        <li id="mypraattexgrid"><a href="#">Praat Textgrid</a></li>
+        <li id="mycsv"><a href="#">CSV</a></li>
+        <li id="mytsv"><a href="#">TSV</a></li>
+        <li id="myjson"><a href="#">JSON</a></li>
+        <li id="myxlsx"><a href="#">XLSX</a></li>
+        <li id="mylatex"><a href="#">LaTeX</a></li>
+        <li id="myhtml"><a href="#">HTML</a></li>
+        <li id="mymarkdown"><a href="#">Markdown</a></li>
+
+      </ul>
+    </div>
+
     <br>
     <br>
     <label for="speakeridsdropdown">Audio Files from Source: </label>
@@ -80,20 +110,20 @@ Enter New Sentences
 </div>
 <hr>
 {% for data in sdata %}
-  {% if data['sentenceId'] is defined %}
-    {% if data['interlineargloss'] is defined %}
-      <p id='sentenceId'><strong>Sentence ID: </strong>{{ data['sentenceId'] }}</p>
-      <input type="text" class="form-control" placeholder="{{ data['interlineargloss']['level_1'] }}"
-        name="interlinearglosslevel_1" value="{{ data['interlineargloss']['level_1'] }}" disabled>
-      <input type="text" class="form-control" placeholder="{{ data['interlineargloss']['level_2'] }}"
-        name="interlinearglosslevel_2" value="{{ data['interlineargloss']['level_2'] }}" disabled>
-      <input type="text" class="form-control" placeholder="{{ data['interlineargloss']['level_3'] }}"
-        name="interlinearglosslevel_3" value="{{ data['interlineargloss']['level_3'] }}" disabled>
-      <br>
-      <button type="button" class="btn btn-primary " onclick="editSentenceBtn()">Edit Sentence</button>
-      <hr>
-    {% endif %}
-  {% endif %}
+{% if data['sentenceId'] is defined %}
+{% if data['interlineargloss'] is defined %}
+<p id='sentenceId'><strong>Sentence ID: </strong>{{ data['sentenceId'] }}</p>
+<input type="text" class="form-control" placeholder="{{ data['interlineargloss']['level_1'] }}"
+  name="interlinearglosslevel_1" value="{{ data['interlineargloss']['level_1'] }}" disabled>
+<input type="text" class="form-control" placeholder="{{ data['interlineargloss']['level_2'] }}"
+  name="interlinearglosslevel_2" value="{{ data['interlineargloss']['level_2'] }}" disabled>
+<input type="text" class="form-control" placeholder="{{ data['interlineargloss']['level_3'] }}"
+  name="interlinearglosslevel_3" value="{{ data['interlineargloss']['level_3'] }}" disabled>
+<br>
+<button type="button" class="btn btn-primary " onclick="editSentenceBtn()">Edit Sentence</button>
+<hr>
+{% endif %}
+{% endif %}
 {% endfor %}
 <!-- <div class="row"> -->
 <!-- <div class="col-md-12 btn-group btn-group-lg btn-primary">
@@ -188,7 +218,8 @@ Enter New Sentences
         <!-- <span class="playPauseBoundaryClass glyphicon glyphicon-play" aria-hidden="true"></span> -->
       </button>
       <!-- </center> -->
-      <button type="submit" class="btn btn-success btn-lg pull-right" id="saveTempTranscription">Save This Boundary</button>
+      <button type="submit" class="btn btn-success btn-lg pull-right" id="saveTempTranscription">Save This
+        Boundary</button>
       <!-- <button type="submit" class="btn btn-success  pull-right saveTempTranscription">Save Boundary</button> -->
       <!-- <center><i>or</i></center> -->
       <!-- <button type="button" class="btn btn-danger" data-action="delete-region">Delete Boundary</button> -->
@@ -198,10 +229,10 @@ Enter New Sentences
 <!-- <br> -->
 <!-- <br> -->
 <!-- <div> -->
-  <button class="btn btn-warning btn-lg pull-right" id="save">
-    Save All Boundaries
-    <span class="saveaudio glyphicon glyphicon-floppy-save" aria-hidden="true"></span>
-  </button>
+<button class="btn btn-warning btn-lg pull-right" id="save">
+  Save All Boundaries
+  <span class="saveaudio glyphicon glyphicon-floppy-save" aria-hidden="true"></span>
+</button>
 <!-- </div> -->
 <br>
 <br>
@@ -299,4 +330,5 @@ Enter New Sentences
 <script src="{{url_for('.static', filename='sorttable.js')}}"></script>
 <script type="text/javascript">myFunction({{ newData | tojson | safe }});</script>
 <script src="{{url_for('.static', filename='audiotranscription.js')}}"></script>
+<script src="{{url_for('.static', filename='downloader/transcriptiondownload.js')}}"></script>
 {% endblock %}

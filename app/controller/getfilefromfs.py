@@ -2,6 +2,7 @@
 
 import gridfs
 import os
+import shutil
 
 def getfilefromfs(mongo,
                     folder_path,
@@ -21,11 +22,20 @@ def getfilefromfs(mongo,
     # print(file_type, file_id)
     # creating GridFS instance to get required files
     fs =  gridfs.GridFS(mongo.db)
-    file = fs.find_one({ 'fileId': file_id })
+    if file_type == 'audio':
+        file = fs.find_one({ 'audioId': file_id })
+    else:
+        file = fs.find_one({ 'fileId': file_id })
     # audioFolder = os.path.join(basedir, 'static/audio')
+    # audioFolder = folder_path
     # if (os.path.exists(audioFolder)):
     #     shutil.rmtree(audioFolder)
     # os.mkdir(audioFolder)
+    print ('file', file)
+    print ('file_id', file_id)
+    print ('content type', file.contentType)
+    print ('file_type', file_type)
+    print ('file_type in file.contentType', file_type in file.contentType)
     if (file is not None and
         file_type in file.contentType):
         file_name = file.filename

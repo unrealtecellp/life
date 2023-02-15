@@ -31,6 +31,10 @@ from app.controller import (
     speakerdetails
 )
 
+from app.lifedownloader.controller import (
+    downloadTextGrid
+)
+
 
 from flask import Blueprint, render_template
 
@@ -39,66 +43,45 @@ ld = Blueprint('lifedownloader', __name__, template_folder='templates', static_f
 
 @ld.route('/downloadtranscriptions', methods=['GET', 'POST'])
 def downloadtranscriptions():
-    userprojects, userlogin = getdbcollections.getdbcollections(
-        mongo, 'userprojects', 'userlogin')
+    print ('Fetching transcription')
+    userprojects, userlogin, transcriptions = getdbcollections.getdbcollections(
+        mongo, 'userprojects', 'userlogin', 'transcriptions')
     current_username = getcurrentusername.getcurrentusername()
     print('USERNAME: ', current_username)
-    usertype = userdetails.get_user_type(
-        userlogin, current_username)
-    currentuserprojectsname = getcurrentuserprojects.getcurrentuserprojects(
-        current_username, userprojects)
     activeprojectname = getactiveprojectname.getactiveprojectname(
         current_username, userprojects)
     shareinfo = getuserprojectinfo.getuserprojectinfo(
         userprojects, current_username, activeprojectname)
 
-        
-    projects = mongo.db.projects
-    # collection of users and their respective projects
-    userprojects = mongo.db.userprojects
-    # collection containing entry of each lexeme and its details
-    lexemes = mongo.db.lexemes
-    # sentences = mongo.db.sentences                          # collection containing entry of each sentence and its details
-    # creating GridFS instance to get required files
-    fs = gridfs.GridFS(mongo.db)
+    if shareinfo['sharemode'] >= 1:
+        print (request.args)
+        format_details = json.loads(request.args.get('data'))    # data through ajax
+        print ('format_details', format_details, type(format_details))
+        data_format = format_details['format']
+        download_audio = format_details['includeAudio']
+        latest = format_details['latest']
+
+        print ('data_format', data_format)
+        if download_audio:
+            pass
+        else:                
+            print ('data_format', data_format)
+            response_code, file_path = downloadTextGrid.downloadTextGridWihoutAudio (transcriptions,
+                                                            current_username,
+                                                            activeprojectname,
+                                                            latest,
+                                                            data_format)
+        # return response_file
+        return send_file(file_path, as_attachment=True)
     
-    lst = []
-    headwords = request.args.get('data')                   # data through ajax
+    return send_file(file_path, as_attachment=True)
 
-    if headwords != None:
-        headwords = eval(headwords)
-    # print(f'{"="*80}\nheadwords from downloadselectedlexeme route:\n {headwords}\n{"="*80}')
 
-    download_format = headwords['downloadFormat']
-    # print(download_format)
-
-    del headwords['downloadFormat']
-
-    # print(f'{"="*80}\ndelete download format:\n {headwords}\n{"="*80}')
-
-    activeprojectname = userprojects.find_one({'username': current_user.username})[
-        'activeprojectname']
-    lst.append({'projectname': activeprojectname})
-    projectname = activeprojectname
-
-    # for headword in headwords:
-    #     lexeme = lexemes.find_one({'username' : current_user.username, 'projectname' : projectname, 'headword' : headword},\
-    #                         {'_id' : 0, 'username' : 0, 'projectname' : 0})
-    #     lst.append(lexeme)
-    # for lexemeId in headwords.keys():
-    #     lexeme = lexemes.find_one({'projectname' : projectname, 'lexemeId' : lexemeId},\
-    #                         {'_id' : 0})
-    #     lst.append(lexeme)
-
-    for lexemeId in headwords.keys():
-        lexeme = lexemes.find_one({'projectname': projectname, 'lexemeId': lexemeId},
-                                  {'_id': 0})
-        lst.append(lexeme)
-        # save current user mutimedia files of each lexeme to local storage
-        files = fs.find({'projectname': projectname, 'lexemeId': lexemeId})
-        for file in files:
-            name = file.filename
-            # open(basedir+'/app/download/'+name, 'wb').write(file.read())
-            open(os.path.join(basedir, 'download', name), 'wb').write(file.read())
-
-    return send_file('../download.zip', as_attachment=True)
+@ld.route('/tgdownloader', methods=['GET', 'POST'])
+def downloader():
+    userprojects, = getdbcollections.getdbcollections(
+        mongo, 'userprojects', )
+    current_username = getcurrentusername.getcurrentusername()
+    activeprojectname = getactiveprojectname.getactiveprojectname(
+        current_username, userprojects)
+    return send_file ('lifedownloader/downloads/'+activeprojectname+'_textgrids.zip', as_attachment=True)
