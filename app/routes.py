@@ -274,6 +274,31 @@ def managespeakermetadata():
         count=len(data_table)
     )
 
+
+@app.route('/getonespeakerdetails', methods=['GET', 'POST'])
+def getonespeakerdetails():
+    accesscodedetails, userprojects = getdbcollections.getdbcollections(mongo, "speakerdetails", "userprojects")
+
+    current_username = getcurrentusername.getcurrentusername()
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_username, userprojects)
+    
+    # data through ajax
+    lifesourceid = request.args.get('lifesourceid')
+    # print(f"{'='*80}\nasycaccesscode: {asycaccesscode}\n{'='*80}")
+    speakerdetails = accesscodedetails.find_one({"projectname": activeprojectname, "lifesourceid": lifesourceid},
+                                                {"_id": 0,
+                                                "current.sourceMetadata": 1})
+    accesscodetask = accesscodedetails.find_one({"projectname": activeprojectname, "lifesourceid":lifesourceid},
+                                                {"_id": 0,
+                                                "audioSource": 1})
+  
+    speakerdetails.update(accesscodetask)
+    return jsonify(speakerdetails=speakerdetails)
+
+
+
+
+
 # new project route
 # create lexeme entry form for the new project
 @app.route('/newproject', methods=['GET', 'POST'])
