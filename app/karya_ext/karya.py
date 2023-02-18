@@ -749,39 +749,39 @@ def fetch_karya_audio():
                 #     elif karyafilename not in transcript_fileId:
                 #         print(karyafilename, " not in the ", transcript_fileId)
                     
-                if (task == "SPEECH_TRANSCRIPTION"):
-                    for transcript_fileIds in fileID_list:
-                        audio_metaData = transcriptions.find({"projectname":activeprojectname, 
-                                                                    "speakerId":accesscode_speakerid,
-                                                                    "karyaInfo.karyaFetchedAudioId": transcript_fileIds},
-                                                                    {
-                                                                        '_id': 0,
-                                                                        'audioMetadata': 1
-                                                                            })
-                        print(audio_metaData)
-                        if 'audioMetadata' not in audio_metaData.keys():
-                            update_audio_metadata_transcription(transcript_fileIds, activeprojectname, karya_audio_report) #edit the function and debug this
-                        else: 
-                            mongodb_info = mongo.db.transcription
+            #     if (task == "SPEECH_TRANSCRIPTION"):
+            #         for transcript_fileIds in fileID_list:
+            #             audio_metaData = transcriptions.find({"projectname":activeprojectname, 
+            #                                                         "speakerId":accesscode_speakerid,
+            #                                                         "karyaInfo.karyaFetchedAudioId": transcript_fileIds},
+            #                                                         {
+            #                                                             '_id': 0,
+            #                                                             'audioMetadata': 1
+            #                                                                 })
+            #             print(audio_metaData)
+            #             if 'audioMetadata' not in audio_metaData.keys():
+            #                 update_audio_metadata_transcription(transcript_fileIds, activeprojectname, karya_audio_report) #edit the function and debug this
+            #             else: 
+            #                 mongodb_info = mongo.db.transcription
 
-                        # updated_audio_metadata = {"additionalInfo":"", "audioMetadata":{"karyaVerificationMetadata": karya_audio_report, "verificationReport": karya_audio_report}}
+            #             # updated_audio_metadata = {"additionalInfo":"", "audioMetadata":{"karyaVerificationMetadata": karya_audio_report, "verificationReport": karya_audio_report}}
 
-                            audio_metadata_transcription = mongodb_info.update({'projectname': activeprojectname, 'speakerId': workerid},
-                                                                        {"$set": {"audioMetadata":{"karyaVerificationMetadata": karya_audio_report, "verificationReport": karya_audio_report}}}) 
+            #                 audio_metadata_transcription = mongodb_info.update({'projectname': activeprojectname, 'speakerId': workerid},
+            #                                                             {"$set": {"audioMetadata":{"karyaVerificationMetadata": karya_audio_report, "verificationReport": karya_audio_report}}}) 
 
 
-            except:
-                pass
+            # except:
+            #     pass
 
-            else:
-                if (worker_id == for_worker_id):
-                    workerId_list.append(worker_id)
+            # else:
+            #     if (worker_id == for_worker_id):
+            #         workerId_list.append(worker_id)
                     
-                    sentences = micro_task_ids[micro_task_id]["input"]["data"]["sentence"]
-                    sentence_list.append(sentences)
+            #         sentences = micro_task_ids[micro_task_id]["input"]["data"]["sentence"]
+            #         sentence_list.append(sentences)
 
-                    fileID_lists = item['id'] 
-                    fileID_list.append(fileID_lists)
+            #         fileID_lists = item['id'] 
+            #         fileID_list.append(fileID_lists)
 
 
 
