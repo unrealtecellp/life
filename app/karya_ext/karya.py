@@ -770,8 +770,8 @@ def fetch_karya_audio():
             #                                                             {"$set": {"audioMetadata":{"karyaVerificationMetadata": karya_audio_report, "verificationReport": karya_audio_report}}}) 
 
 
-            # except:
-            #     pass
+            except:
+                pass
 
             # else:
             #     if (worker_id == for_worker_id):
@@ -840,9 +840,9 @@ def fetch_karya_audio():
 
 
 ###########################################################################################################
-        print("line 714", karya_audio_report)
-        print("line 715", sentence_list)
-        print("line717",workerId_list)
+        # print("line 714", karya_audio_report)
+        # print("line 715", sentence_list)
+        # print("line717",workerId_list)
         # update audio meta data
         
 #####################################################################################################################
