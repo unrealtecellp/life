@@ -1907,7 +1907,11 @@ def project_comments_stats(userprojectslist):
 
     for projectname in userprojectslist:
         project_type = projects.find_one({"projectname": projectname},
-                                            {"_id": 0, "projectType": 1})["projectType"]
+                                            {"_id": 0, "projectType": 1})
+        if (len(project_type) != 0):
+            project_type = project_type["projectType"]
+        else:
+            continue
         if (project_type =='text'):
             project_details = projects.find_one({"projectname": projectname}, \
                     {"_id": 0, "textData": 1})
