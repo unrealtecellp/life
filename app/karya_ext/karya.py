@@ -19,6 +19,9 @@ from io import BytesIO
 import json
 from datetime import datetime
 from pprint import pprint
+# from pylatex.utils import bold, NoEscape
+
+from flask_login import current_user, login_user, logout_user, login_required
 from app.controller import (
     getdbcollections,
     getactiveprojectname,
@@ -40,6 +43,7 @@ karya_bp = Blueprint('karya_bp', __name__, template_folder='templates', static_f
 # print('starting...')
 
 @karya_bp.route('/home_insert')
+@login_required
 def home_insert():
     # print('starting...home')
     userprojects, accesscodedetails = getdbcollections.getdbcollections(mongo,
@@ -105,6 +109,7 @@ def home_insert():
 ##############################################################################################################
 
 @karya_bp.route('/uploadfile' , methods=['GET', 'POST'])
+@login_required
 def uploadfile():
     projects, userprojects, projectsform, karyaaccesscodedetails = getdbcollections.getdbcollections(mongo,
                                                                                                         'projects',
@@ -228,6 +233,7 @@ def uploadfileforquestionnaire(projectsform, project_name):
 ##############################################################################################################
 
 @karya_bp.route('/add', methods=['GET', 'POST'])
+@login_required
 def add():
     # print ('Adding speaker info into server')
     mongodb_info, userprojects = getdbcollections.getdbcollections(mongo,
@@ -421,8 +427,9 @@ def add():
 
 
 @karya_bp.route('/homespeaker')
+@login_required
 def homespeaker():
-    projects, userprojects, projectsform, mongodb_info = getdbcollections.getdbcollections(mongo,
+    projects, userprojects, projectsform, accesscode_info = getdbcollections.getdbcollections(mongo,
                                                                                             'projects',
                                                                                             'userprojects',
                                                                                             'projectsform',
@@ -445,7 +452,7 @@ def homespeaker():
 
 ################################## karya accesscode  #########################################################################
     if share_level == 10:
-        karyaaccesscodedetails = mongodb_info.find({"isActive":1, "projectname": activeprojectname},
+        karyaaccesscodedetails = accesscode_info.find({"isActive":1, "projectname": activeprojectname},
                                                     {
                                                         "karyaaccesscode":1, 
                                                         "lifespeakerid":1,
@@ -461,7 +468,7 @@ def homespeaker():
                                                     }
                                                 )
     else:
-        karyaaccesscodedetails = mongodb_info.find({"isActive":1, "projectname": activeprojectname, "assignedBy": current_username},
+        karyaaccesscodedetails = accesscode_info.find({"isActive":1, "projectname": activeprojectname, "assignedBy": current_username},
                                                     {
                                                         "karyaaccesscode":1, 
                                                         "lifespeakerid":1,
@@ -509,6 +516,7 @@ def homespeaker():
 ##############################################################################################################
 
 @karya_bp.route('/getsharelevel', methods=['GET', 'POST'])
+@login_required
 def getsharelevel():
     userprojects,  = getdbcollections.getdbcollections(mongo,
                                                         'userprojects')
@@ -565,6 +573,7 @@ def getonespeakerdetails():
 ##############################################################################################################
 
 @karya_bp.route('/fetch_karya_otp', methods=['GET', 'POST'])
+@login_required
 def fetch_karya_otp():
     
     userprojects, mongodb_info = getdbcollections.getdbcollections(mongo,
@@ -601,7 +610,8 @@ def get_fetched_audio_list(accesscode, activeprojectname):
 
 
 #update audio metadata in transcription
-def update_audio_metadata_transcription(speakerid, activeprojectname, karya_audio_report):
+# def update_audio_metadata_transcription(speakerid, activeprojectname, karya_audio_report):
+def update_audio_metadata_transcription(activeprojectname, karya_audio_report):
     mongodb_info = mongo.db.transcription
 
     updated_audio_metadata = {"additionalInfo":"", "audioMetadata":{"karyaVerificationMetadata": karya_audio_report, "verificationReport": karya_audio_report}}
@@ -613,6 +623,7 @@ def update_audio_metadata_transcription(speakerid, activeprojectname, karya_audi
 
 
 @karya_bp.route('/fetch_karya_audio', methods=['GET', 'POST'])
+@login_required
 def fetch_karya_audio():
     projects, userprojects, projectsform, transcriptions, questionnaires, accesscodedetails = getdbcollections.getdbcollections(mongo,
                                                                                                             'projects',
@@ -675,6 +686,7 @@ def fetch_karya_audio():
         assignment_request = requests.get(headers = hederr, url = assignment_urll) 
    
         r_j = assignment_request.json()
+        # print(dict(r_j))
         # print ('Lenght of JSON : ', len(r_j))
 
 ###################################################################################
@@ -684,53 +696,155 @@ def fetch_karya_audio():
 
         workerId_list = []
         sentence_list = []
-        #   karya_audio_report = []
-##todo : take nreport from karya api 
+        karya_audio_report = []
+        filename_list = []
+##todo : take the report from karya api 
         micro_task_ids = dict((item['id'], item) for item in r_j["microtasks"])
+        # for item in r_j["microtasks"]:
+        #     karyareport = item['input']['data']['report']
+        #     print('line 692', karyareport)
 
-        fileID_list = []
+        fileID_list = [] # filname
         # pprint(r_j)
         for item in r_j['assignments']:
             micro_task_id = item['microtask_id']
             
             findWorker_id = micro_task_ids[micro_task_id]["input"]["chain"]
             worker_id = findWorker_id["workerId"]
-            
+            print("line 699", worker_id)
             # print('worker_id', worker_id, 'for_worker_id', for_worker_id)
-            if (worker_id == for_worker_id):
-                workerId_list.append(worker_id)
+            try:
+                if (worker_id == for_worker_id):
+                    workerId_list.append(worker_id)
+                    
+                    sentences = micro_task_ids[micro_task_id]["input"]["data"]["sentence"]
+                    sentence_list.append(sentences)
+
+                    fileID_lists = item['id'] 
+                    fileID_list.append(fileID_lists)
+
+                    #appending karya report to list
+                    karyareport = micro_task_ids[micro_task_id]['input']['data']['report']
+                    karya_audio_report.append(karyareport)
+
+                    #appending audio file name
+                    karya_file_name = micro_task_ids[micro_task_id]['input']['files']['recording']
+                    filename_list.append(karya_file_name)
+
+                #speakerid of accesscode
+                accesscode_speakerid = accesscodedetails.find_one({"projectname": activeprojectname, "karyaaccesscode": access_code},
+                                                                        {'karyaInfo.karyaSpeakerId': 1,'_id': 0})['karyaInfo.karyaSpeakerId']
+
+                task = accesscodedetails.find_one({"projectname": activeprojectname, "karyaInfo.karyaSpeakerId": accesscode_speakerid,
+                                                                "karyaaccesscode": access_code},{'task': 1,'_id': 0})['task']
+
+                # transcription_fileId = transcriptions.find({},{"audioId":1})['audioId']
+                # transcription_fileId = transcriptions.find({},{"audioId":1})['audioId']
+
+                # #making file name and fileId dictionary
+                # for transcript_fileId, karyafilename in transcription_fileId,karya_file_name :
+                #     removedate_trans_fileId = transcript_fileId.split()
+                #     if karyafilename in transcript_fileId:
+                #         dict_filename_fileId = dict(transcript_fileId,karyafilename)
+                #     elif karyafilename not in transcript_fileId:
+                #         print(karyafilename, " not in the ", transcript_fileId)
+                    
+            #     if (task == "SPEECH_TRANSCRIPTION"):
+            #         for transcript_fileIds in fileID_list:
+            #             audio_metaData = transcriptions.find({"projectname":activeprojectname, 
+            #                                                         "speakerId":accesscode_speakerid,
+            #                                                         "karyaInfo.karyaFetchedAudioId": transcript_fileIds},
+            #                                                         {
+            #                                                             '_id': 0,
+            #                                                             'audioMetadata': 1
+            #                                                                 })
+            #             print(audio_metaData)
+            #             if 'audioMetadata' not in audio_metaData.keys():
+            #                 update_audio_metadata_transcription(transcript_fileIds, activeprojectname, karya_audio_report) #edit the function and debug this
+            #             else: 
+            #                 mongodb_info = mongo.db.transcription
+
+            #             # updated_audio_metadata = {"additionalInfo":"", "audioMetadata":{"karyaVerificationMetadata": karya_audio_report, "verificationReport": karya_audio_report}}
+
+            #                 audio_metadata_transcription = mongodb_info.update({'projectname': activeprojectname, 'speakerId': workerid},
+            #                                                             {"$set": {"audioMetadata":{"karyaVerificationMetadata": karya_audio_report, "verificationReport": karya_audio_report}}}) 
+
+
+            except:
+                pass
+
+            # else:
+            #     if (worker_id == for_worker_id):
+            #         workerId_list.append(worker_id)
+                    
+            #         sentences = micro_task_ids[micro_task_id]["input"]["data"]["sentence"]
+            #         sentence_list.append(sentences)
+
+            #         fileID_lists = item['id'] 
+            #         fileID_list.append(fileID_lists)
+
+
+
+
+
+                    
+
+                    
+
                 
-                sentences = micro_task_ids[micro_task_id]["input"]["data"]["sentence"]
-                sentence_list.append(sentences)
 
-                fileID_lists = item['id'] 
-                fileID_list.append(fileID_lists)
 
-                #appending karya report to list
-#                 karyareport = micro_task_ids[micro_task_id]['input']["data"]['report']
-#                 karya_audio_report.append(karyareport)
 
-# ###########################################################################################################
-#         # update audio meta data
-#         if (project_type == 'transcriptions'):
-#             for workerid in workerId_list:
-#                 audio_metaData = transcriptions.find({'projectname': activeprojectname,
-#                                                         "spekerid": workerid
-#                                                     },
-#                                                     {
-#                                                         '_id': 0,
-#                                                         'audioMetadata': 1
-#                                                     })
-#                 if 'audio_metadata' not in audio_metaData.keys():
-#                     update_audio_metadata_transcription(workerid, activeprojectname, karya_audio_report)
-#                 else: 
-#                     mongodb_info = mongo.db.transcription
+            #     if (task == "SPEECH_TRANSCRIPTION"):
+            #         for workerid, fileid, audiofilename in accesscode_speakerid, fileID_list, karya_file_name :
 
-#         # updated_audio_metadata = {"additionalInfo":"", "audioMetadata":{"karyaVerificationMetadata": karya_audio_report, "verificationReport": karya_audio_report}}
+            #             filename_value = "A"+audiofilename.split(".")[0]
+            #             audio_metaData = transcriptions.find({'projectname': activeprojectname,
+            #                                                     "karyaInfo.karyaSpeakerId": accesscode_speakerid, 
+            #                                                     'karyaInfo.karyaFetchedAudioId': fileid,
+            #                                                     'audioId' : filename_value
+            #                                                 },
+            #                                                 {
+            #                                                     '_id': 0,
+            #                                                     'audioMetadata': 1
+            #                                                 })
 
-#                     audio_metadata_transcription = mongodb_info.update({'projectname': activeprojectname, 'speakerId': workerid},
-#                                                                 {"$set": {"audioMetadata":{"karyaVerificationMetadata": karya_audio_report, "verificationReport": karya_audio_report}}}) 
-#                     continue
+            #             if 'audioMetadata' not in audio_metaData.keys():
+            #                 update_audio_metadata_transcription(workerid, activeprojectname, karya_audio_report)
+            #             else: 
+            #                 mongodb_info = mongo.db.transcription
+
+            #     # updated_audio_metadata = {"additionalInfo":"", "audioMetadata":{"karyaVerificationMetadata": karya_audio_report, "verificationReport": karya_audio_report}}
+
+            #                 audio_metadata_transcription = mongodb_info.update({'projectname': activeprojectname, 'speakerId': workerid},
+            #                                                             {"$set": {"audioMetadata":{"karyaVerificationMetadata": karya_audio_report, "verificationReport": karya_audio_report}}}) 
+
+            # except:
+            #     pass
+
+            # else:
+            #     if (worker_id == for_worker_id):
+            #         workerId_list.append(worker_id)
+                    
+            #         sentences = micro_task_ids[micro_task_id]["input"]["data"]["sentence"]
+            #         sentence_list.append(sentences)
+
+            #         fileID_lists = item['id'] 
+            #         fileID_list.append(fileID_lists)
+                    
+
+                    # #appending karya report to list
+                    # karyareport = micro_task_ids[micro_task_id]['input']['data']['report']
+                    # karya_audio_report.append(karyareport)
+            
+
+
+###########################################################################################################
+        # print("line 714", karya_audio_report)
+        # print("line 715", sentence_list)
+        # print("line717",workerId_list)
+        # update audio meta data
+        
 #####################################################################################################################
 
 
@@ -824,6 +938,7 @@ def fetch_karya_audio():
                             content = f.read()
                             new_audio_file = {}
                             new_audio_file['audiofile'] = FileStorage(io.BytesIO(content), filename =  fileAudio.getnames()[0])
+                            print(new_audio_file['audiofile'])
 
                             if project_type == "questionnaires":
                                 # language = accesscodedetails.find_one({"karyaaccesscode": access_code}, {'language': 1,'_id': 0})['language']
@@ -904,6 +1019,7 @@ def fetch_karya_audio():
     #################################################################################################
 
 @karya_bp.route('/fetch_karya_audio_zip', methods=['GET', 'POST'])
+@login_required
 def fetch_karya_audio_zip():
     projects, userprojects, transcriptions = getdbcollections.getdbcollections(mongo, 'projects', 'userprojects', 'transcriptions')
     current_username = getcurrentusername.getcurrentusername()
