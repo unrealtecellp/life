@@ -58,7 +58,7 @@
             $('#idtask').change(function () {
                 var taskVal = $(this).val();
                 console.log("Current task value", taskVal);
-                if (taskVal === "SPEECH_DATA_COLLECTION") {
+                if (taskVal === "field") {
                     $('#idspeakerdetailsdiv').show();
                     $('#idspeakerdetailsdiv').attr('required', '');
                     $('#idspeakerdetailsdiv').attr('data-error', 'This field is required.')
@@ -88,17 +88,17 @@
                 // sending accesscode using AJAX
                 // getting speaker details assigned to that accesscode
 
-                var accode = $(this).attr("id");
+                var speakercode = $(this).attr("id");
                 // console.log(accode)
-                $.getJSON("{{url_for('karya_bp.getonespeakerdetails')}}", {
-                    asycaccesscode: String(accode)
+                $.getJSON("{{url_for('getonespeakerdetails')}}", {
+                    asycaccesscode: String(speakercode)
                 }, function (data) {
                     // console.log(data)
-                    metadata = data.speakerdetails.current.workerMetadata
-                    task = data.speakerdetails.task
+                    metadata = data.speakerdetails.current.sourceMetadata
+                    task = data.speakerdetails.audioSource
                     console.log(metadata, task)
                     // accesscode = data.speakerdetails.accesscode
-                    $('#accesscode').attr('value', accode)
+                    $('#lifesourceid').attr('value', speakercode)
 
                     name = metadata.name
                     $('#idname').attr('value', name)
@@ -113,7 +113,7 @@
                     // console.log (agroup)
 
                     console.log("Current task value", task);
-                    if (task === "SPEECH_DATA_COLLECTION") {
+                    if (task === "field") {
                         $('#idspeakerdetailsdiv').show();
                         $('#idspeakerdetailsdiv').attr('required', '');
                         $('#idspeakerdetailsdiv').attr('data-error', 'This field is required.')
@@ -186,7 +186,7 @@
                 $('#accodeformheader').find('input, select').attr('disabled', true);
             });
 
-            $('.assignaccesscode').click(function () {
+            $('.addnewspeaker').click(function () {
                 document.getElementById("accodeformheader").style.display = "block";
                 buttonType = $(this).attr("id")
                 activeform(buttonType)
@@ -218,7 +218,7 @@
                 // $('#formdisplay').find('select').html("")
                 // $('#formdisplay option:selected').removeAttr('selected')                  
 
-                $('#accesscode').attr('value', '')
+                $('lifesourceid').attr('value', '')
             })
             $('#closebutton').click(function () {
                 buttonType = $(this).attr("id")
@@ -234,7 +234,7 @@
     <!-- Add/Edit Speaker button -->
     <!-- Modal -->
     <div id="formdisplay" style="display: none;">
-        <form role="form" method="post" action="{{url_for('karya_bp.add')}}">
+        <form role="form" method="post" action="{{url_for('register')}}">
 
             <button class="pull-right btn-danger" type="button" id="editbutton">Edit</button><br />
 
@@ -345,37 +345,22 @@
                     </td>
 
                     <td>
-                        {{item['karyaaccesscode']}}
+                        {{item['lifesourceid']}}
+                    </td>
+
+                    <td>
+                        {{item['current']['sourceMetadata']['name']}}
+                    </td>
+
+                    <td>
+                        {{item['current']['sourceMetadata']['agegroup']}}
                     </td>
                     <td>
-                        {{item['lifespeakerid']}}
+                        {{item['current']['sourceMetadata']['gender']}}
                     </td>
+
                     <td>
-                        {{item['current']['workerMetadata']['name']}}
-                    </td>
-                    <td>
-                        {{item['current']['workerMetadata']['agegroup']}}
-                    </td>
-                    <td>
-                        {{item['current']['workerMetadata']['gender']}}
-                    </td>
-                    <td>
-                        <strong>{{item['assignedBy']}}</strong>
-                    </td>
-                    <td>
-                        {{item['fetchData']}}
-                    </td>
-                    <td>
-                        {{item['task']}}
-                    </td>
-                    <td>
-                        {{item['domain']}}
-                    </td>
-                    <td>
-                        {{item['elicitationmethod']}}
-                    </td>
-                    <td>
-                        <button type="button" class="btn btn-primary lexemeview" id="{{item['karyaaccesscode']}}"
+                        <button type="button" class="btn btn-primary lexemeview" id="{{item['lifesourceid']}}"
                             data-toggle="modal" data-target="#exampleModal">
                             View
                         </button>
