@@ -222,63 +222,6 @@ def manageproject():
         usertype=usertype
     )
 
-# Manage Speaker Metadata
-@app.route('/managespeakermetadata', methods=['GET', 'POST'])
-@login_required
-def managespeakermetadata():
-    userprojects, userlogin, speakermeta = getdbcollections.getdbcollections(
-        mongo, 'userprojects', 'userlogin', 'speakerdetails')
-    current_username = getcurrentusername.getcurrentusername()
-    print('USERNAME: ', current_username)
-    usertype = userdetails.get_user_type(
-        userlogin, current_username)
-    currentuserprojectsname = getcurrentuserprojects.getcurrentuserprojects(
-        current_username, userprojects)
-    activeprojectname = getactiveprojectname.getactiveprojectname(
-        current_username, userprojects)
-    shareinfo = getuserprojectinfo.getuserprojectinfo(
-        userprojects, current_username, activeprojectname)
-    allspeakerdetails, alldatalengths, allkeys = speakerdetails.getspeakerdetails(
-        activeprojectname, speakermeta)
-    
-    
-    pprint (allspeakerdetails)
-    pprint(alldatalengths)
-    return render_template(
-        'manageSpeakers.html',
-        speaker_data=allspeakerdetails,
-        activeprojectname=activeprojectname,
-        shareinfo=shareinfo,
-        usertype=usertype,
-        count=alldatalengths,
-        table_headers = allkeys
-    )
-
-
-@app.route('/getonespeakerdetails', methods=['GET', 'POST'])
-def getonespeakerdetails():
-    accesscodedetails, userprojects = getdbcollections.getdbcollections(mongo, "speakerdetails", "userprojects")
-
-    current_username = getcurrentusername.getcurrentusername()
-    activeprojectname = getactiveprojectname.getactiveprojectname(current_username, userprojects)
-    
-    # data through ajax
-    lifesourceid = request.args.get('lifesourceid')
-    # print(f"{'='*80}\nasycaccesscode: {asycaccesscode}\n{'='*80}")
-    speakerdetails = accesscodedetails.find_one({"projectname": activeprojectname, "lifesourceid": lifesourceid},
-                                                {"_id": 0,
-                                                "current.sourceMetadata": 1})
-    accesscodetask = accesscodedetails.find_one({"projectname": activeprojectname, "lifesourceid":lifesourceid},
-                                                {"_id": 0,
-                                                "audioSource": 1})
-  
-    speakerdetails.update(accesscodetask)
-    return jsonify(speakerdetails=speakerdetails)
-
-
-
-
-
 # new project route
 # create lexeme entry form for the new project
 @app.route('/newproject', methods=['GET', 'POST'])
@@ -4337,6 +4280,133 @@ def addnewspeakerdetails():
             return redirect(url_for('enternewsentences'))
 
     return redirect(url_for('enternewsentences'))
+
+
+# Manage Speaker Metadata
+@app.route('/managespeakermetadata', methods=['GET', 'POST'])
+@login_required
+def managespeakermetadata():
+    userprojects, userlogin, speakermeta = getdbcollections.getdbcollections(
+        mongo, 'userprojects', 'userlogin', 'speakerdetails')
+    current_username = getcurrentusername.getcurrentusername()
+    print('USERNAME: ', current_username)
+    usertype = userdetails.get_user_type(
+        userlogin, current_username)
+    currentuserprojectsname = getcurrentuserprojects.getcurrentuserprojects(
+        current_username, userprojects)
+    activeprojectname = getactiveprojectname.getactiveprojectname(
+        current_username, userprojects)
+    shareinfo = getuserprojectinfo.getuserprojectinfo(
+        userprojects, current_username, activeprojectname)
+    allspeakerdetails, alldatalengths, allkeys = speakerdetails.getspeakerdetails(
+        activeprojectname, speakermeta)
+    
+    
+    # pprint (allspeakerdetails)
+    # pprint(alldatalengths)
+
+    return render_template(
+        'manageSpeakers.html',
+        speaker_data=allspeakerdetails,
+        activeprojectname=activeprojectname,
+        shareinfo=shareinfo,
+        usertype=usertype,
+        count=alldatalengths,
+        table_headers = allkeys
+    )
+
+
+@app.route('/getonespeakermetadata', methods=['GET', 'POST'])
+def getonespeakermetadata():
+    speakermeta, userprojects = getdbcollections.getdbcollections(mongo, "speakerdetails", "userprojects")
+
+    current_username = getcurrentusername.getcurrentusername()
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_username, userprojects)
+    
+    # data through ajax
+    lifesourceid = request.args.get('lifespeakerid')
+    print ("Life source ID", lifesourceid)
+    speakermetadata = speakerdetails.getonespeakerdetails(
+        activeprojectname, lifesourceid, speakermeta)
+    
+    print ("Speaker Metadata", speakermetadata)
+    return jsonify(onespeakerdetails=speakermetadata)
+
+
+@app.route('/editfieldspeakermetadata', methods=['GET', 'POST'])
+def editfieldspeakermetadata():
+    speakermeta, userprojects = getdbcollections.getdbcollections(mongo, "speakerdetails", "userprojects")
+
+    current_username = getcurrentusername.getcurrentusername()
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_username, userprojects)
+    
+    current_dt = str(datetime.now()).replace('.', ':')
+    # data through ajax
+    lifesourceid = request.form.get('lifespeakerid')
+
+    fname = request.form.get('sname')
+    fage = request.form.get('sagegroup')
+    fgender = request.form.get('sgender')
+    educlvl = request.form.get('educationalevel')
+    moe12 = request.form.getlist('moe12')
+    moea12 = request.form.getlist('moea12')
+    sols = request.form.getlist('sols')
+    por = request.form.get('por')
+    toc = request.form.get('toc')
+    update_data = {
+                "current": {
+                    "updatedBy": current_username,
+                    "sourceMetadata": {
+                        "name": fname,
+                        "agegroup": fage,
+                        "gender": fgender,
+                        "educationlevel": educlvl,
+                        "educationmediumupto12": moe12,
+                        "educationmediumafter12": moea12,
+                        "speakerspeaklanguage": sols,
+                        "recordingplace": por,
+                        "typeofrecordingplace": toc
+                    },
+                    "current_date": current_dt,
+                }
+    }
+
+    updatestatus = speakerdetails.updateonespeakerdetails(
+        activeprojectname, lifesourceid, update_data, speakermeta)
+
+    return redirect(url_for('managespeakermetadata'))
+
+
+@app.route('/edityoutubesourcemetadata', methods=['GET', 'POST'])
+def edityoutubesourcemetadata():
+    speakermeta, userprojects = getdbcollections.getdbcollections(mongo, "speakerdetails", "userprojects")
+
+    current_username = getcurrentusername.getcurrentusername()
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_username, userprojects)
+    
+    current_dt = str(datetime.now()).replace('.', ':')
+    # data through ajax
+    lifesourceid = request.form.get('lifespeakerid')
+
+    channelname = request.form.get('ytchannelname')
+    channelurl = request.form.get('ytchannelurl')
+
+    update_data = {
+                    "current": {
+                        "updatedBy": current_username,
+                        "sourceMetadata": {
+                            "channelName": channelname,
+                            "channelUrl": channelurl
+                        },
+                        "current_date": current_dt
+                    }
+    }
+
+    updatestatus = speakerdetails.updateonespeakerdetails(
+        activeprojectname, lifesourceid, update_data, speakermeta)
+
+    return redirect(url_for('managespeakermetadata'))
+
 
 # uploadaudiofiles route
 @app.route('/uploadaudiofiles', methods=['GET', 'POST'])

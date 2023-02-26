@@ -17,6 +17,7 @@
 
 
 
+
 </head>
 {% extends "links.html" %}
 
@@ -40,388 +41,293 @@
         </button>
     </div>
 
-
-    <script>
-        function activeform(buttonType) {
-            var x = document.getElementById("formdisplay");
-            // buttonType = $(this).attr("id");
-            // console.log(buttonType)
-
-            if (x.style.display === "none") {
-                x.style.display = "block";
-            } else if (buttonType == 'closebutton') {
-                x.style.display = "none";
-            }
-        }
-
-        $(document).ready(function () {
-            $('#idtask').change(function () {
-                var taskVal = $(this).val();
-                console.log("Current task value", taskVal);
-                if (taskVal === "field") {
-                    $('#idspeakerdetailsdiv').show();
-                    $('#idspeakerdetailsdiv').attr('required', '');
-                    $('#idspeakerdetailsdiv').attr('data-error', 'This field is required.')
-
-                }
-                else {
-                    $('#idspeakerdetailsdiv').hide();
-                    $('#idspeakerdetailsdiv').removeAttr('required');
-                    $('#idspeakerdetailsdiv').removeAttr('data-error');
-                }
-            });
-
-
-            $('.lexemeview').click(function () {
-                $('#accodeformheader').find('input, select').attr('disabled', true);
-                $('#accodeformheader').find('input, select').attr('required', false);
-
-                document.getElementById("accodeformheader").style.display = "none";
-
-                buttonType = $(this).attr("id")
-                activeform(buttonType)
-                $('#formdisplay').find('input, select').attr('disabled', true);
-                $('#editbutton').attr('hidden', false);
-                // $('#idname').attr('hidden', true);
-                // $('#idage').attr('hidden', true);
-
-                // sending accesscode using AJAX
-                // getting speaker details assigned to that accesscode
-
-                var speakercode = $(this).attr("id");
-                // console.log(accode)
-                $.getJSON("{{url_for('getonespeakerdetails')}}", {
-                    asycaccesscode: String(speakercode)
-                }, function (data) {
-                    // console.log(data)
-                    metadata = data.speakerdetails.current.sourceMetadata
-                    task = data.speakerdetails.audioSource
-                    console.log(metadata, task)
-                    // accesscode = data.speakerdetails.accesscode
-                    $('#lifesourceid').attr('value', speakercode)
-
-                    name = metadata.name
-                    $('#idname').attr('value', name)
-                    // 
-
-                    agroup = metadata.agegroup
-                    ageOption = '<option value="' + agroup + '" selected="selected">' + agroup + '</option>'
-                    // document.getElementById('idage').innerHTML=""
-                    // $('#idage').html(ageOption)                        
-                    $('#idage').val(agroup).trigger('change');
-                    // $('#idgender').select2("val", "25-60");
-                    // console.log (agroup)
-
-                    console.log("Current task value", task);
-                    if (task === "field") {
-                        $('#idspeakerdetailsdiv').show();
-                        $('#idspeakerdetailsdiv').attr('required', '');
-                        $('#idspeakerdetailsdiv').attr('data-error', 'This field is required.')
-
-                        gender = metadata.gender
-                        // genderOption = '<option value="'+gender+'" selected="selected">'+gender+'</option>'
-                        // $('#idgender').html(genderOption)
-                        $('#idgender').val(gender).trigger('change');
-                        console.log(gender)
-
-                        elevel = metadata.educationlevel
-                        elevelOption = '<option value="' + elevel + '" selected="selected">' + elevel + '</option>'
-                        // $('#idelevel').html(elevelOption)
-                        $('#idelevel').val(elevel).trigger('change');
-
-                        // mediumpre = metadata.medium-of-education-after-12th
-                        // mediumpost = metadata.medium-of-education-upto-12th
-
-                        mediumupto12 = metadata.educationmediumupto12
-                        mediumupto12option = ''
-                        for (i = 0; i < mediumupto12.length; i++) {
-                            mediumupto12option += '<option value="' + mediumupto12[i] + '" selected="selected">' + mediumupto12[i] + '</option>'
-                        }
-                        // $('#idmediumpre').html(mediumupto12option)
-                        $('#idmediumpre').val(mediumupto12).trigger('change');
-
-
-                        mediumafter12 = metadata.educationmediumafter12
-                        mediumafter12option = ''
-                        for (i = 0; i < mediumafter12.length; i++) {
-                            mediumafter12option += '<option value="' + mediumafter12[i] + '" selected="selected">' + mediumafter12[i] + '</option>'
-                        }
-                        // $('#idmediumpost').html(mediumafter12option)
-                        $('#idmediumpost').val(mediumafter12).trigger('change');
-
-                        speakerotherlangs = metadata.speakerspeaklanguage
-                        speakerotherlangsOption = ''
-                        for (i = 0; i < speakerotherlangs.length; i++) {
-                            speakerotherlangsOption += '<option value="' + speakerotherlangs[i] + '" selected="selected">' + speakerotherlangs[i] + '</option>'
-                        }
-                        // $('#idotherlangs').html(speakerotherlangsOption)
-                        $('#idotherlangs').val(speakerotherlangs).trigger('change');
-
-
-                        // name = metadata.name
-                        // $('#idname').attr('value', name)
-                        place = metadata.recordingplace
-                        // $('#idplace').attr('value', place)
-                        $('#idplace').val(place).trigger('change');
-
-                        ptype = metadata.typeofrecordingplace
-                        ptypeOption = '<option value="' + ptype + '" selected="selected">' + ptype + '</option>'
-                        // $('#idptype').html(ptypeOption)
-                        $('#idptype').val(ptype).trigger('change');
-                    }
-
-
-                });
-                return false;
-            });
-
-            $('#editbutton').click(function () {
-
-                $('#formdisplay').find('input, select').attr('disabled', false);
-                $('#editbutton').attr('hidden', true);
-                // $('#idname').hidden();
-                // $('#idage').attr('hidden', false);
-                document.getElementById('idname').disabled = true;
-                document.getElementById('idage').disabled = true;
-                $('#accodeformheader').find('input, select').attr('disabled', true);
-            });
-
-            $('.addnewspeaker').click(function () {
-                document.getElementById("accodeformheader").style.display = "block";
-                buttonType = $(this).attr("id")
-                activeform(buttonType)
-                // activeform()
-                $('#editbutton').attr('hidden', true)
-                // document.getElementById('idname').style.display = "block";
-                $('#formdisplay').find('input, select').attr('disabled', false);
-
-                // $("#formdisplay").trigger('clear');
-                // $('#formdisplay').reset();
-                // document.getElementById('idname').style.display = "block";
-                // $('#idname').attr('hidden', true)
-                $('#idname').attr('value', '');
-                $('#idplace').attr('value', '');
-                // $('#formdisplay').find('input').attr('value', '')
-
-                // $('#formdisplay').find('select').attr('selected', false)
-                // $('#formdisplay').find('select2').val(null).trigger('change');
-
-                $('#idage').val(" ").trigger("change");
-                $('#idgender').val(" ").trigger("change");
-                $('#idelevel').val(" ").trigger("change");
-                $('#idmediumpre').val(" ").trigger("change");
-                $('#idmediumpost').val(" ").trigger("change");
-                $('#idotherlangs').val(" ").trigger("change");
-                $('#idplace').val(" ").trigger("change");
-                $('#idptype').val(" ").trigger("change");
-
-                // $('#formdisplay').find('select').html("")
-                // $('#formdisplay option:selected').removeAttr('selected')                  
-
-                $('lifesourceid').attr('value', '')
-            })
-            $('#closebutton').click(function () {
-                buttonType = $(this).attr("id")
-                activeform(buttonType)
-                // activeform()
-                // $('#formdisplay').find('input, select').attr('disabled', false);
-                // $('#editbutton').attr('hidden', true)
-            })
-        })
-
-    </script>
-
-    <!-- Add/Edit Speaker button -->
+    <!-- View Field Speaker button -->
     <!-- Modal -->
-    <div id="formdisplay" style="display: none;">
-        <form role="form" method="post" action="{{url_for('register')}}">
+    <div>
+        <div class="modal fade" id="fieldspeakerdetailsmodal" tabindex="-1" role="dialog"
+            aria-labelledby="speakerdetailsmodalLabel">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <!-- <div id="fieldspeakerdetails" style="display: none;"> -->
 
-            <button class="pull-right btn-danger" type="button" id="editbutton">Edit</button><br />
+                    <form role="form" method="post" action="{{url_for('editfieldspeakermetadata')}}">
+                        <button class="pull-right btn-danger" type="button" id="editbutton">Edit</button><br />
 
-            <div class="form-group">
-                <h4>Speaker Metadata</h4>
-
-                <!-- return render_template('homespeaker.html', data = table_data, speaker_data_accesscode= speaker_data_accesscode, speaker_data_name = speaker_data_name, 
-                                                              speaker_data_age =speaker_data_age, speaker_data_gender=speaker_data_gender) -->
-                <label class="col-form-label">Name:</label>
-                <input type="text" class="form-control" id="idname" name="sname" placeholder="--Speaker Name--"
-                    style="width:55%" value="" required>
-            </div>
-
-            <div class="form-group">
-                <label for="sagegroup">Age Group: </label> <br>
-                <select class="age" id="idage" name="sagegroup" style="width:55%" required>
-                    <!-- <div id="ageoptions"></div> -->
-                </select><br>
-            </div>
-
-            <div id="idspeakerdetailsdiv" style="display: none;">
-                <div class="form-group">
-                    <label for="sgender">Gender: </label> <br>
-                    <select class="gender" id="idgender" name="sgender" style="width:55%">
-                        <!-- <div id="genderoptions"></div> -->
-
-                    </select><br>
-
-                </div>
-
-                <div class="form-group">
-                    <label for="educationalevel">Educational Level: </label> <br>
-                    <select class="educationlvl" id="idelevel" name="educationalevel" style="width:55%">
-                    </select><br>
-                </div>
-
-
-                <div class="form-group">
-                    <label for="moe12">Medium Of Education (upto 12ᵗʰ): </label><br>
-                    <select class="educationmediumupto12" id="idmediumpre" name="moe12" multiple="multiple"
-                        style="width:55%">
-                    </select><br>
-                </div>
-
-
-                <div class="form-group">
-                    <label for="moea12">Medium Of Education (After 12ᵗʰ): </label><br>
-                    <select class="educationmediumafter12" id="idmediumpost" name="moea12" multiple="multiple"
-                        style="width:55%">
-                    </select><br>
-                </div>
-
-
-                <div class="form-group">
-                    <label for="sols">Other Languages Speaker Could Speak: </label><br>
-                    <select class="speakerspeaklanguage" id="idotherlangs" name="sols" multiple="multiple"
-                        style="width:55%">
-                    </select><br>
-                </div>
-
-                <div class="form-group">
-                    <label class="col-form-label">Place Of Recording:</label><br>
-                    <!-- <select class="typeofcity" id="idptype" name="toc" multiple="multiple" style="width:45%" required></select> -->
-                    <input type="text" class="form-control" id="idplace" name="por" placeholder="--Place Of Recording--"
-                        style="width:55%;">
-
-                </div>
-
-                <div class="form-group">
-                    <label for="toc">Type Of Place: </label> <br>
-                    <select class="typeofcity" id="idptype" name="toc" style="width:55%">
-                    </select><br>
-                </div>
-            </div>
-
-
-            <button type="button" id="closebutton" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            <input type="submit" value="Submit"> <br><br>
-
-        </form>
-    </div>
-    <br>
-</div>
-
-{% for data_source in speaker_data %}
-<div class="row">
-    <div class="col">
-        <b>
-            <h4>{{data_source}} RECORDS</h4>
-        </b>
-        <p id="totalrecords"><strong>Total Records:</strong>&nbsp;{{ count[data_source] }}</p>
-        <input id="myInput" type="text" placeholder="Search">
-        <table class="table table-striped " id="myTable">
-            <thead>
-                <tr>
-                    <!-- <th onclick="sortTable(0)">id</th> -->
-                    <th><input type="checkbox" id="headcheckbox" onchange="checkAllLexeme(this)" name="chk[]"
-                            checked />&nbsp;</th>
-                    {% for header in table_headers[data_source] %}
-                    <th onclick="sortTable(2)">{{header}}</th>
-                    {% endfor %}
-                    <th>View</th>
-
-                </tr>
-            </thead>
-            <tbody id="myTableBody">
-
-                {% for item in speaker_data[data_source] %}
-
-                <tr>
-                    <td>
-                        <input type="checkbox" id="lexemecheckbox" onchange="checkLexeme(this)" name="name1" checked />
-                    </td>
-
-                    <td>
-                        {{item['lifesourceid']}}
-                    </td>
-
-                    <td>
-                        {{item['current']['sourceMetadata']['name']}}
-                    </td>
-
-                    <td>
-                        {{item['current']['sourceMetadata']['agegroup']}}
-                    </td>
-                    <td>
-                        {{item['current']['sourceMetadata']['gender']}}
-                    </td>
-
-                    <td>
-                        <button type="button" class="btn btn-primary lexemeview" id="{{item['lifesourceid']}}"
-                            data-toggle="modal" data-target="#exampleModal">
-                            View
-                        </button>
-                    </td>
-
-                </tr>
-                {% endfor %}
-
-
-            </tbody>
-        </table>
-    </div>
-</div>
-{% endfor %}
-
-
-<!-- Add new Speaker Modal -->
-<div class="modal fade" id="addNewSpeakerModal" tabindex="-1" role="dialog" aria-labelledby="addNewSpeakerModalLabel">
-    <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                        aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="addNewSpeakerModalLabel">Project Name: {{ projectName }}</h4>
-            </div>
-            <div class="modal-body">
-                <!-- <div class="col-xs-6"> -->
-                <!-- <input id="myInput" class="form-control" type="text" placeholder="Search"> -->
-                <!-- </div> -->
-                <br>
-                <div class="row">
-                    <div class="col-xs-12">
-                        <div class="form-group">
-                            <div id="addnewspeakerform"> </div>
+                        <div class="modal-header">
+                            <h4 class="modal-title" id="speakerdetailsmodalLabel">Field Metadata</h4>
                         </div>
-                    </div>
+
+                        <input type="hidden" name="lifespeakerid" id="lifespeakerid" value="" />
+                        <div class="modal-body" id="formdisplay">
+                            <div class="form-group">
+                                <label class="col-form-label">Name:</label>
+                                <input type="text" class="form-control" id="idname" name="sname"
+                                    placeholder="--Speaker Name--" style="width:55%" value="" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="sagegroup">Age Group: </label> <br>
+                                <select class="age" id="idage" name="sagegroup" style="width:55%" required>
+                                    <!-- <div id="ageoptions"></div> -->
+                                </select><br>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="sgender">Gender: </label> <br>
+                                <select class="gender" id="idgender" name="sgender" style="width:55%">
+                                    <!-- <div id="genderoptions"></div> -->
+
+                                </select><br>
+
+                            </div>
+
+                            <div class="form-group">
+                                <label for="educationalevel">Educational Level: </label> <br>
+                                <select class="educationlvl" id="idelevel" name="educationalevel" style="width:55%">
+                                </select><br>
+                            </div>
+
+
+                            <div class="form-group">
+                                <label for="moe12">Medium Of Education (upto 12ᵗʰ): </label><br>
+                                <select class="educationmediumupto12" id="idmediumpre" name="moe12" multiple="multiple"
+                                    style="width:55%">
+                                </select><br>
+                            </div>
+
+
+                            <div class="form-group">
+                                <label for="moea12">Medium Of Education (After 12ᵗʰ): </label><br>
+                                <select class="educationmediumafter12" id="idmediumpost" name="moea12"
+                                    multiple="multiple" style="width:55%">
+                                </select><br>
+                            </div>
+
+
+                            <div class="form-group">
+                                <label for="sols">Other Languages Speaker Could Speak: </label><br>
+                                <select class="speakerspeaklanguage" id="idotherlangs" name="sols" multiple="multiple"
+                                    style="width:55%">
+                                </select><br>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-form-label">Place Of Recording:</label><br>
+                                <!-- <select class="typeofcity" id="idptype" name="toc" multiple="multiple" style="width:45%" required></select> -->
+                                <input type="text" class="form-control" id="idplace" name="por"
+                                    placeholder="--Place Of Recording--" style="width:55%;">
+
+                            </div>
+
+                            <div class="form-group">
+                                <label for="toc">Type Of Place: </label> <br>
+                                <select class="typeofcity" id="idptype" name="toc" style="width:55%">
+                                </select><br>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" id="closebutton" class="btn btn-secondary"
+                                data-dismiss="modal">Close</button>
+                            <input type="submit" value="Submit"> <br><br>
+                        </div>
+                    </form>
                 </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+
             </div>
         </div>
     </div>
-</div>
 
-{% endblock %}
+    <!-- View YouTube Data Button -->
+    <!-- Modal -->
+    <div>
+        <div class="modal fade" id="youtubedetailsmodal" tabindex="-1" role="dialog"
+            aria-labelledby="youtubedetailsmodalLabel">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <!-- <div id="fieldspeakerdetails" style="display: none;"> -->
 
-{% block scripts %}
-{{super()}}
-<script src="{{url_for('.static', filename='speaker_select2_dropdown.js')}}"></script>
-<script src="{{url_for('.static', filename='addnewspeaker.js')}}"></script>
-<script src="{{url_for('.static', filename='speaker_select2_dropdown.js')}}"></script>
-<script src="{{url_for('.static', filename='search.js')}}"></script>
-<script src="{{url_for('.static', filename='sorttable.js')}}"></script>
+                    <form role="form" method="post" action="{{url_for('edityoutubesourcemetadata')}}">
+                        <button class="pull-right btn-danger" type="button" id="editbuttonyt">Edit</button><br />
+
+                        <div class="modal-header">
+                            <h4 class="modal-title" id="youtubedetailsmodalLabel">YouTube Metadata</h4>
+                        </div>
+
+                        <input type="hidden" name="lifespeakerid" id="lifespeakerid" class="lifespeakeridyt" value="" />
+                        <div class="modal-body" id="formdisplayyoutube">
+                            <div class="form-group">
+                                <label class="col-form-label">Youtube Channel Name</label><br>
+                                <input type="text" class="form-control" id="idytchannelname" name="ytchannelname"
+                                    placeholder="--Youtube Channel Name--" style="width:55%;">
+                            </div>
+                            <div class="form-group">
+                                <label class="col-form-label">Youtube Channel URL</label><br>
+                                <input type="url" class="form-control" id="idytchannelurl" name="ytchannelurl"
+                                    placeholder="--Youtube Channel URL--" style="width:55%;">
+                            </div>
 
 
-{% endblock %}
+                            <div class="modal-footer">
+                                <button type="button" id="closebuttonyoutube" class="btn btn-secondary"
+                                    data-dismiss="modal">Close</button>
+                                <input type="submit" value="Submit"> <br><br>
+                            </div>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+    {% for data_source in speaker_data %}
+    <div class="row">
+        <div class="col">
+            <b>
+                <h4>{{data_source}} RECORDS</h4>
+            </b>
+            <p id="totalrecords"><strong>Total Records:</strong>&nbsp;{{ count[data_source] }}</p>
+            <input id="myInput" type="text" placeholder="Search">
+            <table class="table table-striped " id="table" data-toolbar="#toolbar" data-search="true"
+                data-show-refresh="true" data-show-toggle="true" data-show-fullscreen="true" data-show-columns="true"
+                data-show-columns-toggle-all="true" data-detail-view="true" data-show-export="true"
+                data-click-to-select="true" data-detail-formatter="detailFormatter" data-minimum-count-columns="2"
+                data-show-pagination-switch="true" data-pagination="true" data-id-field="id"
+                data-page-list="[10, 25, 50, 100, all]" data-show-footer="true" data-side-pagination="server">
+                <thead>
+                    <tr>
+                        <!-- <th onclick="sortTable(0)">id</th> -->
+                        <th><input type="checkbox" id="headcheckbox" onchange="checkAllLexeme(this)" name="chk[]"
+                                checked />&nbsp;</th>
+                        {% for header in table_headers[data_source] %}
+                        <th onclick="sortTable(2)">{{header}}</th>
+                        {% endfor %}
+                        <th>View</th>
+
+                    </tr>
+                </thead>
+                <tbody id="myTableBody">
+
+                    {% for item in speaker_data[data_source] %}
+
+                    <tr>
+                        <td>
+                            <input type="checkbox" id="lexemecheckbox" onchange="checkLexeme(this)" name="name1"
+                                checked />
+                        </td>
+
+                        <td>
+                            {{item['lifesourceid']}}
+                        </td>
+
+                        {% if data_source == "FIELD" %}
+                        <td>
+                            {{item['current']['sourceMetadata']['name']}}
+                        </td>
+
+                        <td>
+                            {{item['current']['sourceMetadata']['agegroup']}}
+                        </td>
+                        <td>
+                            {{item['current']['sourceMetadata']['gender']}}
+                        </td>
+
+                        <td>
+                            {{item['createdBy']}}
+                        </td>
+
+                        <td>
+                            {{item['current']['updatedBy']}}
+                        </td>
+
+                        <td>
+                            <button type="button" class="btn btn-primary speakerview" id="{{item['lifesourceid']}}"
+                                data-toggle="modal" data-target="#fieldspeakerdetailsmodal">
+                                View
+                            </button>
+                        </td>
+
+                        {% elif data_source == "YOUTUBE" %}
+                        <td>
+                            {{item['current']['sourceMetadata']['channelName']}}
+                        </td>
+
+                        <td>
+                            <a href="{{item['current']['sourceMetadata']['channelUrl']}}"
+                                target="_blank">{{item['current']['sourceMetadata']['channelUrl']}}</a>
+                        </td>
+
+                        <td>
+                            {{item['createdBy']}}
+                        </td>
+
+                        <td>
+                            {{item['current']['updatedBy']}}
+                        </td>
+
+                        <td>
+                            <button type="button" class="btn btn-primary youtubeview" id="{{item['lifesourceid']}}"
+                                data-toggle="modal" data-target="#youtubedetailsmodal">
+                                View
+                            </button>
+                        </td>
+                        {% endif %}
+
+
+
+                    </tr>
+                    {% endfor %}
+
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endfor %}
+
+
+    <!-- Add new Speaker Modal -->
+    <div class="modal fade" id="addNewSpeakerModal" tabindex="-1" role="dialog"
+        aria-labelledby="addNewSpeakerModalLabel">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="addNewSpeakerModalLabel">Project Name: {{ projectName }}</h4>
+                </div>
+                <div class="modal-body">
+                    <!-- <div class="col-xs-6"> -->
+                    <!-- <input id="myInput" class="form-control" type="text" placeholder="Search"> -->
+                    <!-- </div> -->
+                    <br>
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div class="form-group">
+                                <div id="addnewspeakerform"> </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% endblock %}
+
+    {% block scripts %}
+    {{super()}}
+    <script src="{{url_for('.static', filename='addnewspeaker.js')}}"></script>
+    <script src="{{url_for('.static', filename='speaker_select2_dropdown.js')}}"></script>
+    <script src="{{url_for('.static', filename='search.js')}}"></script>
+    <script src="{{url_for('.static', filename='sorttable.js')}}"></script>
+    <!-- <script src="{{url_for('.static', filename='managespeakers.js')}}"></script> -->
+
+
+    {% endblock %}
 
 </html>
