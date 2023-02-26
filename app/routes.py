@@ -6,6 +6,7 @@ from app.forms import UserLoginForm, RegistrationForm
 from app.models import UserLogin
 
 from flask_login import current_user, login_user, logout_user, login_required
+from bson.objectid import ObjectId
 
 from pprint import pprint
 from datetime import datetime
@@ -233,45 +234,24 @@ def managespeakermetadata():
         userlogin, current_username)
     currentuserprojectsname = getcurrentuserprojects.getcurrentuserprojects(
         current_username, userprojects)
-    print("line 236 >>>>>>>>>>>> ",currentuserprojectsname)
     activeprojectname = getactiveprojectname.getactiveprojectname(
         current_username, userprojects)
-    print("line 236 >>>>>>>>>>>> ",activeprojectname)
     shareinfo = getuserprojectinfo.getuserprojectinfo(
         userprojects, current_username, activeprojectname)
-    allspeakerdetails = speakerdetails.getspeakerdetails(
+    allspeakerdetails, alldatalengths, allkeys = speakerdetails.getspeakerdetails(
         activeprojectname, speakermeta)
-
-    # "createdBy": current_username
-    # {"sourceMetadata.lifesourceid":1,"sourceMetadata.name":1,
-    #                                         "sourceMetadata.agegroup":1,"sourceMetadata.gender":1,
-    #                                         "_id" :0}
-
-
     
-    lifespeakerdetails = speakermeta.find({"isActive":1, "projectname": activeprojectname},
-                                            {"lifesourceid":1,
-                                            "current.sourceMetadata.lifesourceid":1,
-                                            "current.sourceMetadata.name":1,
-                                            "current.sourceMetadata.agegroup":1,
-                                            "current.sourceMetadata.gender":1,
-                                            "_id" :0})
-
-    # print("line 249 >>>>>>>>>>>>>>>>", lifespeakerdetails)
-    data_table = []
-    for data in lifespeakerdetails:
-        print("line 256",data)
-        data_table.append(data)
-    print(data_table)
-
+    
+    pprint (allspeakerdetails)
+    pprint(alldatalengths)
     return render_template(
         'manageSpeakers.html',
-        data=allspeakerdetails,
+        speaker_data=allspeakerdetails,
         activeprojectname=activeprojectname,
         shareinfo=shareinfo,
         usertype=usertype,
-        data_table = data_table,
-        count=len(data_table)
+        count=alldatalengths,
+        table_headers = allkeys
     )
 
 
@@ -3807,7 +3787,7 @@ def login():
         # username = userlogin.find_one({"username": form.username.data})
         user = UserLogin(username=form.username.data)
         password = form.password.data
-        print('Original password', password)
+        # print('Original password', password)
         # print(user)
         if user.username == ADMIN_USER:
             if user.password_hash == '':
@@ -3818,10 +3798,12 @@ def login():
         if user is None or not user.check_password(password):
             flash('Invalid username or password')
             return redirect(url_for('login'))
+        
         isUserActive = userlogin.find_one(
-            {'username': form.username.data}, {"_id": 0, "isActive": 1})
+            {'username': form.username.data}, {"_id": 1, "isActive": 1})
         # print(len(isUserActive))
-        if (len(isUserActive) != 0):
+        # if (len(isUserActive) != 0):
+        if 'isActive' in isUserActive:
             isUserActive = isUserActive['isActive']
             if (isUserActive):
                 pass
@@ -3832,6 +3814,10 @@ def login():
                 flash(
                     'Your request for an account is  currently under review. If approved, your account will be active in some time.')
                 return redirect(url_for('login'))
+        else:
+            old_user_update(userlogin, user.username, ObjectId(isUserActive['_id']).generation_time)
+            update_profile(userlogin, user.username, get_blank_profile())
+
         login_user(user, force=True)
         next_page = request.args.get('next')
         if not next_page or url_parse(next_page).netloc != '':
@@ -3840,6 +3826,40 @@ def login():
     return render_template('login.html', form=form)
 
 
+def get_blank_profile ():
+    blank_profile = {
+            "position": "",
+            "organisation_name": "",
+            "organisation_type": "",
+            "country": "",
+            "city": "",
+            "email": "",
+            "languages": "",
+            "storage_requirement": "",
+            "app_use_reason": ""
+        }
+    return blank_profile
+
+
+def old_user_update(userlogin, username, userSince):
+    userlogin.update_one({"username": username},
+                        {"$set": {'userSince': userSince,
+                        'isActive': 1,
+                        'userdeleteFLAG': 0,
+                        'isSuperAdmin': 0,
+                        'isAdmin': 0
+                        }})
+
+
+def update_profile (userlogin, username, userProfile):
+    userlogin.update_one({"username": username},
+                        {"$set": {
+                        'userProfile': userProfile
+                        }})
+
+    # userprojects = mongo.db.userprojects
+    # userprojects.insert({'username': form.username.data, 'myproject': {},
+    #                          'projectsharedwithme': {}, 'activeprojectname': ''})
 # MongoDB Database
 # use logout
 @app.route('/logout')

@@ -318,9 +318,14 @@
     </div>
     <br>
 </div>
+
+{% for data_source in speaker_data %}
 <div class="row">
     <div class="col">
-        <p id="totalrecords"><strong>Total Records:</strong>&nbsp;{{ count }}</p>
+        <b>
+            <h4>{{data_source}} RECORDS</h4>
+        </b>
+        <p id="totalrecords"><strong>Total Records:</strong>&nbsp;{{ count[data_source] }}</p>
         <input id="myInput" type="text" placeholder="Search">
         <table class="table table-striped " id="myTable">
             <thead>
@@ -328,16 +333,16 @@
                     <!-- <th onclick="sortTable(0)">id</th> -->
                     <th><input type="checkbox" id="headcheckbox" onchange="checkAllLexeme(this)" name="chk[]"
                             checked />&nbsp;</th>
-                    <th onclick="sortTable(2)">Speaker ID</th>
-                    <th onclick="sortTable(3)">Name</th>
-                    <th onclick="sortTable(4)">Age Group</th>
-                    <th onclick="sortTable(5)">Gender</th>
+                    {% for header in table_headers[data_source] %}
+                    <th onclick="sortTable(2)">{{header}}</th>
+                    {% endfor %}
                     <th>View</th>
 
                 </tr>
             </thead>
             <tbody id="myTableBody">
-                {% for item in data_table %}
+
+                {% for item in speaker_data[data_source] %}
 
                 <tr>
                     <td>
@@ -374,7 +379,7 @@
         </table>
     </div>
 </div>
-
+{% endfor %}
 
 
 <!-- Add new Speaker Modal -->
