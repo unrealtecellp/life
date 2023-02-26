@@ -1,4 +1,3 @@
-
 from flask import (
     Blueprint,
     flash,
@@ -745,61 +744,8 @@ def fetch_karya_audio():
                 task = accesscodedetails.find_one({"projectname": activeprojectname, "karyaInfo.karyaSpeakerId": accesscode_speakerid,
                                                                 "karyaaccesscode": access_code},{'task': 1,'_id': 0})['task']
 
-<<<<<<< HEAD
             except:
                 pass
-=======
-                # transcription_fileId = transcriptions.find({},{"audioId":1})['audioId']
-                # transcription_fileId = transcriptions.find({},{"audioId":1})['audioId']
-
-                # #making file name and fileId dictionary
-                # for transcript_fileId, karyafilename in transcription_fileId,karya_file_name :
-                #     removedate_trans_fileId = transcript_fileId.split()
-                #     if karyafilename in transcript_fileId:
-                #         dict_filename_fileId = dict(transcript_fileId,karyafilename)
-                #     elif karyafilename not in transcript_fileId:
-                #         print(karyafilename, " not in the ", transcript_fileId)
-                    
-            #     if (task == "SPEECH_TRANSCRIPTION"):
-            #         for transcript_fileIds in fileID_list:
-            #             audio_metaData = transcriptions.find({"projectname":activeprojectname, 
-            #                                                         "speakerId":accesscode_speakerid,
-            #                                                         "karyaInfo.karyaFetchedAudioId": transcript_fileIds},
-            #                                                         {
-            #                                                             '_id': 0,
-            #                                                             'audioMetadata': 1
-            #                                                                 })
-            #             print(audio_metaData)
-            #             if 'audioMetadata' not in audio_metaData.keys():
-            #                 update_audio_metadata_transcription(transcript_fileIds, activeprojectname, karya_audio_report) #edit the function and debug this
-            #             else: 
-            #                 mongodb_info = mongo.db.transcription
-
-            #             # updated_audio_metadata = {"additionalInfo":"", "audioMetadata":{"karyaVerificationMetadata": karya_audio_report, "verificationReport": karya_audio_report}}
-
-            #                 audio_metadata_transcription = mongodb_info.update({'projectname': activeprojectname, 'speakerId': workerid},
-            #                                                             {"$set": {"audioMetadata":{"karyaVerificationMetadata": karya_audio_report, "verificationReport": karya_audio_report}}}) 
-
-
-            except:
-                pass
-
-            # else:
-            #     if (worker_id == for_worker_id):
-            #         workerId_list.append(worker_id)
-                    
-            #         sentences = micro_task_ids[micro_task_id]["input"]["data"]["sentence"]
-            #         sentence_list.append(sentences)
-
-            #         fileID_lists = item['id'] 
-            #         fileID_list.append(fileID_lists)
-
-
-
-
-
-                    
->>>>>>> cce420df80ae1cf3d0213cc07a9d3ccb95f11ee9
 
             else:
                 if (worker_id == for_worker_id):
@@ -854,47 +800,6 @@ def fetch_karya_audio():
             file_id_list = []
             # print(f"Length of fileIdList: {file_id_list}\nLength of fileIdSet: {set(file_id_list)}")
 
-<<<<<<< HEAD
-=======
-###########################################################################################################
-        # print("line 714", karya_audio_report)
-        # print("line 715", sentence_list)
-        # print("line717",workerId_list)
-        # update audio meta data
-        
-#####################################################################################################################
-
-
-        fileID_sentence_list = tuple(zip(fileID_list, sentence_list))
-        # print(fileID_sentence_list)
-
-        #put check condiotn -> if the speakerId and fileID  previouls fetched or not / Fetch on the basis of fileID assign to speakerID
-        audio_speaker_merge = {key:value for key, value in zip(fileID_sentence_list , workerId_list)} #speakerID = fileID_list(fieldID)
-        # print(len(audio_speaker_merge))
-        # print(audio_speaker_merge.keys())
-        language = accesscodedetails.find_one({"projectname": activeprojectname, "karyaaccesscode": access_code},
-                                                {'language': 1,'_id': 0})['language']
-        exclude_ids = []
-        if (project_type == 'questionnaires'):
-            exclude_ids = getquesidlistofsavedaudios.getquesidlistofsavedaudios(questionnaires,
-                                                                                activeprojectname,
-                                                                                language,
-                                                                                exclude_ids)
-        elif (project_type == 'transcriptions' and
-                derive_from_project_type == 'questionnaires'):
-            exclude_ids = audiodetails.getaudioidlistofsavedaudios(transcriptions,
-                                                                    activeprojectname,
-                                                                    language,
-                                                                    exclude_ids,
-                                                                    for_worker_id)
-        
-
-        # print(f"LanguageScript: {language}\nExcludeIds: {exclude_ids}\nLENGTH ExcludeIds: {len(exclude_ids)}")
-        file_id_list = []
-        # print(f"Length of fileIdList: {file_id_list}\nLength of fileIdSet: {set(file_id_list)}")
-        for file_id_and_sent in list(audio_speaker_merge.keys()):
->>>>>>> cce420df80ae1cf3d0213cc07a9d3ccb95f11ee9
-            
             for file_id_and_sent in list(audio_speaker_merge.keys()):
                 
                 current_file_id = file_id_and_sent[0]
