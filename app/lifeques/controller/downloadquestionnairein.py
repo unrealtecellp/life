@@ -48,6 +48,7 @@ def karyajson(mongo,
                                         )
 
     for ques_data in saved_ques_data:
+        print("Q_Id: ", ques_data["Q_Id"])
         prompt = ques_data['prompt']
         content = prompt['content']
         for lang_script, lang_info in content.items():
@@ -80,10 +81,10 @@ def karyajson(mongo,
                     temp_dict['hint'] = prompt_data['filename']
                     audio_fileId = prompt_data['fileId']
                     # get the file to local storage from database 'fs' collection
-                    print(mongo,
-                            project_folder_path,
-                            audio_fileId,
-                            'fileId')
+                    # print(mongo,
+                    #         project_folder_path,
+                    #         audio_fileId,
+                    #         'fileId')
                     audio_file_path = getfilefromfs(mongo,
                                                     project_folder_path,
                                                     audio_fileId,
