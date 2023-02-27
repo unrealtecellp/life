@@ -43,7 +43,7 @@ function myFunction(projData) {
         for (let [key, value] of Object.entries(projData["tagSet"])) {
             if (value[0] === 'SELECT2') {
                 // console.log(value[0], projData[currentUser][key], typeof projData[currentUser][key]);
-                inpt += '<br><label for="' + key + '">' + key + ': </label><br>' +
+                inpt += '<br><h4><label for="' + key + '">' + key + ': </label></h4>' +
                     '<select class="' + key + 'class" id="' + key + '" name="' + key + '" multiple="multiple" style="width: 100%">';
                 if (projData[currentUser][key].length !== 0) {
                     for (s = 0; s < projData[currentUser][key].length; s++) {
@@ -63,7 +63,7 @@ function myFunction(projData) {
             //     continue;
             // }
             dependendTagLabel[key] = 0;
-            inpt += '<br><div class="col btn-group-toggle ' + key + '" data-toggle="buttons" id="'+key+'"><strong>' + key + ': </strong><br/>';
+            inpt += '<br><div class="col btn-group-toggle ' + key + '" data-toggle="buttons" id="'+key+'"><h4><strong>' + key + ': </strong></h4>';
             console.log(key, value);
             for (let i = 0; i < value.length; i++) {
                 // Show hide categories
@@ -75,7 +75,7 @@ function myFunction(projData) {
                     if (key in projData["tagSetMetaData"]["categoryDependency"]) {
                         // console.log(key, value[i], projData[currentUser][key])
                         if (projData[currentUser][key] !== '') {
-                            delStr = '<br><div class="col btn-group-toggle ' + key + '" data-toggle="buttons" id="'+key+'"><strong>' + key + ': </strong><br/>';
+                            delStr = '<br><div class="col btn-group-toggle ' + key + '" data-toggle="buttons" id="'+key+'"><h4><strong>' + key + ': </strong></h4>';
                             // changes here for radio btn to look like button
                             // inpt = inpt.replace(delStr, '<div class="col ' + key + '">');
                             inpt = inpt.replace(delStr, '<div class="col btn-group-toggle" ' + key + '" data-toggle="buttons" id="'+key+'"">');
@@ -85,7 +85,7 @@ function myFunction(projData) {
                             categoryClassCategory = categoryClass.split('=')[0];
                             independentTag = 'independentTag_' + categoryClassCategory;
                             if (dependendTagLabel[key] === 0) {
-                                inpt += '<strong class="dependentTag ' + categoryClass + ' ' + independentTag + '" id="' + categoryClass + key + '">' + key + ': </strong>';
+                                inpt += '<strong class="dependentTag ' + categoryClass + ' ' + independentTag + '" id="' + categoryClass + key + '">' + key + ': </strong></h4>';
                                 dependendTagLabel[key] = 1;
                             }
                             if (projData[currentUser][key] === value[i]) {
@@ -127,7 +127,7 @@ function myFunction(projData) {
                             }
                         }
                         else {
-                            delStr = '<br><div class="col btn-group-toggle ' + key + '" data-toggle="buttons" id="'+key+'"><strong>' + key + ': </strong><br/>';
+                            delStr = '<br><div class="col btn-group-toggle ' + key + '" data-toggle="buttons" id="'+key+'"><h4><strong>' + key + ': </strong></h4>';
                             // changes here for radio btn to look like button
                             // inpt = inpt.replace(delStr, '<div class="col ' + key + '">');
                             inpt = inpt.replace(delStr, '<div class="col btn-group-toggle ' + key + '" data-toggle="buttons" id="'+key+'" style="display: none;">');
@@ -160,7 +160,7 @@ function myFunction(projData) {
                             }
                             if (cTagFLAG === 1) {
                                 if (dependendTagLabel[key] === 0) {
-                                    inpt += '<strong class="dependentTag ' + categoryClass + ' ' + independentTag + '" id="' + categoryClass + key + '">' + key + ': </strong><br/>';
+                                    inpt += '<strong class="dependentTag ' + categoryClass + ' ' + independentTag + '" id="' + categoryClass + key + '">' + key + ': </strong></h4>';
                                     dependendTagLabel[key] = 1;
                                 }
                                 if (projData["tagSetMetaData"]["defaultCategoryTags"][key] == value[i]) {
@@ -201,7 +201,7 @@ function myFunction(projData) {
                             }
                             else {
                                 if (dependendTagLabel[key] === 0) {
-                                    inpt += '<strong class="dependentTag ' + categoryClass + ' ' + independentTag + '" id="' + categoryClass + key + '" hidden>' + key + ': </strong></br>';
+                                    inpt += '<strong class="dependentTag ' + categoryClass + ' ' + independentTag + '" id="' + categoryClass + key + '" hidden>' + key + ': </strong></h4></br>';
                                     dependendTagLabel[key] = 1;
                                 }
                                 if (projData["tagSetMetaData"]["defaultCategoryTags"][key] == value[i]) {
@@ -358,8 +358,8 @@ function myFunction(projData) {
                                 // changes here for radio btn to look like button
                                 // inpt += '<input class="form-check-input" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '" checked onclick="showHideCategory(\'' + categoryClass + '\')">' +
                                 //     '<label class="form-check-label" for="' + value[i] + '">' + value[i] + '</label>';
-                                inpt += '<label class="btn btn-danger  btn-block active" for="' + value[i] + '" onclick="showHideCategory(\'' + categoryClass + '\')">' + value[i] +
-                                    '<input class="form-check-input" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '" checked onclick="showHideCategory(\'' + categoryClass + '\')">' +
+                                inpt += '<label class="btn btn-danger  btn-block active" for="' + value[i] + '" onclick="showHideCategory(this, \'' + categoryClass + '\')">' + value[i] +
+                                    '<input class="form-check-input" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '" checked onclick="showHideCategory(this, \'' + categoryClass + '\')">' +
                                     '</label>' +
                                     '<span class="button-margin"></span>';
                                     
@@ -374,8 +374,8 @@ function myFunction(projData) {
                                 // changes here for radio btn to look like button
                                 // inpt += '<input class="form-check-input" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '" onclick="showHideCategory(\'' + categoryClass + '\')">' +
                                 //     '<label class="form-check-label" for="' + value[i] + '">' + value[i] + '</label>';
-                                inpt += '<label class="btn btn-danger  btn-block" for="' + value[i] + '" onclick="showHideCategory(\'' + categoryClass + '\')">' + value[i] +
-                                    '<input class="form-check-input" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '" onclick="showHideCategory(\'' + categoryClass + '\')">' +
+                                inpt += '<label class="btn btn-danger  btn-block" for="' + value[i] + '" onclick="showHideCategory(this, \'' + categoryClass + '\')">' + value[i] +
+                                    '<input class="form-check-input" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '" onclick="showHideCategory(this, \'' + categoryClass + '\')">' +
                                     '</label>'+
                                     '<span class="button-margin"></span>';
                                     
@@ -429,7 +429,7 @@ function myFunction(projData) {
 
         }
         key = 'Duplicate Text'
-        inpt += '<br><div class="col btn-group-toggle" data-toggle="buttons" id="'+key+'"><strong>' + key + ': </strong></br>';
+        inpt += '<br><div class="col btn-group-toggle" data-toggle="buttons" id="'+key+'"><h4><strong>' + key + ': </strong></h4></br>';
 
         // if (projData[currentUser]["Duplicate"] === 'Yes') {
         //     inpt += '<input class="form-check-input" type="radio" name="' + key + '" id="Yes" value="Yes" checked>' +
@@ -464,7 +464,7 @@ function myFunction(projData) {
         inpt += '</div>';
 
         inpt += '<br><div class="col">' +
-            '<label class="col" for="text">Annotator Comment:</label>' +
+            '<h4><label class="col" for="text">Annotator Comment:</label></h4>' +
             '<div class="col">' +
             '<input type="text" class="form-control" id="annotatorComment"' +
             ' name="annotatorComment" value="' + projData[currentUser]["annotatorComment"] + '">' +
@@ -485,7 +485,7 @@ function myFunction(projData) {
             // console.log(dependendTagLabel);
             if (value[0] === 'SELECT2') {
                 // console.log(value[0]);
-                inpt += '<br><label for="' + key + '">' + key + ': </label><br>' +
+                inpt += '<br><h4><label for="' + key + '">' + key + ': </label></h4>' +
                     '<select class="' + key + 'class" id="' + key + '" name="' + key + '" multiple="multiple" style="width: 100%"></select><br>'
 
                 select2Keys.push(key);
@@ -497,7 +497,7 @@ function myFunction(projData) {
             //             '<textarea class="form-control" id="'+key+'" name="'+key+'" rows="5"></textarea>';
             //     continue;
             // }
-            inpt += '<br><div class="col btn-group-toggle ' + key + '" data-toggle="buttons" id="'+key+'"><strong>' + key + ': </strong></br>';
+            inpt += '<br><div class="col btn-group-toggle ' + key + '" data-toggle="buttons" id="'+key+'"><h4><strong>' + key + ': </strong></h4></br>';
             for (let i = 0; i < value.length; i++) {
                 // Show hide categories
                 if ("tagSetMetaData" in projData) {
@@ -507,7 +507,7 @@ function myFunction(projData) {
                     notInDepencyCol = undefined;
                     if (key in projData["tagSetMetaData"]["categoryDependency"]) {
                         // console.log(key, value);
-                        delStr = '<br><div class="col btn-group-toggle ' + key + '" data-toggle="buttons" id="'+key+'"><strong>' + key + ': </strong></br>';
+                        delStr = '<br><div class="col btn-group-toggle ' + key + '" data-toggle="buttons" id="'+key+'"><h4><strong>' + key + ': </strong></h4></br>';
                         // changes here for radio btn to look like button
                         // inpt = inpt.replace(delStr, '<div class="col ' + key + '">');
                         inpt = inpt.replace(delStr, '<div class="col btn-group-toggle ' + key + '" data-toggle="buttons"  id="'+key+'" style="display: none;">');
@@ -517,7 +517,7 @@ function myFunction(projData) {
                         independentTag = 'independentTag_' + categoryClassCategory;
 
                         if (dependendTagLabel[key] === 0) {
-                            inpt += '<strong class="dependentTag ' + categoryClass + ' ' + independentTag + '" id="' + categoryClass + key + '" hidden>' + key + ': </strong></br>';
+                            inpt += '<strong class="dependentTag ' + categoryClass + ' ' + independentTag + '" id="' + categoryClass + key + '" hidden>' + key + ': </strong></h4></br>';
                             dependendTagLabel[key] = 1;
                         }
 
@@ -692,14 +692,14 @@ function myFunction(projData) {
                             //         '<label class="form-check-label" for="' + value[i] + '">' + value[i] + '</label>';
                             // }\
                             if (projData["tagSetMetaData"]["defaultCategoryTags"][key] == value[i]) {
-                                inpt += '<label class="btn btn-danger  btn-block active" for="' + value[i] + '"  onclick="showHideCategory(\'' + categoryClass + '\')">' + value[i] +
-                                    '<input class="form-check-input" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '" checked onclick="showHideCategory(\'' + categoryClass + '\')">' +
+                                inpt += '<label class="btn btn-danger  btn-block active" for="' + value[i] + '"  onclick="showHideCategory(this, \'' + categoryClass + '\')">' + value[i] +
+                                    '<input class="form-check-input" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '" checked onclick="showHideCategory(this, \'' + categoryClass + '\')">' +
                                     '</label>'+
                                     '<span class="button-margin"></span>';
                             }
                             else {
-                                inpt += '<label class="btn btn-danger  btn-block" for="' + value[i] + '"  onclick="showHideCategory(\'' + categoryClass + '\')">' + value[i] +
-                                    '<input class="form-check-input" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '" onclick="showHideCategory(\'' + categoryClass + '\')">' +
+                                inpt += '<label class="btn btn-danger  btn-block" for="' + value[i] + '"  onclick="showHideCategory(this, \'' + categoryClass + '\')">' + value[i] +
+                                    '<input class="form-check-input" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '" onclick="showHideCategory(this, \'' + categoryClass + '\')">' +
                                     '</label>'+
                                     '<span class="button-margin"></span>';
                             }
@@ -733,14 +733,14 @@ function myFunction(projData) {
 
         }
         key = 'Duplicate Text'
-        // inpt += '<br><div class="col"><strong>' + key + ': </strong>' +
+        // inpt += '<br><div class="col"><h4><strong>' + key + ': </strong></h4>' +
         //     '<input class="form-check-input" type="radio" name="' + key + '" id="Yes" value="Yes">' +
         //     '<label class="form-check-label" for="Yes">Yes</label>' +
         //     '<input class="form-check-input" type="radio" name="' + key + '" id="No" value="No" checked>' +
         //     '<label class="form-check-label" for="No">No</label>' +
         //     '</div>';
 
-        inpt += '<br><div class="col btn-group-toggle" data-toggle="buttons" id="'+key+'"><strong>' + key + ': </strong><br/>' +
+        inpt += '<br><div class="col btn-group-toggle" data-toggle="buttons" id="'+key+'"><h4><strong>' + key + ': </strong></h4>' +
             '<label class="btn btn-danger  btn-block">' +
             '<input class="form-check-input" type="radio" name="' + key + '" id="Yes" value="Yes">' + 'Yes' +
             '</label>' +
@@ -751,7 +751,7 @@ function myFunction(projData) {
             '</div>';
 
         inpt += '<br><div class="col">' +
-            '<label class="col" for="text">Annotator Comment:</label>' +
+            '<h4><label class="col" for="text">Annotator Comment:</label></h4>' +
             '<div class="col">' +
             '<input type="text" class="form-control" id="annotatorComment"' +
             ' name="annotatorComment">' +
@@ -948,8 +948,8 @@ function loadAnnoText() {
     return false;
 }
 
-function showHideCategory(category) {
-    console.log(category);
+function showHideCategory(id, category) {
+    // console.log(id, id.lastChild, category);
     if (category === 'undefined') {
         return false;
     }
@@ -971,12 +971,50 @@ function showHideCategory(category) {
         // parentNodeIds.push(parentNode.id);
         document.getElementById(parentNode.id).style.display = "block";
         // document.getElementById(value.id).nextSibling.hidden = false;
-        console.log(value.id.nextSibling);
     }
-    // console.log(parentNode, parentNode.id)
-    // for (i=0; i<parentNodeIds.length; i++) {
-    //     parentNodeId = parentNodeIds[i]
-    //     document.getElementById(parentNodeId).style.display = "block";
+    if (category.includes('|')) {
+        console.log(id, id.lastChild, category);
+        lastChildElement = id.lastChild;
+        lastChildElementId = lastChildElement.id;
+        lastChildElementName = lastChildElement.name;
+        activeCategory = lastChildElementName+'='+lastChildElementId;
+        console.log(activeCategory);
+        pipedCategoryList = category.split('|');
+        for (i=0; i<pipedCategoryList.length; i++) {
+            if (pipedCategoryList[i].includes(lastChildElementId)) {
+                for (let [key, value] of Object.entries(document.getElementsByClassName(pipedCategoryList[i]))) {
+                    // console.log(key, value, value.parentNode);
+                    document.getElementById(value.id).hidden = false;
+                    document.getElementById(value.id).disabled = false;
+                    parentNode = value.parentNode;
+                    document.getElementById(parentNode.id).style.display = "block";
+                }
+            }
+            else {
+                for (let [key, value] of Object.entries(document.getElementsByClassName(pipedCategoryList[i]))) {
+                    document.getElementById(value.id).hidden = true;
+                    document.getElementById(value.id).disabled = true;
+                    parentNode = value.parentNode ;
+                    document.getElementById(parentNode.id).style.display = "none";
+                
+                }
+            }
+        }
+    }
+    // else {
+    //     categorySplit = category.split('=');
+    //     elementName = categorySplit[0];
+    //     activeElement = categorySplit[1];
+    //     console.log(elementName, activeElement);
+    //     for (let [key, value] of Object.entries(document.getElementsByName(elementName))) {
+    //         console.log(key, value, value.id, activeElement, value.parentNode);
+    //         if (value.id !== activeElement) {
+    //             document.getElementById(value.id).hidden = true;
+    //             document.getElementById(value.id).disabled = true;
+    //             parentNode = value.parentNode ;
+    //             document.getElementById(parentNode.id).style.display = "none";
+    //         }
+    //     }
     // }
 }
 
