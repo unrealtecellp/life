@@ -3939,20 +3939,35 @@ def insertadmin(userlogin):
 
     userprojects = mongo.db.userprojects
 
+    # userlogin.insert({
+    #     "username": ADMIN_USER,
+    #     "password": "",
+    #     "userProfile": {
+    #         "username": ADMIN_USER,
+    #         "position": "Administrator",
+    #         "organisation_name": "Central Institute of Indian Languages",
+    #         "organisation_type": "Academic",
+    #         "country": "India",
+    #         "city": "Mysuru",
+    #         "email": "",
+    #         "languages": "Maithili",
+    #         "storage_requirement": "-1",
+    #         "app_use_reason": "For LDCIL Project"
+    #     }
+    # })
     userlogin.insert({
         "username": ADMIN_USER,
         "password": "",
         "userProfile": {
-            "username": ADMIN_USER,
             "position": "Administrator",
-            "organisation_name": "Central Institute of Indian Languages",
-            "organisation_type": "Academic",
-            "country": "India",
-            "city": "Mysuru",
+            "organisation_name": "",
+            "organisation_type": "",
+            "country": "",
+            "city": "",
             "email": "",
-            "languages": "Maithili",
-            "storage_requirement": "-1",
-            "app_use_reason": "For LDCIL Project"
+            "languages": "",
+            "storage_requirement": "",
+            "app_use_reason": ""
         }
     })
 

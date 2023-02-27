@@ -60,13 +60,15 @@ def get_user_type(userlogin, current_username):
     useraccess = userlogin.find_one(
         {'username': current_username}, {'isAdmin': 1, 'isSuperAdmin': 1, '_id': 0})
 
-    if useraccess['isSuperAdmin'] == 1:
-        usertype = 'SUPER-ADMIN'
-    elif useraccess['isAdmin'] == 1:
-        usertype = 'ADMIN'
-    else:
+    try:
+        if useraccess['isSuperAdmin'] == 1:
+            usertype = 'SUPER-ADMIN'
+        elif useraccess['isAdmin'] == 1:
+            usertype = 'ADMIN'
+        else:
+            usertype = 'USER'
+    except:
         usertype = 'USER'
-
     return usertype
 
 
