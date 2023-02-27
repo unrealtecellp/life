@@ -80,10 +80,15 @@ def karyajson(mongo,
                     temp_dict['hint'] = prompt_data['filename']
                     audio_fileId = prompt_data['fileId']
                     # get the file to local storage from database 'fs' collection
+                    # print(mongo,
+                    #         project_folder_path,
+                    #         audio_fileId,
+                    #         'audioId')
                     audio_file_path = getfilefromfs(mongo,
-                                    project_folder_path,
-                                    audio_fileId,
-                                    'audio')
+                                                    project_folder_path,
+                                                    audio_fileId,
+                                                    'audio',
+                                                    'fileId')
                     # print(audio_file_path)
                     # crop audio from start to end time
                     start_time = prompt_data['textGrid']['sentence'][boundaryId]['startindex']
@@ -154,7 +159,7 @@ def karyajson(mongo,
                 #     "domain_wise_ques_key:", domain_wise_ques_key,
                 #     "domain_wise_ques_key_path:", domain_wise_ques_key_path
                 # )
-                pprint(temp_dict)
+                # pprint(temp_dict)
                 
     # pprint(lang_wise_ques)
     folder_stats = {}
