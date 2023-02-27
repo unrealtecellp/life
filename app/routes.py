@@ -3955,7 +3955,7 @@ def insertadmin(userlogin):
     #         "app_use_reason": "For LDCIL Project"
     #     }
     # })
-    userlogin.insert({
+    userlogin.insert_one({
         "username": ADMIN_USER,
         "password": "",
         "userProfile": {
