@@ -33,7 +33,7 @@ def getfilefromfs(mongo,
     # if (os.path.exists(audioFolder)):
     #     shutil.rmtree(audioFolder)
     # os.mkdir(audioFolder)
-    # print ('file', file)
+    print ('file: ', file)
     # print ('file_id', file_id)
     # print ('content type', file.contentType)
     # print ('file_type', file_type)
