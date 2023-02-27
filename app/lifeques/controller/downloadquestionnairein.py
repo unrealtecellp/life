@@ -91,21 +91,24 @@ def karyajson(mongo,
                                                     'audio',
                                                     'fileId')
                     print('audio_file_path: ', audio_file_path)
-                    # crop audio from start to end time
-                    start_time = prompt_data['textGrid']['sentence'][boundaryId]['startindex']
-                    end_time = prompt_data['textGrid']['sentence'][boundaryId]['endindex']
-                    # print(f"start time: {start_time}, end time: {end_time}")
-                    # TODO: use ffmpeg to trim audio. Try using 'ffmpeg-python' library
-                    # link: https://github.com/kkroening/ffmpeg-python
-                    actual_audio_file = ffmpeg.input(audio_file_path)
-                    # print(type(actual_audio_file))
-                    actual_audio_file = actual_audio_file.filter('atrim', start=start_time, end=end_time)
-                    # print(type(actual_audio_file))
-                    trimmed_audio_file_path = trimmed_audio_folder_path + '/'+audio_file_path.split('/')[-1]
-                    save_audio_file = ffmpeg.output(actual_audio_file, trimmed_audio_file_path)
-                    save_audio_file = ffmpeg.overwrite_output(save_audio_file)
-                    ffmpeg.run(save_audio_file)
-                    os.remove(audio_file_path)
+                    if (audio_file_path != ''):
+                        # crop audio from start to end time
+                        start_time = prompt_data['textGrid']['sentence'][boundaryId]['startindex']
+                        end_time = prompt_data['textGrid']['sentence'][boundaryId]['endindex']
+                        # print(f"start time: {start_time}, end time: {end_time}")
+                        # TODO: use ffmpeg to trim audio. Try using 'ffmpeg-python' library
+                        # link: https://github.com/kkroening/ffmpeg-python
+                        actual_audio_file = ffmpeg.input(audio_file_path)
+                        # print(type(actual_audio_file))
+                        actual_audio_file = actual_audio_file.filter('atrim', start=start_time, end=end_time)
+                        # print(type(actual_audio_file))
+                        trimmed_audio_file_path = trimmed_audio_folder_path + '/'+audio_file_path.split('/')[-1]
+                        save_audio_file = ffmpeg.output(actual_audio_file, trimmed_audio_file_path)
+                        save_audio_file = ffmpeg.overwrite_output(save_audio_file)
+                        ffmpeg.run(save_audio_file)
+                        os.remove(audio_file_path)
+                    else:
+                        continue
                 elif (prompt_type == 'multimedia'):
                     pass
                 elif (prompt_type == 'image'):
