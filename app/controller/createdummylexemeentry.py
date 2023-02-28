@@ -262,7 +262,7 @@ def createdummylexemeentry(projects,
     lexemeFormData.pop('Lexeme Form Script', None)
     
     # saving data for that new lexeme to database in lexemes collection
-    lexemes.insert(lexemeFormData)
+    lexemes.insert_one(lexemeFormData)
     # print(f'{"="*80}\nLexeme Form :')
     # pprint(lexemeFormData)
     # print(f'{"="*80}')

@@ -174,7 +174,7 @@ def uploadfile():
                             "isActive": 0,
                             "additionalInfo": {}
                         }
-            return_obj = karyaaccesscodedetails.insert(insert_dict)
+            return_obj = karyaaccesscodedetails.insert_one(insert_dict)
             # datafromdb = karyaaccesscodedetails.find({},{"_id" :0})
 
         return redirect(url_for('karya_bp.home_insert'))
@@ -801,6 +801,9 @@ def fetch_karya_audio():
             # print(f"Length of fileIdList: {file_id_list}\nLength of fileIdSet: {set(file_id_list)}")
 
             for file_id_and_sent in list(audio_speaker_merge.keys()):
+
+                karyaspeakerId = audio_speaker_merge[file_id_and_sent]
+                print("\n \n Checking line no. 618: ", karyaspeakerId)
                 
                 current_file_id = file_id_and_sent[0]
                 current_sentence = file_id_and_sent[1].strip()
@@ -852,7 +855,7 @@ def fetch_karya_audio():
                     # print(type(filebytes))
 
                     karyaspeakerId = audio_speaker_merge[file_id_and_sent]
-                    # print("Checking line no. 618: ", karyaspeakerId)
+                    print("\n \n Checking line no. 618: ", karyaspeakerId)
                     lifespeakerid = accesscodedetails.find_one({'karyaspeakerid': karyaspeakerId}, {'lifespeakerid': 1,'_id': 0})
                     
 
@@ -951,22 +954,24 @@ def fetch_karya_audio():
 
             # fileID_sentence_list = tuple(zip(f, s, r))
             # print(fileID_sentence_list)
+
+
             for report_key_value in karya_audio_report:
                 karya_audio_report_value.append(report_key_value.values())
                 karya_audio_report_key.append(report_key_value.keys())
             #     fileID_sentence_list = tuple(zip(f, s, p))
             #     print(fileID_sentence_list)
-            print("#############################")
-            print(karya_audio_report_key)
-            print("#############################")
-            print(karya_audio_report_value)
+            # print("#############################")
+            # print(karya_audio_report_key)
+            # print("#############################")
+            # print(karya_audio_report_value)
 
             fileID_sentence_list = tuple(zip(fileID_list, sentence_list, karya_audio_report_value))
-            print("line 1052 " , fileID_sentence_list)
+            # print("line 1052 " , fileID_sentence_list)
             #put check condiotn -> if the speakerId and fileID  previouls fetched or not / Fetch on the basis of fileID assign to speakerID
             audio_speaker_merge = {key:value for key, value in zip(fileID_sentence_list , workerId_list)} #speakerID = fileID_list(fieldID)
             # print(len("line 860", audio_speaker_merge))
-            print("line 1056 ", audio_speaker_merge)
+            # print("line 1056 ", audio_speaker_merge)
             # print(audio_speaker_merge.keys())
 
 
@@ -995,174 +1000,173 @@ def fetch_karya_audio():
                 if report_key not in karya_report_uniquekey:
                     karya_report_uniquekey.append(report_key) 
             # print(ress)
-            print("unique_key" , karya_report_uniquekey)
-
-            # karya_report_merge_list = []
-            # karya_report_merge = {}
-            for report_value in karya_audio_report_value:
-                for report_key in karya_report_uniquekey: 
-                    karya_report = dict(zip(report_key,report_value))
-                    # karya_report_merge.update(karya_report)
-                    print('\n \n ############################## \n')
-                    print("report merge 1099 ", karya_report)
-                    print('\n \n ############################## \n')
-                    # karya_report_merge_list.append(karya_report)
-
-            # print("this dictonary of report of audio", karya_report_merge)
+            # print("unique_key" , karya_report_uniquekey)
 
 
-                    file_id_list = []
-                    # print(f"Length of fileIdList: {file_id_list}\nLength of fileIdSet: {set(file_id_list)}")
+            karya_report_uniquekey_flattened_list = [item for sublist in karya_report_uniquekey for item in sublist]
+            karya_report_list = []
+            for report_value_sublist in karya_audio_report_value:
+                karya_report_list.append(dict(zip(karya_report_uniquekey_flattened_list, report_value_sublist)))
+
+            print(karya_report_list)
+            
+
+
+            file_id_list = []
+            # print(f"Length of fileIdList: {file_id_list}\nLength of fileIdSet: {set(file_id_list)}")
+
+            for file_id_and_sent, karya_report in zip(list(audio_speaker_merge.keys()), karya_report_list):
+
+                # print("this dictonary of report of audio", karya_report_merge)
+                
+                current_file_id = file_id_and_sent[0]
+                print(current_file_id)
+
+                current_sentence = file_id_and_sent[1].strip()
+                # current_audio_report = file_id_and_sent[2] #audio report vlaue
+                # print("line 1087", current_audio_report)
+                # print("line 1087", type(current_audio_report))
+                current_audio_report = karya_report
+                print("\n \n ",current_audio_report, "\n \n ")
+
+                file_id_list.append(current_file_id)
+
                     
-                    for file_id_and_sent in list(audio_speaker_merge.keys()):
+                # for karya_report in karya_report_merge:
+                    ### Checking if the file is already fetched or not
+                if current_file_id not in fetched_audio_list:
+                    if (project_type == 'questionnaires'):
+                        last_active_ques_id, message =  getquesfromprompttext.getquesfromprompttext(projectsform,
+                                                                                                        questionnaires,
+                                                                                                        activeprojectname,
+                                                                                                        current_sentence,
+                                                                                                        exclude_ids)
+                        if last_active_ques_id == 'False': 
+                            print(f"665: {last_active_ques_id}: {message}: {current_sentence}")
+                            continue
 
-                        # print("this dictonary of report of audio", karya_report_merge)
-                        
-                        current_file_id = file_id_and_sent[0]
-                        current_sentence = file_id_and_sent[1].strip()
-                        current_audio_report = file_id_and_sent[2] #audio report vlaue
-                        # print("line 1087", current_audio_report)
-                        # print("line 1087", type(current_audio_report))
-                        file_id_list.append(current_file_id)
-
-
-                        
-                                
-                        # for karya_report in karya_report_merge:
-                            ### Checking if the file is already fetched or not
-                        if current_file_id not in fetched_audio_list:
-                            if (project_type == 'questionnaires'):
-                                last_active_ques_id, message =  getquesfromprompttext.getquesfromprompttext(projectsform,
-                                                                                                                questionnaires,
-                                                                                                                activeprojectname,
-                                                                                                                current_sentence,
-                                                                                                                exclude_ids)
-                                if last_active_ques_id == 'False': 
-                                    print(f"665: {last_active_ques_id}: {message}: {current_sentence}")
-                                    continue
-
-                            elif (project_type == 'transcriptions' and
-                                    derive_from_project_type == 'questionnaires'):
-                                    transcription_audio_id, message  = audiodetails.getaudiofromprompttext(projectsform,
-                                                                                                    transcriptions,
-                                                                                                    derivedFromProjectName,
-                                                                                                    activeprojectname,
-                                                                                                    current_sentence,
-                                                                                                    exclude_ids)
-                                    if transcription_audio_id == 'False': 
-                                        print(f"677: {transcription_audio_id}: {message}: {current_sentence}")
-                                        continue
-
-
-
-                            # if last_active_ques_id == 'False': 
-                            #     print(f"{last_active_ques_id}: {message}: {current_sentence}")
-                            #     continue
-
-                            rl = 'https://karyanltmbox.centralindia.cloudapp.azure.com/assignment/id/input_file'
-
-                            new_url = rl.replace("id", current_file_id)
-                            # print(new_url)
-
-                            ## Fetching audio
-                            ra = requests.get(url = new_url, headers = hederr)
-                            # print(type(ra))
-
-                            ##Audio Content
-                            filebytes= ra.content
-                            # print(type(filebytes))
-
-                            karyaspeakerId = audio_speaker_merge[file_id_and_sent]
-                            print("Checking line no. 1154: ", karyaspeakerId)
-
-                            lifespeakerid = accesscodedetails.find_one({'karyaspeakerid': karyaspeakerId}, {'lifespeakerid': 1,'_id': 0})
-                            
-
-
-                            if lifespeakerid is not None:
-                                lifespeakerid = lifespeakerid["lifespeakerid"]
-                                with BytesIO(gzip.decompress(filebytes)) as fh: #1
-                                    fileAudio = tarfile.TarFile(fileobj=fh) #2
-                                    for member in fileAudio.getmembers():
-                                        f = fileAudio.extractfile(member)
-                                        content = f.read()
-                                        new_audio_file = {}
-                                        new_audio_file['audiofile'] = FileStorage(io.BytesIO(content), filename =  fileAudio.getnames()[0])
-                                        print(new_audio_file['audiofile'])
-
-                                        if project_type == "questionnaires":
-                                            # language = accesscodedetails.find_one({"karyaaccesscode": access_code}, {'language': 1,'_id': 0})['language']
-                                            new_audio_file['Prompt_Audio'+"_"+language] = new_audio_file['audiofile'] # new_audio_file['Transcription Audio']  i have to do this code
-                                            del new_audio_file['audiofile']
-                                            #savequespromptfile
-                                            save_status = savequespromptfile.savequespromptfile(mongo,
-                                                                                                projects,
-                                                                                                userprojects,
-                                                                                                projectsform,
-                                                                                                questionnaires,
-                                                                                                projectowner,
-                                                                                                activeprojectname,
-                                                                                                current_username,
-                                                                                                last_active_ques_id, 
-                                                                                                new_audio_file,
-                                                                                                karyaSpeakerId=karyaspeakerId
-                                                                                            )
-                                        ##Todo: provied score                                                    
-                                        elif (project_type == 'transcriptions'):
-                                            if (derive_from_project_type == 'questionnaires'):
-                                                # for karya_report in karya_report_merge:
-                                                save_status = audiodetails.updateaudiofiles(mongo,
-                                                                                                projects,
-                                                                                                userprojects,
-                                                                                                transcriptions,
-                                                                                                projectowner,
-                                                                                                activeprojectname,
-                                                                                                current_username,
-                                                                                                lifespeakerid,
-                                                                                                new_audio_file,
-                                                                                                transcription_audio_id,
-                                                                                                karyaInfo={
-                                                                                                    "karyaSpeakerId": karyaspeakerId,
-                                                                                                    "karyaFetchedAudioId": current_file_id
-                                                                                                },
-                                                                                                audioMetadata={
-                                                                                                    "karyaVerificationMetadata": karya_report, 
-                                                                                                    "verificationReport": karya_report},
-
-                                                                                                additionalInfo= {}  
-                                                                                            )
-                                            else:
-                                                save_status = audiodetails.saveaudiofiles(mongo,
-                                                                                            projects,
-                                                                                            userprojects,
+                    elif (project_type == 'transcriptions' and
+                            derive_from_project_type == 'questionnaires'):
+                            transcription_audio_id, message  = audiodetails.getaudiofromprompttext(projectsform,
                                                                                             transcriptions,
-                                                                                            projectowner,
+                                                                                            derivedFromProjectName,
                                                                                             activeprojectname,
-                                                                                            current_username,
-                                                                                            lifespeakerid,
-                                                                                            new_audio_file,
-                                                                                            karyaInfo={
-                                                                                                "karyaSpeakerId": karyaspeakerId,
-                                                                                                "karyaFetchedAudioId": current_file_id
-                                                                                            }
-                                                                                        )
-                                            # print("11  Saving to Transcription collection")
-                                        # print(exclude_ids)
+                                                                                            current_sentence,
+                                                                                            exclude_ids)
+                            if transcription_audio_id == 'False': 
+                                print(f"677: {transcription_audio_id}: {message}: {current_sentence}")
+                                continue
 
-                                        if save_status[0]:
-                                            ## save in the list of fetched audios
-                                            if (project_type == 'questionnaires'):
-                                                exclude_ids.append(last_active_ques_id)
-                                            elif (project_type == 'transcriptions' and
-                                                    derive_from_project_type == 'questionnaires'):
-                                                    exclude_ids.append(transcription_audio_id)
-                                            # print("status of save_status : ", save_status)
-                                            accesscodedetails.update_one({"projectname": activeprojectname, "karyaaccesscode": access_code},
-                                                                            {"$addToSet": {"karyafetchedaudios":current_file_id}})
-                            else:
-                                print(f"lifespeakerid not found!: {karyaspeakerId}")
-                        else:
-                            print(f"Audio already fetched: {current_sentence}")
+
+
+                    # if last_active_ques_id == 'False': 
+                    #     print(f"{last_active_ques_id}: {message}: {current_sentence}")
+                    #     continue
+
+                    rl = 'https://karyanltmbox.centralindia.cloudapp.azure.com/assignment/id/input_file'
+
+                    new_url = rl.replace("id", current_file_id)
+                    print(new_url)
+
+                    ## Fetching audio
+                    ra = requests.get(url = new_url, headers = hederr)
+                    # print(type(ra))
+
+                    ##Audio Content
+                    filebytes= ra.content
+                    # print(type(filebytes))
+
+                    karyaspeakerId = audio_speaker_merge[file_id_and_sent]
+                    print("Checking line no. 1154: ", karyaspeakerId)
+
+                    lifespeakerid = accesscodedetails.find_one({'karyaspeakerid': karyaspeakerId}, {'lifespeakerid': 1,'_id': 0})
+                    
+
+
+                    if lifespeakerid is not None:
+                        lifespeakerid = lifespeakerid["lifespeakerid"]
+                        with BytesIO(gzip.decompress(filebytes)) as fh: #1
+                            fileAudio = tarfile.TarFile(fileobj=fh) #2
+                            for member in fileAudio.getmembers():
+                                f = fileAudio.extractfile(member)
+                                content = f.read()
+                                new_audio_file = {}
+                                new_audio_file['audiofile'] = FileStorage(io.BytesIO(content), filename =  fileAudio.getnames()[0])
+                                print(new_audio_file['audiofile'])
+
+                                if project_type == "questionnaires":
+                                    # language = accesscodedetails.find_one({"karyaaccesscode": access_code}, {'language': 1,'_id': 0})['language']
+                                    new_audio_file['Prompt_Audio'+"_"+language] = new_audio_file['audiofile'] # new_audio_file['Transcription Audio']  i have to do this code
+                                    del new_audio_file['audiofile']
+                                    #savequespromptfile
+                                    save_status = savequespromptfile.savequespromptfile(mongo,
+                                                                                        projects,
+                                                                                        userprojects,
+                                                                                        projectsform,
+                                                                                        questionnaires,
+                                                                                        projectowner,
+                                                                                        activeprojectname,
+                                                                                        current_username,
+                                                                                        last_active_ques_id, 
+                                                                                        new_audio_file,
+                                                                                        karyaSpeakerId=karyaspeakerId
+                                                                                    )
+                                ##Todo: provied score                                                    
+                                elif (project_type == 'transcriptions'):
+                                    if (derive_from_project_type == 'questionnaires'):
+                                        # for karya_report in karya_report_merge:
+                                        save_status = audiodetails.updateaudiofiles(mongo,
+                                                                                        projects,
+                                                                                        userprojects,
+                                                                                        transcriptions,
+                                                                                        projectowner,
+                                                                                        activeprojectname,
+                                                                                        current_username,
+                                                                                        lifespeakerid,
+                                                                                        new_audio_file,
+                                                                                        transcription_audio_id,
+                                                                                        karyaInfo={
+                                                                                            "karyaSpeakerId": karyaspeakerId,
+                                                                                            "karyaFetchedAudioId": current_file_id
+                                                                                        },
+                                                                                        audioMetadata={
+                                                                                            "karyaVerificationMetadata":current_audio_report, 
+                                                                                            "verificationReport": current_audio_report},
+
+                                                                                        additionalInfo= {}  
+                                                                                    )
+                                    else:
+                                        save_status = audiodetails.saveaudiofiles(mongo,
+                                                                                    projects,
+                                                                                    userprojects,
+                                                                                    transcriptions,
+                                                                                    projectowner,
+                                                                                    activeprojectname,
+                                                                                    current_username,
+                                                                                    lifespeakerid,
+                                                                                    new_audio_file,
+                                                                                    karyaInfo={
+                                                                                        "karyaSpeakerId": karyaspeakerId,
+                                                                                        "karyaFetchedAudioId": current_file_id
+                                                                                    }
+                                                                                )
+                                    # print("11  Saving to Transcription collection")
+                                # print(exclude_ids)
+
+                                if save_status[0]:
+                                    ## save in the list of fetched audios
+                                    if (project_type == 'questionnaires'):
+                                        exclude_ids.append(last_active_ques_id)
+                                    elif (project_type == 'transcriptions' and
+                                            derive_from_project_type == 'questionnaires'):
+                                            exclude_ids.append(transcription_audio_id)
+                                    # print("status of save_status : ", save_status)
+                                    accesscodedetails.update_one({"projectname": activeprojectname, "karyaaccesscode": access_code},
+                                                                    {"$addToSet": {"karyafetchedaudios":current_file_id}})
+                    else:
+                        print(f"lifespeakerid not found!: {karyaspeakerId}")
+                else:
+                    print(f"Audio already fetched: {current_sentence}")
 
             # print(f"Length of fileIdList: {len(file_id_list)}\nLength of fileIdSet: {len(set(file_id_list))}")
         return redirect(url_for('karya_bp.home_insert'))

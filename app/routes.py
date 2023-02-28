@@ -805,7 +805,7 @@ def enterlexemefromuploadedfile(lexemedf):
             lexemes.update_one({'lexemeId': lexemeId}, {
                                '$set': uploadedFileLexeme})
         else:
-            lexemes.insert(uploadedFileLexeme)
+            lexemes.insert_one(uploadedFileLexeme)
             # update lexemeInserted count of the project in projects collection
             # project[projectname]['lexemeInserted'] = lexemeCount
             # print(f'{"#"*80}\n{project}')
@@ -3896,7 +3896,7 @@ def save_registration_form(form, current_user):
         password = generate_password_hash(form.password.data)
         # print(user, password)
 
-        userlogin.insert({"username": form.username.data,
+        userlogin.insert_one({"username": form.username.data,
                           "password": password,
                           'userProfile': userProfile,
                           'userSince': datetime.now(),
@@ -3909,7 +3909,7 @@ def save_registration_form(form, current_user):
         userprojects = mongo.db.userprojects
         # userprojects.insert({'username' : form.username.data, 'myproject': [], \
         #     'projectsharedwithme': [], 'activeprojectname' : ''})
-        userprojects.insert({'username': form.username.data, 'myproject': {},
+        userprojects.insert_one({'username': form.username.data, 'myproject': {},
                              'projectsharedwithme': {}, 'activeprojectname': ''})
 
     # if current_user.is_authenticated:
@@ -3972,7 +3972,7 @@ def dummyUserandProject():
     projects = mongo.db.projects
     # collection containing projects name
     if len(mongo.db.list_collection_names()) == 0:
-        userprojects.insert({'username': "dummyUser",
+        userprojects.insert_one({'username': "dummyUser",
                              'myproject':
                              {"dummyProject1":
                               {
@@ -3983,7 +3983,7 @@ def dummyUserandProject():
                              'projectsharedwithme': {},
                              'activeprojectname': "dummyActiveProject"
                              })
-        projects.insert({"projectname": "dummyProject1",
+        projects.insert_one({"projectname": "dummyProject1",
                          "projectOwner": "dummyUser",
                          "lexemeInserted": 0,
                          "lexemeDeleted": 0,
@@ -3996,7 +3996,7 @@ def insertadmin(userlogin):
 
     userprojects = mongo.db.userprojects
 
-    userlogin.insert({
+    userlogin.insert_one({
         "username": ADMIN_USER,
         "password": "",
         "userProfile": {
@@ -4013,7 +4013,7 @@ def insertadmin(userlogin):
         }
     })
 
-    userprojects.insert({'username': ADMIN_USER, 'myproject': {},
+    userprojects.insert_one({'username': ADMIN_USER, 'myproject': {},
                          'projectsharedwithme': {}, 'activeprojectname': ''})
 
     flash(admin_reminder)
@@ -4323,7 +4323,8 @@ def addnewspeakerdetails():
                                },
                                "isActive": 1}
         # pprint(source_data)
-        speakerdetails.insert(source_data, check_keys=False)
+        # speakerdetails.insert_one(source_data, check_keys=False)
+        speakerdetails.insert_one(source_data)
 
         # TODO: Redirect to different pages based on button click
 

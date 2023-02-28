@@ -90,7 +90,7 @@ def savenewquestionnaireform(projectsform,
 
     save_ques_form['LangScript'] = ["", lang_script_array]
     save_ques_form['Prompt Type'] = ["prompt", prompt_array]
-    projectsform.insert(save_ques_form)
+    projectsform.insert_one(save_ques_form)
 
     if "_id" in save_ques_form:
         del save_ques_form["_id"]
@@ -107,13 +107,13 @@ def createpromptform(new_ques_form, lang_name, key_id):
     if 'Audio_'+key_id in new_ques_form:
         if 'TranscriptionAudio_'+key_id in new_ques_form:
             if ('Audio' in prompt_type_dict):
-                prompt_type_dict['Audio'].insert(0, 'waveform')
+                prompt_type_dict['Audio'].insert_one(0, 'waveform')
             else:
                 prompt_type_dict['Audio'] = ['waveform']
         else:
             # prompt_type_dict['Audio'] = ['file']
             if ('Audio' in prompt_type_dict):
-                prompt_type_dict['Audio'].insert(0, 'file')
+                prompt_type_dict['Audio'].insert_one(0, 'file')
             else:
                 prompt_type_dict['Audio'] = ['file']
         
@@ -121,25 +121,25 @@ def createpromptform(new_ques_form, lang_name, key_id):
             # prompt_type_dict['Audio'].extend(['Instruction'])
             # prompt_type_dict['Audio Instruction'] = ["text"]
             if ('Audio' in prompt_type_dict):
-                prompt_type_dict['Audio'].insert(1, 'text')
+                prompt_type_dict['Audio'].insert_one(1, 'text')
             else:
                 prompt_type_dict['Audio'] = ['text']
         else:
             # prompt_type_dict['Audio'] = ['file']
             if ('Audio' in prompt_type_dict):
-                prompt_type_dict['Audio'].insert(1, '')
+                prompt_type_dict['Audio'].insert_one(1, '')
             else:
                 prompt_type_dict['Audio'] = ['']
         
     if 'Multimedia_'+key_id in new_ques_form:
         if 'TranscriptionMM_'+key_id in new_ques_form:
             if ('Multimedia' in prompt_type_dict):
-                prompt_type_dict['Multimedia'].insert(0, 'waveform')
+                prompt_type_dict['Multimedia'].insert_one(0, 'waveform')
             else:
                 prompt_type_dict['Multimedia'] = ['waveform']
         else:
             if ('Multimedia' in prompt_type_dict):
-                prompt_type_dict['Multimedia'].insert(0, 'file')
+                prompt_type_dict['Multimedia'].insert_one(0, 'file')
             else:
                 prompt_type_dict['Multimedia'] = ['file']
         
@@ -147,18 +147,18 @@ def createpromptform(new_ques_form, lang_name, key_id):
             # prompt_type_dict['Multimedia'].extend(['Instruction'])
             # prompt_type_dict['Multimedia Instruction'] = ["text"]
             if ('Multimedia' in prompt_type_dict):
-                prompt_type_dict['Multimedia'].insert(1, 'text')
+                prompt_type_dict['Multimedia'].insert_one(1, 'text')
             else:
                 prompt_type_dict['Multimedia'] = ['text']
         else:
             if ('Multimedia' in prompt_type_dict):
-                prompt_type_dict['Multimedia'].insert(1, '')
+                prompt_type_dict['Multimedia'].insert_one(1, '')
             else:
                 prompt_type_dict['Multimedia'] = ['']
 
     if 'Image_'+key_id in new_ques_form:
         if ('Image' in prompt_type_dict):
-            prompt_type_dict['Image'].insert(0, 'file')
+            prompt_type_dict['Image'].insert_one(0, 'file')
         else:
             prompt_type_dict['Image'] = ['file']
         
@@ -166,12 +166,12 @@ def createpromptform(new_ques_form, lang_name, key_id):
             # prompt_type_dict['Image'].extend(['Instruction'])
             # prompt_type_dict['Image Instruction'] = ["text"]
             if ('Image' in prompt_type_dict):
-                prompt_type_dict['Image'].insert(1, 'text')
+                prompt_type_dict['Image'].insert_one(1, 'text')
             else:
                 prompt_type_dict['Image'] = ['text']
         else:
             if ('Image' in prompt_type_dict):
-                prompt_type_dict['Image'].insert(1, '')
+                prompt_type_dict['Image'].insert_one(1, '')
             else:
                 prompt_type_dict['Image'] = ['']
     # print(lang_name)

@@ -29,16 +29,16 @@ def savenewprojectform(projectsform,
         elif key == 'Lexeme Form Script':
             project_form[key] = value
         elif key == 'Gloss Language':
-            value.insert(0, 'English')
+            value.insert_one(0, 'English')
             project_form[key] = value
         elif key == 'Gloss Script':
-            value.insert(0, 'Latin')
+            value.insert_one(0, 'Latin')
             project_form[key] = value
         elif key == 'Interlinear Gloss Language':
-            value.insert(0, 'English')
+            value.insert_one(0, 'English')
             project_form[key] = value
         elif key == 'Interlinear Gloss Script':
-            value.insert(0, 'Latin')
+            value.insert_one(0, 'Latin')
             project_form[key] = value
         elif len(value) == 1:
             project_form[key] = value[0]
@@ -64,4 +64,4 @@ def savenewprojectform(projectsform,
     project_form['Translation Script']  = project_form['Gloss Script']
     # print(project_form)
     # when testing comment these to avoid any database update/changes
-    projectsform.insert(project_form)
+    projectsform.insert_one(project_form)
