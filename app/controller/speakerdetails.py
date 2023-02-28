@@ -57,10 +57,11 @@ def get_field_speaker_details(activeprojectname, speakermeta):
         {"isActive":1, "projectname": activeprojectname,
         'audioSource': 'field'}, {
             "lifesourceid":1,
-            "current.sourceMetadata.lifesourceid":1,
+            "current.updatedBy":1,
             "current.sourceMetadata.name":1,
             "current.sourceMetadata.agegroup":1,
             "current.sourceMetadata.gender":1,
+            "createdBy":1,
             "_id" :0})
 
     
@@ -100,7 +101,7 @@ def get_youtube_details(activeprojectname, speakermeta):
                 'createdBy': 1, 
                 'audioSource': 1, 
                 'audioSubSource': 1, 
-                'current.updatebBy': 1, 
+                'current.updatedBy': 1, 
                 'current.sourceMetadata.channelName': 1, 
                 'current.sourceMetadata.channelUrl': 1, 
                 '_id': 0}
@@ -110,3 +111,21 @@ def get_youtube_details(activeprojectname, speakermeta):
         data_table.append(data)
 
     return data_table
+
+
+def getonespeakerdetails(activeprojectname, lifesourceid, speakermeta):
+    speakerdetails = speakermeta.find_one({"projectname": activeprojectname, "lifesourceid": lifesourceid},
+                                            {"_id": 0,
+                                            "current.sourceMetadata": 1,
+                                            "lifesourceid": 1})
+
+    return speakerdetails
+
+
+def updateonespeakerdetails(activeprojectname, lifesourceid, all_details, speakermeta):
+    print ("All details", all_details)
+    print ("Life source ID", lifesourceid)
+    status = speakermeta.update_one({"projectname": activeprojectname, "lifesourceid": lifesourceid},
+    {"$set": all_details})
+    
+    return status.raw_result
