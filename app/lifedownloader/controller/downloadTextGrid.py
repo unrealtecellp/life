@@ -172,7 +172,7 @@ def get_text_grid_path(original_audio_filename, text_grid_dir):
 
 
 def get_audio_duration (audio_dir, audio_id):
-    audio_file_path = getfilefromfs.getfilefromfs(mongo, audio_dir, audio_id, 'audio')
+    audio_file_path = getfilefromfs.getfilefromfs(mongo, audio_dir, audio_id, 'audio', 'audioId')
     print ('Audio file path', audio_file_path)
     with audioread.audio_open(audio_file_path) as f:
         overall_xmax = f.duration
