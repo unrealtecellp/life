@@ -207,11 +207,15 @@ def get_boundaries_tiers(activeprojectname, text_grid):
 
                         if (type(value_type) is dict) and (len(value_type) > 0):
                             for script_name in value_type:                                
-                                tier_name = tier+'-'+script_name
+                                tier_name = tier+'-'+script_name+'-'+cur_boundary_element
                                 tier_value = value_type[script_name]
                                 # if len(tier_value) > 0:
                                 # print ('Tier name', tier_name)
                                 # print ('Tiers', tiers)
+
+                                ## TODO: This will only work for transcription and translation
+                                ## Fix needed for gloss and morphemic break which are dicts and
+                                ## need to be converged into a string.
                                 if (type(tier_value) is str):
                                     if tier_name in tiers:
                                         # print (activeprojectname, 'Length of current tier', tier_name, len(tiers[tier_name]))
@@ -230,6 +234,14 @@ def get_boundaries_tiers(activeprojectname, text_grid):
                                     # print ('tier_value', tier_value)
 
 
-
+    print ('All tiers', tiers)
+    for tier in tiers:
+        print (activeprojectname, 'Tier', tier, len(tiers[tier]))
+        print (tiers[tier])
+    
+    print (activeprojectname, 'Xmin', len(xmin))
+    print (activeprojectname, 'Xmax', len(xmax))
+    print (xmin)
+    print (xmax)
     return xmin, xmax, tiers
                 
