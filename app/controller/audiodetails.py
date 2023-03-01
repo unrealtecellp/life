@@ -382,7 +382,7 @@ def saveoneaudiofile(mongo,
         audiowaveform_json_dir_path, audio_json_parent_dir, updated_audio_filename)
     new_audio_details['audioMetadata']['audiowaveform'] = audiowaveform_json
 
-    transcription_doc_id = transcriptions.insert(new_audio_details)
+    transcription_doc_id = transcriptions.insert_one(new_audio_details)
 
     return (True, transcription_doc_id, fs_file_id)
 
@@ -1026,7 +1026,7 @@ def copyofaudiodata(transcriptions,
     audio_id = 'A'+re.sub(r'[-: \.]', '', str(datetime.now()))
     audio_data['audioId'] = audio_id
 
-    transcription_doc_id = transcriptions.insert(audio_data)
+    transcription_doc_id = transcriptions.insert_one(audio_data)
 
     return audio_id
 

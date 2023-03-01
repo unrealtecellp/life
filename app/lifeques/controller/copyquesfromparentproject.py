@@ -182,7 +182,7 @@ def copyquesfromparentproject(projects,
         #     derived_ques["prompt"] = derived_quesprompt
         #     # pprint(derived_ques)
 
-            questionnaires.insert(derived_ques)
+            questionnaires.insert_one(derived_ques)
         # # print('questionnaireIds', questionnaireIds)
         projects.update_one({"projectname": newprojectname},
                             {
@@ -234,7 +234,7 @@ def copyquesfromparentproject(projects,
 #         if (getquesId != None):
 #             questionnaires.update_one({ 'quesId': quesId }, { '$set' : uploadedFileQues })
 #         else:
-#             questionnaires.insert(uploadedFileQues)
+#             questionnaires.insert_one(uploadedFileQues)
 #         print(f"{inspect.currentframe().f_lineno}: {uploadedFileQues}")
 #         for column_name in list(quesdf.columns):
 #             print(f"{inspect.currentframe().f_lineno}: {column_name}")

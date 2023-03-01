@@ -540,7 +540,7 @@ def enterquesfromuploadedfile(mongo, projects,
         if (getquesId != None):
             questionnaires.update_one({ 'quesId': quesId }, { '$set' : uploadedFileQues })
         else:
-            questionnaires.insert(uploadedFileQues)
+            questionnaires.insert_one(uploadedFileQues)
         # print(f"{inspect.currentframe().f_lineno}: {uploadedFileQues}")
         
         all_columns = list(quesdf.columns)

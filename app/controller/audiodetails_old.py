@@ -128,7 +128,7 @@ def saveaudiofiles(mongo,
                                 { "$set": {
                                     userprojectinfo: speakerId
                                 }})
-        transcription_doc_id = transcriptions.insert(new_audio_details)
+        transcription_doc_id = transcriptions.insert_one(new_audio_details)
         # save audio file details in fs collection
         fs_file_id = mongo.save_file(updated_audio_filename,
                         new_audio_file['audiofile'],
@@ -664,7 +664,7 @@ def copyofaudiodata(transcriptions,
     audio_id = 'A'+re.sub(r'[-: \.]', '', str(datetime.now()))
     audio_data['audioId'] = audio_id
 
-    transcription_doc_id = transcriptions.insert(audio_data)
+    transcription_doc_id = transcriptions.insert_one(audio_data)
 
     return audio_id
 

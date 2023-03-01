@@ -43,7 +43,7 @@ function myFunction(projData) {
         for (let [key, value] of Object.entries(projData["tagSet"])) {
             if (value[0] === 'SELECT2') {
                 // console.log(value[0], projData[currentUser][key], typeof projData[currentUser][key]);
-                inpt += '<br><label for="' + key + '">' + key + ': </label><br>' +
+                inpt += '<br><h4><label for="' + key + '">' + key + ': </label></h4>' +
                     '<select class="' + key + 'class" id="' + key + '" name="' + key + '" multiple="multiple" style="width: 100%">';
                 if (projData[currentUser][key].length !== 0) {
                     for (s = 0; s < projData[currentUser][key].length; s++) {
@@ -63,7 +63,8 @@ function myFunction(projData) {
             //     continue;
             // }
             dependendTagLabel[key] = 0;
-            inpt += '<br><div class="col ' + key + '"><strong>' + key + ': </strong>';
+            inpt += '<br><div class="col btn-group-toggle ' + key + '" data-toggle="buttons" id="'+key+'"><h4><strong>' + key + ': </strong></h4>';
+            console.log(key, value);
             for (let i = 0; i < value.length; i++) {
                 // Show hide categories
                 if ("tagSetMetaData" in projData) {
@@ -74,48 +75,62 @@ function myFunction(projData) {
                     if (key in projData["tagSetMetaData"]["categoryDependency"]) {
                         // console.log(key, value[i], projData[currentUser][key])
                         if (projData[currentUser][key] !== '') {
-                            // delStr = '<strong>'+key+': </strong>';
-                            // inpt = inpt.replace(delStr, '');
-                            delStr = '<br><div class="col ' + key + '"><strong>' + key + ': </strong>';
-                            inpt = inpt.replace(delStr, '<div class="col ' + key + '">');
+                            delStr = '<br><div class="col btn-group-toggle ' + key + '" data-toggle="buttons" id="'+key+'"><h4><strong>' + key + ': </strong></h4>';
+                            // changes here for radio btn to look like button
+                            // inpt = inpt.replace(delStr, '<div class="col ' + key + '">');
+                            inpt = inpt.replace(delStr, '<div class="col btn-group-toggle" ' + key + '" data-toggle="buttons" id="'+key+'"">');
 
                             categoryClass = projData["tagSetMetaData"]["categoryDependency"][key];
                             // console.log(categoryClass);
                             categoryClassCategory = categoryClass.split('=')[0];
                             independentTag = 'independentTag_' + categoryClassCategory;
                             if (dependendTagLabel[key] === 0) {
-                                inpt += '<strong class="dependentTag ' + categoryClass + ' ' + independentTag + '" id="' + categoryClass + key + '">' + key + ': </strong>';
+                                inpt += '<strong class="dependentTag ' + categoryClass + ' ' + independentTag + '" id="' + categoryClass + key + '">' + key + ': </strong></h4>';
                                 dependendTagLabel[key] = 1;
                             }
                             if (projData[currentUser][key] === value[i]) {
                                 // console.log(key, value[i])
                                 if (value[i] === 'TEXTAREA') {
-                                    inpt += '<textarea class="form-check-input dependentTag ' + categoryClass + ' ' + independentTag + '" name="' + key + '" id="' + key + '_' + value[i] + '" cols="50">' + projData[currentUser][key] + '</textarea>';
+                                    inpt += '<textarea class="form-check-input dependentTag ' + categoryClass + ' ' + independentTag + '" name="' + key + '" id="' + key + '_' + value[i] + '" cols="60">' + projData[currentUser][key] + '</textarea>';
 
                                 }
+                                // changes here for radio btn to look like button
+                                // else {
+                                //     inpt += '<input class="form-check-input dependentTag ' + categoryClass + ' ' + independentTag + '" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '" checked>' +
+                                //         '<label class="form-check-label dependentTag ' + categoryClass + ' ' + independentTag + '" id="' + value[i] + 'Label" for="' + value[i] + '">' + value[i] + '</label>';
+                                // }
                                 else {
-                                    inpt += '<input class="form-check-input dependentTag ' + categoryClass + ' ' + independentTag + '" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '" checked>' +
-                                        '<label class="form-check-label dependentTag ' + categoryClass + ' ' + independentTag + '" id="' + value[i] + 'Label" for="' + value[i] + '">' + value[i] + '</label>';
+                                    inpt += '<label class="btn btn-danger  btn-block active dependentTag ' + categoryClass + ' ' + independentTag + '" id="' + value[i] + 'Label" for="' + value[i] + '">' + value[i] +
+                                        '<input class="form-check-input dependentTag ' + categoryClass + ' ' + independentTag + '" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '" checked>' +
+                                        '</label>' +
+                                        '<span class="button-margin"></span>';
+                                        
                                 }
-
                             }
                             else {
                                 // console.log(key, value[i]);
                                 if (value[i] === 'TEXTAREA') {
-                                    inpt += '<textarea class="form-check-input dependentTag ' + categoryClass + ' ' + independentTag + '" name="' + key + '" id="' + key + '_' + value[i] + '" cols="50">' + projData[currentUser][key] + '</textarea>';
+                                    inpt += '<textarea class="form-check-input dependentTag ' + categoryClass + ' ' + independentTag + '" name="' + key + '" id="' + key + '_' + value[i] + '" cols="60">' + projData[currentUser][key] + '</textarea>';
 
                                 }
+                                // changes here for radio btn to look like button
+                                // else {
+                                //     inpt += '<input class="form-check-input dependentTag ' + categoryClass + ' ' + independentTag + '" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '">' +
+                                //         '<label class="form-check-label dependentTag ' + categoryClass + ' ' + independentTag + '" id="' + value[i] + 'Label" for="' + value[i] + '">' + value[i] + '</label>';
+                                // }
                                 else {
-                                    inpt += '<input class="form-check-input dependentTag ' + categoryClass + ' ' + independentTag + '" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '">' +
-                                        '<label class="form-check-label dependentTag ' + categoryClass + ' ' + independentTag + '" id="' + value[i] + 'Label" for="' + value[i] + '">' + value[i] + '</label>';
+                                    inpt += '<label class="btn btn-danger  btn-block dependentTag ' + categoryClass + ' ' + independentTag + '" id="' + value[i] + 'Label" for="' + value[i] + '">' + value[i] +
+                                        '<input class="form-check-input dependentTag ' + categoryClass + ' ' + independentTag + '" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '">' +
+                                        '</label>'+
+                                        '<span class="button-margin"></span>';
                                 }
                             }
                         }
                         else {
-                            // delStr = '<strong>'+key+': </strong>';
-                            // inpt = inpt.replace(delStr, '');
-                            delStr = '<br><div class="col ' + key + '"><strong>' + key + ': </strong>';
-                            inpt = inpt.replace(delStr, '<div class="col ' + key + '">');
+                            delStr = '<br><div class="col btn-group-toggle ' + key + '" data-toggle="buttons" id="'+key+'"><h4><strong>' + key + ': </strong></h4>';
+                            // changes here for radio btn to look like button
+                            // inpt = inpt.replace(delStr, '<div class="col ' + key + '">');
+                            inpt = inpt.replace(delStr, '<div class="col btn-group-toggle ' + key + '" data-toggle="buttons" id="'+key+'" style="display: none;">');
 
                             categoryClass = projData["tagSetMetaData"]["categoryDependency"][key];
                             categoryClassCategory = categoryClass.split('=')[0];
@@ -145,59 +160,84 @@ function myFunction(projData) {
                             }
                             if (cTagFLAG === 1) {
                                 if (dependendTagLabel[key] === 0) {
-                                    inpt += '<strong class="dependentTag ' + categoryClass + ' ' + independentTag + '" id="' + categoryClass + key + '">' + key + ': </strong>';
+                                    inpt += '<strong class="dependentTag ' + categoryClass + ' ' + independentTag + '" id="' + categoryClass + key + '">' + key + ': </strong></h4>';
                                     dependendTagLabel[key] = 1;
                                 }
                                 if (projData["tagSetMetaData"]["defaultCategoryTags"][key] == value[i]) {
                                     if (value[i] === 'TEXTAREA') {
-                                        inpt += '<textarea class="form-check-input dependentTag ' + categoryClass + ' ' + independentTag + '" name="' + key + '" id="' + key + '_' + value[i] + '" cols="50"></textarea>';
+                                        inpt += '<textarea class="form-check-input dependentTag ' + categoryClass + ' ' + independentTag + '" name="' + key + '" id="' + key + '_' + value[i] + '" cols="60"></textarea>';
 
                                     }
+                                    // changes here for radio btn to look like button
+                                    // else {
+                                    //     inpt += '<input class="form-check-input dependentTag ' + categoryClass + ' ' + independentTag + '" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '" checked>' +
+                                    //         '<label class="form-check-label dependentTag ' + categoryClass + ' ' + independentTag + '" id="' + value[i] + 'Label" for="' + value[i] + '">' + value[i] + '</label>';
+                                    // }
                                     else {
-                                        inpt += '<input class="form-check-input dependentTag ' + categoryClass + ' ' + independentTag + '" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '" checked>' +
-                                            '<label class="form-check-label dependentTag ' + categoryClass + ' ' + independentTag + '" id="' + value[i] + 'Label" for="' + value[i] + '">' + value[i] + '</label>';
+                                        inpt += '<label class="btn btn-danger  btn-block active dependentTag ' + categoryClass + ' ' + independentTag + '" id="' + value[i] + 'Label" for="' + value[i] + '">' + value[i] +
+                                            '<input class="form-check-input dependentTag ' + categoryClass + ' ' + independentTag + '" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '" checked>' +
+                                            '</label>' +
+                                            '<span class="button-margin"></span>';
                                     }
-
                                 }
                                 else {
                                     if (value[i] === 'TEXTAREA') {
-                                        inpt += '<textarea class="form-check-input dependentTag ' + categoryClass + ' ' + independentTag + '" name="' + key + '" id="' + key + '_' + value[i] + '" cols="50"></textarea>';
+                                        inpt += '<textarea class="form-check-input dependentTag ' + categoryClass + ' ' + independentTag + '" name="' + key + '" id="' + key + '_' + value[i] + '" cols="60"></textarea>';
 
                                     }
+                                    // changes here for radio btn to look like button
+                                    // else {
+                                    //     inpt += '<input class="form-check-input dependentTag ' + categoryClass + ' ' + independentTag + '" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '">' +
+                                    //         '<label class="form-check-label dependentTag ' + categoryClass + ' ' + independentTag + '" id="' + value[i] + 'Label" for="' + value[i] + '">' + value[i] + '</label>';
+                                    // }
                                     else {
-                                        inpt += '<input class="form-check-input dependentTag ' + categoryClass + ' ' + independentTag + '" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '">' +
-                                            '<label class="form-check-label dependentTag ' + categoryClass + ' ' + independentTag + '" id="' + value[i] + 'Label" for="' + value[i] + '">' + value[i] + '</label>';
+                                        inpt += '<label class="btn btn-danger  btn-block dependentTag ' + categoryClass + ' ' + independentTag + '" id="' + value[i] + 'Label" for="' + value[i] + '">' + value[i] +
+                                            '<input class="form-check-input dependentTag ' + categoryClass + ' ' + independentTag + '" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '">' +
+                                            '</label>'+
+                                            '<span class="button-margin"></span>';
                                     }
 
                                 }
                             }
                             else {
                                 if (dependendTagLabel[key] === 0) {
-                                    inpt += '<strong class="dependentTag ' + categoryClass + ' ' + independentTag + '" id="' + categoryClass + key + '" hidden>' + key + ': </strong>';
+                                    inpt += '<strong class="dependentTag ' + categoryClass + ' ' + independentTag + '" id="' + categoryClass + key + '" hidden>' + key + ': </strong></h4></br>';
                                     dependendTagLabel[key] = 1;
                                 }
                                 if (projData["tagSetMetaData"]["defaultCategoryTags"][key] == value[i]) {
                                     // console.log(key, value[i])
                                     if (value[i] === 'TEXTAREA') {
-                                        inpt += '<textarea class="form-check-input dependentTag ' + categoryClass + ' ' + independentTag + '" name="' + key + '" id="' + key + '_' + value[i] + '" cols="50" disabled hidden></textarea>';
+                                        inpt += '<textarea class="form-check-input dependentTag ' + categoryClass + ' ' + independentTag + '" name="' + key + '" id="' + key + '_' + value[i] + '" cols="60" disabled hidden></textarea>';
 
                                     }
+                                    // changes here for radio btn to look like button
+                                    // else {
+                                    //     inpt += '<input class="form-check-input dependentTag ' + categoryClass + ' ' + independentTag + '" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '" checked disabled hidden>' +
+                                    //         '<label class="form-check-label dependentTag ' + categoryClass + ' ' + independentTag + '" id="' + value[i] + 'Label" for="' + value[i] + '" hidden>' + value[i] + '</label>';
+                                    // }
                                     else {
-                                        inpt += '<input class="form-check-input dependentTag ' + categoryClass + ' ' + independentTag + '" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '" checked disabled hidden>' +
-                                            '<label class="form-check-label dependentTag ' + categoryClass + ' ' + independentTag + '" id="' + value[i] + 'Label" for="' + value[i] + '" hidden>' + value[i] + '</label>';
+                                        inpt += '<label class="btn btn-danger  btn-block active dependentTag ' + categoryClass + ' ' + independentTag + '" id="' + value[i] + 'Label" for="' + value[i] + '" hidden>' + value[i] +
+                                            '<input class="form-check-input dependentTag ' + categoryClass + ' ' + independentTag + '" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '" checked disabled hidden>' +
+                                            '</label>' +
+                                            '<span class="button-margin"></span>';
                                     }
-
                                 }
                                 else {
                                     if (value[i] === 'TEXTAREA') {
-                                        inpt += '<textarea class="form-check-input dependentTag ' + categoryClass + ' ' + independentTag + '" name="' + key + '" id="' + key + '_' + value[i] + '" cols="50" disabled hidden></textarea>';
+                                        inpt += '<textarea class="form-check-input dependentTag ' + categoryClass + ' ' + independentTag + '" name="' + key + '" id="' + key + '_' + value[i] + '" cols="60" disabled hidden></textarea>';
 
                                     }
+                                    // changes here for radio btn to look like button
+                                    // else {
+                                    //     inpt += '<input class="form-check-input dependentTag ' + categoryClass + ' ' + independentTag + '" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '" disabled hidden>' +
+                                    //         '<label class="form-check-label dependentTag ' + categoryClass + ' ' + independentTag + '" id="' + value[i] + 'Label" for="' + value[i] + '" hidden>' + value[i] + '</label>';
+                                    // }
                                     else {
-                                        inpt += '<input class="form-check-input dependentTag ' + categoryClass + ' ' + independentTag + '" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '" disabled hidden>' +
-                                            '<label class="form-check-label dependentTag ' + categoryClass + ' ' + independentTag + '" id="' + value[i] + 'Label" for="' + value[i] + '" hidden>' + value[i] + '</label>';
+                                        inpt += '<label class="btn btn-danger  btn-block dependentTag ' + categoryClass + ' ' + independentTag + '" id="' + value[i] + 'Label" for="' + value[i] + '" hidden>' + value[i] +
+                                            '<input class="form-check-input dependentTag ' + categoryClass + ' ' + independentTag + '" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '" disabled hidden>' +
+                                            '</label>'+
+                                            '<span class="button-margin"></span>';
                                     }
-
                                 }
                             }
                         }
@@ -209,11 +249,20 @@ function myFunction(projData) {
                                 tempV = v.split('=');
                                 // console.log(tempV);
                                 if (tempV[0] === key) {
-                                    if (tempV[1].includes('|')) {
-                                        tempV = tempV[1].split('|');
+                                    // if (tempV[1].includes('|')) {
+                                    //     tempV = tempV[1].split('|');
+                                    //     // console.log(tempV);
+                                    //     for (t = 0; t < tempV.length; t++) {
+                                    //         if (tempV[t] === value[i]) {
+                                    //             categoryClass = v;
+                                    //         }
+                                    //     }
+                                    // }
+                                    if (v.includes('|')) {
+                                        tempVPipe = v.split('|');
                                         // console.log(tempV);
-                                        for (t = 0; t < tempV.length; t++) {
-                                            if (tempV[t] === value[i]) {
+                                        for (t = 0; t < tempVPipe.length; t++) {
+                                            if (tempVPipe[t].includes(value[i])) {
                                                 categoryClass = v;
                                             }
                                         }
@@ -243,14 +292,30 @@ function myFunction(projData) {
                         // console.log(key, value[i])
                         // Language
                         if (categoryClass === undefined && notInDepencyCol === undefined) {
-                            // console.log(key, value[i])
+                            console.log(key, value[i])
+                            // changes here for radio btn to look like button
+                            // if (projData[currentUser][key] == value[i]) {
+                            //     inpt += '<input class="form-check-input" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '" checked>' +
+                            //         '<label class="form-check-label" for="' + value[i] + '">' + value[i] + '</label>';
+                            // }
+                            // else {
+                            //     inpt += '<input class="form-check-input" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '">' +
+                            //         '<label class="form-check-label" for="' + value[i] + '">' + value[i] + '</label>';
+                            // }
                             if (projData[currentUser][key] == value[i]) {
-                                inpt += '<input class="form-check-input" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '" checked>' +
-                                    '<label class="form-check-label" for="' + value[i] + '">' + value[i] + '</label>';
+                                console.log(key, value[i])
+                                inpt += '<label class="btn btn-danger  btn-block active" for="' + value[i] + '">' + value[i] +
+                                    '<input class="form-check-input" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '" checked>' +
+                                    '</label>' +
+                                    '<span class="button-margin"></span>';
+                                    
                             }
                             else {
-                                inpt += '<input class="form-check-input" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '">' +
-                                    '<label class="form-check-label" for="' + value[i] + '">' + value[i] + '</label>';
+                                inpt += '<label class="btn btn-danger  btn-block" for="' + value[i] + '">' + value[i] +
+                                    '<input class="form-check-input" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '">' +
+                                    '</label>'+
+                                    '<span class="button-margin"></span>';
+                                    
                             }
                         }
                         // NHUM
@@ -258,15 +323,28 @@ function myFunction(projData) {
                             // console.log(key, value[i])
                             independentTagHide = 'independentTag_' + key;
                             console.log(independentTagHide);
+                            // changes here for radio btn to look like button
+                            // if (projData[currentUser][key] == value[i]) {
+                            //     inpt += '<input class="form-check-input" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '" checked onclick="hideHideCategory(\'' + independentTagHide + '\')">' +
+                            //         '<label class="form-check-label" for="' + value[i] + '">' + value[i] + '</label>';
+                            // }
+                            // else {
+                            //     inpt += '<input class="form-check-input" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '" onclick="hideHideCategory(\'' + independentTagHide + '\')">' +
+                            //         '<label class="form-check-label" for="' + value[i] + '">' + value[i] + '</label>';
+                            // }
                             if (projData[currentUser][key] == value[i]) {
-                                inpt += '<input class="form-check-input" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '" checked onclick="hideHideCategory(\'' + independentTagHide + '\')">' +
-                                    '<label class="form-check-label" for="' + value[i] + '">' + value[i] + '</label>';
+                                inpt += '<label class="btn btn-danger  btn-block active" for="' + value[i] + '" onclick="hideHideCategory(\'' + independentTagHide + '\')">' + value[i] +
+                                    '<input class="form-check-input" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '" checked onclick="hideHideCategory(\'' + independentTagHide + '\')">' +
+                                    '</label>' +
+                                    '<span class="button-margin"></span>';
                             }
                             else {
-                                inpt += '<input class="form-check-input" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '" onclick="hideHideCategory(\'' + independentTagHide + '\')">' +
-                                    '<label class="form-check-label" for="' + value[i] + '">' + value[i] + '</label>';
+                                inpt += '<label class="btn btn-danger  btn-block" for="' + value[i] + '" onclick="hideHideCategory(\'' + independentTagHide + '\')">' + value[i] +
+                                    '<input class="form-check-input" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '" onclick="hideHideCategory(\'' + independentTagHide + '\')">' +
+                                    '</label>'+
+                                    '<span class="button-margin"></span>';
+                                    
                             }
-
                         }
                         // HUM/PDOW
                         else if (categoryClass !== undefined) {
@@ -277,10 +355,15 @@ function myFunction(projData) {
                                 //         '<label class="form-check-label" for="'+value[i]+'">'+value[i]+'</label>';
                                 // }
                                 // else {
-                                inpt += '<input class="form-check-input" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '" checked onclick="showHideCategory(\'' + categoryClass + '\')">' +
-                                    '<label class="form-check-label" for="' + value[i] + '">' + value[i] + '</label>';
+                                // changes here for radio btn to look like button
+                                // inpt += '<input class="form-check-input" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '" checked onclick="showHideCategory(\'' + categoryClass + '\')">' +
+                                //     '<label class="form-check-label" for="' + value[i] + '">' + value[i] + '</label>';
+                                inpt += '<label class="btn btn-danger  btn-block active" for="' + value[i] + '" onclick="showHideCategory(this, \'' + categoryClass + '\')">' + value[i] +
+                                    '<input class="form-check-input" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '" checked onclick="showHideCategory(this, \'' + categoryClass + '\')">' +
+                                    '</label>' +
+                                    '<span class="button-margin"></span>';
+                                    
                                 // }
-
                             }
                             else {
                                 // if (key === '01_who2') {
@@ -288,55 +371,100 @@ function myFunction(projData) {
                                 //         '<label class="form-check-label" for="'+value[i]+'">'+value[i]+'</label>';
                                 // }
                                 // else {
-                                inpt += '<input class="form-check-input" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '" onclick="showHideCategory(\'' + categoryClass + '\')">' +
-                                    '<label class="form-check-label" for="' + value[i] + '">' + value[i] + '</label>';
+                                // changes here for radio btn to look like button
+                                // inpt += '<input class="form-check-input" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '" onclick="showHideCategory(\'' + categoryClass + '\')">' +
+                                //     '<label class="form-check-label" for="' + value[i] + '">' + value[i] + '</label>';
+                                inpt += '<label class="btn btn-danger  btn-block" for="' + value[i] + '" onclick="showHideCategory(this, \'' + categoryClass + '\')">' + value[i] +
+                                    '<input class="form-check-input" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '" onclick="showHideCategory(this, \'' + categoryClass + '\')">' +
+                                    '</label>'+
+                                    '<span class="button-margin"></span>';
+                                    
                                 // }
                             }
                         }
                     }
                 }
                 else if (projData[currentUser][key] === value[i]) {
-                    inpt += '<input class="form-check-input" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '" checked>' +
-                        '<label class="form-check-label" for="' + value[i] + '">' + value[i] + '</label>';
+                    // console.log(key, value[i]);
+                    // changes here for radio btn to look like button
+                    // inpt += '<input class="form-check-input" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '" checked>' +
+                    //     '<label class="form-check-label" for="' + value[i] + '">' + value[i] + '</label>';
+                    inpt += '<label class="btn btn-danger  btn-block active" for="' + value[i] + '">' + value[i] +
+                        '<input class="form-check-input" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '" checked>' +
+                        '</label>' +
+                        '<span class="button-margin"></span>';
                 }
                 else if (projData[currentUser][key] === '') {
                     if (value[i].includes('NA') || value[i].includes('NC') || value[i].includes('NE') || value[i].includes('NG') || value[i].includes('None') || value[i].includes('Neutral')) {
-                        inpt += '<input class="form-check-input" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '" checked>' +
-                            '<label class="form-check-label" for="' + value[i] + '">' + value[i] + '</label>';
+                        // changes here for radio btn to look like button
+                        // inpt += '<input class="form-check-input" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '" checked>' +
+                        //     '<label class="form-check-label" for="' + value[i] + '">' + value[i] + '</label>';
+                        inpt += '<label class="btn btn-danger  btn-block active" for="' + value[i] + '">' + value[i] +
+                            '<input class="form-check-input" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '" checked>' +
+                            '</label>' +
+                            '<span class="button-margin"></span>';
                     }
                     else {
-                        inpt += '<input class="form-check-input" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '">' +
-                            '<label class="form-check-label" for="' + value[i] + '">' + value[i] + '</label>';
+                        // changes here for radio btn to look like button
+                        // inpt += '<input class="form-check-input" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '">' +
+                        //     '<label class="form-check-label" for="' + value[i] + '">' + value[i] + '</label>';
+                        inpt += '<label class="btn btn-danger  btn-block" for="' + value[i] + '">' + value[i] +
+                            '<input class="form-check-input" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '">' +
+                            '</label>' +
+                            '<span class="button-margin"></span>';
                     }
                 }
                 else {
-                    inpt += '<input class="form-check-input" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '">' +
-                        '<label class="form-check-label" for="' + value[i] + '">' + value[i] + '</label>';
+                    // changes here for radio btn to look like button
+                    // inpt += '<input class="form-check-input" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '">' +
+                    //     '<label class="form-check-label" for="' + value[i] + '">' + value[i] + '</label>';
+                    inpt += '<label class="btn btn-danger  btn-block" for="' + value[i] + '">' + value[i] +
+                        '<input class="form-check-input" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '">' +
+                        '</label>' +
+                        '<span class="button-margin"></span>';
+                        
                 }
             }
-
             inpt += '</div>';
 
         }
         key = 'Duplicate Text'
-        inpt += '<br><div class="col"><strong>' + key + ': </strong>';
+        inpt += '<br><div class="col btn-group-toggle" data-toggle="buttons" id="'+key+'"><h4><strong>' + key + ': </strong></h4></br>';
 
+        // if (projData[currentUser]["Duplicate"] === 'Yes') {
+        //     inpt += '<input class="form-check-input" type="radio" name="' + key + '" id="Yes" value="Yes" checked>' +
+        //         '<label class="form-check-label" for="Yes">Yes</label>' +
+        //         '<input class="form-check-input" type="radio" name="' + key + '" id="No" value="No">' +
+        //         '<label class="form-check-label" for="No">No</label>';
+        // }
+        // else {
+        //     inpt += '<input class="form-check-input" type="radio" name="' + key + '" id="Yes" value="Yes">' +
+        //         '<label class="form-check-label" for="Yes">Yes</label>' +
+        //         '<input class="form-check-input" type="radio" name="' + key + '" id="No" value="No" checked>' +
+        //         '<label class="form-check-label" for="No">No</label>';
+        // }
         if (projData[currentUser]["Duplicate"] === 'Yes') {
-            inpt += '<input class="form-check-input" type="radio" name="' + key + '" id="Yes" value="Yes" checked>' +
-                '<label class="form-check-label" for="Yes">Yes</label>' +
-                '<input class="form-check-input" type="radio" name="' + key + '" id="No" value="No">' +
-                '<label class="form-check-label" for="No">No</label>';
+            inpt += '<label class="btn btn-danger  btn-block active">' +
+                    '<input class="form-check-input" type="radio" name="' + key + '" id="Yes" value="Yes" checked>' + 'Yes' +
+                    '</label>' +
+                    '<span class="button-margin"></span>' +
+                    '<label class="btn btn-danger  btn-block">' +
+                    '<input class="form-check-input" type="radio" name="' + key + '" id="No" value="No">' + 'No' +
+                    '</label>';
         }
         else {
-            inpt += '<input class="form-check-input" type="radio" name="' + key + '" id="Yes" value="Yes">' +
-                '<label class="form-check-label" for="Yes">Yes</label>' +
-                '<input class="form-check-input" type="radio" name="' + key + '" id="No" value="No" checked>' +
-                '<label class="form-check-label" for="No">No</label>';
+            inpt += '<label class="btn btn-danger  btn-block">' +
+                    '<input class="form-check-input" type="radio" name="' + key + '" id="Yes" value="Yes">' + 'Yes' +
+                    '</label>' +
+                    '<span class="button-margin"></span>' +
+                    '<label class="btn btn-danger  btn-block active">' +
+                    '<input class="form-check-input" type="radio" name="' + key + '" id="No" value="No" checked>' + 'No' +
+                    '</label>';
         }
         inpt += '</div>';
 
         inpt += '<br><div class="col">' +
-            '<label class="col" for="text">Annotator Comment:</label>' +
+            '<h4><label class="col" for="text">Annotator Comment:</label></h4>' +
             '<div class="col">' +
             '<input type="text" class="form-control" id="annotatorComment"' +
             ' name="annotatorComment" value="' + projData[currentUser]["annotatorComment"] + '">' +
@@ -357,7 +485,7 @@ function myFunction(projData) {
             // console.log(dependendTagLabel);
             if (value[0] === 'SELECT2') {
                 // console.log(value[0]);
-                inpt += '<br><label for="' + key + '">' + key + ': </label><br>' +
+                inpt += '<br><h4><label for="' + key + '">' + key + ': </label></h4>' +
                     '<select class="' + key + 'class" id="' + key + '" name="' + key + '" multiple="multiple" style="width: 100%"></select><br>'
 
                 select2Keys.push(key);
@@ -369,7 +497,7 @@ function myFunction(projData) {
             //             '<textarea class="form-control" id="'+key+'" name="'+key+'" rows="5"></textarea>';
             //     continue;
             // }
-            inpt += '<br><div class="col ' + key + '"><strong>' + key + ': </strong>';
+            inpt += '<br><div class="col btn-group-toggle ' + key + '" data-toggle="buttons" id="'+key+'"><h4><strong>' + key + ': </strong></h4></br>';
             for (let i = 0; i < value.length; i++) {
                 // Show hide categories
                 if ("tagSetMetaData" in projData) {
@@ -379,54 +507,85 @@ function myFunction(projData) {
                     notInDepencyCol = undefined;
                     if (key in projData["tagSetMetaData"]["categoryDependency"]) {
                         // console.log(key, value);
-                        // delStr = '<strong>'+key+': </strong>';
-                        // inpt = inpt.replace(delStr, '');
-                        delStr = '<br><div class="col ' + key + '"><strong>' + key + ': </strong>';
-                        inpt = inpt.replace(delStr, '<div class="col ' + key + '">');
+                        delStr = '<br><div class="col btn-group-toggle ' + key + '" data-toggle="buttons" id="'+key+'"><h4><strong>' + key + ': </strong></h4></br>';
+                        // changes here for radio btn to look like button
+                        // inpt = inpt.replace(delStr, '<div class="col ' + key + '">');
+                        inpt = inpt.replace(delStr, '<div class="col btn-group-toggle ' + key + '" data-toggle="buttons"  id="'+key+'" style="display: none;">');
 
                         categoryClass = projData["tagSetMetaData"]["categoryDependency"][key];
                         categoryClassCategory = categoryClass.split('=')[0];
                         independentTag = 'independentTag_' + categoryClassCategory;
 
                         if (dependendTagLabel[key] === 0) {
-                            inpt += '<strong class="dependentTag ' + categoryClass + ' ' + independentTag + '" id="' + categoryClass + key + '" hidden>' + key + ': </strong>';
+                            inpt += '<strong class="dependentTag ' + categoryClass + ' ' + independentTag + '" id="' + categoryClass + key + '" hidden>' + key + ': </strong></h4></br>';
                             dependendTagLabel[key] = 1;
                         }
 
                         if (projData["tagSetMetaData"]["defaultCategoryTags"][key] == value[i]) {
                             if (value[i] === 'TEXTAREA') {
-                                inpt += '<textarea class="form-check-input dependentTag ' + categoryClass + ' ' + independentTag + '" name="' + key + '" id="' + key + '_' + value[i] + '" cols="50" disabled hidden></textarea>';
+                                inpt += '<textarea class="form-check-input dependentTag ' + categoryClass + ' ' + independentTag + '" name="' + key + '" id="' + key + '_' + value[i] + '" cols="60" disabled hidden></textarea>';
 
                             }
+                            // changes here for radio btn to look like button
+                            // else {
+                            //     inpt += '<input class="form-check-input dependentTag ' + categoryClass + ' ' + independentTag + '" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '" checked disabled hidden>' +
+                            //         '<label class="form-check-label dependentTag ' + categoryClass + ' ' + independentTag + '" id="' + value[i] + 'Label" for="' + value[i] + '" hidden>' + value[i] + '</label>';
+                            // }
                             else {
-                                inpt += '<input class="form-check-input dependentTag ' + categoryClass + ' ' + independentTag + '" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '" checked disabled hidden>' +
-                                    '<label class="form-check-label dependentTag ' + categoryClass + ' ' + independentTag + '" id="' + value[i] + 'Label" for="' + value[i] + '" hidden>' + value[i] + '</label>';
+                                inpt += '<label class="btn btn-danger  btn-block active dependentTag ' + categoryClass + ' ' + independentTag + '" id="' + value[i] + 'Label" for="' + value[i] + '" hidden>' + value[i] +
+                                    '<input class="form-check-input dependentTag ' + categoryClass + ' ' + independentTag + '" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '" checked disabled hidden>' +
+                                    '</label>'+
+                                    '<span class="button-margin"></span>';
                             }
                         }
                         else {
                             if (value[i] === 'TEXTAREA') {
-                                inpt += '<textarea class="form-check-input dependentTag ' + categoryClass + ' ' + independentTag + '" name="' + key + '" id="' + key + '_' + value[i] + '" cols="50" disabled hidden></textarea>';
+                                inpt += '<textarea class="form-check-input dependentTag ' + categoryClass + ' ' + independentTag + '" name="' + key + '" id="' + key + '_' + value[i] + '" cols="60" disabled hidden></textarea>';
 
                             }
+                            // changes here for radio btn to look like button
+                            // else {
+                            //     inpt += '<input class="form-check-input dependentTag ' + categoryClass + ' ' + independentTag + '" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '" disabled hidden>' +
+                            //         '<label class="form-check-label dependentTag ' + categoryClass + ' ' + independentTag + '" id="' + value[i] + 'Label" for="' + value[i] + '" hidden>' + value[i] + '</label>';
+                            // }
                             else {
-                                inpt += '<input class="form-check-input dependentTag ' + categoryClass + ' ' + independentTag + '" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '" disabled hidden>' +
-                                    '<label class="form-check-label dependentTag ' + categoryClass + ' ' + independentTag + '" id="' + value[i] + 'Label" for="' + value[i] + '" hidden>' + value[i] + '</label>';
+                                inpt += '<label class="btn btn-danger  btn-block dependentTag ' + categoryClass + ' ' + independentTag + '" id="' + value[i] + 'Label" for="' + value[i] + '" hidden>' + value[i] +
+                                    '<input class="form-check-input dependentTag ' + categoryClass + ' ' + independentTag + '" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '" disabled hidden>' +
+                                    '</label>'+
+                                    '<span class="button-margin"></span>';
                             }
                         }
                     }
                     else if (!(key in projData["tagSetMetaData"]["categoryDependency"])) {
                         // console.log(key, value);
                         for (let [k, v] of Object.entries(projData["tagSetMetaData"]["categoryDependency"])) {
-                            // console.log(k, v);
+                            // if (key === '09-b_how1_mood') {
+                            //     console.log(k, v);
+                            // }
                             if (v.includes("=")) {
                                 tempV = v.split('=');
-                                // console.log(tempV);
+                                // if (key === '09-b_how1_mood') {
+                                //     console.log(tempV);
+                                // }
                                 if (tempV[0] === key) {
-                                    if (tempV[1].includes('|')) {
-                                        tempV = tempV[1].split('|');
+                                    if (key === '09-b_how1_mood') {
+                                        console.log(k, v);
+                                        console.log(tempV, value[i]);
+                                    }
+                                    // if (tempV[1].includes('|')) {
+                                    //     tempV = tempV[1].split('|');
+                                    //     // console.log(tempV);
+                                    //     for (t = 0; t < tempV.length; t++) {
+                                    //         if (tempV[t] === value[i]) {
+                                    //             categoryClass = v;
+                                    //         }
+                                    //     }
+                                    // }
+                                    if (v.includes('|')) {
+                                        tempVPipe = v.split('|');
                                         // console.log(tempV);
-                                        for (t = 0; t < tempV.length; t++) {
-                                            if (tempV[t] === value[i]) {
+                                        for (t = 0; t < tempVPipe.length; t++) {
+                                            if (tempVPipe[t].includes(value[i])) {
                                                 categoryClass = v;
                                             }
                                         }
@@ -437,6 +596,9 @@ function myFunction(projData) {
                                     else {
                                         for (let [kk, vv] of Object.entries(projData["tagSetMetaData"]["categoryDependency"])) {
                                             if (vv.includes(value[i])) {
+                                                if (key === '09-b_how1_mood') {
+                                                    console.log(vv)
+                                                }
                                                 notInDepencyColFLAG = 0;
                                             }
                                         }
@@ -455,17 +617,33 @@ function myFunction(projData) {
                         }
                         // Language
                         if (categoryClass === undefined && notInDepencyCol === undefined) {
-                            // console.log(key, value);
+                            if (key === '09-b_how1_mood') {
+                                console.log(key, value, value[i]);
+                                console.log(key, categoryClass);
+                            }
+                            // console.log(key, value, value[i]);
                             // console.log(key, categoryClass, value[i]);
                             // console.log(projData["tagSetMetaData"]["defaultCategoryTags"][key] == value[i])
                             if (projData["tagSetMetaData"]["defaultCategoryTags"][key] == value[i]) {
                                 // console.log(value[i]);
-                                inpt += '<input class="form-check-input" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '" checked>' +
-                                    '<label class="form-check-label" for="' + value[i] + '">' + value[i] + '</label>';
+                                // changes here for radio btn to look like button
+                                // inpt += '<input class="form-check-input" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '" checked>' +
+                                //     '<label class="form-check-label" for="' + value[i] + '">' + value[i] + '</label>';
+                                inpt += '<label class="btn btn-danger  btn-block active" for="' + value[i] + '">' + value[i] +
+                                    '<input class="form-check-input" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '" checked>' +
+                                    '</label>'+
+                                    '<span class="button-margin"></span>';
                             }
+                            // changes here for radio btn to look like button
+                            // else {
+                            //     inpt += '<input class="form-check-input" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '">' +
+                            //         '<label class="form-check-label" for="' + value[i] + '">' + value[i] + '</label>';
+                            // }
                             else {
-                                inpt += '<input class="form-check-input" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '">' +
-                                    '<label class="form-check-label" for="' + value[i] + '">' + value[i] + '</label>';
+                                inpt += '<label class="btn btn-danger  btn-block" for="' + value[i] + '">' + value[i] +
+                                    '<input class="form-check-input" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '">' +
+                                    '</label>'+
+                                    '<span class="button-margin"></span>';
                             }
 
                         }
@@ -474,65 +652,106 @@ function myFunction(projData) {
                             // console.log(key, value);
                             // console.log(key, categoryClass, value[i]);
                             independentTagHide = 'independentTag_' + key;
-                            console.log(independentTagHide);
+                            // console.log(independentTagHide);
+                            // changes here for radio btn to look like button
+                            // if (projData["tagSetMetaData"]["defaultCategoryTags"][key] == value[i]) {
+                            //     inpt += '<input class="form-check-input" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '" checked onclick="hideHideCategory(\'' + independentTagHide + '\')">' +
+                            //         '<label class="form-check-label" for="' + value[i] + '">' + value[i] + '</label>';
+                            // }
+                            // else {
+                            //     inpt += '<input class="form-check-input" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '" onclick="hideHideCategory(\'' + independentTagHide + '\')">' +
+                            //         '<label class="form-check-label" for="' + value[i] + '">' + value[i] + '</label>';
+                            // }
                             if (projData["tagSetMetaData"]["defaultCategoryTags"][key] == value[i]) {
-                                inpt += '<input class="form-check-input" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '" checked onclick="hideHideCategory(\'' + independentTagHide + '\')">' +
-                                    '<label class="form-check-label" for="' + value[i] + '">' + value[i] + '</label>';
+                                inpt += '<label class="btn btn-danger  btn-block active" for="' + value[i] + '"  onclick="hideHideCategory(\'' + independentTagHide + '\')">' + value[i] +
+                                    '<input class="form-check-input" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '" checked onclick="hideHideCategory(\'' + independentTagHide + '\')">' +
+                                    '</label>'+
+                                    '<span class="button-margin"></span>';
                             }
                             else {
-                                inpt += '<input class="form-check-input" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '" onclick="hideHideCategory(\'' + independentTagHide + '\')">' +
-                                    '<label class="form-check-label" for="' + value[i] + '">' + value[i] + '</label>';
+                                inpt += '<label class="btn btn-danger  btn-block" for="' + value[i] + '"  onclick="hideHideCategory(\'' + independentTagHide + '\')">' + value[i] +
+                                    '<input class="form-check-input" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '" onclick="hideHideCategory(\'' + independentTagHide + '\')">' +
+                                    '</label>'+
+                                    '<span class="button-margin"></span>';
                             }
 
                         }
                         // HUM/PDOW
                         else if (categoryClass !== undefined) {
-                            // console.log(key, value);
-                            // console.log(key, categoryClass, value[i]);
+                            if (key === '09-b_how1_mood') {
+                                console.log(key, value, value[i]);
+                                console.log(key, categoryClass);
+                            }
+                            // changes here for radio btn to look like button
+                            // if (projData["tagSetMetaData"]["defaultCategoryTags"][key] == value[i]) {
+                            //     inpt += '<input class="form-check-input" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '" checked onclick="showHideCategory(\'' + categoryClass + '\')">' +
+                            //         '<label class="form-check-label" for="' + value[i] + '">' + value[i] + '</label>';
+                            // }
+                            // else {
+                            //     inpt += '<input class="form-check-input" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '" onclick="showHideCategory(\'' + categoryClass + '\')">' +
+                            //         '<label class="form-check-label" for="' + value[i] + '">' + value[i] + '</label>';
+                            // }\
                             if (projData["tagSetMetaData"]["defaultCategoryTags"][key] == value[i]) {
-                                inpt += '<input class="form-check-input" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '" checked onclick="showHideCategory(\'' + categoryClass + '\')">' +
-                                    '<label class="form-check-label" for="' + value[i] + '">' + value[i] + '</label>';
+                                inpt += '<label class="btn btn-danger  btn-block active" for="' + value[i] + '"  onclick="showHideCategory(this, \'' + categoryClass + '\')">' + value[i] +
+                                    '<input class="form-check-input" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '" checked onclick="showHideCategory(this, \'' + categoryClass + '\')">' +
+                                    '</label>'+
+                                    '<span class="button-margin"></span>';
                             }
                             else {
-                                inpt += '<input class="form-check-input" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '" onclick="showHideCategory(\'' + categoryClass + '\')">' +
-                                    '<label class="form-check-label" for="' + value[i] + '">' + value[i] + '</label>';
+                                inpt += '<label class="btn btn-danger  btn-block" for="' + value[i] + '"  onclick="showHideCategory(this, \'' + categoryClass + '\')">' + value[i] +
+                                    '<input class="form-check-input" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '" onclick="showHideCategory(this, \'' + categoryClass + '\')">' +
+                                    '</label>'+
+                                    '<span class="button-margin"></span>';
                             }
                         }
                     }
                 }
+                // changes here for radio btn to look like button
+                // else if (value[i].includes('NA') || value[i].includes('NC') || value[i].includes('NE') || value[i].includes('NG') || value[i].includes('None') || value[i].includes('Neutral')) {
+                //     inpt += '<input class="form-check-input" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '" checked>' +
+                //         '<label class="form-check-label" for="' + value[i] + '">' + value[i] + '</label>';
+                // }
                 else if (value[i].includes('NA') || value[i].includes('NC') || value[i].includes('NE') || value[i].includes('NG') || value[i].includes('None') || value[i].includes('Neutral')) {
-                    inpt += '<input class="form-check-input" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '" checked>' +
-                        '<label class="form-check-label" for="' + value[i] + '">' + value[i] + '</label>';
+                    inpt += '<label class="btn btn-danger  btn-block active" for="' + value[i] + '">' + value[i] +
+                        '<input class="form-check-input" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '" checked>' +
+                        '</label>'+
+                        '<span class="button-margin"></span>';
                 }
+                // changes here for radio btn to look like button
+                // else {
+                //     inpt += '<input class="form-check-input" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '">' +
+                //         '<label class="form-check-label" for="' + value[i] + '">' + value[i] + '</label>';
+                // }
                 else {
-                    inpt += '<input class="form-check-input" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '">' +
-                        '<label class="form-check-label" for="' + value[i] + '">' + value[i] + '</label>';
+                    inpt += '<label class="btn btn-danger  btn-block" for="' + value[i] + '">' + value[i] +
+                        '<input class="form-check-input" type="radio" name="' + key + '" id="' + value[i] + '" value="' + value[i] + '">' +
+                        '</label>'+
+                        '<span class="button-margin"></span>';
                 }
             }
-
             inpt += '</div>';
 
         }
         key = 'Duplicate Text'
-        // inpt += '<br><div class="col"><strong>' + key + ': </strong>' +
+        // inpt += '<br><div class="col"><h4><strong>' + key + ': </strong></h4>' +
         //     '<input class="form-check-input" type="radio" name="' + key + '" id="Yes" value="Yes">' +
         //     '<label class="form-check-label" for="Yes">Yes</label>' +
         //     '<input class="form-check-input" type="radio" name="' + key + '" id="No" value="No" checked>' +
         //     '<label class="form-check-label" for="No">No</label>' +
         //     '</div>';
 
-        inpt += '<br><div class="col btn-group-toggle" data-toggle="buttons"><strong>' + key + ': </strong><br/>' +
-            '<label class="btn btn-danger">' +
+        inpt += '<br><div class="col btn-group-toggle" data-toggle="buttons" id="'+key+'"><h4><strong>' + key + ': </strong></h4>' +
+            '<label class="btn btn-danger  btn-block">' +
             '<input class="form-check-input" type="radio" name="' + key + '" id="Yes" value="Yes">' + 'Yes' +
             '</label>' +
             '<span class="button-margin"></span>' +
-            '<label class="btn btn-danger">' +
+            '<label class="btn btn-danger  btn-block active">' +
             '<input class="form-check-input" type="radio" name="' + key + '" id="No" value="No" checked>' + 'No' +
             '</label>' +
             '</div>';
 
         inpt += '<br><div class="col">' +
-            '<label class="col" for="text">Annotator Comment:</label>' +
+            '<h4><label class="col" for="text">Annotator Comment:</label></h4>' +
             '<div class="col">' +
             '<input type="text" class="form-control" id="annotatorComment"' +
             ' name="annotatorComment">' +
@@ -729,8 +948,8 @@ function loadAnnoText() {
     return false;
 }
 
-function showHideCategory(category) {
-    console.log(category);
+function showHideCategory(id, category) {
+    // console.log(id, id.lastChild, category);
     if (category === 'undefined') {
         return false;
     }
@@ -743,13 +962,60 @@ function showHideCategory(category) {
     //             document.getElementById(value.id).disabled = true;
     //         }
     // }
+    parentNodeIds = []
     for (let [key, value] of Object.entries(document.getElementsByClassName(category))) {
-        console.log(value);
+        // console.log(key, value, value.parentNode);
         document.getElementById(value.id).hidden = false;
         document.getElementById(value.id).disabled = false;
+        parentNode = value.parentNode;
+        // parentNodeIds.push(parentNode.id);
+        document.getElementById(parentNode.id).style.display = "block";
         // document.getElementById(value.id).nextSibling.hidden = false;
     }
-
+    if (category.includes('|')) {
+        console.log(id, id.lastChild, category);
+        lastChildElement = id.lastChild;
+        lastChildElementId = lastChildElement.id;
+        lastChildElementName = lastChildElement.name;
+        activeCategory = lastChildElementName+'='+lastChildElementId;
+        console.log(activeCategory);
+        pipedCategoryList = category.split('|');
+        for (i=0; i<pipedCategoryList.length; i++) {
+            if (pipedCategoryList[i].includes(lastChildElementId)) {
+                for (let [key, value] of Object.entries(document.getElementsByClassName(pipedCategoryList[i]))) {
+                    // console.log(key, value, value.parentNode);
+                    document.getElementById(value.id).hidden = false;
+                    document.getElementById(value.id).disabled = false;
+                    parentNode = value.parentNode;
+                    document.getElementById(parentNode.id).style.display = "block";
+                }
+            }
+            else {
+                for (let [key, value] of Object.entries(document.getElementsByClassName(pipedCategoryList[i]))) {
+                    document.getElementById(value.id).hidden = true;
+                    document.getElementById(value.id).disabled = true;
+                    parentNode = value.parentNode ;
+                    document.getElementById(parentNode.id).style.display = "none";
+                
+                }
+            }
+        }
+    }
+    // else {
+    //     categorySplit = category.split('=');
+    //     elementName = categorySplit[0];
+    //     activeElement = categorySplit[1];
+    //     console.log(elementName, activeElement);
+    //     for (let [key, value] of Object.entries(document.getElementsByName(elementName))) {
+    //         console.log(key, value, value.id, activeElement, value.parentNode);
+    //         if (value.id !== activeElement) {
+    //             document.getElementById(value.id).hidden = true;
+    //             document.getElementById(value.id).disabled = true;
+    //             parentNode = value.parentNode ;
+    //             document.getElementById(parentNode.id).style.display = "none";
+    //         }
+    //     }
+    // }
 }
 
 // hide all dependent categories
@@ -773,6 +1039,8 @@ function hideHideCategory(category) {
     for (let [key, value] of Object.entries(document.getElementsByClassName(category))) {
         document.getElementById(value.id).hidden = true;
         document.getElementById(value.id).disabled = true;
+        parentNode = value.parentNode ;
+        document.getElementById(parentNode.id).style.display = "none";
         // document.getElementById(value.id).nextSibling.hidden = true;
     }
 }

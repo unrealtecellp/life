@@ -33,7 +33,7 @@ def savenewproject(projects,
             if (key == 'projectType' and value == 'transcriptions'):
                 project_details['speakerIds'] = {current_username: []}
             
-        projects.insert(project_details)
+        projects.insert_one(project_details)
         # pprint(project_details)
     else:
         projectname = ''
