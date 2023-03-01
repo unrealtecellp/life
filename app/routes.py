@@ -4448,7 +4448,11 @@ def uploadaudiofiles():
                                     activeprojectname,
                                     current_user.username,
                                     speakerId,
-                                    new_audio_file
+                                    new_audio_file,
+                                    transcription_type='sentence',  #change this and boundary_threshold for automatic detection of boundaries of different kinds
+                                    boundary_threshold=0.3,
+                                    slice_threshold=0.9,
+                                    slice_size=120 #max size of each slice (in seconds), if large audio is to be automatically divided into multiple parts
                                     )
 
     return redirect(url_for('enternewsentences'))
