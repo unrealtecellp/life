@@ -15,6 +15,7 @@ from app import mongo
 
 
 def downloadTextGridWihoutAudio(transcriptions,
+                                    projectsform,
                                     current_username,
                                     activeprojectname,
                                     latest,
@@ -42,6 +43,31 @@ def downloadTextGridWihoutAudio(transcriptions,
 
     print ('Basedir', basedir)
     print ('Format received', filetype)
+
+    ##TODO: Its a temporary fix for issues related to data not getting saved as per the
+    ## projectforms. Currently irrespective of what is there is projectsform, morphemic
+    ## break, gloss and translation are getting saved in 'transcriptions' project.
+    ## This is so even though these fields are not displayed on the interface.
+    ## This needs to be fixed - once done, this code will no longer be needed.
+    formelement_textgrid_map = {
+        'Transcription Script': 'transcription',
+        'Interlinear Gloss Script': 'gloss',
+        'Interlinear Gloss Language': 'sentencemorphemicbreak',
+        'Translation Script': 'translation'
+    }
+    current_projectformelements = []
+    projectformelements = projectsform.find({'projectname': activeprojectname}, 
+            {'_id': 0, 'username': 0, 'projectname': 0})
+    
+    for current_element in projectformelements:
+        # current_element_dict = projectformelements[current_element]
+        for current_element_key in current_element:
+            # print ('Current element', current_element)
+            if current_element_key in formelement_textgrid_map:
+                current_projectformelements.append(formelement_textgrid_map[current_element_key])
+    
+    print ('Current project form elements', current_projectformelements)
+
 
     ## Currently it returns the full entry, excluding the audiowaveform 'data' - 
     ## anyway we may not be using that and its a HUGE list of just numbers, making
@@ -78,7 +104,7 @@ def downloadTextGridWihoutAudio(transcriptions,
             if filetype == 'json':
                     write_json(cur_entry, text_grid_dir)
             else:            
-                xmin, xmax, tiers = get_boundaries_tiers(activeprojectname, text_grid)
+                xmin, xmax, tiers = get_boundaries_tiers(activeprojectname, current_projectformelements, text_grid)
 
                 # if xmin > -1 and xmax > 0 and len(tiers) > 0:
                 if len(tiers) > 0:
@@ -180,11 +206,12 @@ def get_audio_duration (audio_dir, audio_id):
     return overall_xmax
 
 
-def get_boundaries_tiers(activeprojectname, text_grid):
+def get_boundaries_tiers(activeprojectname, projectelements, text_grid):
     xmin = []
-    xmax = []
+    xmax = [] 
     tiers = {}
 
+    
     for tier in text_grid:
         # print ('Tier', tier)
         if len(tier) > 0:
@@ -202,36 +229,40 @@ def get_boundaries_tiers(activeprojectname, text_grid):
                     elif cur_boundary_element == 'end':
                         xmax.append(boundary_element['end'])
                     else:
-                        value_type = boundary_element[cur_boundary_element]
-                        # print ('Value type', boundary_element, value_type)
+                        ## If the element is in projectelements only then
+                        # its tiers are being fetched       
+                        if cur_boundary_element in projectelements:
+                            value_type = boundary_element[cur_boundary_element]
+                            print ('Value type', value_type)
+                        
 
-                        if (type(value_type) is dict) and (len(value_type) > 0):
-                            for script_name in value_type:                                
-                                tier_name = tier+'-'+script_name+'-'+cur_boundary_element
-                                tier_value = value_type[script_name]
-                                # if len(tier_value) > 0:
-                                # print ('Tier name', tier_name)
-                                # print ('Tiers', tiers)
+                            if (type(value_type) is dict) and (len(value_type) > 0):
+                                for script_name in value_type:                                
+                                    tier_name = tier+'-'+script_name+'-'+cur_boundary_element
+                                    tier_value = value_type[script_name]
+                                    # if len(tier_value) > 0:
+                                    # print ('Tier name', tier_name)
+                                    # print ('Tiers', tiers)
 
-                                ## TODO: This will only work for transcription and translation
-                                ## Fix needed for gloss and morphemic break which are dicts and
-                                ## need to be converged into a string.
-                                if (type(tier_value) is str):
-                                    if tier_name in tiers:
-                                        # print (activeprojectname, 'Length of current tier', tier_name, len(tiers[tier_name]))
-                                        tiers[tier_name].append(tier_value)
-                                    else:
-                                        tiers[tier_name] = [tier_value]
-                                    
-                                # else:
-                                #     print (activeprojectname, 'Boundary ID', cur_boundary_id)
-                                #     print (activeprojectname, 'Boundary element', cur_boundary_element, value_type)
-                                #     print (activeprojectname, 'current tier', tier_name)
-                                #     print (activeprojectname, 'Tier value', tier_value)
-                                    # print ('xmin', xmin)
-                                    # print ('xmax', xmax)
-                                    # print ('tier_name', tier_name)
-                                    # print ('tier_value', tier_value)
+                                    ## TODO: This will only work for transcription and translation
+                                    ## Fix needed for gloss and morphemic break which are dicts and
+                                    ## need to be converged into a string.
+                                    if (type(tier_value) is str):
+                                        if tier_name in tiers:
+                                            # print (activeprojectname, 'Length of current tier', tier_name, len(tiers[tier_name]))
+                                            tiers[tier_name].append(tier_value)
+                                        else:
+                                            tiers[tier_name] = [tier_value]
+                                        
+                                    # else:
+                                    #     print (activeprojectname, 'Boundary ID', cur_boundary_id)
+                                    #     print (activeprojectname, 'Boundary element', cur_boundary_element, value_type)
+                                    #     print (activeprojectname, 'current tier', tier_name)
+                                    #     print (activeprojectname, 'Tier value', tier_value)
+                                        # print ('xmin', xmin)
+                                        # print ('xmax', xmax)
+                                        # print ('tier_name', tier_name)
+                                        # print ('tier_value', tier_value)
 
 
     print ('All tiers', tiers)
