@@ -1037,6 +1037,3 @@ function replaceZoomSlider() {
 }
 
 replaceZoomSlider();
-document.addEventListener("DOMContentLoaded", function(){
-  $(document).scrollTop( $("#waveform").offset().top );
-});

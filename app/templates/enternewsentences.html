@@ -13,18 +13,22 @@ Enter New Sentences
 
 {% block app_content %}
 <div class="row">
-  <div class="col-sm-6">
+  <div class="col-sm-5">
     {% if projectName is defined %}
     <h4>Project Name : {{ projectName }}</h4>
     {% endif %}
   </div>
-  <div class="col-sm-6 pull-right">
+  <div class="col-sm-7 pull-right">
     <button type="button" id="progressreport" class="btn btn-lg btn-danger" data-toggle="modal"
       data-target="#myProgressReportModal">
       Progress Report
     </button>
+    <button type="button" id="downloadtranscription" class="btn btn-lg btn-warning" data-toggle="modal"
+      data-target="#myDownloadTranscriptionModal">
+      Download
+    </button>
     {% if shareinfo['sharemode']|int >= 3 %}
-      <button type="button" id="addnewspeakertranscriptionid" class="btn btn-lg btn-primary addnewspeaker"
+      <button type="button" id="addnewspeakertranscriptionid" class="btn btn-lg btn-info addnewspeaker"
         data-toggle="modal" data-target="#addNewSpeakerModal">
         Add New Source
       </button>
@@ -60,50 +64,26 @@ Enter New Sentences
 <hr>
 <div class="row">
   <div class="col-sm-6 pull-right">
-
-  <h4>Download:</h3>
-    <div class="btn-group" role="group">
-      <button type="b4tton" id="lifejson" class="btn btn-info dropdown-toggle" data-toggle="dropdown"
-        aria-haspopup="true" aria-expanded="false">
-        LiFE JSON
-      </button>
+    {% if commentstats is defined %}
+    <div class="commentStats">
+      <!-- <strong>Total Files: {{ commentstats[0] }}</strong><br> -->
+      <!-- <strong>Completed Files: {{ commentstats[1] }}</strong><br>
+      <strong>Remaining Files: {{ commentstats[2] }}</strong><br> -->
     </div>
-    <div class="btn-group" role="group">
-      <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
-        aria-expanded="false">
-        Latest Transcriptions
-        <span class="caret"></span>
-      </button>
-      <ul class="dropdown-menu">
-        <li id="praattexgrid"><a href="#">Praat Textgrid</a></li>
-        <li id="csv"><a href="#">CSV</a></li>
-        <li id="tsv"><a href="#">TSV</a></li>
-        <li id="json"><a href="#">JSON</a></li>
-        <li id="xlsx"><a href="#">XLSX</a></li>
-        <li id="latex"><a href="#">LaTeX</a></li>
-        <li id="html"><a href="#">HTML</a></li>
-        <li id="markdown"><a href="#">Markdown</a></li>
-      </ul>
+    <div class="progress">
+      <div class="progress-bar progress-bar-success" role="progressbar" style="width:{{ commentstats[1]/commentstats[0]*100 }}%">
+        Completed : {{ commentstats[1] }}
+      </div>
+      <!-- <div class="progress-bar progress-bar-warning" role="progressbar" style="width:10%">
+        Warning
+      </div> -->
+      <div class="progress-bar progress-bar-danger" role="progressbar" style="width:{{ commentstats[2]/commentstats[0]*100 }}%">
+        Remaining : {{ commentstats[2] }}
+      </div>
     </div>
-
-    <div class="btn-group" role="group">
-      <button type="button" class="btn btn-warning dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
-        aria-expanded="false">
-        My Transcriptions
-        <span class="caret"></span>
-      </button>
-      <ul class="dropdown-menu">
-        <li id="mypraattexgrid"><a href="#">Praat Textgrid</a></li>
-        <li id="mycsv"><a href="#">CSV</a></li>
-        <li id="mytsv"><a href="#">TSV</a></li>
-        <li id="myjson"><a href="#">JSON</a></li>
-        <li id="myxlsx"><a href="#">XLSX</a></li>
-        <li id="mylatex"><a href="#">LaTeX</a></li>
-        <li id="myhtml"><a href="#">HTML</a></li>
-        <li id="mymarkdown"><a href="#">Markdown</a></li>
-      </ul>
-    </div>
-    <br><br>
+    {% endif %}
+  </div>
+  <div class="col-sm-6">
     <div>
       {% if speakerids is defined %}
         <label for="speakeridsdropdown">Audio Files from Source: </label>
@@ -117,15 +97,6 @@ Enter New Sentences
           </select>
         {% endif %}
     </div>
-  </div>
-  <div class="col-sm-6">
-    {% if commentstats is defined %}
-    <div class="commentStats">
-      <strong>Total Files: {{ commentstats[0] }}</strong><br>
-      <strong>Completed Files: {{ commentstats[1] }}</strong><br>
-      <strong>Remaining Files: {{ commentstats[2] }}</strong><br>
-    </div>
-    {% endif %}
     <br>
     <div class="commentIDs">
       <button type="button" id="uNAnnotated" class="btn btn-light" onclick="unAnnotated()">All Filename</button>
@@ -134,11 +105,6 @@ Enter New Sentences
 </div>
 <hr>
 
-<!-- <div class="row"> -->
-  <div class="defaultfield" id="iddefaultfield"></div>
-  <div class="classaudiometadata" id="idaudiometadata"></div>
-<!-- </div> -->
-<br>
 <button class="btn btn-info btn-lg" type="button" id="previous" onclick="previousAudio()">
   <span class="previousaudio glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
   Previous Audio
@@ -148,6 +114,11 @@ Enter New Sentences
   <span class="nextaudio glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
 </button>
 <br>
+<br>
+<div class="row">
+  <div class="col-md-9 defaultfield" id="iddefaultfield"></div>
+  <div class="col-md-2 classaudiometadata pull-right" id="idaudiometadata"></div>
+</div>
 <br>
 <div class="lexemelang"></div>
 <div class="lexemeform"></div>
@@ -337,6 +308,67 @@ Enter New Sentences
   </div>
 </div>
 
+<!-- Download Transcription Modal -->
+<div class="modal fade" id="myDownloadTranscriptionModal" tabindex="-1" role="dialog"
+  aria-labelledby="myDownloadTranscriptionModalLabel">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+            aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myDownloadTranscriptionModalLabel">Project Name: {{ projectName }}</h4>
+      </div>
+      <div class="modal-body">
+
+  <h4>Download:</h3>
+    <div class="btn-group" role="group">
+      <button type="b4tton" id="lifejson" class="btn btn-info dropdown-toggle" data-toggle="dropdown"
+        aria-haspopup="true" aria-expanded="false">
+        LiFE JSON
+      </button>
+    </div>
+    <div class="btn-group" role="group">
+      <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
+        aria-expanded="false">
+        Latest Transcriptions
+        <span class="caret"></span>
+      </button>
+      <ul class="dropdown-menu">
+        <li id="praattexgrid"><a href="#">Praat Textgrid</a></li>
+        <li id="csv"><a href="#">CSV</a></li>
+        <li id="tsv"><a href="#">TSV</a></li>
+        <li id="json"><a href="#">JSON</a></li>
+        <li id="xlsx"><a href="#">XLSX</a></li>
+        <li id="latex"><a href="#">LaTeX</a></li>
+        <li id="html"><a href="#">HTML</a></li>
+        <li id="markdown"><a href="#">Markdown</a></li>
+      </ul>
+    </div>
+
+    <div class="btn-group" role="group">
+      <button type="button" class="btn btn-warning dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
+        aria-expanded="false">
+        My Transcriptions
+        <span class="caret"></span>
+      </button>
+      <ul class="dropdown-menu">
+        <li id="mypraattexgrid"><a href="#">Praat Textgrid</a></li>
+        <li id="mycsv"><a href="#">CSV</a></li>
+        <li id="mytsv"><a href="#">TSV</a></li>
+        <li id="myjson"><a href="#">JSON</a></li>
+        <li id="myxlsx"><a href="#">XLSX</a></li>
+        <li id="mylatex"><a href="#">LaTeX</a></li>
+        <li id="myhtml"><a href="#">HTML</a></li>
+        <li id="mymarkdown"><a href="#">Markdown</a></li>
+      </ul>
+    </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- <label for="ipa">IPA</label>
   <input type="text" id="ipa" name="ipa"><br><br>
@@ -369,6 +401,7 @@ Enter New Sentences
 <!-- </div> -->
 <!-- <br> -->
 <!-- <hr> -->
+ 
 {% endblock %}
 
 {% block scripts %}

@@ -1624,8 +1624,8 @@ function lastUpdatedBy(lstUpdatedBy) {
     if (lstUpdatedBy !== '') {
         let lastUpdate = '<br><span><strong>Last Updated By: ' + lstUpdatedBy + '<strong></span>';
         // document.getElementById("idaudiometadata").append(showDur);
-        $('#idaudiometadata').append(lastUpdate);
-        // $('#iddefaultfield').append(lastUpdate);
+        // $('#idaudiometadata').append(lastUpdate);
+        $('#iddefaultfield').append(lastUpdate);
     }
 }
 
