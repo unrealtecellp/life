@@ -3972,7 +3972,7 @@ def insertadmin(userlogin):
         }
     })
 
-    userprojects.insert_one_one({'username': ADMIN_USER, 'myproject': {},
+    userprojects.insert_one({'username': ADMIN_USER, 'myproject': {},
                          'projectsharedwithme': {}, 'activeprojectname': ''})
 
     flash(admin_reminder)
