@@ -415,7 +415,8 @@ def savetranscription():
                                                             current_user.username,
                                                             activeprojectname)['activespeakerId']
     # data through ajax
-    transcription_data = json.loads(request.args.get('a'))
+    transcription_data = json.loads(request.form['a'])
+    # transcription_data = json.loads(request.args.get('a'))
     transcription_data = dict(transcription_data)
     lastActiveId = transcription_data['lastActiveId']
     transcription_regions = transcription_data['transcriptionRegions']
@@ -3971,7 +3972,7 @@ def insertadmin(userlogin):
         }
     })
 
-    userprojects.insert_one_one({'username': ADMIN_USER, 'myproject': {},
+    userprojects.insert_one({'username': ADMIN_USER, 'myproject': {},
                          'projectsharedwithme': {}, 'activeprojectname': ''})
 
     flash(admin_reminder)
