@@ -27,3 +27,4 @@ app/lifedownloader/downloads
 app/jsonfiles/languages.txt
 app/jsonfiles/languagesSet.txt
 .flaskenv
+.vscode
