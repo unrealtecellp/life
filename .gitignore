@@ -1,6 +1,6 @@
 __pycache__
-.flaskenv
-.vscode
+./.flaskenv
+./.vscode
 venv
 data_format
 app/static/audio
@@ -26,3 +26,5 @@ app/lifedownloader/downloads/D_testing_project_for_transcription_15_textgrids.zi
 app/lifedownloader/downloads
 app/jsonfiles/languages.txt
 app/jsonfiles/languagesSet.txt
+.flaskenv
+.vscode
