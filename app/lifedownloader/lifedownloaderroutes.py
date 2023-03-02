@@ -44,8 +44,8 @@ ld = Blueprint('lifedownloader', __name__, template_folder='templates', static_f
 @ld.route('/downloadtranscriptions', methods=['GET', 'POST'])
 def downloadtranscriptions():
     print ('Fetching transcription')
-    userprojects, userlogin, transcriptions = getdbcollections.getdbcollections(
-        mongo, 'userprojects', 'userlogin', 'transcriptions')
+    userprojects, projectsform, transcriptions = getdbcollections.getdbcollections(
+        mongo, 'userprojects', 'projectsform', 'transcriptions')
     current_username = getcurrentusername.getcurrentusername()
     print('USERNAME: ', current_username)
     activeprojectname = getactiveprojectname.getactiveprojectname(
@@ -67,6 +67,7 @@ def downloadtranscriptions():
         else:                
             print ('data_format', data_format)
             response_code, file_path = downloadTextGrid.downloadTextGridWihoutAudio (transcriptions,
+                                                            projectsform,
                                                             current_username,
                                                             activeprojectname,
                                                             latest,

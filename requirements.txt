@@ -57,6 +57,7 @@ suds-jurko==0.6
 tgt==1.4.4
 threadpoolctl==3.1.0
 torch==1.13.1
+torchaudio==0.13.1
 typing-extensions==4.5.0
 urllib3==1.26.14
 visitor==0.1.3

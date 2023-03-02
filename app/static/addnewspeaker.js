@@ -14,6 +14,136 @@ $(document).on("hidden.bs.modal", "#addNewSpeakerModal", function () {
     document.getElementById('addnewspeakerform').innerHTML = '';
 });
 
+
+$('.speakerview').click(function () {
+    // $('#fieldspeakerdetailsmodal').show.bs.modal
+    // document.getElementById("fieldspeakerdetails").style.display = "block";
+    var lifespeakerid = $(this).attr("id");
+    console.log('Speaker ID', lifespeakerid)
+    addNewSpeakerSelect2();
+    // $.getJSON("{{url_for('getoneuserdetails')}}", {
+    $.getJSON("/getonespeakermetadata", {
+        lifespeakerid: String(lifespeakerid)
+    }, function (data) {
+        console.log("Received data", data)
+        console.log("End Received data")
+
+        $('#formdisplay').find('input, select').attr('disabled', true);
+
+        metadata = data.onespeakerdetails.current.sourceMetadata
+        lifespeakerid = data.onespeakerdetails.lifesourceid
+
+        // accesscode = data.speakerdetails.accesscode
+        $('#lifespeakerid').attr('value', lifespeakerid)
+
+        name = metadata.name
+        $('#idname').attr('value', name)
+        console.log("Name", name)
+
+        agroup = metadata.agegroup
+        ageOption = '<option value="' + agroup + '" selected="selected">' + agroup + '</option>'
+        // document.getElementById('idage').innerHTML=""
+        // $('#idage').html(ageOption)                        
+        $('#idage').val(agroup).trigger('change');
+        // $('#idgender').select2("val", "25-60");
+        console.log("Age group", agroup)
+
+
+        // $('#idspeakerdetailsdiv').show();
+        // $('#idspeakerdetailsdiv').attr('required', '');
+        // $('#idspeakerdetailsdiv').attr('data-error', 'This field is required.')
+
+        gender = metadata.gender
+        // genderOption = '<option value="'+gender+'" selected="selected">'+gender+'</option>'
+        // $('#idgender').html(genderOption)
+        $('#idgender').val(gender).trigger('change');
+        console.log(gender);
+
+        elevel = metadata.educationlevel
+        elevelOption = '<option value="' + elevel + '" selected="selected">' + elevel + '</option>'
+        // $('#idelevel').html(elevelOption)
+        $('#idelevel').val(elevel).trigger('change');
+        console.log(elevel);
+
+        // mediumpre = metadata.medium-of-education-after-12th
+        // mediumpost = metadata.medium-of-education-upto-12th
+
+        mediumupto12 = metadata.educationmediumupto12
+        mediumupto12option = ''
+        for (i = 0; i < mediumupto12.length; i++) {
+            mediumupto12option += '<option value="' + mediumupto12[i] + '" selected="selected">' + mediumupto12[i] + '</option>'
+        }
+        // $('#idmediumpre').html(mediumupto12option)
+        $('#idmediumpre').val(mediumupto12).trigger('change');
+        console.log(idmediumpre);
+
+
+        mediumafter12 = metadata.educationmediumafter12
+        mediumafter12option = ''
+        for (i = 0; i < mediumafter12.length; i++) {
+            mediumafter12option += '<option value="' + mediumafter12[i] + '" selected="selected">' + mediumafter12[i] + '</option>'
+        }
+        // $('#idmediumpost').html(mediumafter12option)
+        $('#idmediumpost').val(mediumafter12).trigger('change');
+
+        speakerotherlangs = metadata.speakerspeaklanguage
+        speakerotherlangsOption = ''
+        for (i = 0; i < speakerotherlangs.length; i++) {
+            speakerotherlangsOption += '<option value="' + speakerotherlangs[i] + '" selected="selected">' + speakerotherlangs[i] + '</option>'
+        }
+        // $('#idotherlangs').html(speakerotherlangsOption)
+        $('#idotherlangs').val(speakerotherlangs).trigger('change');
+
+        // name = metadata.name
+        // $('#idname').attr('value', name)
+        place = metadata.recordingplace
+        // $('#idplace').attr('value', place)
+        $('#idplace').val(place).trigger('change');
+
+        ptype = metadata.typeofrecordingplace
+        ptypeOption = '<option value="' + ptype + '" selected="selected">' + ptype + '</option>'
+        // $('#idptype').html(ptypeOption)
+        $('#idptype').val(ptype).trigger('change');
+
+        // addNewSpeakerSelect2();
+        // addNewSpeakerFormEvents();
+    });
+});
+
+
+$('.youtubeview').click(function () {
+    // $('#fieldspeakerdetailsmodal').show.bs.modal
+    // document.getElementById("fieldspeakerdetails").style.display = "block";
+    var lifespeakerid = $(this).attr("id");
+    console.log('Speaker ID', lifespeakerid)
+    addNewSpeakerSelect2();
+    // $.getJSON("{{url_for('getoneuserdetails')}}", {
+    $.getJSON("/getonespeakermetadata", {
+        lifespeakerid: String(lifespeakerid)
+    }, function (data) {
+        console.log("Received data", data)
+        console.log("End Received data")
+
+        $('#formdisplayyoutube').find('input, select').attr('disabled', true);
+
+        metadata = data.onespeakerdetails.current.sourceMetadata
+        lifespeakerid = data.onespeakerdetails.lifesourceid
+        // accesscode = data.speakerdetails.accesscode
+        console.log('lifespeakerid', lifespeakerid)
+        $('.lifespeakeridyt').attr('value', lifespeakerid)
+
+        name = metadata.channelName
+        $('#idytchannelname').attr('value', name)
+        console.log("Name", name)
+
+        url = metadata.channelUrl
+        $('#idytchannelurl').attr('value', url)
+        console.log("URL", url)
+
+    });
+});
+
+
 function activeform(buttonType) {
     var x = document.getElementById("formdisplay");
     // buttonType = $(this).attr("id");
@@ -26,126 +156,6 @@ function activeform(buttonType) {
     }
 }
 
-// $(document).ready(function() {
-// $('#idtask').change(function() {
-//   var taskVal = $(this).val();
-//   console.log("Current task value", taskVal);
-//   if (taskVal === "SPEECH_DATA_COLLECTION") {
-//     $('#idspeakerdetailsdiv').show();
-//       $('#idspeakerdetailsdiv').attr('required', '');
-//       $('#idspeakerdetailsdiv').attr('data-error', 'This field is required.')
-
-//   }
-//   else {
-//     $('#idspeakerdetailsdiv').hide();
-//       $('#idspeakerdetailsdiv').removeAttr('required');
-//       $('#idspeakerdetailsdiv').removeAttr('data-error');
-//   }
-// });
-
-
-// $('.lexemeview').click(function() {
-//   $('#accodeformheader').find('input, select').attr('disabled', true);
-//   $('#accodeformheader').find('input, select').attr('required', false);
-
-//   document.getElementById("accodeformheader").style.display = "none";
-
-//   buttonType = $(this).attr("id")
-//   activeform(buttonType)
-//   $('#formdisplay').find('input, select').attr('disabled', true);
-//   $('#editbutton').attr('hidden', false);
-//   // $('#idname').attr('hidden', true);
-//   // $('#idage').attr('hidden', true);
-
-//   // sending accesscode using AJAX
-//   // getting speaker details assigned to that accesscode
-
-//   var accode = $(this).attr("id");
-//   // console.log(accode)
-//   $.getJSON("{{url_for('karya_bp.getonespeakerdetails')}}", {
-//     asycaccesscode:String(accode)
-//     }, function(data) {
-//         // console.log(data)
-//         metadata = data.speakerdetails.current.workerMetadata
-//         task = data.speakerdetails.task
-//         console.log (metadata, task)
-//         // accesscode = data.speakerdetails.accesscode
-//         $('#accesscode').attr('value', accode)
-
-//         name = metadata.name
-//         $('#idname').attr('value', name)
-//         // 
-
-//         agroup = metadata.agegroup
-//         ageOption = '<option value="'+agroup+'" selected="selected">'+agroup+'</option>'
-//         // document.getElementById('idage').innerHTML=""
-//         // $('#idage').html(ageOption)                        
-//         $('#idage').val(agroup).trigger('change');
-//         // $('#idgender').select2("val", "25-60");
-//         // console.log (agroup)
-
-//         console.log("Current task value", task);
-//         if (task === "SPEECH_DATA_COLLECTION") {
-//           $('#idspeakerdetailsdiv').show();
-//           $('#idspeakerdetailsdiv').attr('required', '');
-//           $('#idspeakerdetailsdiv').attr('data-error', 'This field is required.')
-
-//           gender = metadata.gender
-//           // genderOption = '<option value="'+gender+'" selected="selected">'+gender+'</option>'
-//           // $('#idgender').html(genderOption)
-//           $('#idgender').val(gender).trigger('change');
-//           console.log (gender)
-
-//           elevel = metadata.educationlevel
-//           elevelOption = '<option value="'+elevel+'" selected="selected">'+elevel+'</option>'
-//           // $('#idelevel').html(elevelOption)
-//           $('#idelevel').val(elevel).trigger('change');
-
-//           // mediumpre = metadata.medium-of-education-after-12th
-//           // mediumpost = metadata.medium-of-education-upto-12th
-
-//           mediumupto12 = metadata.educationmediumupto12
-//           mediumupto12option = ''
-//           for (i=0; i<mediumupto12.length; i++) {
-//             mediumupto12option += '<option value="'+mediumupto12[i]+'" selected="selected">'+mediumupto12[i]+'</option>'
-//           }                        
-//           // $('#idmediumpre').html(mediumupto12option)
-//           $('#idmediumpre').val(mediumupto12).trigger('change');
-
-
-//           mediumafter12 = metadata.educationmediumafter12
-//           mediumafter12option = ''
-//           for (i=0; i<mediumafter12.length; i++) {
-//             mediumafter12option += '<option value="'+mediumafter12[i]+'" selected="selected">'+mediumafter12[i]+'</option>'
-//           }                        
-//           // $('#idmediumpost').html(mediumafter12option)
-//           $('#idmediumpost').val(mediumafter12).trigger('change');
-
-//           speakerotherlangs = metadata.speakerspeaklanguage
-//           speakerotherlangsOption = ''
-//           for (i=0; i<speakerotherlangs.length; i++) {
-//             speakerotherlangsOption += '<option value="'+speakerotherlangs[i]+'" selected="selected">'+speakerotherlangs[i]+'</option>'
-//           }                        
-//           // $('#idotherlangs').html(speakerotherlangsOption)
-//           $('#idotherlangs').val(speakerotherlangs).trigger('change');
-
-
-//           // name = metadata.name
-//           // $('#idname').attr('value', name)
-//           place = metadata.recordingplace
-//           // $('#idplace').attr('value', place)
-//           $('#idplace').val(place).trigger('change');
-
-//           ptype = metadata.typeofrecordingplace
-//           ptypeOption = '<option value="'+ptype+'" selected="selected">'+ptype+'</option>'
-//           // $('#idptype').html(ptypeOption)
-//           $('#idptype').val(ptype).trigger('change');
-//         }
-
-
-//     });
-//     return false;            
-// });
 
 $('#editbutton').click(function () {
 
@@ -155,7 +165,13 @@ $('#editbutton').click(function () {
     // $('#idage').attr('hidden', false);
     document.getElementById('idname').disabled = true;
     document.getElementById('idage').disabled = true;
-    $('#accodeformheader').find('input, select').attr('disabled', true);
+    // $('#accodeformheader').find('input, select').attr('disabled', true);
+});
+
+$('#editbuttonyt').click(function () {
+
+    $('#formdisplayyoutube').find('input, select').attr('disabled', false);
+    $('#editbuttonyt').attr('hidden', true);
 });
 
 $('.assignaccesscode').click(function () {
@@ -200,6 +216,16 @@ $('#closebutton').click(function () {
     // $('#editbutton').attr('hidden', true)
 })
 // });
+
+$('#closebuttonyoutube').click(function () {
+    var x = document.getElementById("formdisplayyoutube");
+    // x.style.display = "none";
+    if (x.style.display === "none") {
+        x.style.display = "block";
+    } else if (buttonType == 'closebuttonyoutube') {
+        x.style.display = "none";
+    }
+})
 
 
 function speakerDetailForm(cur_id) {

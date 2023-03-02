@@ -74,6 +74,7 @@ def saveaudiofiles(mongo,
                    transcription_type='sentence',
                    boundary_threshold=0.3,
                    slice_threshold=0.9,
+                   slice_size=120,
                    **kwargs):
     """mapping of this function is with the 'uploadaudiofiles' route.
 
@@ -115,7 +116,8 @@ def saveaudiofiles(mongo,
                                                                             new_audio_file,
                                                                             transcription_type,
                                                                             boundary_threshold,
-                                                                            slice_threshold)
+                                                                            slice_threshold,
+                                                                            slice_size)
             file_states.append(file_state)
             transcription_doc_ids.append(transcription_doc_id)
             fs_file_ids.append(fs_file_id)
@@ -133,7 +135,8 @@ def saveaudiofiles(mongo,
                                                                                      new_audio_file,
                                                                                      transcription_type,
                                                                                      boundary_threshold,
-                                                                                     slice_threshold)
+                                                                                     slice_threshold,
+                                                                                     slice_size)
         else:
             return ([False], ['Unsupported file format'], ['File not stored'])
 
@@ -150,8 +153,9 @@ def savemultipleaudiofiles(mongo,
                            speakerId,
                            all_audio_files,
                            transcription_type='sentence',
-                           boundary_threshold=500,
-                           slice_threshold=700,
+                           boundary_threshold=0.3,
+                           slice_threshold=0.9,
+                           slice_size=120,
                            **kwargs):
     """mapping of this function is with the 'uploadaudiofiles' route.
 
@@ -206,7 +210,8 @@ def savemultipleaudiofiles(mongo,
                                                                                         new_audio_file,
                                                                                         transcription_type,
                                                                                         boundary_threshold,
-                                                                                        slice_threshold)
+                                                                                        slice_threshold,
+                                                                                        slice_size)
 
                         all_file_states.append(file_state)
                         transcription_doc_ids.append(transcription_doc_id)
@@ -232,8 +237,9 @@ def saveoneaudiofile(mongo,
                      speakerId,
                      new_audio_file,
                      transcription_type='sentence',
-                     boundary_threshold=500,
-                     slice_threshold=700,
+                     boundary_threshold=0.3,
+                     slice_threshold=0.9,
+                     slice_size=120,
                      **kwargs):
     """mapping of this function is with the 'uploadaudiofiles' route.
 
@@ -382,7 +388,7 @@ def saveoneaudiofile(mongo,
         audiowaveform_json_dir_path, audio_json_parent_dir, updated_audio_filename)
     new_audio_details['audioMetadata']['audiowaveform'] = audiowaveform_json
 
-    transcription_doc_id = transcriptions.insert(new_audio_details)
+    transcription_doc_id = transcriptions.insert_one(new_audio_details)
 
     return (True, transcription_doc_id, fs_file_id)
 
@@ -1026,7 +1032,7 @@ def copyofaudiodata(transcriptions,
     audio_id = 'A'+re.sub(r'[-: \.]', '', str(datetime.now()))
     audio_data['audioId'] = audio_id
 
-    transcription_doc_id = transcriptions.insert(audio_data)
+    transcription_doc_id = transcriptions.insert_one(audio_data)
 
     return audio_id
 

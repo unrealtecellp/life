@@ -15,6 +15,7 @@ from app import mongo
 
 
 def downloadTextGridWihoutAudio(transcriptions,
+                                    projectsform,
                                     current_username,
                                     activeprojectname,
                                     latest,
@@ -42,6 +43,31 @@ def downloadTextGridWihoutAudio(transcriptions,
 
     print ('Basedir', basedir)
     print ('Format received', filetype)
+
+    ##TODO: Its a temporary fix for issues related to data not getting saved as per the
+    ## projectforms. Currently irrespective of what is there is projectsform, morphemic
+    ## break, gloss and translation are getting saved in 'transcriptions' project.
+    ## This is so even though these fields are not displayed on the interface.
+    ## This needs to be fixed - once done, this code will no longer be needed.
+    formelement_textgrid_map = {
+        'Transcription Script': 'transcription',
+        'Interlinear Gloss Script': 'gloss',
+        'Interlinear Gloss Language': 'sentencemorphemicbreak',
+        'Translation Script': 'translation'
+    }
+    current_projectformelements = []
+    projectformelements = projectsform.find({'projectname': activeprojectname}, 
+            {'_id': 0, 'username': 0, 'projectname': 0})
+    
+    for current_element in projectformelements:
+        # current_element_dict = projectformelements[current_element]
+        for current_element_key in current_element:
+            # print ('Current element', current_element)
+            if current_element_key in formelement_textgrid_map:
+                current_projectformelements.append(formelement_textgrid_map[current_element_key])
+    
+    print ('Current project form elements', current_projectformelements)
+
 
     ## Currently it returns the full entry, excluding the audiowaveform 'data' - 
     ## anyway we may not be using that and its a HUGE list of just numbers, making
@@ -78,11 +104,11 @@ def downloadTextGridWihoutAudio(transcriptions,
             if filetype == 'json':
                     write_json(cur_entry, text_grid_dir)
             else:            
-                xmin, xmax, tiers = get_boundaries_tiers(text_grid)
+                xmin, xmax, tiers = get_boundaries_tiers(activeprojectname, current_projectformelements, text_grid)
 
-                if xmin > -1 and xmax > 0 and len(tiers) > 0:
-                
-                    min_max.append(list([xmin, xmax]))
+                # if xmin > -1 and xmax > 0 and len(tiers) > 0:
+                if len(tiers) > 0:
+                    # min_max.append(list([xmin, xmax]))
 
                     audio_id = cur_entry['audioId']
                     audio_filename = cur_entry['audioFilename']
@@ -93,7 +119,7 @@ def downloadTextGridWihoutAudio(transcriptions,
 
                     text_grid_path = get_text_grid_path(original_audio_filename, text_grid_dir)
                     
-                    tgt_text_grid = get_tgt_text_grid(tiers, min_max, overall_xmin, overall_xmax, text_grid_path)
+                    tgt_text_grid = get_tgt_text_grid(tiers, xmin, xmax, overall_xmin, overall_xmax, text_grid_path)
 
                     write_tgt_text_grid(tgt_text_grid, text_grid_path, filetype)
 
@@ -147,13 +173,13 @@ def get_textgrid_df(tgt_text_grid):
 
 
 
-def get_tgt_text_grid(tiers, min_max, overall_xmin, overall_xmax, text_grid_path):
+def get_tgt_text_grid(tiers, xmin, xmax, overall_xmin, overall_xmax, text_grid_path):
     tgt_text_grid = tgt.core.TextGrid(filename=text_grid_path)
 
     for cur_tier in tiers:
         tier_transcriptions = tiers[cur_tier]
-        for current_min_max, cur_transcription in zip(min_max, tier_transcriptions):
-            boundary_interval = tgt.core.Interval(current_min_max[0], current_min_max[1], cur_transcription)
+        for current_min, current_max, cur_transcription in zip(xmin, xmax, tier_transcriptions):
+            boundary_interval = tgt.core.Interval(current_min, current_max, cur_transcription)
 
             if tgt_text_grid.has_tier(cur_tier):
                 tgt_text_grid.get_tier_by_name(cur_tier).add_interval(boundary_interval)
@@ -172,7 +198,7 @@ def get_text_grid_path(original_audio_filename, text_grid_dir):
 
 
 def get_audio_duration (audio_dir, audio_id):
-    audio_file_path = getfilefromfs.getfilefromfs(mongo, audio_dir, audio_id, 'audio')
+    audio_file_path = getfilefromfs.getfilefromfs(mongo, audio_dir, audio_id, 'audio', 'audioId')
     print ('Audio file path', audio_file_path)
     with audioread.audio_open(audio_file_path) as f:
         overall_xmax = f.duration
@@ -180,43 +206,73 @@ def get_audio_duration (audio_dir, audio_id):
     return overall_xmax
 
 
-def get_boundaries_tiers(text_grid):
-    xmin = -1
-    xmax = 0
+def get_boundaries_tiers(activeprojectname, projectelements, text_grid):
+    xmin = []
+    xmax = [] 
     tiers = {}
 
+    
     for tier in text_grid:
         # print ('Tier', tier)
         if len(tier) > 0:
             tier_name = tier
-            boundary_id = text_grid[tier]
-            for cur_boundary_id in boundary_id:
-                # print ('Boundary', cur_boundary_id)
-                boundary_element = boundary_id[cur_boundary_id]
+            all_boundary_ids = text_grid[tier]
+            # print('All boundary IDs', all_boundary_ids)
+            for cur_boundary_id in all_boundary_ids:
+                # print ('Boundary ID', cur_boundary_id)
+                boundary_element = all_boundary_ids[cur_boundary_id]
+                # print('Boundary element', boundary_element)
                 for cur_boundary_element in boundary_element:
                     # print ('Boundary element', cur_boundary_element)
                     if cur_boundary_element == 'start':
-                        xmin = boundary_element['start']
+                        xmin.append(boundary_element['start'])
                     elif cur_boundary_element == 'end':
-                        xmax = boundary_element['end']
+                        xmax.append(boundary_element['end'])
                     else:
-                        value_type = boundary_element[cur_boundary_element]
-                        # print ('Value type', value_type)
+                        ## If the element is in projectelements only then
+                        # its tiers are being fetched       
+                        if cur_boundary_element in projectelements:
+                            value_type = boundary_element[cur_boundary_element]
+                            print ('Value type', value_type)
+                        
 
-                        if (type(value_type) is dict) and (len(value_type) > 0):
-                            for script_name in value_type:                                
-                                tier_name = tier+'-'+script_name
-                                tier_value = value_type[script_name]
-                                if len(tier_value) > 0:
-                                    
-                                    if tier_name in tiers:
-                                        tiers[tier_name].append(tier_value)
-                                    else:
-                                        tiers[tier_name] = [tier_value]
-                                    # print ('xmin', xmin)
-                                    # print ('xmax', xmax)
-                                    # print ('tier_name', tier_name)
-                                    # print ('tier_value', tier_value)
+                            if (type(value_type) is dict) and (len(value_type) > 0):
+                                for script_name in value_type:                                
+                                    tier_name = tier+'-'+script_name+'-'+cur_boundary_element
+                                    tier_value = value_type[script_name]
+                                    # if len(tier_value) > 0:
+                                    # print ('Tier name', tier_name)
+                                    # print ('Tiers', tiers)
 
+                                    ## TODO: This will only work for transcription and translation
+                                    ## Fix needed for gloss and morphemic break which are dicts and
+                                    ## need to be converged into a string.
+                                    if (type(tier_value) is str):
+                                        if tier_name in tiers:
+                                            # print (activeprojectname, 'Length of current tier', tier_name, len(tiers[tier_name]))
+                                            tiers[tier_name].append(tier_value)
+                                        else:
+                                            tiers[tier_name] = [tier_value]
+                                        
+                                    # else:
+                                    #     print (activeprojectname, 'Boundary ID', cur_boundary_id)
+                                    #     print (activeprojectname, 'Boundary element', cur_boundary_element, value_type)
+                                    #     print (activeprojectname, 'current tier', tier_name)
+                                    #     print (activeprojectname, 'Tier value', tier_value)
+                                        # print ('xmin', xmin)
+                                        # print ('xmax', xmax)
+                                        # print ('tier_name', tier_name)
+                                        # print ('tier_value', tier_value)
+
+
+    print ('All tiers', tiers)
+    for tier in tiers:
+        print (activeprojectname, 'Tier', tier, len(tiers[tier]))
+        print (tiers[tier])
+    
+    print (activeprojectname, 'Xmin', len(xmin))
+    print (activeprojectname, 'Xmax', len(xmax))
+    print (xmin)
+    print (xmax)
     return xmin, xmax, tiers
                 

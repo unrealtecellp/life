@@ -219,7 +219,7 @@ def savenewlexeme(mongo,
                         headword=lexemeFormData['headword'],
                         updatedBy=current_username)
     # saving data for that new lexeme to database in lexemes collection
-    lexemes.insert(lexemeFormData)
+    lexemes.insert_one(lexemeFormData)
     # update lexemeInserted count of the project in projects collection
     # project['lexemeInserted'] = lexemeCount
     projects.update_one({'projectname': projectname}, { '$set' : { 'lexemeInserted' : lexemeCount }})

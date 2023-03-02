@@ -20,16 +20,16 @@ def savenewdataform(projectsform,
         elif key == 'Transcription Script':
             project_form[key] = value
         elif key == 'Translation Language':
-            # value.insert(0, 'English')
+            # value.insert_many(0, 'English')
             project_form[key] = value
         elif key == 'Translation Script':
-            # value.insert(0, 'Latin')
+            # value.insert_many(0, 'Latin')
             project_form[key] = value
         elif key == 'Interlinear Gloss Language':
-            # value.insert(0, 'English')
+            # value.insert_many(0, 'English')
             project_form[key] = value
         elif key == 'Interlinear Gloss Script':
-            # value.insert(0, 'Latin')
+            # value.insert_many(0, 'Latin')
             project_form[key] = value
 
     # if "Translation Language" not in project_form:
@@ -43,6 +43,6 @@ def savenewdataform(projectsform,
         
     # pprint(project_form)
     # when testing comment these to avoid any database update/changes
-    projectsform.insert(project_form)
+    projectsform.insert_one(project_form)
 
     return project_form

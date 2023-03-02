@@ -111,4 +111,4 @@ def createdummyques(questionnaires,
     # print(dummy_ques)
     # pprint(dummy_ques)
 
-    questionnaires.insert(dummy_ques)
+    questionnaires.insert_one(dummy_ques)

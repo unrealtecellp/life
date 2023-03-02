@@ -6,6 +6,7 @@ from app.forms import UserLoginForm, RegistrationForm
 from app.models import UserLogin
 
 from flask_login import current_user, login_user, logout_user, login_required
+from bson.objectid import ObjectId
 
 from pprint import pprint
 from datetime import datetime
@@ -220,84 +221,6 @@ def manageproject():
         shareinfo=shareinfo,
         usertype=usertype
     )
-
-# Manage Speaker Metadata
-@app.route('/managespeakermetadata', methods=['GET', 'POST'])
-@login_required
-def managespeakermetadata():
-    userprojects, userlogin, speakermeta = getdbcollections.getdbcollections(
-        mongo, 'userprojects', 'userlogin', 'speakerdetails')
-    current_username = getcurrentusername.getcurrentusername()
-    print('USERNAME: ', current_username)
-    usertype = userdetails.get_user_type(
-        userlogin, current_username)
-    currentuserprojectsname = getcurrentuserprojects.getcurrentuserprojects(
-        current_username, userprojects)
-    print("line 236 >>>>>>>>>>>> ",currentuserprojectsname)
-    activeprojectname = getactiveprojectname.getactiveprojectname(
-        current_username, userprojects)
-    print("line 236 >>>>>>>>>>>> ",activeprojectname)
-    shareinfo = getuserprojectinfo.getuserprojectinfo(
-        userprojects, current_username, activeprojectname)
-    allspeakerdetails = speakerdetails.getspeakerdetails(
-        activeprojectname, speakermeta)
-
-    # "createdBy": current_username
-    # {"sourceMetadata.lifesourceid":1,"sourceMetadata.name":1,
-    #                                         "sourceMetadata.agegroup":1,"sourceMetadata.gender":1,
-    #                                         "_id" :0}
-
-
-    
-    lifespeakerdetails = speakermeta.find({"isActive":1, "projectname": activeprojectname},
-                                            {"lifesourceid":1,
-                                            "current.sourceMetadata.lifesourceid":1,
-                                            "current.sourceMetadata.name":1,
-                                            "current.sourceMetadata.agegroup":1,
-                                            "current.sourceMetadata.gender":1,
-                                            "_id" :0})
-
-    # print("line 249 >>>>>>>>>>>>>>>>", lifespeakerdetails)
-    data_table = []
-    for data in lifespeakerdetails:
-        print("line 256",data)
-        data_table.append(data)
-    print(data_table)
-
-    return render_template(
-        'manageSpeakers.html',
-        data=allspeakerdetails,
-        activeprojectname=activeprojectname,
-        shareinfo=shareinfo,
-        usertype=usertype,
-        data_table = data_table,
-        count=len(data_table)
-    )
-
-
-@app.route('/getonespeakerdetails', methods=['GET', 'POST'])
-def getonespeakerdetails():
-    accesscodedetails, userprojects = getdbcollections.getdbcollections(mongo, "speakerdetails", "userprojects")
-
-    current_username = getcurrentusername.getcurrentusername()
-    activeprojectname = getactiveprojectname.getactiveprojectname(current_username, userprojects)
-    
-    # data through ajax
-    lifesourceid = request.args.get('lifesourceid')
-    # print(f"{'='*80}\nasycaccesscode: {asycaccesscode}\n{'='*80}")
-    speakerdetails = accesscodedetails.find_one({"projectname": activeprojectname, "lifesourceid": lifesourceid},
-                                                {"_id": 0,
-                                                "current.sourceMetadata": 1})
-    accesscodetask = accesscodedetails.find_one({"projectname": activeprojectname, "lifesourceid":lifesourceid},
-                                                {"_id": 0,
-                                                "audioSource": 1})
-  
-    speakerdetails.update(accesscodetask)
-    return jsonify(speakerdetails=speakerdetails)
-
-
-
-
 
 # new project route
 # create lexeme entry form for the new project
@@ -825,7 +748,7 @@ def enterlexemefromuploadedfile(lexemedf):
             lexemes.update_one({'lexemeId': lexemeId}, {
                                '$set': uploadedFileLexeme})
         else:
-            lexemes.insert(uploadedFileLexeme)
+            lexemes.insert_one(uploadedFileLexeme)
             # update lexemeInserted count of the project in projects collection
             # project[projectname]['lexemeInserted'] = lexemeCount
             # print(f'{"#"*80}\n{project}')
@@ -3807,7 +3730,7 @@ def login():
         # username = userlogin.find_one({"username": form.username.data})
         user = UserLogin(username=form.username.data)
         password = form.password.data
-        print('Original password', password)
+        # print('Original password', password)
         # print(user)
         if user.username == ADMIN_USER:
             if user.password_hash == '':
@@ -3818,10 +3741,12 @@ def login():
         if user is None or not user.check_password(password):
             flash('Invalid username or password')
             return redirect(url_for('login'))
+        
         isUserActive = userlogin.find_one(
-            {'username': form.username.data}, {"_id": 0, "isActive": 1})
+            {'username': form.username.data}, {"_id": 1, "isActive": 1})
         # print(len(isUserActive))
-        if (len(isUserActive) != 0):
+        # if (len(isUserActive) != 0):
+        if 'isActive' in isUserActive:
             isUserActive = isUserActive['isActive']
             if (isUserActive):
                 pass
@@ -3832,6 +3757,10 @@ def login():
                 flash(
                     'Your request for an account is  currently under review. If approved, your account will be active in some time.')
                 return redirect(url_for('login'))
+        else:
+            old_user_update(userlogin, user.username, ObjectId(isUserActive['_id']).generation_time)
+            update_profile(userlogin, user.username, get_blank_profile())
+
         login_user(user, force=True)
         next_page = request.args.get('next')
         if not next_page or url_parse(next_page).netloc != '':
@@ -3840,6 +3769,40 @@ def login():
     return render_template('login.html', form=form)
 
 
+def get_blank_profile ():
+    blank_profile = {
+            "position": "",
+            "organisation_name": "",
+            "organisation_type": "",
+            "country": "",
+            "city": "",
+            "email": "",
+            "languages": "",
+            "storage_requirement": "",
+            "app_use_reason": ""
+        }
+    return blank_profile
+
+
+def old_user_update(userlogin, username, userSince):
+    userlogin.update_one({"username": username},
+                        {"$set": {'userSince': userSince,
+                        'isActive': 1,
+                        'userdeleteFLAG': 0,
+                        'isSuperAdmin': 0,
+                        'isAdmin': 0
+                        }})
+
+
+def update_profile (userlogin, username, userProfile):
+    userlogin.update_one({"username": username},
+                        {"$set": {
+                        'userProfile': userProfile
+                        }})
+
+    # userprojects = mongo.db.userprojects
+    # userprojects.insert({'username': form.username.data, 'myproject': {},
+    #                          'projectsharedwithme': {}, 'activeprojectname': ''})
 # MongoDB Database
 # use logout
 @app.route('/logout')
@@ -3876,7 +3839,7 @@ def save_registration_form(form, current_user):
         password = generate_password_hash(form.password.data)
         # print(user, password)
 
-        userlogin.insert({"username": form.username.data,
+        userlogin.insert_one({"username": form.username.data,
                           "password": password,
                           'userProfile': userProfile,
                           'userSince': datetime.now(),
@@ -3889,7 +3852,7 @@ def save_registration_form(form, current_user):
         userprojects = mongo.db.userprojects
         # userprojects.insert({'username' : form.username.data, 'myproject': [], \
         #     'projectsharedwithme': [], 'activeprojectname' : ''})
-        userprojects.insert({'username': form.username.data, 'myproject': {},
+        userprojects.insert_one({'username': form.username.data, 'myproject': {},
                              'projectsharedwithme': {}, 'activeprojectname': ''})
 
     # if current_user.is_authenticated:
@@ -3952,7 +3915,7 @@ def dummyUserandProject():
     projects = mongo.db.projects
     # collection containing projects name
     if len(mongo.db.list_collection_names()) == 0:
-        userprojects.insert({'username': "dummyUser",
+        userprojects.insert_one({'username': "dummyUser",
                              'myproject':
                              {"dummyProject1":
                               {
@@ -3963,7 +3926,7 @@ def dummyUserandProject():
                              'projectsharedwithme': {},
                              'activeprojectname': "dummyActiveProject"
                              })
-        projects.insert({"projectname": "dummyProject1",
+        projects.insert_one({"projectname": "dummyProject1",
                          "projectOwner": "dummyUser",
                          "lexemeInserted": 0,
                          "lexemeDeleted": 0,
@@ -3976,24 +3939,39 @@ def insertadmin(userlogin):
 
     userprojects = mongo.db.userprojects
 
-    userlogin.insert({
+    # userlogin.insert({
+    #     "username": ADMIN_USER,
+    #     "password": "",
+    #     "userProfile": {
+    #         "username": ADMIN_USER,
+    #         "position": "Administrator",
+    #         "organisation_name": "Central Institute of Indian Languages",
+    #         "organisation_type": "Academic",
+    #         "country": "India",
+    #         "city": "Mysuru",
+    #         "email": "",
+    #         "languages": "Maithili",
+    #         "storage_requirement": "-1",
+    #         "app_use_reason": "For LDCIL Project"
+    #     }
+    # })
+    userlogin.insert_one({
         "username": ADMIN_USER,
         "password": "",
         "userProfile": {
-            "username": ADMIN_USER,
             "position": "Administrator",
-            "organisation_name": "Central Institute of Indian Languages",
-            "organisation_type": "Academic",
-            "country": "India",
-            "city": "Mysuru",
+            "organisation_name": "",
+            "organisation_type": "",
+            "country": "",
+            "city": "",
             "email": "",
-            "languages": "Maithili",
-            "storage_requirement": "-1",
-            "app_use_reason": "For LDCIL Project"
+            "languages": "",
+            "storage_requirement": "",
+            "app_use_reason": ""
         }
     })
 
-    userprojects.insert({'username': ADMIN_USER, 'myproject': {},
+    userprojects.insert_one_one({'username': ADMIN_USER, 'myproject': {},
                          'projectsharedwithme': {}, 'activeprojectname': ''})
 
     flash(admin_reminder)
@@ -4303,7 +4281,8 @@ def addnewspeakerdetails():
                                },
                                "isActive": 1}
         # pprint(source_data)
-        speakerdetails.insert(source_data, check_keys=False)
+        # speakerdetails.insert_one(source_data, check_keys=False)
+        speakerdetails.insert_one(source_data)
 
         # TODO: Redirect to different pages based on button click
 
@@ -4317,6 +4296,133 @@ def addnewspeakerdetails():
             return redirect(url_for('enternewsentences'))
 
     return redirect(url_for('enternewsentences'))
+
+
+# Manage Speaker Metadata
+@app.route('/managespeakermetadata', methods=['GET', 'POST'])
+@login_required
+def managespeakermetadata():
+    userprojects, userlogin, speakermeta = getdbcollections.getdbcollections(
+        mongo, 'userprojects', 'userlogin', 'speakerdetails')
+    current_username = getcurrentusername.getcurrentusername()
+    print('USERNAME: ', current_username)
+    usertype = userdetails.get_user_type(
+        userlogin, current_username)
+    currentuserprojectsname = getcurrentuserprojects.getcurrentuserprojects(
+        current_username, userprojects)
+    activeprojectname = getactiveprojectname.getactiveprojectname(
+        current_username, userprojects)
+    shareinfo = getuserprojectinfo.getuserprojectinfo(
+        userprojects, current_username, activeprojectname)
+    allspeakerdetails, alldatalengths, allkeys = speakerdetails.getspeakerdetails(
+        activeprojectname, speakermeta)
+    
+    
+    # pprint (allspeakerdetails)
+    # pprint(alldatalengths)
+
+    return render_template(
+        'manageSpeakers.html',
+        speaker_data=allspeakerdetails,
+        activeprojectname=activeprojectname,
+        shareinfo=shareinfo,
+        usertype=usertype,
+        count=alldatalengths,
+        table_headers = allkeys
+    )
+
+
+@app.route('/getonespeakermetadata', methods=['GET', 'POST'])
+def getonespeakermetadata():
+    speakermeta, userprojects = getdbcollections.getdbcollections(mongo, "speakerdetails", "userprojects")
+
+    current_username = getcurrentusername.getcurrentusername()
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_username, userprojects)
+    
+    # data through ajax
+    lifesourceid = request.args.get('lifespeakerid')
+    print ("Life source ID", lifesourceid)
+    speakermetadata = speakerdetails.getonespeakerdetails(
+        activeprojectname, lifesourceid, speakermeta)
+    
+    print ("Speaker Metadata", speakermetadata)
+    return jsonify(onespeakerdetails=speakermetadata)
+
+
+@app.route('/editfieldspeakermetadata', methods=['GET', 'POST'])
+def editfieldspeakermetadata():
+    speakermeta, userprojects = getdbcollections.getdbcollections(mongo, "speakerdetails", "userprojects")
+
+    current_username = getcurrentusername.getcurrentusername()
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_username, userprojects)
+    
+    current_dt = str(datetime.now()).replace('.', ':')
+    # data through ajax
+    lifesourceid = request.form.get('lifespeakerid')
+
+    fname = request.form.get('sname')
+    fage = request.form.get('sagegroup')
+    fgender = request.form.get('sgender')
+    educlvl = request.form.get('educationalevel')
+    moe12 = request.form.getlist('moe12')
+    moea12 = request.form.getlist('moea12')
+    sols = request.form.getlist('sols')
+    por = request.form.get('por')
+    toc = request.form.get('toc')
+    update_data = {
+                "current": {
+                    "updatedBy": current_username,
+                    "sourceMetadata": {
+                        "name": fname,
+                        "agegroup": fage,
+                        "gender": fgender,
+                        "educationlevel": educlvl,
+                        "educationmediumupto12": moe12,
+                        "educationmediumafter12": moea12,
+                        "speakerspeaklanguage": sols,
+                        "recordingplace": por,
+                        "typeofrecordingplace": toc
+                    },
+                    "current_date": current_dt,
+                }
+    }
+
+    updatestatus = speakerdetails.updateonespeakerdetails(
+        activeprojectname, lifesourceid, update_data, speakermeta)
+
+    return redirect(url_for('managespeakermetadata'))
+
+
+@app.route('/edityoutubesourcemetadata', methods=['GET', 'POST'])
+def edityoutubesourcemetadata():
+    speakermeta, userprojects = getdbcollections.getdbcollections(mongo, "speakerdetails", "userprojects")
+
+    current_username = getcurrentusername.getcurrentusername()
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_username, userprojects)
+    
+    current_dt = str(datetime.now()).replace('.', ':')
+    # data through ajax
+    lifesourceid = request.form.get('lifespeakerid')
+
+    channelname = request.form.get('ytchannelname')
+    channelurl = request.form.get('ytchannelurl')
+
+    update_data = {
+                    "current": {
+                        "updatedBy": current_username,
+                        "sourceMetadata": {
+                            "channelName": channelname,
+                            "channelUrl": channelurl
+                        },
+                        "current_date": current_dt
+                    }
+    }
+
+    updatestatus = speakerdetails.updateonespeakerdetails(
+        activeprojectname, lifesourceid, update_data, speakermeta)
+
+    return redirect(url_for('managespeakermetadata'))
+
 
 # uploadaudiofiles route
 @app.route('/uploadaudiofiles', methods=['GET', 'POST'])
@@ -4342,7 +4448,11 @@ def uploadaudiofiles():
                                     activeprojectname,
                                     current_user.username,
                                     speakerId,
-                                    new_audio_file
+                                    new_audio_file,
+                                    transcription_type='sentence',  #change this and boundary_threshold for automatic detection of boundaries of different kinds
+                                    boundary_threshold=0.3,
+                                    slice_threshold=0.9,
+                                    slice_size=120 #max size of each slice (in seconds), if large audio is to be automatically divided into multiple parts
                                     )
 
     return redirect(url_for('enternewsentences'))

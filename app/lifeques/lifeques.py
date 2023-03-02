@@ -57,6 +57,7 @@ if not os.path.exists(lifeques_download_folder_path):
 
 @lifeques.route('/', methods=['GET', 'POST'])
 @lifeques.route('/home', methods=['GET', 'POST'])
+@login_required
 def home():
     """_summary_
 
@@ -68,6 +69,7 @@ def home():
     return render_template("lifequeshome.html")
 
 @lifeques.route('/getprojectslist', methods=['GET', 'POST'])
+@login_required
 def getprojectslist():
     """_summary_
     """
@@ -90,6 +92,7 @@ def getprojectslist():
     return jsonify(projectslist=ques_projects_list)
 
 @lifeques.route('/newquestionnaireform', methods=['GET', 'POST'])
+@login_required
 def newquestionnaireform():
     projects, userprojects, projectsform, questionnaires = getdbcollections.getdbcollections(mongo,
                                                                                             'projects',
