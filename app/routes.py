@@ -90,8 +90,8 @@ admin_reminder = f'App admin <<{ADMIN_USER}>> user created! Please create new pa
 @app.route('/home', methods=['GET', 'POST'])
 @login_required
 def home():
-    userprojects, userlogin = getdbcollections.getdbcollections(
-        mongo, 'userprojects', 'userlogin')
+    userprojects, userlogin, projects = getdbcollections.getdbcollections(
+        mongo, 'userprojects', 'userlogin', 'projects')
     current_username = getcurrentusername.getcurrentusername()
     print('USERNAME: ', current_username)
     usertype = userdetails.get_user_type(
@@ -102,12 +102,15 @@ def home():
         current_username, userprojects)
     shareinfo = getuserprojectinfo.getuserprojectinfo(
         userprojects, current_username, activeprojectname)
+
+    project_type = getprojecttype.getprojecttype(projects, activeprojectname)
     # print(shareinfo)
 
     return render_template('home.html',
                            data=currentuserprojectsname,
                            activeprojectname=activeprojectname,
                            shareinfo=shareinfo,
+                           project_type=project_type,
                            usertype=usertype)
 
 # Manage app level users
@@ -2582,9 +2585,9 @@ def downloadselectedlexeme():
 def downloadproject():
     # getting the collections
     # collection containing projects name
-    projects = mongo.db.projects
+    # projects = mongo.db.projects
     # collection of users and their respective projects
-    userprojects = mongo.db.userprojects
+    # userprojects = mongo.db.userprojects
     # collection containing entry of each lexeme and its details
     lexemes = mongo.db.lexemes
     # collection containing entry of each sentence and its details
@@ -2592,84 +2595,127 @@ def downloadproject():
     # creating GridFS instance to get required files
     fs = gridfs.GridFS(mongo.db)
 
-    lst = list()
+    userprojects, userlogin, projects, lexemes, sentences, questionnaires, transcriptions = getdbcollections.getdbcollections(
+        mongo, 'userprojects', 'userlogin', 'projects', 'lexemes', 'sentences', 
+        'questionnaires', 'transcriptions')
+    current_username = getcurrentusername.getcurrentusername()
+    print('USERNAME: ', current_username)
+    # usertype = userdetails.get_user_type(
+    #     userlogin, current_username)
+    # currentuserprojectsname = getcurrentuserprojects.getcurrentuserprojects(
+    #     current_username, userprojects)
+    activeprojectname = getactiveprojectname.getactiveprojectname(
+        current_username, userprojects)
+    shareinfo = getuserprojectinfo.getuserprojectinfo(
+        userprojects, current_username, activeprojectname)
 
-    activeprojectname = userprojects.find_one({'username': current_user.username})[
-        'activeprojectname']
-    # lst.append(activeprojectname)
-    projectname = activeprojectname
+    if os.path.exists(basedir+"/download"):
+        shutil.rmtree(basedir+"/download")
+    os.mkdir(basedir+"/download")
 
-    for lexeme in lexemes.find({'projectname': activeprojectname, 'lexemedeleteFLAG': 0},
-                               {'_id': 0}):
-        lst.append(lexeme)
-        # save current user mutimedia files of each lexeme to local storage
-        # print(lst)
-    for lexeme in lst:
-        for lexkey, lexvalue in lexeme.items():
-            if (lexkey == 'lexemeId'):
-                files = fs.find(
-                    {'projectname': projectname, 'lexemeId': lexvalue})
-                for file in files:
-                    name = file.filename
-                    # print(f'{"#"*80}')
-                    # print(basedir+'/app/download/'+name)
-                    # print(f'{"#"*80}')
-                    # open(basedir+'/app/download/'+name, 'wb').write(file.read())
-                    open(basedir+'/download/'+name, 'wb').write(file.read())
+    if shareinfo['sharemode'] >= 1:
+        project_type = getprojecttype.getprojecttype(projects, activeprojectname)
+        lst = list()
 
-    # Serializing json
-    json_object = json.dumps(lst, indent=2, ensure_ascii=False)
+        if project_type == 'questionnaire':
+            all_questions = questionnaires.find({'projectname': activeprojectname, 'quesdeleteFLAG': 0},
+                                    {'_id': 0})
+            for cur_ques in all_questions:
+                lst.append(cur_ques)
 
-    # writing to currentprojectname.json
-    # print(f'{"#"*80}')
-    # print(basedir+"/app/download/lexicon_"+activeprojectname+".json")
-    # print(f'{"#"*80}')
-    # with open(basedir+"/app/download/lexicon_"+activeprojectname+".json", "w") as outfile:
-    with open(basedir+"/download/lexicon_"+activeprojectname+".json", "w") as outfile:
-        outfile.write(json_object)
+            json_object = json.dumps(lst, indent=2, ensure_ascii=False)
 
-    # get all sentences of the activeprojectname
-    sentenceLst = []
-    for sentence in sentences.find({'projectname': activeprojectname, 'sentencedeleteFLAG': 0},
-                                   {'_id': 0}):
-        sentenceLst.append(sentence)
+            with open(basedir+"/download/questionnaire_"+activeprojectname+".json", "w") as outfile:
+                outfile.write(json_object)
 
-    # print(sentenceLst)
-        # save current user mutimedia files of each lexeme to local storage
-    for sentence in sentenceLst:
-        for sentkey, sentvalue in sentence.items():
-            if (sentkey == 'sentenceId'):
-                files = fs.find(
-                    {'projectname': projectname, 'sentenceId': sentvalue})
-                for file in files:
-                    name = file.filename
-                    open(basedir+'/download/'+name, 'wb').write(file.read())
+        elif project_type == 'transcription':
+            all_transcriptions = transcriptions.find({'projectname': activeprojectname,
+                                           'transcriptionFLAG': 1, 'audiodeleteFLAG': 0}, {'_id': 0, 'audioMetadata.audiowaveform.data': 0})
+            for cur_trans in all_transcriptions:
+                lst.append(cur_trans)
 
-    # Serializing json
-    json_object = json.dumps(sentenceLst, indent=2, ensure_ascii=False)
+            json_object = json.dumps(lst, indent=2, ensure_ascii=False)
 
-    # writing to currentprojectname.json
-    # with open(basedir+"/app/download/sentence_"+activeprojectname+".json", "w") as outfile:
-    with open(basedir+"/download/sentence_"+activeprojectname+".json", "w") as outfile:
-        outfile.write(json_object)
+            
+            with open(basedir+"/download/transcription_"+activeprojectname+".json", "w") as outfile:
+                outfile.write(json_object)
 
-    # printing the list of all files to be zipped
-    # files = glob.glob(basedir+'/app/download/*')
-    files = glob.glob(basedir+'/download/*')
+        elif project_type == '':
+            projectname = activeprojectname
 
-    with ZipFile('download.zip', 'w') as zip:
-        # writing each file one by one
-        for file in files:
-            zip.write(file, os.path.join(projectname, os.path.basename(file)))
-    print('All files zipped successfully!')
+            for lexeme in lexemes.find({'projectname': activeprojectname, 'lexemedeleteFLAG': 0},
+                                    {'_id': 0}):
+                lst.append(lexeme)
+                # save current user mutimedia files of each lexeme to local storage
+                # print(lst)
+            for lexeme in lst:
+                for lexkey, lexvalue in lexeme.items():
+                    if (lexkey == 'lexemeId'):
+                        files = fs.find(
+                            {'projectname': projectname, 'lexemeId': lexvalue})
+                        for file in files:
+                            name = file.filename
+                            # print(f'{"#"*80}')
+                            # print(basedir+'/app/download/'+name)
+                            # print(f'{"#"*80}')
+                            # open(basedir+'/app/download/'+name, 'wb').write(file.read())
+                            open(basedir+'/download/'+name, 'wb').write(file.read())
 
-    # deleting all files from storage
-    for f in files:
-        # print(files)
-        os.remove(f)
+            
+            # Serializing json
+            json_object = json.dumps(lst, indent=2, ensure_ascii=False)
 
-    return send_file('../download.zip', as_attachment=True)
-    # return 'OK'
+            # writing to currentprojectname.json
+            # print(f'{"#"*80}')
+            # print(basedir+"/app/download/lexicon_"+activeprojectname+".json")
+            # print(f'{"#"*80}')
+            # with open(basedir+"/app/download/lexicon_"+activeprojectname+".json", "w") as outfile:
+            with open(basedir+"/download/lexicon_"+activeprojectname+".json", "w") as outfile:
+                outfile.write(json_object)
+
+            # get all sentences of the activeprojectname
+            sentenceLst = []
+            for sentence in sentences.find({'projectname': activeprojectname, 'sentencedeleteFLAG': 0},
+                                        {'_id': 0}):
+                sentenceLst.append(sentence)
+
+            # print(sentenceLst)
+                # save current user mutimedia files of each lexeme to local storage
+            for sentence in sentenceLst:
+                for sentkey, sentvalue in sentence.items():
+                    if (sentkey == 'sentenceId'):
+                        files = fs.find(
+                            {'projectname': projectname, 'sentenceId': sentvalue})
+                        for file in files:
+                            name = file.filename
+                            open(basedir+'/download/'+name, 'wb').write(file.read())
+
+            # Serializing json
+            json_object = json.dumps(sentenceLst, indent=2, ensure_ascii=False)
+
+            # writing to currentprojectname.json
+            # with open(basedir+"/app/download/sentence_"+activeprojectname+".json", "w") as outfile:
+            with open(basedir+"/download/sentence_"+activeprojectname+".json", "w") as outfile:
+                outfile.write(json_object)
+
+        # printing the list of all files to be zipped
+        # files = glob.glob(basedir+'/app/download/*')
+        files = glob.glob(basedir+'/download/*')
+
+        with ZipFile('download.zip', 'w') as zip:
+            # writing each file one by one
+            for file in files:
+                zip.write(file, os.path.join(projectname, os.path.basename(file)))
+        print('All files zipped successfully!')
+
+        # # deleting all files from storage
+        # for f in files:
+        #     # print(files)
+        #     os.remove(f)
+
+        return send_file('../download.zip', as_attachment=True)
+    else:
+        return 'OK'
 
 # download dictionary route
 @app.route('/downloaddictionary', methods=['GET', 'POST'])

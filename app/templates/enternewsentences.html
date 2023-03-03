@@ -28,36 +28,36 @@ Enter New Sentences
       Download
     </button>
     {% if shareinfo['sharemode']|int >= 3 %}
-      <button type="button" id="addnewspeakertranscriptionid" class="btn btn-lg btn-info addnewspeaker"
-        data-toggle="modal" data-target="#addNewSpeakerModal">
-        Add New Source
-      </button>
-      <button type="button" id="uploadaudioid" class="btn btn-lg btn-primary uploadaudio"
-        data-toggle="modal" data-target="#myUploadAudioModal">
-        Upload Audio
-      </button>
-      {# <form name="newaudioupload" action="/uploadaudiofiles" method="POST" enctype="multipart/form-data">
-        <div class="col upload">
-          <select class="custom-select custom-select-sm" id="speakeriduploaddropdown" name="speakerId" style="width:100%"
-            required>
-            <!-- <option selected disabled></option> -->
-            {% for d in addedspeakerids %}
-            <option value="{{ d }}">{{ d }}</option>
-            {% endfor %}
-          </select>
-          <br><br>
-          <input type="file" id="audiofile" name="audiofile" required>
-          <br>
-          <input class="btn btn-primary uploadbtn" type="submit" value="Upload Audio File">
-        </div>
-      </form> #}
-      <!-- <br> -->
+    <button type="button" id="addnewspeakertranscriptionid" class="btn btn-lg btn-info addnewspeaker"
+      data-toggle="modal" data-target="#addNewSpeakerModal">
+      Add New Source
+    </button>
+    <button type="button" id="uploadaudioid" class="btn btn-lg btn-primary uploadaudio" data-toggle="modal"
+      data-target="#myUploadAudioModal">
+      Upload Audio
+    </button>
+    {# <form name="newaudioupload" action="/uploadaudiofiles" method="POST" enctype="multipart/form-data">
+      <div class="col upload">
+        <select class="custom-select custom-select-sm" id="speakeriduploaddropdown" name="speakerId" style="width:100%"
+          required>
+          <!-- <option selected disabled></option> -->
+          {% for d in addedspeakerids %}
+          <option value="{{ d }}">{{ d }}</option>
+          {% endfor %}
+        </select>
+        <br><br>
+        <input type="file" id="audiofile" name="audiofile" required>
+        <br>
+        <input class="btn btn-primary uploadbtn" type="submit" value="Upload Audio File">
+      </div>
+    </form> #}
+    <!-- <br> -->
     {% endif %}
     <!-- <button class="btn btn-sm btn-dark" type="button" id="transcriptionUserManual" data-toggle="tooltip" title="Transcription User Manual"> -->
-      <a href="https://docs.google.com/document/d/1TWOt9km-HdCk__bi35ZcUF101PZMWZDo0PgXlkeVLTY/edit?usp=sharing" target="_blank" data-toggle="tooltip" title="Transcription User Manual">
-        <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
-        <!-- Transcription User Manual -->
-      </a>
+    <!-- <a href="https://docs.google.com/document/d/1TWOt9km-HdCk__bi35ZcUF101PZMWZDo0PgXlkeVLTY/edit?usp=sharing" target="_blank" data-toggle="tooltip" title="Transcription User Manual">
+        <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span> -->
+    <!-- Transcription User Manual -->
+    </a>
     <!-- </button> -->
   </div>
 </div>
@@ -70,34 +70,36 @@ Enter New Sentences
       <!-- <strong>Completed Files: {{ commentstats[1] }}</strong><br>
       <strong>Remaining Files: {{ commentstats[2] }}</strong><br> -->
     </div>
-      {% if commentstats[0] != 0 %}
-        <div class="progress">
-          <div class="progress-bar progress-bar-success" role="progressbar" style="width:{{ commentstats[1]/commentstats[0]*100 }}%">
-            Completed : {{ commentstats[1] }}
-          </div>
-          <!-- <div class="progress-bar progress-bar-warning" role="progressbar" style="width:10%">
+    {% if commentstats[0] != 0 %}
+    <div class="progress">
+      <div class="progress-bar progress-bar-success" role="progressbar"
+        style="width:{{ commentstats[1]/commentstats[0]*100 }}%">
+        Completed : {{ commentstats[1] }}
+      </div>
+      <!-- <div class="progress-bar progress-bar-warning" role="progressbar" style="width:10%">
             Warning
           </div> -->
-          <div class="progress-bar progress-bar-danger" role="progressbar" style="width:{{ commentstats[2]/commentstats[0]*100 }}%">
-            Remaining : {{ commentstats[2] }}
-          </div>
-        </div>
-      {% endif %}
+      <div class="progress-bar progress-bar-danger" role="progressbar"
+        style="width:{{ commentstats[2]/commentstats[0]*100 }}%">
+        Remaining : {{ commentstats[2] }}
+      </div>
+    </div>
+    {% endif %}
     {% endif %}
   </div>
   <div class="col-sm-6">
     <div>
       {% if speakerids is defined %}
-        <label for="speakeridsdropdown">Audio Files from Source: </label>
-          <select class="custom-select custom-select-sm" id="speakeridsdropdown" style="width: 50%;">
-            <option selected disabled>{{ activespeakerid }}</option>
-            {% for d in speakerids %}
-            {% if d != activespeakerid %}
-            <option value="{{ d }}">{{ d }}</option>
-            {% endif %}
-            {% endfor %}
-          </select>
+      <label for="speakeridsdropdown">Audio Files from Source: </label>
+      <select class="custom-select custom-select-sm" id="speakeridsdropdown" style="width: 50%;">
+        <option selected disabled>{{ activespeakerid }}</option>
+        {% for d in speakerids %}
+        {% if d != activespeakerid %}
+        <option value="{{ d }}">{{ d }}</option>
         {% endif %}
+        {% endfor %}
+      </select>
+      {% endif %}
     </div>
     <br>
     <div class="commentIDs">
@@ -275,8 +277,7 @@ Enter New Sentences
 </div>
 
 <!-- Upload Audio Modal -->
-<div class="modal fade" id="myUploadAudioModal" tabindex="-1" role="dialog"
-  aria-labelledby="myUploadAudioModalLabel">
+<div class="modal fade" id="myUploadAudioModal" tabindex="-1" role="dialog" aria-labelledby="myUploadAudioModalLabel">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -289,8 +290,8 @@ Enter New Sentences
           <div class="col upload">
             <!-- <strong>Audio Files from Source: </strong> -->
             <label for="speakeriduploaddropdown">Audio Files for Source: </label>
-            <select class="custom-select custom-select-sm" id="speakeriduploaddropdown" name="speakerId" style="width:30%"
-              required>
+            <select class="custom-select custom-select-sm" id="speakeriduploaddropdown" name="speakerId"
+              style="width:30%" required>
               <!-- <option selected disabled></option> -->
               {% for d in addedspeakerids %}
               <option value="{{ d }}">{{ d }}</option>
@@ -322,48 +323,48 @@ Enter New Sentences
       </div>
       <div class="modal-body">
 
-  <h4>Download:</h3>
-    <div class="btn-group" role="group">
-      <button type="b4tton" id="lifejson" class="btn btn-info dropdown-toggle" data-toggle="dropdown"
-        aria-haspopup="true" aria-expanded="false">
-        LiFE JSON
-      </button>
-    </div>
-    <div class="btn-group" role="group">
-      <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
-        aria-expanded="false">
-        Latest Transcriptions
-        <span class="caret"></span>
-      </button>
-      <ul class="dropdown-menu">
-        <li id="praattexgrid"><a href="#">Praat Textgrid</a></li>
-        <li id="csv"><a href="#">CSV</a></li>
-        <li id="tsv"><a href="#">TSV</a></li>
-        <li id="json"><a href="#">JSON</a></li>
-        <li id="xlsx"><a href="#">XLSX</a></li>
-        <li id="latex"><a href="#">LaTeX</a></li>
-        <li id="html"><a href="#">HTML</a></li>
-        <li id="markdown"><a href="#">Markdown</a></li>
-      </ul>
-    </div>
+        <h4>Download:</h3>
+          <div class="btn-group" role="group">
+            <button type="b4tton" id="lifejson" class="btn btn-info dropdown-toggle" data-toggle="dropdown"
+              aria-haspopup="true" aria-expanded="false">
+              LiFE JSON
+            </button>
+          </div>
+          <div class="btn-group" role="group">
+            <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
+              aria-expanded="false">
+              Latest Transcriptions
+              <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu">
+              <li id="praattexgrid"><a href="#">Praat Textgrid</a></li>
+              <li id="csv"><a href="#">CSV</a></li>
+              <li id="tsv"><a href="#">TSV</a></li>
+              <li id="json"><a href="#">JSON</a></li>
+              <li id="xlsx"><a href="#">XLSX</a></li>
+              <li id="latex"><a href="#">LaTeX</a></li>
+              <li id="html"><a href="#">HTML</a></li>
+              <li id="markdown"><a href="#">Markdown</a></li>
+            </ul>
+          </div>
 
-    <div class="btn-group" role="group">
-      <button type="button" class="btn btn-warning dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
-        aria-expanded="false">
-        My Transcriptions
-        <span class="caret"></span>
-      </button>
-      <ul class="dropdown-menu">
-        <li id="mypraattexgrid"><a href="#">Praat Textgrid</a></li>
-        <li id="mycsv"><a href="#">CSV</a></li>
-        <li id="mytsv"><a href="#">TSV</a></li>
-        <li id="myjson"><a href="#">JSON</a></li>
-        <li id="myxlsx"><a href="#">XLSX</a></li>
-        <li id="mylatex"><a href="#">LaTeX</a></li>
-        <li id="myhtml"><a href="#">HTML</a></li>
-        <li id="mymarkdown"><a href="#">Markdown</a></li>
-      </ul>
-    </div>
+          <div class="btn-group" role="group">
+            <button type="button" class="btn btn-warning dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
+              aria-expanded="false">
+              My Transcriptions
+              <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu">
+              <li id="mypraattexgrid"><a href="#">Praat Textgrid</a></li>
+              <li id="mycsv"><a href="#">CSV</a></li>
+              <li id="mytsv"><a href="#">TSV</a></li>
+              <li id="myjson"><a href="#">JSON</a></li>
+              <li id="myxlsx"><a href="#">XLSX</a></li>
+              <li id="mylatex"><a href="#">LaTeX</a></li>
+              <li id="myhtml"><a href="#">HTML</a></li>
+              <li id="mymarkdown"><a href="#">Markdown</a></li>
+            </ul>
+          </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
@@ -376,7 +377,7 @@ Enter New Sentences
   <input type="text" id="ipa" name="ipa"><br><br>
   <label for="meetei">Meetei</label>
   <input type="text" id="meetei" name="meetei" onfocusin="ipaFocus(this)"><br><br> -->
-  <!-- <hr> -->
+<!-- <hr> -->
 {% for data in sdata %}
 {% if data['sentenceId'] is defined %}
 {% if data['interlineargloss'] is defined %}
@@ -403,7 +404,7 @@ Enter New Sentences
 <!-- </div> -->
 <!-- <br> -->
 <!-- <hr> -->
- 
+
 {% endblock %}
 
 {% block scripts %}
