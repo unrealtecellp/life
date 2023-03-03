@@ -70,17 +70,19 @@ Enter New Sentences
       <!-- <strong>Completed Files: {{ commentstats[1] }}</strong><br>
       <strong>Remaining Files: {{ commentstats[2] }}</strong><br> -->
     </div>
-    <div class="progress">
-      <div class="progress-bar progress-bar-success" role="progressbar" style="width:{{ commentstats[1]/commentstats[0]*100 }}%">
-        Completed : {{ commentstats[1] }}
-      </div>
-      <!-- <div class="progress-bar progress-bar-warning" role="progressbar" style="width:10%">
-        Warning
-      </div> -->
-      <div class="progress-bar progress-bar-danger" role="progressbar" style="width:{{ commentstats[2]/commentstats[0]*100 }}%">
-        Remaining : {{ commentstats[2] }}
-      </div>
-    </div>
+      {% if commentstats[0] != 0 %}
+        <div class="progress">
+          <div class="progress-bar progress-bar-success" role="progressbar" style="width:{{ commentstats[1]/commentstats[0]*100 }}%">
+            Completed : {{ commentstats[1] }}
+          </div>
+          <!-- <div class="progress-bar progress-bar-warning" role="progressbar" style="width:10%">
+            Warning
+          </div> -->
+          <div class="progress-bar progress-bar-danger" role="progressbar" style="width:{{ commentstats[2]/commentstats[0]*100 }}%">
+            Remaining : {{ commentstats[2] }}
+          </div>
+        </div>
+      {% endif %}
     {% endif %}
   </div>
   <div class="col-sm-6">
