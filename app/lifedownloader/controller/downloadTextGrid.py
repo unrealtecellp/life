@@ -230,7 +230,7 @@ def get_boundaries_tiers(activeprojectname, projectelements, text_grid):
                         xmax.append(boundary_element['end'])
                     else:
                         ## If the element is in projectelements only then
-                        # its tiers are being fetched       
+                        ## its tiers are being fetched       
                         if cur_boundary_element in projectelements:
                             value_type = boundary_element[cur_boundary_element]
                             print ('Value type', value_type)
