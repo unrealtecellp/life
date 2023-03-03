@@ -4,6 +4,7 @@ from flask import flash, redirect, render_template, url_for, request, json, json
 from werkzeug.urls import url_parse
 from werkzeug.security import generate_password_hash
 from app import app, mongo
+import os
 
 from app.controller import (
     audiodetails,
@@ -73,9 +74,16 @@ def downloadtranscriptions():
                                                             latest,
                                                             data_format)
         # return response_file
-        return send_file(file_path, as_attachment=True)
+        if response_code == '200':
+            print ('Response Code', response_code, 'File path', file_path)
+            return send_file(file_path, as_attachment=True)
+        else:
+            print ('Response Code', response_code, 'File path', file_path)
+            flash('No transcriptions are available to download.')
+            return redirect(url_for('enternewsentences'))
     
-    return send_file(file_path, as_attachment=True)
+    return redirect(url_for('enternewsentences'))
+    # return send_file(file_path, as_attachment=True)
 
 
 @ld.route('/tgdownloader', methods=['GET', 'POST'])
@@ -85,4 +93,18 @@ def downloader():
     current_username = getcurrentusername.getcurrentusername()
     activeprojectname = getactiveprojectname.getactiveprojectname(
         current_username, userprojects)
-    return send_file ('lifedownloader/downloads/'+activeprojectname+'_textgrids.zip', as_attachment=True)
+    
+    basedir = os.path.abspath(os.path.dirname(__file__))
+    print ('Base directory', basedir)
+    download_file = 'downloads/'+activeprojectname+'_textgrids.zip'
+    zip_full_path = os.path.join(basedir, download_file)
+
+    zip_path = 'lifedownloader/downloads/'+activeprojectname+'_textgrids.zip'
+    print ('Zip full path', zip_full_path)
+    
+    if os.path.exists(zip_full_path):
+        return send_file (zip_path, as_attachment=True)
+        # return redirect(url_for('enternewsentences'))
+    else:
+        flash('No transcriptions are available to download.')
+        return redirect(url_for('enternewsentences'))
