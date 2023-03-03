@@ -101,6 +101,8 @@ document.addEventListener('DOMContentLoaded', function () {
         // Play on click, loop on shift click
         e.shiftKey ? region.playLoop() : region.play();
     });
+    wavesurfer.on('region-mouseenter', showRegionInfo);
+    wavesurfer.on('region-mouseleave', hideRegionInfo);
     wavesurfer.on('region-click', editAnnotation);
     // wavesurfer.on('region-created', saveRegions);
     // wavesurfer.on('region-removed', saveRegions);
@@ -202,6 +204,7 @@ function loadRegions(regions) {
         // console.log(region)
         wavesurfer.addRegion(region);
     });
+    // wavesurfer.seekAndCenter(0.5);
 }
 
 /**
@@ -292,7 +295,7 @@ function randomColor(alpha) {
  */
 function editAnnotation(region) {
     // wavesurfer.playPause();
-    region.color = boundaryColor(255, 255, 0, 0.1);
+    region.color = boundaryColor(255, 0, 0, 0.1);
     // console.log('editAnnotation(region)')
     // console.log(region)
     let form = document.forms.edit;
@@ -334,7 +337,7 @@ function editAnnotation(region) {
     // (form.elements.start.value = Math.round(region.start * 10) / 10),
     // (form.elements.end.value = Math.round(region.end * 10) / 10);
     (form.elements.start.value = region.start),
-        (form.elements.end.value = region.end);
+    (form.elements.end.value = region.end);
     // form.elements.note.value = region.data.note || '';
     // document.getElementById("activeSentenceMorphemicBreak").checked = false;
     // $(".containerremovesentencefield1").remove();
@@ -342,8 +345,10 @@ function editAnnotation(region) {
     //     createSentenceForm(form, region);
     //     // console.log('true true');
     // }
+    saveBoundaryData(region, form)
+    updateBoundaryColor(region, form);
     formOnSubmit(form, region)
-    // saveBoundaryData(region, form)
+    
     // form.onreset = function () {
     //     // form.style.opacity = 0;
     //     console.log('form reset');
@@ -415,7 +420,7 @@ function saveBoundaryData(region, form) {
 /**
  * Display annotation.
  */
-function showNote() {
+function showNote(region) {
     // console.log(showNote.el);
     // if (!showNote.el) {
     //     showNote.el = document.querySelector('#subtitle');
@@ -434,6 +439,14 @@ function showNote() {
     }
     
 }
+
+// // active region
+// function activeRegionColor(region) {
+//     console.log(region);
+//     // region.color = boundaryColor(255, 0, 0, 0.1);
+//     // let form = document.forms.edit;
+//     // saveBoundaryData(region, form);
+// }
 
 function updateSentenceDetailsOnSaveBoundary(boundaryID, sentence, region, form) {
 
@@ -1611,7 +1624,8 @@ function lastUpdatedBy(lstUpdatedBy) {
     if (lstUpdatedBy !== '') {
         let lastUpdate = '<br><span><strong>Last Updated By: ' + lstUpdatedBy + '<strong></span>';
         // document.getElementById("idaudiometadata").append(showDur);
-        $('#idaudiometadata').append(lastUpdate);
+        // $('#idaudiometadata').append(lastUpdate);
+        $('#iddefaultfield').append(lastUpdate);
     }
 }
 
@@ -1624,6 +1638,7 @@ function autoSavetranscription(transcriptionField) {
     activeTranscriptionFieldValue = transcriptionField.value
     let form = document.forms.edit;
     // console.log(form[2].id);
+    // console.log(form, form.dataset);
     let regionId = form.dataset.region;
     if (regionId) {
         let region = wavesurfer.regions.list[regionId];
@@ -1665,4 +1680,74 @@ function boundaryColor(r, g, b, alpha) {
         ] +
         ')'
     );
+}
+
+// update color to the inactive boundary that has been worked upon and which are not yet saved to server
+function updateBoundaryColor(activeRegion) {
+    activeRegionId = activeRegion.id;
+    regionsList = wavesurfer.regions.list;
+    // console.log(regionsList);
+    for (let [regionId, regionData] of Object.entries(regionsList)) {
+        // console.log(regionId, regionData);
+        if (regionId === activeRegionId) {
+            // console.log(regionId, regionData.color);
+            continue;
+        }
+        else if (regionId !== activeRegionId && regionData.color === "rgba(255,0,0,0.1)") {
+            // console.log(regionId, regionData);
+            // console.log(regionId, regionData.color);
+            regionData.update({
+                color : boundaryColor(255, 255, 0, 0.1)
+            });
+        }
+    }
+}
+
+function showRegionInfo(region) {
+    let regionInfo = '';
+    try {
+        id = region.id;
+        startTime = region.start;
+        endTime = region.end;
+        boundaryID = getBoundaryId(startTime, endTime);
+        sentence = region.data.sentence
+        transciptions = sentence[boundaryID]['transcription'];
+        let trans = '';
+        for (let [scriptName, transcription] of Object.entries(transciptions)) {
+            trans += scriptName+': '+transcription+'<br>';
+        }
+        // let regionInfo = '<br>Boundary ID: '+id+'<br>Start Time: '+startTime+'<br>End Time: '+endTime+'<br>'+trans;
+        regionInfo = '<br>Boundary ID: '+id+'<br>Start Time: '+startTime+'<br>End Time: '+endTime+'<br>'+trans;
+    }
+    catch (err) {
+        regionInfo = '<br>You still have to listen to this boundary';
+    }
+    $('#regioninfo').html(regionInfo);
+    document.getElementById('regioninfo').style.display = 'block';
+    document.getElementById('subtitle').style.display = 'none';
+    document.getElementById('subtitleabsence').style.display = 'block';
+    
+    // console.log(region);
+    // console.log(id, startTime, endTime, transciptions);
+}
+
+function hideRegionInfo(region) {
+    document.getElementById('regioninfo').style.display = 'none';
+    document.getElementById('subtitle').style.display = 'block';
+    document.getElementById('subtitleabsence').style.display = 'none';
+}
+
+function getBoundaryId(startTime, endTime) {
+    startId = startTime.toString().slice(0, 4).replace('.', '');
+    if (startId === '0') {
+        startId = '000';
+    }
+    endId = endTime.toString().slice(0, 4).replace('.', '');
+    if (endId === '0') {
+        endId = '000';
+    }
+    // console.log(startId, endId)
+    rid = startId.concat(endId);
+
+    return rid
 }
