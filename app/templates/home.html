@@ -63,10 +63,13 @@ Home
       </button>
       {% endif %}
       {% if shareinfo['sharemode']|int >= 1 %}
-      <button type="button" class="btn btn-lg btn-warning"
-        onclick="window.location.href='{{ url_for('downloadproject') }}';">Download Project</button>
+      <!-- <button type="button" class="btn btn-lg btn-warning"
+        onclick="window.location.href='{{ url_for('downloadproject') }}';">Download Project</button> -->
+
+      {% if project_type == '' %}
       <button type="button" class="btn btn-lg btn-info"
         onclick="window.location.href='{{ url_for('downloaddictionary') }}';">Download Dictionary</button>
+      {%endif%}
       {% endif %}
       {% if shareinfo['sharemode']|int >= 1 %}
       <button type="button" class="btn btn-lg btn-warning"
@@ -142,7 +145,8 @@ Home
   </div>
 
   <!-- Assign Karya Access Code Modal -->
-  {# <div class="modal fade" id="assignKaryaAccessCodeModal" tabindex="-1" role="dialog" aria-labelledby="assignKaryaAccessCodeModalLabel">
+  {# <div class="modal fade" id="assignKaryaAccessCodeModal" tabindex="-1" role="dialog"
+    aria-labelledby="assignKaryaAccessCodeModalLabel">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
