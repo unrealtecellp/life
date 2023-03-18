@@ -24,27 +24,6 @@ def get_access_code_list(accesscodedetails,
     
     return access_code_list
 
-def get_all_karya_speaker_ids(accesscodedetails, activeprojectname):
-    karya_speaker_ids = []
-
-    speaker_ids = accesscodedetails.find({'projectname': activeprojectname,
-                                                'fetchData': 0,
-                                                'isActive': 1
-                                                },
-                                                {
-                                                    '_id': 0,
-                                                    'karyaspeakerid': 1,
-                                                    'lifespeakerid': 1
-                                                })
-
-    for speakerid in speaker_ids:
-        karyaspeakerid = speakerid['karyaspeakerid']
-        lifespeakerid = speakerid['lifespeakerid']
-        # karya_speaker_ids.append(karyaspeakerid)
-        karya_speaker_ids.append({"id": karyaspeakerid, "text": lifespeakerid})
-
-    return karya_speaker_ids
-
 
 
 def get_access_code_metadata_for_form(projects, projectsform, project_name, project_type, derived_from_project_type, derivedFromProjectName):
@@ -107,6 +86,8 @@ def get_upload_df(access_code_file):
     df["access_code"] = df["access_code"].str[1:]
     df["phone_number"] = df["phone_number"].str[1:]
     return data
+
+
 
 def upload_access_code_metadata_from_file (
     karyaaccesscodedetails,
@@ -326,18 +307,3 @@ def get_access_code_metadata(
     return data_table
 
 
-def get_one_speaker_details(
-    accesscodedetails,
-    activeprojectname,
-    asycaccesscode
-):
-    speakerdetails = accesscodedetails.find_one({"projectname": activeprojectname, "karyaaccesscode": asycaccesscode},
-                                                {"_id": 0,
-                                                "current.workerMetadata": 1})
-    accesscodetask = accesscodedetails.find_one({"projectname": activeprojectname, "karyaaccesscode": asycaccesscode},
-                                                {"_id": 0,
-                                                "task": 1})
-    
-    speakerdetails.update(accesscodetask)
-
-    return speakerdetails
