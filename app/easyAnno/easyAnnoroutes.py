@@ -31,6 +31,7 @@ import os
 import glob
 import random
 from math import ceil
+import json
 
 from app.controller import (
     getactiveprojectname,
@@ -92,7 +93,8 @@ def home():
             if (annotated_text == 'on'):
                 createAnnotatedTextAnno(zipFile)
             else:    
-                createTextAnno(zipFile)
+                # createTextAnno(zipFile)
+                createTextAnnoNew(zipFile)
         elif (file_type == 'image'):
             createImageAnno(zipFile, image_file_name)    
 
@@ -1891,7 +1893,7 @@ def allunannotated():
     # print(allunanno[:10])
     # print(allanno[:10])     
 
-    return jsonify(allunanno=allunanno, allanno=allanno) 
+    return jsonify(allunanno=allunanno, allanno=allanno)
 
 def project_comments_stats(userprojectslist):
     projects = mongo.db.projects
@@ -2414,3 +2416,218 @@ def browse():
 @login_required
 def multimediaAnno():
     return redirect(url_for('easyAnno.home'))
+
+def createTextAnnoNew(zipFile):
+    # projects = mongo.db.projects              # collection of users and their respective projects
+    # userprojects = mongo.db.userprojects              # collection of users and their respective projects
+    # textanno = mongo.db.textanno
+    
+    # currentuserprojectsname =  sorted(list(currentuserprojects()))
+    # activeprojectname = userprojects.find_one({ 'username' : current_user.username },\
+    #                 {'_id' : 0, 'activeprojectname': 1})['activeprojectname']
+
+    projects, userprojects, textanno = getdbcollections.getdbcollections(mongo,
+                                                                'projects',
+                                                                'userprojects',
+                                                                'textanno')
+    current_username = getcurrentusername.getcurrentusername()
+    currentuserprojectsname =  getcurrentuserprojects.getcurrentuserprojects(current_username,
+                                                                                userprojects)
+    project_type_list = ['text', 'image']
+    currentuserprojectsname = getprojectsnamebytype.getprojectsnamebytype(projects,
+                                                                            currentuserprojectsname,
+                                                                            project_type_list)
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                    userprojects)
+
+    # print(type(zipFile))
+    # print(zipFile)
+    tag_set = {}
+    tag_set_meta_data = {}
+    categoryDependency = {}
+    defaultCategoryTags = {}
+    categoryHtmlElement = {}
+    categoryHtmlElementProperties = {}
+    try:
+        with ZipFile(zipFile) as myzip:
+            with myzip.open('textAnno_tags.tsv') as myfile:
+                
+                # print('textAnno_tags.tsv')
+                # tags_df = pd.read_csv(io.BytesIO(myfile.read()), sep='\t', dtype=str).dropna()
+                tags_df = pd.read_csv(io.BytesIO(myfile.read()), sep='\t', dtype=str)
+
+                # version 1
+                # # print(type(tags))
+                # print(tags_df)
+                # for i in range(len(tags_df)):
+                #     tag_set[tags_df.iloc[i, 0]] = re.sub(' ', '', tags_df.iloc[i, 1]).split(',')
+
+                # version 2
+                if (len(tags_df.columns) == 2):
+                    for i in range(len(tags_df)):
+                        tag_set[tags_df.iloc[i, 0]] = re.sub(' ', '', tags_df.iloc[i, 1]).split(',')
+                elif (len(tags_df.columns) == 3):
+                    for i in range(len(tags_df)):
+                        tag_set[tags_df.iloc[i, 0]] = re.sub(' ', '', tags_df.iloc[i, 1]).split(',')
+                        defaultCategoryTags[tags_df.iloc[i, 0]] = re.sub(' ', '', tags_df.iloc[i, 2]).split(',')[0]
+                    tag_set_meta_data['defaultCategoryTags'] = defaultCategoryTags
+                elif (len(tags_df.columns) == 4):
+                    for i in range(len(tags_df)):
+                        tag_set[tags_df.iloc[i, 0]] = re.sub(' ', '', tags_df.iloc[i, 1]).split(',')
+                        if (re.sub(' ', '', tags_df.iloc[i, 3]).split(',')[0] != 'NONE'):
+                            categoryDependency[tags_df.iloc[i, 0]] = re.sub(' ', '', tags_df.iloc[i, 3]).split(',')[0]
+                        defaultCategoryTags[tags_df.iloc[i, 0]] = re.sub(' ', '', tags_df.iloc[i, 2]).split(',')[0]
+                    tag_set_meta_data['categoryDependency'] = categoryDependency
+                    tag_set_meta_data['defaultCategoryTags'] = defaultCategoryTags
+                    # tag_set_meta_data['categoryFormType'] = defaultCategoryTags
+                elif (len(tags_df.columns) == 6):
+                    for i in range(len(tags_df)):
+                        print(tags_df.iloc[i, 0], tags_df.iloc[i, 1], type(tags_df.iloc[i, 1]))
+                        if (str(tags_df.iloc[i, 1]) == 'nan'):
+                            tag_set[tags_df.iloc[i, 0]] = ['']
+                        else:
+                            tag_set[tags_df.iloc[i, 0]] = re.sub(' ', '', tags_df.iloc[i, 1]).split(',')
+                        if (re.sub(' ', '', tags_df.iloc[i, 3]).split(',')[0] != 'NONE'):
+                            categoryDependency[tags_df.iloc[i, 0]] = re.sub(' ', '', tags_df.iloc[i, 3]).split(',')[0]
+                        if (str(tags_df.iloc[i, 2]) == 'nan'):
+                            defaultCategoryTags[tags_df.iloc[i, 0]] = ''
+                        else:
+                            defaultCategoryTags[tags_df.iloc[i, 0]] = re.sub(' ', '', tags_df.iloc[i, 2]).split(',')[0]
+                        categoryHtmlElement[tags_df.iloc[i, 0]] = re.sub(' ', '', tags_df.iloc[i, 4]).split(',')[0]
+                        categoryHtmlElementProperties[tags_df.iloc[i, 0]] = re.sub(' ', '', tags_df.iloc[i, 5]).split(',')[0]
+                    tag_set_meta_data['categoryDependency'] = categoryDependency
+                    tag_set_meta_data['defaultCategoryTags'] = defaultCategoryTags
+                    tag_set_meta_data['categoryHtmlElement'] = categoryHtmlElement
+                    tag_set_meta_data['categoryHtmlElementProperties'] = categoryHtmlElementProperties
+                pprint(tag_set)
+                pprint(tag_set_meta_data)
+                with open('app/jsonfiles/tagSet.json', 'w') as writejson:
+                    jsondata = json.dumps(tag_set, indent=2, ensure_ascii=False)
+                    writejson.write(jsondata)
+                with open('app/jsonfiles/tagSetMetaData.json', 'w') as writejson:
+                    jsondata = json.dumps(tag_set_meta_data, indent=2, ensure_ascii=False)
+                    writejson.write(jsondata)
+# commented from here
+            existing_projects = []
+            for file_name in myzip.namelist():
+                project_name = file_name.split('.')[0]
+                if projects.find_one({"projectname": project_name}, {'_id' : 0, "projectname": 1}) != None:
+                    existing_projects.append(project_name)
+            if (len(existing_projects) > 0):
+                flash(f'File Name : {", ".join(existing_projects)} already exist!', 'warning')
+                return redirect(url_for('easyAnno.home'))
+
+            for file_name in myzip.namelist():    
+                # print(tag_set)
+                text_data = {}
+                text_data_df = ''
+                id_test_list = []
+                with myzip.open(file_name) as myfile:
+                    # print(myfile.read())
+                    if (not file_name.endswith('.tsv')):
+                        # print(file_name)
+                        project_name = file_name.split('.')[0]
+
+                        if projects.find_one({"projectname": project_name}, {'_id' : 0, "projectname": 1}) != None:
+                            flash(f'File Name : {project_name} already exist!', 'warning')
+                            return redirect(url_for('easyAnno.home'))
+
+                        text_data_df = pd.read_csv(io.BytesIO(myfile.read()), sep='\t', dtype=str)
+                        df_header = list(text_data_df.columns)
+                        if ('ID' not in df_header):
+                            # print(df_header)
+                            flash(f'File Name : {project_name} do not have "ID" as column header', 'warning')
+                            return redirect(url_for('easyAnno.home'))
+                        if ('Text' not in df_header):
+                            # print(df_header)
+                            flash(f'File Name : {project_name} do not have "Text" as column header', 'warning')
+                            return redirect(url_for('easyAnno.home'))    
+
+                        if(text_data_df["ID"].isnull().any()):
+                            flash(f'File Name : {project_name}  have empty cell in "ID" column', 'warning')
+                            return redirect(url_for('easyAnno.home'))
+
+                        # print(text_data_df.head())
+                        for i in range(len(text_data_df)): 
+                            text_id = 'T'+re.sub(r'[-: \.]', '', str(datetime.now()))
+                            id_test_list.append(text_id)
+                            single_row = {}
+                            single_row["ID"] = text_data_df.iloc[i, 0]
+                            single_row["Text"] = text_data_df.iloc[i, 1]
+                            text_data[text_id] = single_row
+                            # entry of each text in textanno colloection
+                            text_anno_detail = {}
+                            text_anno_detail["projectname"] = project_name
+                            text_anno_detail["textId"] = text_id
+                            text_anno_detail["ID"] = text_data_df.iloc[i, 0]
+                            text_anno_detail["Text"] = text_data_df.iloc[i, 1]
+                            text_anno_detail['lastUpdatedBy'] = ""
+                            all_access = {}
+                            text_anno_detail['allAccess'] = all_access
+                            all_updates = {}
+                            text_anno_detail['allUpdates'] = all_updates
+
+                            textanno.insert_one(text_anno_detail)
+                        
+                    else:
+                        continue
+
+
+                project_owner = current_user.username
+                project_details = {}
+                # print(text_data.keys())
+                lastActiveId = {current_user.username: list(text_data.keys())[0]}
+                project_details["projectType"] = "text"
+                project_details["projectname"] = project_name
+                project_details["projectOwner"] = project_owner
+                project_details["tagSet"] = tag_set
+                project_details["tagSetMetaData"] = tag_set_meta_data
+                project_details["textData"] = text_data
+                project_details["lastActiveId"] = lastActiveId
+                project_details["sharedwith"]  = [project_owner]
+                project_details["projectdeleteFLAG"] = 0
+                project_details["isPublic"] = 0
+                project_details["derivedFromProject"] = []
+                project_details["projectDerivatives"] = []
+                project_details["aboutproject"] = ''
+
+                projects.insert_one(project_details)
+                projectname = project_details['projectname']
+                updateuserprojects.updateuserprojects(userprojects,
+                                                projectname,
+                                                current_username
+                                                )
+
+                print(project_details)   
+    except Exception as e:
+        print(e)
+        flash('Please upload a zip file. Check the file format at the link provided for the Sample File', 'warning')
+
+        return redirect(url_for('easyAnno.home'))
+
+    flash('File created successfully :)', 'success')
+# commented till here
+    # return render_template('home.html',  data=currentuserprojectsname, activeproject=activeprojectname)
+    return redirect(url_for('easyAnno.home'))
+
+@easyAnno.route('/getIdList', methods=['GET', 'POST'])
+def getIdList():
+    '''
+    get list of all Ids
+    '''
+    projects, userprojects = getdbcollections.getdbcollections(mongo,
+                                                                'projects',
+                                                                'userprojects')
+    current_username = getcurrentusername.getcurrentusername()
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                    userprojects)
+
+    allIds = []
+    project_info = projects.find_one({'projectname': activeprojectname}, {"_id": 0, "textData": 1})
+    textData = project_info['textData']
+    for value in textData.values():
+        Id = value['ID']
+        allIds.append(Id)
+
+    # print(allIds)
+    return jsonify(allIds=allIds)
