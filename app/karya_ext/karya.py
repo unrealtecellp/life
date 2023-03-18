@@ -40,7 +40,7 @@ from app.lifeques.controller import (
 karya_bp = Blueprint('karya_bp', __name__, template_folder='templates', static_folder='static')
 
 # print('starting...')
-
+'''Home page of karya Extension. This contain  ''' 
 @karya_bp.route('/home_insert')
 @login_required
 def home_insert():
@@ -106,7 +106,7 @@ def home_insert():
 ######################################   Upload Access-Code       ############################################
 ##############################################################################################################
 ##############################################################################################################
-
+'''Upload Access Code'''
 @karya_bp.route('/uploadfile' , methods=['GET', 'POST'])
 @login_required
 def uploadfile():
@@ -230,7 +230,7 @@ def uploadfileforquestionnaire(projectsform, project_name):
 ######################################       Add User         ###############################################
 ##############################################################################################################
 ##############################################################################################################
-
+'''Add User'''
 @karya_bp.route('/add', methods=['GET', 'POST'])
 @login_required
 def add():
@@ -423,7 +423,7 @@ def add():
 ##############################################################################################################
 ##############################################################################################################
 
-
+'''Table of speaker details'''
 
 @karya_bp.route('/homespeaker')
 @login_required
@@ -513,7 +513,7 @@ def homespeaker():
 ######################################     Get Speaker Details        ########################################
 ##############################################################################################################
 ##############################################################################################################
-
+'''Getting user details. '''
 @karya_bp.route('/getsharelevel', methods=['GET', 'POST'])
 @login_required
 def getsharelevel():
@@ -528,7 +528,7 @@ def getsharelevel():
 
     return jsonify(shareinfo=shareinfo)
 
-
+'''Getting one speaker details form data base.'''
 @karya_bp.route('/getonespeakerdetails', methods=['GET', 'POST'])
 def getonespeakerdetails():
     accesscodedetails, userprojects = getdbcollections.getdbcollections(mongo, "accesscodedetails", "userprojects")
@@ -570,7 +570,7 @@ def getonespeakerdetails():
 ######################################   Fetch Audio        ###############################################
 ##############################################################################################################
 ##############################################################################################################
-
+'''Getting OTP from karya server to fetch the audio files and audio files.'''
 @karya_bp.route('/fetch_karya_otp', methods=['GET', 'POST'])
 @login_required
 def fetch_karya_otp():
@@ -597,7 +597,7 @@ def fetch_karya_otp():
 
     return jsonify(result="False")
 
-
+'''Getting audio file list from database.'''
 def get_fetched_audio_list(accesscode, activeprojectname):
     mongodb_info = mongo.db.accesscodedetails  
     fetchedaudiodict = mongodb_info.find_one({"projectname": activeprojectname, "karyaaccesscode": accesscode},
@@ -610,17 +610,17 @@ def get_fetched_audio_list(accesscode, activeprojectname):
 
 #update audio metadata in transcription
 # def update_audio_metadata_transcription(speakerid, activeprojectname, karya_audio_report):
-def update_audio_metadata_transcription(activeprojectname, karya_audio_report):
-    mongodb_info = mongo.db.transcription
+# def update_audio_metadata_transcription(activeprojectname, karya_audio_report):
+#     mongodb_info = mongo.db.transcription
 
-    updated_audio_metadata = {"additionalInfo":"", "audioMetadata":{"karyaVerificationMetadata": karya_audio_report, "verificationReport": karya_audio_report}}
+#     updated_audio_metadata = {"additionalInfo":"", "audioMetadata":{"karyaVerificationMetadata": karya_audio_report, "verificationReport": karya_audio_report}}
 
-    audio_metadata_transcription = mongodb_info.update({'projectname': activeprojectname, 'speakerId': accesscode_speakerid},
-                                                            {"$set": {updated_audio_metadata}}) 
+#     audio_metadata_transcription = mongodb_info.update({'projectname': activeprojectname, 'speakerId': accesscode_speakerid},
+#                                                             {"$set": {updated_audio_metadata}}) 
 
-    return audio_metadata_transcription
+#     return audio_metadata_transcription
 
-
+'''Fetching audio files from karya files. '''
 @karya_bp.route('/fetch_karya_audio', methods=['GET', 'POST'])
 @login_required
 def fetch_karya_audio():
@@ -1176,7 +1176,7 @@ def fetch_karya_audio():
 #################################################################################################
     ########################################## Zip File #############################################
     #################################################################################################
-
+'''Upload zip files of audio.'''
 @karya_bp.route('/fetch_karya_audio_zip', methods=['GET', 'POST'])
 @login_required
 def fetch_karya_audio_zip():
