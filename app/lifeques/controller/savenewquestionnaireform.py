@@ -90,7 +90,7 @@ def savenewquestionnaireform(projectsform,
 
     save_ques_form['LangScript'] = ["", lang_script_array]
     save_ques_form['Prompt Type'] = ["prompt", prompt_array]
-    projectsform.insert(save_ques_form)
+    projectsform.insert_one(save_ques_form)
 
     if "_id" in save_ques_form:
         del save_ques_form["_id"]

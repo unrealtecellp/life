@@ -340,7 +340,7 @@ var posCategories =
 var activeTranslationField = '<input type="checkbox" id="activeTranslationField" name="activeTranslationField" value="false">'+
                             '<label for="activeTranslationField">&nbsp; Add Translation</label><br></br>'+
                             '<div id="translationlangs" style="display: none;"></div>';
-$(".translationfield1").append(activeTranslationField);
+// $(".translationfield1").append(activeTranslationField);
 
 var activeTagsField = '<input type="checkbox" id="activeTagsField" name="activeTagsField" value="false">'+
                       '<label for="activeTagsField">&nbsp; Add Tags</label><br></br>'+
@@ -755,13 +755,19 @@ $("#save").click(function() {
   transcriptionData['lastActiveId'] = lastActiveId
   transcriptionData['transcriptionRegions'] = transcriptionRegions
   // console.log(transcriptionData)
-  $.getJSON('/savetranscription', {
+  // $.getJSON('/savetranscription', {
   
-  a:JSON.stringify(transcriptionData)
-  }, function(data) {
-      window.location.reload();
+  // a:JSON.stringify(transcriptionData)
+  // }, function(data) {
+  //     window.location.reload();
+  // });
+  // return false;
+  $.post( "/savetranscription", {
+    a: JSON.stringify(transcriptionData )
+  })
+  .done(function( data ) {
+    window.location.reload();
   });
-  return false; 
 });
 
 function myFunction(newData) {
@@ -792,7 +798,7 @@ function myFunction(newData) {
                   '<input type="text" class="form-control" id="'+key+'" name="'+key+'" value="'+newData[key]+'" readonly>'+
                   '</div></div>'; 
           $('.lexemelang').append(inpt);
-          inpt = '';         
+          inpt = '';
         }
     // else if (key === 'Transcription Script') {
     //   var transcriptionScriptLocalStorage = []
@@ -877,7 +883,7 @@ function displayRadioValue() {
   return activetranscriptionscript
 }
 
-  
+
 function previousAudio() {
   var lastActiveId = document.getElementById("lastActiveId").value;
   // console.log(lastActiveId)
@@ -889,7 +895,7 @@ function previousAudio() {
         success: function(response){
           // console.log(response.newAudioFilePath)
           // localStorage.setItem("AudioFilePath", JSON.stringify(response.newAudioFilePath));
-          window.location.reload();
+          window.location.reload(); 
         }
     });
     return false;
@@ -986,4 +992,48 @@ function loadRandomAudio(newAudioFilename) {
   window.location.reload();
 }
 
+$('#speakeridsdropdown').select2({
+  // tags: true,
+  placeholder: 'select speaker',
+  // data: posCategories
+  // allowClear: true,
+  // sorter: false
+  // width: 'element'
+  });
 
+$('#speakeriduploaddropdown').select2({
+  // tags: true,
+  placeholder: 'select speaker',
+  // data: posCategories
+  // allowClear: true,
+  // sorter: false
+  // width: 'element'
+  });
+
+$("#audiofile").change(function() {
+    let zipFileElement = document.getElementById('audiofile');
+    zipFileName = zipFileElement.files[0];
+    console.log(zipFileName);
+    // displayZipFileName = '<p>'+zipFileName.name+'</p>';
+    // $("#displayZipFileName").append(zipFileName.name);
+    zipFileSize = zipFileName.size
+    console.log(typeof zipFileSize, Math.round((zipFileSize/1024)));
+    if (! (zipFileSize <= 200000000)) {
+      
+      const size = (zipFileSize / 1000 / 1000).toFixed(2);
+      console.log(zipFileSize, size);
+      alert('Please upload file upto 200 MB. This file size is: ' + size + " MB");
+      window.location.reload(true);
+    }
+    
+})
+
+function replaceZoomSlider() {
+  // const element = document.getElementById("slider");
+  // element.remove();
+  // console.log('replaceZoomSlider()')
+  let slider = '<input id="slider" data-action="zoom" type="range" min="20" max="100" value="0" style="width: 50%">';
+  $("#sliderdivid").html(slider);
+}
+
+replaceZoomSlider();

@@ -8,6 +8,7 @@ var languages = [
   {"id": "Bodo", "text": "Bodo"},
   {"id": "Braj", "text": "Braj"},
   {"id": "Bundeli", "text": "Bundeli"},
+  {"id": "Chhattisgarhi", "text": "Chhattisgarhi"},
   {"id": "Chokri", "text": "Chokri"},
   {"id": "English", "text": "English"},
   {"id": "Gujarati", "text": "Gujarati"},
@@ -104,7 +105,7 @@ $('.dataprojecttype').select2({
 
 $('.datasentencelanguageclass').select2({
   tags: true,
-  placeholder: 'Sentence Language',
+  placeholder: 'Audio Language',
   data: languages,
   allowClear: true
 });

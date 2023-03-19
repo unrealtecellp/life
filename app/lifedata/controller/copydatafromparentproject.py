@@ -47,6 +47,6 @@ def copydatafromquesproject(questionnaires,
         new_audio_details[current_username]["textGrid"] = text_grid
         new_audio_details['derivedfromprojectdetails'] = derived_from_project_details
 
-        transcription_doc_id = transcriptions.insert(new_audio_details)
+        transcription_doc_id = transcriptions.insert_one(new_audio_details)
 
     return transcription_doc_id

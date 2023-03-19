@@ -164,4 +164,4 @@ def savenewsentence(mongo,
                             )
 
         # enter the sentence details to the database
-        sentences.insert(sentenceDetails)
+        sentences.insert_one(sentenceDetails)

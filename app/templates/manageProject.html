@@ -1,0 +1,93 @@
+<!-- <!DOCTYPE html>
+<html>
+
+<head>
+
+  <title>Karya Extension</title>
+  
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
+  <script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap.min.js"></script>  
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css" />
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.1/bootstrap3-editable/css/bootstrap-editable.css" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.1/bootstrap3-editable/js/bootstrap-editable.js"></script>
+
+
+
+  <style>
+  
+    h1 {text-align: center;}
+
+    input[type=button]:hover {
+      box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24),0 17px 50px 0 rgba(0,0,0,0.19);
+    }
+    
+    div {
+      border-radius: 20px;
+      background-color: rgba(247, 235, 220, 0.253);
+      padding: 1px;
+    }
+    </style> -->
+
+<!-- </head> -->
+{% extends "links.html" %}
+
+{% block title %}
+Manage Project
+{% endblock title %}
+
+<!-- <body> -->
+
+
+
+
+{% block styles %}
+{{super()}}
+<link href="{{url_for('.static', filename='home_insert.css')}}" rel="stylesheet" />
+{% endblock %}
+
+{% block app_content %}
+{% if activeprojectname is defined %}
+<h4>
+  Project Name : {{ activeprojectname }}
+</h4>
+{% endif %}
+
+<div>
+
+  <div id="uploadmanage">
+    <br>
+
+    <br><br>
+    {% if shareinfo['sharemode']|int >= 2 %}
+    <div>
+      <input class="btn btn-lg btn-success" type="button" value="Manage Speaker Metadata"
+        onclick="window.location.href='{{url_for('managespeakermetadata')}}'; window">
+    </div>
+    {% endif %}
+    <br />
+    {% if shareinfo['sharemode']|int >= 1 %}
+    <div>
+      <button type="button" class="btn btn-lg btn-warning"
+        onclick="window.location.href='{{ url_for('downloadproject') }}';">Download Project</button>
+    </div>
+    {% endif %}
+    <br>
+    <hr>
+  </div>
+
+</div>
+</div>
+
+<!-- <br><br><br><br> -->
+{% endblock %}
+<!-- </body> -->
+
+{% block scripts %}
+{{super()}}
+<script src="{{url_for('.static', filename='speaker_select2_dropdown.js')}}"></script>
+<script src="{{url_for('.static', filename='fetchaccesscodelist.js')}}"></script>
+
+{% endblock %}

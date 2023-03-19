@@ -14,7 +14,7 @@ def getactiveprojectname(current_username, userprojects):
 
     activeprojectname = userprojects.find_one({ 'username' : current_username },\
                     {'_id' : 0, 'activeprojectname': 1})
-                    
+
     if len(activeprojectname) != 0:
         activeprojectname = activeprojectname['activeprojectname']
     else:

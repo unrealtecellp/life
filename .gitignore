@@ -1,7 +1,8 @@
 __pycache__
-.flaskenv
-.vscode
+./.flaskenv
+./.vscode
 venv
+data_format
 app/static/audio
 download.zip
 LiFE_Uploader_Downloader
@@ -17,5 +18,13 @@ app/lifeques/lifeUploadedFileContent.pkl
 app/lifeques/lifexlsxdf.tsv
 app/lifeques/static/audio
 app/lifeques/lifequesdownload
-SSH_Public_Keys
-trainedModelsapp/lifeques/static/audio
+trainedModels
+app/lifeques/static/audio
+TODO
+app/audiowaveform
+app/lifedownloader/downloads/D_testing_project_for_transcription_15_textgrids.zip
+app/lifedownloader/downloads
+app/jsonfiles/languages.txt
+app/jsonfiles/languagesSet.txt
+.flaskenv
+.vscode
