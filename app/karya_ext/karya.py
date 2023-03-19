@@ -415,12 +415,15 @@ def fetch_karya_audio():
         current_username, userprojects)
     projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
     project_type = getprojecttype.getprojecttype(projects, activeprojectname)
-
+    print("karya.py line 418 - ", project_type)
+    print("karya.py line 419 - ", activeprojectname)
     derivedFromProjectName = ''
     derive_from_project_type = ''
     if (project_type == 'transcriptions'):
+        
         derive_from_project_type, derivedFromProjectName = getprojecttype.getderivedfromprojectdetails(
             projects, activeprojectname)
+        print("karya.py line 425 - ", derive_from_project_type, derivedFromProjectName)
 
     if request.method == 'POST':
         access_code = request.form.get("access_code")
@@ -441,6 +444,8 @@ def fetch_karya_audio():
         r_j, hederr = karya_api_access.get_all_karya_assignments(
             verification_details)
         #############################################################################################
+        language = accesscodedetails.find_one({"projectname": activeprojectname, "karyaaccesscode": access_code},
+                                              {'language': 1, '_id': 0})['language']
 
         ################################ Get already fetched audio list and quesIDs   ########################################
         fetched_audio_list = karya_audio_management.get_fetched_audio_list(
@@ -474,9 +479,7 @@ def fetch_karya_audio():
         )
         #############################################################################################
 
-        language = accesscodedetails.find_one({"projectname": activeprojectname, "karyaaccesscode": access_code},
-                                              {'language': 1, '_id': 0})['language']
-
+        
         karya_audio_management.getnsave_karya_recordings(
             mongo,
             projects, userprojects, projectowner, accesscodedetails,

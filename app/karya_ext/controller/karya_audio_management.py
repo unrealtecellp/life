@@ -100,6 +100,8 @@ def get_insert_id(
     current_sentence,
     project_type, exclude_ids
 ):
+    print("line 103 - ", project_type)
+    print("line 104 - ", derive_from_project_type, derivedFromProjectName)
     if (project_type == 'questionnaires'):
         insert_audio_id, message = getquesfromprompttext.getquesfromprompttext(projectsform,
                                                                                questionnaires,
@@ -115,6 +117,8 @@ def get_insert_id(
                                                                        activeprojectname,
                                                                        current_sentence,
                                                                        exclude_ids)
+        
+        print("line 120 - ", insert_audio_id, message)
     return insert_audio_id, message
 
 
@@ -126,7 +130,7 @@ def getnsave_karya_recordings(mongo,
                               audio_speaker_merge, fetched_audio_list, exclude_ids,
                               language, hederr, access_code
                               ):
-
+    print("line 133 - ", derive_from_project_type , derivedFromProjectName)
     file_id_list = []
     for file_id_and_sent in list(audio_speaker_merge.keys()):
         audio_speaker_merge_vals = audio_speaker_merge[file_id_and_sent]
