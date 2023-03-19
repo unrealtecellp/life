@@ -1,5 +1,8 @@
 import pandas as pd
 from datetime import datetime
+from app.controller import (
+    getprojecttype
+)
 
 def get_access_code_list(accesscodedetails,
                             activeprojectname,
@@ -40,6 +43,11 @@ def get_access_code_metadata_transcription_for_form(projects, projectsform, proj
     langscript = []
     projectform = projectsform.find_one({"projectname" : project_name})
     langscript.append(projectform["Sentence Language"][0])
+    
+    derivedFromProject = projects.find_one({"projectname" : project_name},
+                                            {"_id": 0, "derivedFromProject": 1})
+    derivedFromProjectName = derivedFromProject['derivedFromProject'][0]
+    derived_from_project_type = getprojecttype.getprojecttype(projects, derivedFromProjectName)
 
     if (derived_from_project_type == "questionnaires"):
         derivefromprojectform = projectsform.find_one({"projectname" : derivedFromProjectName})
@@ -144,7 +152,8 @@ def get_new_accesscode_speakerid(
                 domain,
                 elicitationmethod,
                 language
-            ):
+                ):
+    
     new_acode_spkrid = accesscodedetails.find_one({"isActive":0, "projectname":activeprojectname, 
                                 "fetchData":accesscodefor, "task":task, 
                                 "domain":domain, "elicitationmethod":elicitationmethod, 

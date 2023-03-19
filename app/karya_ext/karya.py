@@ -190,14 +190,14 @@ def add():
             domain = request.form.getlist('domain')
             elicitationmethod = request.form.getlist("elicitation")
 
-            karyaspeakerid, accesscode = access_code_management.get_new_accesscode(
-                activeprojectname,
-                accesscodefor,
-                task,
-                domain,
-                elicitationmethod,
-                language
-            )
+            karyaspeakerid, accesscode = access_code_management.get_new_accesscode_speakerid(
+                accesscodedetails = accesscodedetails,
+                activeprojectname = activeprojectname,
+                accesscodefor = accesscodefor,
+                task = task,
+                domain = domain,
+                elicitationmethod = elicitationmethod,
+                language =language)
 
             if accesscode == '' and karyaspeakerid == '':
                 flash("Please Upload New Access Code")
@@ -376,7 +376,7 @@ def fetch_karya_otp():
     access_code = request.args.get("acode")
     phone_number = request.args.get("mob")
 
-    karya_api_access.send_otp(
+    karya_api_access.send_karya_otp(
         activeprojectname,
         accesscodedetails,
         access_code,
