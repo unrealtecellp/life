@@ -62,6 +62,7 @@ label {
     bottom: 5%; */
     left: 57%;
     width: 30%;
+    height: 80%;
     overflow-y: scroll; 
   }
   #modalright {
@@ -171,3 +172,16 @@ legend.scheduler-border {
   background-color: #d3b2ff;
   /* text-decoration: underline wavy red; */
 }
+
+/* .modal {
+  height: 80%;
+} */
+
+/* .modal-body {
+  height: 80%;
+  overflow-y: scroll;
+} */
+
+/* .modal-content {
+  height: 400px;
+} */

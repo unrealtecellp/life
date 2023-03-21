@@ -39,11 +39,11 @@ function categoryDependencyInfo(categoryClass, categoryClassValue, categoryDepen
         }
         // break;
     }
-    // console.log(categoryDependencyInfoList);
+    // console.log('categoryDependencyInfoList', categoryDependencyInfoList);
     return categoryDependencyInfoList;
 }
 
-function dependentOn(tagSet, categoryClass, categoryClassValue, categoryDependency) {
+function dependentOn(tagSet, categoryClass, categoryDependency) {
     let dependentOnList = [];
     let valueList = []
     // console.log(categoryClass, categoryClassValue);
@@ -81,10 +81,68 @@ function dependentOn(tagSet, categoryClass, categoryClassValue, categoryDependen
             }
         }
     }
-    // console.log(dependentOnList);
-    dependentOnClass = dependentOnList.join(' ');
+    // console.log('dependentOnList', dependentOnList);
+
+    return dependentOnList;
+    // dependentOnClass = dependentOnList.join(' ');
     // console.log(dependentOnClass)
-    return dependentOnClass;
+    // return dependentOnClass;
+}
+
+function checkModalKey(tagSet, key, categoryDependency) {
+    let modalKey = false;
+    let dependentOnList = dependentOn(tagSet, key, categoryDependency);
+    let dependOnListBig = [];
+    // if (dependentOnList.length === 0) {
+    //     console.log('dependentOnList', dependentOnList);
+    // }
+    loop1:
+    while(dependentOnList.length !== 0) {
+        // console.log('dependentOnList', dependentOnList);
+        let dependOnSet = new Set();
+        for (let i=0; i<dependentOnList.length; i++) {
+            if (dependentOnList[i].includes('=')) {
+                dependOnSet.add(dependentOnList[i].split('=')[0]);
+            }
+        }
+        // console.log(dependOnSet);
+        let dependOnList = Array.from(dependOnSet);
+        // console.log(dependOnList, dependOnList.length);
+        if (dependOnList.length>1) {
+            dependOnListBig = dependOnList;
+        }
+        loop2:
+        for (let i=0; i<dependOnList.length; i++) {
+            dependOn = dependOnList[i];
+            // console.log(dependOn);
+            if (Object.keys(categoryDependency).length !== 0 && dependOn in categoryDependency) {
+                loop3:
+                for (j=0; j<tagSet[dependOn].length; j++) {
+                    // console.log(tagSet[dependOn][j]);
+                    if (tagSet[dependOn][j].includes('SPLIT_TEXT')) {
+                        modalKey = true;
+                        break loop1;
+                    }
+                }
+                // console.log('tracing...')
+                dependentOnList = dependentOn(tagSet, dependOn, categoryDependency);
+                // console.log('dependentOnList_2', dependentOnList);
+            }
+            else {
+                // console.log('break from loop2...')
+                if (dependOnListBig.length>1) {
+                    dependOnListBig.splice(-1);
+                    // console.log('dependOnListBig', dependOnListBig);
+                    dependOnList = dependOnListBig;
+                    continue loop2;
+                }
+                // dependentOnList = [];
+                break loop1;
+            }
+        }
+    }
+    // console.log(modalKey);
+    return modalKey;
 }
 
 function createElement(tagSet,
@@ -92,11 +150,12 @@ function createElement(tagSet,
                         value,
                         defaultCategoryTag='',
                         categoryDependency,
+                        modalEle,
                         element='radio',
                         elementProperties='required=False') {
     // console.log(key, element, elementProperties);
     let ele = '';
-    if (key in categoryDependency) {
+    if (Object.keys(categoryDependency).length !== 0 && key in categoryDependency && !modalEle) {
         ele += '<div class="border col btn-group-toggle ' + key + '" data-toggle="buttons" id="'+key+'"  style="display: none;">';
     }
     else {
@@ -107,7 +166,7 @@ function createElement(tagSet,
 
     ele+='<legend>'+key+': </legend>'
     let categoryDependencyInfoList = categoryDependencyInfo(key, value, categoryDependency);
-    let dependentOnClass = dependentOn(tagSet, key, value, categoryDependency);
+    let dependentOnClass = dependentOn(tagSet, key, categoryDependency).join(' ');
     for (let i = 0; i < value.length; i++) {
         let elementClass = "";
         let elementPropertiesAddon = elementProperties;
@@ -120,7 +179,7 @@ function createElement(tagSet,
             elementPropertiesAddon += ' onclick=" hideHideCategory(\'' + key+'_hideDependency' + '\')"';
             labelElementProperties += ' onclick=" hideHideCategory(\'' + key+'_hideDependency' + '\')"';
         }
-        if (key in categoryDependency) {
+        if (Object.keys(categoryDependency).length !== 0 && key in categoryDependency) {
             // console.log(key, dependentOnClass);
             elementClass += ' '+dependentOnClass;
         }
@@ -168,11 +227,52 @@ function createElement(tagSet,
     return ele
 }
 
+function elementData (projData, key, value, modalEle=false) {
+    let eleData = ''
+    let defaultCategoryTag = '';
+    let categoryDependency = {};
+    if ("defaultCategoryTags" in projData["tagSetMetaData"]) {
+        defaultCategoryTags = projData["tagSetMetaData"]["defaultCategoryTags"]
+        if (key in defaultCategoryTags){
+            defaultCategoryTag = defaultCategoryTags[key]
+        }
+    }
+    if ("categoryDependency" in projData["tagSetMetaData"]) {
+        categoryDependency = projData["tagSetMetaData"]["categoryDependency"]
+    }
+    // console.log('defaultCategoryTag', defaultCategoryTag, 'categoryDependency', categoryDependency)
+    if ("categoryHtmlElement" in projData["tagSetMetaData"]) {
+        categoryHtmlElement = projData["tagSetMetaData"]["categoryHtmlElement"]
+        categoryHtmlElementProperties = projData["tagSetMetaData"]["categoryHtmlElementProperties"]
+        element = categoryHtmlElement[key]
+        elementProperties = categoryHtmlElementProperties[key]
+        eleData += createElement(tagSet,
+                                key,
+                                value,
+                                defaultCategoryTag,
+                                categoryDependency,
+                                modalEle,
+                                element,
+                                elementProperties);
+    }
+    else {
+        eleData += createElement(tagSet,
+                                key,
+                                value,
+                                defaultCategoryTag,
+                                categoryDependency,
+                                modalEle);
+    }
+
+    return eleData;
+}
+
 function myFunction(projData) {
     localStorage.setItem("projData", JSON.stringify(projData));
-    lastActiveId = projData["lastActiveId"]
-    accessedOnTime = projData["accessedOnTime"]
-    currentUser = projData['currentUser']
+    let lastActiveId = projData["lastActiveId"]
+    let accessedOnTime = projData["accessedOnTime"]
+    let currentUser = projData['currentUser']
+    let inpt = '';
     inpt += '<span class="textFormAlert"></span><div class="row">' +
             '<form name="savetextanno" class="form-horizontal" action="/easyAnno/savetextAnno" method="POST" onsubmit="return validateForm()">';
     inpt += '<div class="col-sm-6"  id="left">';
@@ -184,7 +284,8 @@ function myFunction(projData) {
             '<div class="form-group textcontentouter">' +
             '<label class="col" for="text">Text:</label><br>' +
             '<input type="hidden" class="form-control" id="text"' + ' name="text" value="' + projData["textData"]["Text"] + '">' +
-            '<textarea class="col textcontent" id="maintextcontent" readonly>' + projData["textData"]["Text"] + '</textarea>' +
+            // '<textarea class="col textcontent" id="maintextcontent" readonly>' + projData["textData"]["Text"] + '</textarea>' +
+            '<textarea class="col textcontent" id="maintextcontent"  onselect=spanAnnotation(this) readonly>' + projData["textData"]["Text"] + '</textarea>' +
             '</div>';
     // inpt += '<div class="form-group">' +
     //     '<div class="col">' +
@@ -196,37 +297,17 @@ function myFunction(projData) {
 
     inpt += '<div class="col-sm-4" id="middle">';
     tagSet = projData["tagSet"]
+    let categoryDependency = {};
+    if ("categoryDependency" in projData["tagSetMetaData"]) {
+        categoryDependency = projData["tagSetMetaData"]["categoryDependency"]
+    }
     for (let [key, value] of Object.entries(tagSet)) {
         // console.log(key, value);
-        if ("defaultCategoryTags" in projData["tagSetMetaData"]) {
-            defaultCategoryTags = projData["tagSetMetaData"]["defaultCategoryTags"]
-            if (key in defaultCategoryTags){
-                defaultCategoryTag = defaultCategoryTags[key]
-            }
+        modalKey = checkModalKey(tagSet, key, categoryDependency);
+        if (modalKey) {
+            continue
         }
-        if ("categoryDependency" in projData["tagSetMetaData"]) {
-            categoryDependency = projData["tagSetMetaData"]["categoryDependency"]
-        }
-        if ("categoryHtmlElement" in projData["tagSetMetaData"]) {
-            categoryHtmlElement = projData["tagSetMetaData"]["categoryHtmlElement"]
-            categoryHtmlElementProperties = projData["tagSetMetaData"]["categoryHtmlElementProperties"]
-            element = categoryHtmlElement[key]
-            elementProperties = categoryHtmlElementProperties[key]
-            inpt += createElement(tagSet,
-                                    key,
-                                    value,
-                                    defaultCategoryTag,
-                                    categoryDependency,
-                                    element,
-                                    elementProperties);
-        }
-        else {
-            inpt += createElement(tagSet,
-                                    key,
-                                    value,
-                                    defaultCategoryTag,
-                                    categoryDependency);
-        }
+        inpt += elementData(projData, key, value);
     }
     inpt += '</div>';
 
@@ -436,7 +517,16 @@ function openCategoryModal(ele) {
         modalData += spanModalForm(projData, ele.id);
     }
     $('#'+ele.id+'_modal_data').html(modalData);
-    textareaScrollHeight('maintextcontent', 'spantextcontent');
+    // textareaScrollHeight('maintextcontent', 'spantextcontent');
+    let text = document.getElementById('maintextcontent');
+    const spanStart = text.selectionStart;
+    const spanEnd = text.selectionEnd;
+    const selection = text.textContent.substring(
+        spanStart,
+        spanEnd
+      );
+    leftModalForm(selection, spanStart, spanEnd, ele.id)
+    middleModalForm(selection, spanStart, spanEnd, ele.id);
 
 }
 
@@ -444,11 +534,11 @@ function spanModalForm(projData, eleId) {
     let spanModalData = '';
     let text = document.getElementById('maintextcontent').value;
     spanModalData += '<div class="col-md-6"  id="modalleft">';
-    spanModalData += '<p class="form-group" id="' + projData["textData"]["ID"] + '"><strong>Text ID: ' + projData["textData"]["ID"] + '</strong></p>' +
-                    // '<div class="form-group textcontentouter">' +
-                    '<label class="col" for="spantextcontent">Text:</label><br>' +
-                    // '<svg viewBox="0 0 240 80" xmlns="http://www.w3.org/2000/svg">'+
-                    '<textarea class="modaltextcontent" id="spantextcontent" onselect=spanAnnotation(this,"'+eleId+'") readonly>' + text + '</textarea>'
+    // spanModalData += '<p class="form-group" id="' + projData["textData"]["ID"] + '"><strong>Text ID: ' + projData["textData"]["ID"] + '</strong></p>' +
+    //                 // '<div class="form-group textcontentouter">' +
+    //                 '<label class="col" for="spantextcontent">Text:</label><br>'+
+    //                 // '<svg viewBox="0 0 240 80" xmlns="http://www.w3.org/2000/svg">'+
+    //                 '<textarea class="modaltextcontent" id="spantextcontent" onselect=spanAnnotation(this,"'+eleId+'") readonly>' + text + '</textarea>'
                     // '<text class="modaltextcontent" id="spantextcontent" onselect=spanAnnotation(this) readonly>' + text + '</text>'
                 //    '</svg>' ;
     spanModalData += '</div>' // left col div
@@ -458,7 +548,7 @@ function spanModalForm(projData, eleId) {
     spanModalData += '</div>' // right col div
 
     spanModalData+= '<div class="col-sm-2" id="modalright">';
-    spanModalData += '<br><button type="button" class="btn btn-lg btn-danger">Save</button>';
+    spanModalData += '<br><button type="button"  id="modalrightsavebtn" class="btn btn-lg btn-danger">Save</button>';
     spanModalData += '</div>'; //right div close
 
     return spanModalData;
@@ -474,10 +564,16 @@ function splitText(text, terminator) {
     return textList;
 }
 
-function spanAnnotation(event, eleId) {
+function highlightSpanText(spanStart, spanEnd) {
+    $('#maintextcontent').highlightWithinTextarea({
+        highlight: [spanStart, spanEnd]
+    });
+}
+
+function spanAnnotation(event) {
     console.log('span');
     console.log(event);
-    console.log('eleId', eleId);
+    // console.log('eleId', eleId);
     const spanStart = event.selectionStart;
     const spanEnd = event.selectionEnd;
     const selection = event.textContent.substring(
@@ -485,28 +581,78 @@ function spanAnnotation(event, eleId) {
         spanEnd
       );
     // alert(selection);
-    middleModalForm(selection, spanStart, spanEnd, eleId)
-    $('#spantextcontent').highlightWithinTextarea({
-        highlight: [spanStart, spanEnd] // string, regexp, array, function, or custom object
-    });
+    // middleModalForm(selection, spanStart, spanEnd)
+    // $('#spantextcontent').highlightWithinTextarea({
+    //     highlight: [spanStart, spanEnd] // string, regexp, array, function, or custom object
+    // });
     // $('#spantextcontent').highlightWithinTextarea('update');
+    highlightSpanText(spanStart, spanEnd)
 }
 
 function textareaScrollHeight(eleId1, eleId2) {
     textareaElement1 = document.getElementById(eleId1)
     textareaElement2 = document.getElementById(eleId2)
-    console.log('textarea height')
+    // console.log('textarea height');
     textareaElement2.style.height = (5+textareaElement1.scrollHeight)+"px";
+}
+
+function leftModalForm(selection, spanStart, spanEnd, eleId) {
+    let leftModalData = '';
+    let projData = JSON.parse(localStorage.getItem('projData'));
+    let eleValue = projData['tagSet'][eleId][0];
+    // console.log(eleValue, selection, spanStart, spanEnd, eleId);
+    leftModalData += '<label for="spanStart">Span Start</label>'+
+                        '<input class="form-control" id="spanStart" name="spanStart" value='+spanStart+' readonly>';
+    leftModalData += '<label for="spanEnd">Span End</label>'+
+                        '<input class="form-control" id="spanEnd" name="spanEnd" value='+spanEnd+' readonly>';
+    leftModalData += '<p class="form-group" id="' + projData["textData"]["ID"] + '"><strong>Text ID: ' + projData["textData"]["ID"] + '</strong></p>' +
+                    // '<div class="form-group textcontentouter">' +
+                    '<label class="col" for="spantextcontent">Text:</label><br>'+
+                    // '<svg viewBox="0 0 240 80" xmlns="http://www.w3.org/2000/svg">'+
+                    '<textarea class="modaltextcontent" id="spantextcontent" onselect=spanAnnotation(this,"'+eleId+'") readonly>' + selection + '</textarea>'
+    
+    $('#modalleft').html(leftModalData);
 }
 
 function middleModalForm(selection, spanStart, spanEnd, eleId) {
     let middleModalData = '';
-    let projData = JSON.parse(localStorage.getItem('projData'))
-    let eleValue = projData['tagSet'][eleId][0];
-    console.log(eleValue);
-    middleModalData += '<label for="spanStart">Span Start</label>'+
-                        '<input class="form-control" id="spanStart" name="spanStart" value='+spanStart+' readonly>';
-    middleModalData += '<label for="spanEnd">Span End</label>'+
-                        '<input class="form-control" id="spanEnd" name="spanEnd" value='+spanEnd+' readonly>';
+    let projData = JSON.parse(localStorage.getItem('projData'));
+    let tagSet = projData['tagSet'];
+    let eleValue = tagSet[eleId][0];
+    // console.log(eleValue, selection, spanStart, spanEnd, eleId);
+    // middleModalData += '<label for="spanStart">Span Start</label>'+
+    //                     '<input class="form-control" id="spanStart" name="spanStart" value='+spanStart+' readonly>';
+    // middleModalData += '<label for="spanEnd">Span End</label>'+
+    //                     '<input class="form-control" id="spanEnd" name="spanEnd" value='+spanEnd+' readonly>';
+    if ("categoryDependency" in projData["tagSetMetaData"]) {
+        categoryDependency = projData["tagSetMetaData"]["categoryDependency"]
+        // console.log(categoryDependency);
+        for (let [key, value] of Object.entries(categoryDependency)) {
+            if (value.includes(eleId)) {
+                // console.log(key, value, tagSet[key]);
+                middleModalData += elementData(projData, key, tagSet[key], true);
+            }
+            else {
+                let dependentOnList = dependentOn(tagSet, key, categoryDependency);
+                loop1:
+                while (dependentOnList.length !== 0) {
+                    console.log(key, value);
+                    console.log(dependentOnList);
+                    loop2:
+                    for (i=0; i<dependentOnList.length; i++) {
+                        if (dependentOnList[i].includes(eleId)) {
+                            // console.log(key, value, tagSet[key]);
+                            middleModalData += elementData(projData, key, tagSet[key], false);
+                            break loop1;
+                        }
+                        else if (dependentOnList[i].includes('=')) {
+                            dependentOnList = dependentOn(tagSet, dependentOnList[i].split('=')[0], categoryDependency);
+                            console.log(dependentOnList);
+                        }
+                    }
+                }
+            }
+        }
+    }
     $('#modalmiddle').html(middleModalData);
 }
