@@ -721,6 +721,7 @@ def createImageAnno(zipFile, proj_name):
 @easyAnno.route('/textAnno', methods=['GET', 'POST'])
 @login_required
 def textAnno():
+    print('textAnno')
     # projects = mongo.db.projects              # collection of users and their respective projects
     # userprojects = mongo.db.userprojects              # collection of users and their respective projects
     # textanno = mongo.db.textanno
@@ -848,6 +849,7 @@ def textAnno():
 @easyAnno.route('/savetextAnno', methods=['GET', 'POST'])
 @login_required
 def savetextAnno():
+    print('IN /savetextAnno')
     projects = mongo.db.projects              # collection of users and their respective projects
     userprojects = mongo.db.userprojects              # collection of users and their respective projects
     textanno = mongo.db.textanno
@@ -856,10 +858,13 @@ def savetextAnno():
                     {'_id' : 0, 'activeprojectname': 1})['activeprojectname']
 
     if request.method == 'POST':
-        annotatedText = dict(request.form.lists())
-        # pprint(annotatedText)
+        # annotatedText = dict(request.form.lists())
+        
+        annotatedText = json.loads(request.form['a'])
+        pprint(annotatedText)
 
         lastActiveId = annotatedText['lastActiveId'][0]
+        # lastActiveId = annotatedText['lastActiveId']
         project_details = projects.find_one({"projectname": activeprojectname}, {"_id": 0, "textData": 1})        
         # print(project_details.values())
         nextId = nextIdToAnnotate(project_details.values(), lastActiveId)
@@ -879,8 +884,13 @@ def savetextAnno():
                     currentAnnotatorTags[category] =  annotatedText[category]
             elif category not in annotatedText:
                 currentAnnotatorTags[category] = ''
-        currentAnnotatorTags["Duplicate"] = annotatedText["Duplicate Text"][0]
-        currentAnnotatorTags["annotatorComment"] = annotatedText["annotatorComment"][0]
+        
+        if "Duplicate" in currentAnnotatorTags:
+            currentAnnotatorTags["Duplicate"] = annotatedText["Duplicate Text"][0]
+    
+        if 'annotatorComment' in currentAnnotatorTags:
+            currentAnnotatorTags["annotatorComment"] = annotatedText["annotatorComment"][0]
+    
         currentAnnotatorTags["annotatedFLAG"] = 1
 
         once_annotated = textanno.find_one({"projectname": activeprojectname, "textId": lastActiveId}, {"_id": 0})

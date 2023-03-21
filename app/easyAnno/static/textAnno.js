@@ -46,21 +46,26 @@ function categoryDependencyInfo(categoryClass, categoryClassValue, categoryDepen
 function dependentOn(tagSet, categoryClass, categoryDependency) {
     let dependentOnList = [];
     let valueList = []
-    // console.log(categoryClass, categoryClassValue);
+    // console.log(categoryClass);
     for (let [key, value] of Object.entries(categoryDependency)) {
         if (key === categoryClass) {
+            // console.log(categoryClass);
             if (value.includes('|')) {
+                // console.log(categoryClass);
                 valueList = value.split('|');
             }
             else {
+                // console.log(categoryClass);
                 valueList = value.split();
             }
+            // console.log(valueList);
             for (let i = 0; i < valueList.length; i++) {
                 valueListValue  = valueList[i];
                 if (valueListValue.includes('!=')) {
                     insertValue = valueListValue.split('!=')[1]
                     // console.log(insertValue);
                     parentKey = valueListValue.split('!=')[0]
+                    // console.log(parentKey);
                     parentValue = tagSet[parentKey];
                     for (let j = 0; j < parentValue.length; j++) {
                         if (!(dependentOnList.includes(parentKey+'='+parentValue[j])) &&
@@ -119,7 +124,7 @@ function checkModalKey(tagSet, key, categoryDependency) {
                 loop3:
                 for (j=0; j<tagSet[dependOn].length; j++) {
                     // console.log(tagSet[dependOn][j]);
-                    if (tagSet[dependOn][j].includes('SPLIT_TEXT')) {
+                    if (tagSet[dependOn][j].includes('SPAN_TEXT')) {
                         modalKey = true;
                         break loop1;
                     }
@@ -156,7 +161,7 @@ function createElement(tagSet,
     // console.log(key, element, elementProperties);
     let ele = '';
     if (Object.keys(categoryDependency).length !== 0 && key in categoryDependency && !modalEle) {
-        ele += '<div class="border col btn-group-toggle ' + key + '" data-toggle="buttons" id="'+key+'"  style="display: none;">';
+        ele += '<div class="border col btn-group-toggle ' + key + '" data-toggle="buttons" id="'+key+'"  style="display: none;" disabled>';
     }
     else {
         ele += '<div class="border col btn-group-toggle ' + key + '" data-toggle="buttons" id="'+key+'">';
@@ -203,7 +208,7 @@ function createElement(tagSet,
             ele += '<button type="button" id="'+key+'" class="btn btn-info btn-sm ' + elementClass + ' " onclick="openCategoryModal(this)"  data-toggle="modal" data-target="#'+key+'Modal">'+key+'</button>';
             // ele += '<button type="button" id="'+key+'" class="btn btn-info btn-sm ' + elementClass + ' " onclick=" showHideCategory(\'' + key+'='+value[i] + '\')">'+key+'</button>';
             // ele += '<button type="button" id="'+key+'" class="btn btn-info btn-sm ' + elementClass + ' " onclick=" hideHideCategory(\'' + key+'_hideDependency' + '\')">'+key+'</button>';
-            ele += addModalElement(key)
+            // ele += addModalElement(key)
         }
         else if (element === 'select') {
             // console.log(key, element, elementProperties, value[i]);
@@ -273,8 +278,9 @@ function myFunction(projData) {
     let accessedOnTime = projData["accessedOnTime"]
     let currentUser = projData['currentUser']
     let inpt = '';
+    
     inpt += '<span class="textFormAlert"></span><div class="row">' +
-            '<form name="savetextanno" class="form-horizontal" action="/easyAnno/savetextAnno" method="POST" onsubmit="return validateForm()">';
+            '<form name="savetextanno" id="idsavetextannoform" class="form-horizontal" action="/easyAnno/savetextAnno" method="POST"  enctype="multipart/form-data">';
     inpt += '<div class="col-sm-6"  id="left">';
     inpt += '<input type="hidden" id="accessedOnTime" name="accessedOnTime" value="' + accessedOnTime + '">' +
             '<input type="hidden" id="lastActiveId" name="lastActiveId" value="' + lastActiveId + '">' +
@@ -321,10 +327,12 @@ function myFunction(projData) {
         '<button type="button" id="previous" class="btn btn-info btn-lg btn-block" onclick="previousText()">Previous</button><br/>' +
         '<button type="button" id="next" class="btn btn-lg btn-info btn-block" onclick="nextText()">Next</button><br/>' +
         '</div>';
-    inpt += '<br><button type="submit" class="btn btn-lg btn-danger btn-block">Save</button>';
+    inpt += '<br><button type="button" id="mainsave" class="btn btn-lg btn-danger btn-block"  onclick="mainSave(this)">Save</button>';
     inpt += '</div>'; //right div close
-    
+    // inpt += '<br><button type="submit" id="mainsave" class="btn btn-lg btn-danger btn-block"  onclick="mainSave(this)">Save</button>';
     inpt += '</form></div>';
+
+    inpt += '<div id="idmodal"></div>'
 
     $('.textdata').append(inpt);
     textareaScrollHeight('maintextcontent', 'maintextcontent');
@@ -494,7 +502,7 @@ function addModalElement(key) {
                     '<h4 class="modal-title" id="'+key+'ModalLabel">'+key+'</h4>'+
                     '</div>'+
                     '<div class="modal-body">'+
-                        '<div class="row" id="'+key+'_modal_data">'+
+                        '<div class="row" id="'+key+'_modal_data"><form></form>'+
                         '</div>'+
                     '</div>'+
                     '<div class="modal-footer">'+
@@ -510,10 +518,12 @@ function addModalElement(key) {
 
 
 function openCategoryModal(ele) {
+    let createModal = addModalElement(ele.id);
+    $('#idmodal').html(createModal);
     let modalData = '';
     let projData = JSON.parse(localStorage.getItem('projData'))
     let eleValue = projData['tagSet'][ele.id][0];
-    if (eleValue.includes('SPLIT_TEXT')) {
+    if (eleValue.includes('SPAN_TEXT')) {
         modalData += spanModalForm(projData, ele.id);
     }
     $('#'+ele.id+'_modal_data').html(modalData);
@@ -533,6 +543,7 @@ function openCategoryModal(ele) {
 function spanModalForm(projData, eleId) {
     let spanModalData = '';
     let text = document.getElementById('maintextcontent').value;
+    spanModalData += '<form name="savetextannospan" id="idsavetextannospanform" class="form-horizontal" action="/easyAnno/savetextAnnoSpan" method="POST"  enctype="multipart/form-data">';
     spanModalData += '<div class="col-md-6"  id="modalleft">';
     // spanModalData += '<p class="form-group" id="' + projData["textData"]["ID"] + '"><strong>Text ID: ' + projData["textData"]["ID"] + '</strong></p>' +
     //                 // '<div class="form-group textcontentouter">' +
@@ -548,8 +559,10 @@ function spanModalForm(projData, eleId) {
     spanModalData += '</div>' // right col div
 
     spanModalData+= '<div class="col-sm-2" id="modalright">';
-    spanModalData += '<br><button type="button"  id="modalrightsavebtn" class="btn btn-lg btn-danger">Save</button>';
+    spanModalData += '<br><button type="button"  id="modalrightsavebtn" class="btn btn-lg btn-danger" onclick="spanSave(this)">Save Span</button>';
     spanModalData += '</div>'; //right div close
+
+    spanModalData += '</form>';
 
     return spanModalData;
 
@@ -601,6 +614,7 @@ function leftModalForm(selection, spanStart, spanEnd, eleId) {
     let projData = JSON.parse(localStorage.getItem('projData'));
     let eleValue = projData['tagSet'][eleId][0];
     // console.log(eleValue, selection, spanStart, spanEnd, eleId);
+    leftModalData += '<input class="form-control" id="modalHeader" name="modalheader" value='+eleId+' readonly hidden>';
     leftModalData += '<label for="spanStart">Span Start</label>'+
                         '<input class="form-control" id="spanStart" name="spanStart" value='+spanStart+' readonly>';
     leftModalData += '<label for="spanEnd">Span End</label>'+
@@ -609,7 +623,7 @@ function leftModalForm(selection, spanStart, spanEnd, eleId) {
                     // '<div class="form-group textcontentouter">' +
                     '<label class="col" for="spantextcontent">Text:</label><br>'+
                     // '<svg viewBox="0 0 240 80" xmlns="http://www.w3.org/2000/svg">'+
-                    '<textarea class="modaltextcontent" id="spantextcontent" onselect=spanAnnotation(this,"'+eleId+'") readonly>' + selection + '</textarea>'
+                    '<textarea class="modaltextcontent" id="spantextcontent" name="textspan" onselect=spanAnnotation(this,"'+eleId+'") readonly>' + selection + '</textarea>'
     
     $('#modalleft').html(leftModalData);
 }
@@ -625,7 +639,7 @@ function middleModalForm(selection, spanStart, spanEnd, eleId) {
     // middleModalData += '<label for="spanEnd">Span End</label>'+
     //                     '<input class="form-control" id="spanEnd" name="spanEnd" value='+spanEnd+' readonly>';
     if ("categoryDependency" in projData["tagSetMetaData"]) {
-        categoryDependency = projData["tagSetMetaData"]["categoryDependency"]
+        let categoryDependency = projData["tagSetMetaData"]["categoryDependency"]
         // console.log(categoryDependency);
         for (let [key, value] of Object.entries(categoryDependency)) {
             if (value.includes(eleId)) {
@@ -636,8 +650,9 @@ function middleModalForm(selection, spanStart, spanEnd, eleId) {
                 let dependentOnList = dependentOn(tagSet, key, categoryDependency);
                 loop1:
                 while (dependentOnList.length !== 0) {
-                    console.log(key, value);
-                    console.log(dependentOnList);
+                    // console.log(key, value);
+                    // console.log(eleId);
+                    // console.log(dependentOnList);
                     loop2:
                     for (i=0; i<dependentOnList.length; i++) {
                         if (dependentOnList[i].includes(eleId)) {
@@ -645,14 +660,68 @@ function middleModalForm(selection, spanStart, spanEnd, eleId) {
                             middleModalData += elementData(projData, key, tagSet[key], false);
                             break loop1;
                         }
+                        else if (dependentOnList[i].includes('|')) {
+                            dependentOnList = dependentOn(tagSet, dependentOnList[i].split('!=')[0], categoryDependency);
+                            // console.log('|', dependentOnList);
+                        }
                         else if (dependentOnList[i].includes('=')) {
+                            // console.log(dependentOnList[i], dependentOnList[i].split('=')[0])
                             dependentOnList = dependentOn(tagSet, dependentOnList[i].split('=')[0], categoryDependency);
-                            console.log(dependentOnList);
+                            // console.log('=', dependentOnList);
                         }
                     }
                 }
             }
         }
+        // console.log('!!!!!!!!!!!!', dependentOn(tagSet, '01-b_caste_harm_potential_physical', categoryDependency));
+        // console.log(categoryDependency['01-b_caste_harm_potential_physical'])
     }
     $('#modalmiddle').html(middleModalData);
+}
+
+function spanSave(ele) {
+    console.log('sending transcription and morphemic details to the server');
+    let text = JSON.parse(localStorage.getItem('textSpan'));
+    var lastActiveId = document.getElementById("lastActiveId").value;
+    console.log(text, lastActiveId);
+    submit_span_form_ele = document.getElementById("idsavetextannospanform");
+    const formData = new FormData(submit_span_form_ele, ele);
+    console.log(formData);
+    var object = {};
+    formData.forEach(function(value, key){
+        console.log('key: ', key, 'value: ', value);
+        if (key in object) {
+            object[key].push(value);
+        }
+        else {
+            object[key] = [value];
+        }
+    });
+    $.post( "/easyAnno/savetextAnnoSpan", {
+        a: JSON.stringify(object)
+      })
+    //   .done(function( data ) {
+    //     window.location.reload();
+    //   });
+}
+
+function mainSave(ele) {
+    submit_form_ele = document.getElementById("idsavetextannoform");
+    const formData = new FormData(submit_form_ele, ele);
+    var object = {};
+    formData.forEach(function(value, key){
+        // console.log('key: ', key, 'value: ', value);
+        if (key in object) {
+            object[key].push(value);
+        }
+        else {
+            object[key] = [value];
+        }
+    });
+    $.post( "/easyAnno/savetextAnno", {
+        a: JSON.stringify(object)
+      })
+    //   .done(function( data ) {
+    //     window.location.reload();
+    //   });
 }
