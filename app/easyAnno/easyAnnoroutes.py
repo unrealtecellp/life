@@ -953,6 +953,118 @@ def savetextAnno():
 
     return redirect(url_for('easyAnno.textAnno'))
 
+@easyAnno.route('/savetextAnnoSpan', methods=['GET', 'POST'])
+@login_required
+def savetextAnnoSpan():
+    print('IN /savetextAnnoSpan')
+    projects = mongo.db.projects              # collection of users and their respective projects
+    userprojects = mongo.db.userprojects              # collection of users and their respective projects
+    textanno = mongo.db.textanno
+
+    activeprojectname = userprojects.find_one({ 'username' : current_user.username },\
+                    {'_id' : 0, 'activeprojectname': 1})['activeprojectname']
+
+    if request.method == 'POST':
+        # annotatedText = dict(request.form.lists())
+        
+        annotatedTextSpan = json.loads(request.form['a'])
+        pprint(annotatedTextSpan)
+
+        # lastActiveId = annotatedTextSpan['lastActiveId'][0]
+        lastActiveId = annotatedTextSpan['lastActiveId']
+        del annotatedTextSpan['lastActiveId']
+        pprint(annotatedTextSpan)
+        print(lastActiveId)
+        # lastActiveId = annotatedText['lastActiveId']
+        # project_details = projects.find_one({"projectname": activeprojectname}, {"_id": 0, "textData": 1})        
+        # print(project_details.values())
+        # nextId = nextIdToAnnotate(project_details.values(), lastActiveId)
+        # print(nextId)
+
+        # project_details = projects.find_one({"projectname": activeprojectname}, {"_id": 0, "tagSet": 1})
+        # # current user tags for the text
+        # currentAnnotatorTags = {}
+        # for tagset in project_details.values():
+        #     categories = list(tagset.keys())
+        # for category in categories:
+        #     # print(category)
+        #     if category in annotatedText:
+        #         if (len(annotatedText[category])) == 1:
+        #             currentAnnotatorTags[category] =  annotatedText[category][0]
+        #         elif (len(annotatedText[category])) > 1:
+        #             currentAnnotatorTags[category] =  annotatedText[category]
+        #     elif category not in annotatedText:
+        #         currentAnnotatorTags[category] = ''
+        
+        # if "Duplicate" in currentAnnotatorTags:
+        #     currentAnnotatorTags["Duplicate"] = annotatedText["Duplicate Text"][0]
+    
+        # if 'annotatorComment' in currentAnnotatorTags:
+        #     currentAnnotatorTags["annotatorComment"] = annotatedText["annotatorComment"][0]
+    
+        # currentAnnotatorTags["annotatedFLAG"] = 1
+
+        # once_annotated = textanno.find_one({"projectname": activeprojectname, "textId": lastActiveId}, {"_id": 0})
+
+        # if once_annotated != None:
+        #     # update with this user annotation and change lastUpdatedBy
+        #     # print(once_annotated)
+        #     currentAnnotatorTags = currentAnnotatorTags
+        #     # print(currentAnnotatorTags, '\n=============\n', once_annotated[current_user.username])
+        #     # if difference between new annotation and existing annotation is False
+        #     # (user has used 'Save' in place of 'Next' button)
+        #     # Then there should be no update in the allAccess and allUpdates timestamp
+        #     if current_user.username in once_annotated and \
+        #         not bool(diff(currentAnnotatorTags, once_annotated[current_user.username])):
+        #         projects.update_one({"projectname": activeprojectname}, \
+        #                             { '$set' : { 'lastActiveId.'+current_user.username: nextId }})
+        #         # print('matchedddddddddddddddddddddddd')
+        #         return redirect(url_for('easyAnno.textAnno'))
+
+        #     lastUpdatedBy = current_user.username
+
+        #     all_access = once_annotated["allAccess"]
+        #     all_updates = once_annotated["allUpdates"]
+
+        #     if (current_user.username in all_access.keys()):
+        #         # print(all_access, all_updates)
+        #         all_access[current_user.username].append(annotatedText["accessedOnTime"][0])
+        #         all_updates[current_user.username].append(datetime.now().strftime("%d/%m/%y %H:%M:%S"))
+        #         # print(all_access, all_updates)
+        #     else:
+        #         all_access[current_user.username] = [annotatedText["accessedOnTime"][0]]
+        #         all_updates[current_user.username] = [datetime.now().strftime("%d/%m/%y %H:%M:%S")]
+
+            
+        #     textanno.update_one({"projectname": activeprojectname, "textId": lastActiveId}, \
+        #         { '$set' : { 'lastUpdatedBy' : lastUpdatedBy, current_user.username: currentAnnotatorTags,\
+        #             "allAccess": all_access, "allUpdates": all_updates}})
+        # else:
+        #     text_anno = {}
+        #     text_anno["projectname"] = activeprojectname
+        #     text_anno["textId"] = lastActiveId
+        #     text_anno["ID"] = annotatedText["ID"][0]
+        #     text_anno["Text"] = annotatedText["Text"][0]
+        #     text_anno[current_user.username] = currentAnnotatorTags
+        #     text_anno['lastUpdatedBy'] = current_user.username
+        #     all_access = {}
+        #     all_access[current_user.username] = [annotatedText["accessedOnTime"][0]]
+        #     text_anno['allAccess'] = all_access
+        #     all_updates = {}
+        #     all_updates[current_user.username] = [datetime.now().strftime("%d/%m/%y %H:%M:%S")]
+        #     text_anno['allUpdates'] = all_updates
+
+
+        #     textanno.insert_one(text_anno)
+
+        # projects.update_one({"projectname": activeprojectname}, \
+        #                     { '$set' : { 'lastActiveId.'+current_user.username: nextId }})
+
+        return redirect(url_for('easyAnno.textAnno'))
+
+    return redirect(url_for('easyAnno.textAnno'))
+
+
 @easyAnno.route('/loadprevioustext', methods=['GET'])
 @login_required
 def loadprevioustext():

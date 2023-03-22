@@ -507,7 +507,7 @@ function addModalElement(key) {
                     '</div>'+
                     '<div class="modal-footer">'+
                     '<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>'+
-                    '<button type="button" class="btn btn-primary modalAnno" data-dismiss="modal">Done</button>'+
+                    // '<button type="button" class="btn btn-primary modalAnno" data-dismiss="modal">Done</button>'+
                     '</div>'+
                 '</div>'+
                 '</div>'+
@@ -613,17 +613,23 @@ function leftModalForm(selection, spanStart, spanEnd, eleId) {
     let leftModalData = '';
     let projData = JSON.parse(localStorage.getItem('projData'));
     let eleValue = projData['tagSet'][eleId][0];
+    let lastActiveId = projData["lastActiveId"];
+    let spanId = textSpanId(spanStart, spanEnd);
     // console.log(eleValue, selection, spanStart, spanEnd, eleId);
-    leftModalData += '<input class="form-control" id="modalHeader" name="modalheader" value='+eleId+' readonly hidden>';
+    leftModalData += '<input type="hidden" id="lastActiveId" name="lastActiveId" value="' + lastActiveId + '">';
+    leftModalData += '<input type="hidden" id="modalHeader"' + ' name="modalheader" value="' + eleId + '">';
     leftModalData += '<label for="spanStart">Span Start</label>'+
-                        '<input class="form-control" id="spanStart" name="spanStart" value='+spanStart+' readonly>';
+                        '<input class="form-control" id="spanStart" name="startindex" value='+spanStart+' readonly><br>';
     leftModalData += '<label for="spanEnd">Span End</label>'+
-                        '<input class="form-control" id="spanEnd" name="spanEnd" value='+spanEnd+' readonly>';
-    leftModalData += '<p class="form-group" id="' + projData["textData"]["ID"] + '"><strong>Text ID: ' + projData["textData"]["ID"] + '</strong></p>' +
+                        '<input class="form-control" id="spanEnd" name="endindex" value='+spanEnd+' readonly><br>';
+    // leftModalData += '<p class="form-group" id="' + spanId + '"><strong>Text Span ID: ' + spanId + '</strong></p>';
+    leftModalData += '<label for="spanId">Text Span ID</label>'+
+                        '<input class="form-control" id="spanId" name="spanId" value='+spanId+' readonly><br>';
                     // '<div class="form-group textcontentouter">' +
-                    '<label class="col" for="spantextcontent">Text:</label><br>'+
+    leftModalData += '<label class="col" for="spantextcontent">Text:</label><br>'+
                     // '<svg viewBox="0 0 240 80" xmlns="http://www.w3.org/2000/svg">'+
-                    '<textarea class="modaltextcontent" id="spantextcontent" name="textspan" onselect=spanAnnotation(this,"'+eleId+'") readonly>' + selection + '</textarea>'
+                    // '<textarea class="modaltextcontent" id="spantextcontent" name="textspan" onselect=spanAnnotation(this,"'+eleId+'") readonly>' + selection + '</textarea>';
+                    '<textarea class="modaltextcontent" id="spantextcontent" name="textspan" readonly>' + selection + '</textarea>';
     
     $('#modalleft').html(leftModalData);
 }
@@ -679,24 +685,67 @@ function middleModalForm(selection, spanStart, spanEnd, eleId) {
     $('#modalmiddle').html(middleModalData);
 }
 
+function textSpanId(spanStart, spanEnd) {
+    let spanStartLength = spanStart.length;
+    let spanEndLength = spanEnd.length
+    while(spanStartLength != 5) {
+        spanStart = '0'+spanStart;
+        spanStartLength = spanStart.length;
+    }
+    while(spanEndLength != 5) {
+        spanEnd = '0'+spanEnd;
+        spanEndLength = spanEnd.length;
+    }
+    spanId = spanStart+spanEnd;
+
+    return spanId;
+}
+
 function spanSave(ele) {
     console.log('sending transcription and morphemic details to the server');
-    let text = JSON.parse(localStorage.getItem('textSpan'));
+    let textSpanDetails = JSON.parse(localStorage.getItem('textSpanDetails'));
+    let projData = JSON.parse(localStorage.getItem('projData'));
+    let tagSet = projData['tagSet'];
+    if (textSpanDetails === null) {
+        textSpanDetails = {};
+    }
+    let spanId = '';
     var lastActiveId = document.getElementById("lastActiveId").value;
-    console.log(text, lastActiveId);
+    // console.log(text, lastActiveId);
     submit_span_form_ele = document.getElementById("idsavetextannospanform");
     const formData = new FormData(submit_span_form_ele, ele);
     console.log(formData);
-    var object = {};
+    var object = {'textspantags': {}};
     formData.forEach(function(value, key){
-        console.log('key: ', key, 'value: ', value);
-        if (key in object) {
-            object[key].push(value);
+        // console.log('key: ', key, 'value: ', value);
+        if ((key === 'startindex' ||
+                key === 'endindex' ||
+                key === 'textspan' ||
+                key === 'lastActiveId')) {
+            object[key] = value;
         }
-        else {
-            object[key] = [value];
+        else if (key === 'spanId') {
+            spanId = value;
+        }
+        else if (key in tagSet) {
+            object['textspantags'][key] = value;
         }
     });
+    if (spanId in textSpanDetails) {
+        for (let [category, tag] of Object.entries(textSpanDetails[spanId]['textspantags'])) {
+            // console.log(category, tag);
+            if (!(category in object['textspantags'])) {
+                // console.log(category, tag);
+                object['textspantags'][category] = tag;
+            }
+        }
+        textSpanDetails[spanId] = object;
+    }
+    else {
+        textSpanDetails[spanId] = object;
+    }
+    console.log(textSpanDetails)
+    localStorage.setItem("textSpanDetails", JSON.stringify(textSpanDetails));
     $.post( "/easyAnno/savetextAnnoSpan", {
         a: JSON.stringify(object)
       })
