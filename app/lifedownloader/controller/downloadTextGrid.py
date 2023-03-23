@@ -5,6 +5,7 @@ from app.controller import (
     getfilefromfs
 )
 
+import copy
 import os
 import shutil
 import json
@@ -19,7 +20,9 @@ def downloadTextGridWihoutAudio(transcriptions,
                                 current_username,
                                 activeprojectname,
                                 latest,
-                                filetype):
+                                filetype,
+                                empty_string='',
+                                merge_same_intervals=False):
 
     basedir = os.path.abspath(os.path.dirname(__file__))
     basedir = basedir[:basedir.rfind('/')]
@@ -131,17 +134,15 @@ def downloadTextGridWihoutAudio(transcriptions,
                             tiers, xmin, xmax, overall_xmin, overall_xmax, text_grid_path)
 
                         write_tgt_text_grid(
-                            tgt_text_grid, text_grid_path, filetype)
+                            tgt_text_grid, text_grid_path, filetype, empty_string, merge_same_intervals)
 
     if len(os.listdir(text_grid_dir)) > 0:
-        print ('Text grid dir', text_grid_dir)
+        print('Text grid dir', text_grid_dir)
         shutil.make_archive(zipfilepath, 'zip', text_grid_dir)
         return '200', zipfilepath+'.zip'
     else:
-        print ('Text grid dir empty', text_grid_dir)
+        print('Text grid dir empty', text_grid_dir)
         return '0', 'Empty Directory'
-
-    
 
 
 def write_json(cur_entry, text_grid_dir):
@@ -154,8 +155,15 @@ def write_json(cur_entry, text_grid_dir):
         outfile.write(str_json)
 
 
-def write_tgt_text_grid(tgt_text_grid, text_grid_path, filetype):
+def write_tgt_text_grid(original_tgt_text_grid, text_grid_path, filetype, empty_string='', merge_same_intervals=False):
     print('Filetype', filetype)
+
+    tgt_text_grid = correct_start_end_times_and_fill_gaps(
+        original_tgt_text_grid, empty_string, merge_same_intervals)
+
+    # if merge_same_intervals:
+    #     tgt_text_grid = tgt_text_grid.get_copy_with_same_intervals_merged()
+
     if filetype == 'textgrid':
         # print ('Wriing to', tgt_text_grid.filename)
         tgt.io.write_to_file(tgt_text_grid, text_grid_path, format='long')
@@ -296,3 +304,23 @@ def get_boundaries_tiers(activeprojectname, projectelements, text_grid):
     print(xmin)
     print(xmax)
     return xmin, xmax, tiers
+
+
+def correct_start_end_times_and_fill_gaps(textgrid, empty_string='', merge_same_intervals=False):
+    '''Correct the start/end times of all tiers and fill gaps.
+    Returns a copy of a textgrid, where empty gaps between intervals
+    are filled with empty intervals and where start and end times are
+    unified with the start and end times of the whole textgrid.
+    '''
+    textgrid_copy = copy.deepcopy(textgrid)
+    for tier in textgrid_copy:
+        if isinstance(tier, tgt.core.IntervalTier):
+            tier_corrected = tier.get_copy_with_gaps_filled(
+                textgrid.start_time, textgrid.end_time, empty_string)
+
+            if merge_same_intervals:
+                tier_corrected = tier_corrected.get_copy_with_same_intervals_merged()
+
+            position = textgrid_copy.tiers.index(tier)
+            textgrid_copy.tiers[position] = tier_corrected
+    return textgrid_copy
