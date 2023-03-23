@@ -1,3 +1,6 @@
+localStorage.removeItem("textSpanDetails");
+localStorage.removeItem("highlightSpanTextDetails");
+
 let inpt = ''
 let select2Keys = new Array();
 
@@ -205,7 +208,7 @@ function createElement(tagSet,
         else if (element === 'modal+textarea'){
             // console.log(key, element, elementProperties);
             // ele += '<textarea class="form-check-input ' + elementClass + ' " name="' + key + '" id="' + key + '_' + value[i] + '" cols="60">' + defaultCategoryTag + '</textarea>';
-            ele += '<button type="button" id="'+key+'" class="btn btn-info btn-sm ' + elementClass + ' " onclick="openCategoryModal(this)"  data-toggle="modal" data-target="#'+key+'Modal">'+key+'</button>';
+            ele += '<button type="button" id="'+key+'" class="btn btn-info btn ' + elementClass + ' " onclick="openCategoryModal(this)"  data-toggle="modal" data-target="#'+key+'Modal">'+key+'</button>';
             // ele += '<button type="button" id="'+key+'" class="btn btn-info btn-sm ' + elementClass + ' " onclick=" showHideCategory(\'' + key+'='+value[i] + '\')">'+key+'</button>';
             // ele += '<button type="button" id="'+key+'" class="btn btn-info btn-sm ' + elementClass + ' " onclick=" hideHideCategory(\'' + key+'_hideDependency' + '\')">'+key+'</button>';
             // ele += addModalElement(key)
@@ -236,6 +239,7 @@ function elementData (projData, key, value, modalEle=false) {
     let eleData = ''
     let defaultCategoryTag = '';
     let categoryDependency = {};
+    let tagSet = projData['tagSet'];
     if ("defaultCategoryTags" in projData["tagSetMetaData"]) {
         defaultCategoryTags = projData["tagSetMetaData"]["defaultCategoryTags"]
         if (key in defaultCategoryTags){
@@ -251,6 +255,7 @@ function elementData (projData, key, value, modalEle=false) {
         categoryHtmlElementProperties = projData["tagSetMetaData"]["categoryHtmlElementProperties"]
         element = categoryHtmlElement[key]
         elementProperties = categoryHtmlElementProperties[key]
+        // console.log(tagSet);
         eleData += createElement(tagSet,
                                 key,
                                 value,
@@ -272,11 +277,34 @@ function elementData (projData, key, value, modalEle=false) {
     return eleData;
 }
 
+function createHighlightSpanTextDetails(currentUserAnnotation, tagSet) {
+    // console.log(currentUserAnnotation, tagSet);
+    for (let [key, value] of Object.entries(tagSet)) {
+        // console.log(key, value[0])
+        val = value[0];
+        if (val === '#SPAN_TEXT#' && 
+            typeof currentUserAnnotation[key] === 'object' &&
+            !Array.isArray(currentUserAnnotation[key]) &&
+            currentUserAnnotation[key] !== null) {
+            // console.log(currentUserAnnotation[key], typeof currentUserAnnotation[key])
+            for (let [k, v] of Object.entries(currentUserAnnotation[key])) {
+                // console.log(k, v);
+                spanStart = Number(v['startindex']);
+                spanEnd = Number(v['endindex']);
+                selection = v['textspan'];
+                highlightSpanTextDetails(spanStart, spanEnd, selection);
+            }
+        }
+    }
+}
+
 function myFunction(projData) {
     localStorage.setItem("projData", JSON.stringify(projData));
-    let lastActiveId = projData["lastActiveId"]
-    let accessedOnTime = projData["accessedOnTime"]
-    let currentUser = projData['currentUser']
+    let lastActiveId = projData["lastActiveId"];
+    let accessedOnTime = projData["accessedOnTime"];
+    let currentUser = projData['currentUser'];
+    currentUserAnnotation = projData[currentUser];
+    let tagSet = projData["tagSet"];
     let inpt = '';
     
     inpt += '<span class="textFormAlert"></span><div class="row">' +
@@ -302,7 +330,6 @@ function myFunction(projData) {
     inpt += '</div>';
 
     inpt += '<div class="col-sm-4" id="middle">';
-    tagSet = projData["tagSet"]
     let categoryDependency = {};
     if ("categoryDependency" in projData["tagSetMetaData"]) {
         categoryDependency = projData["tagSetMetaData"]["categoryDependency"]
@@ -335,6 +362,10 @@ function myFunction(projData) {
     inpt += '<div id="idmodal"></div>'
 
     $('.textdata').append(inpt);
+    // highlightSpanTextDetails('', '', '');
+    if (currentUserAnnotation !== undefined) {
+        createHighlightSpanTextDetails(currentUserAnnotation, tagSet);
+    }
     textareaScrollHeight('maintextcontent', 'maintextcontent');
     // console.log(select2Keys);
     let data = [];
@@ -559,7 +590,7 @@ function spanModalForm(projData, eleId) {
     spanModalData += '</div>' // right col div
 
     spanModalData+= '<div class="col-sm-2" id="modalright">';
-    spanModalData += '<br><button type="button"  id="modalrightsavebtn" class="btn btn-lg btn-danger" onclick="spanSave(this)">Save Span</button>';
+    spanModalData += '<br><button type="button"  id="modalrightsavebtn" class="btn btn btn-danger" onclick="spanSave(this)">Save Span</button>';
     spanModalData += '</div>'; //right div close
 
     spanModalData += '</form>';
@@ -577,10 +608,29 @@ function splitText(text, terminator) {
     return textList;
 }
 
-function highlightSpanText(spanStart, spanEnd) {
+function highlightSpanText(startEndLists) {
+    // console.log(startEndLists);
     $('#maintextcontent').highlightWithinTextarea({
-        highlight: [spanStart, spanEnd]
+        highlight: [startEndLists]
     });
+}
+
+function highlightSpanTextDetails(spanStart, spanEnd, selection) {
+    let startEndLists = [];
+    data = JSON.parse(localStorage.getItem('highlightSpanTextDetails'));
+    spanId = textSpanId(spanStart, spanEnd);
+    if (data === null) {
+        data = {};
+    }
+    data[spanId] = [spanStart, spanEnd]
+    localStorage.setItem("highlightSpanTextDetails", JSON.stringify(data));
+
+    for (let [key, value] of Object.entries(data)) {
+        // console.log(key, value);
+        startEndLists.push(value);
+    }
+    // console.log(startEndLists);
+    highlightSpanText(startEndLists);
 }
 
 function spanAnnotation(event) {
@@ -599,7 +649,9 @@ function spanAnnotation(event) {
     //     highlight: [spanStart, spanEnd] // string, regexp, array, function, or custom object
     // });
     // $('#spantextcontent').highlightWithinTextarea('update');
-    highlightSpanText(spanStart, spanEnd)
+
+    highlightSpanTextDetails(spanStart, spanEnd, selection);
+    // highlightSpanText(spanStart, spanEnd)
 }
 
 function textareaScrollHeight(eleId1, eleId2) {
@@ -709,45 +761,38 @@ function spanSave(ele) {
     if (textSpanDetails === null) {
         textSpanDetails = {};
     }
-    let spanId = '';
-    var lastActiveId = document.getElementById("lastActiveId").value;
-    // console.log(text, lastActiveId);
     submit_span_form_ele = document.getElementById("idsavetextannospanform");
     const formData = new FormData(submit_span_form_ele, ele);
-    console.log(formData);
-    var object = {'textspantags': {}};
+    // console.log(formData);
+    var object = {};
     formData.forEach(function(value, key){
         // console.log('key: ', key, 'value: ', value);
-        if ((key === 'startindex' ||
-                key === 'endindex' ||
-                key === 'textspan' ||
-                key === 'lastActiveId')) {
-            object[key] = value;
-        }
-        else if (key === 'spanId') {
-            spanId = value;
-        }
-        else if (key in tagSet) {
-            object['textspantags'][key] = value;
-        }
+        object[key] = value;
     });
-    if (spanId in textSpanDetails) {
-        for (let [category, tag] of Object.entries(textSpanDetails[spanId]['textspantags'])) {
-            // console.log(category, tag);
-            if (!(category in object['textspantags'])) {
-                // console.log(category, tag);
-                object['textspantags'][category] = tag;
-            }
-        }
-        textSpanDetails[spanId] = object;
+    // console.log(object);
+    let header = object['modalheader'];
+    let spanId = object['spanId'];
+    let lastActiveId = object['lastActiveId'];
+    let textspan = object['textspan'];
+    // if (textspan)
+    console.log(textspan);
+    ['modalheader', 'spanId', 'lastActiveId'].forEach(e => delete object[e]);
+    // console.log(object);
+    let currentTextSpanDetails = {};
+    currentTextSpanDetails[header] = {}
+    currentTextSpanDetails[header][spanId] = object;
+    // console.log(currentTextSpanDetails);
+    if (header in textSpanDetails) {
+        textSpanDetails[header][spanId] = currentTextSpanDetails[header][spanId];
     }
     else {
-        textSpanDetails[spanId] = object;
+        textSpanDetails[header] = {};
+        textSpanDetails[header][spanId] = currentTextSpanDetails[header][spanId];
     }
-    console.log(textSpanDetails)
     localStorage.setItem("textSpanDetails", JSON.stringify(textSpanDetails));
+    currentTextSpanDetails['lastActiveId'] = lastActiveId;
     $.post( "/easyAnno/savetextAnnoSpan", {
-        a: JSON.stringify(object)
+        a: JSON.stringify(currentTextSpanDetails)
       })
     //   .done(function( data ) {
     //     window.location.reload();
@@ -770,7 +815,11 @@ function mainSave(ele) {
     $.post( "/easyAnno/savetextAnno", {
         a: JSON.stringify(object)
       })
-    //   .done(function( data ) {
-    //     window.location.reload();
-    //   });
+      .done(function( data ) {
+        window.location.reload();
+      });
 }
+
+// $("#maintextcontent").click(function() {
+//     console.log('papppi');
+//   });
