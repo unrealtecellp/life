@@ -762,7 +762,8 @@ function spanSave(ele) {
         textSpanDetails = {};
     }
     submit_span_form_ele = document.getElementById("idsavetextannospanform");
-    const formData = new FormData(submit_span_form_ele, ele);
+    // const formData = new FormData(submit_span_form_ele, ele);
+    const formData = new FormData(submit_span_form_ele);
     // console.log(formData);
     var object = {};
     formData.forEach(function(value, key){
@@ -770,12 +771,15 @@ function spanSave(ele) {
         object[key] = value;
     });
     // console.log(object);
+    let textSpan = object['textspan'];
+    // console.log(textSpan);
+    if (!textSpan) {
+        alert('Please select some text!')
+        return false;
+    }
     let header = object['modalheader'];
     let spanId = object['spanId'];
     let lastActiveId = object['lastActiveId'];
-    let textspan = object['textspan'];
-    // if (textspan)
-    console.log(textspan);
     ['modalheader', 'spanId', 'lastActiveId'].forEach(e => delete object[e]);
     // console.log(object);
     let currentTextSpanDetails = {};
@@ -794,14 +798,16 @@ function spanSave(ele) {
     $.post( "/easyAnno/savetextAnnoSpan", {
         a: JSON.stringify(currentTextSpanDetails)
       })
-    //   .done(function( data ) {
-    //     window.location.reload();
-    //   });
+      .done(function( data ) {
+        // window.location.reload();
+        alert('Annotation Saved :)')
+      });
 }
 
 function mainSave(ele) {
     submit_form_ele = document.getElementById("idsavetextannoform");
-    const formData = new FormData(submit_form_ele, ele);
+    // const formData = new FormData(submit_form_ele, ele);
+    const formData = new FormData(submit_form_ele);
     var object = {};
     formData.forEach(function(value, key){
         // console.log('key: ', key, 'value: ', value);
@@ -819,7 +825,3 @@ function mainSave(ele) {
         window.location.reload();
       });
 }
-
-// $("#maintextcontent").click(function() {
-//     console.log('papppi');
-//   });
