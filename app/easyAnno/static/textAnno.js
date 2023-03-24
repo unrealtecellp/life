@@ -176,6 +176,7 @@ function createElement(tagSet,
     let categoryDependencyInfoList = categoryDependencyInfo(key, value, categoryDependency);
     let dependentOnClass = dependentOn(tagSet, key, categoryDependency).join(' ');
     for (let i = 0; i < value.length; i++) {
+        // console.log(key, value, value[i], defaultCategoryTag, element, elementProperties);
         let elementClass = "";
         let elementPropertiesAddon = elementProperties;
         let labelElementProperties = '';
@@ -203,7 +204,7 @@ function createElement(tagSet,
         }
         else if (element === 'textarea'){
             // console.log(key, element, elementProperties);
-            ele += '<textarea class="form-check-input ' + elementClass + ' " name="' + key + '" id="' + key + '_' + value[i] + '" cols="60">' + defaultCategoryTag + '</textarea>';
+            ele += '<textarea class="form-check-input ' + elementClass + ' " name="' + key + '" id="' + key + '_' + value[i] + '" cols="30">' + defaultCategoryTag + '</textarea>';
         }
         else if (element === 'modal+textarea'){
             // console.log(key, element, elementProperties);
@@ -214,18 +215,23 @@ function createElement(tagSet,
             // ele += addModalElement(key)
         }
         else if (element === 'select') {
-            // console.log(key, element, elementProperties, value[i]);
-            ele += '<select class="' + elementClass + '" id="' + key+'_select' + '" name="' + key + '" '+elementProperties.replace('#', ' ')+' style="width: 100%">';
-            if (defaultCategoryTag!== 'NONE' && defaultCategoryTag.length !== 0) {
-                for (s = 0; s < defaultCategoryTag.length; s++) {
-                    eval = defaultCategoryTag[s];
-                    ele += '<option value="' + eval + '" selected>' + eval + '</option>';
+            if (defaultCategoryTag.includes(value[i]) ||
+                value[i] === "#ID#") {
+                // console.log(key, element, elementProperties, value[i], defaultCategoryTag);
+                ele += '<select class="' + elementClass + '" id="' + key+'_select' + '" name="' + key + '" '+elementProperties.replace('#', ' ')+' style="width: 100%">';
+                // console.log(defaultCategoryTag);
+                if (defaultCategoryTag!== 'NONE' &&
+                    defaultCategoryTag.length !== 0) {
+                    for (s = 0; s < defaultCategoryTag.length; s++) {
+                        eval = defaultCategoryTag[s];
+                        ele += '<option value="' + eval + '" selected>' + eval + '</option>';
+                    }
                 }
-            }
-            ele += '</select><br>';
+                ele += '</select><br>';
 
-            select2Keys.push(key);
-            // continue;
+                select2Keys.push(key);
+                // continue;
+            }
         }
     }
     ele += '</div>';
@@ -235,15 +241,20 @@ function createElement(tagSet,
     return ele
 }
 
-function elementData (projData, key, value, modalEle=false) {
+function elementData (projData, key, value, defaultCategoryTag=undefined, modalEle=false) {
     let eleData = ''
-    let defaultCategoryTag = '';
+    // let defaultCategoryTag = '';
     let categoryDependency = {};
     let tagSet = projData['tagSet'];
     if ("defaultCategoryTags" in projData["tagSetMetaData"]) {
         defaultCategoryTags = projData["tagSetMetaData"]["defaultCategoryTags"]
-        if (key in defaultCategoryTags){
+        if (key in defaultCategoryTags && defaultCategoryTag === undefined){
             defaultCategoryTag = defaultCategoryTags[key]
+            // if (!defaultCategoryTag && modalEle) {
+            //     console.log(key, defaultCategoryTag);
+            //     // console.log(defaultCategoryTags);
+            //     // getModalElementDefaultValue(key, tagSet[value])
+            // }
         }
     }
     if ("categoryDependency" in projData["tagSetMetaData"]) {
@@ -298,13 +309,64 @@ function createHighlightSpanTextDetails(currentUserAnnotation, tagSet) {
     }
 }
 
+function createSelect2(select2Keys, tagSet) {
+    // console.log(select2Keys);
+    let data = [];
+    for (s = 0; s < select2Keys.length; s++) {
+        select2Key = select2Keys[s];
+        select2KeyValue = tagSet[select2Key][0];
+        if (select2KeyValue === '#ID#') {
+            // console.log('getIds')
+            // data = getIds()
+            $.ajax({
+                url: '/easyAnno/getIdList',
+                type: 'GET',
+                data: { 'data': JSON.stringify('') },
+                contentType: "application/json; charset=utf-8",
+                success: function (response) {
+                    data = response.allIds;
+                    // console.log(data);
+                    $('#' + select2Key+'_select').select2({
+                        placeholder: select2Key,
+                        data: data,
+                        // tags: true,
+                        allowClear: true
+                    });
+                }
+            });
+            return false;
+        }
+        else {
+            // console.log(select2Key, tagSet[select2Key]);
+            $('#' + select2Key+'_select').select2({
+                placeholder: select2Key,
+                data: tagSet[select2Key],
+                tags: true,
+                allowClear: true
+            });
+        }
+    }
+}
+
+function createTextSpanDetails(tagSet, defaultCategoryTags) {
+    // console.log(defaultCategoryTags);
+    let textSpanDetails = {};
+    for (let [key, value] of Object.entries(tagSet)) {
+        if (value.includes("#SPAN_TEXT#") && defaultCategoryTags[key]) {
+            // console.log(key, value, defaultCategoryTags[key]);
+            textSpanDetails[key] = defaultCategoryTags[key]
+        }
+    }
+    localStorage.setItem("textSpanDetails", JSON.stringify(textSpanDetails));
+}
 function myFunction(projData) {
     localStorage.setItem("projData", JSON.stringify(projData));
     let lastActiveId = projData["lastActiveId"];
     let accessedOnTime = projData["accessedOnTime"];
     let currentUser = projData['currentUser'];
-    currentUserAnnotation = projData[currentUser];
+    let currentUserAnnotation = projData[currentUser];
     let tagSet = projData["tagSet"];
+    let defaultCategoryTags = projData["tagSetMetaData"]["defaultCategoryTags"]
     let inpt = '';
     
     inpt += '<span class="textFormAlert"></span><div class="row">' +
@@ -367,41 +429,9 @@ function myFunction(projData) {
         createHighlightSpanTextDetails(currentUserAnnotation, tagSet);
     }
     textareaScrollHeight('maintextcontent', 'maintextcontent');
-    // console.log(select2Keys);
-    let data = [];
-    for (s = 0; s < select2Keys.length; s++) {
-        select2Key = select2Keys[s];
-        select2KeyValue = tagSet[select2Key][0];
-        if (select2KeyValue === '#ID#') {
-            // console.log('getIds')
-            // data = getIds()
-            $.ajax({
-                url: '/easyAnno/getIdList',
-                type: 'GET',
-                data: { 'data': JSON.stringify('') },
-                contentType: "application/json; charset=utf-8",
-                success: function (response) {
-                    data = response.allIds;
-                    // console.log(data);
-                    $('#' + select2Key+'_select').select2({
-                        placeholder: select2Key,
-                        data: data,
-                        // tags: true,
-                        allowClear: true
-                    });
-                }
-            });
-            return false;
-        }
-        else {
-            $('#' + select2Key+'_select').select2({
-                placeholder: select2Key,
-                // data: data,
-                tags: true,
-                allowClear: true
-            });
-        }
-    }
+    createSelect2(select2Keys, tagSet);
+    createTextSpanDetails(tagSet, defaultCategoryTags)
+
 }
 
 function previousText() {
@@ -687,9 +717,13 @@ function leftModalForm(selection, spanStart, spanEnd, eleId) {
 }
 
 function middleModalForm(selection, spanStart, spanEnd, eleId) {
+    // console.log(eleId);
     let middleModalData = '';
     let projData = JSON.parse(localStorage.getItem('projData'));
     let tagSet = projData['tagSet'];
+    // let defaultCategoryTags = projData["tagSetMetaData"]["defaultCategoryTags"]
+    // console.log(defaultCategoryTags);
+    let defaultCategoryTag = '';
     let eleValue = tagSet[eleId][0];
     // console.log(eleValue, selection, spanStart, spanEnd, eleId);
     // middleModalData += '<label for="spanStart">Span Start</label>'+
@@ -701,10 +735,12 @@ function middleModalForm(selection, spanStart, spanEnd, eleId) {
         // console.log(categoryDependency);
         for (let [key, value] of Object.entries(categoryDependency)) {
             if (value.includes(eleId)) {
-                // console.log(key, value, tagSet[key]);
-                middleModalData += elementData(projData, key, tagSet[key], true);
+                console.log(key, value, tagSet[key], categoryDependency[key], defaultCategoryTags[value]);
+                defaultCategoryTag = getModalDefaultTag(key, eleId, spanStart, spanEnd);
+                middleModalData += elementData(projData, key, tagSet[key], defaultCategoryTag, true);
             }
             else {
+                // console.log(key, value, tagSet[key]);
                 let dependentOnList = dependentOn(tagSet, key, categoryDependency);
                 loop1:
                 while (dependentOnList.length !== 0) {
@@ -714,8 +750,9 @@ function middleModalForm(selection, spanStart, spanEnd, eleId) {
                     loop2:
                     for (i=0; i<dependentOnList.length; i++) {
                         if (dependentOnList[i].includes(eleId)) {
-                            // console.log(key, value, tagSet[key]);
-                            middleModalData += elementData(projData, key, tagSet[key], false);
+                            console.log(key, value, tagSet[key], categoryDependency[key], defaultCategoryTags[value], dependentOnList[i]);
+                            defaultCategoryTag = getModalDefaultTag(key, eleId, spanStart, spanEnd);
+                            middleModalData += elementData(projData, key, tagSet[key], defaultCategoryTag, false);
                             break loop1;
                         }
                         else if (dependentOnList[i].includes('|')) {
@@ -737,7 +774,24 @@ function middleModalForm(selection, spanStart, spanEnd, eleId) {
     $('#modalmiddle').html(middleModalData);
 }
 
+function getModalDefaultTag(key, eleId, spanStart, spanEnd) {
+    let textSpanDetails = JSON.parse(localStorage.getItem('textSpanDetails'));
+    let defaultCategoryTag = '';
+    spanId = textSpanId(spanStart, spanEnd);
+    if (eleId in textSpanDetails) {
+        if (spanId in textSpanDetails[eleId]) {
+            if (key in textSpanDetails[eleId][spanId]) {
+                defaultCategoryTag = textSpanDetails[eleId][spanId][key]
+            }
+        }
+    }
+    // console.log(eleId, spanStart, spanEnd, textSpanDetails[eleId], textSpanDetails[eleId][spanId], textSpanDetails[eleId][spanId][key]);
+
+    return defaultCategoryTag
+}
+
 function textSpanId(spanStart, spanEnd) {
+    // console.log(spanStart, spanEnd);
     let spanStartLength = spanStart.length;
     let spanEndLength = spanEnd.length
     while(spanStartLength != 5) {
