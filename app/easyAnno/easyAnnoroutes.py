@@ -2571,6 +2571,8 @@ def createTextAnnoNew(zipFile):
                             categoryDependency[tags_df.iloc[i, 0]] = re.sub(' ', '', tags_df.iloc[i, 3]).split(',')[0]
                         if (str(tags_df.iloc[i, 2]) == 'nan'):
                             defaultCategoryTags[tags_df.iloc[i, 0]] = ''
+                        elif (str(tags_df.iloc[i, 4]) == 'select'):
+                            defaultCategoryTags[tags_df.iloc[i, 0]] = [re.sub(' ', '', tags_df.iloc[i, 2]).split(',')[0]]
                         else:
                             defaultCategoryTags[tags_df.iloc[i, 0]] = re.sub(' ', '', tags_df.iloc[i, 2]).split(',')[0]
                         categoryHtmlElement[tags_df.iloc[i, 0]] = re.sub(' ', '', tags_df.iloc[i, 4]).split(',')[0]
