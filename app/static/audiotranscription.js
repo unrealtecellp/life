@@ -187,7 +187,8 @@ function saveRegions(region) {
                 start: region.start,
                 end: region.end,
                 attributes: region.attributes,
-                data: region.data,
+                data: region.data
+                // comment: region.comment
                 // sentence: updateSentenceDetails(rid, sentence, region)
             };
         })
@@ -305,7 +306,8 @@ function editAnnotation(region) {
     // console.log(wavesurferregion)
 
     var sentence = getActiveRegionSentence(region);
-    // console.log(sentence)
+
+    // console.log("Active region sentence", sentence)
     startId = region.start.toString().slice(0, 4).replace('.', '');
     if (startId === '0') {
         startId = '000';
@@ -319,13 +321,15 @@ function editAnnotation(region) {
     // rid = region.start.toString().slice(0, 4).replace('.', '').concat(region.end.toString().slice(0, 4).replace('.', ''));
     if (sentence === undefined) {
         sentence = updateSentenceDetails(rid, sentence, region)
-        // console.log(sentence)
+        // console.log('sentence', sentence)
         createSentenceForm(sentence[rid], rid)
 
     }
     else {
         // console.log('elseeeee', sentence)
         sentence = updateSentenceDetails(rid, sentence, region)
+        // console.log('elseeeee updated', sentence)
+        // console.log('elseeeee updated rid', rid)
         createSentenceForm(sentence[rid], rid)
     }
     // sentence = updateSentenceDetails(rid, sentence, region)
@@ -337,7 +341,7 @@ function editAnnotation(region) {
     // (form.elements.start.value = Math.round(region.start * 10) / 10),
     // (form.elements.end.value = Math.round(region.end * 10) / 10);
     (form.elements.start.value = region.start),
-    (form.elements.end.value = region.end);
+        (form.elements.end.value = region.end);
     // form.elements.note.value = region.data.note || '';
     // document.getElementById("activeSentenceMorphemicBreak").checked = false;
     // $(".containerremovesentencefield1").remove();
@@ -348,7 +352,7 @@ function editAnnotation(region) {
     saveBoundaryData(region, form)
     updateBoundaryColor(region, form);
     formOnSubmit(form, region)
-    
+
     // form.onreset = function () {
     //     // form.style.opacity = 0;
     //     console.log('form reset');
@@ -410,6 +414,7 @@ function saveBoundaryData(region, form) {
     region.update({
         start: form.elements.start.value,
         end: form.elements.end.value,
+        // comment: form.elements.comment.textContent,
         data: {
             // note: form.elements.note.value,
             sentence: sentence
@@ -434,10 +439,10 @@ function showNote(region) {
     if (firstTranscriptionFieldValue !== '') {
         subtitle.innerHTML = firstTranscriptionFieldValue
     }
-    else{
+    else {
         subtitle.innerHTML = '–'
     }
-    
+
 }
 
 // // active region
@@ -453,11 +458,30 @@ function updateSentenceDetailsOnSaveBoundary(boundaryID, sentence, region, form)
     // console.log(boundaryID);
     // console.log(sentence);
     // console.log(region);
-    // console.log(form);
+    // console.log("FOrm in update", form);
+    // console.log("Comment", form["comment-box"].textContent)
+    // console.log("Comment Val", form["comment-box"].value)
     // console.log(document.forms.edit.elements);
+
+    if ("comment-box" in form) {
+        console.log("Comment box found in form")
+        key = "comment";
+        if (key in sentence[boundaryID]) {
+            eleName = 'comment-box'
+            sentence[boundaryID][key] = form[eleName].value
+        }
+        else {
+            eleName = 'comment-box'
+            sentence[boundaryID][key] = form[eleName].value
+        }
+    }
 
     for (let [key, value] of Object.entries(sentence[boundaryID])) {
         // console.log(key, value)
+        // if (key === 'comment') {
+        //     eleName = 'comment-box'
+        //     sentence[boundaryID][key] = form[eleName].value
+        // }
         if (key === 'transcription') {
             for (let [k, v] of Object.entries(sentence[boundaryID][key])) {
                 // console.log(k, v)
@@ -568,6 +592,7 @@ function updateSentenceDetailsOnSaveBoundary(boundaryID, sentence, region, form)
         }
     }
     localStorage.setItem("regions", JSON.stringify(regions));
+
     // console.log('regions', regions)
     // console.log('updateSentenceDetails(boundaryID, sentence, region, form)', sentence)
 
@@ -591,6 +616,7 @@ function updateSentenceDetails(boundaryID, sentence, region) {
         sentencemorphemicbreak = {}
         morphemes = {}
         gloss = {}
+        comment = ""
         activeprojectform = JSON.parse(localStorage.getItem('activeprojectform'));
         // console.log('activeprojectform', activeprojectform)
         scriptCode = activeprojectform['scriptCode']
@@ -634,7 +660,8 @@ function updateSentenceDetails(boundaryID, sentence, region) {
             'gloss': gloss,
             'pos': pos,
             'tags': tags,
-            'sentenceId': document.getElementById('lastActiveId').value
+            'sentenceId': document.getElementById('lastActiveId').value,
+            'comment': comment
         }
         // }
         // let regions = JSON.parse(localStorage.regions)
@@ -654,14 +681,16 @@ function updateSentenceDetails(boundaryID, sentence, region) {
         tempSentence = sentence
         sentence = new Object()
         sentence[boundaryID] = tempSentence
-        sentence[boundaryID]['start'] = region.start,
-            sentence[boundaryID]['end'] = region.end
+        sentence[boundaryID]['start'] = region.start
+        sentence[boundaryID]['end'] = region.end
+        // sentence[boundaryID]['comment'] = region.end
     }
     let regions = JSON.parse(localStorage.regions)
     for (i = 0; i < regions.length; i++) {
         if (regions[i]['start'] === region.start &&
             regions[i]['end'] === region.end) {
             regions[i]['data']['sentence'] = sentence
+            // regions[i]['data']['comment'] = regions.data.comment
         }
     }
     localStorage.setItem("regions", JSON.stringify(regions));
@@ -998,10 +1027,13 @@ function createSentenceForm(formElement, boundaryID) {
                 sentencemorphemicbreakvalue = formElement['sentencemorphemicbreak'][transcriptionkey]
                 // console.log("formElement['sentencemorphemicbreak']", sentencemorphemicbreakvalue)
                 inpt += '<div class="form-group">';
-                inpt += '<label for="Transcription_' + transcriptionkey + '">Transcription in ' + transcriptionkey + '</label>' +
-                    '<input type="text" class="form-control" id="Transcription_' + transcriptionkey + '"' +
+                inpt += '<label for="Transcription_' + transcriptionkey + '">Transcription in ' + transcriptionkey + '</label>'
+                // inpt += '<input type="text" class="form-control transcription-box" id="Transcription_' + transcriptionkey + '"' +
+                //     'placeholder="Transcription ' + transcriptionkey + '" name="transcription_' + transcriptionkey + '"' +
+                //     'value="' + transcriptionvalue + '" onkeyup="autoSavetranscription(this)" required><br>';
+                inpt += '<textarea class="form-control transcription-box" id="Transcription_' + transcriptionkey + '"' +
                     'placeholder="Transcription ' + transcriptionkey + '" name="transcription_' + transcriptionkey + '"' +
-                    'value="' + transcriptionvalue + '" onkeyup="autoSavetranscription(this)" required><br>';
+                    'value="' + transcriptionvalue + '" onkeyup="autoSavetranscription(event,this)" required>' + transcriptionvalue + '</textarea><br>';
                 // '</div></div>';
                 if (transcriptionkey === firstTranscriptionScript) {
                     // activeprojectform = JSON.parse(localStorage.activeprojectform)
@@ -1014,7 +1046,7 @@ function createSentenceForm(formElement, boundaryID) {
                         inpt += '<div id="morphemicDetail_' + transcriptionkey + '" style="display: none;">' +
                             '<p><strong>Give Morphemic Break</strong></p>' +
                             '<p><strong>**(use "#" for word boundary(if there are affixes in the word) and "-" for morphemic break)</strong></p>' +
-                            '<div class="form-group"><div class="input-group">' +
+                            '<div class="form-group"><div cundefinedlass="input-group">' +
                             '<input type="text" class="form-control" name="morphsentenceMorphemicBreak_' + transcriptionkey + '"' +
                             'placeholder="e.g. I have re-#write#-en the paper#-s"' +
                             'id="sentenceMorphemicBreak_' + transcriptionkey + '" value="' + sentencemorphemicbreakvalue + '" readonly>';
@@ -1139,6 +1171,31 @@ function createSentenceForm(formElement, boundaryID) {
         //             key == 'end') {
         //                 inpt = '';
         //             }
+
+        if ("comment" in formElement) {
+            var commentVal = formElement["comment"];
+        }
+        else {
+            try {
+                commentVal = document.getElementById("comment-box-id").value;
+            }
+            catch {
+                commentVal = '';
+            }
+            formElement["comment"] = commentVal;
+        }
+
+
+        console.log("Comment in create", commentVal)
+        console.log(formElement)
+        inpt += '<div class="form-group">';
+        inpt += '<label for="comment-box-id">Comments:</label>'
+        inpt += '<textarea class="form-control comment-box" id="comment-box-id" ' +
+            'placeholder="Comments" name="comment-box"' +
+            'value="' + commentVal + '" onkeyup="autoSavetranscription(event,this)" required>' + commentVal + '</textarea><br>';
+        document.getElementById("transcription-comments").innerHTML = "";
+        $('#transcription-comments').append(inpt);
+        inpt = '';
     }
 
     $("#activeSentenceMorphemicBreak").click(function () {
@@ -1437,7 +1494,7 @@ $("#playPauseBoundary").click(function () {
         else {
             wavesurfer.play(currentTime, endTime);
             togglePlayPause(1);
-            }
+        }
     }
     else if (currentTime === startTime) {
         wavesurfer.play(startTime, endTime);
@@ -1629,10 +1686,24 @@ function lastUpdatedBy(lstUpdatedBy) {
     }
 }
 
-function autoSavetranscription(transcriptionField) {
+function autoSavetranscription(e, transcriptionField) {
     // console.log(wavesurfer, wavesurfer.regions);
     // console.log(transcriptionField, transcriptionField.id, transcriptionField.value);
+    // console.log(transcriptionField);
+    if (e.keyCode == 13) {
+        current_val = transcriptionField.value;
+        keyChar = String.fromCharCode(e.keyCode);
+        // console.log("keychar", keyChar);
+        // console.log("old val", current_val);
+        new_val = current_val.replace(/\s/gm, " ");
+        transcriptionField.value = new_val
+        // console.log("new val", new_val);
+        transcriptionField.textContent = new_val;
+        // console.log("Replace enter");
+    }
+
     showNote();
+
     activeTranscriptionFieldId = transcriptionField.id
     transciptionLang = activeTranscriptionFieldId.split('_')[1]
     activeTranscriptionFieldValue = transcriptionField.value
@@ -1697,7 +1768,7 @@ function updateBoundaryColor(activeRegion) {
             // console.log(regionId, regionData);
             // console.log(regionId, regionData.color);
             regionData.update({
-                color : boundaryColor(255, 255, 0, 0.1)
+                color: boundaryColor(255, 255, 0, 0.1)
             });
         }
     }
@@ -1714,10 +1785,10 @@ function showRegionInfo(region) {
         transciptions = sentence[boundaryID]['transcription'];
         let trans = '';
         for (let [scriptName, transcription] of Object.entries(transciptions)) {
-            trans += scriptName+': '+transcription+'<br>';
+            trans += scriptName + ': ' + transcription + '<br>';
         }
         // let regionInfo = '<br>Boundary ID: '+id+'<br>Start Time: '+startTime+'<br>End Time: '+endTime+'<br>'+trans;
-        regionInfo = '<br>Boundary ID: '+id+'<br>Start Time: '+startTime+'<br>End Time: '+endTime+'<br>'+trans;
+        regionInfo = '<br>Boundary ID: ' + id + '<br>Start Time: ' + startTime + '<br>End Time: ' + endTime + '<br>' + trans;
     }
     catch (err) {
         regionInfo = '<br>You still have to listen to this boundary';
@@ -1726,7 +1797,7 @@ function showRegionInfo(region) {
     document.getElementById('regioninfo').style.display = 'block';
     document.getElementById('subtitle').style.display = 'none';
     document.getElementById('subtitleabsence').style.display = 'block';
-    
+
     // console.log(region);
     // console.log(id, startTime, endTime, transciptions);
 }

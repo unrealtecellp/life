@@ -60,7 +60,9 @@ from app.controller import (
     unannotatedfilename,
     updateuserprojects,
     userdetails,
-    speakerdetails
+    speakerdetails,
+    emailController,
+    manageAppConfig
 )
 import shutil
 import traceback
@@ -136,7 +138,6 @@ def manageusers():
             userprofilelist=userprofilelist,
             usertype=usertype
         )
-
 
 @app.route('/getoneuserdetails', methods=['GET', 'POST'])
 @login_required
@@ -3048,9 +3049,11 @@ def userslist():
 # edit button on dictionary view table
 @app.route('/shareprojectwith', methods=['GET', 'POST'])
 def shareprojectwith():
-    projects, userprojects = getdbcollections.getdbcollections(mongo,
+    projects, userprojects, userlogin, lifeappconfigs = getdbcollections.getdbcollections(mongo,
                                                                'projects',
-                                                               'userprojects')
+                                                               'userprojects',
+                                                               'userlogin',
+                                                               'lifeappconfigs')
     current_username = getcurrentusername.getcurrentusername()
     activeprojectname = getactiveprojectname.getactiveprojectname(
         current_username, userprojects)
@@ -3073,6 +3076,14 @@ def shareprojectwith():
     # print('123', users, speakers, sharemode, sharechecked)
 
     if (len(users) != 0):
+        ## Sender email details
+        sender_email_details = emailController.getSenderDetails(lifeappconfigs)
+        
+        ## Get Base URL
+        current_url = request.base_url
+        base_url_index = current_url.rfind(os.sep)
+        base_url = current_url[:base_url_index]
+
         # projectinfo of the user sharing the project
         projectinfo = userprojects.find_one(
             {
@@ -3262,8 +3273,37 @@ def shareprojectwith():
                                 }
                             }
                         )
+            
+            ## Send email to the user            
+            current_user_email = emailController.getCurrentUserEmail(userlogin, user)
 
-    return 'OK'
+            if current_user_email == '':
+                current_user_email = 'unreal.tece@gmail.com'
+            
+            shared_with_user_email = sender_email_details['email']
+
+            if current_user_email != '' and shared_with_user_email != '':
+                print ('Sending email')
+                purpose = 'share' ##share|OTP|notification
+
+                email_status = emailController.sendEmail(
+                    activeprojectname,
+                    user, 
+                    base_url, 
+                    purpose, 
+                    shared_with_user_email, 
+                    current_user_email,
+                    sender_email_details['password'], 
+                    sender_email_details['smtp_server'], 
+                    sender_email_details['port']
+                )
+            else:
+                email_status = "Email not configured in the app. Project shared but email not sent"
+                print (email_status)
+    
+    flash(email_status)
+    return redirect(url_for('home'))
+    # return 'OK'
 
 # modal view with complete detail of a lexeme
 # view button on dictionary view table
@@ -3761,6 +3801,7 @@ def adminfirstlogin(userlogin, string_password):
                                    'userdeleteFLAG': 0}})
 
     return password
+
 # MongoDB Database
 # user login form route
 @app.route('/login', methods=['GET', 'POST'])
@@ -3770,6 +3811,8 @@ def login():
     # collection of users and their login details
     generateadmin(userlogin)
     dummyUserandProject()
+    manageAppConfig.generateDummyAppConfig()
+
     if current_user.is_authenticated:
         return redirect(url_for('home'))
     form = UserLoginForm()
@@ -3921,6 +3964,8 @@ def register():
         mongo, 'userlogin')
 
     dummyUserandProject()
+    manageAppConfig.generateDummyAppConfig()
+
     form = generate_registration_form()
     current_username = ''
 
@@ -4673,3 +4718,64 @@ def projecttype():
     project_type = getprojecttype.getprojecttype(projects, activeprojectname)
 
     return jsonify(projectType=project_type)
+
+@app.route('/manageapp', methods=['GET', 'POST'])
+@login_required
+def manageapp():
+    userlogin, = getdbcollections.getdbcollections(
+        mongo, 'userlogin')
+    current_username = getcurrentusername.getcurrentusername()
+    print('USERNAME: ', current_username)
+    usertype = userdetails.get_user_type(
+        userlogin, current_username)
+    print('USERTYPE: ', usertype)
+    # print(ADMIN_USER, SUB_ADMINS)
+
+    if 'ADMIN' in usertype:
+        allusers = userdetails.getuserdetails(userlogin)
+        userprofilelist = userdetails.getuserprofilestructure(userlogin)
+
+        return render_template(
+            'manageApp.html',
+            allusers=allusers,
+            userprofilelist=userprofilelist,
+            usertype=usertype
+        )
+
+@app.route('/emailsetup', methods=['GET', 'POST'])
+@login_required
+def emailsetup():
+    userlogin, lifeappconfigs = getdbcollections.getdbcollections(
+        mongo, 'userlogin', 'lifeappconfigs')
+    current_username = getcurrentusername.getcurrentusername()
+    print('USERNAME: ', current_username)
+    usertype = userdetails.get_user_type(
+        userlogin, current_username)
+    print('USERTYPE: ', usertype)
+    # print(ADMIN_USER, SUB_ADMINS)
+    manageAppConfig.generateDummyAppConfig()
+    
+    if 'SUPER-ADMIN' in usertype:
+        if request.method == 'POST':
+        
+            email = request.form.get('name++notificationEmail')
+            pwd = request.form.get('name++notificationEmailPwd')
+            port = request.form.get('name++smtpPort')
+            server = request.form.get('name++smtpServer')
+            emailconfig = {
+                'notificationEmail': email,
+                'notificationEmailPwd': pwd,
+                'smtpPort': port,
+                'smtpServer': server
+            }
+            labelmap = manageAppConfig.updateAppSendEmailDetails(lifeappconfigs, emailconfig)
+
+        else:
+            emailconfig, labelmap = manageAppConfig.getAppSendEmailDetails(lifeappconfigs)
+
+    return render_template(
+        'appemailsetup.html',
+        emailconfig=emailconfig,
+        labelmap=labelmap,
+        usertype=usertype
+    )

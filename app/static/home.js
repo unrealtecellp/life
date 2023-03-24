@@ -64,6 +64,7 @@ $("#idhomevieweditbtn").click(function() {
             windowHref = window.location.href
             pathname = window.location.pathname
             lastIndexOfPathname = windowHref.lastIndexOf(pathname)
+            // console.log(projectType,);
             if (projectType === 'transcriptions') {
                 window.location.href = windowHref.slice(0, lastIndexOfPathname) +  
                                         windowHref.slice(lastIndexOfPathname).replace(pathname, "/enternewsentences");
@@ -72,6 +73,11 @@ $("#idhomevieweditbtn").click(function() {
             else if (projectType === 'questionnaires') {
                 window.location.href = windowHref.slice(0, lastIndexOfPathname) +  
                                         windowHref.slice(lastIndexOfPathname).replace(pathname, '/lifeques/questionnaire');
+                // window.location.href = window.location.href.replace(pathname, '/lifeques/questionnaire');
+            }
+            else if (projectType === 'text') {
+                window.location.href = windowHref.slice(0, lastIndexOfPathname) +  
+                                        windowHref.slice(lastIndexOfPathname).replace(pathname, '/easyAnno/textAnno');
                 // window.location.href = window.location.href.replace(pathname, '/lifeques/questionnaire');
             }
             else {
