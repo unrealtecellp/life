@@ -879,3 +879,10 @@ function mainSave(ele) {
         window.location.reload();
       });
 }
+
+// $(document).ready(function(){
+//     $('#maintextcontent').click(function() { 
+//         alert('clicked');
+//         console.log(this.selectionStart, this.selectionEnd); 
+//     });
+//   });
