@@ -81,7 +81,8 @@ $("#idhomevieweditbtn").click(function() {
                 // window.location.href = window.location.href.replace(pathname, '/lifeques/questionnaire');
             }
             else {
-                window.location.href = window.location.href.replace("home", "enternewlexeme");
+                window.location.href = windowHref.slice(0, lastIndexOfPathname) +  
+                                        windowHref.slice(lastIndexOfPathname).replace(pathname, "/enternewlexeme");
             }
         }
     })
