@@ -1,16 +1,19 @@
-from pylatex import Document, Center, Command, UnsafeCommand, PageStyle, Head, Foot, MiniPage, LargeText, MediumText, Section, LineBreak, NewPage, Tabularx, TextColor, simple_page_number
-from pylatex.utils import bold, NoEscape
-
-from pylatex.base_classes import Environment, Options, CommandBase
-from pylatex.package import Package
-
-import pandas as pd
 import json
 import os
-import regex as re
 
+import pandas as pd
+import regex as re
+from pylatex import (Center, Command, Document, Foot, Head, LargeText,
+                     LineBreak, MediumText, MiniPage, NewPage, PageStyle,
+                     Section, Tabularx, TextColor, UnsafeCommand,
+                     simple_page_number)
+from pylatex.base_classes import CommandBase, Environment, Options
+from pylatex.package import Package
+from pylatex.utils import NoEscape, bold
 
 script_map = {
+    'IPA': '\ipa',
+    'Ipa': '\ipa',
     'ipa': '\ipa',
     'Deva': '\dev',
     'Gujr': '\guj',
@@ -94,11 +97,14 @@ def get_latex_entries(all_entries, fields, dict_headword, char_list, doc, headwo
     #     # content_separator = "\n"
     eng_pattern = '[A-Za-z ]+'
     # print('Fields', fields)
+    # print("Headword script", headwordscript)
     headword_script = script_map[headwordscript]
+    # print("headword script", headword_script)
+    # print("All characters", char_list)
     for character in char_list:
         cur_entries = all_entries[all_entries['firstchar'] == character]
         cur_entries_list = cur_entries.to_dict('records')
-        # print(cur_entries_list[0])
+        print('Current entries first', cur_entries_list[0])
         with doc.create(Section(NoEscape(headword_script+'{'+character+'}'), numbering=False)):
             with doc.create(Multicols(arguments='2')):
                 for cur_entry in cur_entries_list:
@@ -109,12 +115,14 @@ def get_latex_entries(all_entries, fields, dict_headword, char_list, doc, headwo
                     for field in fields:
                         if field in cur_entry:
                             cur_val = cur_entry[field]
-                            print (cur_val)
-                            if field == 'headword':                                
-                                final_val = '\markboth{'+headword_script+'{'+cur_val+'}}{'+headword_script+'{'+cur_val+'}}'+'\\textbf{'+headword_script+'{'+cur_val+'}} '
+                            print(cur_val)
+                            if field == 'headword':
+                                final_val = '\markboth{'+headword_script+'{'+cur_val+'}}{'+headword_script + \
+                                    '{'+cur_val+'}}'+'\\textbf{' + \
+                                    headword_script+'{'+cur_val+'}} '
                             elif field == 'Pronunciation':
                                 final_val = final_val + '/\ipa{'+cur_val+'}/ '
-                                print ('Pronunciation', cur_val)
+                                print('Pronunciation', cur_val)
                             elif field == 'grammaticalcategory':
                                 final_val = final_val + \
                                     '\\textit{'+cur_val+'} '
@@ -137,16 +145,19 @@ def get_latex_entries(all_entries, fields, dict_headword, char_list, doc, headwo
                                 elif cur_val.strip() != '':
                                     final_val = final_val.strip() + '. '
 
-                                if script_name in script_map:                                    
+                                if script_name in script_map:
                                     latex_script = script_map[script_name]
-                                    if not 'Lexeme' in field: 
-                                        final_val = final_val + latex_script+'{'+cur_val+'} '
+                                    if not 'Lexeme' in field:
+                                        final_val = final_val + \
+                                            latex_script+'{'+cur_val+'} '
                                     else:
                                         if headwordscript != latex_script:
-                                            final_val = final_val + latex_script+'{'+cur_val+'} '
+                                            final_val = final_val + \
+                                                latex_script+'{'+cur_val+'} '
                                 elif script_name in language_map:
                                     latex_script = language_map[script_name]
-                                    final_val = final_val + latex_script+'{'+cur_val+'} '
+                                    final_val = final_val + \
+                                        latex_script+'{'+cur_val+'} '
                                 else:
                                     # If Latn / Roman script then no need of other font
                                     # If not Roman and Lang / Script map does not have this
@@ -232,8 +243,8 @@ def generate_formatted_latex(
         project,
         editors=['Editor 1', 'Editor 2', 'Editor 3'],
         co_editors=['Co-ed 1', 'Co-ed 2', 'Co-ed 3'],
-        metadata=['Scheme for Protection and Preservation of Indian Languages',
-                  'Central Institute of Indian Languages'],
+        metadata=['Centre for Advanced Research in Underrepresented Languages',
+                  'UnReaL-TecE LLP'],
         fields=[],
         dict_headword='headword',  # lexemeformscripts.ipa.., glosslangs.hin..
         formatting_options={
@@ -381,9 +392,11 @@ def generate_formatted_latex(
         doc_style = Command("pagestyle", arguments="fancy")
         doc.preamble.append(doc_style)
 
-        headwordscript = list(lexicon[0]['langscripts']['headwordscript'].keys())[0]
+        headwordscript = list(
+            lexicon[0]['langscripts']['headwordscript'].keys())[0]
         otherscript = lexicon[0]['langscripts']['lexemeformscripts'].keys()
 
+        print("headword script", headwordscript)
 
         # if 'ipa' not in otherscript:
         #     other = True
@@ -506,6 +519,10 @@ def generate_formatted_latex(
 
         required_entries, character_list = get_relevant_data(
             lexicon, lexicon_df, fields, dict_headword)
+
+        print('Data', required_entries)
+        print("Char list", character_list)
+
         doc = get_latex_entries(required_entries, fields,
                                 dict_headword, character_list, doc, headwordscript, otherscript)
         # doc.append(doc)

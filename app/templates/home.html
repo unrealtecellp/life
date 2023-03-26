@@ -19,7 +19,7 @@ Home
 <!-- <h3>ADMIN CONSOLE</h3> -->
 <div class="pull-right">
   <button type="button" id="manageusers" class="btn btn-lg btn-danger pull-right"
-    onclick="window.location.href='{{ url_for('manageusers') }}';">Manage Users</button>
+    onclick="window.location.href='{{ url_for('manageapp') }}';">Manage App</button>
 </div>
 {% endif %}
 <br>
@@ -55,12 +55,14 @@ Home
     <h3>Active Project: {{ activeprojectname }}</h3>
 
     <div>
-      <button type="button" class="btn btn-lg btn-primary" id="idhomevieweditbtn">View/Edit Project</button>
+      {% if activeprojectname != '' %}
+        <button type="button" class="btn btn-lg btn-primary" id="idhomevieweditbtn">View/Edit Project</button>
+      {% endif %}
       {% if shareinfo['sharechecked'] == 'true' %}
-      <button type="button" id="shareproject" class="btn btn-lg btn-danger" data-toggle="modal"
+        <button type="button" id="shareproject" class="btn btn-lg btn-danger" data-toggle="modal"
         data-target="#myShareProjectModal">
-        Share Project
-      </button>
+          Share Project
+        </button>
       {% endif %}
       {% if shareinfo['sharemode']|int >= 1 %}
       <!-- <button type="button" class="btn btn-lg btn-warning"
