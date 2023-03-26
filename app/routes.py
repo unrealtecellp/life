@@ -92,6 +92,7 @@ def home():
 
     project_type = getprojecttype.getprojecttype(projects, activeprojectname)
     # print(shareinfo)
+    # print('activeprojectname', activeprojectname)
 
     return render_template('home.html',
                            data=currentuserprojectsname,
