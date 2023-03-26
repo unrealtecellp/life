@@ -119,6 +119,10 @@ legend.scheduler-border {
     border-bottom:none;
 }
 
+legend {
+  word-wrap: break-word;
+}
+
 .textcontent {
   background-color:#DCDCDC;
   padding: 4%;
