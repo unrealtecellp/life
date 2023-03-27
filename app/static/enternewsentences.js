@@ -755,13 +755,19 @@ $("#save").click(function() {
   transcriptionData['lastActiveId'] = lastActiveId
   transcriptionData['transcriptionRegions'] = transcriptionRegions
   // console.log(transcriptionData)
-  $.getJSON('/savetranscription', {
+  // $.getJSON('/savetranscription', {
   
-  a:JSON.stringify(transcriptionData)
-  }, function(data) {
-      window.location.reload();
+  // a:JSON.stringify(transcriptionData)
+  // }, function(data) {
+  //     window.location.reload();
+  // });
+  // return false;
+  $.post( "/savetranscription", {
+    a: JSON.stringify(transcriptionData )
+  })
+  .done(function( data ) {
+    window.location.reload();
   });
-  return false; 
 });
 
 function myFunction(newData) {

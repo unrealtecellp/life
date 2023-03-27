@@ -62,8 +62,17 @@ Manage Project
 
     <br><br>
     {% if shareinfo['sharemode']|int >= 2 %}
-    <input class="btn btn-lg btn-success" type="button" value="Manage Speaker Metadata"
-      onclick="window.location.href='{{url_for('managespeakermetadata')}}'; window">
+    <div>
+      <input class="btn btn-lg btn-success" type="button" value="Manage Speaker Metadata"
+        onclick="window.location.href='{{url_for('managespeakermetadata')}}'; window">
+    </div>
+    {% endif %}
+    <br />
+    {% if shareinfo['sharemode']|int >= 1 %}
+    <div>
+      <button type="button" class="btn btn-lg btn-warning"
+        onclick="window.location.href='{{ url_for('downloadproject') }}';">Download Project</button>
+    </div>
     {% endif %}
     <br>
     <hr>

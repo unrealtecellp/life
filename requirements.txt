@@ -37,7 +37,7 @@ praat-parselmouth==0.4.3
 pyasn1==0.4.8
 pyasn1-modules==0.2.8
 PyLaTeX==1.4.1
-pymongo==4.3.3
+pymongo==3.11.4
 pyparsing==3.0.9
 PySocks==1.7.1
 pytesseract==0.3.10
@@ -57,6 +57,7 @@ suds-jurko==0.6
 tgt==1.4.4
 threadpoolctl==3.1.0
 torch==1.13.1
+torchaudio==0.13.1
 typing-extensions==4.5.0
 urllib3==1.26.14
 visitor==0.1.3

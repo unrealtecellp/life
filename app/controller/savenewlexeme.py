@@ -3,15 +3,18 @@
 import re
 from datetime import datetime
 
+from app.controller import langscriptutils
+
+
 def savenewlexeme(mongo,
-                    projects,
-                    lexemes,
-                    scriptCode,
-                    langScript,
-                    new_lexeme_data,
-                    new_lexeme_files,
-                    projectowner,
-                    current_username):
+                  projects,
+                  lexemes,
+                  scriptCode,
+                  langScript,
+                  new_lexeme_data,
+                  new_lexeme_files,
+                  projectowner,
+                  current_username):
     """
     Args:
         mongo: instance of PyMongo.
@@ -34,9 +37,9 @@ def savenewlexeme(mongo,
     for key in newLexemeFiles:
         if newLexemeFiles[key].filename != '':
             # adding microseconds of current time to differ two files of same name
-            newLexemeFilesName[key] = (datetime.now().strftime('%f')+
-                                        '_'+
-                                        newLexemeFiles[key].filename)
+            newLexemeFilesName[key] = (datetime.now().strftime('%f') +
+                                       '_' +
+                                       newLexemeFiles[key].filename)
     # format data filled in enter new lexeme form
     lexemeFormData = {}
     sense = {}
@@ -50,8 +53,8 @@ def savenewlexeme(mongo,
         for key, value in newLexemeData.items():
             if 'Script' in key:
                 k = re.search(r'Script (\w+)', key)
-                lexemeFormScriptList.append({k[1] : value[0]})
-        lexemeFormData['headword'] =  list(lexemeFormScriptList[0].values())[0]
+                lexemeFormScriptList.append({k[1]: value[0]})
+        lexemeFormData['headword'] = list(lexemeFormScriptList[0].values())[0]
         return lexemeFormScriptList
 
     def senseListOfDict(senseCount):
@@ -62,9 +65,9 @@ def savenewlexeme(mongo,
                 if 'Sense '+str(num) in key:
                     k = re.search(r'([\w+\s]+) Sense', key)
                     if k[1] == 'Semantic Domain' or k[1] == 'Lexical Relation':
-                        senselist.append({k[1] : value})
+                        senselist.append({k[1]: value})
                     else:
-                        senselist.append({k[1] : value[0]})
+                        senselist.append({k[1]: value[0]})
             sense['Sense '+str(num)] = senselist
         return sense
 
@@ -103,7 +106,8 @@ def savenewlexeme(mongo,
         return customFieldsDict
 
     for key, value in newLexemeData.items():
-        if 'Sense' in key or 'Variant' in key or 'Allomorph' in key: continue
+        if 'Sense' in key or 'Variant' in key or 'Allomorph' in key:
+            continue
         elif key == 'senseCount':
             Sense = senseListOfDict(value[0])
             lexemeFormData['Sense'] = Sense
@@ -124,7 +128,8 @@ def savenewlexeme(mongo,
 
     # create lexemeId
     projectname = newLexemeData['projectname'][0]
-    project = projects.find_one({'projectname': projectname}, {'projectname' : 1, 'lexemeInserted' : 1})
+    project = projects.find_one({'projectname': projectname}, {
+                                'projectname': 1, 'lexemeInserted': 1})
     lexemeCount = project['lexemeInserted']+1
     lexemeId = projectname+lexemeFormData['headword']+str(lexemeCount)
     Id = re.sub(r'[-: \.]', '', str(datetime.now()))
@@ -148,28 +153,9 @@ def savenewlexeme(mongo,
     lexemeFormData['updatedBy'] = current_username
     lexemeFormData['lexemeId'] = lexemeId
 
-    langscripts = {}
-    langscripts["langname"] = newLexemeData['Lexeme Language'][0]
-    langscripts["langcode"] = newLexemeData['Lexeme Language'][0][:3].lower()
-    headwordscript = list(lexemeFormData['Lexeme Form Script'][0].keys())[0]
-    langscripts["headwordscript"] = {scriptCode[headwordscript]: headwordscript}
-    lexemeformscripts = {}
-    for i in range(len(lexemeFormData['Lexeme Form Script'])):
-        for lfs in lexemeFormData['Lexeme Form Script'][i].keys():
-            lexemeformscripts[scriptCode[lfs]] = lfs
-    langscripts["lexemeformscripts"] = lexemeformscripts
-    glosslangs = {}
-    glossscripts = {}
-    for gl in newLexemeData.keys():
-        if ('Gloss' in gl):
-            gl = gl.split()[1]
-            glosslangs[gl[0:3]] = gl
-            glossscripts[scriptCode[langScript[gl]]] = gl
-    langscripts["glosslangs"] = glosslangs
-
-    langscripts["glossscripts"] = glossscripts
+    langscripts = langscriptutils.get_langscripts(
+        newLexemeData, lexemeFormData)
     lexemeFormData['langscripts'] = langscripts
-
 
     SenseNew = {}
 
@@ -179,7 +165,7 @@ def savenewlexeme(mongo,
         Gloss = {}
         Definition = {}
         for val in value:
-            
+
             for k, v in val.items():
                 if ("Gloss" in k):
                     Gloss[k.split()[1][:3].lower()] = v
@@ -192,9 +178,9 @@ def savenewlexeme(mongo,
 
                 else:
                     key[k] = v
-        
+
         key['Gloss'] = Gloss
-        key['Definition'] = Definition     
+        key['Definition'] = Definition
         SenseNew[keyParent] = key
 
     lexemeFormData['SenseNew'] = SenseNew
@@ -222,5 +208,6 @@ def savenewlexeme(mongo,
     lexemes.insert_one(lexemeFormData)
     # update lexemeInserted count of the project in projects collection
     # project['lexemeInserted'] = lexemeCount
-    projects.update_one({'projectname': projectname}, { '$set' : { 'lexemeInserted' : lexemeCount }})
+    projects.update_one({'projectname': projectname}, {
+                        '$set': {'lexemeInserted': lexemeCount}})
     # projects.update_one({}, { '$set' : { projectname : project[projectname] }})

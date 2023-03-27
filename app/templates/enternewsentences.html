@@ -13,86 +13,31 @@ Enter New Sentences
 
 {% block app_content %}
 <div class="row">
-  <div class="col-sm-9">
+  <div class="col-sm-5">
     {% if projectName is defined %}
-    <h4>Project Name : {{ projectName }}</h4><br>
+    <h4>Project Name : {{ projectName }}</h4>
     {% endif %}
-    {% if speakerids is defined %}
+  </div>
+  <div class="col-sm-7 pull-right">
     <button type="button" id="progressreport" class="btn btn-lg btn-danger" data-toggle="modal"
       data-target="#myProgressReportModal">
       Progress Report
     </button>
-    <br>
-    <hr>
-    <h4>Download:</h3>
-      <div class="btn-group" role="group">
-        <button type="b4tton" id="lifejson" class="btn btn-info dropdown-toggle" data-toggle="dropdown"
-          aria-haspopup="true" aria-expanded="false">
-          LiFE JSON
-        </button>
-      </div>
-      <div class="btn-group" role="group">
-        <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
-          aria-expanded="false">
-          Latest Transcriptions
-          <span class="caret"></span>
-        </button>
-        <ul class="dropdown-menu">
-          <li id="praattexgrid"><a href="#">Praat Textgrid</a></li>
-          <li id="csv"><a href="#">CSV</a></li>
-          <li id="tsv"><a href="#">TSV</a></li>
-          <li id="json"><a href="#">JSON</a></li>
-          <li id="xlsx"><a href="#">XLSX</a></li>
-          <li id="latex"><a href="#">LaTeX</a></li>
-          <li id="html"><a href="#">HTML</a></li>
-          <li id="markdown"><a href="#">Markdown</a></li>
-        </ul>
-      </div>
-
-      <div class="btn-group" role="group">
-        <button type="button" class="btn btn-warning dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
-          aria-expanded="false">
-          My Transcriptions
-          <span class="caret"></span>
-        </button>
-        <ul class="dropdown-menu">
-          <li id="mypraattexgrid"><a href="#">Praat Textgrid</a></li>
-          <li id="mycsv"><a href="#">CSV</a></li>
-          <li id="mytsv"><a href="#">TSV</a></li>
-          <li id="myjson"><a href="#">JSON</a></li>
-          <li id="myxlsx"><a href="#">XLSX</a></li>
-          <li id="mylatex"><a href="#">LaTeX</a></li>
-          <li id="myhtml"><a href="#">HTML</a></li>
-          <li id="mymarkdown"><a href="#">Markdown</a></li>
-
-        </ul>
-      </div>
-
-      <br>
-      <br>
-      <label for="speakeridsdropdown">Audio Files from Source: </label>
-      <select class="custom-select custom-select-sm" id="speakeridsdropdown" style="width: 25%; margin-top:10px">
-        <option selected disabled>{{ activespeakerid }}</option>
-        {% for d in speakerids %}
-        {% if d != activespeakerid %}
-        <option value="{{ d }}">{{ d }}</option>
-        {% endif %}
-        {% endfor %}
-      </select>
-      {% endif %}
-
-  </div>
-  {% if shareinfo['sharemode']|int >= 3 %}
-  <div class="col-sm-3">
-    <form name="newaudioupload" action="/uploadaudiofiles" method="POST" enctype="multipart/form-data">
+    <button type="button" id="downloadtranscription" class="btn btn-lg btn-warning" data-toggle="modal"
+      data-target="#myDownloadTranscriptionModal">
+      Download
+    </button>
+    {% if shareinfo['sharemode']|int >= 3 %}
+    <button type="button" id="addnewspeakertranscriptionid" class="btn btn-lg btn-info addnewspeaker"
+      data-toggle="modal" data-target="#addNewSpeakerModal">
+      Add New Source
+    </button>
+    <button type="button" id="uploadaudioid" class="btn btn-lg btn-primary uploadaudio" data-toggle="modal"
+      data-target="#myUploadAudioModal">
+      Upload Audio
+    </button>
+    {# <form name="newaudioupload" action="/uploadaudiofiles" method="POST" enctype="multipart/form-data">
       <div class="col upload">
-        <button type="button" id="addnewspeakertranscriptionid" class="btn btn-lg btn-primary addnewspeaker"
-          data-toggle="modal" data-target="#addNewSpeakerModal">
-          Add New Source
-        </button>
-        <br><br>
-        {# <input type="text" class="form-control" placeholder="Speaker ID" name="speakerId" required>
-        <br> #}
         <select class="custom-select custom-select-sm" id="speakeriduploaddropdown" name="speakerId" style="width:100%"
           required>
           <!-- <option selected disabled></option> -->
@@ -105,55 +50,65 @@ Enter New Sentences
         <br>
         <input class="btn btn-primary uploadbtn" type="submit" value="Upload Audio File">
       </div>
-    </form>
+    </form> #}
+    <!-- <br> -->
+    {% endif %}
+    <!-- <button class="btn btn-sm btn-dark" type="button" id="transcriptionUserManual" data-toggle="tooltip" title="Transcription User Manual"> -->
+    <!-- <a href="https://docs.google.com/document/d/1TWOt9km-HdCk__bi35ZcUF101PZMWZDo0PgXlkeVLTY/edit?usp=sharing" target="_blank" data-toggle="tooltip" title="Transcription User Manual">
+        <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span> -->
+    <!-- Transcription User Manual -->
+    </a>
+    <!-- </button> -->
   </div>
-  {% endif %}
 </div>
 <hr>
-{% for data in sdata %}
-{% if data['sentenceId'] is defined %}
-{% if data['interlineargloss'] is defined %}
-<p id='sentenceId'><strong>Sentence ID: </strong>{{ data['sentenceId'] }}</p>
-<input type="text" class="form-control" placeholder="{{ data['interlineargloss']['level_1'] }}"
-  name="interlinearglosslevel_1" value="{{ data['interlineargloss']['level_1'] }}" disabled>
-<input type="text" class="form-control" placeholder="{{ data['interlineargloss']['level_2'] }}"
-  name="interlinearglosslevel_2" value="{{ data['interlineargloss']['level_2'] }}" disabled>
-<input type="text" class="form-control" placeholder="{{ data['interlineargloss']['level_3'] }}"
-  name="interlinearglosslevel_3" value="{{ data['interlineargloss']['level_3'] }}" disabled>
-<br>
-<button type="button" class="btn btn-primary " onclick="editSentenceBtn()">Edit Sentence</button>
-<hr>
-{% endif %}
-{% endif %}
-{% endfor %}
-<!-- <div class="row"> -->
-<!-- <div class="col-md-12 btn-group btn-group-lg btn-primary">
-  <button type="button" class="btn btn-lg btn-primary">Discourse</button>
-  <button type="button" class="btn btn-lg btn-primary">Sentence</button>
-  <button type="button" class="btn btn-lg btn-primary">Word</button>
-  <button type="button" class="btn btn-lg btn-primary">Phone</button>
-</div> -->
-<!-- </div> -->
-<!-- <br> -->
-<!-- <hr> -->
 <div class="row">
-  <div class="col-sm-7 commentIDs">
-    <button type="button" id="uNAnnotated" class="btn btn-light" onclick="unAnnotated()">All Filename</button>
+  <div class="col-sm-6 pull-right">
+    {% if commentstats is defined %}
+    <div class="commentStats">
+      <!-- <strong>Total Files: {{ commentstats[0] }}</strong><br> -->
+      <!-- <strong>Completed Files: {{ commentstats[1] }}</strong><br>
+      <strong>Remaining Files: {{ commentstats[2] }}</strong><br> -->
+    </div>
+    {% if commentstats[0] != 0 %}
+    <div class="progress">
+      <div class="progress-bar progress-bar-success" role="progressbar"
+        style="width:{{ commentstats[1]/commentstats[0]*100 }}%">
+        Completed : {{ commentstats[1] }}
+      </div>
+      <!-- <div class="progress-bar progress-bar-warning" role="progressbar" style="width:10%">
+            Warning
+          </div> -->
+      <div class="progress-bar progress-bar-danger" role="progressbar"
+        style="width:{{ commentstats[2]/commentstats[0]*100 }}%">
+        Remaining : {{ commentstats[2] }}
+      </div>
+    </div>
+    {% endif %}
+    {% endif %}
   </div>
-  {% if commentstats is defined %}
-  <div class="col-sm-3 commentStats pull-right">
-    <strong>Total Files: {{ commentstats[0] }}</strong><br>
-    <strong>Completed Files: {{ commentstats[1] }}</strong><br>
-    <strong>Remaining Files: {{ commentstats[2] }}</strong><br>
+  <div class="col-sm-6">
+    <div>
+      {% if speakerids is defined %}
+      <label for="speakeridsdropdown">Audio Files from Source: </label>
+      <select class="custom-select custom-select-sm" id="speakeridsdropdown" style="width: 50%;">
+        <option selected disabled>{{ activespeakerid }}</option>
+        {% for d in speakerids %}
+        {% if d != activespeakerid %}
+        <option value="{{ d }}">{{ d }}</option>
+        {% endif %}
+        {% endfor %}
+      </select>
+      {% endif %}
+    </div>
+    <br>
+    <div class="commentIDs">
+      <button type="button" id="uNAnnotated" class="btn btn-light" onclick="unAnnotated()">All Filename</button>
+    </div>
   </div>
-  {% endif %}
 </div>
-<br>
-<div class="defaultfield">
-</div>
-<div class="classaudiometadata" , id="idaudiometadata"></div>
-<!-- <br> -->
 <hr>
+
 <button class="btn btn-info btn-lg" type="button" id="previous" onclick="previousAudio()">
   <span class="previousaudio glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
   Previous Audio
@@ -164,15 +119,21 @@ Enter New Sentences
 </button>
 <br>
 <br>
+<div class="row">
+  <div class="col-md-9 defaultfield" id="iddefaultfield"></div>
+  <div class="col-md-2 classaudiometadata pull-right" id="idaudiometadata"></div>
+</div>
+<br>
 <div class="lexemelang"></div>
 <div class="lexemeform"></div>
 
+<p id="subtitleabsence" class="text-center text-info">&nbsp;</p>
 <p id="subtitle" class="text-center text-info">&nbsp;</p>
 <div id="wave-timeline"></div>
 <div id="waveform"></div>
 <div id="wave-spectrogram" style="display: none;"></div>
-
-<br>
+<p id="regioninfo" class="text-danger">&nbsp;</p>
+<!-- <br> -->
 <hr>
 
 <!-- <i class="glyphicon glyphicon-zoom-in"></i> -->
@@ -207,6 +168,9 @@ Enter New Sentences
 
   <div class="form-group transcription1" id="transcription2"></div>
   <div class="form-group translationfield1" id="translationfield2"></div>
+
+  <div class="form-group comments" id="transcription-comments"></div>
+
   <!-- <br> -->
   <div class="row">
     <!-- <center><i>or</i></center> -->
@@ -314,10 +278,136 @@ Enter New Sentences
     </div>
   </div>
 </div>
+
+<!-- Upload Audio Modal -->
+<div class="modal fade" id="myUploadAudioModal" tabindex="-1" role="dialog" aria-labelledby="myUploadAudioModalLabel">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+            aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myUploadAudioModalLabel">Project Name: {{ projectName }}</h4>
+      </div>
+      <div class="modal-body">
+        <form name="newaudioupload" action="/uploadaudiofiles" method="POST" enctype="multipart/form-data">
+          <div class="col upload">
+            <!-- <strong>Audio Files from Source: </strong> -->
+            <label for="speakeriduploaddropdown">Audio Files for Source: </label>
+            <select class="custom-select custom-select-sm" id="speakeriduploaddropdown" name="speakerId"
+              style="width:30%" required>
+              <!-- <option selected disabled></option> -->
+              {% for d in addedspeakerids %}
+              <option value="{{ d }}">{{ d }}</option>
+              {% endfor %}
+            </select>
+            <br><br>
+            <input type="file" id="audiofile" name="audiofile" required>
+            <br>
+            <input class="btn btn-primary uploadbtn" type="submit" value="Upload Audio File">
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Download Transcription Modal -->
+<div class="modal fade" id="myDownloadTranscriptionModal" tabindex="-1" role="dialog"
+  aria-labelledby="myDownloadTranscriptionModalLabel">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+            aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myDownloadTranscriptionModalLabel">Project Name: {{ projectName }}</h4>
+      </div>
+      <div class="modal-body">
+
+        <h4>Download:</h3>
+          <div class="btn-group" role="group">
+            <button type="b4tton" id="lifejson" class="btn btn-info dropdown-toggle" data-toggle="dropdown"
+              aria-haspopup="true" aria-expanded="false">
+              LiFE JSON
+            </button>
+          </div>
+          <div class="btn-group" role="group">
+            <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
+              aria-expanded="false">
+              Latest Transcriptions
+              <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu">
+              <li id="praattexgrid"><a href="#">Praat Textgrid</a></li>
+              <li id="csv"><a href="#">CSV</a></li>
+              <li id="tsv"><a href="#">TSV</a></li>
+              <li id="json"><a href="#">JSON</a></li>
+              <li id="xlsx"><a href="#">XLSX</a></li>
+              <li id="latex"><a href="#">LaTeX</a></li>
+              <li id="html"><a href="#">HTML</a></li>
+              <li id="markdown"><a href="#">Markdown</a></li>
+            </ul>
+          </div>
+
+          <div class="btn-group" role="group">
+            <button type="button" class="btn btn-warning dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
+              aria-expanded="false">
+              My Transcriptions
+              <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu">
+              <li id="mypraattexgrid"><a href="#">Praat Textgrid</a></li>
+              <li id="mycsv"><a href="#">CSV</a></li>
+              <li id="mytsv"><a href="#">TSV</a></li>
+              <li id="myjson"><a href="#">JSON</a></li>
+              <li id="myxlsx"><a href="#">XLSX</a></li>
+              <li id="mylatex"><a href="#">LaTeX</a></li>
+              <li id="myhtml"><a href="#">HTML</a></li>
+              <li id="mymarkdown"><a href="#">Markdown</a></li>
+            </ul>
+          </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- <label for="ipa">IPA</label>
   <input type="text" id="ipa" name="ipa"><br><br>
   <label for="meetei">Meetei</label>
   <input type="text" id="meetei" name="meetei" onfocusin="ipaFocus(this)"><br><br> -->
+<!-- <hr> -->
+{% for data in sdata %}
+{% if data['sentenceId'] is defined %}
+{% if data['interlineargloss'] is defined %}
+<p id='sentenceId'><strong>Sentence ID: </strong>{{ data['sentenceId'] }}</p>
+<input type="text" class="form-control" placeholder="{{ data['interlineargloss']['level_1'] }}"
+  name="interlinearglosslevel_1" value="{{ data['interlineargloss']['level_1'] }}" disabled>
+<input type="text" class="form-control" placeholder="{{ data['interlineargloss']['level_2'] }}"
+  name="interlinearglosslevel_2" value="{{ data['interlineargloss']['level_2'] }}" disabled>
+<input type="text" class="form-control" placeholder="{{ data['interlineargloss']['level_3'] }}"
+  name="interlinearglosslevel_3" value="{{ data['interlineargloss']['level_3'] }}" disabled>
+<br>
+<button type="button" class="btn btn-primary " onclick="editSentenceBtn()">Edit Sentence</button>
+<hr>
+{% endif %}
+{% endif %}
+{% endfor %}
+<!-- <div class="row"> -->
+<!-- <div class="col-md-12 btn-group btn-group-lg btn-primary">
+  <button type="button" class="btn btn-lg btn-primary">Discourse</button>
+  <button type="button" class="btn btn-lg btn-primary">Sentence</button>
+  <button type="button" class="btn btn-lg btn-primary">Word</button>
+  <button type="button" class="btn btn-lg btn-primary">Phone</button>
+</div> -->
+<!-- </div> -->
+<!-- <br> -->
+<!-- <hr> -->
+
 {% endblock %}
 
 {% block scripts %}
