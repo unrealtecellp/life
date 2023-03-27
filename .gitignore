@@ -26,3 +26,6 @@ app/lifedownloader/downloads/D_testing_project_for_transcription_15_textgrids.zi
 app/lifedownloader/downloads
 app/jsonfiles/languages.txt
 app/jsonfiles/languagesSet.txt
+app/jsonfiles/tagSet.json
+app/jsonfiles/tagSetMetaData.json
+ubuntuPackages.sh
