@@ -1,72 +1,55 @@
-from flask import flash, redirect, render_template, url_for, request, json, jsonify, send_file
-from werkzeug.urls import url_parse
-from werkzeug.security import generate_password_hash
-from app import app, mongo
-from app.forms import UserLoginForm, RegistrationForm
-from app.models import UserLogin
-
-from flask_login import current_user, login_user, logout_user, login_required
-from bson.objectid import ObjectId
-
-from pprint import pprint
-from datetime import datetime
-import gridfs
-import os
 import glob
-from zipfile import ZipFile
-import re
-from jsondiff import diff
-import pandas as pd
 import io
-
-from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.naive_bayes import MultinomialNB
-import pickle
-import joblib
-from rdflib import Graph, Literal, RDF, URIRef, XSD
-from rdflib.namespace import RDFS, FOAF, RDF, SKOS
-from rdflib.namespace import Namespace
-
-from pylatex import Document, PageStyle, Head, Foot, MiniPage, \
-    LargeText, MediumText, Section, \
-    LineBreak, NewPage, Tabularx, TextColor, simple_page_number
-from pylatex.utils import bold, NoEscape
-
-from pylatex.base_classes import Environment
-from pylatex.package import Package
 import json
-from xml.etree import ElementTree as ET
-from xml.etree.ElementTree import ElementTree
-from app.controller import (
-    audiodetails,
-    createdummylexemeentry,
-    getactiveprojectform,
-    getactiveprojectname,
-    getcommentstats,
-    getcurrentusername,
-    getcurrentuserprojects,
-    getdbcollections,
-    getprojectowner,
-    getprojecttype,
-    getuserprojectinfo,
-    latex_generator as lg,
-    questionnairedetails,
-    readJSONFile,
-    removeallaccess,
-    savenewlexeme,
-    savenewproject,
-    savenewprojectform,
-    savenewsentence,
-    unannotatedfilename,
-    updateuserprojects,
-    userdetails,
-    speakerdetails,
-    emailController,
-    manageAppConfig
-)
+import os
+import pickle
+import re
 import shutil
 import traceback
+from datetime import datetime
+from pprint import pprint
+from xml.etree import ElementTree as ET
+from xml.etree.ElementTree import ElementTree
+from zipfile import ZipFile
 
+import gridfs
+import joblib
+import pandas as pd
+from bson.objectid import ObjectId
+from flask import (flash, json, jsonify, redirect, render_template, request,
+                   send_file, url_for)
+from flask_login import current_user, login_required, login_user, logout_user
+from jsondiff import diff
+from pylatex import (Document, Foot, Head, LargeText, LineBreak, MediumText,
+                     MiniPage, NewPage, PageStyle, Section, Tabularx,
+                     TextColor, simple_page_number)
+from pylatex.base_classes import Environment
+from pylatex.package import Package
+from pylatex.utils import NoEscape, bold
+from rdflib import RDF, XSD, Graph, Literal, URIRef
+from rdflib.namespace import FOAF, RDF, RDFS, SKOS, Namespace
+from requests.utils import requote_uri
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.naive_bayes import MultinomialNB
+from werkzeug.security import generate_password_hash
+from werkzeug.urls import url_parse
+
+from app import app, mongo
+from app.controller import (audiodetails, createdummylexemeentry,
+                            emailController, getactiveprojectform,
+                            getactiveprojectname, getcommentstats,
+                            getcurrentusername, getcurrentuserprojects,
+                            getdbcollections, getprojectowner, getprojecttype,
+                            getuserprojectinfo, langscriptutils)
+from app.controller import latex_generator as lg
+from app.controller import (manageAppConfig, questionnairedetails,
+                            readJSONFile, removeallaccess, savenewlexeme,
+                            savenewproject, savenewprojectform,
+                            savenewsentence, speakerdetails,
+                            unannotatedfilename, updateuserprojects,
+                            userdetails)
+from app.forms import RegistrationForm, UserLoginForm
+from app.models import UserLogin
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 scriptCodeJSONFilePath = os.path.join(basedir, 'static/json/scriptCode.json')
@@ -88,6 +71,8 @@ admin_reminder = f'App admin <<{ADMIN_USER}>> user created! Please create new pa
 # print(f'{"#"*80}\nBase directory:\n{basedir}\n{"#"*80}')
 
 # home page route
+
+
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/home', methods=['GET', 'POST'])
 @login_required
@@ -116,6 +101,8 @@ def home():
                            usertype=usertype)
 
 # Manage app level users
+
+
 @app.route('/manageusers', methods=['GET', 'POST'])
 @login_required
 def manageusers():
@@ -138,6 +125,7 @@ def manageusers():
             userprofilelist=userprofilelist,
             usertype=usertype
         )
+
 
 @app.route('/getoneuserdetails', methods=['GET', 'POST'])
 @login_required
@@ -228,6 +216,8 @@ def manageproject():
 
 # new project route
 # create lexeme entry form for the new project
+
+
 @app.route('/newproject', methods=['GET', 'POST'])
 @login_required
 def newproject():
@@ -333,11 +323,13 @@ def enternewsentences():
             transcription_details = audiodetails.getaudiofiletranscription(
                 transcriptions, audio_id)
 
-            audio_metadata = audiodetails.getaudiometadata(transcriptions, audio_id)
+            audio_metadata = audiodetails.getaudiometadata(
+                transcriptions, audio_id)
             # print('audio_metadata')
             # pprint(audio_metadata)
             activeprojectform['audioMetadata'] = audio_metadata['audioMetadata']
-            last_updated_by = audiodetails.lastupdatedby(transcriptions, audio_id)
+            last_updated_by = audiodetails.lastupdatedby(
+                transcriptions, audio_id)
             activeprojectform['lastUpdatedBy'] = last_updated_by['updatedBy']
             file_path = audiodetails.getaudiofilefromfs(mongo,
                                                         basedir,
@@ -347,7 +339,8 @@ def enternewsentences():
             activeprojectform['transcriptionDetails'] = transcription_details
             # print(transcription_details)
             activeprojectform['AudioFilePath'] = file_path
-            transcription_regions, gloss, pos, boundary_count = audiodetails.getaudiotranscriptiondetails(transcriptions, audio_id)
+            transcription_regions, gloss, pos, boundary_count = audiodetails.getaudiotranscriptiondetails(
+                transcriptions, audio_id)
             activeprojectform['transcriptionRegions'] = transcription_regions
             # print(transcription_regions)
             activeprojectform['boundaryCount'] = boundary_count
@@ -400,6 +393,8 @@ def enternewsentences():
 
 # get new sentences route
 # get new sentences in the project coming throug ajax
+
+
 @app.route('/savetranscription', methods=['GET', 'POST'])
 @login_required
 def savetranscription():
@@ -452,6 +447,8 @@ def savetranscription():
 
 # new automation route
 # buttons working for different automation(POS, morph analyser)
+
+
 @app.route('/automation', methods=['GET', 'POST'])
 @login_required
 def automation():
@@ -568,6 +565,8 @@ def dummylexemeentry():
 
 # dictionary view route
 # display lexeme entries for current project in a table
+
+
 @app.route('/dictionaryview', methods=['GET', 'POST'])
 @login_required
 def dictionaryview():
@@ -693,10 +692,11 @@ def enternewlexeme():
 
 
 def enterlexemefromuploadedfile(lexemedf):
-    projects, userprojects, lexemes = getdbcollections.getdbcollections(mongo,
-                                                                        'projects',
-                                                                        'userprojects',
-                                                                        'lexemes')
+    projects, userprojects, lexemes, projectsform = getdbcollections.getdbcollections(mongo,
+                                                                                      'projects',
+                                                                                      'userprojects',
+                                                                                      'lexemes',
+                                                                                      'projectsform')
     currentuserprojectsname = getcurrentuserprojects.getcurrentuserprojects(current_user.username,
                                                                             userprojects)
     activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username,
@@ -704,6 +704,12 @@ def enterlexemefromuploadedfile(lexemedf):
     projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
     projectname = activeprojectname
     project = projects.find_one({}, {projectname: 1})
+    current_project_form = projectsform.find_one(
+        {'projectname': projectname}, {'_id': 0})
+
+    # print('Project form', project_form)
+    # if projectname in project_form:
+    #     current_projct_form = project_form[projectname]
 
     def lexmetadata():
         # create lexemeId
@@ -728,6 +734,11 @@ def enterlexemefromuploadedfile(lexemedf):
             "lexemedeleteFLAG": 0,
             "updatedBy": current_user.username,
         }
+
+        langscripts = langscriptutils.get_langscripts_from_lexeme_form(
+            current_project_form)
+        uploadedFileLexeme['langscripts'] = langscripts
+
         lexemeId = str(row['lexemeId'])
         getlexemeId = None
         # print(f"{index}\t{lexemeId}\t{len(lexemeId)}\t{type(lexemeId)}")
@@ -1348,6 +1359,8 @@ def lifeuploader(fileFormat, uploadedFileContent, field_map={}):
     return upload_lexicon(lex, upload_file, format, field_map)
 
 # upload lexeme form in excel/liftXML format
+
+
 @app.route('/uploadlexemeexcelliftxml', methods=['GET', 'POST'])
 def uploadlexemeexcelliftxml():
     if request.method == 'POST':
@@ -1404,6 +1417,8 @@ def uploadlexemeexcelliftxml():
     return redirect(url_for('enternewlexeme'))
 
 # lexeme key mapping
+
+
 @app.route('/lexemekeymapping', methods=['GET', 'POST'])
 def lexemekeymapping():
     # getting the collections
@@ -2080,19 +2095,19 @@ def downloadselectedlexeme():
 
         print(g.serialize(format="turtle"))
 
-    def add_canonical_form(g_form, life, lex_entry, lex_item, ipa, dict_lang):
+    def add_canonical_form(g_form, life, lex_entry, lex_item, enc_lex_form, ipa, dict_lang):
         # g_form = Graph()
         # g_form.bind("ontolex", ontolex)
         # g_form.bind("life", life)
 
         g_form.add((
-            URIRef(life[lex_item+'_form']),
+            URIRef(life[enc_lex_form]),
             RDF.type,
             ontolex.form
         ))
 
         g_form.add((
-            URIRef(life[lex_item+'_form']),
+            URIRef(life[enc_lex_form]),
             ontolex.phoneticRep,
             Literal(ipa, lang="ipa")
         ))
@@ -2102,7 +2117,7 @@ def downloadselectedlexeme():
         headword_lang = dict_lang+'-'+headword_script
 
         g_form.add((
-            URIRef(life[lex_item+'_form']),
+            URIRef(life[enc_lex_form]),
             ontolex.writtenRep,
             Literal(lex_item, lang=headword_lang)
         ))
@@ -2114,48 +2129,48 @@ def downloadselectedlexeme():
             if other_script in lex_trans_forms:
                 lex_trans = lex_trans_forms[other_script]
                 g_form.add((
-                    URIRef(life[lex_item+'_form']),
+                    URIRef(life[enc_lex_form]),
                     ontolex.writtenRep,
                     Literal(lex_trans, lang=dict_lang+'-'+other_script)
                 ))
 
-    def add_definition(g_form, life, lex_entry, lex_item, sense_defn):
+    def add_definition(g_form, life, lex_entry, enc_lex_item, enc_lex_defn, sense_defn):
         defn_langs = lex_entry['langscripts']['glosslangs']
         for defn_lang in defn_langs:
             if defn_lang in sense_defn:
                 lex_defn = sense_defn[defn_lang]
                 g_form.add((
-                    URIRef(life[lex_item]),
+                    URIRef(life[enc_lex_item]),
                     ontolex.denotes,
-                    URIRef(life[lex_item+'_definition'])
+                    URIRef(life[enc_lex_defn])
                 ))
 
                 g_form.add((
-                    URIRef(life[lex_item+'_definition']),
+                    URIRef(life[enc_lex_defn]),
                     SKOS.definition,
                     Literal(lex_defn, lang=defn_lang)
                 ))
 
-    def add_example(g_form, life, lex_item, example, ex_lang):
+    def add_example(g_form, life, enc_lex_item, example, ex_lang):
         g_form.add((
-            URIRef(life[lex_item]),
+            URIRef(life[enc_lex_item]),
             SKOS.example,
             Literal(example, lang=ex_lang)
         ))
 
-    def add_other_forms(g_other_form, life, lex_entry, lex_item, other_form, dict_lang):
+    def add_other_forms(g_other_form, life, lex_entry, enc_otherform, other_form, dict_lang):
         # g_other_form = Graph()
         # g_other_form.bind("ontolex", ontolex)
         # g_other_form.bind("life", life)
 
         g_other_form.add((
-            URIRef(life[lex_item+'_otherForm']),
+            URIRef(life[enc_otherform]),
             RDF.type,
             ontolex.form
         ))
 
         g_other_form.add((
-            URIRef(life[lex_item+'_otherForm']),
+            URIRef(life[enc_otherform]),
             ontolex.writtenRep,
             Literal(other_form, lang=dict_lang)
         ))
@@ -2272,17 +2287,28 @@ def downloadselectedlexeme():
     def json_to_rdf_lexicon(g_lex, lex_entry, domain_name,
                             project, output_format='turtle'):
 
-        lex_item = lex_entry['headword']
-        lex_pos = lex_entry['grammaticalcategory']
+        lex_item = lex_entry['headword'].strip()
+        enc_lex_item = requote_uri(lex_item)
+        enc_lex_form = requote_uri(lex_item+'_form')
+        enc_lex_def = requote_uri(lex_item+'_definition')
+        enc_otherform = requote_uri(lex_item+'_otherForm')
+
+        lex_pos = lex_entry['grammaticalcategory'].strip()
+        enc_lex_pos = requote_uri(lex_pos)
+
         # can_form = lex_item
-        lex_pron = lex_entry['Pronunciation']
+        lex_pron = lex_entry['Pronunciation'].strip()
+        enc_lex_pron = requote_uri(lex_pron)
+
         lex_sense = lex_entry['SenseNew']
-        dict_lang = lex_entry['langscripts']['langcode']
+        # print("Entry", lex_entry)
+        dict_lang = lex_entry['langscripts']['langcode'].strip()
 
         # ontolex = URIRef('http://www.w3.org/ns/lemon/ontolex#')
         # lexinfo = URIRef('http://www.lexinfo.net/ontology/2.0/lexinfo#')
 
-        life = Namespace(domain_name+'/'+project + '/word/')
+        enc_project = requote_uri(project.strip())
+        life = Namespace(domain_name+'/'+enc_project + '/word/')
 
         g_lex.bind("ontolex", ontolex)
         g_lex.bind("lexinfo", lexinfo)
@@ -2292,13 +2318,13 @@ def downloadselectedlexeme():
         g_lex.bind("dbpedia", dbpedia)
 
         g_lex.add((
-            URIRef(life[lex_item]),
+            URIRef(life[enc_lex_item]),
             RDF.type,
             lexinfo.LexicalEntry
         ))
 
         g_lex.add((
-            URIRef(life[lex_item]),
+            URIRef(life[enc_lex_item]),
             lexinfo.partOfSpeech,
             lexinfo[lex_pos]
         ))
@@ -2310,29 +2336,31 @@ def downloadselectedlexeme():
         # ))
 
         g_lex.add((
-            URIRef(life[lex_item]),
+            URIRef(life[enc_lex_item]),
             ontolex.canonicalForm,
-            URIRef(life[lex_item+'_form'])
+            URIRef(life[enc_lex_form])
         ))
 
         # Add graph for the canonical form
         add_canonical_form(g_lex, life, lex_entry,
-                           lex_item, lex_pron, dict_lang)
+                           lex_item, enc_lex_form, lex_pron, dict_lang)
 
         for i in range(1, len(lex_sense)):
-            sense_gloss = lex_sense['Sense '+str(i)]["Gloss"]["eng"]
-            sense_defn = lex_sense['Sense '+str(i)]["Definition"]
-            sense_ex = lex_sense['Sense '+str(i)]["Example"]
+            sense_gloss = lex_sense['Sense '+str(i)]["Gloss"]["eng"].strip()
+            sense_defn = lex_sense['Sense '+str(i)]["Definition"].strip()
+            sense_ex = lex_sense['Sense '+str(i)]["Example"].strip()
 
-            sense_entry = life[lex_item+'_sense'+str(i)]
+            sense_entry = life[lex_item+'_sense'+str(i)].strip()
+            enc_sense_entry = requote_uri(sense_entry)
             g_lex.add((
-                URIRef(life[lex_item]),
+                URIRef(life[enc_lex_item]),
                 ontolex.sense,
-                URIRef(sense_entry)
+                URIRef(enc_sense_entry)
             ))
             add_sense(g_lex, life, lex_item, sense_entry, sense_gloss)
-            add_definition(g_lex, life, lex_entry, lex_item, sense_defn)
-            add_example(g_lex, life, lex_item, sense_ex, dict_lang)
+            add_definition(g_lex, life, lex_entry, enc_lex_item,
+                           enc_lex_def, sense_defn)
+            add_example(g_lex, life, enc_lex_item, sense_ex, dict_lang)
 
     def generate_rdf(write_path, lexicon, domain_name, project, rdf_format):
         g_lex = Graph()
@@ -2582,6 +2610,8 @@ def downloadselectedlexeme():
     return 'OK'
 
 # download project route
+
+
 @app.route('/downloadproject', methods=['GET', 'POST'])
 def downloadproject():
     # getting the collections
@@ -2597,7 +2627,7 @@ def downloadproject():
     fs = gridfs.GridFS(mongo.db)
 
     userprojects, userlogin, projects, lexemes, sentences, questionnaires, transcriptions = getdbcollections.getdbcollections(
-        mongo, 'userprojects', 'userlogin', 'projects', 'lexemes', 'sentences', 
+        mongo, 'userprojects', 'userlogin', 'projects', 'lexemes', 'sentences',
         'questionnaires', 'transcriptions')
     current_username = getcurrentusername.getcurrentusername()
     print('USERNAME: ', current_username)
@@ -2615,12 +2645,13 @@ def downloadproject():
     os.mkdir(basedir+"/download")
 
     if shareinfo['sharemode'] >= 1:
-        project_type = getprojecttype.getprojecttype(projects, activeprojectname)
+        project_type = getprojecttype.getprojecttype(
+            projects, activeprojectname)
         lst = list()
 
         if project_type == 'questionnaire':
             all_questions = questionnaires.find({'projectname': activeprojectname, 'quesdeleteFLAG': 0},
-                                    {'_id': 0})
+                                                {'_id': 0})
             for cur_ques in all_questions:
                 lst.append(cur_ques)
 
@@ -2631,13 +2662,12 @@ def downloadproject():
 
         elif project_type == 'transcription':
             all_transcriptions = transcriptions.find({'projectname': activeprojectname,
-                                           'transcriptionFLAG': 1, 'audiodeleteFLAG': 0}, {'_id': 0, 'audioMetadata.audiowaveform.data': 0})
+                                                      'transcriptionFLAG': 1, 'audiodeleteFLAG': 0}, {'_id': 0, 'audioMetadata.audiowaveform.data': 0})
             for cur_trans in all_transcriptions:
                 lst.append(cur_trans)
 
             json_object = json.dumps(lst, indent=2, ensure_ascii=False)
 
-            
             with open(basedir+"/download/transcription_"+activeprojectname+".json", "w") as outfile:
                 outfile.write(json_object)
 
@@ -2645,7 +2675,7 @@ def downloadproject():
             projectname = activeprojectname
 
             for lexeme in lexemes.find({'projectname': activeprojectname, 'lexemedeleteFLAG': 0},
-                                    {'_id': 0}):
+                                       {'_id': 0}):
                 lst.append(lexeme)
                 # save current user mutimedia files of each lexeme to local storage
                 # print(lst)
@@ -2660,9 +2690,9 @@ def downloadproject():
                             # print(basedir+'/app/download/'+name)
                             # print(f'{"#"*80}')
                             # open(basedir+'/app/download/'+name, 'wb').write(file.read())
-                            open(basedir+'/download/'+name, 'wb').write(file.read())
+                            open(basedir+'/download/'+name,
+                                 'wb').write(file.read())
 
-            
             # Serializing json
             json_object = json.dumps(lst, indent=2, ensure_ascii=False)
 
@@ -2677,7 +2707,7 @@ def downloadproject():
             # get all sentences of the activeprojectname
             sentenceLst = []
             for sentence in sentences.find({'projectname': activeprojectname, 'sentencedeleteFLAG': 0},
-                                        {'_id': 0}):
+                                           {'_id': 0}):
                 sentenceLst.append(sentence)
 
             # print(sentenceLst)
@@ -2689,7 +2719,8 @@ def downloadproject():
                             {'projectname': projectname, 'sentenceId': sentvalue})
                         for file in files:
                             name = file.filename
-                            open(basedir+'/download/'+name, 'wb').write(file.read())
+                            open(basedir+'/download/'+name,
+                                 'wb').write(file.read())
 
             # Serializing json
             json_object = json.dumps(sentenceLst, indent=2, ensure_ascii=False)
@@ -2706,7 +2737,8 @@ def downloadproject():
         with ZipFile('download.zip', 'w') as zip:
             # writing each file one by one
             for file in files:
-                zip.write(file, os.path.join(projectname, os.path.basename(file)))
+                zip.write(file, os.path.join(
+                    projectname, os.path.basename(file)))
         print('All files zipped successfully!')
 
         # # deleting all files from storage
@@ -2719,6 +2751,8 @@ def downloadproject():
         return 'OK'
 
 # download dictionary route
+
+
 @app.route('/downloaddictionary', methods=['GET', 'POST'])
 def downloaddictionary():
     # getting the collections
@@ -2919,6 +2953,8 @@ def downloaddictionary():
     # return 'OK'
 
 # download route
+
+
 @app.route('/download', methods=['GET'])
 def download():
     # getting the collections
@@ -2973,12 +3009,16 @@ def download():
     return send_file('../download.zip', as_attachment=True)
 
 # download project in json format route
+
+
 @app.route('/downloadjson', methods=['GET', 'POST'])
 def downloadjson():
     return send_file('../download.zip', as_attachment=True)
 
 # modal view with complete detail of a lexeme for edit
 # edit button on dictionary view table
+
+
 @app.route('/userslist', methods=['GET', 'POST'])
 def userslist():
 
@@ -3047,13 +3087,15 @@ def userslist():
 
 # modal view with complete detail of a lexeme for edit
 # edit button on dictionary view table
+
+
 @app.route('/shareprojectwith', methods=['GET', 'POST'])
 def shareprojectwith():
     projects, userprojects, userlogin, lifeappconfigs = getdbcollections.getdbcollections(mongo,
-                                                               'projects',
-                                                               'userprojects',
-                                                               'userlogin',
-                                                               'lifeappconfigs')
+                                                                                          'projects',
+                                                                                          'userprojects',
+                                                                                          'userlogin',
+                                                                                          'lifeappconfigs')
     current_username = getcurrentusername.getcurrentusername()
     activeprojectname = getactiveprojectname.getactiveprojectname(
         current_username, userprojects)
@@ -3076,10 +3118,10 @@ def shareprojectwith():
     # print('123', users, speakers, sharemode, sharechecked)
 
     if (len(users) != 0):
-        ## Sender email details
+        # Sender email details
         sender_email_details = emailController.getSenderDetails(lifeappconfigs)
-        
-        ## Get Base URL
+
+        # Get Base URL
         current_url = request.base_url
         base_url_index = current_url.rfind(os.sep)
         base_url = current_url[:base_url_index]
@@ -3273,40 +3315,43 @@ def shareprojectwith():
                                 }
                             }
                         )
-            
-            ## Send email to the user            
-            current_user_email = emailController.getCurrentUserEmail(userlogin, user)
+
+            # Send email to the user
+            current_user_email = emailController.getCurrentUserEmail(
+                userlogin, user)
 
             if current_user_email == '':
                 current_user_email = 'unreal.tece@gmail.com'
-            
+
             shared_with_user_email = sender_email_details['email']
 
             if current_user_email != '' and shared_with_user_email != '':
-                print ('Sending email')
-                purpose = 'share' ##share|OTP|notification
+                print('Sending email')
+                purpose = 'share'  # share|OTP|notification
 
                 email_status = emailController.sendEmail(
                     activeprojectname,
-                    user, 
-                    base_url, 
-                    purpose, 
-                    shared_with_user_email, 
+                    user,
+                    base_url,
+                    purpose,
+                    shared_with_user_email,
                     current_user_email,
-                    sender_email_details['password'], 
-                    sender_email_details['smtp_server'], 
+                    sender_email_details['password'],
+                    sender_email_details['smtp_server'],
                     sender_email_details['port']
                 )
             else:
                 email_status = "Email not configured in the app. Project shared but email not sent"
-                print (email_status)
-    
+                print(email_status)
+
     flash(email_status)
     return redirect(url_for('home'))
     # return 'OK'
 
 # modal view with complete detail of a lexeme
 # view button on dictionary view table
+
+
 @app.route('/lexemeview', methods=['GET'])
 def lexemeview():
     # getting the collections
@@ -3398,6 +3443,8 @@ def lexemeedit():
 
 # enter new lexeme route
 # display form for new lexeme entry for current project
+
+
 @app.route('/editlexeme', methods=['GET', 'POST'])
 @login_required
 def editlexeme():
@@ -3439,49 +3486,6 @@ def lexemeupdate():
         variant = {}
         allomorph = {}
         lemon = ''
-        scriptCode = {
-            "Bengali": "Beng",
-            "Devanagari": "Deva",
-            "Gujarati": "Gujr",
-            "Gurumukhi": "Guru",
-            "IPA": "IPA",
-            "Kannada": "Knda",
-            "Latin": "Latn",
-            "Malayalam": "Mlym",
-            "Mayek": "Mtei",
-            "Odia": "Orya",
-            "Ol_Chiki": "Olck",
-            "Tamil": "Taml",
-            "Telugu": "Telu"
-        }
-        langScript = {
-            "Assamese": "Bengali",
-            "Awadhi": "Devanagari",
-            "Bangla": "Bengali",
-            "Bengali": "Bengali",
-            "Bhojpuri": "Devanagari",
-            "Bodo": "Devanagari",
-            "Braj": "Devanagari",
-            "Bundeli": "Devanagari",
-            "English": "Latin",
-            "Gujarati": "Gujarati",
-            "Haryanvi": "Devanagari",
-            "Hindi": "Devanagari",
-            "IPA": "IPA",
-            "Kannada": "Kannada",
-            "Konkani": "Devanagari",
-            "Magahi": "Devanagari",
-            "Maithili": "Devanagari",
-            "Malayalam": "Malayalam",
-            "Marathi": "Devanagari",
-            "Meitei": "Mayek",
-            "Nepali": "Devanagari",
-            "Odia": "Odia",
-            "Punjabi": "Gurumukhi",
-            "Santali": "Ol_Chiki",
-            "Tamil": "Tamil",
-            "Telugu": "Telugu"
-        }
 
         lexemeFormData['username'] = projectowner
 
@@ -3589,30 +3593,8 @@ def lexemeupdate():
         lexemeFormData['updatedBy'] = current_user.username
         lexemeFormData['lexemeId'] = lexemeId
 
-        langscripts = {}
-        langscripts["langname"] = newLexemeData['Lexeme Language'][0]
-        langscripts["langcode"] = newLexemeData['Lexeme Language'][0][:3].lower()
-        headwordscript = list(
-            lexemeFormData['Lexeme Form Script'][0].keys())[0]
-        # langscripts["headwordscript"] = {headwordscript[0]+headwordscript[1:4].lower(): headwordscript}
-        langscripts["headwordscript"] = {
-            scriptCode[headwordscript]: headwordscript}
-        lexemeformscripts = {}
-        for i in range(len(lexemeFormData['Lexeme Form Script'])):
-            for lfs in lexemeFormData['Lexeme Form Script'][i].keys():
-                # lexemeformscripts[lfs[0]+lfs[1:4]] = lfs
-                lexemeformscripts[scriptCode[lfs]] = lfs
-        langscripts["lexemeformscripts"] = lexemeformscripts
-        glosslangs = {}
-        glossscripts = {}
-        for gl in newLexemeData.keys():
-            if ('Gloss' in gl):
-                gl = gl.split()[1]
-                glosslangs[gl[0:3]] = gl
-                glossscripts[scriptCode[langScript[gl]]] = gl
-        langscripts["glosslangs"] = glosslangs
-
-        langscripts["glossscripts"] = glossscripts
+        langscripts = langscriptutils.get_langscripts(
+            newLexemeData, lexemeFormData)
         lexemeFormData['langscripts'] = langscripts
 
         SenseNew = {}
@@ -3654,7 +3636,7 @@ def lexemeupdate():
         for lexForm in lexemeFormData['Lexeme Form Script']:
             for lexKey, lexValue in lexForm.items():
                 # lexemeForm[lexKey[:4]] = lexValue
-                lexemeForm[scriptCode[lexKey]] = lexValue
+                lexemeForm[langscriptutils.get_script_code(lexKey)] = lexValue
 
         lexemeFormData['Lexeme Form'] = lexemeForm
 
@@ -3749,6 +3731,8 @@ def lexemedelete():
     return jsonify(msg=headword[1]+' deletion successful')
 
 # delete button on dictionary view table
+
+
 @app.route('/deletemultiplelexemes', methods=['GET', 'POST'])
 def deletemultiplelexemes():
     projects, userprojects, lexemes = getdbcollections.getdbcollections(mongo,
@@ -3804,6 +3788,8 @@ def adminfirstlogin(userlogin, string_password):
 
 # MongoDB Database
 # user login form route
+
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     userlogin = mongo.db.userlogin
@@ -3831,7 +3817,7 @@ def login():
         if user is None or not user.check_password(password):
             flash('Invalid username or password')
             return redirect(url_for('login'))
-        
+
         isUserActive = userlogin.find_one(
             {'username': form.username.data}, {"_id": 1, "isActive": 1})
         # print(len(isUserActive))
@@ -3848,7 +3834,8 @@ def login():
                     'Your request for an account is  currently under review. If approved, your account will be active in some time.')
                 return redirect(url_for('login'))
         else:
-            old_user_update(userlogin, user.username, ObjectId(isUserActive['_id']).generation_time)
+            old_user_update(userlogin, user.username, ObjectId(
+                isUserActive['_id']).generation_time)
             update_profile(userlogin, user.username, get_blank_profile())
 
         login_user(user, force=True)
@@ -3859,42 +3846,44 @@ def login():
     return render_template('login.html', form=form)
 
 
-def get_blank_profile ():
+def get_blank_profile():
     blank_profile = {
-            "position": "",
-            "organisation_name": "",
-            "organisation_type": "",
-            "country": "",
-            "city": "",
-            "email": "",
-            "languages": "",
-            "storage_requirement": "",
-            "app_use_reason": ""
-        }
+        "position": "",
+        "organisation_name": "",
+        "organisation_type": "",
+        "country": "",
+        "city": "",
+        "email": "",
+        "languages": "",
+        "storage_requirement": "",
+        "app_use_reason": ""
+    }
     return blank_profile
 
 
 def old_user_update(userlogin, username, userSince):
     userlogin.update_one({"username": username},
-                        {"$set": {'userSince': userSince,
-                        'isActive': 1,
-                        'userdeleteFLAG': 0,
-                        'isSuperAdmin': 0,
-                        'isAdmin': 0
-                        }})
+                         {"$set": {'userSince': userSince,
+                                   'isActive': 1,
+                                   'userdeleteFLAG': 0,
+                                   'isSuperAdmin': 0,
+                                   'isAdmin': 0
+                                   }})
 
 
-def update_profile (userlogin, username, userProfile):
+def update_profile(userlogin, username, userProfile):
     userlogin.update_one({"username": username},
-                        {"$set": {
-                        'userProfile': userProfile
-                        }})
+                         {"$set": {
+                             'userProfile': userProfile
+                         }})
 
     # userprojects = mongo.db.userprojects
     # userprojects.insert({'username': form.username.data, 'myproject': {},
     #                          'projectsharedwithme': {}, 'activeprojectname': ''})
 # MongoDB Database
 # use logout
+
+
 @app.route('/logout')
 def logout():
     try:
@@ -3930,20 +3919,20 @@ def save_registration_form(form, current_user):
         # print(user, password)
 
         userlogin.insert_one({"username": form.username.data,
-                          "password": password,
-                          'userProfile': userProfile,
-                          'userSince': datetime.now(),
-                          'isActive': 0,
-                          'userdeleteFLAG': 0,
-                          'isSuperAdmin': 0,
-                          'isAdmin': 0})
+                              "password": password,
+                              'userProfile': userProfile,
+                              'userSince': datetime.now(),
+                              'isActive': 0,
+                              'userdeleteFLAG': 0,
+                              'isSuperAdmin': 0,
+                              'isAdmin': 0})
 
         # collection of users and their respective projectlist
         userprojects = mongo.db.userprojects
         # userprojects.insert({'username' : form.username.data, 'myproject': [], \
         #     'projectsharedwithme': [], 'activeprojectname' : ''})
         userprojects.insert_one({'username': form.username.data, 'myproject': {},
-                             'projectsharedwithme': {}, 'activeprojectname': ''})
+                                 'projectsharedwithme': {}, 'activeprojectname': ''})
 
     # if current_user.is_authenticated:
     #     current_username = getcurrentusername.getcurrentusername()
@@ -3957,6 +3946,8 @@ def save_registration_form(form, current_user):
 
 # MongoDB Database
 # new user registration
+
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     # collection of users and their login details
@@ -4008,23 +3999,23 @@ def dummyUserandProject():
     # collection containing projects name
     if len(mongo.db.list_collection_names()) == 0:
         userprojects.insert_one({'username': "dummyUser",
-                             'myproject':
-                             {"dummyProject1":
-                              {
-                                  'sharemode': 0,
-                                  'sharechecked': "false"
-                              }
-                              },
-                             'projectsharedwithme': {},
-                             'activeprojectname': "dummyActiveProject"
-                             })
+                                 'myproject':
+                                 {"dummyProject1":
+                                  {
+                                      'sharemode': 0,
+                                      'sharechecked': "false"
+                                  }
+                                  },
+                                 'projectsharedwithme': {},
+                                 'activeprojectname': "dummyActiveProject"
+                                 })
         projects.insert_one({"projectname": "dummyProject1",
-                         "projectOwner": "dummyUser",
-                         "lexemeInserted": 0,
-                         "lexemeDeleted": 0,
-                         'sharedwith': ['dummyUser'],
-                         'projectdeleteFLAG': 0
-                         })
+                             "projectOwner": "dummyUser",
+                             "lexemeInserted": 0,
+                             "lexemeDeleted": 0,
+                             'sharedwith': ['dummyUser'],
+                             'projectdeleteFLAG': 0
+                             })
 
 
 def insertadmin(userlogin):
@@ -4064,7 +4055,7 @@ def insertadmin(userlogin):
     })
 
     userprojects.insert_one({'username': ADMIN_USER, 'myproject': {},
-                         'projectsharedwithme': {}, 'activeprojectname': ''})
+                             'projectsharedwithme': {}, 'activeprojectname': ''})
 
     flash(admin_reminder)
 
@@ -4234,6 +4225,8 @@ def getAudioFilename(lastActiveFilename, whichOne):
 
 # this is for the dropdown list of all the filenames.
 # it could be use by the user to move to (load) some random audio using the filename
+
+
 @app.route('/allunannotated', methods=['GET', 'POST'])
 def allunannotated():
     userprojects, transcriptions = getdbcollections.getdbcollections(
@@ -4298,6 +4291,8 @@ def generate_speaker_id(name, age=''):
     return new_speaker_id
 
 # add speaker details
+
+
 @app.route('/addnewspeakerdetails', methods=['GET', 'POST'])
 @login_required
 def addnewspeakerdetails():
@@ -4350,7 +4345,7 @@ def addnewspeakerdetails():
                                "current_date": current_dt,
                            },
                            "isActive": 1}
-        elif(audio_source == 'internet'):
+        elif (audio_source == 'internet'):
             # internet sub source
             audiosubsource = request.form.get('audiosubsource')
             if (audiosubsource == 'youtube'):
@@ -4408,8 +4403,7 @@ def managespeakermetadata():
         userprojects, current_username, activeprojectname)
     allspeakerdetails, alldatalengths, allkeys = speakerdetails.getspeakerdetails(
         activeprojectname, speakermeta)
-    
-    
+
     # pprint (allspeakerdetails)
     # pprint(alldatalengths)
 
@@ -4420,34 +4414,38 @@ def managespeakermetadata():
         shareinfo=shareinfo,
         usertype=usertype,
         count=alldatalengths,
-        table_headers = allkeys
+        table_headers=allkeys
     )
 
 
 @app.route('/getonespeakermetadata', methods=['GET', 'POST'])
 def getonespeakermetadata():
-    speakermeta, userprojects = getdbcollections.getdbcollections(mongo, "speakerdetails", "userprojects")
+    speakermeta, userprojects = getdbcollections.getdbcollections(
+        mongo, "speakerdetails", "userprojects")
 
     current_username = getcurrentusername.getcurrentusername()
-    activeprojectname = getactiveprojectname.getactiveprojectname(current_username, userprojects)
-    
+    activeprojectname = getactiveprojectname.getactiveprojectname(
+        current_username, userprojects)
+
     # data through ajax
     lifesourceid = request.args.get('lifespeakerid')
-    print ("Life source ID", lifesourceid)
+    print("Life source ID", lifesourceid)
     speakermetadata = speakerdetails.getonespeakerdetails(
         activeprojectname, lifesourceid, speakermeta)
-    
-    print ("Speaker Metadata", speakermetadata)
+
+    print("Speaker Metadata", speakermetadata)
     return jsonify(onespeakerdetails=speakermetadata)
 
 
 @app.route('/editfieldspeakermetadata', methods=['GET', 'POST'])
 def editfieldspeakermetadata():
-    speakermeta, userprojects = getdbcollections.getdbcollections(mongo, "speakerdetails", "userprojects")
+    speakermeta, userprojects = getdbcollections.getdbcollections(
+        mongo, "speakerdetails", "userprojects")
 
     current_username = getcurrentusername.getcurrentusername()
-    activeprojectname = getactiveprojectname.getactiveprojectname(current_username, userprojects)
-    
+    activeprojectname = getactiveprojectname.getactiveprojectname(
+        current_username, userprojects)
+
     current_dt = str(datetime.now()).replace('.', ':')
     # data through ajax
     lifesourceid = request.form.get('lifespeakerid')
@@ -4462,21 +4460,21 @@ def editfieldspeakermetadata():
     por = request.form.get('por')
     toc = request.form.get('toc')
     update_data = {
-                "current": {
-                    "updatedBy": current_username,
-                    "sourceMetadata": {
-                        "name": fname,
-                        "agegroup": fage,
-                        "gender": fgender,
-                        "educationlevel": educlvl,
-                        "educationmediumupto12": moe12,
-                        "educationmediumafter12": moea12,
-                        "speakerspeaklanguage": sols,
-                        "recordingplace": por,
-                        "typeofrecordingplace": toc
-                    },
-                    "current_date": current_dt,
-                }
+        "current": {
+            "updatedBy": current_username,
+            "sourceMetadata": {
+                "name": fname,
+                "agegroup": fage,
+                "gender": fgender,
+                "educationlevel": educlvl,
+                "educationmediumupto12": moe12,
+                "educationmediumafter12": moea12,
+                "speakerspeaklanguage": sols,
+                "recordingplace": por,
+                "typeofrecordingplace": toc
+            },
+            "current_date": current_dt,
+        }
     }
 
     updatestatus = speakerdetails.updateonespeakerdetails(
@@ -4487,11 +4485,13 @@ def editfieldspeakermetadata():
 
 @app.route('/edityoutubesourcemetadata', methods=['GET', 'POST'])
 def edityoutubesourcemetadata():
-    speakermeta, userprojects = getdbcollections.getdbcollections(mongo, "speakerdetails", "userprojects")
+    speakermeta, userprojects = getdbcollections.getdbcollections(
+        mongo, "speakerdetails", "userprojects")
 
     current_username = getcurrentusername.getcurrentusername()
-    activeprojectname = getactiveprojectname.getactiveprojectname(current_username, userprojects)
-    
+    activeprojectname = getactiveprojectname.getactiveprojectname(
+        current_username, userprojects)
+
     current_dt = str(datetime.now()).replace('.', ':')
     # data through ajax
     lifesourceid = request.form.get('lifespeakerid')
@@ -4500,14 +4500,14 @@ def edityoutubesourcemetadata():
     channelurl = request.form.get('ytchannelurl')
 
     update_data = {
-                    "current": {
-                        "updatedBy": current_username,
-                        "sourceMetadata": {
-                            "channelName": channelname,
-                            "channelUrl": channelurl
-                        },
-                        "current_date": current_dt
-                    }
+        "current": {
+            "updatedBy": current_username,
+            "sourceMetadata": {
+                "channelName": channelname,
+                "channelUrl": channelurl
+            },
+            "current_date": current_dt
+        }
     }
 
     updatestatus = speakerdetails.updateonespeakerdetails(
@@ -4541,15 +4541,19 @@ def uploadaudiofiles():
                                     current_user.username,
                                     speakerId,
                                     new_audio_file,
-                                    transcription_type='sentence',  #change this and boundary_threshold for automatic detection of boundaries of different kinds
+                                    # change this and boundary_threshold for automatic detection of boundaries of different kinds
+                                    transcription_type='sentence',
                                     boundary_threshold=0.3,
                                     slice_threshold=0.9,
-                                    slice_size=120 #max size of each slice (in seconds), if large audio is to be automatically divided into multiple parts
+                                    # max size of each slice (in seconds), if large audio is to be automatically divided into multiple parts
+                                    slice_size=120
                                     )
 
     return redirect(url_for('enternewsentences'))
 
 # change speaker ID
+
+
 @app.route('/changespeakerid', methods=['GET', 'POST'])
 @login_required
 def changespeakerid():
@@ -4580,17 +4584,19 @@ def changespeakerid():
     return 'OK'
 
 # get progress report
+
+
 @app.route('/progressreport', methods=['GET'])
 @login_required
 def progressreport():
     projects, userprojects, transcriptions, speakerdetails = getdbcollections.getdbcollections(mongo,
-                                                                               'projects',
-                                                                               'userprojects',
-                                                                               'transcriptions',
-                                                                               'speakerdetails')
+                                                                                               'projects',
+                                                                                               'userprojects',
+                                                                                               'transcriptions',
+                                                                                               'speakerdetails')
     current_username = getcurrentusername.getcurrentusername()
     activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
-                                                                    userprojects)
+                                                                  userprojects)
 
     progressreport = ''
 
@@ -4605,10 +4611,10 @@ def progressreport():
         isharedwith.append(current_username)
         # print('isharedwith_2', isharedwith)
         progressreport = audiodetails.getaudioprogressreport(projects,
-                                                                transcriptions,
-                                                                speakerdetails,
-                                                                activeprojectname, 
-                                                                isharedwith)
+                                                             transcriptions,
+                                                             speakerdetails,
+                                                             activeprojectname,
+                                                             isharedwith)
 
     # print(progressreport)
 
@@ -4653,6 +4659,8 @@ def test():
                            shareinfo=shareinfo)
 
 # uploadquesfiles route
+
+
 @app.route('/uploadquesfiles', methods=['GET', 'POST'])
 @login_required
 def uploadquesfiles():
@@ -4694,12 +4702,16 @@ def uploadquesfiles():
 
 # Contact Us route
 # create contact us form for the LiFE
+
+
 @app.route('/contactus', methods=['GET', 'POST'])
 # @login_required
 def contactus():
     return render_template('contactus.html')
 
 # LiFE Documentation route
+
+
 @app.route('/documentation', methods=['GET', 'POST'])
 # @login_required
 def documentation():
@@ -4718,6 +4730,7 @@ def projecttype():
     project_type = getprojecttype.getprojecttype(projects, activeprojectname)
 
     return jsonify(projectType=project_type)
+
 
 @app.route('/manageapp', methods=['GET', 'POST'])
 @login_required
@@ -4742,6 +4755,7 @@ def manageapp():
             usertype=usertype
         )
 
+
 @app.route('/emailsetup', methods=['GET', 'POST'])
 @login_required
 def emailsetup():
@@ -4754,10 +4768,10 @@ def emailsetup():
     print('USERTYPE: ', usertype)
     # print(ADMIN_USER, SUB_ADMINS)
     manageAppConfig.generateDummyAppConfig()
-    
+
     if 'SUPER-ADMIN' in usertype:
         if request.method == 'POST':
-        
+
             email = request.form.get('name++notificationEmail')
             pwd = request.form.get('name++notificationEmailPwd')
             port = request.form.get('name++smtpPort')
@@ -4768,10 +4782,12 @@ def emailsetup():
                 'smtpPort': port,
                 'smtpServer': server
             }
-            labelmap = manageAppConfig.updateAppSendEmailDetails(lifeappconfigs, emailconfig)
+            labelmap = manageAppConfig.updateAppSendEmailDetails(
+                lifeappconfigs, emailconfig)
 
         else:
-            emailconfig, labelmap = manageAppConfig.getAppSendEmailDetails(lifeappconfigs)
+            emailconfig, labelmap = manageAppConfig.getAppSendEmailDetails(
+                lifeappconfigs)
 
     return render_template(
         'appemailsetup.html',
