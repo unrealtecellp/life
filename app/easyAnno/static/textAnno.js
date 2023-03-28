@@ -209,7 +209,7 @@ function createElement(tagSet,
         else if (element === 'modal+textarea'){
             // console.log(key, element, elementProperties);
             // ele += '<textarea class="form-check-input ' + elementClass + ' " name="' + key + '" id="' + key + '_' + value[i] + '" cols="60">' + defaultCategoryTag + '</textarea>';
-            ele += '<button type="button" id="'+key+'" class="btn btn-info btn ' + elementClass + ' " onclick="openCategoryModal(this)"  data-toggle="modal" data-target="#'+key+'Modal">'+key+'</button>';
+            ele += '<button type="button" id="'+key+'" class="btn btn-info btn ' + elementClass + ' " onclick="openCategoryModal(this.id)"  data-toggle="modal" data-target="#'+key+'Modal">'+key+'</button>';
             // ele += '<button type="button" id="'+key+'" class="btn btn-info btn-sm ' + elementClass + ' " onclick=" showHideCategory(\'' + key+'='+value[i] + '\')">'+key+'</button>';
             // ele += '<button type="button" id="'+key+'" class="btn btn-info btn-sm ' + elementClass + ' " onclick=" hideHideCategory(\'' + key+'_hideDependency' + '\')">'+key+'</button>';
             // ele += addModalElement(key)
@@ -578,26 +578,35 @@ function addModalElement(key) {
 }
 
 
-function openCategoryModal(ele) {
-    let createModal = addModalElement(ele.id);
+function openCategoryModal(eleId, start=0, end=0, selectedText='') {
+    let spanStart = start;
+    let spanEnd = end;
+    let selection = selectedText;
+    console.log(eleId, start, end, selection);
+    let createModal = addModalElement(eleId);
     $('#idmodal').html(createModal);
     let modalData = '';
     let projData = JSON.parse(localStorage.getItem('projData'))
-    let eleValue = projData['tagSet'][ele.id][0];
+    let eleValue = projData['tagSet'][eleId][0];
     if (eleValue.includes('SPAN_TEXT')) {
-        modalData += spanModalForm(projData, ele.id);
+        modalData += spanModalForm(projData, eleId);
     }
-    $('#'+ele.id+'_modal_data').html(modalData);
+    $('#'+eleId+'_modal_data').html(modalData);
     // textareaScrollHeight('maintextcontent', 'spantextcontent');
-    let text = document.getElementById('maintextcontent');
-    const spanStart = text.selectionStart;
-    const spanEnd = text.selectionEnd;
-    const selection = text.textContent.substring(
-        spanStart,
-        spanEnd
-      );
-    leftModalForm(selection, spanStart, spanEnd, ele.id)
-    middleModalForm(selection, spanStart, spanEnd, ele.id);
+    console.log(start, end);
+    if (!start || !end) {
+        console.log(start, end);
+        let text = document.getElementById('maintextcontent');
+        spanStart = text.selectionStart;
+        spanEnd = text.selectionEnd;
+        selection = text.textContent.substring(
+            spanStart,
+            spanEnd
+        );
+        console.log(selection);
+    }
+    leftModalForm(selection, spanStart, spanEnd, eleId)
+    middleModalForm(selection, spanStart, spanEnd, eleId);
 
 }
 
@@ -880,9 +889,44 @@ function mainSave(ele) {
       });
 }
 
-// $(document).ready(function(){
-//     $('#maintextcontent').click(function() { 
-//         alert('clicked');
-//         console.log(this.selectionStart, this.selectionEnd); 
-//     });
-//   });
+$(document).ready(function(){
+    $('#maintextcontent').click(function() { 
+        // console.log(this);
+        // alert('clicked');
+        let eleId = '';
+        let startindex = 0;
+        let endindex = 0;
+        let minimumDistance = this.textLength;
+        // console.log('minimumDistance', minimumDistance);
+        let textSpanDetails = JSON.parse(localStorage.getItem('textSpanDetails'));
+        console.log(textSpanDetails);
+        console.log(this.selectionStart, this.selectionEnd);
+        let spanStart = this.selectionStart;
+        let spanEnd = this.selectionStart;
+        // let spanId = textSpanId(spanStart, spanEnd);
+        // console.log(spanId);
+        loop1:
+        for (let [key, value] of Object.entries(textSpanDetails)) {
+            console.log(key, value);
+            loop2:
+            for (let [k, v] of Object.entries(value)) {
+                let startIndex = v['startindex'];
+                let endIndex = v['endindex'];
+                if (spanStart >= startIndex && spanEnd <= endIndex) {
+                    differenceFromStart = Math.abs(startIndex-spanStart);
+                    differenceFromEnd = Math.abs(endIndex-spanEnd);
+                    distance = differenceFromStart+differenceFromEnd;
+                    console.log(k, v);
+                    console.log(true, spanStart, spanEnd, 'startindex: ', v['startindex'], 'endindex: ', v['endindex'], distance);
+                    eleId = key;
+                    startindex = startIndex;
+                    endindex = endIndex;
+                    selection = v['textspan'];
+                    break loop1;
+                }
+            }
+        }
+        openCategoryModal(eleId, startindex, endindex, selection);
+        $('#'+eleId+'Modal').modal('toggle')
+    });
+  });

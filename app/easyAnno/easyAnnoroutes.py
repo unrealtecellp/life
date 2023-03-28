@@ -857,7 +857,7 @@ def textAnno():
 @easyAnno.route('/savetextAnno', methods=['GET', 'POST'])
 @login_required
 def savetextAnno():
-    print('IN /savetextAnno')
+    # print('IN /savetextAnno')
     # projects = mongo.db.projects              # collection of users and their respective projects
     # userprojects = mongo.db.userprojects              # collection of users and their respective projects
     # textanno = mongo.db.textanno
@@ -1001,13 +1001,13 @@ def savetextAnnoSpan():
         # annotatedText = dict(request.form.lists())
         
         annotatedTextSpan = json.loads(request.form['a'])
-        pprint(annotatedTextSpan)
+        # pprint(annotatedTextSpan)
 
         # lastActiveId = annotatedTextSpan['lastActiveId'][0]
         lastActiveId = annotatedTextSpan['lastActiveId']
         del annotatedTextSpan['lastActiveId']
         # annotatedTextSpan['annotatedFLAG'] = 1
-        pprint(annotatedTextSpan)
+        # pprint(annotatedTextSpan)
         # print(lastActiveId)
         for key, value in annotatedTextSpan.items():
             for k, v in value.items():
@@ -2581,8 +2581,8 @@ def createTextAnnoNew(zipFile):
                     tag_set_meta_data['defaultCategoryTags'] = defaultCategoryTags
                     tag_set_meta_data['categoryHtmlElement'] = categoryHtmlElement
                     tag_set_meta_data['categoryHtmlElementProperties'] = categoryHtmlElementProperties
-                pprint(tag_set)
-                pprint(tag_set_meta_data)
+                # pprint(tag_set)
+                # pprint(tag_set_meta_data)
                 with open('app/jsonfiles/tagSet.json', 'w') as writejson:
                     jsondata = json.dumps(tag_set, indent=2, ensure_ascii=False)
                     writejson.write(jsondata)
