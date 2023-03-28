@@ -293,7 +293,8 @@ def homespeaker():
         accesscode_info,
         activeprojectname,
         share_level,
-        all_data_share_level
+        all_data_share_level, 
+        current_username
     )
 
     return render_template('homespeaker.html',
