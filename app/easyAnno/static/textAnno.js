@@ -209,7 +209,7 @@ function createElement(tagSet,
         else if (element === 'modal+textarea'){
             // console.log(key, element, elementProperties);
             // ele += '<textarea class="form-check-input ' + elementClass + ' " name="' + key + '" id="' + key + '_' + value[i] + '" cols="60">' + defaultCategoryTag + '</textarea>';
-            ele += '<button type="button" id="'+key+'" class="btn btn-info btn ' + elementClass + ' " onclick="openCategoryModal(this)"  data-toggle="modal" data-target="#'+key+'Modal">'+key+'</button>';
+            ele += '<button type="button" id="'+key+'" class="btn btn-info btn ' + elementClass + ' " onclick="openCategoryModal(this.id)"  data-toggle="modal" data-target="#'+key+'Modal">'+key+'</button>';
             // ele += '<button type="button" id="'+key+'" class="btn btn-info btn-sm ' + elementClass + ' " onclick=" showHideCategory(\'' + key+'='+value[i] + '\')">'+key+'</button>';
             // ele += '<button type="button" id="'+key+'" class="btn btn-info btn-sm ' + elementClass + ' " onclick=" hideHideCategory(\'' + key+'_hideDependency' + '\')">'+key+'</button>';
             // ele += addModalElement(key)
@@ -560,6 +560,8 @@ function addModalElement(key) {
                 '<div class="modal-content">'+
                     '<div class="modal-header">'+
                     '<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>'+
+                    '<button type="button" class="btn btn-danger" data-dismiss="modal" id="'+key+'deleteSpan" onclick="deleteSpanModal(this.id)">Delete Span</button>'+
+                    
                     '<h4 class="modal-title" id="'+key+'ModalLabel">'+key+'</h4>'+
                     '</div>'+
                     '<div class="modal-body">'+
@@ -568,7 +570,6 @@ function addModalElement(key) {
                     '</div>'+
                     '<div class="modal-footer">'+
                     '<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>'+
-                    // '<button type="button" class="btn btn-primary modalAnno" data-dismiss="modal">Done</button>'+
                     '</div>'+
                 '</div>'+
                 '</div>'+
@@ -578,27 +579,38 @@ function addModalElement(key) {
 }
 
 
-function openCategoryModal(ele) {
-    let createModal = addModalElement(ele.id);
-    $('#idmodal').html(createModal);
-    let modalData = '';
-    let projData = JSON.parse(localStorage.getItem('projData'))
-    let eleValue = projData['tagSet'][ele.id][0];
-    if (eleValue.includes('SPAN_TEXT')) {
-        modalData += spanModalForm(projData, ele.id);
-    }
-    $('#'+ele.id+'_modal_data').html(modalData);
-    // textareaScrollHeight('maintextcontent', 'spantextcontent');
-    let text = document.getElementById('maintextcontent');
-    const spanStart = text.selectionStart;
-    const spanEnd = text.selectionEnd;
-    const selection = text.textContent.substring(
-        spanStart,
-        spanEnd
-      );
-    leftModalForm(selection, spanStart, spanEnd, ele.id)
-    middleModalForm(selection, spanStart, spanEnd, ele.id);
+function openCategoryModal(eleId, start=0, end=0, selectedText='') {
+    if (eleId) {
+        let spanStart = start;
+        let spanEnd = end;
+        let selection = selectedText;
+        // console.log(eleId, start, end, selection);
+        let createModal = addModalElement(eleId);
+        $('#idmodal').html(createModal);
+        let modalData = '';
+        let projData = JSON.parse(localStorage.getItem('projData'))
+        let eleValue = projData['tagSet'][eleId][0];
+        if (eleValue.includes('SPAN_TEXT')) {
+            modalData += spanModalForm(projData, eleId);
+        }
+        $('#'+eleId+'_modal_data').html(modalData);
+        // textareaScrollHeight('maintextcontent', 'spantextcontent');
+        // console.log(start, end);
+        if (!start || !end) {
+            // console.log(start, end);
+            let text = document.getElementById('maintextcontent');
+            spanStart = text.selectionStart;
+            spanEnd = text.selectionEnd;
+            selection = text.textContent.substring(
+                spanStart,
+                spanEnd
+            );
+            // console.log(selection);
+        }
+        leftModalForm(selection, spanStart, spanEnd, eleId)
+        middleModalForm(selection, spanStart, spanEnd, eleId);
 
+    }
 }
 
 function spanModalForm(projData, eleId) {
@@ -620,7 +632,7 @@ function spanModalForm(projData, eleId) {
     spanModalData += '</div>' // right col div
 
     spanModalData+= '<div class="col-sm-2" id="modalright">';
-    spanModalData += '<br><button type="button"  id="modalrightsavebtn" class="btn btn btn-danger" onclick="spanSave(this)">Save Span</button>';
+    spanModalData += '<br><button type="button"  id="modalrightsavebtn" class="btn btn btn-danger"  data-dismiss="modal" onclick="spanSave(this)">Save Span</button>';
     spanModalData += '</div>'; //right div close
 
     spanModalData += '</form>';
@@ -735,7 +747,7 @@ function middleModalForm(selection, spanStart, spanEnd, eleId) {
         // console.log(categoryDependency);
         for (let [key, value] of Object.entries(categoryDependency)) {
             if (value.includes(eleId)) {
-                console.log(key, value, tagSet[key], categoryDependency[key], defaultCategoryTags[value]);
+                // console.log(key, value, tagSet[key], categoryDependency[key], defaultCategoryTags[value]);
                 defaultCategoryTag = getModalDefaultTag(key, eleId, spanStart, spanEnd);
                 middleModalData += elementData(projData, key, tagSet[key], defaultCategoryTag, true);
             }
@@ -750,7 +762,7 @@ function middleModalForm(selection, spanStart, spanEnd, eleId) {
                     loop2:
                     for (i=0; i<dependentOnList.length; i++) {
                         if (dependentOnList[i].includes(eleId)) {
-                            console.log(key, value, tagSet[key], categoryDependency[key], defaultCategoryTags[value], dependentOnList[i]);
+                            // console.log(key, value, tagSet[key], categoryDependency[key], defaultCategoryTags[value], dependentOnList[i]);
                             defaultCategoryTag = getModalDefaultTag(key, eleId, spanStart, spanEnd);
                             middleModalData += elementData(projData, key, tagSet[key], defaultCategoryTag, false);
                             break loop1;
@@ -808,7 +820,6 @@ function textSpanId(spanStart, spanEnd) {
 }
 
 function spanSave(ele) {
-    console.log('sending transcription and morphemic details to the server');
     let textSpanDetails = JSON.parse(localStorage.getItem('textSpanDetails'));
     let projData = JSON.parse(localStorage.getItem('projData'));
     let tagSet = projData['tagSet'];
@@ -880,9 +891,79 @@ function mainSave(ele) {
       });
 }
 
-// $(document).ready(function(){
-//     $('#maintextcontent').click(function() { 
-//         alert('clicked');
-//         console.log(this.selectionStart, this.selectionEnd); 
-//     });
-//   });
+$(document).ready(function(){
+    $('#maintextcontent').click(function() { 
+        // console.log(this);
+        // alert('clicked');
+        let eleId = '';
+        let startindex = 0;
+        let endindex = 0;
+        let minimumLength = this.textLength;
+        // console.log('minimumDistance', minimumDistance);
+        let textSpanDetails = JSON.parse(localStorage.getItem('textSpanDetails'));
+        // console.log(textSpanDetails);
+        // console.log(this.selectionStart, this.selectionEnd);
+        let spanStart = this.selectionStart;
+        let spanEnd = this.selectionStart;
+        // let spanId = textSpanId(spanStart, spanEnd);
+        // console.log(spanId);
+        loop1:
+        for (let [key, value] of Object.entries(textSpanDetails)) {
+            // console.log(key, value);
+            loop2:
+            for (let [k, v] of Object.entries(value)) {
+                let startIndex = v['startindex'];
+                let endIndex = v['endindex'];
+                if (spanStart >= startIndex && spanEnd <= endIndex) {
+                    differenceFromStart = Math.abs(startIndex-spanStart);
+                    differenceFromEnd = Math.abs(endIndex-spanEnd);
+                    length = differenceFromStart+differenceFromEnd;
+                    if (length < minimumLength) {
+                        minimumLength = length;
+                        // console.log(k, v);
+                        // console.log(true, spanStart, spanEnd, 'startindex: ', v['startindex'], 'endindex: ', v['endindex'], length);
+                        eleId = key;
+                        startindex = startIndex;
+                        endindex = endIndex;
+                        selection = v['textspan'];
+                    }
+                    // break loop1;
+                }
+            }
+        }
+        openCategoryModal(eleId, startindex, endindex, selection);
+        $('#'+eleId+'Modal').modal('toggle')
+    });
+});
+
+function deleteSpanModal(eleId) {
+    let textSpanDetails = JSON.parse(localStorage.getItem('textSpanDetails'));
+    submit_span_form_ele = document.getElementById("idsavetextannospanform");
+    const formData = new FormData(submit_span_form_ele);
+    var object = {};
+    formData.forEach(function(value, key){
+        object[key] = value;
+    });
+    let header = object['modalheader'];
+    let spanId = object['spanId'];
+    let lastActiveId = object['lastActiveId'];
+    ['modalheader', 'spanId', 'lastActiveId'].forEach(e => delete object[e]);
+    let currentTextSpanDetails = {};
+    currentTextSpanDetails[header] = {}
+    currentTextSpanDetails[header][spanId] = object;
+    if (header in textSpanDetails) {
+        delete textSpanDetails[header][spanId];
+        localStorage.setItem("textSpanDetails", JSON.stringify(textSpanDetails));
+        currentTextSpanDetails['lastActiveId'] = lastActiveId;
+        $.post( "/easyAnno/deletetextAnnoSpan", {
+            a: JSON.stringify(currentTextSpanDetails)
+        })
+        .done(function( data ) {
+            alert('Span Deleted Successfully!');
+            window.location.reload();
+        });
+    }
+    else {
+        return false;
+    }
+}

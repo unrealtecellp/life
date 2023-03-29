@@ -244,7 +244,7 @@ def generate_formatted_latex(
         editors=['Editor 1', 'Editor 2', 'Editor 3'],
         co_editors=['Co-ed 1', 'Co-ed 2', 'Co-ed 3'],
         metadata=['Centre for Advanced Research in Underrepresented Languages',
-                  'unReaL-TecE LLP'],
+                  'UnReaL-TecE LLP'],
         fields=[],
         dict_headword='headword',  # lexemeformscripts.ipa.., glosslangs.hin..
         formatting_options={
