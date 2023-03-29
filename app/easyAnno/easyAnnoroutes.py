@@ -721,7 +721,7 @@ def createImageAnno(zipFile, proj_name):
 @easyAnno.route('/textAnno', methods=['GET', 'POST'])
 @login_required
 def textAnno():
-    print('textAnno')
+    # print('textAnno')
     projects, userprojects, textanno = getdbcollections.getdbcollections(mongo,
                                                                 'projects',
                                                                 'userprojects',
@@ -988,7 +988,7 @@ def savetextAnno():
 @easyAnno.route('/savetextAnnoSpan', methods=['GET', 'POST'])
 @login_required
 def savetextAnnoSpan():
-    print('IN /savetextAnnoSpan')
+    # print('IN /savetextAnnoSpan')
     userprojects, textanno = getdbcollections.getdbcollections(mongo,
                                                                 'userprojects',
                                                                 'textanno')
@@ -1020,6 +1020,42 @@ def savetextAnnoSpan():
         return "OK"
 
     # return redirect(url_for('easyAnno.textAnno'))
+    return "OK"
+
+@easyAnno.route('/deletetextAnnoSpan', methods=['GET', 'POST'])
+@login_required
+def deletetextAnnoSpan():
+    # print('IN /deletetextAnnoSpan')
+    userprojects, textanno = getdbcollections.getdbcollections(mongo,
+                                                                'userprojects',
+                                                                'textanno')
+
+    current_username = getcurrentusername.getcurrentusername()
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                    userprojects)
+
+    if request.method == 'POST':
+        # annotatedText = dict(request.form.lists())
+        
+        annotatedTextSpan = json.loads(request.form['a'])
+        # pprint(annotatedTextSpan)
+
+        # # lastActiveId = annotatedTextSpan['lastActiveId'][0]
+        lastActiveId = annotatedTextSpan['lastActiveId']
+        del annotatedTextSpan['lastActiveId']
+        # # annotatedTextSpan['annotatedFLAG'] = 1
+        # # pprint(annotatedTextSpan)
+        # # print(lastActiveId)
+        for key, value in annotatedTextSpan.items():
+            for k, v in value.items():
+                textanno.update_one({"projectname": activeprojectname, "textId": lastActiveId},
+                                    {'$unset': { 
+                                                # "spanAnnotation.text."+spanId: annotatedTextSpan[spanId]
+                                                current_username+'.'+key+'.'+k: 1,
+                                                # current_username+".annotatedFLAG": 1
+                                            }})
+        return "OK"
+
     return "OK"
 
 
