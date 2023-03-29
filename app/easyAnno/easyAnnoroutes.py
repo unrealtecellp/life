@@ -721,7 +721,7 @@ def createImageAnno(zipFile, proj_name):
 @easyAnno.route('/textAnno', methods=['GET', 'POST'])
 @login_required
 def textAnno():
-    print('textAnno')
+    # print('textAnno')
     projects, userprojects, textanno = getdbcollections.getdbcollections(mongo,
                                                                 'projects',
                                                                 'userprojects',
@@ -857,7 +857,7 @@ def textAnno():
 @easyAnno.route('/savetextAnno', methods=['GET', 'POST'])
 @login_required
 def savetextAnno():
-    print('IN /savetextAnno')
+    # print('IN /savetextAnno')
     # projects = mongo.db.projects              # collection of users and their respective projects
     # userprojects = mongo.db.userprojects              # collection of users and their respective projects
     # textanno = mongo.db.textanno
@@ -988,7 +988,7 @@ def savetextAnno():
 @easyAnno.route('/savetextAnnoSpan', methods=['GET', 'POST'])
 @login_required
 def savetextAnnoSpan():
-    print('IN /savetextAnnoSpan')
+    # print('IN /savetextAnnoSpan')
     userprojects, textanno = getdbcollections.getdbcollections(mongo,
                                                                 'userprojects',
                                                                 'textanno')
@@ -1001,13 +1001,13 @@ def savetextAnnoSpan():
         # annotatedText = dict(request.form.lists())
         
         annotatedTextSpan = json.loads(request.form['a'])
-        pprint(annotatedTextSpan)
+        # pprint(annotatedTextSpan)
 
         # lastActiveId = annotatedTextSpan['lastActiveId'][0]
         lastActiveId = annotatedTextSpan['lastActiveId']
         del annotatedTextSpan['lastActiveId']
         # annotatedTextSpan['annotatedFLAG'] = 1
-        pprint(annotatedTextSpan)
+        # pprint(annotatedTextSpan)
         # print(lastActiveId)
         for key, value in annotatedTextSpan.items():
             for k, v in value.items():
@@ -1020,6 +1020,42 @@ def savetextAnnoSpan():
         return "OK"
 
     # return redirect(url_for('easyAnno.textAnno'))
+    return "OK"
+
+@easyAnno.route('/deletetextAnnoSpan', methods=['GET', 'POST'])
+@login_required
+def deletetextAnnoSpan():
+    # print('IN /deletetextAnnoSpan')
+    userprojects, textanno = getdbcollections.getdbcollections(mongo,
+                                                                'userprojects',
+                                                                'textanno')
+
+    current_username = getcurrentusername.getcurrentusername()
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                    userprojects)
+
+    if request.method == 'POST':
+        # annotatedText = dict(request.form.lists())
+        
+        annotatedTextSpan = json.loads(request.form['a'])
+        # pprint(annotatedTextSpan)
+
+        # # lastActiveId = annotatedTextSpan['lastActiveId'][0]
+        lastActiveId = annotatedTextSpan['lastActiveId']
+        del annotatedTextSpan['lastActiveId']
+        # # annotatedTextSpan['annotatedFLAG'] = 1
+        # # pprint(annotatedTextSpan)
+        # # print(lastActiveId)
+        for key, value in annotatedTextSpan.items():
+            for k, v in value.items():
+                textanno.update_one({"projectname": activeprojectname, "textId": lastActiveId},
+                                    {'$unset': { 
+                                                # "spanAnnotation.text."+spanId: annotatedTextSpan[spanId]
+                                                current_username+'.'+key+'.'+k: 1,
+                                                # current_username+".annotatedFLAG": 1
+                                            }})
+        return "OK"
+
     return "OK"
 
 
@@ -2581,8 +2617,8 @@ def createTextAnnoNew(zipFile):
                     tag_set_meta_data['defaultCategoryTags'] = defaultCategoryTags
                     tag_set_meta_data['categoryHtmlElement'] = categoryHtmlElement
                     tag_set_meta_data['categoryHtmlElementProperties'] = categoryHtmlElementProperties
-                pprint(tag_set)
-                pprint(tag_set_meta_data)
+                # pprint(tag_set)
+                # pprint(tag_set_meta_data)
                 with open('app/jsonfiles/tagSet.json', 'w') as writejson:
                     jsondata = json.dumps(tag_set, indent=2, ensure_ascii=False)
                     writejson.write(jsondata)
