@@ -3045,7 +3045,7 @@ def userslist():
         # get list of all the users registered in the application LiFE
         for user in userlogin.find({}, {"_id": 0, "username": 1, "isActive": 1}):
             # print(user)
-            if (user['isActive'] == 1):
+            if ('isActive' in user and user['isActive'] == 1):
                 usersList.append(user["username"])
                 # print(user)
         if (current_username == projectowner):
