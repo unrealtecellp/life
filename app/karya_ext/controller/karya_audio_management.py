@@ -178,7 +178,7 @@ def getnsave_karya_recordings(mongo,
                     lifespeakerid, karyaspeakerId,
                     current_file_id, current_audio_report
                 )
-                print(save_status)
+                print("save_status : ",save_status)
                 
                 if save_status[0]:
                     # save in the list of fetched audios
