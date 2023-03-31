@@ -1,0 +1,90 @@
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Add/ Update User Details </title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
+    <script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css" />
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.1/bootstrap3-editable/css/bootstrap-editable.css"
+        rel="stylesheet">
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.1/bootstrap3-editable/js/bootstrap-editable.js"></script>
+
+    <style>
+        .divtextuserdetails {
+            border: ridge 1px;
+            padding: 5px;
+            width: 20em;
+            min-height: 1em;
+            overflow: auto;
+        }
+    </style>
+
+</head>
+{% extends "manageUsersLinks.html" %}
+
+{% block styles %}
+{{super()}}
+{% endblock %}
+
+{% block app_content %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+
+<div id="formdisplay" style="display: block;">
+    <div class="form-group">
+        <h3> Email Notification Configuration </h3>
+        <h4>Please fill up this information correctly and carefully. If this is not filled
+            up correctly then all email notifications viz. those related to project sharing,
+            password reset etc will NOT be sent.
+        </h4>
+    </div>
+    <hr>
+    <form role="form" method="post" action="{{url_for('emailsetup')}}">
+        <!-- <div id="userdisplay" class="form-group" style="display: none;"> -->
+        {% for item in emailconfig %}
+        <div class="form-group">
+            <label for="display++{{item}}">{{labelmap[item]}}: </label><br>
+            {% if item == 'notificationEmail' %}
+            <input type="email" id="display++{{item}}" name="name++{{item}}" style="width:55%"
+                value="{{emailconfig[item]}}" required readonly>
+            {% elif item == 'notificationEmailPwd' %}
+            <input type="password" id="display++{{item}}" name="name++{{item}}" style="width:55%"
+                value="{{emailconfig[item]}}" required readonly>
+            {% elif item == 'smtpPort' %}
+            <i>For example, <b>587</b> (for Outlook) or <b>465</b> (for Gmail - needs to disable 2-factor
+                authentication)</i><br />
+            <input type="number" id="display++{{item}}" name="name++{{item}}" style="width:55%"
+                value="{{emailconfig[item]}}" required readonly>
+            {% else %}
+            {% if item == 'smtpServer'%}
+            <i>For example, <b>smtp.office365.com</b> (for Outlook) or <b>smtp.gmail.com</b> (for Gmail - needs to
+                disable 2-factor
+                authentication)</i><br />
+            {%endif%}
+            <input type="text" id="display++{{item}}" name="name++{{item}}" style="width:55%"
+                value="{{emailconfig[item]}}" required readonly>
+            {%endif%}
+        </div>
+        {% endfor %}
+        <div class="form-group">
+            <button class="btn-danger" type="button" id="editbutton">Edit</button>
+            <input type="submit" id="submitbutton" class="btn-primary submitbutton" value="Submit" disabled="disabled">
+        </div>
+    </form>
+</div>
+
+
+{% endblock %}
+{% block scripts %}
+{{super()}}
+<script src="{{url_for('.static', filename='appemailsetup.js')}}"></script>
+
+{% endblock %}
+
+</html>
