@@ -890,10 +890,9 @@ function mainSave(ele) {
         window.location.reload();
       });
 }
-
 $(document).ready(function(){
-    $('#maintextcontent').click(function() { 
-        // console.log(this);
+    $('#maintextcontent').click(function(event) { 
+        // console.log(this, event);
         // alert('clicked');
         let eleId = '';
         let startindex = 0;
@@ -903,6 +902,7 @@ $(document).ready(function(){
         let textSpanDetails = JSON.parse(localStorage.getItem('textSpanDetails'));
         // console.log(textSpanDetails);
         // console.log(this.selectionStart, this.selectionEnd);
+        // console.log(event.selectionStart, event.selectionEnd);
         let spanStart = this.selectionStart;
         let spanEnd = this.selectionStart;
         // let spanId = textSpanId(spanStart, spanEnd);
@@ -934,6 +934,52 @@ $(document).ready(function(){
         openCategoryModal(eleId, startindex, endindex, selection);
         $('#'+eleId+'Modal').modal('toggle')
     });
+    // $('#maintextcontent').contextmenu(function(event) { 
+    //     console.log(this, event);
+    //     event.preventDefault();
+    //     console.log(this.selectionStart, this.selectionEnd);
+    //     console.log(event.selectionStart, event.selectionEnd);
+    //     // fn();
+    //     // // alert('clicked');
+    //     // let eleId = '';
+    //     // let startindex = 0;
+    //     // let endindex = 0;
+    //     // let minimumLength = this.textLength;
+    //     // // console.log('minimumDistance', minimumDistance);
+    //     // let textSpanDetails = JSON.parse(localStorage.getItem('textSpanDetails'));
+    //     // // console.log(textSpanDetails);
+    //     // // console.log(this.selectionStart, this.selectionEnd);
+    //     // let spanStart = this.selectionStart;
+    //     // let spanEnd = this.selectionStart;
+    //     // // let spanId = textSpanId(spanStart, spanEnd);
+    //     // // console.log(spanId);
+    //     // loop1:
+    //     // for (let [key, value] of Object.entries(textSpanDetails)) {
+    //     //     // console.log(key, value);
+    //     //     loop2:
+    //     //     for (let [k, v] of Object.entries(value)) {
+    //     //         let startIndex = v['startindex'];
+    //     //         let endIndex = v['endindex'];
+    //     //         if (spanStart >= startIndex && spanEnd <= endIndex) {
+    //     //             differenceFromStart = Math.abs(startIndex-spanStart);
+    //     //             differenceFromEnd = Math.abs(endIndex-spanEnd);
+    //     //             length = differenceFromStart+differenceFromEnd;
+    //     //             if (length < minimumLength) {
+    //     //                 minimumLength = length;
+    //     //                 // console.log(k, v);
+    //     //                 // console.log(true, spanStart, spanEnd, 'startindex: ', v['startindex'], 'endindex: ', v['endindex'], length);
+    //     //                 eleId = key;
+    //     //                 startindex = startIndex;
+    //     //                 endindex = endIndex;
+    //     //                 selection = v['textspan'];
+    //     //             }
+    //     //             // break loop1;
+    //     //         }
+    //     //     }
+    //     // }
+    //     // openCategoryModal(eleId, startindex, endindex, selection);
+    //     // $('#'+eleId+'Modal').modal('toggle')
+    // });
 });
 
 function deleteSpanModal(eleId) {
@@ -967,3 +1013,27 @@ function deleteSpanModal(eleId) {
         return false;
     }
 }
+
+
+// $(function(){
+//     $.contextMenu({
+//         selector: '#maintextcontent', 
+//         trigger: 'right',
+//         delay: 500,
+//         autoHide: true,
+//         // hideOnSecondTrigger: true,
+//         callback: function(key, options) {
+//             var m = "clicked: " + key;
+//             window.console && console.log(m) || alert(m); 
+//         },
+//         items: {
+//             "edit": {name: "Edit", icon: "edit"},
+//             "cut": {name: "Cut", icon: "cut"},
+//             "copy": {name: "Copy", icon: "copy"},
+//             "paste": {name: "Paste", icon: "paste"},
+//             "delete": {name: "Delete", icon: "delete"},
+//             "sep1": "---------",
+//             "quit": {name: "Quit", icon: function($element, key, item){ return 'context-menu-icon context-menu-icon-quit'; }}
+//         }
+//     });
+// });
