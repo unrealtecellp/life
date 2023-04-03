@@ -265,7 +265,6 @@ def sentence_lexeme_to_lexemes(oneSentenceDetail, oneLexemeDetail):
 @app.route('/enternewsentences', methods=['GET', 'POST'])
 @login_required
 def enternewsentences():
-    # print('1234321')
     projects, userprojects, projectsform, sentences, transcriptions, speakerdetails = getdbcollections.getdbcollections(mongo,
                                                                                                                         'projects',
                                                                                                                         'userprojects',
@@ -273,29 +272,29 @@ def enternewsentences():
                                                                                                                         'sentences',
                                                                                                                         'transcriptions',
                                                                                                                         'speakerdetails')
-    currentuserprojectsname = getcurrentuserprojects.getcurrentuserprojects(current_user.username,
+    current_username = getcurrentusername.getcurrentusername()
+    currentuserprojectsname = getcurrentuserprojects.getcurrentuserprojects(current_username,
                                                                             userprojects)
-    activeprojectname = getactiveprojectname.getactiveprojectname(
-        current_user.username, userprojects)
-    shareinfo = getuserprojectinfo.getuserprojectinfo(
-        userprojects, current_user.username, activeprojectname)
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                    userprojects)
+    shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
+                                                      current_username,
+                                                      activeprojectname)
     # print(shareinfo)
 
     if activeprojectname == '':
-        flash(f"select a project from 'All Projects' to work on!")
+        flash(f"select a project from 'Change Active Project' to work on!")
         return redirect(url_for('home'))
+    
     if request.method == 'POST':
         newSentencesData = dict(request.form.lists())
         newSentencesFiles = request.files.to_dict()
         savenewsentence.savenewsentence(mongo,
                                         sentences,
-                                        current_user.username,
+                                        current_username,
                                         activeprojectname,
                                         newSentencesData,
                                         newSentencesFiles)
-
-    # currentuserprojectsname =  getcurrentuserprojects.getcurrentuserprojects(current_user.username,
-    #                             userprojects)
 
     # if method is not 'POST'
     projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
@@ -305,9 +304,9 @@ def enternewsentences():
     if activeprojectform is not None:
         try:
             # , audio_file_path, transcription_details
-            # activespeakerid = getactivespeakerid.getactivespeakerid(userprojects, current_user.username)
+            # activespeakerid = getactivespeakerid.getactivespeakerid(userprojects, current_username)
             activespeakerid = getuserprojectinfo.getuserprojectinfo(userprojects,
-                                                                    current_user.username,
+                                                                    current_username,
                                                                     activeprojectname)['activespeakerId']
             total_comments, annotated_comments, remaining_comments = getcommentstats.getcommentstats(projects,
                                                                                                      transcriptions,
@@ -319,18 +318,18 @@ def enternewsentences():
             audio_id = audiodetails.getactiveaudioid(projects,
                                                      activeprojectname,
                                                      activespeakerid,
-                                                     current_user.username)
+                                                     current_username)
             # print(audio_id)
-            transcription_details = audiodetails.getaudiofiletranscription(
-                transcriptions, audio_id)
+            transcription_details = audiodetails.getaudiofiletranscription(transcriptions,
+                                                                           audio_id)
 
-            audio_metadata = audiodetails.getaudiometadata(
-                transcriptions, audio_id)
+            audio_metadata = audiodetails.getaudiometadata(transcriptions, 
+                                                            audio_id)
             # print('audio_metadata')
             # pprint(audio_metadata)
             activeprojectform['audioMetadata'] = audio_metadata['audioMetadata']
-            last_updated_by = audiodetails.lastupdatedby(
-                transcriptions, audio_id)
+            last_updated_by = audiodetails.lastupdatedby(transcriptions,
+                                                            audio_id)
             activeprojectform['lastUpdatedBy'] = last_updated_by['updatedBy']
             file_path = audiodetails.getaudiofilefromfs(mongo,
                                                         basedir,
@@ -352,8 +351,8 @@ def enternewsentences():
             try:
                 speakerids = projects.find_one({"projectname": activeprojectname},
                                                {"_id": 0, "speakerIds." +
-                                                   current_user.username: 1}
-                                               )["speakerIds"][current_user.username]
+                                                   current_username: 1}
+                                               )["speakerIds"][current_username]
                 added_speaker_ids = audiodetails.addedspeakerids(
                     speakerdetails, activeprojectname)
             except:
@@ -386,15 +385,6 @@ def enternewsentences():
                            projectName=activeprojectname,
                            newData=activeprojectform,
                            data=currentuserprojectsname)
-
-    # return render_template('enternewsentences.html',
-    #                         projectName=activeprojectname,
-    #                         sdata=[],
-    #                         data=currentuserprojectsname)
-
-# get new sentences route
-# get new sentences in the project coming throug ajax
-
 
 @app.route('/savetranscription', methods=['GET', 'POST'])
 @login_required

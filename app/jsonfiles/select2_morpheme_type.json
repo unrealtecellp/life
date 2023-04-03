@@ -1,0 +1,6 @@
+[
+    {"id": "lemma", "text": "lemma"},
+    {"id": "wordform", "text": "wordform"},
+    {"id": "affix", "text": "affix"},
+    {"id": "clitic", "text": "clitic"}
+]

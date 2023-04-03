@@ -1676,7 +1676,7 @@ function showBoundaryCount(boundaryCount) {
 }
 
 function lastUpdatedBy(lstUpdatedBy) {
-    console.log(lstUpdatedBy);
+    // console.log(lstUpdatedBy);
     // lstUpdatedBy = '';
     if (lstUpdatedBy !== '') {
         let lastUpdate = '<br><span><strong>Last Updated By: ' + lstUpdatedBy + '<strong></span>';

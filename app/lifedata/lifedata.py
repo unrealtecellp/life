@@ -29,7 +29,7 @@ from app.lifedata.controller import (
 lifedata = Blueprint('lifedata', __name__, template_folder='templates', static_folder='static')
 basedir = os.path.abspath(os.path.dirname(__file__))
 jsonfilesdir = '/'.join(basedir.split('/')[:-1]+['jsonfiles'])
-select2LanguagesJSONFilePath = os.path.join(jsonfilesdir, 'select2Languages.json')
+select2LanguagesJSONFilePath = os.path.join(jsonfilesdir, 'select2_languages.json')
 
 @lifedata.route('/', methods=['GET', 'POST'])
 @lifedata.route('/home', methods=['GET', 'POST'])
