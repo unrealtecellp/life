@@ -421,7 +421,8 @@ function myFunction(projData) {
     // inpt += '<br><button type="submit" id="mainsave" class="btn btn-lg btn-danger btn-block"  onclick="mainSave(this)">Save</button>';
     inpt += '</form></div>';
 
-    inpt += '<div id="idmodal"></div>'
+    inpt += '<div id="idmodal"></div>';
+    inpt += '<div id="idpremodal"></div>'
 
     $('.textdata').append(inpt);
     // highlightSpanTextDetails('', '', '');
@@ -553,6 +554,45 @@ function hideHideCategory(category) {
     }
 }
 
+function preModalBody(spanModalObject) {
+    let ele = '';
+    for (let [key, value] of Object.entries(spanModalObject)) {
+        // console.log(value);
+        let startindex = value[0];
+        let endindex = value[1];
+        selection = value[2];
+        // console.log(startindex, endindex, selection);
+        // console.log(typeof startindex, typeof endindex, typeof selection);
+        ele += '<button type="button" id="'+key+'" class="btn btn-info btn" onclick="openCategoryModal(this.id, \''+startindex+'\', \''+ endindex+'\', \''+selection+'\')"  data-toggle="modal" data-target="#'+key+'Modal">'+key+'</button><br><br>';
+    }
+
+    return ele;
+}
+
+function spanPreModal() {
+    let modalEle = ''
+    modalEle += '<div class="modal fade" id="pre'+'Modal" tabindex="-1" role="dialog" aria-labelledby="pre'+'ModalLabel">'+
+                '<div class="modal-dialog">'+
+                '<div class="modal-content">'+
+                    '<div class="modal-header">'+
+                    '<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>'+
+                    '<h4 class="modal-title" id="pre'+'ModalLabel">Select One</h4>'+
+                    '</div>'+
+                    '<div class="modal-body">'+
+                        '<div class="row" id="pre_modal_data">'+
+                        '<p>12345</p>'+
+                        '</div>'+
+                    '</div>'+
+                    '<div class="modal-footer">'+
+                    '<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>'+
+                    '</div>'+
+                '</div>'+
+                '</div>'+
+            '</div>';
+
+    return modalEle;
+}
+
 function addModalElement(key) {
     let modalEle = ''
     modalEle += '<div class="modal fade" id="'+key+'Modal" tabindex="-1" role="dialog" aria-labelledby="'+key+'ModalLabel">'+
@@ -578,8 +618,8 @@ function addModalElement(key) {
     return modalEle;
 }
 
-
 function openCategoryModal(eleId, start=0, end=0, selectedText='') {
+    $('#preModal').modal('hide');
     if (eleId) {
         let spanStart = start;
         let spanEnd = end;
@@ -594,10 +634,12 @@ function openCategoryModal(eleId, start=0, end=0, selectedText='') {
             modalData += spanModalForm(projData, eleId);
         }
         $('#'+eleId+'_modal_data').html(modalData);
+        reloadOnModalClose(eleId);
         // textareaScrollHeight('maintextcontent', 'spantextcontent');
-        // console.log(start, end);
+        // console.log(start, end, !start, !end);
+        // console.log(typeof spanStart, typeof spanEnd, typeof start, typeof end);
         if (!start || !end) {
-            // console.log(start, end);
+            console.log(start, end);
             let text = document.getElementById('maintextcontent');
             spanStart = text.selectionStart;
             spanEnd = text.selectionEnd;
@@ -609,7 +651,6 @@ function openCategoryModal(eleId, start=0, end=0, selectedText='') {
         }
         leftModalForm(selection, spanStart, spanEnd, eleId)
         middleModalForm(selection, spanStart, spanEnd, eleId);
-
     }
 }
 
@@ -618,13 +659,6 @@ function spanModalForm(projData, eleId) {
     let text = document.getElementById('maintextcontent').value;
     spanModalData += '<form name="savetextannospan" id="idsavetextannospanform" class="form-horizontal" action="/easyAnno/savetextAnnoSpan" method="POST"  enctype="multipart/form-data">';
     spanModalData += '<div class="col-md-6"  id="modalleft">';
-    // spanModalData += '<p class="form-group" id="' + projData["textData"]["ID"] + '"><strong>Text ID: ' + projData["textData"]["ID"] + '</strong></p>' +
-    //                 // '<div class="form-group textcontentouter">' +
-    //                 '<label class="col" for="spantextcontent">Text:</label><br>'+
-    //                 // '<svg viewBox="0 0 240 80" xmlns="http://www.w3.org/2000/svg">'+
-    //                 '<textarea class="modaltextcontent" id="spantextcontent" onselect=spanAnnotation(this,"'+eleId+'") readonly>' + text + '</textarea>'
-                    // '<text class="modaltextcontent" id="spantextcontent" onselect=spanAnnotation(this) readonly>' + text + '</text>'
-                //    '</svg>' ;
     spanModalData += '</div>' // left col div
 
     spanModalData += '<div class="col-md-4"  id="modalmiddle">';
@@ -892,17 +926,21 @@ function mainSave(ele) {
 }
 
 $(document).ready(function(){
-    $('#maintextcontent').click(function() { 
-        // console.log(this);
+    $('#maintextcontent').on('click', function(event) {
+    // $('#maintextcontent').dblclick(function(event) { 
+        // console.log(this, event);
+        // showCustomContextMenu();
         // alert('clicked');
         let eleId = '';
         let startindex = 0;
         let endindex = 0;
         let minimumLength = this.textLength;
+        let spanModalObject = {};
         // console.log('minimumDistance', minimumDistance);
         let textSpanDetails = JSON.parse(localStorage.getItem('textSpanDetails'));
         // console.log(textSpanDetails);
         // console.log(this.selectionStart, this.selectionEnd);
+        // console.log(event.selectionStart, event.selectionEnd);
         let spanStart = this.selectionStart;
         let spanEnd = this.selectionStart;
         // let spanId = textSpanId(spanStart, spanEnd);
@@ -912,13 +950,14 @@ $(document).ready(function(){
             // console.log(key, value);
             loop2:
             for (let [k, v] of Object.entries(value)) {
+                // console.log(k, v);
                 let startIndex = v['startindex'];
                 let endIndex = v['endindex'];
                 if (spanStart >= startIndex && spanEnd <= endIndex) {
                     differenceFromStart = Math.abs(startIndex-spanStart);
                     differenceFromEnd = Math.abs(endIndex-spanEnd);
                     length = differenceFromStart+differenceFromEnd;
-                    if (length < minimumLength) {
+                    if (length <= minimumLength) {
                         minimumLength = length;
                         // console.log(k, v);
                         // console.log(true, spanStart, spanEnd, 'startindex: ', v['startindex'], 'endindex: ', v['endindex'], length);
@@ -926,13 +965,31 @@ $(document).ready(function(){
                         startindex = startIndex;
                         endindex = endIndex;
                         selection = v['textspan'];
+                        // console.log(eleId, startindex, endindex, selection);
+                        spanModalObject[key] = [startindex, endindex, selection]
                     }
                     // break loop1;
                 }
             }
         }
-        openCategoryModal(eleId, startindex, endindex, selection);
-        $('#'+eleId+'Modal').modal('toggle')
+
+        spanModalObjectLength = Object.keys(spanModalObject).length;
+        // console.log(spanModalObjectLength, spanModalObject);
+
+        if (spanModalObjectLength <= 1) {
+            openCategoryModal(eleId, startindex, endindex, selection);
+            $('#'+eleId+'Modal').modal('toggle');
+            // reloadOnModalClose(eleId);
+        }
+        else if (spanModalObjectLength > 1) {
+            // showCustomContextMenu();
+            console.log('more types of span are marked on this particular span!');
+            let createModal = spanPreModal();
+            $('#idpremodal').html(createModal);
+            let modalData = preModalBody(spanModalObject);
+            $('#pre_modal_data').html(modalData);
+            $('#preModal').modal('toggle');
+        }
     });
 });
 
@@ -966,4 +1023,11 @@ function deleteSpanModal(eleId) {
     else {
         return false;
     }
+}
+
+function reloadOnModalClose(eleId) {
+    $('#'+eleId+'Modal').on('hidden.bs.modal', function() {
+        console.log('categoryModalClose');
+        location.reload();
+    });
 }
