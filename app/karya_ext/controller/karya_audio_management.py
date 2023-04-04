@@ -136,7 +136,7 @@ def getnsave_karya_recordings(mongo,
         audio_speaker_merge_vals = audio_speaker_merge[file_id_and_sent]
         karyaspeakerId = audio_speaker_merge_vals[0]
         lifespeakerid = accesscodedetails.find_one(
-            {'karyaspeakerid': karyaspeakerId}, {'lifespeakerid': 1, '_id': 0})
+            {'karyaspeakerid': karyaspeakerId, 'projectname': activeprojectname}, {'lifespeakerid': 1, '_id': 0})
 
         try:
             current_audio_report = audio_speaker_merge_vals[1]
@@ -164,6 +164,7 @@ def getnsave_karya_recordings(mongo,
                 continue
 
             if lifespeakerid is not None:
+                print('lifespeakerid: ', lifespeakerid)
                 lifespeakerid = lifespeakerid["lifespeakerid"]
                 new_audio_file = karya_api_access.get_audio_file_from_karya(
                     current_file_id, hederr)
@@ -179,6 +180,8 @@ def getnsave_karya_recordings(mongo,
                     current_file_id, current_audio_report
                 )
 
+                print('save_status: ', save_status)
+
                 if save_status[0]:
                     # save in the list of fetched audios
                     exclude_ids.append(insert_audio_id)
@@ -191,7 +194,9 @@ def getnsave_karya_recordings(mongo,
                     # print("status of save_status : ", save_status)
                     accesscodedetails.update_one({"projectname": activeprojectname, "karyaaccesscode": access_code},
                                                  {"$addToSet": {"karyafetchedaudios": current_file_id}})
+                else:
+                    print(f"1. lifespeakerid not found!: {karyaspeakerId, lifespeakerid}")
             else:
-                print(f"lifespeakerid not found!: {karyaspeakerId}")
+                print(f"2. lifespeakerid not found!: {karyaspeakerId, lifespeakerid}")
         else:
             print(f"Audio already fetched: {current_sentence}")

@@ -55,12 +55,14 @@ Home
     <h3>Active Project: {{ activeprojectname }}</h3>
 
     <div>
-      <button type="button" class="btn btn-lg btn-primary" id="idhomevieweditbtn">View/Edit Project</button>
+      {% if activeprojectname != '' %}
+        <button type="button" class="btn btn-lg btn-primary" id="idhomevieweditbtn">View/Edit Project</button>
+      {% endif %}
       {% if shareinfo['sharechecked'] == 'true' %}
-      <button type="button" id="shareproject" class="btn btn-lg btn-danger" data-toggle="modal"
+        <button type="button" id="shareproject" class="btn btn-lg btn-danger" data-toggle="modal"
         data-target="#myShareProjectModal">
-        Share Project
-      </button>
+          Share Project
+        </button>
       {% endif %}
       {% if shareinfo['sharemode']|int >= 1 %}
       <!-- <button type="button" class="btn btn-lg btn-warning"
@@ -85,8 +87,9 @@ Home
     </div>
   </div>
   </br>
-  </br>
   <hr>
+  <a type="button" class="btn btn-lg btn-info" target="_blank"
+      href='https://docs.google.com/document/d/1Gwi8KMfjXcdkJNzTVMY6WX490hHP8TexwBBuEIfERH4/edit#heading=h.tksp88900nix';">User Manual</a>
   <div id="allProjects">
     <!-- <h3>All Projects</h3> -->
 

@@ -30,3 +30,7 @@ app/jsonfiles/languagesSet.txt
 .vscode
 app/jsonfiles/tagSet.json
 app/jsonfiles/tagSetMetaData.json
+ubuntuPackages.sh
+app/jsonfiles/tagSet.json
+app/jsonfiles/tagSetMetaData.json
+ubuntuPackages.sh

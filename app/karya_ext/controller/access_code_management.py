@@ -262,7 +262,8 @@ def get_access_code_metadata(
         accesscode_info,
         activeprojectname,
         share_level,
-        all_data_share_level
+        all_data_share_level,
+        current_username
 ):
     karyaaccesscodedetails = ''
     if share_level >= all_data_share_level:
