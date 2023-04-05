@@ -359,6 +359,7 @@ function createTextSpanDetails(tagSet, defaultCategoryTags) {
     }
     localStorage.setItem("textSpanDetails", JSON.stringify(textSpanDetails));
 }
+
 function myFunction(projData) {
     localStorage.setItem("projData", JSON.stringify(projData));
     let lastActiveId = projData["lastActiveId"];
@@ -634,7 +635,7 @@ function openCategoryModal(eleId, start=0, end=0, selectedText='') {
             modalData += spanModalForm(projData, eleId);
         }
         $('#'+eleId+'_modal_data').html(modalData);
-        reloadOnModalClose(eleId);
+        // reloadOnModalClose(eleId);
         // textareaScrollHeight('maintextcontent', 'spantextcontent');
         // console.log(start, end, !start, !end);
         // console.log(typeof spanStart, typeof spanEnd, typeof start, typeof end);
@@ -702,6 +703,26 @@ function highlightSpanTextDetails(spanStart, spanEnd, selection) {
     localStorage.setItem("highlightSpanTextDetails", JSON.stringify(data));
 
     for (let [key, value] of Object.entries(data)) {
+        console.log(key, value);
+        startEndLists.push(value);
+    }
+    // console.log(startEndLists);
+    highlightSpanText(startEndLists);
+}
+
+
+function removeHighlightSpanTextDetail(spanStart, spanEnd, selection) {
+    let startEndLists = [];
+    data = JSON.parse(localStorage.getItem('highlightSpanTextDetails'));
+    spanId = textSpanId(spanStart, spanEnd);
+    if (data === null) {
+        data = {};
+    }
+    // data[spanId] = [spanStart, spanEnd];
+    delete data[spanId];
+    localStorage.setItem("highlightSpanTextDetails", JSON.stringify(data));
+
+    for (let [key, value] of Object.entries(data)) {
         // console.log(key, value);
         startEndLists.push(value);
     }
@@ -725,8 +746,9 @@ function spanAnnotation(event) {
     //     highlight: [spanStart, spanEnd] // string, regexp, array, function, or custom object
     // });
     // $('#spantextcontent').highlightWithinTextarea('update');
-
-    highlightSpanTextDetails(spanStart, spanEnd, selection);
+    // console.log(spanStart, spanEnd, selection);
+    // console.log(typeof spanStart, typeof spanEnd, typeof selection);
+    // highlightSpanTextDetails(spanStart, spanEnd, selection);
     // highlightSpanText(spanStart, spanEnd)
 }
 
@@ -876,6 +898,8 @@ function spanSave(ele) {
         alert('Please select some text!')
         return false;
     }
+    let spanStart = Number(object['startindex']);
+    let spanEnd = Number(object['endindex']);
     let header = object['modalheader'];
     let spanId = object['spanId'];
     let lastActiveId = object['lastActiveId'];
@@ -900,6 +924,9 @@ function spanSave(ele) {
       .done(function( data ) {
         // window.location.reload();
         alert('Annotation Saved :)')
+        // console.log(spanStart, spanEnd, textSpan);
+        // console.log(typeof spanStart, typeof spanEnd, typeof textSpan);
+        highlightSpanTextDetails(spanStart, spanEnd, selection);
       });
 }
 
@@ -1001,6 +1028,10 @@ function deleteSpanModal(eleId) {
     formData.forEach(function(value, key){
         object[key] = value;
     });
+    // console.log(object);
+    let spanStart = object['startindex'];
+    let spanEnd = object['endindex'];
+    let selection = object['textspan'];
     let header = object['modalheader'];
     let spanId = object['spanId'];
     let lastActiveId = object['lastActiveId'];
@@ -1017,7 +1048,9 @@ function deleteSpanModal(eleId) {
         })
         .done(function( data ) {
             alert('Span Deleted Successfully!');
-            window.location.reload();
+            // window.location.reload();
+            // console.log(spanStart, spanEnd, selection);
+            removeHighlightSpanTextDetail(spanStart, spanEnd, selection);
         });
     }
     else {
@@ -1028,6 +1061,11 @@ function deleteSpanModal(eleId) {
 function reloadOnModalClose(eleId) {
     $('#'+eleId+'Modal').on('hidden.bs.modal', function() {
         console.log('categoryModalClose');
-        location.reload();
+        spanStart = document.getElementById('spanStart').value;
+        spanEnd = document.getElementById('spanEnd').value;
+        selection = document.getElementById('spantextcontent').value;
+        // console.log(spanStart, spanEnd, selection);
+        // removeHighlightSpanTextDetail(spanStart, spanEnd, selection);
+        // location.reload();
     });
 }
