@@ -555,16 +555,17 @@ function hideHideCategory(category) {
     }
 }
 
-function preModalBody(spanModalObject) {
+function preModalBody(spanModalObject, selection) {
     let ele = '';
+    ele += '<p id="pre'+'ModalSelection"><strong>Text:</strong> '+selection+'</p><br>';
     for (let [key, value] of Object.entries(spanModalObject)) {
         // console.log(value);
         let startindex = value[0];
         let endindex = value[1];
-        selection = value[2];
+        // selection = value[2];
         // console.log(startindex, endindex, selection);
         // console.log(typeof startindex, typeof endindex, typeof selection);
-        ele += '<button type="button" id="'+key+'" class="btn btn-info btn" onclick="openCategoryModal(this.id, \''+startindex+'\', \''+ endindex+'\', \''+selection+'\')"  data-toggle="modal" data-target="#'+key+'Modal">'+key+'</button><br><br>';
+        ele += '<button type="button" id="'+key+'" class="btn btn-info btn" onclick="openCategoryModal(this.id, \''+startindex+'\', \''+ endindex+'\')"  data-toggle="modal" data-target="#'+key+'Modal">'+key+'</button><br><br>';
     }
 
     return ele;
@@ -639,8 +640,14 @@ function openCategoryModal(eleId, start=0, end=0, selectedText='') {
         // textareaScrollHeight('maintextcontent', 'spantextcontent');
         // console.log(start, end, !start, !end);
         // console.log(typeof spanStart, typeof spanEnd, typeof start, typeof end);
+        let text = document.getElementById('maintextcontent');
+        selection = text.textContent.substring(
+            spanStart,
+            spanEnd
+        );
+        // console.log(selection);
         if (!start || !end) {
-            console.log(start, end);
+            // console.log(start, end);
             let text = document.getElementById('maintextcontent');
             spanStart = text.selectionStart;
             spanEnd = text.selectionEnd;
@@ -703,7 +710,7 @@ function highlightSpanTextDetails(spanStart, spanEnd, selection) {
     localStorage.setItem("highlightSpanTextDetails", JSON.stringify(data));
 
     for (let [key, value] of Object.entries(data)) {
-        console.log(key, value);
+        // console.log(key, value);
         startEndLists.push(value);
     }
     // console.log(startEndLists);
@@ -731,8 +738,8 @@ function removeHighlightSpanTextDetail(spanStart, spanEnd, selection) {
 }
 
 function spanAnnotation(event) {
-    console.log('span');
-    console.log(event);
+    // console.log('span');
+    // console.log(event);
     // console.log('eleId', eleId);
     const spanStart = event.selectionStart;
     const spanEnd = event.selectionEnd;
@@ -961,6 +968,7 @@ $(document).ready(function(){
         let eleId = '';
         let startindex = 0;
         let endindex = 0;
+        let selection = 0;
         let minimumLength = this.textLength;
         let spanModalObject = {};
         // console.log('minimumDistance', minimumDistance);
@@ -1013,12 +1021,31 @@ $(document).ready(function(){
             console.log('more types of span are marked on this particular span!');
             let createModal = spanPreModal();
             $('#idpremodal').html(createModal);
-            let modalData = preModalBody(spanModalObject);
+            let modalData = preModalBody(spanModalObject, selection);
             $('#pre_modal_data').html(modalData);
             $('#preModal').modal('toggle');
         }
     });
 });
+
+function sameSpanId(textSpanDetails, spanId) {
+    let sameSpanCount = 0;
+    // console.log(spanId);
+    for (let [key, value] of Object.entries(textSpanDetails)) {
+        // console.log(key, value);
+        if (value != 'NONE') {
+            for (let [k, v] of Object.entries(value)) {
+                // console.log(k, v);
+                if (k === spanId) {
+                    sameSpanCount += 1;
+                }
+            }
+        }
+    }
+    // console.log(sameSpanCount);
+
+    return sameSpanCount;
+}
 
 function deleteSpanModal(eleId) {
     let textSpanDetails = JSON.parse(localStorage.getItem('textSpanDetails'));
@@ -1050,7 +1077,10 @@ function deleteSpanModal(eleId) {
             alert('Span Deleted Successfully!');
             // window.location.reload();
             // console.log(spanStart, spanEnd, selection);
-            removeHighlightSpanTextDetail(spanStart, spanEnd, selection);
+            let sameSpanCount = sameSpanId(textSpanDetails, spanId);
+            if (sameSpanCount === 0) {
+                removeHighlightSpanTextDetail(spanStart, spanEnd, selection);
+            }
         });
     }
     else {
