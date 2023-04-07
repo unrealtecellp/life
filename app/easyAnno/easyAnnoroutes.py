@@ -2666,12 +2666,20 @@ def createTextAnnoNew(zipFile):
                             return redirect(url_for('easyAnno.home'))
 
                         # print(text_data_df.head())
+                        # print('text_data_df - COLUMNS', text_data_df.columns, list(text_data_df.columns))
                         for i in range(len(text_data_df)): 
                             text_id = 'T'+re.sub(r'[-: \.]', '', str(datetime.now()))
                             id_test_list.append(text_id)
                             single_row = {}
                             single_row["ID"] = text_data_df.iloc[i, 0]
                             single_row["Text"] = text_data_df.iloc[i, 1]
+                            text_data_df_col_list = list(text_data_df.columns)
+                            for col_name in text_data_df_col_list:
+                                if (col_name == 'ID' or col_name == 'Text'): continue
+                                else:
+                                    col_name_index = text_data_df_col_list.index(col_name)
+                                    # print(col_name, text_data_df_col_list.index(col_name))
+                                    single_row[col_name] = text_data_df.iloc[i, col_name_index]
                             text_data[text_id] = single_row
                             # entry of each text in textanno colloection
                             text_anno_detail = {}
@@ -2716,7 +2724,8 @@ def createTextAnnoNew(zipFile):
                                                 current_username
                                                 )
 
-                print(project_details)   
+                # print(project_details)
+                # print(project_details["textData"])
     except Exception as e:
         print(e)
         flash('Please upload a zip file. Check the file format at the link provided for the Sample File', 'warning')

@@ -377,8 +377,16 @@ function myFunction(projData) {
             '<input type="hidden" id="lastActiveId" name="lastActiveId" value="' + lastActiveId + '">' +
             '<input type="hidden" id="' + projData["textData"]["ID"] + '" name="id" value="' + projData["textData"]["ID"] + '">';
     
-    inpt += '<p class="form-group" id="' + projData["textData"]["ID"] + '"><strong>Text ID: ' + projData["textData"]["ID"] + '</strong></p>' +
-            '<div class="form-group textcontentouter">' +
+    inpt += '<p class="form-group" id="' + projData["textData"]["ID"] + '"><strong>Text ID: ' + projData["textData"]["ID"] + '</strong></p>';
+
+    for (let [k, v] of Object.entries(projData["textData"])) {
+        if (k === 'ID' || k === 'Text') continue
+        else {
+            inpt += '<p class="form-group" id="' + k + '"><strong>' + k+': '+v+ '</strong></p>';
+        }
+    }
+
+    inpt += '<div class="form-group textcontentouter">' +
             '<label class="col" for="text">Text:</label><br>' +
             '<input type="hidden" class="form-control" id="text"' + ' name="text" value="' + projData["textData"]["Text"] + '">' +
             // '<textarea class="col textcontent" id="maintextcontent" readonly>' + projData["textData"]["Text"] + '</textarea>' +
@@ -739,7 +747,8 @@ function removeHighlightSpanTextDetail(spanStart, spanEnd, selection) {
 
 function spanAnnotation(event) {
     // console.log('span');
-    // console.log(event);
+    // console.log(event, event.onselect, window.event);
+    // event.onselect.stopImmediatePropagation();
     // console.log('eleId', eleId);
     const spanStart = event.selectionStart;
     const spanEnd = event.selectionEnd;
@@ -980,6 +989,7 @@ $(document).ready(function(){
         let spanEnd = this.selectionStart;
         // let spanId = textSpanId(spanStart, spanEnd);
         // console.log(spanId);
+        // if (spanStart === spanEnd) {
         loop1:
         for (let [key, value] of Object.entries(textSpanDetails)) {
             // console.log(key, value);
@@ -1025,6 +1035,7 @@ $(document).ready(function(){
             $('#pre_modal_data').html(modalData);
             $('#preModal').modal('toggle');
         }
+        // }
     });
 });
 
