@@ -3,6 +3,7 @@ localStorage.removeItem("highlightSpanTextDetails");
 
 let inpt = ''
 let select2Keys = new Array();
+let modalSelect2Keys = new Array();
 
 function categoryDependencyInfo(categoryClass, categoryClassValue, categoryDependency) {
     let categoryDependencyInfoList = [];
@@ -215,8 +216,8 @@ function createElement(tagSet,
             // ele += addModalElement(key)
         }
         else if (element === 'select') {
-            if (defaultCategoryTag.includes(value[i]) ||
-                value[i] === "#ID#") {
+            // console.log(defaultCategoryTag, value[i]);
+            if ((value[i] === "#ID#")) {
                 // console.log(key, element, elementProperties, value[i], defaultCategoryTag);
                 ele += '<select class="' + elementClass + '" id="' + key+'_select' + '" name="' + key + '" '+elementProperties.replace('#', ' ')+' style="width: 100%">';
                 // console.log(defaultCategoryTag);
@@ -227,11 +228,71 @@ function createElement(tagSet,
                         ele += '<option value="' + eval + '" selected>' + eval + '</option>';
                     }
                 }
-                ele += '</select><br>';
+                ele += '</select>';
 
-                select2Keys.push(key);
+                if (modalEle && !modalSelect2Keys.includes(key)) {
+                    modalSelect2Keys.push(key);
+                }
+                else {
+                    if (!select2Keys.includes(key))
+                        select2Keys.push(key);
+                }
+                // console.log(select2Keys);
                 // continue;
             }
+            else if ((defaultCategoryTag.includes(value[i]) &&
+                        !select2Keys.concat(modalSelect2Keys).includes(key))) {
+                // console.log(key, element, elementProperties, value[i], defaultCategoryTag);
+                ele += '<select class="' + elementClass + '" id="' + key+'_select' + '" name="' + key + '" '+elementProperties.replace('#', ' ')+' style="width: 100%">';
+                // console.log(defaultCategoryTag);
+                if (defaultCategoryTag!== 'NONE' &&
+                    defaultCategoryTag.length !== 0) {
+                    for (s = 0; s < defaultCategoryTag.length; s++) {
+                        eval = defaultCategoryTag[s];
+                        ele += '<option value="' + eval + '" selected>' + eval + '</option>';
+                    }
+                }
+                ele += '</select>';
+
+                if (modalEle && !modalSelect2Keys.includes(key)) {
+                    modalSelect2Keys.push(key);
+                }
+                else {
+                    if (!select2Keys.includes(key))
+                        select2Keys.push(key);
+                }
+            }
+            else if ((defaultCategoryTag === '' &&
+                        !select2Keys.concat(modalSelect2Keys).includes(key))) {
+                // console.log(key, element, elementProperties, value[i], defaultCategoryTag);
+                ele += '<select class="' + elementClass + '" id="' + key+'_select' + '" name="' + key + '" '+elementProperties.replace('#', ' ')+' style="width: 100%">';
+                // console.log(defaultCategoryTag);
+                // if (defaultCategoryTag!== 'NONE' &&
+                //     defaultCategoryTag.length !== 0) {
+                //     for (s = 0; s < defaultCategoryTag.length; s++) {
+                //         eval = defaultCategoryTag[s];
+                //         ele += '<option value="' + eval + '" selected>' + eval + '</option>';
+                //     }
+                // }
+                ele += '</select>';
+
+                if (modalEle && !modalSelect2Keys.includes(key)) {
+                    modalSelect2Keys.push(key);
+                }
+                else {
+                    if (!select2Keys.includes(key))
+                        select2Keys.push(key);
+                }
+            }
+            // else if (defaultCategoryTag.includes(value[i])) {
+            //     if (defaultCategoryTag!== 'NONE' &&
+            //         defaultCategoryTag.length !== 0) {
+            //         for (s = 0; s < defaultCategoryTag.length; s++) {
+            //             eval = defaultCategoryTag[s];
+            //             ele += '<option value="' + eval + '" selected>' + eval + '</option>';
+            //         }
+            //     }
+            // }
         }
     }
     ele += '</div>';
@@ -242,6 +303,7 @@ function createElement(tagSet,
 }
 
 function elementData (projData, key, value, defaultCategoryTag=undefined, modalEle=false) {
+    // console.log(key, value, defaultCategoryTag, modalEle)
     let eleData = ''
     // let defaultCategoryTag = '';
     let categoryDependency = {};
@@ -265,8 +327,20 @@ function elementData (projData, key, value, defaultCategoryTag=undefined, modalE
         categoryHtmlElement = projData["tagSetMetaData"]["categoryHtmlElement"]
         categoryHtmlElementProperties = projData["tagSetMetaData"]["categoryHtmlElementProperties"]
         element = categoryHtmlElement[key]
+        // if (element === 'select' && defaultCategoryTag === '') {
+        //     defaultCategoryTag = [value[0]]
+        // }
         elementProperties = categoryHtmlElementProperties[key]
-        // console.log(tagSet);
+        // if (element === 'select') {
+        //     // console.log(tagSet,
+        //     //     key,
+        //     //     value,
+        //     //     defaultCategoryTag,
+        //     //     categoryDependency,
+        //     //     modalEle,
+        //     //     element,
+        //     //     elementProperties);
+        // }
         eleData += createElement(tagSet,
                                 key,
                                 value,
@@ -361,6 +435,7 @@ function createTextSpanDetails(tagSet, defaultCategoryTags) {
 }
 
 function myFunction(projData) {
+    // console.log(projData);
     localStorage.setItem("projData", JSON.stringify(projData));
     let lastActiveId = projData["lastActiveId"];
     let accessedOnTime = projData["accessedOnTime"];
@@ -390,7 +465,7 @@ function myFunction(projData) {
             '<label class="col" for="text">Text:</label><br>' +
             '<input type="hidden" class="form-control" id="text"' + ' name="text" value="' + projData["textData"]["Text"] + '">' +
             // '<textarea class="col textcontent" id="maintextcontent" readonly>' + projData["textData"]["Text"] + '</textarea>' +
-            '<textarea class="col textcontent" id="maintextcontent"  onselect=spanAnnotation(this) readonly>' + projData["textData"]["Text"] + '</textarea>' +
+            '<textarea class="col textcontent" id="maintextcontent"  onselect=spanAnnotation(event) readonly>' + projData["textData"]["Text"] + '</textarea>' +
             '</div>';
     // inpt += '<div class="form-group">' +
     //     '<div class="col">' +
@@ -746,13 +821,15 @@ function removeHighlightSpanTextDetail(spanStart, spanEnd, selection) {
 }
 
 function spanAnnotation(event) {
+    eve = event.target;
     // console.log('span');
-    // console.log(event, event.onselect, window.event);
-    // event.onselect.stopImmediatePropagation();
+    // console.log(event, event.target, event.bubbles);
+    // event.stopPropagation();
+    event.bubbles = false;
     // console.log('eleId', eleId);
-    const spanStart = event.selectionStart;
-    const spanEnd = event.selectionEnd;
-    const selection = event.textContent.substring(
+    const spanStart = eve.selectionStart;
+    const spanEnd = eve.selectionEnd;
+    const selection = eve.textContent.substring(
         spanStart,
         spanEnd
       );
@@ -801,11 +878,12 @@ function leftModalForm(selection, spanStart, spanEnd, eleId) {
 }
 
 function middleModalForm(selection, spanStart, spanEnd, eleId) {
+    modalSelect2Keys = [];
     // console.log(eleId);
     let middleModalData = '';
     let projData = JSON.parse(localStorage.getItem('projData'));
     let tagSet = projData['tagSet'];
-    // let defaultCategoryTags = projData["tagSetMetaData"]["defaultCategoryTags"]
+    let defaultCategoryTags = projData["tagSetMetaData"]["defaultCategoryTags"]
     // console.log(defaultCategoryTags);
     let defaultCategoryTag = '';
     let eleValue = tagSet[eleId][0];
@@ -820,7 +898,7 @@ function middleModalForm(selection, spanStart, spanEnd, eleId) {
         for (let [key, value] of Object.entries(categoryDependency)) {
             if (value.includes(eleId)) {
                 // console.log(key, value, tagSet[key], categoryDependency[key], defaultCategoryTags[value]);
-                defaultCategoryTag = getModalDefaultTag(key, eleId, spanStart, spanEnd);
+                defaultCategoryTag = getModalDefaultTag(defaultCategoryTags, key, eleId, spanStart, spanEnd);
                 middleModalData += elementData(projData, key, tagSet[key], defaultCategoryTag, true);
             }
             else {
@@ -835,7 +913,7 @@ function middleModalForm(selection, spanStart, spanEnd, eleId) {
                     for (i=0; i<dependentOnList.length; i++) {
                         if (dependentOnList[i].includes(eleId)) {
                             // console.log(key, value, tagSet[key], categoryDependency[key], defaultCategoryTags[value], dependentOnList[i]);
-                            defaultCategoryTag = getModalDefaultTag(key, eleId, spanStart, spanEnd);
+                            defaultCategoryTag = getModalDefaultTag(defaultCategoryTags, key, eleId, spanStart, spanEnd);
                             middleModalData += elementData(projData, key, tagSet[key], defaultCategoryTag, false);
                             break loop1;
                         }
@@ -856,9 +934,11 @@ function middleModalForm(selection, spanStart, spanEnd, eleId) {
         // console.log(categoryDependency['01-b_caste_harm_potential_physical'])
     }
     $('#modalmiddle').html(middleModalData);
+    createSelect2(modalSelect2Keys, tagSet);
 }
 
-function getModalDefaultTag(key, eleId, spanStart, spanEnd) {
+function getModalDefaultTag(defaultCategoryTags, key, eleId, spanStart, spanEnd) {
+    // console.log(defaultCategoryTags);
     let textSpanDetails = JSON.parse(localStorage.getItem('textSpanDetails'));
     let defaultCategoryTag = '';
     spanId = textSpanId(spanStart, spanEnd);
@@ -870,6 +950,12 @@ function getModalDefaultTag(key, eleId, spanStart, spanEnd) {
         }
     }
     // console.log(eleId, spanStart, spanEnd, textSpanDetails[eleId], textSpanDetails[eleId][spanId], textSpanDetails[eleId][spanId][key]);
+    // console.log(key, defaultCategoryTag);
+
+    if (defaultCategoryTag === '') {
+        defaultCategoryTag = defaultCategoryTags[key]
+    }
+    // console.log(defaultCategoryTag);
 
     return defaultCategoryTag
 }
@@ -895,6 +981,7 @@ function spanSave(ele) {
     let textSpanDetails = JSON.parse(localStorage.getItem('textSpanDetails'));
     let projData = JSON.parse(localStorage.getItem('projData'));
     let tagSet = projData['tagSet'];
+    let tagSetMetaData = projData['tagSetMetaData'];
     if (textSpanDetails === null) {
         textSpanDetails = {};
     }
@@ -904,8 +991,20 @@ function spanSave(ele) {
     // console.log(formData);
     var object = {};
     formData.forEach(function(value, key){
-        // console.log('key: ', key, 'value: ', value);
-        object[key] = value;
+        // console.log('key: ', key, 'value: ', value, tagSetMetaData);
+        if ('categoryHtmlElement' in tagSetMetaData &&
+            tagSetMetaData['categoryHtmlElement'][key] == 'select') {
+                // console.log('key: ', key, 'value: ', value, tagSetMetaData);
+                if (key in object) {
+                        object[key].push(value);
+                    }
+                else {
+                    object[key] = [value];
+                }
+            }
+        else {
+            object[key] = value;
+        }
     });
     // console.log(object);
     let textSpan = object['textspan'];
@@ -942,7 +1041,7 @@ function spanSave(ele) {
         alert('Annotation Saved :)')
         // console.log(spanStart, spanEnd, textSpan);
         // console.log(typeof spanStart, typeof spanEnd, typeof textSpan);
-        highlightSpanTextDetails(spanStart, spanEnd, selection);
+        highlightSpanTextDetails(spanStart, spanEnd, textSpan);
       });
 }
 
@@ -971,7 +1070,7 @@ function mainSave(ele) {
 $(document).ready(function(){
     $('#maintextcontent').on('click', function(event) {
     // $('#maintextcontent').dblclick(function(event) { 
-        // console.log(this, event);
+        // console.log(event, event.target, event.detail);
         // showCustomContextMenu();
         // alert('clicked');
         let eleId = '';
@@ -986,7 +1085,11 @@ $(document).ready(function(){
         // console.log(this.selectionStart, this.selectionEnd);
         // console.log(event.selectionStart, event.selectionEnd);
         let spanStart = this.selectionStart;
-        let spanEnd = this.selectionStart;
+        let spanEnd = this.selectionEnd;
+        // console.log(spanStart, spanEnd);
+        if (spanStart !== spanEnd) {
+            return false;
+        }
         // let spanId = textSpanId(spanStart, spanEnd);
         // console.log(spanId);
         // if (spanStart === spanEnd) {

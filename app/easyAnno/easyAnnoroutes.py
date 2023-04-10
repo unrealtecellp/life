@@ -834,6 +834,8 @@ def textAnno():
             # pprint(defaultAnnotation)
             project_details['tagSetMetaData']['defaultCategoryTags'] = {**defaultAnnotation, **currentAnnotation}
 
+            # pprint(project_details)
+
             return render_template('textAnno.html',
                                    projectName=activeprojectname,
                                    proj_data=project_details,
@@ -907,6 +909,9 @@ def savetextAnno():
                 # print(tagset[category])
                 if(tagset[category][0] == '#SPAN_TEXT#'):
                     continue
+                # elif ('categoryDependency' in tagSetMetaData):
+                #     saveTextAnnoCategoryDependency = tagSetMetaData['categoryDependency']
+
                 else:
                     currentAnnotatorTags[category] = ''
         
