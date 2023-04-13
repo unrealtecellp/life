@@ -1836,14 +1836,18 @@ def downloadannotationfile():
         # print(df)
 
         for text_id in list(text_data.keys()):
-            annotated_text = textanno.find_one({ "textId": text_id },\
-                        { "_id": 0, "ID": 1, "Text": 1, current_user.username: 1 })
+            annotated_text = textanno.find_one({ "textId": text_id },
+                                                { "_id": 0, "ID": 1, "textMetadata": 1, "Text": 1, current_username: 1 })
             # print(annotated_text)
-            if (annotated_text != None and current_user.username in annotated_text):
-                annotated_text[current_user.username]["textId"] = text_id
-                annotated_text[current_user.username]["ID"] = annotated_text["ID"]
-                annotated_text[current_user.username]["Text"] = annotated_text["Text"]
-                annotated_text =  annotated_text[current_user.username] 
+            if (annotated_text != None and current_username in annotated_text):
+                annotated_text[current_username]["textId"] = text_id
+                if ('textMetadata' in annotated_text):
+                    for textMetadata_key, textMetadata_value in annotated_text['textMetadata'].items():
+                        annotated_text[current_username][textMetadata_key] = textMetadata_value
+                else:
+                    annotated_text[current_username]["ID"] = annotated_text["ID"]
+                annotated_text[current_username]["Text"] = annotated_text["Text"]
+                annotated_text =  annotated_text[current_username] 
                 # print(annotated_text)
                 annotated_text_df = pd.DataFrame.from_dict(annotated_text.items()).T
                 annotated_text_df.columns = annotated_text_df.iloc[0]
