@@ -115,7 +115,7 @@ function allFiles(allFilesList) {
 $("#zipFile").change(function() {
     let zipFileElement = document.getElementById('zipFile');
     zipFileName = zipFileElement.files[0];
-    console.log(zipFileName);
+    // console.log(zipFileName);
     // displayZipFileName = '<p>'+zipFileName.name+'</p>';
     $("#displayZipFileName").append(zipFileName.name);
 })

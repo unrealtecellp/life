@@ -452,13 +452,14 @@ function myFunction(projData) {
             '<input type="hidden" id="lastActiveId" name="lastActiveId" value="' + lastActiveId + '">' +
             '<input type="hidden" id="' + projData["textData"]["ID"] + '" name="id" value="' + projData["textData"]["ID"] + '">';
     
-    inpt += '<p class="form-group" id="' + projData["textData"]["ID"] + '"><strong>Text ID: ' + projData["textData"]["ID"] + '</strong></p>';
+    // inpt += '<p class="form-group" id="' + projData["textData"]["ID"] + '"><strong>Text ID: ' + projData["textData"]["ID"] + '</strong></p>';
 
-    for (let [k, v] of Object.entries(projData["textData"])) {
-        if (k === 'ID' || k === 'Text') continue
-        else {
-            inpt += '<p class="form-group" id="' + k + '"><strong>' + k+': '+v+ '</strong></p>';
-        }
+    for (let [k, v] of Object.entries(projData["textMetadata"])) {
+        inpt += '<p class="form-group" id="' + k + '"><strong>' + k+': '+v+ '</strong></p>';
+        // if (k === 'ID' || k === 'Text') continue
+        // else {
+        //     inpt += '<p class="form-group" id="' + k + '"><strong>' + k+': '+v+ '</strong></p>';
+        // }
     }
 
     inpt += '<div class="form-group textcontentouter">' +
@@ -556,19 +557,21 @@ function unAnnotated() {
         data: { 'data': JSON.stringify(unanno) },
         contentType: "application/json; charset=utf-8",
         success: function (response) {
+            // console.log(response);
             allunanno = response.allunanno;
             allanno = response.allanno;
             var inpt = '';
             inpt += '<select class="form-control col-sm-3 allanno" id="allanno" onchange="loadAnnoText()">' +
                 '<option selected disabled>All Annotated</option>';
             for (i = 0; i < allanno.length; i++) {
-                inpt += '<option value="' + allanno[i]["textId"] + '">' + allanno[i]["ID"] + '</option>';
+                inpt += '<option value="' + allanno[i]["textId"] + '">' + allanno[i]["textMetadata"]["ID"] + '</option>';
             }
             inpt += '</select>';
+            inpt += '<br><br>';
             inpt += '<select class="form-control col-sm-3" id="allunanno" onchange="loadUnAnnoText()">' +
                 '<option selected disabled>All Un-Annotated</option>';
             for (i = 0; i < allunanno.length; i++) {
-                inpt += '<option value="' + allunanno[i]["textId"] + '">' + allunanno[i]["ID"] + '</option>';
+                inpt += '<option value="' + allunanno[i]["textId"] + '">' + allunanno[i]["textMetadata"]["ID"] + '</option>';
             }
             inpt += '</select><br/><br/>';
             $('.commentIDs').append(inpt);
@@ -949,12 +952,36 @@ function getModalDefaultTag(defaultCategoryTags, key, eleId, spanStart, spanEnd)
             }
         }
     }
-    // console.log(eleId, spanStart, spanEnd, textSpanDetails[eleId], textSpanDetails[eleId][spanId], textSpanDetails[eleId][spanId][key]);
+    // console.log(eleId);
+    // console.log(spanStart)
+    // console.log(spanEnd)
+    // console.log(textSpanDetails[eleId])
+    // console.log(textSpanDetails[eleId][spanId])
+    // console.log(textSpanDetails[eleId][spanId][key])
     // console.log(key, defaultCategoryTag);
 
     if (defaultCategoryTag === '') {
         defaultCategoryTag = defaultCategoryTags[key]
+        // console.log(defaultCategoryTag);
     }
+
+    if (textSpanDetails[eleId] === undefined) {
+        // defaultCategoryTag = ''
+        defaultCategoryTag = defaultCategoryTags[key];
+        // console.log(defaultCategoryTag);
+    }
+
+    else if (textSpanDetails[eleId][spanId] === undefined) {
+        // defaultCategoryTag = ''
+        defaultCategoryTag = defaultCategoryTags[key];
+        // console.log(defaultCategoryTag);
+    }
+
+    else if (textSpanDetails[eleId][spanId][key] === undefined) {
+        defaultCategoryTag = ''
+        // console.log(defaultCategoryTag);
+    }
+
     // console.log(defaultCategoryTag);
 
     return defaultCategoryTag
@@ -1059,6 +1086,10 @@ function mainSave(ele) {
             object[key] = [value];
         }
     });
+    let textSpanDetails = JSON.parse(localStorage.getItem('textSpanDetails'));
+    // console.log(object);
+    // console.log(textSpanDetails);
+    Object.assign(object, textSpanDetails);
     $.post( "/easyAnno/savetextAnno", {
         a: JSON.stringify(object)
       })
