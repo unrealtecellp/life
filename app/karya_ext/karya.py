@@ -29,7 +29,8 @@ from app.controller import (
     getcurrentusername,
     audiodetails,
     getuserprojectinfo,
-    getprojecttype
+    getprojecttype,
+    life_logging
 )
 from app.lifeques.controller import (
     getquesfromprompttext,
@@ -44,9 +45,8 @@ from app.karya_ext.controller import (
     karya_audio_management
 )
 
-karya_bp = Blueprint('karya_bp', __name__,
-                     template_folder='templates', static_folder='static')
-
+karya_bp = Blueprint('karya_bp', __name__, template_folder='templates', static_folder='static')
+logger = life_logging.get_logger()
 # print('starting...')
 '''Home page of karya Extension. This contain  '''
 
@@ -100,8 +100,8 @@ def uploadfile():
     activeprojectname = getactiveprojectname.getactiveprojectname(
         current_username, userprojects)
     project_type = getprojecttype.getprojecttype(projects, activeprojectname)
-    derived_from_project_type, derived_from_project_name = getprojecttype.getderivedfromprojectdetails(
-        projects, activeprojectname)
+    derived_from_project_type, derived_from_project_name = getprojecttype.getderivedfromprojectdetails(projects,
+                                                                                                       activeprojectname)
 
     # This metadata for pre-filling the form with metadata relevant only for
     # the current project
@@ -403,10 +403,11 @@ def fetch_karya_otp():
 @karya_bp.route('/fetch_karya_audio', methods=['GET', 'POST'])
 @login_required
 def fetch_karya_audio():
-    projects, userprojects, projectsform, transcriptions, questionnaires, accesscodedetails = getdbcollections.getdbcollections(mongo,
+    projects, userprojects, projectsform, recordings, transcriptions, questionnaires, accesscodedetails = getdbcollections.getdbcollections(mongo,
                                                                                                                                 'projects',
                                                                                                                                 'userprojects',
                                                                                                                                 'projectsform',
+                                                                                                                                'recordings',
                                                                                                                                 'transcriptions',
                                                                                                                                 'questionnaires',
                                                                                                                                 'accesscodedetails')
@@ -416,15 +417,16 @@ def fetch_karya_audio():
         current_username, userprojects)
     projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
     project_type = getprojecttype.getprojecttype(projects, activeprojectname)
-    print("karya.py line 418 - ", project_type)
-    print("karya.py line 419 - ", activeprojectname)
+    logger.debug("project_type: %s", project_type)
+    logger.debug("activeprojectname: %s", activeprojectname)
     derivedFromProjectName = ''
     derive_from_project_type = ''
-    if (project_type == 'transcriptions'):
+    if (project_type == 'transcriptions' or
+        project_type == 'recordings'):
         
-        derive_from_project_type, derivedFromProjectName = getprojecttype.getderivedfromprojectdetails(
-            projects, activeprojectname)
-        print("karya.py line 425 - ", derive_from_project_type, derivedFromProjectName)
+        derive_from_project_type, derivedFromProjectName = getprojecttype.getderivedfromprojectdetails(projects,
+                                                                                                       activeprojectname)
+        logger.debug("derive_from_project_type: %s, derivedFromProjectName: %s", derive_from_project_type, derivedFromProjectName)
 
     if request.method == 'POST':
         access_code = request.form.get("access_code")
@@ -444,14 +446,15 @@ def fetch_karya_audio():
         ###############################   Get Assignments    ########################################
         r_j, hederr = karya_api_access.get_all_karya_assignments(
             verification_details)
+        logger.debug("r_j: %s\nhederr: %s", r_j, hederr)
         #############################################################################################
         language = accesscodedetails.find_one({"projectname": activeprojectname, "karyaaccesscode": access_code},
                                               {'language': 1, '_id': 0})['language']
-
+        logger.debug("language: %s", language)
         ################################ Get already fetched audio list and quesIDs   ########################################
         fetched_audio_list = karya_audio_management.get_fetched_audio_list(
             accesscodedetails, access_code, activeprojectname)
-
+        logger.debug("fetched_audio_list: %s", fetched_audio_list)
         exclude_ids = []
         if (project_type == 'questionnaires'):
             exclude_ids = getquesidlistofsavedaudios.getquesidlistofsavedaudios(questionnaires,
@@ -465,6 +468,15 @@ def fetch_karya_audio():
                                                                    language,
                                                                    exclude_ids,
                                                                    for_worker_id)
+        elif (project_type == 'recordings' and
+                derive_from_project_type == 'questionnaires'):
+            exclude_ids = audiodetails.getaudioidlistofsavedaudios(recordings,
+                                                                   activeprojectname,
+                                                                   language,
+                                                                   exclude_ids,
+                                                                   for_worker_id)
+            logger.debug("exclude_ids: %s", exclude_ids)
+        
         #############################################################################################
 
         ##############################  File ID and sentence mapping   #################################
@@ -478,13 +490,14 @@ def fetch_karya_audio():
         fileid_sentence_map = karya_api_access.get_fileid_sentence_mapping(
             fileID_list, workerId_list, sentence_list, karya_audio_report
         )
+        logger.debug("fileid_sentence_map: %s", fileid_sentence_map)
         #############################################################################################
 
         
         karya_audio_management.getnsave_karya_recordings(
             mongo,
             projects, userprojects, projectowner, accesscodedetails,
-            projectsform, questionnaires, transcriptions,
+            projectsform, questionnaires, transcriptions, recordings,
             activeprojectname, derivedFromProjectName, current_username,
             project_type, derive_from_project_type,
             fileid_sentence_map, fetched_audio_list, exclude_ids,

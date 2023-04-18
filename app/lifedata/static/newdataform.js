@@ -93,8 +93,10 @@ var scripts =
 ]
 
 var dataProjectType = [
-  // {"id": "", "text": ""},
-  {"id": "transcriptions", "text": "Transcription"}
+  {"id": "", "text": ""},
+  {"id": "recordings", "text": "Recordings"},
+  {"id": "validation", "text": "Validation"},
+  {"id": "transcriptions", "text": "Speech Transcription and Labeling"}
 ];
 
 $('.dataprojecttype').select2({
@@ -104,6 +106,13 @@ $('.dataprojecttype').select2({
 });
 
 $('.datasentencelanguageclass').select2({
+  tags: true,
+  placeholder: 'Audio Language',
+  data: languages,
+  allowClear: true
+});
+
+$('.recordingssentencelanguageclass').select2({
   tags: true,
   placeholder: 'Audio Language',
   data: languages,
@@ -212,12 +221,63 @@ function removeInterlinearGlossFields(rid) {
 
 $("#idprojecttype").change(function(){
   var projecttypevalue = document.getElementById("idprojecttype").value;
-  console.log(projecttypevalue)
-  if (projecttypevalue === 'transcriptions') {
-    var x = document.getElementById("transcriptiontypeproject");
-    if (x.style.display === "none") {
-        x.style.display = "block";
+  // console.log(projecttypevalue, this);
+  projectTypeOptions = this.options;
+  for (i=0; i<projectTypeOptions.length; i++) {
+    if (projectTypeOptions[i].value === '') continue
+    let projecttypeId = projectTypeOptions[i].value+"typeproject";
+    var x = document.getElementById(projecttypeId);
+    if (projectTypeOptions[i].value === projecttypevalue) {
+      // console.log(projectTypeOptions[i].value)
+      // console.log(x);
+      if (x.style.display === "none") {
+          x.style.display = "block";
+          $('#'+projecttypeId).find('input, textarea, button, select').attr('disabled', false);
+      }
+    }
+    else {
+      x.style.display = "none";
+      $('#'+projecttypeId).find('input, textarea, button, select').attr('disabled','disabled');
     }
   }
+  // if (projecttypevalue === 'transcriptions') {
+  //   var x = document.getElementById(projecttypevalue+"typeproject");
+  //   if (x.style.display === "none") {
+  //       x.style.display = "block";
+  //   }
+  // }
 });
 
+uploadFileTypes = [
+
+  {
+    'id': 'audio',
+    'text': 'Audio'
+  },
+  {
+      'id': 'text',
+      'text': 'Text'
+  },
+  {
+      'id': 'image',
+      'text': 'Image'
+  }
+]
+
+function uploadFileType() {
+  $('#fileType').select2({
+      placeholder: 'select',
+      data: uploadFileTypes,
+      // allowClear: true
+  });
+}
+
+uploadFileType()
+
+$("#zipFile").change(function() {
+  let zipFileElement = document.getElementById('zipFile');
+  zipFileName = zipFileElement.files[0];
+  // console.log(zipFileName);
+  // displayZipFileName = '<p>'+zipFileName.name+'</p>';
+  $("#displayZipFileName").append(zipFileName.name);
+})

@@ -39,6 +39,7 @@ from app.controller import (
     getcurrentuserprojects,
     getdbcollections,
     getprojectsnamebytype,
+    getprojectowner,
     getprojecttype,
     readJSONFile,
     savenewproject,
@@ -231,7 +232,6 @@ def updateProjectDetails(project_name, project_shared_with):
         { '$set' : { 'myproject' : list(set(userprojectnamelist)), 'activeprojectname' :  project_name}})
 
     # # print(project_details)   
-
 
 def saveAnnotatedData(project_name, text_data_df):
     # print("Creatinggggggggggggg Newwwwwwwwwwwwwwwwwwwwwwww")
@@ -735,14 +735,15 @@ def textAnno():
                                                                             project_type_list)
     activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
                                                                     userprojects)
-    
+    projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
+
     project_details = projects.find_one({"projectname": activeprojectname},
                                         {"_id": 0, "projectType": 1, "tagSet": 1, "lastActiveId": 1})
     # pprint(project_details)
     # get all the data for active project
     try:
-        my_projects = len(userprojects.find_one({'username' : current_user.username})["myproject"])
-        shared_projects = len(userprojects.find_one({'username' : current_user.username})["projectsharedwithme"])
+        my_projects = len(userprojects.find_one({'username' : current_username})["myproject"])
+        shared_projects = len(userprojects.find_one({'username' : current_username})["projectsharedwithme"])
         # print("my_projects shared_projects", my_projects, shared_projects)
         if  (my_projects+shared_projects)== 0:
             flash('Please create your first project', 'info')
@@ -752,7 +753,7 @@ def textAnno():
                 activeprojectname == "" or
                 project_details["projectType"] not in project_type_list):
             flash('Please select your file from All Files/Change Active File', 'info')
-            return redirect(url_for('easyAnno.home'))    
+            return redirect(url_for('easyAnno.home'))
     except:
         # print(f'{"#"*80}\nCurrent user details not in database!!!')
         flash('Please create your first project', 'info')
@@ -765,32 +766,38 @@ def textAnno():
         if (project_details["projectType"] != "text"):
             flash("Active file is 'image' type. Plese select 'text' file to annotate.", 'info')
             return redirect(url_for('easyAnno.home'))
+        
         last_active_id_user = project_details["lastActiveId"]
         if (current_username in last_active_id_user):
-            last_active_id = project_details["lastActiveId"][current_user.username]
+            last_active_id = project_details["lastActiveId"][current_username]
         else:
             if (project_details["projectType"] == 'text'):
-                text_data = projects.find_one({"projectname": activeprojectname}, \
-                                    {"_id" : 0, "textData": 1 })
+                text_data = projects.find_one({"projectname": activeprojectname},
+                                                {"_id" : 0, "textData": 1 })
             for id in text_data.values():
                 tIds = list(id.keys())
             tIds = sorted(tIds)
             last_active_id = tIds[0]
             projects.update_one({ "projectname": activeprojectname },
-                            { '$set' : { "lastActiveId": {current_username: last_active_id} }})
+                                    { '$set' : 
+                                        { "lastActiveId": {current_username: last_active_id} }})
 
         # print(project_details["textData"][last_active_id])
         # print(last_active_id)
         
         project_details = projects.find_one({"projectname": activeprojectname},
-            {"_id": 0, "tagSet": 1, "tagSetMetaData": 1, "textData."+last_active_id: 1, "textData": 1})
+                                            {"_id": 0, 
+                                             "tagSet": 1, 
+                                             "tagSetMetaData": 1,
+                                             "textData."+last_active_id: 1, 
+                                             "textData": 1})
         # print(project_details)
         total_comments = len(project_details["textData"])
         annotated_comments = 0
-        for comments in textanno.find({"projectname": activeprojectname}, \
-                                        {"projectname": 1, current_user.username: 1 }):
-            if (current_user.username in comments):                            
-                annotatedFLAG = comments[current_user.username]["annotatedFLAG"]
+        for comments in textanno.find({"projectname": activeprojectname},
+                                        {"projectname": 1, current_username: 1 }):
+            if (current_username in comments):
+                annotatedFLAG = comments[current_username]["annotatedFLAG"]
                 if (annotatedFLAG == 1):
                     annotated_comments += 1
         remaining_comments = total_comments - annotated_comments
@@ -800,6 +807,66 @@ def textAnno():
         project_details["remainingComments"]  = remaining_comments   
         project_details["textData"] = project_details["textData"][last_active_id]
         project_details["lastActiveId"] = last_active_id
+
+        # print(last_active_id)
+        text_meta_data = textanno.find_one({"projectname": activeprojectname, "textId": last_active_id},
+                                            {"_id": 0, "textMetadata": 1 })
+        if ('textMetadata' in text_meta_data):
+            project_details["textMetadata"] = text_meta_data["textMetadata"]
+        else:
+            for text_data_key, text_data_value in project_details['textData'].items():
+                # print(text_data_key, text_data_value)
+                if (text_data_key != 'Text'):
+                    text_meta_data[text_data_key] = text_data_value
+            # print(text_meta_data)
+            textanno.update_one({"projectname": activeprojectname, "textId": last_active_id},
+                                { '$set' : 
+                                    {   
+                                        'textMetadata': text_meta_data
+                                    }})
+            
+        missing_keys = textanno.find_one({"projectname": activeprojectname, "textId": last_active_id},
+                                        {"_id": 0})
+        if ('ID' in missing_keys):
+            textanno.update_one({"projectname": activeprojectname, "textId": last_active_id},
+                                {'$unset': {"ID": 1}})
+        if ('username' not in missing_keys):
+            textanno.update_one({"projectname": activeprojectname, "textId": last_active_id},
+                                {'$set': 
+                                    {
+                                        "username": projectowner,
+                                        'lifesourceid': '',
+                                        'textdeleteFLAG': 0,
+                                        'textverifiedFLAG': 0,
+                                        'additionalInfo': {},
+                                        'prompt': ''
+                                    }})
+        if (current_username in missing_keys and 'annotationGrid' not in missing_keys[current_username]):
+            print('123')
+            current_user_anno = missing_keys[current_username]
+            del current_user_anno['annotatedFLAG']
+            textanno.update_one({"projectname": activeprojectname, "textId": last_active_id},
+                                {
+                                    '$unset': {current_username: 1}
+                                })
+            textanno.update_one({"projectname": activeprojectname, "textId": last_active_id},
+                                {
+                                    '$set': 
+                                        {
+                                            current_username: {'annotationGrid': current_user_anno,
+                                                           "annotatedFLAG": 1}
+                                        }
+                                })
+        last_updated_by = missing_keys['lastUpdatedBy']
+        if ('annotationGrid' not in missing_keys and last_updated_by != ''):
+            last_updated_by_user_anno = missing_keys[last_updated_by]
+            if ('annotationGrid' in last_updated_by_user_anno):
+                last_updated_by_user_anno = last_updated_by_user_anno['annotationGrid']
+            textanno.update_one({"projectname": activeprojectname, "textId": last_active_id},
+                                {'$set': {"annotationGrid": last_updated_by_user_anno,
+                                          "annotatedFLAG": 1}})
+
+            
 
         # get current datetime upto seconds as data accessed time
         # use when 'Save' button is clicked
@@ -814,18 +881,20 @@ def textAnno():
             project_details.pop("tagSetMetaData")
 
 
-        currentText = textanno.find_one({"projectname": activeprojectname, "textId": last_active_id}, \
-                    {"_id": 0, current_user.username: 1})
+        currentText = textanno.find_one({"projectname": activeprojectname, "textId": last_active_id},
+                                            {"_id": 0, current_username: 1})
         # print(len(currentText.keys()))
         # pprint(project_details)
 
-        if (currentText != None and \
-            len(currentText.keys()) != 0 and \
-            current_user.username == list(currentText.keys())[0]):
-            # print(currentText)
-            # print(list(currentText.keys())[0])
-            project_details[list(currentText.keys())[0]] = list(currentText.values())[0]
-            project_details['currentUser'] = current_user.username
+        if (currentText != None and
+            len(currentText.keys()) != 0 and
+            current_username == list(currentText.keys())[0]):
+            # print('currentText', currentText)
+            # print('list(currentText.keys())[0]', list(currentText.keys())[0])
+            # print('list(currentText.values())[0]', list(currentText.values())[0])
+            # project_details[list(currentText.keys())[0]] = list(currentText.values())[0]
+            project_details[list(currentText.keys())[0]] = currentText[current_username]['annotationGrid']
+            project_details['currentUser'] = current_username
             # print(project_details)
             # pprint(project_details)
             currentAnnotation = project_details[current_username]
@@ -833,6 +902,8 @@ def textAnno():
             # pprint(currentAnnotation)
             # pprint(defaultAnnotation)
             project_details['tagSetMetaData']['defaultCategoryTags'] = {**defaultAnnotation, **currentAnnotation}
+
+            # pprint(project_details)
 
             return render_template('textAnno.html',
                                    projectName=activeprojectname,
@@ -844,8 +915,6 @@ def textAnno():
                                    projectName=activeprojectname,
                                    proj_data=project_details,
                                    data=currentuserprojectsname)
-        
-
     else:
         flash('File not in the database', 'danger') 
     
@@ -853,6 +922,28 @@ def textAnno():
                            projectName=activeprojectname,
                            proj_data=project_details,
                            data=currentuserprojectsname)
+
+def modalCategory(category, tagset, saveTextAnnoCategoryDependency):
+    modal_category = False
+    # print('saveTextAnnoCategoryDependency', saveTextAnnoCategoryDependency[category])
+    while(modal_category != True):
+        # if (category in saveTextAnnoCategoryDependency):
+        # print(category, 'saveTextAnnoCategoryDependency', saveTextAnnoCategoryDependency[category])
+        for tag_set_key, tag_set_value in tagset.items():
+            if (category in saveTextAnnoCategoryDependency):
+                # print(category, tag_set_key, tag_set_value)
+                if (tag_set_key in saveTextAnnoCategoryDependency[category]):
+                    # print(category, tag_set_key, tag_set_value)
+                    if (tag_set_value[0] == '#SPAN_TEXT#'):
+                        return (True, tag_set_key)
+                    else:
+                        # return (False, tag_set_key)
+                        modal_category = False
+                        category = tag_set_key
+                        # print(modal_category, category, tag_set_key, tag_set_value)
+                        # print('2. saveTextAnnoCategoryDependency', saveTextAnnoCategoryDependency[category])
+            else:
+                return (False, category)
 
 @easyAnno.route('/savetextAnno', methods=['GET', 'POST'])
 @login_required
@@ -883,17 +974,23 @@ def savetextAnno():
         # print(nextId)
 
         project_details = projects.find_one({"projectname": activeprojectname}, {"_id": 0, "tagSet": 1})
+        tagset = project_details['tagSet']
         # pprint(project_details)
         # print(project_details.values())
         tagSetMetaData = projects.find_one({"projectname": activeprojectname}, {"_id": 0, "tagSetMetaData": 1})['tagSetMetaData']
+        annotationGrid = {}
         # current user tags for the text
         currentAnnotatorTags = {}
-        for tagset in project_details.values():
-            categories = list(tagset.keys())
+        # for tagset in project_details.values():
+            # print('tagset', tagset)
+        categories = list(tagset.keys())
+            # print('\n\ncategories\n\n', categories)
         for category in categories:
-            # print(category)
             if category in annotatedText:
-                if (len(annotatedText[category])) == 1:
+                # print(category, annotatedText[category], len(annotatedText[category]), type(annotatedText[category]))
+                if isinstance(annotatedText[category], dict):
+                    currentAnnotatorTags[category] =  annotatedText[category]
+                elif (len(annotatedText[category])) == 1:
                     if ('categoryHtmlElement' in tagSetMetaData):
                         if(tagSetMetaData['categoryHtmlElement'][category] == 'select'):
                             currentAnnotatorTags[category] =  annotatedText[category]
@@ -907,8 +1004,20 @@ def savetextAnno():
                 # print(tagset[category])
                 if(tagset[category][0] == '#SPAN_TEXT#'):
                     continue
-                else:
-                    currentAnnotatorTags[category] = ''
+                elif ('categoryDependency' in tagSetMetaData):
+                    saveTextAnnoCategoryDependency = tagSetMetaData['categoryDependency']
+                    modal_category, next_category = modalCategory(category, tagset, saveTextAnnoCategoryDependency)
+                    # print(modal_category, next_category)
+                    # print()
+                    if (modal_category):
+                        continue
+                    else:
+                        currentAnnotatorTags[category] = ''
+                    #     print('modalCategory CALLED AGAIN...')
+                    #     modal_category, next_category = modalCategory(next_category, tagset, saveTextAnnoCategoryDependency)
+
+                # else:
+                #     currentAnnotatorTags[category] = ''
         
         if "Duplicate" in currentAnnotatorTags:
             currentAnnotatorTags["Duplicate"] = annotatedText["Duplicate Text"][0]
@@ -916,9 +1025,10 @@ def savetextAnno():
         if 'annotatorComment' in currentAnnotatorTags:
             currentAnnotatorTags["annotatorComment"] = annotatedText["annotatorComment"][0]
     
-        currentAnnotatorTags["annotatedFLAG"] = 1
+        # currentAnnotatorTags["annotatedFLAG"] = 1
 
-        once_annotated = textanno.find_one({"projectname": activeprojectname, "textId": lastActiveId}, {"_id": 0})
+        once_annotated = textanno.find_one({"projectname": activeprojectname, "textId": lastActiveId},
+                                           {"_id": 0})
 
         if once_annotated != None:
             # update with this user annotation and change lastUpdatedBy
@@ -928,19 +1038,20 @@ def savetextAnno():
             # if difference between new annotation and existing annotation is False
             # (user has used 'Save' in place of 'Next' button)
             # Then there should be no update in the allAccess and allUpdates timestamp
-            if current_user.username in once_annotated and \
-                not bool(diff(currentAnnotatorTags, once_annotated[current_user.username])):
-                projects.update_one({"projectname": activeprojectname}, \
-                                    { '$set' : { 'lastActiveId.'+current_user.username: nextId }})
-                # print('matchedddddddddddddddddddddddd')
+            # print(diff(currentAnnotatorTags, once_annotated[current_username]))
+            if (current_username in once_annotated and
+                not bool(diff(currentAnnotatorTags, once_annotated[current_username]['annotationGrid']))):
+                projects.update_one({"projectname": activeprojectname},
+                                    { '$set' : { 'lastActiveId.'+current_username: nextId }})
+                print('matchedddddddddddddddddddddddd')
                 return redirect(url_for('easyAnno.textAnno'))
 
-            lastUpdatedBy = current_user.username
+            lastUpdatedBy = current_username
 
             all_access = once_annotated["allAccess"]
             all_updates = once_annotated["allUpdates"]
 
-            if (current_user.username in all_access.keys()):
+            if (current_username in all_access.keys()):
                 # print(all_access, all_updates)
                 all_access[current_user.username].append(annotatedText["accessedOnTime"][0])
                 all_updates[current_user.username].append(datetime.now().strftime("%d/%m/%y %H:%M:%S"))
@@ -950,33 +1061,51 @@ def savetextAnno():
                 all_updates[current_user.username] = [datetime.now().strftime("%d/%m/%y %H:%M:%S")]
 
             oldAnnotation = textanno.find_one({"projectname": activeprojectname, "textId": lastActiveId},
-                                    {"_id": 0, current_username: 1})
+                                                {"_id": 0, current_username: 1})
             # print(oldAnnotation)
             if (current_username in oldAnnotation):
-                oldAnnotation = oldAnnotation[current_username]
+                oldAnnotation = oldAnnotation[current_username]['annotationGrid']
                 mergeredAnnotation = {**oldAnnotation, **currentAnnotatorTags}
             else:
                 mergeredAnnotation = currentAnnotatorTags
-            textanno.update_one({"projectname": activeprojectname, "textId": lastActiveId}, \
-                { '$set' : { 'lastUpdatedBy' : lastUpdatedBy, current_user.username: mergeredAnnotation,\
-                    "allAccess": all_access, "allUpdates": all_updates}})
+
+            textanno.update_one({"projectname": activeprojectname, "textId": lastActiveId},
+                                { '$set' : 
+                                    {   'lastUpdatedBy' : lastUpdatedBy,
+                                        current_username: {'annotationGrid': mergeredAnnotation,
+                                                           "annotatedFLAG": 1},
+                                        "allAccess": all_access,
+                                        "allUpdates": all_updates,
+                                        'annotationGrid': mergeredAnnotation,
+                                        "annotatedFLAG": 1}})
         else:
             text_anno = {}
-            text_anno["projectname"] = activeprojectname
-            text_anno["textId"] = lastActiveId
-            text_anno["ID"] = annotatedText["ID"][0]
-            text_anno["Text"] = annotatedText["Text"][0]
-            text_anno[current_user.username] = currentAnnotatorTags
-            text_anno['lastUpdatedBy'] = current_user.username
+            # text_anno["projectname"] = activeprojectname
+            # text_anno["textId"] = lastActiveId
+            # text_anno["ID"] = annotatedText["ID"][0]
+            # text_anno["Text"] = annotatedText["Text"][0]
+            text_anno[current_username]['annotationGrid'] = currentAnnotatorTags
+            text_anno[current_username]['annotatedFLAG'] = 1
+            text_anno['lastUpdatedBy'] = current_username
             all_access = {}
-            all_access[current_user.username] = [annotatedText["accessedOnTime"][0]]
+            all_access[current_username] = [annotatedText["accessedOnTime"][0]]
             text_anno['allAccess'] = all_access
             all_updates = {}
-            all_updates[current_user.username] = [datetime.now().strftime("%d/%m/%y %H:%M:%S")]
+            all_updates[current_username] = [datetime.now().strftime("%d/%m/%y %H:%M:%S")]
             text_anno['allUpdates'] = all_updates
 
 
-            textanno.insert_one(text_anno)
+            # textanno.insert_one(text_anno)
+            textanno.update_one({"projectname": activeprojectname, "textId": lastActiveId},
+                                { '$set' : 
+                                    {   current_username: {'annotationGrid': currentAnnotatorTags,
+                                                           'annotatedFLAG': 1},
+                                        'lastUpdatedBy': current_username,
+                                        'allUpdates': all_updates,
+                                        'allAccess':  all_access,
+                                        'annotationGrid': currentAnnotatorTags,
+                                        'annotatedFLAG': 1
+                                    }})
 
         projects.update_one({"projectname": activeprojectname}, \
                             { '$set' : { 'lastActiveId.'+current_user.username: nextId }})
@@ -1014,8 +1143,11 @@ def savetextAnnoSpan():
                 textanno.update_one({"projectname": activeprojectname, "textId": lastActiveId},
                                     {'$set': { 
                                                 # "spanAnnotation.text."+spanId: annotatedTextSpan[spanId]
-                                                current_username+'.'+key+'.'+k: v,
-                                                current_username+".annotatedFLAG": 1
+                                                current_username+'.annotationGrid.'+key+'.'+k: v,
+                                                current_username+".annotatedFLAG": 1,
+                                                'annotationGrid.'+key+'.'+k: v,
+                                                "annotatedFLAG": 1,
+                                                "lastUpdatedBy": current_username
                                             }})
         return "OK"
 
@@ -1051,13 +1183,13 @@ def deletetextAnnoSpan():
                 textanno.update_one({"projectname": activeprojectname, "textId": lastActiveId},
                                     {'$unset': { 
                                                 # "spanAnnotation.text."+spanId: annotatedTextSpan[spanId]
-                                                current_username+'.'+key+'.'+k: 1,
+                                                current_username+'.annotationGrid.'+key+'.'+k: 1,
+                                                'annotationGrid.'+key+'.'+k: 1,
                                                 # current_username+".annotatedFLAG": 1
                                             }})
         return "OK"
 
     return "OK"
-
 
 @easyAnno.route('/loadprevioustext', methods=['GET'])
 @login_required
@@ -1575,157 +1707,6 @@ def activeprojectname():
 
     return 'OK'
 
-# # MongoDB Database
-# # user login form route
-# @easyAnno.route('/login', methods=['GET', 'POST'])
-# def login():
-#     # userlogin = mongo.db.userlogin                          # collection of users and their login details
-#     dummyUserandProject()
-#     if current_user.is_authenticated:
-#         return redirect(url_for('easyAnno.home'))
-#     form = UserLoginForm()
-#     if form.validate_on_submit():
-#         # username = userlogin.find_one({"username": form.username.data})
-#         user = UserLogin(username=form.username.data)
-#         # print(user)
-#         if user is None or not user.check_password(form.password.data):
-#             flash('Invalid username or password', 'warning')
-#             return redirect(url_for('login'))
-#         login_user(user, force=True)
-#         next_page = request.args.get('next')
-#         if not next_page or url_parse(next_page).netloc != '':
-#             next_page = url_for('home')
-#         return redirect(next_page)
-#     return render_template('login.html', form=form)
-
-# # MongoDB Database
-# # use logout
-# @easyAnno.route('/logout')
-# def logout():
-#     try:
-#         logout_user()
-#         return redirect(url_for('easyAnno.home'))
-#     except:
-#         return redirect(url_for('easyAnno.home'))    
-
-# # MongoDB Database
-# # new user registration
-# @easyAnno.route('/register', methods=['GET', 'POST'])
-# def register():
-#     userlogin = mongo.db.userlogin                          # collection of users and their login details
-#     dummyUserandProject()
-#     if current_user.is_authenticated:
-#         # print(current_user.get_id())
-#         return redirect(url_for('easyAnno.home'))
-#     form = RegistrationForm()
-#     if form.validate_on_submit():
-#         # user = UserLogin(username=form.username.data)
-#         password = generate_password_hash(form.password.data)
-#         # print(user, password)
-
-#         userlogin.insert_one({"username": form.username.data, "password": password})
-
-#         userprojects = mongo.db.userprojects              # collection of users and their respective projectlist
-#         userprojects.insert_one({'username' : form.username.data, 'myproject': [], \
-#             'projectsharedwithme': [], 'activeprojectname' : ''})
-
-#         flash('Congratulations, you are now a registered user!', 'success')
-#         return redirect(url_for('login'))
-#     return render_template('register.html', form=form)
-
-# @easyAnno.route('/userslist', methods=['GET', 'POST'])
-# def userslist():
-#     print('easyAnno userslist')
-#     userlogin = mongo.db.userlogin                          # collection of users and their login details
-#     projects = mongo.db.projects              # collection of users and their respective projects
-#     userprojects = mongo.db.userprojects              # collection of users and their respective projects
-
-    
-#     activeprojectname = userprojects.find_one({ 'username' : current_user.username },\
-#                     {'_id' : 0, 'activeprojectname': 1})['activeprojectname']
-
-#     usersList = []
-
-#     proj_shared_with = projects.find({"projectname": activeprojectname}, \
-#                         {"_id": 0, "sharedwith": 1})
-    
-#     for user in userlogin.find({}, {"_id": 0, "username": 1}):
-#         # print(user)
-#         usersList.append(user["username"])
-#         # print(user)
-#     # usersList.remove(current_user.username)
-#     for sharer in proj_shared_with:
-#         sharer  = sharer["sharedwith"]
-#         usersList = [i for i in usersList if i not in sharer]
-        
-#     # print(usersList)
-#     return jsonify(usersList=usersList)
-
-# @easyAnno.route('/shareprojectwith', methods=['GET', 'POST'])
-# def shareprojectwith():
-#     # getting the collections
-#     userprojects = mongo.db.userprojects              # collection of users and their respective projects
-#     projects = mongo.db.projects              # collection of users and their respective projects
-
-#     users = request.args.get('a').split(',')                    # data through ajax
-#     # print(users)
-#     activeprojectname = userprojects.find_one({ 'username' : current_user.username })['activeprojectname']
-#     #get _id and project name in the collection projects
-#     activeprojectdetails = projects.find_one({"projectname": activeprojectname}, \
-#                             {"_id" : 1, "projectname" : 1, "sharedwith": 1, "projectType": 1, "lastActiveId": 1})
-#     # print(activeprojectdetails)
-#     project_id = activeprojectdetails["_id"]
-#     project_name = activeprojectdetails["projectname"]
-#     projectsharedwith = activeprojectdetails["sharedwith"]
-#     # # print(activeprojectname)
-#     lastActiveId = activeprojectdetails["lastActiveId"]
-
-#     if (activeprojectdetails["projectType"] == 'text'):
-#         text_data = projects.find_one({"projectname": activeprojectname}, \
-#                             {"_id" : 0, "textData": 1 })
-#     elif (activeprojectdetails["projectType"] == 'image'):
-#             text_data = projects.find_one({"projectname": activeprojectname}, \
-#                                 {"_id" : 0, "imageFiles": 1 }) 
-#     for id in text_data.values():
-#         tIds = list(id.keys())
-#     tIds = sorted(tIds)
-#     # print(tIds[0])                          
-    
-#     if (len(users[0]) != 0):
-#         for user in users:
-#             # get list of projects shared with the user
-#             usershareprojectsname = userprojects.find_one({ 'username' : user })['projectsharedwithme']
-#             myproject = userprojects.find_one({ 'username' : user })['myproject']
-#             # print(myproject, usershareprojectsname)
-#             if (activeprojectname in usershareprojectsname or \
-#                 activeprojectname in myproject):
-#                 # print("=====================================================================$%$%$%$%$%$%$%")
-#                 continue
-#             # update list of projects shared with the user
-#             usershareprojectsname.append(activeprojectname)
-#             usershareprojectsname = list(set(usershareprojectsname))
-#             # update list of projects shared with the user in collection
-#             userprojects.update_one({ 'username' : user }, { '$set' : { 'projectsharedwithme' : usershareprojectsname}})
-#             # userprojectsname = userprojects.find_one({ 'username' : user })
-#             # print(userprojectsname)
-
-#             # update active project sharedwith list
-#             projectsharedwith.append(user)
-#             projectsharedwith = list(set(projectsharedwith))
-#             lastActiveId[user] = tIds[0]
-#             # print("WHYYYYYYYYYYYYYYYYYYYYYYYYY?????????????????????????????????????")
-
-#     #     projectForm['username'] = current_user.username
-#     # update projects collection
-#     # activeprojectdetails["sharedwith"] = projectsharedwith
-#         # flash(f"Project: {activeprojectname} is shared with {users}")
-#     # print(lastActiveId)    
-#     projects.update_one({ "_id" : project_id }, \
-#         { '$set' : { "sharedwith": projectsharedwith, "lastActiveId": lastActiveId }})
-
-#     # return "OK"
-#     return jsonify(users=users)
-
 def dummyUserandProject():
 
     """ Creates dummy user and project if the database has no collection """
@@ -1855,14 +1836,18 @@ def downloadannotationfile():
         # print(df)
 
         for text_id in list(text_data.keys()):
-            annotated_text = textanno.find_one({ "textId": text_id },\
-                        { "_id": 0, "ID": 1, "Text": 1, current_user.username: 1 })
+            annotated_text = textanno.find_one({ "textId": text_id },
+                                                { "_id": 0, "ID": 1, "textMetadata": 1, "Text": 1, current_username: 1 })
             # print(annotated_text)
-            if (annotated_text != None and current_user.username in annotated_text):
-                annotated_text[current_user.username]["textId"] = text_id
-                annotated_text[current_user.username]["ID"] = annotated_text["ID"]
-                annotated_text[current_user.username]["Text"] = annotated_text["Text"]
-                annotated_text =  annotated_text[current_user.username] 
+            if (annotated_text != None and current_username in annotated_text):
+                annotated_text[current_username]["textId"] = text_id
+                if ('textMetadata' in annotated_text):
+                    for textMetadata_key, textMetadata_value in annotated_text['textMetadata'].items():
+                        annotated_text[current_username][textMetadata_key] = textMetadata_value
+                else:
+                    annotated_text[current_username]["ID"] = annotated_text["ID"]
+                annotated_text[current_username]["Text"] = annotated_text["Text"]
+                annotated_text =  annotated_text[current_username] 
                 # print(annotated_text)
                 annotated_text_df = pd.DataFrame.from_dict(annotated_text.items()).T
                 annotated_text_df.columns = annotated_text_df.iloc[0]
@@ -1959,51 +1944,55 @@ def allunannotated():
     '''
     get list of all annotated and all unannotated data by that user for that file
     '''
-    projects = mongo.db.projects              # collection of users and their respective projects
-    userprojects = mongo.db.userprojects              # collection of users and their respective projects
-    textanno = mongo.db.textanno
-    imageanno = mongo.db.imageanno
-
-    activeprojectname = userprojects.find_one({ 'username' : current_user.username },\
-                    {'_id' : 0, 'activeprojectname': 1})['activeprojectname']
+    projects, userprojects, textanno, imageanno = getdbcollections.getdbcollections(mongo,
+                                                                                    'projects',
+                                                                                    'userprojects',
+                                                                                    'textanno',
+                                                                                    'imageanno')
+    current_username = getcurrentusername.getcurrentusername()
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                    userprojects)
 
     allunanno = []
     # list of all annotated
     allanno = []
 
-    project_type = projects.find_one({"projectname": activeprojectname}, \
-                    {"_id": 0, "projectType": 1})["projectType"]
+    project_type = projects.find_one({"projectname": activeprojectname},
+                                        {"_id": 0, "projectType": 1})["projectType"]
 
     if (project_type =='text'):
-        for unannodata in textanno.find({"projectname": activeprojectname}, \
-                        {"_id": 0, "textId":1, "ID": 1, current_user.username: 1}):
+        for unannodata in textanno.find({"projectname": activeprojectname},
+                                        {"_id": 0, "textId":1, "textMetadata.ID": 1, "ID": 1, current_username: 1}):
 
             # print(unannodata)
-            if (current_user.username not in unannodata):
+            if ("ID" in unannodata):
+                unannodata["textMetadata"] = {"ID": unannodata["ID"]}
+                del unannodata["ID"]
+            if (current_username not in unannodata):
                 allunanno.append(unannodata)
-            elif (current_user.username in unannodata and\
-                    unannodata[current_user.username]["annotatedFLAG"] == 0):
-                unannodata.pop(current_user.username)
+            elif (current_username in unannodata and
+                    unannodata[current_username]["annotatedFLAG"] == 0):
+                unannodata.pop(current_username)
                 allunanno.append(unannodata)
-            elif (current_user.username in unannodata and\
-                    unannodata[current_user.username]["annotatedFLAG"] == 1):
-                unannodata.pop(current_user.username)
+            elif (current_username in unannodata and
+                    unannodata[current_username]["annotatedFLAG"] == 1):
+                unannodata.pop(current_username)
                 allanno.append(unannodata)
 
     elif (project_type =='image'):
-        for unannodata in imageanno.find({"projectname": activeprojectname}, \
-                        {"_id": 0, "imageId":1, "filename": 1, current_user.username: 1}):
+        for unannodata in imageanno.find({"projectname": activeprojectname},
+                                            {"_id": 0, "imageId":1, "filename": 1, current_username: 1}):
 
             # print(unannodata)
-            if (current_user.username not in unannodata):
+            if (current_username not in unannodata):
                 allunanno.append(unannodata)
-            elif (current_user.username in unannodata and\
-                    unannodata[current_user.username]["annotatedFLAG"] == 0):
-                unannodata.pop(current_user.username)
+            elif (current_username in unannodata and
+                    unannodata[current_username]["annotatedFLAG"] == 0):
+                unannodata.pop(current_username)
                 allunanno.append(unannodata)
-            elif (current_user.username in unannodata and\
-                    unannodata[current_user.username]["annotatedFLAG"] == 1):
-                unannodata.pop(current_user.username)
+            elif (current_username in unannodata and
+                    unannodata[current_username]["annotatedFLAG"] == 1):
+                unannodata.pop(current_username)
                 allanno.append(unannodata)            
 
     # print(allunanno[:10])
@@ -2543,9 +2532,9 @@ def createTextAnnoNew(zipFile):
     #                 {'_id' : 0, 'activeprojectname': 1})['activeprojectname']
 
     projects, userprojects, textanno = getdbcollections.getdbcollections(mongo,
-                                                                'projects',
-                                                                'userprojects',
-                                                                'textanno')
+                                                                            'projects',
+                                                                            'userprojects',
+                                                                            'textanno')
     current_username = getcurrentusername.getcurrentusername()
     currentuserprojectsname =  getcurrentuserprojects.getcurrentuserprojects(current_username,
                                                                                 userprojects)
@@ -2666,20 +2655,40 @@ def createTextAnnoNew(zipFile):
                             return redirect(url_for('easyAnno.home'))
 
                         # print(text_data_df.head())
+                        # print('text_data_df - COLUMNS', text_data_df.columns, list(text_data_df.columns))
                         for i in range(len(text_data_df)): 
                             text_id = 'T'+re.sub(r'[-: \.]', '', str(datetime.now()))
                             id_test_list.append(text_id)
+                            text_meta_data = {}
                             single_row = {}
                             single_row["ID"] = text_data_df.iloc[i, 0]
+                            text_meta_data["ID"] = text_data_df.iloc[i, 0]
                             single_row["Text"] = text_data_df.iloc[i, 1]
+                            text_data_df_col_list = list(text_data_df.columns)
+                            for col_name in text_data_df_col_list:
+                                if (col_name == 'ID' or col_name == 'Text'): continue
+                                else:
+                                    col_name_index = text_data_df_col_list.index(col_name)
+                                    # print(col_name, text_data_df_col_list.index(col_name))
+                                    text_meta_data[col_name] = text_data_df.iloc[i, col_name_index]
                             text_data[text_id] = single_row
                             # entry of each text in textanno colloection
                             text_anno_detail = {}
+                            text_anno_detail['username'] = current_username
                             text_anno_detail["projectname"] = project_name
                             text_anno_detail["textId"] = text_id
-                            text_anno_detail["ID"] = text_data_df.iloc[i, 0]
+                            # text_anno_detail["ID"] = text_data_df.iloc[i, 0]
                             text_anno_detail["Text"] = text_data_df.iloc[i, 1]
                             text_anno_detail['lastUpdatedBy'] = ""
+                            text_anno_detail['lifesourceid'] = ""
+                            text_anno_detail['textdeleteFLAG'] = 0
+                            text_anno_detail['textverifiedFLAG'] = 0
+                            text_anno_detail['additionalInfo'] = {}
+                            text_anno_detail['textMetadata'] = text_meta_data
+                            text_anno_detail['annotatedFLAG'] = 0
+                            text_anno_detail['annotationGrid'] = {}
+                            text_anno_detail['prompt'] = ""
+                            
                             all_access = {}
                             text_anno_detail['allAccess'] = all_access
                             all_updates = {}
@@ -2691,7 +2700,7 @@ def createTextAnnoNew(zipFile):
                         continue
 
 
-                project_owner = current_user.username
+                project_owner = current_username
                 project_details = {}
                 # print(text_data.keys())
                 lastActiveId = {current_user.username: list(text_data.keys())[0]}
@@ -2716,7 +2725,8 @@ def createTextAnnoNew(zipFile):
                                                 current_username
                                                 )
 
-                print(project_details)   
+                # print(project_details)
+                # print(project_details["textData"])
     except Exception as e:
         print(e)
         flash('Please upload a zip file. Check the file format at the link provided for the Sample File', 'warning')

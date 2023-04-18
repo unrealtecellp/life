@@ -1,8 +1,11 @@
 import pandas as pd
 from datetime import datetime
 from app.controller import (
-    getprojecttype
+    getprojecttype,
+    life_logging
 )
+
+logger = life_logging.get_logger()
 
 def get_access_code_list(accesscodedetails,
                             activeprojectname,
@@ -30,12 +33,25 @@ def get_access_code_list(accesscodedetails,
 
 
 def get_access_code_metadata_for_form(projects, projectsform, project_name, project_type, derived_from_project_type, derivedFromProjectName):
-    if (project_type == 'questionnaires'):
-        acesscodemetadata = get_access_code_metadata_questionnaire_for_form(projectsform, project_name)
-    if (project_type == 'transcriptions'):
-        acesscodemetadata = get_access_code_metadata_transcription_for_form(projects, projectsform, project_name, derived_from_project_type, derivedFromProjectName)
-    
-    return acesscodemetadata
+    # logger.debug("project_name: %s\
+    #             \n\tproject_type: %s\
+    #             \n\tderived_from_project_type: %s\
+    #             \n\tderivedFromProjectName: %s",
+    #             project_name,
+    #             project_type,
+    #             derived_from_project_type,
+    #             derivedFromProjectName)
+    try:
+        if (project_type == 'questionnaires'):
+            acesscodemetadata = get_access_code_metadata_questionnaire_for_form(projectsform, project_name)
+        if (project_type == 'transcriptions'):
+            acesscodemetadata = get_access_code_metadata_transcription_for_form(projects, projectsform, project_name, derived_from_project_type, derivedFromProjectName)
+        if (project_type == 'recordings'):
+            acesscodemetadata = get_access_code_metadata_transcription_for_form(projects, projectsform, project_name, derived_from_project_type, derivedFromProjectName)
+
+        return acesscodemetadata
+    except:
+        logger.exception("")
 
 
 

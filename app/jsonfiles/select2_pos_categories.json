@@ -1,0 +1,15 @@
+[
+    {"id": "Conjunction", "text": "Conjunction"},
+    {"id": "Particle", "text": "Particle"},
+    {"id": "Noun", "text": "Noun"},
+    {"id": "Adjective", "text": "Adjective"},
+    {"id": "Article", "text": "Article"},
+    {"id": "Adverb", "text": "Adverb"},
+    {"id": "FusedPreposition", "text": "FusedPreposition"},
+    {"id": "Pronoun", "text": "Pronoun"},
+    {"id": "Adposition", "text": "Adposition"},
+    {"id": "Determiner", "text": "Determiner"},
+    {"id": "Symbol", "text": "Symbol"},
+    {"id": "Numeral", "text": "Numeral"},
+    {"id": "Verb", "text": "Verb"}
+]
