@@ -62,12 +62,14 @@ def newdataform():
     """
     # print('lifedata newdataform')
     projects, userprojects, projectsform, questionnaires, transcriptions = getdbcollections.getdbcollections(mongo,
-                                                                'projects',
-                                                                'userprojects',
-                                                                'projectsform',
-                                                                'questionnaires',
-                                                                'transcriptions')
+                                                                                                            'projects',
+                                                                                                            'userprojects',
+                                                                                                            'projectsform',
+                                                                                                            'questionnaires',
+                                                                                                            'transcriptions')
     current_username = getcurrentusername.getcurrentusername()
+
+    include_speakerIds = ['transcriptions', 'recordings']
 
     if request.method =='POST':
         new_data_form = dict(request.form.lists())
@@ -113,9 +115,10 @@ def newdataform():
             derive_from_project_type = projects.find_one({'projectname': derive_from_project_name},
                                                             {"_id": 0, "projectType": 1})["projectType"]
             if (derive_from_project_type == 'questionnaires' and
-                project_type == 'transcriptions'):
+                project_type in include_speakerIds):
+                data_collection, = getdbcollections.getdbcollections(mongo, project_type)
                 copydatafromparentproject.copydatafromquesproject(questionnaires,
-                                                                    transcriptions,
+                                                                    data_collection,
                                                                     derive_from_project_name,
                                                                     projectname,
                                                                     current_username)

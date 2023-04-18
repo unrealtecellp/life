@@ -4,6 +4,10 @@ import tarfile
 import io
 from io import BytesIO
 from werkzeug.datastructures import FileStorage
+from app.controller import(
+    life_logging
+)
+logger = life_logging.get_logger()
 
 
 def send_karya_otp(
@@ -80,7 +84,7 @@ def get_assignment_metadata(
 
         findWorker_id = assignment_input['chain']
         worker_id = findWorker_id['workerId']
-        print("line 699", worker_id)
+        logger.debug("worker_id: %s", worker_id)
         # print('worker_id', worker_id, 'for_worker_id', for_worker_id)
         try:
             if (worker_id == for_worker_id):
@@ -118,9 +122,9 @@ def get_assignment_metadata(
                 fileID_lists = item['id']
                 fileID_list.append(fileID_lists)
 
-    print("line 842", karya_audio_report)
-    print("line 843", sentence_list)
-    print("line 844", workerId_list)
+    logger.debug("karya_audio_report: %s", karya_audio_report)
+    logger.debug("sentence_list: %s", sentence_list)
+    logger.debug("workerId_list: %s", workerId_list)
 
     return micro_task_ids, workerId_list, sentence_list, karya_audio_report, filename_list, fileID_list
 
@@ -130,7 +134,7 @@ def get_fileid_sentence_mapping(
 ):
     if len(karya_audio_report) == 0:
         fileID_sentence_list = tuple(zip(fileID_list, sentence_list))
-        print("line 859 ", fileID_sentence_list)
+        # print("line 859 ", fileID_sentence_list)
 
         # put check condiotn -> if the speakerId and fileID  previouls fetched or not / Fetch on the basis of fileID assign to speakerID
         audio_speaker_merge = {key: (value,) for key, value in zip(

@@ -374,13 +374,13 @@ function unAnnotated() {
           allanno = response.allanno;
           // console.log(allanno)
           var inpt = '';
-          inpt += '<select class="col-sm-3 allanno" id="allanno" onchange="loadAnnoText()">'+
+          inpt += '<select class="col-sm-3 allanno" id="allanno" onchange="loadAnnoText()" style="width: 45%">'+
                   '<option selected disabled>Completed</option>';
                   for (i=0; i<allanno.length; i++) {
                       inpt += '<option value="'+allanno[i]+'">'+allanno[i]+'</option>';
                   }
-          inpt += '</select>';
-          inpt += '<select class="pr-4 col-sm-3" id="allunanno" onchange="loadUnAnnoText()">'+
+          inpt += '</select>&nbsp; ';
+          inpt += '<select class="pr-4 col-sm-3" id="allunanno" onchange="loadUnAnnoText()"style="width: 45%">'+
                   '<option selected disabled>Not Completed</option>';
                   for (i=0; i<allunanno.length; i++) {
                       inpt += '<option value="'+allunanno[i]+'">'+allunanno[i]+'</option>';
@@ -388,6 +388,13 @@ function unAnnotated() {
           inpt += '</select>';
           $('.commentIDs').append(inpt);
           // console.log(inpt);
+
+          $('#allanno').select2({
+            // placeholder: 'select user'
+            });
+          $('#allunanno').select2({
+            // placeholder: 'select user'
+            });
       }
   });
   return false; 
