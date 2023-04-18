@@ -47,7 +47,7 @@ from app.controller import (manageAppConfig, questionnairedetails,
                             savenewproject, savenewprojectform,
                             savenewsentence, speakerdetails,
                             unannotatedfilename, updateuserprojects,
-                            userdetails)
+                            userdetails, life_logging)
 from app.forms import RegistrationForm, UserLoginForm
 from app.models import UserLogin
 
@@ -56,6 +56,7 @@ scriptCodeJSONFilePath = os.path.join(basedir, 'static/json/scriptCode.json')
 langScriptJSONFilePath = os.path.join(basedir, 'static/json/langScript.json')
 ipatomeeteiFilePath = os.path.join(basedir, 'static/json/ipatomeetei.json')
 appConfigPath = os.path.join(basedir, 'jsonfiles/app_config.json')
+logger = life_logging.get_logger()
 
 userlogin, = getdbcollections.getdbcollections(
     mongo, 'userlogin')
@@ -265,7 +266,6 @@ def sentence_lexeme_to_lexemes(oneSentenceDetail, oneLexemeDetail):
 @app.route('/enternewsentences', methods=['GET', 'POST'])
 @login_required
 def enternewsentences():
-    # print('1234321')
     projects, userprojects, projectsform, sentences, transcriptions, speakerdetails = getdbcollections.getdbcollections(mongo,
                                                                                                                         'projects',
                                                                                                                         'userprojects',
@@ -273,29 +273,29 @@ def enternewsentences():
                                                                                                                         'sentences',
                                                                                                                         'transcriptions',
                                                                                                                         'speakerdetails')
-    currentuserprojectsname = getcurrentuserprojects.getcurrentuserprojects(current_user.username,
+    current_username = getcurrentusername.getcurrentusername()
+    currentuserprojectsname = getcurrentuserprojects.getcurrentuserprojects(current_username,
                                                                             userprojects)
-    activeprojectname = getactiveprojectname.getactiveprojectname(
-        current_user.username, userprojects)
-    shareinfo = getuserprojectinfo.getuserprojectinfo(
-        userprojects, current_user.username, activeprojectname)
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                    userprojects)
+    shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
+                                                      current_username,
+                                                      activeprojectname)
     # print(shareinfo)
 
     if activeprojectname == '':
-        flash(f"select a project from 'All Projects' to work on!")
+        flash(f"select a project from 'Change Active Project' to work on!")
         return redirect(url_for('home'))
+    
     if request.method == 'POST':
         newSentencesData = dict(request.form.lists())
         newSentencesFiles = request.files.to_dict()
         savenewsentence.savenewsentence(mongo,
                                         sentences,
-                                        current_user.username,
+                                        current_username,
                                         activeprojectname,
                                         newSentencesData,
                                         newSentencesFiles)
-
-    # currentuserprojectsname =  getcurrentuserprojects.getcurrentuserprojects(current_user.username,
-    #                             userprojects)
 
     # if method is not 'POST'
     projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
@@ -305,9 +305,9 @@ def enternewsentences():
     if activeprojectform is not None:
         try:
             # , audio_file_path, transcription_details
-            # activespeakerid = getactivespeakerid.getactivespeakerid(userprojects, current_user.username)
+            # activespeakerid = getactivespeakerid.getactivespeakerid(userprojects, current_username)
             activespeakerid = getuserprojectinfo.getuserprojectinfo(userprojects,
-                                                                    current_user.username,
+                                                                    current_username,
                                                                     activeprojectname)['activespeakerId']
             total_comments, annotated_comments, remaining_comments = getcommentstats.getcommentstats(projects,
                                                                                                      transcriptions,
@@ -319,18 +319,18 @@ def enternewsentences():
             audio_id = audiodetails.getactiveaudioid(projects,
                                                      activeprojectname,
                                                      activespeakerid,
-                                                     current_user.username)
+                                                     current_username)
             # print(audio_id)
-            transcription_details = audiodetails.getaudiofiletranscription(
-                transcriptions, audio_id)
+            transcription_details = audiodetails.getaudiofiletranscription(transcriptions,
+                                                                           audio_id)
 
-            audio_metadata = audiodetails.getaudiometadata(
-                transcriptions, audio_id)
+            audio_metadata = audiodetails.getaudiometadata(transcriptions, 
+                                                            audio_id)
             # print('audio_metadata')
             # pprint(audio_metadata)
             activeprojectform['audioMetadata'] = audio_metadata['audioMetadata']
-            last_updated_by = audiodetails.lastupdatedby(
-                transcriptions, audio_id)
+            last_updated_by = audiodetails.lastupdatedby(transcriptions,
+                                                            audio_id)
             activeprojectform['lastUpdatedBy'] = last_updated_by['updatedBy']
             file_path = audiodetails.getaudiofilefromfs(mongo,
                                                         basedir,
@@ -352,8 +352,8 @@ def enternewsentences():
             try:
                 speakerids = projects.find_one({"projectname": activeprojectname},
                                                {"_id": 0, "speakerIds." +
-                                                   current_user.username: 1}
-                                               )["speakerIds"][current_user.username]
+                                                   current_username: 1}
+                                               )["speakerIds"][current_username]
                 added_speaker_ids = audiodetails.addedspeakerids(
                     speakerdetails, activeprojectname)
             except:
@@ -386,15 +386,6 @@ def enternewsentences():
                            projectName=activeprojectname,
                            newData=activeprojectform,
                            data=currentuserprojectsname)
-
-    # return render_template('enternewsentences.html',
-    #                         projectName=activeprojectname,
-    #                         sdata=[],
-    #                         data=currentuserprojectsname)
-
-# get new sentences route
-# get new sentences in the project coming throug ajax
-
 
 @app.route('/savetranscription', methods=['GET', 'POST'])
 @login_required
@@ -621,6 +612,7 @@ def dictionaryview():
             if (len(lexeme['headword']) != 0):
                 lst.append(lexeme)
     except:
+        logger.exception("")
         flash('Enter first lexeme of the project')
 
     return render_template('dictionaryview.html',
@@ -708,6 +700,14 @@ def enterlexemefromuploadedfile(lexemedf):
     current_project_form = projectsform.find_one(
         {'projectname': projectname}, {'_id': 0})
 
+    print ('df data', lexemedf.columns)
+    if 'langscripts' in lexemedf.columns:
+        print (lexemedf['langscripts'])
+    
+    def removelangscriptsblank(lexemedf):
+        drop_cols = [c for c in lexemedf.columns if c.startswith('langscripts.')]
+        lexemedf.drop(columns=drop_cols, inplace=True)
+        # return lexemedf
     # print('Project form', project_form)
     # if projectname in project_form:
     #     current_projct_form = project_form[projectname]
@@ -739,6 +739,7 @@ def enterlexemefromuploadedfile(lexemedf):
         langscripts = langscriptutils.get_langscripts_from_lexeme_form(
             current_project_form)
         uploadedFileLexeme['langscripts'] = langscripts
+        removelangscriptsblank(lexemedf) #removes old blank langscripts columns
 
         lexemeId = str(row['lexemeId'])
         getlexemeId = None
@@ -774,8 +775,12 @@ def enterlexemefromuploadedfile(lexemedf):
             # projects.update_one({}, { '$set' : { projectname : project[projectname] }})
 
         for column_name in list(lexemedf.columns):
+            print(column_name)
+            if (column_name.endswith('Example')):
+                continue
             if (column_name not in uploadedFileLexeme):
                 value = str(row[column_name])
+                print(value)
                 if (value == 'nan'):
                     value = ''
                 if ('Sense 1.Gloss.eng' in column_name):
@@ -785,7 +790,7 @@ def enterlexemefromuploadedfile(lexemedf):
                 uploadedFileLexeme[column_name] = value
 
         # print(f'{"="*80}\nLexeme Form :')
-        # pprint(uploadedFileLexeme)
+        pprint(uploadedFileLexeme)
         # print(f'{"="*80}')
 
         lexemes.update_one({'lexemeId': lexemeId}, {
@@ -800,9 +805,11 @@ def enterlexemefromuploadedfile(lexemedf):
     # comment till here
 
 
-def lifeuploader(fileFormat, uploadedFileContent, field_map={}):
+def lifeuploader(fileFormat, uploadedFileContent, field_map={}, headword_mapped=False, all_mapped=False):
     lang_script_map = {
         'ipa': 'ipa',
+        'hi': 'Deva',
+        'bns': 'Deva',
         'hin': 'Deva',
         'guj': 'Gujr',
         'pun': 'Guru',
@@ -829,7 +836,7 @@ def lifeuploader(fileFormat, uploadedFileContent, field_map={}):
 
     def get_lift_map():
         map = {
-            'grammatical-info': 'grammaticalcategory',
+            'grammatical-info': 'Grammatical Category',
             'lexical-unit': 'headword',
             'lexical-unit-form': 'Lexical Form',
             'pronunciation': 'Pronunciation',
@@ -922,15 +929,23 @@ def lifeuploader(fileFormat, uploadedFileContent, field_map={}):
         mapped_life_langs_gloss = []
         unmapped_lift_langs_gloss = []
 
+        mapped_life_langs_variant = []
+        unmapped_lift_langs_variant = []
+
         life_headword_script = life_scripts_map['langscripts.headwordscript']
         life_lexeme_form_scripts = life_scripts_map['langscripts.lexemeformscripts']
         life_gloss_langs = life_scripts_map['langscripts.glosslangs']
+        # life_variant_langs = life_scripts_map['langscripts.glosslangs']
+
+        life_gloss_langs = [x.lower() for x in life_gloss_langs]
 
         highest_sense_num = 0
+        highest_variant_num = 0
         for entry in entries:
             # pd_row = {}
             for entry_part in entry:
                 sense_num = 0
+                variant_num = 0
                 entry_part_tag = entry_part.tag
                 if entry_part_tag != 'entry':
                     # print (entry_part_tag)
@@ -1003,16 +1018,26 @@ def lifeuploader(fileFormat, uploadedFileContent, field_map={}):
 
                         for sense_part in entry_part:
                             sense_part_tag = sense_part.tag
-                            # print (sense_part_tag)
+                            # print ('sense_part_tag', sense_part_tag, sense_part.attrib, sense_part.find('text'))
                             life_key_sense = field_map[sense_part_tag]
 
                             if sense_part_tag == 'gloss' or sense_part_tag == 'definition' or sense_part_tag == 'example':
-                                lift_lang_name, lift_full_lang = get_script_name(
+                                if len(sense_part.attrib) == 0:
+                                    sense_part_tag_form = sense_part.find('form')
+                                    print (sense_part_tag_form)
+                                    lift_lang_name, lift_full_lang = get_script_name(
+                                    sense_part_tag_form)
+                                else:
+                                    lift_lang_name, lift_full_lang = get_script_name(
                                     sense_part)
                                 # lift_sense_tag = sense_part_tag + '.' + lift_lang_name
                                 # lift_sense_tag = './/entry/sense/'+sense_part_tag+'[@lang='+lift_full_lang+']'
                                 # lift_sense_tag = './sense/'+sense_part_tag+'[@lang='+lift_full_lang+']/text'
-                                lift_sense_tag = './sense/'+sense_part_tag + \
+                                if len(sense_part.attrib) == 0:
+                                    lift_sense_tag = './sense/'+sense_part_tag + \
+                                    '/form[@lang="'+lift_full_lang+'"]'
+                                else:
+                                    lift_sense_tag = './sense/'+sense_part_tag + \
                                     '[@lang="'+lift_full_lang+'"]'
 
                                 if lift_lang_name in life_gloss_langs:
@@ -1041,6 +1066,49 @@ def lifeuploader(fileFormat, uploadedFileContent, field_map={}):
                                 lift_tag = './sense/'+sense_part_tag
                                 mapped_lift[lift_tag] = 'SenseNew.Sense ' + \
                                     str(sense_num)+'.'+life_key_sense
+                    elif entry_part_tag == 'variant':
+                        variant_num += 1
+
+                        if variant_num > highest_variant_num:
+                            highest_variant_num = variant_num
+
+                        for variant_part in entry_part:
+                            variant_part_tag = variant_part.tag
+                            print ('variant_part_tag', variant_part_tag, variant_part.attrib, variant_part.find('text'))
+                            # life_key_sense = field_map[variant_part_tag]
+                            
+                            if variant_part_tag == 'form':
+                                if len(variant_part.attrib) == 0:
+                                    variant_part_tag_form = variant_part.find('form')
+                                    print (variant_part_tag_form)
+                                    lift_lang_name, lift_full_lang = get_script_name(
+                                    variant_part_tag_form)
+                                else:
+                                    lift_lang_name, lift_full_lang = get_script_name(
+                                    variant_part)
+                                # lift_sense_tag = sense_part_tag + '.' + lift_lang_name
+                                # lift_sense_tag = './/entry/sense/'+sense_part_tag+'[@lang='+lift_full_lang+']'
+                                # lift_sense_tag = './sense/'+sense_part_tag+'[@lang='+lift_full_lang+']/text'
+                                if len(variant_part.attrib) == 0:
+                                    lift_variant_tag = './variant/'+variant_part_tag + \
+                                    '/form[@lang="'+lift_full_lang+'"]'
+                                else:
+                                    lift_variant_tag = './variant/'+variant_part_tag + \
+                                    '[@lang="'+lift_full_lang+'"]'
+                                
+                                mapped_lift[lift_variant_tag] = 'Variant.Variant '+str(
+                                        variant_num)+'.Variant Form'
+                                
+                                # if lift_lang_name in life_variant_langs:
+                                #     mapped_lift[lift_variant_tag] = 'Variant.Variant '+str(
+                                #         sense_num)+'.Variant Form'
+                                #     if lift_lang_name not in mapped_life_langs_variant:
+                                #         mapped_life_langs_variant.append(
+                                #             lift_lang_name)
+                                # else:
+                                #     if lift_variant_tag not in unmapped_lift_langs_variant:
+                                #         unmapped_lift_langs_variant.append(
+                                #             lift_variant_tag)
 
                     elif entry_part_tag == 'pronunciation':
                         life_key_pron = field_map[entry_part_tag]
@@ -1077,6 +1145,10 @@ def lifeuploader(fileFormat, uploadedFileContent, field_map={}):
         # unmapped_lift_langs_gloss = []
         # print ('Unmapped gloss', unmapped_lift_langs_gloss)
 
+        # mapped_life_langs_variant_set = set(mapped_life_langs_variant)
+        # all_life_variant_langs = set(life_variant_langs)
+        # life_unmapped_variant_langs = all_life_variant_langs - mapped_life_langs_variant_set
+
         headword_mapped = False
         life_all_mapped = mapped_lift.values()
         for life_key_mapped in life_all_mapped:
@@ -1092,14 +1164,19 @@ def lifeuploader(fileFormat, uploadedFileContent, field_map={}):
         for lift_unmapped_gloss in unmapped_lift_langs_gloss:
             mapped_lift[lift_unmapped_gloss] = list(life_unmapped_gloss_langs)
 
+        # for lift_unmapped_variant in unmapped_lift_langs_variant:
+        #     mapped_lift[lift_unmapped_variant] = list(life_unmapped_variant_langs)
         # print (mapped_lift)
         # print (headword_mapped)
 
         if len(unmapped_lift_langs_lexeme_form) > 0 or len(unmapped_lift_langs_gloss) > 0:
             all_mapped = False
 
-        # print(f"{'-'*80}\nheadword_mapped:\n{headword_mapped}\nall_mapped:\n{all_mapped}\nmapped_lift:\n{mapped_lift}\nroot:\n{root}")
+        if len(unmapped_lift_langs_lexeme_form) > 0 or len(unmapped_lift_langs_variant) > 0:
+            all_mapped = False
 
+        # print(f"{'-'*80}\nheadword_mapped:\n{headword_mapped}\nall_mapped:\n{all_mapped}\nmapped_lift:\n{mapped_lift}\nroot:\n{root}")
+        print ("All mapped", mapped_lift)
         return headword_mapped, all_mapped, mapped_lift, root
 
     def get_sense_col(lift_tag, field_name, lang_name):
@@ -1144,6 +1221,10 @@ def lifeuploader(fileFormat, uploadedFileContent, field_map={}):
         # highest_sense_num = 0
         for entry in entries:
             df_row = {}
+            sense_num = 0
+            variant_num = 0
+            senseNotAdded = True
+            variantNotAdded = True
             for lift_tag, life_key in field_map.items():
                 if len(life_key) > 0:
                     if 'lexical-unit' in lift_tag:
@@ -1168,51 +1249,84 @@ def lifeuploader(fileFormat, uploadedFileContent, field_map={}):
 
                         df_row[life_key] = txt
 
-                    elif '@lang' in lift_tag:
-                        sense_num = 0
+                    # elif '@lang' in lift_tag:
+                    elif 'sense' in lift_tag and senseNotAdded:                            
+                        sense_num += 1
                         all_sense = entry.findall(lift_tag)
                         for sense in all_sense:
-                            sense_num += 1
-                            if 'gloss' in lift_tag:
-                                life_key_name = lift_life_field_map['gloss']
-                            elif 'definition' in lift_tag:
-                                life_key_name = lift_life_field_map['definition']
-                            elif 'example' in lift_tag:
-                                life_key_name = lift_life_field_map['example']
+                            if 'grammatical-info' in lift_tag:
+                                life_key_name = lift_life_field_map['grammatical-info']
+                                gram_info_tag = sense.find(lift_tag)
+                                # print ('Grammar tag', gram_info_tag, gram_info_tag.tag)
+                                # life_key = lift_life_field_map[lift_tag]
 
+                                if not gram_info_tag is None:
+                                    try:
+                                        gram_info = gram_info_tag.attrib['value']
+                                    # print ('Gram info', gram_info)
+                                    except:
+                                        gram_info = ''
+
+                                # df_row[life_key] = gram_info
+                            else:                            
+                                if 'gloss' in lift_tag:
+                                    life_key_name = lift_life_field_map['gloss']
+                                elif 'definition' in lift_tag:
+                                    life_key_name = lift_life_field_map['definition']
+                                elif 'example' in lift_tag:
+                                    life_key_name = lift_life_field_map['example']
+                                else:
+                                    life_key_name = ''
+
+                                # print (sense.tag)
+                                if life_key_name != '':
+                                    try:
+                                        txt_entry = sense.find('text')
+                                        if txt_entry is None:
+                                            txt_entry = sense.find('form').find('text')
+                                    except:
+                                        txt_entry = None
+
+                                    if not txt_entry is None:
+                                        txt = txt_entry.text
+                                    else:
+                                        txt = "NA"
+                                else:
+                                    txt = ''
+                                
+                            if life_key_name != '':
+                                df_col = 'SenseNew.Sense ' + \
+                                        str(sense_num)+'.'+life_key_name+'.'+life_key
+                                df_row[df_col] = txt
+                        senseNotAdded = False
+                    elif 'variant' in lift_tag and variantNotAdded:                            
+                        variant_num += 1
+                        all_variants = entry.findall(lift_tag)
+                        for variant in all_variants:                               
+                            
                             # print (sense.tag)
-                            txt_entry = sense.find('text')
+                            txt_entry = variant.find('text')
+                            if txt_entry is None:
+                                txt_entry = variant.find('form').find('text')
 
                             if not txt_entry is None:
                                 txt = txt_entry.text
 
-                            df_col = 'SenseNew.Sense ' + \
-                                str(sense_num)+'.'+life_key_name+'.'+life_key
+                            df_col = 'Variant.Variant ' + \
+                                str(variant_num)+'.'+'Variant Form'
                             df_row[df_col] = txt
-
-                    elif 'grammatical-info' in lift_tag:
-                        gram_info_tag = entry.find(lift_tag)
-                        # print ('Grammar tag', gram_info_tag, gram_info_tag.tag)
-                        # life_key = lift_life_field_map[lift_tag]
-
-                        if not gram_info_tag is None:
-                            try:
-                                gram_info = gram_info_tag.attrib['value']
-                            # print ('Gram info', gram_info)
-                            except:
-                                gram_info = ''
-
-                        df_row[life_key] = gram_info
+                        variantNotAdded = False                    
 
                     else:
                         # print (lift_tag)
                         txt_entry = entry.find(lift_tag)
-                        life_key = lift_life_field_map[lift_tag]
+                        if lift_tag in lift_life_field_map:
+                            life_key = lift_life_field_map[lift_tag]
 
-                        if not txt_entry is None:
-                            txt = txt_entry.text
+                            if not txt_entry is None:
+                                txt = txt_entry.text
 
-                        df_row[life_key] = txt
+                            df_row[life_key] = txt
 
             data = data.append(df_row, ignore_index=True)
 
@@ -1301,7 +1415,7 @@ def lifeuploader(fileFormat, uploadedFileContent, field_map={}):
 
         return headword_mapped, mapped, final_data
 
-    def upload_lexicon(lexicon, file_stream, format, field_map):
+    def upload_lexicon(lexicon, file_stream, format, field_map, headword_mapped=False, all_mapped=False):
         lexicon = lexicon[1:]
         # print(f"{'-'*80}\nLEXICON:\n{lexicon}")
         norm_lex = prepare_lex(lexicon)
@@ -1315,8 +1429,8 @@ def lifeuploader(fileFormat, uploadedFileContent, field_map={}):
             if len(field_map) == 0:
                 # print(f"{'-'*80}\nlift-xml: len(field_map) == 0")
 
-                headword_mapped, all_mapped, field_map, root = map_lift(
-                    file_stream, field_map, lex_fields)
+                # headword_mapped, all_mapped, field_map, root = map_lift(
+                    # file_stream, field_map, lex_fields)
 
                 if headword_mapped and all_mapped:
                     # print(f"{'-'*80}\nheadword_mapped and all_mapped")
@@ -1324,9 +1438,12 @@ def lifeuploader(fileFormat, uploadedFileContent, field_map={}):
                         root, field_map, lex_fields)
                     # print(f"{'-'*80}\nheadword_mapped:\n{type(headword_mapped)}\nall_mapped:\n{type(all_mapped)}\nmapped_lift/data:\n{type(data)}\nroot:\n{type(root)}")
                     return headword_mapped, all_mapped, data, root
+                
                 else:
                     # print(f"{'-'*80}\nheadword_mapped and all_mapped: NOT")
                     # print(f"{'-'*80}\nheadword_mapped:\n{type(headword_mapped)}\nall_mapped:\n{type(all_mapped)}\nmapped_lift/data:\n{type(field_map)}\nroot:\n{type(root)}")
+                    headword_mapped, all_mapped, field_map, root = map_lift(
+                    file_stream, field_map, lex_fields)
                     return headword_mapped, all_mapped, field_map, root
             else:
                 # print(f"{'-'*80}\nlift-xml: len(field_map) != 0")
@@ -1357,7 +1474,7 @@ def lifeuploader(fileFormat, uploadedFileContent, field_map={}):
     with open(os.path.join(working_dir, 'lexemeEntry.json')) as f_r:
         lex = json.load(f_r)
 
-    return upload_lexicon(lex, upload_file, format, field_map)
+    return upload_lexicon(lex, upload_file, format, field_map, headword_mapped, all_mapped)
 
 # upload lexeme form in excel/liftXML format
 
@@ -1387,10 +1504,13 @@ def uploadlexemeexcelliftxml():
             life_lift_root_path = os.path.join(basedir, 'lifeliftroot.xml')
             tree = ET.parse(life_lift_root_path)
             root = tree.getroot()
+            headword_mapped=True 
+            all_mapped=True
             # print(f"{'-'*80}\nIN uploadlexemeexcelliftxml() FUNCTION\n\nfile_format\n{file_format}\n\nfield_map:\n{field_map}\n\nroot:\n{root}")
             # print(f"{'-'*80}\nIN uploadlexemeexcelliftxml() FUNCTION\n\nfile_format\n{type(file_format)}\n\nfield_map:\n{type(field_map)}\n\nroot:\n{type(root)}")
+            
             headword_mapped, all_mapped, life_df = lifeuploader(
-                file_format, root, field_map)
+                file_format, root, field_map, headword_mapped, all_mapped)
             # print(f"{'-'*80}\nIN uploadlexemeexcelliftxml() FUNCTION\n\nheadword_mapped\n{headword_mapped}\n\nall_mapped:\n{all_mapped}\n\nlife_df:\n{life_df}\n\nroot:\n{root}")
             # print(f"{'-'*80}\nIN uploadlexemeexcelliftxml() FUNCTION\n\nheadword_mapped\n{type(headword_mapped)}\n\nall_mapped:\n{type(all_mapped)}\n\nlife_df:\n{type(life_df)}\n\nroot:\n{type(root)}")
         elif (file_format == 'xlsx'):
@@ -1506,6 +1626,7 @@ def lexemekeymapping():
             #     './sense/gloss[@lang="anp"]': ['Odi', 'Ass', 'Eng'],
             #     './sense/gloss[@lang="en"]': ['Odi', 'Ass', 'Eng']
             # }
+            print ("Field Map", field_map)
             not_mapped_data = field_map
             # print('create a modal/page where user can give the mapping of the columns')
             return render_template('lexemekeymapping.html', not_mapped_data=not_mapped_data)
@@ -1568,6 +1689,7 @@ def downloadlexemeformexcel():
 
         # print(list(df.columns))
         # print(drop_cols)
+        # drop_cols = [c for c in df.columns if c.startswith('langscripts.')]
         df.drop(columns=drop_cols, inplace=True)
 
         return df
