@@ -576,18 +576,18 @@ def getactiveaudioid(projects,
     return last_active_audio_id
 
 
-def getaudiofiletranscription(transcriptions, audio_id):
+def getaudiofiletranscription(data_collection, audio_id):
     """get the transcription details of the audio file
 
     Args:
-        transcriptions (_type_): _description_
+        data_collection (_type_): _description_
         file_id (_type_): _description_
 
     Returns:
         _type_: _description_
     """
     transcription_details = {}
-    transcription_data = transcriptions.find_one({'audioId': audio_id})
+    transcription_data = data_collection.find_one({'audioId': audio_id})
     if transcription_data is not None:
         transcription_details['data'] = transcription_data['textGrid']
 
@@ -1060,18 +1060,18 @@ def addedspeakerids(speakerdetails,
     return added_speaker_ids
 
 
-def getaudiometadata(transcriptions, audio_id):
+def getaudiometadata(data_collection, audio_id):
     """get the audi metadata details of the audio file
 
     Args:
-        transcriptions (_type_): _description_
+        data_collection (_type_): _description_
         file_id (_type_): _description_
 
     Returns:
         _type_: _description_
     """
     audio_metadata_details = dict({'audioMetadata': ''})
-    audio_metadata = transcriptions.find_one(
+    audio_metadata = data_collection.find_one(
         {'audioId': audio_id}, {'_id': 1, 'audioMetadata': 1})
     # logger.debug(audio_metadata)
     if audio_metadata is not None and 'audioMetadata' in audio_metadata:

@@ -103,6 +103,7 @@ def uploadfile():
     derived_from_project_type, derived_from_project_name = getprojecttype.getderivedfromprojectdetails(projects,
                                                                                                        activeprojectname)
 
+    logger.debug("derived_from_project_type: %s\nderived_from_project_name: %s", derived_from_project_type, derived_from_project_name)
     # This metadata for pre-filling the form with metadata relevant only for
     # the current project
     formacesscodemetadata = access_code_management.get_access_code_metadata_for_form(

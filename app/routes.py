@@ -7,7 +7,7 @@ import re
 import shutil
 import traceback
 from datetime import datetime
-from pprint import pprint
+from pprint import pprint, pformat
 from xml.etree import ElementTree as ET
 from xml.etree.ElementTree import ElementTree
 from zipfile import ZipFile
@@ -266,6 +266,7 @@ def sentence_lexeme_to_lexemes(oneSentenceDetail, oneLexemeDetail):
 @app.route('/enternewsentences', methods=['GET', 'POST'])
 @login_required
 def enternewsentences():
+    project_types = ['recordings', 'validation', 'transcriptions']
     projects, userprojects, projectsform, sentences, transcriptions, speakerdetails = getdbcollections.getdbcollections(mongo,
                                                                                                                         'projects',
                                                                                                                         'userprojects',
@@ -287,6 +288,9 @@ def enternewsentences():
         flash(f"select a project from 'Change Active Project' to work on!")
         return redirect(url_for('home'))
     
+    project_type = getprojecttype.getprojecttype(projects, activeprojectname)
+    data_collection, = getdbcollections.getdbcollections(mongo, project_type)
+    logger.debug("data_collection: %s", data_collection)
     if request.method == 'POST':
         newSentencesData = dict(request.form.lists())
         newSentencesFiles = request.files.to_dict()
@@ -310,7 +314,7 @@ def enternewsentences():
                                                                     current_username,
                                                                     activeprojectname)['activespeakerId']
             total_comments, annotated_comments, remaining_comments = getcommentstats.getcommentstats(projects,
-                                                                                                     transcriptions,
+                                                                                                     data_collection,
                                                                                                      activeprojectname,
                                                                                                      activespeakerid,
                                                                                                      'audio')
@@ -320,16 +324,16 @@ def enternewsentences():
                                                      activeprojectname,
                                                      activespeakerid,
                                                      current_username)
-            # print(audio_id)
-            transcription_details = audiodetails.getaudiofiletranscription(transcriptions,
+            logger.debug("audio_id: %s", audio_id)
+            transcription_details = audiodetails.getaudiofiletranscription(data_collection,
                                                                            audio_id)
 
-            audio_metadata = audiodetails.getaudiometadata(transcriptions, 
+            audio_metadata = audiodetails.getaudiometadata(data_collection, 
                                                             audio_id)
-            # print('audio_metadata')
+            logger.debug('audio_metadata: %s', pformat(audio_metadata))
             # pprint(audio_metadata)
             activeprojectform['audioMetadata'] = audio_metadata['audioMetadata']
-            last_updated_by = audiodetails.lastupdatedby(transcriptions,
+            last_updated_by = audiodetails.lastupdatedby(data_collection,
                                                             audio_id)
             activeprojectform['lastUpdatedBy'] = last_updated_by['updatedBy']
             file_path = audiodetails.getaudiofilefromfs(mongo,
@@ -341,7 +345,7 @@ def enternewsentences():
             # print(transcription_details)
             activeprojectform['AudioFilePath'] = file_path
             transcription_regions, gloss, pos, boundary_count = audiodetails.getaudiotranscriptiondetails(
-                transcriptions, audio_id)
+                data_collection, audio_id)
             activeprojectform['transcriptionRegions'] = transcription_regions
             # print(transcription_regions)
             activeprojectform['boundaryCount'] = boundary_count
@@ -368,7 +372,7 @@ def enternewsentences():
             # print('currentuserprojectsname', currentuserprojectsname)
             # print('speakerids', speakerids)
             # pprint(activeprojectform)
-            # print(activespeakerid, commentstats, shareinfo)
+            logger.debug('activespeakerid: %s\ncommentstats: %s\n, shareinfo: %s', activespeakerid, commentstats, shareinfo)
             return render_template('enternewsentences.html',
                                    projectName=activeprojectname,
                                    newData=activeprojectform,
@@ -378,8 +382,8 @@ def enternewsentences():
                                    activespeakerid=activespeakerid,
                                    commentstats=commentstats,
                                    shareinfo=shareinfo)
-        except Exception as e:
-            traceback.print_exc()
+        except:
+            logger.exception("")
             flash('Upload first audio file.')
 
     return render_template('enternewsentences.html',
@@ -4353,12 +4357,15 @@ def getAudioFilename(lastActiveFilename, whichOne):
 
 @app.route('/allunannotated', methods=['GET', 'POST'])
 def allunannotated():
-    userprojects, transcriptions = getdbcollections.getdbcollections(
-        mongo, 'userprojects', 'transcriptions')
-
-    activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username,
-                                                                  userprojects)
+    projects, userprojects = getdbcollections.getdbcollections(mongo,
+                                                                               'projects',
+                                                                               'userprojects')
+    current_username = getcurrentusername.getcurrentusername()
+    activeprojectname = getactiveprojectname.getactiveprojectname(
+        current_username, userprojects)
     # activespeakerid = getactivespeakerid.getactivespeakerid(userprojects, current_user.username)
+    project_type = getprojecttype.getprojecttype(projects, activeprojectname)
+    data_collection, = getdbcollections.getdbcollections(mongo, project_type)
     activespeakerid = getuserprojectinfo.getuserprojectinfo(userprojects,
                                                             current_user.username,
                                                             activeprojectname)['activespeakerId']
@@ -4367,7 +4374,7 @@ def allunannotated():
     # audioFilesList = sorted(os.listdir(baseAudioFilesPath))
     annotated, unannotated = [], []
     if (activespeakerid != ''):
-        annotated, unannotated = unannotatedfilename.unannotatedfilename(transcriptions,
+        annotated, unannotated = unannotatedfilename.unannotatedfilename(data_collection,
                                                                          activeprojectname,
                                                                          activespeakerid,
                                                                          'audio')
