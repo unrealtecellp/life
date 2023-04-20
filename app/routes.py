@@ -40,7 +40,7 @@ from app.controller import (audiodetails, createdummylexemeentry,
                             getactiveprojectname, getcommentstats,
                             getcurrentusername, getcurrentuserprojects,
                             getdbcollections, getprojectowner, getprojecttype,
-                            getuserprojectinfo, langscriptutils)
+                            getuserprojectinfo, langscriptutils, lexicondetails)
 from app.controller import latex_generator as lg
 from app.controller import (manageAppConfig, questionnairedetails,
                             readJSONFile, removeallaccess, savenewlexeme,
@@ -247,6 +247,7 @@ def newproject():
                                                   project_name,
                                                   project_form_data,
                                                   current_user.username)
+            # dummylexemeentry()
             flash(f'Project Name : {project_name} created successfully :)')
             return redirect(url_for('home'))
     return render_template('newproject.html',
@@ -605,19 +606,16 @@ def dictionaryview():
     lst = list()
     try:
         # print(activeprojectname)
-        projectowner = getprojectowner.getprojectowner(
-            projects, activeprojectname)
-        for lexeme in lexemes.find({'username': projectowner, 'projectname': activeprojectname, 'lexemedeleteFLAG': 0},
-                                   {'_id': 0, 'headword': 1, 'gloss': 1, 'grammaticalcategory': 1, 'lexemeId': 1}):
-            # pprint(lexeme)
-            if (len(lexeme['headword']) != 0):
-                lst.append(lexeme)
+        # optionally takes field_list, if provided by the user for showing dictionary entries
+        all_fields, lst = lexicondetails.get_all_lexicon_details(
+            lexemes, activeprojectname)
     except:
         logger.exception("")
         flash('Enter first lexeme of the project')
 
     return render_template('dictionaryview.html',
                            projectName=activeprojectname,
+                           fields=all_fields,
                            sdata=lst,
                            count=len(lst),
                            data=currentuserprojectsname)
@@ -783,7 +781,7 @@ def enterlexemefromuploadedfile(lexemedf):
             #     continue
             if (column_name not in uploadedFileLexeme):
                 value = str(row[column_name])
-                print(value)
+                # print(value)
                 if (value == 'nan'):
                     value = ''
                 if ('Sense 1.Gloss.eng' in column_name):
@@ -1208,6 +1206,33 @@ def lifeuploader(fileFormat, uploadedFileContent, field_map={}, headword_mapped=
                 new_map[outer_part] = {field: vals}
         return new_map
 
+    def append_new_column(first_field, current_field, current_field_column, data, data_len):
+        if first_field in current_field_column and current_field not in current_field_column:
+            new_field_column = current_field_column.replace(
+                first_field, current_field)
+            data[new_field_column] = ['']*data_len
+
+    def create_df_columns(data, field_type, field_number):
+        data_len = len(data)
+        if field_number > 1:
+            data_columns = list(data.columns)
+            current_field_columns = [
+                x for x in data_columns if x.startswith(field_type)]
+            for current_field_column in current_field_columns:
+                if 'SenseNew' in field_type:
+                    new_field_type = 'Sense'
+                else:
+                    new_field_type = field_type
+
+                first_field = new_field_type + ' 1'
+                current_field = new_field_type + ' '+str(field_number)
+
+                if first_field in current_field_column:
+                    append_new_column(
+                        first_field, current_field, current_field_column, data, data_len)
+
+            # data.columns = data_columns
+
     def lift_to_df(root, field_map, lex_fields):
         # print(f"{'-'*80}\nIN lift_to_df (root, field_map, lex_fields) function\n")
         data = pd.DataFrame(columns=lex_fields)
@@ -1218,7 +1243,7 @@ def lifeuploader(fileFormat, uploadedFileContent, field_map={}, headword_mapped=
 
         # if len(field_map) == 0:
         lift_life_field_map = get_lift_map()
-        # print(f"{'-'*80}\nIN lift_to_df (root, field_map, lex_fields) function: get_lift_map():\n{lift_life_field_map}")
+        print(f"{'-'*80}\nIN lift_to_df (root, field_map, lex_fields) function: get_lift_map():\n{lift_life_field_map}")
 
         # tree = ET.parse(file_stream)
         # root = tree.getroot()
@@ -1246,7 +1271,7 @@ def lifeuploader(fileFormat, uploadedFileContent, field_map={}, headword_mapped=
             senseNotAdded = True
             variantNotAdded = True
             for lift_tag_groups, life_key_maps in field_map.items():
-
+                print('Entry', entry)
                 if len(life_key_maps) > 0:
                     if 'lexical-unit' in lift_tag_groups:
                         # txt = entry.findall(lift_tag+'/text').text
@@ -1288,6 +1313,12 @@ def lifeuploader(fileFormat, uploadedFileContent, field_map={}, headword_mapped=
                         all_sense = entry.findall('.//sense')
                         for full_sense in all_sense:
                             sense_num += 1
+                            print('Sense number', sense_num,
+                                  full_sense)
+
+                            create_df_columns(data, 'SenseNew', sense_num)
+                            print('DF columns', data.columns)
+
                             for lift_tag, life_key in life_key_maps.items():
                                 # for sense in full_sense:
                                 if 'grammatical-info' in lift_tag:
@@ -1345,21 +1376,25 @@ def lifeuploader(fileFormat, uploadedFileContent, field_map={}, headword_mapped=
                                     else:
                                         txt = ''
 
-                                    if life_key_name != '' and 'example' in lift_tag:
-                                        df_col = 'SenseNew.Sense ' + \
-                                            str(sense_num)+'.' + \
-                                            life_key_name
-                                        df_row[df_col] = txt
-                                    else:
-                                        df_col = 'SenseNew.Sense ' + \
-                                            str(sense_num)+'.' + \
-                                            life_key_name+'.'+life_key
-                                        df_row[df_col] = txt
+                                    if life_key_name != '':
+                                        if 'example' in lift_tag:
+                                            df_col = 'SenseNew.Sense ' + \
+                                                str(sense_num)+'.' + \
+                                                life_key_name
+                                            df_row[df_col] = txt
+                                        else:
+                                            df_col = 'SenseNew.Sense ' + \
+                                                str(sense_num)+'.' + \
+                                                life_key_name+'.'+life_key
+                                            df_row[df_col] = txt
                         # senseNotAdded = False
                     elif 'variant' in lift_tag_groups:
-                        variant_num += 1
                         all_variants = entry.findall('.//variant')
                         for variant in all_variants:
+                            variant_num += 1
+                            create_df_columns(data, 'Variant', variant_num)
+                            print('Variant number', variant_num, variant)
+                            print('DF columns', data.columns)
 
                             # print (sense.tag)
                             for lift_tag, life_key in life_key_maps.items():
@@ -1371,6 +1406,7 @@ def lifeuploader(fileFormat, uploadedFileContent, field_map={}, headword_mapped=
                                 if not txt_entry is None:
                                     txt = txt_entry.text
 
+                                # if txt != '':
                                 df_col = 'Variant.Variant ' + \
                                     str(variant_num)+'.'+'Variant Form'
                                 df_row[df_col] = txt
@@ -1387,8 +1423,10 @@ def lifeuploader(fileFormat, uploadedFileContent, field_map={}, headword_mapped=
 
                             df_row[life_key] = txt
 
+            print('DF Row', df_row)
             data = data.append(df_row, ignore_index=True)
 
+        print('Final data', data.head(5))
         data.fillna('', inplace=True)
 
         headword_mapped = True
