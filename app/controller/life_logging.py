@@ -1,8 +1,6 @@
 import logging
 import logging.config
 
-print('in logging')
-
 def get_logger():
 
     logging.config.fileConfig('logging.config')

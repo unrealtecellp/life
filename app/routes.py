@@ -1,5 +1,4 @@
 import glob
-import io
 import json
 import os
 import pickle
@@ -373,7 +372,7 @@ def enternewsentences():
             # print('currentuserprojectsname', currentuserprojectsname)
             # print('speakerids', speakerids)
             # pprint(activeprojectform)
-            logger.debug('activespeakerid: %s\ncommentstats: %s\n, shareinfo: %s', activespeakerid, commentstats, shareinfo)
+            logger.debug('activespeakerid: %s\ncommentstats: %s\nshareinfo: %s', activespeakerid, commentstats, shareinfo)
             return render_template('enternewsentences.html',
                                    projectName=activeprojectname,
                                    newData=activeprojectform,
