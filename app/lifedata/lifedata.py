@@ -1,5 +1,6 @@
 """Module containing the routes for the data part of the LiFe."""
 
+from app import mongo
 from flask import (
     Blueprint,
     render_template,
@@ -9,8 +10,6 @@ from flask import (
     redirect,
     url_for
 )
-from app import mongo
-import os
 from app.controller import (
     getactiveprojectname,
     getcurrentusername,
@@ -19,20 +18,28 @@ from app.controller import (
     getprojecttype,
     readJSONFile,
     savenewproject,
-    updateuserprojects
+    updateuserprojects,
+    life_logging
 )
 from app.lifedata.controller import (
     copydatafromparentproject,
-    savenewdataform
+    savenewdataform,
+    create_validation_type_project,
+    save_tagset
 )
+from flask_login import login_required
+import os
+from pprint import pformat
 
 lifedata = Blueprint('lifedata', __name__, template_folder='templates', static_folder='static')
 basedir = os.path.abspath(os.path.dirname(__file__))
+logger = life_logging.get_logger()
 jsonfilesdir = '/'.join(basedir.split('/')[:-1]+['jsonfiles'])
 select2LanguagesJSONFilePath = os.path.join(jsonfilesdir, 'select2_languages.json')
 
 @lifedata.route('/', methods=['GET', 'POST'])
 @lifedata.route('/home', methods=['GET', 'POST'])
+@login_required
 def home():
     """_summary_
 
@@ -44,6 +51,7 @@ def home():
     return render_template("lifedatahome.html")
 
 @lifedata.route('/getprojectslist', methods=['GET', 'POST'])
+@login_required
 def getprojectslist():
     """_summary_
     """
@@ -54,6 +62,7 @@ def getprojectslist():
     return jsonify(projectslist=projectslist)
 
 @lifedata.route('/newdataform', methods=['GET', 'POST'])
+@login_required
 def newdataform():
     """_summary_
 
@@ -73,17 +82,20 @@ def newdataform():
 
     if request.method =='POST':
         new_data_form = dict(request.form.lists())
-        # print('New Data form', new_data_form)
+        logger.debug('new_data_form: %s', pformat(new_data_form))
+        new_data_form_files = request.files.to_dict()
+        logger.debug('new_data_form_files: %s', pformat(new_data_form_files))
         project_type = new_data_form['projectType'][0]
         projectname = 'D_'+new_data_form['projectname'][0]
         about_project = new_data_form['aboutproject'][0]
+        derive_from_project_name = None
 
         project_name = savenewproject.savenewproject(projects,
-                                        projectname,
-                                        current_username,
-                                        aboutproject=about_project,
-                                        projectType=project_type
-                                        )
+                                                        projectname,
+                                                        current_username,
+                                                        aboutproject=about_project,
+                                                        projectType=project_type
+                                                        )
         if project_name == '':
             flash(f'Project Name : "{projectname}" already exist!')
             return redirect(url_for('lifedata.home'))
@@ -110,10 +122,28 @@ def newdataform():
                                                             new_data_form,
                                                             current_username
                                                         )
+        logger.debug("save_data_form: %s", pformat(save_data_form))
+
+        if (project_type == 'validation'):
+            validation_collection, tagsets = getdbcollections.getdbcollections(mongo,
+                                                                      'validation',
+                                                                      'tagsets')
+            logger.debug("project_type: %s", project_type)
+            validation_zip_file = new_data_form_files["zipFile"]
+            tagset_project_id = save_tagset.save_tagset(tagsets, validation_zip_file)
+            validate_file_type = new_data_form['fileType']
+            create_validation_type_project.create_validation_type_project(validation_collection,
+                                                                          project_name,
+                                                                          validation_zip_file,
+                                                                          validate_file_type,
+                                                                          derive_from_project_name)
+
+            return redirect(url_for("lifedata.validation"))
+
         if ("derivefromproject" in new_data_form):
         # copy all the data from the "derivedfromproject" to "newproject"
-            derive_from_project_type = projects.find_one({'projectname': derive_from_project_name},
-                                                            {"_id": 0, "projectType": 1})["projectType"]
+            derive_from_project_type = getprojecttype.getprojecttype(projects, derive_from_project_name)
+            logger.debug('derive_from_project_type: %s', derive_from_project_type)
             if (derive_from_project_type == 'questionnaires' and
                 project_type in include_speakerIds):
                 data_collection, = getdbcollections.getdbcollections(mongo, project_type)
@@ -127,7 +157,13 @@ def newdataform():
 
     return render_template("lifedatahome.html")
 
+@lifedata.route('/validation', methods=['GET', 'POST'])
+@login_required
+def validation():
+    return "OK"
+
 @lifedata.route('/getlanguagelist', methods=['GET', 'POST'])
+@login_required
 def getlanguagelist():
     """_summary_
     """

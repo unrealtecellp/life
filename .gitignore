@@ -35,3 +35,4 @@ app/jsonfiles/tagSet.json
 app/jsonfiles/tagSetMetaData.json
 ubuntuPackages.sh
 LiFE.log
+logging.config

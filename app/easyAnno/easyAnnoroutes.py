@@ -54,13 +54,6 @@ project_type_list = ['text', 'image']
 @easyAnno.route('/home', methods=['GET', 'POST'])
 @login_required
 def home():
-    # projects = mongo.db.projects              # collection of users and their respective projects
-    # userprojects = mongo.db.userprojects              # collection of users and their respective projects
-
-    # currentuserprojectsname =  sorted(list(currentuserprojects()))
-    # activeprojectname = userprojects.find_one({ 'username' : current_user.username },\
-    #                 {'_id' : 0, 'activeprojectname': 1})['activeprojectname']
-    # print(currentuserprojectsname, activeprojectname)
     projects, userprojects, = getdbcollections.getdbcollections(mongo,
                                                                 'projects',
                                                                 'userprojects')
@@ -74,7 +67,6 @@ def home():
     activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
                                                                     userprojects)
     projectcompleted = project_comments_stats(currentuserprojectsname)
-    # projectcompleted = {'danger': 14, 'warning': 6, 'success': 1}
 
     active_project_type = getprojecttype.getprojecttype(projects, activeprojectname)
     if (active_project_type not in project_type_list):

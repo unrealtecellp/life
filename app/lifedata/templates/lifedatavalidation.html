@@ -1,0 +1,75 @@
+{% extends "easyannolinks.html" %}
+
+{% block title %}
+textAnno
+{% endblock title %}
+
+{% block styles %}
+{{super()}}
+<link href="{{url_for('.static', filename='textAnno.css')}}" rel="stylesheet" />
+<!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"> -->
+
+{% endblock %}
+
+
+{% block app_content %}
+
+<div class="row" id="projname">
+    <div class="col-sm-6" >
+      {% if projectName is defined %}
+      <h4>File Name : {{ projectName }}</h4>
+      {% endif %}
+    <!-- </div>
+    <div class="col-sm-6"> -->
+      {% if proj_data is defined %}
+      <div class="commentStats">
+        
+      </div>
+      {% if proj_data["totalComments"] != 0 %}
+      <div class="progress" id="progressbardiv">
+
+        <div class="progress-bar progress-bar-success" role="progressbar"
+          style="width:{{ proj_data['annotatedComments']/proj_data['totalComments']*100 }}%">
+          Completed : {{ proj_data["annotatedComments"] }}[{{ proj_data['annotatedComments']/proj_data['totalComments']*100 }}%]
+        </div>
+        
+        <div class="progress-bar progress-bar-danger" role="progressbar"
+          style="width:{{ proj_data['remainingComments']/proj_data['totalComments']*100 }}%">
+          Remaining : {{ proj_data['remainingComments'] }}[{{ proj_data['remainingComments']/proj_data['totalComments']*100 }}%]
+        </div>
+      </div>
+      {%else%}
+      
+      {% endif %}
+      {% endif %}
+    </div>
+
+<!-- <div class="row">
+    {% if projectName is defined %}
+    <div class="col-sm-9 projname">
+        <h4>File Name : {{ projectName }}</h4>
+    </div>
+    {% endif %}
+    {% if proj_data is defined %}
+    <div class="col-sm-3 commentStats">
+        <strong>Total Comments: {{ proj_data["totalComments"] }}</strong><br>
+        <strong>Annotated Comments: {{ proj_data["annotatedComments"] }}</strong><br>
+        <strong>Remaining Comments: {{ proj_data["remainingComments"] }}</strong><br>
+    </div>
+    {% endif %}
+</div> -->
+
+<hr>
+<div class="container textdata"></div>
+<br>
+
+{% endblock %}
+
+{% block scripts %}
+{{super()}}
+<!-- <script src="{{url_for('.static', filename='textAnnoo.js')}}"></script> -->
+<script src="{{url_for('.static', filename='textAnno.js')}}"></script>
+{% if proj_data is defined %}
+<script type="text/javascript">myFunction({{ proj_data | tojson | safe }});</script>
+{% endif %}
+{% endblock %}
