@@ -683,7 +683,7 @@ def enternewlexeme():
 # uploaded_file_content = ''
 
 
-def enterlexemefromuploadedfile(lexemedf):
+def enterlexemefromuploadedfile(alllexemedf):
     projects, userprojects, lexemes, projectsform = getdbcollections.getdbcollections(mongo,
                                                                                       'projects',
                                                                                       'userprojects',
@@ -699,7 +699,7 @@ def enterlexemefromuploadedfile(lexemedf):
     current_project_form = projectsform.find_one(
         {'projectname': projectname}, {'_id': 0})
 
-    print('df data', lexemedf.columns)
+    print('df data', alllexemedf.keys())
     # if 'langscripts' in lexemedf.columns:
     #     print(lexemedf['langscripts'])
 
@@ -728,80 +728,84 @@ def enterlexemefromuploadedfile(lexemedf):
     # saving data for that new lexeme to database in lexemes collection
     # try:
     # print(lexemedf)
-    for index, row in lexemedf.iterrows():
-        uploadedFileLexeme = {
-            "username": projectowner,
-            "projectname": activeprojectname,
-            "lexemedeleteFLAG": 0,
-            "updatedBy": current_user.username,
-        }
+    for lexeme_type, lexemedf in alllexemedf.items():
+        print('Data key', lexeme_type)
+        print(lexemedf)
+        for index, row in lexemedf.iterrows():
+            uploadedFileLexeme = {
+                "username": projectowner,
+                "projectname": activeprojectname,
+                "lexemedeleteFLAG": 0,
+                "updatedBy": current_user.username,
+            }
 
-        langscripts = langscriptutils.get_langscripts_from_lexeme_form(
-            current_project_form)
-        uploadedFileLexeme['langscripts'] = langscripts
-        # removes old blank langscripts columns
-        removelangscriptsblank(lexemedf)
+            langscripts = langscriptutils.get_langscripts_from_lexeme_form(
+                current_project_form)
+            uploadedFileLexeme['langscripts'] = langscripts
+            # removes old blank langscripts columns
+            removelangscriptsblank(lexemedf)
 
-        lexemeId = str(row['lexemeId'])
-        getlexemeId = None
-        # print(f"{index}\t{lexemeId}\t{len(lexemeId)}\t{type(lexemeId)}")
-        if (lexemeId == 'nan' or lexemeId == ''):
-            lexemeId, lexemeCount = lexmetadata()
-            # print(lexemeId, lexemeCount)
-        else:
-            getlexemeId = lexemes.find_one({'lexemeId': lexemeId},
-                                           {'_id': 0, 'lexemeId': 1, 'projectname': 1})
-            # print(getlexemeId)
-            if (getlexemeId == None):
-                # print(f"lexemeId not in DB")
+            lexemeId = str(row['lexemeId'])
+            getlexemeId = None
+            # print(f"{index}\t{lexemeId}\t{len(lexemeId)}\t{type(lexemeId)}")
+            if (lexemeId == 'nan' or lexemeId == ''):
                 lexemeId, lexemeCount = lexmetadata()
+                # print(lexemeId, lexemeCount)
             else:
-                if (getlexemeId['projectname'] != activeprojectname):
-                    flash(f"lexemeId: {lexemeId} if from different project!!!")
-                    return redirect(url_for('enternewlexeme'))
+                getlexemeId = lexemes.find_one({'lexemeId': lexemeId},
+                                               {'_id': 0, 'lexemeId': 1, 'projectname': 1})
+                # print(getlexemeId)
+                if (getlexemeId == None):
+                    # print(f"lexemeId not in DB")
+                    lexemeId, lexemeCount = lexmetadata()
+                else:
+                    if (getlexemeId['projectname'] != activeprojectname):
+                        flash(
+                            f"lexemeId: {lexemeId} if from different project!!!")
+                        return redirect(url_for('enternewlexeme'))
 
-        uploadedFileLexeme['lexemeId'] = lexemeId
-        # pprint(uploadedFileLexeme)
-        if (getlexemeId != None):
-            # print(f"LEXEME ALREADY EXISTS")
+            uploadedFileLexeme['lexemeId'] = lexemeId
+            # pprint(uploadedFileLexeme)
+            if (getlexemeId != None):
+                # print(f"LEXEME ALREADY EXISTS")
+                lexemes.update_one({'lexemeId': lexemeId}, {
+                    '$set': uploadedFileLexeme})
+            else:
+                lexemes.insert_one(uploadedFileLexeme)
+                # update lexemeInserted count of the project in projects collection
+                # project[projectname]['lexemeInserted'] = lexemeCount
+                # print(f'{"#"*80}\n{project}')
+                projects.update_one({'projectname': projectname}, {
+                                    '$set': {'lexemeInserted': lexemeCount}})
+                # projects.update_one({}, { '$set' : { projectname : project[projectname] }})
+
+            for column_name in list(lexemedf.columns):
+                # print(column_name)
+                # if (column_name.endswith('Example')):
+                #     continue
+                if (column_name not in uploadedFileLexeme):
+                    value = str(row[column_name])
+                    # print(value)
+                    if (value == 'nan'):
+                        value = ''
+                    if ('Sense 1.Gloss.eng' in column_name):
+                        uploadedFileLexeme['gloss'] = value
+                    if ('Sense 1.Grammatical Category' in column_name):
+                        uploadedFileLexeme['grammaticalcategory'] = value
+                    uploadedFileLexeme[column_name] = value
+
+            # print(f'{"="*80}\nLexeme Form :')
+            pprint(uploadedFileLexeme)
+            # print(f'{"="*80}')
+
             lexemes.update_one({'lexemeId': lexemeId}, {
-                               '$set': uploadedFileLexeme})
-        else:
-            lexemes.insert_one(uploadedFileLexeme)
-            # update lexemeInserted count of the project in projects collection
-            # project[projectname]['lexemeInserted'] = lexemeCount
-            # print(f'{"#"*80}\n{project}')
-            projects.update_one({'projectname': projectname}, {
-                                '$set': {'lexemeInserted': lexemeCount}})
-            # projects.update_one({}, { '$set' : { projectname : project[projectname] }})
+                '$set': uploadedFileLexeme})
 
-        for column_name in list(lexemedf.columns):
-            # print(column_name)
-            # if (column_name.endswith('Example')):
-            #     continue
-            if (column_name not in uploadedFileLexeme):
-                value = str(row[column_name])
-                # print(value)
-                if (value == 'nan'):
-                    value = ''
-                if ('Sense 1.Gloss.eng' in column_name):
-                    uploadedFileLexeme['gloss'] = value
-                if ('Sense 1.Grammatical Category' in column_name):
-                    uploadedFileLexeme['grammaticalcategory'] = value
-                uploadedFileLexeme[column_name] = value
+            # print(f'{"="*80}\nLexeme Form :')
+            # pprint(uploadedFileLexeme)
+            # print(f'{"="*80}')
 
-        # print(f'{"="*80}\nLexeme Form :')
-        pprint(uploadedFileLexeme)
-        # print(f'{"="*80}')
-
-        lexemes.update_one({'lexemeId': lexemeId}, {
-                           '$set': uploadedFileLexeme})
-
-        # print(f'{"="*80}\nLexeme Form :')
-        # pprint(uploadedFileLexeme)
-        # print(f'{"="*80}')
-
-    flash('Successfully added new lexeme')
+    flash('Successfully added new lexemes')
     return redirect(url_for('enternewlexeme'))
     # comment till here
 
@@ -1225,17 +1229,21 @@ def lifeuploader(fileFormat, uploadedFileContent, field_map={}, headword_mapped=
                     new_field_type = field_type
 
                 first_field = new_field_type + ' 1'
-                current_field = new_field_type + ' '+str(field_number)
 
-                if first_field in current_field_column:
-                    append_new_column(
-                        first_field, current_field, current_field_column, data, data_len)
+                for current_field_number in range(2, field_number+1):
+                    current_field = new_field_type + \
+                        ' '+str(current_field_number)
+
+                    if first_field in current_field_column:
+                        append_new_column(
+                            first_field, current_field, current_field_column, data, data_len)
 
             # data.columns = data_columns
 
     def lift_to_df(root, field_map, lex_fields):
         # print(f"{'-'*80}\nIN lift_to_df (root, field_map, lex_fields) function\n")
-        data = pd.DataFrame(columns=lex_fields)
+        all_data = {}
+
         # lex_fields_without_sense = [lex_field for lex_field in lex_fields if 'sense' not in lex_field]
 
         life_scripts_map = get_scripts_map(lex_fields)
@@ -1316,9 +1324,6 @@ def lifeuploader(fileFormat, uploadedFileContent, field_map={}, headword_mapped=
                             print('Sense number', sense_num,
                                   full_sense)
 
-                            create_df_columns(data, 'SenseNew', sense_num)
-                            print('DF columns', data.columns)
-
                             for lift_tag, life_key in life_key_maps.items():
                                 # for sense in full_sense:
                                 if 'grammatical-info' in lift_tag:
@@ -1392,9 +1397,9 @@ def lifeuploader(fileFormat, uploadedFileContent, field_map={}, headword_mapped=
                         all_variants = entry.findall('.//variant')
                         for variant in all_variants:
                             variant_num += 1
-                            create_df_columns(data, 'Variant', variant_num)
+                            # create_df_columns(data, 'Variant', variant_num)
                             print('Variant number', variant_num, variant)
-                            print('DF columns', data.columns)
+                            # print('DF columns', data.columns)
 
                             # print (sense.tag)
                             for lift_tag, life_key in life_key_maps.items():
@@ -1423,11 +1428,27 @@ def lifeuploader(fileFormat, uploadedFileContent, field_map={}, headword_mapped=
 
                             df_row[life_key] = txt
 
-            print('DF Row', df_row)
-            data = data.append(df_row, ignore_index=True)
+            print('Current DF Row', df_row)
+            current_sense_variant = (sense_num, variant_num)
 
-        print('Final data', data.head(5))
-        data.fillna('', inplace=True)
+            if current_sense_variant in all_data:
+                data = all_data[current_sense_variant]
+                data = data.append(df_row, ignore_index=True)
+            else:
+                data = pd.DataFrame(columns=lex_fields)
+                if sense_num > 1:
+                    create_df_columns(data, 'SenseNew', sense_num)
+
+                if variant_num > 1:
+                    create_df_columns(data, 'Variant', variant_num)
+
+                print('DF columns', data.columns)
+                data = data.append(df_row, ignore_index=True)
+
+            data.fillna('', inplace=True)
+            all_data[current_sense_variant] = data
+
+        print('Final data', all_data)
 
         headword_mapped = True
         all_mapped = True
@@ -1437,7 +1458,7 @@ def lifeuploader(fileFormat, uploadedFileContent, field_map={}, headword_mapped=
         # print(f"{'-'*80}\nIN lift_to_df (root, field_map, lex_fields) FUNCTION\n\nheadword_mapped\n{headword_mapped}\n\nall_mapped:\n{all_mapped}\n\ndata:\n{data}\n\nroot:\n{root}")
         # print(f"{'-'*80}\nIN lift_to_df (root, field_map, lex_fields) FUNCTION\n\nheadword_mapped\n{type(headword_mapped)}\n\nall_mapped:\n{type(all_mapped)}\n\ndata:\n{type(data)}\n\nroot:\n{type(root)}")
 
-        return headword_mapped, all_mapped, data, root
+        return headword_mapped, all_mapped, all_data, root
 
     def prepare_lex(lexicon):
         df = pd.json_normalize(lexicon)
@@ -2356,27 +2377,30 @@ def downloadselectedlexeme():
 
     def add_definition(g_form, life, lex_entry, enc_lex_item, enc_lex_defn, sense_defn):
         defn_langs = lex_entry['langscripts']['glosslangs']
+        defn_langs = [x.casefold() for x in defn_langs]
         for defn_lang in defn_langs:
             if defn_lang in sense_defn:
-                lex_defn = sense_defn[defn_lang]
-                g_form.add((
-                    URIRef(life[enc_lex_item]),
-                    ontolex.denotes,
-                    URIRef(life[enc_lex_defn])
-                ))
+                lex_defn = sense_defn[defn_lang].strip()
+                if lex_defn != '':
+                    g_form.add((
+                        URIRef(life[enc_lex_item]),
+                        ontolex.denotes,
+                        URIRef(life[enc_lex_defn])
+                    ))
 
-                g_form.add((
-                    URIRef(life[enc_lex_defn]),
-                    SKOS.definition,
-                    Literal(lex_defn, lang=defn_lang)
-                ))
+                    g_form.add((
+                        URIRef(life[enc_lex_defn]),
+                        SKOS.definition,
+                        Literal(lex_defn, lang=defn_lang)
+                    ))
 
     def add_example(g_form, life, enc_lex_item, example, ex_lang):
-        g_form.add((
-            URIRef(life[enc_lex_item]),
-            SKOS.example,
-            Literal(example, lang=ex_lang)
-        ))
+        if example != '':
+            g_form.add((
+                URIRef(life[enc_lex_item]),
+                SKOS.example,
+                Literal(example, lang=ex_lang)
+            ))
 
     def add_other_forms(g_other_form, life, lex_entry, enc_otherform, other_form, dict_lang):
         # g_other_form = Graph()
@@ -2395,94 +2419,105 @@ def downloadselectedlexeme():
             Literal(other_form, lang=dict_lang)
         ))
 
-    def add_sense(g_lex, life, lex_entry, sense_entry, lex_sense):
-        g_lex.add((
-            sense_entry,
-            RDF.type,
-            ontolex.LexicalSense
-        ))
+    def add_sense(g_lex, life, full_lex_entry, lex_entry, sense_entry, lex_senses):
+        sense_langs = full_lex_entry['langscripts']['glosslangs']
+        sense_langs = [x.casefold() for x in sense_langs]
 
-        if dbpedia_exists(lex_sense):
-            g_lex.add((
-                life[lex_entry],
-                ontolex.denotes,
-                dbpedia[lex_sense.capitalize()]
-            ))
+        # this is mainly used for mapping to english dbpedia/wikipedia entries
+        lex_sense = lex_senses['eng'].strip()
+        for sense_lang in sense_langs:
+            if sense_lang in lex_senses:
+                sense_entry = lex_senses[sense_lang].strip()
+                g_lex.add((
+                    Literal(sense_entry, lang=sense_lang),
+                    RDF.type,
+                    ontolex.LexicalSense
+                ))
 
-            g_lex.add((
-                sense_entry,
-                ontolex.reference,
-                dbpedia[lex_sense.capitalize()]
-            ))
+                # if sense_lang == 'eng':
+                if lex_sense != '':
+                    if dbpedia_exists(lex_sense):
+                        g_lex.add((
+                            life[lex_entry],
+                            ontolex.denotes,
+                            dbpedia[lex_sense.capitalize()]
+                        ))
 
-        g_lex.add((
-            sense_entry,
-            ontolex.isSenseOf,
-            life[lex_entry]
-        ))
+                        g_lex.add((
+                            Literal(sense_entry, lang=sense_lang),
+                            ontolex.reference,
+                            dbpedia[lex_sense.capitalize()]
+                        ))
 
-        wordnet_code = get_wordnet_code(lex_sense)
-        if wordnet_code != '':
-            g_lex.add((
-                sense_entry,
-                ontolex.isLexicalisedSenseOf,
-                pwn[wordnet_code]
-            ))
-            g_lex.add((
-                life[lex_entry],
-                ontolex.evokes,
-                pwn[wordnet_code]
-            ))
+                    g_lex.add((
+                        Literal(sense_entry, lang=sense_lang),
+                        ontolex.isSenseOf,
+                        life[lex_entry]
+                    ))
 
-        g_lex.add((
-            sense_entry,
-            ontolex.isSenseOf,
-            life[lex_entry]
-        ))
+                    wordnet_code = get_wordnet_code(lex_sense)
+                    if wordnet_code != '':
+                        g_lex.add((
+                            Literal(sense_entry, lang=sense_lang),
+                            ontolex.isLexicalisedSenseOf,
+                            pwn[wordnet_code]
+                        ))
+                        g_lex.add((
+                            life[lex_entry],
+                            ontolex.evokes,
+                            pwn[wordnet_code]
+                        ))
 
-        # Creating dbpedia entry
-        g_lex.add((
-            dbpedia[lex_sense.capitalize()],
-            ontolex.concept,
-            pwn[wordnet_code]
-        ))
+                    g_lex.add((
+                        Literal(sense_entry, lang=sense_lang),
+                        ontolex.isSenseOf,
+                        life[lex_entry]
+                    ))
 
-        g_lex.add((
-            dbpedia[lex_sense.capitalize()],
-            ontolex.isReferenceOf,
-            sense_entry
-        ))
+                    # Creating dbpedia entry
 
-        g_lex.add((
-            dbpedia[lex_sense.capitalize()],
-            ontolex.isDenotedBy,
-            ontolex.LexicalConcept
-        ))
+                    g_lex.add((
+                        dbpedia[lex_sense.capitalize()],
+                        ontolex.concept,
+                        pwn[wordnet_code]
+                    ))
 
-        # Creating WordNet entry
-        g_lex.add((
-            pwn[wordnet_code],
-            RDF.type,
-            life[lex_entry]
-        ))
+                    g_lex.add((
+                        dbpedia[lex_sense.capitalize()],
+                        ontolex.isReferenceOf,
+                        Literal(sense_entry, lang=sense_lang)
+                    ))
 
-        g_lex.add((
-            pwn[wordnet_code],
-            ontolex.isEvokedBy,
-            life[lex_entry]
-        ))
+                    g_lex.add((
+                        dbpedia[lex_sense.capitalize()],
+                        ontolex.isDenotedBy,
+                        ontolex.LexicalConcept
+                    ))
 
-        g_lex.add((
-            pwn[wordnet_code],
-            ontolex.lexicalizedSense,
-            sense_entry
-        ))
+                    # Creating WordNet entry
+                    g_lex.add((
+                        pwn[wordnet_code],
+                        RDF.type,
+                        life[lex_entry]
+                    ))
 
-        g_lex.add((
-            pwn[wordnet_code],
-            ontolex.isConceptOf,
-            dbpedia[lex_sense.capitalize()]
-        ))
+                    g_lex.add((
+                        pwn[wordnet_code],
+                        ontolex.isEvokedBy,
+                        life[lex_entry]
+                    ))
+
+                    g_lex.add((
+                        pwn[wordnet_code],
+                        ontolex.lexicalizedSense,
+                        Literal(sense_entry, lang=sense_lang)
+                    ))
+
+                    g_lex.add((
+                        pwn[wordnet_code],
+                        ontolex.isConceptOf,
+                        dbpedia[lex_sense.capitalize()]
+                    ))
 
     def get_wordnet_code(lex_gloss):
         query = '''
@@ -2565,9 +2600,10 @@ def downloadselectedlexeme():
         add_canonical_form(g_lex, life, lex_entry,
                            lex_item, enc_lex_form, lex_pron, dict_lang)
 
-        for i in range(1, len(lex_sense)):
-            sense_gloss = lex_sense['Sense '+str(i)]["Gloss"]["eng"].strip()
-            sense_defn = lex_sense['Sense '+str(i)]["Definition"].strip()
+        for i in range(1, len(lex_sense)+1):
+            sense_gloss = lex_sense['Sense '+str(i)]["Gloss"]
+            sense_defn = lex_sense['Sense ' +
+                                   str(i)]["Definition"]
             sense_ex = lex_sense['Sense '+str(i)]["Example"].strip()
 
             sense_entry = life[lex_item+'_sense'+str(i)].strip()
@@ -2577,7 +2613,8 @@ def downloadselectedlexeme():
                 ontolex.sense,
                 URIRef(enc_sense_entry)
             ))
-            add_sense(g_lex, life, lex_item, sense_entry, sense_gloss)
+            add_sense(g_lex, life, lex_entry, enc_lex_item,
+                      sense_entry, sense_gloss)
             add_definition(g_lex, life, lex_entry, enc_lex_item,
                            enc_lex_def, sense_defn)
             add_example(g_lex, life, enc_lex_item, sense_ex, dict_lang)
