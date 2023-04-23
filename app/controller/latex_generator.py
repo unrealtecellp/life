@@ -103,6 +103,8 @@ def get_latex_entries(all_entries, fields, dict_headword, char_list, doc, headwo
     # print("All characters", char_list)
     for character in char_list:
         cur_entries = all_entries[all_entries['firstchar'] == character]
+        cur_entries.dropna(axis=1, how='all', inplace=True)
+
         cur_entries_list = cur_entries.to_dict('records')
         print('Current entries first', cur_entries_list[0])
         with doc.create(Section(NoEscape(headword_script+'{'+character+'}'), numbering=False)):
@@ -115,62 +117,68 @@ def get_latex_entries(all_entries, fields, dict_headword, char_list, doc, headwo
                     for field in fields:
                         if field in cur_entry:
                             cur_val = cur_entry[field]
-                            print(cur_val)
-                            if field == 'headword':
-                                final_val = '\markboth{'+headword_script+'{'+cur_val+'}}{'+headword_script + \
-                                    '{'+cur_val+'}}'+'\\textbf{' + \
-                                    headword_script+'{'+cur_val+'}} '
-                            elif field == 'Pronunciation':
-                                final_val = final_val + '/\ipa{'+cur_val+'}/ '
-                                print('Pronunciation', cur_val)
-                            elif field == 'grammaticalcategory':
-                                final_val = final_val + \
-                                    '\\textit{'+cur_val+'} '
-                            elif 'Lexeme' in field or 'SenseNew' in field:
-                                sense_parts = field.split('.')
-                                script_name = sense_parts[-1]
+                            print('Current value', cur_val)
+                            if not pd.isna(cur_val):
+                                if field == 'headword':
+                                    final_val = '\markboth{'+headword_script+'{'+cur_val+'}}{'+headword_script + \
+                                        '{'+cur_val+'}}'+'\\textbf{' + \
+                                        headword_script+'{'+cur_val+'}} '
+                                elif field == 'Pronunciation':
+                                    final_val = final_val + \
+                                        '/\ipa{'+cur_val+'}/ '
+                                    print('Pronunciation', cur_val)
+                                elif field == 'grammaticalcategory':
+                                    final_val = final_val + \
+                                        '\\textit{'+cur_val+'} '
+                                elif 'Lexeme' in field or 'SenseNew' in field:
+                                    sense_parts = field.split('.')
+                                    script_name = sense_parts[-1]
 
-                                if 'SenseNew' in field:
-                                    cur_sense_number = sense_parts[1].split(
-                                    )[-1]
+                                    if 'SenseNew' in field:
+                                        cur_sense_number = sense_parts[1].split(
+                                        )[-1]
 
-                                    if cur_sense_number != prev_sense_number:
-                                        sense_start = False
-                                        prev_sense_number = cur_sense_number
+                                        if cur_sense_number != prev_sense_number:
+                                            sense_start = False
+                                            prev_sense_number = cur_sense_number
 
-                                if not sense_start and 'SenseNew' in field:
-                                    sense_start = True
-                                    final_val = final_val.strip(
-                                    ) + '. \\newline\\textbf{' + sense_parts[1] + '} '
-                                elif cur_val.strip() != '':
-                                    final_val = final_val.strip() + '. '
+                                    if not sense_start and 'SenseNew' in field:
+                                        sense_start = True
+                                        final_val = final_val.strip(
+                                        ) + '. \\newline\\textbf{' + sense_parts[1] + '} '
+                                    elif cur_val.strip() != '':
+                                        final_val = final_val.strip() + '. '
 
-                                if script_name in script_map:
-                                    latex_script = script_map[script_name]
-                                    if not 'Lexeme' in field:
+                                    if script_name in script_map:
+                                        latex_script = script_map[script_name]
+                                        if not 'Lexeme' in field:
+                                            final_val = final_val + \
+                                                latex_script+'{'+cur_val+'} '
+                                        else:
+                                            if headwordscript != latex_script:
+                                                final_val = final_val + \
+                                                    latex_script + \
+                                                    '{'+cur_val+'} '
+                                    elif script_name in language_map:
+                                        latex_script = language_map[script_name]
                                         final_val = final_val + \
                                             latex_script+'{'+cur_val+'} '
                                     else:
-                                        if headwordscript != latex_script:
-                                            final_val = final_val + \
-                                                latex_script+'{'+cur_val+'} '
-                                elif script_name in language_map:
-                                    latex_script = language_map[script_name]
-                                    final_val = final_val + \
-                                        latex_script+'{'+cur_val+'} '
-                                else:
-                                    # If Latn / Roman script then no need of other font
-                                    # If not Roman and Lang / Script map does not have this
-                                    # then defaults to Devanagari script
-                                    # TODO: This needs improvement
-                                    if re.search(eng_pattern, cur_val):
-                                        final_val = final_val + cur_val + ' '
-                                    else:
-                                        if cur_val.strip() != '':
-                                            latex_script = '\dev'
-                                            final_val = final_val + \
-                                                latex_script+'{'+cur_val+'} '
-
+                                        # If Latn / Roman script then no need of other font
+                                        # If not Roman and Lang / Script map does not have this
+                                        # then defaults to Devanagari script
+                                        # TODO: This needs improvement
+                                        if re.search(eng_pattern, cur_val):
+                                            final_val = final_val + cur_val + ' '
+                                        else:
+                                            if cur_val.strip() != '':
+                                                latex_script = '\dev'
+                                                final_val = final_val + \
+                                                    latex_script + \
+                                                    '{'+cur_val+'} '
+                            else:
+                                print('Current value', cur_val,
+                                      'is null; skipping')
                             # entry_args.append(cur_val)
                     # doc.append(Entry(arguments=entry_args))
                     final_val = final_val+'\n\n'

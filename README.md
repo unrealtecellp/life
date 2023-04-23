@@ -1,4 +1,4 @@
-# LiFe
+# LiFE
 ## Linguistic Field Data Management and Analysis System
 
 This repository hosts the code and installation instructions for the LiFe, developed by the M.Sc. Computational Linguistics and M.Phil Linguistics students of Dr. Bhimrao Ambedkar Univesity, Agra - Siddharth Singh, Shyam Ratan and Sonal Sinha - under the supervision of Dr. Ritesh Kumar.
@@ -9,7 +9,7 @@ This repository hosts the code and installation instructions for the LiFe, devel
 In order to run a Demo Version of the app (currently its an Alpha Test Version), use the following link -
 
 ```
-http://20.124.225.196:5000/login
+http://life.unreal-tece.co.in/
 ```
 
 ## Installation on Local System
@@ -22,7 +22,7 @@ If you would like to set up the app on your own server / system for testing and 
 
 1. Clone the app GitHub repository
     ```
-    git clone https://github.com/kmi-linguistics/life.git
+    https://github.com/unrealtecellp/life.git
     ```
 2.  Change directory to the app root directory(repo name)
     ```
@@ -45,7 +45,7 @@ If you would like to set up the app on your own server / system for testing and 
 
 1. Clone the app GitHub repository
     ```
-    git clone https://github.com/kmi-linguistics/life.git
+    https://github.com/unrealtecellp/life.git
     ```
 2.  Change directory to the app root directory(repo name)
     ```

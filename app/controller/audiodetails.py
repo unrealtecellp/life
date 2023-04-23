@@ -6,7 +6,6 @@ import os
 import shutil
 from datetime import datetime
 import re
-from pprint import pprint
 import gridfs
 from flask import flash
 import pandas as pd
@@ -20,7 +19,8 @@ from app.controller import (
     getcurrentusername,
     userdetails,
     getcurrentuserprojects,
-    getactiveprojectname
+    getactiveprojectname,
+    life_logging
 )
 from app.lifemodels.controller import (
     predictFromAPI,
@@ -28,16 +28,17 @@ from app.lifemodels.controller import (
 )
 import subprocess
 import shutil
-
+from pprint import pprint, pformat
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 basedir_parent = '/'.join(basedir.split('/')[:-1])
 
-# print('Basedir parent', basedir_parent)
+logger = life_logging.get_logger()
+# logger.debug('Basedir parent', basedir_parent)
 modelConfigPath = os.path.join(
     basedir_parent, 'jsonfiles/model_config.json')
 
-# print('Modle config', modelConfigPath)
+# logger.debug('Modle config', modelConfigPath)
 
 all_model_names = readJSONFile.readJSONFile(modelConfigPath)
 
@@ -55,7 +56,7 @@ allowed_file_formats = ['mp3', 'wav']
 
 def get_file_format(current_file):
     cur_filename = current_file.filename
-    # print("Filename", cur_filename)
+    # logger.debug("Filename", cur_filename)
     file_format = cur_filename.rsplit('.', 1)[-1].lower()
     # TODO: Infer file format based on its header
 
@@ -94,14 +95,14 @@ def saveaudiofiles(mongo,
     """
 
     type = 'audiofile'
-    # print ('New ques file', new_ques_file)
+    # logger.debug ('New ques file', new_ques_file)
     file_states = []
     transcription_doc_ids = []
     fs_file_ids = []
 
     if new_audio_file[type].filename != '':
         current_file = new_audio_file[type]
-        # print("Filepath", current_file)
+        # logger.debug("Filepath", current_file)
         file_format = get_file_format(current_file)
 
         if (file_format in allowed_file_formats):
@@ -123,7 +124,7 @@ def saveaudiofiles(mongo,
             fs_file_ids.append(fs_file_id)
 
         elif (file_format == 'zip'):
-            print('ZIP file format')
+            logger.debug('ZIP file format')
             file_states, transcription_doc_ids, fs_file_ids = savemultipleaudiofiles(mongo,
                                                                                      projects,
                                                                                      userprojects,
@@ -183,20 +184,20 @@ def savemultipleaudiofiles(mongo,
 
     try:
         with ZipFile(zip_audio_files) as myzip:
-            # print('File list', myzip.namelist())
+            # logger.debug('File list', myzip.namelist())
             for file_name in myzip.namelist():
                 # if (file_name.endswith('.wav')):
-                # print('Current File name', file_name)
+                # logger.debug('Current File name', file_name)
                 with myzip.open(file_name) as myfile:
                     # file_format = get_file_format(myfile)
                     file_format = file_name.rsplit('.', 1)[-1].lower()
-                    # print('File format during upload', file_format)
+                    # logger.debug('File format during upload', file_format)
                     if file_format in allowed_file_formats:
                         # upload_file_full = {}
                         file_content = io.BytesIO(myfile.read())
-                        # print ('ZIP file', mainfile)
-                        # print ("File content", file_content)
-                        # print ("Upload type", fileType)
+                        # logger.debug ('ZIP file', mainfile)
+                        # logger.debug ("File content", file_content)
+                        # logger.debug ("Upload type", fileType)
                         new_audio_file['audiofile'] = FileStorage(
                             file_content, filename=file_name)
                         file_state, transcription_doc_id, fs_file_id = saveoneaudiofile(mongo,
@@ -217,7 +218,7 @@ def savemultipleaudiofiles(mongo,
                         transcription_doc_ids.append(transcription_doc_id)
                         fs_file_ids.append(fs_file_id)
     except Exception as e:
-        print(e)
+        logger.debug(e)
         flash(f"ERROR")
         all_file_states.append(False)
         transcription_doc_ids.append('')
@@ -308,19 +309,19 @@ def saveoneaudiofile(mongo,
                                                   boundary_threshold,
                                                   slice_threshold)
 
-    # print('Final generated text grid', text_grid)
-    print('Final transcription flag', transcriptionFLAG)
+    # logger.debug('Final generated text grid', text_grid)
+    logger.debug('Final transcription flag', transcriptionFLAG)
 
     new_audio_details["transcriptionFLAG"] = transcriptionFLAG
     new_audio_details["textGrid"] = text_grid
     new_audio_details[current_username] = {}
     new_audio_details[current_username]["textGrid"] = text_grid
-    # pprint(new_audio_details)
+    # plogger.debug(new_audio_details)
 
     # save audio file details and speaker ID in projects collection
     speakerIds = projects.find_one({'projectname': activeprojectname},
                                    {'_id': 0, 'speakerIds': 1})
-    # print(f"SPEAKER IDS: {speakerIds}")
+    # logger.debug(f"SPEAKER IDS: {speakerIds}")
     if len(speakerIds) != 0:
         speakerIds = speakerIds['speakerIds']
         if current_username in speakerIds:
@@ -333,28 +334,28 @@ def saveoneaudiofile(mongo,
         speakerIds = {
             current_username: [speakerId]
         }
-        # print(speakerIds)
+        # logger.debug(speakerIds)
 
     speaker_audio_ids = projects.find_one({'projectname': activeprojectname},
                                           {'_id': 0, 'speakersAudioIds': 1})
-    # print(len(speaker_audio_ids))
-    # print(speaker_audio_ids)
+    # logger.debug(len(speaker_audio_ids))
+    # logger.debug(speaker_audio_ids)
     if len(speaker_audio_ids) != 0:
         speaker_audio_ids = speaker_audio_ids['speakersAudioIds']
-        # print('speaker_audio_ids', speaker_audio_ids)
+        # logger.debug('speaker_audio_ids', speaker_audio_ids)
         if speakerId in speaker_audio_ids:
             speaker_audio_idskeylist = speaker_audio_ids[speakerId]
             speaker_audio_idskeylist.append(audio_id)
             speaker_audio_ids[speakerId] = speaker_audio_idskeylist
         else:
-            # print('speakerId', speakerId)
+            # logger.debug('speakerId', speakerId)
             speaker_audio_ids[speakerId] = [audio_id]
-        # pprint(speaker_audio_ids)
+        # plogger.debug(speaker_audio_ids)
     else:
         speaker_audio_ids = {
             speakerId: [audio_id]
         }
-    # pprint(speaker_audio_ids)
+    # plogger.debug(speaker_audio_ids)
     # try:
     projects.update_one({'projectname': activeprojectname},
                         {'$set': {
@@ -366,7 +367,7 @@ def saveoneaudiofile(mongo,
     projectinfo = userprojects.find_one({'username': current_username},
                                         {'_id': 0, 'myproject': 1, 'projectsharedwithme': 1})
 
-    # print(projectinfo)
+    # logger.debug(projectinfo)
     userprojectinfo = ''
     for type, value in projectinfo.items():
         if len(value) != 0:
@@ -377,11 +378,11 @@ def saveoneaudiofile(mongo,
                                 userprojectinfo: speakerId
                             }})
 
-    # print('new_audio_file', type(new_audio_file), new_audio_file)
+    # logger.debug('new_audio_file', type(new_audio_file), new_audio_file)
     # transcription_doc_id = transcriptions.insert(new_audio_details)
     # save audio file details in fs collection
 
-    # print('audiowaveform_audio_path', audiowaveform_audio_path)
+    # logger.debug('audiowaveform_audio_path', audiowaveform_audio_path)
     # audiowaveform_audio_path = os.path.join(audiowaveform_audio_path, updated_audio_filename)
 
     audiowaveform_json = get_audio_waveform_json(
@@ -393,7 +394,7 @@ def saveoneaudiofile(mongo,
     return (True, transcription_doc_id, fs_file_id)
 
     # except Exception as e:
-    #     print(e)
+    #     logger.debug(e)
     #     flash(f"ERROR")
     #     return (False, '', '')
 
@@ -411,13 +412,13 @@ def createaudiowaveform(audiowaveform_audio_path, audiowaveform_json_path, audio
     audio_filename = audio_filename[0:audio_filename.rfind('.')]
     json_filename = os.path.join(
         audiowaveform_json_path, audio_filename+'.json')
-    print('audio filename', audiowaveform_audio_path)
-    print('json_filename', json_filename)
+    logger.debug('audio filename', audiowaveform_audio_path)
+    logger.debug('json_filename', json_filename)
     subprocess.run(
         ['audiowaveform', '-i', audiowaveform_audio_path, '-o',  json_filename])
     with open(json_filename, 'r') as jsonfile:
         read_json = json.load(jsonfile)
-    # print(read_json)
+    # logger.debug(read_json)
 
     # shutil.rmtree(audiowaveform_json_path)
 
@@ -427,7 +428,7 @@ def createaudiowaveform(audiowaveform_audio_path, audiowaveform_json_path, audio
 def updateaudiofiles(mongo,
                      projects,
                      userprojects,
-                     transcriptions,
+                     project_type_collection,
                      projectowner,
                      activeprojectname,
                      current_username,
@@ -466,7 +467,7 @@ def updateaudiofiles(mongo,
     # save audio file details and speaker ID in projects collection
     speakerIds = projects.find_one({'projectname': activeprojectname},
                                    {'_id': 0, 'speakerIds': 1})
-    # print(f"SPEAKER IDS: {speakerIds}")
+    # logger.debug(f"SPEAKER IDS: {speakerIds}")
     if len(speakerIds) != 0:
         speakerIds = speakerIds['speakerIds']
         if current_username in speakerIds:
@@ -482,24 +483,24 @@ def updateaudiofiles(mongo,
 
     speaker_audio_ids = projects.find_one({'projectname': activeprojectname},
                                           {'_id': 0, 'speakersAudioIds': 1})
-    # print(len(speaker_audio_ids))
-    # print(speaker_audio_ids)
+    # logger.debug(len(speaker_audio_ids))
+    # logger.debug(speaker_audio_ids)
     if len(speaker_audio_ids) != 0:
         speaker_audio_ids = speaker_audio_ids['speakersAudioIds']
-        # print('speaker_audio_ids', speaker_audio_ids)
+        # logger.debug('speaker_audio_ids', speaker_audio_ids)
         if speakerId in speaker_audio_ids:
             speaker_audio_idskeylist = speaker_audio_ids[speakerId]
             speaker_audio_idskeylist.append(audio_id)
             speaker_audio_ids[speakerId] = speaker_audio_idskeylist
         else:
-            # print('speakerId', speakerId)
+            # logger.debug('speakerId', speakerId)
             speaker_audio_ids[speakerId] = [audio_id]
-        # pprint(speaker_audio_ids)
+        # plogger.debug(speaker_audio_ids)
     else:
         speaker_audio_ids = {
             speakerId: [audio_id]
         }
-    # pprint(speaker_audio_ids)
+    # plogger.debug(speaker_audio_ids)
     try:
         projects.update_one({'projectname': activeprojectname},
                             {'$set': {
@@ -511,7 +512,7 @@ def updateaudiofiles(mongo,
         projectinfo = userprojects.find_one({'username': current_username},
                                             {'_id': 0, 'myproject': 1, 'projectsharedwithme': 1})
 
-        # print(projectinfo)
+        # logger.debug(projectinfo)
         userprojectinfo = ''
         for type, value in projectinfo.items():
             if len(value) != 0:
@@ -521,7 +522,11 @@ def updateaudiofiles(mongo,
                                 {"$set": {
                                     userprojectinfo: speakerId
                                 }})
-        transcription_doc_id = transcriptions.update_one({"audioId": audio_id},
+        logger.debug("audio_id: %s", audio_id)
+        logger.debug("new_audio_details: %s", pformat(new_audio_details))
+        logger.debug("project_type_collection: %s", project_type_collection)
+        # pprint(new_audio_details)
+        project_type_collection_doc_id = project_type_collection.update_one({"audioId": audio_id},
                                                          {"$set": new_audio_details})
         # save audio file details in fs collection
         fs_file_id = mongo.save_file(updated_audio_filename,
@@ -531,10 +536,10 @@ def updateaudiofiles(mongo,
                                      projectname=activeprojectname,
                                      updatedBy=current_username)
 
-        return (True, transcription_doc_id, fs_file_id)
+        return (True, project_type_collection_doc_id, fs_file_id)
 
-    except Exception as e:
-        print(e)
+    except:
+        logger.exception("")
         flash(f"ERROR")
         return (False,"","")
 
@@ -561,7 +566,7 @@ def getactiveaudioid(projects,
             'lastActiveId.'+current_username+'.'+activespeakerId+'.audioId': 1
         }
         )
-        # print(last_active_audio_id)
+        # logger.debug(last_active_audio_id)
         if len(last_active_audio_id) != 0:
             last_active_audio_id = last_active_audio_id['lastActiveId'][
                 current_username][activespeakerId]['audioId']
@@ -605,34 +610,34 @@ def getaudiowaveformfilefromfs(mongo,
     Returns:
         _type_: _description_
     """
-    # print(file_type, file_id)
+    # logger.debug(file_type, file_id)
     # creating GridFS instance to get required files
-    # print('fs file:', basedir, folder_name,
+    # logger.debug('fs file:', basedir, folder_name,
     #                    file_id,
     #                    file_type)
     fs = gridfs.GridFS(mongo.db)
     file = fs.find_one({file_type: file_id})
     audioFolder = os.path.join(basedir, folder_name)
-    print('Audio folder path', audioFolder)
+    logger.debug('Audio folder path', audioFolder)
     if (os.path.exists(audioFolder)):
-        print('Audio folder path exists', audioFolder, 'deleting')
+        logger.debug('Audio folder path exists', audioFolder, 'deleting')
         shutil.rmtree(audioFolder)
     os.mkdir(audioFolder)
     file_path = ''
     if (file is not None and
             'audio' in file.contentType):
         file_name = file.filename
-        print('File name', file_name)
+        logger.debug('File name', file_name)
         audiofile = fs.get_last_version(filename=file_name)
         audiofileBytes = audiofile.read()
         # if len(audiofileBytes) != 0:
         file_path = os.path.join(folder_name, file_name)
         save_file_path = os.path.join(basedir, file_path)
-        print('Save file path', save_file_path)
+        logger.debug('Save file path', save_file_path)
         open(save_file_path, 'wb').write(audiofileBytes)
     else:
         save_file_path = ''
-    # print('file_path', file_path)
+    # logger.debug('file_path', file_path)
     return save_file_path
 
 
@@ -651,9 +656,9 @@ def getaudiofilefromfs(mongo,
     Returns:
         _type_: _description_
     """
-    # print(file_type, file_id)
+    # logger.debug(file_type, file_id)
     # creating GridFS instance to get required files
-    # print('fs file:', basedir,
+    # logger.debug('fs file:', basedir,
     #                    file_id,
     #                    file_type)
     fs = gridfs.GridFS(mongo.db)
@@ -693,12 +698,12 @@ def getnewaudioid(projects,
     """
     audio_ids_list = projects.find_one({'projectname': activeprojectname},
                                        {'_id': 0, 'speakersAudioIds': 1})
-    # print('audio_ids_list', audio_ids_list)
+    # logger.debug('audio_ids_list', audio_ids_list)
     if len(audio_ids_list) != 0:
         audio_ids_list = audio_ids_list['speakersAudioIds'][activespeakerId]
-        # print('audio_ids_list', audio_ids_list)
+        # logger.debug('audio_ids_list', audio_ids_list)
     audio_id_index = audio_ids_list.index(last_active_id)
-    # print('latestAudioId Index!!!!!!!', audio_id_index)
+    # logger.debug('latestAudioId Index!!!!!!!', audio_id_index)
     if which_one == 'previous':
         audio_id_index = audio_id_index - 1
     elif which_one == 'next':
@@ -707,7 +712,7 @@ def getnewaudioid(projects,
         else:
             audio_id_index = audio_id_index + 1
     latest_audio_id = audio_ids_list[audio_id_index]
-    # print('latest_audio_id AUDIODETAILS', latest_audio_id)
+    # logger.debug('latest_audio_id AUDIODETAILS', latest_audio_id)
 
     return latest_audio_id
 
@@ -747,13 +752,13 @@ def getaudiotranscriptiondetails(transcriptions, audio_id):
     try:
         t_data = transcriptions.find_one({'audioId': audio_id},
                                          {'_id': 0, 'textGrid.sentence': 1})
-        # print('t_data!!!!!', t_data)
+        # logger.debug('t_data!!!!!', t_data)
         if t_data is not None:
             transcription_data = t_data['textGrid']
-        # pprint(transcription_data)
+        # plogger.debug(transcription_data)
         sentence = transcription_data['sentence']
         for type, value in sentence.items():
-            # print(type, value)
+            # logger.debug(type, value)
             transcription_region = {}
             # gloss = {}
             # transcription_region['sentence'] = {}
@@ -763,26 +768,26 @@ def getaudiotranscriptiondetails(transcriptions, audio_id):
             transcription_region['end'] = sentence[type]['end']
             # transcription_region['sentence'] = {type: value}
             transcription_region['data'] = {'sentence': {type: value}}
-            # pprint(transcription_region)
+            # plogger.debug(transcription_region)
             boundary_count += 1
             try:
-                # print('!@!#!@!#!@!#!@!#!@!##!@!#!#!@!#!@!#!@!#!@!#!@!##!@!#!#', gloss)
+                # logger.debug('!@!#!@!#!@!#!@!#!@!##!@!#!#!@!#!@!#!@!#!@!#!@!##!@!#!#', gloss)
                 tempgloss = sentence[type]['gloss']
-                # print('!@!#!@!#!@!#!@!#!@!##!@!#!#!@!#!@!#!@!#!@!#!@!##!@!#!#', tempgloss)
+                # logger.debug('!@!#!@!#!@!#!@!#!@!##!@!#!#!@!#!@!#!@!#!@!#!@!##!@!#!#', tempgloss)
                 gloss[type] = pd.json_normalize(
                     tempgloss, sep='.').to_dict(orient='records')[0]
-                # print('!@!#!@!#!@!#!@!#!@!##!@!#!#!@!#!@!#!@!#!@!#!@!##!@!#!#', gloss)
+                # logger.debug('!@!#!@!#!@!#!@!#!@!##!@!#!#!@!#!@!#!@!#!@!#!@!##!@!#!#', gloss)
                 temppos = sentence[type]['pos']
                 pos[type] = pd.json_normalize(
                     temppos, sep='.').to_dict(orient='records')[0]
 
-                # print('288', gloss)
+                # logger.debug('288', gloss)
             except:
-                # print('=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=', gloss)
+                # logger.debug('=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=', gloss)
                 gloss = {}
                 pos = {}
 
-        # pprint(transcription_region)
+        # plogger.debug(transcription_region)
     #     if (type == 'speakerId' or
     #         type == 'sentenceId'):
     #         continue
@@ -792,8 +797,8 @@ def getaudiotranscriptiondetails(transcriptions, audio_id):
     #         sentence[k] = v
     #     transcription_region['data']['sentence'] = sentence
             transcription_regions.append(transcription_region)
-        # pprint(transcription_regions)
-    # print('303', gloss, pos)
+        # plogger.debug(transcription_regions)
+    # logger.debug('303', gloss, pos)
     except:
         pass
 
@@ -813,8 +818,8 @@ def savetranscription(transcriptions,
         transcription_details (_type_): _description_
     """
 
-    # pprint(activeprojectform)
-    # pprint(scriptCode)
+    # plogger.debug(activeprojectform)
+    # plogger.debug(scriptCode)
     # transcription_details = {
     #     'updatedBy' : current_username,
     #     "textdeleteFLAG": 0
@@ -823,17 +828,17 @@ def savetranscription(transcriptions,
     sentence = {}
     if transcription_regions is not None:
         transcription_regions = json.loads(transcription_regions)
-        # pprint(transcription_regions)
+        # plogger.debug(transcription_regions)
         for transcription_boundary in transcription_regions:
             transcription_boundary = transcription_boundary['data']
             if 'sentence' in transcription_boundary:
                 for type, value in transcription_boundary['sentence'].items():
-                    # print(f"KEY: {type}\nVALUE: {value}")
+                    # logger.debug(f"KEY: {type}\nVALUE: {value}")
                     value["speakerId"] = activespeakerId
                     value["sentenceId"] = audio_id
                     sentence[type] = value
-            # pprint(sentence)
-            #     print('transcription_boundary.keys()', transcription_boundary.keys())
+            # plogger.debug(sentence)
+            #     logger.debug('transcription_boundary.keys()', transcription_boundary.keys())
             #     sentence[transcription_boundary['boundaryID']] = {
             #         "speakerId": activespeakerId,
             #         "sentenceId": audio_id,
@@ -850,15 +855,15 @@ def savetranscription(transcriptions,
             # for transcription_data in transcription_regions:
             #     for type in list(transcription_data['data'].keys()):
             #         if type == 'sentence':
-            #             print(type)
+            #             logger.debug(type)
 
             # text_grid['sentence'] = sentence
-            # print(text_grid)
+            # logger.debug(text_grid)
             # transcription_details['textGrid'] = text_grid
             # transcriptions.insert(transcription_details)
-            # print("'sentence' in transcription_boundary")
-            # print('371', sentence)
-            # pprint(sentence)
+            # logger.debug("'sentence' in transcription_boundary")
+            # logger.debug('371', sentence)
+            # plogger.debug(sentence)
     transcriptions.update_one({'audioId': audio_id},
                               {'$set':
                                {
@@ -878,9 +883,9 @@ def getaudioprogressreport(projects,
     datatoshow = []
     users_speaker_ids = projects.find_one({'projectname': activeprojectname},
                                           {'_id': 0, 'speakerIds': 1})['speakerIds']
-    # print('speaker_ids_1', users_speaker_ids)
+    # logger.debug('speaker_ids_1', users_speaker_ids)
     if len(users_speaker_ids) != 0:
-        # print('speaker_ids_2', users_speaker_ids)
+        # logger.debug('speaker_ids_2', users_speaker_ids)
         for username in isharedwith:
             user_datatoshow = {"01_speakerId": '',
                                 "02_createdBy": '',
@@ -909,7 +914,7 @@ def getaudioprogressreport(projects,
                     datatoshow.append(user_datatoshow)
 
 
-    # print('datatoshow', datatoshow)
+    # logger.debug('datatoshow', datatoshow)
 
     return datatoshow
 
@@ -935,14 +940,15 @@ def getaudioidforderivedtranscriptionproject(transcriptions,
     return 'False'
 
 
-def getaudioidlistofsavedaudios(transcriptions,
+def getaudioidlistofsavedaudios(data_collection,
                                 activeprojectname,
                                 language,
                                 exclude,
                                 for_worker_id):
     """_summary_
     """
-    all_audio = transcriptions.find({"projectname": activeprojectname},
+    logger.debug('checking recordings')
+    all_audio = data_collection.find({"projectname": activeprojectname},
                                     {
                                         "_id": 0,
                                         "audioId": 1,
@@ -962,7 +968,7 @@ def getaudioidlistofsavedaudios(transcriptions,
 
 
 def getaudiofromprompttext(projectsform,
-                           transcriptions,
+                           data_collection,
                            derivedFromProjectName,
                            activeprojectname,
                            text,
@@ -973,80 +979,84 @@ def getaudiofromprompttext(projectsform,
     projectform = projectsform.find_one(
         {"projectname": derivedFromProjectName}, {"_id": 0})
     lang_script = projectform['LangScript'][1]
-    # print(lang_script)
-    all_audio = transcriptions.find({"projectname": activeprojectname},
+    # logger.debug(lang_script)
+    all_audio = data_collection.find({"projectname": activeprojectname},
                                     {
                                         "_id": 0
                                         # "prompt.content": 1,
                                         # "audioId": 1
     })
-    foundText = 'text not found in the transcriptions'
+    foundText = 'text not found in the '+str(data_collection)
+    logger.debug('foundText: %s', foundText)
     for audio in all_audio:
-        # print(audio)
+        logger.debug("audio: %s", audio)
         speaker_id = audio['speakerId']
-        # print(speaker_id)
+        logger.debug("speaker_id: %s", speaker_id)
         for lang, lang_info in audio["prompt"]["content"].items():
-            # print(lang, lang_info)
+            logger.debug("lang: %s\nlang_info: %s", lang, lang_info)
             script = lang_script[lang]
-            # print(script)
+            logger.debug("script: %s", script)
             for prompt_type, prompt_info in lang_info.items():
                 if (prompt_type == 'text'):
                     for boundaryId in lang_info['text'].keys():
-                        # print(boundaryId)
+                        logger.debug("boundaryId: %s", boundaryId)
                         prompt_text = lang_info['text'][boundaryId]['textspan'][script].strip(
                         )
 
                         if (text == prompt_text and speaker_id == ''):
                             foundText = "text found but audio already available"
+                            logger.debug('foundText: %s', foundText)
                             # audioId = audio['audioId'
-                            audioId = copyofaudiodata(transcriptions, audio)
+                            audioId = copyofaudiodata(data_collection, audio)
                             if audioId not in exclude:
-                                # pprint(audio)
-                                # print(prompt_text, audioId)
+                                logger.debug("audio: %s", audio)
+                                logger.debug("prompt_text: %s\naudioId: %s", prompt_text, audioId)
                                 return (audioId, '')
                 elif(prompt_type == 'audio'):
                     for boundaryId in lang_info['audio']['textGrid']['sentence'].keys():
-                        # print(boundaryId)
+                        logger.debug("boundaryId: %s", boundaryId)
                         prompt_text = lang_info['audio']['textGrid']['sentence'][boundaryId]['transcription'][script].strip(
                         )
-                        # if (text == prompt_text):
-                        #     print('prompt_text: ', prompt_text, 'speaker_id:', speaker_id, audio['speakerId'])
+                        if (text == prompt_text):
+                            logger.debug('prompt_text: %s\nspeaker_id: %s\naudio["speakerId"]: %s', prompt_text, speaker_id, audio['speakerId'])
                         if (text == prompt_text and speaker_id == ''):
                             foundText = "text found but audio already available"
+                            logger.debug('foundText: %s', foundText)
                             # audioId = audio['audioId']
-                            audioId = copyofaudiodata(transcriptions, audio)
+                            audioId = copyofaudiodata(data_collection, audio)
                             if audioId not in exclude:
-                                # pprint(audio)
-                                # print(prompt_text, audioId)
+                                logger.debug("audio: %s", audio)
+                                logger.debug("prompt_text: %s\naudioId: %s", prompt_text, audioId)
                                 return (audioId, '')
                 elif(prompt_type == 'image'):
                     pass
                 elif(prompt_type == 'multimedia'):
                     pass
+    logger.debug('foundText: %s', foundText)
 
     return ('False', foundText)
 
 
-def copyofaudiodata(transcriptions,
+def copyofaudiodata(data_collection,
                     audio_data):
     audio_id = 'A'+re.sub(r'[-: \.]', '', str(datetime.now()))
     audio_data['audioId'] = audio_id
 
-    transcription_doc_id = transcriptions.insert_one(audio_data)
+    data_collection_doc_id = data_collection.insert_one(audio_data)
 
     return audio_id
 
 
 def addedspeakerids(speakerdetails,
                     activeprojectname):
-    # print('addedspeakerids')
+    # logger.debug('addedspeakerids')
     all_speaker_ids = speakerdetails.find({"projectname": activeprojectname, "isActive": 1},
                                           {"_id": 0, "lifesourceid": 1})
     added_speaker_ids = []
     for speaker_id in all_speaker_ids:
         s_id = speaker_id["lifesourceid"]
         added_speaker_ids.append(s_id)
-    # print ("Added Speaker IDS", added_speaker_ids)
+    # logger.debug ("Added Speaker IDS", added_speaker_ids)
     return added_speaker_ids
 
 
@@ -1063,7 +1073,7 @@ def getaudiometadata(transcriptions, audio_id):
     audio_metadata_details = dict({'audioMetadata': ''})
     audio_metadata = transcriptions.find_one(
         {'audioId': audio_id}, {'_id': 1, 'audioMetadata': 1})
-    # print(audio_metadata)
+    # logger.debug(audio_metadata)
     if audio_metadata is not None and 'audioMetadata' in audio_metadata:
         audio_metadata_details['audioMetadata'] = audio_metadata['audioMetadata']
 
@@ -1083,7 +1093,7 @@ def lastupdatedby(transcriptions, audio_id):
     last_updated_by_details = dict({'updatedBy': ''})
     last_updated_by = transcriptions.find_one(
         {'audioId': audio_id}, {'_id': 1, 'updatedBy': 1})
-    # print(last_updated_by)
+    # logger.debug(last_updated_by)
     if last_updated_by is not None and 'updatedBy' in last_updated_by:
         last_updated_by_details['updatedBy'] = last_updated_by['updatedBy']
 
@@ -1100,11 +1110,11 @@ def get_new_boundaries(boundaries, max_pause, include_transcription=False, trans
 
     span_start = 0
     span_end = 0
-    print('Initial total boundaries', len(boundaries))
-    print('Initial boundary', boundaries[0])
-    # print('Second boundary', boundaries[1])
-    # print('Initial end boundary', boundaries[-1])
-    # print('Initial second end boundary', boundaries[-2:-5])
+    logger.debug('Initial total boundaries', len(boundaries))
+    logger.debug('Initial boundary', boundaries[0])
+    # logger.debug('Second boundary', boundaries[1])
+    # logger.debug('Initial end boundary', boundaries[-1])
+    # logger.debug('Initial second end boundary', boundaries[-2:-5])
 
     if len(boundaries) > 1:
         for i in range(len(boundaries)-1):
@@ -1114,8 +1124,8 @@ def get_new_boundaries(boundaries, max_pause, include_transcription=False, trans
             current_boundary = boundaries[i]
             next_boundary = boundaries[i+1]
             current_start = current_boundary['start']
-            # print(i, 'out of', len(boundaries), current_boundary)
-            # print(i+1, 'out of', len(boundaries), next_boundary)
+            # logger.debug(i, 'out of', len(boundaries), current_boundary)
+            # logger.debug(i+1, 'out of', len(boundaries), next_boundary)
 
             if i == 0 or reset_start:
                 span_start = current_start
@@ -1172,9 +1182,9 @@ def get_new_boundaries(boundaries, max_pause, include_transcription=False, trans
             new_transcriptions.append(transcriptions[0])
             span_transcription = ''
 
-    print('Final total boundaries', len(new_boundaries))
-    print('Final start', new_boundaries[0])
-    print('Final end', new_boundaries[-1])
+    logger.debug('Final total boundaries', len(new_boundaries))
+    logger.debug('Final start', new_boundaries[0])
+    logger.debug('Final end', new_boundaries[-1])
 
     if include_transcription:
         return new_boundaries, new_transcriptions
@@ -1183,20 +1193,20 @@ def get_new_boundaries(boundaries, max_pause, include_transcription=False, trans
 
 
 def update_text_grid(mongo, text_grid, new_boundaries, transcription_type, include_transcription=False, transcriptions={}):
-    print('Data type', transcription_type)
+    logger.debug('Data type', transcription_type)
 
     # if include_transcription:
     #     transcription_scripts = list(transcriptions.keys())
 
     transcription_scripts = get_current_transcription_langscripts(mongo)
-    print('All transcription lang scripts', transcription_scripts)
+    logger.debug('All transcription lang scripts', transcription_scripts)
 
     translation_langscripts = get_current_translation_langscripts(mongo)
-    print('All translation lang scripts', translation_langscripts)
+    logger.debug('All translation lang scripts', translation_langscripts)
 
-    # print('Boundaries to update text grid', new_boundaries)
-    print('Total expected boundaries', len(new_boundaries))
-    print('Input Text Grid', text_grid)
+    # logger.debug('Boundaries to update text grid', new_boundaries)
+    logger.debug('Total expected boundaries', len(new_boundaries))
+    logger.debug('Input Text Grid', text_grid)
 
     for i in range(len(new_boundaries)):
         current_boundary = new_boundaries[i]
@@ -1240,8 +1250,8 @@ def update_text_grid(mongo, text_grid, new_boundaries, transcription_type, inclu
 
             # text_grid[boundary_id_key+'.transcription'] = ""
 
-            # print(f"========Current Text Grid(%i)================", i)
-            # print(text_grid)
+            # logger.debug(f"========Current Text Grid(%i)================", i)
+            # logger.debug(text_grid)
 
     return text_grid
 
@@ -1284,7 +1294,7 @@ def generate_text_grid_with_transcriptions(
 
 
 def generate_text_grid(mongo, text_grid, boundaries, transcriptions, transcription_type, max_pause):
-    print('Type of the data', transcription_type)
+    logger.debug('Type of the data', transcription_type)
     if len(transcriptions) == 0:
         text_grid = generate_text_grid_without_transcriptions(
             mongo, text_grid, boundaries, transcription_type, max_pause)
@@ -1301,7 +1311,7 @@ def get_current_translation_langscripts(mongo):
     userprojects, projectsform = getdbcollections.getdbcollections(
         mongo, 'userprojects', 'projectsform')
     current_username = getcurrentusername.getcurrentusername()
-    print('USERNAME: ', current_username)
+    logger.debug('USERNAME: ', current_username)
     activeprojectname = getactiveprojectname.getactiveprojectname(
         current_username, userprojects)
 
@@ -1328,7 +1338,7 @@ def get_current_translation_langscripts(mongo):
             all_lang_scripts[langscript_code] = langscript_code
         return all_lang_scripts
     except Exception as error:
-        print(error)
+        logger.debug(error)
         return dict()
 
 
@@ -1336,7 +1346,7 @@ def get_current_transcription_langscripts(mongo):
     userprojects, projectsform = getdbcollections.getdbcollections(
         mongo, 'userprojects', 'projectsform')
     current_username = getcurrentusername.getcurrentusername()
-    print('USERNAME: ', current_username)
+    logger.debug('USERNAME: ', current_username)
     activeprojectname = getactiveprojectname.getactiveprojectname(
         current_username, userprojects)
 
@@ -1369,7 +1379,7 @@ def get_audio_transcriptions(mongo, model_params):
     transcribed = 0
     # transcription_scripts = []
     current_lang_scripts = get_current_transcription_langscripts(mongo)
-    print('All current lang scripts', current_lang_scripts)
+    logger.debug('All current lang scripts', current_lang_scripts)
 
     for transcription_model in all_model_names['transcription']:
         target = transcription_model['target']
@@ -1437,7 +1447,7 @@ def get_text_grids(mongo, audio_path, transcription_type, max_pause, max_new_fil
         transcriptions, transcribed = get_audio_transcriptions(
             mongo, model_params)
 
-    # print('Boundaries received', boundaries)
+    # logger.debug('Boundaries received', boundaries)
     text_grid = generate_text_grid(
         mongo, text_grid, boundaries, transcriptions, transcription_type, max_pause)
 
@@ -1462,16 +1472,16 @@ def save_audio_in_mongo_and_localFs(mongo,
                                  projectname=activeprojectname,
                                  updatedBy=current_username)
 
-    # print('audioLength', new_audio_file['audiofile'].content_length)
+    # logger.debug('audioLength', new_audio_file['audiofile'].content_length)
 
-    # print('json_basedir', json_basedir)
+    # logger.debug('json_basedir', json_basedir)
 
     # # audiowaveform_json_path = os.path.join(audiowaveform_json, 'audiowaveform_json')
 
-    # print('audiowaveform_json', audiowaveform_json)
-    # print('audiowaveform_json_path', audiowaveform_json_path)
+    # logger.debug('audiowaveform_json', audiowaveform_json)
+    # logger.debug('audiowaveform_json_path', audiowaveform_json_path)
 
-    # print('new_audio_file', type(new_audio_file), new_audio_file)
+    # logger.debug('new_audio_file', type(new_audio_file), new_audio_file)
     # audiowaveform_file = new_audio_file.stream.seek(0)
     # audiowaveform_file.stream.seek(0)
     # getaudiofilefromfs(mongo,
@@ -1485,7 +1495,7 @@ def save_audio_in_mongo_and_localFs(mongo,
                                                 audio_store_dir,
                                                 audio_id,
                                                 'audioId')
-        print('Audio saved path', saved_path)
+        logger.debug('Audio saved path', saved_path)
 
     return fs_file_id, saved_path
 
@@ -1506,8 +1516,8 @@ def get_audio_waveform_json(audiowaveform_json, json_dir, audio_filename):
     audiowaveform_json_path = os.path.join(audiowaveform_json, json_dir)
     audiowaveform_audio_path = os.path.join(
         audiowaveform_audio_path, audio_filename)
-    # print('audiowaveform_audio_path', audiowaveform_audio_path)
-    # print('audiowaveform_json_path', audiowaveform_json_path)
+    # logger.debug('audiowaveform_audio_path', audiowaveform_audio_path)
+    # logger.debug('audiowaveform_json_path', audiowaveform_json_path)
     audiowaveform_json = createaudiowaveform(
         audiowaveform_audio_path, audiowaveform_json_path, audio_filename)
 
