@@ -59,6 +59,7 @@ def get_assignment_metadata(
     access_code,
     r_j, for_worker_id
 ):
+    #for_worker_id = spekaer_id recived from form
     workerId_list = []
     sentence_list = []
     karya_audio_report = []
@@ -83,7 +84,7 @@ def get_assignment_metadata(
         print("line 699", worker_id)
         # print('worker_id', worker_id, 'for_worker_id', for_worker_id)
         try:
-            if (worker_id == for_worker_id):
+            if (worker_id == for_worker_id):  #for_worker_id = spekaer_id recived from form
                 workerId_list.append(worker_id)
 
                 fileID_lists = item['id']
@@ -173,6 +174,94 @@ def get_audio_file_from_karya(current_file_id, hederr):
             print(new_audio_file['audiofile'])
 
     return new_audio_file
+
+
+
+
+def get_verified_karya_assignments(
+    verifyPh_request
+):
+    getTokenid_assignment_hedder = verifyPh_request.json()['id_token']
+    hederr = {'karya-id-token': getTokenid_assignment_hedder}
+    # assignment_urll = 'https://karyanltmbox.centralindia.cloudapp.azure.com/assignments?type=new&from=2021-05-11T07:23:40.654Z'
+    assignment_urll = 'https://karyanltmbox.centralindia.cloudapp.azure.com/assignments?type=verified&includemt=true&from=2021-05-11T07:23:40.654Z'
+    assignment_request = requests.get(headers=hederr, url=assignment_urll)
+
+    r_j = assignment_request.json()
+
+    return r_j, hederr
+
+def get_verified_assignment_metadata(
+        activeprojectname,
+        r_j, for_worker_id):
+    
+    #for_worker_id = spekaer_id recived from form
+    workerId_list = []
+    sentence_list = []
+    karya_audio_report = []
+    filename_list = []
+    fileID_list = []  # filname
+
+    micro_task_ids = dict((item['id'], item) for item in r_j["microtasks"])
+
+    # for item in r_j["microtasks"]:
+    #     karyareport = item['input']['data']['report']
+    #     print('line 692', karyareport)
+
+    # pprint(r_j)
+    for item in r_j['assignments']:
+        micro_task_id = item['microtask_id']
+        assignment_input = micro_task_ids[micro_task_id]['input']
+        assignment_data = assignment_input['data']
+        # assignment_files = assignment_input['files']
+
+        findWorker_id = assignment_input['chain']
+        worker_id = findWorker_id['workerId']
+        print("line 699", worker_id)
+        # print('worker_id', worker_id, 'for_worker_id', for_worker_id)
+        try:
+            if (worker_id == for_worker_id):  #for_worker_id = spekaer_id recived from form
+                workerId_list.append(worker_id)
+
+                fileID_lists = item['id']
+                fileID_list.append(fileID_lists)
+
+                sentences = assignment_data["sentence"]
+                sentence_list.append(sentences)
+
+                # appending karya report to list
+                karyareport = assignment_data['report']
+                karya_audio_report.append(karyareport)
+
+                # appending audio file name
+                # karya_file_name = assignment_files['recording']
+                # filename_list.append(karya_file_name)
+
+            # speakerid of accesscode
+            # accesscode_speakerid = accesscodedetails.find_one({"projectname": activeprojectname, "karyaaccesscode": access_code},
+            #                                                   {'karyaInfo.karyaSpeakerId': 1, '_id': 0})['karyaInfo.karyaSpeakerId']
+
+            # # task
+            # task = accesscodedetails.find_one({"projectname": activeprojectname, "karyaInfo.karyaSpeakerId": accesscode_speakerid,
+            #                                    "karyaaccesscode": access_code}, {'task': 1, '_id': 0})['task']
+
+        except:
+            if (worker_id == for_worker_id):
+                workerId_list.append(worker_id)
+
+                sentences = assignment_data["sentence"]
+                sentence_list.append(sentences)
+
+                fileID_lists = item['id']
+                fileID_list.append(fileID_lists)
+
+    print("line 842", karya_audio_report)
+    print("line 843", sentence_list)
+    print("line 844", workerId_list)
+
+    return micro_task_ids, workerId_list, sentence_list, karya_audio_report, filename_list, fileID_list
+
+
 
 
 if __name__ == '__main__':

@@ -87,7 +87,7 @@
             <input type="text" name = "for_worker_id" id="idfor_worker_id" placeholder="Enter Speaker ID"/ required>
             <br> -->
             <label for="pimobilenumber">Mobile Number: </label>
-            <input type="text" name = "mobile_number" id="pimobilenumber" placeholder="Enter Mobile Number"/ required>
+            <input type="text" name = "mobile_number" id="pimobilenumber" placeholder="Enter Mobile Number" required>
             <br>
             <input type="button" class="btn btn-info" id="getotpid" value="Get OTP">
             <br>
@@ -97,8 +97,17 @@
             <br>
             <br>
             <input type="submit" class="btn btn-primary" id="fetchaudioid" value="Fetch Audio"> <br>
-
           </form>
+
+
+          <br><br>
+              <!-- Form fields go here -->
+          <button type="submit" class="btn btn-danger" id="updatespeakerids" >Update SpeakerId</button>
+          
+
+
+
+          
         </div>
       {% endif %}
 
@@ -131,6 +140,7 @@
 
 {% block scripts %}
 {{super()}}
+<script src="{{url_for('.static', filename='home_insert.js')}}"></script>
 <script src="{{url_for('.static', filename='speaker_select2_dropdown.js')}}"></script>
 <script src="{{url_for('.static', filename='fetchaccesscodelist.js')}}"></script>
 <script type="text/javascript">fetchAccessCodeList({{ fetchaccesscodelist | tojson | safe }});</script>

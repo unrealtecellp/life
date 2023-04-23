@@ -9,6 +9,7 @@ from flask import (
 )
 from app import mongo
 import pandas as pd
+from bson import ObjectId
 from werkzeug.datastructures import FileStorage
 import requests
 import gzip
@@ -387,6 +388,7 @@ def fetch_karya_otp():
     return jsonify(result="False")
 
 
+
 # update audio metadata in transcription
 # def update_audio_metadata_transcription(speakerid, activeprojectname, karya_audio_report):
 # def update_audio_metadata_transcription(activeprojectname, karya_audio_report):
@@ -447,6 +449,25 @@ def fetch_karya_audio():
         #############################################################################################
         language = accesscodedetails.find_one({"projectname": activeprojectname, "karyaaccesscode": access_code},
                                               {'language': 1, '_id': 0})['language']
+        
+
+  
+
+#####################################################################################################################
+            
+            
+#########################################################################################################
+
+
+
+
+
+
+
+
+
+
+
 
         ################################ Get already fetched audio list and quesIDs   ########################################
         fetched_audio_list = karya_audio_management.get_fetched_audio_list(
@@ -562,3 +583,294 @@ def fetch_karya_audio_zip():
         # return redirect(url_for('karya_bp.home_insert'))
         return redirect(url_for('karya_bp.home_insert'))
     return render_template("karya_bp.fetch_karya_audio_zip")
+
+
+@karya_bp.route('/update_speaker_ids', methods=['GET', 'POST'])
+@login_required
+def update_speaker_ids():
+    print("update_speaker_ids")
+    projects, userprojects, projectsform, transcriptions, questionnaires, accesscodedetails = getdbcollections.getdbcollections(mongo,
+                                                                                                                                'projects',
+                                                                                                                                'userprojects',
+                                                                                                                                'projectsform',
+                                                                                                                                'transcriptions',
+                                                                                                                                'questionnaires',
+                                                                                                                                'accesscodedetails')
+    current_username = getcurrentusername.getcurrentusername()
+    # print('curent user : ', current_username)
+    activeprojectname = getactiveprojectname.getactiveprojectname(
+        current_username, userprojects)
+    projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
+    project_type = getprojecttype.getprojecttype(projects, activeprojectname)
+    print("karya.py line 418 - ", project_type)
+    print("karya.py line 419 - ", activeprojectname)
+    derivedFromProjectName = ''
+    derive_from_project_type = ''
+    if (project_type == 'transcriptions'):
+        
+        derive_from_project_type, derivedFromProjectName = getprojecttype.getderivedfromprojectdetails(
+            projects, activeprojectname)
+        print("karya.py line 425 - ", derive_from_project_type, derivedFromProjectName)
+
+##############################################################
+    homeinsertform_data = json.loads(request.form['a'])
+    homeinsertform_data = dict(homeinsertform_data)
+    print("homeinsertform_data :",homeinsertform_data)
+ ##############################################################   
+    # if request.method == 'POST':
+    
+    access_code = homeinsertform_data["access_code"]
+    for_worker_id = homeinsertform_data["speaker_id"]
+    phone_number = homeinsertform_data["pimobilenumber"]
+    otp = homeinsertform_data["karyaotp"]
+
+    ###############################   verify OTP    ##########################################
+    otp_verified, verification_details = karya_api_access.verify_karya_otp(
+        access_code, phone_number, otp
+    )
+    if not otp_verified:
+        flash("Please Provide Correct OTP/Mobile Number")
+        return redirect(url_for('karya_bp.home_insert'))
+    #############################################################################################
+
+    ###############################   Get Assignments    ########################################
+    
+    # r_j = request json , hederr = token_Id 
+    r_j, hederr = karya_api_access.get_verified_karya_assignments(verification_details)
+    # print(r_j)
+    microtasks = r_j['microtasks']
+    assignment = r_j['assignments']
+
+    '''list of all required meta-data of verified assignments and microtasks'''  
+    filenames  = [fileName["input"]["files"]["recording"] for fileName in microtasks]
+    domains = [doamin['input']['data']['Domain'] for doamin in microtasks]
+    elicitationmethods = [elicitationmethod['input']['data']['Elicitation Method'] for elicitationmethod in microtasks]
+    sentences = [sentence['input']['data']['sentence'] for sentence in microtasks]
+    speakerIds = [speakerId["input"]["chain"]["workerId"] for speakerId in microtasks]
+    fileIds = [fileId["id"] for fileId in assignment]
+    
+
+    # print("Filename : ",filenames, "\n")
+    # print("domain: ", domains, "\n")
+    # print("elicit_method : ", elicitationmethods, "\n")
+    # print("sentence : ", sentences, "\n")
+    # print("speakerids : ", speakerIds, "\n")
+    # print("fileId : ", fileIds)
+
+    # verified_dict = dict(zip(sentences, zip(fileIds, filenames, speakerIds, domains, elicitationmethods)))
+
+    '''dictionary of all list of required meta-data where key is sentence'''
+    verifiedMetadata_dict = {}
+    for key in sentences:
+        verifiedMetadata_dict[key] = {}
+        
+    # Loop through the keys and values lists and add each value to the corresponding nested dictionary
+    for key, fileIds, speakerIds, filenames, domains in zip(sentences, fileIds, speakerIds, filenames, domains):
+        verifiedMetadata_dict[key]['fileId'] = fileIds
+        verifiedMetadata_dict[key]['speakerId'] = speakerIds
+        verifiedMetadata_dict[key]['fileName'] = filenames
+        verifiedMetadata_dict[key]['domain'] = domains
+    print("verifiedMetadata_dict: ",verifiedMetadata_dict)
+
+    for verified_keys, verified_values in verifiedMetadata_dict.items():
+        print("verified_values : ", verified_values['fileId'])
+        # print("verified_keys : ", verified_keys)
+        # find_speakerId = transcriptions.find_one({"projectname": activeprojectname ,
+        #                                           "karyaInfo.karyaFetchedAudioId": verified_values['fileId']},
+        #                                     {'prompt.Domain': 1, 'karyaInfo.karyaFetchedAudioId':1,
+        #                                     'karyaInfo.karyaSpeakerId':1, "prompt.content":1 , '_id': 1})
+        find_speakerId = transcriptions.find_one({"projectname": activeprojectname },
+                                {'prompt.Domain': 1, 'karyaInfo.karyaFetchedAudioId':1,
+                                'karyaInfo.karyaSpeakerId':1, "prompt.content":1 , '_id': 1})
+        print("find_speakerId :", find_speakerId)
+        
+        # print(find_speakerId['prompt']['content'])
+
+        # { results: { $elemMatch: { $gte: 80, $lt: 85 } } }
+
+        '''finding sentence from "prompt.content"  because path is unknown  and matching the data-base sentence with the
+            karya's sentence ''' 
+        
+        sentenceFound = []
+        data = find_speakerId['prompt']['content']
+        for key1 in data.keys():
+            for key2 in data[key1]['text'].keys():
+                for key3 in data[key1]['text'][key2]['textspan'].keys():
+                    if 'Latin' in key3:
+                        sentenceFound.append(data[key1]['text'][key2]['textspan'][key3])
+                    else:
+                        flash("The script of sentence not found in transcription/verification document.")
+                        # return redirect(url_for('karya_bp.home_insert'))
+        for sentencefound in sentenceFound:
+            if sentencefound == verified_keys: #verified_keys
+                # print(find_speakerId["karyaInfo"]["karyaSpeakerId"], " =====> ID : ",find_speakerId["_id"])
+                print(" =====> ID : ",find_speakerId["_id"])
+                
+                documentId = find_speakerId['_id']
+                
+                try:
+                    print("spekaer Id : ", find_speakerId["karyaInfo"]["karyaSpeakerId"])
+                    transcriptions.update_one({'_id': ObjectId(documentId)},
+                                        {"$set":{"karyaInfo.karyaSpeakerId": 
+                                                    find_speakerId["karyaInfo"]["karyaSpeakerId"]}})
+                except KeyError:
+                    print("The 'karyaInfo' key was not found in the MongoDB document. Skipping...")
+            
+            else:
+                print("sentecne not found")
+
+        # print(find_speakerId)
+        # print(find_speakerId['prompt']['Domain'] , find_speakerId['karyaInfo']['karyaFetchedAudioId'])
+        # print("Old speaker Id : ",find_speakerId["karyaInfo"]["karyaSpeakerId"] ,
+        #         "=========> New Speaker Id : ", verified_values['speakerId'])
+
+    # return redirect(url_for('karya_bp.home_insert'))
+
+    # return render_template("karya_bp.update_speaker_ids")
+    return "OK"
+
+
+
+
+
+
+
+        ##########################################################################################################################
+        # microtasks = r_j['microtasks']
+        # # for microtasks in microtasks:
+        #     # print(microtasks)
+        # assignment = r_j['assignments']
+        # # print(assignment)
+
+        # assignment_dict = {a['id']: a for a in assignment}
+        # print(type(assignment_dict))
+        # # assignments_dict = {}
+        # # for assignment in data['assignments']:
+	    # #     assignments_dict[assignment['id']] = assignment
+        # # print(assignments_dict)
+        # microassign = zip(microtasks, assignment_dict)
+
+
+
+
+        # for current_microtask, current_assignment in microassign:
+        #     # print("current microtask: ", current_microtask)
+        #     print("current_assignment : ", current_assignment)
+
+        #     filename = current_microtask['input']['files']['recording']
+        #     print("filename:", filename)
+        #     filenames  = [fileName["input"]["files"]["recording"] for fileName in current_microtask["microtasks"]]
+        #     print(filenames)
+        #     domain = current_microtask['input']['data']['Domain']
+        #     elicitationmethod = current_microtask['input']['data']['Elicitation Method']
+        #     sentence = current_microtask['input']['data']['sentence']
+        #     task_id = current_assignment
+        #     print("domain: ", domain)
+        #     print("elicit_method: ", elicitationmethod)
+        #     print("sentence: ", sentence)
+        #     print("task_id: ", task_id)
+
+
+        #     findSpeakerIdMetadata = transcriptions.find({"projectname": activeprojectname,
+        #                                                  "prompt":{"$elemMatch": {"content.$**.textspan.chokri": sentence,
+        #                                                                           "domain": domain,"Elicitation Method": elicitationmethod}},
+        #                                                                           "karyaInfo.karyaFetchedAudioId": task_id}, {"_id": 0})
+        #     for findspeakeridmetadata in findSpeakerIdMetadata:
+        #         print("findSpeakerIdMetadata : ", findSpeakerIdMetadata)
+        #         karyaspeakerid = current_microtask['chain']['workerId']
+        #         # transcriptions.update_one({'id':findspeakeridmetadata["_id"]},
+        #         #                           {"$set":{"karyaInfo.karyaSpeakerId":karyaspeakerid}})
+        #         op = transcriptions.find_one({'id':findspeakeridmetadata["_id"], "karyaInfo.karyaSpeakerId":karyaspeakerid})
+        #         pp = transcriptions.find_one({'id':findspeakeridmetadata["_id"]}, {"karyaInfo.karyaSpeakerId":1})
+        #         print("new speaker id - ",  op, "old speaker id - ", pp )
+
+
+
+        #     for findspeakeridmetadata in findSpeakerIdMetadata:
+        #         karyaspeakerid = current_microtask['chain']['workerId']
+        #         transcriptions.update_one({'id':findspeakeridmetadata["_id"]},
+        #                                   {"$set":{"karyaInfo.karyaSpeakerId":karyaspeakerid}})
+
+                # if findspeakeridmetadata["prompt"]["content"]["$**"]["textspan"]["latin"] == sentence and findspeakeridmetadata["prompt"]["domain"] == domain and findspeakeridmetadata["prompt"]["Elicitation Method"] == elicitationmethod and findspeakeridmetadata["audioFilename"] == audioFilename and findspeakeridmetadata["karyaInfo"]["karyaFetchedAudioId"] ==  :
+                #     print(findSpeakerIdMetadata)
+    #     return redirect(url_for('karya_bp.home_insert'))
+
+    # return render_template("fetch_karya_audio.html")
+
+
+
+        # microtasks = r_j['microtasks']
+        # assignment = r_j['assignments']
+        # for current_microtask in microtasks + assignment:
+        #     filename = current_microtask['files']['recording']
+        #     # fileid = filename[0:filename.rfind('.wav')]
+        #     speakerId = current_microtask['chain']['workerId']
+        #     sentence = current_microtask['input']['data']['sentence']
+        #     domain = current_microtask['input']['data']['Domain']
+        #     elicitationmethod = current_microtask['input']['data']['Elicitation Method']
+        #     audioFilename = current_microtask['audioFilename']
+        #     fileid = current_microtask["id"]
+
+            
+            # lifespeakerId = 
+            # transcriptions.update_one(
+            #     {"projectname": activeprojectname, 'karyaInfo.karyaFtechedAudioId': fileid},
+            #     {"$set": {"speakerId":lifespeakerId, "karyaInfo.karyaSpeakerId": speakerId}}
+            # )
+
+            # accesscodedetails.insert_one(
+                
+            # )
+
+
+            # findSpeakerIdMetadata = transcriptions.find({"projectname": activeprojectname},
+            #                                         {"prompt.content.$**.textspan.latin":1,
+            #                                          "prompt.domain":1, 
+            #                                          "prompt.Elicitation Method": 1,
+            #                                            "audioFilename":1, 
+            #                                            "karyaInfo.karyaFetchedAudioId":1,
+            #                                            "_id": 0})
+
+
+            # findSpeakerIdMetadata = transcriptions.find({"projectname": activeprojectname},
+            #                                         {"prompt.content.$**.textspan.chokri":sentence,
+            #                                          "prompt.domain":domain, 
+            #                                          "prompt.Elicitation Method": elicitationmethod,
+            #                                            "karyaInfo.karyaFetchedAudioId":audioFilename, 
+            #                                            "_id": 0})
+            
+
+            # findSpeakerIdMetadata = transcriptions.find({"projectname": activeprojectname},
+            #                                         {"prompt.content.$**.textspan.chokri":sentence,
+            #                                          "prompt.domain":domain, 
+            #                                          "prompt.Elicitation Method": elicitationmethod,
+            #                                            "karyaInfo.karyaSpeakerId":speakerId, 
+            #                                            "_id": 0})
+    
+            
+
+
+    
+
+
+    # v_quesId =   [ quesid["input"]["data"]["quesId"] for quesid in verification_file_data["microtasks"] ]
+    # v_domain = [domain["input"]["data"]["Domain"] for domain in verification_file_data["microtasks"]]
+    # v_sentence =[sentence["input"]["data"]["sentence"] for sentence in verification_file_data["microtasks"]]
+    # v_fileName = [fileName["input"]["files"]["recording"] for fileName in verification_file_data["microtasks"]]
+    # v_speakerId = [speakerId["input"]["chain"]["workerId"] for speakerId in verification_file_data["microtasks"]]
+    # v_fileId = [fileId["id"] for fileId in verification_file_data["assignments"]]
+
+    #     # dictionary  of speakr id and files
+    # my_dict = {}
+    # for key in v_sentence:
+    #     my_dict[key] = {}
+
+    # # Loop through the keys and values lists and add each value to the corresponding nested dictionary
+    # for key, v_fileId, v_speakerId, v_fileName, v_domain in zip(v_sentence, v_fileId, v_speakerId, v_fileName, v_domain):
+    #     my_dict[key]['v_fileId'] = v_fileId
+    #     my_dict[key]['v_speakerId'] = v_speakerId
+    #     my_dict[key]['v_fileName'] = v_fileName
+    #     my_dict[key]['v_domain'] = v_domain
+
+    # # Print the resulting nested dictionary
+    # print(my_dict)
