@@ -19,7 +19,8 @@ from app.controller import (
     readJSONFile,
     savenewproject,
     updateuserprojects,
-    life_logging
+    life_logging,
+    readzip
 )
 from app.lifedata.controller import (
     copydatafromparentproject,
@@ -69,7 +70,6 @@ def newdataform():
     Returns:
         _type_: _description_
     """
-    # print('lifedata newdataform')
     projects, userprojects, projectsform, questionnaires, transcriptions = getdbcollections.getdbcollections(mongo,
                                                                                                             'projects',
                                                                                                             'userprojects',
@@ -186,3 +186,47 @@ def getlanguagelist():
             #     langscript.append(lang_script)
 
     return jsonify(languageslist=languageslist)
+
+@lifedata.route('/datazipfile', methods=['GET', 'POST'])
+@login_required
+def datazipfile():
+    try:
+        projects, tagsets, = getdbcollections.getdbcollections(mongo,
+                                                            'projects',
+                                                                'tagsets')
+        if request.method == "POST":
+            derive_from_project_name = dict(request.form.lists())
+            derive_from_project_name = derive_from_project_name['deriveFromProjectName'][0]
+            logger.debug("derive_from_project_name: %s", derive_from_project_name)
+            validation_zip_file = request.files.to_dict()
+            validation_zip_file = validation_zip_file['zipFile']
+            logger.debug("validation_zip_file: %s", validation_zip_file)
+            completed, message, validation_tagset = readzip.read_zip(tagsets, validation_zip_file)
+            logger.debug('completed: %s', completed)
+            logger.debug('message: %s', message)
+            logger.debug('validation_tagset: %s', validation_tagset)
+            if (completed):
+                validation_tagset_keys = list(validation_tagset.keys())
+            else:
+                return jsonify(completed=completed,
+                               message=message,
+                               mappingTagset={},
+                               validationTagsetKeys=[])
+
+            derive_from_project_type = getprojecttype.getprojecttype(projects, derive_from_project_name)
+            logger.debug("derive_from_project_type: %s", derive_from_project_type)
+            if (derive_from_project_type == 'recordings'):
+                derive_from_project_tagset = ['Audio_Recording']
+            else:
+                derive_from_project_tagset = []
+
+            if (len(derive_from_project_tagset) != 0):
+                mapping_tagset = {}
+                for category in derive_from_project_tagset:
+                    mapping_tagset[category] = validation_tagset_keys
+            return jsonify(completed=completed,
+                            message=message,
+                            mappingTagset=mapping_tagset,
+                            validationTagsetKeys=validation_tagset_keys)
+    except:
+        logger.exception("")
