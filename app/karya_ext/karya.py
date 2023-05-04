@@ -716,12 +716,3 @@ def update_speaker_ids():
 
 
 
-
-# find_speakerId = transcriptions.find_one({"derivedfromprojectdetails.quesId": "Q20230417211234026414"},
-#                                                   {'prompt.Domain': 1, "audioFilename":1, 
-#                                                    "derivedfromprojectdetails.quesId":1,
-#                                                    "karyaInfo":1,
-#                                                    '_id': 0})
-#     print(find_speakerId)
-
-

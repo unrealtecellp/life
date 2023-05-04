@@ -102,13 +102,16 @@
 
           <br><br>
               <!-- Form fields go here -->
-          <button type="submit" class="btn btn-danger" id="updatespeakerids" >Update SpeakerId</button>
+              {% if  shareinfo['sharemode']|int >= 10 %}
+              <button type="submit" class="btn btn-danger" id="updatespeakerids" >Update SpeakerId</button>
+              {% endif %}
+          
           
 
 
 
           
-        </div>
+        </div> 
       {% endif %}
 
       <!-- <br><br><br><br> -->

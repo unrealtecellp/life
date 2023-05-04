@@ -69,6 +69,7 @@ def get_assignment_metadata(
     karya_audio_report = []
     filename_list = []
     fileID_list = []  # filname
+    
 
     micro_task_ids = dict((item['id'], item) for item in r_j["microtasks"])
 
@@ -82,11 +83,20 @@ def get_assignment_metadata(
         assignment_input = micro_task_ids[micro_task_id]['input']
         assignment_data = assignment_input['data']
         # assignment_files = assignment_input['files']
-
         findWorker_id = assignment_input['chain']
-        worker_id = findWorker_id['workerId']
-        logger.debug("worker_id: %s", worker_id)
-        # print('worker_id', worker_id, 'for_worker_id', for_worker_id)
+
+        try:
+            worker_id = assignment_data['recorder_id'] # recorder_id is colection speaker_id
+            logger.debug("recorder_id: %s", worker_id) # recorder_id is colection speaker_id
+
+        except:
+            worker_id = findWorker_id['workerId']
+            logger.debug("worker_id: %s", worker_id)
+            # print('worker_id', worker_id, 'for_worker_id', for_worker_id)
+        
+
+      
+
         try:
             if (worker_id == for_worker_id):  #for_worker_id = spekaer_id recived from form
                 workerId_list.append(worker_id)
