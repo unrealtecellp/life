@@ -70,92 +70,102 @@ def newdataform():
     Returns:
         _type_: _description_
     """
-    projects, userprojects, projectsform, questionnaires, transcriptions = getdbcollections.getdbcollections(mongo,
-                                                                                                            'projects',
-                                                                                                            'userprojects',
-                                                                                                            'projectsform',
-                                                                                                            'questionnaires',
-                                                                                                            'transcriptions')
-    current_username = getcurrentusername.getcurrentusername()
+    try:
+        projects, userprojects, projectsform, questionnaires, transcriptions = getdbcollections.getdbcollections(mongo,
+                                                                                                                'projects',
+                                                                                                                'userprojects',
+                                                                                                                'projectsform',
+                                                                                                                'questionnaires',
+                                                                                                                'transcriptions')
+        current_username = getcurrentusername.getcurrentusername()
 
-    include_speakerIds = ['transcriptions', 'recordings']
+        include_speakerIds = ['transcriptions', 'recordings']
 
-    if request.method =='POST':
-        new_data_form = dict(request.form.lists())
-        logger.debug('new_data_form: %s', pformat(new_data_form))
-        new_data_form_files = request.files.to_dict()
-        logger.debug('new_data_form_files: %s', pformat(new_data_form_files))
-        project_type = new_data_form['projectType'][0]
-        projectname = 'D_'+new_data_form['projectname'][0]
-        about_project = new_data_form['aboutproject'][0]
-        derive_from_project_name = None
+        if request.method =='POST':
+            new_data_form = dict(request.form.lists())
+            logger.debug('new_data_form: %s', pformat(new_data_form))
+            new_data_form_files = request.files.to_dict()
+            logger.debug('new_data_form_files: %s', pformat(new_data_form_files))
+            project_type = new_data_form['projectType'][0]
+            projectname = 'D_'+new_data_form['projectname'][0]
+            about_project = new_data_form['aboutproject'][0]
+            derive_from_project_name = None
 
-        project_name = savenewproject.savenewproject(projects,
-                                                        projectname,
-                                                        current_username,
-                                                        aboutproject=about_project,
-                                                        projectType=project_type
-                                                        )
-        if project_name == '':
-            flash(f'Project Name : "{projectname}" already exist!')
-            return redirect(url_for('lifedata.home'))
-
-        if ("derivefromproject" in new_data_form):
-        #     print("line no: 76, derivefromproject in new_data_form")
-            derive_from_project_name = new_data_form["derivefromproject"][0]
-            projects.update_one({"projectname": derive_from_project_name},
-                                {"$addToSet": {
-                                    "projectDerivatives": project_name
-                                }})
-            projects.update_one({"projectname": project_name},
-                                {"$addToSet": {
-                                    "derivedFromProject": derive_from_project_name
-                                }})
-
-        updateuserprojects.updateuserprojects(userprojects,
-                                                projectname,
-                                                current_username
-                                                )
-
-        save_data_form = savenewdataform.savenewdataform(projectsform,
+            project_name = savenewproject.savenewproject(projects,
                                                             projectname,
-                                                            new_data_form,
-                                                            current_username
-                                                        )
-        logger.debug("save_data_form: %s", pformat(save_data_form))
+                                                            current_username,
+                                                            aboutproject=about_project,
+                                                            projectType=project_type
+                                                            )
+            if project_name == '':
+                flash(f'Project Name : "{projectname}" already exist!')
+                return redirect(url_for('lifedata.home'))
 
-        if (project_type == 'validation'):
-            validation_collection, tagsets = getdbcollections.getdbcollections(mongo,
-                                                                      'validation',
-                                                                      'tagsets')
-            logger.debug("project_type: %s", project_type)
-            validation_zip_file = new_data_form_files["zipFile"]
-            tagset_project_id = save_tagset.save_tagset(tagsets, validation_zip_file)
-            validate_file_type = new_data_form['fileType']
-            create_validation_type_project.create_validation_type_project(validation_collection,
-                                                                          project_name,
-                                                                          validation_zip_file,
-                                                                          validate_file_type,
-                                                                          derive_from_project_name)
+            if ("derivefromproject" in new_data_form):
+            #     print("line no: 76, derivefromproject in new_data_form")
+                derive_from_project_name = new_data_form["derivefromproject"][0]
+                projects.update_one({"projectname": derive_from_project_name},
+                                    {"$addToSet": {
+                                        "projectDerivatives": project_name
+                                    }})
+                projects.update_one({"projectname": project_name},
+                                    {"$addToSet": {
+                                        "derivedFromProject": derive_from_project_name
+                                    }})
 
-            return redirect(url_for("lifedata.validation"))
+            updateuserprojects.updateuserprojects(userprojects,
+                                                    projectname,
+                                                    current_username
+                                                    )
 
-        if ("derivefromproject" in new_data_form):
-        # copy all the data from the "derivedfromproject" to "newproject"
-            derive_from_project_type = getprojecttype.getprojecttype(projects, derive_from_project_name)
-            logger.debug('derive_from_project_type: %s', derive_from_project_type)
-            if (derive_from_project_type == 'questionnaires' and
-                project_type in include_speakerIds):
-                data_collection, = getdbcollections.getdbcollections(mongo, project_type)
-                copydatafromparentproject.copydatafromquesproject(questionnaires,
-                                                                    data_collection,
-                                                                    derive_from_project_name,
-                                                                    projectname,
-                                                                    current_username)
+            save_data_form = savenewdataform.savenewdataform(projectsform,
+                                                                projectname,
+                                                                new_data_form,
+                                                                current_username,
+                                                                project_type
+                                                            )
+            logger.debug("save_data_form: %s", pformat(save_data_form))
 
-        return redirect(url_for("enternewsentences"))
+            if (project_type == 'validation'):
+                validation_collection, tagsets = getdbcollections.getdbcollections(mongo,
+                                                                        'validation',
+                                                                        'tagsets')
+                logger.debug("project_type: %s", project_type)
 
-    return render_template("lifedatahome.html")
+                validation_zip_file = new_data_form_files["tagsetZipFile"]
+                tagset_project_id = save_tagset.save_tagset(tagsets, validation_zip_file, project_name)
+                logger.debug(tagset_project_id, type(tagset_project_id))
+                projects.update_one({"projectname": project_name},
+                                    {"$set": {
+                                        "tagsetId": tagset_project_id
+                                    }})
+                create_validation_type_project.create_validation_type_project(projects,
+                                                                            validation_collection,
+                                                                            project_name,
+                                                                            derive_from_project_name,
+                                                                            current_username)
+
+                # return redirect(url_for("lifedata.validation"))
+                return redirect(url_for("enternewsentences"))
+
+            if ("derivefromproject" in new_data_form):
+            # copy all the data from the "derivedfromproject" to "newproject"
+                derive_from_project_type = getprojecttype.getprojecttype(projects, derive_from_project_name)
+                logger.debug('derive_from_project_type: %s', derive_from_project_type)
+                if (derive_from_project_type == 'questionnaires' and
+                    project_type in include_speakerIds):
+                    data_collection, = getdbcollections.getdbcollections(mongo, project_type)
+                    copydatafromparentproject.copydatafromquesproject(questionnaires,
+                                                                        data_collection,
+                                                                        derive_from_project_name,
+                                                                        projectname,
+                                                                        current_username)
+
+            return redirect(url_for("enternewsentences"))
+    except:
+        logger.exception("")
+        flash("Some error occured!!!")
+        return render_template("lifedatahome.html")
 
 @lifedata.route('/validation', methods=['GET', 'POST'])
 @login_required
@@ -199,7 +209,7 @@ def datazipfile():
             derive_from_project_name = derive_from_project_name['deriveFromProjectName'][0]
             logger.debug("derive_from_project_name: %s", derive_from_project_name)
             validation_zip_file = request.files.to_dict()
-            validation_zip_file = validation_zip_file['zipFile']
+            validation_zip_file = validation_zip_file['tagsetZipFile']
             logger.debug("validation_zip_file: %s", validation_zip_file)
             completed, message, validation_tagset = readzip.read_zip(tagsets, validation_zip_file)
             logger.debug('completed: %s', completed)

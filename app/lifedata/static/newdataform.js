@@ -101,7 +101,9 @@ var dataProjectType = [
   {"id": "", "text": ""},
   {"id": "recordings", "text": "Recordings"},
   {"id": "validation", "text": "Validation"},
-  {"id": "transcriptions", "text": "Speech Transcription and Labeling"}
+  {"id": "transcriptions", "text": "Speech Transcription and Labeling"},
+  // {"id": "crawling", "text": "Crawling"},
+  // {"id": "annotation", "text": "Annotation"}
 ];
 
 $('.dataprojecttype').select2({
@@ -232,10 +234,12 @@ $("#idprojecttype").change(function() {
     if (projectTypeOptions[i].value === '') continue
     let projecttypeId = projectTypeOptions[i].value+"typeproject";
     var x = document.getElementById(projecttypeId);
+    // console.log(projecttypeId, x);
     if (projectTypeOptions[i].value === projecttypevalue) {
       // console.log(projectTypeOptions[i].value)
       // console.log(x);
       if (x.style.display === "none") {
+        // console.log(x);
           x.style.display = "block";
           $('#'+projecttypeId).find('input, textarea, button, select').attr('disabled', false);
       }
@@ -262,33 +266,33 @@ $("#idprojecttype").change(function() {
   // }
 });
 
-uploadFileTypes = [
+// uploadFileTypes = [
 
-  {
-    'id': 'audio',
-    'text': 'Audio'
-  },
-  {
-      'id': 'text',
-      'text': 'Text'
-  },
-  {
-      'id': 'image',
-      'text': 'Image'
-  }
-]
+//   {
+//     'id': 'audio',
+//     'text': 'Audio'
+//   },
+//   {
+//       'id': 'text',
+//       'text': 'Text'
+//   },
+//   {
+//       'id': 'image',
+//       'text': 'Image'
+//   }
+// ]
 
-function uploadFileType() {
-  $('#fileType').select2({
-      placeholder: 'select',
-      data: uploadFileTypes,
-      // allowClear: true
-  });
-}
-uploadFileType();
+// function uploadFileType() {
+//   $('#fileType').select2({
+//       placeholder: 'select',
+//       data: uploadFileTypes,
+//       // allowClear: true
+//   });
+// }
+// uploadFileType();
 
-$("#zipFile").change(function() {
-  let zipFileElement = document.getElementById('zipFile');
+$("#tagsetZipFile").change(function() {
+  let zipFileElement = document.getElementById('tagsetZipFile');
   // console.log(zipFileElement);
   zipFileName = zipFileElement.files[0];
   // console.log(zipFileName);
@@ -301,11 +305,11 @@ $("#zipFile").change(function() {
 
 function uploadValidatioZipFile(btn) {
   // console.log(btn, btn.id);
-  const file = document.getElementById('zipFile').files[0];
+  const file = document.getElementById('tagsetZipFile').files[0];
   // console.log(file);
   if (file !== undefined) {
     var formData = new FormData();
-    formData.append('zipFile', file);
+    formData.append('tagsetZipFile', file);
     let deriveFromProjectName = document.getElementById('idderivefromproject').value;
     formData.append('deriveFromProjectName', deriveFromProjectName)
     $.ajax({

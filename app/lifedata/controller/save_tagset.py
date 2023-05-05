@@ -13,7 +13,7 @@ import re
 
 logger = life_logging.get_logger()
 
-def save_tagset(tagsets, zip_file):
+def save_tagset(tagsets, zip_file, use_in_project):
     current_username = getcurrentusername.getcurrentusername()
     tag_set = {}
     tag_set_meta_data = {}
@@ -90,6 +90,7 @@ def save_tagset(tagsets, zip_file):
                 tagset_project_details["derivedFromProject"] = []
                 tagset_project_details["projectDerivatives"] = []
                 tagset_project_details["aboutproject"] = ''
+                tagset_project_details["useInProjects"] = [use_in_project]
 
                 tagset_project_id = tagsets.insert_one(tagset_project_details)
                 tagset_project_ids.append(tagset_project_id)

@@ -117,7 +117,7 @@ LiFe Data Home
       <div id="validationtypeproject" style="display: none;">
         <div class="col upload">
           <label class="btn btn-danger">
-            Select ZIP File <input type="file" id="zipFile" name="zipFile" accept="application/zip" hidden>
+            Select ZIP File <input type="file" id="tagsetZipFile" name="tagsetZipFile" accept="application/zip" hidden>
           </label>
           <input class="btn btn-primary" id="validationzipfilesubmit" type="button" value="Upload" onclick="uploadValidatioZipFile(this);" data-toggle="modal">
           <input class="btn btn-primary" id="validationtagsetmappingedit" type="button" value="Edit Mapping" onclick="editValidatioTagsetMapping(this);" data-toggle="modal" data-target="#validationTagsetMappingModal" hidden>
@@ -125,9 +125,9 @@ LiFe Data Home
 
           <div id="validationtagsetmapping" style="display: none;"></div>
 
-          <label for="fileType">File Type:&nbsp;&nbsp;</label>
+          <!-- <label for="fileType">File Type:&nbsp;&nbsp;</label>
           <select name="fileType" id="fileType" style="width: 30%">
-          </select>
+          </select> -->
         </div>
       </div>
 
