@@ -9,6 +9,7 @@ from flask import (
 )
 from app import mongo
 import pandas as pd
+from bson import ObjectId
 from werkzeug.datastructures import FileStorage
 import requests
 import gzip
@@ -388,6 +389,7 @@ def fetch_karya_otp():
     return jsonify(result="False")
 
 
+
 # update audio metadata in transcription
 # def update_audio_metadata_transcription(speakerid, activeprojectname, karya_audio_report):
 # def update_audio_metadata_transcription(activeprojectname, karya_audio_report):
@@ -576,3 +578,142 @@ def fetch_karya_audio_zip():
         # return redirect(url_for('karya_bp.home_insert'))
         return redirect(url_for('karya_bp.home_insert'))
     return render_template("karya_bp.fetch_karya_audio_zip")
+
+
+@karya_bp.route('/update_speaker_ids', methods=['GET', 'POST'])
+@login_required
+def update_speaker_ids():
+    print("update_speaker_ids")
+    projects, userprojects, projectsform, transcriptions, questionnaires, accesscodedetails = getdbcollections.getdbcollections(mongo,
+                                                                                                                                'projects',
+                                                                                                                                'userprojects',
+                                                                                                                                'projectsform',
+                                                                                                                                'transcriptions',
+                                                                                                                                'questionnaires',
+                                                                                                                                'accesscodedetails')
+    current_username = getcurrentusername.getcurrentusername()
+    # print('curent user : ', current_username)
+    activeprojectname = getactiveprojectname.getactiveprojectname(
+        current_username, userprojects)
+    projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
+    project_type = getprojecttype.getprojecttype(projects, activeprojectname)
+    print("karya.py line 418 - ", project_type)
+    print("karya.py line 419 - ", activeprojectname)
+    derivedFromProjectName = ''
+    derive_from_project_type = ''
+    if (project_type == 'transcriptions'):
+        
+        derive_from_project_type, derivedFromProjectName = getprojecttype.getderivedfromprojectdetails(
+            projects, activeprojectname)
+        print("karya.py line 425 - ", derive_from_project_type, derivedFromProjectName)
+
+##############################################################
+    homeinsertform_data = json.loads(request.form['a'])
+    homeinsertform_data = dict(homeinsertform_data)
+    print("homeinsertform_data :",homeinsertform_data)
+ ##############################################################   
+    # if request.method == 'POST':
+    
+    access_code = homeinsertform_data["access_code"]
+    for_worker_id = homeinsertform_data["speaker_id"]
+    phone_number = homeinsertform_data["pimobilenumber"]
+    otp = homeinsertform_data["karyaotp"]
+
+    ###############################   verify OTP    ##########################################
+    otp_verified, verification_details = karya_api_access.verify_karya_otp(
+        access_code, phone_number, otp
+    )
+    if not otp_verified:
+        flash("Please Provide Correct OTP/Mobile Number")
+        return redirect(url_for('karya_bp.home_insert'))
+    #############################################################################################
+
+    ###############################   Get Assignments    ########################################
+    
+    # r_j = request json , hederr = token_Id 
+    r_j, hederr = karya_api_access.get_verified_karya_assignments(verification_details)
+    # print(r_j)
+    microtasks = r_j['microtasks']
+    assignment = r_j['assignments']
+
+    '''list of all required meta-data of verified assignments and microtasks'''  
+    filenames  = [fileName["input"]["files"]["recording"] for fileName in microtasks]
+    domains = [doamin['input']['data']['Domain'] for doamin in microtasks]
+    elicitationmethods = [elicitationmethod['input']['data']['Elicitation Method'] for elicitationmethod in microtasks]
+    sentences = [sentence['input']['data']['sentence'] for sentence in microtasks]
+    speakerIds = [speakerId["input"]["chain"]["workerId"] for speakerId in microtasks]
+    fileIds = [fileId["id"] for fileId in assignment]
+    quesIds = [quesId['input']['data']['quesId'] for quesId in microtasks]
+    
+
+    # print("Filename : ",filenames, "\n")
+    # print("domain: ", domains, "\n")
+    # print("elicit_method : ", elicitationmethods, "\n")
+    # print("sentence : ", sentences, "\n")
+    # print("speakerids : ", speakerIds, "\n")
+    # print("fileId : ", fileIds)
+
+    # verified_dict = dict(zip(sentences, zip(fileIds, filenames, speakerIds, domains, elicitationmethods)))
+
+    '''dictionary of all list of required meta-data where key is sentence'''
+    verifiedMetadata_dict = {}
+    for key in filenames:
+        verifiedMetadata_dict[key] = {}
+        
+    # Loop through the keys and values lists and add each value to the corresponding nested dictionary
+    for key, fileIds, speakerIds, domains, quesIds, sentences in zip(filenames, fileIds, speakerIds, domains, quesIds, sentences):
+        verifiedMetadata_dict[key]['fileId'] = fileIds
+        verifiedMetadata_dict[key]['speakerId'] = speakerIds
+        # verifiedMetadata_dict[key]['fileName'] = filenames
+        verifiedMetadata_dict[key]['domain'] = domains
+        verifiedMetadata_dict[key]['quesId'] = quesIds
+        verifiedMetadata_dict[key]['sentence'] = sentences
+
+    print("\n verifiedMetadata_dict: ",verifiedMetadata_dict)
+
+
+
+    # First, get the list of original file names from the transcriptions collection
+    databaseFileNames = []
+    for document in transcriptions.find({"projectname": activeprojectname}, 
+                                        {"audioFilename": 1, "_id": 0}):
+        if document["audioFilename"] != "":
+            databaseFileNames.append(document["audioFilename"])
+    print(" \n \n databaseFileNames : ", databaseFileNames) #db file name list 
+
+    # Loop over each verified audio file and check if it matches with any of the original file names
+    for verified_audiofile, verified_value in verifiedMetadata_dict.items():
+        for databaseFileName in databaseFileNames: 
+            if databaseFileName.endswith(verified_audiofile): #matching karya file name with the db 
+            # If there's a match, update the karyaSpeakerId in the transcriptions collection
+                # transcriptions.update_one({'_id': ObjectId(documentId)}, {"$set": {"audioFilename": orignalFileName}})
+
+                find_speakerId = transcriptions.find_one({"projectname": activeprojectname, "audioFilename":databaseFileName}, 
+                                        {'karyaInfo.karyaSpeakerId':1, "_id": 0})
+                print(" \n old speakerId : ", find_speakerId['karyaInfo']['karyaSpeakerId'])
+
+                print("\n file found ", databaseFileName , " And ", "New speakerId : ", verified_value['speakerId'])
+
+
+                transcriptions.update_one({"projectname": activeprojectname, "audioFilename":databaseFileName}, 
+                                        {"$set": {'karyaInfo.karyaSpeakerId': verified_value['speakerId']}})
+
+
+
+                # audioId, orignalFileName = databaseFileName.rsplit("_", 1)
+                # orignalFileName = orignalFileName.replace("_", "")
+                # document = transcriptions.find_one({"audioFilename": databaseFileName}, {"_id": 1})
+                # if document is not None and document.get("audioFilename", "") != "":
+                #     documentId = document["_id"]
+                #     print("documentId : ", documentId)
+                #     # transcriptions.update_one({'_id': ObjectId(documentId)}, {"$set": {"karyaInfo.karyaSpeakerId": verified_value["speakerId"]}})
+                #     if document["audioFilename"] != "":
+                #         # transcriptions.update_one({'_id': ObjectId(documentId)}, {"$set": {"audioFilename": orignalFileName}})
+                #         print("audioFilename :",document["audioFilename"])
+
+    
+
+    return "OK"
+
+
+
