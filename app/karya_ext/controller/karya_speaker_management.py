@@ -3,8 +3,7 @@ def get_all_karya_speaker_ids(accesscodedetails, activeprojectname):
 
     speaker_ids = accesscodedetails.find({'projectname': activeprojectname,
                                                 'fetchData': 0,
-                                                'isActive': 1,
-                                                "task":'SPEECH_DATA_COLLECTION'
+                                                'isActive': 1
                                                 },
                                                 {
                                                     '_id': 0,
