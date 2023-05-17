@@ -52,9 +52,9 @@ def save_tagset(tagsets, zip_file, use_in_project):
                 if (len(tags_df.columns) >= 2):
                     for i in range(len(tags_df)):
                         # reading column 'Category', and 'Tags'
-                        logger.debug("tags_df.iloc[i, 0]: %s", tags_df.iloc[i, 0])
-                        logger.debug("tags_df.iloc[i, 1]: %s", tags_df.iloc[i, 1])
-                        logger.debug(", type(tags_df.iloc[i, 1]: %s", type(tags_df.iloc[i, 1]))
+                        # logger.debug("tags_df.iloc[i, 0]: %s", tags_df.iloc[i, 0])
+                        # logger.debug("tags_df.iloc[i, 1]: %s", tags_df.iloc[i, 1])
+                        # logger.debug(", type(tags_df.iloc[i, 1]: %s", type(tags_df.iloc[i, 1]))
                         if (str(tags_df.iloc[i, 1]) == 'nan'):
                             tag_set[tags_df.iloc[i, 0]] = ['']
                         else:
@@ -93,7 +93,9 @@ def save_tagset(tagsets, zip_file, use_in_project):
                 tagset_project_details["useInProjects"] = [use_in_project]
 
                 tagset_project_id = tagsets.insert_one(tagset_project_details)
-                tagset_project_ids.append(tagset_project_id)
+                logger.debug('tagset_project_id: %s', tagset_project_id)
+                logger.debug("insertedId: %s", tagset_project_id.inserted_id)
+                tagset_project_ids.append(tagset_project_id.inserted_id)
                 # projectname = tagset_project_details['projectname']
                 # updateuserprojects.updateuserprojects(userprojects,
                 #                                 projectname,
@@ -109,4 +111,5 @@ def save_tagset(tagsets, zip_file, use_in_project):
         flash('Please upload a zip file. Check the file format at the link provided for the Sample File')
         return redirect(url_for('lifedata.home'))
 
+    # logger.debug('tagset_project_ids from save_tagset: %s', tagset_project_ids)
     return tuple(tagset_project_ids)

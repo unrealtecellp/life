@@ -83,9 +83,9 @@ def newdataform():
 
         if request.method =='POST':
             new_data_form = dict(request.form.lists())
-            logger.debug('new_data_form: %s', pformat(new_data_form))
+            # logger.debug('new_data_form: %s', pformat(new_data_form))
             new_data_form_files = request.files.to_dict()
-            logger.debug('new_data_form_files: %s', pformat(new_data_form_files))
+            # logger.debug('new_data_form_files: %s', pformat(new_data_form_files))
             project_type = new_data_form['projectType'][0]
             projectname = 'D_'+new_data_form['projectname'][0]
             about_project = new_data_form['aboutproject'][0]
@@ -124,20 +124,20 @@ def newdataform():
                                                                 current_username,
                                                                 project_type
                                                             )
-            logger.debug("save_data_form: %s", pformat(save_data_form))
+            # logger.debug("save_data_form: %s", pformat(save_data_form))
 
             if (project_type == 'validation'):
                 validation_collection, tagsets = getdbcollections.getdbcollections(mongo,
                                                                         'validation',
                                                                         'tagsets')
-                logger.debug("project_type: %s", project_type)
+                # logger.debug("project_type: %s", project_type)
 
                 validation_zip_file = new_data_form_files["tagsetZipFile"]
-                tagset_project_id = save_tagset.save_tagset(tagsets, validation_zip_file, project_name)
-                logger.debug(tagset_project_id, type(tagset_project_id))
+                tagset_project_ids, = save_tagset.save_tagset(tagsets, validation_zip_file, project_name)
+                # logger.debug(tagset_project_ids)
                 projects.update_one({"projectname": project_name},
                                     {"$set": {
-                                        "tagsetId": tagset_project_id
+                                        "tagsetId": tagset_project_ids
                                     }})
                 create_validation_type_project.create_validation_type_project(projects,
                                                                             validation_collection,
@@ -145,13 +145,13 @@ def newdataform():
                                                                             derive_from_project_name,
                                                                             current_username)
 
-                # return redirect(url_for("lifedata.validation"))
-                return redirect(url_for("enternewsentences"))
+                return redirect(url_for("lifedata.validation"))
+                # return redirect(url_for("enternewsentences"))
 
             if ("derivefromproject" in new_data_form):
             # copy all the data from the "derivedfromproject" to "newproject"
                 derive_from_project_type = getprojecttype.getprojecttype(projects, derive_from_project_name)
-                logger.debug('derive_from_project_type: %s', derive_from_project_type)
+                # logger.debug('derive_from_project_type: %s', derive_from_project_type)
                 if (derive_from_project_type == 'questionnaires' and
                     project_type in include_speakerIds):
                     data_collection, = getdbcollections.getdbcollections(mongo, project_type)
@@ -207,14 +207,14 @@ def datazipfile():
         if request.method == "POST":
             derive_from_project_name = dict(request.form.lists())
             derive_from_project_name = derive_from_project_name['deriveFromProjectName'][0]
-            logger.debug("derive_from_project_name: %s", derive_from_project_name)
+            # logger.debug("derive_from_project_name: %s", derive_from_project_name)
             validation_zip_file = request.files.to_dict()
             validation_zip_file = validation_zip_file['tagsetZipFile']
-            logger.debug("validation_zip_file: %s", validation_zip_file)
+            # logger.debug("validation_zip_file: %s", validation_zip_file)
             completed, message, validation_tagset = readzip.read_zip(tagsets, validation_zip_file)
-            logger.debug('completed: %s', completed)
-            logger.debug('message: %s', message)
-            logger.debug('validation_tagset: %s', validation_tagset)
+            # logger.debug('completed: %s', completed)
+            # logger.debug('message: %s', message)
+            # logger.debug('validation_tagset: %s', validation_tagset)
             if (completed):
                 validation_tagset_keys = list(validation_tagset.keys())
             else:
@@ -224,7 +224,7 @@ def datazipfile():
                                validationTagsetKeys=[])
 
             derive_from_project_type = getprojecttype.getprojecttype(projects, derive_from_project_name)
-            logger.debug("derive_from_project_type: %s", derive_from_project_type)
+            # logger.debug("derive_from_project_type: %s", derive_from_project_type)
             if (derive_from_project_type == 'recordings'):
                 derive_from_project_tagset = ['Audio_Recording']
             else:

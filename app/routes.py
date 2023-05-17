@@ -290,7 +290,7 @@ def enternewsentences():
     
     project_type = getprojecttype.getprojecttype(projects, activeprojectname)
     data_collection, = getdbcollections.getdbcollections(mongo, project_type)
-    logger.debug("data_collection: %s", data_collection)
+    # logger.debug("data_collection: %s", data_collection)
     if request.method == 'POST':
         newSentencesData = dict(request.form.lists())
         newSentencesFiles = request.files.to_dict()
@@ -324,13 +324,13 @@ def enternewsentences():
                                                      activeprojectname,
                                                      activespeakerid,
                                                      current_username)
-            logger.debug("audio_id: %s", audio_id)
+            # logger.debug("audio_id: %s", audio_id)
             transcription_details = audiodetails.getaudiofiletranscription(data_collection,
                                                                            audio_id)
 
             audio_metadata = audiodetails.getaudiometadata(data_collection, 
                                                             audio_id)
-            logger.debug('audio_metadata: %s', pformat(audio_metadata))
+            # logger.debug('audio_metadata: %s', pformat(audio_metadata))
             # pprint(audio_metadata)
             activeprojectform['audioMetadata'] = audio_metadata['audioMetadata']
             last_updated_by = audiodetails.lastupdatedby(data_collection,
@@ -372,7 +372,7 @@ def enternewsentences():
             # print('currentuserprojectsname', currentuserprojectsname)
             # print('speakerids', speakerids)
             # pprint(activeprojectform)
-            logger.debug('activespeakerid: %s\ncommentstats: %s\nshareinfo: %s', activespeakerid, commentstats, shareinfo)
+            # logger.debug('activespeakerid: %s\ncommentstats: %s\nshareinfo: %s', activespeakerid, commentstats, shareinfo)
             return render_template('enternewsentences.html',
                                    projectName=activeprojectname,
                                    newData=activeprojectform,
@@ -5022,3 +5022,14 @@ def emailsetup():
         labelmap=labelmap,
         usertype=usertype
     )
+
+
+@app.errorhandler(404)
+def page_not_found(e):
+    # note that we set the 404 status explicitly
+    return render_template('404.html'), 404
+
+@app.errorhandler(500)
+def internal_server_error(e):
+    # note that we set the 500 status explicitly
+    return render_template('500.html'), 500
