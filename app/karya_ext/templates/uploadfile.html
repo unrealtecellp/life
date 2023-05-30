@@ -6,39 +6,6 @@
 
 {% block styles %}
   {{super()}}
-  <style>
-    /* Custom CSS styles */
-    .table-container {
-      width: 100px;
-      background-color: #ffffff;
-      border: 1px solid #000000;
-      border-radius: 8px;
-      padding: 10px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
-    .table-header {
-      text-align: center;
-    }
-
-    .close-button-cell {
-      text-align: right;
-      vertical-align: top;
-      padding-top: 5px;
-    }
-
-    .close-button {
-      background: none;
-      border: none;
-      cursor: pointer;
-      font-size: 20px;
-      color: #050505;
-    }
-
-    .close-button:hover {
-      color: #fb0505;
-    }
-  </style>
 {% endblock %}
   
 {% block app_content %}
@@ -56,8 +23,6 @@
   <form action="{{ url_for('karya_bp.uploadfile') }}" method="POST" enctype="multipart/form-data"> 
     
     <div id="uploadaccode"></div>
-
-
     <div class="form-group">
       <label for="idtask">Task :</label><br>                           
       <select class="task" id="idtask" name="task"  style="width:55%" required></select><br>
@@ -67,7 +32,6 @@
       <label for="idphase">Phase :</label><br>
       <input type="number" name = "phase" id="idphase" placeholder="--Phase--" required>
     </div>
-
     <div class="form-group">
       <input type="checkbox" name = "fetchdata" id="idfetchdata">
       <label for="idfetchdata">Check this if you will use these access code(s) to sync Karya data with LiFE</label>
@@ -78,8 +42,6 @@
     <br>        
     <input class="btn btn-lg btn-primary create" id="submit" type="submit" value="Submit" >
 
-    <br>
-    <br>
 
 <!-- Hidden Table -->
 <div id="hiddenTable" style="display: none;">
@@ -311,6 +273,8 @@
 <br>
 
 
+  </form>
+
 {% endblock %}
 
 {% block scripts %}
@@ -319,7 +283,6 @@
   <script src="{{url_for('.static', filename='uploadaccesscode.js')}}"></script>
   <script type="text/javascript">uploadaccesscodeform({{ uploadacesscodemetadata | tojson | safe }}, {{ projecttype | tojson | safe }});</script>
 
-  <!-- Include jQuery and Bootstrap JavaScript files -->
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
@@ -549,4 +512,4 @@ $('#hiddenDTable').hide();
 </script>
 
 
-{% endblock %}
+  {% endblock %}
