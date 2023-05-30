@@ -279,13 +279,11 @@
 
 {% block scripts %}
   {{super()}}
-  <script src="{{url_for('.static', filename='speaker_select2_dropdown.js')}}"></script>
-  <script src="{{url_for('.static', filename='uploadaccesscode.js')}}"></script>
-  <script type="text/javascript">uploadaccesscodeform({{ uploadacesscodemetadata | tojson | safe }}, {{ projecttype | tojson | safe }});</script>
 
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
+<!-- Your custom scripts -->
+<script src="{{url_for('.static', filename='speaker_select2_dropdown.js')}}"></script>
+<script src="{{url_for('.static', filename='uploadaccesscode.js')}}"></script>
+<script type="text/javascript">uploadaccesscodeform({{ uploadacesscodemetadata | tojson | safe }}, {{ projecttype | tojson | safe }});</script>
   <script>
     function showTable(event) {
       var code = event.target.dataset.code;
@@ -510,6 +508,5 @@ function closehiddenDTable() {
 $('#hiddenDTable').hide();
 }
 </script>
-
 
   {% endblock %}
