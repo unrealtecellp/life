@@ -112,6 +112,8 @@
 <br>
 
 <!-- Main HTML Table -->
+
+{% if  shareinfo['sharemode']|int >= 10 %}
 <div class="panel-group" id="activeacodedetails">
   <div class="panel panel-default">
     <div class="panel-heading">
@@ -154,8 +156,9 @@
     </div>
   </div>
 </div>
-
+{% endif %}
 <br>
+
 <!-- Hidden Table -->
 <div id="hiddenDTable" style="display: none;">
   <table class="table table-striped">
@@ -223,6 +226,7 @@
 <br>
 <br>
 
+{% if  shareinfo['sharemode']|int >= 10 %}
 <!-- Main HTML Table -->
 <div class="panel-group" id="deactiveacodedetails">
   <div class="panel panel-default">
@@ -266,7 +270,7 @@
     </div>
   </div>
 </div>
-
+{% endif %}
 <br>
 <br>
 <br>

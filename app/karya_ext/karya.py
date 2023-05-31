@@ -151,6 +151,10 @@ def uploadfile():
     # active_data_table = [json.loads(json.dumps(item, default=str)) for item in activeacode]
     # deactive_data_table = [json.loads(json.dumps(item, default=str)) for item in deactiveacode]
 
+    shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
+                                                      current_username,
+                                                      activeprojectname)
+
     if request.method == "POST":
         access_code_file = request.files['accesscodefile']
         task = request.form.get('task')
@@ -188,8 +192,8 @@ def uploadfile():
                            deactive_data_table = deactive_data_table, 
                            projectName=activeprojectname,
                            uploadacesscodemetadata=formacesscodemetadata,
-                           projecttype=project_type
-                           )
+                           projecttype=project_type,
+                           shareinfo=shareinfo)
 
 
 
