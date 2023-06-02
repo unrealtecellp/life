@@ -131,7 +131,8 @@ def uploadfile():
         "id": str(item["_id"]),  # Convert ObjectId to string
         "karyaaccesscode": item["karyaaccesscode"],
         "karyaspeakerid": item["karyaspeakerid"],
-        "isActive": item["isActive"]
+        "isActive": item["isActive"],
+        "fetchData":item["fetchData"]
         # Include other required fields from the item
         }
         active_data_table.append(item_dict)
@@ -141,7 +142,8 @@ def uploadfile():
         "id": str(item["_id"]),  # Convert ObjectId to string
         "karyaaccesscode": item["karyaaccesscode"],
         "karyaspeakerid": item["karyaspeakerid"],
-        "isActive": item["isActive"]
+        "isActive": item["isActive"],
+        "fetchData":item["fetchData"]
         # Include other required fields from the item
         }
         deactive_data_table.append(item_dict)
@@ -211,7 +213,7 @@ def active_accesscodes():
 
     acodedetails = accesscodedetails.find_one({"isActive": 1, "projectname": activeprojectname, "karyaaccesscode": str(asycaccesscode)},
                                                {"karyaaccesscode":1, "karyaspeakerid": 1, "isActive":1, "fetchData":1,
-                                                "task":1,"doamin":1,"elicittionmethod":1, "projectname":1,"current.workerMetadata.name":1,
+                                                "task":1,"domain":1, "elicitationmethod":1, "phase":1, "language":1, "projectname":1,"current.workerMetadata.name":1,
                                                 "current.workerMetadata.agegroup":1,"current.workerMetadata.gender":1,"current.workerMetadata.educationlevel":1,
                                                 "current.workerMetadata.educationmediumupto12":1,"current.workerMetadata.educationmediumafter12":1,
                                                 "current.workerMetadata.speakerlanguage":1,"current.workerMetadata.recordingplace":1,
@@ -246,7 +248,7 @@ def deactive_accesscodes():
 
     acodedetails = accesscodedetails.find_one({"isActive": 0, "projectname": activeprojectname, "karyaaccesscode": str(asycaccesscode)},
                                                {"karyaaccesscode":1, "karyaspeakerid": 1, "isActive":1, "fetchData":1,
-                                                "task":1,"doamin":1,"elicittionmethod":1, "projectname":1,"current.workerMetadata.name":1,
+                                                "task":1,"domain":1, "elicitationmethod":1, "phase":1, "language":1, "projectname":1,"current.workerMetadata.name":1,
                                                 "current.workerMetadata.agegroup":1,"current.workerMetadata.gender":1,"current.workerMetadata.educationlevel":1,
                                                 "current.workerMetadata.educationmediumupto12":1,"current.workerMetadata.educationmediumafter12":1,
                                                 "current.workerMetadata.speakerlanguage":1,"current.workerMetadata.recordingplace":1,
@@ -272,33 +274,31 @@ def deactive_update_table_data():
     activeprojectname = getactiveprojectname.getactiveprojectname(current_username, userprojects)
 
     # Get the data from the request
-    name = request.form.get('name')
-    age = request.form.get('age')
-    gender = request.form.get('gender')
+    # name = request.form.get('name')
+    # age = request.form.get('age')
+    # gender = request.form.get('gender')
     accessCode = request.form.get('accessCode')
     speakerID = request.form.get('speakerID')
-    status = request.form.get('status')
+    # status = request.form.get('status')
     fetchData = request.form.get('fetchData')
-    educationlevel = request.form.get('educationalevel')
-    educationmediumupto12 = request.form.get('educationmediumupto12')
-    educationmediumafter12 = request.form.get('educationmediumafter12')
-    place = request.form.get('place')
-    typeofplace = request.form.get('typeofplace')
+    elicitation = request.form.get('elicitationmethod')
+    domain = request.form.get('domain')
+    phase = request.form.get('phase')
+    languagescript = request.form.get('languagescript')
+    task = request.form.get('task')
+    # educationlevel = request.form.get('educationalevel')
+    # educationmediumupto12 = request.form.get('educationmediumupto12')
+    # educationmediumafter12 = request.form.get('educationmediumafter12')
+    # place = request.form.get('place')
+    # typeofplace = request.form.get('typeofplace')
     
     # Print the received data
-    # print("Name:", name)
-    # print("Age:", age)
-    # print("Gender:", gender)
-    # print("Access Code:", accessCode)
-    # print("Speaker ID:", speakerID)
-    # print("Status:", status)
-    # print("Fetch Data:", fetchData)
-    # print("Education Level:", educationlevel)
-    # print("Education Medium Upto 12:", educationmediumupto12)
-    # print("Education Medium After 12:", educationmediumafter12)
-    # print("Place:", place)
-    # print("Type of Place:", typeofplace)
-
+    print("Access Code:", accessCode)
+    print("Speaker ID:", speakerID)
+    print("elicitation :", elicitation)
+    print("domain :", domain)
+    print("phase :", phase)
+    print("languagescript :", languagescript)
 
     current_speakerdetails = accesscodedetails.find_one({"karyaaccesscode": accessCode, "projectname": activeprojectname, "isActive":0},
                                             {"current.workerMetadata.name": 1, "current.workerMetadata.agegroup":1, "_id": 0,})
@@ -307,63 +307,24 @@ def deactive_update_table_data():
     current_speakerdetails_age = current_speakerdetails['current']['workerMetadata']['agegroup']
     print("current_speakerdetails_name: " ,current_speakerdetails_name)
     print("current_speakerdetails_age: ", current_speakerdetails_age)
-    if current_speakerdetails_age != '' and current_speakerdetails_name != '':
-        update_data = {"current.updatedBy" :  current_username,
+ 
+    update_data = {"current.updatedBy" :  current_username,
                                         "karyaaccesscode":accessCode,
                                         "karyaspeakerid": speakerID,
-                                        "current.workerMetadata.name": name,
-                                        "current.workerMetadata.agegroup": age,
-                                        "current.workerMetadata.gender": gender,
-                                        "current.workerMetadata.educationlevel": educationlevel,
-                                        "current.workerMetadata.educationmediumupto12": educationmediumupto12,
-                                        "current.workerMetadata.educationmediumafter12": educationmediumafter12,
-                                        "current.workerMetadata.recordingplace": place,
-                                        "current.workerMetadata.typeofrecordingplace": typeofplace,
-                                        "isActive": int(status),
-                                        "fetchData": int(fetchData)}
-           
-        previous_speakerdetails = accesscodedetails.find_one({"karyaaccesscode": accessCode, "projectname": activeprojectname, "isActive":0},
-                                            {"karyaaccesscode":1, "karyaspeakerid":1,"current.workerMetadata": 1,
-                                             "current.updatedBy":1, "_id": 0,})
+                                        "fetchData": fetchData,
+                                        "elicitationmethod": elicitation,
+                                        "phase" : phase,
+                                        "domain" :domain,
+                                        "language" : languagescript,
+                                        "task": task
+                                        }
 
     
-        date_of_modified = str(datetime.now()).replace(".", ":" )
+    date_of_modified = str(datetime.now()).replace(".", ":" )
 
-        update_old_data = {"previous."+date_of_modified+".workerMetadata.karyaaccesscode": previous_speakerdetails["karyaaccesscode"],
-                            "previous."+date_of_modified+".workerMetadata.karyaspeakerid": previous_speakerdetails["karyaspeakerid"],
-                            "previous."+date_of_modified+".workerMetadata.name": previous_speakerdetails["current"]["workerMetadata"]["name"],
-                            "previous."+date_of_modified+".workerMetadata.agegroup": previous_speakerdetails["current"]["workerMetadata"]["agegroup"],
-                            "previous."+date_of_modified+".workerMetadata.gender": previous_speakerdetails["current"]["workerMetadata"]["gender"],
-                            "previous."+date_of_modified+".workerMetadata.educationlevel": previous_speakerdetails["current"]["workerMetadata"]["educationlevel"],
-                            "previous."+date_of_modified+".workerMetadata.educationmediumupto12": previous_speakerdetails["current"]["workerMetadata"]["educationmediumupto12"],
-                            "previous."+date_of_modified+".workerMetadata.educationmediumafter12": previous_speakerdetails["current"]["workerMetadata"]["educationmediumafter12"],
-                            "previous."+date_of_modified+".workerMetadata.speakerspeaklanguage": previous_speakerdetails["current"]["workerMetadata"]["speakerspeaklanguage"],
-                            "previous."+date_of_modified+".workerMetadata.recordingplace": previous_speakerdetails["current"]["workerMetadata"]["recordingplace"],
-                            "previous."+date_of_modified+".updatedBy" : previous_speakerdetails["current"]["updatedBy"]
-                            }
+    accesscodedetails.update_one({"karyaaccesscode": accessCode, "projectname": activeprojectname, "isActive":0}, {"$set": update_data}) #new_user_info
+    print("if condtion working inactive access code")
 
-        accesscodedetails.update_one({"karyaaccesscode": accessCode, "projectname": activeprojectname, "isActive":0}, {"$set": update_old_data}) # Edit_old_user_info
-        accesscodedetails.update_one({"karyaaccesscode": accessCode, "projectname": activeprojectname, "isActive":0}, {"$set": update_data}) #new_user_info
-        print("if condtion working")
-
-    else:
-        update_query = {"karyaaccesscode": accessCode, "projectname": activeprojectname, "isActive": 0}
-        update_fields = {"$set": {"karyaaccesscode":accessCode, "karyaspeakerid": speakerID, 
-                              "isActive": int(status),"fetchData": int(fetchData),
-                              "current.workerMetadata.name": name,
-                              "current.workerMetadata.agegroup": age,
-                              "current.workerMetadata.gender": gender,
-                              "current.workerMetadata.educationalevel": educationlevel,
-                              "current.workerMetadata.educationmediumupto12": educationmediumupto12,
-                              "current.workerMetadata.educationmediumafter12": educationmediumafter12,
-                              "current.workerMetadata.recordingplace": place,
-                              "current.workerMetadata.typeofrecordingplace": typeofplace}}
-
-        update_fields = {"$set": {"karyaspeakerid": speakerID,"isActive": int(status),"fetchData": int(fetchData)}}
-        print("else condtion working ")
-    
-        result = accesscodedetails.update_one(update_query, update_fields)
-        print("result : ",update_query)
 
     # Return a response indicating the success or failure of the update operation 
     return jsonify({'status': 'success', 'message': 'Table data updated successfully'})
@@ -379,27 +340,27 @@ def update_table_data():
     activeprojectname = getactiveprojectname.getactiveprojectname(current_username, userprojects)
 
     # Get the data from the request
-    name = request.form.get('name')
-    age = request.form.get('age')
-    gender = request.form.get('gender')
+    # name = request.form.get('name')
+    # age = request.form.get('age')
+    # gender = request.form.get('gender')
     accessCode = request.form.get('accessCode')
-    speakerID = request.form.get('speakerID')
-    status = request.form.get('status')
+    # speakerID = request.form.get('speakerID')
+    # status = request.form.get('status')
     fetchData = request.form.get('fetchData')
-    educationlevel = request.form.get('educationalevel')
-    educationmediumupto12 = request.form.get('educationmediumupto12')
-    educationmediumafter12 = request.form.get('educationmediumafter12')
-    place = request.form.get('place')
-    typeofplace = request.form.get('typeofplace')
+    # educationlevel = request.form.get('educationalevel')
+    # educationmediumupto12 = request.form.get('educationmediumupto12')
+    # educationmediumafter12 = request.form.get('educationmediumafter12')
+    # place = request.form.get('place')
+    # typeofplace = request.form.get('typeofplace')
     
     # Print the received data
     # print("Name:", name)
     # print("Age:", age)
     # print("Gender:", gender)
-    # print("Access Code:", accessCode)
+    print("Access Code:", accessCode)
     # print("Speaker ID:", speakerID)
     # print("Status:", status)
-    # print("Fetch Data:", fetchData)
+    print("Fetch Data:", fetchData)
     # print("Education Level:", educationlevel)
     # print("Education Medium Upto 12:", educationmediumupto12)
     # print("Education Medium After 12:", educationmediumafter12)
@@ -415,19 +376,23 @@ def update_table_data():
     print("current_speakerdetails_name: " ,current_speakerdetails_name)
     print("current_speakerdetails_age: ", current_speakerdetails_age)
     if current_speakerdetails_age != '' and current_speakerdetails_name != '':
-        update_data = {"current.updatedBy" :  current_username,
-                                        "karyaaccesscode":accessCode,
-                                        "karyaspeakerid": speakerID,
-                                        "current.workerMetadata.name": name,
-                                        "current.workerMetadata.agegroup": age,
-                                        "current.workerMetadata.gender": gender,
-                                        "current.workerMetadata.educationlevel": educationlevel,
-                                        "current.workerMetadata.educationmediumupto12": educationmediumupto12,
-                                        "current.workerMetadata.educationmediumafter12": educationmediumafter12,
-                                        "current.workerMetadata.recordingplace": place,
-                                        "current.workerMetadata.typeofrecordingplace": typeofplace,
-                                        "isActive": int(status),
-                                        "fetchData": int(fetchData)}
+        # update_data = {"current.updatedBy" :  current_username,
+        #                                 "karyaaccesscode":accessCode,
+        #                                 "karyaspeakerid": speakerID,
+        #                                 "current.workerMetadata.name": name,
+        #                                 "current.workerMetadata.agegroup": age,
+        #                                 "current.workerMetadata.gender": gender,
+        #                                 "current.workerMetadata.educationlevel": educationlevel,
+        #                                 "current.workerMetadata.educationmediumupto12": educationmediumupto12,
+        #                                 "current.workerMetadata.educationmediumafter12": educationmediumafter12,
+        #                                 "current.workerMetadata.recordingplace": place,
+        #                                 "current.workerMetadata.typeofrecordingplace": typeofplace,
+        #                                 "isActive": int(status),
+        #                                 "fetchData": int(fetchData)}
+
+        update_data = {"current.updatedBy": current_username,
+                       "karyaaccesscode":accessCode,
+                        "fetchData": int(fetchData)}
            
         previous_speakerdetails = accesscodedetails.find_one({"karyaaccesscode": accessCode, "projectname": activeprojectname, "isActive": 1},
                                             {"karyaaccesscode":1, "karyaspeakerid":1,"current.workerMetadata": 1,
@@ -436,37 +401,54 @@ def update_table_data():
     
         date_of_modified = str(datetime.now()).replace(".", ":" )
 
-        update_old_data = {"previous."+date_of_modified+".workerMetadata.karyaaccesscode": previous_speakerdetails["karyaaccesscode"],
-                            "previous."+date_of_modified+".workerMetadata.karyaspeakerid": previous_speakerdetails["karyaspeakerid"],
-                            "previous."+date_of_modified+".workerMetadata.name": previous_speakerdetails["current"]["workerMetadata"]["name"],
-                            "previous."+date_of_modified+".workerMetadata.agegroup": previous_speakerdetails["current"]["workerMetadata"]["agegroup"],
-                            "previous."+date_of_modified+".workerMetadata.gender": previous_speakerdetails["current"]["workerMetadata"]["gender"],
-                            "previous."+date_of_modified+".workerMetadata.educationlevel": previous_speakerdetails["current"]["workerMetadata"]["educationlevel"],
-                            "previous."+date_of_modified+".workerMetadata.educationmediumupto12": previous_speakerdetails["current"]["workerMetadata"]["educationmediumupto12"],
-                            "previous."+date_of_modified+".workerMetadata.educationmediumafter12": previous_speakerdetails["current"]["workerMetadata"]["educationmediumafter12"],
-                            "previous."+date_of_modified+".workerMetadata.speakerspeaklanguage": previous_speakerdetails["current"]["workerMetadata"]["speakerspeaklanguage"],
-                            "previous."+date_of_modified+".workerMetadata.recordingplace": previous_speakerdetails["current"]["workerMetadata"]["recordingplace"],
-                            "previous."+date_of_modified+".updatedBy" : previous_speakerdetails["current"]["updatedBy"]
-                            }
+        # update_old_data = {"previous."+date_of_modified+".workerMetadata.karyaaccesscode": previous_speakerdetails["karyaaccesscode"],
+        #                     "previous."+date_of_modified+".workerMetadata.karyaspeakerid": previous_speakerdetails["karyaspeakerid"],
+        #                     "previous."+date_of_modified+".workerMetadata.name": previous_speakerdetails["current"]["workerMetadata"]["name"],
+        #                     "previous."+date_of_modified+".workerMetadata.agegroup": previous_speakerdetails["current"]["workerMetadata"]["agegroup"],
+        #                     "previous."+date_of_modified+".workerMetadata.gender": previous_speakerdetails["current"]["workerMetadata"]["gender"],
+        #                     "previous."+date_of_modified+".workerMetadata.educationlevel": previous_speakerdetails["current"]["workerMetadata"]["educationlevel"],
+        #                     "previous."+date_of_modified+".workerMetadata.educationmediumupto12": previous_speakerdetails["current"]["workerMetadata"]["educationmediumupto12"],
+        #                     "previous."+date_of_modified+".workerMetadata.educationmediumafter12": previous_speakerdetails["current"]["workerMetadata"]["educationmediumafter12"],
+        #                     "previous."+date_of_modified+".workerMetadata.speakerspeaklanguage": previous_speakerdetails["current"]["workerMetadata"]["speakerspeaklanguage"],
+        #                     "previous."+date_of_modified+".workerMetadata.recordingplace": previous_speakerdetails["current"]["workerMetadata"]["recordingplace"],
+        #                     "previous."+date_of_modified+".updatedBy" : previous_speakerdetails["current"]["updatedBy"]
+        #                     }
 
-        accesscodedetails.update_one({"karyaaccesscode": accessCode, "projectname": activeprojectname, "isActive":1}, {"$set": update_old_data}) # Edit_old_user_info
+        
+
+        # accesscodedetails.update_one({"karyaaccesscode": accessCode, "projectname": activeprojectname, "isActive":1}, {"$set": update_old_data}) # Edit_old_user_info
         accesscodedetails.update_one({"karyaaccesscode": accessCode, "projectname": activeprojectname, "isActive":1}, {"$set": update_data}) #new_user_info
         print("if condtion working")
 
     else:
         update_query = {"karyaaccesscode": accessCode, "projectname": activeprojectname, "isActive": 1}
-        update_fields = {"$set": {"karyaaccesscode":accessCode, "karyaspeakerid": speakerID, 
-                              "isActive": int(status),"fetchData": int(fetchData),
-                              "current.workerMetadata.name": name,
-                              "current.workerMetadata.agegroup": age,
-                              "current.workerMetadata.gender": gender,
-                              "current.workerMetadata.educationalevel": educationlevel,
-                              "current.workerMetadata.educationmediumupto12": educationmediumupto12,
-                              "current.workerMetadata.educationmediumafter12": educationmediumafter12,
-                              "current.workerMetadata.recordingplace": place,
-                              "current.workerMetadata.typeofrecordingplace": typeofplace}}
+        # update_fields = {"$set": {"karyaaccesscode":accessCode, "karyaspeakerid": speakerID, 
+        #                       "isActive": int(status),"fetchData": int(fetchData),
+        #                       "current.workerMetadata.name": name,
+        #                       "current.workerMetadata.agegroup": age,
+        #                       "current.workerMetadata.gender": gender,
+        #                       "current.workerMetadata.educationalevel": educationlevel,
+        #                       "current.workerMetadata.educationmediumupto12": educationmediumupto12,
+        #                       "current.workerMetadata.educationmediumafter12": educationmediumafter12,
+        #                       "current.workerMetadata.recordingplace": place,
+        #                       "current.workerMetadata.typeofrecordingplace": typeofplace}}
+        
+        # update_fields = {"$set": {"karyaaccesscode":accessCode, "karyaspeakerid": speakerID, 
+        #                       "isActive": int(status),"fetchData": int(fetchData),
+        #                       "current.workerMetadata.name": name,
+        #                       "current.workerMetadata.agegroup": age,
+        #                       "current.workerMetadata.gender": gender,
+        #                       "current.workerMetadata.educationalevel": educationlevel,
+        #                       "current.workerMetadata.educationmediumupto12": educationmediumupto12,
+        #                       "current.workerMetadata.educationmediumafter12": educationmediumafter12,
+        #                       "current.workerMetadata.recordingplace": place,
+        #                       "current.workerMetadata.typeofrecordingplace": typeofplace}}
+        # update_fields = {"$set": {"karyaaccesscode":accessCode, "fetchData": int(fetchData)}}
 
-        update_fields = {"$set": {"karyaspeakerid": speakerID,"isActive": int(status),"fetchData": int(fetchData)}}
+        # update_fields = {"$set": {"karyaspeakerid": speakerID,"isActive": int(status),"fetchData": int(fetchData)}}
+        # print("else condtion working ")
+
+        update_fields = {"$set": {"fetchData": int(fetchData)}}
         print("else condtion working ")
     
         result = accesscodedetails.update_one(update_query, update_fields)

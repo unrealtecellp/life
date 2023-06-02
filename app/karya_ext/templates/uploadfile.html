@@ -42,12 +42,53 @@
     <br>        
     <input class="btn btn-lg btn-primary create" id="submit" type="submit" value="Submit" >
 
+    <br>
+    <br>
+    <br>
 
 <!-- Hidden Table -->
 <div id="hiddenTable" style="display: none;">
   <table class="table table-striped">
     <tbody id="hiddenTableBody">
       <b><center>Active Accesscode </center></b>
+      <tr>
+        <th>Access Code:</th>
+        <td id="hiddenTableAccessCode"></td>
+      </tr>
+      <tr>
+        <th>Karya Speaker ID:</th>
+        <td id="hiddenTableSpeakerID"></td>
+      </tr>
+      <tr>
+        <th>Language Script:</th>
+        <td id="hiddenTableLanguageScript"></td>
+      </tr>
+      <tr>
+
+        <tr>
+          <th>Domain:</th>
+          <td id="hiddenTableDomain"></td>
+        </tr>
+        <tr>
+
+          <tr>
+            <th>Elicitation:</th>
+            <td id="hiddenTableElicitation"></td>
+          </tr>
+          <tr>
+
+            <tr>
+              <th>Task:</th>
+              <td id="hiddenTableTask"></td>
+            </tr>
+            <tr>
+
+              <tr>
+                <th>Phase:</th>
+                <td id="hiddenTablePhase"></td>
+              </tr>
+              <tr>
+
       <tr>
         <th>Name:</th>
         <td id="hiddenTableName"></td>
@@ -60,14 +101,7 @@
         <th>Gender:</th>
         <td id="hiddenTableGender"></td>
       </tr>
-      <tr>
-        <th>Access Code:</th>
-        <td id="hiddenTableAccessCode"></td>
-      </tr>
-      <tr>
-        <th>Karya Speaker ID:</th>
-        <td id="hiddenTableSpeakerID"></td>
-      </tr>
+      
       <tr>
         <th>Status:</th>
         <td id="hiddenTableStatus"></td>
@@ -134,6 +168,7 @@
                   <th onclick="sortTable(1)">Access Code</th>
                   <th onclick="sortTable(2)">Speaker ID</th>
                   <th onclick="sortTable(4)">Status</th>
+                  <th onclick="sortTable(5)">Fetch Status</th>
                   <th>View</th>
                 </tr>
               </thead>
@@ -143,6 +178,7 @@
                   <td>{{ item.karyaaccesscode }}</td>
                   <td>{{ item.karyaspeakerid }}</td>
                   <td>{{ item.isActive }}</td>
+                  <td>{{ item.fetchData }}</td>
                   <td>
                     <button class="view-button" data-code="{{ item.karyaaccesscode }}" type="button" onclick="showTable(event)">View</button>
                   </td>
@@ -165,6 +201,45 @@
     <tbody id="hiddenDTableBody">
       <b><center>Inactive Accesscode </center></b>
       <tr>
+        <th>Access Code:</th>
+        <td id="hiddenDTableDAccessCode"></td>
+      </tr>
+      <tr>
+        <th>Karya Speaker ID:</th>
+        <td id="hiddenDTableDSpeakerID"></td>
+      </tr>
+
+
+      <th>Language Script:</th>
+      <td id="hiddenDTableLanguageScript"></td>
+    </tr>
+    <tr>
+
+      <tr>
+        <th>Domain:</th>
+        <td id="hiddenDTableDomain"></td>
+      </tr>
+      <tr>
+
+        <tr>
+          <th>Elicitation:</th>
+          <td id="hiddenDTableElicitation"></td>
+        </tr>
+        <tr>
+
+          <tr>
+            <th>Task:</th>
+            <td id="hiddenDTableTask"></td>
+          </tr>
+          <tr>
+
+            <tr>
+              <th>Phase:</th>
+              <td id="hiddenDTablePhase"></td>
+            </tr>
+            <tr>
+
+      <tr>
         <th>Name:</th>
         <td id="hiddenDTableDName"></td>
       </tr>
@@ -176,14 +251,7 @@
         <th>Gender:</th>
         <td id="hiddenDTableDGender"></td>
       </tr>
-      <tr>
-        <th>Access Code:</th>
-        <td id="hiddenDTableDAccessCode"></td>
-      </tr>
-      <tr>
-        <th>Karya Speaker ID:</th>
-        <td id="hiddenDTableDSpeakerID"></td>
-      </tr>
+  
       <tr>
         <th>Status:</th>
         <td id="hiddenDTableDStatus"></td>
@@ -248,6 +316,7 @@
                   <th onclick="sortTable(1)">Access Code</th>
                   <th onclick="sortTable(2)">Speaker ID</th>
                   <th onclick="sortTable(4)">Status</th>
+                  <th onclick="sortTable(4)">Fetch Status</th>
                   <th>View</th>
                 </tr>
               </thead>
@@ -257,6 +326,7 @@
                   <td>{{ item.karyaaccesscode }}</td>
                   <td>{{ item.karyaspeakerid }}</td>
                   <td>{{ item.isActive }}</td>
+                  <td>{{ item.fetchData }}</td>
                   <td>
                     <button class="view-button" data-code="{{ item.karyaaccesscode }}" type="button" onclick="showDTable(event)">View</button>
                   </td>
@@ -288,117 +358,149 @@
 <script src="{{url_for('.static', filename='speaker_select2_dropdown.js')}}"></script>
 <script src="{{url_for('.static', filename='uploadaccesscode.js')}}"></script>
 <script type="text/javascript">uploadaccesscodeform({{ uploadacesscodemetadata | tojson | safe }}, {{ projecttype | tojson | safe }});</script>
-  <script>
-    function showTable(event) {
-      var code = event.target.dataset.code;
-  
-      // Perform AJAX request to fetch data
-      $.ajax({
-        type: 'POST',
-        url: "{{ url_for('karya_bp.active_accesscodes') }}",
-        data: {
-          code: code
-        },
-        success: function(response) {
-          console.log(response);
-          if ($.isEmptyObject(response)) {
-            alert('No data found for the selected code!');
-          } else {
-            var name = response.response.current.workerMetadata.name;
-            var age = response.response.current.workerMetadata.agegroup;
-            var gender = response.response.current.workerMetadata.gender;
-            var accessCode = response.response.karyaaccesscode;
-            var speakerID = response.response.karyaspeakerid;
-            var status = response.response.isActive;
-            var fetchData = response.response.fetchData;
-            var educationalevel = response.response.current.workerMetadata.educationlevel;
-            var educationmediumupto12 = response.response.current.workerMetadata.educationmediumupto12;
-            var educationmediumafter12 = response.response.current.workerMetadata.educationmediumafter12 ;
-            var speakerlanguage = response.response.current.workerMetadata.speakerlanguage;
-            var place = response.response.current.workerMetadata.recordingplace;
-            var typeofplace = response.response.current.workerMetadata.typeofrecordingplace;
-  
-            // Set values in the hidden table
-            $('#hiddenTableName').text(name);
-            $('#hiddenTableAge').text(age);
-            $('#hiddenTableGender').text(gender);
-            $('#hiddenTableAccessCode').text(accessCode);
-            $('#hiddenTableSpeakerID').text(speakerID);
-            $('#hiddenTableStatus').text(status);
-            $('#hiddenTableFetchData').text(fetchData);
-            $('#hiddenTableEducationalevel').text(educationalevel);
-            $('#hiddenTableEducationmediumupto12').text(educationmediumupto12);
-            $('#hiddenTableEducationmediumafter12').text(educationmediumafter12);
-            $('#hiddenTablePlace').text(place);
-            $('#hiddenTableTypeofplace').text(typeofplace)
-  ;
-            // Show the hidden table
-            $('#hiddenTable').show();
-          }
-        },
-        error: function(error) {
-          console.log(error);
+ 
+ 
+<script>
+  function showTable(event) {
+    var code = event.target.dataset.code;
+
+    // Perform AJAX request to fetch data
+    $.ajax({
+      type: 'POST',
+      url: "{{ url_for('karya_bp.active_accesscodes') }}",
+      data: {
+        code: code
+      },
+      success: function(response) {
+        console.log(response);
+        if ($.isEmptyObject(response)) {
+          alert('No data found for the selected code!');
+        } else {
+          var name = response.response.current.workerMetadata.name;
+          var age = response.response.current.workerMetadata.agegroup;
+          var gender = response.response.current.workerMetadata.gender;
+          var accessCode = response.response.karyaaccesscode;
+          var speakerID = response.response.karyaspeakerid;
+          var status = response.response.isActive;
+          var fetchData = response.response.fetchData;
+          var educationalevel = response.response.current.workerMetadata.educationlevel;
+          var educationmediumupto12 = response.response.current.workerMetadata.educationmediumupto12;
+          var educationmediumafter12 = response.response.current.workerMetadata.educationmediumafter12;
+          var speakerlanguage = response.response.current.workerMetadata.speakerlanguage;
+          var place = response.response.current.workerMetadata.recordingplace;
+          var typeofplace = response.response.current.workerMetadata.typeofrecordingplace;
+          var domain = response.response.domain;
+          var language = response.response.language;
+          var task = response.response.task;
+          var elicitationmethod = response.response.elicitationmethod;
+          var phase = response.response.phase;
+
+          // Set values in the hidden table
+          $('#hiddenTableName').text(name);
+          $('#hiddenTableAge').text(age);
+          $('#hiddenTableGender').text(gender);
+          $('#hiddenTableAccessCode').text(accessCode);
+          $('#hiddenTableSpeakerID').text(speakerID);
+          $('#hiddenTableStatus').text(status);
+          $('#hiddenTableFetchData').text(fetchData);
+          $('#hiddenTableEducationalevel').text(educationalevel);
+          $('#hiddenTableEducationmediumupto12').text(educationmediumupto12);
+          $('#hiddenTableEducationmediumafter12').text(educationmediumafter12);
+          $('#hiddenTablePlace').text(place);
+          $('#hiddenTableTypeofplace').text(typeofplace);
+          $('#hiddenTableLanguageScript').text(language);
+          $('#hiddenTableDomain').text(domain);
+          $('#hiddenTableElicitation').text(elicitationmethod);
+          $('#hiddenTablePhase').text(phase);
+          $('#hiddenTableTask').text(task);
+          // Show the hidden table
+          $('#hiddenTable').show();
         }
-      });
-    }
-  
-    function editHiddenTableRow() {
-  // Enable edit mode
-  $('#hiddenTable td:not(:first-child)').each(function() {
-    var text = $(this).text();
-    $(this).html(`<input type="text" value="${text}">`);
-  });
+      },
+      error: function(error) {
+        console.log(error);
+      }
+    });
+  }
 
-  // Show the Save button
-  $('#hiddenTable button:nth-child(2)').show();
-}
 
-function saveHiddenTableRow() {
-  var data = {
-    name: $('#hiddenTableName input').val(),
-    age: $('#hiddenTableAge input').val(),
-    gender: $('#hiddenTableGender input').val(),
-    accessCode: $('#hiddenTableAccessCode input').val(),
-    speakerID: $('#hiddenTableSpeakerID input').val(),
-    status: $('#hiddenTableStatus input').val(),
-    fetchData: $('#hiddenTableFetchData input').val(),
-    educationalevel: $('#hiddenTableEducationalevel input').val(),
-    educationmediumupto12: $('#hiddenTableEducationmediumupto12 input').val(),
-    educationmediumafter12: $('#hiddenTableEducationmediumafter12 input').val(),
-    place: $('#hiddenTablePlace input').val(),
-    typeofplace: $('#hiddenTableTypeofplace input').val()
-  };
+  function editHiddenTableRow() {
+    // Disable view mode for all fields except Status and Task
+    // $('#hiddenTable td:not(:first-child):not(:nth-child(6)):not(:nth-child(8))').each(function() {
+    $('#hiddenTable td:not(:first-child):not(:nth-child(8))').each(function() {
+      var text = $(this).text();
+      $(this).html(text);
+    });
 
-  console.log('Data to be updated:', data);
+    // Enable edit mode for Status and Task fields
+    // var statusText = $('#hiddenTableStatus').text();
+    // $('#hiddenTableStatus').html('<input type="text" value="' + statusText + '">');
 
-  // Send the updated data to Flask using AJAX
-  $.ajax({
-    type: 'POST',
-    url: "{{ url_for('karya_bp.update_table_data') }}",
-    data: data,
-    success: function(response) {
-      // Handle success response
-      alert('Data updated successfully!');
-      console.log("response :", response);
+    var taskText = $('#hiddenTableFetchData').text();
+    $('#hiddenTableFetchData').html('<input type="text" value="' + taskText + '">');
 
-      // Disable edit mode and hide the Save button
-      $('#hiddenTable td:not(:first-child)').each(function() {
-        var text = $(this).find('input').val();
-        $(this).html(text);
-      });
-      $('#hiddenTable button:nth-child(2)').hide();
-    },
-    error: function(error) {
-      console.log(error);
-    }
-  });
-}
+    // Show the Save button and disable the Edit button
+    $('#hiddenTable button:nth-child(2)').show();
+    // $('#hiddenTable button:nth-child(1)').prop('disabled', true);
+  }
 
-function closeHiddenTable() {
-  // Hide the hidden table
-  $('#hiddenTable').hide();
-}
-  </script>
+  //     function editHiddenTableRow() {
+  //   // Enable edit mode
+  //   $('#hiddenTable td:not(:first-child)').each(function() {
+  //     var text = $(this).text();
+  //     $(this).html(`<input type="text" value="${text}">`);
+  //   });
+
+  //   // Show the Save button
+  //   $('#hiddenTable button:nth-child(2)').show();
+  // }
+
+  function saveHiddenTableRow() {
+    var accessCode = $('#hiddenTableAccessCode').text();
+    // var status = $('#hiddenTableStatus input').val();
+    var fetchData = $('#hiddenTableFetchData input').val();
+
+    console.log('Access Code:', accessCode);
+    // console.log('Status:', status);
+    console.log('Fetch Data:', fetchData);
+
+    var data = {
+      accessCode: accessCode,
+      fetchData: fetchData
+    };
+
+    console.log('Data to be updated:', data);
+
+    // Send the updated data to Flask using AJAX
+    $.ajax({
+      type: 'POST',
+      url: "{{ url_for('karya_bp.update_table_data') }}",
+      data: data,
+      success: function(response) {
+        // Handle success response
+        alert('Data updated successfully!');
+        console.log("response:", response);
+
+        // Disable edit mode and hide the Save button
+        $('#hiddenTable td:not(:first-child)').each(function() {
+          var text = $(this).find('input').val();
+          $(this).html(text);
+        });
+        $('#hiddenTable button:nth-child(2)').hide();
+      },
+      error: function(error) {
+        console.log(error);
+      }
+    });
+  }
+
+  // Close button click event handler
+  function closeHiddenTable() {
+    // Hide the hidden table
+    $('#hiddenTable').hide();
+  }
+</script>
+
 
 
 <script>
@@ -426,10 +528,15 @@ function closeHiddenTable() {
           var fetchData = response.response.fetchData;
           var educationalevel = response.response.current.workerMetadata.educationlevel;
           var educationmediumupto12 = response.response.current.workerMetadata.educationmediumupto12;
-          var educationmediumafter12 = response.response.current.workerMetadata.educationmediumafter12 ;
+          var educationmediumafter12 = response.response.current.workerMetadata.educationmediumafter12;
           var speakerlanguage = response.response.current.workerMetadata.speakerlanguage;
           var place = response.response.current.workerMetadata.recordingplace;
           var typeofplace = response.response.current.workerMetadata.typeofrecordingplace;
+          var domain = response.response.domain;
+          var language = response.response.language;
+          var task = response.response.task;
+          var elicitationmethod = response.response.elicitationmethod;
+          var phase = response.response.phase;
 
           // Set values in the hidden table
           $('#hiddenDTableDName').text(name);
@@ -443,8 +550,13 @@ function closeHiddenTable() {
           $('#hiddenDTableDEducationmediumupto12').text(educationmediumupto12);
           $('#hiddenDTableDEducationmediumafter12').text(educationmediumafter12);
           $('#hiddenDTableDPlace').text(place);
-          $('#hiddenDTableDTypeofplace').text(typeofplace)
-;
+          $('#hiddenDTableDTypeofplace').text(typeofplace);
+          $('#hiddenDTableLanguageScript').text(language);
+          $('#hiddenDTableDomain').text(domain);
+          $('#hiddenDTableElicitation').text(elicitationmethod);
+          $('#hiddenDTablePhase').text(phase);
+          $('#hiddenDTableTask').text(task);
+
           // Show the hidden table
           $('#hiddenDTable').show();
         }
@@ -455,62 +567,104 @@ function closeHiddenTable() {
     });
   }
 
+  // function edithiddenDTableRow() {
+  //   // Disable view mode for all fields except Status and Task
+  //   $('#hiddenDTable td:not(:first-child)').each(function() {
+  //     var text = $(this).text();
+  //     $(this).html('<input type="text" value="' + text + '">');
+  //   });
+
+  //   // Show the Save button and disable the Edit button
+  //   $('#hiddenDTable button:nth-child(2)').show();
+  //   $('#hiddenDTable button:nth-child(1)').prop('disabled', true);
+  // }
+
+
+
   function edithiddenDTableRow() {
-// Enable edit mode
-$('#hiddenDTable td:not(:first-child)').each(function() {
-  var text = $(this).text();
-  $(this).html(`<input type="text" value="${text}">`);
-});
+  // Enable edit mode for the specific fields
 
-// Show the Save button
-$('#hiddenDTable button:nth-child(2)').show();
+  var accessCodeText = $('#hiddenDTableDAccessCode').text();
+  $('#hiddenDTableDAccessCode').html('<input type="text" value="' + accessCodeText + '">');
+
+  var speakerIDText = $('#hiddenDTableDSpeakerID').text();
+  $('#hiddenDTableDSpeakerID').html('<input type="text" value="' + speakerIDText + '">');
+
+  var fetchDataText = $('#hiddenDTableDFetchData').text();
+  $('#hiddenDTableDFetchData').html('<input type="text" value="' + fetchDataText + '">');
+
+  var taskText = $('#hiddenDTableTask').text();
+  $('#hiddenDTableTask').html('<input type="text" value="' + taskText + '">');
+
+  var phaseText = $('#hiddenDTablePhase').text();
+  $('#hiddenDTablePhase').html('<input type="text" value="' + phaseText + '">');
+
+  var languageText = $('#hiddenDTableLanguageScript').text();
+  $('#hiddenDTableLanguageScript').html('<input type="text" value="' + languageText + '">');
+
+  var domainText = $('#hiddenDTableDomain').text();
+  $('#hiddenDTableDomain').html('<input type="text" value="' + domainText + '">');
+
+  var elicitationText = $('#hiddenDTableElicitation').text();
+  $('#hiddenDTableElicitation').html('<input type="text" value="' + elicitationText + '">');
+
+  // Show the Save button and disable the Edit button
+  $('#hiddenDTable button:nth-child(2)').show();
 }
 
-function savehiddenDTableRow() {
-var data = {
-  name: $('#hiddenDTableDName input').val(),
-  age: $('#hiddenDTableDAge input').val(),
-  gender: $('#hiddenDTableDGender input').val(),
-  accessCode: $('#hiddenDTableDAccessCode input').val(),
-  speakerID: $('#hiddenDTableDSpeakerID input').val(),
-  status: $('#hiddenDTableDStatus input').val(),
-  fetchData: $('#hiddenDTableDFetchData input').val(),
-  educationalevel: $('#hiddenDTableDEducationalevel input').val(),
-  educationmediumupto12: $('#hiddenDTableDEducationmediumupto12 input').val(),
-  educationmediumafter12: $('#hiddenDTableDEducationmediumafter12 input').val(),
-  place: $('#hiddenDTableDPlace input').val(),
-  typeofplace: $('#hiddenDTableDTypeofplace input').val()
-};
 
-console.log('Data to be updated:', data);
 
-// Send the updated data to Flask using AJAX
-$.ajax({
-  type: 'POST',
-  url: "{{ url_for('karya_bp.deactive_update_table_data') }}",
-  data: data,
-  success: function(response) {
-    // Handle success response
-    alert('Data updated successfully!');
-    console.log("response :", response);
+  function savehiddenDTableRow() {
+    var accessCode = $('#hiddenDTableDAccessCode input').val();
+    var speakerID = $('#hiddenDTableDSpeakerID input').val();
+    var fetchData = $('#hiddenDTableDFetchData input').val();
+    var task = $('#hiddenDTableTask input').val();
+    var phase = $('#hiddenDTablePhase input').val();
+    var languagescript = $('#hiddenDTableLanguageScript input').val();
+    var domain = $('#hiddenDTableDomain input').val();
+    var elicitationmethod = $('#hiddenDTableElicitation input').val();
 
-    // Disable edit mode and hide the Save button
-    $('#hiddenDTable td:not(:first-child)').each(function() {
-      var text = $(this).find('input').val();
-      $(this).html(text);
+    var data = {
+      accessCode: accessCode,
+      speakerID: speakerID,
+      fetchData: fetchData,
+      task: task,
+      phase: phase,
+      languagescript: languagescript,
+      domain: domain,
+      elicitationmethod: elicitationmethod
+    };
+
+    console.log('Data to be updated:', data);
+
+    // Send the updated data to Flask using AJAX
+    $.ajax({
+      type: 'POST',
+      url: "{{ url_for('karya_bp.deactive_update_table_data') }}",
+      data: data,
+      success: function(response) {
+        // Handle success response
+        alert('Data updated successfully!');
+        console.log('Response:', response);
+
+        // Disable edit mode and hide the Save button
+        $('#hiddenDTable td:not(:first-child)').each(function() {
+          var text = $(this).find('input').val();
+          $(this).text(text);
+        });
+        $('#hiddenDTable button:nth-child(2)').hide();
+        $('#hiddenDTable button:nth-child(1)').prop('disabled', false);
+      },
+      error: function(error) {
+        console.log(error);
+      }
     });
-    $('#hiddenDTable button:nth-child(2)').hide();
-  },
-  error: function(error) {
-    console.log(error);
   }
-});
-}
 
-function closehiddenDTable() {
-// Hide the hidden table
-$('#hiddenDTable').hide();
-}
+  function closehiddenDTable() {
+    // Hide the hidden table
+    $('#hiddenDTable').hide();
+  }
 </script>
 
   {% endblock %}
