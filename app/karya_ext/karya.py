@@ -68,6 +68,13 @@ def home_insert():
 
     access_code_list = access_code_management.get_access_code_list(
         accesscodedetails, activeprojectname, current_username)
+    
+    transcription_access_code_list = access_code_management.get_transcription_access_code_list(
+        accesscodedetails, activeprojectname, current_username)
+    
+    verification_access_code_list = access_code_management.get_verification_access_code_list(
+        accesscodedetails, activeprojectname, current_username)
+    
     karya_speaker_ids = karya_speaker_management.get_all_karya_speaker_ids(
         accesscodedetails, activeprojectname)
 
@@ -75,6 +82,8 @@ def home_insert():
                            projectName=activeprojectname,
                            shareinfo=shareinfo,
                            fetchaccesscodelist=access_code_list,
+                           transcription_access_code_list =transcription_access_code_list,
+                           verification_access_code_list=verification_access_code_list,
                            karya_speaker_ids=karya_speaker_ids,
                            )
 
@@ -682,6 +691,7 @@ def fetch_karya_otp():
         current_username, userprojects)
 
     access_code = request.args.get("acode")
+    print(access_code)
     phone_number = request.args.get("mob")
 
     karya_api_access.send_karya_otp(
@@ -737,11 +747,41 @@ def fetch_karya_audio():
         logger.debug("derive_from_project_type: %s, derivedFromProjectName: %s", derive_from_project_type, derivedFromProjectName)
 
     if request.method == 'POST':
-        access_code = request.form.get("access_code")
+        # access_code_task = request.form.get("optionSelect")
+        # access_code = ''
+        # if access_code_task == "trans":
+        #     access_code = request.form.get('transAccessCode')
+        # else:
+        #     access_code = request.form.get('verAccessCode')
+
+        # access_code_task = request.form.get("optionSelect")
+        # access_code = ''
+        # if access_code_task == "trans":
+        #     access_code = request.form.get('transAccessCode')
+        # elif access_code_task == "fetch":
+        #     access_code = request.form.get('verAccessCode')
+        # 
+        acode = request.form.get('optionSelect')
+        ver_access_code = request.form.get('verification_access_code')
+        trans_access_code = request.form.get('transcription_access_code')
+
+        # print(acode)
+        # print(ver_access_code)
+        # print(trans_access_code)
+        # access_code =  request.form.get('acode')
+
+        if acode == "transcriptionAccessCode":
+            access_code = trans_access_code
+        else:
+            access_code = ver_access_code
+    
+        print(access_code)
         for_worker_id = request.form.get("speaker_id")
         phone_number = request.form.get("mobile_number")
         otp = request.form.get("karya_otp")
-
+        print("access_code : ",access_code)
+        print("for_worker_id : ", for_worker_id)
+        print("phone_number : ", phone_number)
         ###############################   verify OTP    ##########################################
         otp_verified, verification_details = karya_api_access.verify_karya_otp(
             access_code, phone_number, otp

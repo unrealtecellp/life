@@ -79,7 +79,55 @@
           <form name="fetchdata" method="POST" action="{{url_for('karya_bp.fetch_karya_audio')}}">
             <!-- <label for="piaccesscode">Access Code: </label> -->
             <!-- <input type="text" name="access_code" id="piaccesscode" placeholder="Enter Access Code"/> -->
-            <div id="piaccesscode"></div>
+            <br>
+            <style>
+              .dropdown-container {
+                  display: flex;
+                  align-items: center;
+              }
+          
+              .dropdown-container select {
+                  width: 200px;
+                  height: 30px; /* Adjust the height to your desired value */
+                  padding: 5px;
+                  border-radius: 5px;
+                  margin-left: 10px;
+                  background-color: #fff;
+              }
+          </style>
+              <div class="dropdown-container">
+                <h4 style="font-weight: bold; margin-right: 10px;">Select Access Code Task:</h4>
+                <select id="optionSelect" name="optionSelect" onchange="showDropdown()">
+                    <option value="">Select Access Code Task</option>
+                    <option value="verificationAccessCode">Verification Access Code</option>
+                    <option value="transcriptionAccessCode">Transcription Access Code</option>
+                </select>
+            </div>
+            
+            <br>
+            
+            <div id="pitransaccesscode" style="display: none;">
+                <h3>Transcription Access Code:</h3>
+                <select name="transAccessCode" id="transAccessCodeSelect" >
+                    <option value="">Select a transcription access code</option>
+                    <!-- Options will be populated dynamically -->
+                </select>
+            </div>
+            
+            <div id="piveraccesscode" style="display: none;">
+                <h3>Verification Access Code:</h3>
+                <select name="verAccessCode" id="verAccessCodeSelect" >
+                    <option value="">Select a verification access code</option>
+                    <!-- Options will be populated dynamically -->
+                </select>
+            </div>
+
+
+            <!-- <div id="piaccesscode"></div>
+            <br>
+            <div id="pitransaccesscode"></div>
+            <br>
+            <div id="piveraccesscode"></div> -->
             <br>
             <div id="idforworker"></div>
             <br>
@@ -98,15 +146,7 @@
             <br>
             <input type="submit" class="btn btn-primary" id="fetchaudioid" value="Fetch Audio"> <br>
           </form>
-
-
-          <br><br>
-              <!-- Form fields go here -->
-              {% if  shareinfo['sharemode']|int >= 10 %}
-              <button type="submit" class="btn btn-danger" id="updatespeakerids" >Update SpeakerId</button>
-              {% endif %}
-          
-          
+       
 
 
 
@@ -147,29 +187,104 @@
 <script src="{{url_for('.static', filename='speaker_select2_dropdown.js')}}"></script>
 <script src="{{url_for('.static', filename='fetchaccesscodelist.js')}}"></script>
 <script type="text/javascript">fetchAccessCodeList({{ fetchaccesscodelist | tojson | safe }});</script>
+<script type="text/javascript">fetchTransAccessCodeList({{ transcription_access_code_list | tojson | safe }});</script>
+<script type="text/javascript">fetchVerAccessCodeList({{ verification_access_code_list | tojson | safe }});</script>
 <script type="text/javascript">karyaSpeakerIdsList({{ karya_speaker_ids | tojson | safe }});</script>
-<script>
-  $(document).ready(function() {
-              $('#getotpid').click(function() {
-                // alert('Clicked')
-                // var acode = document.getElementById("piaccesscode").value;
-                var acode = document.getElementById("access_code").value;
-                var mob = document.getElementById("pimobilenumber").value;
-                // console.log(acode);
-                // console.log(mob)
-                $.getJSON("{{url_for('karya_bp.fetch_karya_otp')}}", {
-                  acode:String(acode), mob:String(mob)
-                  }, function(data) {
-                    // console.log(data)
-                    // alert('DOne!')
-                    // console.log(document.getElementById("getotpid").hidden);
-                    document.getElementById("getotpid").hidden=true;
-                    document.getElementById("fetchaudioid").disabled=false;
-                    document.getElementById("karyaotp").hidden=false;
-                  });
-                  return false;
-              });
-            })
 
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+<script>
+$(document).ready(function() {
+  $('#getotpid').click(function() {
+
+    var dropdown = document.getElementById("optionSelect");
+      var selectedValue = dropdown.value;
+      var acode = null;
+
+      if (selectedValue === "") {
+        // Code for Verification Access Code selected
+        var verAccessCodeSelect = document.getElementById("verification_access_code");
+        acode = verAccessCodeSelect.value;
+      } else if (selectedValue === "transcriptionAccessCode") {
+        // Code for Transcription Access Code selected
+        var transAccessCodeSelect = document.getElementById("transcription_access_code");
+        acode = transAccessCodeSelect.value;
+      }
+  console.log(acode)
+  //  var acode = document.getElementById("pimobilenumber").value;
+    var mob = document.getElementById("pimobilenumber").value;
+
+    $.getJSON("{{url_for('karya_bp.fetch_karya_otp')}}", {
+      acode: String(acode),
+      mob: String(mob)
+    }, function(data) {
+      document.getElementById("getotpid").hidden = true;
+      document.getElementById("fetchaudioid").disabled = false;
+      document.getElementById("karyaotp").hidden = false;
+    });
+
+    return false;
+  });
+});
+</script> 
+
+
+
+<script type="text/javascript">
+  function showDropdown() {
+    var option = document.getElementById("optionSelect").value;
+    var verDropdown = document.getElementById("piveraccesscode");
+    var transDropdown = document.getElementById("pitransaccesscode");
+    
+    if (option === "verificationAccessCode") {
+      verDropdown.style.display = "block";
+      transDropdown.style.display = "none";
+    } else if (option === "transcriptionAccessCode") {
+      verDropdown.style.display = "none";
+      transDropdown.style.display = "block";
+    } else {
+      verDropdown.style.display = "none";
+      transDropdown.style.display = "none";
+    }
+  }
+
+  // Function to populate transcription access code dropdown
+  function fetchTransAccessCodeList(accessCodeList) {
+    var transAccessCodeSelect = document.getElementById("transAccessCodeSelect");
+    transAccessCodeSelect.innerHTML = ""; // Clear existing options
+
+    // Add options based on the accessCodeList
+    for (var i = 0; i < accessCodeList.length; i++) {
+      var option = document.createElement("option");
+      option.value = accessCodeList[i].value;
+      option.text = accessCodeList[i].text;
+      transAccessCodeSelect.appendChild(option);
+    }
+  }
+
+  // Function to populate verification access code dropdown
+  function fetchVerAccessCodeList(accessCodeList) {
+    var verAccessCodeSelect = document.getElementById("verAccessCodeSelect");
+    verAccessCodeSelect.innerHTML = ""; // Clear existing options
+
+    // Add options based on the accessCodeList
+    for (var i = 0; i < accessCodeList.length; i++) {
+      var option = document.createElement("option");
+      option.value = accessCodeList[i].value;
+      option.text = accessCodeList[i].text;
+      verAccessCodeSelect.appendChild(option);
+    }
+  }
 </script>
+
+
+
+
+
+
+
+
 {% endblock %} 
