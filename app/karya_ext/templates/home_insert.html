@@ -95,9 +95,23 @@
               }
           </style>
           <p>To Fetch Karya Recoding Select The Task To Get Access Code(s) : </p>
+
+              <div class="dropdown-container">
+                <h5 style="font-weight: bold; margin-right: 10px;">Recording Type:</h5>
+                <select id="additionalDropdown" name="additionalDropdown" required>
+                  <option value="">Select an option</option>
+                  <option value="completedRecordings">Completed Recordings</option>
+                  <option value="newVerification">New Verification</option>
+                  <option value="completedVerification">Completed Verification</option>
+                  <option value="newTranscription">New Transcription</option>
+                </select>
+              </div>
+              
+
+
               <div class="dropdown-container">
                 <h5 style="font-weight: bold; margin-right: 10px;">Task:</h5>
-                <select id="optionSelect" name="optionSelect" onchange="showDropdown()">
+                <select id="optionSelect" name="optionSelect" onchange="showDropdown()" required>
                     <option value="">Select Access Code Task</option>
                     <option value="verificationAccessCode" style="text-align: center;">Verification</option>
                     <option value="transcriptionAccessCode" style="text-align: center;">Transcription</option>

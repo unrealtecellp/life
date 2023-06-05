@@ -748,6 +748,7 @@ def fetch_karya_audio():
 
     if request.method == 'POST':
 
+        additional_task = request.form.get('additionalDropdown')
         access_code_task = request.form.get('optionSelect')
         ver_access_code = request.form.get('verification_access_code')
         trans_access_code = request.form.get('transcription_access_code')
@@ -761,7 +762,7 @@ def fetch_karya_audio():
         for_worker_id = request.form.get("speaker_id")
         phone_number = request.form.get("mobile_number")
         otp = request.form.get("karya_otp")
-
+        print("additional_task : ", additional_task)
         print("access_code_task : ", access_code_task)
         print("access_code : ",access_code)
         print("for_worker_id : ", for_worker_id)
@@ -777,7 +778,7 @@ def fetch_karya_audio():
 
         ###############################   Get Assignments    ########################################
         r_j, hederr = karya_api_access.get_all_karya_assignments(
-            verification_details,access_code_task)
+            verification_details, additional_task)
         
         logger.debug("r_j: %s\nhederr: %s", r_j, hederr)
         #############################################################################################

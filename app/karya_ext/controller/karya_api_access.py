@@ -46,19 +46,19 @@ def verify_karya_otp(
 
 
 def get_all_karya_assignments(
-    verifyPh_request, access_code_task
+    verifyPh_request, additional_task
 ):
     getTokenid_assignment_hedder = verifyPh_request.json()['id_token']
     hederr = {'karya-id-token': getTokenid_assignment_hedder}
 
-    if access_code_task == "transcriptionAccessCode":
+    if additional_task == 'completedRecordings' or additional_task == 'completedVerification':
         print("transcriptionAccessCode URL")
-        # assignment_urll = 'https://karyanltmbox.centralindia.cloudapp.azure.com/assignments?type=verified&includemt=true&from=2021-05-11T07:23:40.654Z'
-        assignment_urll = 'https://karyanltmbox.centralindia.cloudapp.azure.com/assignments?type=new&from=2021-05-11T07:23:40.654Z'
+        assignment_urll = 'https://karyanltmbox.centralindia.cloudapp.azure.com/assignments?type=verified&includemt=true&from=2021-05-11T07:23:40.654Z'
+        # assignment_urll = 'https://karyanltmbox.centralindia.cloudapp.azure.com/assignments?type=new&from=2021-05-11T07:23:40.654Z'
     else:
         print("verificationAccessCode URL")
-        # assignment_urll = 'https://karyanltmbox.centralindia.cloudapp.azure.com/assignments?type=new&from=2021-05-11T07:23:40.654Z'
-        assignment_urll = 'https://karyanltmbox.centralindia.cloudapp.azure.com/assignments?type=verified&includemt=true&from=2021-05-11T07:23:40.654Z'
+        assignment_urll = 'https://karyanltmbox.centralindia.cloudapp.azure.com/assignments?type=new&from=2021-05-11T07:23:40.654Z'
+        # assignment_urll = 'https://karyanltmbox.centralindia.cloudapp.azure.com/assignments?type=verified&includemt=true&from=2021-05-11T07:23:40.654Z'
 
 
     assignment_request = requests.get(headers=hederr, url=assignment_urll)
