@@ -74,8 +74,7 @@
     <div class="row karyaaudiodata">
       {% if  shareinfo['sharemode']|int >= 3 %}
         <div class="col-md-6 fetchkaryarecording">
-          <h4>Fetch Karya Recordings</h4>
-
+          <h3><b>Fetch Karya Recordings</b></h3>
           <form name="fetchdata" method="POST" action="{{url_for('karya_bp.fetch_karya_audio')}}">
             <!-- <label for="piaccesscode">Access Code: </label> -->
             <!-- <input type="text" name="access_code" id="piaccesscode" placeholder="Enter Access Code"/> -->
@@ -92,19 +91,30 @@
                   padding: 5px;
                   border-radius: 5px;
                   margin-left: 10px;
-                  background-color: #fff;
+                  background-color: #f1f1f1fb;
               }
           </style>
+          <p>To Fetch Karya Recoding Select The Task To Get Access Code(s) : </p>
               <div class="dropdown-container">
-                <h4 style="font-weight: bold; margin-right: 10px;">Select Access Code Task:</h4>
+                <h5 style="font-weight: bold; margin-right: 10px;">Task:</h5>
                 <select id="optionSelect" name="optionSelect" onchange="showDropdown()">
                     <option value="">Select Access Code Task</option>
-                    <option value="verificationAccessCode">Verification Access Code</option>
-                    <option value="transcriptionAccessCode">Transcription Access Code</option>
+                    <option value="verificationAccessCode" style="text-align: center;">Verification</option>
+                    <option value="transcriptionAccessCode" style="text-align: center;">Transcription</option>
+                    <!-- <option value="verificationAccessCode"> Verification </option>
+                    <option value="transcriptionAccessCode"> Transcription </option> -->
                 </select>
             </div>
             
             <br>
+
+            <div id="piveraccesscode" style="display: none;">
+              <h3>Verification Access Code:</h3>
+              <select name="verAccessCode" id="verAccessCodeSelect" >
+                  <option value="">Select a verification access code</option>
+                  <!-- Options will be populated dynamically -->
+              </select>
+          </div>
             
             <div id="pitransaccesscode" style="display: none;">
                 <h3>Transcription Access Code:</h3>
@@ -114,13 +124,7 @@
                 </select>
             </div>
             
-            <div id="piveraccesscode" style="display: none;">
-                <h3>Verification Access Code:</h3>
-                <select name="verAccessCode" id="verAccessCodeSelect" >
-                    <option value="">Select a verification access code</option>
-                    <!-- Options will be populated dynamically -->
-                </select>
-            </div>
+            
 
 
             <!-- <div id="piaccesscode"></div>
@@ -157,7 +161,7 @@
       <!-- <br><br><br><br> -->
       {% if  shareinfo['sharemode']|int >= 3 %}
         <div class="col-md-6 uploadkaryarecording pull-right">
-          <h4>Upload Karya Recordings</h4>
+          <h3><b>Upload Karya Recordings</b></h3>
           <form action="{{ url_for('karya_bp.fetch_karya_audio_zip') }}" method="POST" enctype="multipart/form-data">
 
           <!-- <h2>Fetch access code with metadata</h2>
@@ -165,7 +169,7 @@
                 <button>Fetch access code</button>
               </a>
               -->
-            
+            <br>
               <p>Click on the "Choose File" button to upload a zip file*:<p>
               <input type="file" id="accesscodefile" name="accesscodefile">
               <br>
@@ -204,7 +208,7 @@ $(document).ready(function() {
       var selectedValue = dropdown.value;
       var acode = null;
 
-      if (selectedValue === "") {
+      if (selectedValue === "verificationAccessCode") {
         // Code for Verification Access Code selected
         var verAccessCodeSelect = document.getElementById("verification_access_code");
         acode = verAccessCodeSelect.value;

@@ -747,38 +747,22 @@ def fetch_karya_audio():
         logger.debug("derive_from_project_type: %s, derivedFromProjectName: %s", derive_from_project_type, derivedFromProjectName)
 
     if request.method == 'POST':
-        # access_code_task = request.form.get("optionSelect")
-        # access_code = ''
-        # if access_code_task == "trans":
-        #     access_code = request.form.get('transAccessCode')
-        # else:
-        #     access_code = request.form.get('verAccessCode')
 
-        # access_code_task = request.form.get("optionSelect")
-        # access_code = ''
-        # if access_code_task == "trans":
-        #     access_code = request.form.get('transAccessCode')
-        # elif access_code_task == "fetch":
-        #     access_code = request.form.get('verAccessCode')
-        # 
-        acode = request.form.get('optionSelect')
+        access_code_task = request.form.get('optionSelect')
         ver_access_code = request.form.get('verification_access_code')
         trans_access_code = request.form.get('transcription_access_code')
 
-        # print(acode)
-        # print(ver_access_code)
-        # print(trans_access_code)
-        # access_code =  request.form.get('acode')
-
-        if acode == "transcriptionAccessCode":
+        if access_code_task == "transcriptionAccessCode":
             access_code = trans_access_code
         else:
             access_code = ver_access_code
     
-        print(access_code)
+        
         for_worker_id = request.form.get("speaker_id")
         phone_number = request.form.get("mobile_number")
         otp = request.form.get("karya_otp")
+
+        print("access_code_task : ", access_code_task)
         print("access_code : ",access_code)
         print("for_worker_id : ", for_worker_id)
         print("phone_number : ", phone_number)
@@ -793,7 +777,8 @@ def fetch_karya_audio():
 
         ###############################   Get Assignments    ########################################
         r_j, hederr = karya_api_access.get_all_karya_assignments(
-            verification_details)
+            verification_details,access_code_task)
+        
         logger.debug("r_j: %s\nhederr: %s", r_j, hederr)
         #############################################################################################
         language = accesscodedetails.find_one({"projectname": activeprojectname, "karyaaccesscode": access_code},

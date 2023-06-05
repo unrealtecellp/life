@@ -46,11 +46,21 @@ def verify_karya_otp(
 
 
 def get_all_karya_assignments(
-    verifyPh_request
+    verifyPh_request, access_code_task
 ):
     getTokenid_assignment_hedder = verifyPh_request.json()['id_token']
     hederr = {'karya-id-token': getTokenid_assignment_hedder}
-    assignment_urll = 'https://karyanltmbox.centralindia.cloudapp.azure.com/assignments?type=new&from=2021-05-11T07:23:40.654Z'
+
+    if access_code_task == "transcriptionAccessCode":
+        print("transcriptionAccessCode URL")
+        # assignment_urll = 'https://karyanltmbox.centralindia.cloudapp.azure.com/assignments?type=verified&includemt=true&from=2021-05-11T07:23:40.654Z'
+        assignment_urll = 'https://karyanltmbox.centralindia.cloudapp.azure.com/assignments?type=new&from=2021-05-11T07:23:40.654Z'
+    else:
+        print("verificationAccessCode URL")
+        # assignment_urll = 'https://karyanltmbox.centralindia.cloudapp.azure.com/assignments?type=new&from=2021-05-11T07:23:40.654Z'
+        assignment_urll = 'https://karyanltmbox.centralindia.cloudapp.azure.com/assignments?type=verified&includemt=true&from=2021-05-11T07:23:40.654Z'
+
+
     assignment_request = requests.get(headers=hederr, url=assignment_urll)
 
     r_j = assignment_request.json()
@@ -86,13 +96,13 @@ def get_assignment_metadata(
         findWorker_id = assignment_input['chain']
 
         try:
-            worker_id = assignment_data['recorder_id'] # recorder_id is colection speaker_id
-            logger.debug("recorder_id: %s", worker_id) # recorder_id is colection speaker_id
+            worker_id = findWorker_id['workerId'] #recorder_id is colection speaker_id
+            logger.debug("worker_id: %s", worker_id)
 
         except:
-            worker_id = findWorker_id['workerId']
-            logger.debug("worker_id: %s", worker_id)
             # print('worker_id', worker_id, 'for_worker_id', for_worker_id)
+            worker_id = assignment_data['recorder_id'] # 
+            logger.debug("recorder_id: %s", worker_id) # recorder_id is colection speaker_id
         
 
       
