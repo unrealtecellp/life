@@ -748,11 +748,16 @@ def fetch_karya_audio():
 
     if request.method == 'POST':
 
+
+        # additional_task = request.form.get('additionalDropdown')
+        # access_code_task = request.form.get('optionSelect')
+        project_type = projects.find_one({"projectname": activeprojectname}, {"projectType": 1})['projectType']
+        
         additional_task = request.form.get('additionalDropdown')
         access_code_task = request.form.get('optionSelect')
         ver_access_code = request.form.get('verification_access_code')
         trans_access_code = request.form.get('transcription_access_code')
-
+        
         if access_code_task == "transcriptionAccessCode":
             access_code = trans_access_code
         else:
@@ -762,6 +767,7 @@ def fetch_karya_audio():
         for_worker_id = request.form.get("speaker_id")
         phone_number = request.form.get("mobile_number")
         otp = request.form.get("karya_otp")
+        print("project_type: ", project_type)
         print("additional_task : ", additional_task)
         print("access_code_task : ", access_code_task)
         print("access_code : ",access_code)
@@ -776,9 +782,35 @@ def fetch_karya_audio():
             return redirect(url_for('karya_bp.home_insert'))
         #############################################################################################
 
+
+        if project_type == 'validation' and additional_task == 'newVerification' and access_code_task == 'verificationAccessCode':
+            assignment_url = 'https://karyanltmbox.centralindia.cloudapp.azure.com/assignments?type=new&from=2021-05-11T07:23:40.654Z'
+            
+
+        elif project_type == 'validation' and additional_task == 'completedVerification' and access_code_task == 'verificationAccessCode':
+            assignment_url = 'https://karyanltmbox.centralindia.cloudapp.azure.com/assignments?type=verified&includemt=true&from=2021-05-11T07:23:40.654Z'
+        
+        elif project_type == 'transcriptions' and additional_task == 'newTranscription' and access_code_task == 'transcriptionAccessCode':
+            assignment_url = 'https://karyanltmbox.centralindia.cloudapp.azure.com/assignments?type=new&from=2021-05-11T07:23:40.654Z'
+
+
+        elif project_type == 'transcriptions' and additional_task == 'completedVerification' and access_code_task == 'transcriptionAccessCode':
+            assignment_url = 'https://karyanltmbox.centralindia.cloudapp.azure.com/assignments?type=verified&includemt=true&from=2021-05-11T07:23:40.654Z'
+
+
+        else:
+            flash("This action is not allowed in this project. Please fetch the recording in a new/other project.")
+            return redirect(url_for('karya_bp.home_insert'))
+
+
+
+
         ###############################   Get Assignments    ########################################
-        r_j, hederr = karya_api_access.get_all_karya_assignments(
-            verification_details, additional_task)
+        r_j, hederr = karya_api_access.get_all_karya_assignments(verification_details, assignment_url)
+        # r_j, hederr = karya_api_access.get_all_karya_assignments(
+        #     verification_details, additional_task, project_type, access_code_task)
+
+        print("line 790")
         
         logger.debug("r_j: %s\nhederr: %s", r_j, hederr)
         #############################################################################################

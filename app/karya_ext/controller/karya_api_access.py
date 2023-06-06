@@ -1,3 +1,12 @@
+from flask import (
+    Blueprint,
+    flash,
+    redirect,
+    render_template,
+    url_for,
+    request,
+    jsonify
+)
 import requests
 import gzip
 import tarfile
@@ -45,27 +54,18 @@ def verify_karya_otp(
     return verification_details.status_code == int(200), verification_details
 
 
-def get_all_karya_assignments(
-    verifyPh_request, additional_task
-):
+
+
+# def get_all_karya_assignments(verifyPh_request, additional_task, project_type, access_code_task):
+def get_all_karya_assignments(verifyPh_request, assignment_url):
+
     getTokenid_assignment_hedder = verifyPh_request.json()['id_token']
     hederr = {'karya-id-token': getTokenid_assignment_hedder}
-
-    if additional_task == 'completedRecordings' or additional_task == 'completedVerification':
-        print("transcriptionAccessCode URL")
-        assignment_urll = 'https://karyanltmbox.centralindia.cloudapp.azure.com/assignments?type=verified&includemt=true&from=2021-05-11T07:23:40.654Z'
-        # assignment_urll = 'https://karyanltmbox.centralindia.cloudapp.azure.com/assignments?type=new&from=2021-05-11T07:23:40.654Z'
-    else:
-        print("verificationAccessCode URL")
-        assignment_urll = 'https://karyanltmbox.centralindia.cloudapp.azure.com/assignments?type=new&from=2021-05-11T07:23:40.654Z'
-        # assignment_urll = 'https://karyanltmbox.centralindia.cloudapp.azure.com/assignments?type=verified&includemt=true&from=2021-05-11T07:23:40.654Z'
-
-
-    assignment_request = requests.get(headers=hederr, url=assignment_urll)
-
+    assignment_request = requests.get(url=assignment_url, headers=hederr)
     r_j = assignment_request.json()
-
+    # print(r_j)
     return r_j, hederr
+
 
 
 def get_assignment_metadata(
