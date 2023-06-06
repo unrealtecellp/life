@@ -96,13 +96,14 @@ def get_assignment_metadata(
         findWorker_id = assignment_input['chain']
 
         try:
-            worker_id = findWorker_id['workerId'] #recorder_id is colection speaker_id
-            logger.debug("worker_id: %s", worker_id)
+            worker_id = assignment_data['recorder_id'] # recorder_id is colection speaker_id
+            logger.debug("recorder_id: %s", worker_id) # recorder_id is colection speaker_id
+            
 
         except:
             # print('worker_id', worker_id, 'for_worker_id', for_worker_id)
-            worker_id = assignment_data['recorder_id'] # 
-            logger.debug("recorder_id: %s", worker_id) # recorder_id is colection speaker_id
+            worker_id = findWorker_id['workerId'] 
+            logger.debug("worker_id: %s", worker_id)
         
 
       
