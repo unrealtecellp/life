@@ -56,7 +56,8 @@ logger = life_logging.get_logger()
 @login_required
 def home_insert():
     # print('starting...home')
-    userprojects, accesscodedetails = getdbcollections.getdbcollections(mongo,
+    projects, userprojects, accesscodedetails = getdbcollections.getdbcollections(mongo,
+                                                                                  'projects',
                                                                         'userprojects',
                                                                         'accesscodedetails')
     current_username = getcurrentusername.getcurrentusername()
@@ -77,6 +78,21 @@ def home_insert():
     
     karya_speaker_ids = karya_speaker_management.get_all_karya_speaker_ids(
         accesscodedetails, activeprojectname)
+    activeprojectname = getactiveprojectname.getactiveprojectname(
+    current_username, userprojects)
+    projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
+    projectType = getprojecttype.getprojecttype(projects, activeprojectname)
+    print("projectType : ", projectType)
+
+    if projectType == "transcriptions":
+        dropdown_dict = {"newTranscription":"New Transcription", "completedVerification":"Completed Verification"}
+    elif projectType == "validation":
+        dropdown_dict = {"completedVerification":"Completed Verification","newVerification":"New Verification"}
+    else:
+        dropdown_dict = {"completedRecordings":"Completed Recordings"}
+    
+    dropdown_list = [{"value": key, "name": value} for key, value in dropdown_dict.items()]
+
 
     return render_template("home_insert.html",
                            projectName=activeprojectname,
@@ -85,7 +101,7 @@ def home_insert():
                            transcription_access_code_list =transcription_access_code_list,
                            verification_access_code_list=verification_access_code_list,
                            karya_speaker_ids=karya_speaker_ids,
-                           )
+                           dropdown_list=dropdown_list)
 
 
 
@@ -753,22 +769,34 @@ def fetch_karya_audio():
         # access_code_task = request.form.get('optionSelect')
         project_type = projects.find_one({"projectname": activeprojectname}, {"projectType": 1})['projectType']
         
-        additional_task = request.form.get('additionalDropdown')
-        access_code_task = request.form.get('optionSelect')
-        ver_access_code = request.form.get('verification_access_code')
-        trans_access_code = request.form.get('transcription_access_code')
+        # additional_task = request.form.get('additionalDropdown')
+        # access_code_task = request.form.get('optionSelect')
+        # ver_access_code = request.form.get('verification_access_code')
+        # trans_access_code = request.form.get('transcription_access_code')
         
-        if access_code_task == "transcriptionAccessCode":
-            access_code = trans_access_code
-        else:
-            access_code = ver_access_code
-    
+        # if access_code_task == "transcriptionAccessCode":
+        #     access_code = trans_access_code
+        # else:
+        #     access_code = ver_access_code
+        # access_code = request.form.get('acode') 
+
+
+
+        access_code_task = request.form.get('additionalDropdown')
+        access_code = None
+
+        if access_code_task == "newVerification" or access_code_task == "completedVerification":
+            access_code = request.form.get('verification_access_code')
+        elif access_code_task == "newTranscription":
+            access_code = request.form.get('transcription_access_code')
         
         for_worker_id = request.form.get("speaker_id")
         phone_number = request.form.get("mobile_number")
         otp = request.form.get("karya_otp")
+
+        print("OTP : ", otp)
         print("project_type: ", project_type)
-        print("additional_task : ", additional_task)
+        # print("additional_task : ", additional_task)
         print("access_code_task : ", access_code_task)
         print("access_code : ",access_code)
         print("for_worker_id : ", for_worker_id)
@@ -783,18 +811,18 @@ def fetch_karya_audio():
         #############################################################################################
 
 
-        if project_type == 'validation' and additional_task == 'newVerification' and access_code_task == 'verificationAccessCode':
+        if project_type == 'validation'  and "newVerification":
             assignment_url = 'https://karyanltmbox.centralindia.cloudapp.azure.com/assignments?type=new&from=2021-05-11T07:23:40.654Z'
             
 
-        elif project_type == 'validation' and additional_task == 'completedVerification' and access_code_task == 'verificationAccessCode':
+        elif project_type == 'validation' and access_code_task == "completedVerification":
             assignment_url = 'https://karyanltmbox.centralindia.cloudapp.azure.com/assignments?type=verified&includemt=true&from=2021-05-11T07:23:40.654Z'
         
-        elif project_type == 'transcriptions' and additional_task == 'newTranscription' and access_code_task == 'transcriptionAccessCode':
+        elif project_type == 'transcriptions' and access_code_task == "newTranscription":
             assignment_url = 'https://karyanltmbox.centralindia.cloudapp.azure.com/assignments?type=new&from=2021-05-11T07:23:40.654Z'
 
 
-        elif project_type == 'transcriptions' and additional_task == 'completedVerification' and access_code_task == 'transcriptionAccessCode':
+        elif project_type == 'transcriptions' and access_code_task == "completedVerification":
             assignment_url = 'https://karyanltmbox.centralindia.cloudapp.azure.com/assignments?type=verified&includemt=true&from=2021-05-11T07:23:40.654Z'
 
 
