@@ -1,5 +1,18 @@
 <<<<<<< HEAD
 quesId	Q_Id	prompt.Domain	prompt.Elicitation Method	prompt.content.English-Latin.text.000000.startindex	prompt.content.English-Latin.text.000000.endindex	prompt.content.English-Latin.text.000000.textspan.Latin	prompt.content.Hindi-Devanagari.text.000000.startindex	prompt.content.Hindi-Devanagari.text.000000.endindex	prompt.content.Hindi-Devanagari.text.000000.textspan.Devanagari
+<<<<<<< HEAD
+	AG_1	[Agriculture]	Narration			n thüma mori n rünami ko dipu bizü rhase ranye/bate teyo?			n thüma mori n rünami ko dipu bizü rhase ranye/bate teyo?
+	AG_2	[Agriculture]	Narration			thüma rhase ranye/bate(crop) teyo zü mi kha dipu thi tsüyo? puko ga bizü ko lübi teyo me mha kükre mhatho ri thiyo? mha kükre mhatho thiyo mütha , dipu thi yo?			thüma rhase ranye/bate(crop) teyo zü mi kha dipu thi tsüyo? puko ga bizü ko lübi teyo me mha kükre mhatho ri thiyo? mha kükre mhatho thiyo mütha , dipu thi yo?
+	AG_3	[Agriculture]	Narration			ga kükre kükre zü n thüma ko mori rünami ko teyo zü posüte? kütsa tho lo ri uza se pungu posüte?			ga kükre kükre zü n thüma ko mori rünami ko teyo zü posüte? kütsa tho lo ri uza se pungu posüte?
+	AG_4	[Agriculture]	Narration			tekhri mori utu dibi zü ce ga hiko teyo?			tekhri mori utu dibi zü ce ga hiko teyo?
+	AG_5	[Agriculture]	Narration			dipu bi no ga hiko teyo?			dipu bi no ga hiko teyo?
+	AG_6	[Agriculture]	Narration			mü küto la pütü didu-o yiyo?			mü küto la pütü didu-o yiyo?
+	AG_7	[Agriculture]	Narration			ga hiko te zü ce, daru bizü sü yo me? me ga vo vekuto la udo kükre kro-o ba?			ga hiko te zü ce, daru bizü sü yo me? me ga vo vekuto la udo kükre kro-o ba?
+	AG_8	[Agriculture]	Narration			n thüma mori n rünami ko dipu bizü rhase ranye/bate teyo?			n thüma mori n rünami ko dipu bizü rhase ranye/bate teyo?
+	AG_9	[Agriculture]	Narration			thüma rhase ranye/bate(crop) teyo zü mi kha dipu thi tsüyo? puko ga bizü ko lübi teyo me mha kükre mhatho ri thiyo? mha kükre mhatho thiyo mütha , dipu thi yo?			thüma rhase ranye/bate(crop) teyo zü mi kha dipu thi tsüyo? puko ga bizü ko lübi teyo me mha kükre mhatho ri thiyo? mha kükre mhatho thiyo mütha , dipu thi yo?
+	AG_10	[Agriculture]	Narration			ga kükre kükre zü n thüma ko mori rünami ko teyo zü posüte? kütsa tho lo ri uza se pungu posüte?			ga kükre kükre zü n thüma ko mori rünami ko teyo zü posüte? kütsa tho lo ri uza se pungu posüte?
+	AG_11	[Agriculture]	Narration			tekhri mori utu dibi zü ce ga hiko teyo?			tekhri mori utu dibi zü ce ga hiko teyo?
+=======
 	AG_1	[Agriculture]	Narration			What kinds of crops are grown by the people of your community?			आपके समाज के लोग किस प्रकार की फसलें उगाते हैं?
 	AG_2	[Agriculture]	Narration			What are the people who grow crops called? Do they only grow crops or are they engaged in other activities as well? What kind of other activities are they engaged in?			फसल उगाने वाले लोगों को क्या कहा जाता है? क्या वे केवल फसल उगाते हैं या वे अन्य गतिविधियों में भी लगे हुए हैं? वे किस तरह की अन्य गतिविधियों में लगे हुए हैं?
 	AG_3	[Agriculture]	Narration			Tell the names of at least 5 vegetables that are grown in your community			अपने समाज में उगाई जाने वाली कम से कम 5 सब्जियों के नाम बताइए?
@@ -511,3 +524,4 @@ Q20230212230431830911	AG_204								Dipu bi no mi ce ju yo?
 Q20230212230431831228	AG_205								Dipu bi no cho mu tiyo?
 Q20230212230431831543	AG_206								gakre utsa kükre kükre zü dipü bizü teyo? Pu küve mu pu küsü posüte?
 >>>>>>> 31c07cf533da7c4eec619931ebc708293cfb3ff8
+>>>>>>> d63c2dd7943c840c46389761cfb8c48587415ab1
