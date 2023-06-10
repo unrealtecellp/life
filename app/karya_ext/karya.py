@@ -52,14 +52,70 @@ logger = life_logging.get_logger()
 '''Home page of karya Extension. This contain  '''
 
 
+# @karya_bp.route('/home_insert')
+# @login_required
+# def home_insert():
+#     # print('starting...home')
+#     projects, userprojects, accesscodedetails = getdbcollections.getdbcollections(mongo,
+#                                                                                   'projects',
+#                                                                         'userprojects',
+#                                                                         'accesscodedetails')
+#     current_username = getcurrentusername.getcurrentusername()
+#     activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+#                                                                   userprojects)
+#     shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
+#                                                       current_username,
+#                                                       activeprojectname)
+
+#     access_code_list = access_code_management.get_access_code_list(
+#         accesscodedetails, activeprojectname, current_username)
+    
+#     transcription_access_code_list = access_code_management.get_transcription_access_code_list(
+#         accesscodedetails, activeprojectname, current_username)
+    
+#     verification_access_code_list = access_code_management.get_verification_access_code_list(
+#         accesscodedetails, activeprojectname, current_username)
+    
+#     print(verification_access_code_list)
+    
+
+    
+#     karya_speaker_ids = karya_speaker_management.get_all_karya_speaker_ids(
+#         accesscodedetails, activeprojectname)
+#     activeprojectname = getactiveprojectname.getactiveprojectname(
+#     current_username, userprojects)
+#     projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
+#     projectType = getprojecttype.getprojecttype(projects, activeprojectname)
+#     print("projectType : ", projectType)
+
+#     if projectType == "transcriptions":
+#         dropdown_dict = {"newTranscription":"New Transcription", "completedVerification":"Completed Verification"}
+#     elif projectType == "validation":
+#         dropdown_dict = {"completedVerification":"Completed Verification","newVerification":"New Verification"}
+#     else:
+#         dropdown_dict = {"completedRecordings":"Completed Recordings"}
+    
+#     dropdown_list = [{"value": key, "name": value} for key, value in dropdown_dict.items()]
+
+
+#     return render_template("home_insert.html",
+#                            projectName=activeprojectname,
+#                            shareinfo=shareinfo,
+#                            fetchaccesscodelist=access_code_list,
+#                            transcription_access_code_list =transcription_access_code_list,
+#                            verification_access_code_list=verification_access_code_list,
+#                            karya_speaker_ids=karya_speaker_ids,
+#                            dropdown_list=dropdown_list)
+
+
 @karya_bp.route('/home_insert')
 @login_required
 def home_insert():
     # print('starting...home')
     projects, userprojects, accesscodedetails = getdbcollections.getdbcollections(mongo,
                                                                                   'projects',
-                                                                        'userprojects',
-                                                                        'accesscodedetails')
+                                                                                  'userprojects',
+                                                                                  'accesscodedetails')
     current_username = getcurrentusername.getcurrentusername()
     activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
                                                                   userprojects)
@@ -69,42 +125,46 @@ def home_insert():
 
     access_code_list = access_code_management.get_access_code_list(
         accesscodedetails, activeprojectname, current_username)
-    
+
     transcription_access_code_list = access_code_management.get_transcription_access_code_list(
         accesscodedetails, activeprojectname, current_username)
-    
+
     verification_access_code_list = access_code_management.get_verification_access_code_list(
         accesscodedetails, activeprojectname, current_username)
-    
+
+    # Add condition to check if the lists are empty
+    # if not verification_access_code_list:
+    #     verification_access_code_list = [""]
+    # if not transcription_access_code_list:
+    #     transcription_access_code_list = [""]
+
+    # print(verification_access_code_list)
+
     karya_speaker_ids = karya_speaker_management.get_all_karya_speaker_ids(
         accesscodedetails, activeprojectname)
     activeprojectname = getactiveprojectname.getactiveprojectname(
-    current_username, userprojects)
+        current_username, userprojects)
     projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
     projectType = getprojecttype.getprojecttype(projects, activeprojectname)
     print("projectType : ", projectType)
 
     if projectType == "transcriptions":
-        dropdown_dict = {"newTranscription":"New Transcription", "completedVerification":"Completed Verification"}
+        dropdown_dict = {"newTranscription": "New Transcription", "completedVerification": "Completed Verification"}
     elif projectType == "validation":
-        dropdown_dict = {"completedVerification":"Completed Verification","newVerification":"New Verification"}
+        dropdown_dict = {"completedVerification": "Completed Verification", "newVerification": "New Verification"}
     else:
-        dropdown_dict = {"completedRecordings":"Completed Recordings"}
-    
-    dropdown_list = [{"value": key, "name": value} for key, value in dropdown_dict.items()]
+        dropdown_dict = {"completedRecordings": "Completed Recordings"}
 
+    dropdown_list = [{"value": key, "name": value} for key, value in dropdown_dict.items()]
 
     return render_template("home_insert.html",
                            projectName=activeprojectname,
                            shareinfo=shareinfo,
                            fetchaccesscodelist=access_code_list,
-                           transcription_access_code_list =transcription_access_code_list,
+                           transcription_access_code_list=transcription_access_code_list,
                            verification_access_code_list=verification_access_code_list,
                            karya_speaker_ids=karya_speaker_ids,
                            dropdown_list=dropdown_list)
-
-
-
 
 
 
@@ -707,7 +767,7 @@ def fetch_karya_otp():
         current_username, userprojects)
 
     access_code = request.args.get("acode")
-    print(access_code)
+    print("URL FOR fetch_karya_otp: ",access_code)
     phone_number = request.args.get("mob")
 
     karya_api_access.send_karya_otp(
@@ -746,7 +806,7 @@ def fetch_karya_audio():
                                                                                                                                 'questionnaires',
                                                                                                                                 'accesscodedetails')
     current_username = getcurrentusername.getcurrentusername()
-    # print('curent user : ', current_username)
+    print('curent user : ', current_username)
     activeprojectname = getactiveprojectname.getactiveprojectname(
         current_username, userprojects)
     projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
@@ -764,32 +824,17 @@ def fetch_karya_audio():
 
     if request.method == 'POST':
 
-
-        # additional_task = request.form.get('additionalDropdown')
-        # access_code_task = request.form.get('optionSelect')
         project_type = projects.find_one({"projectname": activeprojectname}, {"projectType": 1})['projectType']
         
-        # additional_task = request.form.get('additionalDropdown')
-        # access_code_task = request.form.get('optionSelect')
-        # ver_access_code = request.form.get('verification_access_code')
-        # trans_access_code = request.form.get('transcription_access_code')
-        
-        # if access_code_task == "transcriptionAccessCode":
-        #     access_code = trans_access_code
-        # else:
-        #     access_code = ver_access_code
-        # access_code = request.form.get('acode') 
-
-
-
         access_code_task = request.form.get('additionalDropdown')
-        access_code = None
-
+        # access_code = None
+        access_code = request.form.get('transcriptionDropdown')
+       
         if access_code_task == "newVerification" or access_code_task == "completedVerification":
-            access_code = request.form.get('verification_access_code')
+            access_code = request.form.get('verificationDropdown')
         elif access_code_task == "newTranscription":
-            access_code = request.form.get('transcription_access_code')
-        
+            access_code = request.form.get('transcriptionDropdown')
+       
         for_worker_id = request.form.get("speaker_id")
         phone_number = request.form.get("mobile_number")
         otp = request.form.get("karya_otp")

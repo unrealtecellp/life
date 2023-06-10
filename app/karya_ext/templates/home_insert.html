@@ -1,37 +1,4 @@
-<!-- <!DOCTYPE html>
-<html>
 
-<head>
-
-  <title>Karya Extension</title>
-  
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
-  <script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
-  <script src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap.min.js"></script>  
-  <link rel="stylesheet" href="https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css" />
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.1/bootstrap3-editable/css/bootstrap-editable.css" rel="stylesheet">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.1/bootstrap3-editable/js/bootstrap-editable.js"></script>
-
-
-
-  <style>
-  
-    h1 {text-align: center;}
-
-    input[type=button]:hover {
-      box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24),0 17px 50px 0 rgba(0,0,0,0.19);
-    }
-    
-    div {
-      border-radius: 20px;
-      background-color: rgba(247, 235, 220, 0.253);
-      padding: 1px;
-    }
-    </style> -->
-  
-<!-- </head> -->
 {% extends "karyaextlinks.html" %}
 
 {% block title %}
@@ -98,54 +65,34 @@
 
           <form id="accessCodeForm">
 
-            <!-- <label for="dropdown">Select an option:</label>
-        <select id="dropdown">
-            {% for option in dropdown_list %}
-                <option value="{{ option.value }}">{{ option.name }}</option>
-            {% endfor %}
-        </select> -->
-
-
-        <div class="dropdown-container">
-          <h5 style="font-weight: bold; margin-right: 10px;">Recording Type:</h5>
-          <select id="additionalDropdown" name="additionalDropdown" required>
-            <option value="">Select an option</option>
-            {% for option in dropdown_list %}
-              <option value="{{ option.value }}">{{ option.name }}</option>
-            {% endfor %}
-          </select>
-        </div>
-        
-
-
-            <!-- <div class="dropdown-container">
+            <div class="dropdown-container">
               <h5 style="font-weight: bold; margin-right: 10px;">Recording Type:</h5>
               <select id="additionalDropdown" name="additionalDropdown" required>
                 <option value="">Select an option</option>
-                <option value="completedRecordings">Completed Recordings</option>
-                <option value="newVerification">New Verification</option>
-                <option value="completedVerification">Completed Verification</option>
-                <option value="newTranscription">New Transcription</option>
-              </select>
-            </div> -->
-        
-            <br>
-        
-            <div id="piveraccesscode" style="display: none;">
-              <h3>Verification Access Code:</h3>
-              <select name="verAccessCode" id="verAccessCodeSelect">
-                <option value="">Select a verification access code</option>
-                <!-- Options will be populated dynamically -->
+                {% for option in dropdown_list %}
+                  <option value="{{ option.value }}">{{ option.name }}</option>
+                {% endfor %}
               </select>
             </div>
-        
-            <div id="pitransaccesscode" style="display: none;">
-              <h3>Transcription Access Code:</h3>
-              <select name="transAccessCode" id="transAccessCodeSelect">
-                <option value="">Select a transcription access code</option>
-                <!-- Options will be populated dynamically -->
-              </select>
-            </div>
+            
+          <div class="dropdown-container">
+            <label for="transcriptionDropdown" id="transcriptionLabel" style="display: none;">Access Code:</label>
+            <select id="transcriptionDropdown"  name="transcriptionDropdown"style="display: none;">
+              {% for item in transcription_access_code_list %}
+                <option value="{{ item }}">{{ item }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="dropdown-container">
+            <label for="verificationDropdown" id="verificationLabel" style="display: none;">Access Code:</label>
+            <select id="verificationDropdown" name = "verificationDropdown" style="display: none;">
+              {% for item in verification_access_code_list %}
+                <option value="{{ item }}">{{ item }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
         
             <br>
             <div id="idforworker"></div>
@@ -204,8 +151,8 @@
 <script src="{{url_for('.static', filename='speaker_select2_dropdown.js')}}"></script>
 <script src="{{url_for('.static', filename='fetchaccesscodelist.js')}}"></script>
 <script type="text/javascript">fetchAccessCodeList({{ fetchaccesscodelist | tojson | safe }});</script>
-<script type="text/javascript">fetchTransAccessCodeList({{ transcription_access_code_list | tojson | safe }});</script>
-<script type="text/javascript">fetchVerAccessCodeList({{ verification_access_code_list | tojson | safe }});</script>
+<!-- <script type="text/javascript">fetchTransAccessCodeList({{ transcription_access_code_list | tojson | safe }});</script> -->
+<!-- <script type="text/javascript">fetchVerAccessCodeList({{ verification_access_code_list | tojson | safe }});</script> -->
 <script type="text/javascript">karyaSpeakerIdsList({{ karya_speaker_ids | tojson | safe }});</script>
 
 
@@ -213,19 +160,55 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-<!-- <script>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var additionalDropdown = document.getElementById('additionalDropdown');
+    var transcriptionDropdown = document.getElementById('transcriptionDropdown');
+    var verificationDropdown = document.getElementById('verificationDropdown');
+    var transcriptionLabel = document.getElementById('transcriptionLabel');
+    var verificationLabel = document.getElementById('verificationLabel');
+
+    additionalDropdown.addEventListener('change', function() {
+      var selectedOption = additionalDropdown.value;
+
+      if (selectedOption === "newVerification" || selectedOption === "completedVerification") {
+        verificationDropdown.style.display = "block";
+        verificationLabel.style.display = "block";
+        transcriptionDropdown.style.display = "none";
+        transcriptionLabel.style.display = "none";
+      } else if (selectedOption === "newTranscription") {
+        verificationDropdown.style.display = "none";
+        verificationLabel.style.display = "none";
+        transcriptionDropdown.style.display = "block";
+        transcriptionLabel.style.display = "block";
+      } else {
+        verificationDropdown.style.display = "none";
+        verificationLabel.style.display = "none";
+        transcriptionDropdown.style.display = "none";
+        transcriptionLabel.style.display = "none";
+      }
+    });
+  });
+</script>
+
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script>
   $(document).ready(function() {
     $('#getotpid').click(function() {
       var selectedValue = $('#additionalDropdown').val();
       var acode = null;
 
-      if (selectedValue === "newVerification") {
+      if (selectedValue === "newVerification" || selectedValue === "completedVerification") {
         // Code for Verification Access Code selected
-        var verAccessCodeSelect = document.getElementById("verification_access_code");
+        var verAccessCodeSelect = document.getElementById("verificationDropdown");
         acode = verAccessCodeSelect.value;
       } else if (selectedValue === "newTranscription") {
         // Code for Transcription Access Code selected
-        var transAccessCodeSelect = document.getElementById("transcription_access_code");
+        var transAccessCodeSelect = document.getElementById("transcriptionDropdown");
         acode = transAccessCodeSelect.value;
       }
 
@@ -238,150 +221,22 @@
       $.getJSON("{{url_for('karya_bp.fetch_karya_otp')}}", {
         acode: String(acode),
         mob: String(mob)
-      }, function(data) {
+      })
+      .done(function(data) {
         console.log("API Response:", data);
         $('#getotpid').hide();
         $('#fetchaudioid').prop('disabled', false);
         $('#karyaotp').prop('hidden', false);
+      })
+      .fail(function(jqXHR, textStatus, errorThrown) {
+        console.log("API Request Failed:", textStatus, errorThrown);
+        // Handle the failure scenario here
       });
 
       return false;
     });
   });
-</script> -->
+</script>
 
-
-
-
-   <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-   <script>
-     $(document).ready(function() {
-       $("#additionalDropdown").change(function() {
-         var selectedOption = $(this).val();
-         var verAccessCodeDiv = $("#piveraccesscode");
-         var transAccessCodeDiv = $("#pitransaccesscode");
-   
-         if (selectedOption === "newVerification" || selectedOption === "completedVerification") {
-           verAccessCodeDiv.show();
-           transAccessCodeDiv.hide();
-         } else if (selectedOption === "newTranscription") {
-           verAccessCodeDiv.hide();
-           transAccessCodeDiv.show();
-         } else {
-           verAccessCodeDiv.hide();
-           transAccessCodeDiv.hide();
-         }
-       });
-   
-       function fetchTransAccessCodeList(accessCodeList) {
-         var transAccessCodeSelect = $("#transAccessCodeSelect");
-         transAccessCodeSelect.empty(); // Clear existing options
-   
-         // Add options based on the accessCodeList
-         for (var i = 0; i < accessCodeList.length; i++) {
-           var option = $("<option>");
-           option.val(accessCodeList[i].value);
-           option.text(accessCodeList[i].text);
-           transAccessCodeSelect.append(option);
-         }
-       }
-   
-       function fetchVerAccessCodeList(accessCodeList) {
-         var verAccessCodeSelect = $("#verAccessCodeSelect");
-         verAccessCodeSelect.empty(); // Clear existing options
-   
-         // Add options based on the accessCodeList
-         for (var i = 0; i < accessCodeList.length; i++) {
-           var option = $("<option>");
-           option.val(accessCodeList[i].value);
-           option.text(accessCodeList[i].text);
-           verAccessCodeSelect.append(option);
-         }
-       }
-     });
-   </script>
-    -->
- 
-
-    <script>
-      $(document).ready(function() {
-        $('#getotpid').click(function() {
-          var selectedValue = $('#additionalDropdown').val();
-          var acode = null;
-    
-          if (selectedValue === "newVerification" || selectedValue === "completedVerification") {
-            // Code for Verification Access Code selected
-            var verAccessCodeSelect = document.getElementById("verification_access_code");
-            acode = verAccessCodeSelect.value;
-          } else if (selectedValue === "newTranscription") {
-            // Code for Transcription Access Code selected
-            var transAccessCodeSelect = document.getElementById("transcription_access_code");
-            acode = transAccessCodeSelect.value;
-          }
-    
-          var mob = $('#pimobilenumber').val();
-    
-          console.log("Selected Value:", selectedValue);
-          console.log("Access Code:", acode);
-          console.log("Mobile Number:", mob);
-    
-          $.getJSON("{{url_for('karya_bp.fetch_karya_otp')}}", {
-            acode: String(acode),
-            mob: String(mob)
-          }, function(data) {
-            console.log("API Response:", data);
-            $('#getotpid').hide();
-            $('#fetchaudioid').prop('disabled', false);
-            $('#karyaotp').prop('hidden', false);
-          });
-    
-          return false;
-        });
-    
-        $("#additionalDropdown").change(function() {
-          var selectedOption = $(this).val();
-          var verAccessCodeDiv = $("#piveraccesscode");
-          var transAccessCodeDiv = $("#pitransaccesscode");
-    
-          if (selectedOption === "newVerification" || selectedOption === "completedVerification") {
-            verAccessCodeDiv.show();
-            transAccessCodeDiv.hide();
-          } else if (selectedOption === "newTranscription") {
-            verAccessCodeDiv.hide();
-            transAccessCodeDiv.show();
-          } else {
-            verAccessCodeDiv.hide();
-            transAccessCodeDiv.hide();
-          }
-        });
-    
-        function fetchTransAccessCodeList(accessCodeList) {
-          var transAccessCodeSelect = $("#transAccessCodeSelect");
-          transAccessCodeSelect.empty(); // Clear existing options
-    
-          // Add options based on the accessCodeList
-          for (var i = 0; i < accessCodeList.length; i++) {
-            var option = $("<option>");
-            option.val(accessCodeList[i].value);
-            option.text(accessCodeList[i].text);
-            transAccessCodeSelect.append(option);
-          }
-        }
-    
-        function fetchVerAccessCodeList(accessCodeList) {
-          var verAccessCodeSelect = $("#verAccessCodeSelect");
-          verAccessCodeSelect.empty(); // Clear existing options
-    
-          // Add options based on the accessCodeList
-          for (var i = 0; i < accessCodeList.length; i++) {
-            var option = $("<option>");
-            option.val(accessCodeList[i].value);
-            option.text(accessCodeList[i].text);
-            verAccessCodeSelect.append(option);
-          }
-        }
-      });
-    </script>
-    
 
 {% endblock %} 
