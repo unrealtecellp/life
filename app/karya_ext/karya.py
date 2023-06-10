@@ -856,20 +856,21 @@ def fetch_karya_audio():
         #############################################################################################
 
 
-        if project_type == 'validation'  and "newVerification":
+        if project_type == 'validation'  and access_code_task == "newVerification":
             assignment_url = 'https://karyanltmbox.centralindia.cloudapp.azure.com/assignments?type=new&from=2021-05-11T07:23:40.654Z'
-            
+            print( "the project type is ", project_type , "and" ,access_code_task, "and"  , " New url")
 
         elif project_type == 'validation' and access_code_task == "completedVerification":
             assignment_url = 'https://karyanltmbox.centralindia.cloudapp.azure.com/assignments?type=verified&includemt=true&from=2021-05-11T07:23:40.654Z'
-        
+            print( "the project type is ", project_type , "and" ,access_code_task, "and", "verified url")
+
         elif project_type == 'transcriptions' and access_code_task == "newTranscription":
             assignment_url = 'https://karyanltmbox.centralindia.cloudapp.azure.com/assignments?type=new&from=2021-05-11T07:23:40.654Z'
-
+            print( "the project type is ",project_type , "and" ,access_code_task, "and", "New url")
 
         elif project_type == 'transcriptions' and access_code_task == "completedVerification":
             assignment_url = 'https://karyanltmbox.centralindia.cloudapp.azure.com/assignments?type=verified&includemt=true&from=2021-05-11T07:23:40.654Z'
-
+            print( "the project type is ",project_type , "and" ,access_code_task, "and", "verified url")
 
         else:
             flash("This action is not allowed in this project. Please fetch the recording in a new/other project.")
