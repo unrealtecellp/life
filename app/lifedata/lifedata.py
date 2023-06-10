@@ -26,7 +26,8 @@ from app.lifedata.controller import (
     copydatafromparentproject,
     savenewdataform,
     create_validation_type_project,
-    save_tagset
+    save_tagset,
+    get_validation_data
 )
 from flask_login import login_required
 import os
@@ -170,7 +171,27 @@ def newdataform():
 @lifedata.route('/validation', methods=['GET', 'POST'])
 @login_required
 def validation():
-    return "OK"
+    projects_collection, userprojects_collection, validation_collection, tagsets_collection = getdbcollections.getdbcollections(mongo,
+                                                                                                                                "projects",
+                                                                                                                                "userprojects",
+                                                                                                                                "validation",
+                                                                                                                                "tagsets")
+    current_username = getcurrentusername.getcurrentusername()
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                  userprojects_collection)
+
+    project_details = get_validation_data.get_validation_data(projects_collection,
+                                                              userprojects_collection,
+                                                              validation_collection,
+                                                              tagsets_collection,
+                                                              current_username,
+                                                              activeprojectname)
+    
+
+    return render_template("lifedatavalidation.html",
+                           projectName=activeprojectname,
+                           proj_data=project_details
+                           )
 
 @lifedata.route('/getlanguagelist', methods=['GET', 'POST'])
 @login_required

@@ -68,13 +68,13 @@ Home
       <!-- <button type="button" class="btn btn-lg btn-warning"
         onclick="window.location.href='{{ url_for('downloadproject') }}';">Download Project</button> -->
 
-      {% if project_type == '' %}
-      <button type="button" class="btn btn-lg btn-info"
-        onclick="window.location.href='{{ url_for('downloaddictionary') }}';">Download Dictionary</button>
-      {%endif%}
+        {% if project_type == '' %}
+        <button type="button" class="btn btn-lg btn-info"
+          onclick="window.location.href='{{ url_for('downloaddictionary') }}';">Download Dictionary</button>
+        {%endif%}
       {% endif %}
       {% if shareinfo['sharemode']|int >= 1 %}
-      <button type="button" class="btn btn-lg btn-warning"
+        <button type="button" class="btn btn-lg btn-warning"
         onclick="window.location.href='{{ url_for('manageproject') }}';">Manage Project</button>
       {% endif %}
       <!-- <div class="assignkaryaaccesscodecount pull-right"></div>
@@ -119,20 +119,22 @@ Home
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
               aria-hidden="true">&times;</span></button>
-          <h4 class="modal-title" id="myShareProjectModalLabel">Project Name: {{ activeprojectname }}</h4>
+          <h4 class="modal-title">LiFE Access Control</h4>
         </div>
         <div class="modal-body">
+          <h4 id="myShareProjectModalLabel">Project Name: {{ activeprojectname }}</h4>
+          <hr>
           <div class="row">
-            <!-- <div class="col-xs-12">Select A State</div> -->
             <div class="col-xs-12">
               <div class="form-group">
+                
                 <select name="" id="shareProjectSelect" multiple="multiple" style="width: 100%">
                 </select>
                 <br>
+                <div id="shareLatest"></div>
                 <br>
                 <select name="" id="shareSpeakerSelect" multiple="multiple" style="width: 100%">
                 </select>
-                <br>
                 <br>
                 <div class="sharemode"></div>
               </div>

@@ -3,7 +3,8 @@ var speakersToShare = ''
 var shareuserlist = []
 var sharespeakerlist = []
 var shareModeList = ['removeallaccess', 'view', 'download', 'edit', 'add', 'delete']
-var shareMode = ''
+var shareMode = '';
+var shareLatest = '';
 
 // share project button on dictionary view page
 $(document).ready(function() { 
@@ -26,7 +27,12 @@ $(document).ready(function() {
         localStorage.setItem("shareuserlist", JSON.stringify(shareuserlist));
         localStorage.setItem("sharespeakerlist", JSON.stringify(sharespeakerlist));
         $('#shareProjectSelect').append(usersToShare)
+        shareLatest += '<input type="checkbox" id="sharelatestchecked" name="sharelatestchecked" value="">'+
+                      '<label for="sharelatestchecked">&nbsp; Share Only Data</label><br>';
+        $('#shareLatest').append(shareLatest)
         $('#shareSpeakerSelect').append(speakersToShare)
+
+        shareMode += '<hr><h4>Access Control:</h4>';
         for (i=0; i<=sharemodecount+1;i++) {
           // console.log(shareModeList[i]);
           if (shareModeList[i] !== undefined) {
@@ -34,8 +40,14 @@ $(document).ready(function() {
                         '<label for="'+shareModeList[i]+'">&nbsp; '+shareModeList[i]+'</label><br>';
           }
         }
+
+        shareMode += '<hr><h4>Advanced Access Control:</h4>';
+        shareMode += '<input type="checkbox" id="downloadchecked" name="downloadchecked" value="">'+
+                      '<label for="downloadchecked">&nbsp; Allow Download</label>';
+        shareMode += '&nbsp;&nbsp;&nbsp;&nbsp;';
+        // shareMode += 'Access To Share Button&nbsp;';
         shareMode += '<input type="checkbox" id="sharechecked" name="sharechecked" value="">'+
-                      '<label for="sharechecked">&nbsp; Share</label><br>';
+                      '<label for="sharechecked">&nbsp; Access To Share Button</label><br>';
 
         // var shareMode = '<input type="radio" id="view" name="sharemode" value="0">'+
         //                 '<label for="view">&nbsp; View</label><br>'+
@@ -75,4 +87,3 @@ $(document).ready(function() {
 $(".shareprojectwith").click(function() {
   alert('Project sharing successful :)');
   });
-

@@ -61,10 +61,16 @@
       {% endif %}
       <div class="commentIDs">
         <button type="button" id="uNAnnotated" class="btn btn-light" onclick="unAnnotated()">All Filename</button>
+        {% if shareinfo['sharemode']|int >= 4 %}
+          <button type="button" id="deleteaudio" class="btn btn-danger pull-right">
+            <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+            Delete Audio
+          </button>
+        {% endif %}
       </div>
     </div>
     <div class="col-sm-6">
-      <div>
+      {# <div>
         {% if speakerids is defined %}
           <label for="usernamesdropdown">Audio Files of: </label>
           <select class="custom-select custom-select-sm" id="usernamesdropdown" style="width: 50%;">
@@ -76,7 +82,7 @@
             {% endfor %}
           </select>
         {% endif %}
-      </div>
+      </div> #}
       <br>
       <div>
         {% if speakerids is defined %}

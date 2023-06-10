@@ -278,6 +278,11 @@ $("#save").click(function() {
     a: JSON.stringify(transcriptionData )
   })
   .done(function( data ) {
+    // console.log(data.savedTranscription);
+    if (!data.savedTranscription) {
+      alert("Unable to save the transcription as audio seem to be deleted by one of the shared user.\
+      Showing you the next audio in the list.")
+    }
     window.location.reload();
   });
 });
@@ -479,5 +484,22 @@ function replaceZoomSlider() {
   let slider = '<input id="slider" data-action="zoom" type="range" min="20" max="100" value="0" style="width: 50%">';
   $("#sliderdivid").html(slider);
 }
+
+$("#deleteaudio").click(function() {
+  let deleteAudioFLAG = false;
+  let lastActiveId = document.getElementById("lastActiveId").value;
+  if (lastActiveId) {
+    deleteAudioFLAG = confirm("Delete This Audio!!!");
+  }
+  if(deleteAudioFLAG) {
+    console.log(deleteAudioFLAG, lastActiveId);
+    $.post( "/deleteaudio", {
+      a: JSON.stringify(lastActiveId)
+    })
+    .done(function( data ) {
+      window.location.reload();
+    });
+  }
+});
 
 replaceZoomSlider();

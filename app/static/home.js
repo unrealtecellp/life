@@ -80,6 +80,11 @@ $("#idhomevieweditbtn").click(function() {
                                         windowHref.slice(lastIndexOfPathname).replace(pathname, '/easyAnno/textAnno');
                 // window.location.href = window.location.href.replace(pathname, '/lifeques/questionnaire');
             }
+            else if (projectType === 'validation') {
+                window.location.href = windowHref.slice(0, lastIndexOfPathname) +  
+                                        windowHref.slice(lastIndexOfPathname).replace(pathname, '/lifedata/validation');
+                // window.location.href = window.location.href.replace(pathname, '/lifeques/questionnaire');
+            }
             else {
                 window.location.href = windowHref.slice(0, lastIndexOfPathname) +  
                                         windowHref.slice(lastIndexOfPathname).replace(pathname, "/enternewlexeme");

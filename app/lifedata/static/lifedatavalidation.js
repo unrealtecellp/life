@@ -435,7 +435,7 @@ function createTextSpanDetails(tagSet, defaultCategoryTags) {
 }
 
 function myFunction(projData) {
-    // console.log(projData);
+    console.log(projData);
     localStorage.setItem("projData", JSON.stringify(projData));
     let lastActiveId = projData["lastActiveId"];
     let accessedOnTime = projData["accessedOnTime"];
@@ -449,24 +449,24 @@ function myFunction(projData) {
             '<form name="savetextanno" id="idsavetextannoform" class="form-horizontal" action="/easyAnno/savetextAnno" method="POST"  enctype="multipart/form-data">';
     inpt += '<div class="col-sm-6"  id="left">';
     inpt += '<input type="hidden" id="accessedOnTime" name="accessedOnTime" value="' + accessedOnTime + '">' +
-            '<input type="hidden" id="lastActiveId" name="lastActiveId" value="' + lastActiveId + '">' +
-            '<input type="hidden" id="' + projData["textData"]["ID"] + '" name="id" value="' + projData["textData"]["ID"] + '">';
+            '<input type="hidden" id="lastActiveId" name="lastActiveId" value="' + lastActiveId + '">';
+            // '<input type="hidden" id="' + projData["textData"]["ID"] + '" name="id" value="' + projData["textData"]["ID"] + '">';
     
     // inpt += '<p class="form-group" id="' + projData["textData"]["ID"] + '"><strong>Text ID: ' + projData["textData"]["ID"] + '</strong></p>';
 
-    for (let [k, v] of Object.entries(projData["textMetadata"])) {
-        inpt += '<p class="form-group" id="' + k + '"><strong>' + k+': '+v+ '</strong></p>';
-        // if (k === 'ID' || k === 'Text') continue
-        // else {
-        //     inpt += '<p class="form-group" id="' + k + '"><strong>' + k+': '+v+ '</strong></p>';
-        // }
-    }
+    // for (let [k, v] of Object.entries(projData["textMetadata"])) {
+    //     inpt += '<p class="form-group" id="' + k + '"><strong>' + k+': '+v+ '</strong></p>';
+    //     // if (k === 'ID' || k === 'Text') continue
+    //     // else {
+    //     //     inpt += '<p class="form-group" id="' + k + '"><strong>' + k+': '+v+ '</strong></p>';
+    //     // }
+    // }
 
     inpt += '<div class="form-group textcontentouter">' +
-            '<label class="col" for="text">Text:</label><br>' +
-            '<input type="hidden" class="form-control" id="text"' + ' name="text" value="' + projData["textData"]["Text"] + '">' +
+            '<label class="col" for="text">Audio File:</label><br>' +
+            // '<input type="hidden" class="form-control" id="text"' + ' name="text" value="' + projData["textData"]["Text"] + '">' +
             // '<textarea class="col textcontent" id="maintextcontent" readonly>' + projData["textData"]["Text"] + '</textarea>' +
-            '<textarea class="col textcontent" id="maintextcontent"  onselect=spanAnnotation(event) readonly>' + projData["textData"]["Text"] + '</textarea>' +
+            // '<textarea class="col textcontent" id="maintextcontent"  onselect=spanAnnotation(event) readonly>' + projData["textData"]["Text"] + '</textarea>' +
             '</div>';
     // inpt += '<div class="form-group">' +
     //     '<div class="col">' +

@@ -39,9 +39,15 @@ def derive_from_recordings(projects_collection,
     try:
         recordings, = getdbcollections.getdbcollections(mongo, 'recordings')
         validation_data = []
+        speaker_ids = set()
+        speaker_last_active_id = {}
         for recording in recordings.find({"projectname": derive_from_project_name}):
-            if (recording['speakerId'] != ''):
+            temp_speaker_id = recording['speakerId']
+            if (temp_speaker_id != ''):
                 # logger.debug('recording: %s', pformat(recording))
+                speaker_ids.add(temp_speaker_id)
+                if temp_speaker_id not in speaker_last_active_id:
+                    speaker_last_active_id[temp_speaker_id] = recording['audioId']
                 project_owner = getprojectowner.getprojectowner(projects_collection, project_name)
                 recording['username'] = project_owner
                 recording['projectname'] = project_name
@@ -52,5 +58,17 @@ def derive_from_recordings(projects_collection,
                 validation_data.append(recording)
         # logger.debug('validation_data: %s', pformat(validation_data))
         validation_collection.insert_many(validation_data)
+        logger.debug("speaker_ids: %s\nspeaker_last_active_id: %s", speaker_ids, pformat(speaker_last_active_id))
+        for speaker_id in speaker_ids:
+            projects_collection.update_one({"projectname": project_name},
+                                        {
+                                            "$addToSet": {
+                                                "speakerIds."+current_username: speaker_id,
+                                            },
+                                            "$set": {
+                                                "lastActiveId."+current_username+'.'+speaker_id+'.audioId': speaker_last_active_id[speaker_id]
+                                            }
+                                        }
+                                        )
     except:
         logger.exception("")
