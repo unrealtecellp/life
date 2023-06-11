@@ -46,6 +46,7 @@ function createAudioBrowseTable(audioDataFields, audioData) {
     for (let i=0; i<audioDataFields.length; i++) {
         ele += '<th onclick="sortTable('+(i+1)+')">'+audioDataFields[i]+'</th>';
     }
+    ele += '<th>View</th>';
     ele += '<th>'+browseActionSelectedOption+'</th>'+
             '</tr>'+
             '</thead>';
@@ -58,13 +59,25 @@ function createAudioBrowseTable(audioDataFields, audioData) {
         for (let j=0; j<audioDataFields.length; j++) {
             let field = audioDataFields[j];
             if (field in aData) {
-                ele += '<td id='+field+'>'+aData[field]+'</td>';
+                if (field == 'Audio File') {
+                    ele += '<td id='+field+'>'+
+                            '<audio controls><source src="'+aData[field]+'" type="audio/wav"></audio>'+
+                            '</td>';
+                }
+                else {
+                    ele += '<td id='+field+'>'+aData[field]+'</td>';
+                }
+                
             }
             else {
                 console.log(field);
                 ele += '<td> - </td>';
             }
         }
+        ele += '<td><button type="button" id="viewaudio" class="btn btn-primary viewaudioclass">'+
+                    '<span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>'+
+                    ' View Audio'+
+                    '</button></td>';
         if (browseActionSelectedOption === 'Delete') {
             ele += '<td><button type="button" id="deleteaudio" class="btn btn-danger deleteaudioclass">'+
                     '<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>'+

@@ -506,13 +506,19 @@ def audiobrowse():
                                                         active_speaker_id)
         else:
             audio_data_list = []
-        
+        # get audio file src
+        new_audio_data_list = []
+        for audio_data in audio_data_list:
+            new_audio_data = audio_data
+            audio_filename = audio_data['audioFilename']
+            new_audio_data['Audio File'] = url_for('retrieve', filename=audio_filename)
+            new_audio_data_list.append(new_audio_data)
         new_data['currentUsername'] = current_username
         new_data['activeProjectName'] = activeprojectname
         new_data['projectOwner'] = projectowner
         new_data['shareInfo'] = shareinfo
         new_data['speakerIds'] = speakerids
-        new_data['audioData'] = audio_data_list
+        new_data['audioData'] = new_audio_data_list
         new_data['audioDataFields'] = ['audioId', 'audioFilename', 'Audio File']
     except:
         logger.exception("")
@@ -551,11 +557,18 @@ def updateaudiobrowsetable():
         else:
             audio_data_list = []
         # logger.debug('audio_data_list: %s', pformat(audio_data_list))
+        # get audio file src
+        new_audio_data_list = []
+        for audio_data in audio_data_list:
+            new_audio_data = audio_data
+            audio_filename = audio_data['audioFilename']
+            new_audio_data['Audio File'] = url_for('retrieve', filename=audio_filename)
+            new_audio_data_list.append(new_audio_data)
     except:
         logger.exception("")
 
     return jsonify(audioDataFields= audio_data_fields,
-                   audioData=audio_data_list)
+                   audioData=new_audio_data_list)
 
 @app.route('/audiobrowseaction', methods=['GET', 'POST'])
 @login_required
@@ -3779,40 +3792,41 @@ def shareprojectwith():
 # view button on dictionary view table
 
 
+# retrieve files from database
+@app.route('/retrieve/<filename>')
+@login_required
+def retrieve(filename):
+    x = mongo.send_file(filename)
+
+    return x
+
 @app.route('/lexemeview', methods=['GET'])
 def lexemeview():
-    # getting the collections
-    # collection of project specific form created by the user
-    projectsform = mongo.db.projectsform
-    # collection containing entry of each lexeme and its details
-    lexemes = mongo.db.lexemes
-    # collection of users and their respective projects
-    userprojects = mongo.db.userprojects
-    projects = mongo.db.projects                        # collection of projects
-
-    headword = request.args.get('a').split(
-        ',')                    # data through ajax
-    # print(headword)
-
-    activeprojectname = userprojects.find_one({'username': current_user.username})[
-        'activeprojectname']
-    # print(activeprojectname)
-    projectOwner = projects.find_one({'projectname': activeprojectname}, {
-                                     'projectOwner': 1})['projectOwner']
-    # projectOwner = projects.find_one({}, {"_id" : 0, activeprojectname : 1})[activeprojectname]["projectOwner"]
-    # print(projectOwner)
+    projects, userprojects, projectsform, lexemes = getdbcollections.getdbcollections(mongo,
+                                                                                        'projects',
+                                                                                        'userprojects',
+                                                                                        'projectsform',
+                                                                                        'lexemes')
+    
+    current_username = getcurrentusername.getcurrentusername()
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_username, userprojects)
+    projectOwner = getprojectowner.getprojectowner(projects, activeprojectname)
+    logger.debug('projectOwner: %s', projectOwner)
+    # data through ajax
+    headword = request.args.get('a').split(',')
+    logger.debug('headword: %s', headword)
     lexeme = lexemes.find_one({'username': projectOwner, 'lexemeId': headword[0], },
                               {'_id': 0, 'username': 0})
 
     # print(lexeme["lemon"])
-    # pprint(lexeme)
+    logger.debug('lexeme: %s', pformat(lexeme))
 
     filen = {}
     if 'filesname' in lexeme:
         for key, filename in lexeme['filesname'].items():
-            # print(key, filename)
+            logger.debug('key: %s, filename: %s', key, filename)
             filen[key] = url_for('retrieve', filename=filename)
-
+    logger.debug('filen: %s', pformat(filen))
     y = projectsform.find_one_or_404({'projectname': activeprojectname,
                                       'username': projectOwner}, {"_id": 0})
 
