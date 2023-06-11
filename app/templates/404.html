@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}
+404
+{% endblock title %}
+
+{% block styles %}
+{{super()}}
+{% endblock %}
+
+
+{% block app_content %}
+<div>
+  <h2>The page that you are trying to access does not exist!!</h2>
+  <a class="navbar-brand" href="{{ url_for('home') }}"><button class="btn btn-primary">Go Back to Home</button></a>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{super()}}
+{% endblock %}

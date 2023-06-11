@@ -177,6 +177,15 @@ legend {
   /* text-decoration: underline wavy red; */
 }
 
+#preModal .modal-dialog {
+  width: 60%;
+  /* padding: 2%; */
+}
+
+#pre_modal_data {
+  padding: 2%;
+}
+
 /* .modal {
   height: 80%;
 } */

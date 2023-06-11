@@ -7,7 +7,9 @@ LiFe Data Home
 
 {% block styles %}
 {{super()}}
+<link href="{{url_for('.static', filename='newdataform.css')}}" rel="stylesheet" />
 <link href="{{url_for('.static', filename='lifedatahome.css')}}" rel="stylesheet" />
+<link href="{{url_for('easyAnno.static', filename='easyannohome.css')}}" rel="stylesheet" />
 {% endblock %}
 
 
@@ -59,7 +61,7 @@ LiFe Data Home
         <textarea id="idabout" name="aboutproject" style="width:55%" required></textarea>
       </div>
 
-      <div id="transcriptiontypeproject" style="display: block;">
+      <div id="transcriptionstypeproject" style="display: none;">
         <div class="form-group" id="datasentencelanguage">
           <label for="iddatasentencelanguage">Audio Language</label><br>
           <select class="datasentencelanguageclass" id="iddatasentencelanguage" name="Sentence Language" style="width: 55%" required></select>
@@ -106,6 +108,29 @@ LiFe Data Home
         </div>
       </div>
 
+      <div id="recordingstypeproject" style="display: none;">
+        <div class="form-group" id="datasentencelanguage">
+          <label for="idrecordingsdatasentencelanguage">Audio Language</label><br>
+          <select class="recordingssentencelanguageclass" id="idrecordingsdatasentencelanguage" name="Sentence Language" style="width: 55%" required></select>
+        </div> </div>
+
+      <div id="validationtypeproject" style="display: none;">
+        <div class="col upload">
+          <label class="btn btn-danger">
+            Select ZIP File <input type="file" id="tagsetZipFile" name="tagsetZipFile" accept="application/zip" hidden>
+          </label>
+          <input class="btn btn-primary" id="validationzipfilesubmit" type="button" value="Upload" onclick="uploadValidatioZipFile(this);" data-toggle="modal">
+          <input class="btn btn-primary" id="validationtagsetmappingedit" type="button" value="Edit Mapping" onclick="editValidatioTagsetMapping(this);" data-toggle="modal" data-target="#validationTagsetMappingModal" hidden>
+          <p id="displayZipFileName"></p>
+
+          <div id="validationtagsetmapping" style="display: none;"></div>
+
+          <!-- <label for="fileType">File Type:&nbsp;&nbsp;</label>
+          <select name="fileType" id="fileType" style="width: 30%">
+          </select> -->
+        </div>
+      </div>
+
       <!-- <div class="row">
         <div class="col-md-3">
           <p><strong>Add Custom Fields</strong></p>
@@ -122,8 +147,9 @@ LiFe Data Home
       </div>
       <div class="datacustomfield"></div> -->
       <br>
-      <input class="btn btn-lg btn-primary create" id="submit" type="submit" value="Create Form">
+      <input class="btn btn-lg btn-primary create" id="dataformsubmit" type="submit" value="Create Form">
     </form>
+    <div id="addModal"></div>
   </div>
     
 {% endblock %}

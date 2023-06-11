@@ -4,7 +4,7 @@ from datetime import datetime
 import re
 
 def copydatafromquesproject(questionnaires,
-                                transcriptions,
+                                data_collection,
                                 derived_from_project_name,
                                 newprojectname,
                                 current_username):
@@ -27,7 +27,7 @@ def copydatafromquesproject(questionnaires,
                 "word": {},
                 "phoneme": {}
             }
-        # save audio file details in transcriptions collection
+        # save audio file details in data_collection collection
         new_audio_details = {
             "username": current_username,
             "projectname": newprojectname,
@@ -47,6 +47,6 @@ def copydatafromquesproject(questionnaires,
         new_audio_details[current_username]["textGrid"] = text_grid
         new_audio_details['derivedfromprojectdetails'] = derived_from_project_details
 
-        transcription_doc_id = transcriptions.insert_one(new_audio_details)
+        transcription_doc_id = data_collection.insert_one(new_audio_details)
 
     return transcription_doc_id

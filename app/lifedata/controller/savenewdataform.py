@@ -1,48 +1,54 @@
 """Module to save new data project form in database."""
 
-from pprint import pprint
-import re
+from app.controller import (
+    life_logging
+)
+logger = life_logging.get_logger()
 
 def savenewdataform(projectsform,
                     projectname,
                     new_data_form,
-                    current_username
+                    current_username,
+                    project_type
                 ):
-
-        
-    # print(f'{"#"*80}\nprojectFormData\n{new_data_form}')
     project_form = {}
-    project_form['username'] = current_username
-    project_form['projectname'] = projectname
+    try:
+        project_form['username'] = current_username
+        project_form['projectname'] = projectname
+        if (project_type == 'recordings' or
+            project_type == 'transcriptions'):
+            project_form = createprojectform(new_data_form, project_form)
+        elif(project_type == 'validation'):
+            project_form = createvalidationprojectform(new_data_form, project_form)
+
+        projectsform.insert_one(project_form)
+    except:
+        logger.exception("")
+
+    return project_form
+
+def createprojectform(new_data_form, project_form):
     for key, value in new_data_form.items():
         if key == 'Sentence Language':
             project_form[key] = value
         elif key == 'Transcription Script':
             project_form[key] = value
         elif key == 'Translation Language':
-            # value.insert_many(0, 'English')
             project_form[key] = value
         elif key == 'Translation Script':
-            # value.insert_many(0, 'Latin')
             project_form[key] = value
         elif key == 'Interlinear Gloss Language':
-            # value.insert_many(0, 'English')
             project_form[key] = value
         elif key == 'Interlinear Gloss Script':
-            # value.insert_many(0, 'Latin')
             project_form[key] = value
 
-    # if "Translation Language" not in project_form:
-    #     project_form["Translation Language"] = ['English']
-    # if "Translation Script" not in project_form:
-    #     project_form["Translation Script"] = ['Latin']
-    # if "Interlinear Gloss Language" not in project_form:
-    #     project_form["Interlinear Gloss Language"] = ['English']
-    # if "Interlinear Gloss Script" not in project_form:
-    #     project_form["Interlinear Gloss Script"] = ['Latin']
-        
-    # pprint(project_form)
-    # when testing comment these to avoid any database update/changes
-    projectsform.insert_one(project_form)
+    return project_form
 
+def createvalidationprojectform(new_data_form, project_form):
+    for key, value in new_data_form.items():
+        if ('mapped' in key):
+            project_form[key.replace('_mapped', '')] = {
+                "onValidationCategories": value
+            }
+    
     return project_form

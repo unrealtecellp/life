@@ -1,78 +1,61 @@
-from flask import flash, redirect, render_template, url_for, request, json, jsonify, send_file
-from werkzeug.urls import url_parse
-from werkzeug.security import generate_password_hash
-from app import app, mongo
-from app.forms import UserLoginForm, RegistrationForm
-from app.models import UserLogin
-
-from flask_login import current_user, login_user, logout_user, login_required
-from bson.objectid import ObjectId
-
-from pprint import pprint
-from datetime import datetime
-import gridfs
-import os
 import glob
-from zipfile import ZipFile
-import re
-from jsondiff import diff
-import pandas as pd
-import io
-
-from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.naive_bayes import MultinomialNB
-import pickle
-import joblib
-from rdflib import Graph, Literal, RDF, URIRef, XSD
-from rdflib.namespace import RDFS, FOAF, RDF, SKOS
-from rdflib.namespace import Namespace
-
-from pylatex import Document, PageStyle, Head, Foot, MiniPage, \
-    LargeText, MediumText, Section, \
-    LineBreak, NewPage, Tabularx, TextColor, simple_page_number
-from pylatex.utils import bold, NoEscape
-
-from pylatex.base_classes import Environment
-from pylatex.package import Package
 import json
-from xml.etree import ElementTree as ET
-from xml.etree.ElementTree import ElementTree
-from app.controller import (
-    audiodetails,
-    createdummylexemeentry,
-    getactiveprojectform,
-    getactiveprojectname,
-    getcommentstats,
-    getcurrentusername,
-    getcurrentuserprojects,
-    getdbcollections,
-    getprojectowner,
-    getprojecttype,
-    getuserprojectinfo,
-    latex_generator as lg,
-    questionnairedetails,
-    readJSONFile,
-    removeallaccess,
-    savenewlexeme,
-    savenewproject,
-    savenewprojectform,
-    savenewsentence,
-    unannotatedfilename,
-    updateuserprojects,
-    userdetails,
-    speakerdetails,
-    emailController,
-    manageAppConfig
-)
+import os
+import pickle
+import re
 import shutil
 import traceback
+from datetime import datetime
+from pprint import pprint, pformat
+from xml.etree import ElementTree as ET
+from xml.etree.ElementTree import ElementTree
+from zipfile import ZipFile
 
+import gridfs
+import joblib
+import pandas as pd
+from bson.objectid import ObjectId
+from flask import (flash, json, jsonify, redirect, render_template, request,
+                   send_file, url_for)
+from flask_login import current_user, login_required, login_user, logout_user
+from jsondiff import diff
+from pylatex import (Document, Foot, Head, LargeText, LineBreak, MediumText,
+                     MiniPage, NewPage, PageStyle, Section, Tabularx,
+                     TextColor, simple_page_number)
+from pylatex.base_classes import Environment
+from pylatex.package import Package
+from pylatex.utils import NoEscape, bold
+from rdflib import RDF, XSD, Graph, Literal, URIRef
+from rdflib.namespace import FOAF, RDF, RDFS, SKOS, Namespace
+from requests.utils import requote_uri
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.naive_bayes import MultinomialNB
+from werkzeug.security import generate_password_hash
+from werkzeug.urls import url_parse
+
+from app import app, mongo
+from app.controller import (audiodetails, createdummylexemeentry,
+                            emailController, getactiveprojectform,
+                            getactiveprojectname, getcommentstats,
+                            getcurrentusername, getcurrentuserprojects,
+                            getdbcollections, getprojectowner, getprojecttype,
+                            getuserprojectinfo, langscriptutils, lexicondetails)
+from app.controller import latex_generator as lg
+from app.controller import (manageAppConfig, questionnairedetails,
+                            readJSONFile, removeallaccess, savenewlexeme,
+                            savenewproject, savenewprojectform,
+                            savenewsentence, speakerdetails,
+                            unannotatedfilename, updateuserprojects,
+                            userdetails, life_logging)
+from app.forms import RegistrationForm, UserLoginForm
+from app.models import UserLogin
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 scriptCodeJSONFilePath = os.path.join(basedir, 'static/json/scriptCode.json')
 langScriptJSONFilePath = os.path.join(basedir, 'static/json/langScript.json')
 ipatomeeteiFilePath = os.path.join(basedir, 'static/json/ipatomeetei.json')
 appConfigPath = os.path.join(basedir, 'jsonfiles/app_config.json')
+logger = life_logging.get_logger()
 
 userlogin, = getdbcollections.getdbcollections(
     mongo, 'userlogin')
@@ -88,6 +71,8 @@ admin_reminder = f'App admin <<{ADMIN_USER}>> user created! Please create new pa
 # print(f'{"#"*80}\nBase directory:\n{basedir}\n{"#"*80}')
 
 # home page route
+
+
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/home', methods=['GET', 'POST'])
 @login_required
@@ -104,9 +89,21 @@ def home():
         current_username, userprojects)
     shareinfo = getuserprojectinfo.getuserprojectinfo(
         userprojects, current_username, activeprojectname)
+    project_owner = getprojectowner.getprojectowner(projects, activeprojectname)
+
+    add_to_share_info = ['downloadchecked', 'sharelatestchecked']
+    for value in add_to_share_info:
+        if (current_username == project_owner and value not in shareinfo):
+            userprojects.update_one({'username': current_username},
+                                    {'$set': {
+                                        'myproject.'+activeprojectname+'.'+value: 'true'
+                                    }})
+            shareinfo[value] = 'true'
 
     project_type = getprojecttype.getprojecttype(projects, activeprojectname)
+    logger.debug('project_type: %s', project_type)
     # print(shareinfo)
+    # print('activeprojectname', activeprojectname)
 
     return render_template('home.html',
                            data=currentuserprojectsname,
@@ -116,6 +113,8 @@ def home():
                            usertype=usertype)
 
 # Manage app level users
+
+
 @app.route('/manageusers', methods=['GET', 'POST'])
 @login_required
 def manageusers():
@@ -138,6 +137,7 @@ def manageusers():
             userprofilelist=userprofilelist,
             usertype=usertype
         )
+
 
 @app.route('/getoneuserdetails', methods=['GET', 'POST'])
 @login_required
@@ -228,6 +228,8 @@ def manageproject():
 
 # new project route
 # create lexeme entry form for the new project
+
+
 @app.route('/newproject', methods=['GET', 'POST'])
 @login_required
 def newproject():
@@ -255,6 +257,7 @@ def newproject():
                                                   project_name,
                                                   project_form_data,
                                                   current_user.username)
+            # dummylexemeentry()
             flash(f'Project Name : {project_name} created successfully :)')
             return redirect(url_for('home'))
     return render_template('newproject.html',
@@ -274,7 +277,7 @@ def sentence_lexeme_to_lexemes(oneSentenceDetail, oneLexemeDetail):
 @app.route('/enternewsentences', methods=['GET', 'POST'])
 @login_required
 def enternewsentences():
-    # print('1234321')
+    project_types = ['recordings', 'validation', 'transcriptions']
     projects, userprojects, projectsform, sentences, transcriptions, speakerdetails = getdbcollections.getdbcollections(mongo,
                                                                                                                         'projects',
                                                                                                                         'userprojects',
@@ -282,29 +285,32 @@ def enternewsentences():
                                                                                                                         'sentences',
                                                                                                                         'transcriptions',
                                                                                                                         'speakerdetails')
-    currentuserprojectsname = getcurrentuserprojects.getcurrentuserprojects(current_user.username,
+    current_username = getcurrentusername.getcurrentusername()
+    currentuserprojectsname = getcurrentuserprojects.getcurrentuserprojects(current_username,
                                                                             userprojects)
-    activeprojectname = getactiveprojectname.getactiveprojectname(
-        current_user.username, userprojects)
-    shareinfo = getuserprojectinfo.getuserprojectinfo(
-        userprojects, current_user.username, activeprojectname)
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                  userprojects)
+    shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
+                                                      current_username,
+                                                      activeprojectname)
     # print(shareinfo)
 
     if activeprojectname == '':
-        flash(f"select a project from 'All Projects' to work on!")
+        flash(f"select a project from 'Change Active Project' to work on!")
         return redirect(url_for('home'))
+    
+    project_type = getprojecttype.getprojecttype(projects, activeprojectname)
+    data_collection, = getdbcollections.getdbcollections(mongo, project_type)
+    # logger.debug("data_collection: %s", data_collection)
     if request.method == 'POST':
         newSentencesData = dict(request.form.lists())
         newSentencesFiles = request.files.to_dict()
         savenewsentence.savenewsentence(mongo,
                                         sentences,
-                                        current_user.username,
+                                        current_username,
                                         activeprojectname,
                                         newSentencesData,
                                         newSentencesFiles)
-
-    # currentuserprojectsname =  getcurrentuserprojects.getcurrentuserprojects(current_user.username,
-    #                             userprojects)
 
     # if method is not 'POST'
     projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
@@ -314,30 +320,50 @@ def enternewsentences():
     if activeprojectform is not None:
         try:
             # , audio_file_path, transcription_details
-            # activespeakerid = getactivespeakerid.getactivespeakerid(userprojects, current_user.username)
+            # activespeakerid = getactivespeakerid.getactivespeakerid(userprojects, current_username)
             activespeakerid = getuserprojectinfo.getuserprojectinfo(userprojects,
-                                                                    current_user.username,
+                                                                    current_username,
                                                                     activeprojectname)['activespeakerId']
             total_comments, annotated_comments, remaining_comments = getcommentstats.getcommentstats(projects,
-                                                                                                     transcriptions,
+                                                                                                     data_collection,
                                                                                                      activeprojectname,
                                                                                                      activespeakerid,
                                                                                                      'audio')
-            commentstats = [total_comments,
-                            annotated_comments, remaining_comments]
+            commentstats = [total_comments,annotated_comments, remaining_comments]
             audio_id = audiodetails.getactiveaudioid(projects,
                                                      activeprojectname,
                                                      activespeakerid,
-                                                     current_user.username)
-            # print(audio_id)
-            transcription_details = audiodetails.getaudiofiletranscription(
-                transcriptions, audio_id)
+                                                     current_username)
+            logger.debug("audio_id: %s", audio_id)
+            if (audio_id != ''):
+                audio_delete_flag = audiodetails.get_audio_delete_flag(transcriptions,
+                                                                        activeprojectname,
+                                                                        audio_id)
+                if (audio_delete_flag):
+                    latest_audio_id = audiodetails.getnewaudioid(projects,
+                                                                activeprojectname,
+                                                                audio_id,
+                                                                activespeakerid,
+                                                                'next')
+                    audiodetails.updatelatestaudioid(projects,
+                                                        activeprojectname,
+                                                        latest_audio_id,
+                                                        current_username,
+                                                        activespeakerid)
+                    flash(f"Your last active audio seem to be deleted by one of the shared user.\
+                        Showing you the next audio in the list.")
+                    return redirect(url_for('enternewsentences'))
+    
+            transcription_details = audiodetails.getaudiofiletranscription(data_collection,
+                                                                           audio_id)
 
-            audio_metadata = audiodetails.getaudiometadata(transcriptions, audio_id)
-            # print('audio_metadata')
+            audio_metadata = audiodetails.getaudiometadata(data_collection, 
+                                                            audio_id)
+            # logger.debug('audio_metadata: %s', pformat(audio_metadata))
             # pprint(audio_metadata)
             activeprojectform['audioMetadata'] = audio_metadata['audioMetadata']
-            last_updated_by = audiodetails.lastupdatedby(transcriptions, audio_id)
+            last_updated_by = audiodetails.lastupdatedby(data_collection,
+                                                            audio_id)
             activeprojectform['lastUpdatedBy'] = last_updated_by['updatedBy']
             file_path = audiodetails.getaudiofilefromfs(mongo,
                                                         basedir,
@@ -347,7 +373,8 @@ def enternewsentences():
             activeprojectform['transcriptionDetails'] = transcription_details
             # print(transcription_details)
             activeprojectform['AudioFilePath'] = file_path
-            transcription_regions, gloss, pos, boundary_count = audiodetails.getaudiotranscriptiondetails(transcriptions, audio_id)
+            transcription_regions, gloss, pos, boundary_count = audiodetails.getaudiotranscriptiondetails(
+                data_collection, audio_id)
             activeprojectform['transcriptionRegions'] = transcription_regions
             # print(transcription_regions)
             activeprojectform['boundaryCount'] = boundary_count
@@ -358,8 +385,8 @@ def enternewsentences():
             try:
                 speakerids = projects.find_one({"projectname": activeprojectname},
                                                {"_id": 0, "speakerIds." +
-                                                   current_user.username: 1}
-                                               )["speakerIds"][current_user.username]
+                                                   current_username: 1}
+                                               )["speakerIds"][current_username]
                 added_speaker_ids = audiodetails.addedspeakerids(
                     speakerdetails, activeprojectname)
             except:
@@ -374,7 +401,7 @@ def enternewsentences():
             # print('currentuserprojectsname', currentuserprojectsname)
             # print('speakerids', speakerids)
             # pprint(activeprojectform)
-            # print(activespeakerid, commentstats, shareinfo)
+            # logger.debug('activespeakerid: %s\ncommentstats: %s\nshareinfo: %s', activespeakerid, commentstats, shareinfo)
             return render_template('enternewsentences.html',
                                    projectName=activeprojectname,
                                    newData=activeprojectform,
@@ -384,8 +411,8 @@ def enternewsentences():
                                    activespeakerid=activespeakerid,
                                    commentstats=commentstats,
                                    shareinfo=shareinfo)
-        except Exception as e:
-            traceback.print_exc()
+        except:
+            logger.exception("")
             flash('Upload first audio file.')
 
     return render_template('enternewsentences.html',
@@ -393,13 +420,7 @@ def enternewsentences():
                            newData=activeprojectform,
                            data=currentuserprojectsname)
 
-    # return render_template('enternewsentences.html',
-    #                         projectName=activeprojectname,
-    #                         sdata=[],
-    #                         data=currentuserprojectsname)
 
-# get new sentences route
-# get new sentences in the project coming throug ajax
 @app.route('/savetranscription', methods=['GET', 'POST'])
 @login_required
 def savetranscription():
@@ -408,7 +429,8 @@ def savetranscription():
                                                                                              'userprojects',
                                                                                              'projectsform',
                                                                                              'transcriptions')
-    activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username,
+    current_username = getcurrentusername.getcurrentusername()
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
                                                                   userprojects)
     projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
     activeprojectform = getactiveprojectform.getactiveprojectform(projectsform,
@@ -416,7 +438,7 @@ def savetranscription():
                                                                   activeprojectname)
     # activespeakerid = getactivespeakerid.getactivespeakerid(userprojects, current_user.username)
     activespeakerid = getuserprojectinfo.getuserprojectinfo(userprojects,
-                                                            current_user.username,
+                                                            current_username,
                                                             activeprojectname)['activespeakerId']
     # data through ajax
     transcription_data = json.loads(request.form['a'])
@@ -426,11 +448,28 @@ def savetranscription():
     transcription_regions = transcription_data['transcriptionRegions']
     # print(lastActiveId)
     # print(transcription_regions)
+    audio_delete_flag = audiodetails.get_audio_delete_flag(transcriptions,
+                                                            activeprojectname,
+                                                            lastActiveId)
+    if (audio_delete_flag):
+        latest_audio_id = audiodetails.getnewaudioid(projects,
+                                                     activeprojectname,
+                                                     lastActiveId,
+                                                     activespeakerid,
+                                                     'next')
+        audiodetails.updatelatestaudioid(projects,
+                                         activeprojectname,
+                                         latest_audio_id,
+                                         current_username,
+                                         activespeakerid)
+        # return redirect(url_for('enternewsentences'))
+        return jsonify(savedTranscription=0)
+        
     scriptCode = readJSONFile.readJSONFile(scriptCodeJSONFilePath)
     audiodetails.savetranscription(transcriptions,
                                    activeprojectform,
                                    scriptCode,
-                                   current_user.username,
+                                   current_username,
                                    transcription_regions,
                                    lastActiveId,
                                    activespeakerid)
@@ -442,13 +481,166 @@ def savetranscription():
     # audiodetails.updatelatestaudioid(projects,
     #                                  activeprojectname,
     #                                  latest_audio_id,
-    #                                  current_user.username,
+    #                                  current_username,
     #                                  activespeakerid)
     sentenceFieldId = ''
     gloss = ''
     sentence = ''
 
-    return jsonify(sentenceFieldId=sentenceFieldId, gloss=gloss, result2=sentence)
+    # return jsonify(sentenceFieldId=sentenceFieldId, gloss=gloss, result2=sentence)
+    return jsonify(savedTranscription=1)
+
+@app.route('/audiobrowse', methods=['GET', 'POST'])
+@login_required
+def audiobrowse():
+    try:
+        new_data = {}
+        projects, userprojects, transcriptions = getdbcollections.getdbcollections(mongo,
+                                                                                    'projects',
+                                                                                    'userprojects',
+                                                                                    'transcriptions')
+        current_username = getcurrentusername.getcurrentusername()
+        activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                    userprojects)
+        projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
+        shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
+                                                        current_username,
+                                                        activeprojectname)
+        speakerids = projects.find_one({"projectname": activeprojectname},
+                                        {"_id": 0, "speakerIds." +current_username: 1})
+        logger.debug('speakerids: %s', pformat(speakerids))
+        if (speakerids["speakerIds"]):
+            speakerids = speakerids["speakerIds"][current_username]
+            speakerids.append('')
+        else:
+            speakerids = ['']
+        active_speaker_id = shareinfo['activespeakerId']
+        
+        if (active_speaker_id != ''):
+            audio_data_list = audiodetails.get_n_audios(transcriptions,
+                                                        activeprojectname,
+                                                        active_speaker_id)
+        else:
+            audio_data_list = []
+        # get audio file src
+        new_audio_data_list = []
+        for audio_data in audio_data_list:
+            new_audio_data = audio_data
+            audio_filename = audio_data['audioFilename']
+            new_audio_data['Audio File'] = url_for('retrieve', filename=audio_filename)
+            new_audio_data_list.append(new_audio_data)
+        new_data['currentUsername'] = current_username
+        new_data['activeProjectName'] = activeprojectname
+        new_data['projectOwner'] = projectowner
+        new_data['shareInfo'] = shareinfo
+        new_data['speakerIds'] = speakerids
+        new_data['audioData'] = new_audio_data_list
+        new_data['audioDataFields'] = ['audioId', 'audioFilename', 'Audio File']
+    except:
+        logger.exception("")
+
+    return render_template('audiobrowse.html',
+                           projectName=activeprojectname,
+                           newData=new_data)
+                        #    data=currentuserprojectsname)
+
+@app.route('/updateaudiobrowsetable', methods=['GET', 'POST'])
+@login_required
+def updateaudiobrowsetable():
+    audio_data_fields= ['audioId', 'audioFilename', 'Audio File']
+    audio_data_list = []
+    try:
+        # data through ajax
+        audio_browse_info = json.loads(request.args.get('a'))
+        logger.debug('audio_browse_info: %s', audio_browse_info)
+        userprojects, transcriptions = getdbcollections.getdbcollections(mongo,
+                                                                            'userprojects',
+                                                                            'transcriptions')
+        current_username = getcurrentusername.getcurrentusername()
+        activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                    userprojects)
+        logger.debug(audio_browse_info['activeSpeakerId'])
+        active_speaker_id = audio_browse_info['activeSpeakerId']
+        audio_file_count = audio_browse_info['audioFilesCount']
+        audio_browse_action = audio_browse_info['browseActionSelectedOption']
+        if (active_speaker_id != ''):
+            audio_data_list = audiodetails.get_n_audios(transcriptions,
+                                                        activeprojectname,
+                                                        active_speaker_id,
+                                                        start_from=0,
+                                                        number_of_audios=audio_file_count,
+                                                        audio_delete_flag=audio_browse_action)
+        else:
+            audio_data_list = []
+        # logger.debug('audio_data_list: %s', pformat(audio_data_list))
+        # get audio file src
+        new_audio_data_list = []
+        for audio_data in audio_data_list:
+            new_audio_data = audio_data
+            audio_filename = audio_data['audioFilename']
+            new_audio_data['Audio File'] = url_for('retrieve', filename=audio_filename)
+            new_audio_data_list.append(new_audio_data)
+    except:
+        logger.exception("")
+
+    return jsonify(audioDataFields= audio_data_fields,
+                   audioData=new_audio_data_list)
+
+@app.route('/audiobrowseaction', methods=['GET', 'POST'])
+@login_required
+def audiobrowseaction():
+    try:
+        projects_collection, userprojects, transcriptions_collection = getdbcollections.getdbcollections(mongo,
+                                                                                                            'projects',
+                                                                                                            'userprojects',
+                                                                                                            'transcriptions')
+        current_username = getcurrentusername.getcurrentusername()
+        activeprojectname = getactiveprojectname.getactiveprojectname(current_username, userprojects)
+        logger.debug("%s,%s", current_username, activeprojectname)
+        # data from ajax
+        data = json.loads(request.args.get('a'))
+        logger.debug('data: %s', pformat(data))
+        audio_info = data['audioInfo']
+        logger.debug('audio_info: %s', pformat(audio_info))
+        audio_browse_info = data['audioBrowseInfo']
+        logger.debug('audio_browse_info: %s', pformat(audio_browse_info))
+        browse_action = audio_browse_info['browseActionSelectedOption']
+        active_speaker_id = audio_browse_info['activeSpeakerId']
+        audio_ids_list = list(audio_info.keys())
+        active_audio_id = audiodetails.getactiveaudioid(projects_collection,
+                                                        activeprojectname,
+                                                        active_speaker_id,
+                                                        current_username)
+        update_latest_audio_id=0
+        for audio_id in audio_ids_list:
+            if(browse_action):
+                logger.info("audio id to revoke: %s, %s", audio_id, type(audio_id))
+            else:
+                logger.info("audio id to delete: %s, %s", audio_id, type(audio_id))
+            if (audio_id == active_audio_id):
+                update_latest_audio_id = 1
+            if (browse_action):
+                audiodetails.revoke_deleted_audio(projects_collection,
+                                                    transcriptions_collection,
+                                                    activeprojectname,
+                                                    active_speaker_id,
+                                                    audio_id)
+            else:
+                audiodetails.delete_one_audio_file(projects_collection,
+                                                    transcriptions_collection,
+                                                    activeprojectname,
+                                                    current_username,
+                                                    active_speaker_id,
+                                                    audio_id,
+                                                    update_latest_audio_id=update_latest_audio_id)
+        if (browse_action):
+            flash("Audio revoked successfully")
+        else:
+            flash("Audio deleted successfully")
+    except:
+        logger.exception("")
+
+    return 'OK'
 
 # new automation route
 # buttons working for different automation(POS, morph analyser)
@@ -568,6 +760,8 @@ def dummylexemeentry():
 
 # dictionary view route
 # display lexeme entries for current project in a table
+
+
 @app.route('/dictionaryview', methods=['GET', 'POST'])
 @login_required
 def dictionaryview():
@@ -575,9 +769,10 @@ def dictionaryview():
                                                                         'projects',
                                                                         'userprojects',
                                                                         'lexemes')
-    currentuserprojectsname = getcurrentuserprojects.getcurrentuserprojects(current_user.username,
+    current_username = getcurrentusername.getcurrentusername()
+    currentuserprojectsname = getcurrentuserprojects.getcurrentuserprojects(current_username,
                                                                             userprojects)
-    activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username,
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
                                                                   userprojects)
     projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
     scriptCode = readJSONFile.readJSONFile(scriptCodeJSONFilePath)
@@ -593,14 +788,14 @@ def dictionaryview():
                                     new_lexeme_data,
                                     new_lexeme_files,
                                     projectowner,
-                                    current_user.username)
+                                    current_username)
         flash('Successfully added new lexeme')
         return redirect(url_for('enternewlexeme'))
     try:
         my_projects = len(userprojects.find_one(
-            {'username': current_user.username})["myproject"])
+            {'username': current_username})["myproject"])
         shared_projects = len(userprojects.find_one(
-            {'username': current_user.username})["projectsharedwithme"])
+            {'username': current_username})["projectsharedwithme"])
         # print(f"MY PROJECTS: {my_projects}, SHARED PROJECTS: {shared_projects}")
         if (my_projects+shared_projects) == 0:
             flash('Please create your first project')
@@ -613,21 +808,22 @@ def dictionaryview():
     lst = list()
     try:
         # print(activeprojectname)
-        projectowner = getprojectowner.getprojectowner(
-            projects, activeprojectname)
-        for lexeme in lexemes.find({'username': projectowner, 'projectname': activeprojectname, 'lexemedeleteFLAG': 0},
-                                   {'_id': 0, 'headword': 1, 'gloss': 1, 'grammaticalcategory': 1, 'lexemeId': 1}):
-            # pprint(lexeme)
-            if (len(lexeme['headword']) != 0):
-                lst.append(lexeme)
+        # optionally takes field_list, if provided by the user for showing dictionary entries
+        all_fields, lst = lexicondetails.get_all_lexicon_details(
+            lexemes, activeprojectname)
     except:
+        logger.exception("")
         flash('Enter first lexeme of the project')
 
+    shareinfo = getuserprojectinfo.getuserprojectinfo(
+        userprojects, current_username, activeprojectname)
     return render_template('dictionaryview.html',
                            projectName=activeprojectname,
+                           fields=all_fields,
                            sdata=lst,
                            count=len(lst),
-                           data=currentuserprojectsname)
+                           data=currentuserprojectsname,
+                           shareinfo=shareinfo)
 
 
 # enter new lexeme route
@@ -692,11 +888,12 @@ def enternewlexeme():
 # uploaded_file_content = ''
 
 
-def enterlexemefromuploadedfile(lexemedf):
-    projects, userprojects, lexemes = getdbcollections.getdbcollections(mongo,
-                                                                        'projects',
-                                                                        'userprojects',
-                                                                        'lexemes')
+def enterlexemefromuploadedfile(alllexemedf):
+    projects, userprojects, lexemes, projectsform = getdbcollections.getdbcollections(mongo,
+                                                                                      'projects',
+                                                                                      'userprojects',
+                                                                                      'lexemes',
+                                                                                      'projectsform')
     currentuserprojectsname = getcurrentuserprojects.getcurrentuserprojects(current_user.username,
                                                                             userprojects)
     activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username,
@@ -704,6 +901,21 @@ def enterlexemefromuploadedfile(lexemedf):
     projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
     projectname = activeprojectname
     project = projects.find_one({}, {projectname: 1})
+    current_project_form = projectsform.find_one(
+        {'projectname': projectname}, {'_id': 0})
+
+    print('df data', alllexemedf.keys())
+    # if 'langscripts' in lexemedf.columns:
+    #     print(lexemedf['langscripts'])
+
+    def removelangscriptsblank(lexemedf):
+        drop_cols = [
+            c for c in lexemedf.columns if c.startswith('langscripts.')]
+        lexemedf.drop(columns=drop_cols, inplace=True)
+        # return lexemedf
+    # print('Project form', project_form)
+    # if projectname in project_form:
+    #     current_projct_form = project_form[projectname]
 
     def lexmetadata():
         # create lexemeId
@@ -721,76 +933,93 @@ def enterlexemefromuploadedfile(lexemedf):
     # saving data for that new lexeme to database in lexemes collection
     # try:
     # print(lexemedf)
-    for index, row in lexemedf.iterrows():
-        uploadedFileLexeme = {
-            "username": projectowner,
-            "projectname": activeprojectname,
-            "lexemedeleteFLAG": 0,
-            "updatedBy": current_user.username,
-        }
-        lexemeId = str(row['lexemeId'])
-        getlexemeId = None
-        # print(f"{index}\t{lexemeId}\t{len(lexemeId)}\t{type(lexemeId)}")
-        if (lexemeId == 'nan' or lexemeId == ''):
-            lexemeId, lexemeCount = lexmetadata()
-            # print(lexemeId, lexemeCount)
-        else:
-            getlexemeId = lexemes.find_one({'lexemeId': lexemeId},
-                                           {'_id': 0, 'lexemeId': 1, 'projectname': 1})
-            # print(getlexemeId)
-            if (getlexemeId == None):
-                # print(f"lexemeId not in DB")
+    for lexeme_type, lexemedf in alllexemedf.items():
+        print('Data key', lexeme_type)
+        print(lexemedf)
+        for index, row in lexemedf.iterrows():
+            uploadedFileLexeme = {
+                "username": projectowner,
+                "projectname": activeprojectname,
+                "lexemedeleteFLAG": 0,
+                "updatedBy": current_user.username,
+            }
+
+            langscripts = langscriptutils.get_langscripts_from_lexeme_form(
+                current_project_form)
+            uploadedFileLexeme['langscripts'] = langscripts
+            # removes old blank langscripts columns
+            removelangscriptsblank(lexemedf)
+
+            lexemeId = str(row['lexemeId'])
+            getlexemeId = None
+            # print(f"{index}\t{lexemeId}\t{len(lexemeId)}\t{type(lexemeId)}")
+            if (lexemeId == 'nan' or lexemeId == ''):
                 lexemeId, lexemeCount = lexmetadata()
+                # print(lexemeId, lexemeCount)
             else:
-                if (getlexemeId['projectname'] != activeprojectname):
-                    flash(f"lexemeId: {lexemeId} if from different project!!!")
-                    return redirect(url_for('enternewlexeme'))
+                getlexemeId = lexemes.find_one({'lexemeId': lexemeId},
+                                               {'_id': 0, 'lexemeId': 1, 'projectname': 1})
+                # print(getlexemeId)
+                if (getlexemeId == None):
+                    # print(f"lexemeId not in DB")
+                    lexemeId, lexemeCount = lexmetadata()
+                else:
+                    if (getlexemeId['projectname'] != activeprojectname):
+                        flash(
+                            f"lexemeId: {lexemeId} if from different project!!!")
+                        return redirect(url_for('enternewlexeme'))
 
-        uploadedFileLexeme['lexemeId'] = lexemeId
-        # pprint(uploadedFileLexeme)
-        if (getlexemeId != None):
-            # print(f"LEXEME ALREADY EXISTS")
+            uploadedFileLexeme['lexemeId'] = lexemeId
+            # pprint(uploadedFileLexeme)
+            if (getlexemeId != None):
+                # print(f"LEXEME ALREADY EXISTS")
+                lexemes.update_one({'lexemeId': lexemeId}, {
+                    '$set': uploadedFileLexeme})
+            else:
+                lexemes.insert_one(uploadedFileLexeme)
+                # update lexemeInserted count of the project in projects collection
+                # project[projectname]['lexemeInserted'] = lexemeCount
+                # print(f'{"#"*80}\n{project}')
+                projects.update_one({'projectname': projectname}, {
+                                    '$set': {'lexemeInserted': lexemeCount}})
+                # projects.update_one({}, { '$set' : { projectname : project[projectname] }})
+
+            for column_name in list(lexemedf.columns):
+                # print(column_name)
+                # if (column_name.endswith('Example')):
+                #     continue
+                if (column_name not in uploadedFileLexeme):
+                    value = str(row[column_name])
+                    # print(value)
+                    if (value == 'nan'):
+                        value = ''
+                    if ('Sense 1.Gloss.eng' in column_name):
+                        uploadedFileLexeme['gloss'] = value
+                    if ('Sense 1.Grammatical Category' in column_name):
+                        uploadedFileLexeme['grammaticalcategory'] = value
+                    uploadedFileLexeme[column_name] = value
+
+            # print(f'{"="*80}\nLexeme Form :')
+            pprint(uploadedFileLexeme)
+            # print(f'{"="*80}')
+
             lexemes.update_one({'lexemeId': lexemeId}, {
-                               '$set': uploadedFileLexeme})
-        else:
-            lexemes.insert_one(uploadedFileLexeme)
-            # update lexemeInserted count of the project in projects collection
-            # project[projectname]['lexemeInserted'] = lexemeCount
-            # print(f'{"#"*80}\n{project}')
-            projects.update_one({'projectname': projectname}, {
-                                '$set': {'lexemeInserted': lexemeCount}})
-            # projects.update_one({}, { '$set' : { projectname : project[projectname] }})
+                '$set': uploadedFileLexeme})
 
-        for column_name in list(lexemedf.columns):
-            if (column_name not in uploadedFileLexeme):
-                value = str(row[column_name])
-                if (value == 'nan'):
-                    value = ''
-                if ('Sense 1.Gloss.eng' in column_name):
-                    uploadedFileLexeme['gloss'] = value
-                if ('Sense 1.Grammatical Category' in column_name):
-                    uploadedFileLexeme['grammaticalcategory'] = value
-                uploadedFileLexeme[column_name] = value
+            # print(f'{"="*80}\nLexeme Form :')
+            # pprint(uploadedFileLexeme)
+            # print(f'{"="*80}')
 
-        # print(f'{"="*80}\nLexeme Form :')
-        # pprint(uploadedFileLexeme)
-        # print(f'{"="*80}')
-
-        lexemes.update_one({'lexemeId': lexemeId}, {
-                           '$set': uploadedFileLexeme})
-
-        # print(f'{"="*80}\nLexeme Form :')
-        # pprint(uploadedFileLexeme)
-        # print(f'{"="*80}')
-
-    flash('Successfully added new lexeme')
+    flash('Successfully added new lexemes')
     return redirect(url_for('enternewlexeme'))
     # comment till here
 
 
-def lifeuploader(fileFormat, uploadedFileContent, field_map={}):
+def lifeuploader(fileFormat, uploadedFileContent, field_map={}, headword_mapped=False, all_mapped=False):
     lang_script_map = {
         'ipa': 'ipa',
+        'hi': 'Deva',
+        'bns': 'Deva',
         'hin': 'Deva',
         'guj': 'Gujr',
         'pun': 'Guru',
@@ -817,7 +1046,7 @@ def lifeuploader(fileFormat, uploadedFileContent, field_map={}):
 
     def get_lift_map():
         map = {
-            'grammatical-info': 'grammaticalcategory',
+            'grammatical-info': 'Grammatical Category',
             'lexical-unit': 'headword',
             'lexical-unit-form': 'Lexical Form',
             'pronunciation': 'Pronunciation',
@@ -910,15 +1139,23 @@ def lifeuploader(fileFormat, uploadedFileContent, field_map={}):
         mapped_life_langs_gloss = []
         unmapped_lift_langs_gloss = []
 
+        mapped_life_langs_variant = []
+        unmapped_lift_langs_variant = []
+
         life_headword_script = life_scripts_map['langscripts.headwordscript']
         life_lexeme_form_scripts = life_scripts_map['langscripts.lexemeformscripts']
         life_gloss_langs = life_scripts_map['langscripts.glosslangs']
+        # life_variant_langs = life_scripts_map['langscripts.glosslangs']
+
+        life_gloss_langs = [x.lower() for x in life_gloss_langs]
 
         highest_sense_num = 0
+        highest_variant_num = 0
         for entry in entries:
             # pd_row = {}
             for entry_part in entry:
                 sense_num = 0
+                variant_num = 0
                 entry_part_tag = entry_part.tag
                 if entry_part_tag != 'entry':
                     # print (entry_part_tag)
@@ -939,14 +1176,16 @@ def lifeuploader(fileFormat, uploadedFileContent, field_map={}):
 
                             if lift_script_name == life_headword_script:
                                 if lift_tag not in mapped_lift:
-                                    mapped_lift[lift_tag] = life_key_headword
+                                    mapped_lift[lift_tag +
+                                                '#headword'] = life_key_headword
 
                                 if lift_script_name not in mapped_life_langs_lexeme_form:
                                     mapped_life_langs_lexeme_form.append(
                                         lift_script_name)
 
-                            elif lift_script_name in life_lexeme_form_scripts:
+                            if lift_script_name in life_lexeme_form_scripts:
                                 # mapped_lift[lift_tag] = life_key_other_lexemes+'.'+lift_script_name
+
                                 mapped_lift[lift_tag] = lift_script_name
                                 if lift_script_name not in mapped_life_langs_lexeme_form:
                                     mapped_life_langs_lexeme_form.append(
@@ -991,17 +1230,28 @@ def lifeuploader(fileFormat, uploadedFileContent, field_map={}):
 
                         for sense_part in entry_part:
                             sense_part_tag = sense_part.tag
-                            # print (sense_part_tag)
+                            # print ('sense_part_tag', sense_part_tag, sense_part.attrib, sense_part.find('text'))
                             life_key_sense = field_map[sense_part_tag]
 
                             if sense_part_tag == 'gloss' or sense_part_tag == 'definition' or sense_part_tag == 'example':
-                                lift_lang_name, lift_full_lang = get_script_name(
-                                    sense_part)
+                                if len(sense_part.attrib) == 0:
+                                    sense_part_tag_form = sense_part.find(
+                                        'form')
+                                    print(sense_part_tag_form)
+                                    lift_lang_name, lift_full_lang = get_script_name(
+                                        sense_part_tag_form)
+                                else:
+                                    lift_lang_name, lift_full_lang = get_script_name(
+                                        sense_part)
                                 # lift_sense_tag = sense_part_tag + '.' + lift_lang_name
                                 # lift_sense_tag = './/entry/sense/'+sense_part_tag+'[@lang='+lift_full_lang+']'
                                 # lift_sense_tag = './sense/'+sense_part_tag+'[@lang='+lift_full_lang+']/text'
-                                lift_sense_tag = './sense/'+sense_part_tag + \
-                                    '[@lang="'+lift_full_lang+'"]'
+                                if len(sense_part.attrib) == 0:
+                                    lift_sense_tag = './sense/'+sense_part_tag + \
+                                        '/form[@lang="'+lift_full_lang+'"]'
+                                else:
+                                    lift_sense_tag = './sense/'+sense_part_tag + \
+                                        '[@lang="'+lift_full_lang+'"]'
 
                                 if lift_lang_name in life_gloss_langs:
                                     mapped_lift[lift_sense_tag] = 'SenseNew.Sense '+str(
@@ -1029,6 +1279,51 @@ def lifeuploader(fileFormat, uploadedFileContent, field_map={}):
                                 lift_tag = './sense/'+sense_part_tag
                                 mapped_lift[lift_tag] = 'SenseNew.Sense ' + \
                                     str(sense_num)+'.'+life_key_sense
+                    elif entry_part_tag == 'variant':
+                        variant_num += 1
+
+                        if variant_num > highest_variant_num:
+                            highest_variant_num = variant_num
+
+                        for variant_part in entry_part:
+                            variant_part_tag = variant_part.tag
+                            print('variant_part_tag', variant_part_tag,
+                                  variant_part.attrib, variant_part.find('text'))
+                            # life_key_sense = field_map[variant_part_tag]
+
+                            if variant_part_tag == 'form':
+                                if len(variant_part.attrib) == 0:
+                                    variant_part_tag_form = variant_part.find(
+                                        'form')
+                                    print(variant_part_tag_form)
+                                    lift_lang_name, lift_full_lang = get_script_name(
+                                        variant_part_tag_form)
+                                else:
+                                    lift_lang_name, lift_full_lang = get_script_name(
+                                        variant_part)
+                                # lift_sense_tag = sense_part_tag + '.' + lift_lang_name
+                                # lift_sense_tag = './/entry/sense/'+sense_part_tag+'[@lang='+lift_full_lang+']'
+                                # lift_sense_tag = './sense/'+sense_part_tag+'[@lang='+lift_full_lang+']/text'
+                                if len(variant_part.attrib) == 0:
+                                    lift_variant_tag = './variant/'+variant_part_tag + \
+                                        '/form[@lang="'+lift_full_lang+'"]'
+                                else:
+                                    lift_variant_tag = './variant/'+variant_part_tag + \
+                                        '[@lang="'+lift_full_lang+'"]'
+
+                                mapped_lift[lift_variant_tag] = 'Variant.Variant '+str(
+                                    variant_num)+'.Variant Form'
+
+                                # if lift_lang_name in life_variant_langs:
+                                #     mapped_lift[lift_variant_tag] = 'Variant.Variant '+str(
+                                #         sense_num)+'.Variant Form'
+                                #     if lift_lang_name not in mapped_life_langs_variant:
+                                #         mapped_life_langs_variant.append(
+                                #             lift_lang_name)
+                                # else:
+                                #     if lift_variant_tag not in unmapped_lift_langs_variant:
+                                #         unmapped_lift_langs_variant.append(
+                                #             lift_variant_tag)
 
                     elif entry_part_tag == 'pronunciation':
                         life_key_pron = field_map[entry_part_tag]
@@ -1065,6 +1360,10 @@ def lifeuploader(fileFormat, uploadedFileContent, field_map={}):
         # unmapped_lift_langs_gloss = []
         # print ('Unmapped gloss', unmapped_lift_langs_gloss)
 
+        # mapped_life_langs_variant_set = set(mapped_life_langs_variant)
+        # all_life_variant_langs = set(life_variant_langs)
+        # life_unmapped_variant_langs = all_life_variant_langs - mapped_life_langs_variant_set
+
         headword_mapped = False
         life_all_mapped = mapped_lift.values()
         for life_key_mapped in life_all_mapped:
@@ -1080,14 +1379,19 @@ def lifeuploader(fileFormat, uploadedFileContent, field_map={}):
         for lift_unmapped_gloss in unmapped_lift_langs_gloss:
             mapped_lift[lift_unmapped_gloss] = list(life_unmapped_gloss_langs)
 
+        # for lift_unmapped_variant in unmapped_lift_langs_variant:
+        #     mapped_lift[lift_unmapped_variant] = list(life_unmapped_variant_langs)
         # print (mapped_lift)
         # print (headword_mapped)
 
         if len(unmapped_lift_langs_lexeme_form) > 0 or len(unmapped_lift_langs_gloss) > 0:
             all_mapped = False
 
-        # print(f"{'-'*80}\nheadword_mapped:\n{headword_mapped}\nall_mapped:\n{all_mapped}\nmapped_lift:\n{mapped_lift}\nroot:\n{root}")
+        if len(unmapped_lift_langs_lexeme_form) > 0 or len(unmapped_lift_langs_variant) > 0:
+            all_mapped = False
 
+        # print(f"{'-'*80}\nheadword_mapped:\n{headword_mapped}\nall_mapped:\n{all_mapped}\nmapped_lift:\n{mapped_lift}\nroot:\n{root}")
+        print("All mapped", mapped_lift)
         return headword_mapped, all_mapped, mapped_lift, root
 
     def get_sense_col(lift_tag, field_name, lang_name):
@@ -1100,9 +1404,51 @@ def lifeuploader(fileFormat, uploadedFileContent, field_map={}):
             all_cols.append(df_col)
         return all_cols
 
+    def group_fields(field_map):
+        new_map = {}
+        for field, vals in field_map.items():
+            field_parts = field.split('/')
+            outer_part = field_parts[1]
+            if outer_part in new_map:
+                new_map[outer_part][field] = vals
+            else:
+                new_map[outer_part] = {field: vals}
+        return new_map
+
+    def append_new_column(first_field, current_field, current_field_column, data, data_len):
+        if first_field in current_field_column and current_field not in current_field_column:
+            new_field_column = current_field_column.replace(
+                first_field, current_field)
+            data[new_field_column] = ['']*data_len
+
+    def create_df_columns(data, field_type, field_number):
+        data_len = len(data)
+        if field_number > 1:
+            data_columns = list(data.columns)
+            current_field_columns = [
+                x for x in data_columns if x.startswith(field_type)]
+            for current_field_column in current_field_columns:
+                if 'SenseNew' in field_type:
+                    new_field_type = 'Sense'
+                else:
+                    new_field_type = field_type
+
+                first_field = new_field_type + ' 1'
+
+                for current_field_number in range(2, field_number+1):
+                    current_field = new_field_type + \
+                        ' '+str(current_field_number)
+
+                    if first_field in current_field_column:
+                        append_new_column(
+                            first_field, current_field, current_field_column, data, data_len)
+
+            # data.columns = data_columns
+
     def lift_to_df(root, field_map, lex_fields):
         # print(f"{'-'*80}\nIN lift_to_df (root, field_map, lex_fields) function\n")
-        data = pd.DataFrame(columns=lex_fields)
+        all_data = {}
+
         # lex_fields_without_sense = [lex_field for lex_field in lex_fields if 'sense' not in lex_field]
 
         life_scripts_map = get_scripts_map(lex_fields)
@@ -1110,7 +1456,7 @@ def lifeuploader(fileFormat, uploadedFileContent, field_map={}):
 
         # if len(field_map) == 0:
         lift_life_field_map = get_lift_map()
-        # print(f"{'-'*80}\nIN lift_to_df (root, field_map, lex_fields) function: get_lift_map():\n{lift_life_field_map}")
+        print(f"{'-'*80}\nIN lift_to_df (root, field_map, lex_fields) function: get_lift_map():\n{lift_life_field_map}")
 
         # tree = ET.parse(file_stream)
         # root = tree.getroot()
@@ -1125,6 +1471,7 @@ def lifeuploader(fileFormat, uploadedFileContent, field_map={}):
         # life_headword_script = life_scripts_map['langscripts.headwordscript']
         # life_lexeme_form_scripts = life_scripts_map['langscripts.lexemeformscripts']
         # life_gloss_langs = life_scripts_map['langscripts.glosslangs']
+        field_map = group_fields(field_map)
 
         print(
             f"{'-'*80}\nIN lift_to_df (root, field_map, lex_fields) function: {field_map}")
@@ -1132,22 +1479,40 @@ def lifeuploader(fileFormat, uploadedFileContent, field_map={}):
         # highest_sense_num = 0
         for entry in entries:
             df_row = {}
-            for lift_tag, life_key in field_map.items():
-                if len(life_key) > 0:
-                    if 'lexical-unit' in lift_tag:
+            sense_num = 0
+            variant_num = 0
+            senseNotAdded = True
+            variantNotAdded = True
+            for lift_tag_groups, life_key_maps in field_map.items():
+                print('Entry', entry)
+                if len(life_key_maps) > 0:
+                    if 'lexical-unit' in lift_tag_groups:
                         # txt = entry.findall(lift_tag+'/text').text
                         # print (lift_tag)
-                        txt_entry = entry.find(lift_tag+'/text')
+                        for lift_tag, life_key in life_key_maps.items():
+                            lexical_unit = entry.find('lexical-unit')
+                            lexical_unit_text = lexical_unit.find('text')
 
-                        if not txt_entry is None:
-                            txt = txt_entry.text
+                            if lexical_unit_text is None:
+                                lexical_unit_text = lexical_unit.find(
+                                    'form').find('text')
 
-                        if 'headword' in life_key:
-                            df_row['headword'] = txt
-                        else:
-                            df_row['Lexeme Form.'+life_key] = txt
+                            if not lexical_unit_text is None:
+                                txt = lexical_unit_text.text
 
-                    elif 'pronunciation' in lift_tag:
+                            if 'headword' in life_key and 'headword' in lift_tag:
+                                df_row['headword'] = txt
+
+                            else:
+                                df_row['Lexeme Form.'+life_key] = txt
+                            # else:
+                            #     df_row['Lexeme Form.'+life_key] = txt
+
+                    elif 'pronunciation' in lift_tag_groups:
+                        if len(life_key_maps) == 1:
+                            lift_tag = list(life_key_maps.keys())[0]
+                            life_key = life_key_maps[lift_tag]
+
                         txt_entry = entry.find(lift_tag+'/text')
                         # life_key = lift_life_field_map[lift_tag]
 
@@ -1156,55 +1521,139 @@ def lifeuploader(fileFormat, uploadedFileContent, field_map={}):
 
                         df_row[life_key] = txt
 
-                    elif '@lang' in lift_tag:
-                        sense_num = 0
-                        all_sense = entry.findall(lift_tag)
-                        for sense in all_sense:
+                    # elif '@lang' in lift_tag:
+                    elif 'sense' in lift_tag_groups:
+                        all_sense = entry.findall('.//sense')
+                        for full_sense in all_sense:
                             sense_num += 1
-                            if 'gloss' in lift_tag:
-                                life_key_name = lift_life_field_map['gloss']
-                            elif 'definition' in lift_tag:
-                                life_key_name = lift_life_field_map['definition']
-                            elif 'example' in lift_tag:
-                                life_key_name = lift_life_field_map['example']
+                            print('Sense number', sense_num,
+                                  full_sense)
+
+                            for lift_tag, life_key in life_key_maps.items():
+                                # for sense in full_sense:
+                                if 'grammatical-info' in lift_tag:
+                                    life_key_name = lift_life_field_map['grammatical-info']
+                                    gram_info_tag = full_sense.find(
+                                        'grammatical-info')
+                                    print('Grammar tag', gram_info_tag,
+                                          gram_info_tag.tag)
+                                    # life_key = lift_life_field_map[lift_tag]
+
+                                    if not gram_info_tag is None:
+                                        try:
+                                            gram_info = gram_info_tag.attrib['value']
+                                            print('Gram info', gram_info)
+                                        except Exception as e:
+                                            print(
+                                                'Exception in grammatical info', e)
+                                            gram_info = ''
+                                        df_col = 'SenseNew.Sense ' + \
+                                            str(sense_num)+'.' + \
+                                            life_key_name
+                                        df_row[df_col] = gram_info
+                                    # df_row[life_key] = gram_info
+                                else:
+                                    if 'gloss' in lift_tag:
+                                        life_key_name = lift_life_field_map['gloss']
+                                        current_sense_tag = full_sense.find(
+                                            'gloss')
+                                    elif 'definition' in lift_tag:
+                                        life_key_name = lift_life_field_map['definition']
+                                        current_sense_tag = full_sense.find(
+                                            'definition')
+                                    elif 'example' in lift_tag:
+                                        life_key_name = lift_life_field_map['example']
+                                        current_sense_tag = full_sense.find(
+                                            'example')
+                                    else:
+                                        life_key_name = ''
+
+                                    # print (sense.tag)
+                                    if life_key_name != '':
+                                        try:
+                                            txt_entry = current_sense_tag.find(
+                                                'text')
+                                            if txt_entry is None:
+                                                txt_entry = current_sense_tag.find(
+                                                    'form').find('text')
+                                        except:
+                                            txt_entry = None
+
+                                        if not txt_entry is None:
+                                            txt = txt_entry.text
+                                        else:
+                                            txt = "NA"
+                                    else:
+                                        txt = ''
+
+                                    if life_key_name != '':
+                                        if 'example' in lift_tag:
+                                            df_col = 'SenseNew.Sense ' + \
+                                                str(sense_num)+'.' + \
+                                                life_key_name
+                                            df_row[df_col] = txt
+                                        else:
+                                            df_col = 'SenseNew.Sense ' + \
+                                                str(sense_num)+'.' + \
+                                                life_key_name+'.'+life_key
+                                            df_row[df_col] = txt
+                        # senseNotAdded = False
+                    elif 'variant' in lift_tag_groups:
+                        all_variants = entry.findall('.//variant')
+                        for variant in all_variants:
+                            variant_num += 1
+                            # create_df_columns(data, 'Variant', variant_num)
+                            print('Variant number', variant_num, variant)
+                            # print('DF columns', data.columns)
 
                             # print (sense.tag)
-                            txt_entry = sense.find('text')
+                            for lift_tag, life_key in life_key_maps.items():
+                                txt_entry = variant.find('text')
+                                if txt_entry is None:
+                                    txt_entry = variant.find(
+                                        'form').find('text')
 
-                            if not txt_entry is None:
-                                txt = txt_entry.text
+                                if not txt_entry is None:
+                                    txt = txt_entry.text
 
-                            df_col = 'SenseNew.Sense ' + \
-                                str(sense_num)+'.'+life_key_name+'.'+life_key
-                            df_row[df_col] = txt
-
-                    elif 'grammatical-info' in lift_tag:
-                        gram_info_tag = entry.find(lift_tag)
-                        # print ('Grammar tag', gram_info_tag, gram_info_tag.tag)
-                        # life_key = lift_life_field_map[lift_tag]
-
-                        if not gram_info_tag is None:
-                            try:
-                                gram_info = gram_info_tag.attrib['value']
-                            # print ('Gram info', gram_info)
-                            except:
-                                gram_info = ''
-
-                        df_row[life_key] = gram_info
+                                # if txt != '':
+                                df_col = 'Variant.Variant ' + \
+                                    str(variant_num)+'.'+'Variant Form'
+                                df_row[df_col] = txt
+                        # variantNotAdded = False
 
                     else:
                         # print (lift_tag)
                         txt_entry = entry.find(lift_tag)
-                        life_key = lift_life_field_map[lift_tag]
+                        if lift_tag in lift_life_field_map:
+                            life_key = lift_life_field_map[lift_tag]
 
-                        if not txt_entry is None:
-                            txt = txt_entry.text
+                            if not txt_entry is None:
+                                txt = txt_entry.text
 
-                        df_row[life_key] = txt
+                            df_row[life_key] = txt
 
-            data = data.append(df_row, ignore_index=True)
+            print('Current DF Row', df_row)
+            current_sense_variant = (sense_num, variant_num)
 
-        data.fillna('', inplace=True)
+            if current_sense_variant in all_data:
+                data = all_data[current_sense_variant]
+                data = data.append(df_row, ignore_index=True)
+            else:
+                data = pd.DataFrame(columns=lex_fields)
+                if sense_num > 1:
+                    create_df_columns(data, 'SenseNew', sense_num)
+
+                if variant_num > 1:
+                    create_df_columns(data, 'Variant', variant_num)
+
+                print('DF columns', data.columns)
+                data = data.append(df_row, ignore_index=True)
+
+            data.fillna('', inplace=True)
+            all_data[current_sense_variant] = data
+
+        print('Final data', all_data)
 
         headword_mapped = True
         all_mapped = True
@@ -1214,7 +1663,7 @@ def lifeuploader(fileFormat, uploadedFileContent, field_map={}):
         # print(f"{'-'*80}\nIN lift_to_df (root, field_map, lex_fields) FUNCTION\n\nheadword_mapped\n{headword_mapped}\n\nall_mapped:\n{all_mapped}\n\ndata:\n{data}\n\nroot:\n{root}")
         # print(f"{'-'*80}\nIN lift_to_df (root, field_map, lex_fields) FUNCTION\n\nheadword_mapped\n{type(headword_mapped)}\n\nall_mapped:\n{type(all_mapped)}\n\ndata:\n{type(data)}\n\nroot:\n{type(root)}")
 
-        return headword_mapped, all_mapped, data, root
+        return headword_mapped, all_mapped, all_data, root
 
     def prepare_lex(lexicon):
         df = pd.json_normalize(lexicon)
@@ -1289,7 +1738,7 @@ def lifeuploader(fileFormat, uploadedFileContent, field_map={}):
 
         return headword_mapped, mapped, final_data
 
-    def upload_lexicon(lexicon, file_stream, format, field_map):
+    def upload_lexicon(lexicon, file_stream, format, field_map, headword_mapped=False, all_mapped=False):
         lexicon = lexicon[1:]
         # print(f"{'-'*80}\nLEXICON:\n{lexicon}")
         norm_lex = prepare_lex(lexicon)
@@ -1303,8 +1752,8 @@ def lifeuploader(fileFormat, uploadedFileContent, field_map={}):
             if len(field_map) == 0:
                 # print(f"{'-'*80}\nlift-xml: len(field_map) == 0")
 
-                headword_mapped, all_mapped, field_map, root = map_lift(
-                    file_stream, field_map, lex_fields)
+                # headword_mapped, all_mapped, field_map, root = map_lift(
+                # file_stream, field_map, lex_fields)
 
                 if headword_mapped and all_mapped:
                     # print(f"{'-'*80}\nheadword_mapped and all_mapped")
@@ -1312,9 +1761,12 @@ def lifeuploader(fileFormat, uploadedFileContent, field_map={}):
                         root, field_map, lex_fields)
                     # print(f"{'-'*80}\nheadword_mapped:\n{type(headword_mapped)}\nall_mapped:\n{type(all_mapped)}\nmapped_lift/data:\n{type(data)}\nroot:\n{type(root)}")
                     return headword_mapped, all_mapped, data, root
+
                 else:
                     # print(f"{'-'*80}\nheadword_mapped and all_mapped: NOT")
                     # print(f"{'-'*80}\nheadword_mapped:\n{type(headword_mapped)}\nall_mapped:\n{type(all_mapped)}\nmapped_lift/data:\n{type(field_map)}\nroot:\n{type(root)}")
+                    headword_mapped, all_mapped, field_map, root = map_lift(
+                        file_stream, field_map, lex_fields)
                     return headword_mapped, all_mapped, field_map, root
             else:
                 # print(f"{'-'*80}\nlift-xml: len(field_map) != 0")
@@ -1345,9 +1797,11 @@ def lifeuploader(fileFormat, uploadedFileContent, field_map={}):
     with open(os.path.join(working_dir, 'lexemeEntry.json')) as f_r:
         lex = json.load(f_r)
 
-    return upload_lexicon(lex, upload_file, format, field_map)
+    return upload_lexicon(lex, upload_file, format, field_map, headword_mapped, all_mapped)
 
 # upload lexeme form in excel/liftXML format
+
+
 @app.route('/uploadlexemeexcelliftxml', methods=['GET', 'POST'])
 def uploadlexemeexcelliftxml():
     if request.method == 'POST':
@@ -1373,10 +1827,13 @@ def uploadlexemeexcelliftxml():
             life_lift_root_path = os.path.join(basedir, 'lifeliftroot.xml')
             tree = ET.parse(life_lift_root_path)
             root = tree.getroot()
+            headword_mapped = True
+            all_mapped = True
             # print(f"{'-'*80}\nIN uploadlexemeexcelliftxml() FUNCTION\n\nfile_format\n{file_format}\n\nfield_map:\n{field_map}\n\nroot:\n{root}")
             # print(f"{'-'*80}\nIN uploadlexemeexcelliftxml() FUNCTION\n\nfile_format\n{type(file_format)}\n\nfield_map:\n{type(field_map)}\n\nroot:\n{type(root)}")
+
             headword_mapped, all_mapped, life_df = lifeuploader(
-                file_format, root, field_map)
+                file_format, root, field_map, headword_mapped, all_mapped)
             # print(f"{'-'*80}\nIN uploadlexemeexcelliftxml() FUNCTION\n\nheadword_mapped\n{headword_mapped}\n\nall_mapped:\n{all_mapped}\n\nlife_df:\n{life_df}\n\nroot:\n{root}")
             # print(f"{'-'*80}\nIN uploadlexemeexcelliftxml() FUNCTION\n\nheadword_mapped\n{type(headword_mapped)}\n\nall_mapped:\n{type(all_mapped)}\n\nlife_df:\n{type(life_df)}\n\nroot:\n{type(root)}")
         elif (file_format == 'xlsx'):
@@ -1404,6 +1861,8 @@ def uploadlexemeexcelliftxml():
     return redirect(url_for('enternewlexeme'))
 
 # lexeme key mapping
+
+
 @app.route('/lexemekeymapping', methods=['GET', 'POST'])
 def lexemekeymapping():
     # getting the collections
@@ -1490,6 +1949,7 @@ def lexemekeymapping():
             #     './sense/gloss[@lang="anp"]': ['Odi', 'Ass', 'Eng'],
             #     './sense/gloss[@lang="en"]': ['Odi', 'Ass', 'Eng']
             # }
+            print("Field Map", field_map)
             not_mapped_data = field_map
             # print('create a modal/page where user can give the mapping of the columns')
             return render_template('lexemekeymapping.html', not_mapped_data=not_mapped_data)
@@ -1552,6 +2012,7 @@ def downloadlexemeformexcel():
 
         # print(list(df.columns))
         # print(drop_cols)
+        # drop_cols = [c for c in df.columns if c.startswith('langscripts.')]
         df.drop(columns=drop_cols, inplace=True)
 
         return df
@@ -2080,19 +2541,19 @@ def downloadselectedlexeme():
 
         print(g.serialize(format="turtle"))
 
-    def add_canonical_form(g_form, life, lex_entry, lex_item, ipa, dict_lang):
+    def add_canonical_form(g_form, life, lex_entry, lex_item, enc_lex_form, ipa, dict_lang):
         # g_form = Graph()
         # g_form.bind("ontolex", ontolex)
         # g_form.bind("life", life)
 
         g_form.add((
-            URIRef(life[lex_item+'_form']),
+            URIRef(life[enc_lex_form]),
             RDF.type,
             ontolex.form
         ))
 
         g_form.add((
-            URIRef(life[lex_item+'_form']),
+            URIRef(life[enc_lex_form]),
             ontolex.phoneticRep,
             Literal(ipa, lang="ipa")
         ))
@@ -2102,7 +2563,7 @@ def downloadselectedlexeme():
         headword_lang = dict_lang+'-'+headword_script
 
         g_form.add((
-            URIRef(life[lex_item+'_form']),
+            URIRef(life[enc_lex_form]),
             ontolex.writtenRep,
             Literal(lex_item, lang=headword_lang)
         ))
@@ -2114,140 +2575,154 @@ def downloadselectedlexeme():
             if other_script in lex_trans_forms:
                 lex_trans = lex_trans_forms[other_script]
                 g_form.add((
-                    URIRef(life[lex_item+'_form']),
+                    URIRef(life[enc_lex_form]),
                     ontolex.writtenRep,
                     Literal(lex_trans, lang=dict_lang+'-'+other_script)
                 ))
 
-    def add_definition(g_form, life, lex_entry, lex_item, sense_defn):
+    def add_definition(g_form, life, lex_entry, enc_lex_item, enc_lex_defn, sense_defn):
         defn_langs = lex_entry['langscripts']['glosslangs']
+        defn_langs = [x.casefold() for x in defn_langs]
         for defn_lang in defn_langs:
             if defn_lang in sense_defn:
-                lex_defn = sense_defn[defn_lang]
-                g_form.add((
-                    URIRef(life[lex_item]),
-                    ontolex.denotes,
-                    URIRef(life[lex_item+'_definition'])
-                ))
+                lex_defn = sense_defn[defn_lang].strip()
+                if lex_defn != '':
+                    g_form.add((
+                        URIRef(life[enc_lex_item]),
+                        ontolex.denotes,
+                        URIRef(life[enc_lex_defn])
+                    ))
 
-                g_form.add((
-                    URIRef(life[lex_item+'_definition']),
-                    SKOS.definition,
-                    Literal(lex_defn, lang=defn_lang)
-                ))
+                    g_form.add((
+                        URIRef(life[enc_lex_defn]),
+                        SKOS.definition,
+                        Literal(lex_defn, lang=defn_lang)
+                    ))
 
-    def add_example(g_form, life, lex_item, example, ex_lang):
-        g_form.add((
-            URIRef(life[lex_item]),
-            SKOS.example,
-            Literal(example, lang=ex_lang)
-        ))
+    def add_example(g_form, life, enc_lex_item, example, ex_lang):
+        if example != '':
+            g_form.add((
+                URIRef(life[enc_lex_item]),
+                SKOS.example,
+                Literal(example, lang=ex_lang)
+            ))
 
-    def add_other_forms(g_other_form, life, lex_entry, lex_item, other_form, dict_lang):
+    def add_other_forms(g_other_form, life, lex_entry, enc_otherform, other_form, dict_lang):
         # g_other_form = Graph()
         # g_other_form.bind("ontolex", ontolex)
         # g_other_form.bind("life", life)
 
         g_other_form.add((
-            URIRef(life[lex_item+'_otherForm']),
+            URIRef(life[enc_otherform]),
             RDF.type,
             ontolex.form
         ))
 
         g_other_form.add((
-            URIRef(life[lex_item+'_otherForm']),
+            URIRef(life[enc_otherform]),
             ontolex.writtenRep,
             Literal(other_form, lang=dict_lang)
         ))
 
-    def add_sense(g_lex, life, lex_entry, sense_entry, lex_sense):
-        g_lex.add((
-            sense_entry,
-            RDF.type,
-            ontolex.LexicalSense
-        ))
+    def add_sense(g_lex, life, full_lex_entry, lex_entry, sense_entry, lex_senses):
+        sense_langs = full_lex_entry['langscripts']['glosslangs']
+        sense_langs = [x.casefold() for x in sense_langs]
 
-        if dbpedia_exists(lex_sense):
-            g_lex.add((
-                life[lex_entry],
-                ontolex.denotes,
-                dbpedia[lex_sense.capitalize()]
-            ))
+        # this is mainly used for mapping to english dbpedia/wikipedia entries
+        lex_sense = lex_senses['eng'].strip()
+        for sense_lang in sense_langs:
+            if sense_lang in lex_senses:
+                sense_entry = lex_senses[sense_lang].strip()
+                g_lex.add((
+                    Literal(sense_entry, lang=sense_lang),
+                    RDF.type,
+                    ontolex.LexicalSense
+                ))
 
-            g_lex.add((
-                sense_entry,
-                ontolex.reference,
-                dbpedia[lex_sense.capitalize()]
-            ))
+                # if sense_lang == 'eng':
+                if lex_sense != '':
+                    if dbpedia_exists(lex_sense):
+                        g_lex.add((
+                            life[lex_entry],
+                            ontolex.denotes,
+                            dbpedia[lex_sense.capitalize()]
+                        ))
 
-        g_lex.add((
-            sense_entry,
-            ontolex.isSenseOf,
-            life[lex_entry]
-        ))
+                        g_lex.add((
+                            Literal(sense_entry, lang=sense_lang),
+                            ontolex.reference,
+                            dbpedia[lex_sense.capitalize()]
+                        ))
 
-        wordnet_code = get_wordnet_code(lex_sense)
-        if wordnet_code != '':
-            g_lex.add((
-                sense_entry,
-                ontolex.isLexicalisedSenseOf,
-                pwn[wordnet_code]
-            ))
-            g_lex.add((
-                life[lex_entry],
-                ontolex.evokes,
-                pwn[wordnet_code]
-            ))
+                    g_lex.add((
+                        Literal(sense_entry, lang=sense_lang),
+                        ontolex.isSenseOf,
+                        life[lex_entry]
+                    ))
 
-        g_lex.add((
-            sense_entry,
-            ontolex.isSenseOf,
-            life[lex_entry]
-        ))
+                    wordnet_code = get_wordnet_code(lex_sense)
+                    if wordnet_code != '':
+                        g_lex.add((
+                            Literal(sense_entry, lang=sense_lang),
+                            ontolex.isLexicalisedSenseOf,
+                            pwn[wordnet_code]
+                        ))
+                        g_lex.add((
+                            life[lex_entry],
+                            ontolex.evokes,
+                            pwn[wordnet_code]
+                        ))
 
-        # Creating dbpedia entry
-        g_lex.add((
-            dbpedia[lex_sense.capitalize()],
-            ontolex.concept,
-            pwn[wordnet_code]
-        ))
+                    g_lex.add((
+                        Literal(sense_entry, lang=sense_lang),
+                        ontolex.isSenseOf,
+                        life[lex_entry]
+                    ))
 
-        g_lex.add((
-            dbpedia[lex_sense.capitalize()],
-            ontolex.isReferenceOf,
-            sense_entry
-        ))
+                    # Creating dbpedia entry
 
-        g_lex.add((
-            dbpedia[lex_sense.capitalize()],
-            ontolex.isDenotedBy,
-            ontolex.LexicalConcept
-        ))
+                    g_lex.add((
+                        dbpedia[lex_sense.capitalize()],
+                        ontolex.concept,
+                        pwn[wordnet_code]
+                    ))
 
-        # Creating WordNet entry
-        g_lex.add((
-            pwn[wordnet_code],
-            RDF.type,
-            life[lex_entry]
-        ))
+                    g_lex.add((
+                        dbpedia[lex_sense.capitalize()],
+                        ontolex.isReferenceOf,
+                        Literal(sense_entry, lang=sense_lang)
+                    ))
 
-        g_lex.add((
-            pwn[wordnet_code],
-            ontolex.isEvokedBy,
-            life[lex_entry]
-        ))
+                    g_lex.add((
+                        dbpedia[lex_sense.capitalize()],
+                        ontolex.isDenotedBy,
+                        ontolex.LexicalConcept
+                    ))
 
-        g_lex.add((
-            pwn[wordnet_code],
-            ontolex.lexicalizedSense,
-            sense_entry
-        ))
+                    # Creating WordNet entry
+                    g_lex.add((
+                        pwn[wordnet_code],
+                        RDF.type,
+                        life[lex_entry]
+                    ))
 
-        g_lex.add((
-            pwn[wordnet_code],
-            ontolex.isConceptOf,
-            dbpedia[lex_sense.capitalize()]
-        ))
+                    g_lex.add((
+                        pwn[wordnet_code],
+                        ontolex.isEvokedBy,
+                        life[lex_entry]
+                    ))
+
+                    g_lex.add((
+                        pwn[wordnet_code],
+                        ontolex.lexicalizedSense,
+                        Literal(sense_entry, lang=sense_lang)
+                    ))
+
+                    g_lex.add((
+                        pwn[wordnet_code],
+                        ontolex.isConceptOf,
+                        dbpedia[lex_sense.capitalize()]
+                    ))
 
     def get_wordnet_code(lex_gloss):
         query = '''
@@ -2272,17 +2747,28 @@ def downloadselectedlexeme():
     def json_to_rdf_lexicon(g_lex, lex_entry, domain_name,
                             project, output_format='turtle'):
 
-        lex_item = lex_entry['headword']
-        lex_pos = lex_entry['grammaticalcategory']
+        lex_item = lex_entry['headword'].strip()
+        enc_lex_item = requote_uri(lex_item)
+        enc_lex_form = requote_uri(lex_item+'_form')
+        enc_lex_def = requote_uri(lex_item+'_definition')
+        enc_otherform = requote_uri(lex_item+'_otherForm')
+
+        lex_pos = lex_entry['grammaticalcategory'].strip()
+        enc_lex_pos = requote_uri(lex_pos)
+
         # can_form = lex_item
-        lex_pron = lex_entry['Pronunciation']
+        lex_pron = lex_entry['Pronunciation'].strip()
+        enc_lex_pron = requote_uri(lex_pron)
+
         lex_sense = lex_entry['SenseNew']
-        dict_lang = lex_entry['langscripts']['langcode']
+        # print("Entry", lex_entry)
+        dict_lang = lex_entry['langscripts']['langcode'].strip()
 
         # ontolex = URIRef('http://www.w3.org/ns/lemon/ontolex#')
         # lexinfo = URIRef('http://www.lexinfo.net/ontology/2.0/lexinfo#')
 
-        life = Namespace(domain_name+'/'+project + '/word/')
+        enc_project = requote_uri(project.strip())
+        life = Namespace(domain_name+'/'+enc_project + '/word/')
 
         g_lex.bind("ontolex", ontolex)
         g_lex.bind("lexinfo", lexinfo)
@@ -2292,13 +2778,13 @@ def downloadselectedlexeme():
         g_lex.bind("dbpedia", dbpedia)
 
         g_lex.add((
-            URIRef(life[lex_item]),
+            URIRef(life[enc_lex_item]),
             RDF.type,
             lexinfo.LexicalEntry
         ))
 
         g_lex.add((
-            URIRef(life[lex_item]),
+            URIRef(life[enc_lex_item]),
             lexinfo.partOfSpeech,
             lexinfo[lex_pos]
         ))
@@ -2310,29 +2796,33 @@ def downloadselectedlexeme():
         # ))
 
         g_lex.add((
-            URIRef(life[lex_item]),
+            URIRef(life[enc_lex_item]),
             ontolex.canonicalForm,
-            URIRef(life[lex_item+'_form'])
+            URIRef(life[enc_lex_form])
         ))
 
         # Add graph for the canonical form
         add_canonical_form(g_lex, life, lex_entry,
-                           lex_item, lex_pron, dict_lang)
+                           lex_item, enc_lex_form, lex_pron, dict_lang)
 
-        for i in range(1, len(lex_sense)):
-            sense_gloss = lex_sense['Sense '+str(i)]["Gloss"]["eng"]
-            sense_defn = lex_sense['Sense '+str(i)]["Definition"]
-            sense_ex = lex_sense['Sense '+str(i)]["Example"]
+        for i in range(1, len(lex_sense)+1):
+            sense_gloss = lex_sense['Sense '+str(i)]["Gloss"]
+            sense_defn = lex_sense['Sense ' +
+                                   str(i)]["Definition"]
+            sense_ex = lex_sense['Sense '+str(i)]["Example"].strip()
 
-            sense_entry = life[lex_item+'_sense'+str(i)]
+            sense_entry = life[lex_item+'_sense'+str(i)].strip()
+            enc_sense_entry = requote_uri(sense_entry)
             g_lex.add((
-                URIRef(life[lex_item]),
+                URIRef(life[enc_lex_item]),
                 ontolex.sense,
-                URIRef(sense_entry)
+                URIRef(enc_sense_entry)
             ))
-            add_sense(g_lex, life, lex_item, sense_entry, sense_gloss)
-            add_definition(g_lex, life, lex_entry, lex_item, sense_defn)
-            add_example(g_lex, life, lex_item, sense_ex, dict_lang)
+            add_sense(g_lex, life, lex_entry, enc_lex_item,
+                      sense_entry, sense_gloss)
+            add_definition(g_lex, life, lex_entry, enc_lex_item,
+                           enc_lex_def, sense_defn)
+            add_example(g_lex, life, enc_lex_item, sense_ex, dict_lang)
 
     def generate_rdf(write_path, lexicon, domain_name, project, rdf_format):
         g_lex = Graph()
@@ -2582,6 +3072,8 @@ def downloadselectedlexeme():
     return 'OK'
 
 # download project route
+
+
 @app.route('/downloadproject', methods=['GET', 'POST'])
 def downloadproject():
     # getting the collections
@@ -2597,7 +3089,7 @@ def downloadproject():
     fs = gridfs.GridFS(mongo.db)
 
     userprojects, userlogin, projects, lexemes, sentences, questionnaires, transcriptions = getdbcollections.getdbcollections(
-        mongo, 'userprojects', 'userlogin', 'projects', 'lexemes', 'sentences', 
+        mongo, 'userprojects', 'userlogin', 'projects', 'lexemes', 'sentences',
         'questionnaires', 'transcriptions')
     current_username = getcurrentusername.getcurrentusername()
     print('USERNAME: ', current_username)
@@ -2614,13 +3106,15 @@ def downloadproject():
         shutil.rmtree(basedir+"/download")
     os.mkdir(basedir+"/download")
 
-    if shareinfo['sharemode'] >= 1:
-        project_type = getprojecttype.getprojecttype(projects, activeprojectname)
+    # if shareinfo['sharemode'] >= 1:
+    if ('downloadchecked' in shareinfo and shareinfo['downloadchecked'] == 'true'):
+        project_type = getprojecttype.getprojecttype(
+            projects, activeprojectname)
         lst = list()
 
         if project_type == 'questionnaire':
             all_questions = questionnaires.find({'projectname': activeprojectname, 'quesdeleteFLAG': 0},
-                                    {'_id': 0})
+                                                {'_id': 0})
             for cur_ques in all_questions:
                 lst.append(cur_ques)
 
@@ -2631,13 +3125,12 @@ def downloadproject():
 
         elif project_type == 'transcription':
             all_transcriptions = transcriptions.find({'projectname': activeprojectname,
-                                           'transcriptionFLAG': 1, 'audiodeleteFLAG': 0}, {'_id': 0, 'audioMetadata.audiowaveform.data': 0})
+                                                      'transcriptionFLAG': 1, 'audiodeleteFLAG': 0}, {'_id': 0, 'audioMetadata.audiowaveform.data': 0})
             for cur_trans in all_transcriptions:
                 lst.append(cur_trans)
 
             json_object = json.dumps(lst, indent=2, ensure_ascii=False)
 
-            
             with open(basedir+"/download/transcription_"+activeprojectname+".json", "w") as outfile:
                 outfile.write(json_object)
 
@@ -2645,7 +3138,7 @@ def downloadproject():
             projectname = activeprojectname
 
             for lexeme in lexemes.find({'projectname': activeprojectname, 'lexemedeleteFLAG': 0},
-                                    {'_id': 0}):
+                                       {'_id': 0}):
                 lst.append(lexeme)
                 # save current user mutimedia files of each lexeme to local storage
                 # print(lst)
@@ -2660,9 +3153,9 @@ def downloadproject():
                             # print(basedir+'/app/download/'+name)
                             # print(f'{"#"*80}')
                             # open(basedir+'/app/download/'+name, 'wb').write(file.read())
-                            open(basedir+'/download/'+name, 'wb').write(file.read())
+                            open(basedir+'/download/'+name,
+                                 'wb').write(file.read())
 
-            
             # Serializing json
             json_object = json.dumps(lst, indent=2, ensure_ascii=False)
 
@@ -2677,7 +3170,7 @@ def downloadproject():
             # get all sentences of the activeprojectname
             sentenceLst = []
             for sentence in sentences.find({'projectname': activeprojectname, 'sentencedeleteFLAG': 0},
-                                        {'_id': 0}):
+                                           {'_id': 0}):
                 sentenceLst.append(sentence)
 
             # print(sentenceLst)
@@ -2689,7 +3182,8 @@ def downloadproject():
                             {'projectname': projectname, 'sentenceId': sentvalue})
                         for file in files:
                             name = file.filename
-                            open(basedir+'/download/'+name, 'wb').write(file.read())
+                            open(basedir+'/download/'+name,
+                                 'wb').write(file.read())
 
             # Serializing json
             json_object = json.dumps(sentenceLst, indent=2, ensure_ascii=False)
@@ -2706,7 +3200,8 @@ def downloadproject():
         with ZipFile('download.zip', 'w') as zip:
             # writing each file one by one
             for file in files:
-                zip.write(file, os.path.join(projectname, os.path.basename(file)))
+                zip.write(file, os.path.join(
+                    projectname, os.path.basename(file)))
         print('All files zipped successfully!')
 
         # # deleting all files from storage
@@ -2719,6 +3214,8 @@ def downloadproject():
         return 'OK'
 
 # download dictionary route
+
+
 @app.route('/downloaddictionary', methods=['GET', 'POST'])
 def downloaddictionary():
     # getting the collections
@@ -2919,6 +3416,8 @@ def downloaddictionary():
     # return 'OK'
 
 # download route
+
+
 @app.route('/download', methods=['GET'])
 def download():
     # getting the collections
@@ -2973,12 +3472,16 @@ def download():
     return send_file('../download.zip', as_attachment=True)
 
 # download project in json format route
+
+
 @app.route('/downloadjson', methods=['GET', 'POST'])
 def downloadjson():
     return send_file('../download.zip', as_attachment=True)
 
 # modal view with complete detail of a lexeme for edit
 # edit button on dictionary view table
+
+
 @app.route('/userslist', methods=['GET', 'POST'])
 def userslist():
 
@@ -3002,10 +3505,11 @@ def userslist():
         current_user_sharemode = int(shareinfo['sharemode'])
 
         # get list of all the users registered in the application LiFE
-        for user in userlogin.find({}, {"_id": 0, "username": 1}):
+        for user in userlogin.find({}, {"_id": 0, "username": 1, "isActive": 1}):
             # print(user)
-            usersList.append(user["username"])
-            # print(user)
+            if ('isActive' in user and user['isActive'] == 1):
+                usersList.append(user["username"])
+                # print(user)
         if (current_username == projectowner):
             usersList.remove(projectowner)
             share_with_users_list = usersList
@@ -3047,13 +3551,15 @@ def userslist():
 
 # modal view with complete detail of a lexeme for edit
 # edit button on dictionary view table
+
+
 @app.route('/shareprojectwith', methods=['GET', 'POST'])
 def shareprojectwith():
     projects, userprojects, userlogin, lifeappconfigs = getdbcollections.getdbcollections(mongo,
-                                                               'projects',
-                                                               'userprojects',
-                                                               'userlogin',
-                                                               'lifeappconfigs')
+                                                                                          'projects',
+                                                                                          'userprojects',
+                                                                                          'userlogin',
+                                                                                          'lifeappconfigs')
     current_username = getcurrentusername.getcurrentusername()
     activeprojectname = getactiveprojectname.getactiveprojectname(
         current_username, userprojects)
@@ -3064,7 +3570,7 @@ def shareprojectwith():
     # data through ajax
     data = request.args.get('data')
     data = eval(data)
-    # print('2765', data)
+    logger.debug('Sharing Information: %s', pformat(data))
     users = data['sharewithusers']
     # print(type(users))
     speakers = data['sharespeakers']
@@ -3073,13 +3579,16 @@ def shareprojectwith():
     if (sharemode == ''):
         sharemode = 0
     sharechecked = str(data['sharechecked'])
+    downloadchecked = str(data['downloadchecked'])
+    sharelatestchecked = str(data['sharelatestchecked'])
+    
     # print('123', users, speakers, sharemode, sharechecked)
 
     if (len(users) != 0):
-        ## Sender email details
+        # Sender email details
         sender_email_details = emailController.getSenderDetails(lifeappconfigs)
-        
-        ## Get Base URL
+
+        # Get Base URL
         current_url = request.base_url
         base_url_index = current_url.rfind(os.sep)
         base_url = current_url[:base_url_index]
@@ -3138,6 +3647,8 @@ def shareprojectwith():
                     'tomesharedby': list(set(tomesharedby)),
                     'isharedwith': isharedwith,
                     'sharechecked': sharechecked,
+                    'downloadchecked': downloadchecked,
+                    'sharelatestchecked': sharelatestchecked,
                     'activespeakerId': ''
                 }
             else:
@@ -3149,6 +3660,8 @@ def shareprojectwith():
                     'tomesharedby': [current_user.username],
                     'isharedwith': [],
                     'sharechecked': sharechecked,
+                    'downloadchecked': downloadchecked,
+                    'sharelatestchecked': sharelatestchecked,
                     'activespeakerId': ''
                 }
             projectdetails = projects.find_one(
@@ -3273,74 +3786,79 @@ def shareprojectwith():
                                 }
                             }
                         )
-            
-            ## Send email to the user            
-            current_user_email = emailController.getCurrentUserEmail(userlogin, user)
+
+            # Send email to the user
+            current_user_email = emailController.getCurrentUserEmail(
+                userlogin, user)
 
             if current_user_email == '':
                 current_user_email = 'unreal.tece@gmail.com'
-            
+
             shared_with_user_email = sender_email_details['email']
 
             if current_user_email != '' and shared_with_user_email != '':
-                print ('Sending email')
-                purpose = 'share' ##share|OTP|notification
+                print('Sending email')
+                purpose = 'share'  # share|OTP|notification
 
                 email_status = emailController.sendEmail(
                     activeprojectname,
-                    user, 
-                    base_url, 
-                    purpose, 
-                    shared_with_user_email, 
+                    user,
+                    base_url,
+                    purpose,
+                    shared_with_user_email,
                     current_user_email,
-                    sender_email_details['password'], 
-                    sender_email_details['smtp_server'], 
+                    sender_email_details['password'],
+                    sender_email_details['smtp_server'],
                     sender_email_details['port']
                 )
             else:
                 email_status = "Email not configured in the app. Project shared but email not sent"
-                print (email_status)
-    
-    flash(email_status)
+                print(email_status)
+
+    # flash(email_status)
     return redirect(url_for('home'))
     # return 'OK'
 
 # modal view with complete detail of a lexeme
 # view button on dictionary view table
+
+
+# retrieve files from database
+# TODO: User not able to download the data
+@app.route('/retrieve/<filename>')
+@login_required
+def retrieve(filename):
+    x = mongo.send_file(filename)
+
+    return x
+
 @app.route('/lexemeview', methods=['GET'])
 def lexemeview():
-    # getting the collections
-    # collection of project specific form created by the user
-    projectsform = mongo.db.projectsform
-    # collection containing entry of each lexeme and its details
-    lexemes = mongo.db.lexemes
-    # collection of users and their respective projects
-    userprojects = mongo.db.userprojects
-    projects = mongo.db.projects                        # collection of projects
-
-    headword = request.args.get('a').split(
-        ',')                    # data through ajax
-    # print(headword)
-
-    activeprojectname = userprojects.find_one({'username': current_user.username})[
-        'activeprojectname']
-    # print(activeprojectname)
-    projectOwner = projects.find_one({'projectname': activeprojectname}, {
-                                     'projectOwner': 1})['projectOwner']
-    # projectOwner = projects.find_one({}, {"_id" : 0, activeprojectname : 1})[activeprojectname]["projectOwner"]
-    # print(projectOwner)
+    projects, userprojects, projectsform, lexemes = getdbcollections.getdbcollections(mongo,
+                                                                                        'projects',
+                                                                                        'userprojects',
+                                                                                        'projectsform',
+                                                                                        'lexemes')
+    
+    current_username = getcurrentusername.getcurrentusername()
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_username, userprojects)
+    projectOwner = getprojectowner.getprojectowner(projects, activeprojectname)
+    logger.debug('projectOwner: %s', projectOwner)
+    # data through ajax
+    headword = request.args.get('a').split(',')
+    logger.debug('headword: %s', headword)
     lexeme = lexemes.find_one({'username': projectOwner, 'lexemeId': headword[0], },
                               {'_id': 0, 'username': 0})
 
     # print(lexeme["lemon"])
-    # pprint(lexeme)
+    logger.debug('lexeme: %s', pformat(lexeme))
 
     filen = {}
     if 'filesname' in lexeme:
         for key, filename in lexeme['filesname'].items():
-            # print(key, filename)
+            logger.debug('key: %s, filename: %s', key, filename)
             filen[key] = url_for('retrieve', filename=filename)
-
+    logger.debug('filen: %s', pformat(filen))
     y = projectsform.find_one_or_404({'projectname': activeprojectname,
                                       'username': projectOwner}, {"_id": 0})
 
@@ -3398,6 +3916,8 @@ def lexemeedit():
 
 # enter new lexeme route
 # display form for new lexeme entry for current project
+
+
 @app.route('/editlexeme', methods=['GET', 'POST'])
 @login_required
 def editlexeme():
@@ -3439,49 +3959,6 @@ def lexemeupdate():
         variant = {}
         allomorph = {}
         lemon = ''
-        scriptCode = {
-            "Bengali": "Beng",
-            "Devanagari": "Deva",
-            "Gujarati": "Gujr",
-            "Gurumukhi": "Guru",
-            "IPA": "IPA",
-            "Kannada": "Knda",
-            "Latin": "Latn",
-            "Malayalam": "Mlym",
-            "Mayek": "Mtei",
-            "Odia": "Orya",
-            "Ol_Chiki": "Olck",
-            "Tamil": "Taml",
-            "Telugu": "Telu"
-        }
-        langScript = {
-            "Assamese": "Bengali",
-            "Awadhi": "Devanagari",
-            "Bangla": "Bengali",
-            "Bengali": "Bengali",
-            "Bhojpuri": "Devanagari",
-            "Bodo": "Devanagari",
-            "Braj": "Devanagari",
-            "Bundeli": "Devanagari",
-            "English": "Latin",
-            "Gujarati": "Gujarati",
-            "Haryanvi": "Devanagari",
-            "Hindi": "Devanagari",
-            "IPA": "IPA",
-            "Kannada": "Kannada",
-            "Konkani": "Devanagari",
-            "Magahi": "Devanagari",
-            "Maithili": "Devanagari",
-            "Malayalam": "Malayalam",
-            "Marathi": "Devanagari",
-            "Meitei": "Mayek",
-            "Nepali": "Devanagari",
-            "Odia": "Odia",
-            "Punjabi": "Gurumukhi",
-            "Santali": "Ol_Chiki",
-            "Tamil": "Tamil",
-            "Telugu": "Telugu"
-        }
 
         lexemeFormData['username'] = projectowner
 
@@ -3589,30 +4066,8 @@ def lexemeupdate():
         lexemeFormData['updatedBy'] = current_user.username
         lexemeFormData['lexemeId'] = lexemeId
 
-        langscripts = {}
-        langscripts["langname"] = newLexemeData['Lexeme Language'][0]
-        langscripts["langcode"] = newLexemeData['Lexeme Language'][0][:3].lower()
-        headwordscript = list(
-            lexemeFormData['Lexeme Form Script'][0].keys())[0]
-        # langscripts["headwordscript"] = {headwordscript[0]+headwordscript[1:4].lower(): headwordscript}
-        langscripts["headwordscript"] = {
-            scriptCode[headwordscript]: headwordscript}
-        lexemeformscripts = {}
-        for i in range(len(lexemeFormData['Lexeme Form Script'])):
-            for lfs in lexemeFormData['Lexeme Form Script'][i].keys():
-                # lexemeformscripts[lfs[0]+lfs[1:4]] = lfs
-                lexemeformscripts[scriptCode[lfs]] = lfs
-        langscripts["lexemeformscripts"] = lexemeformscripts
-        glosslangs = {}
-        glossscripts = {}
-        for gl in newLexemeData.keys():
-            if ('Gloss' in gl):
-                gl = gl.split()[1]
-                glosslangs[gl[0:3]] = gl
-                glossscripts[scriptCode[langScript[gl]]] = gl
-        langscripts["glosslangs"] = glosslangs
-
-        langscripts["glossscripts"] = glossscripts
+        langscripts = langscriptutils.get_langscripts(
+            newLexemeData, lexemeFormData)
         lexemeFormData['langscripts'] = langscripts
 
         SenseNew = {}
@@ -3654,7 +4109,7 @@ def lexemeupdate():
         for lexForm in lexemeFormData['Lexeme Form Script']:
             for lexKey, lexValue in lexForm.items():
                 # lexemeForm[lexKey[:4]] = lexValue
-                lexemeForm[scriptCode[lexKey]] = lexValue
+                lexemeForm[langscriptutils.get_script_code(lexKey)] = lexValue
 
         lexemeFormData['Lexeme Form'] = lexemeForm
 
@@ -3749,6 +4204,8 @@ def lexemedelete():
     return jsonify(msg=headword[1]+' deletion successful')
 
 # delete button on dictionary view table
+
+
 @app.route('/deletemultiplelexemes', methods=['GET', 'POST'])
 def deletemultiplelexemes():
     projects, userprojects, lexemes = getdbcollections.getdbcollections(mongo,
@@ -3804,6 +4261,8 @@ def adminfirstlogin(userlogin, string_password):
 
 # MongoDB Database
 # user login form route
+
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     userlogin = mongo.db.userlogin
@@ -3831,7 +4290,7 @@ def login():
         if user is None or not user.check_password(password):
             flash('Invalid username or password')
             return redirect(url_for('login'))
-        
+
         isUserActive = userlogin.find_one(
             {'username': form.username.data}, {"_id": 1, "isActive": 1})
         # print(len(isUserActive))
@@ -3848,7 +4307,8 @@ def login():
                     'Your request for an account is  currently under review. If approved, your account will be active in some time.')
                 return redirect(url_for('login'))
         else:
-            old_user_update(userlogin, user.username, ObjectId(isUserActive['_id']).generation_time)
+            old_user_update(userlogin, user.username, ObjectId(
+                isUserActive['_id']).generation_time)
             update_profile(userlogin, user.username, get_blank_profile())
 
         login_user(user, force=True)
@@ -3859,42 +4319,44 @@ def login():
     return render_template('login.html', form=form)
 
 
-def get_blank_profile ():
+def get_blank_profile():
     blank_profile = {
-            "position": "",
-            "organisation_name": "",
-            "organisation_type": "",
-            "country": "",
-            "city": "",
-            "email": "",
-            "languages": "",
-            "storage_requirement": "",
-            "app_use_reason": ""
-        }
+        "position": "",
+        "organisation_name": "",
+        "organisation_type": "",
+        "country": "",
+        "city": "",
+        "email": "",
+        "languages": "",
+        "storage_requirement": "",
+        "app_use_reason": ""
+    }
     return blank_profile
 
 
 def old_user_update(userlogin, username, userSince):
     userlogin.update_one({"username": username},
-                        {"$set": {'userSince': userSince,
-                        'isActive': 1,
-                        'userdeleteFLAG': 0,
-                        'isSuperAdmin': 0,
-                        'isAdmin': 0
-                        }})
+                         {"$set": {'userSince': userSince,
+                                   'isActive': 1,
+                                   'userdeleteFLAG': 0,
+                                   'isSuperAdmin': 0,
+                                   'isAdmin': 0
+                                   }})
 
 
-def update_profile (userlogin, username, userProfile):
+def update_profile(userlogin, username, userProfile):
     userlogin.update_one({"username": username},
-                        {"$set": {
-                        'userProfile': userProfile
-                        }})
+                         {"$set": {
+                             'userProfile': userProfile
+                         }})
 
     # userprojects = mongo.db.userprojects
     # userprojects.insert({'username': form.username.data, 'myproject': {},
     #                          'projectsharedwithme': {}, 'activeprojectname': ''})
 # MongoDB Database
 # use logout
+
+
 @app.route('/logout')
 def logout():
     try:
@@ -3930,20 +4392,20 @@ def save_registration_form(form, current_user):
         # print(user, password)
 
         userlogin.insert_one({"username": form.username.data,
-                          "password": password,
-                          'userProfile': userProfile,
-                          'userSince': datetime.now(),
-                          'isActive': 0,
-                          'userdeleteFLAG': 0,
-                          'isSuperAdmin': 0,
-                          'isAdmin': 0})
+                              "password": password,
+                              'userProfile': userProfile,
+                              'userSince': datetime.now(),
+                              'isActive': 0,
+                              'userdeleteFLAG': 0,
+                              'isSuperAdmin': 0,
+                              'isAdmin': 0})
 
         # collection of users and their respective projectlist
         userprojects = mongo.db.userprojects
         # userprojects.insert({'username' : form.username.data, 'myproject': [], \
         #     'projectsharedwithme': [], 'activeprojectname' : ''})
         userprojects.insert_one({'username': form.username.data, 'myproject': {},
-                             'projectsharedwithme': {}, 'activeprojectname': ''})
+                                 'projectsharedwithme': {}, 'activeprojectname': ''})
 
     # if current_user.is_authenticated:
     #     current_username = getcurrentusername.getcurrentusername()
@@ -3957,6 +4419,8 @@ def save_registration_form(form, current_user):
 
 # MongoDB Database
 # new user registration
+
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     # collection of users and their login details
@@ -4008,23 +4472,25 @@ def dummyUserandProject():
     # collection containing projects name
     if len(mongo.db.list_collection_names()) == 0:
         userprojects.insert_one({'username': "dummyUser",
-                             'myproject':
-                             {"dummyProject1":
-                              {
-                                  'sharemode': 0,
-                                  'sharechecked': "false"
-                              }
-                              },
-                             'projectsharedwithme': {},
-                             'activeprojectname': "dummyActiveProject"
-                             })
+                                 'myproject':
+                                 {"dummyProject1":
+                                  {
+                                    'sharemode': 0,
+                                    'sharechecked': "false",
+                                    'downloadchecked': "false",
+                                    'sharelatestchecked': "false"
+                                  }
+                                  },
+                                 'projectsharedwithme': {},
+                                 'activeprojectname': "dummyActiveProject"
+                                 })
         projects.insert_one({"projectname": "dummyProject1",
-                         "projectOwner": "dummyUser",
-                         "lexemeInserted": 0,
-                         "lexemeDeleted": 0,
-                         'sharedwith': ['dummyUser'],
-                         'projectdeleteFLAG': 0
-                         })
+                             "projectOwner": "dummyUser",
+                             "lexemeInserted": 0,
+                             "lexemeDeleted": 0,
+                             'sharedwith': ['dummyUser'],
+                             'projectdeleteFLAG': 0
+                             })
 
 
 def insertadmin(userlogin):
@@ -4064,7 +4530,7 @@ def insertadmin(userlogin):
     })
 
     userprojects.insert_one({'username': ADMIN_USER, 'myproject': {},
-                         'projectsharedwithme': {}, 'activeprojectname': ''})
+                             'projectsharedwithme': {}, 'activeprojectname': ''})
 
     flash(admin_reminder)
 
@@ -4234,14 +4700,19 @@ def getAudioFilename(lastActiveFilename, whichOne):
 
 # this is for the dropdown list of all the filenames.
 # it could be use by the user to move to (load) some random audio using the filename
+
+
 @app.route('/allunannotated', methods=['GET', 'POST'])
 def allunannotated():
-    userprojects, transcriptions = getdbcollections.getdbcollections(
-        mongo, 'userprojects', 'transcriptions')
-
-    activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username,
-                                                                  userprojects)
+    projects, userprojects = getdbcollections.getdbcollections(mongo,
+                                                                'projects',
+                                                                'userprojects')
+    current_username = getcurrentusername.getcurrentusername()
+    activeprojectname = getactiveprojectname.getactiveprojectname(
+        current_username, userprojects)
     # activespeakerid = getactivespeakerid.getactivespeakerid(userprojects, current_user.username)
+    project_type = getprojecttype.getprojecttype(projects, activeprojectname)
+    data_collection, = getdbcollections.getdbcollections(mongo, project_type)
     activespeakerid = getuserprojectinfo.getuserprojectinfo(userprojects,
                                                             current_user.username,
                                                             activeprojectname)['activespeakerId']
@@ -4250,7 +4721,7 @@ def allunannotated():
     # audioFilesList = sorted(os.listdir(baseAudioFilesPath))
     annotated, unannotated = [], []
     if (activespeakerid != ''):
-        annotated, unannotated = unannotatedfilename.unannotatedfilename(transcriptions,
+        annotated, unannotated = unannotatedfilename.unannotatedfilename(data_collection,
                                                                          activeprojectname,
                                                                          activespeakerid,
                                                                          'audio')
@@ -4298,6 +4769,8 @@ def generate_speaker_id(name, age=''):
     return new_speaker_id
 
 # add speaker details
+
+
 @app.route('/addnewspeakerdetails', methods=['GET', 'POST'])
 @login_required
 def addnewspeakerdetails():
@@ -4350,7 +4823,7 @@ def addnewspeakerdetails():
                                "current_date": current_dt,
                            },
                            "isActive": 1}
-        elif(audio_source == 'internet'):
+        elif (audio_source == 'internet'):
             # internet sub source
             audiosubsource = request.form.get('audiosubsource')
             if (audiosubsource == 'youtube'):
@@ -4408,8 +4881,7 @@ def managespeakermetadata():
         userprojects, current_username, activeprojectname)
     allspeakerdetails, alldatalengths, allkeys = speakerdetails.getspeakerdetails(
         activeprojectname, speakermeta)
-    
-    
+
     # pprint (allspeakerdetails)
     # pprint(alldatalengths)
 
@@ -4420,34 +4892,38 @@ def managespeakermetadata():
         shareinfo=shareinfo,
         usertype=usertype,
         count=alldatalengths,
-        table_headers = allkeys
+        table_headers=allkeys
     )
 
 
 @app.route('/getonespeakermetadata', methods=['GET', 'POST'])
 def getonespeakermetadata():
-    speakermeta, userprojects = getdbcollections.getdbcollections(mongo, "speakerdetails", "userprojects")
+    speakermeta, userprojects = getdbcollections.getdbcollections(
+        mongo, "speakerdetails", "userprojects")
 
     current_username = getcurrentusername.getcurrentusername()
-    activeprojectname = getactiveprojectname.getactiveprojectname(current_username, userprojects)
-    
+    activeprojectname = getactiveprojectname.getactiveprojectname(
+        current_username, userprojects)
+
     # data through ajax
     lifesourceid = request.args.get('lifespeakerid')
-    print ("Life source ID", lifesourceid)
+    print("Life source ID", lifesourceid)
     speakermetadata = speakerdetails.getonespeakerdetails(
         activeprojectname, lifesourceid, speakermeta)
-    
-    print ("Speaker Metadata", speakermetadata)
+
+    print("Speaker Metadata", speakermetadata)
     return jsonify(onespeakerdetails=speakermetadata)
 
 
 @app.route('/editfieldspeakermetadata', methods=['GET', 'POST'])
 def editfieldspeakermetadata():
-    speakermeta, userprojects = getdbcollections.getdbcollections(mongo, "speakerdetails", "userprojects")
+    speakermeta, userprojects = getdbcollections.getdbcollections(
+        mongo, "speakerdetails", "userprojects")
 
     current_username = getcurrentusername.getcurrentusername()
-    activeprojectname = getactiveprojectname.getactiveprojectname(current_username, userprojects)
-    
+    activeprojectname = getactiveprojectname.getactiveprojectname(
+        current_username, userprojects)
+
     current_dt = str(datetime.now()).replace('.', ':')
     # data through ajax
     lifesourceid = request.form.get('lifespeakerid')
@@ -4462,21 +4938,21 @@ def editfieldspeakermetadata():
     por = request.form.get('por')
     toc = request.form.get('toc')
     update_data = {
-                "current": {
-                    "updatedBy": current_username,
-                    "sourceMetadata": {
-                        "name": fname,
-                        "agegroup": fage,
-                        "gender": fgender,
-                        "educationlevel": educlvl,
-                        "educationmediumupto12": moe12,
-                        "educationmediumafter12": moea12,
-                        "speakerspeaklanguage": sols,
-                        "recordingplace": por,
-                        "typeofrecordingplace": toc
-                    },
-                    "current_date": current_dt,
-                }
+        "current": {
+            "updatedBy": current_username,
+            "sourceMetadata": {
+                "name": fname,
+                "agegroup": fage,
+                "gender": fgender,
+                "educationlevel": educlvl,
+                "educationmediumupto12": moe12,
+                "educationmediumafter12": moea12,
+                "speakerspeaklanguage": sols,
+                "recordingplace": por,
+                "typeofrecordingplace": toc
+            },
+            "current_date": current_dt,
+        }
     }
 
     updatestatus = speakerdetails.updateonespeakerdetails(
@@ -4487,11 +4963,13 @@ def editfieldspeakermetadata():
 
 @app.route('/edityoutubesourcemetadata', methods=['GET', 'POST'])
 def edityoutubesourcemetadata():
-    speakermeta, userprojects = getdbcollections.getdbcollections(mongo, "speakerdetails", "userprojects")
+    speakermeta, userprojects = getdbcollections.getdbcollections(
+        mongo, "speakerdetails", "userprojects")
 
     current_username = getcurrentusername.getcurrentusername()
-    activeprojectname = getactiveprojectname.getactiveprojectname(current_username, userprojects)
-    
+    activeprojectname = getactiveprojectname.getactiveprojectname(
+        current_username, userprojects)
+
     current_dt = str(datetime.now()).replace('.', ':')
     # data through ajax
     lifesourceid = request.form.get('lifespeakerid')
@@ -4500,14 +4978,14 @@ def edityoutubesourcemetadata():
     channelurl = request.form.get('ytchannelurl')
 
     update_data = {
-                    "current": {
-                        "updatedBy": current_username,
-                        "sourceMetadata": {
-                            "channelName": channelname,
-                            "channelUrl": channelurl
-                        },
-                        "current_date": current_dt
-                    }
+        "current": {
+            "updatedBy": current_username,
+            "sourceMetadata": {
+                "channelName": channelname,
+                "channelUrl": channelurl
+            },
+            "current_date": current_dt
+        }
     }
 
     updatestatus = speakerdetails.updateonespeakerdetails(
@@ -4541,15 +5019,19 @@ def uploadaudiofiles():
                                     current_user.username,
                                     speakerId,
                                     new_audio_file,
-                                    transcription_type='sentence',  #change this and boundary_threshold for automatic detection of boundaries of different kinds
+                                    # change this and boundary_threshold for automatic detection of boundaries of different kinds
+                                    transcription_type='sentence',
                                     boundary_threshold=0.3,
                                     slice_threshold=0.9,
-                                    slice_size=120 #max size of each slice (in seconds), if large audio is to be automatically divided into multiple parts
+                                    # max size of each slice (in seconds), if large audio is to be automatically divided into multiple parts
+                                    slice_size=120
                                     )
 
     return redirect(url_for('enternewsentences'))
 
 # change speaker ID
+
+
 @app.route('/changespeakerid', methods=['GET', 'POST'])
 @login_required
 def changespeakerid():
@@ -4580,17 +5062,19 @@ def changespeakerid():
     return 'OK'
 
 # get progress report
+
+
 @app.route('/progressreport', methods=['GET'])
 @login_required
 def progressreport():
     projects, userprojects, transcriptions, speakerdetails = getdbcollections.getdbcollections(mongo,
-                                                                               'projects',
-                                                                               'userprojects',
-                                                                               'transcriptions',
-                                                                               'speakerdetails')
+                                                                                               'projects',
+                                                                                               'userprojects',
+                                                                                               'transcriptions',
+                                                                                               'speakerdetails')
     current_username = getcurrentusername.getcurrentusername()
     activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
-                                                                    userprojects)
+                                                                  userprojects)
 
     progressreport = ''
 
@@ -4605,10 +5089,10 @@ def progressreport():
         isharedwith.append(current_username)
         # print('isharedwith_2', isharedwith)
         progressreport = audiodetails.getaudioprogressreport(projects,
-                                                                transcriptions,
-                                                                speakerdetails,
-                                                                activeprojectname, 
-                                                                isharedwith)
+                                                             transcriptions,
+                                                             speakerdetails,
+                                                             activeprojectname,
+                                                             isharedwith)
 
     # print(progressreport)
 
@@ -4653,6 +5137,8 @@ def test():
                            shareinfo=shareinfo)
 
 # uploadquesfiles route
+
+
 @app.route('/uploadquesfiles', methods=['GET', 'POST'])
 @login_required
 def uploadquesfiles():
@@ -4694,12 +5180,16 @@ def uploadquesfiles():
 
 # Contact Us route
 # create contact us form for the LiFE
+
+
 @app.route('/contactus', methods=['GET', 'POST'])
 # @login_required
 def contactus():
     return render_template('contactus.html')
 
 # LiFE Documentation route
+
+
 @app.route('/documentation', methods=['GET', 'POST'])
 # @login_required
 def documentation():
@@ -4718,6 +5208,7 @@ def projecttype():
     project_type = getprojecttype.getprojecttype(projects, activeprojectname)
 
     return jsonify(projectType=project_type)
+
 
 @app.route('/manageapp', methods=['GET', 'POST'])
 @login_required
@@ -4742,6 +5233,7 @@ def manageapp():
             usertype=usertype
         )
 
+
 @app.route('/emailsetup', methods=['GET', 'POST'])
 @login_required
 def emailsetup():
@@ -4754,10 +5246,10 @@ def emailsetup():
     print('USERTYPE: ', usertype)
     # print(ADMIN_USER, SUB_ADMINS)
     manageAppConfig.generateDummyAppConfig()
-    
+
     if 'SUPER-ADMIN' in usertype:
         if request.method == 'POST':
-        
+
             email = request.form.get('name++notificationEmail')
             pwd = request.form.get('name++notificationEmailPwd')
             port = request.form.get('name++smtpPort')
@@ -4768,10 +5260,12 @@ def emailsetup():
                 'smtpPort': port,
                 'smtpServer': server
             }
-            labelmap = manageAppConfig.updateAppSendEmailDetails(lifeappconfigs, emailconfig)
+            labelmap = manageAppConfig.updateAppSendEmailDetails(
+                lifeappconfigs, emailconfig)
 
         else:
-            emailconfig, labelmap = manageAppConfig.getAppSendEmailDetails(lifeappconfigs)
+            emailconfig, labelmap = manageAppConfig.getAppSendEmailDetails(
+                lifeappconfigs)
 
     return render_template(
         'appemailsetup.html',
@@ -4779,3 +5273,42 @@ def emailsetup():
         labelmap=labelmap,
         usertype=usertype
     )
+
+
+@app.errorhandler(404)
+def page_not_found(e):
+    # note that we set the 404 status explicitly
+    return render_template('404.html'), 404
+
+@app.errorhandler(500)
+def internal_server_error(e):
+    # note that we set the 500 status explicitly
+    return render_template('500.html'), 500
+
+@app.route('/deleteaudio', methods=['GET', 'POST'])
+@login_required
+def deleteaudio():
+    try:
+        projects_collection, userprojects, transcriptions_collection = getdbcollections.getdbcollections(mongo,
+                                                                                                            'projects',
+                                                                                                            'userprojects',
+                                                                                                            'transcriptions')
+        current_username = getcurrentusername.getcurrentusername()
+        activeprojectname = getactiveprojectname.getactiveprojectname(current_username, userprojects)
+        logger.debug("%s,%s", current_username, activeprojectname)
+        last_active_id = json.loads(request.form['a'])
+        logger.info("last active audio id to delete: %s, %s", last_active_id, type(last_active_id))
+        active_speaker_id = getuserprojectinfo.getuserprojectinfo(userprojects,
+                                                                    current_username,
+                                                                    activeprojectname)['activespeakerId']
+        audiodetails.delete_one_audio_file(projects_collection,
+                                            transcriptions_collection,
+                                            activeprojectname,
+                                            current_username,
+                                            active_speaker_id,
+                                            last_active_id)
+    except:
+        logger.exception("")
+    flash("Audio deleted successfully")
+
+    return "OK"

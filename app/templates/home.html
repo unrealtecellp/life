@@ -55,24 +55,29 @@ Home
     <h3>Active Project: {{ activeprojectname }}</h3>
 
     <div>
-      <button type="button" class="btn btn-lg btn-primary" id="idhomevieweditbtn">View/Edit Project</button>
-      {% if shareinfo['sharechecked'] == 'true' %}
-      <button type="button" id="shareproject" class="btn btn-lg btn-danger" data-toggle="modal"
-        data-target="#myShareProjectModal">
-        Share Project
-      </button>
+      {% if activeprojectname != '' %}
+        <button type="button" class="btn btn-lg btn-primary" id="idhomevieweditbtn">View/Edit Project</button>
       {% endif %}
-      {% if shareinfo['sharemode']|int >= 1 %}
+      {% if shareinfo['sharechecked'] == 'true' %}
+        <button type="button" id="shareproject" class="btn btn-lg btn-danger" data-toggle="modal"
+        data-target="#myShareProjectModal">
+          Share Project
+        </button>
+      {% endif %}
+      {% if 'downloadchecked' in shareinfo and shareinfo['downloadchecked'] == 'true' %}
+      {# {% endif %}
+      {% if shareinfo['sharemode']|int >= 1 %} #}
       <!-- <button type="button" class="btn btn-lg btn-warning"
         onclick="window.location.href='{{ url_for('downloadproject') }}';">Download Project</button> -->
 
-      {% if project_type == '' %}
-      <button type="button" class="btn btn-lg btn-info"
-        onclick="window.location.href='{{ url_for('downloaddictionary') }}';">Download Dictionary</button>
-      {%endif%}
+        {% if project_type == '' %}
+        <button type="button" class="btn btn-lg btn-info"
+          onclick="window.location.href='{{ url_for('downloaddictionary') }}';">Download Dictionary</button>
+        {%endif%}
       {% endif %}
-      {% if shareinfo['sharemode']|int >= 1 %}
-      <button type="button" class="btn btn-lg btn-warning"
+      {# {% if shareinfo['sharemode']|int >= 1 %} #}
+      {% if 'downloadchecked' in shareinfo and shareinfo['downloadchecked'] == 'true' %}
+        <button type="button" class="btn btn-lg btn-warning"
         onclick="window.location.href='{{ url_for('manageproject') }}';">Manage Project</button>
       {% endif %}
       <!-- <div class="assignkaryaaccesscodecount pull-right"></div>
@@ -85,8 +90,9 @@ Home
     </div>
   </div>
   </br>
-  </br>
   <hr>
+  <a type="button" class="btn btn-lg btn-info" target="_blank"
+      href='https://docs.google.com/document/d/1Gwi8KMfjXcdkJNzTVMY6WX490hHP8TexwBBuEIfERH4/edit#heading=h.tksp88900nix';">User Manual</a>
   <div id="allProjects">
     <!-- <h3>All Projects</h3> -->
 
@@ -116,20 +122,22 @@ Home
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
               aria-hidden="true">&times;</span></button>
-          <h4 class="modal-title" id="myShareProjectModalLabel">Project Name: {{ activeproject }}</h4>
+          <h4 class="modal-title">LiFE Access Control</h4>
         </div>
         <div class="modal-body">
+          <h4 id="myShareProjectModalLabel">Project Name: {{ activeprojectname }}</h4>
+          <hr>
           <div class="row">
-            <!-- <div class="col-xs-12">Select A State</div> -->
             <div class="col-xs-12">
               <div class="form-group">
+                
                 <select name="" id="shareProjectSelect" multiple="multiple" style="width: 100%">
                 </select>
                 <br>
+                <div id="shareLatest"></div>
                 <br>
                 <select name="" id="shareSpeakerSelect" multiple="multiple" style="width: 100%">
                 </select>
-                <br>
                 <br>
                 <div class="sharemode"></div>
               </div>

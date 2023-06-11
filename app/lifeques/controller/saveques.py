@@ -26,12 +26,14 @@ def saveques(questionnaires,
     transcription_boundary_data = {}
     transcription = ''
     for key, value in ques_data.items():
+        # print(key)
         if (key in prompt):
             prompt[key] = value
         if ('Transcription' in key):
             # transcription_lang = key.split()[1]
             prompt_type = key.split()[1]
-            lang_name = key.split()[-1]
+            lang_name = key.split(' Transcription ')[-1]
+            # print(key.split(' Transcription '), lang_name)
             transcription_script = lang_name.split('-')[1]
             transcription = value[0]
             transcription_boundary_data[transcription_boundaryId] =  {
@@ -48,7 +50,8 @@ def saveques(questionnaires,
             prompt[key] = value[0]
         if ('Language' in key):
             text_boundary_data = {}
-            lang_name = key.split(' ')[-1]
+            lang_name = key.split(' Language ')[-1]
+            # print(key.split(' Language '), lang_name)
             lang_script = lang_name.split('-')[1]
             value = ques_data[key][0]
             # print(key, lang_name, lang_script, value)

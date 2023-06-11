@@ -456,6 +456,7 @@ function createquesform(quesprojectform) {
   // quesform += '</div>';
   
   $('#quesform').html(qform);
+
   $('.quesselect').select2({
     placeholder: 'select',
     // data: usersList,

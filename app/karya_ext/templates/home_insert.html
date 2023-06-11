@@ -1,37 +1,4 @@
-<!-- <!DOCTYPE html>
-<html>
 
-<head>
-
-  <title>Karya Extension</title>
-  
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
-  <script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
-  <script src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap.min.js"></script>  
-  <link rel="stylesheet" href="https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css" />
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.1/bootstrap3-editable/css/bootstrap-editable.css" rel="stylesheet">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.1/bootstrap3-editable/js/bootstrap-editable.js"></script>
-
-
-
-  <style>
-  
-    h1 {text-align: center;}
-
-    input[type=button]:hover {
-      box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24),0 17px 50px 0 rgba(0,0,0,0.19);
-    }
-    
-    div {
-      border-radius: 20px;
-      background-color: rgba(247, 235, 220, 0.253);
-      padding: 1px;
-    }
-    </style> -->
-  
-<!-- </head> -->
 {% extends "karyaextlinks.html" %}
 
 {% block title %}
@@ -74,38 +41,87 @@
     <div class="row karyaaudiodata">
       {% if  shareinfo['sharemode']|int >= 3 %}
         <div class="col-md-6 fetchkaryarecording">
-          <h4>Fetch Karya Recordings</h4>
-
+          <h3><b>Fetch Karya Recordings</b></h3>
           <form name="fetchdata" method="POST" action="{{url_for('karya_bp.fetch_karya_audio')}}">
             <!-- <label for="piaccesscode">Access Code: </label> -->
             <!-- <input type="text" name="access_code" id="piaccesscode" placeholder="Enter Access Code"/> -->
-            <div id="piaccesscode"></div>
+            <br>
+            <style>
+              .dropdown-container {
+                  display: flex;
+                  align-items: center;
+              }
+          
+              .dropdown-container select {
+                  width: 200px;
+                  height: 30px; /* Adjust the height to your desired value */
+                  padding: 5px;
+                  border-radius: 5px;
+                  margin-left: 10px;
+                  background-color: #f1f1f1fb;
+              }
+          </style>
+          <p>To Fetch Karya Recoding Select The Task To Get Access Code(s) : </p>
+
+          <form id="accessCodeForm">
+
+            <div class="dropdown-container">
+              <h5 style="font-weight: bold; margin-right: 10px;">Recording Type:</h5>
+              <select id="additionalDropdown" name="additionalDropdown" required>
+                <option value="">Select an option</option>
+                {% for option in dropdown_list %}
+                  <option value="{{ option.value }}">{{ option.name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            
+          <div class="dropdown-container">
+            <label for="transcriptionDropdown" id="transcriptionLabel" style="display: none;">Access Code:</label>
+            <select id="transcriptionDropdown"  name="transcriptionDropdown"style="display: none;">
+              {% for item in transcription_access_code_list %}
+                <option value="{{ item }}">{{ item }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="dropdown-container">
+            <label for="verificationDropdown" id="verificationLabel" style="display: none;">Access Code:</label>
+            <select id="verificationDropdown" name = "verificationDropdown" style="display: none;">
+              {% for item in verification_access_code_list %}
+                <option value="{{ item }}">{{ item }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+        
             <br>
             <div id="idforworker"></div>
             <br>
-            <!-- <label for="idfor_worker_id">For Speaker: </label>
-            <input type="text" name = "for_worker_id" id="idfor_worker_id" placeholder="Enter Speaker ID"/ required>
-            <br> -->
-            <label for="pimobilenumber">Mobile Number: </label>
-            <input type="text" name = "mobile_number" id="pimobilenumber" placeholder="Enter Mobile Number"/ required>
+            <label for="pimobilenumber">Mobile Number:</label>
+            <input type="text" name="mobile_number" id="pimobilenumber" placeholder="Enter Mobile Number" required>
             <br>
             <input type="button" class="btn btn-info" id="getotpid" value="Get OTP">
             <br>
             <br>
-            <label for="karyaotp">Enter OTP</label>
-            <input type = "text" name = "karya_otp" id="karyaotp" hidden required/>
+            <label for="karyaotp">Enter OTP:</label>
+            <input type="text" name="karya_otp" id="karyaotp" hidden required>
             <br>
             <br>
-            <input type="submit" class="btn btn-primary" id="fetchaudioid" value="Fetch Audio"> <br>
+            <input type="submit" class="btn btn-primary" id="fetchaudioid" value="Fetch Audio">
+            <br>
+             </form>
+   
 
-          </form>
-        </div>
+
+
+          
+        </div> 
       {% endif %}
 
       <!-- <br><br><br><br> -->
       {% if  shareinfo['sharemode']|int >= 3 %}
         <div class="col-md-6 uploadkaryarecording pull-right">
-          <h4>Upload Karya Recordings</h4>
+          <h3><b>Upload Karya Recordings</b></h3>
           <form action="{{ url_for('karya_bp.fetch_karya_audio_zip') }}" method="POST" enctype="multipart/form-data">
 
           <!-- <h2>Fetch access code with metadata</h2>
@@ -113,7 +129,7 @@
                 <button>Fetch access code</button>
               </a>
               -->
-            
+            <br>
               <p>Click on the "Choose File" button to upload a zip file*:<p>
               <input type="file" id="accesscodefile" name="accesscodefile">
               <br>
@@ -131,32 +147,96 @@
 
 {% block scripts %}
 {{super()}}
+<script src="{{url_for('.static', filename='home_insert.js')}}"></script>
 <script src="{{url_for('.static', filename='speaker_select2_dropdown.js')}}"></script>
 <script src="{{url_for('.static', filename='fetchaccesscodelist.js')}}"></script>
 <script type="text/javascript">fetchAccessCodeList({{ fetchaccesscodelist | tojson | safe }});</script>
+<!-- <script type="text/javascript">fetchTransAccessCodeList({{ transcription_access_code_list | tojson | safe }});</script> -->
+<!-- <script type="text/javascript">fetchVerAccessCodeList({{ verification_access_code_list | tojson | safe }});</script> -->
 <script type="text/javascript">karyaSpeakerIdsList({{ karya_speaker_ids | tojson | safe }});</script>
+
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var additionalDropdown = document.getElementById('additionalDropdown');
+    var transcriptionDropdown = document.getElementById('transcriptionDropdown');
+    var verificationDropdown = document.getElementById('verificationDropdown');
+    var transcriptionLabel = document.getElementById('transcriptionLabel');
+    var verificationLabel = document.getElementById('verificationLabel');
+
+    additionalDropdown.addEventListener('change', function() {
+      var selectedOption = additionalDropdown.value;
+
+      if (selectedOption === "newVerification" || selectedOption === "completedVerification") {
+        verificationDropdown.style.display = "block";
+        verificationLabel.style.display = "block";
+        transcriptionDropdown.style.display = "none";
+        transcriptionLabel.style.display = "none";
+      } else if (selectedOption === "newTranscription") {
+        verificationDropdown.style.display = "none";
+        verificationLabel.style.display = "none";
+        transcriptionDropdown.style.display = "block";
+        transcriptionLabel.style.display = "block";
+      } else {
+        verificationDropdown.style.display = "none";
+        verificationLabel.style.display = "none";
+        transcriptionDropdown.style.display = "none";
+        transcriptionLabel.style.display = "none";
+      }
+    });
+  });
+</script>
+
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script>
   $(document).ready(function() {
-              $('#getotpid').click(function() {
-                // alert('Clicked')
-                // var acode = document.getElementById("piaccesscode").value;
-                var acode = document.getElementById("access_code").value;
-                var mob = document.getElementById("pimobilenumber").value;
-                // console.log(acode);
-                // console.log(mob)
-                $.getJSON("{{url_for('karya_bp.fetch_karya_otp')}}", {
-                  acode:String(acode), mob:String(mob)
-                  }, function(data) {
-                    // console.log(data)
-                    // alert('DOne!')
-                    // console.log(document.getElementById("getotpid").hidden);
-                    document.getElementById("getotpid").hidden=true;
-                    document.getElementById("fetchaudioid").disabled=false;
-                    document.getElementById("karyaotp").hidden=false;
-                  });
-                  return false;
-              });
-            })
+    $('#getotpid').click(function() {
+      var selectedValue = $('#additionalDropdown').val();
+      var acode = null;
 
+      if (selectedValue === "newVerification" || selectedValue === "completedVerification") {
+        // Code for Verification Access Code selected
+        var verAccessCodeSelect = document.getElementById("verificationDropdown");
+        acode = verAccessCodeSelect.value;
+      } else if (selectedValue === "newTranscription") {
+        // Code for Transcription Access Code selected
+        var transAccessCodeSelect = document.getElementById("transcriptionDropdown");
+        acode = transAccessCodeSelect.value;
+      }
+
+      var mob = $('#pimobilenumber').val();
+
+      console.log("Selected Value:", selectedValue);
+      console.log("Access Code:", acode);
+      console.log("Mobile Number:", mob);
+
+      $.getJSON("{{url_for('karya_bp.fetch_karya_otp')}}", {
+        acode: String(acode),
+        mob: String(mob)
+      })
+      .done(function(data) {
+        console.log("API Response:", data);
+        $('#getotpid').hide();
+        $('#fetchaudioid').prop('disabled', false);
+        $('#karyaotp').prop('hidden', false);
+      })
+      .fail(function(jqXHR, textStatus, errorThrown) {
+        console.log("API Request Failed:", textStatus, errorThrown);
+        // Handle the failure scenario here
+      });
+
+      return false;
+    });
+  });
 </script>
+
+
 {% endblock %} 

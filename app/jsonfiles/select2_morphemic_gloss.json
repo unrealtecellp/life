@@ -1,0 +1,310 @@
+[
+    {
+    "text": "ModificationType",
+    "children": 
+        [
+            {"id": "indifferent", "text": "indifferent"},
+            {"id": "postModifier", "text": "postModifier"},
+            {"id": "preModifier", "text": "preModifier"}  
+        ]
+    },
+    {
+    "text": "Number",
+    "children": 
+        [
+            {"id": "collective", "text": "collective"},
+            {"id": "dual", "text": "dual"},
+            {"id": "massNoun", "text": "massNoun"},
+            {"id": "otherNumber", "text": "otherNumber"},
+            {"id": "paucal", "text": "paucal"},
+            {"id": "plural", "text": "plural"},
+            {"id": "quadrial", "text": "quadrial"},
+            {"id": "singular", "text": "singular"},
+            {"id": "trial", "text": "trial"}
+        ]
+    },
+    {
+    "text": "Animacy",
+    "children": 
+        [
+            {"id": "animate", "text": "animate"},
+            {"id": "inanimate", "text": "inanimate"},
+            {"id": "otherAnimacy", "text": "otherAnimacy"}
+        ]
+    },
+    {
+    "text": "TermType",
+    "children": 
+        [
+            {"id": "CJK_compound", "text": "CJK_compound"},
+            {"id": "abbreviatedForm", "text": "abbreviatedForm"},
+            {"id": "abbreviation", "text": "abbreviation"},
+            {"id": "acronym", "text": "acronym"},
+            {"id": "appellation", "text": "appellation"},
+            {"id": "clippedTerm", "text": "clippedTerm"},
+            {"id": "commonName", "text": "commonName"},
+            {"id": "compound", "text": "compound"},
+            {"id": "contraction", "text": "contraction"},
+            {"id": "entryTerm", "text": "entryTerm"},
+            {"id": "equation", "text": "equation"},
+            {"id": "expression", "text": "expression"},
+            {"id": "formula", "text": "formula"},
+            {"id": "fullForm", "text": "fullForm"},
+            {"id": "idiom", "text": "idiom"},
+            {"id": "initialism", "text": "initialism"},
+            {"id": "internationalScientificTerm", "text": "internationalScientificTerm"},
+            {"id": "internationalism", "text": "internationalism"},
+            {"id": "logicalExpression", "text": "logicalExpression"},
+            {"id": "nucleus", "text": "nucleus"},
+            {"id": "partNumber", "text": "partNumber"},
+            {"id": "phraseologicalUnit", "text": "phraseologicalUnit"},
+            {"id": "productName", "text": "productName"},
+            {"id": "proverb", "text": "proverb"},
+            {"id": "setPhrase", "text": "setPhrase"},
+            {"id": "shortForm", "text": "shortForm"},
+            {"id": "sku", "text": "sku"},
+            {"id": "standardText", "text": "standardText"},
+            {"id": "string", "text": "string"},
+            {"id": "stringCategory", "text": "stringCategory"},
+            {"id": "symbol", "text": "symbol"},
+            {"id": "transcribedForm", "text": "transcribedForm"}
+        ]
+    },
+    {
+    "text": "VerbFormMood",
+    "children": 
+        [
+            {"id": "conditional", "text": "conditional"},
+            {"id": "gerundive", "text": "gerundive"},
+            {"id": "imperative", "text": "imperative"},
+            {"id": "indicative", "text": "indicative"},
+            {"id": "infinitive", "text": "infinitive"},
+            {"id": "participle", "text": "participle"},
+            {"id": "subjunctive", "text": "subjunctive"}
+        ]
+    },
+    {
+    "text": "NormativeAuthorization",
+    "children": 
+        [
+            {"id": "admittedTerm", "text": "admittedTerm"},
+            {"id": "deprecatedTerm", "text": "deprecatedTerm"},
+            {"id": "legalTerm", "text": "legalTerm"},
+            {"id": "preferredTerm", "text": "preferredTerm"},
+            {"id": "regulatedTerm", "text": "regulatedTerm"},
+            {"id": "standardizedTerm", "text": "standardizedTerm"},
+            {"id": "supersededTerm", "text": "supersededTerm"}
+        ]
+    },
+    {
+    "text": "Person",
+    "children": 
+        [
+            {"id": "firstPerson", "text": "firstPerson"},
+            {"id": "secondPerson", "text": "secondPerson"},
+            {"id": "thirdPerson", "text": "thirdPerson"}
+        ]
+    },
+    {
+    "text": "Degree",
+    "children": 
+        [
+            {"id": "comparative", "text": "comparative"},
+            {"id": "positive", "text": "positive"},
+            {"id": "superlative", "text": "superlative"}
+        ]
+    },
+    {
+    "text": "Dating",
+    "children": 
+        [
+            {"id": "modern", "text": "modern"},
+            {"id": "old", "text": "old"}
+        ]
+    },
+    {
+    "text": "Gender",
+    "children": 
+        [
+            {"id": "commonGender", "text": "commonGender"},
+            {"id": "feminine", "text": "feminine"},
+            {"id": "masculine", "text": "masculine"},
+            {"id": "neuter", "text": "neuter"},
+            {"id": "otherGender", "text": "otherGender"}
+        ]
+    },
+    {
+    "text": "Cliticness",
+    "children": 
+        [
+            {"id": "bound", "text": "bound"},
+            {"id": "no", "text": "no"},
+            {"id": "yes", "text": "yes"}
+        ]
+    },
+    {
+    "text": "Frequency",
+    "children": 
+        [
+            {"id": "commonlyUsed", "text": "commonlyUsed"},
+            {"id": "infrequentlyUsed", "text": "infrequentlyUsed"},
+            {"id": "rarelyUsed", "text": "rarelyUsed"}
+        ]
+    },
+    {
+    "text": "TermElement",
+    "children": 
+        [
+            {"id": "affix", "text": "affix"},
+            {"id": "baseElement", "text": "baseElement"},
+            {"id": "infix", "text": "infix"},
+            {"id": "inflectionElement", "text": "inflectionElement"},
+            {"id": "morphologicalElement", "text": "morphologicalElement"},
+            {"id": "optionalElement", "text": "optionalElement"},
+            {"id": "prefix", "text": "prefix"},
+            {"id": "radical", "text": "radical"},
+            {"id": "suffix", "text": "suffix"},
+            {"id": "syllable", "text": "syllable"},
+            {"id": "wordElement", "text": "wordElement"}
+        ]
+    },
+    {
+    "text": "Negative",
+    "children": 
+        [
+            {"id": "no", "text": "no"},
+            {"id": "yes", "text": "yes"}
+        ]
+    },
+    {
+    "text": "ReferentType",
+    "children": 
+        [
+            {"id": "personal", "text": "personal"},
+            {"id": "possessive", "text": "possessive"}
+        ]
+    },
+    {
+    "text": "Finiteness",
+    "children": 
+        [
+            {"id": "finite", "text": "finite"},
+            {"id": "nonFinite", "text": "nonFinite"}
+        ]
+    },
+    {
+    "text": "Voice",
+    "children": 
+        [
+            {"id": "activeVoice", "text": "activeVoice"},
+            {"id": "middleVoice", "text": "middleVoice"},
+            {"id": "passiveVoice", "text": "passiveVoice"}
+        ]
+    },
+    {
+    "text": "Definiteness",
+    "children": 
+        [
+            {"id": "definite", "text": "definite"},
+            {"id": "fullArticle", "text": "fullArticle"},
+            {"id": "indefinite", "text": "indefinite"},
+            {"id": "shortArticle", "text": "shortArticle"}
+        ]
+    },
+    {
+    "text": "Tense",
+    "children": 
+        [
+            {"id": "future", "text": "future"},
+            {"id": "imperfect", "text": "imperfect"},
+            {"id": "past", "text": "past"},
+            {"id": "present", "text": "present"},
+            {"id": "preterite", "text": "preterite"}
+        ]
+    },
+    {
+    "text": "Mood",
+    "children": 
+        [
+            {"id": "imperative", "text": "imperative"},
+            {"id": "indicative", "text": "indicative"},
+            {"id": "subjunctive", "text": "subjunctive"}
+        ]
+    },
+    {
+    "text": "Register",
+    "children": 
+        [
+            {"id": "benchLevelRegister", "text": "benchLevelRegister"},
+            {"id": "dialectRegister", "text": "dialectRegister"},
+            {"id": "facetiousRegister", "text": "facetiousRegister"},
+            {"id": "formalRegister", "text": "formalRegister"},
+            {"id": "inHouseRegister", "text": "inHouseRegister"},
+            {"id": "ironicRegister", "text": "ironicRegister"},
+            {"id": "neutralRegister", "text": "neutralRegister"},
+            {"id": "slangRegister", "text": "slangRegister"},
+            {"id": "tabooRegister", "text": "tabooRegister"},
+            {"id": "technicalRegister", "text": "technicalRegister"},
+            {"id": "vulgarRegister", "text": "vulgarRegister"}
+        ]
+    },
+    {
+    "text": "Case",
+    "children": 
+        [
+            {"id": "abessiveCase", "text": "abessiveCase"},
+            {"id": "ablativeCase", "text": "ablativeCase"},
+            {"id": "absolutiveCase", "text": "absolutiveCase"},
+            {"id": "accusativeCase", "text": "accusativeCase"},
+            {"id": "adessiveCase", "text": "adessiveCase"},
+            {"id": "aditiveCase", "text": "aditiveCase"},
+            {"id": "allativeCase", "text": "allativeCase"},
+            {"id": "benefactiveCase", "text": "benefactiveCase"},
+            {"id": "causativeCase", "text": "causativeCase"},
+            {"id": "comitativeCase", "text": "comitativeCase"},
+            {"id": "dativeCase", "text": "dativeCase"},
+            {"id": "delativeCase", "text": "delativeCase"},
+            {"id": "elativeCase", "text": "elativeCase"},
+            {"id": "equativeCase", "text": "equativeCase"},
+            {"id": "ergativeCase", "text": "ergativeCase"},
+            {"id": "essiveCase", "text": "essiveCase"},
+            {"id": "genitiveCase", "text": "genitiveCase"},
+            {"id": "illativeCase", "text": "illativeCase"},
+            {"id": "inessiveCase", "text": "inessiveCase"},
+            {"id": "instrumentalCase", "text": "instrumentalCase"},
+            {"id": "lativeCase", "text": "lativeCase"},
+            {"id": "locativeCase", "text": "locativeCase"},
+            {"id": "nominativeCase", "text": "nominativeCase"},
+            {"id": "obliqueCase", "text": "obliqueCase"},
+            {"id": "partitiveCase", "text": "partitiveCase"},
+            {"id": "prolativeCase", "text": "prolativeCase"},
+            {"id": "sociativeCase", "text": "sociativeCase"},
+            {"id": "sublativeCase", "text": "sublativeCase"},
+            {"id": "superessiveCase", "text": "superessiveCase"},
+            {"id": "terminativeCase", "text": "terminativeCase"},
+            {"id": "translativeCase", "text": "translativeCase"},
+            {"id": "vocativeCase", "text": "vocativeCase"},
+            {"id": "directCase", "text": "directCase"}
+        ]
+    },
+    {
+    "text": "Aspect",
+    "children": 
+        [
+            {"id": "cessative", "text": "cessative"},
+            {"id": "imperfective", "text": "imperfective"},
+            {"id": "inchoative", "text": "inchoative"},
+            {"id": "perfective", "text": "perfective"},
+            {"id": "unaccomplished", "text": "unaccomplished"}
+        ]
+    },
+    {
+    "text": "TemporalQualifier",
+    "children": 
+        [
+            {"id": "archaicForm", "text": "archaicForm"},
+            {"id": "obsoleteForm", "text": "obsoleteForm"},
+            {"id": "outdatedForm", "text": "outdatedForm"}
+        ]
+    }
+]

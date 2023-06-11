@@ -13,6 +13,7 @@ def savenewproject(projects,
     Returns:
         empty string
     """
+    include_speakerIds = ['transcriptions', 'recordings']
     if projects.find_one({ 'projectname': projectname }) is None:
         project_details = {
             "projectname": projectname,
@@ -30,11 +31,11 @@ def savenewproject(projects,
         }
         for key, value in kwargs.items():
             project_details[key] = value
-            if (key == 'projectType' and value == 'transcriptions'):
+            if (key == 'projectType' and value in include_speakerIds):
                 project_details['speakerIds'] = {current_username: []}
             
         projects.insert_one(project_details)
-        # pprint(project_details)
+        # print(project_details)
     else:
         projectname = ''
 

@@ -55,7 +55,7 @@ function checkLexeme(ele) {
     var headcheckbox = document.getElementById('headcheckbox');
     var checkboxes = document.getElementsByTagName('input');
     var totalrecords = document.getElementById('totalrecords').innerHTML;
-    totalrecordscount = totalrecords.match(/\d/);
+    let totalrecordscount = totalrecords.match(/\d/);
     // alert(totalrecordscount);
     if (ele.checked == false) {
         headcheckbox.checked = false;
