@@ -31,6 +31,58 @@ def get_access_code_list(accesscodedetails,
     return access_code_list
 
 
+def get_transcription_access_code_list(accesscodedetails,
+                            activeprojectname,
+                            current_username):
+    fetch_access_codes = accesscodedetails.find({'projectname': activeprojectname,
+                                                    'fetchData': 1,
+                                                    'task':'SPEECH_TRANSCRIPTION'},
+                                                    {'_id': 0,
+                                                        'karyaaccesscode': 1,
+                                                        'assignedBy': 1,
+                                                        'uploadedBy': 1})
+                                                
+    access_code_list = []
+
+    for fetch_access_code in fetch_access_codes:
+        # print ('Current access code', fetch_access_code)
+        if (fetch_access_code['assignedBy'] != ''):
+            if (fetch_access_code['assignedBy'] == current_username):
+                access_code_list.append(fetch_access_code['karyaaccesscode'])
+            else:
+                if (current_username == fetch_access_code['uploadedBy']):
+                    access_code_list.append(fetch_access_code['karyaaccesscode'])
+    
+    return access_code_list
+
+
+
+def get_verification_access_code_list(accesscodedetails,
+                            activeprojectname,
+                            current_username):
+    fetch_access_codes = accesscodedetails.find({'projectname': activeprojectname,
+                                                    'fetchData': 1,
+                                                    'task':'SPEECH_VERIFICATION'},
+                                                    {'_id': 0,
+                                                        'karyaaccesscode': 1,
+                                                        'assignedBy': 1,
+                                                        'uploadedBy': 1})
+                                                
+    access_code_list = []
+
+    for fetch_access_code in fetch_access_codes:
+        # print ('Current access code', fetch_access_code)
+        if (fetch_access_code['assignedBy'] != ''):
+            if (fetch_access_code['assignedBy'] == current_username):
+                access_code_list.append(fetch_access_code['karyaaccesscode'])
+            else:
+                if (current_username == fetch_access_code['uploadedBy']):
+                    access_code_list.append(fetch_access_code['karyaaccesscode'])
+    
+    return access_code_list
+
+
+
 
 def get_access_code_metadata_for_form(projects, projectsform, project_name, project_type, derived_from_project_type, derivedFromProjectName):
     # logger.debug("project_name: %s\

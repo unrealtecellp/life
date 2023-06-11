@@ -1,3 +1,12 @@
+from flask import (
+    Blueprint,
+    flash,
+    redirect,
+    render_template,
+    url_for,
+    request,
+    jsonify
+)
 import requests
 import gzip
 import tarfile
@@ -45,17 +54,18 @@ def verify_karya_otp(
     return verification_details.status_code == int(200), verification_details
 
 
-def get_all_karya_assignments(
-    verifyPh_request
-):
+
+
+# def get_all_karya_assignments(verifyPh_request, additional_task, project_type, access_code_task):
+def get_all_karya_assignments(verifyPh_request, assignment_url):
+
     getTokenid_assignment_hedder = verifyPh_request.json()['id_token']
     hederr = {'karya-id-token': getTokenid_assignment_hedder}
-    assignment_urll = 'https://karyanltmbox.centralindia.cloudapp.azure.com/assignments?type=new&from=2021-05-11T07:23:40.654Z'
-    assignment_request = requests.get(headers=hederr, url=assignment_urll)
-
+    assignment_request = requests.get(url=assignment_url, headers=hederr)
     r_j = assignment_request.json()
-
+    # print(r_j)
     return r_j, hederr
+
 
 
 def get_assignment_metadata(
@@ -88,11 +98,12 @@ def get_assignment_metadata(
         try:
             worker_id = assignment_data['recorder_id'] # recorder_id is colection speaker_id
             logger.debug("recorder_id: %s", worker_id) # recorder_id is colection speaker_id
+            
 
         except:
-            worker_id = findWorker_id['workerId']
-            logger.debug("worker_id: %s", worker_id)
             # print('worker_id', worker_id, 'for_worker_id', for_worker_id)
+            worker_id = findWorker_id['workerId'] 
+            logger.debug("worker_id: %s", worker_id)
         
 
       
