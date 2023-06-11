@@ -484,13 +484,10 @@ def savetranscription():
 def audiobrowse():
     try:
         new_data = {}
-        projects, userprojects, projectsform, sentences, transcriptions, speakerdetails = getdbcollections.getdbcollections(mongo,
-                                                                                                                            'projects',
-                                                                                                                            'userprojects',
-                                                                                                                            'projectsform',
-                                                                                                                            'sentences',
-                                                                                                                            'transcriptions',
-                                                                                                                            'speakerdetails')
+        projects, userprojects, transcriptions = getdbcollections.getdbcollections(mongo,
+                                                                                    'projects',
+                                                                                    'userprojects',
+                                                                                    'transcriptions')
         current_username = getcurrentusername.getcurrentusername()
         activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
                                                                     userprojects)
@@ -503,9 +500,12 @@ def audiobrowse():
                                                     current_username: 1}
                                                 )["speakerIds"][current_username]
         active_speaker_id = shareinfo['activespeakerId']
-        audio_data_list = audiodetails.get_n_audios(transcriptions,
-                                                    activeprojectname,
-                                                    active_speaker_id)
+        if (active_speaker_id != ''):
+            audio_data_list = audiodetails.get_n_audios(transcriptions,
+                                                        activeprojectname,
+                                                        active_speaker_id)
+        else:
+            audio_data_list = []
         
         new_data['currentUsername'] = current_username
         new_data['activeProjectName'] = activeprojectname
@@ -521,6 +521,94 @@ def audiobrowse():
                            projectName=activeprojectname,
                            newData=new_data)
                         #    data=currentuserprojectsname)
+
+@app.route('/updateaudiobrowsetable', methods=['GET', 'POST'])
+@login_required
+def updateaudiobrowsetable():
+    audio_data_fields= ['audioId', 'audioFilename', 'Audio File']
+    audio_data_list = []
+    try:
+        # data through ajax
+        audio_browse_info = json.loads(request.args.get('a'))
+        logger.debug('audio_browse_info: %s', audio_browse_info)
+        userprojects, transcriptions = getdbcollections.getdbcollections(mongo,
+                                                                            'userprojects',
+                                                                            'transcriptions')
+        current_username = getcurrentusername.getcurrentusername()
+        activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                    userprojects)
+        logger.debug(audio_browse_info['activeSpeakerId'])
+        active_speaker_id = audio_browse_info['activeSpeakerId']
+        audio_file_count = audio_browse_info['audioFilesCount']
+        audio_browse_action = audio_browse_info['browseActionSelectedOption']
+        if (active_speaker_id != ''):
+            audio_data_list = audiodetails.get_n_audios(transcriptions,
+                                                        activeprojectname,
+                                                        active_speaker_id,
+                                                        start_from=0,
+                                                        number_of_audios=audio_file_count,
+                                                        audio_delete_flag=audio_browse_action)
+        else:
+            audio_data_list = []
+        # logger.debug('audio_data_list: %s', pformat(audio_data_list))
+    except:
+        logger.exception("")
+
+    return jsonify(audioDataFields= audio_data_fields,
+                   audioData=audio_data_list)
+
+@app.route('/audiobrowseaction', methods=['GET', 'POST'])
+@login_required
+def audiobrowseaction():
+    try:
+        projects_collection, userprojects, transcriptions_collection = getdbcollections.getdbcollections(mongo,
+                                                                                                            'projects',
+                                                                                                            'userprojects',
+                                                                                                            'transcriptions')
+        current_username = getcurrentusername.getcurrentusername()
+        activeprojectname = getactiveprojectname.getactiveprojectname(current_username, userprojects)
+        logger.debug("%s,%s", current_username, activeprojectname)
+        # data from ajax
+        data = json.loads(request.args.get('a'))
+        logger.debug('data: %s', pformat(data))
+        audio_info = data['audioInfo']
+        logger.debug('audio_info: %s', pformat(audio_info))
+        audio_browse_info = data['audioBrowseInfo']
+        logger.debug('audio_browse_info: %s', pformat(audio_browse_info))
+        browse_action = audio_browse_info['browseActionSelectedOption']
+        active_speaker_id = audio_browse_info['activeSpeakerId']
+        audio_ids_list = list(audio_info.keys())
+        active_audio_id = audiodetails.getactiveaudioid(projects_collection,
+                                                        activeprojectname,
+                                                        active_speaker_id,
+                                                        current_username)
+        update_latest_audio_id=0
+        for audio_id in audio_ids_list:
+            logger.info("audio id to delete: %s, %s", audio_id, type(audio_id))
+            if (audio_id == active_audio_id):
+                update_latest_audio_id = 1
+            if (browse_action):
+                audiodetails.revoke_deleted_audio(projects_collection,
+                                                    transcriptions_collection,
+                                                    activeprojectname,
+                                                    active_speaker_id,
+                                                    audio_id)
+            else:
+                audiodetails.delete_one_audio_file(projects_collection,
+                                                    transcriptions_collection,
+                                                    activeprojectname,
+                                                    current_username,
+                                                    active_speaker_id,
+                                                    audio_id,
+                                                    update_latest_audio_id=update_latest_audio_id)
+        if (browse_action):
+            flash("Audio revoked successfully")
+        else:
+            flash("Audio deleted successfully")
+    except:
+        logger.exception("")
+
+    return 'OK'
 
 # new automation route
 # buttons working for different automation(POS, morph analyser)

@@ -20,9 +20,9 @@ Audio Browse
 <div class="row">
     <div class="col col-md-6">
         <label for="speakeridsdropdown">Audio Files from Source:&nbsp;</label>
-        <select class="custom-select custom-select-sm" id="speakeridsdropdown" style="width: 40%;"></select>
-        <select class="custom-select custom-select-sm" id="audiofilescountdropdown" style="width: 10%;"></select>
-        <label for="speakeridsdropdown">&nbsp;:Audio Files</label>
+        <select id="speakeridsdropdown" style="width: 40%;"></select>
+        <select id="audiofilescountdropdown" style="width: 10%;"></select>
+        <label for="audiofilescountdropdown">&nbsp;:Audio Files</label>
     </div>
     <div class="col col-md-6 pull-right" id="browseaudiodropdowns">
     </div>
@@ -38,6 +38,7 @@ Audio Browse
 {% block scripts %}
 {{super()}}
     <script src="{{url_for('.static', filename='audiobrowse.js')}}"></script>
+    <script src="{{url_for('.static', filename='changeactivespeaker.js')}}"></script>
     <script type="text/javascript">createAudioBrowse({{ newData | tojson | safe }});</script>
     <script src="{{url_for('.static', filename='search.js')}}"></script>
     <script src="{{url_for('.static', filename='sorttable.js')}}"></script>

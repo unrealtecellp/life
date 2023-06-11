@@ -704,7 +704,10 @@ def getnewaudioid(projects,
         audio_ids_list = audio_ids_list['speakersAudioIds'][activespeakerId]
         logger.debug('audio_ids_list: %s', audio_ids_list)
     if (len(audio_ids_list) != 0):
-        audio_id_index = audio_ids_list.index(last_active_id)
+        if (last_active_id in audio_ids_list):
+            audio_id_index = audio_ids_list.index(last_active_id)
+        else:
+            audio_id_index = 0
         # logger.debug('latestAudioId Index!!!!!!!', audio_id_index)
         if which_one == 'previous':
             audio_id_index = audio_id_index - 1
@@ -1533,7 +1536,8 @@ def delete_one_audio_file(projects_collection,
                           project_name,
                           current_username,
                           active_speaker_id,
-                          audio_id):
+                          audio_id,
+                          update_latest_audio_id=1):
     try:
         logger.debug("project_name: %s, audio_id: %s", project_name, audio_id)
         transcription_doc_id = transcriptions_collection.find_one_and_update({
@@ -1545,22 +1549,22 @@ def delete_one_audio_file(projects_collection,
             return_document=ReturnDocument.AFTER)['_id']
         logger.debug('DELETED transcription_doc_id: %s, %s', transcription_doc_id, type(transcription_doc_id))
 
+        if (update_latest_audio_id):
+            latest_audio_id = getnewaudioid(projects_collection,
+                                            project_name,
+                                            audio_id,
+                                            active_speaker_id,
+                                            'next')
+            updatelatestaudioid(projects_collection,
+                                project_name,
+                                latest_audio_id,
+                                current_username,
+                                active_speaker_id)
+            
         projects_collection.update_one({"projectname": project_name},
                                        {"$pull": {"speakersAudioIds."+active_speaker_id: audio_id},
                                         "$addToSet": {"speakersAudioIdsDeleted."+active_speaker_id: audio_id}
                                         })
-        
-        latest_audio_id = getnewaudioid(projects_collection,
-                                        project_name,
-                                        audio_id,
-                                        active_speaker_id,
-                                        'next')
-        updatelatestaudioid(projects_collection,
-                            project_name,
-                            latest_audio_id,
-                            current_username,
-                            active_speaker_id)
-        
     except:
         logger.exception("")
         transcription_doc_id = False
@@ -1636,8 +1640,8 @@ def get_n_audios(data_collection,
     # logger.debug("aggregate_output: %s", aggregate_output)
     aggregate_output_list = []
     for doc in aggregate_output:
-        logger.debug("aggregate_output: %s", pformat(doc))
+        # logger.debug("aggregate_output: %s", pformat(doc))
         aggregate_output_list.append(doc)
-    logger.debug('aggregate_output_list: %s', pformat(aggregate_output_list))
+    # logger.debug('aggregate_output_list: %s', pformat(aggregate_output_list))
 
     return aggregate_output_list[start_from:number_of_audios]
