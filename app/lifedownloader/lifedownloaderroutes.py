@@ -55,7 +55,8 @@ def downloadtranscriptions():
     shareinfo = getuserprojectinfo.getuserprojectinfo(
         userprojects, current_username, activeprojectname)
 
-    if shareinfo['sharemode'] >= 1:
+    # if shareinfo['sharemode'] >= 1:
+    if ('downloadchecked' in shareinfo and shareinfo['downloadchecked'] == 'true'):
         print(request.args)
         format_details = json.loads(
             request.args.get('data'))    # data through ajax

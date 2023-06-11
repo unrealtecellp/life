@@ -89,8 +89,19 @@ def home():
         current_username, userprojects)
     shareinfo = getuserprojectinfo.getuserprojectinfo(
         userprojects, current_username, activeprojectname)
+    project_owner = getprojectowner.getprojectowner(projects, activeprojectname)
+
+    add_to_share_info = ['downloadchecked', 'sharelatestchecked']
+    for value in add_to_share_info:
+        if (current_username == project_owner and value not in shareinfo):
+            userprojects.update_one({'username': current_username},
+                                    {'$set': {
+                                        'myproject.'+activeprojectname+'.'+value: 'true'
+                                    }})
+            shareinfo[value] = 'true'
 
     project_type = getprojecttype.getprojecttype(projects, activeprojectname)
+    logger.debug('project_type: %s', project_type)
     # print(shareinfo)
     # print('activeprojectname', activeprojectname)
 
@@ -496,10 +507,15 @@ def audiobrowse():
                                                         current_username,
                                                         activeprojectname)
         speakerids = projects.find_one({"projectname": activeprojectname},
-                                                {"_id": 0, "speakerIds." +
-                                                    current_username: 1}
-                                                )["speakerIds"][current_username]
+                                        {"_id": 0, "speakerIds." +current_username: 1})
+        logger.debug('speakerids: %s', pformat(speakerids))
+        if (speakerids["speakerIds"]):
+            speakerids = speakerids["speakerIds"][current_username]
+            speakerids.append('')
+        else:
+            speakerids = ['']
         active_speaker_id = shareinfo['activespeakerId']
+        
         if (active_speaker_id != ''):
             audio_data_list = audiodetails.get_n_audios(transcriptions,
                                                         activeprojectname,
@@ -597,7 +613,10 @@ def audiobrowseaction():
                                                         current_username)
         update_latest_audio_id=0
         for audio_id in audio_ids_list:
-            logger.info("audio id to delete: %s, %s", audio_id, type(audio_id))
+            if(browse_action):
+                logger.info("audio id to revoke: %s, %s", audio_id, type(audio_id))
+            else:
+                logger.info("audio id to delete: %s, %s", audio_id, type(audio_id))
             if (audio_id == active_audio_id):
                 update_latest_audio_id = 1
             if (browse_action):
@@ -750,9 +769,10 @@ def dictionaryview():
                                                                         'projects',
                                                                         'userprojects',
                                                                         'lexemes')
-    currentuserprojectsname = getcurrentuserprojects.getcurrentuserprojects(current_user.username,
+    current_username = getcurrentusername.getcurrentusername()
+    currentuserprojectsname = getcurrentuserprojects.getcurrentuserprojects(current_username,
                                                                             userprojects)
-    activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username,
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
                                                                   userprojects)
     projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
     scriptCode = readJSONFile.readJSONFile(scriptCodeJSONFilePath)
@@ -768,14 +788,14 @@ def dictionaryview():
                                     new_lexeme_data,
                                     new_lexeme_files,
                                     projectowner,
-                                    current_user.username)
+                                    current_username)
         flash('Successfully added new lexeme')
         return redirect(url_for('enternewlexeme'))
     try:
         my_projects = len(userprojects.find_one(
-            {'username': current_user.username})["myproject"])
+            {'username': current_username})["myproject"])
         shared_projects = len(userprojects.find_one(
-            {'username': current_user.username})["projectsharedwithme"])
+            {'username': current_username})["projectsharedwithme"])
         # print(f"MY PROJECTS: {my_projects}, SHARED PROJECTS: {shared_projects}")
         if (my_projects+shared_projects) == 0:
             flash('Please create your first project')
@@ -795,12 +815,15 @@ def dictionaryview():
         logger.exception("")
         flash('Enter first lexeme of the project')
 
+    shareinfo = getuserprojectinfo.getuserprojectinfo(
+        userprojects, current_username, activeprojectname)
     return render_template('dictionaryview.html',
                            projectName=activeprojectname,
                            fields=all_fields,
                            sdata=lst,
                            count=len(lst),
-                           data=currentuserprojectsname)
+                           data=currentuserprojectsname,
+                           shareinfo=shareinfo)
 
 
 # enter new lexeme route
@@ -3083,7 +3106,8 @@ def downloadproject():
         shutil.rmtree(basedir+"/download")
     os.mkdir(basedir+"/download")
 
-    if shareinfo['sharemode'] >= 1:
+    # if shareinfo['sharemode'] >= 1:
+    if ('downloadchecked' in shareinfo and shareinfo['downloadchecked'] == 'true'):
         project_type = getprojecttype.getprojecttype(
             projects, activeprojectname)
         lst = list()
@@ -3555,6 +3579,9 @@ def shareprojectwith():
     if (sharemode == ''):
         sharemode = 0
     sharechecked = str(data['sharechecked'])
+    downloadchecked = str(data['downloadchecked'])
+    sharelatestchecked = str(data['sharelatestchecked'])
+    
     # print('123', users, speakers, sharemode, sharechecked)
 
     if (len(users) != 0):
@@ -3620,6 +3647,8 @@ def shareprojectwith():
                     'tomesharedby': list(set(tomesharedby)),
                     'isharedwith': isharedwith,
                     'sharechecked': sharechecked,
+                    'downloadchecked': downloadchecked,
+                    'sharelatestchecked': sharelatestchecked,
                     'activespeakerId': ''
                 }
             else:
@@ -3631,6 +3660,8 @@ def shareprojectwith():
                     'tomesharedby': [current_user.username],
                     'isharedwith': [],
                     'sharechecked': sharechecked,
+                    'downloadchecked': downloadchecked,
+                    'sharelatestchecked': sharelatestchecked,
                     'activespeakerId': ''
                 }
             projectdetails = projects.find_one(
@@ -3784,7 +3815,7 @@ def shareprojectwith():
                 email_status = "Email not configured in the app. Project shared but email not sent"
                 print(email_status)
 
-    flash(email_status)
+    # flash(email_status)
     return redirect(url_for('home'))
     # return 'OK'
 
@@ -3793,6 +3824,7 @@ def shareprojectwith():
 
 
 # retrieve files from database
+# TODO: User not able to download the data
 @app.route('/retrieve/<filename>')
 @login_required
 def retrieve(filename):
@@ -4443,8 +4475,10 @@ def dummyUserandProject():
                                  'myproject':
                                  {"dummyProject1":
                                   {
-                                      'sharemode': 0,
-                                      'sharechecked': "false"
+                                    'sharemode': 0,
+                                    'sharechecked': "false",
+                                    'downloadchecked': "false",
+                                    'sharelatestchecked': "false"
                                   }
                                   },
                                  'projectsharedwithme': {},
