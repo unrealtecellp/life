@@ -7,6 +7,7 @@ LiFe Data Home
 
 {% block styles %}
 {{super()}}
+<link href="{{url_for('.static', filename='newdataform.css')}}" rel="stylesheet" />
 <link href="{{url_for('.static', filename='lifedatahome.css')}}" rel="stylesheet" />
 <link href="{{url_for('easyAnno.static', filename='easyannohome.css')}}" rel="stylesheet" />
 {% endblock %}
@@ -116,17 +117,17 @@ LiFe Data Home
       <div id="validationtypeproject" style="display: none;">
         <div class="col upload">
           <label class="btn btn-danger">
-            Select ZIP File <input type="file" id="zipFile" name="zipFile" accept="application/zip" hidden>
-        </label>
-        <p id="displayZipFileName"></p>
-        
-        <!-- <input type="file" id="zipFile" name="zipFile"> -->
-        <label for="fileType">File Type:&nbsp;&nbsp;</label>
+            Select ZIP File <input type="file" id="tagsetZipFile" name="tagsetZipFile" accept="application/zip" hidden>
+          </label>
+          <input class="btn btn-primary" id="validationzipfilesubmit" type="button" value="Upload" onclick="uploadValidatioZipFile(this);" data-toggle="modal">
+          <input class="btn btn-primary" id="validationtagsetmappingedit" type="button" value="Edit Mapping" onclick="editValidatioTagsetMapping(this);" data-toggle="modal" data-target="#validationTagsetMappingModal" hidden>
+          <p id="displayZipFileName"></p>
 
-        <select name="fileType" id="fileType" style="width: 30%">
-          <!-- <option value="text">Text</option>
-          <option value="image">Image</option> -->
-        </select>
+          <div id="validationtagsetmapping" style="display: none;"></div>
+
+          <!-- <label for="fileType">File Type:&nbsp;&nbsp;</label>
+          <select name="fileType" id="fileType" style="width: 30%">
+          </select> -->
         </div>
       </div>
 
@@ -146,8 +147,9 @@ LiFe Data Home
       </div>
       <div class="datacustomfield"></div> -->
       <br>
-      <input class="btn btn-lg btn-primary create" id="submit" type="submit" value="Create Form">
+      <input class="btn btn-lg btn-primary create" id="dataformsubmit" type="submit" value="Create Form">
     </form>
+    <div id="addModal"></div>
   </div>
     
 {% endblock %}

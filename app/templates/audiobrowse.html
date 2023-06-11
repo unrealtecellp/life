@@ -1,0 +1,45 @@
+{% extends "enternewsentenceslinks.html" %}
+
+{% block title %}
+Audio Browse
+{% endblock title %}
+
+{% block styles %}
+{{super()}}
+    <link href="{{url_for('.static', filename='audiobrowse.css')}}" rel="stylesheet">
+{% endblock %}
+
+{% block app_content %}
+{% if projectName is defined %}
+    <h4>
+        Project Name : {{ projectName }}
+    </h4>
+    <br>
+{% endif %}
+<br>
+<div class="row">
+    <div class="col col-md-6">
+        <label for="speakeridsdropdown">Audio Files from Source:&nbsp;</label>
+        <select id="speakeridsdropdown" style="width: 40%;"></select>
+        <select id="audiofilescountdropdown" style="width: 10%;"></select>
+        <label for="audiofilescountdropdown">&nbsp;:Audio Files</label>
+    </div>
+    <div class="col col-md-6 pull-right" id="browseaudiodropdowns">
+    </div>
+</div>
+<br>
+<div>
+    <input id="myInput" type="text" placeholder="Search">
+</div>
+<br>
+<div id="audiobrowsetable"></div>
+{% endblock %}
+
+{% block scripts %}
+{{super()}}
+    <script src="{{url_for('.static', filename='audiobrowse.js')}}"></script>
+    <script src="{{url_for('.static', filename='changeactivespeaker.js')}}"></script>
+    <script type="text/javascript">createAudioBrowse({{ newData | tojson | safe }});</script>
+    <script src="{{url_for('.static', filename='search.js')}}"></script>
+    <script src="{{url_for('.static', filename='sorttable.js')}}"></script>
+{% endblock %}

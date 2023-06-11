@@ -40,8 +40,27 @@ $(document).ready(function() {
       // console.log(typeof err.message);
       sharechecked = '';
     }
-    
     data['sharechecked'] = String(sharechecked)
+
+    try {
+      downloadchecked = document.getElementById('downloadchecked').checked;
+    }
+    catch(err) {
+      // console.log(typeof err.message);
+      downloadchecked = '';
+    }
+    
+    data['downloadchecked'] = String(downloadchecked)
+
+    try {
+      sharelatestchecked = document.getElementById('sharelatestchecked').checked;
+    }
+    catch(err) {
+      // console.log(typeof err.message);
+      sharelatestchecked = '';
+    }
+    data['sharelatestchecked'] = String(sharelatestchecked)
+
     // console.log(data);
       $.ajax({
         url: '/shareprojectwith',

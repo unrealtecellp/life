@@ -29,6 +29,7 @@ from app.lifemodels.controller import (
 import subprocess
 import shutil
 from pprint import pprint, pformat
+from pymongo import ReturnDocument
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 basedir_parent = '/'.join(basedir.split('/')[:-1])
@@ -701,18 +702,24 @@ def getnewaudioid(projects,
     # logger.debug('audio_ids_list', audio_ids_list)
     if len(audio_ids_list) != 0:
         audio_ids_list = audio_ids_list['speakersAudioIds'][activespeakerId]
-        # logger.debug('audio_ids_list', audio_ids_list)
-    audio_id_index = audio_ids_list.index(last_active_id)
-    # logger.debug('latestAudioId Index!!!!!!!', audio_id_index)
-    if which_one == 'previous':
-        audio_id_index = audio_id_index - 1
-    elif which_one == 'next':
-        if len(audio_ids_list) == (audio_id_index+1):
-            audio_id_index = 0
+        logger.debug('audio_ids_list: %s', audio_ids_list)
+    if (len(audio_ids_list) != 0):
+        if (last_active_id in audio_ids_list):
+            audio_id_index = audio_ids_list.index(last_active_id)
         else:
-            audio_id_index = audio_id_index + 1
-    latest_audio_id = audio_ids_list[audio_id_index]
-    # logger.debug('latest_audio_id AUDIODETAILS', latest_audio_id)
+            audio_id_index = 0
+        # logger.debug('latestAudioId Index!!!!!!!', audio_id_index)
+        if which_one == 'previous':
+            audio_id_index = audio_id_index - 1
+        elif which_one == 'next':
+            if len(audio_ids_list) == (audio_id_index+1):
+                audio_id_index = 0
+            else:
+                audio_id_index = audio_id_index + 1
+        latest_audio_id = audio_ids_list[audio_id_index]
+    else:
+        latest_audio_id = ''
+    logger.debug('latest_audio_id AUDIODETAILS: %s', latest_audio_id)
 
     return latest_audio_id
 
@@ -1470,7 +1477,8 @@ def save_audio_in_mongo_and_localFs(mongo,
                                  audioId=audio_id,
                                  username=projectowner,
                                  projectname=activeprojectname,
-                                 updatedBy=current_username)
+                                 updatedBy=current_username,
+                                 filedeleteFLAG=0)
 
     # logger.debug('audioLength', new_audio_file['audiofile'].content_length)
 
@@ -1522,3 +1530,118 @@ def get_audio_waveform_json(audiowaveform_json, json_dir, audio_filename):
         audiowaveform_audio_path, audiowaveform_json_path, audio_filename)
 
     return audiowaveform_json
+
+def delete_one_audio_file(projects_collection,
+                          transcriptions_collection,
+                          project_name,
+                          current_username,
+                          active_speaker_id,
+                          audio_id,
+                          update_latest_audio_id=1):
+    try:
+        logger.debug("project_name: %s, audio_id: %s", project_name, audio_id)
+        transcription_doc_id = transcriptions_collection.find_one_and_update({
+            "projectname": project_name,
+            "audioId": audio_id
+            },
+            {"$set": {"audiodeleteFLAG": 1}},
+            projection={'_id': True},
+            return_document=ReturnDocument.AFTER)['_id']
+        logger.debug('DELETED transcription_doc_id: %s, %s', transcription_doc_id, type(transcription_doc_id))
+
+        if (update_latest_audio_id):
+            latest_audio_id = getnewaudioid(projects_collection,
+                                            project_name,
+                                            audio_id,
+                                            active_speaker_id,
+                                            'next')
+            updatelatestaudioid(projects_collection,
+                                project_name,
+                                latest_audio_id,
+                                current_username,
+                                active_speaker_id)
+            
+        projects_collection.update_one({"projectname": project_name},
+                                       {"$pull": {"speakersAudioIds."+active_speaker_id: audio_id},
+                                        "$addToSet": {"speakersAudioIdsDeleted."+active_speaker_id: audio_id}
+                                        })
+    except:
+        logger.exception("")
+        transcription_doc_id = False
+
+    return transcription_doc_id
+
+def get_audio_delete_flag(transcriptions_collection,
+                          project_name,
+                          audio_id):
+    logger.debug("%s, %s, %s", transcriptions_collection,
+                          project_name,
+                          audio_id)
+    audio_delete_flag = transcriptions_collection.find_one({"projectname": project_name,
+                                                            "audioId": audio_id},
+                                                            {"_id": 0,
+                                                             "audiodeleteFLAG": 1})["audiodeleteFLAG"]
+    
+    return audio_delete_flag
+
+def revoke_deleted_audio(projects_collection,
+                         transcriptions_collection,
+                         project_name,
+                         active_speaker_id,
+                         audio_id):
+    try:
+        logger.debug("project_name: %s, audio_id: %s", project_name, audio_id)
+        transcription_doc_id = transcriptions_collection.find_one_and_update({
+            "projectname": project_name,
+            "audioId": audio_id
+            },
+            {"$set": {"audiodeleteFLAG": 0}},
+            projection={'_id': True},
+            return_document=ReturnDocument.AFTER)['_id']
+        logger.debug('REVOKED transcription_doc_id: %s, %s', transcription_doc_id, type(transcription_doc_id))
+
+        projects_collection.update_one({"projectname": project_name},
+                                        {"$pull": {"speakersAudioIdsDeleted."+active_speaker_id: audio_id},
+                                        "$addToSet": {"speakersAudioIds."+active_speaker_id: audio_id}
+                                        })
+    except:
+        logger.exception("")
+        transcription_doc_id = False
+
+    return transcription_doc_id
+
+def get_n_audios(data_collection,
+                 activeprojectname,
+                 active_speaker_id,
+                 start_from=0,
+                 number_of_audios=10,
+                 audio_delete_flag=0):
+    aggregate_output = data_collection.aggregate( [
+                                {
+                                    "$match": {
+                                        "projectname": activeprojectname,
+                                        "speakerId": active_speaker_id,
+                                        "audiodeleteFLAG": audio_delete_flag
+                                                }
+                                },
+                                { 
+                                    "$sort" : {
+                                        "audioId" : 1
+                                        }
+                                },
+                                {
+                                    "$project": {
+                                        "_id": 0,
+                                        "audioId": 1,
+                                        "audioFilename": 1
+                                    }
+                                }
+                                ] )
+    # logger.debug("aggregate_output: %s", aggregate_output)
+    aggregate_output_list = []
+    for doc in aggregate_output:
+        # logger.debug("aggregate_output: %s", pformat(doc))
+        aggregate_output_list.append(doc)
+    # logger.debug('aggregate_output_list: %s', pformat(aggregate_output_list))
+
+    return aggregate_output_list[start_from:number_of_audios]
