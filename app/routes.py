@@ -101,7 +101,7 @@ def home():
             shareinfo[value] = 'true'
 
     project_type = getprojecttype.getprojecttype(projects, activeprojectname)
-    logger.debug('project_type: %s', project_type)
+    # logger.debug('project_type: %s', project_type)
     # print(shareinfo)
     # print('activeprojectname', activeprojectname)
 

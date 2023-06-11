@@ -76,7 +76,7 @@ $("#derivefromdatabtn").click(function() {
 
 $("#datamanualentrybtn").click(function() {
     var x = document.getElementById("dataform");
-    var y = '';
+    var y = document.getElementById("crawldataform");
     var z = '';
     hidedisplaydiv(x, y, z)
     $('#beforefield').empty();

@@ -1,0 +1,8 @@
+[
+    {"id": "youtube", "text": "Youtube"},
+    {"id": "facebook", "text": "Facebook"},
+    {"id": "instagram", "text": "Instagram"},
+    {"id": "twitter", "text": "Twitter"},
+    {"id": "newspaper", "text": "Newspaper"},
+    {"id": "blog", "text": "Blog"}
+]
