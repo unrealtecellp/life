@@ -1,12 +1,12 @@
 {% extends "crawlerlinks.html" %}
 
 {% block title %}
-  Data Crawler
+  Data Crawler Browse
 {% endblock title %}
 
 {% block styles %}
 {{super()}}
-  <link href="{{url_for('.static', filename='crawler.css')}}" rel="stylesheet" />
+  <link href="{{url_for('.static', filename='crawlerbrowse.css')}}" rel="stylesheet" />
 {% endblock %}
 
 {% block app_content %}
@@ -21,5 +21,5 @@
 
 {% block scripts %}
   {{super()}}
-  <script src="{{url_for('.static', filename='crawler.js')}}"></script>
+  <script src="{{url_for('.static', filename='crawlerbrowse.js')}}"></script>
 {% endblock %}

@@ -274,12 +274,13 @@ def datasubsource():
 @login_required
 def crawler():
     try:
-        projects, userprojects, projectsform, speakerdetails = getdbcollections.getdbcollections(mongo,
-                                                                                                    'projects',
-                                                                                                    'userprojects',
-                                                                                                    'projectsform',
-                                                                                                    'speakerdetails')
+        projects, userprojects = getdbcollections.getdbcollections(mongo,
+                                                                    'projects',
+                                                                    'userprojects')
         current_username = getcurrentusername.getcurrentusername()
+        
+        activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                        userprojects)
 
         if request.method =='POST':
             new_crawl_data_form = dict(request.form.lists())
@@ -288,51 +289,34 @@ def crawler():
             project_type = new_crawl_data_form['projectType'][0]
             projectname = 'D_'+new_crawl_data_form['projectname'][0]
             about_project = new_crawl_data_form['aboutproject'][0]
+            datasource = new_crawl_data_form['datasource'][0]
+            datasubsource = new_crawl_data_form['datasubsource'][0]
 
-            # project_name = savenewproject.savenewproject(projects,
-            #                                                 projectname,
-            #                                                 current_username,
-            #                                                 aboutproject=about_project,
-            #                                                 projectType=project_type
-            #                                                 )
-            # if project_name == '':
-            #     flash(f'Project Name : "{projectname}" already exist!')
-            #     return redirect(url_for('lifedata.home'))
+            project_name = savenewproject.savenewproject(projects,
+                                                            projectname,
+                                                            current_username,
+                                                            aboutproject=about_project,
+                                                            projectType=project_type,
+                                                            dataSource=datasource,
+                                                            dataSubSource=datasubsource
+                                                            )
+            if project_name == '':
+                flash(f'Project Name : "{projectname}" already exist!')
+                return redirect(url_for('lifedata.home'))
 
-            # updateuserprojects.updateuserprojects(userprojects,
-            #                                         projectname,
-            #                                         current_username
-            #                                         )
-
-            # save_data_form = savenewdataform.savenewdataform(projectsform,
-            #                                                     projectname,
-            #                                                     new_data_form,
-            #                                                     current_username,
-            #                                                     project_type
-            #                                                 )
-            
-            datasubsource = request.form.get('datasubsource')
-        #     source_data = {"username": projectowner,
-        #                     "projectname": activeprojectname,
-        #                     "lifesourceid": source_id,
-        #                     "createdBy": current_username,
-        #                     "dataSource": data_source,
-        #                     "dataSubSource": datasubsource,
-        #                     "current": {
-        #                         "updatedBy": current_username,
-        #                         "sourceMetadata": {
-        #                             "channelName": channelname,
-        #                             "channelUrl": channelurl
-        #                         },
-        #                         "current_date": current_dt
-        #                     },
-        #                     "isActive": 1}
-        # # pprint(source_data)
-        # # speakerdetails.insert_one(source_data, check_keys=False)
-        # speakerdetails.insert_one(source_data)
+            updateuserprojects.updateuserprojects(userprojects,
+                                                    projectname,
+                                                    current_username
+                                                    )
             return redirect(url_for("lifedata.crawler"))
     except:
         logger.exception("")
 
     return render_template('crawler.html',
-                           projectName='project_name')
+                           projectName=activeprojectname)
+
+@lifedata.route('/crawlerbrowse', methods=['GET', 'POST'])
+@login_required
+def crawlerbrowse():
+
+    return render_template('crawlerbrowse.html')
