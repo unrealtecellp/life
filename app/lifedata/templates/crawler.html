@@ -17,9 +17,11 @@
         {% endif %}
         </div>
     </div>
+    <div id="crawlerinterface"></div>
 {% endblock %}
 
 {% block scripts %}
   {{super()}}
   <script src="{{url_for('.static', filename='crawler.js')}}"></script>
+  <script type="text/javascript">crawlerInterface({{ dataSubSource | tojson | safe }});</script>
 {% endblock %}

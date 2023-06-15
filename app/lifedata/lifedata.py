@@ -27,7 +27,8 @@ from app.lifedata.controller import (
     savenewdataform,
     create_validation_type_project,
     save_tagset,
-    get_validation_data
+    get_validation_data,
+    get_data_sub_source
 )
 from flask_login import login_required
 import os
@@ -281,6 +282,8 @@ def crawler():
         
         activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
                                                                         userprojects)
+        data_sub_source = get_data_sub_source.get_data_sub_source(projects,
+                                                                  activeprojectname)
 
         if request.method =='POST':
             new_crawl_data_form = dict(request.form.lists())
@@ -313,7 +316,14 @@ def crawler():
         logger.exception("")
 
     return render_template('crawler.html',
-                           projectName=activeprojectname)
+                           projectName=activeprojectname,
+                           dataSubSource=data_sub_source)
+
+@lifedata.route('/youtubecrawler', methods=['GET', 'POST'])
+@login_required
+def youtubecrawler():
+
+    return redirect(url_for("lifedatacrawler"))
 
 @lifedata.route('/crawlerbrowse', methods=['GET', 'POST'])
 @login_required
