@@ -1,6 +1,7 @@
 
 {% extends "karyaextlinks.html" %}
 
+
 {% block title %}
   Karya Extension
 {% endblock title %}
@@ -35,9 +36,17 @@
         <input class="btn btn-lg btn-success" type="button" value="Manage Access Code" onclick="window.location.href='{{url_for('karya_bp.homespeaker')}}'; window">
       {% endif %}
       <br>
+
+    <br>
+      {% if  shareinfo['sharemode']|int >= 2 %}
+        <input class="btn btn-lg btn-success" type="button" value="Manage Audio" onclick="window.location.href='{{url_for('karya_bp.karyaaudiobrowse')}}'; window">
+      {% endif %}
+      <br>
       <hr>
     </div>
-    
+
+
+
     <div class="row karyaaudiodata">
       {% if  shareinfo['sharemode']|int >= 3 %}
         <div class="col-md-6 fetchkaryarecording">
@@ -46,6 +55,11 @@
             <!-- <label for="piaccesscode">Access Code: </label> -->
             <!-- <input type="text" name="access_code" id="piaccesscode" placeholder="Enter Access Code"/> -->
             <br>
+
+
+
+
+
             <style>
               .dropdown-container {
                   display: flex;

@@ -18,7 +18,7 @@ import io
 from io import BytesIO
 import json
 from datetime import datetime
-from pprint import pprint
+from pprint import pprint, pformat
 # from pylatex.utils import bold, NoEscape
 
 from flask_login import current_user, login_user, logout_user, login_required
@@ -1155,3 +1155,157 @@ def update_speaker_ids():
 
 
 
+
+@karya_bp.route('/karyaaudiobrowse', methods=['GET', 'POST'])
+@login_required
+def karyaaudiobrowse():
+    try:
+        new_data = {}
+        projects, userprojects, transcriptions = getdbcollections.getdbcollections(mongo,
+                                                                                    'projects',
+                                                                                    'userprojects',
+                                                                                    'transcriptions')
+        current_username = getcurrentusername.getcurrentusername()
+        activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                    userprojects)
+        projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
+        shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
+                                                        current_username,
+                                                        activeprojectname)
+        speakerids = projects.find_one({"projectname": activeprojectname},
+                                                {"_id": 0, "speakerIds." +
+                                                    current_username: 1}
+                                                )["speakerIds"][current_username]
+        active_speaker_id = shareinfo['activespeakerId']
+        if (active_speaker_id != ''):
+            audio_data_list = audiodetails.get_n_audios(transcriptions,
+                                                        activeprojectname,
+                                                        active_speaker_id)
+        else:
+            audio_data_list = []
+        # get audio file src
+        new_audio_data_list = []
+        for audio_data in audio_data_list:
+            new_audio_data = audio_data
+            audio_filename = audio_data['audioFilename']
+            new_audio_data['Audio File'] = url_for('retrieve', filename=audio_filename)
+            new_audio_data_list.append(new_audio_data)
+        new_data['currentUsername'] = current_username
+        new_data['activeProjectName'] = activeprojectname
+        new_data['projectOwner'] = projectowner
+        new_data['shareInfo'] = shareinfo
+        new_data['speakerIds'] = speakerids
+        new_data['audioData'] = new_audio_data_list
+        new_data['audioDataFields'] = ['audioId', 'audioFilename', 'Audio File']
+    except:
+        logger.exception("")
+
+    return render_template('karyaaudiobrowse.html',
+                           projectName=activeprojectname,
+                           newData=new_data)
+                        #    data=currentuserprojectsname)
+
+
+
+
+
+
+
+
+
+@karya_bp.route('/karyaupdateaudiobrowsetable', methods=['GET', 'POST'])
+@login_required
+def karyaupdateaudiobrowsetable():
+    audio_data_fields= ['audioId', 'audioFilename', 'Audio File']
+    audio_data_list = []
+    try:
+        # data through ajax
+        audio_browse_info = json.loads(request.args.get('a'))
+        logger.debug('audio_browse_info: %s', audio_browse_info)
+        userprojects, transcriptions = getdbcollections.getdbcollections(mongo,
+                                                                            'userprojects',
+                                                                            'transcriptions')
+        current_username = getcurrentusername.getcurrentusername()
+        activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                    userprojects)
+        logger.debug(audio_browse_info['activeSpeakerId'])
+        active_speaker_id = audio_browse_info['activeSpeakerId']
+        audio_file_count = audio_browse_info['audioFilesCount']
+        audio_browse_action = audio_browse_info['browseActionSelectedOption']
+        if (active_speaker_id != ''):
+            audio_data_list = audiodetails.get_n_audios(transcriptions,
+                                                        activeprojectname,
+                                                        active_speaker_id,
+                                                        start_from=0,
+                                                        number_of_audios=audio_file_count,
+                                                        audio_delete_flag=audio_browse_action)
+        else:
+            audio_data_list = []
+        # logger.debug('audio_data_list: %s', pformat(audio_data_list))
+        # get audio file src
+        new_audio_data_list = []
+        for audio_data in audio_data_list:
+            new_audio_data = audio_data
+            audio_filename = audio_data['audioFilename']
+            new_audio_data['Audio File'] = url_for('retrieve', filename=audio_filename)
+            new_audio_data_list.append(new_audio_data)
+    except:
+        logger.exception("")
+
+    return jsonify(audioDataFields= audio_data_fields,
+                   audioData=new_audio_data_list)
+
+
+
+@karya_bp.route('/karyaaudiobrowseaction', methods=['GET', 'POST'])
+@login_required
+def karyaaudiobrowseaction():
+    try:
+        projects_collection, userprojects, transcriptions_collection = getdbcollections.getdbcollections(mongo,
+                                                                                                            'projects',
+                                                                                                            'userprojects',
+                                                                                                            'transcriptions')
+        current_username = getcurrentusername.getcurrentusername()
+        activeprojectname = getactiveprojectname.getactiveprojectname(current_username, userprojects)
+        logger.debug("%s,%s", current_username, activeprojectname)
+        # data from ajax
+        data = json.loads(request.args.get('a'))
+        logger.debug('data: %s', pformat(data))
+        audio_info = data['audioInfo']
+        logger.debug('audio_info: %s', pformat(audio_info))
+        audio_browse_info = data['audioBrowseInfo']
+        logger.debug('audio_browse_info: %s', pformat(audio_browse_info))
+        browse_action = audio_browse_info['browseActionSelectedOption']
+        active_speaker_id = audio_browse_info['activeSpeakerId']
+        audio_ids_list = list(audio_info.keys())
+        active_audio_id = audiodetails.getactiveaudioid(projects_collection,
+                                                        activeprojectname,
+                                                        active_speaker_id,
+                                                        current_username)
+        update_latest_audio_id=0
+        for audio_id in audio_ids_list:
+            logger.info("audio id to delete: %s, %s", audio_id, type(audio_id))
+            if (audio_id == active_audio_id):
+                update_latest_audio_id = 1
+            if (browse_action):
+                audiodetails.revoke_deleted_audio(projects_collection,
+                                                    transcriptions_collection,
+                                                    activeprojectname,
+                                                    active_speaker_id,
+                                                    audio_id)
+            else:
+                audiodetails.delete_one_audio_file(projects_collection,
+                                                    transcriptions_collection,
+                                                    activeprojectname,
+                                                    current_username,
+                                                    active_speaker_id,
+                                                    audio_id,
+                                                    update_latest_audio_id=update_latest_audio_id)
+        if (browse_action):
+            flash("Audio revoked successfully")
+        else:
+            flash("Audio deleted successfully")
+    except:
+        logger.exception("")
+
+    return 'OK'
