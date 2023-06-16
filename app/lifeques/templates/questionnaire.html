@@ -40,19 +40,20 @@
         </a>
       {% endif %}
     </div>
-
-    <div class="btn-group" role="group">
-      <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        Download Questionnaire
-        <span class="caret"></span>
-      </button>
-      <ul class="dropdown-menu">
-          <li id="json"><a href="#">JSON</a></li>
-          <li id="csv"><a href="#">CSV</a></li>
-          <li id="xlsx"><a href="#">XLSX</a></li>
-          <li id="karyajson"><a href="#">Karya JSON</a></li>
-      </ul>
-    </div>
+    {% if 'downloadchecked' in shareinfo and shareinfo['downloadchecked'] == 'true' %}
+      <div class="btn-group" role="group">
+        <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Download Questionnaire
+          <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu">
+            <li id="json"><a href="#">JSON</a></li>
+            <li id="csv"><a href="#">CSV</a></li>
+            <li id="xlsx"><a href="#">XLSX</a></li>
+            <li id="karyajson"><a href="#">Karya JSON</a></li>
+        </ul>
+      </div>
+    {% endif %}
 </div>
 <hr>
 <div class="row">

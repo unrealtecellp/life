@@ -64,7 +64,9 @@ Home
           Share Project
         </button>
       {% endif %}
-      {% if shareinfo['sharemode']|int >= 1 %}
+      {% if 'downloadchecked' in shareinfo and shareinfo['downloadchecked'] == 'true' %}
+      {# {% endif %}
+      {% if shareinfo['sharemode']|int >= 1 %} #}
       <!-- <button type="button" class="btn btn-lg btn-warning"
         onclick="window.location.href='{{ url_for('downloadproject') }}';">Download Project</button> -->
 
@@ -73,7 +75,8 @@ Home
           onclick="window.location.href='{{ url_for('downloaddictionary') }}';">Download Dictionary</button>
         {%endif%}
       {% endif %}
-      {% if shareinfo['sharemode']|int >= 1 %}
+      {# {% if shareinfo['sharemode']|int >= 1 %} #}
+      {% if 'downloadchecked' in shareinfo and shareinfo['downloadchecked'] == 'true' %}
         <button type="button" class="btn btn-lg btn-warning"
         onclick="window.location.href='{{ url_for('manageproject') }}';">Manage Project</button>
       {% endif %}

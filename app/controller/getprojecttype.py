@@ -11,16 +11,20 @@ def getprojecttype(projects,
     Args:
         projects (_type_): _description_
     """
+    project_type = ''
     try:
         # logger.debug("projectname from getprojecttype(): %s", activeprojectname)
         project_type = projects.find_one({"projectname": activeprojectname},
                                          {"_id": 0, "projectType": 1})
+        # logger.debug('project_type: %s', project_type)
         if (project_type):
             project_type = project_type["projectType"]
+        else:
+            project_type = ''
     except:
         logger.exception("")
-        project_type = ''
-
+        # project_type = ''
+    # logger.debug('project_type: %s', project_type)
     return project_type
 
 

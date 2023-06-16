@@ -27,7 +27,8 @@ from app.lifedata.controller import (
     savenewdataform,
     create_validation_type_project,
     save_tagset,
-    get_validation_data
+    get_validation_data,
+    get_data_sub_source
 )
 from flask_login import login_required
 import os
@@ -38,6 +39,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 logger = life_logging.get_logger()
 jsonfilesdir = '/'.join(basedir.split('/')[:-1]+['jsonfiles'])
 select2LanguagesJSONFilePath = os.path.join(jsonfilesdir, 'select2_languages.json')
+select2CrawlerTypeJSONFilePath = os.path.join(jsonfilesdir, 'select2_crawler_type.json')
 
 @lifedata.route('/', methods=['GET', 'POST'])
 @lifedata.route('/home', methods=['GET', 'POST'])
@@ -261,3 +263,70 @@ def datazipfile():
                             validationTagsetKeys=validation_tagset_keys)
     except:
         logger.exception("")
+
+@lifedata.route('/datasubsource', methods=['GET', 'POST'])
+@login_required
+def datasubsource():
+    data_sub_source = readJSONFile.readJSONFile(select2CrawlerTypeJSONFilePath)
+
+    return jsonify(dataSubSource=data_sub_source)
+
+@lifedata.route('/crawler', methods=['GET', 'POST'])
+@login_required
+def crawler():
+    try:
+        projects, userprojects = getdbcollections.getdbcollections(mongo,
+                                                                    'projects',
+                                                                    'userprojects')
+        current_username = getcurrentusername.getcurrentusername()
+        
+        activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                        userprojects)
+        data_sub_source = get_data_sub_source.get_data_sub_source(projects,
+                                                                  activeprojectname)
+
+        if request.method =='POST':
+            new_crawl_data_form = dict(request.form.lists())
+            logger.debug('new_crawl_data_form: %s', pformat(new_crawl_data_form))
+            # logger.debug('new_crawl_data_form_files: %s', pformat(new_crawl_data_form_files))
+            project_type = new_crawl_data_form['projectType'][0]
+            projectname = 'D_'+new_crawl_data_form['projectname'][0]
+            about_project = new_crawl_data_form['aboutproject'][0]
+            datasource = new_crawl_data_form['datasource'][0]
+            datasubsource = new_crawl_data_form['datasubsource'][0]
+
+            project_name = savenewproject.savenewproject(projects,
+                                                            projectname,
+                                                            current_username,
+                                                            aboutproject=about_project,
+                                                            projectType=project_type,
+                                                            dataSource=datasource,
+                                                            dataSubSource=datasubsource
+                                                            )
+            if project_name == '':
+                flash(f'Project Name : "{projectname}" already exist!')
+                return redirect(url_for('lifedata.home'))
+
+            updateuserprojects.updateuserprojects(userprojects,
+                                                    projectname,
+                                                    current_username
+                                                    )
+            return redirect(url_for("lifedata.crawler"))
+    except:
+        logger.exception("")
+
+    return render_template('crawler.html',
+                           projectName=activeprojectname,
+                           dataSubSource=data_sub_source)
+
+@lifedata.route('/youtubecrawler', methods=['GET', 'POST'])
+@login_required
+def youtubecrawler():
+
+    return redirect(url_for("lifedatacrawler"))
+
+@lifedata.route('/crawlerbrowse', methods=['GET', 'POST'])
+@login_required
+def crawlerbrowse():
+
+    return render_template('crawlerbrowse.html')

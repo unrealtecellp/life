@@ -23,10 +23,12 @@
         data-target="#myProgressReportModal">
           Progress Report
       </button>
-      <button type="button" id="downloadtranscription" class="btn btn-lg btn-warning" data-toggle="modal"
-        data-target="#myDownloadTranscriptionModal">
-          Download
-      </button>
+      {% if 'downloadchecked' in shareinfo and shareinfo['downloadchecked'] == 'true' %}
+        <button type="button" id="downloadtranscription" class="btn btn-lg btn-warning" data-toggle="modal"
+          data-target="#myDownloadTranscriptionModal">
+            Download
+        </button>
+      {% endif %}
       {% if shareinfo['sharemode']|int >= 3 %}
         <button type="button" id="addnewspeakertranscriptionid" class="btn btn-lg btn-info addnewspeaker"
           data-toggle="modal" data-target="#addNewSpeakerModal">

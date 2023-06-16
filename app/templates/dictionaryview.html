@@ -18,6 +18,7 @@ Dictionary View
 {% endif %}
 <div>
     <input id="myInput" type="text" placeholder="Search">
+    {% if 'downloadchecked' in shareinfo and shareinfo['downloadchecked'] == 'true' %}
     <div class="btn-group" role="group">
         <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           Download Lexicon
@@ -43,6 +44,7 @@ Dictionary View
             <li><a href="{{url_for('download')}}">.ods</a></li> -->
         </ul>
     </div>
+    {% endif %}
     <!-- <button type="button" class="btn btn-primary shareproject">Share Project</button> -->
     <!-- Button trigger share project modal -->
     <!-- <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myShareProjectModal">

@@ -33,6 +33,7 @@ $(document).ready(function() {
     data['sharewithusers'] = sharewithusers
     data['sharespeakers'] = sharespeakers
     data['sharemode'] = displayRadioValue()
+    console.log(data['sharemode']);
     try {
       sharechecked = document.getElementById('sharechecked').checked;
     }
@@ -77,13 +78,16 @@ $(document).ready(function() {
 
   function displayRadioValue() {
     var ele = document.getElementsByName('sharemode');
-    // console.log(ele)
+    console.log(ele)
     sharemode = ''
     for(i = 0; i < ele.length; i++) {
-        if(ele[i].checked)
-          sharemode =  ele[i].value - 1
+        if(ele[i].checked) {
+          console.log(ele[i].id);
+          // sharemode =  ele[i].value - 1
+          sharemode =  ele[i].id;
+        }
     }
     // console.log(sharemode)
-    
+    sharemode = shareModeObject[sharemode]
     return sharemode
   }

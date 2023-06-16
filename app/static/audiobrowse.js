@@ -33,11 +33,11 @@ function createBrowseActions(projectOwner, currentUsername) {
     createSelect2('browseactiondropdown', browseActionOptionsList, 'Delete');
 }
 
-function createAudioBrowseTable(audioDataFields, audioData) {
+function createAudioBrowseTable(audioDataFields, audioData, shareMode=0) {
     console.log(audioData);
     let count = audioData.length
-    let browseActionSelectedOption = document.getElementById('browseactiondropdown').value;
     let ele = '';
+    let browseActionSelectedOption = '';
     ele += '<p id="totalrecords">Total Records:&nbsp;'+count+'</p>'+
             '<table class="table table-striped " id="myTable">'+
             '<thead>'+
@@ -47,8 +47,12 @@ function createAudioBrowseTable(audioDataFields, audioData) {
         ele += '<th onclick="sortTable('+(i+1)+')">'+audioDataFields[i]+'</th>';
     }
     ele += '<th>View</th>';
-    ele += '<th>'+browseActionSelectedOption+'</th>'+
-            '</tr>'+
+    if (shareMode >= 4) {
+        browseActionSelectedOption = document.getElementById('browseactiondropdown').value;
+        ele += '<th>'+browseActionSelectedOption+'</th>';
+    }
+    
+    ele += '</tr>'+
             '</thead>';
     ele += '<tbody id="myTableBody">';
             // {% for data in sdata %}
@@ -107,6 +111,7 @@ function createAudioBrowse(newData) {
     let shareInfo = newData['shareInfo']
     let shareMode = shareInfo['sharemode']
     let activeSpeakerId = shareInfo['activespeakerId']
+    console.log(activeSpeakerId)
     let audioDataFields = newData['audioDataFields']
     let audioData = newData['audioData']
     createSelect2('speakeridsdropdown', speakerIds, activeSpeakerId);
@@ -114,7 +119,7 @@ function createAudioBrowse(newData) {
     if (shareMode >= 4) {
         createBrowseActions(projectOwner, currentUsername);
     }
-    createAudioBrowseTable(audioDataFields, audioData)
+    createAudioBrowseTable(audioDataFields, audioData, shareMode)
     eventsMapping();
 }
 
@@ -202,21 +207,24 @@ function audioBrowseAction(audioInfo) {
         url : '/audiobrowseaction'
       }).done(function(data){
             window.location.reload();
-        // console.log(data.audioDataFields, data.audioData);
-        // createAudioBrowseTable(data.audioDataFields, data.audioData);
-        // eventsMapping();
       });
 }
 
 function getAudioBrowseInfo() {
     let activeSpeakerId = document.getElementById('speakeridsdropdown').value;
     let audioFilesCount = Number(document.getElementById('audiofilescountdropdown').value);
-    let browseActionSelectedOption = document.getElementById('browseactiondropdown').value;
-    if (browseActionSelectedOption === 'Delete') {
-        browseActionSelectedOption = 0
+    let browseActionSelectedOption = '';
+    try {
+        browseActionSelectedOption = document.getElementById('browseactiondropdown').value;
+        if (browseActionSelectedOption === 'Delete') {
+            browseActionSelectedOption = 0
+        }
+        else if (browseActionSelectedOption === 'Revoke') {
+            browseActionSelectedOption = 1
+        }
     }
-    else if (browseActionSelectedOption === 'Revoke') {
-        browseActionSelectedOption = 1
+    catch (err) {
+        browseActionSelectedOption = 0
     }
     let audioBrowseInfo = {
         "activeSpeakerId": activeSpeakerId,
