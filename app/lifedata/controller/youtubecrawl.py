@@ -407,6 +407,7 @@ def getVideoData(projects_collection,
 
                     doc = xmltodict.parse(ET.tostring(co3h))
                     xml_to_json = json.dumps(doc, indent=2, ensure_ascii=False)
+                    logger.debug('xml_to_json TYPE: %s', type(xml_to_json))
                     logger.debug('xml_to_json: %s', xml_to_json)
                     # logger.debug('co3h TYPE: %s', type(co3h))
                     # logger.debug('co3h: %s', co3h)
@@ -430,7 +431,7 @@ def getVideoData(projects_collection,
                                                                     project_owner,
                                                                     current_username,
                                                                     active_project_name,
-                                                                    xml_to_json,
+                                                                    eval(xml_to_json),
                                                                     csv_data,
                                                                     meta,
                                                                     vlink)

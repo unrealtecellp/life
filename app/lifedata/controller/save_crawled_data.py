@@ -1,5 +1,6 @@
 from datetime import datetime
 import re
+from pprint import pformat
 from app.controller import (
     life_logging
 )
@@ -32,6 +33,10 @@ def add_new_source_info(projects_collection,
                 "sourceMetadata": source_metadata,
                 "current_date": str(datetime.now())
             },
+            "audioId": "",
+            "audioFilename": "",
+            "videoId": "",
+            "videoFilename": "",
             "isActive": 1
         }
         sourcedetails_doc_id = sourcedetails_collection.insert_one(source_info)
@@ -84,6 +89,8 @@ def generate_meta(sub_meta):
     for i, info in enumerate(meta_header):
         meta_dict[info] = sub_meta[i]
 
+    # logger.debug("meta_dict: %s", pformat(meta_dict))
+
     return meta_dict
 
 def save_crawled_data(crawling_collection,
@@ -106,7 +113,11 @@ def save_crawled_data(crawling_collection,
             "textverifiedFLAG": 0,
             "additionalInfo": additional_info,
             "textMetadata": text_meta_data,
-            "prompt": ""
+            "prompt": "",
+            "audioId": "",
+            "audioFilename": "",
+            "videoId": "",
+            "videoFilename": ""
         }
         crawling_doc_id = crawling_collection.insert_one(crawled_data)
         return(crawling_doc_id, True)
@@ -162,12 +173,11 @@ def save_youtube_crawled_data(projects_collection,
             text_id = 'C'+re.sub(r'[-: \.]', '', str(datetime.now()))
             text = comment[1]
             meta_dict = generate_meta(meta[i])
-            additional_info = {meta_dict}
+            additional_info = meta_dict
             text_meta_data = {
                 "ID": comment[0]
             }
-            if (i == 0): continue
-            else:
+            if (i != 0):
                 additional_info['async_comment'] = async_comment[i-1]
 
             save_crawled_data(crawling_collection,
@@ -178,7 +188,5 @@ def save_youtube_crawled_data(projects_collection,
                                 life_source_id,
                                 additional_info,
                                 text_meta_data)
-
-
     except:
         logger.exception("")

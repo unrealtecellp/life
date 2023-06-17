@@ -19,12 +19,12 @@
   <br>
   <div class="row">
       <div class="col col-md-6">
-          <label for="speakeridsdropdown">Audio Files from Source:&nbsp;</label>
-          <select id="speakeridsdropdown" style="width: 40%;"></select>
-          <select id="audiofilescountdropdown" style="width: 10%;"></select>
-          <label for="audiofilescountdropdown">&nbsp;:Audio Files</label>
+          <label for="sourceidsdropdown">Data from Source:&nbsp;</label>
+          <select id="sourceidsdropdown" style="width: 40%;"></select>
+          <select id="sourcedatacountdropdown" style="width: 10%;"></select>
+          <label for="sourcedatacountdropdown">&nbsp;:Data</label>
       </div>
-      <div class="col col-md-6 pull-right" id="browseaudiodropdowns">
+      <div class="col col-md-6 pull-right" id="browsedatadropdowns">
       </div>
   </div>
   <br>
@@ -32,14 +32,14 @@
       <input id="myInput" type="text" placeholder="Search">
   </div>
   <br>
-  <div id="audiobrowsetable"></div>
+  <div id="crawlerbrowsetable"></div>
 {% endblock %}
 
 {% block scripts %}
   {{super()}}
   <script src="{{url_for('.static', filename='crawlerbrowse.js')}}"></script>
-  <script src="{{url_for('.static', filename='changeactivesource.js')}}"></script>
+  <script src="{{url_for('static', filename='changeactivesource.js')}}"></script>
   <script type="text/javascript">createCrawlerBrowse({{ newData | tojson | safe }});</script>
-  <script src="{{url_for('.static', filename='search.js')}}"></script>
-  <script src="{{url_for('.static', filename='sorttable.js')}}"></script>
+  <script src="{{url_for('static', filename='search.js')}}"></script>
+  <script src="{{url_for('static', filename='sorttable.js')}}"></script>
 {% endblock %}

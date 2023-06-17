@@ -1,22 +1,17 @@
-let speakerid = document.getElementById('speakeridsdropdown');
+let sourceid = document.getElementById('sourceidsdropdown');
 
-if (speakerid !== null){
-    speakerid.onchange = function() {
-        sid = speakerid.value;
-  
-        // alert(sid);
+if (sourceid !== null){
+    sourceid.onchange = function() {
+        sid = sourceid.value;
         $.ajax({
           data : {
             a : sid
           },
           type : 'GET',
-          url : '/changespeakerid'
+          url : '/changesourceid'
         }).done(function(){
             loc = window.location.href
             window.location.assign(loc)
-
         });
-        
-        
     };
 }

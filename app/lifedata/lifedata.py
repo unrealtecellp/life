@@ -17,6 +17,7 @@ from app.controller import (
     getdbcollections,
     getprojecttype,
     getprojectowner,
+    getuserprojectinfo,
     readJSONFile,
     savenewproject,
     updateuserprojects,
@@ -30,7 +31,8 @@ from app.lifedata.controller import (
     create_validation_type_project,
     save_tagset,
     get_validation_data,
-    youtubecrawl
+    youtubecrawl,
+    get_crawled_data
 )
 from flask_login import login_required
 import os
@@ -313,6 +315,7 @@ def crawler():
                                                     projectname,
                                                     current_username
                                                     )
+            flash("Crawling Complete.")
             return redirect(url_for("lifedata.crawler"))
     except:
         logger.exception("")
@@ -361,5 +364,55 @@ def youtubecrawler():
 @lifedata.route('/crawlerbrowse', methods=['GET', 'POST'])
 @login_required
 def crawlerbrowse():
+    try:
+        new_data = {}
+        projects, userprojects, crawling = getdbcollections.getdbcollections(mongo,
+                                                                                'projects',
+                                                                                'userprojects',
+                                                                                'crawling')
+        current_username = getcurrentusername.getcurrentusername()
+        activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                    userprojects)
+        projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
+        shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
+                                                        current_username,
+                                                        activeprojectname)
+        sourceids = projects.find_one({"projectname": activeprojectname},
+                                        {"_id": 0, "sourceIds." +current_username: 1})
+        logger.debug('sourceids: %s', pformat(sourceids))
+        if (sourceids["sourceIds"]):
+            sourceids = sourceids["sourceIds"][current_username]
+            sourceids.append('')
+        else:
+            sourceids = ['']
+        if ('activesourceId' in shareinfo):
+            active_source_id = shareinfo['activesourceId']
+        else:
+            active_source_id = ''
+        
+        if (active_source_id != ''):
+            crawled_data_list = get_crawled_data.get_n_crawled_data(crawling,
+                                                                    activeprojectname,
+                                                                    active_source_id)
+        else:
+            crawled_data_list = []
+        # get crawled file src
+        # new_crawled_data_list = []
+        # for crawled_data in crawled_data_list:
+        #     new_crawled_data = crawled_data
+        #     crawled_filename = crawled_data['crawledFilename']
+        #     new_crawled_data['Audio File'] = url_for('retrieve', filename=crawled_filename)
+        #     new_crawled_data_list.append(new_crawled_data)
+        new_data['currentUsername'] = current_username
+        new_data['activeProjectName'] = activeprojectname
+        new_data['projectOwner'] = projectowner
+        new_data['shareInfo'] = shareinfo
+        new_data['sourceIds'] = sourceids
+        new_data['crawlerData'] = crawled_data_list
+        new_data['crawlerDataFields'] = ['textId', 'Text']
+    except:
+        logger.exception("")
 
-    return render_template('crawlerbrowse.html')
+    return render_template('crawlerbrowse.html',
+                           projectName=activeprojectname,
+                           newData=new_data)
