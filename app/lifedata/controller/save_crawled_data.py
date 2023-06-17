@@ -1,4 +1,5 @@
 from datetime import datetime
+import re
 from app.controller import (
     life_logging
 )
@@ -76,6 +77,15 @@ def update_active_source_id(userprojects_collection,
         logger.exception("")
         return False
 
+def generate_meta(sub_meta):
+    meta_header = ['Video_ID', 'Channel_ID', 'Comment_ID',
+                       'File_Name', 'Parent_ID', 'Date_Time_of_Retrieval']
+    meta_dict = {}
+    for i, info in enumerate(meta_header):
+        meta_dict[info] = sub_meta[i]
+
+    return meta_dict
+
 def save_crawled_data(crawling_collection,
                       project_owner,
                       active_project_name,
@@ -107,6 +117,7 @@ def save_crawled_data(crawling_collection,
 def save_youtube_crawled_data(projects_collection,
                                 userprojects_collection,
                                 sourcedetails_collection,
+                                crawling_collection,
                                 project_owner,
                                 current_username,
                                 active_project_name,
@@ -146,8 +157,28 @@ def save_youtube_crawled_data(projects_collection,
                                     project_owner,
                                     current_username,
                                     life_source_id)
+        async_comment = xml_to_json_data["async_comment"]
         for i, comment in enumerate(csv_data):
-            
+            text_id = 'C'+re.sub(r'[-: \.]', '', str(datetime.now()))
+            text = comment[1]
+            meta_dict = generate_meta(meta[i])
+            additional_info = {meta_dict}
+            text_meta_data = {
+                "ID": comment[0]
+            }
+            if (i == 0): continue
+            else:
+                additional_info['async_comment'] = async_comment[i-1]
+
+            save_crawled_data(crawling_collection,
+                                project_owner,
+                                active_project_name,
+                                text_id,
+                                text,
+                                life_source_id,
+                                additional_info,
+                                text_meta_data)
+
 
     except:
         logger.exception("")

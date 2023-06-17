@@ -195,12 +195,33 @@ def getCommentData(datac, utube, chid, vid):
 
     return utube
 
-def getAllVideosData (datad):
+def getAllVideosData (projects_collection,
+                        userprojects_collection,
+                        sourcedetails_collection,
+                        crawling_collection,
+                        project_owner,
+                        current_username,
+                        active_project_name,
+                        datad):
     for data in datad['items']:
             nlink = data['contentDetails']['videoId']
-            getVideoData(nlink)
+            getVideoData(projects_collection,
+                            userprojects_collection,
+                            sourcedetails_collection,
+                            crawling_collection,
+                            project_owner,
+                            current_username,
+                            active_project_name,
+                            nlink)
 
-def getVideoData(vlink):
+def getVideoData(projects_collection,
+                    userprojects_collection,
+                    sourcedetails_collection,
+                    crawling_collection,
+                    project_owner,
+                    current_username,
+                    active_project_name,
+                    vlink):
     global ccount
     global crcount
     global video_count
@@ -402,10 +423,17 @@ def getVideoData(vlink):
                     #     writer.writerows(meta)
                     logger.debug('youTubeLinks.tsv: %s', meta)
                     
-                    save_crawled_data.save_youtube_crawled_data(xml_to_json,
-                                                                csv_data,
-                                                                meta,
-                                                                vlink)
+                    save_crawled_data.save_youtube_crawled_data(projects_collection,
+                                                                    userprojects_collection,
+                                                                    sourcedetails_collection,
+                                                                    crawling_collection,
+                                                                    project_owner,
+                                                                    current_username,
+                                                                    active_project_name,
+                                                                    xml_to_json,
+                                                                    csv_data,
+                                                                    meta,
+                                                                    vlink)
         except Exception:
             # traceback.logger.debugexc()
             with open('linksnotparse.txt', 'a') as notparse:
@@ -470,7 +498,15 @@ def getPreviousVideos():
             writer = csv.writer(f, delimiter='\t')
             writer.writerow(meta_header)
 
-def run_youtube_crawler(api_key, data_links):
+def run_youtube_crawler(projects_collection,
+                            userprojects_collection,
+                            sourcedetails_collection,
+                            crawling_collection,
+                            project_owner,
+                            current_username,
+                            active_project_name,
+                            api_key,
+                            data_links):
     #Get API Key for the User
     # getKey()
     global key
@@ -515,7 +551,14 @@ def run_youtube_crawler(api_key, data_links):
         urld = ''
         uploadid = ''
         if ytparam == 'vid':
-            getVideoData (ytid)
+            getVideoData (projects_collection,
+                            userprojects_collection,
+                            sourcedetails_collection,
+                            crawling_collection,
+                            project_owner,
+                            current_username,
+                            active_project_name,
+                            ytid)
         else:
             try:
                 urld = "https://www.googleapis.com/youtube/v3/channels?part=contentDetails&" + \
@@ -544,7 +587,14 @@ def run_youtube_crawler(api_key, data_links):
 
                     # get data from first page of the video list
                     logger.debug('Getting videos for page 0 of channel: %s', ytid)
-                    getAllVideosData(datad)
+                    getAllVideosData(projects_collection,
+                                        userprojects_collection,
+                                        sourcedetails_collection,
+                                        crawling_collection,
+                                        project_owner,
+                                        current_username,
+                                        active_project_name,
+                                        datad)
                     logger.debug('All videos on page 0 done')
 
                     # checking for more pages
@@ -575,7 +625,14 @@ def run_youtube_crawler(api_key, data_links):
 
                             # get data from next pages
                             logger.debug('Getting videos for page: %s of channel: %s',i, ytid)
-                            getAllVideosData(datad)
+                            getAllVideosData(projects_collection,
+                                                userprojects_collection,
+                                                sourcedetails_collection,
+                                                crawling_collection,
+                                                project_owner,
+                                                current_username,
+                                                active_project_name,
+                                                datad)
                             logger.debug('All videos on page: %s', i, 'done')
                         except Exception as e:
                             logger.debug('Exception: %s', e)

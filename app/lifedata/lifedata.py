@@ -16,6 +16,7 @@ from app.controller import (
     getcurrentuserprojects,
     getdbcollections,
     getprojecttype,
+    getprojectowner,
     readJSONFile,
     savenewproject,
     updateuserprojects,
@@ -324,6 +325,17 @@ def crawler():
 @login_required
 def youtubecrawler():
     try:
+        projects_collection, userprojects_collection, sourcedetails_collection, crawling_collection = getdbcollections.getdbcollections(mongo,
+                                                                                                                                        'projects',
+                                                                                                                                        'userprojects',
+                                                                                                                                        'sourcedetails',
+                                                                                                                                        'crawling')
+        current_username = getcurrentusername.getcurrentusername()
+        
+        activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                        userprojects_collection)
+        project_owner = getprojectowner.getprojectowner(projects_collection, activeprojectname)
+
         if request.method =='POST':
             youtube_crawler_info = dict(request.form.lists())
             logger.debug('youtube_crawler_info: %s', pformat(youtube_crawler_info))
@@ -332,7 +344,15 @@ def youtubecrawler():
             youtube_data_for = youtube_crawler_info['youtubeDataFor'][0]
             data_links_list = youtube_crawler_info['dataLinks'][0].split('\r\n')
             data_links = {youtube_data_for: data_links_list}
-            youtubecrawl.run_youtube_crawler(api_key, data_links)
+            youtubecrawl.run_youtube_crawler(projects_collection,
+                                                userprojects_collection,
+                                                sourcedetails_collection,
+                                                crawling_collection,
+                                                project_owner,
+                                                current_username,
+                                                activeprojectname,
+                                                api_key,
+                                                data_links)
     except:
         logger.exception("")
 
