@@ -24,11 +24,12 @@ from app.controller import (
 )
 from app.lifedata.controller import (
     copydatafromparentproject,
+    data_project_info,
     savenewdataform,
     create_validation_type_project,
     save_tagset,
     get_validation_data,
-    get_data_sub_source
+    youtubecrawl
 )
 from flask_login import login_required
 import os
@@ -282,7 +283,7 @@ def crawler():
         
         activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
                                                                         userprojects)
-        data_sub_source = get_data_sub_source.get_data_sub_source(projects,
+        data_sub_source = data_project_info.get_data_sub_source(projects,
                                                                   activeprojectname)
 
         if request.method =='POST':
@@ -322,8 +323,20 @@ def crawler():
 @lifedata.route('/youtubecrawler', methods=['GET', 'POST'])
 @login_required
 def youtubecrawler():
+    try:
+        if request.method =='POST':
+            youtube_crawler_info = dict(request.form.lists())
+            logger.debug('youtube_crawler_info: %s', pformat(youtube_crawler_info))
+            logger.debug('%s', pformat(youtube_crawler_info['dataLinks'][0].split('\r\n')))
+            api_key = youtube_crawler_info['youtubeAPIKey'][0]
+            youtube_data_for = youtube_crawler_info['youtubeDataFor'][0]
+            data_links_list = youtube_crawler_info['dataLinks'][0].split('\r\n')
+            data_links = {youtube_data_for: data_links_list}
+            youtubecrawl.run_youtube_crawler(api_key, data_links)
+    except:
+        logger.exception("")
 
-    return redirect(url_for("lifedatacrawler"))
+    return redirect(url_for("lifedata.crawler"))
 
 @lifedata.route('/crawlerbrowse', methods=['GET', 'POST'])
 @login_required
