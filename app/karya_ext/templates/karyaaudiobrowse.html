@@ -96,18 +96,19 @@ Audio Browse
         {% for speakerId, audioList in data.items() %}
             {% for audioData in audioList %}
                 <tr class="{{ speakerId }}">
-                    <td><input type="checkbox" name="selectedRows" value="{{ audioData.speakerId }}_{{ audioData.audioId }}"></td>
+                    <td><input type="checkbox" id="checkbox_{{ audioData.audioId }}" name="selectedRows" value="{{ audioData.audioId }}"></td>
                     <td>{{ audioData.speakerId }}</td>
                     <td>{{ audioData.audioId }}</td>
                     <td>{{ audioData.audioFilename }}</td>
                     <td>{{ audioData.karyaInfo.karyaFetchedAudioId }}</td>
                     <td>
-                        <button class="playPauseBtn" data-audioid="">Play/Pause</button>
+                        <button class="playPauseBtn" data-audioid="{{ audioData.audioId }}">Play/Pause</button>
                     </td>
                 </tr>
             {% endfor %}
         {% endfor %}
     </tbody>
+    
 </table>
 
 {% endblock %}
@@ -136,21 +137,32 @@ Audio Browse
         // Show or hide the table based on the selected speaker ID
         table.style.display = (selectedSpeakerId !== "") ? "table" : "none";
     }
-    
-    function deleteSelected() {
-        var selectedRows = document.getElementsByName("selectedRows");
-        var selectedData = [];
 
-        for (var i = 0; i < selectedRows.length; i++) {
-            if (selectedRows[i].checked) {
-                var rowData = selectedRows[i].value.split("_");
-                var data = {
-                    speakerId: rowData[0],
-                    audioId: rowData[1]
-                };
-                selectedData.push(data);
-            }
+
+
+    function deleteSelected() {
+    var selectedRows = document.getElementsByName("selectedRows");
+    var selectedData = [];
+
+    for (var i = 0; i < selectedRows.length; i++) {
+        if (selectedRows[i].checked) {
+            var audioId = selectedRows[i].value;
+            var checkboxId = "checkbox_" + audioId;
+            var speakerId = document.getElementById(checkboxId).closest("tr").querySelector("td:nth-child(2)").innerText;
+            var audioFilename = document.getElementById(checkboxId).closest("tr").querySelector("td:nth-child(4)").innerText;
+            var karyaFetchedAudioIds = document.getElementById(checkboxId).closest("tr").querySelector("td:nth-child(5)").innerText;
+
+            var data = {
+                speakerId: speakerId,
+                audioId: audioId,
+                audioFilename: audioFilename,
+                karyaFetchedAudioIds: karyaFetchedAudioIds
+            };
+            selectedData.push(data);
         }
+    }
+
+    
         
         if (selectedData.length > 0) {
             if (confirm("Do you really want to delete the selected audio file(s)?")) {
