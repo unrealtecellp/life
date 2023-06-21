@@ -89,32 +89,32 @@ def get_n_crawled_data(data_collection,
                         active_speaker_id,
                         start_from=0,
                         number_of_audios=10,
-                        text_delete_flag=0):
+                        data_delete_flag=0):
     aggregate_output = data_collection.aggregate( [
                                 {
                                     "$match": {
                                         "projectname": activeprojectname,
                                         "lifesourceid": active_speaker_id,
-                                        "textdeleteFLAG": text_delete_flag
+                                        "datadeleteFLAG": data_delete_flag
                                                 }
                                 },
                                 { 
                                     "$sort" : {
-                                        "textId" : 1
+                                        "dataId" : 1
                                         }
                                 },
                                 {
                                     "$project": {
                                         "_id": 0,
-                                        "textId": 1,
-                                        "Text": 1
+                                        "dataId": 1,
+                                        "Data": 1
                                     }
                                 }
                                 ] )
     # logger.debug("aggregate_output: %s", aggregate_output)
     aggregate_output_list = []
     for doc in aggregate_output:
-        # logger.debug("aggregate_output: %s", pformat(doc))
+        logger.debug("aggregate_output: %s", pformat(doc))
         aggregate_output_list.append(doc)
     logger.debug('aggregate_output_list: %s', pformat(aggregate_output_list))
 

@@ -298,6 +298,8 @@ def crawler():
             about_project = new_crawl_data_form['aboutproject'][0]
             datasource = new_crawl_data_form['datasource'][0]
             datasubsource = new_crawl_data_form['datasubsource'][0]
+            crawlerlanguage = new_crawl_data_form['crawlerlanguage']
+            crawlerscript = new_crawl_data_form['crawlerscript']
 
             project_name = savenewproject.savenewproject(projects,
                                                             projectname,
@@ -305,7 +307,9 @@ def crawler():
                                                             aboutproject=about_project,
                                                             projectType=project_type,
                                                             dataSource=datasource,
-                                                            dataSubSource=datasubsource
+                                                            dataSubSource=datasubsource,
+                                                            crawlerLanguage=crawlerlanguage,
+                                                            crawlerScript=crawlerscript
                                                             )
             if project_name == '':
                 flash(f'Project Name : "{projectname}" already exist!')
@@ -342,11 +346,27 @@ def youtubecrawler():
         if request.method =='POST':
             youtube_crawler_info = dict(request.form.lists())
             logger.debug('youtube_crawler_info: %s', pformat(youtube_crawler_info))
-            logger.debug('%s', pformat(youtube_crawler_info['dataLinks'][0].split('\r\n')))
+            # logger.debug('%s', pformat(youtube_crawler_info['dataLinks'][0].split('\r\n')))
             api_key = youtube_crawler_info['youtubeAPIKey'][0]
             youtube_data_for = youtube_crawler_info['youtubeDataFor'][0]
-            data_links_list = youtube_crawler_info['dataLinks'][0].split('\r\n')
-            data_links = {youtube_data_for: data_links_list}
+            data_links = {}
+            # data_links_list = youtube_crawler_info['dataLinks'][0].split('\r\n')
+            # data_links = {youtube_data_for: data_links_list}
+            data_links_info = {}
+            for key, value in youtube_crawler_info.items():
+                if('videoschannelId' in key):
+                    videoschannelId_count = key.split('_')[1]
+                    searchkeywords_key = 'searchkeywords_'+videoschannelId_count
+                    if (searchkeywords_key in youtube_crawler_info):
+                        searchkeywords_value = youtube_crawler_info[searchkeywords_key]
+                    else:
+                        searchkeywords_value = []
+                    data_links_info[value[0]] = searchkeywords_value
+                    logger.debug('key: %s, videoschannelId_count: %s, value: %s, searchkeywords_key: %s, searchkeywords_value: %s', 
+                                 key, videoschannelId_count, value, searchkeywords_key, searchkeywords_value)
+            data_links[youtube_data_for] = data_links_info
+            logger.debug("data_links_info: %s", pformat(data_links_info))
+            logger.debug("data_links: %s", pformat(data_links))
             youtubecrawl.run_youtube_crawler(projects_collection,
                                                 userprojects_collection,
                                                 sourcedetails_collection,
@@ -409,7 +429,7 @@ def crawlerbrowse():
         new_data['shareInfo'] = shareinfo
         new_data['sourceIds'] = sourceids
         new_data['crawlerData'] = crawled_data_list
-        new_data['crawlerDataFields'] = ['textId', 'Text']
+        new_data['crawlerDataFields'] = ['dataId', 'Data']
     except:
         logger.exception("")
 

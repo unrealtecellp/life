@@ -1,10 +1,9 @@
 [
-
+    {"id": "youtube", "text": "Youtube"},
     {"id": "blog", "text": "Blog"},
     {"id": "facebook", "text": "Facebook"},
     {"id": "instagram", "text": "Instagram"},
     {"id": "newspaper", "text": "Newspaper"},
     {"id": "twitter", "text": "Twitter"},
-    {"id": "wikipedia", "text": "Wikipedia"},
-    {"id": "youtube", "text": "Youtube"}
+    {"id": "wikipedia", "text": "Wikipedia"}
 ]
