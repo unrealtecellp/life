@@ -20,6 +20,7 @@ def add_new_source_info(projects_collection,
                         data_source,
                         data_sub_source,
                         source_metadata,
+                        search_keywords,
                         data_type):
     try:
         source_info = {
@@ -32,6 +33,8 @@ def add_new_source_info(projects_collection,
             "dataType": data_type,
             "current": {
                 "updatedBy": current_username,
+                "searchKeywords": search_keywords,
+                "sourceTags": search_keywords,
                 "sourceMetadata": source_metadata,
                 "current_date": str(datetime.now())
             },
@@ -151,7 +154,7 @@ def save_youtube_crawled_data(projects_collection,
         async_info = xml_to_json_data["async_info"]
         async_info['video_link'] = xml_to_json_data["main_content"]['original_script']['#text']
         source_metadata = async_info
-        dataType = 'text'
+        dataType = ['text']
         sourcedetails_doc_id, added_new_source = add_new_source_info(projects_collection,
                                                                         userprojects_collection,
                                                                         sourcedetails_collection,
@@ -162,7 +165,8 @@ def save_youtube_crawled_data(projects_collection,
                                                                         data_source,
                                                                         data_sub_source,
                                                                         source_metadata,
-                                                                        data_type=dataType)
+                                                                        search_keywords,
+                                                                        data_type=dataType,)
         if(added_new_source):
             add_new_source_id(projects_collection,
                                 active_project_name,
@@ -175,22 +179,25 @@ def save_youtube_crawled_data(projects_collection,
                                     current_username,
                                     life_source_id)
         additional_info = {}
-        additional_info['searchKeywords'] = search_keywords
         async_comments = xml_to_json_data["async_comment"]
+        logger.debug('async_comments TYPE: %s', type(async_comments))
+        if (isinstance(async_comments, dict)):
+            async_comments = [async_comments]
         for i, comment in enumerate(csv_data):
             text_id = 'C'+re.sub(r'[-: \.]', '', str(datetime.now()))
             text = comment[1]
             meta_dict = generate_meta(meta[i])
             additional_info = meta_dict
-            text_meta_data = {
-                "ID": comment[0]
-            }
-            if (i != 0):
+            text_meta_data = {}
+            if (i == 0):
+                text_meta_data["ID"] = video_id+'.0'
+            elif (i != 0):
                 async_comment = async_comments[i-1]
                 async_comment['comment_number'] = async_comment['@id']
                 del async_comment['@id']
                 additional_info.update(async_comment)
-
+                text_meta_data["ID"] = video_id+'.'+async_comment['comment_number']
+            # additional_info['searchKeywords'] = search_keywords
             save_crawled_data(crawling_collection,
                                 project_owner,
                                 active_project_name,

@@ -361,9 +361,10 @@ def youtubecrawler():
                         searchkeywords_value = youtube_crawler_info[searchkeywords_key]
                     else:
                         searchkeywords_value = []
-                    data_links_info[value[0]] = searchkeywords_value
-                    logger.debug('key: %s, videoschannelId_count: %s, value: %s, searchkeywords_key: %s, searchkeywords_value: %s', 
-                                 key, videoschannelId_count, value, searchkeywords_key, searchkeywords_value)
+                    for link in value:
+                        data_links_info[link] = searchkeywords_value
+                    # logger.debug('key: %s, videoschannelId_count: %s, value: %s, searchkeywords_key: %s, searchkeywords_value: %s', 
+                    #              key, videoschannelId_count, value, searchkeywords_key, searchkeywords_value)
             data_links[youtube_data_for] = data_links_info
             logger.debug("data_links_info: %s", pformat(data_links_info))
             logger.debug("data_links: %s", pformat(data_links))
