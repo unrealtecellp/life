@@ -1,4 +1,6 @@
 from datetime import datetime
+import re
+from pprint import pformat
 from app.controller import (
     life_logging
 )
@@ -17,7 +19,8 @@ def add_new_source_info(projects_collection,
                         current_username,
                         data_source,
                         data_sub_source,
-                        source_metadata):
+                        source_metadata,
+                        data_type):
     try:
         source_info = {
             "username": project_owner,
@@ -26,12 +29,18 @@ def add_new_source_info(projects_collection,
             "createdBy": current_username,
             "dataSource": data_source,
             "dataSubSource": data_sub_source,
+            "dataType": data_type,
             "current": {
                 "updatedBy": current_username,
                 "sourceMetadata": source_metadata,
                 "current_date": str(datetime.now())
             },
-            "isActive": 1
+            "audioId": "",
+            "audioFilename": "",
+            "videoId": "",
+            "videoFilename": "",
+            "isActive": 1,
+            "sourcedeleteFLAG": 0
         }
         sourcedetails_doc_id = sourcedetails_collection.insert_one(source_info)
         return (sourcedetails_doc_id, True)
@@ -76,27 +85,43 @@ def update_active_source_id(userprojects_collection,
         logger.exception("")
         return False
 
+def generate_meta(sub_meta):
+    meta_header = ['Video_ID', 'Channel_ID', 'Comment_ID',
+                       'File_Name', 'Parent_ID', 'Date_Time_of_Retrieval']
+    meta_dict = {}
+    for i, info in enumerate(meta_header):
+        if (info == 'File_Name'): continue
+        meta_dict[info] = sub_meta[i]
+
+    # logger.debug("meta_dict: %s", pformat(meta_dict))
+
+    return meta_dict
+
 def save_crawled_data(crawling_collection,
                       project_owner,
                       active_project_name,
-                      text_id,
-                      text,
+                      data_id,
+                      data,
                       life_source_id,
                       additional_info,
-                      text_meta_data):
+                      data_meta_data):
     try:
         crawled_data = {
             "username": project_owner,
             "projectname": active_project_name,
-            "textId": text_id,
-            "Text": text,
+            "dataId": data_id,
+            "Data": data,
             "lastUpdatedBy": "",
             "lifesourceid": life_source_id,
-            "textdeleteFLAG": 0,
-            "textverifiedFLAG": 0,
+            "datadeleteFLAG": 0,
+            "dataverifiedFLAG": 0,
             "additionalInfo": additional_info,
-            "textMetadata": text_meta_data,
-            "prompt": ""
+            "dataMetadata": data_meta_data,
+            "prompt": "",
+            "audioId": "",
+            "audioFilename": "",
+            "videoId": "",
+            "videoFilename": ""
         }
         crawling_doc_id = crawling_collection.insert_one(crawled_data)
         return(crawling_doc_id, True)
@@ -107,13 +132,15 @@ def save_crawled_data(crawling_collection,
 def save_youtube_crawled_data(projects_collection,
                                 userprojects_collection,
                                 sourcedetails_collection,
+                                crawling_collection,
                                 project_owner,
                                 current_username,
                                 active_project_name,
                                 xml_to_json,
                                 csv_data,
                                 meta,
-                                video_id):
+                                video_id,
+                                search_keywords):
     try:
         life_source_id = video_id
         data_source = data_project_info.get_data_source(projects_collection,
@@ -121,10 +148,10 @@ def save_youtube_crawled_data(projects_collection,
         data_sub_source = data_project_info.get_data_sub_source(projects_collection,
                                                                 active_project_name)
         xml_to_json_data = xml_to_json["co3h"]["asynchronous"]["youtube_video"]
-        source_metadata = {
-            "async_info": xml_to_json_data["async_info"],
-            "main_content": xml_to_json_data["main_content"]
-        }
+        async_info = xml_to_json_data["async_info"]
+        async_info['video_link'] = xml_to_json_data["main_content"]['original_script']['#text']
+        source_metadata = async_info
+        dataType = 'text'
         sourcedetails_doc_id, added_new_source = add_new_source_info(projects_collection,
                                                                         userprojects_collection,
                                                                         sourcedetails_collection,
@@ -134,7 +161,8 @@ def save_youtube_crawled_data(projects_collection,
                                                                         current_username,
                                                                         data_source,
                                                                         data_sub_source,
-                                                                        source_metadata)
+                                                                        source_metadata,
+                                                                        data_type=dataType)
         if(added_new_source):
             add_new_source_id(projects_collection,
                                 active_project_name,
@@ -146,8 +174,30 @@ def save_youtube_crawled_data(projects_collection,
                                     project_owner,
                                     current_username,
                                     life_source_id)
+        additional_info = {}
+        additional_info['searchKeywords'] = search_keywords
+        async_comments = xml_to_json_data["async_comment"]
         for i, comment in enumerate(csv_data):
-            
+            text_id = 'C'+re.sub(r'[-: \.]', '', str(datetime.now()))
+            text = comment[1]
+            meta_dict = generate_meta(meta[i])
+            additional_info = meta_dict
+            text_meta_data = {
+                "ID": comment[0]
+            }
+            if (i != 0):
+                async_comment = async_comments[i-1]
+                async_comment['comment_number'] = async_comment['@id']
+                del async_comment['@id']
+                additional_info.update(async_comment)
 
+            save_crawled_data(crawling_collection,
+                                project_owner,
+                                active_project_name,
+                                text_id,
+                                text,
+                                life_source_id,
+                                additional_info,
+                                text_meta_data)
     except:
         logger.exception("")

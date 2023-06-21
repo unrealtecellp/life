@@ -5061,9 +5061,35 @@ def changespeakerid():
 
     return 'OK'
 
+@app.route('/changesourceid', methods=['GET', 'POST'])
+@login_required
+def changesourceid():
+    userprojects, = getdbcollections.getdbcollections(mongo, 'userprojects')
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username,
+                                                                  userprojects)
+
+    # data through ajax
+    sourceId = str(request.args.get('a'))
+    # print(sourceId)
+    projectinfo = userprojects.find_one({'username': current_user.username},
+                                        {'_id': 0, 'myproject': 1, 'projectsharedwithme': 1})
+
+    # print(projectinfo)
+    userprojectinfo = ''
+    for key, value in projectinfo.items():
+        if len(value) != 0:
+            if activeprojectname in value:
+                userprojectinfo = key+'.'+activeprojectname+".activesourceId"
+    # print(userprojectinfo)
+    userprojects.update_one({"username": current_user.username},
+                            {"$set": {
+                                userprojectinfo: sourceId
+                            }})
+
+    return 'OK'
+
+
 # get progress report
-
-
 @app.route('/progressreport', methods=['GET'])
 @login_required
 def progressreport():
