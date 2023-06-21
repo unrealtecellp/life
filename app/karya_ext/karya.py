@@ -895,6 +895,7 @@ def fetch_karya_audio():
         ################################ Get already fetched audio list and quesIDs   ########################################
         fetched_audio_list = karya_audio_management.get_fetched_audio_list(
             accesscodedetails, access_code, activeprojectname)
+        print("898", fetched_audio_list)
         logger.debug("fetched_audio_list: %s", fetched_audio_list)
         exclude_ids = []
         if (project_type == 'questionnaires'):
@@ -1283,86 +1284,140 @@ def karyaaudiobrowse():
 def karyadeleteaudiobrowse():
 
 
-    projects, userprojects, transcriptions, accesscodedetails= getdbcollections.getdbcollections(mongo, 'projects', 'userprojects', 'transcriptions', 'accesscodedetails')
+    projects, userprojects, transcriptions, accesscodedetails, fs_files, fs_chunks = getdbcollections.getdbcollections(mongo, 'projects', 'userprojects', 'transcriptions', 'accesscodedetails', 'fs.files', 'fs.chunks')
     current_username = getcurrentusername.getcurrentusername()
     activeprojectname = getactiveprojectname.getactiveprojectname(current_username, userprojects)
     projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
     shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects, current_username, activeprojectname)
     active_speaker_id = shareinfo['activespeakerId']
+    print("active_speaker_id : ",active_speaker_id)
+    current_username = getcurrentusername.getcurrentusername()
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_username, userprojects)
 
     selected_data = request.get_json()
     # Perform the delete operation using the selected_data
     # Replace this with your own delete logic
     # Here's an example of how you can access the data
     for item in selected_data:
+
         speaker_id = item['speakerId']
         audio_id = item['audioId']
-        
-        audioFilename = item['audioFilename']
-        karyaAudioId =item['karyaFetchedAudioIds']
+        audio_filename = item['audioFilename']
+        karya_fetchedAudio_ids =item['karyaFetchedAudioIds']
         # print(item)
         
         # Perform the delete operation for the given speaker_id and audio_id
         # Split the speaker_id if needed to extract the actual speakerId and audioId
+        print("Project Name : ",activeprojectname)
         print("speaker_id : ",speaker_id)
-        print("audioFilename : ",audioFilename)
-        print("karyaAudioId : ",karyaAudioId)
         print("audio_id : ", audio_id)
-        actual_speaker_id = speaker_id.split("_")[0]
-        actual_audio_id = audio_id
+        print("audioFilename : ",audio_filename)
+        print("karyaAudioId : ",karya_fetchedAudio_ids)
+        print("####################################\n########################################\n#####################")
+        
+   
 
-        # print("actual_audio_id : ",actual_audio_id, "\n actual_speaker_id :",actual_speaker_id)
         # Rest of the delete logic...
-        print(activeprojectname)
-        accesscodedetails_result_find = accesscodedetails.find_one({"projectname": activeprojectname, "isActive":1, 'lifespeakerid': speaker_id},{'karyafetchedaudios':1})['karyafetchedaudios']
-        # print("Matched documents:", result.matched_count)
-        # print("Modified documents:", result.modified_count)
-        print("accesscodedetails_result_find : ",accesscodedetails_result_find)
+        
 
+        ################################### accesscodedetails = remove matched karyafetchedaudios from list
+        accesscodedetails_result_find = accesscodedetails.find_one({"projectname": str(activeprojectname),
+                                                                    "isActive":1, 'fetchData':1,
+                                                                      'karyafetchedaudios':karya_fetchedAudio_ids},
+                                                                     {'karyafetchedaudios':1, "karyaaccesscode":1})#['karyafetchedaudios']['karyaaccesscode']
+        
+        print("accesscodedetails_result_find : ","karya audio ids: ",accesscodedetails_result_find['karyafetchedaudios'], 
+                                                "accesscode: ",accesscodedetails_result_find['karyaaccesscode'])
+        
+        ################################ delete karya audio id
+        accesscodedetails_result = accesscodedetails.update_one(
+                    {
+                        "projectname": str(activeprojectname),
+                        "isActive":1, 'fetchData':1,
+                        'karyafetchedaudios':karya_fetchedAudio_ids},
+                    {
+                        '$pull': {
+                            'karyafetchedaudios':   karya_fetchedAudio_ids
+                        }
+                    }
+                )
+        
+        print("####################################\n########################################\n#####################")
+
+        ##################### transcription deletefalg = 1
         transcriptions_result_find = transcriptions.find_one({"projectname": activeprojectname, 'speakerId': speaker_id,
                                                                'audioId':audio_id,
-                            'audioFilename':audioFilename,
-                            'karyaInfo.karyaFetchedAudioId':karyaAudioId},{})
-        print("transcriptions_result_find : " ,transcriptions_result_find)
-        # print(result['karyaFetchedAudios'])
-        # if karyaAudioId == "281474976758601":
-        #     print("matched")
-        accesscodedetails_result = accesscodedetails.update_one(
-            {
-                'projectname': activeprojectname,
-                'isActive': 1,
-                'lifespeakerid': speaker_id
-            },
-            {
-                '$pull': {
-                    'karyafetchedaudios': karyaAudioId  
-                }
-            }
-        )
-
-        print("Matched documents:", accesscodedetails_result.matched_count)
-        print("Modified documents:", accesscodedetails_result.modified_count)
-
-
-        transcriptions_result = transcriptions.update_one({
-                            'projectname': activeprojectname,
-                            'speakerId': speaker_id,
-                            'audioId':audio_id,
-                            'audioFilename':audioFilename,
-                            'karyaInfo.karyaFetchedAudioId':karyaAudioId
-                            },{"$set":
-                               {
-                                "audioFilename":"",
-                                "speakerId":""
-                                }, "$unset":{"karyaInfo":"", "audioMetadata":"", "additionalInfo":"" }})
+                                                               'audioFilename':audio_filename,
+                                                               'karyaInfo.karyaFetchedAudioId':karya_fetchedAudio_ids},{})
         
-        print("Matched documents:", transcriptions_result.matched_count)
-        print("Modified documents:", transcriptions_result.modified_count)
+        transcription_id = transcriptions_result_find['_id']
+
+        print(transcriptions.find_one({"_id":transcription_id},{}))
+
+        audiodetails.delete_one_audio_file(projects,
+                                transcriptions,
+                                activeprojectname,
+                                current_username,
+                                speaker_id,
+                                audio_id,
+                                update_latest_audio_id=1)
+
+        # print("transcriptions_result_find : " ,transcriptions_result_find['_id'])
+
+        # transcriptions_deleteFlag = transcriptions.update_one({"_id":ObjectId(transcription_id)},{'$set':{'audiodeleteFLAG':1}})
+        ############# transcriptions remove whole document that is matched
+        # delete_transcriptions_doc = transcriptions.delete_one({"_id":ObjectId(transcription_id)})
+
+        print("####################################\n########################################\n#####################")
+
+        ################# fs.files remove audio file 
+
+        # fsfiles_result_find = fs_files.find_one({'projectname': activeprojectname, "audioId":audio_id, "filename":audio_filename},{})
+        # fsfile_id = fsfiles_result_find['_id']
+        # print(fsfile_id)
+        # delete_fsfile = fs_files.delete_one({"_id":ObjectId(fsfile_id)})
+        # print("####################################\n########################################\n#####################")
+
+        ################################ fs.chunks remove audio bytes 
+        # fschunks_result_find = fs_chunks.find_one({'files_id':fsfile_id},{})
+        #fschunk_id = fschunks_result_find['_id']
+        #print(fschunk_id)
+        # delete_fschunk = fs_chunks.delete_one({"_id":ObjectId(fschunk_id)})
+        #print("####################################\n########################################\n#####################")
+
+        ################################       projects 
+        # speakersAudioIds_speakerid = str("speakersAudioIds."+speaker_id)
+        # print(speakersAudioIds_speakerid)
+        # projects_result_find = projects.find_one({"projectname":activeprojectname, speakersAudioIds_speakerid : audio_id},{})
+        # print(projects_result_find)
+
+        
+
+        # print("Matched documents:", accesscodedetails_result.matched_count)
+        # print("Modified documents:", accesscodedetails_result.modified_count)
+
+
+        # transcriptions_result = transcriptions.update_one({
+        #                     'projectname': activeprojectname,
+        #                     'speakerId': speaker_id,
+        #                     'audioId':audio_id,
+        #                     'audioFilename':audioFilename,
+        #                     'karyaInfo.karyaFetchedAudioId':karyaAudioId
+        #                     },{"$set":
+        #                        {
+        #                         "audioFilename":"",
+        #                         "speakerId":""
+        #                         }, "$unset":{"karyaInfo":"", "audioMetadata":"", "additionalInfo":"" }})
+        
+        # print("Matched documents:", transcriptions_result.matched_count)
+        # print("Modified documents:", transcriptions_result.modified_count)
 
 
 
         # else:
             # print("not matched")
+
+
     # Return a success response
     return jsonify({'message': 'Audio file(s) deleted successfully'})
 
@@ -1374,102 +1429,3 @@ def karyadeleteaudiobrowse():
 
 
 
-
-
-
-@karya_bp.route('/karyaupdateaudiobrowsetable', methods=['GET', 'POST'])
-@login_required
-def karyaupdateaudiobrowsetable():
-    audio_data_fields= ['audioId', 'audioFilename', 'Audio File']
-    audio_data_list = []
-    try:
-        # data through ajax
-        audio_browse_info = json.loads(request.args.get('a'))
-        logger.debug('audio_browse_info: %s', audio_browse_info)
-        userprojects, transcriptions = getdbcollections.getdbcollections(mongo,
-                                                                            'userprojects',
-                                                                            'transcriptions')
-        current_username = getcurrentusername.getcurrentusername()
-        activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
-                                                                    userprojects)
-        logger.debug(audio_browse_info['activeSpeakerId'])
-        active_speaker_id = audio_browse_info['activeSpeakerId']
-        audio_file_count = audio_browse_info['audioFilesCount']
-        audio_browse_action = audio_browse_info['browseActionSelectedOption']
-        if (active_speaker_id != ''):
-            audio_data_list = audiodetails.get_n_audios(transcriptions,
-                                                        activeprojectname,
-                                                        active_speaker_id,
-                                                        start_from=0,
-                                                        number_of_audios=audio_file_count,
-                                                        audio_delete_flag=audio_browse_action)
-        else:
-            audio_data_list = []
-        # logger.debug('audio_data_list: %s', pformat(audio_data_list))
-        # get audio file src
-        new_audio_data_list = []
-        for audio_data in audio_data_list:
-            new_audio_data = audio_data
-            audio_filename = audio_data['audioFilename']
-            new_audio_data['Audio File'] = url_for('retrieve', filename=audio_filename)
-            new_audio_data_list.append(new_audio_data)
-    except:
-        logger.exception("")
-
-    return jsonify(audioDataFields= audio_data_fields,
-                   audioData=new_audio_data_list)
-
-
-
-@karya_bp.route('/karyaaudiobrowseaction', methods=['GET', 'POST'])
-@login_required
-def karyaaudiobrowseaction():
-    try:
-        projects_collection, userprojects, transcriptions_collection = getdbcollections.getdbcollections(mongo,
-                                                                                                            'projects',
-                                                                                                            'userprojects',
-                                                                                                            'transcriptions')
-        current_username = getcurrentusername.getcurrentusername()
-        activeprojectname = getactiveprojectname.getactiveprojectname(current_username, userprojects)
-        logger.debug("%s,%s", current_username, activeprojectname)
-        # data from ajax
-        data = json.loads(request.args.get('a'))
-        logger.debug('data: %s', pformat(data))
-        audio_info = data['audioInfo']
-        logger.debug('audio_info: %s', pformat(audio_info))
-        audio_browse_info = data['audioBrowseInfo']
-        logger.debug('audio_browse_info: %s', pformat(audio_browse_info))
-        browse_action = audio_browse_info['browseActionSelectedOption']
-        active_speaker_id = audio_browse_info['activeSpeakerId']
-        audio_ids_list = list(audio_info.keys())
-        active_audio_id = audiodetails.getactiveaudioid(projects_collection,
-                                                        activeprojectname,
-                                                        active_speaker_id,
-                                                        current_username)
-        update_latest_audio_id=0
-        for audio_id in audio_ids_list:
-            logger.info("audio id to delete: %s, %s", audio_id, type(audio_id))
-            if (audio_id == active_audio_id):
-                update_latest_audio_id = 1
-            if (browse_action):
-                audiodetails.revoke_deleted_audio(projects_collection,
-                                                    transcriptions_collection,
-                                                    activeprojectname,
-                                                    active_speaker_id,
-                                                    audio_id)
-            else:
-                audiodetails.delete_one_audio_file(projects_collection,
-                                                    transcriptions_collection,
-                                                    activeprojectname,
-                                                    current_username,
-                                                    active_speaker_id,
-                                                    audio_id,
-                                                    update_latest_audio_id=update_latest_audio_id)
-        if (browse_action):
-            flash("Audio revoked successfully")
-        else:
-            flash("Audio deleted successfully")
-    except:
-        logger.exception("")
-
-    return 'OK'
