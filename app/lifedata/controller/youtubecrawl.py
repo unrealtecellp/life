@@ -415,8 +415,8 @@ def getVideoData(projects_collection,
                     logger.debug('xml_to_json TYPE: %s', type(xml_to_json))
                     logger.debug('xml_to_json: %s', xml_to_json)
                     xml_to_json = json.loads(xml_to_json)
-                    logger.debug('xml_to_json: %s', pformat(xml_to_json))
-                    logger.debug('xml_to_json TYPE: %s', type(xml_to_json))
+                    # logger.debug('xml_to_json: %s', pformat(xml_to_json))
+                    # logger.debug('xml_to_json TYPE: %s', type(xml_to_json))
                     # logger.debug('co3h TYPE: %s', type(co3h))
                     # logger.debug('co3h: %s', co3h)
 
@@ -528,6 +528,7 @@ def getPreviousVideos(sourcedetails_collection,
                             }
                             ])
     aggregate_output_list = []
+    prev_videos = set()
     for doc in aggregate_output:
         logger.debug("aggregate_output: %s", pformat(doc))
         aggregate_output_list.append(doc)
