@@ -1,7 +1,7 @@
 /* karyaextlinks.css */
 
 body {
-    background-color: #fcfcfc;
+    background-color: #b62e2e;
   }
   
   h4 {
@@ -11,34 +11,25 @@ body {
   }
   
   #uploadmanage {
-    background-color: #f2f2f2;
+    background-color: #fff;
     padding: 20px;
     border-radius: 5px;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
-  
-  
-  #uploadmanage {
-    display: flex; /* Add this line to enable flexbox */
-    flex-wrap: wrap; /* Add this line to wrap the buttons to the next line if needed */
-    justify-content: space-between; /* Add this line to distribute the buttons evenly */
   }
   
   #uploadmanage input[type="button"],
   #uploadmanage input[type="submit"] {
-    font-size: 20px;
+    font-size: 16px;
     padding: 10px 20px;
     border: none;
-    border-radius: 7px;
+    border-radius: 5px;
     margin-top: 10px;
     cursor: pointer;
-    width: calc(50% - 15px); /* Add this line to set the width of each button */
   }
   
-  
   .karyaaudiodata {
-    background-color: #f2f2f2;
+    background-color: #fff;
     padding: 20px;
     border-radius: 5px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -85,8 +76,8 @@ body {
   }
   
   #pimobilenumber {
-    width: 40%;
-    padding: 7px;
+    width: 100%;
+    padding: 10px;
     border-radius: 5px;
     border: 1px solid #ccc;
   }
@@ -107,8 +98,8 @@ body {
   }
   
   #karyaotp {
-    width: 45%;
-    padding: 7px;
+    width: 100%;
+    padding: 10px;
     border-radius: 5px;
     border: 1px solid #ccc;
     margin-top: 10px;

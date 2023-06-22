@@ -108,6 +108,7 @@ logger = life_logging.get_logger()
 #                            dropdown_list=dropdown_list)
 
 
+
 @karya_bp.route('/home_insert')
 @login_required
 def home_insert():
@@ -122,7 +123,18 @@ def home_insert():
     shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
                                                       current_username,
                                                       activeprojectname)
+    
 
+     # Find documents without "acodedeleteFlag" field
+    query = { "acodedeleteFlag": { "$exists": False } }
+    documents = accesscodedetails.find(query)
+
+    # Update documents with "acodedeleteFlag: 0"
+    for document in documents:
+        document["acodedeleteFlag"] = 0
+        accesscodedetails.update_one({"_id": document["_id"], "projectname":activeprojectname}, {"$set": document})
+
+    # finding acccesscode list on the basis of accesscodedetails "Task"
     access_code_list = access_code_management.get_access_code_list(
         accesscodedetails, activeprojectname, current_username)
 
@@ -1157,59 +1169,10 @@ def update_speaker_ids():
 
 
 
-# @karya_bp.route('/karyaaudiobrowse', methods=['GET', 'POST'])
-# @login_required
-# def karyaaudiobrowse():
-#     try:
-#         new_data = {}
-#         projects, userprojects, transcriptions = getdbcollections.getdbcollections(mongo,
-#                                                                                     'projects',
-#                                                                                     'userprojects',
-#                                                                                     'transcriptions')
-#         current_username = getcurrentusername.getcurrentusername()
-#         activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
-#                                                                     userprojects)
-#         projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
-#         shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
-#                                                         current_username,
-#                                                         activeprojectname)
-#         speakerids = projects.find_one({"projectname": activeprojectname},
-#                                                 {"_id": 0, "speakerIds." +
-#                                                     current_username: 1}
-#                                                 )["speakerIds"][current_username]
-#         active_speaker_id = shareinfo['activespeakerId']
-#         if (active_speaker_id != ''):
-#             audio_data_list = audiodetails.get_n_audios(transcriptions,
-#                                                         activeprojectname,
-#                                                         active_speaker_id)
-#         else:
-#             audio_data_list = []
-#         # get audio file src
-#         new_audio_data_list = []
-#         for audio_data in audio_data_list:
-#             new_audio_data = audio_data
-#             audio_filename = audio_data['audioFilename']
-#             new_audio_data['Audio File'] = url_for('retrieve', filename=audio_filename)
-#             new_audio_data_list.append(new_audio_data)
-#         new_data['currentUsername'] = current_username
-#         new_data['activeProjectName'] = activeprojectname
-#         new_data['projectOwner'] = projectowner
-#         new_data['shareInfo'] = shareinfo
-#         new_data['speakerIds'] = speakerids
-#         new_data['audioData'] = new_audio_data_list
-#         new_data['audioDataFields'] = ['audioId', 'audioFilename', 'Audio File']
-#     except:
-#         logger.exception("")
-
-#     return render_template('karyaaudiobrowse.html',
-#                            projectName=activeprojectname,
-#                            newData=new_data)
-#                         #    data=currentuserprojectsname)
 @karya_bp.route('/karyaaudiobrowse', methods=['GET', 'POST'])
 @login_required
 def karyaaudiobrowse():
     try:
-        new_data = {}
         projects, userprojects, transcriptions = getdbcollections.getdbcollections(mongo, 'projects', 'userprojects', 'transcriptions')
         current_username = getcurrentusername.getcurrentusername()
         activeprojectname = getactiveprojectname.getactiveprojectname(current_username, userprojects)
@@ -1247,42 +1210,11 @@ def karyaaudiobrowse():
     return render_template('karyaaudiobrowse.html', projectName=activeprojectname, data=data)
 
 
-# @karya_bp.route('/karyadeleteaudiobrowse', methods=['GET', 'POST'])
-# @login_required
-# def karyadeleteaudiobrowse():
-#     # selected_data = request.args.get('selectedData')
-#     selected_data = request.json
-#     # for data in selected_data:
-#     #     speaker_ids = data['speakerId'] 
-#     #     # speaker_ids = html_speaker_ids.replace(" ", "_")
-#     #     audio_ids = data['audioId'] 
-#     #     audio_filenames = data['audioFilename'] 
-#     #     karya_fetched_audio_ids = data['karyaFetchedAudioId'] 
-#     #     print(type(karya_fetched_audio_ids))
-#     #     print("selected_data : ", speaker_ids, audio_ids, audio_filenames, karya_fetched_audio_ids)
-#         # print(selected_data)
-
-
-#     speaker_ids = []
-#     audio_ids = []
-#     audio_filenames = []
-#     karya_fetched_audio_ids = []
-
-#     for data in selected_data:
-#         speaker_ids.append(data['speakerId'])
-#         audio_ids.append(data['audioId'])
-#         audio_filenames.append(data['audioFilename'])
-#         # karya_fetched_audio_ids.append(data['karyaFetchedAudioId'])
-
-#     print("selected_data : ", speaker_ids, audio_ids, audio_filenames, karya_fetched_audio_ids)
-#     response = {'message': 'Audio files deleted successfully'}
-#     return jsonify(response)
 
 
 @karya_bp.route('/karyadeleteaudiobrowse', methods=['GET', 'POST'])
 @login_required
 def karyadeleteaudiobrowse():
-
 
     projects, userprojects, transcriptions, accesscodedetails, fs_files, fs_chunks = getdbcollections.getdbcollections(mongo, 'projects', 'userprojects', 'transcriptions', 'accesscodedetails', 'fs.files', 'fs.chunks')
     current_username = getcurrentusername.getcurrentusername()

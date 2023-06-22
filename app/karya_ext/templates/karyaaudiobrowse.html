@@ -6,42 +6,8 @@ Audio Browse
 
 {% block styles %}
 {{ super() }}
-<style>
-    /* Custom styles */
-    table {
-        border-collapse: collapse;
-        width: 100%;
-    }
-    
-    th, td {
-        text-align: left;
-        padding: 8px;
-        border-bottom: 1px solid #ddd;
-    }
-    
-    th {
-        background-color: #f2f2f2;
-    }
-    
-    .playPauseBtn,
-    .deleteBtn {
-        padding: 5px 10px;
-        border: none;
-        background-color: #007bff;
-        color: #fff;
-        cursor: pointer;
-    }
-    
-    .playPauseBtn:hover,
-    .deleteBtn:hover {
-        background-color: #0056b3;
-    }
+<link href="{{url_for('.static', filename='karyaaudiobrowse.css')}}" rel="stylesheet" />
 
-    #deleteSelectedBtn {
-        background-color: red;
-        color: #fff;
-    }
-</style>
 {% endblock %}
 
 {% block app_content %}
@@ -54,6 +20,10 @@ Audio Browse
 <br>
 <div class="row">
     <div class="col col-md-6">
+        <!-- <div>
+            <input id="myInput" type="text" placeholder="Search">
+        </div> -->
+        <br>
         <label for="speakerId">Select Speaker:</label>
         <select name="speakerId" id="speakerId" onchange="updateTable()" style="width: 40%;">
             <option value="">--Select Speaker ID--</option>
@@ -71,10 +41,7 @@ Audio Browse
 
 
 <br>
-<div>
-    <input id="myInput" type="text" placeholder="Search">
-</div>
-<br>
+
 
 <button id="deleteSelectedBtn" onclick="deleteSelected()">Delete Selected</button>
 <br>

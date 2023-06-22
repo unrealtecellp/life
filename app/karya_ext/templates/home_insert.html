@@ -39,7 +39,7 @@
 
     <br>
       {% if  shareinfo['sharemode']|int >= 2 %}
-        <input class="btn btn-lg btn-success" type="button" value="Manage Audio" onclick="window.location.href='{{url_for('karya_bp.karyaaudiobrowse')}}'; window">
+        <input class="btn btn-lg btn-warning" type="button" value="Manage Audio" onclick="window.location.href='{{url_for('karya_bp.karyaaudiobrowse')}}'; window">
       {% endif %}
       <br>
       <hr>
@@ -50,6 +50,7 @@
     <div class="row karyaaudiodata">
       {% if  shareinfo['sharemode']|int >= 3 %}
         <div class="col-md-6 fetchkaryarecording">
+          <br>
           <h3><b>Fetch Karya Recordings</b></h3>
           <form name="fetchdata" method="POST" action="{{url_for('karya_bp.fetch_karya_audio')}}">
             <!-- <label for="piaccesscode">Access Code: </label> -->
@@ -72,7 +73,7 @@
                   padding: 5px;
                   border-radius: 5px;
                   margin-left: 10px;
-                  background-color: #f1f1f1fb;
+                  background-color: #fcfcfc;
               }
           </style>
           <p>To Fetch Karya Recoding Select The Task To Get Access Code(s) : </p>
@@ -107,17 +108,14 @@
             </select>
           </div>
 
-        
-            <br>
             <div id="idforworker"></div>
             <br>
-            <label for="pimobilenumber">Mobile Number:</label>
+            <label for="pimobilenumber">Mobile Number :</label>
             <input type="text" name="mobile_number" id="pimobilenumber" placeholder="Enter Mobile Number" required>
             <br>
             <input type="button" class="btn btn-info" id="getotpid" value="Get OTP">
             <br>
-            <br>
-            <label for="karyaotp">Enter OTP:</label>
+            <label for="karyaotp">Enter OTP : </label>
             <input type="text" name="karya_otp" id="karyaotp" hidden required>
             <br>
             <br>
@@ -145,7 +143,7 @@
               -->
             <br>
               <p>Click on the "Choose File" button to upload a zip file*:<p>
-              <input type="file" id="accesscodefile" name="accesscodefile">
+              <input type="file"   class="btn btn-lg btn-success" id="accesscodefile" name="accesscodefile">
               <br>
           
             <input class="btn btn-primary" id="submit" type="submit" value="Submit" >

@@ -1,0 +1,103 @@
+    /* Custom styles */
+    table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+    
+    th, td {
+        text-align: left;
+        padding: 8px;
+        border-bottom: 1px solid #ddd;
+    }
+    
+    th {
+        background-color: #f2f2f2;
+    }
+    
+    .playPauseBtn,
+    .deleteBtn {
+        padding: 5px 10px;
+        border: none;
+        background-color: #007bff;
+        color: #fff;
+        cursor: pointer;
+    }
+    
+    .playPauseBtn:hover,
+    .deleteBtn:hover {
+        background-color: #0056b3;
+    }
+
+    #deleteSelectedBtn {
+        background-color: red;
+        color: #fff;
+    }
+
+    /* New styles */
+    h4 {
+        font-size: 24px;
+        margin-bottom: 20px;
+    }
+
+    .row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .col {
+        flex-basis: 50%;
+    }
+
+    label {
+        font-weight: bold;
+    }
+
+    select {
+        width: 40%;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+    }
+
+    #audiofilescountdropdown {
+        width: 10%;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        margin-left: 5px;
+    }
+
+    #myInput {
+        width: 50%;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        margin-bottom: 10px;
+    }
+
+    #deleteSelectedBtn {
+        padding: 8px 16px;
+        border-radius: 4px;
+        font-weight: bold;
+        color: #fff;
+        cursor: pointer;
+    }
+
+    #deleteSelectedBtn:hover {
+        background-color: #c40000;
+    }
+
+    table {
+        display: none;
+        margin-top: 20px;
+    }
+
+    thead th {
+        font-weight: bold;
+    }
+
+    tbody tr:hover {
+        background-color: #f2f2f2;
+    }
