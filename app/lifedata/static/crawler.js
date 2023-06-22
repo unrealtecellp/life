@@ -62,13 +62,21 @@ function crawlerInterfaceEvents() {
     
         var drow = '<div class="row removecrawlervideoschannelsId' + crawlerVideosChannelsId + '">';
         
-        var fItems = '<div class="col-md-4"><div class="form-group">'+
-                    '<input type="text" class="form-control"'+
-                    ' name="videoschannelId_' + crawlerVideosChannelsId + '" placeholder="Videos/Channels Id" required></div></div>';
+        var fItems = '';
+        
+        // fItems += '<div class="col-md-4"><div class="form-group">'+
+        //             '<input type="text" class="form-control"'+
+        //             ' name="videoschannelId_' + crawlerVideosChannelsId + '" placeholder="Videos/Channels Id" required></div></div>';
     
-        fItems += '<div class="col-md-3"><div class="form-group">'+
-                    '<div class="input-group">'+
+        fItems += '<div class="col-md-2"><div class="form-group">'+
+                    // '<div class="input-group">'+
                     '<select class="form-control" id="idsearchkeywords' + crawlerVideosChannelsId + '" name="searchkeywords_' + crawlerVideosChannelsId + '" multiple="multiple">';
+        
+        fItems += '</select></div></div>';
+
+        fItems += '<div class="col-md-5"><div class="form-group">'+
+                    '<div class="input-group">'+
+                    '<select class="form-control" id="idvideoschannelId' + crawlerVideosChannelsId + '" name="videoschannelId_' + crawlerVideosChannelsId + '" multiple="multiple">';
         
         fItems += '</select>';
     
@@ -81,6 +89,12 @@ function crawlerInterfaceEvents() {
         $(".videoschannelsid").append(drow);
         $('#idsearchkeywords' + crawlerVideosChannelsId).select2({
             placeholder: 'Search Keywords',
+            // data: languages,
+            tags: true,
+            allowClear: true
+        });
+        $('#idvideoschannelId' + crawlerVideosChannelsId).select2({
+            placeholder: 'Videos/Channels Ids',
             // data: languages,
             tags: true,
             allowClear: true
