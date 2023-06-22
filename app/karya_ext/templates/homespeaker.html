@@ -21,7 +21,7 @@
 
 {% block styles %}
 {{super()}}
-<!-- <link href="{{url_for('.static', filename='homespeaker.css')}}" rel="stylesheet" /> -->
+<link href="{{url_for('.static', filename='homespeaker.css')}}" rel="stylesheet" />
 
 {% endblock %}
 
@@ -52,7 +52,7 @@
 
       <div class="panel panel-default">
           <div class="panel-heading">
-            <button type="button" id="newcodebutton" class="btn btn-primary assignaccesscode" data-toggle="modal" data-target="#exampleModal">
+            <button type="button" style="background-color: #ef1e0b; color: white;" id="newcodebutton" class="btn btn-danger assignaccesscode" data-toggle="modal" data-target="#exampleModal">
               Get New Access Code
             </button>
           </div>
