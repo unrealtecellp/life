@@ -26,17 +26,19 @@ from app.controller import (
 )
 from app.lifedata.controller import (
     copydatafromparentproject,
+    crawled_data_details,
     data_project_info,
     savenewdataform,
     create_validation_type_project,
     save_tagset,
     get_validation_data,
     youtubecrawl,
-    get_crawled_data
+    sourceid_to_souremetadata
 )
 from flask_login import login_required
 import os
 from pprint import pformat
+import json
 
 lifedata = Blueprint('lifedata', __name__, template_folder='templates', static_folder='static')
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -387,10 +389,11 @@ def youtubecrawler():
 def crawlerbrowse():
     try:
         new_data = {}
-        projects, userprojects, crawling = getdbcollections.getdbcollections(mongo,
+        projects, userprojects, crawling, sourcedetails_collection = getdbcollections.getdbcollections(mongo,
                                                                                 'projects',
                                                                                 'userprojects',
-                                                                                'crawling')
+                                                                                'crawling',
+                                                                                'sourcedetails')
         current_username = getcurrentusername.getcurrentusername()
         activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
                                                                     userprojects)
@@ -400,9 +403,12 @@ def crawlerbrowse():
                                                         activeprojectname)
         sourceids = projects.find_one({"projectname": activeprojectname},
                                         {"_id": 0, "sourceIds." +current_username: 1})
-        logger.debug('sourceids: %s', pformat(sourceids))
+        # logger.debug('sourceids: %s', pformat(sourceids))
         if (sourceids["sourceIds"]):
             sourceids = sourceids["sourceIds"][current_username]
+            source_metadata = sourceid_to_souremetadata.get_source_metadata(sourcedetails_collection,
+                                                                                sourceids,
+                                                                                activeprojectname)
             sourceids.append('')
         else:
             sourceids = ['']
@@ -410,11 +416,11 @@ def crawlerbrowse():
             active_source_id = shareinfo['activesourceId']
         else:
             active_source_id = ''
-        
+        total_records = 0
         if (active_source_id != ''):
-            crawled_data_list = get_crawled_data.get_n_crawled_data(crawling,
-                                                                    activeprojectname,
-                                                                    active_source_id)
+            total_records, crawled_data_list = crawled_data_details.get_n_crawled_data(crawling,
+                                                                        activeprojectname,
+                                                                        active_source_id)
         else:
             crawled_data_list = []
         # get crawled file src
@@ -431,9 +437,191 @@ def crawlerbrowse():
         new_data['sourceIds'] = sourceids
         new_data['crawlerData'] = crawled_data_list
         new_data['crawlerDataFields'] = ['dataId', 'Data']
+        new_data['sourceMetadata'] = source_metadata
+        new_data['totalRecords'] = total_records
+        # logger.debug('new_data: %s', pformat(new_data))
     except:
         logger.exception("")
 
     return render_template('crawlerbrowse.html',
                            projectName=activeprojectname,
                            newData=new_data)
+
+@lifedata.route('/updatecrawlerbrowsetable', methods=['GET', 'POST'])
+@login_required
+def updatecrawlerbrowsetable():
+    crawler_data_fields= ['dataId', 'Data']
+    crawled_data_list = []
+    try:
+        # data through ajax
+        crawler_browse_info = json.loads(request.args.get('a'))
+        logger.debug('crawler_browse_info: %s', pformat(crawler_browse_info))
+        userprojects, crawling = getdbcollections.getdbcollections(mongo,
+                                                                    'userprojects',
+                                                                    'crawling')
+        current_username = getcurrentusername.getcurrentusername()
+        activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                    userprojects)
+        logger.debug(crawler_browse_info['activeSourceId'])
+        active_source_id = crawler_browse_info['activeSourceId']
+        crawled_data_count = crawler_browse_info['crawledDataCount']
+        crawled_data_browse_action = crawler_browse_info['browseActionSelectedOption']
+        if (active_source_id != ''):
+            total_records, crawled_data_list = crawled_data_details.get_n_crawled_data(crawling,
+                                                                        activeprojectname,
+                                                                        active_source_id,
+                                                                        start_from=0,
+                                                                        number_of_crawled_data=crawled_data_count,
+                                                                        crawled_data_delete_flag=crawled_data_browse_action)
+        else:
+            crawled_data_list = []
+        # logger.debug('crawler_data_list: %s', pformat(crawler_data_list))
+        # get crawler file src
+        # new_crawled_data_list = []
+        # for crawler_data in crawler_data_list:
+        #     new_crawler_data = crawler_data
+        #     crawler_filename = crawler_data['crawlerFilename']
+        #     new_crawler_data['crawler File'] = url_for('retrieve', filename=crawler_filename)
+        #     new_crawler_data_list.append(new_crawler_data)
+        shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
+                                                        current_username,
+                                                        activeprojectname)
+        share_mode = shareinfo['sharemode']
+    except:
+        logger.exception("")
+
+    return jsonify(crawledDataFields= crawler_data_fields,
+                   crawledData=crawled_data_list,
+                   shareMode=share_mode,
+                   totalRecords=total_records)
+
+@lifedata.route('/crawlerbrowseaction', methods=['GET', 'POST'])
+@login_required
+def crawlerbrowseaction():
+    try:
+        projects_collection, userprojects, crawling_collection = getdbcollections.getdbcollections(mongo,
+                                                                                                    'projects',
+                                                                                                    'userprojects',
+                                                                                                    'crawling')
+        current_username = getcurrentusername.getcurrentusername()
+        activeprojectname = getactiveprojectname.getactiveprojectname(current_username, userprojects)
+        logger.debug("%s,%s", current_username, activeprojectname)
+        # data from ajax
+        data = json.loads(request.args.get('a'))
+        logger.debug('data: %s', pformat(data))
+        data_info = data['dataInfo']
+        logger.debug('data_info: %s', pformat(data_info))
+        crawler_browse_info = data['crawlerBrowseInfo']
+        logger.debug('crawler_browse_info: %s', pformat(crawler_browse_info))
+        browse_action = crawler_browse_info['browseActionSelectedOption']
+        active_source_id = crawler_browse_info['activeSourceId']
+        data_ids_list = list(data_info.keys())
+
+        for crawler_id in data_ids_list:
+            if(browse_action):
+                logger.info("crawler id to revoke: %s, %s", crawler_id, type(crawler_id))
+            else:
+                logger.info("crawler id to delete: %s, %s", crawler_id, type(crawler_id))
+            if (browse_action):
+                crawled_data_details.revoke_deleted_data(projects_collection,
+                                                            crawling_collection,
+                                                            activeprojectname,
+                                                            active_source_id,
+                                                            crawler_id)
+            else:
+                crawled_data_details.delete_one_data(projects_collection,
+                                                                crawling_collection,
+                                                                activeprojectname,
+                                                                current_username,
+                                                                active_source_id,
+                                                                crawler_id)
+        if (browse_action):
+            flash("Data revoked successfully")
+        else:
+            flash("Data deleted successfully")
+    except:
+        logger.exception("")
+
+    return 'OK'
+
+@lifedata.route('/crawlerbrowseactionviewdata', methods=['GET', 'POST'])
+@login_required
+def crawlerbrowseactionviewdata():
+    try:
+        userprojects, crawling_collection = getdbcollections.getdbcollections(mongo,
+                                                                              'userprojects',
+                                                                                'crawling')
+        current_username = getcurrentusername.getcurrentusername()
+        activeprojectname = getactiveprojectname.getactiveprojectname(current_username, userprojects)
+        logger.debug("%s,%s", current_username, activeprojectname)
+        # data from ajax
+        data = json.loads(request.args.get('a'))
+        logger.debug('data: %s', pformat(data))
+        data_info = data['dataInfo']
+        # logger.debug('data_info: %s', pformat(data_info))
+        crawler_browse_info = data['crawlerBrowseInfo']
+        # logger.debug('crawler_browse_info: %s', pformat(crawler_browse_info))
+        # browse_action = crawler_browse_info['browseActionSelectedOption']
+        active_source_id = crawler_browse_info['activeSourceId']
+        data_id = list(data_info.keys())[0]
+        logger.debug("data_id: %s", data_id)
+        comment_info = crawling_collection.find_one({"projectname": activeprojectname,
+                                                     "lifesourceid": active_source_id,
+                                                     "dataId": data_id},
+                                                     {"_id": 0,
+                                                      "additionalInfo.comment_info": 1})
+        comment_info = comment_info["additionalInfo"]["comment_info"]
+        logger.debug("comment_info: %s", pformat(comment_info))
+        return jsonify(commentInfo= comment_info)
+    except:
+        logger.exception("")
+        return jsonify(commentInfo={})
+
+@lifedata.route('/crawlerbrowsechangepage', methods=['GET', 'POST'])
+@login_required
+def crawlerbrowsechangepage():
+    crawler_data_fields= ['dataId', 'Data']
+    crawled_data_list = []
+    try:
+        # data through ajax
+        crawler_browse_info = json.loads(request.args.get('a'))
+        logger.debug('crawler_browse_info: %s', pformat(crawler_browse_info))
+        userprojects, crawling = getdbcollections.getdbcollections(mongo,
+                                                                    'userprojects',
+                                                                    'crawling')
+        current_username = getcurrentusername.getcurrentusername()
+        activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                    userprojects)
+        # logger.debug(crawler_browse_info['activeSourceId'])
+        active_source_id = crawler_browse_info['activeSourceId']
+        crawled_data_count = crawler_browse_info['crawledDataCount']
+        crawled_data_browse_action = crawler_browse_info['browseActionSelectedOption']
+        page_id = crawler_browse_info['pageId']
+        start_from = ((page_id*crawled_data_count)-crawled_data_count)
+        number_of_crawled_data = page_id*crawled_data_count
+        logger.debug('pageId: %s, start_from: %s, number_of_crawled_data: %s',
+                     page_id, start_from, number_of_crawled_data)
+        total_records = 0
+        if (active_source_id != ''):
+            total_records, crawled_data_list = crawled_data_details.get_n_crawled_data(crawling,
+                                                                        activeprojectname,
+                                                                        active_source_id,
+                                                                        start_from=start_from,
+                                                                        number_of_crawled_data=number_of_crawled_data,
+                                                                        crawled_data_delete_flag=crawled_data_browse_action)
+        else:
+            crawled_data_list = []
+        # logger.debug('crawled_data_list: %s', pformat(crawled_data_list))
+        shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
+                                                        current_username,
+                                                        activeprojectname)
+        share_mode = shareinfo['sharemode']
+    except:
+        logger.exception("")
+
+    return jsonify(crawledDataFields= crawler_data_fields,
+                   crawledData=crawled_data_list,
+                   shareMode=share_mode,
+                   totalRecords=total_records,
+                   activePage=page_id)
+
