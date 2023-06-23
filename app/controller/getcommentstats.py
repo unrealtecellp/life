@@ -28,16 +28,20 @@ def getcommentstats(projects,
         total_comments = len(speakerfiles)
 
         transcribedfiles = transcriptions.find({ "projectname": activeprojectname, "speakerId": ID },
-                                            { "_id" : 0, "transcriptionFLAG" : 1 })
+                                            {"_id" : 0,
+                                             "transcriptionFLAG" : 1,
+                                             "audiodeleteFLAG": 1})
         # print(speakerinfo)
         # print(total_comments)
         for transcribedfile in transcribedfiles:
-            # print(transcribedfile, transcribedfile['transcriptionFLAG'])
-            if transcribedfile['transcriptionFLAG'] == 1:
-                transcribed += 1
-            elif transcribedfile['transcriptionFLAG'] == 0:
-                nottranscribed += 1
+            # logger.debug('transcribedfile: %s, ', transcribedfile)
+            if (transcribedfile['audiodeleteFLAG'] == 0):
+                if transcribedfile['transcriptionFLAG'] == 1:
+                    transcribed += 1
+                elif transcribedfile['transcriptionFLAG'] == 0:
+                    nottranscribed += 1
         # print(transcribed, nottranscribed)
+        # logger.debug('total_comments: %s, transcribed: %s, nottranscribed: %s', total_comments, transcribed, nottranscribed)
     except:
         pass
 
