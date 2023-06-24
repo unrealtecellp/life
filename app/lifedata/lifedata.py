@@ -25,6 +25,7 @@ from app.controller import (
     readzip
 )
 from app.lifedata.controller import (
+    annotationdetails,
     copydatafromparentproject,
     crawled_data_details,
     data_project_info,
@@ -80,21 +81,22 @@ def newdataform():
         _type_: _description_
     """
     try:
-        projects, userprojects, projectsform, questionnaires, transcriptions = getdbcollections.getdbcollections(mongo,
+        projects, userprojects, projectsform, questionnaires, transcriptions, crawling = getdbcollections.getdbcollections(mongo,
                                                                                                                 'projects',
                                                                                                                 'userprojects',
                                                                                                                 'projectsform',
                                                                                                                 'questionnaires',
-                                                                                                                'transcriptions')
+                                                                                                                'transcriptions',
+                                                                                                                'crawling')
         current_username = getcurrentusername.getcurrentusername()
 
         include_speakerIds = ['transcriptions', 'recordings']
 
         if request.method =='POST':
             new_data_form = dict(request.form.lists())
-            # logger.debug('new_data_form: %s', pformat(new_data_form))
+            logger.debug('new_data_form: %s', pformat(new_data_form))
             new_data_form_files = request.files.to_dict()
-            # logger.debug('new_data_form_files: %s', pformat(new_data_form_files))
+            logger.debug('new_data_form_files: %s', pformat(new_data_form_files))
             project_type = new_data_form['projectType'][0]
             projectname = 'D_'+new_data_form['projectname'][0]
             about_project = new_data_form['aboutproject'][0]
@@ -110,18 +112,6 @@ def newdataform():
                 flash(f'Project Name : "{projectname}" already exist!')
                 return redirect(url_for('lifedata.home'))
 
-            if ("derivefromproject" in new_data_form):
-            #     print("line no: 76, derivefromproject in new_data_form")
-                derive_from_project_name = new_data_form["derivefromproject"][0]
-                projects.update_one({"projectname": derive_from_project_name},
-                                    {"$addToSet": {
-                                        "projectDerivatives": project_name
-                                    }})
-                projects.update_one({"projectname": project_name},
-                                    {"$addToSet": {
-                                        "derivedFromProject": derive_from_project_name
-                                    }})
-
             updateuserprojects.updateuserprojects(userprojects,
                                                     projectname,
                                                     current_username
@@ -133,16 +123,18 @@ def newdataform():
                                                                 current_username,
                                                                 project_type
                                                             )
-            # logger.debug("save_data_form: %s", pformat(save_data_form))
+            logger.debug("save_data_form: %s", pformat(save_data_form))
 
             if (project_type == 'validation'):
                 validation_collection, tagsets = getdbcollections.getdbcollections(mongo,
-                                                                        'validation',
-                                                                        'tagsets')
+                                                                                    'validation',
+                                                                                    'tagsets')
                 # logger.debug("project_type: %s", project_type)
 
                 validation_zip_file = new_data_form_files["tagsetZipFile"]
-                tagset_project_ids, = save_tagset.save_tagset(tagsets, validation_zip_file, project_name)
+                tagset_project_ids, = save_tagset.save_tagset(tagsets,
+                                                              validation_zip_file,
+                                                              project_name)
                 # logger.debug(tagset_project_ids)
                 projects.update_one({"projectname": project_name},
                                     {"$set": {
@@ -156,10 +148,43 @@ def newdataform():
 
                 return redirect(url_for("lifedata.validation"))
                 # return redirect(url_for("enternewsentences"))
+            elif (project_type == 'annotation'):
+                annotation_collection, tagsets = getdbcollections.getdbcollections(mongo,
+                                                                                    'annotation',
+                                                                                    'tagsets')
+                # logger.debug("project_type: %s", project_type)
+
+                annotation_zip_file = new_data_form_files["annotationtagsetZipFile"]
+                tagset_project_ids, = save_tagset.save_tagset(tagsets,
+                                                              annotation_zip_file,
+                                                              project_name)
+                # logger.debug(tagset_project_ids)
+                projects.update_one({"projectname": project_name},
+                                    {"$set": {
+                                        "tagsetId": tagset_project_ids
+                                    }})
+                # annotation.create_annotation_type_project(projects,
+                #                                             annotation_collection,
+                #                                             project_name,
+                #                                             derive_from_project_name,
+                #                                             current_username)
+
+                # return redirect(url_for("lifedata.annotation"))
 
             if ("derivefromproject" in new_data_form):
             # copy all the data from the "derivedfromproject" to "newproject"
-                derive_from_project_type = getprojecttype.getprojecttype(projects, derive_from_project_name)
+            #     print("line no: 76, derivefromproject in new_data_form")
+                derive_from_project_name = new_data_form["derivefromproject"][0]
+                projects.update_one({"projectname": derive_from_project_name},
+                                    {"$addToSet": {
+                                        "projectDerivatives": project_name
+                                    }})
+                projects.update_one({"projectname": project_name},
+                                    {"$addToSet": {
+                                        "derivedFromProject": derive_from_project_name
+                                    }})
+                derive_from_project_type = getprojecttype.getprojecttype(projects,
+                                                                         derive_from_project_name)
                 # logger.debug('derive_from_project_type: %s', derive_from_project_type)
                 if (derive_from_project_type == 'questionnaires' and
                     project_type in include_speakerIds):
@@ -169,12 +194,49 @@ def newdataform():
                                                                         derive_from_project_name,
                                                                         projectname,
                                                                         current_username)
+                if (derive_from_project_type == 'crawling' and
+                    project_type == 'annotation'):
+                    data_collection, = getdbcollections.getdbcollections(mongo, project_type)
+                    copydatafromparentproject.copydatafromcrawlingproject(projects,
+                                                                            userprojects,
+                                                                            crawling,
+                                                                            data_collection,
+                                                                            derive_from_project_name,
+                                                                            projectname,
+                                                                            current_username)
+                    return redirect(url_for("lifedata.annotation"))
 
             return redirect(url_for("enternewsentences"))
+        return render_template("lifedatahome.html")
     except:
         logger.exception("")
         flash("Some error occured!!!")
         return render_template("lifedatahome.html")
+
+@lifedata.route('/annotation', methods=['GET', 'POST'])
+@login_required
+def annotation():
+    projects_collection, userprojects_collection, annotation_collection, tagsets_collection = getdbcollections.getdbcollections(mongo,
+                                                                                                                                "projects",
+                                                                                                                                "userprojects",
+                                                                                                                                "annotation",
+                                                                                                                                "tagsets")
+    current_username = getcurrentusername.getcurrentusername()
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                  userprojects_collection)
+
+    project_details = annotationdetails.get_annotation_data(projects_collection,
+                                                            userprojects_collection,
+                                                            annotation_collection,
+                                                            tagsets_collection,
+                                                            current_username,
+                                                            activeprojectname)
+    
+
+    return render_template("lifedataannotation.html",
+                           projectName=activeprojectname,
+                           proj_data=project_details
+                           )
 
 @lifedata.route('/validation', methods=['GET', 'POST'])
 @login_required

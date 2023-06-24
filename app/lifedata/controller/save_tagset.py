@@ -15,12 +15,6 @@ logger = life_logging.get_logger()
 
 def save_tagset(tagsets, zip_file, use_in_project):
     current_username = getcurrentusername.getcurrentusername()
-    tag_set = {}
-    tag_set_meta_data = {}
-    categoryDependency = {}
-    defaultCategoryTags = {}
-    categoryHtmlElement = {}
-    categoryHtmlElementProperties = {}
     try:
         with ZipFile(zip_file) as myzip:
             existing_tagset_projects = []
@@ -48,7 +42,13 @@ def save_tagset(tagsets, zip_file, use_in_project):
                     if tagsets.find_one({"projectname": tagset_project_name},
                                         {'_id' : 0, "projectname": 1}) != None:
                         existing_tagset_projects.append(tagset_project_name)
-                    
+                        continue
+                tag_set = {}
+                tag_set_meta_data = {}
+                categoryDependency = {}
+                defaultCategoryTags = {}
+                categoryHtmlElement = {}
+                categoryHtmlElementProperties = {}
                 if (len(tags_df.columns) >= 2):
                     for i in range(len(tags_df)):
                         # reading column 'Category', and 'Tags'
@@ -59,18 +59,22 @@ def save_tagset(tagsets, zip_file, use_in_project):
                             tag_set[tags_df.iloc[i, 0]] = ['']
                         else:
                             tag_set[tags_df.iloc[i, 0]] = re.sub(' ', '', tags_df.iloc[i, 1]).split(',')
-                        if (len(tags_df.columns) == 3):
+                        if (len(tags_df.columns) >= 3):
                             # reading column 'Default'
+                            # logger.debug("tags_df.iloc[i, 2]: %s", tags_df.iloc[i, 2])
                             if (str(tags_df.iloc[i, 2]) == 'nan'):
                                 defaultCategoryTags[tags_df.iloc[i, 0]] = ''
                             elif (len(tags_df.columns) == 4 and str(tags_df.iloc[i, 4]) == 'select'):
                                 defaultCategoryTags[tags_df.iloc[i, 0]] = [re.sub(' ', '', tags_df.iloc[i, 2]).split(',')[0]]
                             else:
                                 defaultCategoryTags[tags_df.iloc[i, 0]] = re.sub(' ', '', tags_df.iloc[i, 2]).split(',')[0]
-                        if (len(tags_df.columns) == 4):
+                        if (len(tags_df.columns) >= 4):
+                            # logger.debug("tags_df.iloc[i, 3]: %s", tags_df.iloc[i, 3])
                             if (re.sub(' ', '', tags_df.iloc[i, 3]).split(',')[0] != 'NONE'):
                                 categoryDependency[tags_df.iloc[i, 0]] = re.sub(' ', '', tags_df.iloc[i, 3]).split(',')[0]
-                        if (len(tags_df.columns) == 6):
+                        if (len(tags_df.columns) >= 6):
+                            # logger.debug("tags_df.iloc[i, 4]: %s", tags_df.iloc[i, 4])
+                            # logger.debug("tags_df.iloc[i, 5]: %s", tags_df.iloc[i, 5])
                             categoryHtmlElement[tags_df.iloc[i, 0]] = re.sub(' ', '', tags_df.iloc[i, 4]).split(',')[0]
                             categoryHtmlElementProperties[tags_df.iloc[i, 0]] = re.sub(' ', '', tags_df.iloc[i, 5]).split(',')[0]
                     tag_set_meta_data['categoryDependency'] = categoryDependency
@@ -93,7 +97,7 @@ def save_tagset(tagsets, zip_file, use_in_project):
                 tagset_project_details["useInProjects"] = [use_in_project]
 
                 tagset_project_id = tagsets.insert_one(tagset_project_details)
-                logger.debug('tagset_project_id: %s', tagset_project_id)
+                # logger.debug('tagset_project_id: %s', tagset_project_id)
                 logger.debug("insertedId: %s", tagset_project_id.inserted_id)
                 tagset_project_ids.append(tagset_project_id.inserted_id)
                 # projectname = tagset_project_details['projectname']
@@ -103,13 +107,11 @@ def save_tagset(tagsets, zip_file, use_in_project):
                 #                                 )
             if (len(existing_tagset_projects) > 0):
                 flash(f'File Name : {", ".join(existing_tagset_projects)} already exist!', 'warning')
-                return redirect(url_for('lifedata.home'))
-
-
+                # return redirect(url_for('lifedata.home'))
     except:
         logger.exception("")
         flash('Please upload a zip file. Check the file format at the link provided for the Sample File')
         return redirect(url_for('lifedata.home'))
 
-    # logger.debug('tagset_project_ids from save_tagset: %s', tagset_project_ids)
+    logger.debug('tagset_project_ids from save_tagset: %s', tagset_project_ids)
     return tuple(tagset_project_ids)
