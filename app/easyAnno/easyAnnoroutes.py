@@ -23,7 +23,7 @@ from flask import Response, stream_with_context
 import base64
 import re
 from datetime import datetime
-from pprint import pprint
+from pprint import pprint, pformat
 from jsondiff import diff
 from pytesseract import image_to_string, image_to_osd
 from PIL import Image
@@ -43,8 +43,11 @@ from app.controller import (
     getprojecttype,
     readJSONFile,
     savenewproject,
-    updateuserprojects
+    updateuserprojects,
+    life_logging
 )
+
+logger = life_logging.get_logger()
 
 easyAnno = Blueprint('easyAnno', __name__, template_folder='templates', static_folder='static')
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -896,20 +899,25 @@ def textAnno():
             project_details['tagSetMetaData']['defaultCategoryTags'] = {**defaultAnnotation, **currentAnnotation}
 
             # pprint(project_details)
+            logger.debug('project_details: %s', pformat(project_details))
+            logger.debug('project_details: %s', pformat(list(project_details.keys())))
 
             return render_template('textAnno.html',
                                    projectName=activeprojectname,
                                    proj_data=project_details,
                                    data=currentuserprojectsname)
         else:
+            # logger.debug('project_details: %s', pformat(project_details))
 
             return render_template('textAnno.html',
                                    projectName=activeprojectname,
                                    proj_data=project_details,
                                    data=currentuserprojectsname)
     else:
-        flash('File not in the database', 'danger') 
-    
+        flash('File not in the database', 'danger')
+
+    # logger.debug('project_details: %s', pformat(project_details))
+
     return render_template('textAnno.html',
                            projectName=activeprojectname,
                            proj_data=project_details,

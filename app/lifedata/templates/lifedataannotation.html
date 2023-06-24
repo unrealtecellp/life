@@ -49,6 +49,7 @@ Annotation
 
 {% block scripts %}
 {{super()}}
+<script src="{{url_for('.static', filename='textannotation.js')}}"></script>
 <script src="{{url_for('.static', filename='annotation.js')}}"></script>
 {% if proj_data is defined %}
     <script type="text/javascript">createAnnotationInterface({{ proj_data | tojson | safe }});</script>

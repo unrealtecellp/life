@@ -163,13 +163,6 @@ def newdataform():
                                     {"$set": {
                                         "tagsetId": tagset_project_ids
                                     }})
-                # annotation.create_annotation_type_project(projects,
-                #                                             annotation_collection,
-                #                                             project_name,
-                #                                             derive_from_project_name,
-                #                                             current_username)
-
-                # return redirect(url_for("lifedata.annotation"))
 
             if ("derivefromproject" in new_data_form):
             # copy all the data from the "derivedfromproject" to "newproject"
