@@ -73,6 +73,10 @@ def saveaudiofiles(mongo,
                    current_username,
                    speakerId,
                    new_audio_file,
+                   run_vad=True,
+                   run_asr=False,
+                   vad_model=[],
+                   asr_model=[],
                    transcription_type='sentence',
                    boundary_threshold=0.3,
                    slice_threshold=0.9,
@@ -116,6 +120,10 @@ def saveaudiofiles(mongo,
                                                                             current_username,
                                                                             speakerId,
                                                                             new_audio_file,
+                                                                            run_vad,
+                                                                            run_asr,
+                                                                            vad_model,
+                                                                            asr_model,
                                                                             transcription_type,
                                                                             boundary_threshold,
                                                                             slice_threshold,
@@ -135,6 +143,10 @@ def saveaudiofiles(mongo,
                                                                                      current_username,
                                                                                      speakerId,
                                                                                      new_audio_file,
+                                                                                     run_vad,
+                                                                                     run_asr,
+                                                                                     vad_model,
+                                                                                     asr_model,
                                                                                      transcription_type,
                                                                                      boundary_threshold,
                                                                                      slice_threshold,
@@ -154,6 +166,10 @@ def savemultipleaudiofiles(mongo,
                            current_username,
                            speakerId,
                            all_audio_files,
+                           run_vad=True,
+                           run_asr=False,
+                           vad_model=[],
+                           asr_model=[],
                            transcription_type='sentence',
                            boundary_threshold=0.3,
                            slice_threshold=0.9,
@@ -210,6 +226,10 @@ def savemultipleaudiofiles(mongo,
                                                                                         current_username,
                                                                                         speakerId,
                                                                                         new_audio_file,
+                                                                                        run_vad,
+                                                                                        run_asr,
+                                                                                        vad_model,
+                                                                                        asr_model,
                                                                                         transcription_type,
                                                                                         boundary_threshold,
                                                                                         slice_threshold,
@@ -238,6 +258,11 @@ def saveoneaudiofile(mongo,
                      current_username,
                      speakerId,
                      new_audio_file,
+                     sourceId='',
+                     run_vad=True,
+                     run_asr=False,
+                     vad_model=[],
+                     asr_model=[],
                      transcription_type='sentence',
                      boundary_threshold=0.3,
                      slice_threshold=0.9,
@@ -268,6 +293,9 @@ def saveoneaudiofile(mongo,
     #     audiowaveform_json_dir_path, audio_json_parent_dir)
 
     # save audio file details in transcriptions collection
+    if sourceId == '':
+        sourceId = speakerId
+
     new_audio_details = {
         "username": projectowner,
         "projectname": activeprojectname,
@@ -276,6 +304,7 @@ def saveoneaudiofile(mongo,
         "audioverifiedFLAG": 0,
         "prompt": "",
         "speakerId": speakerId,
+        "sourceId": sourceId,
         "additionalInfo": {},
         "audioMetadata": {
             "verificationReport": {},
@@ -306,7 +335,12 @@ def saveoneaudiofile(mongo,
                                                                   store_in_local=True)
 
     # mongo, audio_path, type, max_pause = 0.5
-    text_grid, transcriptionFLAG = get_text_grids(mongo, audio_file_path, transcription_type,
+    text_grid, transcriptionFLAG = get_text_grids(mongo,
+                                                  run_vad,
+                                                  run_asr,
+                                                  vad_model,
+                                                  asr_model,
+                                                  audio_file_path, transcription_type,
                                                   boundary_threshold,
                                                   slice_threshold)
 
@@ -528,7 +562,7 @@ def updateaudiofiles(mongo,
         logger.debug("project_type_collection: %s", project_type_collection)
         # pprint(new_audio_details)
         project_type_collection_doc_id = project_type_collection.update_one({"audioId": audio_id},
-                                                         {"$set": new_audio_details})
+                                                                            {"$set": new_audio_details})
         # save audio file details in fs collection
         fs_file_id = mongo.save_file(updated_audio_filename,
                                      new_audio_file['audiofile'],
@@ -542,7 +576,7 @@ def updateaudiofiles(mongo,
     except:
         logger.exception("")
         flash(f"ERROR")
-        return (False,"","")
+        return (False, "", "")
 
 
 def getactiveaudioid(projects,
@@ -883,10 +917,10 @@ def savetranscription(transcriptions,
 
 
 def getaudioprogressreport(projects,
-                            transcriptions, 
-                            speakerdetails,
-                            activeprojectname,
-                            isharedwith):
+                           transcriptions,
+                           speakerdetails,
+                           activeprojectname,
+                           isharedwith):
     datatoshow = []
     users_speaker_ids = projects.find_one({'projectname': activeprojectname},
                                           {'_id': 0, 'speakerIds': 1})['speakerIds']
@@ -895,18 +929,19 @@ def getaudioprogressreport(projects,
         # logger.debug('speaker_ids_2', users_speaker_ids)
         for username in isharedwith:
             user_datatoshow = {"01_speakerId": '',
-                                "02_createdBy": '',
-                                "03_assignedTo": '',
-                                "04_totalFiles": '',
-                                "05_completedFiles": '',
-                                "06_remainingFiles": ''}
+                               "02_createdBy": '',
+                               "03_assignedTo": '',
+                               "04_totalFiles": '',
+                               "05_completedFiles": '',
+                               "06_remainingFiles": ''}
             if username in users_speaker_ids:
                 user_datatoshow['03_assignedTo'] = username
                 for speakerid in users_speaker_ids[username]:
                     user_datatoshow['01_speakerId'] = speakerid
                     user_datatoshow['02_createdBy'] = speakerdetails.find_one(
-                                                            {"projectname": activeprojectname, "lifesourceid": speakerid,},
-                                                            {"_id": 0, "createdBy": 1})['createdBy']
+                        {"projectname": activeprojectname,
+                            "lifesourceid": speakerid, },
+                        {"_id": 0, "createdBy": 1})['createdBy']
                     total_comments, annotated_comments, remaining_comments = getcommentstats.getcommentstats(projects,
                                                                                                              transcriptions,
                                                                                                              activeprojectname,
@@ -919,7 +954,6 @@ def getaudioprogressreport(projects,
                     user_datatoshow['06_remainingFiles'] = remaining_comments
 
                     datatoshow.append(user_datatoshow)
-
 
     # logger.debug('datatoshow', datatoshow)
 
@@ -956,11 +990,11 @@ def getaudioidlistofsavedaudios(data_collection,
     """
     logger.debug('checking recordings')
     all_audio = data_collection.find({"projectname": activeprojectname},
-                                    {
-                                        "_id": 0,
-                                        "audioId": 1,
-                                        "audioFilename": 1,
-                                        "speakerId": 1
+                                     {
+        "_id": 0,
+        "audioId": 1,
+        "audioFilename": 1,
+        "speakerId": 1
     })
 
     for audio in all_audio:
@@ -988,10 +1022,10 @@ def getaudiofromprompttext(projectsform,
     lang_script = projectform['LangScript'][1]
     # logger.debug(lang_script)
     all_audio = data_collection.find({"projectname": activeprojectname},
-                                    {
-                                        "_id": 0
-                                        # "prompt.content": 1,
-                                        # "audioId": 1
+                                     {
+        "_id": 0
+        # "prompt.content": 1,
+        # "audioId": 1
     })
     foundText = 'text not found in the '+str(data_collection)
     logger.debug('foundText: %s', foundText)
@@ -1017,15 +1051,17 @@ def getaudiofromprompttext(projectsform,
                             audioId = copyofaudiodata(data_collection, audio)
                             if audioId not in exclude:
                                 logger.debug("audio: %s", audio)
-                                logger.debug("prompt_text: %s\naudioId: %s", prompt_text, audioId)
+                                logger.debug(
+                                    "prompt_text: %s\naudioId: %s", prompt_text, audioId)
                                 return (audioId, '')
-                elif(prompt_type == 'audio'):
+                elif (prompt_type == 'audio'):
                     for boundaryId in lang_info['audio']['textGrid']['sentence'].keys():
                         logger.debug("boundaryId: %s", boundaryId)
                         prompt_text = lang_info['audio']['textGrid']['sentence'][boundaryId]['transcription'][script].strip(
                         )
                         if (text == prompt_text):
-                            logger.debug('prompt_text: %s\nspeaker_id: %s\naudio["speakerId"]: %s', prompt_text, speaker_id, audio['speakerId'])
+                            logger.debug(
+                                'prompt_text: %s\nspeaker_id: %s\naudio["speakerId"]: %s', prompt_text, speaker_id, audio['speakerId'])
                         if (text == prompt_text and speaker_id == ''):
                             foundText = "text found but audio already available"
                             logger.debug('foundText: %s', foundText)
@@ -1033,11 +1069,12 @@ def getaudiofromprompttext(projectsform,
                             audioId = copyofaudiodata(data_collection, audio)
                             if audioId not in exclude:
                                 logger.debug("audio: %s", audio)
-                                logger.debug("prompt_text: %s\naudioId: %s", prompt_text, audioId)
+                                logger.debug(
+                                    "prompt_text: %s\naudioId: %s", prompt_text, audioId)
                                 return (audioId, '')
-                elif(prompt_type == 'image'):
+                elif (prompt_type == 'image'):
                     pass
-                elif(prompt_type == 'multimedia'):
+                elif (prompt_type == 'multimedia'):
                     pass
     logger.debug('foundText: %s', foundText)
 
@@ -1419,7 +1456,12 @@ def get_audio_boundaries(model_params):
     return boundaries, cleaned_file
 
 
-def get_text_grids(mongo, audio_path, transcription_type, max_pause, max_new_file_pause):
+def get_text_grids(mongo,
+                   run_vad,
+                   run_asr,
+                   vad_model,
+                   asr_model,
+                   audio_path, transcription_type, max_pause, max_new_file_pause):
     text_grid = {
         "discourse": {},
         "sentence": {},
@@ -1435,28 +1477,29 @@ def get_text_grids(mongo, audio_path, transcription_type, max_pause, max_new_fil
     # of a model. We could store project-specific prefeerences here.
     # Currently it gives preference to local models and select the first
     # model in the list.
-    if 'textGrid_boundary' in all_model_names:
-        model_params = {
-            "audio_file": audio_path,
-            "SAMPLING_RATE": 16000,
-            "remove_pauses": False,
-            "USE_ONNX": False
-        }
-        boundaries, cleaned_file = get_audio_boundaries(
-            model_params)
+    if run_vad or run_asr:
+        if 'textGrid_boundary' in all_model_names:
+            model_params = {
+                "audio_file": audio_path,
+                "SAMPLING_RATE": 16000,
+                "remove_pauses": False,
+                "USE_ONNX": False
+            }
+            boundaries, cleaned_file = get_audio_boundaries(
+                model_params)
 
-    if 'transcription' in all_model_names:
-        model_params = {
-            "audio_file": audio_path,
-            "boundaries": boundaries
-        }
+        if run_asr and 'transcription' in all_model_names:
+            model_params = {
+                "audio_file": audio_path,
+                "boundaries": boundaries
+            }
 
-        transcriptions, transcribed = get_audio_transcriptions(
-            mongo, model_params)
+            transcriptions, transcribed = get_audio_transcriptions(
+                mongo, model_params)
 
-    # logger.debug('Boundaries received', boundaries)
-    text_grid = generate_text_grid(
-        mongo, text_grid, boundaries, transcriptions, transcription_type, max_pause)
+        # logger.debug('Boundaries received', boundaries)
+        text_grid = generate_text_grid(
+            mongo, text_grid, boundaries, transcriptions, transcription_type, max_pause)
 
     return text_grid, transcribed
 
@@ -1531,6 +1574,7 @@ def get_audio_waveform_json(audiowaveform_json, json_dir, audio_filename):
 
     return audiowaveform_json
 
+
 def delete_one_audio_file(projects_collection,
                           transcriptions_collection,
                           project_name,
@@ -1543,11 +1587,12 @@ def delete_one_audio_file(projects_collection,
         transcription_doc_id = transcriptions_collection.find_one_and_update({
             "projectname": project_name,
             "audioId": audio_id
-            },
+        },
             {"$set": {"audiodeleteFLAG": 1}},
             projection={'_id': True},
             return_document=ReturnDocument.AFTER)['_id']
-        logger.debug('DELETED transcription_doc_id: %s, %s', transcription_doc_id, type(transcription_doc_id))
+        logger.debug('DELETED transcription_doc_id: %s, %s',
+                     transcription_doc_id, type(transcription_doc_id))
 
         if (update_latest_audio_id):
             latest_audio_id = getnewaudioid(projects_collection,
@@ -1560,7 +1605,7 @@ def delete_one_audio_file(projects_collection,
                                 latest_audio_id,
                                 current_username,
                                 active_speaker_id)
-            
+
         projects_collection.update_one({"projectname": project_name},
                                        {"$pull": {"speakersAudioIds."+active_speaker_id: audio_id},
                                         "$addToSet": {"speakersAudioIdsDeleted."+active_speaker_id: audio_id}
@@ -1571,18 +1616,20 @@ def delete_one_audio_file(projects_collection,
 
     return transcription_doc_id
 
+
 def get_audio_delete_flag(transcriptions_collection,
                           project_name,
                           audio_id):
     logger.debug("%s, %s, %s", transcriptions_collection,
-                          project_name,
-                          audio_id)
+                 project_name,
+                 audio_id)
     audio_delete_flag = transcriptions_collection.find_one({"projectname": project_name,
                                                             "audioId": audio_id},
-                                                            {"_id": 0,
-                                                             "audiodeleteFLAG": 1})["audiodeleteFLAG"]
-    
+                                                           {"_id": 0,
+                                                            "audiodeleteFLAG": 1})["audiodeleteFLAG"]
+
     return audio_delete_flag
+
 
 def revoke_deleted_audio(projects_collection,
                          transcriptions_collection,
@@ -1594,14 +1641,15 @@ def revoke_deleted_audio(projects_collection,
         transcription_doc_id = transcriptions_collection.find_one_and_update({
             "projectname": project_name,
             "audioId": audio_id
-            },
+        },
             {"$set": {"audiodeleteFLAG": 0}},
             projection={'_id': True},
             return_document=ReturnDocument.AFTER)['_id']
-        logger.debug('REVOKED transcription_doc_id: %s, %s', transcription_doc_id, type(transcription_doc_id))
+        logger.debug('REVOKED transcription_doc_id: %s, %s',
+                     transcription_doc_id, type(transcription_doc_id))
 
         projects_collection.update_one({"projectname": project_name},
-                                        {"$pull": {"speakersAudioIdsDeleted."+active_speaker_id: audio_id},
+                                       {"$pull": {"speakersAudioIdsDeleted."+active_speaker_id: audio_id},
                                         "$addToSet": {"speakersAudioIds."+active_speaker_id: audio_id}
                                         })
     except:
@@ -1610,33 +1658,34 @@ def revoke_deleted_audio(projects_collection,
 
     return transcription_doc_id
 
+
 def get_n_audios(data_collection,
                  activeprojectname,
                  active_speaker_id,
                  start_from=0,
                  number_of_audios=10,
                  audio_delete_flag=0):
-    aggregate_output = data_collection.aggregate( [
-                                {
-                                    "$match": {
-                                        "projectname": activeprojectname,
-                                        "speakerId": active_speaker_id,
-                                        "audiodeleteFLAG": audio_delete_flag
-                                                }
-                                },
-                                { 
-                                    "$sort" : {
-                                        "audioId" : 1
-                                        }
-                                },
-                                {
-                                    "$project": {
-                                        "_id": 0,
-                                        "audioId": 1,
-                                        "audioFilename": 1
-                                    }
-                                }
-                                ] )
+    aggregate_output = data_collection.aggregate([
+        {
+            "$match": {
+                "projectname": activeprojectname,
+                "speakerId": active_speaker_id,
+                "audiodeleteFLAG": audio_delete_flag
+            }
+        },
+        {
+            "$sort": {
+                "audioId": 1
+            }
+        },
+        {
+            "$project": {
+                "_id": 0,
+                "audioId": 1,
+                "audioFilename": 1
+            }
+        }
+    ])
     # logger.debug("aggregate_output: %s", aggregate_output)
     aggregate_output_list = []
     for doc in aggregate_output:

@@ -1,7 +1,7 @@
 /* karyaextlinks.css */
 
 body {
-    background-color: #fcfcfc;
+    background-color: #f1f1f1;
   }
   
   h4 {
@@ -11,7 +11,7 @@ body {
   }
   
   #uploadmanage {
-    background-color: #f2f2f2;
+    background-color: #fcfcfc;
     padding: 20px;
     border-radius: 5px;
     margin-bottom: 10px;
@@ -38,7 +38,7 @@ body {
   
   
   .karyaaudiodata {
-    background-color: #f2f2f2;
+    background-color: #fcfcfc;
     padding: 20px;
     border-radius: 5px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
