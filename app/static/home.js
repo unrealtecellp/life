@@ -89,6 +89,10 @@ $("#idhomevieweditbtn").click(function() {
                 window.location.href = windowHref.slice(0, lastIndexOfPathname) +  
                                         windowHref.slice(lastIndexOfPathname).replace(pathname, "/lifedata/crawler");
             }
+            else if (projectType === 'annotation') {
+                window.location.href = windowHref.slice(0, lastIndexOfPathname) +  
+                                        windowHref.slice(lastIndexOfPathname).replace(pathname, "/lifedata/annotation");
+            }
             else {
                 window.location.href = windowHref.slice(0, lastIndexOfPathname) +  
                                         windowHref.slice(lastIndexOfPathname).replace(pathname, "/enternewlexeme");
