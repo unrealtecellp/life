@@ -1692,5 +1692,8 @@ def get_n_audios(data_collection,
         # logger.debug("aggregate_output: %s", pformat(doc))
         aggregate_output_list.append(doc)
     # logger.debug('aggregate_output_list: %s', pformat(aggregate_output_list))
+    total_records = len(aggregate_output_list)
+    logger.debug('total_records AUDIO: %s', total_records)
 
-    return aggregate_output_list[start_from:number_of_audios]
+    return (total_records,
+            aggregate_output_list[start_from:number_of_audios])

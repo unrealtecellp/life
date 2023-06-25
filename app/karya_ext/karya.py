@@ -1169,11 +1169,52 @@ def update_speaker_ids():
 
 
 
+# @karya_bp.route('/karyaaudiobrowse', methods=['GET', 'POST'])
+# @login_required
+# def karyaaudiobrowse():
+#     try:
+#         projects, userprojects, transcriptions = getdbcollections.getdbcollections(mongo, 'projects', 'userprojects', 'transcriptions')
+#         current_username = getcurrentusername.getcurrentusername()
+#         activeprojectname = getactiveprojectname.getactiveprojectname(current_username, userprojects)
+#         projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
+#         shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects, current_username, activeprojectname)
+
+#         active_speaker_id = shareinfo['activespeakerId']
+#         print("activeprojectname:", activeprojectname)
+#         print("active_speaker_id:", active_speaker_id)
+#         data = {}
+#         for transcriptions_data in transcriptions.find(
+#                 {
+#                     "projectname": activeprojectname,
+#                     "audiodeleteFLAG": 0
+#                 },
+#                 {
+#                     "_id": 0,
+#                     "audioId": 1,
+#                     "audioFilename": 1,
+#                     "karyaInfo.karyaFetchedAudioId": 1,
+#                     "speakerId": 1,
+#                     "karyaInfo.karyaSpeakerId": 1
+#                 }
+#         ):
+#             if "karyaInfo" in transcriptions_data and "karyaSpeakerId" in transcriptions_data["karyaInfo"] and "karyaFetchedAudioId" in transcriptions_data["karyaInfo"]:
+#                 speaker_id = transcriptions_data["speakerId"]
+#                 if speaker_id not in data:
+#                     data[speaker_id] = []
+#                 data[speaker_id].append(transcriptions_data)
+#         # print(data)
+
+#     except Exception as e:
+#         logger.exception(e)
+
+#     return render_template('karyaaudiobrowse.html', projectName=activeprojectname, data=data)
+
+
 @karya_bp.route('/karyaaudiobrowse', methods=['GET', 'POST'])
 @login_required
 def karyaaudiobrowse():
     try:
-        projects, userprojects, transcriptions = getdbcollections.getdbcollections(mongo, 'projects', 'userprojects', 'transcriptions')
+        projects, userprojects, transcriptions, accesscodedetails = getdbcollections.getdbcollections(mongo, 'projects', 'userprojects', 'transcriptions', 'accesscodedetails')
         current_username = getcurrentusername.getcurrentusername()
         activeprojectname = getactiveprojectname.getactiveprojectname(current_username, userprojects)
         projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
@@ -1202,8 +1243,16 @@ def karyaaudiobrowse():
                 if speaker_id not in data:
                     data[speaker_id] = []
                 data[speaker_id].append(transcriptions_data)
-        # print(data)
-
+        
+        for speaker_id, transcriptions_list in data.items():
+            for transcription in transcriptions_list:
+                karya_fetched_audio_id = transcription["karyaInfo"]["karyaFetchedAudioId"]
+                if karya_fetched_audio_id in accesscodedetails.distinct("karyafetchedaudios"):
+                    access_code = accesscodedetails.find_one({"karyafetchedaudios": karya_fetched_audio_id})["karyaaccesscode"]
+                    transcription["accesscode"] = access_code
+                    print("access_code : ",access_code)
+        print(100*"#","\n",data)
+        
     except Exception as e:
         logger.exception(e)
 
@@ -1236,6 +1285,8 @@ def karyadeleteaudiobrowse():
         audio_id = item['audioId']
         audio_filename = item['audioFilename']
         karya_fetchedAudio_ids =item['karyaFetchedAudioIds']
+        acode = item['karyaacode']
+        print("acode : ", acode)
         # print(item)
         
         # Perform the delete operation for the given speaker_id and audio_id
@@ -1253,18 +1304,28 @@ def karyadeleteaudiobrowse():
         
 
         ################################### accesscodedetails = remove matched karyafetchedaudios from list
-        accesscodedetails_result_find = accesscodedetails.find_one({"projectname": str(activeprojectname),
+        # accesscodedetails_result_find = accesscodedetails.find_one({"projectname": str(activeprojectname),
+        #                                                             "isActive":1, 'fetchData':1,
+        #                                                               'karyafetchedaudios':karya_fetchedAudio_ids},
+        #                                                              {'karyafetchedaudios':1, "karyaaccesscode":1})#['karyafetchedaudios']['karyaaccesscode']
+        
+
+
+        accesscodedetails_result_find = accesscodedetails.find_one({'projectname': str(activeprojectname),
                                                                     "isActive":1, 'fetchData':1,
-                                                                      'karyafetchedaudios':karya_fetchedAudio_ids},
-                                                                     {'karyafetchedaudios':1, "karyaaccesscode":1})#['karyafetchedaudios']['karyaaccesscode']
+                                                                      'karyafetchedaudios':karya_fetchedAudio_ids, 'karyaaccesscode':acode},
+                                                                     {'karyafetchedaudios':1})
         
-        print("accesscodedetails_result_find : ","karya audio ids: ",accesscodedetails_result_find['karyafetchedaudios'], 
-                                                "accesscode: ",accesscodedetails_result_find['karyaaccesscode'])
+        # print("accesscodedetails_result_find : ","karya audio ids: ",accesscodedetails_result_find['karyafetchedaudios'], 
+        #                                         "accesscode: ",accesscodedetails_result_find['karyaaccesscode'])
         
+
+        print("accesscodedetails_result_find : ","karya audio ids: ",accesscodedetails_result_find['karyafetchedaudios'])
         ################################ delete karya audio id
         accesscodedetails_result = accesscodedetails.update_one(
                     {
                         "projectname": str(activeprojectname),
+                        'karyaaccesscode':acode,
                         "isActive":1, 'fetchData':1,
                         'karyafetchedaudios':karya_fetchedAudio_ids},
                     {

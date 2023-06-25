@@ -25,7 +25,7 @@ Audio Browse
         </div> -->
         <br>
         <label for="speakerId">Select Speaker:</label>
-        <select name="speakerId" id="speakerId" onchange="updateTable()" style="width: 40%;">
+        <select name="speakerId" id="speakerId" onchange="updateTable()" style="width: 45%;">
             <option value="">--Select Speaker ID--</option>
             {% for speakerId in data %}
                 <option value="{{ speakerId }}">{{ speakerId }}</option>
@@ -58,6 +58,7 @@ Audio Browse
             <th>Audio ID</th>
             <th>Audio Filename</th>
             <th>Karya Fetched Audio ID</th>
+            <th>Access Code</th>
             <th>Actions</th>
         </tr>
     </thead>
@@ -70,6 +71,7 @@ Audio Browse
                     <td>{{ audioData.audioId }}</td>
                     <td>{{ audioData.audioFilename }}</td>
                     <td>{{ audioData.karyaInfo.karyaFetchedAudioId }}</td>
+                    <td>{{ audioData.accesscode }}</td>
                     <td>
                         <button class="playPauseBtn" data-audioid="{{ audioData.audioId }}">Play/Pause</button>
                     </td>
@@ -120,12 +122,14 @@ Audio Browse
             var speakerId = document.getElementById(checkboxId).closest("tr").querySelector("td:nth-child(2)").innerText;
             var audioFilename = document.getElementById(checkboxId).closest("tr").querySelector("td:nth-child(4)").innerText;
             var karyaFetchedAudioIds = document.getElementById(checkboxId).closest("tr").querySelector("td:nth-child(5)").innerText;
-
+            var karyaacode = document.getElementById(checkboxId).closest("tr").querySelector("td:nth-child(6)").innerText;
             var data = {
                 speakerId: speakerId,
                 audioId: audioId,
                 audioFilename: audioFilename,
-                karyaFetchedAudioIds: karyaFetchedAudioIds
+                karyaFetchedAudioIds: karyaFetchedAudioIds,
+                karyaacode:karyaacode
+
             };
             selectedData.push(data);
         }

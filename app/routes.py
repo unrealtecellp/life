@@ -519,11 +519,11 @@ def audiobrowse():
         else:
             speakerids = ['']
         active_speaker_id = shareinfo['activespeakerId']
-
+        total_records = 0
         if (active_speaker_id != ''):
-            audio_data_list = audiodetails.get_n_audios(transcriptions,
-                                                        activeprojectname,
-                                                        active_speaker_id)
+            total_records, audio_data_list = audiodetails.get_n_audios(transcriptions,
+                                                                        activeprojectname,
+                                                                        active_speaker_id)
         else:
             audio_data_list = []
         # get audio file src
@@ -540,8 +540,8 @@ def audiobrowse():
         new_data['shareInfo'] = shareinfo
         new_data['speakerIds'] = speakerids
         new_data['audioData'] = new_audio_data_list
-        new_data['audioDataFields'] = [
-            'audioId', 'audioFilename', 'Audio File']
+        new_data['audioDataFields'] = ['audioId', 'audioFilename', 'Audio File']
+        new_data['totalRecords'] = total_records
     except:
         logger.exception("")
 
@@ -570,13 +570,14 @@ def updateaudiobrowsetable():
         active_speaker_id = audio_browse_info['activeSpeakerId']
         audio_file_count = audio_browse_info['audioFilesCount']
         audio_browse_action = audio_browse_info['browseActionSelectedOption']
+        total_records = 0
         if (active_speaker_id != ''):
-            audio_data_list = audiodetails.get_n_audios(transcriptions,
-                                                        activeprojectname,
-                                                        active_speaker_id,
-                                                        start_from=0,
-                                                        number_of_audios=audio_file_count,
-                                                        audio_delete_flag=audio_browse_action)
+            total_records, audio_data_list = audiodetails.get_n_audios(transcriptions,
+                                                                        activeprojectname,
+                                                                        active_speaker_id,
+                                                                        start_from=0,
+                                                                        number_of_audios=audio_file_count,
+                                                                        audio_delete_flag=audio_browse_action)
         else:
             audio_data_list = []
         # logger.debug('audio_data_list: %s', pformat(audio_data_list))
@@ -588,11 +589,17 @@ def updateaudiobrowsetable():
             new_audio_data['Audio File'] = url_for(
                 'retrieve', filename=audio_filename)
             new_audio_data_list.append(new_audio_data)
+        shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
+                                                        current_username,
+                                                        activeprojectname)
+        share_mode = shareinfo['sharemode']
     except:
         logger.exception("")
 
-    return jsonify(audioDataFields=audio_data_fields,
-                   audioData=new_audio_data_list)
+    return jsonify(audioDataFields= audio_data_fields,
+                   audioData=new_audio_data_list,
+                   shareMode=share_mode,
+                   totalRecords=total_records)
 
 
 @app.route('/audiobrowseaction', methods=['GET', 'POST'])
@@ -653,6 +660,54 @@ def audiobrowseaction():
         logger.exception("")
 
     return 'OK'
+
+@app.route('/audiobrowsechangepage', methods=['GET', 'POST'])
+@login_required
+def audiobrowsechangepage():
+    audio_data_fields= ['audioId', 'audioFilename', 'Audio File']
+    audio_data_list = []
+    try:
+        # data through ajax
+        audio_browse_info = json.loads(request.args.get('a'))
+        logger.debug('audio_browse_info: %s', pformat(audio_browse_info))
+        userprojects, transcriptions = getdbcollections.getdbcollections(mongo,
+                                                                    'userprojects',
+                                                                    'transcriptions')
+        current_username = getcurrentusername.getcurrentusername()
+        activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                    userprojects)
+        # logger.debug(crawler_browse_info['activeSourceId'])
+        active_speaker_id = audio_browse_info['activeSpeakerId']
+        audio_count = audio_browse_info['audioFilesCount']
+        audio_browse_action = audio_browse_info['browseActionSelectedOption']
+        page_id = audio_browse_info['pageId']
+        start_from = ((page_id*audio_count)-audio_count)
+        number_of_audios = page_id*audio_count
+        logger.debug('pageId: %s, start_from: %s, number_of_crawled_data: %s',
+                     page_id, start_from, number_of_audios)
+        total_records = 0
+        if (active_speaker_id != ''):
+            total_records, crawled_data_list = audiodetails.get_n_audios(transcriptions,
+                                                                        activeprojectname,
+                                                                        active_speaker_id,
+                                                                        start_from=start_from,
+                                                                        number_of_audios=number_of_audios,
+                                                                        audio_delete_flag=audio_browse_action)
+        else:
+            crawled_data_list = []
+        # logger.debug('crawled_data_list: %s', pformat(crawled_data_list))
+        shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
+                                                        current_username,
+                                                        activeprojectname)
+        share_mode = shareinfo['sharemode']
+    except:
+        logger.exception("")
+
+    return jsonify(crawledDataFields= audio_data_fields,
+                   crawledData=crawled_data_list,
+                   shareMode=share_mode,
+                   totalRecords=total_records,
+                   activePage=page_id)
 
 # new automation route
 # buttons working for different automation(POS, morph analyser)
