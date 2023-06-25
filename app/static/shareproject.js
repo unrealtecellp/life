@@ -28,7 +28,7 @@ $(document).ready(function() {
           shareuserlist.push(value)
 
         };
-        for (let [key, value] of Object.entries(data.speakersList)){
+        for (let [key, value] of Object.entries(data.sourceList)){
           speakersToShare += '<option value="'+value+'">'+value+'</option>';
           sharespeakerlist.push(value)
 
@@ -67,7 +67,7 @@ $(document).ready(function() {
         allowClear: true
       });
       $('#shareSpeakerSelect').select2({
-        placeholder: 'speakers',
+        placeholder: 'source',
         // data: usersList,
         allowClear: true
       });

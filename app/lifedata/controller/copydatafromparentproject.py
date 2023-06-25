@@ -71,7 +71,7 @@ def copydatafromcrawlingproject(projects_collection,
                                 project_name,
                                 current_username):
     try:
-        all_crawled_data = crawling.find({"projectname": derived_from_project_name},{"_id": 0})
+        all_crawled_data = crawling.find({"projectname": derived_from_project_name, "datadeleteFLAG": 0},{"_id": 0})
         sourcedata_ids = {}
         for i, crawled_data in enumerate(all_crawled_data):
             # logger.debug('crawled_data: %s -> %s', i, pformat(crawled_data))

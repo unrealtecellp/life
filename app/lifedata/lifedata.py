@@ -232,7 +232,9 @@ def annotation():
                                                             sourcedetails_collection,
                                                             current_username,
                                                             activeprojectname)
-    
+    if not project_details:
+        flash("Plese select a project from active project list")
+        return redirect(url_for("home"))
 
     return render_template("lifedataannotation.html",
                            projectName=activeprojectname,

@@ -3547,7 +3547,7 @@ def userslist():
                                                                           'userprojects')
     current_username = getcurrentusername.getcurrentusername()
     usersList = []
-    speakersList = []
+    sourceList = []
     current_user_sharemode = 0
     share_with_users_list = []
     try:
@@ -3559,6 +3559,8 @@ def userslist():
                                                           current_username,
                                                           activeprojectname)
         current_user_sharemode = int(shareinfo['sharemode'])
+        project_type = getprojecttype.getprojecttype(projects,
+                                                     activeprojectname)
 
         # get list of all the users registered in the application LiFE
         for user in userlogin.find({}, {"_id": 0, "username": 1, "isActive": 1}):
@@ -3592,17 +3594,23 @@ def userslist():
                     # print(f"username!!!: {username}")
                     share_with_users_list.append(username)
         # print(usersList, share_with_users_list)
-        speakersDict = projects.find_one({'projectname': activeprojectname},
-                                         {'_id': 0, 'speakerIds.'+current_username: 1})
-        if (len(speakersDict) != 0):
-            speakersList = speakersDict['speakerIds'][current_username]
-        # print(speakersList)
-    except Exception as e:
-        print(e)
-        pass
+        if (project_type == 'recordings' or
+            project_type == 'transcriptions'):
+            speakersDict = projects.find_one({'projectname': activeprojectname},
+                                            {'_id': 0, 'speakerIds.'+current_username: 1})
+            if (len(speakersDict) != 0):
+                sourceList = speakersDict['speakerIds'][current_username]
+        elif (project_type == 'crawling' or
+            project_type == 'annotation'):
+            sourceDict = projects.find_one({'projectname': activeprojectname},
+                                            {'_id': 0, 'sourceIds.'+current_username: 1})
+            if (len(sourceDict) != 0):
+                sourceList = sourceDict['sourceIds'][current_username]
+    except:
+        logger.exception("")
 
     return jsonify(usersList=sorted(share_with_users_list),
-                   speakersList=sorted(speakersList),
+                   sourceList=sorted(sourceList),
                    sharemode=current_user_sharemode)
 
 # modal view with complete detail of a lexeme for edit
@@ -3622,6 +3630,8 @@ def shareprojectwith():
     # print('2758: activeprojectname', activeprojectname)
 
     projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
+    project_type = getprojecttype.getprojecttype(projects,
+                                                 activeprojectname)
 
     # data through ajax
     data = request.args.get('data')
@@ -3705,7 +3715,8 @@ def shareprojectwith():
                     'sharechecked': sharechecked,
                     'downloadchecked': downloadchecked,
                     'sharelatestchecked': sharelatestchecked,
-                    'activespeakerId': ''
+                    'activespeakerId': '',
+                    'activesourceId': ''
                 }
             else:
                 if (sharemode == -1):
@@ -3718,8 +3729,10 @@ def shareprojectwith():
                     'sharechecked': sharechecked,
                     'downloadchecked': downloadchecked,
                     'sharelatestchecked': sharelatestchecked,
-                    'activespeakerId': ''
+                    'activespeakerId': '',
+                    'activesourceId': ''
                 }
+                
             projectdetails = projects.find_one(
                 {
                     'projectname': activeprojectname
@@ -3728,7 +3741,8 @@ def shareprojectwith():
                     '_id': 0,
                     'sharedwith': 1,
                     'lastActiveId': 1,
-                    'speakerIds': 1
+                    'speakerIds': 1,
+                    'sourceIds': 1
                 }
             )
             # print(projectdetails)
@@ -3778,7 +3792,7 @@ def shareprojectwith():
                     )
 
                     for speaker in speakers:
-                        # print(speaker)
+                        logger.debug("speaker: %s", speaker)
                         projects.update_one(
                             {
                                 'projectname': activeprojectname
@@ -3803,6 +3817,64 @@ def shareprojectwith():
                             }
                         )
                 elif user not in projectdetails['speakerIds']:
+                    projects.update_one(
+                        {
+                            'projectname': activeprojectname
+                        },
+                        {
+                            '$set':
+                            {
+                                'lastActiveId.'+user: {}
+                            }
+                        }
+                    )
+            elif ('sourceIds' in projectdetails):
+                logger.debug("FOUND sourceIds source[-1]: %s", speakers[-1])
+                if (len(speakers) != 0):
+                    userprojectinfo = ''
+                    for key, value in projectinfo.items():
+                        if len(value) != 0:
+                            if activeprojectname in value:
+                                userprojectinfo = key+'.'+activeprojectname+".activesourceId"
+                    userprojects.update_one(
+                        {
+                            "username": current_username
+                        },
+                        {
+                            "$set":
+                            {
+                                userprojectinfo: speakers[-1]
+                            }
+                        }
+                    )
+
+                    for speaker in speakers:
+                        logger.debug("sourceId: %s", speaker)
+                        projects.update_one(
+                            {
+                                'projectname': activeprojectname
+                            },
+                            {
+                                '$addToSet':
+                                {
+                                    'sourceIds.'+user: speaker
+                                }
+                            }
+                        )
+                        if (project_type == 'annotation'):
+                            userlastactiveId = projectdetails['lastActiveId'][current_username][speaker]['dataId']
+                            projects.update_one(
+                                {
+                                    'projectname': activeprojectname
+                                },
+                                {
+                                    '$set':
+                                    {
+                                        'lastActiveId.'+user+'.'+speaker+'.dataId': userlastactiveId
+                                    }
+                                }
+                            )
+                elif user not in projectdetails['sourceIds']:
                     projects.update_one(
                         {
                             'projectname': activeprojectname
