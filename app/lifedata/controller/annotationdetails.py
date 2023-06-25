@@ -20,6 +20,7 @@ def get_annotation_data(projects_collection,
                         activeprojectname):
     project_details = {}
     try:
+        # logger.debug("activeprojectname: %s", pformat(activeprojectname))
         project_info = projects_collection.find_one({"projectname": activeprojectname},
                                                   {
                                                       "_id": 0,
@@ -30,10 +31,15 @@ def get_annotation_data(projects_collection,
                                                       "derivedFromProject": 1 
                                                     }
                                                 )
+        # logger.debug("project_info: %s", pformat(project_info))
+        if not project_info:
+            return project_details
         currentuser_projectinfo = getuserprojectinfo.getuserprojectinfo(userprojects_collection,
                                                                         current_username,
                                                                         activeprojectname)
+        last_active_id = ''
         shareinfo = currentuser_projectinfo
+        # logger.debug("currentuser_projectinfo: %s", pformat(currentuser_projectinfo))
         derive_from_project_name = project_info["derivedFromProject"][0]
         if (project_info["sourceIds"]):
             source_ids = project_info["sourceIds"][current_username]
@@ -48,9 +54,12 @@ def get_annotation_data(projects_collection,
         tag_set = tagsets_collection.find_one({"_id": tag_set_id})
         if ('activesourceId' in currentuser_projectinfo):
             active_source_id = currentuser_projectinfo['activesourceId']
+            # logger.debug("active_source_id: %s", active_source_id)
+            if (len(active_source_id) != 0):
+                last_active_id = project_info["lastActiveId"][current_username][active_source_id]['dataId']
         else:
             active_source_id = ''
-        last_active_id = project_info["lastActiveId"][current_username][active_source_id]['dataId']
+        
         total_comments, annotated_comments, remaining_comments = getcommentstats.getdatacommentstatsnew(annotation_collection,
                                                                                                         activeprojectname,
                                                                                                         active_source_id,
@@ -80,11 +89,18 @@ def get_annotation_data(projects_collection,
         project_details['totalComments'] = total_comments
         project_details["annotatedComments"] = annotated_comments
         project_details["remainingComments"]  = remaining_comments
-        project_details['textData'] = {
-                                                "ID": data_info["dataId"],
-                                                "Text": data_info["Data"]
-                                            }
-        project_details['textMetadata'] = data_info['dataMetadata']
+        if (data_info):
+            project_details['textData'] = {
+                                                    "ID": data_info["dataId"],
+                                                    "Text": data_info["Data"]
+                                                }
+            project_details['textMetadata'] = data_info['dataMetadata']
+        else:
+            project_details['textData'] = {
+                                                    "ID": '',
+                                                    "Text": ''
+                                                }
+            project_details['textMetadata'] = {}
         if (current_username in data_info):
             project_details[current_username] = data_info[current_username]['annotationGrid']
             currentAnnotation = project_details[current_username]
