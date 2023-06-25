@@ -73,7 +73,7 @@ def getcommentstatsnew(projects_collection,
         elif doc['_id'] == 1:
             annotated_comments = doc['count']
     total_comments = remaining_comments+annotated_comments
-    logger.debug("total_comments: %s\nannotated_comments: %s\nremaining_comments: %s", total_comments, annotated_comments, remaining_comments)
+    # logger.debug("total_comments: %s\nannotated_comments: %s\nremaining_comments: %s", total_comments, annotated_comments, remaining_comments)
 
     return (total_comments, annotated_comments, remaining_comments)
 
@@ -101,6 +101,6 @@ def getdatacommentstatsnew(data_collection,
         elif doc['_id'] == 1:
             annotated_comments = doc['count']
     total_comments = remaining_comments+annotated_comments
-    logger.debug("total_comments: %s\nannotated_comments: %s\nremaining_comments: %s", total_comments, annotated_comments, remaining_comments)
+    # logger.debug("total_comments: %s\nannotated_comments: %s\nremaining_comments: %s", total_comments, annotated_comments, remaining_comments)
 
     return (total_comments, annotated_comments, remaining_comments)

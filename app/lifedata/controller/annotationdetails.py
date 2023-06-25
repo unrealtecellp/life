@@ -86,7 +86,11 @@ def get_annotation_data(projects_collection,
                                             }
         project_details['textMetadata'] = data_info['dataMetadata']
         if (current_username in data_info):
-            project_details[current_username] = data_info[current_username]
+            project_details[current_username] = data_info[current_username]['annotationGrid']
+            currentAnnotation = project_details[current_username]
+            # logger.debug('currentAnnotation: %s', pformat(currentAnnotation))
+            defaultAnnotation = project_details['tagSetMetaData']['defaultCategoryTags']
+            project_details['tagSetMetaData']['defaultCategoryTags'] = {**defaultAnnotation, **currentAnnotation}
         project_details['accessedOnTime'] = datetime.now().strftime("%d/%m/%y %H:%M:%S")
         project_details["currentUser"] = current_username
         
@@ -103,8 +107,9 @@ def get_annotation_ids_list(data_collection,
                             active_source_id):
     allIds = []
     try:
-        dataIds = data_collection.find({"projectname": active_project_name, "lifesourceid": active_source_id},
-                            {"_id": 0, "dataId": 1})
+        dataIds = data_collection.find({"projectname": active_project_name, 
+                                        "lifesourceid": active_source_id},
+                                        {"_id": 0, "dataId": 1})
 
         if (dataIds != None):
             for dataId in dataIds:
@@ -129,10 +134,10 @@ def getnewdataid(projects,
     """
     data_ids_list = projects.find_one({'projectname': activeprojectname},
                                        {'_id': 0, 'sourcedataIds': 1})
-    logger.debug('data_ids_list', data_ids_list)
+    # logger.debug('data_ids_list', data_ids_list)
     if len(data_ids_list) != 0:
         data_ids_list = data_ids_list['sourcedataIds'][active_source_id]
-        logger.debug('data_ids_list: %s', data_ids_list)
+        # logger.debug('data_ids_list: %s', data_ids_list)
     if (len(data_ids_list) != 0):
         if (last_active_id in data_ids_list):
             data_id_index = data_ids_list.index(last_active_id)
@@ -149,7 +154,7 @@ def getnewdataid(projects,
         latest_data_id = data_ids_list[data_id_index]
     else:
         latest_data_id = ''
-    logger.debug('latest_data_id dataDETAILS: %s', latest_data_id)
+    # logger.debug('latest_data_id dataDETAILS: %s', latest_data_id)
 
     return latest_data_id
 

@@ -8,7 +8,8 @@ from flask import (
     request,
     flash,
     redirect,
-    url_for
+    url_for,
+    send_file
 )
 from app.controller import (
     getactiveprojectname,
@@ -40,6 +41,11 @@ from flask_login import login_required
 import os
 from pprint import pformat
 import json
+from jsondiff import diff
+from datetime import datetime
+from zipfile import ZipFile
+import glob
+import pandas as pd
 
 lifedata = Blueprint('lifedata', __name__, template_folder='templates', static_folder='static')
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -858,4 +864,408 @@ def loadnextdata():
     except:
         logger.exception("")
     return jsonify(newdataId=latest_data_id)
+
+def modalCategory(category, tagset, saveannotationCategoryDependency):
+    try:
+        modal_category = False
+        # print('saveannotationCategoryDependency', saveannotationCategoryDependency[category])
+        while(modal_category != True):
+            # if (category in saveannotationCategoryDependency):
+            # print(category, 'saveannotationCategoryDependency', saveannotationCategoryDependency[category])
+            for tag_set_key, tag_set_value in tagset.items():
+                if (category in saveannotationCategoryDependency):
+                    # print(category, tag_set_key, tag_set_value)
+                    if (tag_set_key in saveannotationCategoryDependency[category]):
+                        # print(category, tag_set_key, tag_set_value)
+                        if (tag_set_value[0] == '#SPAN_TEXT#'):
+                            return (True, tag_set_key)
+                        else:
+                            # return (False, tag_set_key)
+                            modal_category = False
+                            category = tag_set_key
+                            # print(modal_category, category, tag_set_key, tag_set_value)
+                            # print('2. saveannotationCategoryDependency', saveannotationCategoryDependency[category])
+                else:
+                    return (False, category)
+    except:
+        logger.exception("")
+
+@lifedata.route('/saveannotation', methods=['GET', 'POST'])
+@login_required
+def saveannotation():
+    try:
+        projects, userprojects, annotation, tagsets = getdbcollections.getdbcollections(mongo,
+                                                                                    'projects',
+                                                                                    'userprojects',
+                                                                                    'annotation',
+                                                                                    'tagsets')
+        current_username = getcurrentusername.getcurrentusername()
+        activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                        userprojects)
+
+        if request.method == 'POST':
+            annotatedText = json.loads(request.form['a'])
+            # logger.debug("annotatedText saveannotation() : %s", pformat(annotatedText))
+            lastActiveId = annotatedText['lastActiveId'][0]
+            active_source_id = getuserprojectinfo.getuserprojectinfo(userprojects,
+                                                                        current_username,
+                                                                        activeprojectname)
+            if ('activesourceId' in active_source_id):
+                    active_source_id = active_source_id['activesourceId']
+            else:
+                active_source_id = ''
+            nextId = annotationdetails.getnewdataid(projects,
+                                                        activeprojectname,
+                                                        lastActiveId,
+                                                        active_source_id,
+                                                        'next')
+            project_details = projects.find_one({"projectname": activeprojectname},
+                                                {"_id": 0, "tagsetId": 1})
+            tag_set_id = project_details["tagsetId"]
+            tag_set = tagsets.find_one({"_id": tag_set_id})
+            tagset = tag_set['tagSet']
+            tagSetMetaData = tag_set['tagSetMetaData']
+            annotationGrid = {}
+            # current user tags for the text
+            currentAnnotatorTags = {}
+            # for tagset in project_details.values():
+                # print('tagset', tagset)
+            categories = list(tagset.keys())
+                # print('\n\ncategories\n\n', categories)
+            for category in categories:
+                if category in annotatedText:
+                    # print(category, annotatedText[category], len(annotatedText[category]), type(annotatedText[category]))
+                    if isinstance(annotatedText[category], dict):
+                        currentAnnotatorTags[category] =  annotatedText[category]
+                    elif (len(annotatedText[category])) == 1:
+                        if ('categoryHtmlElement' in tagSetMetaData):
+                            if(tagSetMetaData['categoryHtmlElement'][category] == 'select'):
+                                currentAnnotatorTags[category] =  annotatedText[category]
+                            else:
+                                currentAnnotatorTags[category] =  annotatedText[category][0]
+                        else:
+                            currentAnnotatorTags[category] =  annotatedText[category][0]
+                    elif (len(annotatedText[category])) > 1:
+                        currentAnnotatorTags[category] =  annotatedText[category]
+                elif category not in annotatedText:
+                    # print(tagset[category])
+                    if(tagset[category][0] == '#SPAN_TEXT#'):
+                        continue
+                    elif ('categoryDependency' in tagSetMetaData):
+                        saveannotationCategoryDependency = tagSetMetaData['categoryDependency']
+                        modal_category, next_category = modalCategory(category, tagset, saveannotationCategoryDependency)
+                        # print(modal_category, next_category)
+                        # print()
+                        if (modal_category):
+                            continue
+                        else:
+                            currentAnnotatorTags[category] = ''
+            if "Duplicate" in currentAnnotatorTags:
+                currentAnnotatorTags["Duplicate"] = annotatedText["Duplicate Text"][0]
+        
+            if 'annotatorComment' in currentAnnotatorTags:
+                currentAnnotatorTags["annotatorComment"] = annotatedText["annotatorComment"][0]
+
+            once_annotated = annotation.find_one({"projectname": activeprojectname,
+                                                    "lifesourceid": active_source_id,
+                                                    "dataId": lastActiveId},
+                                                    {"_id": 0})
+
+            if once_annotated != None:
+                # update with this user annotation and change lastUpdatedBy
+                currentAnnotatorTags = currentAnnotatorTags
+                # print(currentAnnotatorTags, '\n=============\n', once_annotated[current_username])
+                # if difference between new annotation and existing annotation is False
+                # (user has used 'Save' in place of 'Next' button)
+                # Then there should be no update in the allAccess and allUpdates timestamp
+                # print(diff(currentAnnotatorTags, once_annotated[current_username]))
+                if (current_username in once_annotated and
+                    not bool(diff(currentAnnotatorTags, once_annotated[current_username]['annotationGrid']))):
+                    projects.update_one({"projectname": activeprojectname},
+                                        { '$set' : { 'lastActiveId.'+current_username+'.'+active_source_id+'.dataId': nextId }})
+                    logger.info('matchedddddddddddddddddddddddd')
+                    return redirect(url_for('lifedata.annotation'))
+
+                lastUpdatedBy = current_username
+
+                all_access = once_annotated["allAccess"]
+                all_updates = once_annotated["allUpdates"]
+
+                if (current_username in all_access.keys()):
+                    # print(all_access, all_updates)
+                    all_access[current_username].append(annotatedText["accessedOnTime"][0])
+                    all_updates[current_username].append(datetime.now().strftime("%d/%m/%y %H:%M:%S"))
+                    # print(all_access, all_updates)
+                else:
+                    all_access[current_username] = [annotatedText["accessedOnTime"][0]]
+                    all_updates[current_username] = [datetime.now().strftime("%d/%m/%y %H:%M:%S")]
+
+                oldAnnotation = annotation.find_one({"projectname": activeprojectname,
+                                                    "lifesourceid": active_source_id,
+                                                    "dataId": lastActiveId},
+                                                    {"_id": 0, current_username: 1})
+                # print(oldAnnotation)
+                if (current_username in oldAnnotation):
+                    oldAnnotation = oldAnnotation[current_username]['annotationGrid']
+                    mergeredAnnotation = {**oldAnnotation, **currentAnnotatorTags}
+                else:
+                    mergeredAnnotation = currentAnnotatorTags
+
+                annotation.update_one({"projectname": activeprojectname,
+                                       "lifesourceid": active_source_id,
+                                       "dataId": lastActiveId},
+                                    { '$set' : 
+                                        {   'lastUpdatedBy' : lastUpdatedBy,
+                                            current_username: {'annotationGrid': mergeredAnnotation,
+                                                            "annotatedFLAG": 1},
+                                            "allAccess": all_access,
+                                            "allUpdates": all_updates,
+                                            'annotationGrid': mergeredAnnotation,
+                                            "annotatedFLAG": 1}})
+            else:
+                text_anno = {}
+                text_anno[current_username]['annotationGrid'] = currentAnnotatorTags
+                text_anno[current_username]['annotatedFLAG'] = 1
+                text_anno['lastUpdatedBy'] = current_username
+                all_access = {}
+                all_access[current_username] = [annotatedText["accessedOnTime"][0]]
+                text_anno['allAccess'] = all_access
+                all_updates = {}
+                all_updates[current_username] = [datetime.now().strftime("%d/%m/%y %H:%M:%S")]
+                text_anno['allUpdates'] = all_updates
+
+
+                # annotation.insert_one(text_anno)
+                annotation.update_one({"projectname": activeprojectname,
+                                       "lifesourceid": active_source_id,
+                                       "dataId": lastActiveId},
+                                    { '$set' : 
+                                        {   current_username: {'annotationGrid': currentAnnotatorTags,
+                                                            'annotatedFLAG': 1},
+                                            'lastUpdatedBy': current_username,
+                                            'allUpdates': all_updates,
+                                            'allAccess':  all_access,
+                                            'annotationGrid': currentAnnotatorTags,
+                                            'annotatedFLAG': 1
+                                        }})
+
+            projects.update_one({"projectname": activeprojectname},
+                                { '$set' : { 'lastActiveId.'+current_username+'.'+active_source_id+'.dataId': nextId }})
+
+            return redirect(url_for('lifedata.annotation'))
+    except:
+        logger.exception("")
+
+    return redirect(url_for('lifedata.annotation'))
+
+@lifedata.route('/saveannotationspan', methods=['GET', 'POST'])
+@login_required
+def saveannotationspan():
+    try:
+        # print('IN /saveannotationSpan')
+        userprojects, annotation = getdbcollections.getdbcollections(mongo,
+                                                                    'userprojects',
+                                                                    'annotation')
+
+        current_username = getcurrentusername.getcurrentusername()
+        activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                        userprojects)
+
+        if request.method == 'POST':
+            # annotatedText = dict(request.form.lists())
+            
+            annotatedTextSpan = json.loads(request.form['a'])
+            # pprint(annotatedTextSpan)
+
+            # lastActiveId = annotatedTextSpan['lastActiveId'][0]
+            lastActiveId = annotatedTextSpan['lastActiveId']
+            del annotatedTextSpan['lastActiveId']
+            # annotatedTextSpan['annotatedFLAG'] = 1
+            # pprint(annotatedTextSpan)
+            # print(lastActiveId)
+            active_source_id = getuserprojectinfo.getuserprojectinfo(userprojects,
+                                                                        current_username,
+                                                                        activeprojectname)
+            if ('activesourceId' in active_source_id):
+                    active_source_id = active_source_id['activesourceId']
+            else:
+                active_source_id = ''
+            for key, value in annotatedTextSpan.items():
+                for k, v in value.items():
+                    annotation.update_one({"projectname": activeprojectname,
+                                        "lifesourceid": active_source_id,
+                                        "dataId": lastActiveId},
+                                        {'$set': { 
+                                                    # "spanAnnotation.text."+spanId: annotatedTextSpan[spanId]
+                                                    current_username+'.annotationGrid.'+key+'.'+k: v,
+                                                    current_username+".annotatedFLAG": 1,
+                                                    'annotationGrid.'+key+'.'+k: v,
+                                                    "annotatedFLAG": 1,
+                                                    "lastUpdatedBy": current_username
+                                                }})
+    except:
+        logger.exception("")
+
+    return "OK"
+
+@lifedata.route('/deleteannotationspan', methods=['GET', 'POST'])
+@login_required
+def deleteannotationspan():
+    try:
+        # print('IN /deleteannotationSpan')
+        userprojects, annotation = getdbcollections.getdbcollections(mongo,
+                                                                    'userprojects',
+                                                                    'annotation')
+
+        current_username = getcurrentusername.getcurrentusername()
+        activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                        userprojects)
+
+        if request.method == 'POST':
+            # annotatedText = dict(request.form.lists())
+            
+            annotatedTextSpan = json.loads(request.form['a'])
+            # pprint(annotatedTextSpan)
+
+            # # lastActiveId = annotatedTextSpan['lastActiveId'][0]
+            lastActiveId = annotatedTextSpan['lastActiveId']
+            del annotatedTextSpan['lastActiveId']
+            # # annotatedTextSpan['annotatedFLAG'] = 1
+            # # pprint(annotatedTextSpan)
+            # # print(lastActiveId)
+            active_source_id = getuserprojectinfo.getuserprojectinfo(userprojects,
+                                                                        current_username,
+                                                                        activeprojectname)
+            if ('activesourceId' in active_source_id):
+                    active_source_id = active_source_id['activesourceId']
+            else:
+                active_source_id = ''
+            for key, value in annotatedTextSpan.items():
+                for k, v in value.items():
+                    annotation.update_one({"projectname": activeprojectname,
+                                        "lifesourceid": active_source_id,
+                                        "dataId": lastActiveId},
+                                        {'$unset': { 
+                                                    # "spanAnnotation.text."+spanId: annotatedTextSpan[spanId]
+                                                    current_username+'.annotationGrid.'+key+'.'+k: 1,
+                                                    'annotationGrid.'+key+'.'+k: 1,
+                                                    # current_username+".annotatedFLAG": 1
+                                                }})
+    except:
+        logger.exception("")
+
+    return "OK"
+
+@lifedata.route('/downloadannotationfile', methods=['GET', 'POST'])
+def downloadannotationfile():
+    try:
+        projects, userprojects, annotation, tagsets = getdbcollections.getdbcollections(mongo,
+                                                                    'projects',
+                                                                    'userprojects',
+                                                                    'annotation',
+                                                                    'tagsets')
+        current_username = getcurrentusername.getcurrentusername()
+        activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                        userprojects)
+        project_type = getprojecttype.getprojecttype(projects,
+                                                    activeprojectname)
+        project_details = projects.find_one({"projectname": activeprojectname},
+                                                    {"_id": 0, "tagsetId": 1})
+        tag_set_id = project_details["tagsetId"]
+        tag_set = tagsets.find_one({"_id": tag_set_id})
+        tagset = tag_set['tagSet']
+        df_dict = {"dataId": [], "ID": [], "Data": []}
+        for category in list(tagset.keys()):
+            df_dict[category] = []
+        df_dict["Duplicate"] = []
+        df_dict["annotatorComment"] = []
+        df = pd.DataFrame.from_dict(df_dict)
+        logger.debug("df.columns: %s", pformat(list(df.columns)))
+        active_source_id = getuserprojectinfo.getuserprojectinfo(userprojects,
+                                                                    current_username,
+                                                                    activeprojectname)
+        if ('activesourceId' in active_source_id):
+                active_source_id = active_source_id['activesourceId']
+        else:
+                active_source_id = ''
+        allIds = annotationdetails.get_annotation_ids_list(annotation,
+                                                            activeprojectname,
+                                                            active_source_id)
+
+        for data_id in list(allIds):
+            annotated_text = {}
+            logger.debug("data_id: %s", data_id)
+            data_info = annotation.find_one({
+                                                "projectname": activeprojectname,
+                                                "lifesourceid": active_source_id,
+                                                "dataId": data_id
+                                                },
+                                                {
+                                                    "_id": 0,
+                                                    "dataId": 1,
+                                                    "Data": 1,
+                                                    "dataMetadata": 1,
+                                                    current_username: 1
+                                                }
+                                                )
+            logger.debug("data_info: %s", pformat(data_info))
+
+            annotated_text["dataId"] = data_id
+            annotated_text["ID"]  = data_info["dataMetadata"]["ID"]
+            annotated_text["Data"]  = data_info["Data"]
+            if (data_info != None and current_username in data_info):
+                current_user_annotated_text = data_info[current_username]['annotationGrid']
+                for category in list(tagset.keys()):
+                    logger.debug("category: %s", category)
+                    if (category in current_user_annotated_text):
+                        tag = current_user_annotated_text[category]
+                        logger.debug("tag: %s", tag)
+                        annotated_text[category] = tag
+                    else:
+                        annotated_text[category] = ''
+                annotated_text_df = pd.DataFrame.from_dict(annotated_text.items()).T
+                annotated_text_df.columns = annotated_text_df.iloc[0]
+                annotated_text_df = annotated_text_df[1:]
+                # print(annotated_text_df, '\n')
+                df = df.append(annotated_text_df, ignore_index=True)
+            else:
+                for category in list(tagset.keys()):
+                    annotated_text[category] = ''
+                annotated_text["Duplicate"] = ''
+                annotated_text["annotatorComment"] = ''
+                annotated_text_df = pd.DataFrame.from_dict(annotated_text.items()).T
+                annotated_text_df.columns = annotated_text_df.iloc[0]
+                annotated_text_df = annotated_text_df[1:]
+                df = df.append(annotated_text_df, ignore_index=True)
+        logger.debug("df: %s", df.head())
+        download_folder_path = os.path.join(basedir, 'download')
+        if not (os.path.exists(download_folder_path)):
+            os.mkdir(download_folder_path)
+        logger.debug("download_folder_path: %s", download_folder_path)
+        current_user_download_folder_path = os.path.join(download_folder_path, current_username)
+        if not (os.path.exists(current_user_download_folder_path)):
+            os.mkdir(current_user_download_folder_path)
+        logger.debug("current_user_download_folder_path: %s", current_user_download_folder_path)
+        current_user_download_file_path = os.path.join(current_user_download_folder_path, activeprojectname+'_'+active_source_id+'.tsv')
+        logger.debug("current_user_download_file_path: %s", current_user_download_file_path)
+        df.to_csv(current_user_download_file_path, sep='\t', index=False)
+
+        files = glob.glob(current_user_download_folder_path+'/*')
+        logger.debug("files: %s", pformat(files))
+        zip_file_path = os.path.join(download_folder_path, current_username+'_'+activeprojectname+'.zip')
+        with ZipFile(zip_file_path, 'w') as zip:
+            # writing each file one by one 
+            for file in files: 
+                # zip.write(file, os.path.join(activeprojectname, os.path.basename(file)))
+                zip.write(file, os.path.basename(file))
+        print('All files zipped successfully!')
+
+        # deleting all files from storage
+        for f in files:
+            # print(f)
+            os.remove(f)
+    except:
+        logger.exception("")
+    
+    return send_file(zip_file_path, as_attachment=True)
 

@@ -363,7 +363,7 @@ function elementData (projData, key, value, defaultCategoryTag=undefined, modalE
 }
 
 function createHighlightSpanTextDetails(currentUserAnnotation, tagSet) {
-    // console.log(currentUserAnnotation, tagSet);
+    console.log(currentUserAnnotation, tagSet);
     for (let [key, value] of Object.entries(tagSet)) {
         // console.log(key, value[0])
         val = value[0];
@@ -446,7 +446,7 @@ function createTextAnnotationInterface(projData) {
     let inpt = '';
     
     inpt += '<span class="textFormAlert"></span><div class="row">' +
-            '<form name="savetextanno" id="idsavetextannoform" class="form-horizontal" action="/lifedata/savetextAnno" method="POST"  enctype="multipart/form-data">';
+            '<form name="savetextanno" id="idsavetextannoform" class="form-horizontal" action="/lifedata/saveannotation" method="POST"  enctype="multipart/form-data">';
     inpt += '<div class="col-sm-6"  id="left">';
     inpt += '<input type="hidden" id="accessedOnTime" name="accessedOnTime" value="' + accessedOnTime + '">' +
             '<input type="hidden" id="lastActiveId" name="lastActiveId" value="' + lastActiveId + '">' +
@@ -1067,7 +1067,7 @@ function spanSave(ele) {
     }
     localStorage.setItem("textSpanDetails", JSON.stringify(textSpanDetails));
     currentTextSpanDetails['lastActiveId'] = lastActiveId;
-    $.post( "/lifedata/savetextAnnoSpan", {
+    $.post( "/lifedata/saveannotationspan", {
         a: JSON.stringify(currentTextSpanDetails)
       })
       .done(function( data ) {
@@ -1097,7 +1097,7 @@ function mainSave(ele) {
     // console.log(object);
     // console.log(textSpanDetails);
     Object.assign(object, textSpanDetails);
-    $.post( "/lifedata/savetextAnno", {
+    $.post( "/lifedata/saveannotation", {
         a: JSON.stringify(object)
       })
       .done(function( data ) {
@@ -1222,7 +1222,7 @@ function deleteSpanModal(eleId) {
         delete textSpanDetails[header][spanId];
         localStorage.setItem("textSpanDetails", JSON.stringify(textSpanDetails));
         currentTextSpanDetails['lastActiveId'] = lastActiveId;
-        $.post( "/lifedata/deletetextAnnoSpan", {
+        $.post( "/lifedata/deleteannotationspan", {
             a: JSON.stringify(currentTextSpanDetails)
         })
         .done(function( data ) {
