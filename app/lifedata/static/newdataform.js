@@ -99,11 +99,11 @@ var scripts =
 
 var dataProjectType = [
   {"id": "", "text": ""},
+  {"id": "annotation", "text": "Annotation"},
   {"id": "recordings", "text": "Recordings"},
   // {"id": "validation", "text": "Validation"},
   {"id": "transcriptions", "text": "Speech Transcription and Labeling"},
   // {"id": "crawling", "text": "Crawling"},
-  // {"id": "annotation", "text": "Annotation"}
 ];
 
 $('.dataprojecttype').select2({
@@ -253,7 +253,6 @@ $("#idprojecttype").change(function() {
     enableDisableDataFormSubmitBtn(true);
     let addModal = addModalElement('validationTagsetMapping');
     $('#addModal').html(addModal);
-
   }
   else {
     enableDisableDataFormSubmitBtn(false);
@@ -436,3 +435,13 @@ function enableDisableDataFormSubmitBtn(bool) {
   // console.log(bool);
   document.getElementById('dataformsubmit').disabled = bool;
 }
+
+$("#annotationtagsetZipFile").change(function() {
+  let zipFileElement = document.getElementById('annotationtagsetZipFile');
+  // console.log(zipFileElement);
+  zipFileName = zipFileElement.files[0];
+  // console.log(zipFileName);
+  // displayZipFileName = '<p>'+zipFileName.name+'</p>';
+  $("#displayAnnotationZipFileName").html(zipFileName.name);
+
+})

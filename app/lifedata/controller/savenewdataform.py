@@ -20,6 +20,8 @@ def savenewdataform(projectsform,
             project_form = createprojectform(new_data_form, project_form)
         elif(project_type == 'validation'):
             project_form = createvalidationprojectform(new_data_form, project_form)
+        elif(project_type == 'annotation'):
+            return project_form
 
         projectsform.insert_one(project_form)
     except:

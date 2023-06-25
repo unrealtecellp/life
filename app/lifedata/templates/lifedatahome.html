@@ -7,8 +7,8 @@ LiFe Data Home
 
 {% block styles %}
 {{super()}}
-<link href="{{url_for('.static', filename='newdataform.css')}}" rel="stylesheet" />
 <link href="{{url_for('.static', filename='lifedatahome.css')}}" rel="stylesheet" />
+<link href="{{url_for('.static', filename='newdataform.css')}}" rel="stylesheet" />
 <link href="{{url_for('easyAnno.static', filename='easyannohome.css')}}" rel="stylesheet" />
 {% endblock %}
 
@@ -131,6 +131,15 @@ LiFe Data Home
           <!-- <label for="fileType">File Type:&nbsp;&nbsp;</label>
           <select name="fileType" id="fileType" style="width: 30%">
           </select> -->
+        </div>
+      </div>
+
+      <div id="annotationtypeproject" style="display: none;">
+        <div class="col upload">
+          <label class="btn btn-danger">
+            Select ZIP File <input type="file" id="annotationtagsetZipFile" name="annotationtagsetZipFile" accept="application/zip" hidden>
+          </label>
+          <p id="displayAnnotationZipFileName"></p>
         </div>
       </div>
 
