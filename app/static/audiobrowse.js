@@ -33,12 +33,13 @@ function createBrowseActions(projectOwner, currentUsername) {
     createSelect2('browseactiondropdown', browseActionOptionsList, 'Delete');
 }
 
-function createAudioBrowseTable(audioDataFields, audioData, shareMode=0) {
-    console.log(audioData);
+function createAudioBrowseTable(audioDataFields, audioData, shareMode=0, totalRecords=0) {
+    // console.log(audioData);
     let count = audioData.length
     let ele = '';
     let browseActionSelectedOption = '';
-    ele += '<p id="totalrecords">Total Records:&nbsp;'+count+'</p>'+
+    ele += '<p id="actualtotalrecords">Total Records:&nbsp;'+totalRecords+'</p>';
+    ele += '<p id="totalrecords">Showing Records:&nbsp;'+count+'</p>'+
             '<table class="table table-striped " id="myTable">'+
             '<thead>'+
             '<tr>'+
@@ -74,7 +75,7 @@ function createAudioBrowseTable(audioDataFields, audioData, shareMode=0) {
                 
             }
             else {
-                console.log(field);
+                // console.log(field);
                 ele += '<td> - </td>';
             }
         }
@@ -104,14 +105,15 @@ function createAudioBrowseTable(audioDataFields, audioData, shareMode=0) {
 }
 
 function createAudioBrowse(newData) {
-    console.log(newData);
+    // console.log(newData);
     let speakerIds = newData['speakerIds'];
     let currentUsername = newData['currentUsername']
     let projectOwner = newData['projectOwner']
+    let totalRecords = newData['totalRecords']
     let shareInfo = newData['shareInfo']
     let shareMode = shareInfo['sharemode']
     let activeSpeakerId = shareInfo['activespeakerId']
-    console.log(activeSpeakerId)
+    // console.log(activeSpeakerId)
     let audioDataFields = newData['audioDataFields']
     let audioData = newData['audioData']
     createSelect2('speakeridsdropdown', speakerIds, activeSpeakerId);
@@ -119,8 +121,9 @@ function createAudioBrowse(newData) {
     if (shareMode >= 4) {
         createBrowseActions(projectOwner, currentUsername);
     }
-    createAudioBrowseTable(audioDataFields, audioData, shareMode)
+    createAudioBrowseTable(audioDataFields, audioData, shareMode, totalRecords)
     eventsMapping();
+    createPagination(totalRecords)
 }
 
 function eventsMapping() {
@@ -154,7 +157,7 @@ function eventsMapping() {
     // delete multiple audios
     $("#multipleaudiodelete").click(function() {
         audios = GetSelected();
-        console.log(audios);
+        // console.log(audios);
         deleteAudioFLAG = confirm("Delete These Audios!!!");
         if(deleteAudioFLAG) {
             audioBrowseAction(audios);
@@ -171,7 +174,7 @@ function eventsMapping() {
     // revoke multiple audios
     $("#multipleaudiorevoke").click(function() {
         audios = GetSelected();
-        console.log(audios);
+        // console.log(audios);
         revokeAudioFLAG = confirm("Revoke These Audios!!!");
         if(revokeAudioFLAG) {
             audioBrowseAction(audios);
@@ -188,9 +191,10 @@ function updateAudioBrowseTable() {
         type : 'GET',
         url : '/updateaudiobrowsetable'
       }).done(function(data){
-        console.log(data.audioDataFields, data.audioData);
-        createAudioBrowseTable(data.audioDataFields, data.audioData);
+        // console.log(data.audioDataFields, data.audioData, data.shareMode);
+        createAudioBrowseTable(data.audioDataFields, data.audioData, data.shareMode, data.totalRecords);
         eventsMapping();
+        createPagination(data.totalRecords)
       });
 }
 
@@ -308,7 +312,44 @@ function getSingleAudioBrowseAction(element) {
     var audioId = $row.find("#audioId").text(); // Find the text
     var audioFilename = $row.find("#audioFilename").text(); // Find the text
     audioInfo[audioId] = audioFilename
-    console.log(audioInfo);
+    // console.log(audioInfo);
 
     return audioInfo
+}
+
+function createPagination(totalRecords, active=1) {
+    let audioFilesCount = Number(document.getElementById('audiofilescountdropdown').value);
+    let paginationEle = '';
+    totalPages = Math.ceil(totalRecords/audioFilesCount);
+    // console.log(totalPages);
+    paginationEle +=  '<div class="btn-group">';
+    for (let i=1; i<=totalPages; i++) {
+        if (i == active) {
+            paginationEle += '<button type="button" class="btn btn-primary" id="'+i+'" onclick="changeAudioBrowsePage(this.id)">'+i+'</button>';
+        }
+        else {
+            paginationEle += '<button type="button" class="btn" id="'+i+'" onclick="changeAudioBrowsePage(this.id)">'+i+'</button>';
+        }
+    }
+    paginationEle += '</div><br><br>';
+    $("#audiobrowsepagination").html(paginationEle);
+}
+
+
+function changeAudioBrowsePage(pageId) {
+    // console.log(pageId);
+    let audioBrowseInfo = getAudioBrowseInfo();
+    audioBrowseInfo['pageId'] = Number(pageId);
+    $.ajax({
+        data : {
+          a : JSON.stringify(audioBrowseInfo)
+        },
+        type : 'GET',
+        url : '/audiobrowsechangepage'
+      }).done(function(data){
+        // console.log(data.crawledDataFields, data.crawledData, data.shareMode);
+        createAudioBrowseTable(data.crawledDataFields, data.crawledData, data.shareMode, data.totalRecords);
+        eventsMapping();
+        createPagination(data.totalRecords, data.activePage);
+    });
 }

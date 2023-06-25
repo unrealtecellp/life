@@ -28,16 +28,20 @@ def getcommentstats(projects,
         total_comments = len(speakerfiles)
 
         transcribedfiles = transcriptions.find({ "projectname": activeprojectname, "speakerId": ID },
-                                            { "_id" : 0, "transcriptionFLAG" : 1 })
+                                            {"_id" : 0,
+                                             "transcriptionFLAG" : 1,
+                                             "audiodeleteFLAG": 1})
         # print(speakerinfo)
         # print(total_comments)
         for transcribedfile in transcribedfiles:
-            # print(transcribedfile, transcribedfile['transcriptionFLAG'])
-            if transcribedfile['transcriptionFLAG'] == 1:
-                transcribed += 1
-            elif transcribedfile['transcriptionFLAG'] == 0:
-                nottranscribed += 1
+            # logger.debug('transcribedfile: %s, ', transcribedfile)
+            if (transcribedfile['audiodeleteFLAG'] == 0):
+                if transcribedfile['transcriptionFLAG'] == 1:
+                    transcribed += 1
+                elif transcribedfile['transcriptionFLAG'] == 0:
+                    nottranscribed += 1
         # print(transcribed, nottranscribed)
+        # logger.debug('total_comments: %s, transcribed: %s, nottranscribed: %s', total_comments, transcribed, nottranscribed)
     except:
         pass
 
@@ -69,6 +73,34 @@ def getcommentstatsnew(projects_collection,
         elif doc['_id'] == 1:
             annotated_comments = doc['count']
     total_comments = remaining_comments+annotated_comments
-    logger.debug("total_comments: %s\nannotated_comments: %s\nremaining_comments: %s", total_comments, annotated_comments, remaining_comments)
+    # logger.debug("total_comments: %s\nannotated_comments: %s\nremaining_comments: %s", total_comments, annotated_comments, remaining_comments)
+
+    return (total_comments, annotated_comments, remaining_comments)
+
+def getdatacommentstatsnew(data_collection,
+                            activeprojectname,
+                            match_key,
+                            groupBy_key):
+    
+    aggregate_output = data_collection.aggregate( [
+                                {
+                                    "$match": { "projectname": activeprojectname,
+                                                "lifesourceid": match_key }
+                                },
+                                {
+                                    "$group": { "_id": "$"+groupBy_key,
+                                               "count": { "$sum": 1 }
+                                    }
+                                }
+                                ] )
+    total_comments, annotated_comments, remaining_comments = (0, 0, 0)
+    for doc in aggregate_output:
+        # logger.debug("aggregated_output: %s", doc)
+        if doc['_id'] == 0:
+            remaining_comments = doc['count']
+        elif doc['_id'] == 1:
+            annotated_comments = doc['count']
+    total_comments = remaining_comments+annotated_comments
+    # logger.debug("total_comments: %s\nannotated_comments: %s\nremaining_comments: %s", total_comments, annotated_comments, remaining_comments)
 
     return (total_comments, annotated_comments, remaining_comments)
