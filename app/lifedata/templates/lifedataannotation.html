@@ -1,8 +1,6 @@
 {% extends "base.html" %}
-{% import 'bootstrap/wtf.html' as wtf %}
-
 {% block title %}
-Annotation
+Data Annotation
 {% endblock title %}
 
 {% block styles %}
@@ -42,6 +40,10 @@ Annotation
       {% endif %}
     </div>
 <hr>
+<div class="col-sm-6">
+  <label for="sourceidsdropdown">Data from Source:&nbsp;</label>
+  <select id="sourceidsdropdown" style="width: 40%;"></select>
+</div>
 <div class="container textdata"></div>
 <br>
 
@@ -49,6 +51,8 @@ Annotation
 
 {% block scripts %}
 {{super()}}
+<script src="{{url_for('.static', filename='crawlerbrowse.js')}}"></script>
+<script src="{{url_for('static', filename='changeactivesource.js')}}"></script>
 <script src="{{url_for('.static', filename='textannotation.js')}}"></script>
 <script src="{{url_for('.static', filename='annotation.js')}}"></script>
 {% if proj_data is defined %}

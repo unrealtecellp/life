@@ -1,4 +1,4 @@
-function createSelect2(eleId, optionsList, selectedOption, moreInfo={}, optionKey='') {
+function crawlerCreateSelect2(eleId, optionsList, selectedOption, moreInfo={}, optionKey='') {
     let ele = '';
     for (let i=0; i<optionsList.length; i++) {
         optionValue = optionsList[i];
@@ -34,7 +34,7 @@ function createBrowseActions(projectOwner, currentUsername) {
     if (currentUsername === projectOwner) {
         browseActionOptionsList.push('Revoke');
     }
-    createSelect2('browsedataactiondropdowns', browseActionOptionsList, 'Delete');
+    crawlerCreateSelect2('browsedataactiondropdowns', browseActionOptionsList, 'Delete');
 }
 
 function createCrawlerBrowseTable(crawlerDataFields, crawlerData, shareMode=0, totalRecords=0) {
@@ -121,8 +121,8 @@ function createCrawlerBrowse(newData) {
     // console.log(activeSourceId)
     let crawlerDataFields = newData['crawlerDataFields']
     let crawlerData = newData['crawlerData']
-    createSelect2('sourceidsdropdown', sourceIds, activeSourceId, sourceMetadata, 'video_title');
-    createSelect2('sourcedatacountdropdown', [10, 20, 50], 10)
+    crawlerCreateSelect2('sourceidsdropdown', sourceIds, activeSourceId, sourceMetadata, 'video_title');
+    crawlerCreateSelect2('sourcedatacountdropdown', [10, 20, 50], 10)
     if (shareMode >= 4) {
         createBrowseActions(projectOwner, currentUsername);
     }

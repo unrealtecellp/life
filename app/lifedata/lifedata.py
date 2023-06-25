@@ -209,11 +209,12 @@ def newdataform():
 @lifedata.route('/annotation', methods=['GET', 'POST'])
 @login_required
 def annotation():
-    projects_collection, userprojects_collection, annotation_collection, tagsets_collection = getdbcollections.getdbcollections(mongo,
-                                                                                                                                "projects",
-                                                                                                                                "userprojects",
-                                                                                                                                "annotation",
-                                                                                                                                "tagsets")
+    projects_collection, userprojects_collection, annotation_collection, tagsets_collection, sourcedetails_collection = getdbcollections.getdbcollections(mongo,
+                                                                                                                                                            "projects",
+                                                                                                                                                            "userprojects",
+                                                                                                                                                            "annotation",
+                                                                                                                                                            "tagsets",
+                                                                                                                                                            "sourcedetails")
     current_username = getcurrentusername.getcurrentusername()
     activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
                                                                   userprojects_collection)
@@ -222,6 +223,7 @@ def annotation():
                                                             userprojects_collection,
                                                             annotation_collection,
                                                             tagsets_collection,
+                                                            sourcedetails_collection,
                                                             current_username,
                                                             activeprojectname)
     
@@ -276,7 +278,7 @@ def getlanguagelist():
         languageslist = [{"id": "", "text": ""}]
         for lang_script, lang_info in langscripts.items():
             languageslist.append({"id": lang_script, "text": lang_script})
-            # if ('Audio' in lang_info):
+            # if ('data' in lang_info):
             #     langscript.append(lang_script)
 
     return jsonify(languageslist=languageslist)
@@ -310,7 +312,7 @@ def datazipfile():
             derive_from_project_type = getprojecttype.getprojecttype(projects, derive_from_project_name)
             # logger.debug("derive_from_project_type: %s", derive_from_project_type)
             if (derive_from_project_type == 'recordings'):
-                derive_from_project_tagset = ['Audio_Recording']
+                derive_from_project_tagset = ['data_Recording']
             else:
                 derive_from_project_tagset = []
 
@@ -445,10 +447,10 @@ def crawlerbrowse():
     try:
         new_data = {}
         projects, userprojects, crawling, sourcedetails_collection = getdbcollections.getdbcollections(mongo,
-                                                                                'projects',
-                                                                                'userprojects',
-                                                                                'crawling',
-                                                                                'sourcedetails')
+                                                                                                        'projects',
+                                                                                                        'userprojects',
+                                                                                                        'crawling',
+                                                                                                        'sourcedetails')
         current_username = getcurrentusername.getcurrentusername()
         activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
                                                                     userprojects)
@@ -483,7 +485,7 @@ def crawlerbrowse():
         # for crawled_data in crawled_data_list:
         #     new_crawled_data = crawled_data
         #     crawled_filename = crawled_data['crawledFilename']
-        #     new_crawled_data['Audio File'] = url_for('retrieve', filename=crawled_filename)
+        #     new_crawled_data['data File'] = url_for('retrieve', filename=crawled_filename)
         #     new_crawled_data_list.append(new_crawled_data)
         new_data['currentUsername'] = current_username
         new_data['activeProjectName'] = activeprojectname
@@ -679,4 +681,181 @@ def crawlerbrowsechangepage():
                    shareMode=share_mode,
                    totalRecords=total_records,
                    activePage=page_id)
+
+@lifedata.route('/getIdList', methods=['GET', 'POST'])
+def getIdList():
+    '''
+    get list of all Ids
+    '''
+    allIds = []
+    try:
+        projects_collection, userprojects_collection = getdbcollections.getdbcollections(mongo,
+                                                                                        "projects",
+                                                                                            "userprojects")
+        current_username = getcurrentusername.getcurrentusername()
+        active_project_name = getactiveprojectname.getactiveprojectname(current_username,
+                                                                        userprojects_collection)
+        active_source_id = getuserprojectinfo.getuserprojectinfo(userprojects_collection,
+                                                                        current_username,
+                                                                        active_project_name)
+        if ('activesourceId' in active_source_id):
+                active_source_id = active_source_id['activesourceId']
+        else:
+            active_source_id = ''
+        project_type = getprojecttype.getprojecttype(projects_collection,
+                                                    active_project_name)
+        data_collection, = getdbcollections.getdbcollections(mongo,
+                                                                project_type)
+        allIds = annotationdetails.get_annotation_ids_list(data_collection,
+                                                        active_project_name,
+                                                        active_source_id)
+    except:
+        logger.exception("")
+
+    return jsonify(allIds=allIds)
+
+@lifedata.route('/allunannotated', methods=['GET', 'POST'])
+def allunannotated():
+    '''
+    get list of all annotated and all unannotated data by that user for that file
+    '''
+    allunanno = []
+    allanno = []
+    try:
+        projects, userprojects, annotation = getdbcollections.getdbcollections(mongo,
+                                                                                'projects',
+                                                                                'userprojects',
+                                                                                'annotation')
+        current_username = getcurrentusername.getcurrentusername()
+        activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                        userprojects)
+        active_source_id = getuserprojectinfo.getuserprojectinfo(userprojects,
+                                                                    current_username,
+                                                                    activeprojectname)
+        if ('activesourceId' in active_source_id):
+                active_source_id = active_source_id['activesourceId']
+        else:
+            active_source_id = ''
+        for unannodata in annotation.find({"projectname": activeprojectname, "lifesourceid": active_source_id},
+                                        {"_id": 0, "dataId":1, "dataMetadata.ID": 1, current_username: 1}):
+
+            if (current_username not in unannodata):
+                allunanno.append(unannodata)
+            elif (current_username in unannodata and
+                    unannodata[current_username]["annotatedFLAG"] == 0):
+                unannodata.pop(current_username)
+                allunanno.append(unannodata)
+            elif (current_username in unannodata and
+                    unannodata[current_username]["annotatedFLAG"] == 1):
+                unannodata.pop(current_username)
+                allanno.append(unannodata)
+    except:
+        logger.exception("")
+
+    return jsonify(allunanno=allunanno, allanno=allanno)
+
+@lifedata.route('/loadunannotext', methods=['GET'])
+@login_required
+def loadunannotext():
+    try:
+        projects, userprojects, annotation = getdbcollections.getdbcollections(mongo,
+                                                                    'projects',
+                                                                    'userprojects',
+                                                                    'annotation')
+        current_username = getcurrentusername.getcurrentusername()
+        activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                        userprojects)
+        active_source_id = getuserprojectinfo.getuserprojectinfo(userprojects,
+                                                                    current_username,
+                                                                    activeprojectname)
+        if ('activesourceId' in active_source_id):
+                active_source_id = active_source_id['activesourceId']
+        else:
+            active_source_id = ''
+
+        lastActiveId = request.args.get('data')
+        lastActiveId = eval(lastActiveId)
+        logger.debug("lastActiveId: %s", lastActiveId)
+
+        projects.update_one({"projectname": activeprojectname},
+                            { '$set' : { 'lastActiveId.'+current_username+'.'+active_source_id+'.dataId': lastActiveId }})
+    except:
+        logger.debug("")
+
+    return redirect(url_for('lifedata.annotation'))
+
+@lifedata.route('/loadpreviousdata', methods=['GET', 'POST'])
+@login_required
+def loadpreviousdata():
+    newdataId = 0
+    try:
+        projects, userprojects = getdbcollections.getdbcollections(mongo,
+                                                                'projects',
+                                                                'userprojects')
+        current_username = getcurrentusername.getcurrentusername()
+        activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                        userprojects)
+        active_source_id = getuserprojectinfo.getuserprojectinfo(userprojects,
+                                                                    current_username,
+                                                                    activeprojectname)
+        if ('activesourceId' in active_source_id):
+                active_source_id = active_source_id['activesourceId']
+        else:
+            active_source_id = ''
+        # data through ajax
+        lastActiveId = request.args.get('data')
+        lastActiveId = eval(lastActiveId)
+        latest_data_id = ''
+        if (len(lastActiveId) != 0):
+            latest_data_id = annotationdetails.getnewdataid(projects,
+                                                            activeprojectname,
+                                                            lastActiveId,
+                                                            active_source_id,
+                                                            'previous')
+            annotationdetails.updatelatestdataid(projects,
+                                                activeprojectname,
+                                                latest_data_id,
+                                                current_username,
+                                                active_source_id)
+    except:
+        logger.debug("")
+
+    return jsonify(newdataId=latest_data_id)
+
+@lifedata.route('/loadnextdata', methods=['GET', 'POST'])
+@login_required
+def loadnextdata():
+    newdataId = 0
+    try:
+        projects, userprojects = getdbcollections.getdbcollections(mongo,
+                                                                'projects',
+                                                                'userprojects')
+        current_username = getcurrentusername.getcurrentusername()
+        activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                        userprojects)
+        active_source_id = getuserprojectinfo.getuserprojectinfo(userprojects,
+                                                                    current_username,
+                                                                    activeprojectname)
+        if ('activesourceId' in active_source_id):
+                active_source_id = active_source_id['activesourceId']
+        else:
+            active_source_id = ''
+        # data through ajax
+        lastActiveId = request.args.get('data')
+        lastActiveId = eval(lastActiveId)
+        latest_data_id = ''
+        if (len(lastActiveId) != 0):
+            latest_data_id = annotationdetails.getnewdataid(projects,
+                                                        activeprojectname,
+                                                        lastActiveId,
+                                                        active_source_id,
+                                                        'next')
+            annotationdetails.updatelatestdataid(projects,
+                                            activeprojectname,
+                                            latest_data_id,
+                                            current_username,
+                                            active_source_id)
+    except:
+        logger.exception("")
+    return jsonify(newdataId=latest_data_id)
 

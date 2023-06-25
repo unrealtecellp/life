@@ -5,6 +5,9 @@ from app.controller import (
     getcommentstats,
     life_logging
 )
+from app.lifedata.controller import (
+    sourceid_to_souremetadata
+)
 
 logger = life_logging.get_logger()
 
@@ -12,24 +15,41 @@ def get_annotation_data(projects_collection,
                         userprojects_collection,
                         annotation_collection,
                         tagsets_collection,
+                        sourcedetails_collection,
                         current_username,
                         activeprojectname):
     project_details = {}
     try:
-        active_source_id = getuserprojectinfo.getuserprojectinfo(userprojects_collection,
-                                                                    current_username,
-                                                                    activeprojectname)['activesourceId']
         project_info = projects_collection.find_one({"projectname": activeprojectname},
                                                   {
                                                       "_id": 0,
                                                       "sourceIds."+current_username: 1,
                                                       "tagsetId": 1,
-                                                      "lastActiveId."+current_username: 1
+                                                      "lastActiveId."+current_username: 1,
+                                                      "projectOwner": 1,
+                                                      "derivedFromProject": 1 
                                                     }
                                                 )
-        source_ids = project_info["sourceIds"][current_username]
+        currentuser_projectinfo = getuserprojectinfo.getuserprojectinfo(userprojects_collection,
+                                                                        current_username,
+                                                                        activeprojectname)
+        shareinfo = currentuser_projectinfo
+        derive_from_project_name = project_info["derivedFromProject"][0]
+        if (project_info["sourceIds"]):
+            source_ids = project_info["sourceIds"][current_username]
+            source_metadata = sourceid_to_souremetadata.get_source_metadata(sourcedetails_collection,
+                                                                            source_ids,
+                                                                            derive_from_project_name)
+            source_ids.append('')
+        else:
+            source_ids = ['']
+        projectowner = project_info['projectOwner']
         tag_set_id = project_info["tagsetId"]
         tag_set = tagsets_collection.find_one({"_id": tag_set_id})
+        if ('activesourceId' in currentuser_projectinfo):
+            active_source_id = currentuser_projectinfo['activesourceId']
+        else:
+            active_source_id = ''
         last_active_id = project_info["lastActiveId"][current_username][active_source_id]['dataId']
         total_comments, annotated_comments, remaining_comments = getcommentstats.getdatacommentstatsnew(annotation_collection,
                                                                                                         activeprojectname,
@@ -37,7 +57,8 @@ def get_annotation_data(projects_collection,
                                                                                                         'datadeleteFLAG')
         data_info = annotation_collection.find_one({
                                                     "projectname": activeprojectname,
-                                                    "lifesourceid": active_source_id
+                                                    "lifesourceid": active_source_id,
+                                                    "dataId": last_active_id
                                                     },
                                                     {
                                                         "_id": 0,
@@ -47,9 +68,12 @@ def get_annotation_data(projects_collection,
                                                         current_username: 1
                                                     }
                                                     )
-        logger.debug('data_info: %s', pformat(data_info))
+        # logger.debug('data_info: %s', pformat(data_info))
+        project_details["projectOwner"] = projectowner
         project_details['activesourceId'] = active_source_id
         project_details['sourceIds'] = source_ids
+        project_details['shareInfo'] = shareinfo
+        project_details['sourceMetadata'] = source_metadata
         project_details['tagSet'] = tag_set['tagSet']
         project_details['tagSetMetaData'] = tag_set['tagSetMetaData']
         project_details['lastActiveId'] = last_active_id
@@ -65,165 +89,84 @@ def get_annotation_data(projects_collection,
             project_details[current_username] = data_info[current_username]
         project_details['accessedOnTime'] = datetime.now().strftime("%d/%m/%y %H:%M:%S")
         project_details["currentUser"] = current_username
+        
 
-        logger.debug('project_details get_annotation_data() %s', pformat(project_details))
-        logger.debug('project_details get_annotation_data() %s', pformat(list(project_details.keys())))
+        # logger.debug('project_details get_annotation_data() %s', pformat(project_details))
+        # logger.debug('project_details get_annotation_data() %s', pformat(list(project_details.keys())))
     except:
         logger.exception("")
-    # project_details = projects.find_one({"projectname": activeprojectname},
-    #                                     {
-    #                                         "_id": 0,
-    #                                         "lastActiveId": 1
-    #                                     })
-    # if project_details != None:
-    #     # print(project_details)
-    #     if (project_details["projectType"] != "text"):
-    #         flash("Active file is 'image' type. Plese select 'text' file to annotate.", 'info')
-    #         return redirect(url_for('easyAnno.home'))
-        
-    #     last_active_id_user = project_details["lastActiveId"]
-    #     if (current_username in last_active_id_user):
-    #         last_active_id = project_details["lastActiveId"][current_username]
-    #     else:
-    #         if (project_details["projectType"] == 'text'):
-    #             text_data = projects.find_one({"projectname": activeprojectname},
-    #                                             {"_id" : 0, "textData": 1 })
-    #         for id in text_data.values():
-    #             tIds = list(id.keys())
-    #         tIds = sorted(tIds)
-    #         last_active_id = tIds[0]
-    #         projects.update_one({ "projectname": activeprojectname },
-    #                                 { '$set' : 
-    #                                     { "lastActiveId": {current_username: last_active_id} }})
 
-    #     # print(project_details["textData"][last_active_id])
-    #     # print(last_active_id)
-        
-    #     project_details = projects.find_one({"projectname": activeprojectname},
-    #                                         {"_id": 0, 
-    #                                          "tagSet": 1, 
-    #                                          "tagSetMetaData": 1,
-    #                                          "textData."+last_active_id: 1, 
-    #                                          "textData": 1})
-    #     # print(project_details)
-    #     total_comments = len(project_details["textData"])
-    #     annotated_comments = 0
-    #     for comments in textanno.find({"projectname": activeprojectname},
-    #                                     {"projectname": 1, current_username: 1 }):
-    #         if (current_username in comments):
-    #             annotatedFLAG = comments[current_username]["annotatedFLAG"]
-    #             if (annotatedFLAG == 1):
-    #                 annotated_comments += 1
-    #     remaining_comments = total_comments - annotated_comments
-
-    #     project_details['totalComments'] = total_comments
-    #     project_details["annotatedComments"] = annotated_comments
-    #     project_details["remainingComments"]  = remaining_comments   
-    #     project_details["textData"] = project_details["textData"][last_active_id]
-    #     project_details["lastActiveId"] = last_active_id
-
-    #     # print(last_active_id)
-    #     text_meta_data = textanno.find_one({"projectname": activeprojectname, "textId": last_active_id},
-    #                                         {"_id": 0, "textMetadata": 1 })
-    #     if ('textMetadata' in text_meta_data):
-    #         project_details["textMetadata"] = text_meta_data["textMetadata"]
-    #     else:
-    #         for text_data_key, text_data_value in project_details['textData'].items():
-    #             # print(text_data_key, text_data_value)
-    #             if (text_data_key != 'Text'):
-    #                 text_meta_data[text_data_key] = text_data_value
-    #         # print(text_meta_data)
-    #         textanno.update_one({"projectname": activeprojectname, "textId": last_active_id},
-    #                             { '$set' : 
-    #                                 {   
-    #                                     'textMetadata': text_meta_data
-    #                                 }})
-            
-    #     missing_keys = textanno.find_one({"projectname": activeprojectname, "textId": last_active_id},
-    #                                     {"_id": 0})
-    #     if ('ID' in missing_keys):
-    #         textanno.update_one({"projectname": activeprojectname, "textId": last_active_id},
-    #                             {'$unset': {"ID": 1}})
-    #     if ('username' not in missing_keys):
-    #         textanno.update_one({"projectname": activeprojectname, "textId": last_active_id},
-    #                             {'$set': 
-    #                                 {
-    #                                     "username": projectowner,
-    #                                     'lifesourceid': '',
-    #                                     'textdeleteFLAG': 0,
-    #                                     'textverifiedFLAG': 0,
-    #                                     'additionalInfo': {},
-    #                                     'prompt': ''
-    #                                 }})
-    #     if (current_username in missing_keys and 'annotationGrid' not in missing_keys[current_username]):
-    #         print('123')
-    #         current_user_anno = missing_keys[current_username]
-    #         del current_user_anno['annotatedFLAG']
-    #         textanno.update_one({"projectname": activeprojectname, "textId": last_active_id},
-    #                             {
-    #                                 '$unset': {current_username: 1}
-    #                             })
-    #         textanno.update_one({"projectname": activeprojectname, "textId": last_active_id},
-    #                             {
-    #                                 '$set': 
-    #                                     {
-    #                                         current_username: {'annotationGrid': current_user_anno,
-    #                                                        "annotatedFLAG": 1}
-    #                                     }
-    #                             })
-    #     last_updated_by = missing_keys['lastUpdatedBy']
-    #     if ('annotationGrid' not in missing_keys and last_updated_by != ''):
-    #         last_updated_by_user_anno = missing_keys[last_updated_by]
-    #         if ('annotationGrid' in last_updated_by_user_anno):
-    #             last_updated_by_user_anno = last_updated_by_user_anno['annotationGrid']
-    #         textanno.update_one({"projectname": activeprojectname, "textId": last_active_id},
-    #                             {'$set': {"annotationGrid": last_updated_by_user_anno,
-    #                                       "annotatedFLAG": 1}})
-
-            
-
-    #     # get current datetime upto seconds as data accessed time
-    #     # use when 'Save' button is clicked
-    #     project_details['accessedOnTime'] = datetime.now().strftime("%d/%m/%y %H:%M:%S")
-    #     # pprint(project_details)
-    #     # check if tagSetMetaData key is present int he project details
-    #     # to check if the tagset contains any dependency and default tags list
-    #     if ('tagSetMetaData' in project_details and \
-    #         not bool(project_details["tagSetMetaData"])):
-    #         # print(project_details["tagSetMetaData"])
-    #         # print(not bool(project_details["tagSetMetaData"]))
-    #         project_details.pop("tagSetMetaData")
-
-
-    #     currentText = textanno.find_one({"projectname": activeprojectname, "textId": last_active_id},
-    #                                         {"_id": 0, current_username: 1})
-    #     # print(len(currentText.keys()))
-    #     # pprint(project_details)
-
-    #     if (currentText != None and
-    #         len(currentText.keys()) != 0 and
-    #         current_username == list(currentText.keys())[0]):
-    #         # print('currentText', currentText)
-    #         # print('list(currentText.keys())[0]', list(currentText.keys())[0])
-    #         # print('list(currentText.values())[0]', list(currentText.values())[0])
-    #         # project_details[list(currentText.keys())[0]] = list(currentText.values())[0]
-    #         project_details[list(currentText.keys())[0]] = currentText[current_username]['annotationGrid']
-    #         project_details['currentUser'] = current_username
-    #         # print(project_details)
-    #         # pprint(project_details)
-    #         currentAnnotation = project_details[current_username]
-    #         defaultAnnotation = project_details['tagSetMetaData']['defaultCategoryTags']
-    #         # pprint(currentAnnotation)
-    #         # pprint(defaultAnnotation)
-    #         project_details['tagSetMetaData']['defaultCategoryTags'] = {**defaultAnnotation, **currentAnnotation}
-
-    #         # pprint(project_details)
-
-    #         return project_details
-    #     else:
-
-    #         return project_details
-    # else:
-    #     flash('File not in the database', 'danger')
-    
     return project_details
+
+def get_annotation_ids_list(data_collection,
+                            active_project_name,
+                            active_source_id):
+    allIds = []
+    try:
+        dataIds = data_collection.find({"projectname": active_project_name, "lifesourceid": active_source_id},
+                            {"_id": 0, "dataId": 1})
+
+        if (dataIds != None):
+            for dataId in dataIds:
+                allIds.append(dataId["dataId"])
+    except:
+        logger.exception("")
+
+    return allIds
+
+def getnewdataid(projects,
+                  activeprojectname,
+                  last_active_id,
+                  active_source_id,
+                  which_one):
+    """_summary_
+
+    Args:
+        projects (_type_): _description_
+        activeprojectname (_type_): _description_
+        last_active_id (_type_): _description_
+        which_one (_type_): _description_
+    """
+    data_ids_list = projects.find_one({'projectname': activeprojectname},
+                                       {'_id': 0, 'sourcedataIds': 1})
+    logger.debug('data_ids_list', data_ids_list)
+    if len(data_ids_list) != 0:
+        data_ids_list = data_ids_list['sourcedataIds'][active_source_id]
+        logger.debug('data_ids_list: %s', data_ids_list)
+    if (len(data_ids_list) != 0):
+        if (last_active_id in data_ids_list):
+            data_id_index = data_ids_list.index(last_active_id)
+        else:
+            data_id_index = 0
+        # logger.debug('latestdataId Index!!!!!!!', data_id_index)
+        if which_one == 'previous':
+            data_id_index = data_id_index - 1
+        elif which_one == 'next':
+            if len(data_ids_list) == (data_id_index+1):
+                data_id_index = 0
+            else:
+                data_id_index = data_id_index + 1
+        latest_data_id = data_ids_list[data_id_index]
+    else:
+        latest_data_id = ''
+    logger.debug('latest_data_id dataDETAILS: %s', latest_data_id)
+
+    return latest_data_id
+
+
+def updatelatestdataid(projects,
+                        activeprojectname,
+                        latest_data_id,
+                        current_username,
+                        active_source_id):
+    """_summary_
+
+    Args:
+        projects (_type_): _description_
+        activeprojectname (_type_): _description_
+        latest_data_id (_type_): _description_
+        current_username (_type_): _description_
+    """
+    projects.update_one({'projectname': activeprojectname},
+                        {'$set': {'lastActiveId.'+current_username+'.'+active_source_id+'.dataId':  latest_data_id}})
+

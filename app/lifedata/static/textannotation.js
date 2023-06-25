@@ -393,7 +393,7 @@ function createSelect2(select2Keys, tagSet) {
             // console.log('getIds')
             // data = getIds()
             $.ajax({
-                url: '/easyAnno/getIdList',
+                url: '/lifedata/getIdList',
                 type: 'GET',
                 data: { 'data': JSON.stringify('') },
                 contentType: "application/json; charset=utf-8",
@@ -446,7 +446,7 @@ function createTextAnnotationInterface(projData) {
     let inpt = '';
     
     inpt += '<span class="textFormAlert"></span><div class="row">' +
-            '<form name="savetextanno" id="idsavetextannoform" class="form-horizontal" action="/easyAnno/savetextAnno" method="POST"  enctype="multipart/form-data">';
+            '<form name="savetextanno" id="idsavetextannoform" class="form-horizontal" action="/lifedata/savetextAnno" method="POST"  enctype="multipart/form-data">';
     inpt += '<div class="col-sm-6"  id="left">';
     inpt += '<input type="hidden" id="accessedOnTime" name="accessedOnTime" value="' + accessedOnTime + '">' +
             '<input type="hidden" id="lastActiveId" name="lastActiveId" value="' + lastActiveId + '">' +
@@ -517,13 +517,18 @@ function createTextAnnotationInterface(projData) {
     textareaScrollHeight('maintextcontent', 'maintextcontent');
     createSelect2(select2Keys, tagSet);
     createTextSpanDetails(tagSet, defaultCategoryTags)
+    let sourceIds = projData['sourceIds'];
+    let sourceMetadata = projData['sourceMetadata']
+    let shareInfo = projData['shareInfo']
+    let activeSourceId = shareInfo['activesourceId']
+    crawlerCreateSelect2('sourceidsdropdown', sourceIds, activeSourceId, sourceMetadata, 'video_title');
 
 }
 
 function previousText() {
     lastActiveId = document.forms["savetextanno"]["lastActiveId"].value
     $.ajax({
-        url: '/easyAnno/loadprevioustext',
+        url: '/lifedata/loadpreviousdata',
         type: 'GET',
         data: { 'data': JSON.stringify(lastActiveId) },
         contentType: "application/json; charset=utf-8",
@@ -537,7 +542,7 @@ function previousText() {
 function nextText() {
     lastActiveId = document.forms["savetextanno"]["lastActiveId"].value
     $.ajax({
-        url: '/easyAnno/loadnexttext',
+        url: '/lifedata/loadnextdata',
         type: 'GET',
         data: { 'data': JSON.stringify(lastActiveId) },
         contentType: "application/json; charset=utf-8",
@@ -552,26 +557,26 @@ function unAnnotated() {
     unanno = '';
     $('#uNAnnotated').remove();
     $.ajax({
-        url: '/easyAnno/allunannotated',
+        url: '/lifedata/allunannotated',
         type: 'GET',
         data: { 'data': JSON.stringify(unanno) },
         contentType: "application/json; charset=utf-8",
         success: function (response) {
-            // console.log(response);
+            console.log(response);
             allunanno = response.allunanno;
             allanno = response.allanno;
             var inpt = '';
             inpt += '<select class="form-control col-sm-3 allanno" id="allanno" onchange="loadAnnoText()">' +
                 '<option selected disabled>All Annotated</option>';
             for (i = 0; i < allanno.length; i++) {
-                inpt += '<option value="' + allanno[i]["textId"] + '">' + allanno[i]["textMetadata"]["ID"] + '</option>';
+                inpt += '<option value="' + allanno[i]["dataId"] + '">' + allanno[i]["dataMetadata"]["ID"] + '</option>';
             }
             inpt += '</select>';
             inpt += '<br><br>';
             inpt += '<select class="form-control col-sm-3" id="allunanno" onchange="loadUnAnnoText()">' +
                 '<option selected disabled>All Un-Annotated</option>';
             for (i = 0; i < allunanno.length; i++) {
-                inpt += '<option value="' + allunanno[i]["textId"] + '">' + allunanno[i]["textMetadata"]["ID"] + '</option>';
+                inpt += '<option value="' + allunanno[i]["dataId"] + '">' + allunanno[i]["dataMetadata"]["ID"] + '</option>';
             }
             inpt += '</select><br/><br/>';
             $('.commentIDs').append(inpt);
@@ -583,8 +588,9 @@ function unAnnotated() {
 
 function loadUnAnnoText() {
     textId = document.getElementById('allunanno').value;
+    console.log(textId);
     $.ajax({
-        url: '/easyAnno/loadunannotext',
+        url: '/lifedata/loadunannotext',
         type: 'GET',
         data: { 'data': JSON.stringify(textId) },
         contentType: "application/json; charset=utf-8",
@@ -597,8 +603,9 @@ function loadUnAnnoText() {
 
 function loadAnnoText() {
     textId = document.getElementById('allanno').value;
+    console.log(textId);
     $.ajax({
-        url: '/easyAnno/loadunannotext',
+        url: '/lifedata/loadunannotext',
         type: 'GET',
         data: { 'data': JSON.stringify(textId) },
         contentType: "application/json; charset=utf-8",
@@ -751,7 +758,7 @@ function openCategoryModal(eleId, start=0, end=0, selectedText='') {
 function spanModalForm(projData, eleId) {
     let spanModalData = '';
     let text = document.getElementById('maintextcontent').value;
-    spanModalData += '<form name="savetextannospan" id="idsavetextannospanform" class="form-horizontal" action="/easyAnno/savetextAnnoSpan" method="POST"  enctype="multipart/form-data">';
+    spanModalData += '<form name="savetextannospan" id="idsavetextannospanform" class="form-horizontal" action="/lifedata/savetextAnnoSpan" method="POST"  enctype="multipart/form-data">';
     spanModalData += '<div class="col-md-6"  id="modalleft">';
     spanModalData += '</div>' // left col div
 
@@ -1060,7 +1067,7 @@ function spanSave(ele) {
     }
     localStorage.setItem("textSpanDetails", JSON.stringify(textSpanDetails));
     currentTextSpanDetails['lastActiveId'] = lastActiveId;
-    $.post( "/easyAnno/savetextAnnoSpan", {
+    $.post( "/lifedata/savetextAnnoSpan", {
         a: JSON.stringify(currentTextSpanDetails)
       })
       .done(function( data ) {
@@ -1090,7 +1097,7 @@ function mainSave(ele) {
     // console.log(object);
     // console.log(textSpanDetails);
     Object.assign(object, textSpanDetails);
-    $.post( "/easyAnno/savetextAnno", {
+    $.post( "/lifedata/savetextAnno", {
         a: JSON.stringify(object)
       })
       .done(function( data ) {
@@ -1215,7 +1222,7 @@ function deleteSpanModal(eleId) {
         delete textSpanDetails[header][spanId];
         localStorage.setItem("textSpanDetails", JSON.stringify(textSpanDetails));
         currentTextSpanDetails['lastActiveId'] = lastActiveId;
-        $.post( "/easyAnno/deletetextAnnoSpan", {
+        $.post( "/lifedata/deletetextAnnoSpan", {
             a: JSON.stringify(currentTextSpanDetails)
         })
         .done(function( data ) {

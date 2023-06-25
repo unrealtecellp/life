@@ -64,7 +64,7 @@ def save_tagset(tagsets, zip_file, use_in_project):
                             # logger.debug("tags_df.iloc[i, 2]: %s", tags_df.iloc[i, 2])
                             if (str(tags_df.iloc[i, 2]) == 'nan'):
                                 defaultCategoryTags[tags_df.iloc[i, 0]] = ''
-                            elif (len(tags_df.columns) == 4 and str(tags_df.iloc[i, 4]) == 'select'):
+                            elif (len(tags_df.columns) >= 4 and str(tags_df.iloc[i, 4]) == 'select'):
                                 defaultCategoryTags[tags_df.iloc[i, 0]] = [re.sub(' ', '', tags_df.iloc[i, 2]).split(',')[0]]
                             else:
                                 defaultCategoryTags[tags_df.iloc[i, 0]] = re.sub(' ', '', tags_df.iloc[i, 2]).split(',')[0]
