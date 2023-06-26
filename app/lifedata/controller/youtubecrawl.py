@@ -42,6 +42,28 @@ tccount = 0
 data_links_info = {}
 
 
+def initialise_globals():
+    global ytids
+    global prev_videos
+    global csv_data
+    global meta
+    global video_count
+    global ccount
+    global crcount
+    global tccount
+    global data_links_info
+
+    ytids = []
+    prev_videos = set()
+    csv_data = []
+    meta = []
+    video_count = 0
+    ccount = 0
+    crcount = 0
+    tccount = 0
+    data_links_info = {}
+
+
 def getAllCommentsData(utube, vlink, channel_id, cmntc, cc):
     # Comments on the video
     urlc = "https://www.googleapis.com/youtube/v3/commentThreads?part=snippet,replies&videoId="+vlink+"&key="+key
@@ -602,7 +624,8 @@ def write_crawled_data(co3h,
                        video_stream,
                        download_items):
 
-    logger.debug("Save format: %s \t Download items %s", save_format, download_items)
+    logger.debug("Save format: %s \t Download items %s",
+                 save_format, download_items)
     if 'comments' in download_items:
         # File Name
         fname = 'youtube_corpus_'+str(video_count)
@@ -752,6 +775,8 @@ def run_youtube_crawler(projects_collection,
                         save_formats=['mongodb']):
     # Get API Key for the User
     # getKey()
+    initialise_globals()
+
     global key
     key = api_key
 
@@ -764,6 +789,8 @@ def run_youtube_crawler(projects_collection,
     # getList()
     global ytids
     global data_links_info
+
+    ytids = []
 
     if ('channels' in data_links):
         data_links_info = data_links['channels']
