@@ -63,7 +63,7 @@ def get_annotation_data(projects_collection,
         total_comments, annotated_comments, remaining_comments = getcommentstats.getdatacommentstatsnew(annotation_collection,
                                                                                                         activeprojectname,
                                                                                                         active_source_id,
-                                                                                                        'datadeleteFLAG')
+                                                                                                        'annotatedFLAG')
         data_info = annotation_collection.find_one({
                                                     "projectname": activeprojectname,
                                                     "lifesourceid": active_source_id,
@@ -111,7 +111,7 @@ def get_annotation_data(projects_collection,
         project_details["currentUser"] = current_username
         
 
-        # logger.debug('project_details get_annotation_data() %s', pformat(project_details))
+        logger.debug('project_details get_annotation_data() %s', pformat(project_details))
         # logger.debug('project_details get_annotation_data() %s', pformat(list(project_details.keys())))
     except:
         logger.exception("")
