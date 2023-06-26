@@ -396,7 +396,7 @@ def crawler():
                                                   current_username
                                                   )
             # flash("Crawling Complete.")
-            # return redirect(url_for("lifedata.crawler"))
+            return redirect(url_for("lifedata.crawler"))
         else:
             activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
                                                                           userprojects)
