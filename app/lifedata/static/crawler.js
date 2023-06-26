@@ -22,9 +22,10 @@ function youtubeCrawlerInterface() {
     ele += '<div class="form-group">'+
         '<label for="idyoutubedatafor">Crawl Mode</label><br>'+
         '<select class="classyoutubedatafor" id="idyoutubedatafor" name="youtubeDataFor" style="width:55%" required>' +
-        '<option value="topn">Top Videos</option>' +
+        '<option value="" disabled selected>Select the crawl mode</option>'+
         '<option value="videos">Specific Videos</option>'+
         '<option value="channels">Specific Channels</option>'+
+        '<option value="topn">Top Videos</option>' +
         '</select><br>'+
         '</div>';
     
@@ -35,37 +36,37 @@ function youtubeCrawlerInterface() {
     //     '<option value="specificlinks">Specific Videos/Channels</option>' +
     //     '</select><br>' +
     //     '</div>';
-    
-    ele += '<div class="classtopndiv" style="display: block;">' +
-        '<div class="form-group">' +
-        '<label for="idyoutubetopnsearchquery">Search Query</label>' +
-        '<input type="text" class="form-control" id="idyoutubetopnsearchquery" placeholder="Enter your search query" name="youtubeTopNSearchQuery" style="width: 55%" required>' +
-        '</div>' +
-        '<div class="form-group">' +
-        '<label for="idyoutubetopnsearchtags">Additional Tags, if any</label><br/>' +
-        '<select class="classyoutubetopnsearchtags" id="idyoutubetopnsearchtags" name="youtubeTopNSearchTags" style="width:55%" multiple="multiple">' +
-        '</select>' +
-        '</div>' +
-        '<div class="form-group">' +
-        '<label for="idyoutubetopnvideocount">Total Videos to crawl from (Max - 50): </label>' +
-        '<input type="number" min="1" max="50" class="form-control" id="idyoutubetopnvideocount" placeholder="Total number of videos to crawl" name="youtubeTopNVideoCount" style="width: 55%" required>' +
-        '</div>' +
-        '<div class="form-group">' +
-        '<label for="idyoutubevideolicense">Youtube Video License</label><br>' +
-        '<select class="classyoutubevideolicense" id="idyoutubevideolicense" name="youtubeVideoLicense" style="width:55%" required>' +
-        '<option value="creativeCommon">Creative Commons</option>' +
-        '<option value="youtube">Standard YouTube License</option>' +
-        '<option value="any">Any License</option>' +
-        '</select><br>' +
-        '</div>' +
-        '</div>';
 
     
-    ele += '<div class="classspecificlinksdiv" style="display: none;">'
+    ele += '<div class="classspecificlinksdiv" id="idspecificlinksdiv" style="display: none;">'
     
     ele += createVideosChannelIdInput();
 
     ele += '</div>';
+
+    ele += '<div class="classtopndiv" id="idtopndiv" style="display: none;">' +
+    '<div class="form-group">' +
+    '<label for="idyoutubetopnsearchquery">Search Query</label>' +
+    '<input type="text" class="form-control" id="idyoutubetopnsearchquery" placeholder="Enter your search query" name="youtubeTopNSearchQuery" style="width: 55%" required>' +
+    '</div>' +
+    '<div class="form-group">' +
+    '<label for="idyoutubetopnsearchtags">Additional Tags, if any</label><br/>' +
+    '<select class="classyoutubetopnsearchtags" id="idyoutubetopnsearchtags" name="youtubeTopNSearchTags" style="width:55%" multiple="multiple">' +
+    '</select>' +
+    '</div>' +
+    '<div class="form-group">' +
+    '<label for="idyoutubetopnvideocount">Total Videos to crawl from (Max - 50): </label>' +
+    '<input type="number" min="1" max="50" class="form-control" id="idyoutubetopnvideocount" placeholder="Total number of videos to crawl" name="youtubeTopNVideoCount" style="width: 55%" required>' +
+    '</div>' +
+    '<div class="form-group">' +
+    '<label for="idyoutubevideolicense">Youtube Video License</label><br>' +
+    '<select class="classyoutubevideolicense" id="idyoutubevideolicense" name="youtubeVideoLicense" style="width:55%" required>' +
+    '<option value="creativeCommon">Creative Commons</option>' +
+    '<option value="youtube">Standard YouTube License</option>' +
+    '<option value="any">Any License</option>' +
+    '</select><br>' +
+    '</div>' +
+    '</div>';
 
         // '<div class="form-group">'+
         // '<label for= "iddatalinks">Videos/Channels Id</label><br>'+
@@ -172,8 +173,13 @@ function crawlerInterfaceEvents() {
             // $('.classspecificlinksdiv').toggle("slide");
             // $('.classtopndiv').toggle("slide");
             $('.classspecificlinksdiv').css("display", "none");
+            $(".classspecificlinksdiv :input").prop("disabled", true);
+
             $('.classtopndiv').css("display", "block");
-            var $drillDown = $("#drilldown");
+            $('.classtopndiv :input').prop("disabled", false);
+            // var $drillDown = $("#drilldown");
+            
+            
             // $('.classtopndiv').display = "block";
             // $('.classspecificlinksdiv').display = "none";
         }
@@ -183,9 +189,12 @@ function crawlerInterfaceEvents() {
             // $('.classspecificlinksdiv').style = "display: block";
             // $('.classtopndiv').style = "display: none";
             // console.log("Selected Val2", selectedVal);
-            $('.classtopndiv').css("display", "none");
+            $('.classtopndiv').css("display", "none");            
+            $('.classtopndiv :input').prop("disabled", true);
+
             $('.classspecificlinksdiv').css("display", "block");
-            var $drillDown = $("#drilldown");
+            $(".classspecificlinksdiv :input").prop("disabled", false);
+            // var $drillDown = $("#drilldown");
         }
     });
 
