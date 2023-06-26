@@ -42,7 +42,7 @@ tccount = 0
 data_links_info = {}
 
 
-def getAllCommentsData(vlink, channel_id, cmntc, cc):
+def getAllCommentsData(utube, vlink, channel_id, cmntc, cc):
     # Comments on the video
     urlc = "https://www.googleapis.com/youtube/v3/commentThreads?part=snippet,replies&videoId="+vlink+"&key="+key
     with urllib.request.urlopen(urlc) as url:
@@ -477,7 +477,8 @@ def getVideoData(projects_collection,
                         meta_video.append(dt_string)  # current date time
                         meta.append(meta_video)
 
-                        getAllCommentsData(vlink,
+                        getAllCommentsData(utube,
+                                           vlink,
                                            channel_id,
                                            cmntc,
                                            cc)
@@ -536,33 +537,35 @@ def write_mongodb_comments(co3h,
     #     doc = xmltodict.parse(f_r.read())
     # xml_to_json = json.dumps(doc, indent=2, ensure_ascii=False)
     # logger.debug('xml_to_json: %s', xml_to_json)
+    try:
+        doc = xmltodict.parse(ET.tostring(co3h))
+        xml_to_json = json.dumps(
+            doc, indent=2, ensure_ascii=False)
+        logger.debug('xml_to_json TYPE: %s', type(xml_to_json))
+        logger.debug('xml_to_json: %s', xml_to_json)
+        xml_to_json = json.loads(xml_to_json)
+        # logger.debug('xml_to_json: %s', pformat(xml_to_json))
+        # logger.debug('xml_to_json TYPE: %s', type(xml_to_json))
+        # logger.debug('co3h TYPE: %s', type(co3h))
+        # logger.debug('co3h: %s', co3h)
+        logger.debug('csv-data-youtube: %s', csv_data)
 
-    doc = xmltodict.parse(ET.tostring(co3h))
-    xml_to_json = json.dumps(
-        doc, indent=2, ensure_ascii=False)
-    logger.debug('xml_to_json TYPE: %s', type(xml_to_json))
-    logger.debug('xml_to_json: %s', xml_to_json)
-    xml_to_json = json.loads(xml_to_json)
-    # logger.debug('xml_to_json: %s', pformat(xml_to_json))
-    # logger.debug('xml_to_json TYPE: %s', type(xml_to_json))
-    # logger.debug('co3h TYPE: %s', type(co3h))
-    # logger.debug('co3h: %s', co3h)
-    logger.debug('csv-data-youtube: %s', csv_data)
+        logger.debug('youTubeLinks.tsv: %s', meta)
 
-    logger.debug('youTubeLinks.tsv: %s', meta)
-
-    save_crawled_data.save_youtube_crawled_data(projects_collection,
-                                                userprojects_collection,
-                                                sourcedetails_collection,
-                                                crawling_collection,
-                                                project_owner,
-                                                current_username,
-                                                active_project_name,
-                                                xml_to_json,
-                                                csv_data,
-                                                meta,
-                                                vlink,
-                                                search_keywords)
+        save_crawled_data.save_youtube_crawled_data(projects_collection,
+                                                    userprojects_collection,
+                                                    sourcedetails_collection,
+                                                    crawling_collection,
+                                                    project_owner,
+                                                    current_username,
+                                                    active_project_name,
+                                                    xml_to_json,
+                                                    csv_data,
+                                                    meta,
+                                                    vlink,
+                                                    search_keywords)
+    except:
+        logger.exception("")
 
 
 def write_csv_file(fname):
@@ -599,20 +602,22 @@ def write_crawled_data(co3h,
                        video_stream,
                        download_items):
 
+    logger.debug("Save format: %s \t Download items %s", save_format, download_items)
     if 'comments' in download_items:
         # File Name
         fname = 'youtube_corpus_'+str(video_count)
 
-        if save_format == 'xml' or save_format == 'csv':
+        if 'xml' in save_format or 'csv' in save_format:
             write_metadata_file()
 
-        if save_format == 'xml':
+        if 'xml' in save_format:
             write_xml_file(co3h, fname)
 
-        elif save_format == 'csv':
+        elif 'csv' in save_format:
             write_csv_file(fname)
 
-        elif save_format == 'mongodb':
+        elif 'mongodb' in save_format:
+            logger.debug("Writing comments to mongodb")
             write_mongodb_comments(co3h,
                                    projects_collection,
                                    userprojects_collection,

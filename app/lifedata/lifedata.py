@@ -395,7 +395,7 @@ def crawler():
                                                   projectname,
                                                   current_username
                                                   )
-            flash("Crawling Complete.")
+            # flash("Crawling Complete.")
             return redirect(url_for("lifedata.crawler"))
         else:
             activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
@@ -480,6 +480,7 @@ def youtubecrawler():
                                              api_key,
                                              data_links)
             flash("Crawling Complete.")
+            return redirect(url_for("lifedata.crawler"))
     except:
         logger.exception("")
 
