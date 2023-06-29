@@ -8,19 +8,24 @@ import sys
 import csv
 import os
 import re
+import io
 import xmltodict
 import isodate
+from werkzeug.datastructures import FileStorage
 from pytube import YouTube
 from pprint import pformat
 from app.controller import (
     life_logging
+
 )
+
 from app.lifedata.controller import (
     save_crawled_data
 )
 
 from app.controller import (
-    audiodetails
+    audiodetails,
+    videodetails
 )
 
 logger = life_logging.get_logger()
@@ -40,6 +45,7 @@ ccount = 0
 crcount = 0
 tccount = 0
 data_links_info = {}
+crawling_status = -1
 
 
 def initialise_globals():
@@ -52,6 +58,7 @@ def initialise_globals():
     global crcount
     global tccount
     global data_links_info
+    global crawling_status
 
     ytids = []
     prev_videos = set()
@@ -62,6 +69,7 @@ def initialise_globals():
     crcount = 0
     tccount = 0
     data_links_info = {}
+    crawling_status = -1
 
 
 def getAllCommentsData(utube, vlink, channel_id, cmntc, cc):
@@ -102,6 +110,7 @@ def getAllCommentsData(utube, vlink, channel_id, cmntc, cc):
                         'Video:\t%s \tPage:\t%s', video_count, (i+2))
                     utube = getCommentData(
                         datac, utube, channel_id, vlink)
+
                 except Exception as e:
                     logger.exception("")
                     logger.debug('Exception: %s', e)
@@ -111,10 +120,16 @@ def getAllCommentsData(utube, vlink, channel_id, cmntc, cc):
                     logger.debug(
                         'Expected total comments: %s', totalResults)
                     logger.debug(
-                        'Expected complete: %s', ccount)
-                    logger.debug(
-                        'The program will now exit without writing data from video: %s', video_count)
-                    quit(403)
+                        'Total crawled comments: %s', ccount)
+                    if ccount > 0:
+                        logger.debug(
+                            'The program will now exit after writing data from video: %s', video_count)
+                        crawling_status = 0
+                        break
+                    else:
+                        logger.debug(
+                            'The program will now exit without writing data from video: %s', video_count)
+                        quit(403)
             else:
                 logger.debug(
                     'Video:\t%s \tPage:\t%s', video_count, (i+2))
@@ -293,20 +308,34 @@ def getCommentData(datac, utube, chid, vid):
 
 
 def downloadYoutubeVideo(video_link):
-    yt = YouTube(video_link)
-    relevant_streams = yt.streams.filter(progressive=True)
-    download_stream = relevant_streams.get_by_itag(22)
+    try:
+        logger.debug('Video Link %s', video_link)
+        if '?v=' not in video_link:
+            video_link = "https://www.youtube.com/watch?v="+video_link
+        yt = YouTube(video_link)
+        relevant_streams = yt.streams.filter(progressive=True)
+        download_stream = relevant_streams.get_by_itag(22)
+    except:
+        logger.exception("")
+        download_stream = ""
     return download_stream
 
 
 def downloadYoutubeAudio(video_link):
-    yt = YouTube(video_link)
-    relevant_streams = yt.streams.filter(only_audio=True)
-    download_stream = relevant_streams.get_by_itag(140)
+    try:
+        logger.debug('Video Link %s', video_link)
+        if '?v=' not in video_link:
+            video_link = "https://www.youtube.com/watch?v="+video_link
+        yt = YouTube(video_link)
+        relevant_streams = yt.streams.filter(only_audio=True)
+        download_stream = relevant_streams.get_by_itag(140)
+    except:
+        logger.exception("")
+        download_stream = ""
     return download_stream
 
 
-def getAllVideosData(projects_collection,
+def getAllVideosData(mongo, projects_collection,
                      userprojects_collection,
                      sourcedetails_collection,
                      crawling_collection,
@@ -319,7 +348,7 @@ def getAllVideosData(projects_collection,
                      save_format):
     for data in datad['items']:
         nlink = data['contentDetails']['videoId']
-        getVideoData(projects_collection,
+        getVideoData(mongo, projects_collection,
                      userprojects_collection,
                      sourcedetails_collection,
                      crawling_collection,
@@ -332,7 +361,7 @@ def getAllVideosData(projects_collection,
                      save_format)
 
 
-def getVideoData(projects_collection,
+def getVideoData(mongo, projects_collection,
                  userprojects_collection,
                  sourcedetails_collection,
                  crawling_collection,
@@ -349,6 +378,7 @@ def getVideoData(projects_collection,
     global meta
     global csv_data
     global tccount
+    global crawling_status
 
     if vlink not in prev_videos:
         csv_data.clear()
@@ -369,143 +399,156 @@ def getVideoData(projects_collection,
                     cmntc = stats['commentCount']
                 logger.debug('Total comments on video: %s : %s', vlink, cmntc)
                 # Proceeding further if there are comments on video
-                if int(cmntc) > 0:
-                    video_details = vdata['contentDetails']
-                    duration = video_details['duration']
-                    formatted_duration = isodate.parse_duration(duration)
+                # if int(cmntc) > 0:
+                logger.debug('Getting metadata of video: %s', vlink)
+                video_details = vdata['contentDetails']
+                duration = video_details['duration']
+                formatted_duration = isodate.parse_duration(duration)
 
-                    metadata = vdata['snippet']
-                    dt = metadata['publishedAt']
-                    date = dt[:dt.find('T')]
-                    time = dt[dt.find('T')+1:]
-                    channel = metadata['channelTitle']
-                    channel_id = metadata['channelId']
-                    title = metadata['title']
-                    description = metadata['description']
+                metadata = vdata['snippet']
+                dt = metadata['publishedAt']
+                date = dt[:dt.find('T')]
+                time = dt[dt.find('T')+1:]
+                channel = metadata['channelTitle']
+                channel_id = metadata['channelId']
+                title = metadata['title']
+                description = metadata['description']
 
-                    views = stats['viewCount']
-                    if 'likeCount' not in stats:
-                        likes = 0
-                    else:
-                        likes = stats['likeCount']
-                    if 'dislikeCount' not in stats:
-                        dislikes = 0
-                    else:
-                        dislikes = stats['dislikeCount']
+                views = stats['viewCount']
+                if 'likeCount' not in stats:
+                    likes = 0
+                else:
+                    likes = stats['likeCount']
+                if 'dislikeCount' not in stats:
+                    dislikes = 0
+                else:
+                    dislikes = stats['dislikeCount']
 
-                    favs = '0'
-                    if 'favouriteCount' in stats:
-                        favs = stats['favouriteCount']
+                favs = '0'
+                if 'favouriteCount' in stats:
+                    favs = stats['favouriteCount']
 
-                    lang = 'NA'
-                    if 'defaultAudioLanguage' in metadata:
-                        lang = metadata['defaultAudioLanguage']
+                lang = 'NA'
+                if 'defaultAudioLanguage' in metadata:
+                    lang = metadata['defaultAudioLanguage']
 
-                    video_tags = []
-                    if 'tags' in metadata:
-                        video_tags = metadata['tags']
+                video_tags = []
+                if 'tags' in metadata:
+                    video_tags = metadata['tags']
 
-                    video_id = vlink
-                    vLink = "https://www.youtube.com/watch?v="+vlink
+                video_id = vlink
+                vLink = "https://www.youtube.com/watch?v="+vlink
 
-                    # Increasing file count
-                    video_count += 1
+                # Increasing file count
+                video_count += 1
 
-                    # Adding for CSV File
-                    csv_data.append(
-                        ['Youtube Corpus ' + str(video_count), vLink])
+                # Adding for CSV File
+                csv_data.append(
+                    ['Youtube Corpus ' + str(video_count), vLink])
 
-                    # Comment count
-                    ccount = 0
-                    tccount = 0
+                # Comment count
+                ccount = 0
+                tccount = 0
 
-                    # Adding Video Data to XML
-                    co3h = ET.Element('co3h')
-                    async_c = ET.SubElement(co3h, 'asynchronous')
-                    utube = ET.SubElement(async_c, 'youtube_video', {
-                        'id': str(video_count)})
+                # Adding Video Data to XML
+                co3h = ET.Element('co3h')
+                async_c = ET.SubElement(co3h, 'asynchronous')
+                utube = ET.SubElement(async_c, 'youtube_video', {
+                    'id': str(video_count)})
 
-                    async_i = ET.SubElement(utube, 'async_info')
-                    pub = ET.SubElement(async_i, 'publisher')
-                    pub.text = str(channel)
-                    pub = ET.SubElement(async_i, 'publisher_id')
-                    pub.text = str(channel_id)
-                    ttl = ET.SubElement(async_i, 'video_title')
-                    ttl.text = str(title)
-                    desc = ET.SubElement(async_i, 'video_description')
-                    desc.text = html2text.html2text(str(description)).strip()
-                    dat = ET.SubElement(async_i, 'published_date')
-                    dat.text = str(date)
-                    tm = ET.SubElement(async_i, 'published_time')
-                    tm.text = str(time)
-                    vws = ET.SubElement(async_i, 'total_views')
-                    vws.text = str(views)
-                    lks = ET.SubElement(async_i, 'video_likes')
-                    lks.text = str(likes)
-                    dlks = ET.SubElement(async_i, 'video_dislikes')
-                    dlks.text = str(dislikes)
-                    fav = ET.SubElement(async_i, 'video_favourites')
-                    fav.text = str(favs)
-                    cc = ET.SubElement(async_i, 'total_comments')
-                    cc.text = str(cmntc)
-                    lng = ET.SubElement(async_i, 'audio_language')
-                    lng.text = str(lang)
-                    dur = ET.SubElement(async_i, 'video_duration')
-                    dur.text = str(formatted_duration)
-                    # vtags = ET.SubElement(async_i, 'video_tags')
-                    if len(video_tags) > 0:
-                        for video_tag in video_tags:
-                            # vtag = ET.SubElement(vtags, 'vtag')
-                            vtags = ET.SubElement(async_i, 'video_tags')
-                            vtags.text = str(video_tag)
-                    else:
+                async_i = ET.SubElement(utube, 'async_info')
+                pub = ET.SubElement(async_i, 'publisher')
+                pub.text = str(channel)
+                pub = ET.SubElement(async_i, 'publisher_id')
+                pub.text = str(channel_id)
+                ttl = ET.SubElement(async_i, 'video_title')
+                ttl.text = str(title)
+                desc = ET.SubElement(async_i, 'video_description')
+                desc.text = html2text.html2text(str(description)).strip()
+                dat = ET.SubElement(async_i, 'published_date')
+                dat.text = str(date)
+                tm = ET.SubElement(async_i, 'published_time')
+                tm.text = str(time)
+                vws = ET.SubElement(async_i, 'total_views')
+                vws.text = str(views)
+                lks = ET.SubElement(async_i, 'video_likes')
+                lks.text = str(likes)
+                dlks = ET.SubElement(async_i, 'video_dislikes')
+                dlks.text = str(dislikes)
+                fav = ET.SubElement(async_i, 'video_favourites')
+                fav.text = str(favs)
+                cc = ET.SubElement(async_i, 'total_comments')
+                cc.text = str(cmntc)
+                lng = ET.SubElement(async_i, 'audio_language')
+                lng.text = str(lang)
+                dur = ET.SubElement(async_i, 'video_duration')
+                dur.text = str(formatted_duration)
+                # vtags = ET.SubElement(async_i, 'video_tags')
+                if len(video_tags) > 0:
+                    for video_tag in video_tags:
+                        # vtag = ET.SubElement(vtags, 'vtag')
                         vtags = ET.SubElement(async_i, 'video_tags')
-                        vtags.text = ""
+                        vtags.text = str(video_tag)
+                else:
+                    vtags = ET.SubElement(async_i, 'video_tags')
+                    vtags.text = ""
 
-                    # crawl date time
-                    now = datetime.now()
-                    dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
-                    acc_dt = ET.SubElement(async_i, 'accessed_at')
-                    acc_dt.text = str(dt_string)
+                # crawl date time
+                now = datetime.now()
+                dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+                acc_dt = ET.SubElement(async_i, 'accessed_at')
+                acc_dt.text = str(dt_string)
 
-                    main = ET.SubElement(utube, 'main_content')
-                    org = ET.SubElement(
-                        main, 'original_script', {'name': 'Roman'})
-                    org.text = str(vLink)
+                main = ET.SubElement(utube, 'main_content')
+                org = ET.SubElement(
+                    main, 'original_script', {'name': 'Roman'})
+                org.text = str(vLink)
 
-                    # Get Audio and Video
-                    if 'audio' in download_items:
-                        audio_stream = downloadYoutubeAudio(
-                            vlink)
-                    else:
-                        audio_stream = ''
+                write_data = False
+                # Get Audio and Video
+                if 'audio' in download_items:
+                    logger.debug('Downloading audio of video: %s', vlink)
+                    audio_stream = downloadYoutubeAudio(
+                        vlink)
+                    if audio_stream != '':
+                        write_data = True
+                else:
+                    audio_stream = ''
 
-                    if 'video' in download_items:
-                        video_stream = downloadYoutubeVideo(
-                            vlink)
-                    else:
-                        video_stream = ''
+                if 'video' in download_items:
+                    logger.debug('Downloading video of video: %s', vlink)
+                    video_stream = downloadYoutubeVideo(
+                        vlink)
+                    if video_stream != '':
+                        write_data = True
+                else:
+                    video_stream = ''
 
-                    # Get comments
-                    if 'comments' in download_items:
-                        # Metadata for this video
-                        meta_video = []
-                        meta_video.append(vlink)  # video ID
-                        meta_video.append(channel_id)  # channel ID
-                        meta_video.append('NA')  # comment ID
-                        meta_video.append('youtube_corpus_' +
-                                          str(video_count))  # file name
-                        meta_video.append('NA')  # parent_ID
-                        meta_video.append(dt_string)  # current date time
-                        meta.append(meta_video)
+                # Get comments
+                if 'comments' in download_items and int(cmntc) > 0:
+                    crawling_status = 1
+                    logger.debug('Downloading comments of video: %s', vlink)
+                    # Metadata for this video
+                    meta_video = []
+                    meta_video.append(vlink)  # video ID
+                    meta_video.append(channel_id)  # channel ID
+                    meta_video.append('NA')  # comment ID
+                    meta_video.append('youtube_corpus_' +
+                                      str(video_count))  # file name
+                    meta_video.append('NA')  # parent_ID
+                    meta_video.append(dt_string)  # current date time
+                    meta.append(meta_video)
 
-                        getAllCommentsData(utube,
-                                           vlink,
-                                           channel_id,
-                                           cmntc,
-                                           cc)
+                    getAllCommentsData(utube,
+                                       vlink,
+                                       channel_id,
+                                       cmntc,
+                                       cc)
+                    write_data = True
 
-                    write_crawled_data(co3h,
+                if write_data:
+                    logger.debug('Writing data of video: %s', vlink)
+                    write_crawled_data(mongo, co3h,
                                        projects_collection,
                                        userprojects_collection,
                                        sourcedetails_collection,
@@ -545,16 +588,7 @@ def write_xml_file(co3h, fname):
     logger.debug('xml-data-youtube: %s', complete)
 
 
-def write_mongodb_comments(co3h,
-                           projects_collection,
-                           userprojects_collection,
-                           sourcedetails_collection,
-                           crawling_collection,
-                           project_owner,
-                           current_username,
-                           active_project_name,
-                           vlink,
-                           search_keywords):
+def get_mongodb_json(co3h):
     # with open('xml-data-youtube/' + fname + '.xml', 'r') as f_r:
     #     doc = xmltodict.parse(f_r.read())
     # xml_to_json = json.dumps(doc, indent=2, ensure_ascii=False)
@@ -573,21 +607,10 @@ def write_mongodb_comments(co3h,
         logger.debug('csv-data-youtube: %s', csv_data)
 
         logger.debug('youTubeLinks.tsv: %s', meta)
-
-        save_crawled_data.save_youtube_crawled_data(projects_collection,
-                                                    userprojects_collection,
-                                                    sourcedetails_collection,
-                                                    crawling_collection,
-                                                    project_owner,
-                                                    current_username,
-                                                    active_project_name,
-                                                    xml_to_json,
-                                                    csv_data,
-                                                    meta,
-                                                    vlink,
-                                                    search_keywords)
     except:
         logger.exception("")
+
+    return xml_to_json
 
 
 def write_csv_file(fname):
@@ -601,15 +624,86 @@ def write_audio_video_file(audio_video_stream):
     return True
 
 
-def write_mongodb_audio(audio_stream):
-    return True
+def write_mongodb_audio(mongo,
+                        projects,
+                        userprojects,
+                        crawling,
+                        projectowner,
+                        activeprojectname,
+                        current_username,
+                        speakerId,
+                        audio_stream):
+    new_audio_file = {}
+
+    string_file_name = audio_stream.title
+    file_name = string_file_name[:15]+'_'+speakerId+'_audio.mp4a'
+
+    file_content = io.BytesIO()
+    audio_stream.stream_to_buffer(file_content)
+    # logger.debug ("File content", file_content)
+    # logger.debug ("Upload type", fileType)
+    new_audio_file['audiofile'] = FileStorage(
+        file_content, filename=file_name)
+    file_state, transcription_doc_id, fs_file_id = audiodetails.saveoneaudiofile(mongo,
+                                                                                 projects,
+                                                                                 userprojects,
+                                                                                 crawling,
+                                                                                 projectowner,
+                                                                                 activeprojectname,
+                                                                                 current_username,
+                                                                                 speakerId,
+                                                                                 new_audio_file,
+                                                                                 run_vad=False,
+                                                                                 run_asr=False,
+                                                                                 get_audio_json=False)
+    updated_filename = crawling.find_one(
+        {'projectname': activeprojectname,
+            'username': current_username, 'speakerId': speakerId, 'dataType': "audio"},
+        {'audioFilename': 1, '_id': 0})['audioFilename']
+    return transcription_doc_id, fs_file_id, updated_filename, file_state
 
 
-def write_mongodb_video(video_stream):
-    return True
+def write_mongodb_video(mongo,
+                        projects,
+                        userprojects,
+                        crawling,
+                        projectowner,
+                        activeprojectname,
+                        current_username,
+                        speakerId,
+                        video_stream):
+
+    new_video_file = {}
+    string_file_name = video_stream.title
+    file_name = string_file_name[:15]+'_'+speakerId+'_video.mp4'
+
+    file_content = io.BytesIO()
+    video_stream.stream_to_buffer(file_content)
+    # logger.debug ("File content", file_content)
+    # logger.debug ("Upload type", fileType)
+    new_video_file['videofile'] = FileStorage(
+        file_content, filename=file_name)
+    file_state, transcription_doc_id, fs_file_id = videodetails.saveonevideofile(mongo,
+                                                                                 projects,
+                                                                                 userprojects,
+                                                                                 crawling,
+                                                                                 projectowner,
+                                                                                 activeprojectname,
+                                                                                 current_username,
+                                                                                 speakerId,
+                                                                                 new_video_file,
+                                                                                 run_vad=False,
+                                                                                 run_asr=False,
+                                                                                 get_audio_json=False)
+
+    updated_filename = crawling.find_one(
+        {'projectname': activeprojectname,
+            'username': current_username, 'speakerId': speakerId, 'dataType': "video"},
+        {'videoFilename': 1, '_id': 0})['videoFilename']
+    return transcription_doc_id, fs_file_id, updated_filename, file_state
 
 
-def write_crawled_data(co3h,
+def write_crawled_data(mongo, co3h,
                        projects_collection,
                        userprojects_collection,
                        sourcedetails_collection,
@@ -626,42 +720,78 @@ def write_crawled_data(co3h,
 
     logger.debug("Save format: %s \t Download items %s",
                  save_format, download_items)
-    if 'comments' in download_items:
-        # File Name
-        fname = 'youtube_corpus_'+str(video_count)
+    audio_doc_id = fs_audio_id = audio_filename = ''
+    video_doc_id = fs_video_id = video_filename = ''
 
-        if 'xml' in save_format or 'csv' in save_format:
+    if 'xml' in save_format or 'csv' in save_format:
+        if 'comments' in download_items:
+            # File Name
+            fname = 'youtube_corpus_'+str(video_count)
             write_metadata_file()
 
-        if 'xml' in save_format:
-            write_xml_file(co3h, fname)
+            if 'xml' in save_format:
+                write_xml_file(co3h, fname)
 
-        elif 'csv' in save_format:
-            write_csv_file(fname)
+            elif 'csv' in save_format:
+                write_csv_file(fname)
 
-        elif 'mongodb' in save_format:
-            logger.debug("Writing comments to mongodb")
-            write_mongodb_comments(co3h,
-                                   projects_collection,
-                                   userprojects_collection,
-                                   sourcedetails_collection,
-                                   crawling_collection,
-                                   project_owner,
-                                   current_username,
-                                   active_project_name,
-                                   vlink,
-                                   search_keywords)
-    if 'audio' in download_items:
-        if save_format == 'mongodb':
-            write_mongodb_audio(audio_stream)
-        elif save_format == 'xml' or save_format == 'csv':
+        if 'audio' in download_items:
             write_audio_video_file(audio_stream)
 
-    if 'video' in download_items:
-        if save_format == 'mongodb':
-            write_mongodb_video(video_stream)
-        elif save_format == 'xml' or save_format == 'csv':
+        if 'video' in download_items:
             write_audio_video_file(video_stream)
+
+    if 'mongodb' in save_format:
+        if 'audio' in download_items:
+            logger.debug('Writing audio of video: %s to mongodb', vlink)
+            audio_doc_id, fs_audio_id, audio_filename, file_state = write_mongodb_audio(mongo,
+                                                                                        projects_collection,
+                                                                                        userprojects_collection,
+                                                                                        crawling_collection,
+                                                                                        project_owner,
+                                                                                        active_project_name,
+                                                                                        current_username,
+                                                                                        vlink,
+                                                                                        audio_stream)
+            audio_doc_id = audio_doc_id.inserted_id
+
+        if 'video' in download_items:
+            logger.debug('Writing video of video: %s to mongodb', vlink)
+            video_doc_id, fs_video_id, video_filename, file_state = write_mongodb_video(mongo,
+                                                                                        projects_collection,
+                                                                                        userprojects_collection,
+                                                                                        crawling_collection,
+                                                                                        project_owner,
+                                                                                        active_project_name,
+                                                                                        current_username,
+                                                                                        vlink,
+                                                                                        video_stream)
+            video_doc_id = video_doc_id.inserted_id
+
+        # if 'comments' in download_items:
+        logger.debug("Getting data JSON for writing to mongodb")
+        xml_to_json = get_mongodb_json(co3h)
+
+        logger.debug('Writing all data of video: %s to mongodb', vlink)
+        save_crawled_data.save_youtube_crawled_data(projects_collection,
+                                                    userprojects_collection,
+                                                    sourcedetails_collection,
+                                                    crawling_collection,
+                                                    project_owner,
+                                                    current_username,
+                                                    active_project_name,
+                                                    xml_to_json,
+                                                    csv_data,
+                                                    meta,
+                                                    vlink,
+                                                    search_keywords,
+                                                    fs_audio_id,
+                                                    audio_filename,
+                                                    fs_video_id,
+                                                    video_filename,
+                                                    audio_doc_id,
+                                                    video_doc_id,
+                                                    crawling_status)
 
 
 # Function for retrieving the API key
@@ -762,7 +892,7 @@ def getPreviousVideos(sourcedetails_collection,
         logger.debug('prev_videos_aggregated: %s', pformat(prev_videos))
 
 
-def run_youtube_crawler(projects_collection,
+def run_youtube_crawler(mongo, projects_collection,
                         userprojects_collection,
                         sourcedetails_collection,
                         crawling_collection,
@@ -836,7 +966,7 @@ def run_youtube_crawler(projects_collection,
         else:
             search_keywords = []
         if ytparam == 'vid':
-            getVideoData(projects_collection,
+            getVideoData(mongo, projects_collection,
                          userprojects_collection,
                          sourcedetails_collection,
                          crawling_collection,
@@ -876,7 +1006,7 @@ def run_youtube_crawler(projects_collection,
                     # get data from first page of the video list
                     logger.debug(
                         'Getting videos for page 0 of channel: %s', ytid)
-                    getAllVideosData(projects_collection,
+                    getAllVideosData(mongo, projects_collection,
                                      userprojects_collection,
                                      sourcedetails_collection,
                                      crawling_collection,
@@ -922,7 +1052,7 @@ def run_youtube_crawler(projects_collection,
                             # get data from next pages
                             logger.debug(
                                 'Getting videos for page: %s of channel: %s', i, ytid)
-                            getAllVideosData(projects_collection,
+                            getAllVideosData(mongo, projects_collection,
                                              userprojects_collection,
                                              sourcedetails_collection,
                                              crawling_collection,

@@ -440,6 +440,7 @@ def youtubecrawler():
             # logger.debug('%s', pformat(youtube_crawler_info['dataLinks'][0].split('\r\n')))
             api_key = youtube_crawler_info['youtubeAPIKey'][0]
             youtube_data_for = youtube_crawler_info['youtubeDataFor'][0]
+            youtube_data_type = youtube_crawler_info['youtubeDataType']
             data_links = {}
             # data_links_list = youtube_crawler_info['dataLinks'][0].split('\r\n')
             # data_links = {youtube_data_for: data_links_list}
@@ -478,7 +479,7 @@ def youtubecrawler():
             logger.debug("data_links: %s", pformat(data_links))
 
             logger.debug("Current active project name %s", activeprojectname)
-            youtubecrawl.run_youtube_crawler(projects_collection,
+            youtubecrawl.run_youtube_crawler(mongo, projects_collection,
                                              userprojects_collection,
                                              sourcedetails_collection,
                                              crawling_collection,
@@ -486,7 +487,8 @@ def youtubecrawler():
                                              current_username,
                                              activeprojectname,
                                              api_key,
-                                             data_links)
+                                             data_links,
+                                             download_items=youtube_data_type)
             flash("Crawling Complete.")
             return redirect(url_for("lifedata.crawler"))
     except:
