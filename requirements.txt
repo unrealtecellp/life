@@ -44,6 +44,7 @@ PySocks==1.7.1
 pytesseract==0.3.10
 python-dateutil==2.8.2
 python-dotenv==1.0.0
+pytube==15.0.0
 pytz==2015.7
 PyYAML==6.0
 rdflib==6.2.0

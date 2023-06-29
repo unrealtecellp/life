@@ -9,6 +9,7 @@
 {{super()}}
   <link href="{{url_for('.static', filename='enternewsentences.css')}}" rel="stylesheet" />
   <link href="{{url_for('.static', filename='audiotranscription.css')}}" rel="stylesheet" />
+  <link href="{{url_for('.static', filename='sidepanel.css')}}" rel="stylesheet" />
 {% endblock %}
 
 {% block app_content %}
@@ -17,8 +18,54 @@
       {% if projectName is defined %}
         <h4>Project Name : {{ projectName }}</h4>
       {% endif %}
+      {% if commentstats is defined %}
+          <div class="commentStats">
+          </div>
+        {% if commentstats[0] != 0 %}
+          <div class="progress">
+            <div class="progress-bar progress-bar-success" role="progressbar"
+              style="width:{{ commentstats[1]/commentstats[0]*100 }}%">
+              Completed : {{ commentstats[1] }}
+            </div>
+            <div class="progress-bar progress-bar-danger" role="progressbar"
+              style="width:{{ commentstats[2]/commentstats[0]*100 }}%">
+              Remaining : {{ commentstats[2] }}
+            </div>
+          </div>
+        {% endif %}
+      {% endif %}
     </div>
-    <div class="col-sm-7 pull-right">
+    {% if speakerids is defined %}
+      <label for="speakeridsdropdown">Source: </label>
+      <select class="custom-select custom-select-sm" id="speakeridsdropdown" style="width: 10%;">
+        <option selected disabled>{{ activespeakerid }}</option>
+        {% for d in speakerids %}
+          {% if d != activespeakerid %}
+            <option value="{{ d }}">{{ d }}</option>
+          {% endif %}
+        {% endfor %}
+      </select>
+    {% endif %}
+    <button class="btn btn-info" type="button" id="previous" onclick="previousAudio()">
+      <span class="previousaudio glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+    </button>
+    <button class="btn btn-info" type="button" id="next" onclick="nextAudio()">
+      <span class="nextaudio glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+    </button>
+    <button class="btn btn-warning" id="save">
+      <span class="saveaudio glyphicon glyphicon-floppy-save" aria-hidden="true"></span>
+    </button>
+    {% if shareinfo['sharemode']|int >= 4 %}
+      <button type="button" id="deleteaudio" class="btn btn-danger">
+        <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+      </button>
+    {% endif %}
+    <span class="commentIDs">
+      <button type="button" id="uNAnnotated" class="btn btn-light" onclick="unAnnotated()">All Filename</button>
+    </span>
+    <span class="pull-right" style="font-size:30px; position:absolute; right:10px;cursor:pointer" onclick="openNav()"><i class="glyphicon glyphicon-menu-hamburger"></i></span>
+    <div id="sidepanel"></div>
+    <!-- <div class="col-sm-7 pull-right">
       <button type="button" id="progressreport" class="btn btn-lg btn-danger" data-toggle="modal"
         data-target="#myProgressReportModal">
           Progress Report
@@ -39,96 +86,21 @@
             Upload Audio
         </button>
       {% endif %}
-      </a>
-    </div>
+    </div> -->
   </div>
-  <hr>
-  <div class="row">
-    <div class="col-sm-6 pull-right">
-      {% if commentstats is defined %}
-          <div class="commentStats">
-          </div>
-        {% if commentstats[0] != 0 %}
-          <div class="progress">
-            <div class="progress-bar progress-bar-success" role="progressbar"
-              style="width:{{ commentstats[1]/commentstats[0]*100 }}%">
-              Completed : {{ commentstats[1] }}
-            </div>
-            <div class="progress-bar progress-bar-danger" role="progressbar"
-              style="width:{{ commentstats[2]/commentstats[0]*100 }}%">
-              Remaining : {{ commentstats[2] }}
-            </div>
-          </div>
-        {% endif %}
-      {% endif %}
-      <div class="commentIDs">
-        <button type="button" id="uNAnnotated" class="btn btn-light" onclick="unAnnotated()">All Filename</button>
-        {% if shareinfo['sharemode']|int >= 4 %}
-          <button type="button" id="deleteaudio" class="btn btn-danger pull-right">
-            <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
-            Delete Audio
-          </button>
-        {% endif %}
-      </div>
-    </div>
-    <div class="col-sm-6">
-      {# <div>
-        {% if speakerids is defined %}
-          <label for="usernamesdropdown">Audio Files of: </label>
-          <select class="custom-select custom-select-sm" id="usernamesdropdown" style="width: 50%;">
-            <option selected disabled>{{ activespeakerid }}</option>
-            {% for d in speakerids %}
-              {% if d != activespeakerid %}
-                <option value="{{ d }}">{{ d }}</option>
-              {% endif %}
-            {% endfor %}
-          </select>
-        {% endif %}
-      </div> #}
-      <br>
-      <div>
-        {% if speakerids is defined %}
-          <label for="speakeridsdropdown">Audio Files from Source: </label>
-          <select class="custom-select custom-select-sm" id="speakeridsdropdown" style="width: 50%;">
-            <option selected disabled>{{ activespeakerid }}</option>
-            {% for d in speakerids %}
-              {% if d != activespeakerid %}
-                <option value="{{ d }}">{{ d }}</option>
-              {% endif %}
-            {% endfor %}
-          </select>
-        {% endif %}
-      </div>
-    </div>
-  </div>
-  <hr>
-
-  <button class="btn btn-info btn-lg" type="button" id="previous" onclick="previousAudio()">
-    <span class="previousaudio glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
-      Previous Audio
-  </button>
-  <button class="btn btn-info pull-right btn-lg" type="button" id="next" onclick="nextAudio()">
-      Next Audio
-    <span class="nextaudio glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
-  </button>
-  <br>
-  <br>
   <div class="row">
     <div class="col-md-9 defaultfield" id="iddefaultfield"></div>
     <div class="col-md-2 classaudiometadata pull-right" id="idaudiometadata"></div>
   </div>
   <br>
   <div class="lexemelang"></div>
-  <div class="lexemeform"></div>
-
   <p id="subtitleabsence" class="text-center text-info">&nbsp;</p>
   <p id="subtitle" class="text-center text-info">&nbsp;</p>
-  <div id="wave-timeline"></div>
+  <!-- <div id="wave-timeline"></div> -->
   <div id="waveform"></div>
   <div id="wave-spectrogram" style="display: none;"></div>
-  <p id="regioninfo" class="text-danger">&nbsp;</p>
-  <hr>
-
+  <!-- <p id="regioninfo" class="text-danger">&nbsp;</p> -->
+  <br>
   <div class="row">
     <div class="col-sm-3" id="sliderdivid">
       <input id="slider" data-action="zoom" type="range" min="0" max="100" value="0" style="width: 50%">
@@ -142,9 +114,10 @@
       </button>
     </div>
   </div>
-  <hr>
+  <p id="regioninfo" class="text-danger">&nbsp;</p>
+  <form id="boundaryForm" role="form" name="edit" style="display: none; margin: 30px 0;">    <div class="form-group transcription1" id="transcription2"></div>
+    <div class="form-group translationfield1" id="translationfield2"></div>
 
-  <form id="boundaryForm" role="form" name="edit" style="display: none; margin: 30px 0;">
     <div class="row">
       <div class="form-group col-sm-6">
         <label for="start">Boundary Start Time</label>
@@ -156,10 +129,7 @@
         <input class="form-control" id="end" name="end" readonly required />
       </div>
     </div>
-
-    <div class="form-group transcription1" id="transcription2"></div>
-    <div class="form-group translationfield1" id="translationfield2"></div>
-
+    
     <div class="form-group comments" id="transcription-comments"></div>
 
     <div class="row">
@@ -172,21 +142,16 @@
         <button class="btn btn-primary" type="button" id="playPauseBoundary">
           Play/Pause This Boundary
         </button>
-        <button type="submit" class="btn btn-success btn-lg pull-right" id="saveTempTranscription">Save This
+        <!-- <button type="submit" class="btn btn-success btn-lg pull-right" id="saveTempTranscription">Save This
           Boundary
-        </button>
+        </button> -->
       </div>
     </div>
   </form>
-
-  <button class="btn btn-warning btn-lg pull-right" id="save">
-    Save All Boundaries
-    <span class="saveaudio glyphicon glyphicon-floppy-save" aria-hidden="true"></span>
-  </button>
+  <!-- <br>
   <br>
-  <br>
-  <br>
-  <div id="waveformControl">
+  <br> -->
+  <!-- <div id="waveformControl">
     <button class="btn btn-info btn-lg" type="button" id="previous" onclick="previousAudio()">
       <span class="previousaudio glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
       Previous Audio
@@ -195,7 +160,7 @@
       Next Audio
       <span class="nextaudio glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
     </button>
-  </div>
+  </div> -->
   <br>
   <div class="interlineargloss"></div>
   <div class="clear"></div>
@@ -377,6 +342,8 @@
 
 {% block scripts %}
 {{super()}}
+  <script src="{{url_for('.static', filename='sidepanel.js')}}"></script>
+  <script type="text/javascript">createSidePanel({{ shareinfo | tojson | safe }});</script>
   <script src="{{url_for('.static', filename='enternewsentences.js')}}"></script>
   <script src="{{url_for('.static', filename='changeactivespeaker.js')}}"></script>
   <script src="{{url_for('.static', filename='progressreport.js')}}"></script>

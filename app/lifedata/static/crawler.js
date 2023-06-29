@@ -4,20 +4,69 @@ function youtubeCrawlerInterface() {
     let ele = '';
     ele += '<div id="formdisplay" style="display: block;">' +
         '<form role="form" method="post" action="/lifedata/youtubecrawler">';
-    ele += '<div class="form-group">'+
-        '<label for="idyoutubedatafor">Youtube Data For</label><br>'+
-        '<select class="classyoutubedatafor" id="idyoutubedatafor" name="youtubeDataFor" style="width:55%" required>'+
-        '<option value="videos">Videos</option>'+
-        '<option value="channels">Channels</option>'+
-        '</select><br>'+
-        '</div>'+
-
-        '<div class="form-group">'+
-        '<label for="idyoutubeapikey">Youtube API Key</label>'+
-        '<input type="password" class="form-control" id="idyoutubeapikey" placeholder="Youtube API Key" name="youtubeAPIKey" style="width: 55%" required>'+
+    
+    ele += '<div class="form-group">' +
+        '<label for="idyoutubeapikey">Youtube API Key</label>' +
+        '<input type="password" class="form-control" id="idyoutubeapikey" placeholder="Youtube API Key" name="youtubeAPIKey" style="width: 55%" required>' +
         '</div>';
+    
+    ele += '<div class="form-group">' +
+        '<label for="idyoutubedatatypes">Data Type</label><br>' +
+        '<select class="classyoutubedatatypes" id="idyoutubedatatypes" name="youtubeDataType" placeholder="Select the data type that is to be stored" style="width:55%" required multiple="multiple">' +
+        '<option value="comments">Comments</option>' +
+        '<option value="audio">Audio</option>' +
+        '<option value="video">Video</option>' +
+        '</select><br>' +
+        '</div>';
+    
+    ele += '<div class="form-group">'+
+        '<label for="idyoutubedatafor">Crawl Mode</label><br>'+
+        '<select class="classyoutubedatafor" id="idyoutubedatafor" name="youtubeDataFor" style="width:55%" required>' +
+        '<option value="" disabled selected>Select the crawl mode</option>'+
+        '<option value="videos">Specific Videos</option>'+
+        '<option value="channels">Specific Channels</option>'+
+        '<option value="topn">Top Videos</option>' +
+        '</select><br>'+
+        '</div>';
+    
+    // ele += '<div class="form-group">' +
+    //     '<label for="idyoutubecrawlmode">Crawl Mode</label><br>' +
+    //     '<select class="classyoutubecrawlmode" id="idyoutubecrawlmode" name="youtubeCrawlMode" style="width:55%" required>' +
+    //     '<option value="topn">Top Videos</option>' +
+    //     '<option value="specificlinks">Specific Videos/Channels</option>' +
+    //     '</select><br>' +
+    //     '</div>';
 
+    
+    ele += '<div class="classspecificlinksdiv" id="idspecificlinksdiv" style="display: none;">'
+    
     ele += createVideosChannelIdInput();
+
+    ele += '</div>';
+
+    ele += '<div class="classtopndiv" id="idtopndiv" style="display: none;">' +
+    '<div class="form-group">' +
+    '<label for="idyoutubetopnsearchquery">Search Query</label>' +
+    '<input type="text" class="form-control" id="idyoutubetopnsearchquery" placeholder="Enter your search query" name="youtubeTopNSearchQuery" style="width: 55%" required>' +
+    '</div>' +
+    '<div class="form-group">' +
+    '<label for="idyoutubetopnsearchtags">Additional Tags, if any</label><br/>' +
+    '<select class="classyoutubetopnsearchtags" id="idyoutubetopnsearchtags" name="youtubeTopNSearchTags" style="width:55%" multiple="multiple">' +
+    '</select>' +
+    '</div>' +
+    '<div class="form-group">' +
+    '<label for="idyoutubetopnvideocount">Total Videos to crawl from (Max - 50): </label>' +
+    '<input type="number" min="1" max="50" class="form-control" id="idyoutubetopnvideocount" placeholder="Total number of videos to crawl" name="youtubeTopNVideoCount" style="width: 55%" required>' +
+    '</div>' +
+    '<div class="form-group">' +
+    '<label for="idyoutubevideolicense">Youtube Video License</label><br>' +
+    '<select class="classyoutubevideolicense" id="idyoutubevideolicense" name="youtubeVideoLicense" style="width:55%" required>' +
+    '<option value="creativeCommon">Creative Commons</option>' +
+    '<option value="youtube">Standard YouTube License</option>' +
+    '<option value="any">Any License</option>' +
+    '</select><br>' +
+    '</div>' +
+    '</div>';
 
         // '<div class="form-group">'+
         // '<label for= "iddatalinks">Videos/Channels Id</label><br>'+
@@ -29,6 +78,22 @@ function youtubeCrawlerInterface() {
     $('#crawlerinterface').append(ele);
 
     $('.classyoutubedatafor').select2({});
+
+    $('.classyoutubedatatypes').select2({
+        placeholder: 'Select all data types to crawl',
+        allowClear: true
+    });
+
+    // $('classyoutubecrawlmode').select2({});
+
+    $('.classyoutubevideolicense').select2({});
+
+    $('.classyoutubetopnsearchtags').select2({
+        placeholder: 'Additional Tags for Metadata',
+        tags: true,
+        allowClear: true
+    });
+
 
     crawlerInterfaceEvents();
 
@@ -100,6 +165,40 @@ function crawlerInterfaceEvents() {
             allowClear: true
         });
     });
+
+    $('#idyoutubedatafor').on('change.select2', function() {
+        selectedVal = $('#idyoutubedatafor').val();
+        // console.log("Selected Val", selectedVal);
+        if (selectedVal === "topn") {
+            // $('.classspecificlinksdiv').toggle("slide");
+            // $('.classtopndiv').toggle("slide");
+            $('.classspecificlinksdiv').css("display", "none");
+            $(".classspecificlinksdiv :input").prop("disabled", true);
+
+            $('.classtopndiv').css("display", "block");
+            $('.classtopndiv :input').prop("disabled", false);
+            // var $drillDown = $("#drilldown");
+            
+            
+            // $('.classtopndiv').display = "block";
+            // $('.classspecificlinksdiv').display = "none";
+        }
+        else if (selectedVal === "videos" || selectedVal === "channels") {
+            // $('.classspecificlinksdiv').toggle("slide");
+            // $('.classtopndiv').toggle("slide");
+            // $('.classspecificlinksdiv').style = "display: block";
+            // $('.classtopndiv').style = "display: none";
+            // console.log("Selected Val2", selectedVal);
+            $('.classtopndiv').css("display", "none");            
+            $('.classtopndiv :input').prop("disabled", true);
+
+            $('.classspecificlinksdiv').css("display", "block");
+            $(".classspecificlinksdiv :input").prop("disabled", false);
+            // var $drillDown = $("#drilldown");
+        }
+    });
+
+
 }
 
 // remove a translation element

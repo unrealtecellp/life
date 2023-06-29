@@ -9,12 +9,18 @@ import csv
 import os
 import re
 import xmltodict
+import isodate
+from pytube import YouTube
 from pprint import pformat
 from app.controller import (
     life_logging
 )
 from app.lifedata.controller import (
     save_crawled_data
+)
+
+from app.controller import (
+    audiodetails
 )
 
 logger = life_logging.get_logger()
@@ -24,7 +30,7 @@ key = ""
 # List of channels : mention if you are pasting channel id or username - "id" or "forUsername"
 # getVideoCount()
 
-#ytids = [["bbcnews", "forUsername"], ["UCjq4pjKj9X4W9i7UnYShpVg", "id"]]
+# ytids = [["bbcnews", "forUsername"], ["UCjq4pjKj9X4W9i7UnYShpVg", "id"]]
 ytids = []
 prev_videos = set()
 csv_data = []
@@ -34,6 +40,92 @@ ccount = 0
 crcount = 0
 tccount = 0
 data_links_info = {}
+
+
+def initialise_globals():
+    global ytids
+    global prev_videos
+    global csv_data
+    global meta
+    global video_count
+    global ccount
+    global crcount
+    global tccount
+    global data_links_info
+
+    ytids = []
+    prev_videos = set()
+    csv_data = []
+    meta = []
+    video_count = 0
+    ccount = 0
+    crcount = 0
+    tccount = 0
+    data_links_info = {}
+
+
+def getAllCommentsData(utube, vlink, channel_id, cmntc, cc):
+    # Comments on the video
+    urlc = "https://www.googleapis.com/youtube/v3/commentThreads?part=snippet,replies&videoId="+vlink+"&key="+key
+    with urllib.request.urlopen(urlc) as url:
+        datac = json.loads(url.read())
+
+    # get comments from first page
+    logger.debug('Video:\t:%s \tPage:\t1', video_count)
+    utube = getCommentData(datac, utube, channel_id, vlink)
+
+    # checking for more pages
+    # totalResults = int(datac['pageInfo']['totalResults'])
+    totalResults = int(cmntc)
+    perPage = int(datac['pageInfo']['resultsPerPage'])
+    totalPages = int(totalResults / perPage)
+    logger.debug(
+        'Total: %s pages of comments in video: %s', (totalPages+1), vlink)
+    logger.debug('Per page: %s \tTotal Pages: %s \tTotal Results: %s',
+                 perPage, (totalPages+1), totalResults)
+
+    # Iterating through multiple pages of videos on the channel
+    if totalResults > perPage:
+        for i in range(totalPages):
+            if 'nextPageToken' in datac:
+                pToken = datac['nextPageToken']
+                # logger.debug(pToken)
+                urlc = "https://www.googleapis.com/youtube/v3/commentThreads?part=snippet,replies&videoId=" + \
+                    vlink+"&key="+key+"&pageToken="+pToken
+                # logger.debug(urlc)
+                try:
+                    with urllib.request.urlopen(urlc) as url:
+                        datac = json.loads(url.read())
+
+                    # get data from next pages
+                    logger.debug(
+                        'Video:\t%s \tPage:\t%s', video_count, (i+2))
+                    utube = getCommentData(
+                        datac, utube, channel_id, vlink)
+                except Exception as e:
+                    logger.exception("")
+                    logger.debug('Exception: %s', e)
+                    logger.debug('urlc: %s', urlc)
+                    logger.debug(
+                        'Page: %s out of total: %s pages of comments', i, totalPages)
+                    logger.debug(
+                        'Expected total comments: %s', totalResults)
+                    logger.debug(
+                        'Expected complete: %s', ccount)
+                    logger.debug(
+                        'The program will now exit without writing data from video: %s', video_count)
+                    quit(403)
+            else:
+                logger.debug(
+                    'Video:\t%s \tPage:\t%s', video_count, (i+2))
+                logger.debug('Total Comments:\t%s', tccount)
+                logger.debug('No more next pages')
+                if tccount != cmntc:
+                    cc.text = str(tccount)
+                break
+
+    logger.debug(
+        'Crawling complete. Now writing data and metadata to file')
 
 
 def getCommentData(datac, utube, chid, vid):
@@ -87,7 +179,7 @@ def getCommentData(datac, utube, chid, vid):
 
         cmnt = ET.SubElement(async_c, 'comment_content')
         sc = 'Roman'
-        
+
         if re.search(r"[\u0900-\u097F]+", final_text):
             if re.search(r"[A-Za-z]+", final_text):
                 sc = 'Roman and Devanagari'
@@ -106,7 +198,8 @@ def getCommentData(datac, utube, chid, vid):
         intl.text = str(org_text)
 
         # storing data for CSV. More information may be added later, based on requirement
-        csv_data.append(['C' + str(video_count) + '.' + str(ccount), html2text.html2text(final_text).strip()])
+        csv_data.append(['C' + str(video_count) + '.' +
+                        str(ccount), html2text.html2text(final_text).strip()])
 
         # Metadata for this comment
         meta_comment = []
@@ -124,11 +217,13 @@ def getCommentData(datac, utube, chid, vid):
         if replies > 0 and 'replies' in data:
             replies_a = data['replies']['comments']
             crcount = 0
-            logger.debug('Video:\t%s \tComment:\t%s \tReplies on comment:\t%s', video_count, ccount, cid)
+            logger.debug(
+                'Video:\t%s \tComment:\t%s \tReplies on comment:\t%s', video_count, ccount, cid)
             for comment in replies_a:
                 crcount += 1
                 tccount += 1
-                logger.debug('Video:\t%s \tComment:\t%s \tReply:\t%s', video_count, ccount, crcount)
+                logger.debug('Video:\t%s \tComment:\t%s \tReply:\t%s',
+                             video_count, ccount, crcount)
                 rep = comment['snippet']
                 org_text = rep['textOriginal']
                 final_text = rep['textDisplay']
@@ -196,54 +291,76 @@ def getCommentData(datac, utube, chid, vid):
 
     return utube
 
-def getAllVideosData (projects_collection,
-                        userprojects_collection,
-                        sourcedetails_collection,
-                        crawling_collection,
-                        project_owner,
-                        current_username,
-                        active_project_name,
-                        datad,
-                        search_keywords):
+
+def downloadYoutubeVideo(video_link):
+    yt = YouTube(video_link)
+    relevant_streams = yt.streams.filter(progressive=True)
+    download_stream = relevant_streams.get_by_itag(22)
+    return download_stream
+
+
+def downloadYoutubeAudio(video_link):
+    yt = YouTube(video_link)
+    relevant_streams = yt.streams.filter(only_audio=True)
+    download_stream = relevant_streams.get_by_itag(140)
+    return download_stream
+
+
+def getAllVideosData(projects_collection,
+                     userprojects_collection,
+                     sourcedetails_collection,
+                     crawling_collection,
+                     project_owner,
+                     current_username,
+                     active_project_name,
+                     datad,
+                     search_keywords,
+                     download_items,
+                     save_format):
     for data in datad['items']:
-            nlink = data['contentDetails']['videoId']
-            getVideoData(projects_collection,
-                            userprojects_collection,
-                            sourcedetails_collection,
-                            crawling_collection,
-                            project_owner,
-                            current_username,
-                            active_project_name,
-                            nlink,
-                            search_keywords)
+        nlink = data['contentDetails']['videoId']
+        getVideoData(projects_collection,
+                     userprojects_collection,
+                     sourcedetails_collection,
+                     crawling_collection,
+                     project_owner,
+                     current_username,
+                     active_project_name,
+                     nlink,
+                     search_keywords,
+                     download_items,
+                     save_format)
+
 
 def getVideoData(projects_collection,
-                    userprojects_collection,
-                    sourcedetails_collection,
-                    crawling_collection,
-                    project_owner,
-                    current_username,
-                    active_project_name,
-                    vlink,
-                    search_keywords):
+                 userprojects_collection,
+                 sourcedetails_collection,
+                 crawling_collection,
+                 project_owner,
+                 current_username,
+                 active_project_name,
+                 vlink,
+                 search_keywords,
+                 download_items,
+                 save_format):
     global ccount
     global crcount
     global video_count
     global meta
     global csv_data
-    global tccount        
+    global tccount
 
     if vlink not in prev_videos:
         csv_data.clear()
         meta.clear()
 
         # Getting Video Data
-        #ntitle = data['snippet']['title']
+        # ntitle = data['snippet']['title']
         urlv = "https://www.googleapis.com/youtube/v3/videos?part=snippet%2CcontentDetails%2Cstatistics&id="+vlink+"&key="+key
         with urllib.request.urlopen(urlv) as url:
             datav = json.loads(url.read())
             # logger.debugdatav)
-        try :
+        try:
             for vdata in datav['items']:
                 # Checking if the video has comments
                 stats = vdata['statistics']
@@ -253,6 +370,10 @@ def getVideoData(projects_collection,
                 logger.debug('Total comments on video: %s : %s', vlink, cmntc)
                 # Proceeding further if there are comments on video
                 if int(cmntc) > 0:
+                    video_details = vdata['contentDetails']
+                    duration = video_details['duration']
+                    formatted_duration = isodate.parse_duration(duration)
+
                     metadata = vdata['snippet']
                     dt = metadata['publishedAt']
                     date = dt[:dt.find('T')]
@@ -269,9 +390,9 @@ def getVideoData(projects_collection,
                         likes = stats['likeCount']
                     if 'dislikeCount' not in stats:
                         dislikes = 0
-                    else:    
+                    else:
                         dislikes = stats['dislikeCount']
-                    
+
                     favs = '0'
                     if 'favouriteCount' in stats:
                         favs = stats['favouriteCount']
@@ -280,177 +401,272 @@ def getVideoData(projects_collection,
                     if 'defaultAudioLanguage' in metadata:
                         lang = metadata['defaultAudioLanguage']
 
+                    video_tags = []
+                    if 'tags' in metadata:
+                        video_tags = metadata['tags']
+
+                    video_id = vlink
                     vLink = "https://www.youtube.com/watch?v="+vlink
 
                     # Increasing file count
                     video_count += 1
 
                     # Adding for CSV File
-                    csv_data.append(['Youtube Corpus ' + str(video_count), vLink])
+                    csv_data.append(
+                        ['Youtube Corpus ' + str(video_count), vLink])
 
                     # Comment count
                     ccount = 0
                     tccount = 0
-                    
+
                     # Adding Video Data to XML
                     co3h = ET.Element('co3h')
                     async_c = ET.SubElement(co3h, 'asynchronous')
                     utube = ET.SubElement(async_c, 'youtube_video', {
-                                        'id': str(video_count)})
+                        'id': str(video_count)})
 
                     async_i = ET.SubElement(utube, 'async_info')
                     pub = ET.SubElement(async_i, 'publisher')
                     pub.text = str(channel)
+                    pub = ET.SubElement(async_i, 'publisher_id')
+                    pub.text = str(channel_id)
                     ttl = ET.SubElement(async_i, 'video_title')
                     ttl.text = str(title)
                     desc = ET.SubElement(async_i, 'video_description')
-                    desc.text = html2text.html2text (str(description)).strip()
-                    dat = ET.SubElement(async_i, 'date')
+                    desc.text = html2text.html2text(str(description)).strip()
+                    dat = ET.SubElement(async_i, 'published_date')
                     dat.text = str(date)
-                    tm = ET.SubElement(async_i, 'time')
+                    tm = ET.SubElement(async_i, 'published_time')
                     tm.text = str(time)
                     vws = ET.SubElement(async_i, 'total_views')
                     vws.text = str(views)
-                    lks = ET.SubElement(async_i, 'likes')
+                    lks = ET.SubElement(async_i, 'video_likes')
                     lks.text = str(likes)
-                    dlks = ET.SubElement(async_i, 'dislikes')
+                    dlks = ET.SubElement(async_i, 'video_dislikes')
                     dlks.text = str(dislikes)
-                    fav = ET.SubElement(async_i, 'favourites')
+                    fav = ET.SubElement(async_i, 'video_favourites')
                     fav.text = str(favs)
                     cc = ET.SubElement(async_i, 'total_comments')
                     cc.text = str(cmntc)
                     lng = ET.SubElement(async_i, 'audio_language')
                     lng.text = str(lang)
+                    dur = ET.SubElement(async_i, 'video_duration')
+                    dur.text = str(formatted_duration)
+                    # vtags = ET.SubElement(async_i, 'video_tags')
+                    if len(video_tags) > 0:
+                        for video_tag in video_tags:
+                            # vtag = ET.SubElement(vtags, 'vtag')
+                            vtags = ET.SubElement(async_i, 'video_tags')
+                            vtags.text = str(video_tag)
+                    else:
+                        vtags = ET.SubElement(async_i, 'video_tags')
+                        vtags.text = ""
 
-                    main = ET.SubElement(utube, 'main_content')
-                    org = ET.SubElement(main, 'original_script', {'name': 'Roman'})
-                    org.text = str(vLink)
-
-                    # Metadata for this video
-                    meta_video = []
-                    meta_video.append(vlink)  # video ID
-                    meta_video.append(channel_id)  # channel ID
-                    meta_video.append('NA')  # comment ID
-                    meta_video.append('youtube_corpus_' +
-                                    str(video_count))  # file name
-                    meta_video.append('NA')  # parent_ID
+                    # crawl date time
                     now = datetime.now()
                     dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
-                    meta_video.append(dt_string)  # current date time
-                    meta.append(meta_video)
+                    acc_dt = ET.SubElement(async_i, 'accessed_at')
+                    acc_dt.text = str(dt_string)
 
-                    # Comments on the video
-                    urlc = "https://www.googleapis.com/youtube/v3/commentThreads?part=snippet,replies&videoId="+vlink+"&key="+key
-                    with urllib.request.urlopen(urlc) as url:
-                        datac = json.loads(url.read())
+                    main = ET.SubElement(utube, 'main_content')
+                    org = ET.SubElement(
+                        main, 'original_script', {'name': 'Roman'})
+                    org.text = str(vLink)
 
-                    # get comments from first page
-                    logger.debug('Video:\t:%s \tPage:\t1', video_count)
-                    utube = getCommentData(datac, utube, channel_id, vlink)
+                    # Get Audio and Video
+                    if 'audio' in download_items:
+                        audio_stream = downloadYoutubeAudio(
+                            vlink)
+                    else:
+                        audio_stream = ''
 
-                    # checking for more pages
-                    #totalResults = int(datac['pageInfo']['totalResults'])
-                    totalResults = int(cmntc)
-                    perPage = int(datac['pageInfo']['resultsPerPage'])
-                    totalPages = int(totalResults / perPage)
-                    logger.debug('Total: %s pages of comments in video: %s', (totalPages+1), vlink)
-                    logger.debug('Per page: %s \tTotal Pages: %s \tTotal Results: %s', perPage, (totalPages+1), totalResults)
+                    if 'video' in download_items:
+                        video_stream = downloadYoutubeVideo(
+                            vlink)
+                    else:
+                        video_stream = ''
 
-                    # Iterating through multiple pages of videos on the channel
-                    if totalResults > perPage:
-                        for i in range(totalPages):
-                            if 'nextPageToken' in datac:
-                                pToken = datac['nextPageToken']
-                                #logger.debug(pToken)
-                                urlc = "https://www.googleapis.com/youtube/v3/commentThreads?part=snippet,replies&videoId=" + \
-                                    vlink+"&key="+key+"&pageToken="+pToken
-                                #logger.debug(urlc)
-                                try:
-                                    with urllib.request.urlopen(urlc) as url:
-                                        datac = json.loads(url.read())
-                                    
-                                    # get data from next pages
-                                    logger.debug('Video:\t%s \tPage:\t%s', video_count, (i+2))
-                                    utube = getCommentData(
-                                        datac, utube, channel_id, vlink)
-                                except Exception as e:
-                                    logger.exception("")
-                                    logger.debug('Exception: %s', e)
-                                    logger.debug('urlc: %s', urlc)
-                                    logger.debug('Page: %s out of total: %s pages of comments', i, totalPages)
-                                    logger.debug('Expected total comments: %s', totalResults)
-                                    logger.debug('Expected complete: %s', ccount)
-                                    logger.debug('The program will now exit without writing data from video: %s', video_count)
-                                    quit(403)
-                            else:
-                                logger.debug('Video:\t%s \tPage:\t%s', video_count, (i+2))
-                                logger.debug('Total Comments:\t%s', tccount)
-                                logger.debug('No more next pages')
-                                if tccount != cmntc:
-                                    cc.text = str(tccount)
-                                break
+                    # Get comments
+                    if 'comments' in download_items:
+                        # Metadata for this video
+                        meta_video = []
+                        meta_video.append(vlink)  # video ID
+                        meta_video.append(channel_id)  # channel ID
+                        meta_video.append('NA')  # comment ID
+                        meta_video.append('youtube_corpus_' +
+                                          str(video_count))  # file name
+                        meta_video.append('NA')  # parent_ID
+                        meta_video.append(dt_string)  # current date time
+                        meta.append(meta_video)
 
+                        getAllCommentsData(utube,
+                                           vlink,
+                                           channel_id,
+                                           cmntc,
+                                           cc)
 
-
-                    logger.debug('Crawling complete. Now writing data and metadata to file')
-                    # XML to String
-                    #complete = ET.tostring(co3h)
-                    complete = minidom.parseString(ET.tostring(co3h)).toprettyxml(indent="   ")
-
-                    # File Name
-                    fname = 'youtube_corpus_'+str(video_count)
-
-                    # Writing XML File
-                    # with open('xml-data-youtube/' + fname + '.xml', 'w') as f_w:
-                    #     f_w.write(complete)
-                    # logger.debug('xml-data-youtube: %s', complete)
-
-                    # with open('xml-data-youtube/' + fname + '.xml', 'r') as f_r:
-                    #     doc = xmltodict.parse(f_r.read())
-                    # xml_to_json = json.dumps(doc, indent=2, ensure_ascii=False)
-                    # logger.debug('xml_to_json: %s', xml_to_json)
-
-                    doc = xmltodict.parse(ET.tostring(co3h))
-                    xml_to_json = json.dumps(doc, indent=2, ensure_ascii=False)
-                    logger.debug('xml_to_json TYPE: %s', type(xml_to_json))
-                    logger.debug('xml_to_json: %s', xml_to_json)
-                    xml_to_json = json.loads(xml_to_json)
-                    # logger.debug('xml_to_json: %s', pformat(xml_to_json))
-                    # logger.debug('xml_to_json TYPE: %s', type(xml_to_json))
-                    # logger.debug('co3h TYPE: %s', type(co3h))
-                    # logger.debug('co3h: %s', co3h)
-
-                    # Writing CSV File
-                    # with open('csv-data-youtube/' + fname + '.csv', 'w') as f_w:
-                    #     writer = csv.writer(f_w, delimiter='\t')
-                    #     writer.writerows(csv_data)
-                    logger.debug('csv-data-youtube: %s', csv_data)
-
-                    # Writing metadata file
-                    # with open('youTubeLinks.tsv', 'a') as f_w:
-                    #     writer = csv.writer(f_w, delimiter='\t')
-                    #     writer.writerows(meta)
-                    logger.debug('youTubeLinks.tsv: %s', meta)
-                    
-                    save_crawled_data.save_youtube_crawled_data(projects_collection,
-                                                                    userprojects_collection,
-                                                                    sourcedetails_collection,
-                                                                    crawling_collection,
-                                                                    project_owner,
-                                                                    current_username,
-                                                                    active_project_name,
-                                                                    xml_to_json,
-                                                                    csv_data,
-                                                                    meta,
-                                                                    vlink,
-                                                                    search_keywords)
+                    write_crawled_data(co3h,
+                                       projects_collection,
+                                       userprojects_collection,
+                                       sourcedetails_collection,
+                                       crawling_collection,
+                                       project_owner,
+                                       current_username,
+                                       active_project_name,
+                                       vlink,
+                                       search_keywords,
+                                       save_format,
+                                       audio_stream,
+                                       video_stream,
+                                       download_items)
         except Exception:
             # traceback.logger.debugexc()
             logger.exception("")
             with open('linksnotparse.txt', 'a') as notparse:
                 notparse.write("https://www.youtube.com/watch?v="+vlink+"\n")
 
-#Function for retrieving the API key
+
+def write_metadata_file():
+    # Writing metadata file
+    with open('youTubeLinks.tsv', 'a') as f_w:
+        writer = csv.writer(f_w, delimiter='\t')
+        writer.writerows(meta)
+
+
+def write_xml_file(co3h, fname):
+    # XML to String
+    complete = ET.tostring(co3h)
+    complete = minidom.parseString(
+        ET.tostring(co3h)).toprettyxml(indent="   ")
+
+    # Writing XML File
+    with open('xml-data-youtube/' + fname + '.xml', 'w') as f_w:
+        f_w.write(complete)
+    logger.debug('xml-data-youtube: %s', complete)
+
+
+def write_mongodb_comments(co3h,
+                           projects_collection,
+                           userprojects_collection,
+                           sourcedetails_collection,
+                           crawling_collection,
+                           project_owner,
+                           current_username,
+                           active_project_name,
+                           vlink,
+                           search_keywords):
+    # with open('xml-data-youtube/' + fname + '.xml', 'r') as f_r:
+    #     doc = xmltodict.parse(f_r.read())
+    # xml_to_json = json.dumps(doc, indent=2, ensure_ascii=False)
+    # logger.debug('xml_to_json: %s', xml_to_json)
+    try:
+        doc = xmltodict.parse(ET.tostring(co3h))
+        xml_to_json = json.dumps(
+            doc, indent=2, ensure_ascii=False)
+        logger.debug('xml_to_json TYPE: %s', type(xml_to_json))
+        logger.debug('xml_to_json: %s', xml_to_json)
+        xml_to_json = json.loads(xml_to_json)
+        # logger.debug('xml_to_json: %s', pformat(xml_to_json))
+        # logger.debug('xml_to_json TYPE: %s', type(xml_to_json))
+        # logger.debug('co3h TYPE: %s', type(co3h))
+        # logger.debug('co3h: %s', co3h)
+        logger.debug('csv-data-youtube: %s', csv_data)
+
+        logger.debug('youTubeLinks.tsv: %s', meta)
+
+        save_crawled_data.save_youtube_crawled_data(projects_collection,
+                                                    userprojects_collection,
+                                                    sourcedetails_collection,
+                                                    crawling_collection,
+                                                    project_owner,
+                                                    current_username,
+                                                    active_project_name,
+                                                    xml_to_json,
+                                                    csv_data,
+                                                    meta,
+                                                    vlink,
+                                                    search_keywords)
+    except:
+        logger.exception("")
+
+
+def write_csv_file(fname):
+    # Writing CSV File
+    with open('csv-data-youtube/' + fname + '.csv', 'w') as f_w:
+        writer = csv.writer(f_w, delimiter='\t')
+        writer.writerows(csv_data)
+
+
+def write_audio_video_file(audio_video_stream):
+    return True
+
+
+def write_mongodb_audio(audio_stream):
+    return True
+
+
+def write_mongodb_video(video_stream):
+    return True
+
+
+def write_crawled_data(co3h,
+                       projects_collection,
+                       userprojects_collection,
+                       sourcedetails_collection,
+                       crawling_collection,
+                       project_owner,
+                       current_username,
+                       active_project_name,
+                       vlink,
+                       search_keywords,
+                       save_format,
+                       audio_stream,
+                       video_stream,
+                       download_items):
+
+    logger.debug("Save format: %s \t Download items %s",
+                 save_format, download_items)
+    if 'comments' in download_items:
+        # File Name
+        fname = 'youtube_corpus_'+str(video_count)
+
+        if 'xml' in save_format or 'csv' in save_format:
+            write_metadata_file()
+
+        if 'xml' in save_format:
+            write_xml_file(co3h, fname)
+
+        elif 'csv' in save_format:
+            write_csv_file(fname)
+
+        elif 'mongodb' in save_format:
+            logger.debug("Writing comments to mongodb")
+            write_mongodb_comments(co3h,
+                                   projects_collection,
+                                   userprojects_collection,
+                                   sourcedetails_collection,
+                                   crawling_collection,
+                                   project_owner,
+                                   current_username,
+                                   active_project_name,
+                                   vlink,
+                                   search_keywords)
+    if 'audio' in download_items:
+        if save_format == 'mongodb':
+            write_mongodb_audio(audio_stream)
+        elif save_format == 'xml' or save_format == 'csv':
+            write_audio_video_file(audio_stream)
+
+    if 'video' in download_items:
+        if save_format == 'mongodb':
+            write_mongodb_video(video_stream)
+        elif save_format == 'xml' or save_format == 'csv':
+            write_audio_video_file(video_stream)
+
+
+# Function for retrieving the API key
+
+
 def getKey():
     global key
     if os.path.exists('key.txt'):
@@ -472,16 +688,17 @@ def getList():
     else:
         logger.debug(
             'List of channels not found. Please give the ID of channels in channels.txt file')
-    
+
     if os.path.exists('videos.txt'):
         with open('videos.txt') as f:
             for video in f:
-                video_id = video [video.find ('?v=')+3:].strip()
+                video_id = video[video.find('?v=')+3:].strip()
                 if video_id not in prev_videos and video_id not in ytids:
                     ytids.append([video_id, "vid"])
     else:
         logger.debug(
             'List of videos not found. Please give the ID of videos in videos.txt file')
+
 
 '''
     if os.path.exists('users.txt'):
@@ -493,68 +710,79 @@ def getList():
 '''
 
 # Function for retrieving the list of previously collected videos [allows resuming]
+
+
 def getPreviousVideos(sourcedetails_collection,
-                      activeprojectname):
+                      activeprojectname, save_format):
     global prev_videos
-    # if os.path.exists('youTubeLinks.tsv'):
-    #     with open('youTubeLinks.tsv') as f:
-    #         reader = csv.reader(f, delimiter='\t')
-    #         for entry in reader:
-    #             vid = entry[0]
-    #             if vid != '' and vid != 'Video_ID' and vid not in prev_videos:
-    #                 prev_videos.add(vid.strip())
-    # else:
-    #     meta_header = ['Video_ID', 'Channel_ID', 'Comment_ID',
-    #                    'File_Name', 'Parent_ID', 'Date_Time_of_Retrieval']
-    #     with open('youTubeLinks.tsv', 'w') as f:
-    #         writer = csv.writer(f, delimiter='\t')
-    #         writer.writerow(meta_header)
-    aggregate_output = sourcedetails_collection.aggregate( [
-                            {
-                                "$match": {
-                                    "projectname": activeprojectname,
-                                            }
-                            },
-                            { 
-                                "$sort" : {
-                                    "lifesourceid" : 1
-                                    }
-                            },
-                            {
-                                "$project": {
-                                    "_id": 0,
-                                    "lifesourceid": 1
-                                }
-                            }
-                            ])
-    aggregate_output_list = []
-    prev_videos = set()
-    for doc in aggregate_output:
-        logger.debug("aggregate_output: %s", pformat(doc))
-        aggregate_output_list.append(doc)
-        vid = doc['lifesourceid']
-        if vid != '' and vid not in prev_videos:
-            prev_videos.add(vid.strip())
-    logger.debug('aggregate_output_list: %s', pformat(aggregate_output_list))
-    logger.debug('prev_videos_aggregated: %s', pformat(prev_videos))
+
+    if 'xml' in save_format or 'csv' in save_format:
+        if os.path.exists('youTubeLinks.tsv'):
+            with open('youTubeLinks.tsv') as f:
+                reader = csv.reader(f, delimiter='\t')
+                for entry in reader:
+                    vid = entry[0]
+                    if vid != '' and vid != 'Video_ID' and vid not in prev_videos:
+                        prev_videos.add(vid.strip())
+        else:
+            meta_header = ['Video_ID', 'Channel_ID', 'Comment_ID',
+                           'File_Name', 'Parent_ID', 'Date_Time_of_Retrieval']
+            with open('youTubeLinks.tsv', 'w') as f:
+                writer = csv.writer(f, delimiter='\t')
+                writer.writerow(meta_header)
+    elif 'mongodb' in save_format:
+        aggregate_output = sourcedetails_collection.aggregate([
+            {
+                "$match": {
+                    "projectname": activeprojectname,
+                }
+            },
+            {
+                "$sort": {
+                    "lifesourceid": 1
+                }
+            },
+            {
+                "$project": {
+                    "_id": 0,
+                    "lifesourceid": 1
+                }
+            }
+        ])
+        aggregate_output_list = []
+        prev_videos = set()
+        for doc in aggregate_output:
+            logger.debug("aggregate_output: %s", pformat(doc))
+            aggregate_output_list.append(doc)
+            vid = doc['lifesourceid']
+            if vid != '' and vid not in prev_videos:
+                prev_videos.add(vid.strip())
+        logger.debug('aggregate_output_list: %s',
+                     pformat(aggregate_output_list))
+        logger.debug('prev_videos_aggregated: %s', pformat(prev_videos))
+
 
 def run_youtube_crawler(projects_collection,
-                            userprojects_collection,
-                            sourcedetails_collection,
-                            crawling_collection,
-                            project_owner,
-                            current_username,
-                            active_project_name,
-                            api_key,
-                            data_links):
-    #Get API Key for the User
+                        userprojects_collection,
+                        sourcedetails_collection,
+                        crawling_collection,
+                        project_owner,
+                        current_username,
+                        active_project_name,
+                        api_key,
+                        data_links,
+                        download_items=['comments'],
+                        save_formats=['mongodb']):
+    # Get API Key for the User
     # getKey()
+    initialise_globals()
+
     global key
     key = api_key
 
     # Get list of already collected videos [will be skipped]
     getPreviousVideos(sourcedetails_collection,
-                      active_project_name)
+                      active_project_name, save_formats)
     logger.debug('prev_videos: %s', prev_videos)
 
     # Get list of channel / videos to retrieve data from
@@ -562,17 +790,24 @@ def run_youtube_crawler(projects_collection,
     global ytids
     global data_links_info
 
+    ytids = []
+
     if ('channels' in data_links):
         data_links_info = data_links['channels']
         channels = list(data_links['channels'].keys())
         for channel in channels:
             ytids.append([channel.strip(), "id"])
 
-    if ('videos' in data_links):
-        data_links_info = data_links['videos']
-        videos = list(data_links['videos'].keys())
+    if ('videos' in data_links or 'topn' in data_links):
+        if 'videos' in data_links:
+            data_search_criteria = 'videos'
+        elif 'topn' in data_links:
+            data_search_criteria = 'topn'
+
+        data_links_info = data_links[data_search_criteria]
+        videos = list(data_links[data_search_criteria].keys())
         for video in videos:
-            video_id = video [video.find ('?v=')+3:].strip()
+            video_id = video[video.find('?v=')+3:].strip()
             if video_id not in prev_videos and video_id not in ytids:
                 ytids.append([video_id, "vid"])
                 data_links_info[video_id] = data_links_info[video]
@@ -601,15 +836,17 @@ def run_youtube_crawler(projects_collection,
         else:
             search_keywords = []
         if ytparam == 'vid':
-            getVideoData (projects_collection,
-                            userprojects_collection,
-                            sourcedetails_collection,
-                            crawling_collection,
-                            project_owner,
-                            current_username,
-                            active_project_name,
-                            ytid,
-                            search_keywords)
+            getVideoData(projects_collection,
+                         userprojects_collection,
+                         sourcedetails_collection,
+                         crawling_collection,
+                         project_owner,
+                         current_username,
+                         active_project_name,
+                         ytid,
+                         search_keywords,
+                         download_items,
+                         save_formats)
         else:
             try:
                 urld = "https://www.googleapis.com/youtube/v3/channels?part=contentDetails&" + \
@@ -625,7 +862,6 @@ def run_youtube_crawler(projects_collection,
                 logger.debug('Error in getting uploaded video set')
                 logger.debug('urld: %s', urld)
 
-            
             totalPages = 0
             totalResults = 0
             perPage = 0
@@ -638,35 +874,41 @@ def run_youtube_crawler(projects_collection,
                         datad = json.loads(url.read())
 
                     # get data from first page of the video list
-                    logger.debug('Getting videos for page 0 of channel: %s', ytid)
+                    logger.debug(
+                        'Getting videos for page 0 of channel: %s', ytid)
                     getAllVideosData(projects_collection,
-                                        userprojects_collection,
-                                        sourcedetails_collection,
-                                        crawling_collection,
-                                        project_owner,
-                                        current_username,
-                                        active_project_name,
-                                        datad,
-                                        search_keywords)
+                                     userprojects_collection,
+                                     sourcedetails_collection,
+                                     crawling_collection,
+                                     project_owner,
+                                     current_username,
+                                     active_project_name,
+                                     datad,
+                                     search_keywords,
+                                     download_items,
+                                     save_formats)
                     logger.debug('All videos on page 0 done')
 
                     # checking for more pages
                     totalResults = int(datad['pageInfo']['totalResults'])
                     perPage = int(datad['pageInfo']['resultsPerPage'])
                     totalPages = int(totalResults / perPage)
-                    logger.debug('Total: %s pages of video in channel: %s', totalPages, ytid)
-                    logger.debug('Per page: %s \tTotal Pages: %s \tTotal Results: %s', perPage, totalPages, totalResults)
+                    logger.debug(
+                        'Total: %s pages of video in channel: %s', totalPages, ytid)
+                    logger.debug(
+                        'Per page: %s \tTotal Pages: %s \tTotal Results: %s', perPage, totalPages, totalResults)
             except Exception as e:
                 logger.exception("")
                 logger.debug(e)
-                logger.debug('Error in getting videos on first page with upload id: %s', uploadid)
+                logger.debug(
+                    'Error in getting videos on first page with upload id: %s', uploadid)
                 logger.debug('urld: %s', urld)
 
             # Iterating through more pages
             if totalResults > 0 and totalResults > perPage:
                 for i in range(totalPages):
-                    #logger.debug('Page:', i)
-                    #logger.debug(datad['pageInfo'])
+                    # logger.debug('Page:', i)
+                    # logger.debug(datad['pageInfo'])
                     if 'nextPageToken' in datad:
                         pToken = datad['nextPageToken']
 
@@ -678,22 +920,51 @@ def run_youtube_crawler(projects_collection,
                                 datad = json.loads(url.read())
 
                             # get data from next pages
-                            logger.debug('Getting videos for page: %s of channel: %s',i, ytid)
+                            logger.debug(
+                                'Getting videos for page: %s of channel: %s', i, ytid)
                             getAllVideosData(projects_collection,
-                                                userprojects_collection,
-                                                sourcedetails_collection,
-                                                crawling_collection,
-                                                project_owner,
-                                                current_username,
-                                                active_project_name,
-                                                datad,
-                                                search_keywords)
+                                             userprojects_collection,
+                                             sourcedetails_collection,
+                                             crawling_collection,
+                                             project_owner,
+                                             current_username,
+                                             active_project_name,
+                                             datad,
+                                             search_keywords,
+                                             download_items,
+                                             save_formats)
                             logger.debug('All videos on page: %s', i, 'done')
                         except Exception as e:
-                            logger.exception("")
+                            logger.exception('Exception: %s', e)
                             logger.debug('Exception: %s', e)
                             logger.debug('urld: %s', urld)
-                            logger.debug('Page: %s', i, 'out of total: %s', totalPages, 'pages of video')
-                            logger.debug('Expected total videos: %s', totalResults)
-                            logger.debug('Expected complete: %s', totalPages*50)
+                            logger.debug(
+                                'Page: %s', i, 'out of total: %s', totalPages, 'pages of video')
+                            logger.debug(
+                                'Expected total videos: %s', totalResults)
+                            logger.debug(
+                                'Expected complete: %s', totalPages*50)
                             logger.debug('pToken: %s', pToken)
+
+
+# Get link to top n videos for the given search query
+def get_topn_videos(api_key,
+                    search_query,
+                    video_count,
+                    video_license):
+    all_links = []
+
+    urld = "https://youtube.googleapis.com/youtube/v3/search?part=snippet&maxResults=" + \
+        video_count+"&q="+search_query + \
+        "&type=video&videoLicense="+video_license+"&key="+api_key
+
+    with urllib.request.urlopen(urld) as url:
+        datad = json.loads(url.read())
+
+    all_itens = datad['items']
+    for item in all_itens:
+        vid = item['id']['videoId']
+        link = 'https://www.youtube.com/watch?v='+str(vid)
+        all_links.append(link)
+
+    return all_links

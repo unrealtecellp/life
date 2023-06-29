@@ -10,6 +10,7 @@ from app.lifedata.controller import (
 
 logger = life_logging.get_logger()
 
+
 def add_new_source_info(projects_collection,
                         userprojects_collection,
                         sourcedetails_collection,
@@ -51,21 +52,26 @@ def add_new_source_info(projects_collection,
         logger.exception("")
         return (None, False)
 
+
 def add_new_source_id(projects_collection,
                       active_project_name,
                       current_username,
                       life_source_id):
     try:
+
+        logger.debug(
+            "Adding new sourve ID %s Current active project name during save %s", life_source_id, active_project_name)
         projects_collection.update_one({"projectname": active_project_name},
                                        {
                                            "$addToSet": {
                                                "sourceIds."+current_username: life_source_id
                                            }
-                                       })
+        })
         return True
     except:
         logger.exception("")
         return False
+
 
 def update_active_source_id(userprojects_collection,
                             active_project_name,
@@ -73,32 +79,35 @@ def update_active_source_id(userprojects_collection,
                             current_username,
                             life_source_id):
     try:
-        if(current_username == project_owner):
+        if (current_username == project_owner):
             key = 'myproject'
         else:
             key = 'projectsharedwithme'
         userprojects_collection.update_one({"username": current_username},
-                                       {
+                                           {
                                            "$set": {
                                                key+'.'+active_project_name+".activesourceId": life_source_id
                                            }
-                                       })
+                                           })
         return True
     except:
         logger.exception("")
         return False
 
+
 def generate_meta(sub_meta):
     meta_header = ['Video_ID', 'Channel_ID', 'Comment_ID',
-                       'File_Name', 'Parent_ID', 'Date_Time_of_Retrieval']
+                   'File_Name', 'Parent_ID', 'Date_Time_of_Retrieval']
     meta_dict = {}
     for i, info in enumerate(meta_header):
-        if (info == 'File_Name'): continue
+        if (info == 'File_Name'):
+            continue
         meta_dict[info] = sub_meta[i]
 
     # logger.debug("meta_dict: %s", pformat(meta_dict))
 
     return meta_dict
+
 
 def save_crawled_data(crawling_collection,
                       project_owner,
@@ -127,23 +136,24 @@ def save_crawled_data(crawling_collection,
             "videoFilename": ""
         }
         crawling_doc_id = crawling_collection.insert_one(crawled_data)
-        return(crawling_doc_id, True)
+        return (crawling_doc_id, True)
     except:
         logger.exception("")
         return (None, False)
 
+
 def save_youtube_crawled_data(projects_collection,
-                                userprojects_collection,
-                                sourcedetails_collection,
-                                crawling_collection,
-                                project_owner,
-                                current_username,
-                                active_project_name,
-                                xml_to_json,
-                                csv_data,
-                                meta,
-                                video_id,
-                                search_keywords):
+                              userprojects_collection,
+                              sourcedetails_collection,
+                              crawling_collection,
+                              project_owner,
+                              current_username,
+                              active_project_name,
+                              xml_to_json,
+                              csv_data,
+                              meta,
+                              video_id,
+                              search_keywords):
     try:
         life_source_id = video_id
         data_source = data_project_info.get_data_source(projects_collection,
@@ -156,23 +166,25 @@ def save_youtube_crawled_data(projects_collection,
         source_metadata = async_info
         dataType = ['text']
         sourcedetails_doc_id, added_new_source = add_new_source_info(projects_collection,
-                                                                        userprojects_collection,
-                                                                        sourcedetails_collection,
-                                                                        project_owner,
-                                                                        active_project_name,
-                                                                        life_source_id,
-                                                                        current_username,
-                                                                        data_source,
-                                                                        data_sub_source,
-                                                                        source_metadata,
-                                                                        search_keywords,
-                                                                        data_type=dataType,)
-        if(added_new_source):
+                                                                     userprojects_collection,
+                                                                     sourcedetails_collection,
+                                                                     project_owner,
+                                                                     active_project_name,
+                                                                     life_source_id,
+                                                                     current_username,
+                                                                     data_source,
+                                                                     data_sub_source,
+                                                                     source_metadata,
+                                                                     search_keywords,
+                                                                     data_type=dataType,)
+        if (added_new_source):
+            logger.debug(
+                "Current source id %s active project name before save %s", life_source_id, active_project_name)
             add_new_source_id(projects_collection,
-                                active_project_name,
-                                current_username,
-                                life_source_id)
-            
+                              active_project_name,
+                              current_username,
+                              life_source_id)
+
             update_active_source_id(userprojects_collection,
                                     active_project_name,
                                     project_owner,
@@ -196,15 +208,16 @@ def save_youtube_crawled_data(projects_collection,
                 async_comment['comment_number'] = async_comment['@id']
                 del async_comment['@id']
                 additional_info.update(async_comment)
-                text_meta_data["ID"] = video_id+'.'+async_comment['comment_number']
+                text_meta_data["ID"] = video_id+'.' + \
+                    async_comment['comment_number']
             # additional_info['searchKeywords'] = search_keywords
             save_crawled_data(crawling_collection,
-                                project_owner,
-                                active_project_name,
-                                text_id,
-                                text,
-                                life_source_id,
-                                additional_info,
-                                text_meta_data)
+                              project_owner,
+                              active_project_name,
+                              text_id,
+                              text,
+                              life_source_id,
+                              additional_info,
+                              text_meta_data)
     except:
         logger.exception("")

@@ -20,7 +20,8 @@ def getuserprojectinfo(userprojects,
         userprojectinfo = {
                         'sharemode': 0,
                         'sharechecked': "false",
-                        'activespeakerId': ""
+                        'activespeakerId': "",
+                        'activesourceId': ""
                     }
 
     return userprojectinfo
