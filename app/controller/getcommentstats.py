@@ -85,7 +85,8 @@ def getdatacommentstatsnew(data_collection,
     aggregate_output = data_collection.aggregate( [
                                 {
                                     "$match": { "projectname": activeprojectname,
-                                                "lifesourceid": match_key }
+                                                "lifesourceid": match_key,
+                                                "datadeleteFLAG": 0 }
                                 },
                                 {
                                     "$group": { "_id": "$"+groupBy_key,

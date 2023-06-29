@@ -464,7 +464,7 @@ function updateSentenceDetailsOnSaveBoundary(boundaryID, sentence, region, form)
     // console.log(document.forms.edit.elements);
 
     if ("comment-box" in form) {
-        console.log("Comment box found in form")
+        // console.log("Comment box found in form")
         key = "comment";
         if (key in sentence[boundaryID]) {
             eleName = 'comment-box'
@@ -1186,8 +1186,8 @@ function createSentenceForm(formElement, boundaryID) {
         }
 
 
-        console.log("Comment in create", commentVal)
-        console.log(formElement)
+        // console.log("Comment in create", commentVal)
+        // console.log(formElement)
         inpt += '<div class="form-group">';
         inpt += '<label for="comment-box-id">Comments:</label>'
         inpt += '<textarea class="form-control comment-box" id="comment-box-id" ' +
