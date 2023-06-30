@@ -661,7 +661,6 @@ def crawlerbrowseaction():
 
     return 'OK'
 
-
 @lifedata.route('/crawlerbrowseactionviewdata', methods=['GET', 'POST'])
 @login_required
 def crawlerbrowseactionviewdata():
@@ -695,7 +694,6 @@ def crawlerbrowseactionviewdata():
     except:
         logger.exception("")
         return jsonify(commentInfo={})
-
 
 @lifedata.route('/crawlerbrowsechangepage', methods=['GET', 'POST'])
 @login_required

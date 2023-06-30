@@ -512,7 +512,7 @@ def audiobrowse():
                                                           activeprojectname)
         speakerids = projects.find_one({"projectname": activeprojectname},
                                        {"_id": 0, "speakerIds." + current_username: 1})
-        logger.debug('speakerids: %s', pformat(speakerids))
+        # logger.debug('speakerids: %s', pformat(speakerids))
         if (speakerids["speakerIds"]):
             speakerids = speakerids["speakerIds"][current_username]
             speakerids.append('')
@@ -603,7 +603,6 @@ def updateaudiobrowsetable():
                    totalRecords=total_records,
                    shareChecked=share_checked)
 
-
 @app.route('/audiobrowseaction', methods=['GET', 'POST'])
 @login_required
 def audiobrowseaction():
@@ -662,6 +661,34 @@ def audiobrowseaction():
         logger.exception("")
 
     return 'OK'
+
+
+@app.route('/audiobrowseactionshare', methods=['GET', 'POST'])
+@login_required
+def audiobrowseactionshare():
+    try:
+        userprojects, crawling_collection = getdbcollections.getdbcollections(mongo,
+                                                                              'userprojects',
+                                                                              'crawling')
+        current_username = getcurrentusername.getcurrentusername()
+        activeprojectname = getactiveprojectname.getactiveprojectname(
+            current_username, userprojects)
+        logger.debug("%s,%s", current_username, activeprojectname)
+        # data from ajax
+        data = json.loads(request.args.get('a'))
+        logger.debug('data: %s', pformat(data))
+        data_info = data['audioInfo']
+        # logger.debug('data_info: %s', pformat(data_info))
+        crawler_browse_info = data['audioBrowseInfo']
+        # logger.debug('crawler_browse_info: %s', pformat(crawler_browse_info))
+        # browse_action = crawler_browse_info['browseActionSelectedOption']
+        active_source_id = crawler_browse_info['activeSpeakerId']
+        data_id = list(data_info.keys())[0]
+        logger.debug("data_id: %s", data_id)
+        return jsonify(commentInfo={})
+    except:
+        logger.exception("")
+        return jsonify(commentInfo={})
 
 @app.route('/audiobrowsechangepage', methods=['GET', 'POST'])
 @login_required

@@ -193,6 +193,13 @@ function eventsMapping() {
             audioBrowseAction(audios);
         }
     });
+    $(".shareaudioclass").click(function() {
+        let audioInfo = getSingleAudioBrowseAction(this);
+        shareAudioFLAG = confirm("Share This Audio!!!");
+        if(shareAudioFLAG) {
+            audioBrowseActionShare(audioInfo);
+        }
+    });
 }
 
 function updateAudioBrowseTable() {
@@ -222,6 +229,22 @@ function audioBrowseAction(audioInfo) {
         },
         type : 'GET',
         url : '/audiobrowseaction'
+      }).done(function(data){
+            window.location.reload();
+      });
+}
+
+function audioBrowseActionShare(audioInfo) {
+    let audioBrowseInfo = getAudioBrowseInfo();
+    $.ajax({
+        data : {
+          a : JSON.stringify({
+            "audioInfo": audioInfo,
+            "audioBrowseInfo": audioBrowseInfo
+        })
+        },
+        type : 'GET',
+        url : '/audiobrowseactionshare'
       }).done(function(data){
             window.location.reload();
       });
