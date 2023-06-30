@@ -283,7 +283,7 @@ $("#save").click(function() {
       alert("Unable to save the transcription as audio seem to be deleted by one of the shared user.\
       Showing you the next audio in the list.")
     }
-    window.location.reload();
+    // window.location.reload();
   });
 });
 
@@ -294,7 +294,7 @@ function myFunction(newData) {
   if (activeAudioFilename === undefined) {
     activeAudioFilename = '';
   }
-  var inpt = '<strong>Audio Filename: </strong><strong id="audioFilename">'+ activeAudioFilename +'</strong>'
+  var inpt = '<span>Audio Filename: </span><span id="audioFilename">'+ activeAudioFilename +'</span>';
   $(".defaultfield").append(inpt);
   lastActiveId = newData["lastActiveId"]
   inpt = '<input type="hidden" id="lastActiveId" name="lastActiveId" value="'+lastActiveId+'">';
@@ -304,10 +304,11 @@ function myFunction(newData) {
   localStorage.setItem("AudioFilePath", JSON.stringify(newData['AudioFilePath']));
   for (let [key, value] of Object.entries(newData)){
     if (key === 'Sentence Language') {
-      inpt += '<div class="col"><div class="form-group">'+
-                  '<label for="'+key+'">'+key+'</label>'+
-                  '<input type="text" class="form-control" id="'+key+'" name="'+key+'" value="'+newData[key]+'" readonly>'+
-                  '</div></div>'; 
+      // inpt += '<div class="col"><div class="form-group">'+
+      //             '<label for="'+key+'">Audio Language:</label>'+
+      //             '<input type="text" class="form-control" id="'+key+'" name="'+key+'" value="'+newData[key]+'" readonly>'+
+      //             '</div></div>'; 
+      inpt += '<strong>Audio Language: </strong><strong id="'+key+'">'+newData[key]+'</strong>';
           $('.lexemelang').append(inpt);
           inpt = '';
         }
@@ -379,13 +380,13 @@ function unAnnotated() {
           allanno = response.allanno;
           // console.log(allanno)
           var inpt = '';
-          inpt += '<select class="col-sm-3 allanno" id="allanno" onchange="loadAnnoText()" style="width: 10%">'+
+          inpt += '<select class="col-sm-3 allanno" id="allanno" onchange="loadAnnoText()" style="width: 45%">'+
                   '<option selected disabled>Completed</option>';
                   for (i=0; i<allanno.length; i++) {
                       inpt += '<option value="'+allanno[i]+'">'+allanno[i]+'</option>';
                   }
           inpt += '</select>&nbsp; ';
-          inpt += '<select class="pr-4 col-sm-3" id="allunanno" onchange="loadUnAnnoText()"style="width: 10%">'+
+          inpt += '<select class="pr-4 col-sm-3" id="allunanno" onchange="loadUnAnnoText()"style="width: 45%">'+
                   '<option selected disabled>Not Completed</option>';
                   for (i=0; i<allunanno.length; i++) {
                       inpt += '<option value="'+allunanno[i]+'">'+allunanno[i]+'</option>';

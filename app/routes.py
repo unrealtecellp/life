@@ -593,13 +593,15 @@ def updateaudiobrowsetable():
                                                         current_username,
                                                         activeprojectname)
         share_mode = shareinfo['sharemode']
+        share_checked = shareinfo['sharechecked']
     except:
         logger.exception("")
 
     return jsonify(audioDataFields= audio_data_fields,
                    audioData=new_audio_data_list,
                    shareMode=share_mode,
-                   totalRecords=total_records)
+                   totalRecords=total_records,
+                   shareChecked=share_checked)
 
 
 @app.route('/audiobrowseaction', methods=['GET', 'POST'])
@@ -700,6 +702,7 @@ def audiobrowsechangepage():
                                                         current_username,
                                                         activeprojectname)
         share_mode = shareinfo['sharemode']
+        share_checked = shareinfo['sharechecked']
     except:
         logger.exception("")
 
@@ -707,6 +710,7 @@ def audiobrowsechangepage():
                    crawledData=crawled_data_list,
                    shareMode=share_mode,
                    totalRecords=total_records,
+                   shareChecked=share_checked,
                    activePage=page_id)
 
 # new automation route
