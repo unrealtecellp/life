@@ -399,13 +399,13 @@ def saveoneaudiofile(mongo,
         }
         # logger.debug(speakerIds)
 
-    # speaker_audioid_key_name = get_audiospeaker_id_key_name(project_type)
+    speaker_audioid_key_name = get_audiospeaker_id_key_name(project_type)
     speaker_audio_ids = projects.find_one({'projectname': activeprojectname},
-                                          {'_id': 0, 'speakersAudioIds': 1})
+                                          {'_id': 0, speaker_audioid_key_name: 1})
     # logger.debug(len(speaker_audio_ids))
     # logger.debug(speaker_audio_ids)
     if len(speaker_audio_ids) != 0:
-        speaker_audio_ids = speaker_audio_ids['speakersAudioIds']
+        speaker_audio_ids = speaker_audio_ids[speaker_audioid_key_name]
         # logger.debug('speaker_audio_ids', speaker_audio_ids)
         if speakerId in speaker_audio_ids:
             speaker_audio_idskeylist = speaker_audio_ids[speakerId]
@@ -425,7 +425,7 @@ def saveoneaudiofile(mongo,
                         {'$set': {
                             'lastActiveId.'+current_username+'.'+speakerId+'.audioId':  audio_id,
                             speaker_id_key_name: speakerIds,
-                            'speakersAudioIds': speaker_audio_ids
+                            speaker_audioid_key_name: speaker_audio_ids
                         }})
     # update active speaker ID in userprojects collection
     projectinfo = userprojects.find_one({'username': current_username},
@@ -469,7 +469,7 @@ def saveoneaudiofile(mongo,
 
 def get_speaker_id_key_name(project_type):
     speaker_id_key_name = ''
-    if project_type == 'crawling' and project_type == 'annotation':
+    if project_type == 'crawling' or project_type == 'annotation':
         speaker_id_key_name = 'sourceIds'
     else:
         speaker_id_key_name = 'speakerIds'
@@ -479,8 +479,8 @@ def get_speaker_id_key_name(project_type):
 
 def get_audiospeaker_id_key_name(project_type):
     speaker_id_key_name = ''
-    if project_type == 'crawling' and project_type == 'annotation':
-        speaker_id_key_name = 'sourceDataIds'
+    if project_type == 'crawling' or project_type == 'annotation':
+        speaker_id_key_name = 'sourceAudioIds'
     else:
         speaker_id_key_name = 'speakersAudioIds'
 
