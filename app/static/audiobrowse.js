@@ -33,8 +33,9 @@ function createBrowseActions(projectOwner, currentUsername) {
     createSelect2('browseactiondropdown', browseActionOptionsList, 'Delete');
 }
 
-function createAudioBrowseTable(audioDataFields, audioData, shareMode=0, totalRecords=0) {
+function createAudioBrowseTable(audioDataFields, audioData, shareMode=0, totalRecords=0, shareChecked="false") {
     // console.log(audioData);
+    // console.log(shareChecked);
     let count = audioData.length
     let ele = '';
     let browseActionSelectedOption = '';
@@ -52,6 +53,9 @@ function createAudioBrowseTable(audioDataFields, audioData, shareMode=0, totalRe
         browseActionSelectedOption = document.getElementById('browseactiondropdown').value;
         ele += '<th>'+browseActionSelectedOption+'</th>';
     }
+    if (shareChecked === 'true') {
+        ele += '<th>Share</th>';
+    }
     
     ele += '</tr>'+
             '</thead>';
@@ -66,7 +70,7 @@ function createAudioBrowseTable(audioDataFields, audioData, shareMode=0, totalRe
             if (field in aData) {
                 if (field == 'Audio File') {
                     ele += '<td id='+field+'>'+
-                            '<audio controls><source src="'+aData[field]+'" type="audio/wav"></audio>'+
+                            '<audio controls controlslist="nofullscreen nodownload noremoteplayback noplaybackrate"><source src="'+aData[field]+'" type="audio/wav"></audio>'+
                             '</td>';
                 }
                 else {
@@ -97,6 +101,13 @@ function createAudioBrowseTable(audioDataFields, audioData, shareMode=0, totalRe
                     '</button></td>';
 
         }
+        if (shareChecked === 'true') {
+            ele += '<td><button type="button" id="shareaudio" class="btn btn-warning shareaudioclass">'+
+                    '<span class="glyphicon glyphicon-share-alt" aria-hidden="true"></span>'+
+                    ' Share Audio'+
+                    '</button></td>';
+
+        }
         ele += '</tr>';
     }
     ele += '</tbody>'+
@@ -111,7 +122,9 @@ function createAudioBrowse(newData) {
     let projectOwner = newData['projectOwner']
     let totalRecords = newData['totalRecords']
     let shareInfo = newData['shareInfo']
+    // console.log(shareInfo);
     let shareMode = shareInfo['sharemode']
+    let shareChecked = shareInfo['sharechecked']
     let activeSpeakerId = shareInfo['activespeakerId']
     // console.log(activeSpeakerId)
     let audioDataFields = newData['audioDataFields']
@@ -121,7 +134,7 @@ function createAudioBrowse(newData) {
     if (shareMode >= 4) {
         createBrowseActions(projectOwner, currentUsername);
     }
-    createAudioBrowseTable(audioDataFields, audioData, shareMode, totalRecords)
+    createAudioBrowseTable(audioDataFields, audioData, shareMode, totalRecords, shareChecked)
     eventsMapping();
     createPagination(totalRecords)
 }
@@ -192,7 +205,7 @@ function updateAudioBrowseTable() {
         url : '/updateaudiobrowsetable'
       }).done(function(data){
         // console.log(data.audioDataFields, data.audioData, data.shareMode);
-        createAudioBrowseTable(data.audioDataFields, data.audioData, data.shareMode, data.totalRecords);
+        createAudioBrowseTable(data.audioDataFields, data.audioData, data.shareMode, data.totalRecords, data.shareChecked);
         eventsMapping();
         createPagination(data.totalRecords)
       });
@@ -348,7 +361,7 @@ function changeAudioBrowsePage(pageId) {
         url : '/audiobrowsechangepage'
       }).done(function(data){
         // console.log(data.crawledDataFields, data.crawledData, data.shareMode);
-        createAudioBrowseTable(data.crawledDataFields, data.crawledData, data.shareMode, data.totalRecords);
+        createAudioBrowseTable(data.crawledDataFields, data.crawledData, data.shareMode, data.totalRecords, data.shareChecked);
         eventsMapping();
         createPagination(data.totalRecords, data.activePage);
     });
