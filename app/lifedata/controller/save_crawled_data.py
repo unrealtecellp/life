@@ -81,11 +81,31 @@ def add_new_source_id(projects_collection,
     try:
 
         logger.debug(
-            "Adding new sourve ID %s Current active project name during save %s", life_source_id, active_project_name)
+            "Adding new source ID %s Current active project name during save %s", life_source_id, active_project_name)
         projects_collection.update_one({"projectname": active_project_name},
                                        {
                                            "$addToSet": {
                                                "sourceIds."+current_username: life_source_id
+                                           }
+        })
+        return True
+    except:
+        logger.exception("")
+        return False
+
+
+def add_new_source_data_id(projects_collection,
+                           active_project_name,
+                           life_source_id,
+                           data_id):
+    try:
+
+        logger.debug(
+            "Adding new source ID %s Current active project name during save %s", life_source_id, active_project_name)
+        projects_collection.update_one({"projectname": active_project_name},
+                                       {
+                                           "$addToSet": {
+                                               "sourcedataIds."+life_source_id: data_id
                                            }
         })
         return True
@@ -299,5 +319,10 @@ def save_youtube_crawled_data(projects_collection,
                                   audio_doc_id=life_audio_doc_id,
                                   video_doc_id=life_video_doc_id,
                                   data_type='text')
+
+                add_new_source_data_id(projects_collection,
+                                       active_project_name,
+                                       life_source_id,
+                                       text_id)
     except:
         logger.exception("")

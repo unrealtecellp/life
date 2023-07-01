@@ -174,10 +174,10 @@ def saveonevideofile(mongo,
     # save audio file details and speaker ID in projects collection
     speaker_id_key_name = audiodetails.get_speaker_id_key_name(project_type)
     speakerIds = projects.find_one({'projectname': activeprojectname},
-                                   {'_id': 0, 'speakerIdsOfVideos': 1})
+                                   {'_id': 0, speaker_id_key_name: 1})
     # logger.debug(f"SPEAKER IDS: {speakerIds}")
     if len(speakerIds) != 0:
-        speakerIds = speakerIds['speakerIdsOfVideos']
+        speakerIds = speakerIds[speaker_id_key_name]
         if current_username in speakerIds:
             speakerIdskeylist = speakerIds[current_username]
             speakerIdskeylist.append(speakerId)
@@ -190,12 +190,13 @@ def saveonevideofile(mongo,
         }
         # logger.debug(speakerIds)
 
+    speaker_videoid_key_name = get_videospeaker_id_key_name(project_type)
     speaker_video_ids = projects.find_one({'projectname': activeprojectname},
-                                          {'_id': 0, 'speakersVideoIds': 1})
+                                          {'_id': 0, speaker_videoid_key_name: 1})
     # logger.debug(len(speaker_audio_ids))
     # logger.debug(speaker_audio_ids)
     if len(speaker_video_ids) != 0:
-        speaker_video_ids = speaker_video_ids['speakersVideoIds']
+        speaker_video_ids = speaker_video_ids[speaker_videoid_key_name]
         # logger.debug('speaker_audio_ids', speaker_audio_ids)
         if speakerId in speaker_video_ids:
             speaker_video_idskeylist = speaker_video_ids[speakerId]
@@ -214,8 +215,8 @@ def saveonevideofile(mongo,
     projects.update_one({'projectname': activeprojectname},
                         {'$set': {
                             'lastActiveId.'+current_username+'.'+speakerId+'.videoId':  video_id,
-                            'speakerIdsOfVideos': speakerIds,
-                            'speakersVideoIds': speaker_video_ids
+                            speaker_id_key_name: speakerIds,
+                            speaker_videoid_key_name: speaker_video_ids
                         }})
     # update active speaker ID in userprojects collection
     projectinfo = userprojects.find_one({'username': current_username},
@@ -255,3 +256,13 @@ def saveonevideofile(mongo,
     #     logger.debug(e)
     #     flash(f"ERROR")
     #     return (False, '', '')
+
+
+def get_videospeaker_id_key_name(project_type):
+    speaker_id_key_name = ''
+    if project_type == 'crawling' or project_type == 'annotation':
+        speaker_id_key_name = 'sourceVideoIds'
+    else:
+        speaker_id_key_name = 'speakersVudioIds'
+
+    return speaker_id_key_name

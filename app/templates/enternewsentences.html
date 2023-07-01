@@ -14,55 +14,31 @@
 
 {% block app_content %}
   <div class="row">
-    <div class="col-sm-5">
-      {% if projectName is defined %}
-        <h4>Project Name : {{ projectName }}</h4>
-      {% endif %}
-      {% if commentstats is defined %}
-          <div class="commentStats">
-          </div>
-        {% if commentstats[0] != 0 %}
-          <div class="progress">
-            <div class="progress-bar progress-bar-success" role="progressbar"
-              style="width:{{ commentstats[1]/commentstats[0]*100 }}%">
-              Completed : {{ commentstats[1] }}
-            </div>
-            <div class="progress-bar progress-bar-danger" role="progressbar"
-              style="width:{{ commentstats[2]/commentstats[0]*100 }}%">
-              Remaining : {{ commentstats[2] }}
-            </div>
-          </div>
-        {% endif %}
-      {% endif %}
-    </div>
-    {% if speakerids is defined %}
-      <label for="speakeridsdropdown">Source: </label>
-      <select class="custom-select custom-select-sm" id="speakeridsdropdown" style="width: 10%;">
-        <option selected disabled>{{ activespeakerid }}</option>
-        {% for d in speakerids %}
-          {% if d != activespeakerid %}
-            <option value="{{ d }}">{{ d }}</option>
-          {% endif %}
-        {% endfor %}
-      </select>
-    {% endif %}
-    <button class="btn btn-info" type="button" id="previous" onclick="previousAudio()">
-      <span class="previousaudio glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
-    </button>
-    <button class="btn btn-info" type="button" id="next" onclick="nextAudio()">
-      <span class="nextaudio glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
-    </button>
-    <button class="btn btn-warning" id="save">
-      <span class="saveaudio glyphicon glyphicon-floppy-save" aria-hidden="true"></span>
-    </button>
-    {% if shareinfo['sharemode']|int >= 4 %}
-      <button type="button" id="deleteaudio" class="btn btn-danger">
-        <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+    <div class="col-sm-5"></div>
+    <div class="col-sm-6">
+      <button class="btn btn-info" type="button" id="previous" data-toggle="tooltip" title="Previous Audio" onclick="previousAudio()">
+        <span class="previousaudio glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
       </button>
-    {% endif %}
-    <span class="commentIDs">
-      <button type="button" id="uNAnnotated" class="btn btn-light" onclick="unAnnotated()">All Filename</button>
-    </span>
+      &nbsp;
+      <button class="btn btn-info" type="button" id="next" data-toggle="tooltip" title="Next Audio" onclick="nextAudio()">
+        <span class="nextaudio glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+      </button>
+      &nbsp;
+      <button class="btn btn-warning" id="save" data-toggle="tooltip" title="Save Transcriptions">
+        <span class="saveaudio glyphicon glyphicon-floppy-save" aria-hidden="true"></span>
+      </button>
+      &nbsp;&nbsp;
+      {% if shareinfo['sharemode']|int >= 4 %}
+        <button type="button" id="deleteaudio" class="btn btn-danger" data-toggle="tooltip" title="Delete Audio">
+          <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+        </button>
+      {% endif %}
+      &nbsp;&nbsp;
+      <span class="pull-right" style="font-size:30px; position:absolute; cursor:pointer" data-toggle="tooltip" title="Info" onclick="openAudioMetaData()">
+        <i class="glyphicon glyphicon-info-sign"></i>
+      </span>
+    </div>
+    <div class="col-sm-1"></div>
     <span class="pull-right" style="font-size:30px; position:absolute; right:10px;cursor:pointer" onclick="openNav()"><i class="glyphicon glyphicon-menu-hamburger"></i></span>
     <div id="sidepanel"></div>
     <!-- <div class="col-sm-7 pull-right">
@@ -88,12 +64,61 @@
       {% endif %}
     </div> -->
   </div>
-  <div class="row">
-    <div class="col-md-9 defaultfield" id="iddefaultfield"></div>
-    <div class="col-md-2 classaudiometadata pull-right" id="idaudiometadata"></div>
+  <div class="row" id="audiometadata" style="display: none;">
+    <br>
+    <hr>
+    <div class="row">
+      <div class="col-sm-6">
+        {% if projectName is defined %}
+          <h4>Project Name : {{ projectName }}</h4>
+        {% endif %}
+      </div>
+      {% if commentstats is defined %}
+        <div class="commentStats">
+        </div>
+      {% if commentstats[0] != 0 %}
+        <div class="progress">
+          <div class="progress-bar progress-bar-success" role="progressbar"
+            style="width:{{ commentstats[1]/commentstats[0]*100 }}%">
+            Completed : {{ commentstats[1] }}
+          </div>
+          <div class="progress-bar progress-bar-danger" role="progressbar"
+            style="width:{{ commentstats[2]/commentstats[0]*100 }}%">
+            Remaining : {{ commentstats[2] }}
+          </div>
+        </div>
+      {% endif %}
+      {% endif %}
+    </div>
+    <hr>
+    <div class="row">
+      <div class="col-md-6">
+        {% if speakerids is defined %}
+          <label for="speakeridsdropdown">Source: </label>
+          <select class="custom-select custom-select-sm" id="speakeridsdropdown" style="width: 50%;">
+            <option selected disabled>{{ activespeakerid }}</option>
+            {% for d in speakerids %}
+              {% if d != activespeakerid %}
+                <option value="{{ d }}">{{ d }}</option>
+              {% endif %}
+            {% endfor %}
+          </select>
+        {% endif %}
+      </div>
+      <div class="col-md-6">
+        <span class="commentIDs">
+          <button type="button" id="uNAnnotated" class="btn btn-light" onclick="unAnnotated()">All Filename</button>
+        </span>
+      </div>
+    </div>
+    <hr>
+    <div class="row">
+      <div class="col-md-3 lexemelang"></div>
+      <div class="col-md-6 defaultfield" id="iddefaultfield"></div>
+      <div class="col-md-3 classaudiometadata" id="idaudiometadata"></div>
+      
+    </div>
   </div>
-  <br>
-  <div class="lexemelang"></div>
   <p id="subtitleabsence" class="text-center text-info">&nbsp;</p>
   <p id="subtitle" class="text-center text-info">&nbsp;</p>
   <!-- <div id="wave-timeline"></div> -->
@@ -105,7 +130,7 @@
     <div class="col-sm-3" id="sliderdivid">
       <input id="slider" data-action="zoom" type="range" min="0" max="100" value="0" style="width: 50%">
     </div>
-    <div class=" col-sm-3 pull-right">
+    <div class=" col-sm-3">
       <button class="btn btn-danger" type="button" id="stopAudio">STOP
         <span class="audiostop glyphicon glyphicon-stop" aria-hidden="true"></span>
       </button>
@@ -113,35 +138,42 @@
         <span class="audioplaypause glyphicon glyphicon-play" aria-hidden="true"></span>
       </button>
     </div>
+    <div class=" col-sm-6 pull-right">
+      <button type="button" class="btn btn-danger" data-action="delete-region">
+        Delete Boundary
+      </button>
+      <button class="btn btn-primary" type="button" id="playPauseBoundary">
+        Play From Here
+      </button>
+      <button class="btn btn-primary" type="button" id="playPauseBoundaryStart">
+        Play From Start
+      </button>
+    </div>
   </div>
   <p id="regioninfo" class="text-danger">&nbsp;</p>
-  <form id="boundaryForm" role="form" name="edit" style="display: none; margin: 30px 0;">    <div class="form-group transcription1" id="transcription2"></div>
+  <form id="boundaryForm" role="form" name="edit" style="display: none; margin: 30px 0;">
+    <div class="form-group transcription1" id="transcription2"></div>
     <div class="form-group translationfield1" id="translationfield2"></div>
 
-    <div class="row">
-      <div class="form-group col-sm-6">
-        <label for="start">Boundary Start Time</label>
-        <input class="form-control" id="start" name="start" readonly required />
-      </div>
+    <!-- <div class="row"> -->
+      <!-- <div class="form-group col-sm-6"> -->
+        <!-- <label for="start">Boundary Start Time</label> -->
+        <input type="hidden" class="form-control" id="start" name="start" readonly required/>
+      <!-- </div> -->
 
-      <div class="form-group col-sm-6">
-        <label for="end">Boundary End Time</label>
-        <input class="form-control" id="end" name="end" readonly required />
-      </div>
-    </div>
+      <!-- <div class="form-group col-sm-6"> -->
+        <!-- <label for="end">Boundary End Time</label> -->
+        <input type="hidden" class="form-control" id="end" name="end" readonly required />
+      <!-- </div> -->
+    <!-- </div> -->
     
     <div class="form-group comments" id="transcription-comments"></div>
 
     <div class="row">
       <div class=" col-sm-3">
-        <button type="button" class="btn btn-danger" data-action="delete-region">
-          Delete Boundary
-        </button>
+        
       </div>
       <div class=" col-sm-5 pull-right">
-        <button class="btn btn-primary" type="button" id="playPauseBoundary">
-          Play/Pause This Boundary
-        </button>
         <!-- <button type="submit" class="btn btn-success btn-lg pull-right" id="saveTempTranscription">Save This
           Boundary
         </button> -->
