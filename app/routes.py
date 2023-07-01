@@ -446,8 +446,10 @@ def savetranscription():
     transcription_data = json.loads(request.form['a'])
     # transcription_data = json.loads(request.args.get('a'))
     transcription_data = dict(transcription_data)
+    # logger.debug("transcription_data: %s", pformat(transcription_data))
     lastActiveId = transcription_data['lastActiveId']
     transcription_regions = transcription_data['transcriptionRegions']
+    # logger.debug("transcription_regions: %s", pformat(json.loads(transcription_regions)))
     # print(lastActiveId)
     # print(transcription_regions)
     audio_delete_flag = audiodetails.get_audio_delete_flag(transcriptions,

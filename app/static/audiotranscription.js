@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Init wavesurfer
     wavesurfer = WaveSurfer.create({
         container: '#waveform',
-        height: 150,
+        height: 120,
         pixelRatio: 1,
         scrollParent: true,
         normalize: true,
@@ -111,6 +111,9 @@ document.addEventListener('DOMContentLoaded', function () {
     // wavesurfer.on('region-updated', saveRegions);
     wavesurfer.on('region-update-end', saveRegions);
     wavesurfer.on('region-update-end', editAnnotation);
+    wavesurfer.on('region-update-end', function (region) {
+        // preventOverlapBoundaries(region);
+    });
     wavesurfer.on('region-in', showNote);
 
     wavesurfer.on('region-play', function (region) {
@@ -128,6 +131,7 @@ document.addEventListener('DOMContentLoaded', function () {
     document.querySelector(
         '[data-action="delete-region"]'
     ).addEventListener('click', function () {
+        // deleteBoundary();
         let form = document.forms.edit;
         let regionId = form.dataset.region;
         if (regionId) {
@@ -147,10 +151,11 @@ document.addEventListener('DOMContentLoaded', function () {
             }
             // console.log(startId, endId)
             rid = startId.concat(endId);
-            localStorageRegions = JSON.parse(localStorage.regions)
+            localStorageRegions = JSON.parse(localStorage.regions);
             for (let [key, value] of Object.entries(localStorageRegions)) {
                 // console.log(key, value)
-                if (localStorageRegions[key]['boundaryID'] === rid) {
+                if (key in localStorageRegions &&
+                    localStorageRegions[key]['boundaryID'] === rid) {
                     localStorageRegions.splice(key, 1)
                     // console.log(localStorageRegions)
                     localStorage.setItem("regions", JSON.stringify(localStorageRegions));
@@ -159,6 +164,39 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 });
+
+function deleteBoundary() {
+    let form = document.forms.edit;
+    let regionId = form.dataset.region;
+    if (regionId) {
+        let region = wavesurfer.regions.list[regionId];
+        wavesurfer.regions.list[regionId].remove();
+
+        form.reset();
+        transcriptionFormDisplay(form);
+        wavesurfer.pause();
+        startId = region.start.toString().slice(0, 4).replace('.', '');
+        if (startId === '0') {
+            startId = '000';
+        }
+        endId = region.end.toString().slice(0, 4).replace('.', '');
+        if (endId === '0') {
+            endId = '000';
+        }
+        // console.log(startId, endId)
+        rid = startId.concat(endId);
+        localStorageRegions = JSON.parse(localStorage.regions);
+        for (let [key, value] of Object.entries(localStorageRegions)) {
+            // console.log(key, value)
+            if (key in localStorageRegions &&
+                localStorageRegions[key]['boundaryID'] === rid) {
+                localStorageRegions.splice(key, 1)
+                // console.log(localStorageRegions)
+                localStorage.setItem("regions", JSON.stringify(localStorageRegions));
+            }
+        }
+    }
+}
 
 function updateCurrentCursorTime(from='') {
     if (from == 'edit') {
@@ -310,7 +348,7 @@ function randomColor(alpha) {
  * Edit annotation for a region.
  */
 function editAnnotation(region) {
-    updateCurrentCursorTime(from="edit")
+    updateCurrentCursorTime(from="edit");
     // wavesurfer.playPause();
     region.color = boundaryColor(255, 0, 0, 0.1);
     // console.log('editAnnotation(region)')
@@ -1885,5 +1923,39 @@ function openAudioMetaData() {
     }
     else if(audioMetadataDisplay.style.display == 'block') {
         audioMetadataDisplay.style.display = 'none'
+    }
+}
+
+function preventOverlapBoundaries(region) {
+    // console.log(region);
+    // console.log(region.start, region.end);
+    localStorageRegions = JSON.parse(localStorage.regions);
+    // console.log(localStorageRegions);
+    for (i=0; i< localStorageRegions.length; i++) {
+        localStorageRegion = localStorageRegions[i];
+        if (region.start == localStorageRegion.start ||
+            region.end == localStorageRegion.end) {
+                continue
+            }
+        if ((region.start<localStorageRegion.end &&
+            region.start>localStorageRegion.start) ||
+            (region.end<localStorageRegion.end &&
+            region.end>localStorageRegion.start)) {
+                // console.log(region.start, localStorageRegion.end);
+                // console.log(region.end, localStorageRegion.start);
+                console.log('OVERLAP!!!');
+                console.log('FALLING IN REGION: ', localStorageRegion);
+                deleteBoundary();
+            }
+        else if ((localStorageRegion.start>region.start &&
+                localStorageRegion.start<region.end) &&
+                (localStorageRegion.end>region.start &&
+                localStorageRegion.end<region.end)) {
+                // console.log(region.start, localStorageRegion.end);
+                // console.log(region.end, localStorageRegion.start);
+                console.log('OVERLAP!!!');
+                console.log('FALLING IN REGION: ', localStorageRegion);
+                deleteBoundary();
+            }
     }
 }

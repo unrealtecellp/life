@@ -16,25 +16,27 @@
   <div class="row">
     <div class="col-sm-5"></div>
     <div class="col-sm-6">
-      <button class="btn btn-info" type="button" id="previous" onclick="previousAudio()">
+      <button class="btn btn-info" type="button" id="previous" data-toggle="tooltip" title="Previous Audio" onclick="previousAudio()">
         <span class="previousaudio glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
       </button>
       &nbsp;
-      <button class="btn btn-info" type="button" id="next" onclick="nextAudio()">
+      <button class="btn btn-info" type="button" id="next" data-toggle="tooltip" title="Next Audio" onclick="nextAudio()">
         <span class="nextaudio glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
       </button>
       &nbsp;
-      <button class="btn btn-warning" id="save">
+      <button class="btn btn-warning" id="save" data-toggle="tooltip" title="Save Transcriptions">
         <span class="saveaudio glyphicon glyphicon-floppy-save" aria-hidden="true"></span>
       </button>
       &nbsp;&nbsp;
       {% if shareinfo['sharemode']|int >= 4 %}
-        <button type="button" id="deleteaudio" class="btn btn-danger">
+        <button type="button" id="deleteaudio" class="btn btn-danger" data-toggle="tooltip" title="Delete Audio">
           <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
         </button>
       {% endif %}
       &nbsp;&nbsp;
-      <span class="pull-right" style="font-size:30px; position:absolute; cursor:pointer" onclick="openAudioMetaData()"><i class="glyphicon glyphicon-info-sign"></i></span>
+      <span class="pull-right" style="font-size:30px; position:absolute; cursor:pointer" data-toggle="tooltip" title="Info" onclick="openAudioMetaData()">
+        <i class="glyphicon glyphicon-info-sign"></i>
+      </span>
     </div>
     <div class="col-sm-1"></div>
     <span class="pull-right" style="font-size:30px; position:absolute; right:10px;cursor:pointer" onclick="openNav()"><i class="glyphicon glyphicon-menu-hamburger"></i></span>
