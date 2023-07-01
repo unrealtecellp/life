@@ -20,6 +20,7 @@ from app.controller import (
     userdetails,
     getcurrentuserprojects,
     getactiveprojectname,
+    getprojecttype,
     life_logging
 )
 from app.lifemodels.controller import (
@@ -75,6 +76,8 @@ def saveaudiofiles(mongo,
                    new_audio_file,
                    run_vad=True,
                    run_asr=False,
+                   split_into_smaller_chunks=False,
+                   get_audio_json=True,
                    vad_model=[],
                    asr_model=[],
                    transcription_type='sentence',
@@ -122,6 +125,7 @@ def saveaudiofiles(mongo,
                                                                             new_audio_file,
                                                                             run_vad,
                                                                             run_asr,
+                                                                            split_into_smaller_chunks,
                                                                             vad_model,
                                                                             asr_model,
                                                                             transcription_type,
@@ -145,6 +149,8 @@ def saveaudiofiles(mongo,
                                                                                      new_audio_file,
                                                                                      run_vad,
                                                                                      run_asr,
+                                                                                     split_into_smaller_chunks,
+                                                                                     get_audio_json,
                                                                                      vad_model,
                                                                                      asr_model,
                                                                                      transcription_type,
@@ -168,6 +174,8 @@ def savemultipleaudiofiles(mongo,
                            all_audio_files,
                            run_vad=True,
                            run_asr=False,
+                           split_into_smaller_chunks=False,
+                           get_audio_json=True,
                            vad_model=[],
                            asr_model=[],
                            transcription_type='sentence',
@@ -228,6 +236,8 @@ def savemultipleaudiofiles(mongo,
                                                                                         new_audio_file,
                                                                                         run_vad,
                                                                                         run_asr,
+                                                                                        split_into_smaller_chunks,
+                                                                                        get_audio_json,
                                                                                         vad_model,
                                                                                         asr_model,
                                                                                         transcription_type,
@@ -261,12 +271,15 @@ def saveoneaudiofile(mongo,
                      sourceId='',
                      run_vad=True,
                      run_asr=False,
+                     split_into_smaller_chunks=False,
+                     get_audio_json=True,
                      vad_model=[],
                      asr_model=[],
                      transcription_type='sentence',
                      boundary_threshold=0.3,
                      slice_threshold=0.9,
-                     slice_size=120,
+                     max_slice_size=120,
+                     data_type="audio",
                      **kwargs):
     """mapping of this function is with the 'uploadaudiofiles' route.
 
@@ -283,12 +296,22 @@ def saveoneaudiofile(mongo,
         type: the type of data - one of 'sentence', 'word', 'discourse' or 'phone'
         boundary_threshold: the threshold value of 'pause' where boundary is to be drawn
         slice_threshold: the threshold value of 'pause' where the file will be split into another files (0=no slice)
+        max_slice_size: the recommended size of each slice (might have some offset value). Slices should not be larger than this but might be lower than this.
     """
+
+    project_type = getprojecttype.getprojecttype(projects, activeprojectname)
+
     audiowaveform_file = new_audio_file['audiofile']
 
     json_basedir = os.path.abspath(os.path.dirname(__file__))
     audiowaveform_json_dir_path = '/'.join(json_basedir.split('/')[:-1])
     audio_json_parent_dir = 'audiowaveform'
+
+    if get_audio_json or run_vad or run_asr or split_into_smaller_chunks:
+        store_in_local = True
+    else:
+        store_in_local = False
+
     # audio_json_path = os.path.join(
     #     audiowaveform_json_dir_path, audio_json_parent_dir)
 
@@ -303,6 +326,7 @@ def saveoneaudiofile(mongo,
         "audiodeleteFLAG": 0,
         "audioverifiedFLAG": 0,
         "prompt": "",
+        "dataType": data_type,
         "speakerId": speakerId,
         "sourceId": sourceId,
         "additionalInfo": {},
@@ -323,6 +347,7 @@ def saveoneaudiofile(mongo,
     new_audio_details['audioFilename'] = updated_audio_filename
 
     # Save audio file in mongoDb and also get it in Local File System
+
     fs_file_id, audio_file_path = save_audio_in_mongo_and_localFs(mongo,
                                                                   updated_audio_filename,
                                                                   audiowaveform_file,
@@ -332,7 +357,7 @@ def saveoneaudiofile(mongo,
                                                                   current_username,
                                                                   audiowaveform_json_dir_path,
                                                                   audio_json_parent_dir,
-                                                                  store_in_local=True)
+                                                                  store_in_local=store_in_local)
 
     # mongo, audio_path, type, max_pause = 0.5
     text_grid, transcriptionFLAG = get_text_grids(mongo,
@@ -342,10 +367,11 @@ def saveoneaudiofile(mongo,
                                                   asr_model,
                                                   audio_file_path, transcription_type,
                                                   boundary_threshold,
-                                                  slice_threshold)
+                                                  slice_threshold,
+                                                  max_slice_size)
 
     # logger.debug('Final generated text grid', text_grid)
-    logger.debug('Final transcription flag', transcriptionFLAG)
+    logger.debug('Final transcription flag %s', transcriptionFLAG)
 
     new_audio_details["transcriptionFLAG"] = transcriptionFLAG
     new_audio_details["textGrid"] = text_grid
@@ -354,11 +380,13 @@ def saveoneaudiofile(mongo,
     # plogger.debug(new_audio_details)
 
     # save audio file details and speaker ID in projects collection
+    speaker_id_key_name = get_speaker_id_key_name(project_type)
+
     speakerIds = projects.find_one({'projectname': activeprojectname},
-                                   {'_id': 0, 'speakerIds': 1})
+                                   {'_id': 0, speaker_id_key_name: 1})
     # logger.debug(f"SPEAKER IDS: {speakerIds}")
     if len(speakerIds) != 0:
-        speakerIds = speakerIds['speakerIds']
+        speakerIds = speakerIds[speaker_id_key_name]
         if current_username in speakerIds:
             speakerIdskeylist = speakerIds[current_username]
             speakerIdskeylist.append(speakerId)
@@ -371,12 +399,13 @@ def saveoneaudiofile(mongo,
         }
         # logger.debug(speakerIds)
 
+    speaker_audioid_key_name = get_audiospeaker_id_key_name(project_type)
     speaker_audio_ids = projects.find_one({'projectname': activeprojectname},
-                                          {'_id': 0, 'speakersAudioIds': 1})
+                                          {'_id': 0, speaker_audioid_key_name: 1})
     # logger.debug(len(speaker_audio_ids))
     # logger.debug(speaker_audio_ids)
     if len(speaker_audio_ids) != 0:
-        speaker_audio_ids = speaker_audio_ids['speakersAudioIds']
+        speaker_audio_ids = speaker_audio_ids[speaker_audioid_key_name]
         # logger.debug('speaker_audio_ids', speaker_audio_ids)
         if speakerId in speaker_audio_ids:
             speaker_audio_idskeylist = speaker_audio_ids[speakerId]
@@ -395,8 +424,8 @@ def saveoneaudiofile(mongo,
     projects.update_one({'projectname': activeprojectname},
                         {'$set': {
                             'lastActiveId.'+current_username+'.'+speakerId+'.audioId':  audio_id,
-                            'speakerIds': speakerIds,
-                            'speakersAudioIds': speaker_audio_ids
+                            speaker_id_key_name: speakerIds,
+                            speaker_audioid_key_name: speaker_audio_ids
                         }})
     # update active speaker ID in userprojects collection
     projectinfo = userprojects.find_one({'username': current_username},
@@ -420,9 +449,13 @@ def saveoneaudiofile(mongo,
     # logger.debug('audiowaveform_audio_path', audiowaveform_audio_path)
     # audiowaveform_audio_path = os.path.join(audiowaveform_audio_path, updated_audio_filename)
 
-    audiowaveform_json = get_audio_waveform_json(
-        audiowaveform_json_dir_path, audio_json_parent_dir, updated_audio_filename)
-    new_audio_details['audioMetadata']['audiowaveform'] = audiowaveform_json
+    if get_audio_json:
+        # json_basedir = os.path.abspath(os.path.dirname(__file__))
+        # audiowaveform_json_dir_path = '/'.join(json_basedir.split('/')[:-1])
+        # audio_json_parent_dir = 'audiowaveform'
+        audiowaveform_json = get_audio_waveform_json(
+            audiowaveform_json_dir_path, audio_json_parent_dir, updated_audio_filename)
+        new_audio_details['audioMetadata']['audiowaveform'] = audiowaveform_json
 
     transcription_doc_id = transcriptions.insert_one(new_audio_details)
 
@@ -432,6 +465,26 @@ def saveoneaudiofile(mongo,
     #     logger.debug(e)
     #     flash(f"ERROR")
     #     return (False, '', '')
+
+
+def get_speaker_id_key_name(project_type):
+    speaker_id_key_name = ''
+    if project_type == 'crawling' or project_type == 'annotation':
+        speaker_id_key_name = 'sourceIds'
+    else:
+        speaker_id_key_name = 'speakerIds'
+
+    return speaker_id_key_name
+
+
+def get_audiospeaker_id_key_name(project_type):
+    speaker_id_key_name = ''
+    if project_type == 'crawling' or project_type == 'annotation':
+        speaker_id_key_name = 'sourceAudioIds'
+    else:
+        speaker_id_key_name = 'speakersAudioIds'
+
+    return speaker_id_key_name
 
 
 def createaudiowaveform(audiowaveform_audio_path, audiowaveform_json_path, audio_filename):
@@ -1459,9 +1512,10 @@ def get_audio_boundaries(model_params):
 def get_text_grids(mongo,
                    run_vad,
                    run_asr,
+                   split_into_smaller_chunks,
                    vad_model,
                    asr_model,
-                   audio_path, transcription_type, max_pause, max_new_file_pause):
+                   audio_path, transcription_type, max_pause, max_new_file_duration):
     text_grid = {
         "discourse": {},
         "sentence": {},
@@ -1477,7 +1531,7 @@ def get_text_grids(mongo,
     # of a model. We could store project-specific prefeerences here.
     # Currently it gives preference to local models and select the first
     # model in the list.
-    if run_vad or run_asr:
+    if run_vad or run_asr or split_into_smaller_chunks:
         if 'textGrid_boundary' in all_model_names:
             model_params = {
                 "audio_file": audio_path,
@@ -1547,12 +1601,13 @@ def save_audio_in_mongo_and_localFs(mongo,
                                                 audio_id,
                                                 'audioId')
         logger.debug('Audio saved path', saved_path)
+    else:
+        saved_path = ''
 
     return fs_file_id, saved_path
 
 
-def get_audio_id_filename(audiofile):
-    audio_filename = "no_filename"
+def get_audio_id_filename(audiofile, audio_filename="no_filename"):
     if audiofile['audiofile'].filename != '':
         audio_filename = audiofile['audiofile'].filename
     audio_id = 'A'+re.sub(r'[-: \.]', '', str(datetime.now()))

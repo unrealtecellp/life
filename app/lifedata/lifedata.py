@@ -440,6 +440,7 @@ def youtubecrawler():
             # logger.debug('%s', pformat(youtube_crawler_info['dataLinks'][0].split('\r\n')))
             api_key = youtube_crawler_info['youtubeAPIKey'][0]
             youtube_data_for = youtube_crawler_info['youtubeDataFor'][0]
+            youtube_data_type = youtube_crawler_info['youtubeDataType']
             data_links = {}
             # data_links_list = youtube_crawler_info['dataLinks'][0].split('\r\n')
             # data_links = {youtube_data_for: data_links_list}
@@ -478,7 +479,7 @@ def youtubecrawler():
             logger.debug("data_links: %s", pformat(data_links))
 
             logger.debug("Current active project name %s", activeprojectname)
-            youtubecrawl.run_youtube_crawler(projects_collection,
+            youtubecrawl.run_youtube_crawler(mongo, projects_collection,
                                              userprojects_collection,
                                              sourcedetails_collection,
                                              crawling_collection,
@@ -486,7 +487,8 @@ def youtubecrawler():
                                              current_username,
                                              activeprojectname,
                                              api_key,
-                                             data_links)
+                                             data_links,
+                                             download_items=youtube_data_type)
             flash("Crawling Complete.")
             return redirect(url_for("lifedata.crawler"))
     except:
@@ -530,9 +532,13 @@ def crawlerbrowse():
             active_source_id = ''
         total_records = 0
         if (active_source_id != ''):
+            source_data_types = sourceid_to_souremetadata.get_data_types(sourcedetails_collection,
+                                                                         active_source_id,
+                                                                         activeprojectname)
             total_records, crawled_data_list = crawled_data_details.get_n_crawled_data(crawling,
                                                                                        activeprojectname,
                                                                                        active_source_id)
+
         else:
             crawled_data_list = []
         # get crawled file src
@@ -551,6 +557,7 @@ def crawlerbrowse():
         new_data['crawlerDataFields'] = ['dataId', 'Data']
         new_data['sourceMetadata'] = source_metadata
         new_data['totalRecords'] = total_records
+        new_data['dataTypes'] = source_data_types
         # logger.debug('new_data: %s', pformat(new_data))
     except:
         logger.exception("")
@@ -579,10 +586,12 @@ def updatecrawlerbrowsetable():
         active_source_id = crawler_browse_info['activeSourceId']
         crawled_data_count = crawler_browse_info['crawledDataCount']
         crawled_data_browse_action = crawler_browse_info['browseActionSelectedOption']
+        data_type = crawler_browse_info['dataType']
         if (active_source_id != ''):
             total_records, crawled_data_list = crawled_data_details.get_n_crawled_data(crawling,
                                                                                        activeprojectname,
                                                                                        active_source_id,
+                                                                                       data_type=data_type,
                                                                                        start_from=0,
                                                                                        number_of_crawled_data=crawled_data_count,
                                                                                        crawled_data_delete_flag=crawled_data_browse_action)

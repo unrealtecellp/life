@@ -121,7 +121,9 @@ function createCrawlerBrowse(newData) {
     // console.log(activeSourceId)
     let crawlerDataFields = newData['crawlerDataFields']
     let crawlerData = newData['crawlerData']
+    let dataTypes = newData['dataTypes']
     crawlerCreateSelect2('sourceidsdropdown', sourceIds, activeSourceId, sourceMetadata, 'video_title');
+    crawlerCreateSelect2('datatypedropdown', dataTypes, 'text')
     crawlerCreateSelect2('sourcedatacountdropdown', [10, 20, 50], 10)
     if (shareMode >= 4) {
         createBrowseActions(projectOwner, currentUsername);
@@ -266,6 +268,7 @@ function crawlerBrowseActionViewData(dataInfo) {
 function getCrawlerBrowseInfo() {
     let activeSourceId = document.getElementById('sourceidsdropdown').value;
     let crawledDataCount = Number(document.getElementById('sourcedatacountdropdown').value);
+    let dataType = document.getElementById('datatypedropdown').value;
     let browseActionSelectedOption = '';
     try {
         browseActionSelectedOption = document.getElementById('browsedataactiondropdowns').value;
@@ -282,7 +285,8 @@ function getCrawlerBrowseInfo() {
     let crawlerBrowseInfo = {
         "activeSourceId": activeSourceId,
         "crawledDataCount": crawledDataCount,
-        "browseActionSelectedOption": browseActionSelectedOption
+        "browseActionSelectedOption": browseActionSelectedOption,
+        "dataType": dataType
     }
     // console.log(crawlerBrowseInfo);
 
