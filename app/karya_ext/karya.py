@@ -1209,7 +1209,7 @@ def update_speaker_ids():
 
 #     return render_template('karyaaudiobrowse.html', projectName=activeprojectname, data=data)
 
-
+'''creating table of audio files with realted details'''
 @karya_bp.route('/karyaaudiobrowse', methods=['GET', 'POST'])
 @login_required
 def karyaaudiobrowse():
@@ -1260,7 +1260,7 @@ def karyaaudiobrowse():
 
 
 
-
+'''Delete selected karya audio id and make transcription deleteflag 1'''
 @karya_bp.route('/karyadeleteaudiobrowse', methods=['GET', 'POST'])
 @login_required
 def karyadeleteaudiobrowse():
