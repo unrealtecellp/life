@@ -318,6 +318,7 @@ def saveoneaudiofile(mongo,
     # save audio file details in transcriptions collection
     if sourceId == '':
         sourceId = speakerId
+        # lifesourceid = speakerId
 
     new_audio_details = {
         "username": projectowner,
@@ -327,8 +328,8 @@ def saveoneaudiofile(mongo,
         "audioverifiedFLAG": 0,
         "prompt": "",
         "dataType": data_type,
+        "lifesourceid": sourceId,
         "speakerId": speakerId,
-        "sourceId": sourceId,
         "additionalInfo": {},
         "audioMetadata": {
             "verificationReport": {},

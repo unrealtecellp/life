@@ -94,3 +94,17 @@ function fetchVerAccessCodeList(fetchveraccesscodelist) {
       allowClear: true
   });
 }
+
+
+function fetchRecAccessCodeList(fetchveraccesscodelist) {
+  // console.log(fetchaccesscodelist);
+  var fetchveraccodeform = ''
+  fetchveraccodeform += createSelectElement('recording_access_code_list', fetchrecaccesscodelist, '', [], 'fetchrecaccodeselect')
+
+  $('#pirecaccesscode').html(fetchrecaccodeform);
+  $('.fetchrecaccodeselect').select2({
+      placeholder: 'select',
+      // data: usersList,
+      allowClear: true
+  });
+}

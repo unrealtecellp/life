@@ -123,6 +123,11 @@ def home_insert():
                                                       current_username,
                                                       activeprojectname)
 
+    activeprojectname = getactiveprojectname.getactiveprojectname(
+        current_username, userprojects)
+    projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
+    projectType = getprojecttype.getprojecttype(projects, activeprojectname)
+    print("projectType : ", projectType)
     # Find documents without "acodedeleteFlag" field
     query = {"acodedeleteFlag": {"$exists": False}}
     documents = accesscodedetails.find(query)
@@ -143,6 +148,9 @@ def home_insert():
     verification_access_code_list = access_code_management.get_verification_access_code_list(
         accesscodedetails, activeprojectname, current_username)
 
+    recording_access_code_list = access_code_management.get_recording_access_code_list(
+        accesscodedetails, activeprojectname, current_username)
+
     # Add condition to check if the lists are empty
     # if not verification_access_code_list:
     #     verification_access_code_list = [""]
@@ -151,22 +159,36 @@ def home_insert():
 
     # print(verification_access_code_list)
 
-    karya_speaker_ids = karya_speaker_management.get_all_karya_speaker_ids(
-        accesscodedetails, activeprojectname)
-    activeprojectname = getactiveprojectname.getactiveprojectname(
-        current_username, userprojects)
-    projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
-    projectType = getprojecttype.getprojecttype(projects, activeprojectname)
-    print("projectType : ", projectType)
+    # if projectType == "validation":
+    karya_speaker_ids = karya_speaker_management.get_recording_karya_speaker_ids(
+        accesscodedetails, activeprojectname, include_fetch=True)
+    # else:
+    #     karya_speaker_ids = karya_speaker_management.get_recording_karya_speaker_ids(
+    # accesscodedetails, activeprojectname, include_fetch=True)
 
     if projectType == "transcriptions":
-        dropdown_dict = {"newTranscription": "New Transcription",
-                         "completedVerification": "Completed Verification"}
+        dropdown_dict = {
+            "newTranscription": "New Transcription",
+            "completedVerification": "Completed Verification",
+            "newVerification": "New Verification"
+        }
     elif projectType == "validation":
-        dropdown_dict = {"completedVerification": "Completed Verification",
-                         "newVerification": "New Verification"}
+        dropdown_dict = {
+            "completedVerification": "Completed Verification",
+            "newVerification": "New Verification"
+        }
+    elif projectType == "recordings":
+        dropdown_dict = {
+            "completedRecordings": "Completed Recordings",
+            "newTranscription": "New Transcription",
+            "completedVerification": "Completed Verification",
+            "newVerification": "New Verification"
+        }
     else:
-        dropdown_dict = {"completedRecordings": "Completed Recordings"}
+        dropdown_dict = {
+            "newVerification": "New Verification",
+            "completedRecordings": "Completed Recordings"
+        }
 
     dropdown_list = [{"value": key, "name": value}
                      for key, value in dropdown_dict.items()]
@@ -177,6 +199,7 @@ def home_insert():
                            fetchaccesscodelist=access_code_list,
                            transcription_access_code_list=transcription_access_code_list,
                            verification_access_code_list=verification_access_code_list,
+                           recording_access_code_list=recording_access_code_list,
                            karya_speaker_ids=karya_speaker_ids,
                            dropdown_list=dropdown_list)
 
@@ -853,6 +876,8 @@ def fetch_karya_audio():
             access_code = request.form.get('verificationDropdown')
         elif access_code_task == "newTranscription":
             access_code = request.form.get('transcriptionDropdown')
+        elif access_code_task == "completedRecordings":
+            access_code = request.form.get('recordingDropdown')
 
         for_worker_id = request.form.get("speaker_id")
         phone_number = request.form.get("mobile_number")
@@ -874,30 +899,45 @@ def fetch_karya_audio():
             return redirect(url_for('karya_bp.home_insert'))
         #############################################################################################
 
-        if project_type == 'validation' and access_code_task == "newVerification":
-            assignment_url = 'https://karyanltmbox.centralindia.cloudapp.azure.com/assignments?type=new&from=2021-05-11T07:23:40.654Z'
-            print("the project type is ", project_type,
-                  "and", access_code_task, "and", " New url")
+        if project_type == 'validation' or project_type == 'transcriptions' or project_type == 'recordings':
+            if "new" in access_code_task:
+                assignment_url = 'https://karyanltmbox.centralindia.cloudapp.azure.com/assignments?type=new&from=2021-05-11T07:23:40.654Z'
+                print("the project type is ", project_type,
+                      "and", access_code_task, "and", " New url")
+            elif "completed" in access_code_task:
+                assignment_url = 'https://karyanltmbox.centralindia.cloudapp.azure.com/assignments?type=verified&includemt=true&from=2021-05-11T07:23:40.654Z'
+                print("the project type is ", project_type, "and",
+                      access_code_task, "and", "verified url")
 
-        elif project_type == 'validation' and access_code_task == "completedVerification":
-            assignment_url = 'https://karyanltmbox.centralindia.cloudapp.azure.com/assignments?type=verified&includemt=true&from=2021-05-11T07:23:40.654Z'
-            print("the project type is ", project_type, "and",
-                  access_code_task, "and", "verified url")
+        # if project_type == 'validation' and access_code_task == "newVerification":
+        #     assignment_url = 'https://karyanltmbox.centralindia.cloudapp.azure.com/assignments?type=new&from=2021-05-11T07:23:40.654Z'
+        #     print("the project type is ", project_type,
+        #           "and", access_code_task, "and", " New url")
 
-        elif project_type == 'transcriptions' and access_code_task == "newTranscription":
-            assignment_url = 'https://karyanltmbox.centralindia.cloudapp.azure.com/assignments?type=new&from=2021-05-11T07:23:40.654Z'
-            print("the project type is ", project_type,
-                  "and", access_code_task, "and", "New url")
+        # elif project_type == 'validation' and access_code_task == "completedVerification":
+        #     assignment_url = 'https://karyanltmbox.centralindia.cloudapp.azure.com/assignments?type=verified&includemt=true&from=2021-05-11T07:23:40.654Z'
+        #     print("the project type is ", project_type, "and",
+        #           access_code_task, "and", "verified url")
 
-        elif project_type == 'transcriptions' and access_code_task == "completedVerification":
-            assignment_url = 'https://karyanltmbox.centralindia.cloudapp.azure.com/assignments?type=verified&includemt=true&from=2021-05-11T07:23:40.654Z'
-            print("the project type is ", project_type, "and",
-                  access_code_task, "and", "verified url")
+        # elif project_type == 'transcriptions' and access_code_task == "newTranscription":
+        #     assignment_url = 'https://karyanltmbox.centralindia.cloudapp.azure.com/assignments?type=new&from=2021-05-11T07:23:40.654Z'
+        #     print("the project type is ", project_type,
+        #           "and", access_code_task, "and", "New url")
 
-        elif project_type == 'transcriptions' and access_code_task == "completedRecording":
-            assignment_url = 'https://karyanltmbox.centralindia.cloudapp.azure.com/assignments?type=verified&includemt=true&from=2021-05-11T07:23:40.654Z'
-            print("the project type is ", project_type, "and",
-                  access_code_task, "and", "verified url")
+        # elif project_type == 'transcriptions' and access_code_task == "completedVerification":
+        #     assignment_url = 'https://karyanltmbox.centralindia.cloudapp.azure.com/assignments?type=verified&includemt=true&from=2021-05-11T07:23:40.654Z'
+        #     print("the project type is ", project_type, "and",
+        #           access_code_task, "and", "verified url")
+
+        # elif project_type == 'transcriptions' and access_code_task == "completedRecordings":
+        #     assignment_url = 'https://karyanltmbox.centralindia.cloudapp.azure.com/assignments?type=verified&includemt=true&from=2021-05-11T07:23:40.654Z'
+        #     print("the project type is ", project_type, "and",
+        #           access_code_task, "and", "verified url")
+
+        # elif project_type == 'recordings' and access_code_task == "completedRecordings":
+        #     assignment_url = 'https://karyanltmbox.centralindia.cloudapp.azure.com/assignments?type=verified&includemt=true&from=2021-05-11T07:23:40.654Z'
+        #     print("the project type is ", project_type, "and",
+        #           access_code_task, "and", "verified url")
 
         else:
             flash(
@@ -905,6 +945,7 @@ def fetch_karya_audio():
             return redirect(url_for('karya_bp.home_insert'))
 
         ###############################   Get Assignments    ########################################
+
         r_j, hederr = karya_api_access.get_all_karya_assignments(
             verification_details, assignment_url)
         # r_j, hederr = karya_api_access.get_all_karya_assignments(
@@ -948,11 +989,19 @@ def fetch_karya_audio():
 
         ##############################  File ID and sentence mapping   #################################
         '''worker ID'''
-        micro_task_ids, workerId_list, sentence_list, karya_audio_report, filename_list, fileID_list = karya_api_access.get_assignment_metadata(
-            accesscodedetails, activeprojectname,
-            access_code,
-            r_j, for_worker_id
-        )
+
+        if "completedRecordings" in access_code_task:
+            micro_task_ids, workerId_list, sentence_list, karya_audio_report, filename_list, fileID_list = karya_api_access.get_assignment_metadata_recording(
+                accesscodedetails, activeprojectname,
+                access_code,
+                r_j, for_worker_id
+            )
+        else:
+            micro_task_ids, workerId_list, sentence_list, karya_audio_report, filename_list, fileID_list = karya_api_access.get_assignment_metadata(
+                accesscodedetails, activeprojectname,
+                access_code,
+                r_j, for_worker_id
+            )
 
         fileid_sentence_map = karya_api_access.get_fileid_sentence_mapping(
             fileID_list, workerId_list, sentence_list, karya_audio_report

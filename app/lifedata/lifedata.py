@@ -535,12 +535,39 @@ def crawlerbrowse():
             source_data_types = sourceid_to_souremetadata.get_data_types(sourcedetails_collection,
                                                                          active_source_id,
                                                                          activeprojectname)
+
+            logger.debug("Source Data Types %s", source_data_types)
+
+            if 'text' in source_data_types:
+                default_data_type = 'text'
+            elif 'video' in source_data_types:
+                default_data_type = 'video'
+            elif 'audio' in source_data_types:
+                default_data_type = 'audio'
+            else:
+                default_data_type = 'text'
+
+            logger.debug("Default Data Type %s", default_data_type)
+
             total_records, crawled_data_list = crawled_data_details.get_n_crawled_data(crawling,
                                                                                        activeprojectname,
-                                                                                       active_source_id)
+                                                                                       active_source_id,
+                                                                                       data_type=default_data_type)
 
         else:
             crawled_data_list = []
+
+        if default_data_type == 'audio':
+            audio_filename = crawled_data_list['audioFilename']
+            crawled_data_list['Audio File'] = url_for(
+                'retrieve', filename=audio_filename)
+
+        if default_data_type == 'video':
+            video_filename = crawled_data_list['videoFilename']
+            crawled_data_list['Video File'] = url_for(
+                'retrieve', filename=video_filename)
+
+        logger.debug("Crawled data list %s", crawled_data_list)
         # get crawled file src
         # new_crawled_data_list = []
         # for crawled_data in crawled_data_list:
@@ -558,6 +585,7 @@ def crawlerbrowse():
         new_data['sourceMetadata'] = source_metadata
         new_data['totalRecords'] = total_records
         new_data['dataTypes'] = source_data_types
+        new_data['defaultDataType'] = default_data_type
         # logger.debug('new_data: %s', pformat(new_data))
     except:
         logger.exception("")
@@ -597,6 +625,17 @@ def updatecrawlerbrowsetable():
                                                                                        crawled_data_delete_flag=crawled_data_browse_action)
         else:
             crawled_data_list = []
+
+        if data_type == 'audio':
+            audio_filename = crawled_data_list['audioFilename']
+            crawled_data_list['Audio File'] = url_for(
+                'retrieve', filename=audio_filename)
+
+        if data_type == 'video':
+            video_filename = crawled_data_list['videoFilename']
+            crawled_data_list['Video File'] = url_for(
+                'retrieve', filename=video_filename)
+            # crawled_data_list.append(new_audio_data)
         # logger.debug('crawler_data_list: %s', pformat(crawler_data_list))
         # get crawler file src
         # new_crawled_data_list = []
@@ -615,7 +654,8 @@ def updatecrawlerbrowsetable():
     return jsonify(crawledDataFields=crawler_data_fields,
                    crawledData=crawled_data_list,
                    shareMode=share_mode,
-                   totalRecords=total_records)
+                   totalRecords=total_records,
+                   dataType=data_type)
 
 
 @lifedata.route('/crawlerbrowseaction', methods=['GET', 'POST'])
@@ -722,6 +762,7 @@ def crawlerbrowsechangepage():
         activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
                                                                       userprojects)
         # logger.debug(crawler_browse_info['activeSourceId'])
+        data_type = crawler_browse_info['dataType']
         active_source_id = crawler_browse_info['activeSourceId']
         crawled_data_count = crawler_browse_info['crawledDataCount']
         crawled_data_browse_action = crawler_browse_info['browseActionSelectedOption']
@@ -735,6 +776,7 @@ def crawlerbrowsechangepage():
             total_records, crawled_data_list = crawled_data_details.get_n_crawled_data(crawling,
                                                                                        activeprojectname,
                                                                                        active_source_id,
+                                                                                       data_type=data_type,
                                                                                        start_from=start_from,
                                                                                        number_of_crawled_data=number_of_crawled_data,
                                                                                        crawled_data_delete_flag=crawled_data_browse_action)
@@ -752,7 +794,8 @@ def crawlerbrowsechangepage():
                    crawledData=crawled_data_list,
                    shareMode=share_mode,
                    totalRecords=total_records,
-                   activePage=page_id)
+                   activePage=page_id,
+                   dataType=data_type)
 
 
 @lifedata.route('/getIdList', methods=['GET', 'POST'])

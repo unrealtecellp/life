@@ -122,7 +122,7 @@ def saveonevideofile(mongo,
         "prompt": "",
         "dataType": data_type,
         "speakerId": speakerId,
-        "sourceId": sourceId,
+        "lifesourceid": sourceId,
         "additionalInfo": {},
         "videoMetadata": {
             "verificationReport": {},

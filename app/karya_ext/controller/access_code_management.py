@@ -7,16 +7,17 @@ from app.controller import (
 
 logger = life_logging.get_logger()
 
+
 def get_access_code_list(accesscodedetails,
-                            activeprojectname,
-                            current_username):
+                         activeprojectname,
+                         current_username):
     fetch_access_codes = accesscodedetails.find({'projectname': activeprojectname,
-                                                    'fetchData': 1},
-                                                    {'_id': 0,
-                                                        'karyaaccesscode': 1,
-                                                        'assignedBy': 1,
-                                                        'uploadedBy': 1})
-                                                
+                                                 'fetchData': 1},
+                                                {'_id': 0,
+                                                 'karyaaccesscode': 1,
+                                                 'assignedBy': 1,
+                                                 'uploadedBy': 1})
+
     access_code_list = []
 
     for fetch_access_code in fetch_access_codes:
@@ -26,22 +27,23 @@ def get_access_code_list(accesscodedetails,
                 access_code_list.append(fetch_access_code['karyaaccesscode'])
             else:
                 if (current_username == fetch_access_code['uploadedBy']):
-                    access_code_list.append(fetch_access_code['karyaaccesscode'])
-    
+                    access_code_list.append(
+                        fetch_access_code['karyaaccesscode'])
+
     return access_code_list
 
 
 def get_transcription_access_code_list(accesscodedetails,
-                            activeprojectname,
-                            current_username):
+                                       activeprojectname,
+                                       current_username):
     fetch_access_codes = accesscodedetails.find({'projectname': activeprojectname,
-                                                    'fetchData': 1,
-                                                    'task':'SPEECH_TRANSCRIPTION'},
-                                                    {'_id': 0,
-                                                        'karyaaccesscode': 1,
-                                                        'assignedBy': 1,
-                                                        'uploadedBy': 1})
-                                                
+                                                 'fetchData': 1,
+                                                 'task': 'SPEECH_TRANSCRIPTION'},
+                                                {'_id': 0,
+                                                 'karyaaccesscode': 1,
+                                                 'assignedBy': 1,
+                                                 'uploadedBy': 1})
+
     access_code_list = []
 
     for fetch_access_code in fetch_access_codes:
@@ -51,23 +53,23 @@ def get_transcription_access_code_list(accesscodedetails,
                 access_code_list.append(fetch_access_code['karyaaccesscode'])
             else:
                 if (current_username == fetch_access_code['uploadedBy']):
-                    access_code_list.append(fetch_access_code['karyaaccesscode'])
-    
-    return access_code_list
+                    access_code_list.append(
+                        fetch_access_code['karyaaccesscode'])
 
+    return access_code_list
 
 
 def get_verification_access_code_list(accesscodedetails,
-                            activeprojectname,
-                            current_username):
+                                      activeprojectname,
+                                      current_username):
     fetch_access_codes = accesscodedetails.find({'projectname': activeprojectname,
-                                                    'fetchData': 1,
-                                                    'task':'SPEECH_VERIFICATION'},
-                                                    {'_id': 0,
-                                                        'karyaaccesscode': 1,
-                                                        'assignedBy': 1,
-                                                        'uploadedBy': 1})
-                                                
+                                                 'fetchData': 1,
+                                                 'task': 'SPEECH_VERIFICATION'},
+                                                {'_id': 0,
+                                                 'karyaaccesscode': 1,
+                                                 'assignedBy': 1,
+                                                 'uploadedBy': 1})
+
     access_code_list = []
 
     for fetch_access_code in fetch_access_codes:
@@ -77,11 +79,36 @@ def get_verification_access_code_list(accesscodedetails,
                 access_code_list.append(fetch_access_code['karyaaccesscode'])
             else:
                 if (current_username == fetch_access_code['uploadedBy']):
-                    access_code_list.append(fetch_access_code['karyaaccesscode'])
-    
+                    access_code_list.append(
+                        fetch_access_code['karyaaccesscode'])
+
     return access_code_list
 
 
+def get_recording_access_code_list(accesscodedetails,
+                                   activeprojectname,
+                                   current_username):
+    fetch_access_codes = accesscodedetails.find({'projectname': activeprojectname,
+                                                 'fetchData': 1,
+                                                 'task': 'SPEECH_DATA_COLLECTION'},
+                                                {'_id': 0,
+                                                 'karyaaccesscode': 1,
+                                                 'assignedBy': 1,
+                                                 'uploadedBy': 1})
+
+    access_code_list = []
+
+    for fetch_access_code in fetch_access_codes:
+        # print ('Current access code', fetch_access_code)
+        if (fetch_access_code['assignedBy'] != ''):
+            if (fetch_access_code['assignedBy'] == current_username):
+                access_code_list.append(fetch_access_code['karyaaccesscode'])
+            else:
+                if (current_username == fetch_access_code['uploadedBy']):
+                    access_code_list.append(
+                        fetch_access_code['karyaaccesscode'])
+
+    return access_code_list
 
 
 def get_access_code_metadata_for_form(projects, projectsform, project_name, project_type, derived_from_project_type, derivedFromProjectName):
@@ -95,63 +122,66 @@ def get_access_code_metadata_for_form(projects, projectsform, project_name, proj
     #             derivedFromProjectName)
     try:
         if (project_type == 'questionnaires'):
-            acesscodemetadata = get_access_code_metadata_questionnaire_for_form(projectsform, project_name)
+            acesscodemetadata = get_access_code_metadata_questionnaire_for_form(
+                projectsform, project_name)
         if (project_type == 'transcriptions'):
-            acesscodemetadata = get_access_code_metadata_transcription_for_form(projects, projectsform, project_name, derived_from_project_type, derivedFromProjectName)
+            acesscodemetadata = get_access_code_metadata_transcription_for_form(
+                projects, projectsform, project_name, derived_from_project_type, derivedFromProjectName)
         if (project_type == 'recordings'):
-            acesscodemetadata = get_access_code_metadata_transcription_for_form(projects, projectsform, project_name, derived_from_project_type, derivedFromProjectName)
+            acesscodemetadata = get_access_code_metadata_transcription_for_form(
+                projects, projectsform, project_name, derived_from_project_type, derivedFromProjectName)
 
         return acesscodemetadata
     except:
         logger.exception("")
 
 
-
 def get_access_code_metadata_transcription_for_form(projects, projectsform, project_name, derived_from_project_type, derivedFromProjectName):
     langscript = []
-    projectform = projectsform.find_one({"projectname" : project_name})
+    projectform = projectsform.find_one({"projectname": project_name})
     langscript.append(projectform["Sentence Language"][0])
-    
-    derivedFromProject = projects.find_one({"projectname" : project_name},
-                                            {"_id": 0, "derivedFromProject": 1})
+
+    derivedFromProject = projects.find_one({"projectname": project_name},
+                                           {"_id": 0, "derivedFromProject": 1})
     derivedFromProjectName = derivedFromProject['derivedFromProject'][0]
-    derived_from_project_type = getprojecttype.getprojecttype(projects, derivedFromProjectName)
+    derived_from_project_type = getprojecttype.getprojecttype(
+        projects, derivedFromProjectName)
 
     if (derived_from_project_type == "questionnaires"):
-        derivefromprojectform = projectsform.find_one({"projectname" : derivedFromProjectName})
-    
+        derivefromprojectform = projectsform.find_one(
+            {"projectname": derivedFromProjectName})
+
         domain = derivefromprojectform["Domain"][1]
         elicitation = derivefromprojectform["Elicitation Method"][1]
 
     acesscodemetadata = {
-                                "langscript": langscript,
-                                "domain": domain,
-                                "elicitation": elicitation
-                                }
+        "langscript": langscript,
+        "domain": domain,
+        "elicitation": elicitation
+    }
 
     return acesscodemetadata
-
 
 
 def get_access_code_metadata_questionnaire_for_form(projectsform, project_name):
     langscript = []
-    projectform = projectsform.find_one({"projectname" : project_name})  #domain, elictationmethod ,langscript-[1]
+    # domain, elictationmethod ,langscript-[1]
+    projectform = projectsform.find_one({"projectname": project_name})
     langscripts = projectform["Prompt Type"][1]
-    
+
     for lang_script, lang_info in langscripts.items():
         if ('Audio' in lang_info):
             langscript.append(lang_script)
-    
+
     domain = projectform["Domain"][1]
     elicitation = projectform["Elicitation Method"][1]
     acesscodemetadata = {
-                                "langscript": langscript,
-                                "domain": domain,
-                                "elicitation": elicitation
-                                }
+        "langscript": langscript,
+        "domain": domain,
+        "elicitation": elicitation
+    }
 
     return acesscodemetadata
-
 
 
 def get_upload_df(access_code_file):
@@ -164,8 +194,7 @@ def get_upload_df(access_code_file):
     return data
 
 
-
-def upload_access_code_metadata_from_file (
+def upload_access_code_metadata_from_file(
     karyaaccesscodedetails,
     activeprojectname,
     current_username,
@@ -178,54 +207,54 @@ def upload_access_code_metadata_from_file (
     data_df,
 
 ):
-    for index,item in data_df.iterrows(): 
+    for index, item in data_df.iterrows():
         current_dt = str(datetime.now()).replace('.', ':')
         checkaccesscode = item["access_code"]
         accesscode_exist = karyaaccesscodedetails.find_one(
-                                                            {
-                                                                "projectname": activeprojectname,
-                                                                "karyaaccesscode": checkaccesscode
-                                                            }
-                                                        )
-        if  accesscode_exist is not None: continue
-        
+            {
+                "projectname": activeprojectname,
+                "karyaaccesscode": checkaccesscode
+            }
+        )
+        if accesscode_exist is not None:
+            continue
 
         insert_dict = {
-                        "karyaspeakerid": item["id"], "karyaaccesscode": item["access_code"], "lifespeakerid": "", 
-                        "task":task,"language": language, "domain": domain, 
-                        "phase":phase, "elicitationmethod":elicitationmethod, "projectname": activeprojectname,
-                        "uploadedBy":current_username,
-                        "assignedBy":"",
-                        "current": {"workerMetadata": {"name": "", "agegroup": "", "gender": "", 
-                                                "educationlevel": "", "educationmediumupto12": "", 
-                                                "educationmediumafter12": "", "speakerspeaklanguage" :"", 
-                                                "recordingplace": "", "typeofrecordingplace" : "", 
-                                                "activeAccessCode": ""}, "updatedBy":"","current_date":current_dt},
-                        "previous": {},
-                        "fetchData": fetch_data,
-                        "karyafetchedaudios":[],
-                        "isActive": 0,
-                        "additionalInfo": {}
-                    }
+            "karyaspeakerid": item["id"], "karyaaccesscode": item["access_code"], "lifespeakerid": "",
+            "task": task, "language": language, "domain": domain,
+            "phase": phase, "elicitationmethod": elicitationmethod, "projectname": activeprojectname,
+            "uploadedBy": current_username,
+            "assignedBy": "",
+            "current": {"workerMetadata": {"name": "", "agegroup": "", "gender": "",
+                                                       "educationlevel": "", "educationmediumupto12": "",
+                                                       "educationmediumafter12": "", "speakerspeaklanguage": "",
+                                                       "recordingplace": "", "typeofrecordingplace": "",
+                                                       "activeAccessCode": ""}, "updatedBy": "", "current_date": current_dt},
+            "previous": {},
+            "fetchData": fetch_data,
+            "karyafetchedaudios": [],
+            "isActive": 0,
+            "additionalInfo": {}
+        }
         return_obj = karyaaccesscodedetails.insert_one(insert_dict)
         # datafromdb = karyaaccesscodedetails.find({},{"_id" :0})
     return return_obj
 
 
 def get_new_accesscode_speakerid(
-                accesscodedetails,
-                activeprojectname,
-                accesscodefor,
-                task,
-                domain,
-                elicitationmethod,
-                language
-                ):
-    
-    new_acode_spkrid = accesscodedetails.find_one({"isActive":0, "projectname":activeprojectname, 
-                                "fetchData":accesscodefor, "task":task, 
-                                "domain":domain, "elicitationmethod":elicitationmethod, 
-                                "language":language},{"karyaspeakerid":1,"karyaaccesscode":1 , "_id" :0})
+    accesscodedetails,
+    activeprojectname,
+    accesscodefor,
+    task,
+    domain,
+    elicitationmethod,
+    language
+):
+
+    new_acode_spkrid = accesscodedetails.find_one({"isActive": 0, "projectname": activeprojectname,
+                                                   "fetchData": accesscodefor, "task": task,
+                                                   "domain": domain, "elicitationmethod": elicitationmethod,
+                                                   "language": language}, {"karyaspeakerid": 1, "karyaaccesscode": 1, "_id": 0})
 
     try:
         if new_acode_spkrid is not None:
@@ -238,8 +267,7 @@ def get_new_accesscode_speakerid(
         speakerid = ''
         acode = ''
 
-    return speakerid, acode 
-
+    return speakerid, acode
 
 
 def add_access_code_metadata(
@@ -258,30 +286,30 @@ def add_access_code_metadata(
     por,
     toc
 ):
-    
-    renameInFormDOB = fage.replace("-","")    
-    renameInForm = fname.replace(" ","")
+
+    renameInFormDOB = fage.replace("-", "")
+    renameInForm = fname.replace(" ", "")
     lowerRenameInForm = renameInForm.lower()
-    renameDOB =  "".join([lowerRenameInForm,renameInFormDOB])
-    renameCode ="_".join([renameDOB,karyaspeakerid])
+    renameDOB = "".join([lowerRenameInForm, renameInFormDOB])
+    renameCode = "_".join([renameDOB, karyaspeakerid])
 
     update_data = {"lifespeakerid": renameCode,
-                            "assignedBy" :  current_username, 
-                            "current.updatedBy" :  current_username,
-                            "current.workerMetadata.name": fname, 
-                            "current.workerMetadata.agegroup": fage, 
-                            "current.workerMetadata.gender": fgender,
-                            "current.workerMetadata.educationlevel": educlvl,
-                            "current.workerMetadata.educationmediumupto12": moe12,
-                            "current.workerMetadata.educationmediumafter12": moea12,
-                            "current.workerMetadata.speakerspeaklanguage": sols,
-                            "current.workerMetadata.recordingplace": por,
-                            "current.workerMetadata.typeofrecordingplace": toc,
-                            "isActive": 1}
+                   "assignedBy":  current_username,
+                   "current.updatedBy":  current_username,
+                   "current.workerMetadata.name": fname,
+                   "current.workerMetadata.agegroup": fage,
+                   "current.workerMetadata.gender": fgender,
+                   "current.workerMetadata.educationlevel": educlvl,
+                   "current.workerMetadata.educationmediumupto12": moe12,
+                   "current.workerMetadata.educationmediumafter12": moea12,
+                   "current.workerMetadata.speakerspeaklanguage": sols,
+                   "current.workerMetadata.recordingplace": por,
+                   "current.workerMetadata.typeofrecordingplace": toc,
+                   "isActive": 1}
 
     accesscodedetails.update_one({"karyaaccesscode": karyaaccesscode, "projectname": activeprojectname},
-                        {"$set": update_data}
-                        )
+                                 {"$set": update_data}
+                                 )
 
 
 def update_access_code_metadata(
@@ -298,32 +326,33 @@ def update_access_code_metadata(
     toc
 ):
 
-    update_data = {"current.updatedBy" :  current_username,
-                                "current.workerMetadata.gender": fgender,
-                                    "current.workerMetadata.educationlevel": educlvl,
-                                    "current.workerMetadata.educationmediumupto12": moe12,
-                                    "current.workerMetadata.educationmediumafter12": moea12,
-                                    "current.workerMetadata.speakerspeaklanguage": sols,
-                                    "current.workerMetadata.recordingplace": por,
-                                    "current.workerMetadata.typeofrecordingplace": toc,
-                                    "isActive": 1}   
+    update_data = {"current.updatedBy":  current_username,
+                   "current.workerMetadata.gender": fgender,
+                   "current.workerMetadata.educationlevel": educlvl,
+                   "current.workerMetadata.educationmediumupto12": moe12,
+                   "current.workerMetadata.educationmediumafter12": moea12,
+                   "current.workerMetadata.speakerspeaklanguage": sols,
+                   "current.workerMetadata.recordingplace": por,
+                   "current.workerMetadata.typeofrecordingplace": toc,
+                   "isActive": 1}
     previous_speakerdetails = accesscodedetails.find_one({"karyaaccesscode": accesscode, "projectname": activeprojectname},
-                                        {"current.workerMetadata": 1, "current.updatedBy":1, "_id": 0,})
+                                                         {"current.workerMetadata": 1, "current.updatedBy": 1, "_id": 0, })
 
-    
-    date_of_modified = str(datetime.now()).replace(".", ":" )
+    date_of_modified = str(datetime.now()).replace(".", ":")
 
     update_old_data = {"previous."+date_of_modified+".workerMetadata.gender": previous_speakerdetails["current"]["workerMetadata"]["gender"],
-                                            "previous."+date_of_modified+".workerMetadata.educationlevel": previous_speakerdetails["current"]["workerMetadata"]["educationlevel"],
-                                            "previous."+date_of_modified+".workerMetadata.educationmediumupto12": previous_speakerdetails["current"]["workerMetadata"]["educationmediumupto12"],
-                                            "previous."+date_of_modified+".workerMetadata.educationmediumafter12": previous_speakerdetails["current"]["workerMetadata"]["educationmediumafter12"],
-                                            "previous."+date_of_modified+".workerMetadata.speakerspeaklanguage": previous_speakerdetails["current"]["workerMetadata"]["speakerspeaklanguage"],
-                                            "previous."+date_of_modified+".workerMetadata.recordingplace": previous_speakerdetails["current"]["workerMetadata"]["recordingplace"],
-                                            "previous."+date_of_modified+".updatedBy" : previous_speakerdetails["current"]["updatedBy"]
-                                            }
+                       "previous."+date_of_modified+".workerMetadata.educationlevel": previous_speakerdetails["current"]["workerMetadata"]["educationlevel"],
+                       "previous."+date_of_modified+".workerMetadata.educationmediumupto12": previous_speakerdetails["current"]["workerMetadata"]["educationmediumupto12"],
+                       "previous."+date_of_modified+".workerMetadata.educationmediumafter12": previous_speakerdetails["current"]["workerMetadata"]["educationmediumafter12"],
+                       "previous."+date_of_modified+".workerMetadata.speakerspeaklanguage": previous_speakerdetails["current"]["workerMetadata"]["speakerspeaklanguage"],
+                       "previous."+date_of_modified+".workerMetadata.recordingplace": previous_speakerdetails["current"]["workerMetadata"]["recordingplace"],
+                       "previous."+date_of_modified+".updatedBy": previous_speakerdetails["current"]["updatedBy"]
+                       }
 
-    accesscodedetails.update_one({"karyaaccesscode": accesscode, "projectname": activeprojectname}, {"$set": update_old_data}) # Edit_old_user_info
-    accesscodedetails.update_one({"karyaaccesscode": accesscode, "projectname": activeprojectname}, {"$set": update_data}) #new_user_info
+    accesscodedetails.update_one({"karyaaccesscode": accesscode, "projectname": activeprojectname}, {
+                                 "$set": update_old_data})  # Edit_old_user_info
+    accesscodedetails.update_one({"karyaaccesscode": accesscode, "projectname": activeprojectname}, {
+                                 "$set": update_data})  # new_user_info
 
 
 def get_access_code_metadata(
@@ -335,37 +364,37 @@ def get_access_code_metadata(
 ):
     karyaaccesscodedetails = ''
     if share_level >= all_data_share_level:
-        karyaaccesscodedetails = accesscode_info.find({"isActive":1, "projectname": activeprojectname},
-                                                    {
-                                                        "karyaaccesscode":1, 
-                                                        "lifespeakerid":1,
-                                                        "task": 1,
-                                                        "fetchData": 1,
-                                                        "assignedBy": 1,
-                                                        "current.workerMetadata.name" :1,
-                                                        "current.workerMetadata.agegroup":1,
-                                                        "current.workerMetadata.gender":1,
-                                                        "domain": 1,
-                                                        "elicitationmethod": 1,
-                                                        "_id" :0
-                                                    }
-                                                )
+        karyaaccesscodedetails = accesscode_info.find({"isActive": 1, "projectname": activeprojectname},
+                                                      {
+            "karyaaccesscode": 1,
+            "lifespeakerid": 1,
+            "task": 1,
+            "fetchData": 1,
+            "assignedBy": 1,
+            "current.workerMetadata.name": 1,
+            "current.workerMetadata.agegroup": 1,
+            "current.workerMetadata.gender": 1,
+            "domain": 1,
+            "elicitationmethod": 1,
+            "_id": 0
+        }
+        )
     else:
-        karyaaccesscodedetails = accesscode_info.find({"isActive":1, "projectname": activeprojectname, "assignedBy": current_username},
-                                                    {
-                                                        "karyaaccesscode":1, 
-                                                        "lifespeakerid":1,
-                                                        "task": 1,
-                                                        "fetchData": 1,
-                                                        "assignedBy": 1,
-                                                        "current.workerMetadata.name" :1,
-                                                        "current.workerMetadata.agegroup":1,
-                                                        "current.workerMetadata.gender":1,
-                                                        "domain": 1,
-                                                        "elicitationmethod": 1,
-                                                        "_id" :0
-                                                    }
-                                                )
+        karyaaccesscodedetails = accesscode_info.find({"isActive": 1, "projectname": activeprojectname, "assignedBy": current_username},
+                                                      {
+            "karyaaccesscode": 1,
+            "lifespeakerid": 1,
+            "task": 1,
+            "fetchData": 1,
+            "assignedBy": 1,
+            "current.workerMetadata.name": 1,
+            "current.workerMetadata.agegroup": 1,
+            "current.workerMetadata.gender": 1,
+            "domain": 1,
+            "elicitationmethod": 1,
+            "_id": 0
+        }
+        )
 
     data_table = []
     fetch_data = {
@@ -383,5 +412,3 @@ def get_access_code_metadata(
         data_table.append(data)
 
     return data_table
-
-
