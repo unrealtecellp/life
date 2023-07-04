@@ -1,6 +1,8 @@
 """Module to save the uploaded audio file(s) from 'enternewsenteces' route."""
 
 import librosa
+import pydub
+from pydub import AudioSegment
 import json
 import os
 import shutil
@@ -308,8 +310,8 @@ def saveoneaudiofile(mongo,
 
     audiowaveform_file = new_audio_file['audiofile']
 
-    full_audio_file, file_sr = librosa.load(audiowaveform_file, sr=None)
-    audio_duration = librosa.get_duration(full_audio_file, sr=file_sr)
+    full_audio_file = AudioSegment.from_file(audiowaveform_file)
+    audio_duration = full_audio_file.duration_seconds
 
     json_basedir = os.path.abspath(os.path.dirname(__file__))
     audiowaveform_json_dir_path = '/'.join(json_basedir.split('/')[:-1])
@@ -425,6 +427,14 @@ def saveoneaudiofile(mongo,
             all_audio_filenames.append(current_audio_filename)
 
             current_audio_chunk = audio_chunks[i]
+            current_audio_chunk_begn = current_audio_chunk['start']*1000
+            if current_audio_chunk_begn > 0:
+                current_audio_chunk_begn = current_audio_chunk_begn-100
+
+            current_audio_chunk_end = current_audio_chunk['end']*1000
+            if current_audio_chunk_end < audio_duration:
+                current_audio_chunk_end = current_audio_chunk_end+100
+            current_audio_file = full_audio_file[current_audio_chunk_begn:current_audio_chunk_end]
 
             current_text_grid = text_grids[i]
             current_audio_details = json.loads(json.dumps(new_audio_details))
