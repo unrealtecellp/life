@@ -1,6 +1,6 @@
 """Module to save the uploaded audio file(s) from 'enternewsenteces' route."""
 
-
+import librosa
 import json
 import os
 import shutil
@@ -76,7 +76,7 @@ def saveaudiofiles(mongo,
                    new_audio_file,
                    run_vad=True,
                    run_asr=False,
-                   split_into_smaller_chunks=False,
+                   split_into_smaller_chunks=True,
                    get_audio_json=True,
                    vad_model=[],
                    asr_model=[],
@@ -174,7 +174,7 @@ def savemultipleaudiofiles(mongo,
                            all_audio_files,
                            run_vad=True,
                            run_asr=False,
-                           split_into_smaller_chunks=False,
+                           split_into_smaller_chunks=True,
                            get_audio_json=True,
                            vad_model=[],
                            asr_model=[],
@@ -271,7 +271,7 @@ def saveoneaudiofile(mongo,
                      sourceId='',
                      run_vad=True,
                      run_asr=False,
-                     split_into_smaller_chunks=False,
+                     split_into_smaller_chunks=True,
                      get_audio_json=True,
                      vad_model=[],
                      asr_model=[],
@@ -280,6 +280,8 @@ def saveoneaudiofile(mongo,
                      slice_threshold=0.9,
                      max_slice_size=120,
                      data_type="audio",
+                     new_audio_details={},
+                     prompt="",
                      **kwargs):
     """mapping of this function is with the 'uploadaudiofiles' route.
 
@@ -299,9 +301,15 @@ def saveoneaudiofile(mongo,
         max_slice_size: the recommended size of each slice (might have some offset value). Slices should not be larger than this but might be lower than this.
     """
 
+    all_transcription_doc_ids = []
+    all_audio_fs_file_ids = []
+
     project_type = getprojecttype.getprojecttype(projects, activeprojectname)
 
     audiowaveform_file = new_audio_file['audiofile']
+
+    full_audio_file, file_sr = librosa.load(audiowaveform_file, sr=None)
+    audio_duration = librosa.get_duration(full_audio_file, sr=file_sr)
 
     json_basedir = os.path.abspath(os.path.dirname(__file__))
     audiowaveform_json_dir_path = '/'.join(json_basedir.split('/')[:-1])
@@ -312,6 +320,11 @@ def saveoneaudiofile(mongo,
     else:
         store_in_local = False
 
+    if split_into_smaller_chunks:
+        store_in_mongo = False
+    else:
+        store_in_mongo = True
+
     # audio_json_path = os.path.join(
     #     audiowaveform_json_dir_path, audio_json_parent_dir)
 
@@ -320,66 +333,243 @@ def saveoneaudiofile(mongo,
         sourceId = speakerId
         # lifesourceid = speakerId
 
-    new_audio_details = {
-        "username": projectowner,
-        "projectname": activeprojectname,
-        "updatedBy": current_username,
-        "audiodeleteFLAG": 0,
-        "audioverifiedFLAG": 0,
-        "prompt": "",
-        "dataType": data_type,
-        "lifesourceid": sourceId,
-        "speakerId": speakerId,
-        "additionalInfo": {},
-        "audioMetadata": {
-            "verificationReport": {},
-            "audiowaveform": {},
-            "audioWaveformNorm": {}
+    if len(new_audio_details) == 0:
+        new_audio_details = {
+            "username": projectowner,
+            "projectname": activeprojectname,
+            "updatedBy": current_username,
+            "audiodeleteFLAG": 0,
+            "audioverifiedFLAG": 0,
+            "prompt": prompt,
+            "dataType": data_type,
+            "lifesourceid": sourceId,
+            "speakerId": speakerId,
+            "additionalInfo": {},
+            "audioMetadata": {
+                "verificationReport": {},
+                "audiowaveform": {},
+                "audioWaveformNorm": {}
+            }
         }
-    }
     for kwargs_key, kwargs_value in kwargs.items():
         new_audio_details[kwargs_key] = kwargs_value
 
+    all_audio_ids = []
+    all_audio_filenames = []
+
     audio_id, audio_filename = get_audio_id_filename(new_audio_file)
-    new_audio_details['audioId'] = audio_id
     updated_audio_filename = (audio_id +
                               '_' +
                               audio_filename)
-    new_audio_details['audioFilename'] = updated_audio_filename
 
     # Save audio file in mongoDb and also get it in Local File System
 
-    fs_file_id, audio_file_path = save_audio_in_mongo_and_localFs(mongo,
-                                                                  updated_audio_filename,
-                                                                  audiowaveform_file,
-                                                                  audio_id,
-                                                                  projectowner,
-                                                                  activeprojectname,
-                                                                  current_username,
-                                                                  audiowaveform_json_dir_path,
-                                                                  audio_json_parent_dir,
-                                                                  store_in_local=store_in_local)
+    # if split_into_smaller_chunks:
+    audio_fs_file_id, audio_file_path = save_audio_in_mongo_and_localFs(mongo,
+                                                                        updated_audio_filename,
+                                                                        audiowaveform_file,
+                                                                        audio_id,
+                                                                        projectowner,
+                                                                        activeprojectname,
+                                                                        current_username,
+                                                                        audiowaveform_json_dir_path,
+                                                                        audio_json_parent_dir,
+                                                                        store_in_local=store_in_local,
+                                                                        store_in_mongo=store_in_mongo)
 
     # mongo, audio_path, type, max_pause = 0.5
-    text_grid, transcriptionFLAG = get_text_grids(mongo,
-                                                  run_vad,
-                                                  run_asr,
-                                                  vad_model,
-                                                  asr_model,
-                                                  audio_file_path, transcription_type,
-                                                  boundary_threshold,
-                                                  slice_threshold,
-                                                  max_slice_size)
+    audio_chunks, text_grids, transcriptionFLAG = get_slices_and_text_grids(mongo,
+                                                                            run_vad,
+                                                                            run_asr,
+                                                                            vad_model,
+                                                                            asr_model,
+                                                                            audio_file_path,
+                                                                            transcription_type,
+                                                                            boundary_threshold,
+                                                                            slice_threshold,
+                                                                            max_slice_size,
+                                                                            audio_duration)
 
     # logger.debug('Final generated text grid', text_grid)
     logger.debug('Final transcription flag %s', transcriptionFLAG)
 
     new_audio_details["transcriptionFLAG"] = transcriptionFLAG
-    new_audio_details["textGrid"] = text_grid
-    new_audio_details[current_username] = {}
-    new_audio_details[current_username]["textGrid"] = text_grid
+
+    if not split_into_smaller_chunks:
+        all_audio_ids.append(audio_id)
+        all_audio_filenames.append(audio_filename)
+        all_audio_fs_file_ids.append(audio_fs_file_id)
+
+        add_audio_details(new_audio_details,
+                          get_audio_json,
+                          current_username,
+                          audio_id,
+                          updated_audio_filename,
+                          text_grids[0],
+                          audiowaveform_json_dir_path,
+                          audio_json_parent_dir
+                          )
+
+        transcription_doc_id = transcriptions.insert_one(new_audio_details)
+        all_transcription_doc_ids.append(transcription_doc_id)
+
+    else:
+
+        for i in range(len(text_grids)):
+            # for current_text_gird in text_grids:
+            current_audio_id = audio_id + '-slice'+str(i)
+            current_audio_filename = (current_audio_id +
+                                      '_' +
+                                      audio_filename)
+            all_audio_ids.append(current_audio_id)
+            all_audio_filenames.append(current_audio_filename)
+
+            current_audio_chunk = audio_chunks[i]
+
+            current_text_grid = text_grids[i]
+            current_audio_details = json.loads(json.dumps(new_audio_details))
+            current_audio_fs_file_id, current_audio_file_path = save_audio_in_mongo_and_localFs(mongo,
+                                                                                                current_audio_filename,
+                                                                                                current_audio_file,
+                                                                                                current_audio_id,
+                                                                                                projectowner,
+                                                                                                activeprojectname,
+                                                                                                current_username,
+                                                                                                audiowaveform_json_dir_path,
+                                                                                                audio_json_parent_dir,
+                                                                                                store_in_local=False,
+                                                                                                store_in_mongo=True)
+            all_audio_fs_file_ids.append(current_audio_fs_file_id)
+
+            add_audio_details(current_audio_details,
+                              get_audio_json,
+                              current_username,
+                              current_audio_id,
+                              current_audio_filename,
+                              current_text_grid,
+                              audiowaveform_json_dir_path,
+                              audio_json_parent_dir
+                              )
+            transcription_doc_id = transcriptions.insert_one(
+                current_audio_details)
+            all_transcription_doc_ids.append(transcription_doc_id)
+
     # plogger.debug(new_audio_details)
 
+        # logger.debug(speakerIds)
+
+    speaker_id_key_name, speakerIds = get_speaker_ids(projects,
+                                                      activeprojectname,
+                                                      current_username,
+                                                      speakerId,
+                                                      project_type)
+
+    speaker_audioid_key_name, speaker_audio_ids = get_speaker_audio_ids(projects,
+                                                                        activeprojectname,
+                                                                        all_audio_ids,
+                                                                        speakerId,
+                                                                        project_type)
+    # plogger.debug(speaker_audio_ids)
+    # try:
+    # Update projects collection with speakerIds and Audio Ids of each speakerIds
+    last_active_id = all_audio_ids[0]
+    update_speakerid_audioid(projects,
+                             activeprojectname,
+                             current_username,
+                             speakerId,
+                             last_active_id,
+                             speaker_id_key_name,
+                             speakerIds,
+                             speaker_audioid_key_name,
+                             speaker_audio_ids)
+
+    # Update active speaker ID in user projects
+    update_active_speaker_Id(userprojects,
+                             activeprojectname,
+                             current_username,
+                             speakerId
+                             )
+    # logger.debug('new_audio_file', type(new_audio_file), new_audio_file)
+    # transcription_doc_id = transcriptions.insert(new_audio_details)
+    # save audio file details in fs collection
+
+    # logger.debug('audiowaveform_audio_path', audiowaveform_audio_path)
+    # audiowaveform_audio_path = os.path.join(audiowaveform_audio_path, updated_audio_filename)
+
+    return (True, all_transcription_doc_ids, all_audio_fs_file_ids)
+
+    # except Exception as e:
+    #     logger.debug(e)
+    #     flash(f"ERROR")
+    #     return (False, '', '')
+
+
+def add_audio_details(audio_details_dict,
+                      get_audio_json,
+                      current_username,
+                      audio_id,
+                      updated_audio_filename,
+                      text_grid,
+                      audiowaveform_json_dir_path,
+                      audio_json_parent_dir
+                      ):
+    audio_details_dict['audioId'] = audio_id
+    audio_details_dict['audioFilename'] = updated_audio_filename
+    audio_details_dict["textGrid"] = text_grid
+    audio_details_dict['additionalIndo'] = {
+        'totalSlices': 1, 'currentSliceNumber': 0}
+    audio_details_dict[current_username] = {}
+    audio_details_dict[current_username]["textGrid"] = text_grid
+    if get_audio_json:
+        audiowaveform_json = get_audio_waveform_json(
+            audiowaveform_json_dir_path, audio_json_parent_dir, updated_audio_filename)
+        audio_details_dict['audioMetadata']['audiowaveform'] = audiowaveform_json
+
+
+def update_active_speaker_Id(userprojects,
+                             activeprojectname,
+                             current_username,
+                             speakerId
+                             ):
+    # update active speaker ID in userprojects collection
+    projectinfo = userprojects.find_one({'username': current_username},
+                                        {'_id': 0, 'myproject': 1, 'projectsharedwithme': 1})
+
+    # logger.debug(projectinfo)
+    userprojectinfo = ''
+    for type, value in projectinfo.items():
+        if len(value) != 0:
+            if activeprojectname in value:
+                userprojectinfo = type+'.'+activeprojectname+".activespeakerId"
+    userprojects.update_one({"username": current_username},
+                            {"$set": {
+                                userprojectinfo: speakerId
+                            }})
+
+
+def update_speakerid_audioid(projects,
+                             activeprojectname,
+                             current_username,
+                             speakerId,
+                             last_active_id,
+                             speaker_id_key_name,
+                             speakerIds,
+                             speaker_audioid_key_name,
+                             speaker_audio_ids
+                             ):
+    projects.update_one({'projectname': activeprojectname},
+                        {'$set': {
+                            'lastActiveId.'+current_username+'.'+speakerId+'.audioId':  last_active_id,
+                            speaker_id_key_name: speakerIds,
+                            speaker_audioid_key_name: speaker_audio_ids
+                        }})
+
+
+def get_speaker_ids(projects,
+                    activeprojectname,
+                    current_username,
+                    speakerId,
+                    project_type):
     # save audio file details and speaker ID in projects collection
     speaker_id_key_name = get_speaker_id_key_name(project_type)
 
@@ -398,8 +588,15 @@ def saveoneaudiofile(mongo,
         speakerIds = {
             current_username: [speakerId]
         }
-        # logger.debug(speakerIds)
 
+    return speaker_id_key_name, speakerIds
+
+
+def get_speaker_audio_ids(projects,
+                          activeprojectname,
+                          all_audio_ids,
+                          speakerId,
+                          project_type):
     speaker_audioid_key_name = get_audiospeaker_id_key_name(project_type)
     speaker_audio_ids = projects.find_one({'projectname': activeprojectname},
                                           {'_id': 0, speaker_audioid_key_name: 1})
@@ -410,62 +607,18 @@ def saveoneaudiofile(mongo,
         # logger.debug('speaker_audio_ids', speaker_audio_ids)
         if speakerId in speaker_audio_ids:
             speaker_audio_idskeylist = speaker_audio_ids[speakerId]
-            speaker_audio_idskeylist.append(audio_id)
+            speaker_audio_idskeylist.extend(all_audio_ids)
             speaker_audio_ids[speakerId] = speaker_audio_idskeylist
         else:
             # logger.debug('speakerId', speakerId)
-            speaker_audio_ids[speakerId] = [audio_id]
+            speaker_audio_ids[speakerId] = all_audio_ids
         # plogger.debug(speaker_audio_ids)
     else:
         speaker_audio_ids = {
-            speakerId: [audio_id]
+            speakerId: all_audio_ids
         }
-    # plogger.debug(speaker_audio_ids)
-    # try:
-    projects.update_one({'projectname': activeprojectname},
-                        {'$set': {
-                            'lastActiveId.'+current_username+'.'+speakerId+'.audioId':  audio_id,
-                            speaker_id_key_name: speakerIds,
-                            speaker_audioid_key_name: speaker_audio_ids
-                        }})
-    # update active speaker ID in userprojects collection
-    projectinfo = userprojects.find_one({'username': current_username},
-                                        {'_id': 0, 'myproject': 1, 'projectsharedwithme': 1})
 
-    # logger.debug(projectinfo)
-    userprojectinfo = ''
-    for type, value in projectinfo.items():
-        if len(value) != 0:
-            if activeprojectname in value:
-                userprojectinfo = type+'.'+activeprojectname+".activespeakerId"
-    userprojects.update_one({"username": current_username},
-                            {"$set": {
-                                userprojectinfo: speakerId
-                            }})
-
-    # logger.debug('new_audio_file', type(new_audio_file), new_audio_file)
-    # transcription_doc_id = transcriptions.insert(new_audio_details)
-    # save audio file details in fs collection
-
-    # logger.debug('audiowaveform_audio_path', audiowaveform_audio_path)
-    # audiowaveform_audio_path = os.path.join(audiowaveform_audio_path, updated_audio_filename)
-
-    if get_audio_json:
-        # json_basedir = os.path.abspath(os.path.dirname(__file__))
-        # audiowaveform_json_dir_path = '/'.join(json_basedir.split('/')[:-1])
-        # audio_json_parent_dir = 'audiowaveform'
-        audiowaveform_json = get_audio_waveform_json(
-            audiowaveform_json_dir_path, audio_json_parent_dir, updated_audio_filename)
-        new_audio_details['audioMetadata']['audiowaveform'] = audiowaveform_json
-
-    transcription_doc_id = transcriptions.insert_one(new_audio_details)
-
-    return (True, transcription_doc_id, fs_file_id)
-
-    # except Exception as e:
-    #     logger.debug(e)
-    #     flash(f"ERROR")
-    #     return (False, '', '')
+    return speaker_audioid_key_name, speaker_audio_ids
 
 
 def get_speaker_id_key_name(project_type):
@@ -1405,6 +1558,30 @@ def generate_text_grid(mongo, text_grid, boundaries, transcriptions, transcripti
     return text_grid
 
 
+def get_smaller_chunks_of_audio(
+    boundaries, max_new_file_duration, audio_duration
+):
+    new_audio_chunks = get_new_boundaries(
+        boundaries, max_new_file_duration)
+    new_audio_chunks[0]['start'] = 0
+    new_audio_chunks[-1]['end'] = audio_duration
+
+    return new_audio_chunks
+
+
+def get_boundary_lists_of_smaller_chunks(
+        audio_chunk_boundaries, boundaries):
+    all_chunk_boundaries = []
+    for audio_chunk_boundary in audio_chunk_boundaries:
+        current_chunk_boundary_start = audio_chunk_boundary['start']
+        current_chunk_boundary_end = audio_chunk_boundary['end']
+        boundary_start_index = boundaries.index(current_chunk_boundary_start)
+        boundary_end_index = boundaries.index(current_chunk_boundary_end)+1
+        all_chunk_boundaries.append(
+            boundaries[boundary_start_index: boundary_end_index])
+    return all_chunk_boundaries
+
+
 def get_current_translation_langscripts(mongo):
     userprojects, projectsform = getdbcollections.getdbcollections(
         mongo, 'userprojects', 'projectsform')
@@ -1510,19 +1687,23 @@ def get_audio_boundaries(model_params):
     return boundaries, cleaned_file
 
 
-def get_text_grids(mongo,
-                   run_vad,
-                   run_asr,
-                   split_into_smaller_chunks,
-                   vad_model,
-                   asr_model,
-                   audio_path, transcription_type, max_pause, max_new_file_duration):
-    text_grid = {
+def get_slices_and_text_grids(mongo,
+                              run_vad,
+                              run_asr,
+                              split_into_smaller_chunks,
+                              vad_model,
+                              asr_model,
+                              audio_path,
+                              transcription_type,
+                              max_pause,
+                              max_new_file_duration,
+                              audio_duration):
+    all_text_grids = [{
         "discourse": {},
         "sentence": {},
         "word": {},
         "phoneme": {}
-    }
+    }]
 
     boundaries = None
     transcriptions = None
@@ -1553,10 +1734,23 @@ def get_text_grids(mongo,
                 mongo, model_params)
 
         # logger.debug('Boundaries received', boundaries)
-        text_grid = generate_text_grid(
-            mongo, text_grid, boundaries, transcriptions, transcription_type, max_pause)
+        if split_into_smaller_chunks:
+            audio_chunk_boundaries = get_smaller_chunks_of_audio(
+                boundaries, max_new_file_duration, audio_duration)
 
-    return text_grid, transcribed
+            audio_chunk_boundary_lists = get_boundary_lists_of_smaller_chunks(
+                audio_chunk_boundaries, boundaries)
+
+        else:
+            audio_chunk_boundaries = [
+                {'start': boundaries[0], 'end': boundaries[-1]}]
+            audio_chunk_boundary_lists = boundaries
+
+        for audio_chunk_boundary_list in audio_chunk_boundary_lists:
+            all_text_grids.append(generate_text_grid(
+                mongo, audio_chunk_boundary_list, audio_chunk_boundary_list, transcriptions, transcription_type, max_pause))
+
+    return audio_chunk_boundaries, all_text_grids, transcribed
 
 
 def save_audio_in_mongo_and_localFs(mongo,
@@ -1568,15 +1762,19 @@ def save_audio_in_mongo_and_localFs(mongo,
                                     current_username,
                                     audio_store_path='',
                                     audio_store_dir='',
-                                    store_in_local=False):
+                                    store_in_local=False,
+                                    store_in_mongo=True):
 
-    fs_file_id = mongo.save_file(updated_audio_filename,
-                                 new_audio_file,
-                                 audioId=audio_id,
-                                 username=projectowner,
-                                 projectname=activeprojectname,
-                                 updatedBy=current_username,
-                                 filedeleteFLAG=0)
+    if store_in_mongo:
+        fs_file_id = mongo.save_file(updated_audio_filename,
+                                     new_audio_file,
+                                     audioId=audio_id,
+                                     username=projectowner,
+                                     projectname=activeprojectname,
+                                     updatedBy=current_username,
+                                     filedeleteFLAG=0)
+    else:
+        fs_file_id = ''
 
     # logger.debug('audioLength', new_audio_file['audiofile'].content_length)
 
