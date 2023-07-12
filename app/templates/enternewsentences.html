@@ -14,7 +14,14 @@
 
 {% block app_content %}
   <div class="row">
-    <div class="col-sm-5"></div>
+    <div class="col-sm-5">
+      {% if shareinfo['sharemode']|int >= 4 %}
+        <button type="button" id="deleteaudio" class="btn btn-danger" data-toggle="tooltip" title="Delete Audio">
+          <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+        </button>
+      {% endif %}
+      &nbsp;&nbsp;
+    </div>
     <div class="col-sm-6">
       <button class="btn btn-info" type="button" id="previous" data-toggle="tooltip" title="Previous Audio" onclick="previousAudio()">
         <span class="previousaudio glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
@@ -28,17 +35,12 @@
         <span class="saveaudio glyphicon glyphicon-floppy-save" aria-hidden="true"></span>
       </button>
       &nbsp;&nbsp;
-      {% if shareinfo['sharemode']|int >= 4 %}
-        <button type="button" id="deleteaudio" class="btn btn-danger" data-toggle="tooltip" title="Delete Audio">
-          <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
-        </button>
-      {% endif %}
-      &nbsp;&nbsp;
+    </div>
+    <div class="col-sm-1">
       <span class="pull-right" style="font-size:30px; position:absolute; cursor:pointer" data-toggle="tooltip" title="Info" onclick="openAudioMetaData()">
         <i class="glyphicon glyphicon-info-sign"></i>
       </span>
     </div>
-    <div class="col-sm-1"></div>
     <span class="pull-right" style="font-size:30px; position:absolute; right:10px;cursor:pointer" onclick="openNav()"><i class="glyphicon glyphicon-menu-hamburger"></i></span>
     <div id="sidepanel"></div>
     <!-- <div class="col-sm-7 pull-right">

@@ -58,6 +58,7 @@ var languages = [
 {"id": "", "text": ""},
 {"id": "Assamese", "text": "Assamese"},
 {"id": "Awadhi", "text": "Awadhi"},
+{"id": "Bajjika", "text": "Bajjika"},
 {"id": "Bangla", "text": "Bangla"},
 {"id": "Bhojpuri", "text": "Bhojpuri"},
 {"id": "Bodo", "text": "Bodo"},
