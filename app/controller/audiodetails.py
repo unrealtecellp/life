@@ -1361,13 +1361,16 @@ def lastupdatedby(transcriptions, audio_id):
     return last_updated_by_details
 
 
-def merge_boundary_with_next(current_end, next_start, max_pause):
-    return (next_start-current_end) <= max_pause
+def merge_boundary_with_next(current_end, next_start, span_start, span_end, max_pause, max_boundary_size):
+    return ((next_start-current_end) <= max_pause) and ((span_end-span_start) <= max_boundary_size)
 
 
-def get_new_boundaries(boundaries, max_pause, include_transcription=False, transcriptions=None):
+def get_new_boundaries(boundaries, max_pause, max_boundary_size=-1, include_transcription=False, transcriptions=None):
     new_boundaries = []
     new_transcriptions = []
+
+    if max_boundary_size == -1:
+        max_boundary_size = boundaries[-1]['end']
 
     span_start = 0
     span_end = 0
@@ -1403,7 +1406,7 @@ def get_new_boundaries(boundaries, max_pause, include_transcription=False, trans
             else:
                 span_end = current_end
 
-            if merge_boundary_with_next(current_end, next_start, max_pause):
+            if merge_boundary_with_next(current_end, next_start, span_start, span_end, max_pause, max_boundary_size):
                 if i == len(boundaries) - 2:
                     new_boundaries.append({
                         'start': span_start,
@@ -1569,10 +1572,10 @@ def generate_text_grid(mongo, text_grid, boundaries, transcriptions, transcripti
 
 
 def get_smaller_chunks_of_audio(
-    boundaries, max_new_file_duration, audio_duration
+    boundaries, max_pause, max_new_file_duration, audio_duration
 ):
     new_audio_chunks = get_new_boundaries(
-        boundaries, max_new_file_duration)
+        boundaries, max_pause, max_boundary_size=max_new_file_duration)
     new_audio_chunks[0]['start'] = 0
     new_audio_chunks[-1]['end'] = audio_duration
 
@@ -1705,7 +1708,8 @@ def get_slices_and_text_grids(mongo,
                               asr_model,
                               audio_path,
                               transcription_type,
-                              max_pause,
+                              max_pause_boundary,
+                              max_pause_slice,
                               max_new_file_duration,
                               audio_duration):
     all_text_grids = [{
@@ -1746,7 +1750,7 @@ def get_slices_and_text_grids(mongo,
         # logger.debug('Boundaries received', boundaries)
         if split_into_smaller_chunks:
             audio_chunk_boundaries = get_smaller_chunks_of_audio(
-                boundaries, max_new_file_duration, audio_duration)
+                boundaries, max_pause_slice, max_new_file_duration, audio_duration)
 
             audio_chunk_boundary_lists = get_boundary_lists_of_smaller_chunks(
                 audio_chunk_boundaries, boundaries)
@@ -1758,7 +1762,7 @@ def get_slices_and_text_grids(mongo,
 
         for audio_chunk_boundary_list in audio_chunk_boundary_lists:
             all_text_grids.append(generate_text_grid(
-                mongo, audio_chunk_boundary_list, audio_chunk_boundary_list, transcriptions, transcription_type, max_pause))
+                mongo, audio_chunk_boundary_list, audio_chunk_boundary_list, transcriptions, transcription_type, max_pause_boundary))
 
     return audio_chunk_boundaries, all_text_grids, transcribed
 
