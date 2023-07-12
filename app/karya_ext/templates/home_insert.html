@@ -110,6 +110,15 @@
             </select>
           </div>
 
+          <div class="dropdown-container">
+            <label for="recordingDropdown" id="recordingLabel" style="display: none;">Access Code:</label>
+            <select id="recordingDropdown" name="recordingDropdown" style="display: none;">
+              {% for item in recording_access_code_list %}
+              <option value="{{ item }}">{{ item }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
             <div id="idforworker"></div>
             <br>
             <label for="pimobilenumber">Mobile Number :</label>
@@ -192,16 +201,29 @@
         verificationLabel.style.display = "block";
         transcriptionDropdown.style.display = "none";
         transcriptionLabel.style.display = "none";
+        recordingDropdown.style.display = "none";
+        recordingLabel.style.display = "none";
       } else if (selectedOption === "newTranscription") {
         verificationDropdown.style.display = "none";
         verificationLabel.style.display = "none";
         transcriptionDropdown.style.display = "block";
         transcriptionLabel.style.display = "block";
+        recordingDropdown.style.display = "none";
+        recordingLabel.style.display = "none";
+      } else if (selectedOption == "completedRecordings") {
+        verificationDropdown.style.display = "none";
+        verificationLabel.style.display = "none";
+        transcriptionDropdown.style.display = "none";
+        transcriptionLabel.style.display = "none";
+        recordingDropdown.style.display = "block";
+        recordingLabel.style.display = "block";
       } else {
         verificationDropdown.style.display = "none";
         verificationLabel.style.display = "none";
         transcriptionDropdown.style.display = "none";
         transcriptionLabel.style.display = "none";
+        recordingDropdown.style.display = "none";
+        recordingLabel.style.display = "none";
       }
     });
   });
@@ -224,6 +246,10 @@
         // Code for Transcription Access Code selected
         var transAccessCodeSelect = document.getElementById("transcriptionDropdown");
         acode = transAccessCodeSelect.value;
+      } else if (selectedValue === "completedRecordings") {
+        // Code for Transcription Access Code selected
+        var recordAccessCodeSelect = document.getElementById("recordingDropdown");
+        acode = recordAccessCodeSelect.value
       }
 
       var mob = $('#pimobilenumber').val();
