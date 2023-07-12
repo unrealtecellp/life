@@ -87,7 +87,11 @@ $(document).ready(function() {
           sharemode =  ele[i].id;
         }
     }
-    // console.log(sharemode)
-    sharemode = shareModeObject[sharemode]
+    // console.log(sharemode);
+    sharemode = shareModeObject[sharemode];
+    console.log(sharemode);
+    if (sharemode === undefined) {
+      sharemode = 0;
+    }
     return sharemode
   }
