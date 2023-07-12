@@ -110,11 +110,11 @@ document.addEventListener('DOMContentLoaded', function () {
     // wavesurfer.on('region-removed', saveRegions);
     // wavesurfer.on('region-updated', saveRegions);
     wavesurfer.on('region-update-end', saveRegions);
-    wavesurfer.on('region-update-end', editAnnotation);
     wavesurfer.on('region-update-end', function (region) {
-        // preventOverlapBoundaries(region);
+        preventOverlapBoundaries(region);
     });
-    wavesurfer.on('region-in', showNote);
+    wavesurfer.on('region-update-end', editAnnotation);
+    // wavesurfer.on('region-in', showNote);
 
     wavesurfer.on('region-play', function (region) {
         togglePlayPause(1);
@@ -133,7 +133,9 @@ document.addEventListener('DOMContentLoaded', function () {
     ).addEventListener('click', function () {
         // deleteBoundary();
         let form = document.forms.edit;
+        // console.log(form.dataset, Object.keys(form.dataset), form);
         let regionId = form.dataset.region;
+        // console.log(regionId);
         if (regionId) {
             let region = wavesurfer.regions.list[regionId];
             wavesurfer.regions.list[regionId].remove();
@@ -165,15 +167,17 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
-function deleteBoundary() {
+function deleteBoundary(regionId) {
+    // console.log('deleteBoundary');
     let form = document.forms.edit;
-    let regionId = form.dataset.region;
+    // let regionId = form.dataset.region;
+    // console.log(form.dataset, Object.keys(form.dataset), form);
     if (regionId) {
         let region = wavesurfer.regions.list[regionId];
         wavesurfer.regions.list[regionId].remove();
 
         form.reset();
-        transcriptionFormDisplay(form);
+        // transcriptionFormDisplay(form);
         wavesurfer.pause();
         startId = region.start.toString().slice(0, 4).replace('.', '');
         if (startId === '0') {
@@ -214,12 +218,14 @@ function updateCurrentCursorTime(from='') {
  * Save annotations to localStorage.
  */
 function saveRegions(region) {
+    // console.log(wavesurfer.regions.list);
     // region.color =  boundaryColor(255, 0, 0, 0.1),
     console.log('WHERE')
     localStorage.regions = JSON.stringify(
         Object.keys(wavesurfer.regions.list).map(function (id) {
             let region = wavesurfer.regions.list[id];
             // console.log(region)
+            region.drag = false;
             startId = region.start.toString().slice(0, 4).replace('.', '');
             if (startId === '0') {
                 startId = '000';
@@ -240,7 +246,7 @@ function saveRegions(region) {
                 start: region.start,
                 end: region.end,
                 attributes: region.attributes,
-                data: region.data
+                data: region.data,
                 // comment: region.comment
                 // sentence: updateSentenceDetails(rid, sentence, region)
             };
@@ -255,6 +261,7 @@ function loadRegions(regions) {
     // console.log(regions)
     regions.forEach(function (region) {
         region.color = boundaryColor(0, 255, 0, 0.1);
+        region.drag = false;
         // console.log(region)
         wavesurfer.addRegion(region);
     });
@@ -480,14 +487,10 @@ function saveBoundaryData(region, form) {
  * Display annotation.
  */
 function showNote(region) {
-    // console.log(showNote.el);
-    // if (!showNote.el) {
-    //     showNote.el = document.querySelector('#subtitle');
-    // }
-    // showNote.el.textContent = region.data.note || '–';
     let form = document.forms.edit;
-    // console.log(form[2].id, form[2].value);
-    let firstTranscriptionFieldValue = form[2].value;
+    // console.log(form);
+    // console.log(form[0].id, form[0].value);
+    let firstTranscriptionFieldValue = form[0].value;
     let subtitle = document.getElementById('subtitle');
     // console.log(subtitle, firstTranscriptionFieldValue);
     if (firstTranscriptionFieldValue !== '') {
@@ -1529,6 +1532,7 @@ function playPauseBoundaryStart() {
     let form = document.forms.edit;
     // console.log(form[2].id);
     let regionId = form.dataset.region;
+    // console.log(regionId);
     if (regionId) {
         let region = wavesurfer.regions.list[regionId];
         startTime = region.start
@@ -1795,7 +1799,7 @@ function autoSavetranscription(e, transcriptionField) {
         // console.log("Replace enter");
     }
 
-    showNote();
+    // showNote();
 
     activeTranscriptionFieldId = transcriptionField.id
     transciptionLang = activeTranscriptionFieldId.split('_')[1]
@@ -1807,7 +1811,12 @@ function autoSavetranscription(e, transcriptionField) {
     if (regionId) {
         let region = wavesurfer.regions.list[regionId];
         // console.log(region);
-        saveBoundaryData(region, form);
+        if (region) {
+            saveBoundaryData(region, form);
+        }
+        // else if (region === undefined) {
+        //     transcriptionFormDisplay(form);
+        // }
     }
     // startTime = document.getElementById('start').value
     // endTime = document.getElementById('end').value
@@ -1869,21 +1878,27 @@ function updateBoundaryColor(activeRegion) {
 
 function showRegionInfo(region) {
     let regionInfo = '';
+    let trans = '';
     try {
         id = region.id;
         startTime = region.start;
         endTime = region.end;
         boundaryID = getBoundaryId(startTime, endTime);
-        sentence = region.data.sentence
-        transciptions = sentence[boundaryID]['transcription'];
-        let trans = '';
-        for (let [scriptName, transcription] of Object.entries(transciptions)) {
-            trans += scriptName + ': ' + transcription + '<br>';
+        sentence = region.data.sentence;
+        if (sentence) {
+            transciptions = sentence[boundaryID]['transcription'];
+            for (let [scriptName, transcription] of Object.entries(transciptions)) {
+                trans += scriptName + ': ' + transcription + '<br>';
+            }
         }
         // let regionInfo = '<br>Boundary ID: '+id+'<br>Start Time: '+startTime+'<br>End Time: '+endTime+'<br>'+trans;
-        regionInfo = '<br>Boundary ID: ' + id + '<br>Start Time: ' + startTime + '<br>End Time: ' + endTime + '<br>' + trans;
+        // regionInfo += '<br>Boundary ID: ' + id;
+        regionInfo += '<br>Start Time: ' + startTime;
+        regionInfo += '<br>End Time: ' + endTime;
+        regionInfo += '<br>' + trans;
     }
     catch (err) {
+        console.log(err);
         regionInfo = '<br>You still have to listen to this boundary';
     }
     $('#regioninfo').html(regionInfo);
@@ -1926,11 +1941,27 @@ function openAudioMetaData() {
     }
 }
 
+function closestBoundary(region, overlapBoundary, dragDirection='left', diff=0.001) {
+    const min = Math.min(...overlapBoundary)
+    console.log(min)
+    if (dragDirection == 'left') {
+        region.end = min-diff;
+    }
+    if (dragDirection == 'right') {
+        region.start = min+diff;
+    }
+    saveRegions();
+}
+
 function preventOverlapBoundaries(region) {
     // console.log(region);
+    // console.log(region.wrapper);
+    // console.log(region.scrollSpeed);
     // console.log(region.start, region.end);
     localStorageRegions = JSON.parse(localStorage.regions);
     // console.log(localStorageRegions);
+    let overlapBoundaryStarts = [];
+    let overlapBoundaryEnds = [];
     for (i=0; i< localStorageRegions.length; i++) {
         localStorageRegion = localStorageRegions[i];
         if (region.start == localStorageRegion.start ||
@@ -1938,14 +1969,22 @@ function preventOverlapBoundaries(region) {
                 continue
             }
         if ((region.start<localStorageRegion.end &&
-            region.start>localStorageRegion.start) ||
-            (region.end<localStorageRegion.end &&
-            region.end>localStorageRegion.start)) {
+            region.start>localStorageRegion.start)) {
                 // console.log(region.start, localStorageRegion.end);
                 // console.log(region.end, localStorageRegion.start);
-                console.log('OVERLAP!!!');
-                console.log('FALLING IN REGION: ', localStorageRegion);
-                deleteBoundary();
+                // console.log('OVERLAP!!!... RIGHT DRAG');
+                // console.log('FALLING IN REGION: ', localStorageRegion);
+                overlapBoundaryEnds.push(localStorageRegion.end);
+                // deleteBoundary(region.id);
+            }
+        else if ((region.end<localStorageRegion.end &&
+                region.end>localStorageRegion.start)) {
+                // console.log(region.start, localStorageRegion.end);
+                // console.log(region.end, localStorageRegion.start);
+                // console.log('OVERLAP!!!... LEFT DRAG');
+                // console.log('FALLING IN REGION: ', localStorageRegion);
+                // deleteBoundary();
+                overlapBoundaryStarts.push(localStorageRegion.start);
             }
         else if ((localStorageRegion.start>region.start &&
                 localStorageRegion.start<region.end) &&
@@ -1953,9 +1992,25 @@ function preventOverlapBoundaries(region) {
                 localStorageRegion.end<region.end)) {
                 // console.log(region.start, localStorageRegion.end);
                 // console.log(region.end, localStorageRegion.start);
-                console.log('OVERLAP!!!');
-                console.log('FALLING IN REGION: ', localStorageRegion);
-                deleteBoundary();
+                // console.log('OVERLAP!!!');
+                // console.log('FALLING IN REGION COMPLETE OERLAP: ', localStorageRegion);
+                alert("This new region is completely covering the other regions. DELETING new region.");
+                deleteBoundary(region.id);
+                break;
+                // let dltBoundary = confirm("OK will delete the overlap boungary")
+                // if (dltBoundary) {
+                //     deleteBoundary();
+                // }
+                // else {
+                //     window.location.reload();
+                // }
+                
             }
+    }
+    if (overlapBoundaryStarts.length) {
+        closestBoundary(region, overlapBoundaryStarts, dragDirection='left')
+    }
+    if (overlapBoundaryEnds.length) {
+        closestBoundary(region, overlapBoundaryEnds, dragDirection='right')
     }
 }
