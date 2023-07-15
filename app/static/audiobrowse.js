@@ -18,14 +18,25 @@ function createSelect2(eleId, optionsList, selectedOption) {
 function createBrowseActions(projectOwner, currentUsername) {
     let ele = '';
     let browseActionOptionsList = ['Delete']
+    // let tabSpace = '&nbsp;&nbsp;&nbsp;&nbsp;';
     ele += '<label for="browseactiondropdown">Action:&nbsp;</label>'+
-            '<select class="custom-select custom-select-sm" id="browseactiondropdown" style="width: 50%;"></select>&nbsp;&nbsp;&nbsp;&nbsp;';
+            '<select class="custom-select custom-select-sm" id="browseactiondropdown" style="width: 30%;"></select>';
+    // ele += tabSpace;
+    // multiple audio delete
     ele += '<button type="button" class="btn btn-danger" id="multipleaudiodelete"  style="display: inline;">'+
             '<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>'+
-            ' Delete Multiple Audio</button>';
+            ' Multiple</button>';
+    // ele += tabSpace;
+    // multiple audio revove
     ele += '<button type="button" class="btn btn-success" id="multipleaudiorevoke" style="display: none;">'+
             '<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>'+
-            ' Revoke Multiple Audio</button>';
+            ' Multiple</button>';
+    // ele += tabSpace;
+    // multiple audio share
+    ele += '<button type="button" class="btn btn-warning" id="multipleaudioshare" style="display: inline;">'+
+            '<span class="glyphicon glyphicon-share-alt" aria-hidden="true"></span>'+
+            ' Multiple</button>';
+
     $('#browseaudiodropdowns').append(ele);
     if (currentUsername === projectOwner) {
         browseActionOptionsList.push('Revoke');
@@ -39,13 +50,15 @@ function createAudioBrowseTable(audioDataFields, audioData, shareMode=0, totalRe
     let count = audioData.length
     let ele = '';
     let browseActionSelectedOption = '';
-    ele += '<p id="actualtotalrecords">Total Records:&nbsp;'+totalRecords+'</p>';
-    ele += '<p id="totalrecords">Showing Records:&nbsp;'+count+'</p>'+
-            '<table class="table table-striped " id="myTable">'+
+    // ele += '<p id="actualtotalrecords">Total Records:&nbsp;'+totalRecords+'</p>';
+    ele += '<strong><p id="totalrecords">Showing Records:&nbsp;'+count+' of '+totalRecords+'</p></strong>';
+    ele += '<hr>';
+    ele += '<table class="table table-striped " id="myTable">'+
             '<thead>'+
             '<tr>'+
             '<th><input type="checkbox" id="headcheckbox" onchange="checkAllAudio(this)" name="chk[]" checked/>&nbsp;</th>';
     for (let i=0; i<audioDataFields.length; i++) {
+        if (audioDataFields[i] == "audioFilename") continue;
         ele += '<th onclick="sortTable('+(i+1)+')">'+audioDataFields[i]+'</th>';
     }
     ele += '<th>View</th>';
@@ -68,9 +81,11 @@ function createAudioBrowseTable(audioDataFields, audioData, shareMode=0, totalRe
         for (let j=0; j<audioDataFields.length; j++) {
             let field = audioDataFields[j];
             if (field in aData) {
+                if (field == "audioFilename") continue;
                 if (field == 'Audio File') {
                     ele += '<td id='+field+'>'+
-                            '<audio controls controlslist="nofullscreen nodownload noremoteplayback noplaybackrate"><source src="'+aData[field]+'" type="audio/wav"></audio>'+
+                            '<audio controls oncontextmenu="return false" controlslist="nofullscreen nodownload noremoteplayback noplaybackrate">'+
+                            '<source src="'+aData[field]+'" type="audio/wav"></audio>'+
                             '</td>';
                 }
                 else {
@@ -85,26 +100,26 @@ function createAudioBrowseTable(audioDataFields, audioData, shareMode=0, totalRe
         }
         ele += '<td><button type="button" id="viewaudio" class="btn btn-primary viewaudioclass">'+
                     '<span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>'+
-                    ' View Audio'+
+                    // ' View Audio'+
                     '</button></td>';
         if (browseActionSelectedOption === 'Delete') {
             ele += '<td><button type="button" id="deleteaudio" class="btn btn-danger deleteaudioclass">'+
                     '<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>'+
-                    ' Delete Audio'+
+                    // ' Delete Audio'+
                     '</button></td>';
 
         }
         else if (browseActionSelectedOption === 'Revoke') {
             ele += '<td><button type="button" id="revokeaudio" class="btn btn-success revokeaudioclass">'+
                     '<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>'+
-                    ' Revoke Audio'+
+                    // ' Revoke Audio'+
                     '</button></td>';
 
         }
         if (shareChecked === 'true') {
             ele += '<td><button type="button" id="shareaudio" class="btn btn-warning shareaudioclass">'+
                     '<span class="glyphicon glyphicon-share-alt" aria-hidden="true"></span>'+
-                    ' Share Audio'+
+                    // ' Share Audio'+
                     '</button></td>';
 
         }
@@ -319,13 +334,15 @@ function checkAllAudio(ele) {
 }
 
 function checkAudio(ele) {
+    // console.log(ele);
     // checkbox in table header true or false when any checkbox of table body is true or false
     var checkboxcount = 0;
     var headcheckbox = document.getElementById('headcheckbox');
     var checkboxes = document.getElementsByTagName('input');
     var totalrecords = document.getElementById('totalrecords').innerHTML;
+    console.log(totalrecords);
     let totalrecordscount = totalrecords.match(/\d/);
-    // alert(totalrecordscount);
+    console.log(totalrecordscount);
     if (ele.checked == false) {
         headcheckbox.checked = false;
     }
@@ -383,8 +400,8 @@ function changeAudioBrowsePage(pageId) {
         type : 'GET',
         url : '/audiobrowsechangepage'
       }).done(function(data){
-        // console.log(data.crawledDataFields, data.crawledData, data.shareMode);
-        createAudioBrowseTable(data.crawledDataFields, data.crawledData, data.shareMode, data.totalRecords, data.shareChecked);
+        // console.log(data.audioDataFields, data.audioData, data.shareMode);
+        createAudioBrowseTable(data.audioDataFields, data.audioData, data.shareMode, data.totalRecords, data.shareChecked);
         eventsMapping();
         createPagination(data.totalRecords, data.activePage);
     });
