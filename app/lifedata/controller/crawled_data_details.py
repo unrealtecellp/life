@@ -85,6 +85,7 @@ def get_n_crawled_data(data_collection,
                        start_from=0,
                        number_of_crawled_data=10,
                        crawled_data_delete_flag=0):
+
     aggregate_output = data_collection.aggregate([
         {
             "$match": {
@@ -103,7 +104,25 @@ def get_n_crawled_data(data_collection,
             "$project": {
                 "_id": 0,
                 "dataId": 1,
-                "Data": 1
+                "Data": {
+                    "$switch": {
+                        "branches": [
+                            {
+                                "case": {"$eq": [data_type, "text"]},
+                                "then": "$Data"
+                            },
+                            {
+                                "case": {"$eq": [data_type, "audio"]},
+                                "then": "$audioFilename"
+                            },
+                            {
+                                "case": {"$eq": [data_type, "video"]},
+                                "then": "$videoFilename"
+                            }
+                        ],
+                        "default": ""
+                    }
+                }
             }
         }
     ])
