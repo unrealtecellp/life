@@ -44,7 +44,13 @@ function createBrowseActions(projectOwner, currentUsername) {
     createSelect2('browseactiondropdown', browseActionOptionsList, 'Delete');
 }
 
-function createAudioBrowseTable(audioDataFields, audioData, shareMode=0, totalRecords=0, shareChecked="false") {
+function createAudioBrowseTable(
+    audioDataFields,
+    audioData,
+    shareMode=0,
+    totalRecords=0,
+    shareChecked="false",
+    shareInfo=undefined) {
     // console.log(audioData);
     // console.log(shareChecked);
     let count = audioData.length
@@ -58,7 +64,10 @@ function createAudioBrowseTable(audioDataFields, audioData, shareMode=0, totalRe
             '<tr>'+
             '<th><input type="checkbox" id="headcheckbox" onchange="checkAllAudio(this)" name="chk[]" checked/>&nbsp;</th>';
     for (let i=0; i<audioDataFields.length; i++) {
-        if (audioDataFields[i] == "audioFilename") continue;
+        if (audioDataFields[i] == "audioFilename"){
+            ele += '<th onclick="sortTable('+(i+1)+')" hidden>'+audioDataFields[i]+'</th>';
+            continue;
+        }
         ele += '<th onclick="sortTable('+(i+1)+')">'+audioDataFields[i]+'</th>';
     }
     ele += '<th>View</th>';
@@ -68,6 +77,7 @@ function createAudioBrowseTable(audioDataFields, audioData, shareMode=0, totalRe
     }
     if (shareChecked === 'true') {
         ele += '<th>Share</th>';
+        ele += '<th>Share Info</th>';
     }
     
     ele += '</tr>'+
@@ -76,17 +86,27 @@ function createAudioBrowseTable(audioDataFields, audioData, shareMode=0, totalRe
             // {% for data in sdata %}
     for (let i=0; i<audioData.length; i++) {
         aData = audioData[i];
+        let audioCount = i+1;
         ele += '<tr>'+
                 '<td><input type="checkbox" id="lexemecheckbox" onchange="checkAudio(this)" name="name1" checked /></td>';
         for (let j=0; j<audioDataFields.length; j++) {
             let field = audioDataFields[j];
             if (field in aData) {
-                if (field == "audioFilename") continue;
+                if (field == "audioFilename") {
+                    ele += '<td id='+field+' hidden>'+aData[field]+'</td>';
+                    continue;
+                }
                 if (field == 'Audio File') {
-                    ele += '<td id='+field+'>'+
-                            '<audio controls oncontextmenu="return false" controlslist="nofullscreen nodownload noremoteplayback noplaybackrate">'+
-                            '<source src="'+aData[field]+'" type="audio/wav"></audio>'+
+                    ele += '<td>'+
+                            '<button type="button" id="playaudio_'+audioCount+'" class="btn btn-primary playaudioclass">'+
+                            '<span class="glyphicon glyphicon-play" aria-hidden="true"></span>'+
+                            // ' Play Audio'+
+                            '</button>'+
                             '</td>';
+                    // ele += '<td id='+field+'>'+
+                            // '<audio controls oncontextmenu="return false" controlslist="nofullscreen nodownload noremoteplayback noplaybackrate">'+
+                            // '<source src="'+aData[field]+'" type="audio/wav"></audio>'+
+                            // '</td>';
                 }
                 else {
                     ele += '<td id='+field+'>'+aData[field]+'</td>';
@@ -121,7 +141,13 @@ function createAudioBrowseTable(audioDataFields, audioData, shareMode=0, totalRe
                     '<span class="glyphicon glyphicon-share-alt" aria-hidden="true"></span>'+
                     // ' Share Audio'+
                     '</button></td>';
-
+            if (shareInfo) {
+                ele += '<td>'+shareInfo+'</td>';
+            }
+            else {
+                // console.log(field);
+                ele += '<td> - </td>';
+            }
         }
         ele += '</tr>';
     }
@@ -208,6 +234,11 @@ function eventsMapping() {
             audioBrowseAction(audios);
         }
     });
+    // play single audio
+    $(".playaudioclass").click(function() {
+        let audioInfo = getSingleAudioBrowseAction(this);
+        audioBrowseActionPlay(audioInfo, this);
+    });
     $(".shareaudioclass").click(function() {
         let audioInfo = getSingleAudioBrowseAction(this);
         shareAudioFLAG = confirm("Share This Audio!!!");
@@ -246,6 +277,34 @@ function audioBrowseAction(audioInfo) {
         url : '/audiobrowseaction'
       }).done(function(data){
             window.location.reload();
+            // updateAudioBrowseTable();
+      });
+}
+
+function audioBrowseActionPlay(audioInfo, audioCountInfo) {
+    // console.log(audioCountInfo);
+    let audioBrowseInfo = getAudioBrowseInfo();
+    $.ajax({
+        data : {
+          a : JSON.stringify({
+            "audioInfo": audioInfo,
+            "audioBrowseInfo": audioBrowseInfo
+        })
+        },
+        type : 'GET',
+        url : '/audiobrowseactionplay'
+      }).done(function(data){
+            // window.location.reload();
+            createAudioBrowseTable(data.audioDataFields, data.audioData, data.shareMode, data.totalRecords, data.shareChecked);
+            eventsMapping();
+            createPagination(data.totalRecords)
+            // console.log(audioCountInfo);
+            audioCountInfo = document.getElementById(audioCountInfo.id);
+            // console.log(audioCountInfo);
+            let audioSource = data.audioSource;
+            let embededAudio = '<audio controls autoplay oncontextmenu="return false" controlslist="nofullscreen nodownload noremoteplayback noplaybackrate">'+
+                                '<source src="'+audioSource+'" type="audio/wav"></audio>';
+            audioCountInfo.parentNode.innerHTML = embededAudio;
       });
 }
 
@@ -340,9 +399,9 @@ function checkAudio(ele) {
     var headcheckbox = document.getElementById('headcheckbox');
     var checkboxes = document.getElementsByTagName('input');
     var totalrecords = document.getElementById('totalrecords').innerHTML;
-    console.log(totalrecords);
+    // console.log(totalrecords);
     let totalrecordscount = totalrecords.match(/\d/);
-    console.log(totalrecordscount);
+    // console.log(totalrecordscount);
     if (ele.checked == false) {
         headcheckbox.checked = false;
     }

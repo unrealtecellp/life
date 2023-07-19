@@ -336,7 +336,7 @@ def enternewsentences():
                                                      activeprojectname,
                                                      activespeakerid,
                                                      current_username)
-            logger.debug("audio_id: %s", audio_id)
+            # logger.debug("audio_id: %s", audio_id)
             if (audio_id != ''):
                 audio_delete_flag = audiodetails.get_audio_delete_flag(transcriptions,
                                                                        activeprojectname,
@@ -367,10 +367,14 @@ def enternewsentences():
             last_updated_by = audiodetails.lastupdatedby(data_collection,
                                                          audio_id)
             activeprojectform['lastUpdatedBy'] = last_updated_by['updatedBy']
-            file_path = audiodetails.getaudiofilefromfs(mongo,
-                                                        basedir,
-                                                        audio_id,
-                                                        'audioId')
+            # file_path = audiodetails.getaudiofilefromfs(mongo,
+            #                                             basedir,
+            #                                             audio_id,
+            #                                             'audioId')
+            audio_filename = audiodetails.get_audio_filename(data_collection,
+                                                            audio_id)
+            file_path = url_for('retrieve', filename=audio_filename)
+            # logger.debug("audio_filename: %s, file_path: %s", audio_filename, file_path)
             activeprojectform['lastActiveId'] = audio_id
             activeprojectform['transcriptionDetails'] = transcription_details
             # print(transcription_details)
@@ -529,15 +533,16 @@ def audiobrowse():
         else:
             audio_data_list = []
         # get audio file src
-        new_audio_data_list = []
-        for audio_data in audio_data_list:
-            new_audio_data = audio_data
-            audio_filename = audio_data['audioFilename']
-            if ("downloadchecked" in shareinfo and
-                shareinfo["downloadchecked"] == 'true'):
-                new_audio_data['Audio File'] = url_for('retrieve', filename=audio_filename)
-                # logger.debug("retrieved audio: %s", new_audio_data['Audio File'])
-            new_audio_data_list.append(new_audio_data)
+        new_audio_data_list = audio_data_list
+        # new_audio_data_list = []
+        # for audio_data in audio_data_list:
+        #     new_audio_data = audio_data
+        #     audio_filename = audio_data['audioFilename']
+        #     # if ("downloadchecked" in shareinfo and
+        #     #     shareinfo["downloadchecked"] == 'true'):
+        #     # new_audio_data['Audio File'] = url_for('retrieve', filename=audio_filename)
+        #     # logger.debug("retrieved audio: %s", new_audio_data['Audio File'])
+        #     new_audio_data_list.append(new_audio_data)
         new_data['currentUsername'] = current_username
         new_data['activeProjectName'] = activeprojectname
         new_data['projectOwner'] = projectowner
@@ -563,14 +568,14 @@ def updateaudiobrowsetable():
     try:
         # data through ajax
         audio_browse_info = json.loads(request.args.get('a'))
-        logger.debug('audio_browse_info: %s', audio_browse_info)
+        # logger.debug('audio_browse_info: %s', audio_browse_info)
         userprojects, transcriptions = getdbcollections.getdbcollections(mongo,
                                                                          'userprojects',
                                                                          'transcriptions')
         current_username = getcurrentusername.getcurrentusername()
         activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
                                                                       userprojects)
-        logger.debug(audio_browse_info['activeSpeakerId'])
+        # logger.debug(audio_browse_info['activeSpeakerId'])
         active_speaker_id = audio_browse_info['activeSpeakerId']
         audio_file_count = audio_browse_info['audioFilesCount']
         audio_browse_action = audio_browse_info['browseActionSelectedOption']
@@ -592,14 +597,15 @@ def updateaudiobrowsetable():
                                                         activeprojectname)
         share_mode = shareinfo['sharemode']
         share_checked = shareinfo['sharechecked']
-        new_audio_data_list = []
-        for audio_data in audio_data_list:
-            new_audio_data = audio_data
-            audio_filename = audio_data['audioFilename']
-            if ("downloadchecked" in shareinfo and
-                shareinfo["downloadchecked"] == 'true'):
-                new_audio_data['Audio File'] = url_for('retrieve', filename=audio_filename)
-            new_audio_data_list.append(new_audio_data)
+        new_audio_data_list = audio_data_list
+        # new_audio_data_list = []
+        # for audio_data in audio_data_list:
+        #     new_audio_data = audio_data
+        #     audio_filename = audio_data['audioFilename']
+        #     # if ("downloadchecked" in shareinfo and
+        #     #     shareinfo["downloadchecked"] == 'true'):
+        #     # new_audio_data['Audio File'] = url_for('retrieve', filename=audio_filename)
+        #     new_audio_data_list.append(new_audio_data)
     except:
         logger.exception("")
 
@@ -620,14 +626,14 @@ def audiobrowseaction():
         current_username = getcurrentusername.getcurrentusername()
         activeprojectname = getactiveprojectname.getactiveprojectname(
             current_username, userprojects)
-        logger.debug("%s,%s", current_username, activeprojectname)
+        # logger.debug("%s,%s", current_username, activeprojectname)
         # data from ajax
         data = json.loads(request.args.get('a'))
         # logger.debug('data: %s', pformat(data))
         audio_info = data['audioInfo']
-        logger.debug('audio_info: %s', pformat(audio_info))
+        # logger.debug('audio_info: %s', pformat(audio_info))
         audio_browse_info = data['audioBrowseInfo']
-        logger.debug('audio_browse_info: %s', pformat(audio_browse_info))
+        # logger.debug('audio_browse_info: %s', pformat(audio_browse_info))
         browse_action = audio_browse_info['browseActionSelectedOption']
         active_speaker_id = audio_browse_info['activeSpeakerId']
         audio_ids_list = list(audio_info.keys())
@@ -668,6 +674,57 @@ def audiobrowseaction():
 
     return 'OK'
 
+@app.route('/audiobrowseactionplay', methods=['GET', 'POST'])
+@login_required
+def audiobrowseactionplay():
+    audio_data_fields = ['audioId', 'audioFilename', 'Audio File']
+    audio_data_list = []
+    try:
+        userprojects, transcriptions = getdbcollections.getdbcollections(mongo,
+                                                                         'userprojects',
+                                                                         'transcriptions')
+        current_username = getcurrentusername.getcurrentusername()
+        activeprojectname = getactiveprojectname.getactiveprojectname(
+            current_username, userprojects)
+        # logger.debug("%s,%s", current_username, activeprojectname)
+        # data from ajax
+        data = json.loads(request.args.get('a'))
+        # logger.debug('data: %s', pformat(data))
+        data_info = data['audioInfo']
+        audio_browse_info = data['audioBrowseInfo']
+        audio_filename = list(data_info.values())[0]
+        # logger.debug("audio_filename: %s", audio_filename)
+        audio_src = url_for('retrieve', filename=audio_filename)
+        # logger.debug(audio_browse_info['activeSpeakerId'])
+        active_speaker_id = audio_browse_info['activeSpeakerId']
+        audio_file_count = audio_browse_info['audioFilesCount']
+        audio_browse_action = audio_browse_info['browseActionSelectedOption']
+        total_records = 0
+        if (active_speaker_id != ''):
+            total_records, audio_data_list = audiodetails.get_n_audios(transcriptions,
+                                                                        activeprojectname,
+                                                                        active_speaker_id,
+                                                                        start_from=0,
+                                                                        number_of_audios=audio_file_count,
+                                                                        audio_delete_flag=audio_browse_action)
+        else:
+            audio_data_list = []
+
+        shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
+                                                        current_username,
+                                                        activeprojectname)
+        share_mode = shareinfo['sharemode']
+        share_checked = shareinfo['sharechecked']
+        new_audio_data_list = audio_data_list
+        return jsonify(audioDataFields= audio_data_fields,
+                        audioData=new_audio_data_list,
+                        shareMode=share_mode,
+                        totalRecords=total_records,
+                        shareChecked=share_checked,
+                        audioSource=audio_src)
+    except:
+        logger.exception("")
+        return jsonify(audioSource='')
 
 @app.route('/audiobrowseactionshare', methods=['GET', 'POST'])
 @login_required
@@ -738,14 +795,15 @@ def audiobrowsechangepage():
                                                         activeprojectname)
         share_mode = shareinfo['sharemode']
         share_checked = shareinfo['sharechecked']
-        new_audio_data_list = []
-        for audio_data in audio_data_list:
-            new_audio_data = audio_data
-            audio_filename = audio_data['audioFilename']
-            if ("downloadchecked" in shareinfo and
-                shareinfo["downloadchecked"] == 'true'):
-                new_audio_data['Audio File'] = url_for('retrieve', filename=audio_filename)
-            new_audio_data_list.append(new_audio_data)
+        new_audio_data_list = audio_data_list
+        # new_audio_data_list = []
+        # for audio_data in audio_data_list:
+        #     new_audio_data = audio_data
+        #     audio_filename = audio_data['audioFilename']
+        #     # if ("downloadchecked" in shareinfo and
+        #     #     shareinfo["downloadchecked"] == 'true'):
+        #     # new_audio_data['Audio File'] = url_for('retrieve', filename=audio_filename)
+        #     new_audio_data_list.append(new_audio_data)
     except:
         logger.exception("")
 
@@ -4025,13 +4083,13 @@ def retrieve(filename):
         activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
                                                                     userprojects)
 
-        share_info = getuserprojectinfo.getuserprojectinfo(userprojects,
-                                                            current_username,
-                                                            activeprojectname)
-        if ("downloadchecked" in share_info and
-            share_info["downloadchecked"] == 'true'):
+        # share_info = getuserprojectinfo.getuserprojectinfo(userprojects,
+        #                                                     current_username,
+        #                                                     activeprojectname)
+        # if ("downloadchecked" in share_info and
+        #     share_info["downloadchecked"] == 'true'):
             # logger.debug("share_info: %s", share_info)
-            x = mongo.send_file(filename)
+        x = mongo.send_file(filename)
             # logger.debug("mongo send file: %s, %s, %s, %s, %s, %s", x.response, x.status, x.headers, x.mimetype, x.content_type, x.direct_passthrough)
     except:
         logger.exception("")

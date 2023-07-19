@@ -139,7 +139,7 @@ def saveaudiofiles(mongo,
             fs_file_ids.append(fs_file_id)
 
         elif (file_format == 'zip'):
-            logger.debug('ZIP file format')
+            # logger.debug('ZIP file format')
             file_states, transcription_doc_ids, fs_file_ids = savemultipleaudiofiles(mongo,
                                                                                      projects,
                                                                                      userprojects,
@@ -250,8 +250,8 @@ def savemultipleaudiofiles(mongo,
                         all_file_states.append(file_state)
                         transcription_doc_ids.append(transcription_doc_id)
                         fs_file_ids.append(fs_file_id)
-    except Exception as e:
-        logger.debug(e)
+    except:
+        logger.exception("")
         flash(f"ERROR")
         all_file_states.append(False)
         transcription_doc_ids.append('')
@@ -393,7 +393,7 @@ def saveoneaudiofile(mongo,
                                                                             audio_duration)
 
     # logger.debug('Final generated text grid', text_grid)
-    logger.debug('Final transcription flag %s', transcriptionFLAG)
+    # logger.debug('Final transcription flag %s', transcriptionFLAG)
 
     new_audio_details["transcriptionFLAG"] = transcriptionFLAG
 
@@ -664,8 +664,8 @@ def createaudiowaveform(audiowaveform_audio_path, audiowaveform_json_path, audio
     audio_filename = audio_filename[0:audio_filename.rfind('.')]
     json_filename = os.path.join(
         audiowaveform_json_path, audio_filename+'.json')
-    logger.debug('audio filename', audiowaveform_audio_path)
-    logger.debug('json_filename', json_filename)
+    # logger.debug('audio filename', audiowaveform_audio_path)
+    # logger.debug('json_filename', json_filename)
     subprocess.run(
         ['audiowaveform', '-i', audiowaveform_audio_path, '-o',  json_filename])
     with open(json_filename, 'r') as jsonfile:
@@ -774,9 +774,9 @@ def updateaudiofiles(mongo,
                                 {"$set": {
                                     userprojectinfo: speakerId
                                 }})
-        logger.debug("audio_id: %s", audio_id)
-        logger.debug("new_audio_details: %s", pformat(new_audio_details))
-        logger.debug("project_type_collection: %s", project_type_collection)
+        # logger.debug("audio_id: %s", audio_id)
+        # logger.debug("new_audio_details: %s", pformat(new_audio_details))
+        # logger.debug("project_type_collection: %s", project_type_collection)
         # pprint(new_audio_details)
         project_type_collection_doc_id = project_type_collection.update_one({"audioId": audio_id},
                                                                             {"$set": new_audio_details})
@@ -870,16 +870,16 @@ def getaudiowaveformfilefromfs(mongo,
     fs = gridfs.GridFS(mongo.db)
     file = fs.find_one({file_type: file_id})
     audioFolder = os.path.join(basedir, folder_name)
-    logger.debug('Audio folder path', audioFolder)
+    # logger.debug('Audio folder path', audioFolder)
     if (os.path.exists(audioFolder)):
-        logger.debug('Audio folder path exists', audioFolder, 'deleting')
+        # logger.debug('Audio folder path exists', audioFolder, 'deleting')
         shutil.rmtree(audioFolder)
     os.mkdir(audioFolder)
     file_path = ''
     if (file is not None and
             'audio' in file.contentType):
         file_name = file.filename
-        logger.debug('File name', file_name)
+        # logger.debug('File name', file_name)
         audiofile = fs.get_last_version(filename=file_name)
         audiofileBytes = audiofile.read()
         # if len(audiofileBytes) != 0:
@@ -953,7 +953,7 @@ def getnewaudioid(projects,
     # logger.debug('audio_ids_list', audio_ids_list)
     if len(audio_ids_list) != 0:
         audio_ids_list = audio_ids_list['speakersAudioIds'][activespeakerId]
-        logger.debug('audio_ids_list: %s', audio_ids_list)
+        # logger.debug('audio_ids_list: %s', audio_ids_list)
     if (len(audio_ids_list) != 0):
         if (last_active_id in audio_ids_list):
             audio_id_index = audio_ids_list.index(last_active_id)
@@ -1339,6 +1339,26 @@ def getaudiometadata(data_collection, audio_id):
         audio_metadata_details['audioMetadata'] = audio_metadata['audioMetadata']
 
     return audio_metadata_details
+
+def get_audio_filename(data_collection, audio_id):
+    """get the audio filename of the audio file
+
+    Args:
+        data_collection (_type_): _description_
+        file_id (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """
+    audio_filename = data_collection.find_one(
+        {'audioId': audio_id}, {'_id': 1, 'audioFilename': 1})
+    # logger.debug(audio_filename)
+    if audio_filename is not None and 'audioFilename' in audio_filename:
+        return audio_filename['audioFilename']
+    else:
+        return ''
+
+
 
 
 def lastupdatedby(transcriptions, audio_id):
@@ -1813,7 +1833,7 @@ def save_audio_in_mongo_and_localFs(mongo,
                                                 audio_store_dir,
                                                 audio_id,
                                                 'audioId')
-        logger.debug('Audio saved path', saved_path)
+        # logger.debug('Audio saved path', saved_path)
     else:
         saved_path = ''
 
@@ -1851,7 +1871,7 @@ def delete_one_audio_file(projects_collection,
                           audio_id,
                           update_latest_audio_id=1):
     try:
-        logger.debug("project_name: %s, audio_id: %s", project_name, audio_id)
+        # logger.debug("project_name: %s, audio_id: %s", project_name, audio_id)
         transcription_doc_id = transcriptions_collection.find_one_and_update({
             "projectname": project_name,
             "audioId": audio_id
@@ -1859,8 +1879,8 @@ def delete_one_audio_file(projects_collection,
             {"$set": {"audiodeleteFLAG": 1}},
             projection={'_id': True},
             return_document=ReturnDocument.AFTER)['_id']
-        logger.debug('DELETED transcription_doc_id: %s, %s',
-                     transcription_doc_id, type(transcription_doc_id))
+        # logger.debug('DELETED transcription_doc_id: %s, %s',
+        #              transcription_doc_id, type(transcription_doc_id))
 
         if (update_latest_audio_id):
             latest_audio_id = getnewaudioid(projects_collection,
@@ -1888,9 +1908,9 @@ def delete_one_audio_file(projects_collection,
 def get_audio_delete_flag(transcriptions_collection,
                           project_name,
                           audio_id):
-    logger.debug("%s, %s, %s", transcriptions_collection,
-                 project_name,
-                 audio_id)
+    # logger.debug("%s, %s, %s", transcriptions_collection,
+    #              project_name,
+    #              audio_id)
     audio_delete_flag = transcriptions_collection.find_one({"projectname": project_name,
                                                             "audioId": audio_id},
                                                            {"_id": 0,
@@ -1905,7 +1925,7 @@ def revoke_deleted_audio(projects_collection,
                          active_speaker_id,
                          audio_id):
     try:
-        logger.debug("project_name: %s, audio_id: %s", project_name, audio_id)
+        # logger.debug("project_name: %s, audio_id: %s", project_name, audio_id)
         transcription_doc_id = transcriptions_collection.find_one_and_update({
             "projectname": project_name,
             "audioId": audio_id
@@ -1913,8 +1933,8 @@ def revoke_deleted_audio(projects_collection,
             {"$set": {"audiodeleteFLAG": 0}},
             projection={'_id': True},
             return_document=ReturnDocument.AFTER)['_id']
-        logger.debug('REVOKED transcription_doc_id: %s, %s',
-                     transcription_doc_id, type(transcription_doc_id))
+        # logger.debug('REVOKED transcription_doc_id: %s, %s',
+        #              transcription_doc_id, type(transcription_doc_id))
 
         projects_collection.update_one({"projectname": project_name},
                                        {"$pull": {"speakersAudioIdsDeleted."+active_speaker_id: audio_id},
@@ -1958,6 +1978,7 @@ def get_n_audios(data_collection,
     aggregate_output_list = []
     for doc in aggregate_output:
         # logger.debug("aggregate_output: %s", pformat(doc))
+        doc['Audio File'] = ''
         aggregate_output_list.append(doc)
     # logger.debug('aggregate_output_list: %s', pformat(aggregate_output_list))
     total_records = len(aggregate_output_list)

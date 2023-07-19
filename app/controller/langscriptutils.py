@@ -34,6 +34,7 @@ def get_script_name(langname):
         "Hindi": "Devanagari",
         "IPA": "IPA",
         "Kannada": "Kannada",
+        "Khortha": "Devanagari",
         "Konkani": "Devanagari",
         "Magahi": "Devanagari",
         "Maithili": "Devanagari",
