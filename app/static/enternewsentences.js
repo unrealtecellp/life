@@ -466,6 +466,14 @@ $('#speakeriduploaddropdown').select2({
   // allowClear: true
   });
 
+  $('#boundarypausedropdown').select2({
+  tags: true,
+  placeholder: 'Select preset value or enter a custom value',
+  // data: posCategories
+  // allowClear: true
+  });
+
+
 $("#audiofile").change(function() {
     let zipFileElement = document.getElementById('audiofile');
     zipFileName = zipFileElement.files[0];
@@ -481,6 +489,18 @@ $("#audiofile").change(function() {
     }
     
 })
+
+$('#uploadparameters-vadid').change(function () {
+  if (this.checked) {
+    $('#uploadparameters-boundarypause-divid').css("display", "block");
+    $("#uploadparameters-boundarypause-divid :input").prop("disabled", false);
+  }
+  else {
+    $('#uploadparameters-boundarypause-divid').css("display", "none");
+    $("#uploadparameters-boundarypause-divid :input").prop("disabled", true);
+  }
+})
+
 
 function replaceZoomSlider() {
   let slider = '<input id="slider" data-action="zoom" type="range" min="20" max="100" value="0" style="width: 50%">';

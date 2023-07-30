@@ -524,8 +524,8 @@ def audiobrowse():
         total_records = 0
         if (active_speaker_id != ''):
             total_records, audio_data_list = audiodetails.get_n_audios(transcriptions,
-                                                                        activeprojectname,
-                                                                        active_speaker_id)
+                                                                       activeprojectname,
+                                                                       active_speaker_id)
         else:
             audio_data_list = []
         # get audio file src
@@ -542,7 +542,8 @@ def audiobrowse():
         new_data['shareInfo'] = shareinfo
         new_data['speakerIds'] = speakerids
         new_data['audioData'] = new_audio_data_list
-        new_data['audioDataFields'] = ['audioId', 'audioFilename', 'Audio File']
+        new_data['audioDataFields'] = [
+            'audioId', 'audioFilename', 'Audio File']
         new_data['totalRecords'] = total_records
     except:
         logger.exception("")
@@ -575,11 +576,11 @@ def updateaudiobrowsetable():
         total_records = 0
         if (active_speaker_id != ''):
             total_records, audio_data_list = audiodetails.get_n_audios(transcriptions,
-                                                                        activeprojectname,
-                                                                        active_speaker_id,
-                                                                        start_from=0,
-                                                                        number_of_audios=audio_file_count,
-                                                                        audio_delete_flag=audio_browse_action)
+                                                                       activeprojectname,
+                                                                       active_speaker_id,
+                                                                       start_from=0,
+                                                                       number_of_audios=audio_file_count,
+                                                                       audio_delete_flag=audio_browse_action)
         else:
             audio_data_list = []
         # logger.debug('audio_data_list: %s', pformat(audio_data_list))
@@ -592,18 +593,19 @@ def updateaudiobrowsetable():
                 'retrieve', filename=audio_filename)
             new_audio_data_list.append(new_audio_data)
         shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
-                                                        current_username,
-                                                        activeprojectname)
+                                                          current_username,
+                                                          activeprojectname)
         share_mode = shareinfo['sharemode']
         share_checked = shareinfo['sharechecked']
     except:
         logger.exception("")
 
-    return jsonify(audioDataFields= audio_data_fields,
+    return jsonify(audioDataFields=audio_data_fields,
                    audioData=new_audio_data_list,
                    shareMode=share_mode,
                    totalRecords=total_records,
                    shareChecked=share_checked)
+
 
 @app.route('/audiobrowseaction', methods=['GET', 'POST'])
 @login_required
@@ -692,21 +694,22 @@ def audiobrowseactionshare():
         logger.exception("")
         return jsonify(commentInfo={})
 
+
 @app.route('/audiobrowsechangepage', methods=['GET', 'POST'])
 @login_required
 def audiobrowsechangepage():
-    audio_data_fields= ['audioId', 'audioFilename', 'Audio File']
+    audio_data_fields = ['audioId', 'audioFilename', 'Audio File']
     audio_data_list = []
     try:
         # data through ajax
         audio_browse_info = json.loads(request.args.get('a'))
         logger.debug('audio_browse_info: %s', pformat(audio_browse_info))
         userprojects, transcriptions = getdbcollections.getdbcollections(mongo,
-                                                                    'userprojects',
-                                                                    'transcriptions')
+                                                                         'userprojects',
+                                                                         'transcriptions')
         current_username = getcurrentusername.getcurrentusername()
         activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
-                                                                    userprojects)
+                                                                      userprojects)
         # logger.debug(crawler_browse_info['activeSourceId'])
         active_speaker_id = audio_browse_info['activeSpeakerId']
         audio_count = audio_browse_info['audioFilesCount']
@@ -719,23 +722,23 @@ def audiobrowsechangepage():
         total_records = 0
         if (active_speaker_id != ''):
             total_records, crawled_data_list = audiodetails.get_n_audios(transcriptions,
-                                                                        activeprojectname,
-                                                                        active_speaker_id,
-                                                                        start_from=start_from,
-                                                                        number_of_audios=number_of_audios,
-                                                                        audio_delete_flag=audio_browse_action)
+                                                                         activeprojectname,
+                                                                         active_speaker_id,
+                                                                         start_from=start_from,
+                                                                         number_of_audios=number_of_audios,
+                                                                         audio_delete_flag=audio_browse_action)
         else:
             crawled_data_list = []
         # logger.debug('crawled_data_list: %s', pformat(crawled_data_list))
         shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
-                                                        current_username,
-                                                        activeprojectname)
+                                                          current_username,
+                                                          activeprojectname)
         share_mode = shareinfo['sharemode']
         share_checked = shareinfo['sharechecked']
     except:
         logger.exception("")
 
-    return jsonify(crawledDataFields= audio_data_fields,
+    return jsonify(crawledDataFields=audio_data_fields,
                    crawledData=crawled_data_list,
                    shareMode=share_mode,
                    totalRecords=total_records,
@@ -3641,15 +3644,15 @@ def userslist():
                     share_with_users_list.append(username)
         # print(usersList, share_with_users_list)
         if (project_type == 'recordings' or
-            project_type == 'transcriptions'):
+                project_type == 'transcriptions'):
             speakersDict = projects.find_one({'projectname': activeprojectname},
-                                            {'_id': 0, 'speakerIds.'+current_username: 1})
+                                             {'_id': 0, 'speakerIds.'+current_username: 1})
             if (len(speakersDict) != 0):
                 sourceList = speakersDict['speakerIds'][current_username]
         elif (project_type == 'crawling' or
-            project_type == 'annotation'):
+              project_type == 'annotation'):
             sourceDict = projects.find_one({'projectname': activeprojectname},
-                                            {'_id': 0, 'sourceIds.'+current_username: 1})
+                                           {'_id': 0, 'sourceIds.'+current_username: 1})
             if (len(sourceDict) != 0):
                 sourceList = sourceDict['sourceIds'][current_username]
     except:
@@ -3778,7 +3781,7 @@ def shareprojectwith():
                     'activespeakerId': '',
                     'activesourceId': ''
                 }
-                
+
             projectdetails = projects.find_one(
                 {
                     'projectname': activeprojectname
@@ -5182,10 +5185,60 @@ def uploadaudiofiles():
                                                                   userprojects)
     projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
     if request.method == 'POST':
+        run_vad = False
+        run_asr = False
+        split_into_smaller_chunks = True
+        get_audio_json = True
+
         data = dict(request.form.lists())
-        # print(data)
+        logger.debug("Form data %s", data)
         speakerId = data['speakerId'][0]
         new_audio_file = request.files.to_dict()
+
+        if 'uploadparameters-vad' in data:
+            run_vad = True
+
+        if 'boundaryPause' in data:
+            boundary_threshold = float(data['boundaryPause'][0])
+        else:
+            boundary_threshold = 0.3
+
+        if 'sliceOffsetValue' in data:
+            slice_offset = float(data['sliceOffsetValue'][0])
+        else:
+            slice_offset = 0.1
+
+        slice_threshold = float(data['fileSplitThreshold'][0])
+        slice_size = float(data['maxFileSize'][0])
+
+        if 'uploadparameters-optimisefor' in data:
+            get_audio_json = data['uploadparameters-optimisefor'][0] == 'True'
+        # print(get_audio_json)
+
+        '''
+        ASR Model and VAD Model Dict Formats
+
+        asr_model = {
+            'model_name': "name_1",
+            'model_type': "local", (or "api")
+            'model_params': {
+                'model_path': "path_1",
+                'model_api': 'api_endpoint'
+            },
+            'target': 'hin-Deva'
+        }
+
+
+        vad_model = {
+            'model_name': "name_1",
+            'model_type': "local", (or "api")
+            'model_params': {
+                'model_path': "path_1",
+                'model_api': 'api_endpoint'
+            }
+        }
+        '''
+
         audiodetails.saveaudiofiles(mongo,
                                     projects,
                                     userprojects,
@@ -5196,16 +5249,120 @@ def uploadaudiofiles():
                                     speakerId,
                                     new_audio_file,
                                     # change this and boundary_threshold for automatic detection of boundaries of different kinds
-                                    run_vad=True,
-                                    run_asr=False,
-                                    vad_model=[],
-                                    asr_model=[],
+                                    run_vad=run_vad,
+                                    run_asr=run_asr,
+                                    split_into_smaller_chunks=split_into_smaller_chunks,
+                                    get_audio_json=get_audio_json,
+                                    vad_model={},
+                                    asr_model={},
                                     transcription_type='sentence',
-                                    boundary_threshold=0.3,
-                                    slice_threshold=0.9,
+                                    boundary_threshold=boundary_threshold,
+                                    slice_threshold=slice_threshold,
                                     # max size of each slice (in seconds), if large audio is to be automatically divided into multiple parts
-                                    slice_size=120
+                                    slice_size=slice_size,
+                                    data_type="audio",
+                                    new_audio_details={},
+                                    prompt="",
+                                    update=False,
+                                    slice_offset_value=slice_offset
                                     )
+
+    return redirect(url_for('enternewsentences'))
+
+
+# makeboundary route
+@app.route('/makeboundary', methods=['GET', 'POST'])
+@login_required
+def makeboundary():
+    projects, userprojects, transcriptions = getdbcollections.getdbcollections(mongo,
+                                                                               'projects',
+                                                                               'userprojects',
+                                                                               'transcriptions')
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username,
+                                                                  userprojects)
+    projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
+    if request.method == 'POST':
+        run_vad = True
+        run_asr = False
+        get_audio_json = False
+        split_into_smaller_chunks = False
+        overwrite_user = False
+
+        data = dict(request.form.lists())
+        logger.debug("Form data %s", data)
+        speakerId = data['speakerId'][0]
+        # new_audio_file = request.files.to_dict()
+        audio_filename = data['audiofile'][0]
+        # converts into seconds
+        audio_duration = float(data['audioduration'][0]) * 60
+        existing_audio_details = transcriptions.find_one(
+            {'projectname': activeprojectname, 'audioFilename': audio_filename})
+        logger.debug("Existing audio data %s", existing_audio_details)
+
+        if 'boundaryPause' in data:
+            boundary_threshold = float(data['boundaryPause'][0])
+        else:
+            boundary_threshold = 0.3
+
+        if 'sliceOffsetValue' in data:
+            slice_offset = float(data['sliceOffsetValue'][0])
+        else:
+            slice_offset = 0.1
+
+        slice_threshold = 2.0
+        slice_size = 150.0
+
+        if 'createaudiojson' in data:
+            get_audio_json = True
+
+        if 'overwrite-my-boundaries' in data:
+            overwrite_user = True
+        # print(get_audio_json)
+
+        '''
+        ASR Model and VAD Model Dict Formats
+
+        asr_model = {
+            'model_name': "name_1",
+            'model_type': "local", (or "api")
+            'model_params': {
+                'model_path': "path_1",
+                'model_api': 'api_endpoint'
+            },
+            'target': 'hin-Deva'
+        }
+
+
+        vad_model = {
+            'model_name': "name_1",
+            'model_type': "local", (or "api")
+            'model_params': {
+                'model_path': "path_1",
+                'model_api': 'api_endpoint'
+            }
+        }
+        '''
+
+        audiodetails.save_boundaries_of_one_audio_file(mongo,
+                                                       projects,
+                                                       userprojects,
+                                                       transcriptions,
+                                                       projectowner,
+                                                       activeprojectname,
+                                                       current_user.username,
+                                                       audio_filename,
+                                                       audio_duration,
+                                                       # change this and boundary_threshold for automatic detection of boundaries of different kinds
+                                                       run_vad=run_vad,
+                                                       run_asr=run_asr,
+                                                       split_into_smaller_chunks=split_into_smaller_chunks,
+                                                       get_audio_json=get_audio_json,
+                                                       vad_model={},
+                                                       asr_model={},
+                                                       transcription_type='sentence',
+                                                       boundary_threshold=boundary_threshold,
+                                                       save_for_user=overwrite_user
+                                                       )
 
     return redirect(url_for('enternewsentences'))
 

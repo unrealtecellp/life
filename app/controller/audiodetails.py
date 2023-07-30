@@ -14,6 +14,7 @@ import pandas as pd
 from zipfile import ZipFile
 from werkzeug.datastructures import FileStorage
 import io
+from io import BytesIO
 from app.controller import (
     getcommentstats,
     readJSONFile,
@@ -42,7 +43,7 @@ logger = life_logging.get_logger()
 modelConfigPath = os.path.join(
     basedir_parent, 'jsonfiles/model_config.json')
 
-# logger.debug('Modle config', modelConfigPath)
+# logger.debug('Modle config %s', modelConfigPath)
 
 all_model_names = readJSONFile.readJSONFile(modelConfigPath)
 
@@ -60,7 +61,7 @@ allowed_file_formats = ['mp3', 'wav']
 
 def get_file_format(current_file):
     cur_filename = current_file.filename
-    # logger.debug("Filename", cur_filename)
+    # logger.debug("Filename %s", cur_filename)
     file_format = cur_filename.rsplit('.', 1)[-1].lower()
     # TODO: Infer file format based on its header
 
@@ -76,16 +77,21 @@ def saveaudiofiles(mongo,
                    current_username,
                    speakerId,
                    new_audio_file,
+                   sourceId='',
                    run_vad=True,
                    run_asr=False,
                    split_into_smaller_chunks=True,
                    get_audio_json=True,
-                   vad_model=[],
-                   asr_model=[],
+                   vad_model={},
+                   asr_model={},
                    transcription_type='sentence',
                    boundary_threshold=0.3,
                    slice_threshold=0.9,
-                   slice_size=120,
+                   max_slice_size=120,
+                   data_type="audio",
+                   new_audio_details={},
+                   prompt="",
+                   update=False,
                    **kwargs):
     """mapping of this function is with the 'uploadaudiofiles' route.
 
@@ -105,14 +111,14 @@ def saveaudiofiles(mongo,
     """
 
     type = 'audiofile'
-    # logger.debug ('New ques file', new_ques_file)
+    # logger.debug ('New ques file %s', new_ques_file)
     file_states = []
     transcription_doc_ids = []
     fs_file_ids = []
 
     if new_audio_file[type].filename != '':
         current_file = new_audio_file[type]
-        # logger.debug("Filepath", current_file)
+        # logger.debug("Filepath %s", current_file)
         file_format = get_file_format(current_file)
 
         if (file_format in allowed_file_formats):
@@ -125,15 +131,21 @@ def saveaudiofiles(mongo,
                                                                             current_username,
                                                                             speakerId,
                                                                             new_audio_file,
+                                                                            sourceId,
                                                                             run_vad,
                                                                             run_asr,
                                                                             split_into_smaller_chunks,
+                                                                            get_audio_json,
                                                                             vad_model,
                                                                             asr_model,
                                                                             transcription_type,
                                                                             boundary_threshold,
                                                                             slice_threshold,
-                                                                            slice_size)
+                                                                            max_slice_size,
+                                                                            data_type,
+                                                                            new_audio_details,
+                                                                            prompt,
+                                                                            update)
             file_states.append(file_state)
             transcription_doc_ids.append(transcription_doc_id)
             fs_file_ids.append(fs_file_id)
@@ -149,6 +161,7 @@ def saveaudiofiles(mongo,
                                                                                      current_username,
                                                                                      speakerId,
                                                                                      new_audio_file,
+                                                                                     sourceId,
                                                                                      run_vad,
                                                                                      run_asr,
                                                                                      split_into_smaller_chunks,
@@ -158,7 +171,11 @@ def saveaudiofiles(mongo,
                                                                                      transcription_type,
                                                                                      boundary_threshold,
                                                                                      slice_threshold,
-                                                                                     slice_size)
+                                                                                     max_slice_size,
+                                                                                     data_type,
+                                                                                     new_audio_details,
+                                                                                     prompt,
+                                                                                     update)
         else:
             return ([False], ['Unsupported file format'], ['File not stored'])
 
@@ -174,16 +191,21 @@ def savemultipleaudiofiles(mongo,
                            current_username,
                            speakerId,
                            all_audio_files,
+                           sourceId='',
                            run_vad=True,
                            run_asr=False,
                            split_into_smaller_chunks=True,
                            get_audio_json=True,
-                           vad_model=[],
-                           asr_model=[],
+                           vad_model={},
+                           asr_model={},
                            transcription_type='sentence',
                            boundary_threshold=0.3,
                            slice_threshold=0.9,
-                           slice_size=120,
+                           max_slice_size=120,
+                           data_type="audio",
+                           new_audio_details={},
+                           prompt="",
+                           update=False,
                            **kwargs):
     """mapping of this function is with the 'uploadaudiofiles' route.
 
@@ -211,20 +233,20 @@ def savemultipleaudiofiles(mongo,
 
     try:
         with ZipFile(zip_audio_files) as myzip:
-            # logger.debug('File list', myzip.namelist())
+            # logger.debug('File list %s', myzip.namelist())
             for file_name in myzip.namelist():
                 # if (file_name.endswith('.wav')):
-                # logger.debug('Current File name', file_name)
+                # logger.debug('Current File name %s', file_name)
                 with myzip.open(file_name) as myfile:
                     # file_format = get_file_format(myfile)
                     file_format = file_name.rsplit('.', 1)[-1].lower()
-                    # logger.debug('File format during upload', file_format)
+                    # logger.debug('File format during upload %s', file_format)
                     if file_format in allowed_file_formats:
                         # upload_file_full = {}
                         file_content = io.BytesIO(myfile.read())
-                        # logger.debug ('ZIP file', mainfile)
-                        # logger.debug ("File content", file_content)
-                        # logger.debug ("Upload type", fileType)
+                        # logger.debug ('ZIP file %s', mainfile)
+                        # logger.debug ("File content %s", file_content)
+                        # logger.debug ("Upload type 5s", fileType)
                         new_audio_file['audiofile'] = FileStorage(
                             file_content, filename=file_name)
                         file_state, transcription_doc_id, fs_file_id = saveoneaudiofile(mongo,
@@ -236,6 +258,7 @@ def savemultipleaudiofiles(mongo,
                                                                                         current_username,
                                                                                         speakerId,
                                                                                         new_audio_file,
+                                                                                        sourceId,
                                                                                         run_vad,
                                                                                         run_asr,
                                                                                         split_into_smaller_chunks,
@@ -245,7 +268,11 @@ def savemultipleaudiofiles(mongo,
                                                                                         transcription_type,
                                                                                         boundary_threshold,
                                                                                         slice_threshold,
-                                                                                        slice_size)
+                                                                                        max_slice_size,
+                                                                                        data_type,
+                                                                                        new_audio_details,
+                                                                                        prompt,
+                                                                                        update)
 
                         all_file_states.append(file_state)
                         transcription_doc_ids.append(transcription_doc_id)
@@ -275,8 +302,8 @@ def saveoneaudiofile(mongo,
                      run_asr=False,
                      split_into_smaller_chunks=True,
                      get_audio_json=True,
-                     vad_model=[],
-                     asr_model=[],
+                     vad_model={},
+                     asr_model={},
                      transcription_type='sentence',
                      boundary_threshold=0.3,
                      slice_threshold=0.9,
@@ -284,7 +311,9 @@ def saveoneaudiofile(mongo,
                      data_type="audio",
                      new_audio_details={},
                      prompt="",
-                     **kwargs):
+                     update=False,
+                     slice_offset_value=0.1,
+                     ** kwargs):
     """mapping of this function is with the 'uploadaudiofiles' route.
 
     Args:
@@ -301,63 +330,43 @@ def saveoneaudiofile(mongo,
         boundary_threshold: the threshold value of 'pause' where boundary is to be drawn
         slice_threshold: the threshold value of 'pause' where the file will be split into another files (0=no slice)
         max_slice_size: the recommended size of each slice (might have some offset value). Slices should not be larger than this but might be lower than this.
+        slice_offset_value: this is the amount of audio (in seconds) that is repeated / retained across different slices made by automatically slicing the audio into smaller chunks. This is added to the end and substracted from the beginning.
     """
 
     all_transcription_doc_ids = []
     all_audio_fs_file_ids = []
 
-    project_type = getprojecttype.getprojecttype(projects, activeprojectname)
-
-    audiowaveform_file = new_audio_file['audiofile']
-
-    full_audio_file = AudioSegment.from_file(audiowaveform_file)
-    audio_duration = full_audio_file.duration_seconds
-
-    json_basedir = os.path.abspath(os.path.dirname(__file__))
-    audiowaveform_json_dir_path = '/'.join(json_basedir.split('/')[:-1])
-    audio_json_parent_dir = 'audiowaveform'
-
-    if get_audio_json or run_vad or run_asr or split_into_smaller_chunks:
-        store_in_local = True
-    else:
-        store_in_local = False
-
-    if split_into_smaller_chunks:
-        store_in_mongo = False
-    else:
-        store_in_mongo = True
-
-    # audio_json_path = os.path.join(
-    #     audiowaveform_json_dir_path, audio_json_parent_dir)
-
-    # save audio file details in transcriptions collection
-    if sourceId == '':
-        sourceId = speakerId
-        # lifesourceid = speakerId
-
-    if len(new_audio_details) == 0:
-        new_audio_details = {
-            "username": projectowner,
-            "projectname": activeprojectname,
-            "updatedBy": current_username,
-            "audiodeleteFLAG": 0,
-            "audioverifiedFLAG": 0,
-            "prompt": prompt,
-            "dataType": data_type,
-            "lifesourceid": sourceId,
-            "speakerId": speakerId,
-            "additionalInfo": {},
-            "audioMetadata": {
-                "verificationReport": {},
-                "audiowaveform": {},
-                "audioWaveformNorm": {}
-            }
-        }
-    for kwargs_key, kwargs_value in kwargs.items():
-        new_audio_details[kwargs_key] = kwargs_value
-
     all_audio_ids = []
     all_audio_filenames = []
+
+    project_type = getprojecttype.getprojecttype(projects, activeprojectname)
+
+    audiowaveform_json_dir_path = get_audio_dir_path()
+    audio_json_parent_dir = 'audiowaveform'
+
+    audiowaveform_file = new_audio_file['audiofile']
+    audio_duration, full_audio_file = get_audio_duration_from_file(
+        audiowaveform_file)
+    audiowaveform_file.stream.seek(0)
+
+    split_into_smaller_chunks = is_split_into_smaller_chunks(
+        audio_duration, max_slice_size)
+
+    store_in_local = is_store_in_local(
+        get_audio_json, run_vad, run_asr, split_into_smaller_chunks)
+
+    store_in_mongo = is_store_in_mongo(split_into_smaller_chunks)
+
+    new_audio_details = get_audio_doc_details(projectowner,
+                                              activeprojectname,
+                                              current_username,
+                                              speakerId,
+                                              sourceId,
+                                              data_type,
+                                              prompt,
+                                              new_audio_details,
+                                              update,
+                                              kwargs.items())
 
     audio_id, audio_filename = get_audio_id_filename(new_audio_file)
     updated_audio_filename = (audio_id +
@@ -367,6 +376,9 @@ def saveoneaudiofile(mongo,
     # Save audio file in mongoDb and also get it in Local File System
 
     # if split_into_smaller_chunks:
+    logger.debug('Audio Duration %s', str(audio_duration))
+    logger.debug('Store in local %s, Store in Mongo %s, Get audio json %s',
+                 store_in_local, store_in_mongo, get_audio_json)
     audio_fs_file_id, audio_file_path = save_audio_in_mongo_and_localFs(mongo,
                                                                         updated_audio_filename,
                                                                         audiowaveform_file,
@@ -380,39 +392,56 @@ def saveoneaudiofile(mongo,
                                                                         store_in_mongo=store_in_mongo)
 
     # mongo, audio_path, type, max_pause = 0.5
-    audio_chunks, text_grids, transcriptionFLAG = get_slices_and_text_grids(mongo,
-                                                                            run_vad,
-                                                                            run_asr,
-                                                                            vad_model,
-                                                                            asr_model,
-                                                                            audio_file_path,
-                                                                            transcription_type,
-                                                                            boundary_threshold,
-                                                                            slice_threshold,
-                                                                            max_slice_size,
-                                                                            audio_duration)
+    logger.debug("Audio File Path %s", audio_file_path)
+    audio_chunks, text_grids, boundary_offset_values, transcriptionFLAG, model_details = get_slices_and_text_grids(mongo,
+                                                                                                                   run_vad,
+                                                                                                                   run_asr,
+                                                                                                                   split_into_smaller_chunks,
+                                                                                                                   vad_model,
+                                                                                                                   asr_model,
+                                                                                                                   audio_file_path,
+                                                                                                                   transcription_type,
+                                                                                                                   boundary_threshold,
+                                                                                                                   slice_threshold,
+                                                                                                                   max_slice_size,
+                                                                                                                   audio_duration)
 
-    # logger.debug('Final generated text grid', text_grid)
+    # logger.debug('Final generated text grid %s', text_grids)
     logger.debug('Final transcription flag %s', transcriptionFLAG)
+    logger.debug('Final text grid length %s', len(text_grids))
+    logger.debug('Final boundary offset length %s',
+                 len(boundary_offset_values))
+    # logger.debug('Final first two text grids %s', text_grids[:3])
 
     new_audio_details["transcriptionFLAG"] = transcriptionFLAG
+
+    full_model_name = get_full_model_name(run_vad,
+                                          run_asr,
+                                          model_details.get(
+                                              'vad_model_name', ''),
+                                          model_details.get('asr_model_name', ''))
 
     if not split_into_smaller_chunks:
         all_audio_ids.append(audio_id)
         all_audio_filenames.append(audio_filename)
         all_audio_fs_file_ids.append(audio_fs_file_id)
 
-        add_audio_details(new_audio_details,
-                          get_audio_json,
-                          current_username,
-                          audio_id,
-                          updated_audio_filename,
-                          text_grids[0],
-                          audiowaveform_json_dir_path,
-                          audio_json_parent_dir
-                          )
-
-        transcription_doc_id = transcriptions.insert_one(new_audio_details)
+        add_audio_doc_details(new_audio_details,
+                              get_audio_json,
+                              current_username,
+                              audio_id,
+                              updated_audio_filename,
+                              text_grids[0],
+                              audiowaveform_json_dir_path,
+                              audio_json_parent_dir,
+                              full_model_name,
+                              model_details
+                              )
+        if update:
+            transcription_doc_id = transcriptions.update_one({"audioId": audio_id},
+                                                             {"$set": new_audio_details})
+        else:
+            transcription_doc_id = transcriptions.insert_one(new_audio_details)
         all_transcription_doc_ids.append(transcription_doc_id)
 
     else:
@@ -428,40 +457,68 @@ def saveoneaudiofile(mongo,
 
             current_audio_chunk = audio_chunks[i]
             current_audio_chunk_begn = current_audio_chunk['start']*1000
-            if current_audio_chunk_begn > 0:
-                current_audio_chunk_begn = current_audio_chunk_begn-100
+
+            if i > 0:
+                current_audio_chunk_begn = current_audio_chunk_begn - \
+                    (slice_offset_value*1000)
+                # delete_previous = False
+            else:
+                current_audio_chunk_begn = 0.0
+                # delete_previous = True
 
             current_audio_chunk_end = current_audio_chunk['end']*1000
-            if current_audio_chunk_end < audio_duration:
-                current_audio_chunk_end = current_audio_chunk_end+100
+
+            if (i < len(text_grids)-1):
+                current_audio_chunk_end = current_audio_chunk_end + \
+                    (slice_offset_value*1000)
+            else:
+                current_audio_chunk_end = audio_duration
+
             current_audio_file = full_audio_file[current_audio_chunk_begn:current_audio_chunk_end]
+            audio_segment_bytes = BytesIO()
+            current_audio_file.export(audio_segment_bytes, format="wav")
+            current_audio_file_segment = FileStorage(
+                audio_segment_bytes, filename=current_audio_filename)
 
             current_text_grid = text_grids[i]
             current_audio_details = json.loads(json.dumps(new_audio_details))
             current_audio_fs_file_id, current_audio_file_path = save_audio_in_mongo_and_localFs(mongo,
                                                                                                 current_audio_filename,
-                                                                                                current_audio_file,
+                                                                                                current_audio_file_segment,
                                                                                                 current_audio_id,
                                                                                                 projectowner,
                                                                                                 activeprojectname,
                                                                                                 current_username,
                                                                                                 audiowaveform_json_dir_path,
                                                                                                 audio_json_parent_dir,
-                                                                                                store_in_local=False,
+                                                                                                store_in_local=store_in_local,
                                                                                                 store_in_mongo=True)
             all_audio_fs_file_ids.append(current_audio_fs_file_id)
 
-            add_audio_details(current_audio_details,
-                              get_audio_json,
-                              current_username,
-                              current_audio_id,
-                              current_audio_filename,
-                              current_text_grid,
-                              audiowaveform_json_dir_path,
-                              audio_json_parent_dir
-                              )
-            transcription_doc_id = transcriptions.insert_one(
-                current_audio_details)
+            add_audio_doc_details(current_audio_details,
+                                  get_audio_json,
+                                  current_username,
+                                  current_audio_id,
+                                  current_audio_filename,
+                                  current_text_grid,
+                                  audiowaveform_json_dir_path,
+                                  audio_json_parent_dir,
+                                  full_model_name,
+                                  model_details,
+                                  current_slice_number=i,
+                                  total_slices=len(text_grids),
+                                  boundary_offset_value=boundary_offset_values[i],
+                                  slice_offset_value=slice_offset_value,
+
+                                  )
+
+            if update:
+                transcription_doc_id = transcriptions.update_one({"audioId": audio_id},
+                                                                 {"$set": current_audio_details})
+            else:
+                transcription_doc_id = transcriptions.insert_one(
+                    current_audio_details)
+
             all_transcription_doc_ids.append(transcription_doc_id)
 
     # plogger.debug(new_audio_details)
@@ -499,11 +556,11 @@ def saveoneaudiofile(mongo,
                              current_username,
                              speakerId
                              )
-    # logger.debug('new_audio_file', type(new_audio_file), new_audio_file)
+    # logger.debug('new_audio_file %s, %s', type(new_audio_file), new_audio_file)
     # transcription_doc_id = transcriptions.insert(new_audio_details)
     # save audio file details in fs collection
 
-    # logger.debug('audiowaveform_audio_path', audiowaveform_audio_path)
+    # logger.debug('audiowaveform_audio_path %s', audiowaveform_audio_path)
     # audiowaveform_audio_path = os.path.join(audiowaveform_audio_path, updated_audio_filename)
 
     return (True, all_transcription_doc_ids, all_audio_fs_file_ids)
@@ -514,26 +571,204 @@ def saveoneaudiofile(mongo,
     #     return (False, '', '')
 
 
-def add_audio_details(audio_details_dict,
-                      get_audio_json,
-                      current_username,
-                      audio_id,
-                      updated_audio_filename,
-                      text_grid,
-                      audiowaveform_json_dir_path,
-                      audio_json_parent_dir
-                      ):
+def save_boundaries_of_one_audio_file(mongo,
+                                      projects,
+                                      userprojects,
+                                      transcriptions,
+                                      projectowner,
+                                      activeprojectname,
+                                      current_username,
+                                      audio_filename,
+                                      audio_duration,
+                                      sourceId='',
+                                      run_vad=True,
+                                      run_asr=False,
+                                      split_into_smaller_chunks=True,
+                                      get_audio_json=True,
+                                      vad_model={},
+                                      asr_model={},
+                                      transcription_type='sentence',
+                                      boundary_threshold=0.3,
+                                      slice_threshold=0.9,
+                                      max_slice_size=150,
+                                      save_for_user=False,
+                                      ** kwargs):
+
+    audio_details_dict = {}
+
+    audio_id = audio_filename.split('_')[0]
+    # if get_audio_json:
+    audiowaveform_json_dir_path = get_audio_dir_path()
+    audio_json_parent_dir = 'audiowaveform'
+
+    audio_file_path = getaudiowaveformfilefromfs(mongo,
+                                                 audiowaveform_json_dir_path,
+                                                 audio_json_parent_dir,
+                                                 audio_id,
+                                                 'audioId'
+                                                 )
+
+    audio_chunks, text_grids, boundary_offset_values, transcriptionFLAG, model_details = get_slices_and_text_grids(mongo,
+                                                                                                                   run_vad,
+                                                                                                                   run_asr,
+                                                                                                                   split_into_smaller_chunks,
+                                                                                                                   vad_model,
+                                                                                                                   asr_model,
+                                                                                                                   audio_file_path,
+                                                                                                                   transcription_type,
+                                                                                                                   boundary_threshold,
+                                                                                                                   slice_threshold,
+                                                                                                                   max_slice_size,
+                                                                                                                   audio_duration)
+
+    # logger.debug('Final generated text grid %s', text_grids)
+    logger.debug('Final transcription flag %s', transcriptionFLAG)
+    logger.debug('Final text grid length %s', len(text_grids))
+    logger.debug('Final boundary offset length %s',
+                 len(boundary_offset_values))
+    # logger.debug('Final first two text grids %s', text_grids[:3])
+
+    audio_details_dict["transcriptionFLAG"] = transcriptionFLAG
+    full_model_name = get_full_model_name(run_vad,
+                                          run_asr,
+                                          model_details.get(
+                                              'vad_model_name', ''),
+                                          model_details.get('asr_model_name', ''))
+
+    add_text_grid(audio_details_dict,
+                  current_username,
+                  text_grids[0],
+                  full_model_name,
+                  model_details,
+                  save_for_user=save_for_user)
+
+    if get_audio_json:
+        add_waveform_json(audio_details_dict,
+                          audiowaveform_json_dir_path,
+                          audio_json_parent_dir,
+                          audio_filename)
+
+    transcription_doc_id = transcriptions.update_one({"projectname": activeprojectname, "audioId": audio_id},
+                                                     {"$set": audio_details_dict})
+
+    return transcription_doc_id
+
+
+def delete_all_boundaries_of_one_audio_file(mongo,
+                                            projects,
+                                            userprojects,
+                                            transcriptions,
+                                            projectowner,
+                                            activeprojectname,
+                                            current_username,
+                                            audio_filename,
+                                            ** kwargs):
+
+    audio_details_dict = {}
+    blank_text_grid = {
+        "discourse": {},
+        "sentence": {},
+        "word": {},
+        "phoneme": {}
+    }
+    audio_id = audio_filename.split('_')[0]
+    # if get_audio_json:
+    # logger.debug('Final first two text grids %s', text_grids[:3])
+
+    audio_details_dict["transcriptionFLAG"] = 0
+
+    add_text_grid(audio_details_dict,
+                  current_username,
+                  blank_text_grid,
+                  '',
+                  {})
+
+    transcription_doc_id = transcriptions.update_one({"projectname": activeprojectname, "audioId": audio_id},
+                                                     {"$set": audio_details_dict})
+
+    return transcription_doc_id
+
+
+def add_audio_doc_details(audio_details_dict,
+                          get_audio_json,
+                          current_username,
+                          audio_id,
+                          updated_audio_filename,
+                          text_grid,
+                          audiowaveform_json_dir_path,
+                          audio_json_parent_dir,
+                          model_name,
+                          model_metadata,
+                          current_slice_number=0,
+                          total_slices=1,
+                          boundary_offset_value=0.0,
+                          slice_offset_value=0.0,
+                          ):
     audio_details_dict['audioId'] = audio_id
     audio_details_dict['audioFilename'] = updated_audio_filename
-    audio_details_dict["textGrid"] = text_grid
-    audio_details_dict['additionalIndo'] = {
-        'totalSlices': 1, 'currentSliceNumber': 0}
-    audio_details_dict[current_username] = {}
-    audio_details_dict[current_username]["textGrid"] = text_grid
+
+    add_additional_info(audio_details_dict,
+                        current_slice_number,
+                        total_slices,
+                        boundary_offset_value,
+                        slice_offset_value
+                        )
+
+    add_text_grid(audio_details_dict,
+                  current_username,
+                  text_grid,
+                  model_name,
+                  model_metadata)
+
     if get_audio_json:
-        audiowaveform_json = get_audio_waveform_json(
-            audiowaveform_json_dir_path, audio_json_parent_dir, updated_audio_filename)
-        audio_details_dict['audioMetadata']['audiowaveform'] = audiowaveform_json
+        add_waveform_json(audio_details_dict,
+                          audiowaveform_json_dir_path,
+                          audio_json_parent_dir,
+                          updated_audio_filename)
+
+
+def add_additional_info(audio_details_dict,
+                        current_slice_number,
+                        total_slices,
+                        boundary_offset_value,
+                        slice_offset_value):
+    if 'additionalInfo' in audio_details_dict:
+        audio_details_dict['additionalInfo'].update([
+            ('totalSlices', total_slices), ('currentSliceNumber', current_slice_number), ('boundaryOffsetValue', boundary_offset_value), ('sliceOffsetValue', slice_offset_value)])
+    else:
+        audio_details_dict['additionalInfo'] = {
+            'totalSlices': total_slices, 'currentSliceNumber': current_slice_number}
+
+
+def add_text_grid(audio_details_dict,
+                  current_username,
+                  text_grid,
+                  model_name,
+                  model_metadata,
+                  save_for_user=True):
+    audio_details_dict["textGrid"] = text_grid
+
+    if save_for_user:
+        audio_details_dict[current_username] = {}
+        audio_details_dict[current_username]["textGrid"] = text_grid
+
+    if model_name != '':
+        model_key = '@model##'+model_name
+        audio_details_dict[model_key] = {}
+        audio_details_dict[model_key]["textGrid"] = text_grid
+        audio_details_dict[model_key]["updatedBy"] = current_username
+        audio_details_dict[model_key]["updatedAt"] = datetime.now()
+        audio_details_dict[model_key]["modelMetadata"] = model_metadata
+
+
+def add_waveform_json(audio_details_dict,
+                      audiowaveform_json_dir_path,
+                      audio_json_parent_dir,
+                      updated_audio_filename
+                      ):
+    audiowaveform_json = get_audio_waveform_json(
+        audiowaveform_json_dir_path, audio_json_parent_dir, updated_audio_filename)
+    audio_details_dict['audioMetadata']['audiowaveform'] = audiowaveform_json
 
 
 def update_active_speaker_Id(userprojects,
@@ -575,6 +810,90 @@ def update_speakerid_audioid(projects,
                         }})
 
 
+def is_store_in_mongo(split_into_smaller_chunks):
+    return not split_into_smaller_chunks
+
+
+def is_store_in_local(get_audio_json, run_vad, run_asr, split_into_smaller_chunks):
+    return get_audio_json or run_vad or run_asr or split_into_smaller_chunks
+
+
+def is_split_into_smaller_chunks(audio_duration, max_allowed_duration):
+    return audio_duration > max_allowed_duration
+
+
+def get_full_model_name(run_vad,
+                        run_asr,
+                        vad_model_name,
+                        asr_model_name):
+    full_model_name = ''
+    if run_vad:
+        full_model_name = vad_model_name
+    if run_asr:
+        full_model_name = vad_model_name + '##' + asr_model_name
+
+    return full_model_name
+
+
+def get_audio_doc_details(projectowner,
+                          activeprojectname,
+                          current_username,
+                          speakerId,
+                          sourceId="",
+                          data_type="audio",
+                          prompt="",
+                          new_audio_details={},
+                          update=False,
+                          additional_data={},
+                          **kwargs):
+    # save audio file details in transcriptions collection
+    if sourceId == '':
+        sourceId = speakerId
+        # lifesourceid = speakerId
+
+    if update:
+        new_audio_details = {
+            "speakerId": speakerId
+        }
+    elif len(new_audio_details) == 0:
+        new_audio_details = {
+            "username": projectowner,
+            "projectname": activeprojectname,
+            "updatedBy": current_username,
+            "audiodeleteFLAG": 0,
+            "audioverifiedFLAG": 0,
+            "prompt": prompt,
+            "dataType": data_type,
+            "lifesourceid": sourceId,
+            "speakerId": speakerId,
+            "additionalInfo": {},
+            "audioMetadata": {
+                "verificationReport": {},
+                "audiowaveform": {},
+                "audioWaveformNorm": {}
+            }
+        }
+    for additional_key, additional_value in additional_data:
+        new_audio_details[additional_key] = additional_value
+
+    for kwargs_key, kwargs_value in kwargs.items():
+        new_audio_details[kwargs_key] = kwargs_value
+
+    return new_audio_details
+
+
+def get_audio_dir_path():
+    json_basedir = os.path.abspath(os.path.dirname(__file__))
+    audio_dir_path = '/'.join(json_basedir.split('/')[:-1])
+    return audio_dir_path
+
+
+def get_audio_duration_from_file(audio_file):
+    full_audio_file = AudioSegment.from_file(audio_file)
+    audio_duration = full_audio_file.duration_seconds
+    return audio_duration, full_audio_file
+
+
 def get_speaker_ids(projects,
                     activeprojectname,
                     current_username,
@@ -614,13 +933,13 @@ def get_speaker_audio_ids(projects,
     # logger.debug(speaker_audio_ids)
     if len(speaker_audio_ids) != 0:
         speaker_audio_ids = speaker_audio_ids[speaker_audioid_key_name]
-        # logger.debug('speaker_audio_ids', speaker_audio_ids)
+        # logger.debug('speaker_audio_ids %s', speaker_audio_ids)
         if speakerId in speaker_audio_ids:
             speaker_audio_idskeylist = speaker_audio_ids[speakerId]
             speaker_audio_idskeylist.extend(all_audio_ids)
             speaker_audio_ids[speakerId] = speaker_audio_idskeylist
         else:
-            # logger.debug('speakerId', speakerId)
+            # logger.debug('speakerId %s', speakerId)
             speaker_audio_ids[speakerId] = all_audio_ids
         # plogger.debug(speaker_audio_ids)
     else:
@@ -664,8 +983,8 @@ def createaudiowaveform(audiowaveform_audio_path, audiowaveform_json_path, audio
     audio_filename = audio_filename[0:audio_filename.rfind('.')]
     json_filename = os.path.join(
         audiowaveform_json_path, audio_filename+'.json')
-    logger.debug('audio filename', audiowaveform_audio_path)
-    logger.debug('json_filename', json_filename)
+    logger.debug('audio filename %s', audiowaveform_audio_path)
+    logger.debug('json_filename %s', json_filename)
     subprocess.run(
         ['audiowaveform', '-i', audiowaveform_audio_path, '-o',  json_filename])
     with open(json_filename, 'r') as jsonfile:
@@ -735,17 +1054,17 @@ def updateaudiofiles(mongo,
 
     speaker_audio_ids = projects.find_one({'projectname': activeprojectname},
                                           {'_id': 0, 'speakersAudioIds': 1})
-    # logger.debug(len(speaker_audio_ids))
-    # logger.debug(speaker_audio_ids)
+    # logger.debug("Length of speaker audio IDs %s", len(speaker_audio_ids))
+    # logger.debug("Speaker Audio IDs %s", speaker_audio_ids)
     if len(speaker_audio_ids) != 0:
         speaker_audio_ids = speaker_audio_ids['speakersAudioIds']
-        # logger.debug('speaker_audio_ids', speaker_audio_ids)
+        # logger.debug('speaker_audio_ids %s', speaker_audio_ids)
         if speakerId in speaker_audio_ids:
             speaker_audio_idskeylist = speaker_audio_ids[speakerId]
             speaker_audio_idskeylist.append(audio_id)
             speaker_audio_ids[speakerId] = speaker_audio_idskeylist
         else:
-            # logger.debug('speakerId', speakerId)
+            # logger.debug('speakerId %s', speakerId)
             speaker_audio_ids[speakerId] = [audio_id]
         # plogger.debug(speaker_audio_ids)
     else:
@@ -850,7 +1169,8 @@ def getaudiowaveformfilefromfs(mongo,
                                basedir,
                                folder_name,
                                file_id,
-                               file_type):
+                               file_type,
+                               delete_previous_files=True):
     """get file from fs collection save it to local storage 'static' folder
 
     Args:
@@ -864,32 +1184,39 @@ def getaudiowaveformfilefromfs(mongo,
     """
     # logger.debug(file_type, file_id)
     # creating GridFS instance to get required files
-    # logger.debug('fs file:', basedir, folder_name,
+    # logger.debug('fs file: %s, %s, %s, %s', basedir, folder_name,
     #                    file_id,
     #                    file_type)
     fs = gridfs.GridFS(mongo.db)
     file = fs.find_one({file_type: file_id})
     audioFolder = os.path.join(basedir, folder_name)
-    logger.debug('Audio folder path', audioFolder)
-    if (os.path.exists(audioFolder)):
-        logger.debug('Audio folder path exists', audioFolder, 'deleting')
-        shutil.rmtree(audioFolder)
-    os.mkdir(audioFolder)
+    logger.debug('Audio folder path %s', audioFolder)
+
+    if delete_previous_files:
+        if (os.path.exists(audioFolder)):
+            logger.debug('Audio folder path exists %s',
+                         audioFolder, 'deleting')
+            shutil.rmtree(audioFolder)
+        os.mkdir(audioFolder)
+    else:
+        if (not os.path.exists(audioFolder)):
+            os.mkdir(audioFolder)
+
     file_path = ''
     if (file is not None and
             'audio' in file.contentType):
         file_name = file.filename
-        logger.debug('File name', file_name)
+        logger.debug('File name %s', file_name)
         audiofile = fs.get_last_version(filename=file_name)
         audiofileBytes = audiofile.read()
         # if len(audiofileBytes) != 0:
         file_path = os.path.join(folder_name, file_name)
         save_file_path = os.path.join(basedir, file_path)
-        logger.debug('Save file path', save_file_path)
+        logger.debug('Save file path %s', save_file_path)
         open(save_file_path, 'wb').write(audiofileBytes)
     else:
         save_file_path = ''
-    # logger.debug('file_path', file_path)
+    # logger.debug('file_path %s', file_path)
     return save_file_path
 
 
@@ -910,7 +1237,7 @@ def getaudiofilefromfs(mongo,
     """
     # logger.debug(file_type, file_id)
     # creating GridFS instance to get required files
-    # logger.debug('fs file:', basedir,
+    # logger.debug('fs file: %s, %s, %s', basedir,
     #                    file_id,
     #                    file_type)
     fs = gridfs.GridFS(mongo.db)
@@ -950,7 +1277,7 @@ def getnewaudioid(projects,
     """
     audio_ids_list = projects.find_one({'projectname': activeprojectname},
                                        {'_id': 0, 'speakersAudioIds': 1})
-    # logger.debug('audio_ids_list', audio_ids_list)
+    # logger.debug('audio_ids_list %s', audio_ids_list)
     if len(audio_ids_list) != 0:
         audio_ids_list = audio_ids_list['speakersAudioIds'][activespeakerId]
         logger.debug('audio_ids_list: %s', audio_ids_list)
@@ -959,7 +1286,7 @@ def getnewaudioid(projects,
             audio_id_index = audio_ids_list.index(last_active_id)
         else:
             audio_id_index = 0
-        # logger.debug('latestAudioId Index!!!!!!!', audio_id_index)
+        # logger.debug('latestAudioId Index!!!!!!! %s', audio_id_index)
         if which_one == 'previous':
             audio_id_index = audio_id_index - 1
         elif which_one == 'next':
@@ -1010,7 +1337,7 @@ def getaudiotranscriptiondetails(transcriptions, audio_id):
     try:
         t_data = transcriptions.find_one({'audioId': audio_id},
                                          {'_id': 0, 'textGrid.sentence': 1})
-        # logger.debug('t_data!!!!!', t_data)
+        # logger.debug('t_data!!!!! %s', t_data)
         if t_data is not None:
             transcription_data = t_data['textGrid']
         # plogger.debug(transcription_data)
@@ -1029,19 +1356,19 @@ def getaudiotranscriptiondetails(transcriptions, audio_id):
             # plogger.debug(transcription_region)
             boundary_count += 1
             try:
-                # logger.debug('!@!#!@!#!@!#!@!#!@!##!@!#!#!@!#!@!#!@!#!@!#!@!##!@!#!#', gloss)
+                # logger.debug('!@!#!@!#!@!#!@!#!@!##!@!#!#!@!#!@!#!@!#!@!#!@!##!@!#!# %s', gloss)
                 tempgloss = sentence[type]['gloss']
-                # logger.debug('!@!#!@!#!@!#!@!#!@!##!@!#!#!@!#!@!#!@!#!@!#!@!##!@!#!#', tempgloss)
+                # logger.debug('!@!#!@!#!@!#!@!#!@!##!@!#!#!@!#!@!#!@!#!@!#!@!##!@!#!# %s', tempgloss)
                 gloss[type] = pd.json_normalize(
                     tempgloss, sep='.').to_dict(orient='records')[0]
-                # logger.debug('!@!#!@!#!@!#!@!#!@!##!@!#!#!@!#!@!#!@!#!@!#!@!##!@!#!#', gloss)
+                # logger.debug('!@!#!@!#!@!#!@!#!@!##!@!#!#!@!#!@!#!@!#!@!#!@!##!@!#!# %s', gloss)
                 temppos = sentence[type]['pos']
                 pos[type] = pd.json_normalize(
                     temppos, sep='.').to_dict(orient='records')[0]
 
-                # logger.debug('288', gloss)
+                # logger.debug('288 %s', gloss)
             except:
-                # logger.debug('=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=', gloss)
+                # logger.debug('=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1=1= %s', gloss)
                 gloss = {}
                 pos = {}
 
@@ -1056,7 +1383,7 @@ def getaudiotranscriptiondetails(transcriptions, audio_id):
     #     transcription_region['data']['sentence'] = sentence
             transcription_regions.append(transcription_region)
         # plogger.debug(transcription_regions)
-    # logger.debug('303', gloss, pos)
+    # logger.debug('303 %s %s', gloss, pos)
     except:
         pass
 
@@ -1096,7 +1423,7 @@ def savetranscription(transcriptions,
                     value["sentenceId"] = audio_id
                     sentence[type] = value
             # plogger.debug(sentence)
-            #     logger.debug('transcription_boundary.keys()', transcription_boundary.keys())
+            #     logger.debug('transcription_boundary.keys() %s', transcription_boundary.keys())
             #     sentence[transcription_boundary['boundaryID']] = {
             #         "speakerId": activespeakerId,
             #         "sentenceId": audio_id,
@@ -1120,7 +1447,7 @@ def savetranscription(transcriptions,
             # transcription_details['textGrid'] = text_grid
             # transcriptions.insert(transcription_details)
             # logger.debug("'sentence' in transcription_boundary")
-            # logger.debug('371', sentence)
+            # logger.debug('371 %s', sentence)
             # plogger.debug(sentence)
     transcriptions.update_one({'audioId': audio_id},
                               {'$set':
@@ -1141,9 +1468,9 @@ def getaudioprogressreport(projects,
     datatoshow = []
     users_speaker_ids = projects.find_one({'projectname': activeprojectname},
                                           {'_id': 0, 'speakerIds': 1})['speakerIds']
-    # logger.debug('speaker_ids_1', users_speaker_ids)
+    # logger.debug('speaker_ids_1 %s', users_speaker_ids)
     if len(users_speaker_ids) != 0:
-        # logger.debug('speaker_ids_2', users_speaker_ids)
+        # logger.debug('speaker_ids_2 %s', users_speaker_ids)
         for username in isharedwith:
             user_datatoshow = {"01_speakerId": '',
                                "02_createdBy": '',
@@ -1172,7 +1499,7 @@ def getaudioprogressreport(projects,
 
                     datatoshow.append(user_datatoshow)
 
-    # logger.debug('datatoshow', datatoshow)
+    # logger.debug('datatoshow %s', datatoshow)
 
     return datatoshow
 
@@ -1317,7 +1644,7 @@ def addedspeakerids(speakerdetails,
     for speaker_id in all_speaker_ids:
         s_id = speaker_id["lifesourceid"]
         added_speaker_ids.append(s_id)
-    # logger.debug ("Added Speaker IDS", added_speaker_ids)
+    # logger.debug ("Added Speaker IDS %s", added_speaker_ids)
     return added_speaker_ids
 
 
@@ -1374,11 +1701,11 @@ def get_new_boundaries(boundaries, max_pause, max_boundary_size=-1, include_tran
 
     span_start = 0
     span_end = 0
-    logger.debug('Initial total boundaries', len(boundaries))
-    logger.debug('Initial boundary', boundaries[0])
-    # logger.debug('Second boundary', boundaries[1])
-    # logger.debug('Initial end boundary', boundaries[-1])
-    # logger.debug('Initial second end boundary', boundaries[-2:-5])
+    logger.debug('Initial total boundaries %s', len(boundaries))
+    logger.debug('Initial boundary %s', boundaries[0])
+    # logger.debug('Second boundary %s', boundaries[1])
+    # logger.debug('Initial end boundary %s', boundaries[-1])
+    # logger.debug('Initial second end boundary %s', boundaries[-2:-5])
 
     if len(boundaries) > 1:
         for i in range(len(boundaries)-1):
@@ -1388,8 +1715,8 @@ def get_new_boundaries(boundaries, max_pause, max_boundary_size=-1, include_tran
             current_boundary = boundaries[i]
             next_boundary = boundaries[i+1]
             current_start = current_boundary['start']
-            # logger.debug(i, 'out of', len(boundaries), current_boundary)
-            # logger.debug(i+1, 'out of', len(boundaries), next_boundary)
+            # logger.debug(i, '%s out of %s %s', len(boundaries), current_boundary)
+            # logger.debug(i+1, '%s out of %s %s', len(boundaries), next_boundary)
 
             if i == 0 or reset_start:
                 span_start = current_start
@@ -1446,9 +1773,9 @@ def get_new_boundaries(boundaries, max_pause, max_boundary_size=-1, include_tran
             new_transcriptions.append(transcriptions[0])
             span_transcription = ''
 
-    logger.debug('Final total boundaries', len(new_boundaries))
-    logger.debug('Final start', new_boundaries[0])
-    logger.debug('Final end', new_boundaries[-1])
+    logger.debug('Final total boundaries %s', len(new_boundaries))
+    logger.debug('Final start %s', new_boundaries[0])
+    logger.debug('Final end %s', new_boundaries[-1])
 
     if include_transcription:
         return new_boundaries, new_transcriptions
@@ -1456,21 +1783,21 @@ def get_new_boundaries(boundaries, max_pause, max_boundary_size=-1, include_tran
         return new_boundaries
 
 
-def update_text_grid(mongo, text_grid, new_boundaries, transcription_type, include_transcription=False, transcriptions={}):
-    logger.debug('Data type', transcription_type)
+def update_text_grid(mongo, text_grid, new_boundaries, transcription_type, include_transcription=False, transcriptions={}, boundary_offset_value=0.0):
+    logger.debug('Data type %s', transcription_type)
 
     # if include_transcription:
     #     transcription_scripts = list(transcriptions.keys())
 
     transcription_scripts = get_current_transcription_langscripts(mongo)
-    logger.debug('All transcription lang scripts', transcription_scripts)
+    logger.debug('All transcription lang scripts %s', transcription_scripts)
 
     translation_langscripts = get_current_translation_langscripts(mongo)
-    logger.debug('All translation lang scripts', translation_langscripts)
+    logger.debug('All translation lang scripts %s', translation_langscripts)
 
     # logger.debug('Boundaries to update text grid', new_boundaries)
-    logger.debug('Total expected boundaries', len(new_boundaries))
-    logger.debug('Input Text Grid', text_grid)
+    logger.debug('Total expected boundaries %s', len(new_boundaries))
+    logger.debug('Input Text Grid %s', text_grid)
 
     for i in range(len(new_boundaries)):
         current_boundary = new_boundaries[i]
@@ -1482,9 +1809,9 @@ def update_text_grid(mongo, text_grid, new_boundaries, transcription_type, inclu
 
         text_grid[transcription_type][boundary_id] = {}
         text_grid[transcription_type][boundary_id]['start'] = float(
-            start_boundary)
+            start_boundary - boundary_offset_value)
         text_grid[transcription_type][boundary_id]['end'] = float(
-            end_boundary)
+            end_boundary - boundary_offset_value)
         text_grid[transcription_type][boundary_id]['speakerId'] = ""
         text_grid[transcription_type][boundary_id]['sentenceId'] = ""
 
@@ -1514,32 +1841,32 @@ def update_text_grid(mongo, text_grid, new_boundaries, transcription_type, inclu
 
             # text_grid[boundary_id_key+'.transcription'] = ""
 
-            # logger.debug(f"========Current Text Grid(%i)================", i)
+            # logger.debug(f"========Current Text Grid(%i)================ %s", i)
             # logger.debug(text_grid)
 
     return text_grid
 
 
 def generate_text_grid_without_transcriptions(
-        mongo, text_grid, boundaries, transcription_type, max_pause):
+        mongo, text_grid, boundaries, transcription_type, max_pause, offset_value=0.0):
 
     new_boundaries = get_new_boundaries(
         boundaries, max_pause)
 
     text_grid = update_text_grid(
-        mongo, text_grid, new_boundaries, transcription_type)
+        mongo, text_grid, new_boundaries, transcription_type, boundary_offset_value=offset_value)
 
     return text_grid
 
 
 def generate_text_grid_with_transcriptions(
-        mongo, text_grid, boundaries, transcriptions, transcription_type, max_pause):
+        mongo, text_grid, boundaries, transcriptions, transcription_type, max_pause, offset_value=0.0):
 
     new_boundaries, new_transcriptions = get_new_boundaries(
         boundaries, max_pause, transcription=True, transcriptions=transcriptions)
 
     text_grid = update_text_grid(
-        mongo, text_grid, new_boundaries, transcription_type, include_transcription=True, transcriptions=new_transcriptions)
+        mongo, text_grid, new_boundaries, transcription_type, include_transcription=True, transcriptions=new_transcriptions, boundary_offset_value=offset_value)
 
     return text_grid
 
@@ -1557,14 +1884,14 @@ def generate_text_grid_with_transcriptions(
 #     return text_grid
 
 
-def generate_text_grid(mongo, text_grid, boundaries, transcriptions, transcription_type, max_pause):
-    logger.debug('Type of the data', transcription_type)
+def generate_text_grid(mongo, text_grid, boundaries, transcriptions, transcription_type, max_pause, offset_value=0.0):
+    logger.debug('Type of the data %s', transcription_type)
     if len(transcriptions) == 0:
         text_grid = generate_text_grid_without_transcriptions(
-            mongo, text_grid, boundaries, transcription_type, max_pause)
+            mongo, text_grid, boundaries, transcription_type, max_pause, offset_value)
     else:
         text_grid = generate_text_grid_with_transcriptions(
-            mongo, text_grid, boundaries, transcriptions, transcription_type, max_pause)
+            mongo, text_grid, boundaries, transcriptions, transcription_type, max_pause, offset_value)
     # if transcription_type == "sentence":
     #     text_grid = generate_sentence_text_grid(
     #         text_grid, boundaries, transcriptions, max_pause)
@@ -1576,30 +1903,56 @@ def get_smaller_chunks_of_audio(
 ):
     new_audio_chunks = get_new_boundaries(
         boundaries, max_pause, max_boundary_size=max_new_file_duration)
-    new_audio_chunks[0]['start'] = 0
-    new_audio_chunks[-1]['end'] = audio_duration
+    # new_audio_chunks[0]['start'] = 0
+    # new_audio_chunks[-1]['end'] = audio_duration
 
     return new_audio_chunks
 
 
 def get_boundary_lists_of_smaller_chunks(
-        audio_chunk_boundaries, boundaries):
+        audio_chunk_boundaries, boundaries, audio_duration):
+
+    logger.debug("All boundaries %s", boundaries)
+    logger.debug("Audio chunk boundaries %s", audio_chunk_boundaries)
     all_chunk_boundaries = []
+    offset_values = []
+    all_boundaries_start_values = [boundary['start']
+                                   for boundary in boundaries]
+    all_boundaries_end_values = [boundary['end'] for boundary in boundaries]
+
     for audio_chunk_boundary in audio_chunk_boundaries:
         current_chunk_boundary_start = audio_chunk_boundary['start']
         current_chunk_boundary_end = audio_chunk_boundary['end']
-        boundary_start_index = boundaries.index(current_chunk_boundary_start)
-        boundary_end_index = boundaries.index(current_chunk_boundary_end)+1
+
+        if current_chunk_boundary_start == 0:
+            boundary_start_index = 0
+        else:
+            boundary_start_index = all_boundaries_start_values.index(
+                current_chunk_boundary_start)
+
+        if current_chunk_boundary_start == audio_duration:
+            boundary_end_index = len(boundaries)-1
+        else:
+            boundary_end_index = all_boundaries_end_values.index(
+                current_chunk_boundary_end)+1
+
         all_chunk_boundaries.append(
             boundaries[boundary_start_index: boundary_end_index])
-    return all_chunk_boundaries
+
+        offset_values.append(current_chunk_boundary_start)
+
+    logger.debug("Total Slices with boundaries: %s; Total initial slices: %s", len(
+        all_chunk_boundaries), len(audio_chunk_boundaries))
+    logger.debug("Final Chunk Boundaries %s", all_chunk_boundaries)
+
+    return all_chunk_boundaries, offset_values
 
 
 def get_current_translation_langscripts(mongo):
     userprojects, projectsform = getdbcollections.getdbcollections(
         mongo, 'userprojects', 'projectsform')
     current_username = getcurrentusername.getcurrentusername()
-    logger.debug('USERNAME: ', current_username)
+    logger.debug('USERNAME: %s', current_username)
     activeprojectname = getactiveprojectname.getactiveprojectname(
         current_username, userprojects)
 
@@ -1634,7 +1987,7 @@ def get_current_transcription_langscripts(mongo):
     userprojects, projectsform = getdbcollections.getdbcollections(
         mongo, 'userprojects', 'projectsform')
     current_username = getcurrentusername.getcurrentusername()
-    logger.debug('USERNAME: ', current_username)
+    logger.debug('USERNAME: %s', current_username)
     activeprojectname = getactiveprojectname.getactiveprojectname(
         current_username, userprojects)
 
@@ -1659,45 +2012,64 @@ def get_current_transcription_langscripts(mongo):
         current_script_code = scriptCode[current_script]
         langscript_code = project_language_code + '-' + current_script_code
         all_lang_scripts[langscript_code] = current_script
-        return all_lang_scripts
+    return all_lang_scripts
 
 
-def get_audio_transcriptions(mongo, model_params):
+def get_audio_transcriptions(mongo, model_params, model_name, model_langscript="", model_type="local"):
     transcriptions = {}
     transcribed = 0
     # transcription_scripts = []
-    current_lang_scripts = get_current_transcription_langscripts(mongo)
-    logger.debug('All current lang scripts', current_lang_scripts)
+    if len(model_langscript) == 0:
+        current_lang_scripts = get_current_transcription_langscripts(mongo)
+    else:
+        current_lang_scripts = model_langscript
+    logger.debug('All current lang scripts %s', current_lang_scripts)
 
-    for transcription_model in all_model_names['transcription']:
-        target = transcription_model['target']
+    if model_name == '':
+        for transcription_model in all_model_names['transcription']:
+            target = transcription_model['target']
+            # target_val = current_lang_scripts[target]
+            if target in current_lang_scripts:
+                target_val = current_lang_scripts[target]
+                if target_val not in transcriptions:
+                    model_names = transcription_model['model']['local']
+                    model_paths = transcription_model['model']['localpath']
+                    model_params['model_path'] = model_paths[0]
+
+                    if len(model_names) > 0:
+                        model_name = model_names[0]
+                        transcriptions[target_val] = predictFromLocalModels.getTranscription(
+                            model_names[0], model_params)
+                        transcribed = 1
+    else:
+        # for target_val in current_lang_scripts:
         # target_val = current_lang_scripts[target]
-        if target in current_lang_scripts:
-            target_val = current_lang_scripts[target]
-            if target_val not in transcriptions:
-                model_names = transcription_model['model']['local']
-                model_path = transcription_model['model']['localpath']
-                model_params['model_path'] = model_path
+        if current_lang_scripts not in transcriptions:
+            if model_type == 'local':
+                transcriptions[current_lang_scripts] = predictFromLocalModels.getTranscription(
+                    model_name, model_params)
+            transcribed = 1
 
-                if len(model_names) > 0:
-                    transcriptions[target_val] = predictFromLocalModels.getTranscription(
-                        model_names[0], model_params)
-                    transcribed = 1
-
-    return transcriptions, transcribed
+    return transcriptions, transcribed, model_name
 
 
-def get_audio_boundaries(model_params):
-    for textgrid_boundary_model in all_model_names['textGrid_boundary']:
-        model_names = textgrid_boundary_model['model']['local']
-        model_path = textgrid_boundary_model['model']['localpath']
-        model_params['model_path'] = model_path
+def get_audio_boundaries(model_params, model_name, model_type="local"):
+    if model_name == '':
+        for textgrid_boundary_model in all_model_names['textGrid_boundary']:
+            model_names = textgrid_boundary_model['model']['local']
+            model_paths = textgrid_boundary_model['model']['localpath']
+            model_params['model_path'] = model_paths[0]
 
-        if len(model_names) > 0:
+            if len(model_names) > 0:
+                model_name = model_names[0]
+                boundaries, cleaned_file = predictFromLocalModels.get_boundaries(
+                    model_names[0], model_params)
+                break
+    else:
+        if model_type == 'local':
             boundaries, cleaned_file = predictFromLocalModels.get_boundaries(
-                model_names[0], model_params)
-            break
-    return boundaries, cleaned_file
+                model_name, model_params)
+    return boundaries, cleaned_file, model_name
 
 
 def get_slices_and_text_grids(mongo,
@@ -1712,59 +2084,142 @@ def get_slices_and_text_grids(mongo,
                               max_pause_slice,
                               max_new_file_duration,
                               audio_duration):
-    all_text_grids = [{
-        "discourse": {},
-        "sentence": {},
-        "word": {},
-        "phoneme": {}
-    }]
 
-    boundaries = None
-    transcriptions = None
+    model_details = {}
+    all_text_grids = []
+
+    audio_chunk_boundaries = []
+
+    boundaries = []
+    offset_values = [0.0]
+    transcriptions = {}
     transcribed = 0
 
     # TODO: This needs to be improved and based on user-inputs regarding the choice
     # of a model. We could store project-specific prefeerences here.
     # Currently it gives preference to local models and select the first
     # model in the list.
+    logger.debug("Run vad: %s, Run ASR: %s, Split: %s",
+                 run_vad, run_asr, split_into_smaller_chunks)
     if run_vad or run_asr or split_into_smaller_chunks:
+        min_speech_duration = 250
+        min_silence_duration = 100
+        vad_model_name = ''
+        vad_model_type = 'local'
+        max_pause_boundary_ms = max_pause_boundary*1000
+        if max_pause_boundary < min_speech_duration:
+            min_speech_duration = int(max_pause_boundary_ms)
+
+            if max_pause_boundary < min_silence_duration:
+                min_silence_duration = int(max_pause_boundary)
+
         if 'textGrid_boundary' in all_model_names:
-            model_params = {
+            vad_model_params = {
                 "audio_file": audio_path,
                 "SAMPLING_RATE": 16000,
                 "remove_pauses": False,
-                "USE_ONNX": False
+                "USE_ONNX": False,
+                "minimum_speech_duration": min_speech_duration,
+                "minimum_silence_duration": min_silence_duration
             }
-            boundaries, cleaned_file = get_audio_boundaries(
-                model_params)
+            logger.debug('Vad Model %s', vad_model)
+            if len(vad_model) > 0:
+                vad_model_name = vad_model['model_name']
+                add_vad_model_params = vad_model['model_params']
+                vad_model_type = vad_model['model_type']
+                vad_model_params.update(add_vad_model_params)
+
+            vad_start = datetime.now()
+            boundaries, cleaned_file, vad_model_name = get_audio_boundaries(
+                vad_model_params, vad_model_name, vad_model_type)
+            vad_end = datetime.now()
+
+            model_details.update([('vad_model_name', vad_model_name), ('vad_model_params',
+                                 vad_model_params), ('vad_start', vad_start), ('vad_end', vad_end)])
 
         if run_asr and 'transcription' in all_model_names:
-            model_params = {
+            asr_model_name = ''
+            asr_model_langscript = {}
+            asr_model_type = 'local'
+            asr_model_params = {
                 "audio_file": audio_path,
                 "boundaries": boundaries
             }
+            logger.debug('ASR Model %s', asr_model)
+            if len(asr_model) > 0:
+                asr_model_name = asr_model['model_name']
+                add_asr_model_params = asr_model['model_params']
+                asr_model_langscript = asr_model['target']
+                asr_model_type = asr_model['model_type']
+                asr_model_params.update(add_asr_model_params)
 
-            transcriptions, transcribed = get_audio_transcriptions(
-                mongo, model_params)
+            asr_start = datetime.now()
+            transcriptions, transcribed, asr_model_name = get_audio_transcriptions(
+                mongo, asr_model_params, asr_model_name, asr_model_langscript, asr_model_type)
+            asr_end = datetime.now()
+
+            model_details.update([('asr_model_name', asr_model_name), ('asr_model_params',
+                                 asr_model_params), ('asr_start', asr_start), ('asr_end', asr_end)])
 
         # logger.debug('Boundaries received', boundaries)
         if split_into_smaller_chunks:
             audio_chunk_boundaries = get_smaller_chunks_of_audio(
                 boundaries, max_pause_slice, max_new_file_duration, audio_duration)
 
-            audio_chunk_boundary_lists = get_boundary_lists_of_smaller_chunks(
-                audio_chunk_boundaries, boundaries)
+            audio_chunk_boundary_lists, offset_values = get_boundary_lists_of_smaller_chunks(
+                audio_chunk_boundaries, boundaries, audio_duration)
 
         else:
             audio_chunk_boundaries = [
                 {'start': boundaries[0], 'end': boundaries[-1]}]
-            audio_chunk_boundary_lists = boundaries
+            audio_chunk_boundary_lists = [boundaries]
 
-        for audio_chunk_boundary_list in audio_chunk_boundary_lists:
-            all_text_grids.append(generate_text_grid(
-                mongo, audio_chunk_boundary_list, audio_chunk_boundary_list, transcriptions, transcription_type, max_pause_boundary))
+        for audio_chunk_boundary_list, offset_value in zip(audio_chunk_boundary_lists, offset_values):
+            blank_text_grid = {
+                "discourse": {},
+                "sentence": {},
+                "word": {},
+                "phoneme": {}
+            }
+            current_text_grid = generate_text_grid(
+                mongo, blank_text_grid, audio_chunk_boundary_list, transcriptions, transcription_type, max_pause_boundary, offset_value=offset_value)
+            all_text_grids.append(current_text_grid)
 
-    return audio_chunk_boundaries, all_text_grids, transcribed
+    return audio_chunk_boundaries, all_text_grids, offset_values, transcribed, model_details
+
+
+def save_uploaded_audio_in_localFs(audio_store_path,
+                                   audio_store_dir,
+                                   audio_id,
+                                   new_audio_file,
+                                   delete_previous_files):
+    audioFolder = os.path.join(audio_store_path, audio_store_dir)
+    logger.debug('Audio folder path %s', audioFolder)
+
+    if delete_previous_files:
+        if (os.path.exists(audioFolder)):
+            logger.debug('Audio folder path exists %s',
+                         audioFolder, 'deleting')
+            shutil.rmtree(audioFolder)
+        os.mkdir(audioFolder)
+    else:
+        if (not os.path.exists(audioFolder)):
+            os.mkdir(audioFolder)
+
+    file_path = ''
+    if (new_audio_file is not None):
+        file_name = audio_id
+        logger.debug('File name %s', file_name)
+        file_path = os.path.join(audio_store_dir, file_name)
+        saved_path = os.path.join(audio_store_path, file_path)
+        logger.debug('Save file path %s', saved_path)
+        # open(saved_path, 'wb').write(new_audio_file)
+        new_audio_file.save(saved_path)
+        logger.debug('Audio saved path %s', saved_path)
+    else:
+        saved_path = ''
+
+    return saved_path
 
 
 def save_audio_in_mongo_and_localFs(mongo,
@@ -1777,7 +2232,8 @@ def save_audio_in_mongo_and_localFs(mongo,
                                     audio_store_path='',
                                     audio_store_dir='',
                                     store_in_local=False,
-                                    store_in_mongo=True):
+                                    store_in_mongo=True,
+                                    delete_previous_files=True):
 
     if store_in_mongo:
         fs_file_id = mongo.save_file(updated_audio_filename,
@@ -1787,35 +2243,42 @@ def save_audio_in_mongo_and_localFs(mongo,
                                      projectname=activeprojectname,
                                      updatedBy=current_username,
                                      filedeleteFLAG=0)
+        if store_in_local:
+            saved_path = getaudiowaveformfilefromfs(mongo,
+                                                    audio_store_path,
+                                                    audio_store_dir,
+                                                    audio_id,
+                                                    'audioId',
+                                                    delete_previous_files)
+            logger.debug('Audio saved path %s', saved_path)
+        else:
+            saved_path = ''
     else:
         fs_file_id = ''
+        if store_in_local:
+            saved_path = save_uploaded_audio_in_localFs(audio_store_path,
+                                                        audio_store_dir,
+                                                        audio_id,
+                                                        new_audio_file,
+                                                        delete_previous_files)
+        else:
+            saved_path = ''
+    # logger.debug('audioLength %s', new_audio_file['audiofile'].content_length)
 
-    # logger.debug('audioLength', new_audio_file['audiofile'].content_length)
-
-    # logger.debug('json_basedir', json_basedir)
+    # logger.debug('json_basedir %s', json_basedir)
 
     # # audiowaveform_json_path = os.path.join(audiowaveform_json, 'audiowaveform_json')
 
-    # logger.debug('audiowaveform_json', audiowaveform_json)
-    # logger.debug('audiowaveform_json_path', audiowaveform_json_path)
+    # logger.debug('audiowaveform_json %s', audiowaveform_json)
+    # logger.debug('audiowaveform_json_path %s', audiowaveform_json_path)
 
-    # logger.debug('new_audio_file', type(new_audio_file), new_audio_file)
+    # logger.debug('new_audio_file %s %s', type(new_audio_file), new_audio_file)
     # audiowaveform_file = new_audio_file.stream.seek(0)
     # audiowaveform_file.stream.seek(0)
     # getaudiofilefromfs(mongo,
     #                 audiowaveform_json,
     #                 audio_id,
     #                 'audio')
-
-    if store_in_local:
-        saved_path = getaudiowaveformfilefromfs(mongo,
-                                                audio_store_path,
-                                                audio_store_dir,
-                                                audio_id,
-                                                'audioId')
-        logger.debug('Audio saved path', saved_path)
-    else:
-        saved_path = ''
 
     return fs_file_id, saved_path
 
@@ -1835,8 +2298,8 @@ def get_audio_waveform_json(audiowaveform_json, json_dir, audio_filename):
     audiowaveform_json_path = os.path.join(audiowaveform_json, json_dir)
     audiowaveform_audio_path = os.path.join(
         audiowaveform_audio_path, audio_filename)
-    # logger.debug('audiowaveform_audio_path', audiowaveform_audio_path)
-    # logger.debug('audiowaveform_json_path', audiowaveform_json_path)
+    # logger.debug('audiowaveform_audio_path %s', audiowaveform_audio_path)
+    # logger.debug('audiowaveform_json_path %s', audiowaveform_json_path)
     audiowaveform_json = createaudiowaveform(
         audiowaveform_audio_path, audiowaveform_json_path, audio_filename)
 
