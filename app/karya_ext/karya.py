@@ -184,6 +184,11 @@ def home_insert():
             "completedVerification": "Completed Verification",
             "newVerification": "New Verification"
         }
+    elif projectType == "questionnaires":
+                dropdown_dict = {
+            "newVerification": "New Verification"
+                }
+
     else:
         dropdown_dict = {
             "newVerification": "New Verification",
@@ -899,7 +904,7 @@ def fetch_karya_audio():
             return redirect(url_for('karya_bp.home_insert'))
         #############################################################################################
 
-        if project_type == 'validation' or project_type == 'transcriptions' or project_type == 'recordings':
+        if project_type == 'validation' or project_type == 'transcriptions' or project_type == 'recordings' or project_type == "questionnaires":
             if "new" in access_code_task:
                 assignment_url = 'https://karyanltmbox.centralindia.cloudapp.azure.com/assignments?type=new&from=2021-05-11T07:23:40.654Z'
                 print("the project type is ", project_type,
@@ -908,6 +913,10 @@ def fetch_karya_audio():
                 assignment_url = 'https://karyanltmbox.centralindia.cloudapp.azure.com/assignments?type=verified&includemt=true&from=2021-05-11T07:23:40.654Z'
                 print("the project type is ", project_type, "and",
                       access_code_task, "and", "verified url")
+
+
+
+                  
 
         # if project_type == 'validation' and access_code_task == "newVerification":
         #     assignment_url = 'https://karyanltmbox.centralindia.cloudapp.azure.com/assignments?type=new&from=2021-05-11T07:23:40.654Z'
