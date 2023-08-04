@@ -10,6 +10,7 @@
   <link href="{{url_for('.static', filename='enternewsentences.css')}}" rel="stylesheet" />
   <link href="{{url_for('.static', filename='audiotranscription.css')}}" rel="stylesheet" />
   <link href="{{url_for('.static', filename='sidepanel.css')}}" rel="stylesheet" />
+  <link href="{{url_for('.static', filename='addnewspeaker.css')}}" rel="stylesheet" />
 {% endblock %}
 
 {% block app_content %}
@@ -156,7 +157,7 @@
                 <span class="glyphicon glyphicon-repeat" aria-hidden="true"></span>
                 <span class="audioplaypauseboundarystart glyphicon glyphicon-play" aria-hidden="true"></span>
       </button>
-      <button type="button" id="myMakeBoundaryModalButton" class="btn btn btn-success makeboundary" data-toggle="modal"
+      <button type="button" id="myMakeBoundaryModalButton" class="btn btn-success makeboundary" data-toggle="modal"
         data-target="#myMakeBoundaryModal" title="Make Boundaries">
         <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
       </button>
@@ -252,9 +253,7 @@
           <h4 class="modal-title" id="addNewSpeakerModalLabel">Project Name: {{ projectName }}</h4>
         </div>
         <div class="modal-body">
-          <!-- <div class="col-xs-6"> -->
-          <!-- <input id="myInput" class="form-control" type="text" placeholder="Search"> -->
-          <!-- </div> -->
+          
           <br>
           <div class="row">
             <div class="col-xs-12">

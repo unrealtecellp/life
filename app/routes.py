@@ -39,13 +39,12 @@ from app.controller import (audiodetails, createdummylexemeentry,
                             getactiveprojectname, getcommentstats,
                             getcurrentusername, getcurrentuserprojects,
                             getdbcollections, getprojectowner, getprojecttype,
-                            getuserprojectinfo, langscriptutils, lexicondetails)
+                            getuserprojectinfo, langscriptutils, lexicondetails, speakerDetails)
 from app.controller import latex_generator as lg
 from app.controller import (manageAppConfig, questionnairedetails,
                             readJSONFile, removeallaccess, savenewlexeme,
                             savenewproject, savenewprojectform,
-                            savenewsentence, speakerdetails,
-                            unannotatedfilename, updateuserprojects,
+                            savenewsentence, unannotatedfilename, updateuserprojects,
                             userdetails, life_logging)
 from app.forms import RegistrationForm, UserLoginForm
 from app.models import UserLogin
@@ -4940,13 +4939,6 @@ def loadunannotext():
     return 'OK'
 
 
-def generate_speaker_id(name, age=''):
-    name = name.replace(" ", "").replace(".", "").lower()
-    age = age.replace("-", "")
-    new_speaker_id = name+age+'_'+re.sub(r'[-: \.]', '', str(datetime.now()))
-
-    return new_speaker_id
-
 # add speaker details
 
 
@@ -4962,73 +4954,65 @@ def addnewspeakerdetails():
                                                                   userprojects)
     projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
     if request.method == 'POST':
-        add_new_speaker_form_data = dict(request.form.lists())
-        print(add_new_speaker_form_data)
-        current_dt = str(datetime.now()).replace('.', ':')
-        audio_source = request.form.get('audiosource')
-        call_source = request.form.get('sourcecallpage')
-        print("Call source", call_source)
+        # add_new_speaker_form_data = dict(request.form.lists())
+        # print(add_new_speaker_form_data)
+        logger.debug("All form %s", request.form)
 
-        if (audio_source == 'field'):
-            # speaker metadata
-            fname = request.form.get('sname')
-            fage = request.form.get('sagegroup')
-            source_id = generate_speaker_id(fname, fage)
-            fgender = request.form.get('sgender')
-            educlvl = request.form.get('educationalevel')
-            moe12 = request.form.getlist('moe12')
-            moea12 = request.form.getlist('moea12')
-            sols = request.form.getlist('sols')
-            por = request.form.get('por')
-            toc = request.form.get('toc')
-            source_data = {"username": projectowner,
-                           "projectname": activeprojectname,
-                           "lifesourceid": source_id,
-                           "createdBy": current_username,
-                           "audioSource": audio_source,
-                           "current": {
-                               "updatedBy": current_username,
-                               "sourceMetadata": {
-                                   "name": fname,
-                                   "agegroup": fage,
-                                   "gender": fgender,
-                                   "educationlevel": educlvl,
-                                   "educationmediumupto12": moe12,
-                                   "educationmediumafter12": moea12,
-                                   "speakerspeaklanguage": sols,
-                                   "recordingplace": por,
-                                   "typeofrecordingplace": toc
-                               },
-                               "current_date": current_dt,
-                           },
-                           "isActive": 1}
-        elif (audio_source == 'internet'):
-            # internet sub source
-            audiosubsource = request.form.get('audiosubsource')
-            if (audiosubsource == 'youtube'):
-                channelname = request.form.get('ytchannelname')
-                channelurl = request.form.get('ytchannelurl')
-                source_id = generate_speaker_id(channelname)
-                source_data = {"username": projectowner,
-                               "projectname": activeprojectname,
-                               "lifesourceid": source_id,
-                               "createdBy": current_username,
-                               "audioSource": audio_source,
-                               "audioSubSource": audiosubsource,
-                               "current": {
-                                   "updatedBy": current_username,
-                                   "sourceMetadata": {
-                                       "channelName": channelname,
-                                       "channelUrl": channelurl
-                                   },
-                                   "current_date": current_dt
-                               },
-                               "isActive": 1}
-        # pprint(source_data)
-        # speakerdetails.insert_one(source_data, check_keys=False)
-        speakerdetails.insert_one(source_data)
+        audio_source = request.form.get('audiosource', '')
+        call_source = request.form.get('sourcecallpage', '')
+        audio_subsource = request.form.get('fieldmetadataschema', '')
+        upload_type = request.form.get('metadataentrytype', '')
+        logger.debug("Call source %s", call_source)
+        metadata_data = {}
+        if upload_type == 'single':
+            if ('field' in audio_source):
+                fname = request.form.get('sname', '')
+                fage = request.form.get('sagegroup', '')
+                fgender = request.form.get('sgender', '')
+                educlvl = request.form.get('educationalevel', '')
+                moe12 = request.form.getlist('moe12')
+                moea12 = request.form.getlist('moea12')
+                sols = request.form.getlist('sols')
+                por = request.form.get('por', '')
+                toc = request.form.get('toc', '')
+                metadata_data.update({"name": fname,
+                                      "agegroup": fage,
+                                      "gender": fgender,
+                                      "educationlevel": educlvl,
+                                      "educationmediumupto12": moe12,
+                                      "educationmediumafter12": moea12,
+                                      "speakerspeaklanguage": sols,
+                                      "recordingplace": por,
+                                      "typeofrecordingplace": toc})
 
-        # TODO: Redirect to different pages based on button click
+            elif (audio_source == 'internet'):
+                # internet sub source
+                audio_subsource = request.form.get('audiosubsource')
+                if (audio_subsource == 'youtube'):
+                    if upload_type == 'single':
+                        channelname = request.form.get('ytchannelname', '')
+                        channelurl = request.form.get('ytchannelurl', '')
+                        metadata_data.update({"channelName": channelname,
+                                              "channelUrl": channelurl})
+        else:
+            metadata_data = request.files.to_dict().get('metadatafile', '')
+
+            # logger.debug('Metadata info %s', metadata_data)
+            # excel_data = pd.read_excel(
+            #     metadata_data, engine="openpyxl")
+            # excel_data['educationmediumupto12'] = excel_data['educationmediumupto12'].apply(
+            #     lambda x: x.split(','))
+            # logger.debug('File data %s', excel_data.to_dict(orient='records'))
+        speakerDetails.write_speaker_metadata_details(speakerdetails,
+                                                      projectowner,
+                                                      activeprojectname,
+                                                      current_username,
+                                                      audio_source,
+                                                      audio_subsource,
+                                                      metadata_data,
+                                                      upload_type)
+
+        # # TODO: Redirect to different pages based on button click
 
         if "managepage" in call_source:
             flash(
@@ -5058,7 +5042,7 @@ def managespeakermetadata():
         current_username, userprojects)
     shareinfo = getuserprojectinfo.getuserprojectinfo(
         userprojects, current_username, activeprojectname)
-    allspeakerdetails, alldatalengths, allkeys = speakerdetails.getspeakerdetails(
+    allspeakerdetails, alldatalengths, allkeys = speakerDetails.getspeakerdetails(
         activeprojectname, speakermeta)
 
     # pprint (allspeakerdetails)
@@ -5087,7 +5071,7 @@ def getonespeakermetadata():
     # data through ajax
     lifesourceid = request.args.get('lifespeakerid')
     print("Life source ID", lifesourceid)
-    speakermetadata = speakerdetails.getonespeakerdetails(
+    speakermetadata = speakerDetails.getonespeakerdetails(
         activeprojectname, lifesourceid, speakermeta)
 
     print("Speaker Metadata", speakermetadata)
@@ -5134,7 +5118,7 @@ def editfieldspeakermetadata():
         }
     }
 
-    updatestatus = speakerdetails.updateonespeakerdetails(
+    updatestatus = speakerDetails.updateonespeakerdetails(
         activeprojectname, lifesourceid, update_data, speakermeta)
 
     return redirect(url_for('managespeakermetadata'))
@@ -5167,7 +5151,7 @@ def edityoutubesourcemetadata():
         }
     }
 
-    updatestatus = speakerdetails.updateonespeakerdetails(
+    updatestatus = speakerDetails.updateonespeakerdetails(
         activeprojectname, lifesourceid, update_data, speakermeta)
 
     return redirect(url_for('managespeakermetadata'))
