@@ -130,6 +130,8 @@ def manageusers():
     if 'ADMIN' in usertype:
         allusers = userdetails.getuserdetails(userlogin)
         userprofilelist = userdetails.getuserprofilestructure(userlogin)
+        if 'username' not in userprofilelist:
+            userprofilelist.insert(0, 'username')
 
         return render_template(
             'manageUsers.html',
@@ -155,6 +157,7 @@ def getoneuserdetails():
         required_username = request.args.get('username')
         required_user_details = userdetails.getuserdetails(
             userlogin, required_username)
+        required_user_details['username'] = required_username
 
         print(required_user_details)
 
@@ -4469,20 +4472,34 @@ def login():
             flash('Invalid username or password')
             return redirect(url_for('login'))
 
-        isUserActive = userlogin.find_one(
-            {'username': form.username.data}, {"_id": 1, "isActive": 1})
+        isUserAvailable = userlogin.find_one(
+            {'username': form.username.data}, {"_id": 1, "isActive": 1, "userdeleteFLAG": 1})
         # print(len(isUserActive))
         # if (len(isUserActive) != 0):
-        if 'isActive' in isUserActive:
-            isUserActive = isUserActive['isActive']
-            if (isUserActive):
+        if 'isActive' in isUserAvailable and 'userdeleteFLAG' in isUserAvailable:
+            isUserActive = isUserAvailable['isActive']
+            isUserDelete = isUserAvailable['userdeleteFLAG']
+            logger.debug('User active status', isUserActive)
+            if (isUserActive == 1 and isUserDelete == 0):
                 pass
                 # print(isUserActive)
                 # print('123')
             else:
-                # flash('Your request for an account is successfully submitted and is currently under review.')
-                flash(
-                    'Your request for an account is  currently under review. If approved, your account will be active in some time.')
+                if (isUserDelete == 1):
+                    if (isUserActive == 2):
+                        flash(
+                            'Your account has been deactivated and deleted. Please contact the administrator for more details.')
+                    elif (isUserActive == 0):
+                        flash(
+                            'Your request for an account was not approved. Please contact the administrator for more details or apply again with lesser requirements.')
+                else:
+                    if (isUserActive == 2):
+                        flash(
+                            'Your account has been deactivated. Please contact the administrator for more details.')
+                    # flash('Your request for an account is successfully submitted and is currently under review.')
+                    elif (isUserActive == 0):
+                        flash(
+                            'Your request for an account is  currently under review. If approved, your account will be active in some time.')
                 return redirect(url_for('login'))
         else:
             old_user_update(userlogin, user.username, ObjectId(
