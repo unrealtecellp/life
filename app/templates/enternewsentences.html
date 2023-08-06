@@ -10,6 +10,7 @@
   <link href="{{url_for('.static', filename='enternewsentences.css')}}" rel="stylesheet" />
   <link href="{{url_for('.static', filename='audiotranscription.css')}}" rel="stylesheet" />
   <link href="{{url_for('.static', filename='sidepanel.css')}}" rel="stylesheet" />
+  <link href="{{url_for('.static', filename='addnewspeaker.css')}}" rel="stylesheet" />
 {% endblock %}
 
 {% block app_content %}
@@ -133,23 +134,36 @@
       <input id="slider" data-action="zoom" type="range" min="0" max="100" value="0" style="width: 50%">
     </div>
     <div class=" col-sm-3">
-      <button class="btn btn-danger" type="button" id="stopAudio">STOP
+      AUDIO:
+      <button class="btn btn-danger" type="button" id="stopAudio" title="Stop Audio">
         <span class="audiostop glyphicon glyphicon-stop" aria-hidden="true"></span>
       </button>
-      <button class="btn btn-primary" type="button" id="playPauseAudio">PLAY/PAUSE
+      <button class="btn btn-primary" type="button" id="playPauseAudio" title="Play/Pause Audio">
         <span class="audioplaypause glyphicon glyphicon-play" aria-hidden="true"></span>
       </button>
     </div>
     <div class=" col-sm-6 pull-right">
-      <button type="button" class="btn btn-danger" data-action="delete-region">
-        Delete Boundary
+      BOUNDARIES:
+      <button type="button" class="btn btn-danger" data-action="delete-region-all" title="Delete all boundaries">
+        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
       </button>
-      <button class="btn btn-primary" type="button" id="playPauseBoundary">
-        Play From Here
+      <button type="button" class="btn btn-warning" data-action="delete-region" title="Delete Boundary">
+        <span class="glyphicon glyphicon-minus" aria-hidden="true"></span>
       </button>
-      <button class="btn btn-primary" type="button" id="playPauseBoundaryStart">
-        Play From Start
+      <button class="btn btn-primary" type="button" id="playPauseBoundary" title="Play/Pause boundary audio from cursor position">
+        <span class="audioplaypauseboundary glyphicon glyphicon-play" aria-hidden="true"></span>
       </button>
+      <button class="btn btn-info" type="button" id="playPauseBoundaryStart" title="Play/Pause boundary audio from beginning">
+                <span class="glyphicon glyphicon-repeat" aria-hidden="true"></span>
+                <span class="audioplaypauseboundarystart glyphicon glyphicon-play" aria-hidden="true"></span>
+      </button>
+      <button type="button" id="myMakeBoundaryModalButton" class="btn btn-success makeboundary" data-toggle="modal"
+        data-target="#myMakeBoundaryModal" title="Make Boundaries">
+        <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+      </button>
+      <!-- <button class="btn btn-info" type="button" id="drawBoundary">
+        Draw Boundaries
+      </button> -->
     </div>
   </div>
   <p id="regioninfo" class="text-danger">&nbsp;</p>
@@ -239,9 +253,7 @@
           <h4 class="modal-title" id="addNewSpeakerModalLabel">Project Name: {{ projectName }}</h4>
         </div>
         <div class="modal-body">
-          <!-- <div class="col-xs-6"> -->
-          <!-- <input id="myInput" class="form-control" type="text" placeholder="Search"> -->
-          <!-- </div> -->
+          
           <br>
           <div class="row">
             <div class="col-xs-12">
@@ -269,8 +281,10 @@
         </div>
         <div class="modal-body">
           <form name="newaudioupload" action="/uploadaudiofiles" method="POST" enctype="multipart/form-data">
-            <div class="col upload">
+            <!-- <div class="col upload"> -->
               <!-- <strong>Audio Files from Source: </strong> -->
+              <h4>Select File:</h4>
+              <div class="input-group col-md-12 upload" id="speakeriduploaddropdown-divid">
               <label for="speakeriduploaddropdown">Audio Files for Source: </label>
               <select class="custom-select custom-select-sm" id="speakeriduploaddropdown" name="speakerId"
                 style="width:30%" required>
@@ -279,11 +293,65 @@
                 <option value="{{ d }}">{{ d }}</option>
                 {% endfor %}
               </select>
-              <br><br>
-              <input type="file" id="audiofile" name="audiofile" required>
-              <br>
+              </div>
+              <div class="input-group col-md-6" id="audiobrowse-classid">
+                <input type="file" id="audiofile" name="audiofile" required>
+              </div>
+              <!-- <br/>
+              <div class="input-group col-md-12" id="uploadparameters-optimise-divid">
+                <label>Optimise Uploaded Audio For: </label><br/>
+                <input type="radio" id="uploadparameters-optimiseforflid" name="uploadparameters-optimisefor" value="True" checked>
+                <label for="uploadparameters-optimiseforflid">Faster Loading</label>
+                <input type="radio" id="uploadparameters-optimiseforwaveid" name="uploadparameters-optimisefor" value="False">
+                <label for="uploadparameters-optimiseforwaveid">High-quality waveform</label>
+                
+              </div> -->
+              
+              <hr>
+
+              <h4>Boundary Options:</h4>
+              
+              <div class="input-group col-md-4" id="uploadparameters-vad-divid">
+              <input type="checkbox" id="uploadparameters-vadid" name="uploadparameters-vad">
+              <label for="uploadparameters-vadid">Make Boundaries</label><br/>
+              </div>  
+
+              <div class="input-group col-md-8" id="uploadparameters-boundarypause-divid" style="display: none;" aria-disabled="true">              
+              <label title="It defines the minimum value of pause at which a new boundary is made"
+                for="uploadparameters-boundarypause">Boundary Pause Threshold (between 0.00001-10.0 seconds) </label><br /> Suggested Values: <i>For sentence: 0.3; For words: 0.01; For phones: 0.001</i><br/>
+              
+              <input type="number" name="boundaryPause" id="uploadparameters-boundarypauseid" min="0.00001" max="10.0" step="0.00001"
+                  placeholder="Value between 0.00001 to 10.0" value="0.3" disabled>
+              </div>
+              
+              <hr/>
+              
+              <h4>File Options:</h4>
+              
+              <div class="input-group col-md-8" id="uploadparameters-maxFileSeize-divid">
+              <label title="It defines the maximum size of one audio file to be generated after splitting"
+                for="uploadparameters-splitpausedropdown">Maximum File Duration (between 60-150 seconds): </label><br/>
+              <input type="number" name="maxFileSize" id="uploadparameters-maxfilesizeid" min="60" max="150"
+                placeholder="Value between 60 to 150" value="120"><br/><br/>            
+              </div>
+<!-- sliceOffsetValue -->
+              <div class="input-group col-md-8" id="uploadparameters-filesplitthreshold-divid">
+              <label for="uploadparameters-filesplitthresholdid">File Split Pause Threshold (between 0.1-5.0 seconds):</label><br>
+              <input type="number" name="fileSplitThreshold" id="uploadparameters-filesplitthresholdid" min="0.1" max="5.0" step="0.1" value="0.9"
+                placeholder="Value between 0.1 to 5.0">
+              </div>
+
+              <div class="input-group col-md-8" id="uploadparameters-sliceOffsetValue-divid">
+                <label for="uploadparameters-sliceOffsetValueid">Overlap across Split Audios (between 0.01-10.0 seconds):</label><br>
+                <input type="number" name="sliceOffsetValue" id="uploadparameters-sliceOffsetValueid" min="0.01" max="10.0"
+                  step="0.01" value="0.1" placeholder="Value between 0.01 to 10.0">
+              </div>
+              <hr/>
+
+              <div class="input-group" id="audioupload-divid">
               <input class="btn btn-primary uploadbtn" type="submit" value="Upload Audio File">
-            </div>
+              </div>
+            <!-- </div> -->
           </form>
         </div>
         <div class="modal-footer">
@@ -347,6 +415,79 @@
                 <li id="mymarkdown"><a href="#">Markdown</a></li>
               </ul>
             </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Make Boundary Modal -->
+  <div class="modal fade" id="myMakeBoundaryModal" tabindex="-1" role="dialog" aria-labelledby="myMakeBoundaryModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+              aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="myMakeBoundaryModalLabel">Project Name: {{ projectName }}</h4>
+        </div>
+        <div class="modal-body">
+          <form name="makeboundary" action="/makeboundary" method="POST" enctype="multipart/form-data">
+            <!-- <div class="col upload"> -->
+            <!-- <strong>Audio Files from Source: </strong> -->
+            <h4>Make Boundaries for this file </h4>
+            <i><font color="red">It will overwrite any boundaries made earlier using this model</font></i>
+            <div class="input-group col-md-12 upload" id="  ">
+              <label for="speakeriduploaddropdown">Source: </label><br />
+              <input class="col-md-6" type="text" id="makeboundaryspeakeriduploaddropdown" name="speakerId" value="" readonly>
+              <!-- <select class="custom-select custom-select-sm" id="speakeriduploaddropdown" name="speakerId" -->
+                <!-- style="width:30%" readonly> -->
+                <!-- <option selected disabled></option> -->
+                <!-- {% for d in addedspeakerids %}
+                <option value="{{ d }}">{{ d }}</option>
+                {% endfor %}
+              </select> -->
+            </div>
+            <br>
+            <div class="input-group col-md-12" id="audiofilename-divid">
+              <label for="audiofile">Filename: </label><br/>
+              <input class="col-md-6" type="text" id="makeboundaryaudiofileid" name="audiofile" readonly>
+            </div>
+            <br>
+            <div class="input-group col-md-12" id="audioduration-divid">
+              <label for="makeboundaryaudiodurationid">Audio Duration: </label><br />
+              <input class="col-md-6" type="text" id="makeboundaryaudiodurationid" name="audioduration" readonly>
+            </div>
+            <hr>
+  
+            <div class="input-group col-md-8" id="uploadparameters-boundarypause-divid" style="display: block;"
+              aria-disabled="true">
+              <label title="It defines the minimum value of pause at which a new boundary is made"
+                for="uploadparameters-boundarypause">Boundary Pause Threshold (between 0.00001-10.0 seconds)
+              </label><br /> Suggested Values: <i>For sentence: 0.3; For words: 0.01; For phones: 0.001</i><br />
+  
+              <input type="number" name="boundaryPause" id="uploadparameters-boundarypauseid" min="0.00001" max="10.0"
+                step="0.00001" placeholder="Value between 0.00001 to 10.0" value="0.3" required><br/><br>
+            </div>
+
+            <div class="input-group col-md-4" id="overwrite-my-boundaries-divid">
+              <input type="checkbox" id="overwrite-my-boundariesid" name="overwrite-my-boundaries">
+              <label for="uploadparameters-vadid">Overwrite my Boundaries</label>
+            </div>
+
+            <!-- <div class="input-group col-md-4" id="createaudiojson-divid">
+              <input type="checkbox" id="createaudiojsonid" name="createaudiojson">
+              <label for="uploadparameters-vadid">Create Audio JSON (for faster loading - already created</label>
+            </div> -->
+  
+            <hr>
+            <div class="input-group" id="audioupload-divid">
+              <input class="btn btn-primary uploadbtn" type="submit" value="Make Boundaries">
+            </div>
+            <!-- </div> -->
+          </form>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>

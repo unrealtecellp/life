@@ -26,10 +26,10 @@ from app.controller import (
     savenewproject,
     savenewprojectform,
     savenewsentence,
+    speakerDetails,
     unannotatedfilename,
     updateuserprojects,
-    userdetails,
-    speakerdetails
+    userdetails
 )
 
 from app.lifedownloader.controller import (

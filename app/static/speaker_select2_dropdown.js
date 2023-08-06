@@ -208,7 +208,7 @@ var EducationLevel =
 [
   {"id": "", "text": ""},
   {"id": "No Schooling", "text": "No Schooling"},
-  {"id": "Upto 12ᵗʰ", "text": "Upto 12ᵗʰ"},
+  {"id": "Upto 12th", "text": "Upto 12ᵗʰ"},
   {"id": "Graduate", "text": "Graduate"},
   {"id": "Post-Graduate", "text": "Post-Graduate"},
   {"id": "Above PG", "text": "Above PG"},
@@ -238,8 +238,14 @@ var TypeOfCity = [
 
 var audioSource = [
   {"id": "", "text": ""},
-  {"id": "field", "text": "Field"},
+  { "id": "field", "text": "Field" },
   {"id": "internet", "text": "Internet"}
+];
+
+var metadataSchema = [
+  {"id": "", "text": ""},
+  { "id": "speed", "text": "SpeeD-IL" },
+  {"id": "ldcil", "text": "LDC-IL "}
 ];
 
 var audioSubSource = [

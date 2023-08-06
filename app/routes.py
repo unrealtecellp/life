@@ -39,13 +39,12 @@ from app.controller import (audiodetails, createdummylexemeentry,
                             getactiveprojectname, getcommentstats,
                             getcurrentusername, getcurrentuserprojects,
                             getdbcollections, getprojectowner, getprojecttype,
-                            getuserprojectinfo, langscriptutils, lexicondetails)
+                            getuserprojectinfo, langscriptutils, lexicondetails, speakerDetails)
 from app.controller import latex_generator as lg
 from app.controller import (manageAppConfig, questionnairedetails,
                             readJSONFile, removeallaccess, savenewlexeme,
                             savenewproject, savenewprojectform,
-                            savenewsentence, speakerdetails,
-                            unannotatedfilename, updateuserprojects,
+                            savenewsentence, unannotatedfilename, updateuserprojects,
                             userdetails, life_logging)
 from app.forms import RegistrationForm, UserLoginForm
 from app.models import UserLogin
@@ -131,6 +130,8 @@ def manageusers():
     if 'ADMIN' in usertype:
         allusers = userdetails.getuserdetails(userlogin)
         userprofilelist = userdetails.getuserprofilestructure(userlogin)
+        if 'username' not in userprofilelist:
+            userprofilelist.insert(0, 'username')
 
         return render_template(
             'manageUsers.html',
@@ -156,6 +157,7 @@ def getoneuserdetails():
         required_username = request.args.get('username')
         required_user_details = userdetails.getuserdetails(
             userlogin, required_username)
+        required_user_details['username'] = required_username
 
         print(required_user_details)
 
@@ -528,8 +530,8 @@ def audiobrowse():
         total_records = 0
         if (active_speaker_id != ''):
             total_records, audio_data_list = audiodetails.get_n_audios(transcriptions,
-                                                                        activeprojectname,
-                                                                        active_speaker_id)
+                                                                       activeprojectname,
+                                                                       active_speaker_id)
         else:
             audio_data_list = []
         # get audio file src
@@ -549,7 +551,8 @@ def audiobrowse():
         new_data['shareInfo'] = shareinfo
         new_data['speakerIds'] = speakerids
         new_data['audioData'] = new_audio_data_list
-        new_data['audioDataFields'] = ['audioId', 'audioFilename', 'Audio File']
+        new_data['audioDataFields'] = [
+            'audioId', 'audioFilename', 'Audio File']
         new_data['totalRecords'] = total_records
     except:
         logger.exception("")
@@ -677,19 +680,19 @@ def updateaudiobrowsetable():
         total_records = 0
         if (active_speaker_id != ''):
             total_records, audio_data_list = audiodetails.get_n_audios(transcriptions,
-                                                                        activeprojectname,
-                                                                        active_speaker_id,
-                                                                        start_from=0,
-                                                                        number_of_audios=audio_file_count,
-                                                                        audio_delete_flag=audio_browse_action)
+                                                                       activeprojectname,
+                                                                       active_speaker_id,
+                                                                       start_from=0,
+                                                                       number_of_audios=audio_file_count,
+                                                                       audio_delete_flag=audio_browse_action)
         else:
             audio_data_list = []
         # logger.debug('audio_data_list: %s', pformat(audio_data_list))
         # get audio file src
 
         shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
-                                                        current_username,
-                                                        activeprojectname)
+                                                          current_username,
+                                                          activeprojectname)
         share_mode = shareinfo['sharemode']
         share_checked = shareinfo['sharechecked']
         new_audio_data_list = audio_data_list
@@ -704,11 +707,12 @@ def updateaudiobrowsetable():
     except:
         logger.exception("")
 
-    return jsonify(audioDataFields= audio_data_fields,
+    return jsonify(audioDataFields=audio_data_fields,
                    audioData=new_audio_data_list,
                    shareMode=share_mode,
                    totalRecords=total_records,
                    shareChecked=share_checked)
+
 
 @app.route('/audiobrowseaction', methods=['GET', 'POST'])
 @login_required
@@ -856,21 +860,22 @@ def audiobrowseactionshare():
         logger.exception("")
         return jsonify(commentInfo={})
 
+
 @app.route('/audiobrowsechangepage', methods=['GET', 'POST'])
 @login_required
 def audiobrowsechangepage():
-    audio_data_fields= ['audioId', 'audioFilename', 'Audio File']
+    audio_data_fields = ['audioId', 'audioFilename', 'Audio File']
     audio_data_list = []
     try:
         # data through ajax
         audio_browse_info = json.loads(request.args.get('a'))
         logger.debug('audio_browse_info: %s', pformat(audio_browse_info))
         userprojects, transcriptions = getdbcollections.getdbcollections(mongo,
-                                                                    'userprojects',
-                                                                    'transcriptions')
+                                                                         'userprojects',
+                                                                         'transcriptions')
         current_username = getcurrentusername.getcurrentusername()
         activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
-                                                                    userprojects)
+                                                                      userprojects)
         # logger.debug(crawler_browse_info['activeSourceId'])
         active_speaker_id = audio_browse_info['activeSpeakerId']
         audio_count = audio_browse_info['audioFilesCount']
@@ -894,8 +899,8 @@ def audiobrowsechangepage():
         # get audio file src
 
         shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
-                                                        current_username,
-                                                        activeprojectname)
+                                                          current_username,
+                                                          activeprojectname)
         share_mode = shareinfo['sharemode']
         share_checked = shareinfo['sharechecked']
         new_audio_data_list = audio_data_list
@@ -3816,15 +3821,15 @@ def userslist():
                     share_with_users_list.append(username)
         # print(usersList, share_with_users_list)
         if (project_type == 'recordings' or
-            project_type == 'transcriptions'):
+                project_type == 'transcriptions'):
             speakersDict = projects.find_one({'projectname': activeprojectname},
-                                            {'_id': 0, 'speakerIds.'+current_username: 1})
+                                             {'_id': 0, 'speakerIds.'+current_username: 1})
             if (len(speakersDict) != 0):
                 sourceList = speakersDict['speakerIds'][current_username]
         elif (project_type == 'crawling' or
-            project_type == 'annotation'):
+              project_type == 'annotation'):
             sourceDict = projects.find_one({'projectname': activeprojectname},
-                                            {'_id': 0, 'sourceIds.'+current_username: 1})
+                                           {'_id': 0, 'sourceIds.'+current_username: 1})
             if (len(sourceDict) != 0):
                 sourceList = sourceDict['sourceIds'][current_username]
     except:
@@ -3953,7 +3958,7 @@ def shareprojectwith():
                     'activespeakerId': '',
                     'activesourceId': ''
                 }
-                
+
             projectdetails = projects.find_one(
                 {
                     'projectname': activeprojectname
@@ -4661,20 +4666,34 @@ def login():
             flash('Invalid username or password')
             return redirect(url_for('login'))
 
-        isUserActive = userlogin.find_one(
-            {'username': form.username.data}, {"_id": 1, "isActive": 1})
+        isUserAvailable = userlogin.find_one(
+            {'username': form.username.data}, {"_id": 1, "isActive": 1, "userdeleteFLAG": 1})
         # print(len(isUserActive))
         # if (len(isUserActive) != 0):
-        if 'isActive' in isUserActive:
-            isUserActive = isUserActive['isActive']
-            if (isUserActive):
+        if 'isActive' in isUserAvailable and 'userdeleteFLAG' in isUserAvailable:
+            isUserActive = isUserAvailable['isActive']
+            isUserDelete = isUserAvailable['userdeleteFLAG']
+            logger.debug('User active status', isUserActive)
+            if (isUserActive == 1 and isUserDelete == 0):
                 pass
                 # print(isUserActive)
                 # print('123')
             else:
-                # flash('Your request for an account is successfully submitted and is currently under review.')
-                flash(
-                    'Your request for an account is  currently under review. If approved, your account will be active in some time.')
+                if (isUserDelete == 1):
+                    if (isUserActive == 2):
+                        flash(
+                            'Your account has been deactivated and deleted. Please contact the administrator for more details.')
+                    elif (isUserActive == 0):
+                        flash(
+                            'Your request for an account was not approved. Please contact the administrator for more details or apply again with lesser requirements.')
+                else:
+                    if (isUserActive == 2):
+                        flash(
+                            'Your account has been deactivated. Please contact the administrator for more details.')
+                    # flash('Your request for an account is successfully submitted and is currently under review.')
+                    elif (isUserActive == 0):
+                        flash(
+                            'Your request for an account is  currently under review. If approved, your account will be active in some time.')
                 return redirect(url_for('login'))
         else:
             old_user_update(userlogin, user.username, ObjectId(
@@ -5131,13 +5150,6 @@ def loadunannotext():
     return 'OK'
 
 
-def generate_speaker_id(name, age=''):
-    name = name.replace(" ", "").replace(".", "").lower()
-    age = age.replace("-", "")
-    new_speaker_id = name+age+'_'+re.sub(r'[-: \.]', '', str(datetime.now()))
-
-    return new_speaker_id
-
 # add speaker details
 
 
@@ -5153,73 +5165,65 @@ def addnewspeakerdetails():
                                                                   userprojects)
     projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
     if request.method == 'POST':
-        add_new_speaker_form_data = dict(request.form.lists())
-        print(add_new_speaker_form_data)
-        current_dt = str(datetime.now()).replace('.', ':')
-        audio_source = request.form.get('audiosource')
-        call_source = request.form.get('sourcecallpage')
-        print("Call source", call_source)
+        # add_new_speaker_form_data = dict(request.form.lists())
+        # print(add_new_speaker_form_data)
+        logger.debug("All form %s", request.form)
 
-        if (audio_source == 'field'):
-            # speaker metadata
-            fname = request.form.get('sname')
-            fage = request.form.get('sagegroup')
-            source_id = generate_speaker_id(fname, fage)
-            fgender = request.form.get('sgender')
-            educlvl = request.form.get('educationalevel')
-            moe12 = request.form.getlist('moe12')
-            moea12 = request.form.getlist('moea12')
-            sols = request.form.getlist('sols')
-            por = request.form.get('por')
-            toc = request.form.get('toc')
-            source_data = {"username": projectowner,
-                           "projectname": activeprojectname,
-                           "lifesourceid": source_id,
-                           "createdBy": current_username,
-                           "audioSource": audio_source,
-                           "current": {
-                               "updatedBy": current_username,
-                               "sourceMetadata": {
-                                   "name": fname,
-                                   "agegroup": fage,
-                                   "gender": fgender,
-                                   "educationlevel": educlvl,
-                                   "educationmediumupto12": moe12,
-                                   "educationmediumafter12": moea12,
-                                   "speakerspeaklanguage": sols,
-                                   "recordingplace": por,
-                                   "typeofrecordingplace": toc
-                               },
-                               "current_date": current_dt,
-                           },
-                           "isActive": 1}
-        elif (audio_source == 'internet'):
-            # internet sub source
-            audiosubsource = request.form.get('audiosubsource')
-            if (audiosubsource == 'youtube'):
-                channelname = request.form.get('ytchannelname')
-                channelurl = request.form.get('ytchannelurl')
-                source_id = generate_speaker_id(channelname)
-                source_data = {"username": projectowner,
-                               "projectname": activeprojectname,
-                               "lifesourceid": source_id,
-                               "createdBy": current_username,
-                               "audioSource": audio_source,
-                               "audioSubSource": audiosubsource,
-                               "current": {
-                                   "updatedBy": current_username,
-                                   "sourceMetadata": {
-                                       "channelName": channelname,
-                                       "channelUrl": channelurl
-                                   },
-                                   "current_date": current_dt
-                               },
-                               "isActive": 1}
-        # pprint(source_data)
-        # speakerdetails.insert_one(source_data, check_keys=False)
-        speakerdetails.insert_one(source_data)
+        audio_source = request.form.get('audiosource', '')
+        call_source = request.form.get('sourcecallpage', '')
+        audio_subsource = request.form.get('fieldmetadataschema', '')
+        upload_type = request.form.get('metadataentrytype', '')
+        logger.debug("Call source %s", call_source)
+        metadata_data = {}
+        if upload_type == 'single':
+            if ('field' in audio_source):
+                fname = request.form.get('sname', '')
+                fage = request.form.get('sagegroup', '')
+                fgender = request.form.get('sgender', '')
+                educlvl = request.form.get('educationalevel', '')
+                moe12 = request.form.getlist('moe12')
+                moea12 = request.form.getlist('moea12')
+                sols = request.form.getlist('sols')
+                por = request.form.get('por', '')
+                toc = request.form.get('toc', '')
+                metadata_data.update({"name": fname,
+                                      "agegroup": fage,
+                                      "gender": fgender,
+                                      "educationlevel": educlvl,
+                                      "educationmediumupto12": moe12,
+                                      "educationmediumafter12": moea12,
+                                      "speakerspeaklanguage": sols,
+                                      "recordingplace": por,
+                                      "typeofrecordingplace": toc})
 
-        # TODO: Redirect to different pages based on button click
+            elif (audio_source == 'internet'):
+                # internet sub source
+                audio_subsource = request.form.get('audiosubsource')
+                if (audio_subsource == 'youtube'):
+                    if upload_type == 'single':
+                        channelname = request.form.get('ytchannelname', '')
+                        channelurl = request.form.get('ytchannelurl', '')
+                        metadata_data.update({"channelName": channelname,
+                                              "channelUrl": channelurl})
+        else:
+            metadata_data = request.files.to_dict().get('metadatafile', '')
+
+            # logger.debug('Metadata info %s', metadata_data)
+            # excel_data = pd.read_excel(
+            #     metadata_data, engine="openpyxl")
+            # excel_data['educationmediumupto12'] = excel_data['educationmediumupto12'].apply(
+            #     lambda x: x.split(','))
+            # logger.debug('File data %s', excel_data.to_dict(orient='records'))
+        speakerDetails.write_speaker_metadata_details(speakerdetails,
+                                                      projectowner,
+                                                      activeprojectname,
+                                                      current_username,
+                                                      audio_source,
+                                                      audio_subsource,
+                                                      metadata_data,
+                                                      upload_type)
+
+        # # TODO: Redirect to different pages based on button click
 
         if "managepage" in call_source:
             flash(
@@ -5249,7 +5253,7 @@ def managespeakermetadata():
         current_username, userprojects)
     shareinfo = getuserprojectinfo.getuserprojectinfo(
         userprojects, current_username, activeprojectname)
-    allspeakerdetails, alldatalengths, allkeys = speakerdetails.getspeakerdetails(
+    allspeakerdetails, alldatalengths, allkeys = speakerDetails.getspeakerdetails(
         activeprojectname, speakermeta)
 
     # pprint (allspeakerdetails)
@@ -5278,7 +5282,7 @@ def getonespeakermetadata():
     # data through ajax
     lifesourceid = request.args.get('lifespeakerid')
     print("Life source ID", lifesourceid)
-    speakermetadata = speakerdetails.getonespeakerdetails(
+    speakermetadata = speakerDetails.getonespeakerdetails(
         activeprojectname, lifesourceid, speakermeta)
 
     print("Speaker Metadata", speakermetadata)
@@ -5325,7 +5329,7 @@ def editfieldspeakermetadata():
         }
     }
 
-    updatestatus = speakerdetails.updateonespeakerdetails(
+    updatestatus = speakerDetails.updateonespeakerdetails(
         activeprojectname, lifesourceid, update_data, speakermeta)
 
     return redirect(url_for('managespeakermetadata'))
@@ -5358,7 +5362,7 @@ def edityoutubesourcemetadata():
         }
     }
 
-    updatestatus = speakerdetails.updateonespeakerdetails(
+    updatestatus = speakerDetails.updateonespeakerdetails(
         activeprojectname, lifesourceid, update_data, speakermeta)
 
     return redirect(url_for('managespeakermetadata'))
@@ -5376,10 +5380,60 @@ def uploadaudiofiles():
                                                                   userprojects)
     projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
     if request.method == 'POST':
+        run_vad = False
+        run_asr = False
+        split_into_smaller_chunks = True
+        get_audio_json = True
+
         data = dict(request.form.lists())
-        # print(data)
+        logger.debug("Form data %s", data)
         speakerId = data['speakerId'][0]
         new_audio_file = request.files.to_dict()
+
+        if 'uploadparameters-vad' in data:
+            run_vad = True
+
+        if 'boundaryPause' in data:
+            boundary_threshold = float(data['boundaryPause'][0])
+        else:
+            boundary_threshold = 0.3
+
+        if 'sliceOffsetValue' in data:
+            slice_offset = float(data['sliceOffsetValue'][0])
+        else:
+            slice_offset = 0.1
+
+        slice_threshold = float(data['fileSplitThreshold'][0])
+        slice_size = float(data['maxFileSize'][0])
+
+        if 'uploadparameters-optimisefor' in data:
+            get_audio_json = data['uploadparameters-optimisefor'][0] == 'True'
+        # print(get_audio_json)
+
+        '''
+        ASR Model and VAD Model Dict Formats
+
+        asr_model = {
+            'model_name': "name_1",
+            'model_type': "local", (or "api")
+            'model_params': {
+                'model_path': "path_1",
+                'model_api': 'api_endpoint'
+            },
+            'target': 'hin-Deva'
+        }
+
+
+        vad_model = {
+            'model_name': "name_1",
+            'model_type': "local", (or "api")
+            'model_params': {
+                'model_path': "path_1",
+                'model_api': 'api_endpoint'
+            }
+        }
+        '''
+
         audiodetails.saveaudiofiles(mongo,
                                     projects,
                                     userprojects,
@@ -5390,16 +5444,120 @@ def uploadaudiofiles():
                                     speakerId,
                                     new_audio_file,
                                     # change this and boundary_threshold for automatic detection of boundaries of different kinds
-                                    run_vad=True,
-                                    run_asr=False,
-                                    vad_model=[],
-                                    asr_model=[],
+                                    run_vad=run_vad,
+                                    run_asr=run_asr,
+                                    split_into_smaller_chunks=split_into_smaller_chunks,
+                                    get_audio_json=get_audio_json,
+                                    vad_model={},
+                                    asr_model={},
                                     transcription_type='sentence',
-                                    boundary_threshold=0.3,
-                                    slice_threshold=0.9,
+                                    boundary_threshold=boundary_threshold,
+                                    slice_threshold=slice_threshold,
                                     # max size of each slice (in seconds), if large audio is to be automatically divided into multiple parts
-                                    slice_size=120
+                                    slice_size=slice_size,
+                                    data_type="audio",
+                                    new_audio_details={},
+                                    prompt="",
+                                    update=False,
+                                    slice_offset_value=slice_offset
                                     )
+
+    return redirect(url_for('enternewsentences'))
+
+
+# makeboundary route
+@app.route('/makeboundary', methods=['GET', 'POST'])
+@login_required
+def makeboundary():
+    projects, userprojects, transcriptions = getdbcollections.getdbcollections(mongo,
+                                                                               'projects',
+                                                                               'userprojects',
+                                                                               'transcriptions')
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username,
+                                                                  userprojects)
+    projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
+    if request.method == 'POST':
+        run_vad = True
+        run_asr = False
+        get_audio_json = False
+        split_into_smaller_chunks = False
+        overwrite_user = False
+
+        data = dict(request.form.lists())
+        logger.debug("Form data %s", data)
+        speakerId = data['speakerId'][0]
+        # new_audio_file = request.files.to_dict()
+        audio_filename = data['audiofile'][0]
+        # converts into seconds
+        audio_duration = float(data['audioduration'][0]) * 60
+        existing_audio_details = transcriptions.find_one(
+            {'projectname': activeprojectname, 'audioFilename': audio_filename})
+        logger.debug("Existing audio data %s", existing_audio_details)
+
+        if 'boundaryPause' in data:
+            boundary_threshold = float(data['boundaryPause'][0])
+        else:
+            boundary_threshold = 0.3
+
+        if 'sliceOffsetValue' in data:
+            slice_offset = float(data['sliceOffsetValue'][0])
+        else:
+            slice_offset = 0.1
+
+        slice_threshold = 2.0
+        slice_size = 150.0
+
+        if 'createaudiojson' in data:
+            get_audio_json = True
+
+        if 'overwrite-my-boundaries' in data:
+            overwrite_user = True
+        # print(get_audio_json)
+
+        '''
+        ASR Model and VAD Model Dict Formats
+
+        asr_model = {
+            'model_name': "name_1",
+            'model_type': "local", (or "api")
+            'model_params': {
+                'model_path': "path_1",
+                'model_api': 'api_endpoint'
+            },
+            'target': 'hin-Deva'
+        }
+
+
+        vad_model = {
+            'model_name': "name_1",
+            'model_type': "local", (or "api")
+            'model_params': {
+                'model_path': "path_1",
+                'model_api': 'api_endpoint'
+            }
+        }
+        '''
+
+        audiodetails.save_boundaries_of_one_audio_file(mongo,
+                                                       projects,
+                                                       userprojects,
+                                                       transcriptions,
+                                                       projectowner,
+                                                       activeprojectname,
+                                                       current_user.username,
+                                                       audio_filename,
+                                                       audio_duration,
+                                                       # change this and boundary_threshold for automatic detection of boundaries of different kinds
+                                                       run_vad=run_vad,
+                                                       run_asr=run_asr,
+                                                       split_into_smaller_chunks=split_into_smaller_chunks,
+                                                       get_audio_json=get_audio_json,
+                                                       vad_model={},
+                                                       asr_model={},
+                                                       transcription_type='sentence',
+                                                       boundary_threshold=boundary_threshold,
+                                                       save_for_user=overwrite_user
+                                                       )
 
     return redirect(url_for('enternewsentences'))
 

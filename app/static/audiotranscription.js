@@ -126,6 +126,8 @@ document.addEventListener('DOMContentLoaded', function () {
     wavesurfer.on('finish', function () {
         // $(".audioplaypause").addClass('glyphicon-play').removeClass('glyphicon-pause');
         togglePlayPause(0);
+        togglePlayPauseBoundary(0);
+        togglePlayPauseBoundaryStart(0);
     });
 
     document.querySelector(
@@ -163,6 +165,18 @@ document.addEventListener('DOMContentLoaded', function () {
                     localStorage.setItem("regions", JSON.stringify(localStorageRegions));
                 }
             }
+        }
+    });
+
+    document.querySelector(
+        '[data-action="delete-region-all"]'
+    ).addEventListener('click', function () {
+        confirm_msg = confirm("Delete all boundaries?");
+        // alert(confirm_msg);
+        if (confirm_msg) {
+            wavesurfer.clearRegions();
+            // alert(wavesurfer.regions.list);
+            localStorage.setItem("regions", "[]");
         }
     });
 });
@@ -1539,11 +1553,13 @@ function playPauseBoundaryStart() {
         endTime = region.end
         if (wavesurfer.isPlaying()) {
             wavesurfer.pause();
-            togglePlayPause(0);
+            togglePlayPauseBoundaryStart(0);
+            // togglePlayPause(0);
         }
         else {
             wavesurfer.play(startTime, endTime);
-            togglePlayPause(1);
+            // togglePlayPause(1);
+            togglePlayPauseBoundaryStart(1);
         }
     }
 }
@@ -1551,7 +1567,7 @@ $("#playPauseBoundaryStart").click(function () {
     playPauseBoundaryStart();
 });
 
-function playPauseBoundary() {
+function playPauseBoundary() {  
     let form = document.forms.edit;
     // console.log(form[2].id);
     let regionId = form.dataset.region;
@@ -1567,7 +1583,8 @@ function playPauseBoundary() {
         if (wavesurfer.isPlaying()) {
             console.log(startTime, endTime, currentCursorTime);
             wavesurfer.pause();
-            togglePlayPause(0);
+            // togglePlayPause(0);
+            togglePlayPauseBoundary(0);
         }
         // else if (Math.trunc(currentCursorTime) === Math.trunc(endTime)) {
         //     console.log(startTime, endTime, currentCursorTime);
@@ -1577,13 +1594,15 @@ function playPauseBoundary() {
         else {
             // console.log(startTime, endTime, currentCursorTime);
             wavesurfer.play(currentCursorTime, endTime);
-            togglePlayPause(1);
+            // togglePlayPause(1);
+            togglePlayPauseBoundary(1);
         }
     }
     else if (currentCursorTime === startTime) {
         // console.log(startTime, endTime, currentCursorTime);
         wavesurfer.play(startTime, endTime);
         togglePlayPause(1);
+        // togglePlayPauseBoundary(1);
     }
     // wavesurfer.playPause();
     // playPauseState = $(".playPauseBoundaryClass").attr('class');
@@ -1623,6 +1642,34 @@ function togglePlayPause(state) {
         $(".audioplaypause").addClass('glyphicon-play').removeClass('glyphicon-pause');
     }
 }
+
+function togglePlayPauseBoundary(state) {
+    if (state === 1) {
+        $(".audioplaypauseboundary").addClass('glyphicon-pause').removeClass('glyphicon-play');
+        // $(".playPauseBoundaryClass").addClass('glyphicon-pause').removeClass('glyphicon-play');
+    }
+    else if (state === 0) {
+        // $(".playPauseBoundaryClass").addClass('glyphicon-play').removeClass('glyphicon-pause');
+        $(".audioplaypauseboundary").addClass('glyphicon-play').removeClass('glyphicon-pause');
+    }
+}
+
+function togglePlayPauseBoundaryStart(state) {
+    if (state === 1) {
+        $(".audioplaypauseboundarystart").addClass('glyphicon-pause').removeClass('glyphicon-play');
+        // $(".playPauseBoundaryClass").addClass('glyphicon-pause').removeClass('glyphicon-play');
+    }
+    else if (state === 0) {
+        // $(".playPauseBoundaryClass").addClass('glyphicon-play').removeClass('glyphicon-pause');
+        $(".audioplaypauseboundarystart").addClass('glyphicon-play').removeClass('glyphicon-pause');
+    }
+}
+
+function drawBoundaries(state) {
+    
+}
+
+
 function transcriptionFormDisplay(form, mode) {
     if (form.style.display === "none") {
         form.style.display = "block";
@@ -1758,7 +1805,7 @@ function getAudiDuration(audiFilePath) {
         audioDurMin = audioDur.split('.')[0]
         audioDurSec = audioDur.split('.')[1] * 60
         // console.log(audioDur, audioDurMin, audioDurSec);
-        let showDur = '<br><span>Duration: ' + audioDur + ' minutes</span>';
+        let showDur = '<br><span>Duration: <span id="currentaudioduration">' + audioDur + '</span> minutes</span>';
         // document.getElementById("idaudiometadata").append(showDur);
         $('#idaudiometadata').append(showDur);
     });
@@ -2014,3 +2061,18 @@ function preventOverlapBoundaries(region) {
         closestBoundary(region, overlapBoundaryEnds, dragDirection='right')
     }
 }
+
+
+$('#myMakeBoundaryModalButton').on('click', function (e) {
+//   alert("Opened!")
+    activeSpeaker = document.getElementById("speakeridsdropdown").value;
+    filename = document.getElementById("audioFilename").textContent;
+    audioDuration = document.getElementById("currentaudioduration").textContent;
+    // alert(audioDuration) 
+    document.getElementById("makeboundaryspeakeriduploaddropdown").value = activeSpeaker;
+    document.getElementById("makeboundaryaudiofileid").value = filename
+    document.getElementById("makeboundaryaudiodurationid").value = audioDuration
+    // document.getElementById("speakeriduploaddropdown-divid").innerHTML = activeSpeaker;
+    $('#myMakeBoundaryModal').show.bs.modal;
+
+})
