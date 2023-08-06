@@ -37,7 +37,7 @@ $(document).ready(function() {
         localStorage.setItem("sharespeakerlist", JSON.stringify(sharespeakerlist));
         $('#shareProjectSelect').append(usersToShare)
         shareLatest += '<input type="checkbox" id="sharelatestchecked" name="sharelatestchecked" value="">'+
-                      '<label for="sharelatestchecked">&nbsp; Share Only Data</label><br>';
+                      '<label for="sharelatestchecked">&nbsp; Share Annotations by Other Users</label><br>';
         $('#shareLatest').append(shareLatest)
         $('#shareSpeakerSelect').append(speakersToShare)
 

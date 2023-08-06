@@ -437,6 +437,23 @@ function loadAnnoText() {
   return false;
 }
 
+function loadUserTranscription() {
+  var username = document.getElementById('transcriptionbydropdown').value;
+  var lastActiveId = document.getElementById("lastActiveId").value;
+  console.log('Load transcription', username, lastActiveId)
+  // loadRandomAudio(newAudioFilename)
+  $.ajax({
+      url: '/loadtranscriptionbyanyuser',
+      type: 'GET',
+      data: {'transcriptionUser': username, 'activeId': lastActiveId},
+      contentType: "application/json; charset=utf-8", 
+      success: function(response){
+          window.location.reload();
+      }
+  });
+  return false;
+}
+
 function loadRandomAudio(newAudioFilename) {
   filePath = JSON.parse(localStorage.getItem('AudioFilePath'));
   currentAudioFilename = filePath.split('/')[2];
@@ -455,6 +472,13 @@ $('#usernamesdropdown').select2({
 $('#speakeridsdropdown').select2({
   // tags: true,
   placeholder: 'select speaker',
+  // data: posCategories
+  // allowClear: true
+});
+  
+$('#transcriptionbydropdown').select2({
+  // tags: true,
+  placeholder: 'Select Transcription by',
   // data: posCategories
   // allowClear: true
   });
