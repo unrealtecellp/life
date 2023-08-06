@@ -18,8 +18,14 @@ Audio Browse
 <br>
 <div class="row">
     <div class="col col-md-5">
-        <label for="speakeridsdropdown">Source:</label>
-        <select id="speakeridsdropdown" style="width: 60%;"></select>
+        <!-- <label for="speakeridsdropdown">Source:</label> -->
+        <select id="audiosortingcategoriesdropdown" style="width: 60%;"></select>
+        <select id="audiosortingsubcategoriesdropdown" multiple="multiple" style="width: 60%; display: none;"></select>
+        <button type="button" class="btn btn-primary" id="audiofilter"  style="display: none;">
+            <span class="glyphicon glyphicon-filter" aria-hidden="true"></span>
+        </button>
+        <!-- <label for="speakeridsdropdown">Source:</label> -->
+        <select id="speakeridsdropdown" style="width: 60%; display: block;"></select>
         <select id="audiofilescountdropdown" style="width: 10%;"></select>
         <label for="audiofilescountdropdown">:Files</label>
     </div>
@@ -32,13 +38,21 @@ Audio Browse
 <br>
 <div id="audiobrowsetable"></div>
 <div class="text-center" id="audiobrowsepagination"></div>
+
+  <!-- Share File/s Modal -->
+  <div id="plugBrowseShareModal"></div>
+
 {% endblock %}
 
 {% block scripts %}
 {{super()}}
+    <script src="{{url_for('.static', filename='audiobrowsefilter.js')}}"></script>
     <script src="{{url_for('.static', filename='audiobrowse.js')}}"></script>
     <script src="{{url_for('.static', filename='changeactivespeaker.js')}}"></script>
     <script type="text/javascript">createAudioBrowse({{ newData | tojson | safe }});</script>
     <script src="{{url_for('.static', filename='search.js')}}"></script>
     <script src="{{url_for('.static', filename='sorttable.js')}}"></script>
+    <script src="{{url_for('static', filename='browsesharemodal.js')}}"></script>
+    <script src="{{url_for('static', filename='browseshare.js')}}"></script>
+    <script src="{{url_for('static', filename='browsesharewith.js')}}"></script>
 {% endblock %}

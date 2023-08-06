@@ -559,6 +559,101 @@ def audiobrowse():
                            newData=new_data)
     #    data=currentuserprojectsname)
 
+@app.route('/updateaudiosortingsubcategories', methods=['GET', 'POST'])
+@login_required
+def updateaudiosortingsubcategories():
+    audio_sorting_sub_categories = ''
+    try:
+        projects, userprojects, speakerdetails_collection = getdbcollections.getdbcollections(mongo,
+                                                                                                'projects',
+                                                                                                'userprojects',
+                                                                                                'speakerdetails')
+        current_username = getcurrentusername.getcurrentusername()
+        activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                      userprojects)
+        # data through ajax
+        selected_audio_sorting_category = json.loads(request.args.get('a'))
+        logger.debug('selected_audio_sorting_category: %s', selected_audio_sorting_category)
+        if (selected_audio_sorting_category == 'sourcemetainfo'):
+            audio_sorting_sub_categories = audiodetails.get_audio_sorting_subcategories(speakerdetails_collection,
+                                                                                        activeprojectname,
+                                                                                        selected_audio_sorting_category
+                                                                                        )
+            selected_audio_sorting_sub_categories = ''
+        elif (selected_audio_sorting_category == 'lifespeakerid'):
+            shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
+                                                            current_username,
+                                                            activeprojectname)
+            speakerids = projects.find_one({"projectname": activeprojectname},
+                                        {"_id": 0, "speakerIds." + current_username: 1})
+            # logger.debug('speakerids: %s', pformat(speakerids))
+            if ("speakerIds" in speakerids and speakerids["speakerIds"]):
+                speakerids = speakerids["speakerIds"][current_username]
+                # speakerids.append('')
+            else:
+                speakerids = []
+            audio_sorting_sub_categories = speakerids
+            active_speaker_id = shareinfo['activespeakerId']
+            selected_audio_sorting_sub_categories = active_speaker_id
+    except:
+        logger.exception("")
+
+    return jsonify(audioSortingSubCategories=audio_sorting_sub_categories,
+                   selectedAudioSortingSubCategories=selected_audio_sorting_sub_categories)
+
+@app.route('/filteraudiobrowsetable', methods=['GET', 'POST'])
+@login_required
+def filteraudiobrowsetable():
+    audio_data_fields = ['audioId', 'audioFilename', 'Audio File']
+    audio_data_list = []
+    try:
+        # data through ajax
+        data = json.loads(request.args.get('a'))
+        logger.debug('audio_browse_info: %s', pformat(data))
+        userprojects, speakerdetails_collection, transcriptions = getdbcollections.getdbcollections(mongo,
+                                                                                                    'userprojects',
+                                                                                                    'speakerdetails',
+                                                                                                    'transcriptions')
+        current_username = getcurrentusername.getcurrentusername()
+        activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                      userprojects)
+    #     # logger.debug(audio_browse_info['activeSpeakerId'])
+    #     active_speaker_id = audio_browse_info['activeSpeakerId']
+        audio_browse_info = data['audioBrowseInfo']
+        audio_file_count = audio_browse_info['audioFilesCount']
+        audio_browse_action = audio_browse_info['browseActionSelectedOption']
+        filter_options = data['selectedFilterOptions']
+        total_records = 0
+        audio_data_list = []
+        speakers_list = audiodetails.filter_speakers(speakerdetails_collection,
+                                                        activeprojectname,
+                                                        filter_options=filter_options)
+        for speaker in speakers_list:
+            total_records, temp_audio_data_list = audiodetails.get_n_audios(transcriptions,
+                                                                        activeprojectname,
+                                                                        speaker,
+                                                                        start_from=0,
+                                                                        number_of_audios=audio_file_count,
+                                                                        audio_delete_flag=audio_browse_action)
+            audio_data_list.extend(temp_audio_data_list)
+            if (len(audio_data_list) == audio_file_count):
+                break
+        shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
+                                                        current_username,
+                                                        activeprojectname)
+        share_mode = shareinfo['sharemode']
+        share_checked = shareinfo['sharechecked']
+        new_audio_data_list = audio_data_list
+    except:
+        logger.exception("")
+
+    return jsonify(audioDataFields= audio_data_fields,
+                   audioData=new_audio_data_list,
+                   shareMode=share_mode,
+                   totalRecords=total_records,
+                   shareChecked=share_checked)
+
+    return "OK"
 
 @app.route('/updateaudiobrowsetable', methods=['GET', 'POST'])
 @login_required
@@ -687,41 +782,50 @@ def audiobrowseactionplay():
         activeprojectname = getactiveprojectname.getactiveprojectname(
             current_username, userprojects)
         # logger.debug("%s,%s", current_username, activeprojectname)
+        logger.debug("THe data: %s", request.form['a'])
         # data from ajax
-        data = json.loads(request.args.get('a'))
-        # logger.debug('data: %s', pformat(data))
-        data_info = data['audioInfo']
-        audio_browse_info = data['audioBrowseInfo']
-        audio_filename = list(data_info.values())[0]
-        # logger.debug("audio_filename: %s", audio_filename)
-        audio_src = url_for('retrieve', filename=audio_filename)
-        # logger.debug(audio_browse_info['activeSpeakerId'])
-        active_speaker_id = audio_browse_info['activeSpeakerId']
-        audio_file_count = audio_browse_info['audioFilesCount']
-        audio_browse_action = audio_browse_info['browseActionSelectedOption']
-        total_records = 0
-        if (active_speaker_id != ''):
-            total_records, audio_data_list = audiodetails.get_n_audios(transcriptions,
-                                                                        activeprojectname,
-                                                                        active_speaker_id,
-                                                                        start_from=0,
-                                                                        number_of_audios=audio_file_count,
-                                                                        audio_delete_flag=audio_browse_action)
-        else:
-            audio_data_list = []
+        if request.method == 'POST':
+            data = json.loads(request.form['a'])
+            logger.debug('data: %s', pformat(data))
 
-        shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
-                                                        current_username,
-                                                        activeprojectname)
-        share_mode = shareinfo['sharemode']
-        share_checked = shareinfo['sharechecked']
-        new_audio_data_list = audio_data_list
-        return jsonify(audioDataFields= audio_data_fields,
-                        audioData=new_audio_data_list,
-                        shareMode=share_mode,
-                        totalRecords=total_records,
-                        shareChecked=share_checked,
-                        audioSource=audio_src)
+            # data = json.loads(request.args.get('a'))
+            # logger.debug('data: %s', pformat(data))
+            data_info = data['audioInfo']
+            audio_browse_info = data['audioBrowseInfo']
+            audio_filename = list(data_info.values())[0]
+            # logger.debug("audio_filename: %s", audio_filename)
+            # audio_src = url_for('retrieve', filename=audio_filename)
+            audio_src = os.path.join('retrieve', audio_filename)
+            # logger.debug(audio_browse_info['activeSpeakerId'])
+            active_speaker_id = audio_browse_info['activeSpeakerId']
+            audio_file_count = audio_browse_info['audioFilesCount']
+            audio_browse_action = audio_browse_info['browseActionSelectedOption']
+            total_records = 0
+            if (active_speaker_id != ''):
+                total_records, audio_data_list = audiodetails.get_n_audios(transcriptions,
+                                                                            activeprojectname,
+                                                                            active_speaker_id,
+                                                                            start_from=0,
+                                                                            number_of_audios=audio_file_count,
+                                                                            audio_delete_flag=audio_browse_action
+                                                                            )
+            else:
+                audio_data_list = []
+
+            shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
+                                                            current_username,
+                                                            activeprojectname)
+            share_mode = shareinfo['sharemode']
+            share_checked = shareinfo['sharechecked']
+            new_audio_data_list = audio_data_list
+            return jsonify(
+                            audioDataFields= audio_data_fields,
+                            audioData=new_audio_data_list,
+                            shareMode=share_mode,
+                            totalRecords=total_records,
+                            shareChecked=share_checked,
+                            audioSource=audio_src
+                            )
     except:
         logger.exception("")
         return jsonify(audioSource='')
@@ -730,9 +834,8 @@ def audiobrowseactionplay():
 @login_required
 def audiobrowseactionshare():
     try:
-        userprojects, crawling_collection = getdbcollections.getdbcollections(mongo,
-                                                                              'userprojects',
-                                                                              'crawling')
+        userprojects, = getdbcollections.getdbcollections(mongo,
+                                                            'userprojects')
         current_username = getcurrentusername.getcurrentusername()
         activeprojectname = getactiveprojectname.getactiveprojectname(
             current_username, userprojects)
@@ -742,10 +845,10 @@ def audiobrowseactionshare():
         logger.debug('data: %s', pformat(data))
         data_info = data['audioInfo']
         # logger.debug('data_info: %s', pformat(data_info))
-        crawler_browse_info = data['audioBrowseInfo']
-        # logger.debug('crawler_browse_info: %s', pformat(crawler_browse_info))
-        # browse_action = crawler_browse_info['browseActionSelectedOption']
-        active_source_id = crawler_browse_info['activeSpeakerId']
+        audio_browse_info = data['audioBrowseInfo']
+        # logger.debug('audio_browse_info: %s', pformat(audio_browse_info))
+        # browse_action = audio_browse_info['browseActionSelectedOption']
+        active_source_id = audio_browse_info['activeSpeakerId']
         data_id = list(data_info.keys())[0]
         logger.debug("data_id: %s", data_id)
         return jsonify(commentInfo={})
@@ -4071,9 +4174,10 @@ def shareprojectwith():
 
 # retrieve files from database
 # TODO: User not able to download the data
-@app.route('/retrieve/<filename>')
+@app.route('/retrieve/<filename>', methods=['GET'])
 @login_required
 def retrieve(filename):
+    logger.debug('Now in retrieve')
     x = ''
     try:
         userprojects, = getdbcollections.getdbcollections(mongo,
@@ -4090,7 +4194,7 @@ def retrieve(filename):
         #     share_info["downloadchecked"] == 'true'):
             # logger.debug("share_info: %s", share_info)
         x = mongo.send_file(filename)
-            # logger.debug("mongo send file: %s, %s, %s, %s, %s, %s", x.response, x.status, x.headers, x.mimetype, x.content_type, x.direct_passthrough)
+        # logger.debug("mongo send file: %s, %s, %s, %s, %s, %s", x.response, x.status, x.headers, x.mimetype, x.content_type, x.direct_passthrough)
     except:
         logger.exception("")
 
@@ -5613,3 +5717,108 @@ def deleteaudio():
     flash("Audio deleted successfully")
 
     return "OK"
+
+
+@app.route('/browseshareuserslist', methods=['GET', 'POST'])
+def browseshareuserslist():
+
+    userlogin, projects, userprojects = getdbcollections.getdbcollections(mongo,
+                                                                          'userlogin',
+                                                                          'projects',
+                                                                          'userprojects')
+    current_username = getcurrentusername.getcurrentusername()
+    usersList = []
+    sourceList = []
+    current_user_sharemode = 0
+    share_with_users_list = []
+    try:
+        activeprojectname = getactiveprojectname.getactiveprojectname(
+            current_username, userprojects)
+        projectowner = getprojectowner.getprojectowner(
+            projects, activeprojectname)
+        shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
+                                                          current_username,
+                                                          activeprojectname)
+        current_user_sharemode = int(shareinfo['sharemode'])
+        project_type = getprojecttype.getprojecttype(projects,
+                                                     activeprojectname)
+
+        # get list of all the users registered in the application LiFE
+        for user in userlogin.find({}, {"_id": 0, "username": 1, "isActive": 1}):
+            # print(user)
+            if ('isActive' in user and user['isActive'] == 1):
+                usersList.append(user["username"])
+                # print(user)
+        if (current_username == projectowner):
+            usersList.remove(projectowner)
+            share_with_users_list = usersList
+        else:
+            # print(usersList)
+            usersList.remove(projectowner)
+            usersList.remove(current_username)
+            # print(usersList)
+            # share_with_users_list = usersList
+            # print(usersList)
+            for username in usersList:
+                # print(username)
+                usershareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
+                                                                      username,
+                                                                      activeprojectname)
+                usersharemode = int(usershareinfo['sharemode'])
+                # print(current_username, current_user_sharemode, username, usersharemode)
+                # print(current_username, type(current_user_sharemode), username, type(usersharemode))
+                if (current_user_sharemode <= usersharemode):
+                    # print(f"username!!!: {username}")
+                    # share_with_users_list.remove(username)
+                    pass
+                else:
+                    # print(f"username!!!: {username}")
+                    share_with_users_list.append(username)
+        project_shared_with = projects.find_one({'projectname': activeprojectname},
+                                            {'_id': 0, 'sharedwith': 1})["sharedwith"]
+        share_with_users_list = list(set(share_with_users_list) & set(project_shared_with))
+        # print(usersList, share_with_users_list)
+        # if (project_type == 'recordings' or
+        #     project_type == 'transcriptions'):
+        #     speakersDict = projects.find_one({'projectname': activeprojectname},
+        #                                     {'_id': 0, 'speakerIds.'+current_username: 1})
+        #     if (len(speakersDict) != 0):
+        #         sourceList = speakersDict['speakerIds'][current_username]
+        # elif (project_type == 'crawling' or
+        #     project_type == 'annotation'):
+        #     sourceDict = projects.find_one({'projectname': activeprojectname},
+        #                                     {'_id': 0, 'sourceIds.'+current_username: 1})
+        #     if (len(sourceDict) != 0):
+        #         sourceList = sourceDict['sourceIds'][current_username]
+    except:
+        logger.exception("")
+
+    return jsonify(usersList=sorted(share_with_users_list),
+                   sourceList=sorted(sourceList),
+                   sharemode=current_user_sharemode)
+
+
+@app.route('/browsesharewith', methods=['GET', 'POST'])
+def browsesharewith():
+    try:
+        projects, userprojects, userlogin = getdbcollections.getdbcollections(mongo,
+                                                                                'projects',
+                                                                                'userprojects',
+                                                                                'userlogin')
+        current_username = getcurrentusername.getcurrentusername()
+        activeprojectname = getactiveprojectname.getactiveprojectname(
+            current_username, userprojects)
+        # print('2758: activeprojectname', activeprojectname)
+
+        projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
+        project_type = getprojecttype.getprojecttype(projects,
+                                                    activeprojectname)
+
+        # data through ajax
+        data = json.loads(request.args.get('a'))
+        logger.debug('Sharing Information: %s', pformat(data))
+        users = data
+    except:
+        logger.exception("")
+
+    return jsonify(users=users)

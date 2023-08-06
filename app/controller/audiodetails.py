@@ -1986,3 +1986,99 @@ def get_n_audios(data_collection,
 
     return (total_records,
             aggregate_output_list[start_from:number_of_audios])
+
+def get_audio_sorting_subcategories(speakerdetails_collection,
+                                    activeprojectname,
+                                    selected_audio_sorting_category
+                                    ):
+    selected_audio_sorting_subcategory = {
+        "agegroup": "Age Group",
+        "gender": "Gender",
+        "educationlevel": "Education Level",
+        "educationmediumupto12": "Education Medium Upto 12",
+        "educationmediumafter12": "Education Medium After 12",
+        "speakerspeaklanguage": "Speaker Speak Language"
+    }
+    aggregate_output = speakerdetails_collection.aggregate([
+        {
+            "$match": {
+                "projectname": activeprojectname
+            }
+        },
+        {
+            "$project": {
+                "_id": 0,
+                # "current.sourceMetadata."+selected_audio_sorting_category: 1
+                "current.sourceMetadata": 1
+            }
+        }
+    ])
+    logger.debug("aggregate_output: %s", aggregate_output)
+    aggregate_output_dict = {}
+    for doc in aggregate_output:
+        logger.debug("aggregate_output: %s", pformat(doc))
+        try:
+            # audio_sorting_subcategory = doc["current"]["sourceMetadata"][selected_audio_sorting_category]
+            audio_sorting_subcategory = doc["current"]["sourceMetadata"]
+            logger.debug("aggregate_output: %s", pformat(audio_sorting_subcategory))
+            for key, value in audio_sorting_subcategory.items():
+                if (key in selected_audio_sorting_subcategory):
+                    selected_audio_sorting_subcategory_value = selected_audio_sorting_subcategory[key]
+                    if (selected_audio_sorting_subcategory_value in aggregate_output_dict):
+                        if (isinstance(value, list)):
+                            for subcat in value:
+                                aggregate_output_dict[selected_audio_sorting_subcategory_value].append(subcat)
+                        else:
+                            aggregate_output_dict[selected_audio_sorting_subcategory_value].append(value)
+                    else:
+                        if (isinstance(value, list)):
+                            aggregate_output_dict[selected_audio_sorting_subcategory_value] = value
+                        else:
+                            aggregate_output_dict[selected_audio_sorting_subcategory_value] = [value]
+        except:
+            logger.exception("")
+
+    return aggregate_output_dict
+
+def filter_speakers(speakerdetails_collection,
+                    activeprojectname,
+                    filter_options,
+                    logical_operator="and"):
+    speakers_match = {
+                "projectname": activeprojectname,
+                "isActive": 1
+            }
+    for key, value in filter_options.items():
+        db_key = "current.sourceMetadata."+key
+        value_list_len = len(value)
+        if (value_list_len != 0):
+            if (value_list_len == 1):
+                speakers_match[db_key] = value[0]
+            else:
+                speakers_match[db_key] = { "$in": value }
+    logger.debug("speakers_match: %s", speakers_match)
+    if (len(speakers_match) > 2):
+        aggregate_output = speakerdetails_collection.aggregate([
+            {
+                "$match": speakers_match
+            },
+            {
+                "$sort": {
+                    "lifesourceid": 1
+                }
+            },
+            {
+                "$project": {
+                    "_id": 0,
+                    "lifesourceid": 1
+                }
+            }
+        ])
+    # logger.debug("aggregate_output: %s", aggregate_output)
+    aggregate_output_list = []
+    for doc in aggregate_output:
+        # logger.debug("aggregate_output: %s", pformat(doc))
+        aggregate_output_list.append(doc["lifesourceid"])
+    # logger.debug('aggregate_output_list: %s', pformat(aggregate_output_list))
+
+    return (list(set(aggregate_output_list)))
