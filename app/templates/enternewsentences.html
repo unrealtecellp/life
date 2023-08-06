@@ -97,7 +97,7 @@
     <div class="row">
       <div class="col-md-6">
         {% if speakerids is defined %}
-          <label for="speakeridsdropdown">Source: </label>
+          <label for="speakeridsdropdown">Audio Source: </label>
           <select class="custom-select custom-select-sm" id="speakeridsdropdown" style="width: 50%;">
             <option selected disabled>{{ activespeakerid }}</option>
             {% for d in speakerids %}
@@ -108,11 +108,30 @@
           </select>
         {% endif %}
       </div>
+      {% if ('sharelatestchecked' not in shareinfo) or ('sharelatestchecked' in shareinfo and shareinfo['sharelatestchecked'] == 'true') %}
       <div class="col-md-6">
-        <span class="commentIDs">
-          <button type="button" id="uNAnnotated" class="btn btn-light" onclick="unAnnotated()">All Filename</button>
-        </span>
+        {% if transcriptionsby is defined %}
+        <label for="transcriptionsbydropdown">Transcription Source: </label>
+        <select class="custom-select custom-select-sm" id="transcriptionbydropdown" style="width: 50%;" onchange="loadUserTranscription()">
+          <option selected disabled>{{ activetranscriptionby }}</option>
+          {% for d in transcriptionsby %}
+          {% if d != activetranscriptionby %}
+          <option value="{{ d }}">{{ d }}</option>
+          {% endif %}
+          {% endfor %}
+        </select>
+        {% endif %}
       </div>
+      {% endif %}
+    </div>
+    <hr>
+    <div class="row">
+    <div class="col-md-8">
+      <label>Go to: </label>
+      <span class="commentIDs">
+        <button type="button" id="uNAnnotated" class="btn btn-light" onclick="unAnnotated()">All Filename</button>
+      </span>
+    </div>
     </div>
     <hr>
     <div class="row">

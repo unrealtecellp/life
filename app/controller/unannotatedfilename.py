@@ -5,6 +5,7 @@ from app.controller import (
 )
 logger = life_logging.get_logger()
 
+
 def unannotatedfilename(transcriptions,
                         activeprojectname,
                         ID,
@@ -17,11 +18,11 @@ def unannotatedfilename(transcriptions,
     transcribedfiles = transcriptions.find({"projectname": activeprojectname,
                                             "speakerId": ID
                                             },
-                                            {"_id" : 0,
-                                             "transcriptionFLAG" : 1,
-                                             'audioId': 1,
-                                             "audiodeleteFLAG": 1})
-
+                                           {"_id": 0,
+                                            "transcriptionFLAG": 1,
+                                            'audioId': 1,
+                                            "audiodeleteFLAG": 1})
+    # logger.debug("All transcribed files %s", transcribedfiles)
     for transcribedfile in transcribedfiles:
         logger.debug("transcribedfile: %s", transcribedfile)
         audioid = transcribedfile['audioId']

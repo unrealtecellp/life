@@ -39,7 +39,7 @@ from app.controller import (audiodetails, createdummylexemeentry,
                             getactiveprojectname, getcommentstats,
                             getcurrentusername, getcurrentuserprojects,
                             getdbcollections, getprojectowner, getprojecttype,
-                            getuserprojectinfo, langscriptutils, lexicondetails, speakerDetails)
+                            getuserprojectinfo, langscriptutils, lexicondetails, speakerDetails, projectDetails)
 from app.controller import latex_generator as lg
 from app.controller import (manageAppConfig, questionnairedetails,
                             readJSONFile, removeallaccess, savenewlexeme,
@@ -363,8 +363,14 @@ def enternewsentences():
                         Showing you the next audio in the list.")
                     return redirect(url_for('enternewsentences'))
 
+            transcription_by = projectDetails.get_active_transcription_by(projects,
+                                                                          activeprojectname,
+                                                                          current_username,
+                                                                          activespeakerid,
+                                                                          audio_id)
             transcription_details = audiodetails.getaudiofiletranscription(data_collection,
-                                                                           audio_id)
+                                                                           audio_id,
+                                                                           transcription_by)
 
             audio_metadata = audiodetails.getaudiometadata(data_collection,
                                                            audio_id)
@@ -387,7 +393,7 @@ def enternewsentences():
             # print(transcription_details)
             activeprojectform['AudioFilePath'] = file_path
             transcription_regions, gloss, pos, boundary_count = audiodetails.getaudiotranscriptiondetails(
-                data_collection, audio_id)
+                data_collection, audio_id, transcription_by, transcription_details)
             activeprojectform['transcriptionRegions'] = transcription_regions
             # print(transcription_regions)
             activeprojectform['boundaryCount'] = boundary_count
@@ -405,6 +411,10 @@ def enternewsentences():
                                                                 current_username)
                 added_speaker_ids = audiodetails.addedspeakerids(
                     speakerdetails, activeprojectname)
+
+                transcriptions_by = audiodetails.get_audio_transcriptions_by(
+                    projects, transcriptions, activeprojectname, audio_id)
+
             except:
                 speakerids = ''
                 added_speaker_ids = ''
@@ -417,13 +427,16 @@ def enternewsentences():
             # print('currentuserprojectsname', currentuserprojectsname)
             # print('speakerids', speakerids)
             # pprint(activeprojectform)
-            # logger.debug('activespeakerid: %s\ncommentstats: %s\nshareinfo: %s', activespeakerid, commentstats, shareinfo)
+            # logger.debug('activespeakerid: %s\ncommentstats: %s\nshareinfo: %s\ntranscriptions by: %s', activespeakerid, commentstats, shareinfo, transcriptions_by)
+            # logger.debug('speaker IDs: %s', speakerids)
             return render_template('enternewsentences.html',
                                    projectName=activeprojectname,
                                    newData=activeprojectform,
                                    data=currentuserprojectsname,
                                    speakerids=speakerids,
                                    addedspeakerids=added_speaker_ids,
+                                   transcriptionsby=transcriptions_by,
+                                   activetranscriptionby=transcription_by,
                                    activespeakerid=activespeakerid,
                                    commentstats=commentstats,
                                    shareinfo=shareinfo)
@@ -5226,6 +5239,7 @@ def allunannotated():
     # audioFilesPath = 'static/audio'
     # baseAudioFilesPath = os.path.join(basedir, audioFilesPath)
     # audioFilesList = sorted(os.listdir(baseAudioFilesPath))
+    logger.debug('Active speaker ID: %s', activespeakerid)
     annotated, unannotated = [], []
     if (activespeakerid != ''):
         speaker_audio_ids = audiodetails.get_speaker_audio_ids_new(projects,
@@ -5237,7 +5251,7 @@ def allunannotated():
                                                                          activespeakerid,
                                                                          speaker_audio_ids,
                                                                          'audio')
-    # print(annotated, unannotated)
+    logger.debug('Annotated: %s\nUnannotated: %s', annotated, unannotated)
     return jsonify(allanno=annotated, allunanno=unannotated)
 
 
@@ -5272,6 +5286,48 @@ def loadunannotext():
     #     return redirect(url_for('imageAnno'))
     return 'OK'
 
+
+@app.route('/loadtranscriptionbyanyuser', methods=['GET'])
+@login_required
+def loadtranscriptionbyanyuser():
+    projects, userprojects, transcriptions = getdbcollections.getdbcollections(mongo, 'projects',
+                                                                               'userprojects', 'transcriptions')
+
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username,
+                                                                  userprojects)
+    # activespeakerid = getactivespeakerid.getactivespeakerid(userprojects, current_user.username)
+    activespeakerid = getuserprojectinfo.getuserprojectinfo(userprojects,
+                                                            current_user.username,
+                                                            activeprojectname)['activespeakerId']
+
+    # print(f'{"="*80}\nUn-Anno\n{"="*80}')
+
+    # receivedData =
+    lastActiveUser = request.args.get('transcriptionUser')
+    lastActiveAudioId = request.args.get('activeId')
+    logger.debug('Data receved from form %s\t%s',
+                 lastActiveUser, lastActiveAudioId)
+    # lastActiveUser = eval(lastActiveUser)
+    # lastActiveAudioId = eval(lastActiveAudioId)
+    # logger.debug('Final data %s\t%s', lastActiveUser, lastActiveAudioId)
+    # print(lastActiveId)
+
+    # Preference set for each Audio file separately
+    # updateactiveuser = 'lastActiveUserTranscription.' + \
+    #     current_user.username+'.'+activespeakerid+'.' + lastActiveAudioId
+    # print(updateactivespeakeraudioid)
+
+    # Preference set for a specific user in a project - all audio files will show the transcription of the user selected
+    updateactiveuser = 'lastActiveUserTranscription.' + current_user.username
+
+    projects.update_one({"projectname": activeprojectname},
+                        {'$set': {updateactiveuser: lastActiveUser}})
+
+    # if (project_type == 'text'):
+    #     return redirect(url_for('textAnno'))
+    # elif (project_type == 'image'):
+    #     return redirect(url_for('imageAnno'))
+    return 'OK'
 
 # add speaker details
 

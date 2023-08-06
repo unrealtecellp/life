@@ -24,7 +24,8 @@ from app.controller import (
     getcurrentuserprojects,
     getactiveprojectname,
     getprojecttype,
-    life_logging
+    life_logging,
+    projectDetails
 )
 from app.lifemodels.controller import (
     predictFromAPI,
@@ -1147,7 +1148,7 @@ def getactiveaudioid(projects,
     return last_active_audio_id
 
 
-def getaudiofiletranscription(data_collection, audio_id):
+def getaudiofiletranscription(data_collection, audio_id, transcription_by=""):
     """get the transcription details of the audio file
 
     Args:
@@ -1160,9 +1161,30 @@ def getaudiofiletranscription(data_collection, audio_id):
     transcription_details = {}
     transcription_data = data_collection.find_one({'audioId': audio_id})
     if transcription_data is not None:
-        transcription_details['data'] = transcription_data['textGrid']
+        if (transcription_by == "") or (transcription_by == "latest") or (transcription_by not in transcription_data):
+            transcription_details['data'] = transcription_data['textGrid']
+        elif transcription_by in transcription_data:
+            transcription_details['data'] = transcription_data[transcription_by]
+
+    logger.debug("Transcription by %s, transcription details %s",
+                 transcription_by, transcription_details)
 
     return transcription_details
+
+
+def get_audio_transcriptions_by(projects, data_collection, project_name, audio_id, get_model_names=True):
+    transcriptions_by = []
+    transcription_data = data_collection.find_one({'audioId': audio_id})
+
+    if transcription_data is not None:
+        project_shared_with = projectDetails.get_shared_with_users(
+            projects, project_name)
+        transcription_data_keys = transcription_data.keys()
+        transcriptions_by = [
+            uname for uname in transcription_data_keys if uname in project_shared_with or uname.startswith("@model")]
+        transcriptions_by.append('latest')
+
+    return transcriptions_by
 
 
 def getaudiowaveformfilefromfs(mongo,
@@ -1322,7 +1344,7 @@ def updatelatestaudioid(projects,
                         {'$set': {'lastActiveId.'+current_username+'.'+activespeakerId+'.audioId':  latest_audio_id}})
 
 
-def getaudiotranscriptiondetails(transcriptions, audio_id):
+def getaudiotranscriptiondetails(transcriptions, audio_id, transcription_by="", transcription_data={}):
     """_summary_
 
     Args:
@@ -1337,14 +1359,31 @@ def getaudiotranscriptiondetails(transcriptions, audio_id):
     gloss = {}
     pos = {}
     boundary_count = 0
+    logger.debug('Transcription data %s', transcription_data)
     try:
-        t_data = transcriptions.find_one({'audioId': audio_id},
-                                         {'_id': 0, 'textGrid.sentence': 1})
-        # logger.debug('t_data!!!!! %s', t_data)
+        if 'data' in transcription_data:
+            t_data = transcription_data['data']
+        else:
+            t_data = getaudiofiletranscription(
+                transcriptions, audio_id, transcription_by)
+            if t_data is not None and 'data' in t_data:
+                t_data = t_data['data']
+
+        # t_data = transcriptions.find_one({'audioId': audio_id},
+                #  {'_id': 0, 'textGrid.sentence': 1})
+
+        logger.debug('t_data!!!!! %s', t_data)
         if t_data is not None:
-            transcription_data = t_data['textGrid']
+            if 'textGrid' in t_data:
+                transcription_data = t_data['textGrid']
+            else:
+                transcription_data = t_data
         # plogger.debug(transcription_data)
-        sentence = transcription_data['sentence']
+        logger.debug('Transcription data %s', transcription_data)
+        if 'sentence' in transcription_data:
+            sentence = transcription_data['sentence']
+        else:
+            sentence = {}
         for type, value in sentence.items():
             # logger.debug(type, value)
             transcription_region = {}
@@ -1388,7 +1427,7 @@ def getaudiotranscriptiondetails(transcriptions, audio_id):
         # plogger.debug(transcription_regions)
     # logger.debug('303 %s %s', gloss, pos)
     except:
-        pass
+        logger.exception("")
 
     return (transcription_regions, gloss, pos, boundary_count)
 
