@@ -5,7 +5,11 @@ from app.controller import (
 )
 logger = life_logging.get_logger()
 
-def unannotatedfilename(transcriptions, activeprojectname, ID, idtype):
+def unannotatedfilename(transcriptions,
+                        activeprojectname,
+                        ID,
+                        speaker_audio_ids,
+                        idtype):
 
 
     annotated = []
@@ -21,12 +25,13 @@ def unannotatedfilename(transcriptions, activeprojectname, ID, idtype):
     for transcribedfile in transcribedfiles:
         logger.debug("transcribedfile: %s", transcribedfile)
         audioid = transcribedfile['audioId']
-        audio_delete_flag = transcribedfile['audiodeleteFLAG']
-        if (not audio_delete_flag):
-            if transcribedfile['transcriptionFLAG'] == 1:
-                annotated.append(audioid)
-            elif transcribedfile['transcriptionFLAG'] == 0:
-                unannotated.append(audioid)
+        if(audioid in speaker_audio_ids):
+            audio_delete_flag = transcribedfile['audiodeleteFLAG']
+            if (not audio_delete_flag):
+                if transcribedfile['transcriptionFLAG'] == 1:
+                    annotated.append(audioid)
+                elif transcribedfile['transcriptionFLAG'] == 0:
+                    unannotated.append(audioid)
     # print(annotated, unannotated)
 
     return (sorted(annotated), sorted(unannotated))
