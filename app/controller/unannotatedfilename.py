@@ -24,7 +24,7 @@ def unannotatedfilename(transcriptions,
                                             "audiodeleteFLAG": 1})
     # logger.debug("All transcribed files %s", transcribedfiles)
     for transcribedfile in transcribedfiles:
-        logger.debug("transcribedfile: %s", transcribedfile)
+        # logger.debug("transcribedfile: %s", transcribedfile)
         audioid = transcribedfile['audioId']
         if(audioid in speaker_audio_ids):
             audio_delete_flag = transcribedfile['audiodeleteFLAG']

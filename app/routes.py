@@ -339,6 +339,7 @@ def enternewsentences():
                                                                                                      'audio')
             commentstats = [total_comments,
                             annotated_comments, remaining_comments]
+            # logger.debug("commentstats: %s", commentstats)
             audio_id = audiodetails.getactiveaudioid(projects,
                                                      activeprojectname,
                                                      activespeakerid,
@@ -353,6 +354,7 @@ def enternewsentences():
                                                                  activeprojectname,
                                                                  audio_id,
                                                                  activespeakerid,
+                                                                 speaker_audio_ids,
                                                                  'next')
                     audiodetails.updatelatestaudioid(projects,
                                                      activeprojectname,
@@ -429,6 +431,7 @@ def enternewsentences():
             # pprint(activeprojectform)
             # logger.debug('activespeakerid: %s\ncommentstats: %s\nshareinfo: %s\ntranscriptions by: %s', activespeakerid, commentstats, shareinfo, transcriptions_by)
             # logger.debug('speaker IDs: %s', speakerids)
+            # print(commentstats)
             return render_template('enternewsentences.html',
                                    projectName=activeprojectname,
                                    newData=activeprojectform,
@@ -534,8 +537,8 @@ def audiobrowse():
         current_username = getcurrentusername.getcurrentusername()
         activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
                                                                       userprojects)
-        projectowner = getprojectowner.getprojectowner(
-            projects, activeprojectname)
+        projectowner = getprojectowner.getprojectowner(projects,
+                                                       activeprojectname)
         shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
                                                           current_username,
                                                           activeprojectname)
@@ -566,6 +569,7 @@ def audiobrowse():
             audio_data_list = []
         # get audio file src
         new_audio_data_list = audio_data_list
+        # logger.debug("new_audio_data_list: %s", pformat(new_audio_data_list))
         # new_audio_data_list = []
         # for audio_data in audio_data_list:
         #     new_audio_data = audio_data
@@ -778,10 +782,10 @@ def updateaudiobrowsetable():
         audio_browse_action = audio_browse_info['browseActionSelectedOption']
         total_records = 0
         speaker_audio_ids = audiodetails.get_speaker_audio_ids_new(projects,
-                                                               activeprojectname,
-                                                               current_username,
-                                                               active_speaker_id,
-                                                               audio_browse_action=audio_browse_action)
+                                                                    activeprojectname,
+                                                                    current_username,
+                                                                    active_speaker_id,
+                                                                    audio_browse_action=audio_browse_action)
         if (active_speaker_id != ''):
             total_records, audio_data_list = audiodetails.get_n_audios(transcriptions,
                                                                        activeprojectname,
@@ -885,14 +889,14 @@ def audiobrowseactionplay():
     audio_data_list = []
     try:
         projects, userprojects, transcriptions = getdbcollections.getdbcollections(mongo,
-                                                                                    'projects'
+                                                                                    'projects',
                                                                                     'userprojects',
                                                                                     'transcriptions')
         current_username = getcurrentusername.getcurrentusername()
-        activeprojectname = getactiveprojectname.getactiveprojectname(
-            current_username, userprojects)
+        activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                      userprojects)
         # logger.debug("%s,%s", current_username, activeprojectname)
-        logger.debug("THe data: %s", request.form['a'])
+        # logger.debug("THe data: %s", pformat(request.form['a']))
         # data from ajax
         if request.method == 'POST':
             data = json.loads(request.form['a'])
@@ -903,25 +907,30 @@ def audiobrowseactionplay():
             data_info = data['audioInfo']
             audio_browse_info = data['audioBrowseInfo']
             audio_filename = list(data_info.values())[0]
+            audio_count = audio_browse_info['audioFilesCount']
+            page_id = audio_browse_info['pageId']
+            start_from = ((page_id*audio_count)-audio_count)
+            number_of_audios = page_id*audio_count
             # logger.debug("audio_filename: %s", audio_filename)
             # audio_src = url_for('retrieve', filename=audio_filename)
             audio_src = os.path.join('retrieve', audio_filename)
             # logger.debug(audio_browse_info['activeSpeakerId'])
             active_speaker_id = audio_browse_info['activeSpeakerId']
-            speaker_audio_ids = audiodetails.get_speaker_audio_ids_new(projects,
-                                                               activeprojectname,
-                                                               current_username,
-                                                               active_speaker_id)
-            audio_file_count = audio_browse_info['audioFilesCount']
             audio_browse_action = audio_browse_info['browseActionSelectedOption']
+            speaker_audio_ids = audiodetails.get_speaker_audio_ids_new(projects,
+                                                                        activeprojectname,
+                                                                        current_username,
+                                                                        active_speaker_id,
+                                                                        audio_browse_action=audio_browse_action)
+            # audio_file_count = audio_browse_info['audioFilesCount']
             total_records = 0
             if (active_speaker_id != ''):
                 total_records, audio_data_list = audiodetails.get_n_audios(transcriptions,
                                                                             activeprojectname,
                                                                             active_speaker_id,
                                                                             speaker_audio_ids,
-                                                                            start_from=0,
-                                                                            number_of_audios=audio_file_count,
+                                                                            start_from=start_from,
+                                                                            number_of_audios=number_of_audios,
                                                                             audio_delete_flag=audio_browse_action
                                                                             )
             else:
@@ -5239,7 +5248,7 @@ def allunannotated():
     # audioFilesPath = 'static/audio'
     # baseAudioFilesPath = os.path.join(basedir, audioFilesPath)
     # audioFilesList = sorted(os.listdir(baseAudioFilesPath))
-    logger.debug('Active speaker ID: %s', activespeakerid)
+    # logger.debug('Active speaker ID: %s', activespeakerid)
     annotated, unannotated = [], []
     if (activespeakerid != ''):
         speaker_audio_ids = audiodetails.get_speaker_audio_ids_new(projects,
@@ -5251,7 +5260,7 @@ def allunannotated():
                                                                          activespeakerid,
                                                                          speaker_audio_ids,
                                                                          'audio')
-    logger.debug('Annotated: %s\nUnannotated: %s', annotated, unannotated)
+    # logger.debug('Annotated: %s\nUnannotated: %s', annotated, unannotated)
     return jsonify(allanno=annotated, allunanno=unannotated)
 
 

@@ -27,7 +27,7 @@ def getcommentstats(projects,
         #                                     { "_id" : 0, "speakersAudioIds."+str(ID) : 1 })
         # speakerfiles = speakerinfo['speakersAudioIds'][ID]
         speakerfiles = speaker_audio_ids
-        total_comments = len(speakerfiles)
+        # total_comments = len(speakerfiles)
 
         transcribedfiles = transcriptions.find({ "projectname": activeprojectname, "speakerId": ID },
                                             {"_id" : 0,
@@ -45,10 +45,13 @@ def getcommentstats(projects,
                         transcribed += 1
                     elif transcribedfile['transcriptionFLAG'] == 0:
                         nottranscribed += 1
+                elif (transcribedfile['audiodeleteFLAG'] == 1):
+                    speakerfiles.remove(audioId)
         # print(transcribed, nottranscribed)
         # logger.debug('total_comments: %s, transcribed: %s, nottranscribed: %s', total_comments, transcribed, nottranscribed)
+        total_comments = len(speakerfiles)
     except:
-        pass
+        logger.exception("")
 
     return (total_comments, transcribed, nottranscribed)
 

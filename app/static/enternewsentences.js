@@ -289,6 +289,7 @@ $("#save").click(function() {
 });
 
 function myFunction(newData) {
+  // console.log(newData);
   localStorage.setItem("activeprojectform", JSON.stringify(newData));
   localStorage.setItem("regions", JSON.stringify(newData['transcriptionRegions']));
   var activeAudioFilename = newData["AudioFilePath"].split('/')[2];
@@ -490,12 +491,12 @@ $('#speakeriduploaddropdown').select2({
   // allowClear: true
   });
 
-  $('#boundarypausedropdown').select2({
-  tags: true,
-  placeholder: 'Select preset value or enter a custom value',
-  // data: posCategories
-  // allowClear: true
-  });
+$('#boundarypausedropdown').select2({
+tags: true,
+placeholder: 'Select preset value or enter a custom value',
+// data: posCategories
+// allowClear: true
+});
 
 
 $("#audiofile").change(function() {

@@ -28,7 +28,7 @@ function audioBrowseActionShare(audioInfo) {
         //   alert("File shared with: " + data.users)
           
         // }
-        window.location.reload();
+        // window.location.reload();
       });
       return false;
     });

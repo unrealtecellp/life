@@ -1,5 +1,5 @@
+var activePageNumber = 1
 
-var embededAudio = new Audio();
 var audioSortingCategories = [
     {"id": "lifespeakerid", "text": "Source"},
     {"id": "sourcemetainfo", "text": "Source Meta Info"}
@@ -322,12 +322,14 @@ function eventsMapping() {
         audioBrowseActionPlay(audioInfo, this);
     });
     $(".pauseaudioclass").click(function() {
-        let audioInfo = getSingleAudioBrowseAction(this);
-        // audioBrowseActionPlay(audioInfo, this);
-        console.log(this);
-        let playingAudioId = document.getElementById(this.id);
-        console.log(embededAudio);
-        embededAudio.pause();
+        let playingAudioId = this.id;
+        // console.log(playingAudioId);
+        let playingAudioEleId = playingAudioId + "_audioEle";
+        let playingAudioEle = document.getElementById(playingAudioEleId);
+        // console.log(playingAudioEleId, playingAudioEle);
+        playingAudioEle.pause();
+        togglePlayPause(this, 'playaudioclass', 'play');
+        
     });
     $(".shareaudioclass").click(function() {
         let audioInfo = getSingleAudioBrowseAction(this);
@@ -417,6 +419,7 @@ function audioBrowseAction(audioInfo) {
 function audioBrowseActionPlay(audioInfo, audioCountInfo) {
     // console.log(audioCountInfo);
     let audioBrowseInfo = getAudioBrowseInfo();
+    audioBrowseInfo['pageId'] = activePageNumber;
     let data_1 = {
         audioInfo: audioInfo,
         audioBrowseInfo: audioBrowseInfo
@@ -427,25 +430,27 @@ function audioBrowseActionPlay(audioInfo, audioCountInfo) {
       })
       .done(function(data){
             // window.location.reload();
+            // console.log(data)
             createAudioBrowseTable(data.audioDataFields, data.audioData, data.shareMode, data.totalRecords, data.shareChecked);
             eventsMapping();
-            createPagination(data.totalRecords)
+            // console.log(activePageNumber);
+            createPagination(data.totalRecords, activePageNumber);
             // console.log(audioCountInfo);
             audioCountInfo = document.getElementById(audioCountInfo.id);
             console.log(audioCountInfo);
             let audioSource = data.audioSource;
             // console.log(audioSource)
             // let embededAudio = new Audio(audioSource);
-            embededAudio = new Audio(audioSource);
-            console.log(embededAudio);
-            embededAudio.play();
-            togglePlayPause(audioCountInfo, 'pauseaudioclass', 'pause')
+            // embededAudio = new Audio(audioSource);
+            // console.log(embededAudio);
+            // embededAudio.play();
+            togglePlayPause(audioCountInfo, 'pauseaudioclass', 'pause', audioSource)
             // let togglePlayPause = '<button type="button" id="'+audioCountInfo.id+'" class="btn btn-primary pauseaudioclass">'+
             //                         '<span class="glyphicon glyphicon-pause" aria-hidden="true"></span>'+
             //                         // ' Play Audio'+
             //                         '</button>';
-            // // let embededAudio = '<audio controls preload="none" oncontextmenu="return false" controlslist="nofullscreen nodownload noremoteplayback noplaybackrate">'+
-            // //                     '<source src="'+audioSource+'" type="audio/wav"></audio>';
+            // let embededAudio = '<audio controls autoplay hidden oncontextmenu="return false" controlslist="nofullscreen nodownload noremoteplayback noplaybackrate">'+
+            //                     '<source src="'+audioSource+'" type="audio/wav"></audio>';
             // audioCountInfo.parentNode.innerHTML = togglePlayPause;
             // eventsMapping();
       });
@@ -580,10 +585,10 @@ function createPagination(totalRecords, active=1) {
     paginationEle +=  '<div class="btn-group">';
     for (let i=1; i<=totalPages; i++) {
         if (i == active) {
-            paginationEle += '<button type="button" class="btn btn-primary" id="'+i+'" onclick="changeAudioBrowsePage(this.id)">'+i+'</button>';
+            paginationEle += '<button type="button" class="btn btn-primary createpagination" id="'+i+'" onclick="changeAudioBrowsePage(this.id)">'+i+'</button>';
         }
         else {
-            paginationEle += '<button type="button" class="btn" id="'+i+'" onclick="changeAudioBrowsePage(this.id)">'+i+'</button>';
+            paginationEle += '<button type="button" class="btn createpagination" id="'+i+'" onclick="changeAudioBrowsePage(this.id)">'+i+'</button>';
         }
     }
     paginationEle += '</div><br><br>';
@@ -594,6 +599,7 @@ function createPagination(totalRecords, active=1) {
 function changeAudioBrowsePage(pageId) {
     // console.log(pageId);
     let audioBrowseInfo = getAudioBrowseInfo();
+    activePageNumber = Number(pageId);
     audioBrowseInfo['pageId'] = Number(pageId);
     let selectedAudioSortingCategories = document.getElementById("audiosortingcategoriesdropdown").value;
     console.log(selectedAudioSortingCategories);
@@ -616,11 +622,24 @@ function changeAudioBrowsePage(pageId) {
     }
 }
 
-function togglePlayPause(ele, state, icon) {
+function togglePlayPause(ele, state, icon, audioSource=undefined) {
     let togglePlayPause = '<button type="button" id="'+ele.id+'" class="btn btn-primary '+state+'">'+
                                     '<span class="glyphicon glyphicon-'+icon+'" aria-hidden="true"></span>'+
                                     // ' Play Audio'+
                                     '</button>';
-        ele.parentNode.innerHTML = togglePlayPause;
-        eventsMapping();
+    if (audioSource) {
+        let embededAudio = '<audio id="'+ele.id+'_audioEle" onended="audioEnded(this)" controls autoplay hidden oncontextmenu="return false" controlslist="nofullscreen nodownload noremoteplayback noplaybackrate">'+
+                        '<source src="'+audioSource+'" type="audio/wav"></audio>';
+        togglePlayPause += embededAudio;
+    }
+    ele.parentNode.innerHTML = togglePlayPause;
+    eventsMapping();
+}
+
+function audioEnded(ele) {
+    let eleId = ele.id;
+    let audioBtnId = eleId.replaceAll("_audioEle", "");
+    // console.log(eleId, audioBtnId);
+    let audioBtnEle = document.getElementById(audioBtnId);
+    togglePlayPause(audioBtnEle, 'playaudioclass', 'play');
 }

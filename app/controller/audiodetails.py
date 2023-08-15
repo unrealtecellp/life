@@ -1444,7 +1444,7 @@ def savetranscription(transcriptions,
     Args:
         transcription_details (_type_): _description_
     """
-
+    # logger.debug("audio_id: %s", audio_id)
     # plogger.debug(activeprojectform)
     # plogger.debug(scriptCode)
     # transcription_details = {
@@ -2500,7 +2500,7 @@ def get_n_audios(data_collection,
     # logger.debug("aggregate_output: %s", aggregate_output)
     aggregate_output_list = []
     for doc in aggregate_output:
-        logger.debug("aggregate_output: %s", pformat(doc))
+        # logger.debug("aggregate_output: %s", pformat(doc))
         if (doc['audioId'] in speaker_audio_ids):
             doc['Audio File'] = ''
             aggregate_output_list.append(doc)
@@ -2517,7 +2517,7 @@ def get_audio_sorting_subcategories(speakerdetails_collection,
                                     speakerids,
                                     selected_audio_sorting_category
                                     ):
-    logger.debug("speakerids: %s", pformat(speakerids))
+    # logger.debug("speakerids: %s", pformat(speakerids))
     selected_audio_sorting_subcategory = {
         "agegroup": "Age Group",
         "gender": "Gender",
@@ -2542,16 +2542,16 @@ def get_audio_sorting_subcategories(speakerdetails_collection,
             }
         }
     ])
-    logger.debug("aggregate_output: %s", aggregate_output)
+    # logger.debug("aggregate_output: %s", aggregate_output)
     aggregate_output_dict = {}
     for doc in aggregate_output:
-        logger.debug("aggregate_output: %s", pformat(doc))
+        # logger.debug("aggregate_output: %s", pformat(doc))
         try:
             speaker = doc["lifesourceid"]
             if (speaker in speakerids):
                 # audio_sorting_subcategory = doc["current"]["sourceMetadata"][selected_audio_sorting_category]
                 audio_sorting_subcategory = doc["current"]["sourceMetadata"]
-                logger.debug("aggregate_output: %s", pformat(audio_sorting_subcategory))
+                # logger.debug("aggregate_output: %s", pformat(audio_sorting_subcategory))
                 for key, value in audio_sorting_subcategory.items():
                     if (key in selected_audio_sorting_subcategory):
                         selected_audio_sorting_subcategory_value = selected_audio_sorting_subcategory[key]
@@ -2588,7 +2588,7 @@ def filter_speakers(speakerdetails_collection,
                 speakers_match[db_key] = value[0]
             else:
                 speakers_match[db_key] = { "$in": value }
-    logger.debug("speakers_match: %s", speakers_match)
+    # logger.debug("speakers_match: %s", speakers_match)
     aggregate_output = []
     aggregate_output_list = []
     if (len(speakers_match) > 2):
@@ -2612,7 +2612,7 @@ def filter_speakers(speakerdetails_collection,
     for doc in aggregate_output:
         # logger.debug("aggregate_output: %s", pformat(doc))
         aggregate_output_list.append(doc["lifesourceid"])
-    logger.debug('aggregate_output_list: %s', pformat(aggregate_output_list))
+    # logger.debug('aggregate_output_list: %s', pformat(aggregate_output_list))
 
     return (list(set(aggregate_output_list)))
 
@@ -2625,7 +2625,7 @@ def combine_speaker_ids(projects_collection,
     try:
         speaker_ids = projects_collection.find_one({'projectname': activeprojectname},
                                             {'_id': 0, 'speakerIds.'+current_username: 1})
-        logger.debug("speaker_ids: %s", pformat(speaker_ids))
+        # logger.debug("speaker_ids: %s", pformat(speaker_ids))
         if (speaker_ids and
             'speakerIds' in speaker_ids and
             current_username in speaker_ids['speakerIds']):
@@ -2634,17 +2634,17 @@ def combine_speaker_ids(projects_collection,
             speaker_ids = []
         file_speaker_ids = projects_collection.find_one({'projectname': activeprojectname},
                                             {'_id': 0, 'fileSpeakerIds.'+current_username: 1})
-        logger.debug("file_speaker_ids: %s", pformat(file_speaker_ids))
+        # logger.debug("file_speaker_ids: %s", pformat(file_speaker_ids))
         if (file_speaker_ids and
             'fileSpeakerIds' in file_speaker_ids and
             current_username in file_speaker_ids['fileSpeakerIds']):
             file_speaker_ids = list(file_speaker_ids['fileSpeakerIds'][current_username].keys())
         else:
             file_speaker_ids = []
-        logger.debug("file_speaker_ids: %s", file_speaker_ids)
+        # logger.debug("file_speaker_ids: %s", file_speaker_ids)
         speaker_ids.extend(file_speaker_ids)
         speaker_ids = list(set(speaker_ids))
-        logger.debug("extended speaker ids: %s", pformat(speaker_ids))
+        # logger.debug("extended speaker ids: %s", pformat(speaker_ids))
     except:
         logger.exception("")
 
@@ -2664,7 +2664,7 @@ def get_speaker_audio_ids_new(projects_collection,
                                                         {'_id': 0,
                                                         'speakerIds.'+current_username: 1,
                                                         "speakersAudioIdsDeleted."+active_speaker_id: 1})
-            logger.debug("speaker_ids: %s", pformat(speaker_ids))
+            # logger.debug("speaker_ids: %s", pformat(speaker_ids))
             if (speaker_ids and
                 'speakerIds' in speaker_ids and
                 current_username in speaker_ids['speakerIds'] and
@@ -2677,7 +2677,7 @@ def get_speaker_audio_ids_new(projects_collection,
                                                         {'_id': 0,
                                                         'speakerIds.'+current_username: 1,
                                                         "speakersAudioIds."+active_speaker_id: 1})
-            logger.debug("speaker_ids: %s", pformat(speaker_ids))
+            # logger.debug("speaker_ids: %s", pformat(speaker_ids))
             if (speaker_ids and
                 'speakerIds' in speaker_ids and
                 current_username in speaker_ids['speakerIds'] and
@@ -2691,7 +2691,7 @@ def get_speaker_audio_ids_new(projects_collection,
         file_speaker_ids = projects_collection.find_one({'projectname': activeprojectname},
                                                         {'_id': 0,
                                                         'fileSpeakerIds.'+current_username: 1})
-        logger.debug("file_speaker_ids: %s", pformat(file_speaker_ids))
+        # logger.debug("file_speaker_ids: %s", pformat(file_speaker_ids))
         if (file_speaker_ids and
             'fileSpeakerIds' in file_speaker_ids and
             current_username in file_speaker_ids['fileSpeakerIds'] and
