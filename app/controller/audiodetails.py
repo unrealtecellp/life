@@ -2475,7 +2475,7 @@ def get_n_audios(data_collection,
                  number_of_audios=10,
                  audio_delete_flag=0,
                  all_data=False):
-    logger.debug("speaker_audio_ids: %s", pformat(speaker_audio_ids))
+    # logger.debug("speaker_audio_ids: %s", pformat(speaker_audio_ids))
     aggregate_output = data_collection.aggregate([
         {
             "$match": {
@@ -2504,7 +2504,7 @@ def get_n_audios(data_collection,
         if (doc['audioId'] in speaker_audio_ids):
             doc['Audio File'] = ''
             aggregate_output_list.append(doc)
-    logger.debug('aggregate_output_list: %s', pformat(aggregate_output_list))
+    # logger.debug('aggregate_output_list: %s', pformat(aggregate_output_list))
     total_records = len(aggregate_output_list)
     # logger.debug('total_records AUDIO: %s', total_records)
     if (not all_data):

@@ -1,4 +1,5 @@
-var activePageNumber = 1
+var activePageNumber = 1;
+var audioIds = [];
 
 var audioSortingCategories = [
     {"id": "lifespeakerid", "text": "Source"},
@@ -138,7 +139,7 @@ function createAudioBrowseTable(
     }
     if (shareChecked === 'true') {
         ele += '<th>Share</th>';
-        ele += '<th>Share Info</th>';
+        // ele += '<th>Share Info</th>';
     }
     
     ele += '</tr>'+
@@ -202,13 +203,13 @@ function createAudioBrowseTable(
                     '<span class="glyphicon glyphicon-share-alt" aria-hidden="true"></span>'+
                     // ' Share Audio'+
                     '</button></td>';
-            if (shareInfo) {
-                ele += '<td>'+shareInfo+'</td>';
-            }
-            else {
-                // console.log(field);
-                ele += '<td> - </td>';
-            }
+            // if (shareInfo) {
+            //     ele += '<td>'+shareInfo+'</td>';
+            // }
+            // else {
+            //     // console.log(field);
+            //     ele += '<td> - </td>';
+            // }
         }
         ele += '</tr>';
     }
@@ -333,15 +334,44 @@ function eventsMapping() {
     });
     $(".shareaudioclass").click(function() {
         let audioInfo = getSingleAudioBrowseAction(this);
+        // console.log(audioInfo);
+        // console.log(Object.keys(audioInfo));
+        audioIds = Object.keys(audioInfo);
+        $("#browseShareSelectMode").val(null).trigger('change');
+        $('#browseShareSelectMode').select2({
+        // placeholder: 'Share with',
+        data: browseShareSelMode,
+        // allowClear: true
+        });
+        document.getElementById("browseRemoveShareSelect").style.display = "none";
+        document.getElementById("removesharedfileaccess").style.display = "none";
+        // $('#audioInfo').select2({
+        //     // placeholder: 'Share with',
+        //     data: audioInfo,
+        //     // allowClear: true
+        // });
         // shareAudioFLAG = confirm("Share This Audio!!!");
         // if(shareAudioFLAG) {
-        audioBrowseActionShare(audioInfo);
+        // getAudioSharedWithUsersList(audioInfo);
+        // audioBrowseActionShare(audioInfo);
         // }
     });
     $("#multipleaudioshare").click(function() {
         audios = GetSelected();
         // console.log(audios);
-        audioBrowseActionShare(audios);
+        // console.log(Object.keys(audios));
+        audioIds = Object.keys(audios);
+        // $("#browseShareSelectMode").val(null).trigger('change');
+        document.getElementById("browseShareSelectMode").innerHTML = "";
+        $('#browseShareSelectMode').select2({
+        // placeholder: 'Share with',
+        data: ["share"],
+        // allowClear: true
+        });
+        document.getElementById("browseRemoveShareSelect").style.display = "none";
+        document.getElementById("removesharedfileaccess").style.display = "none";
+        // browseShareMode(["share"]);
+        // audioBrowseActionShare(audios);
     });
 }
 
@@ -602,7 +632,7 @@ function changeAudioBrowsePage(pageId) {
     activePageNumber = Number(pageId);
     audioBrowseInfo['pageId'] = Number(pageId);
     let selectedAudioSortingCategories = document.getElementById("audiosortingcategoriesdropdown").value;
-    console.log(selectedAudioSortingCategories);
+    // console.log(selectedAudioSortingCategories);
     if (selectedAudioSortingCategories === 'sourcemetainfo') {
         audioFilter(Number(pageId));
     }
@@ -643,3 +673,46 @@ function audioEnded(ele) {
     let audioBtnEle = document.getElementById(audioBtnId);
     togglePlayPause(audioBtnEle, 'playaudioclass', 'play');
 }
+
+// function getAudioSharedWithUsersList(audioInfo) {
+$(document).ready(function() {
+    $("#browseShareSelectMode").change(function() {
+        if (this.value === 'remove') {
+            // console.log(audioIds);
+            $.getJSON('/browsefilesharedwithuserslist', {
+                a : JSON.stringify({
+                    "audioInfo": audioIds,
+                })
+            }, function(data) {
+                // console.log(data, $('#browseRemoveShareSelect').hasClass("select2-hidden-accessible"));
+                // if (!$(obj).hasClass("select2-hidden-accessible"))
+
+                // $('#browseRemoveShareSelect').select2('destroy');
+                document.getElementById("browseRemoveShareSelect").innerHTML = "";
+                $('#browseRemoveShareSelect').select2({
+                    placeholder: 'Remove Access For',
+                    data: data.sharedWithUsers,
+                    allowClear: true
+                });
+                document.getElementById("browseShareSelect").style.display = "none";
+                $('#browseShareSelect').select2('destroy');
+                document.getElementById("browsesharebtn").style.display = "none";
+                document.getElementById("browseRemoveShareSelect").style.display = "block";
+                document.getElementById("removesharedfileaccess").style.display = "inline";
+            });
+            return false;
+        }
+        else if (this.value === 'share') {
+            $('#browseShareSelect').select2({
+                placeholder: 'Share with',
+                // data: usersList,
+                allowClear: true
+            });
+            document.getElementById("browseRemoveShareSelect").style.display = "none";
+            $('#browseRemoveShareSelect').select2('destroy');
+            document.getElementById("removesharedfileaccess").style.display = "none";
+            document.getElementById("browseShareSelect").style.display = "block";
+            document.getElementById("browsesharebtn").style.display = "inline";
+        }
+    });
+});
