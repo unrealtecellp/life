@@ -9,6 +9,7 @@ import os
 from flask import (flash, json, jsonify, redirect, render_template, request,
                    send_file, url_for)
 from flask_login import current_user, login_required, login_user, logout_user
+from datetime import datetime
 
 from app.controller import (
     audiodetails,
@@ -41,7 +42,7 @@ from app.lifedownloader.controller import (
     downloadTextGrid
 )
 
-from controller import (
+from app.lifetagsets.controller import (
     tagset_details
 )
 
@@ -78,7 +79,7 @@ def managetagset():
 
 
 @app.route('/getonetagsetmetadata', methods=['GET', 'POST'])
-def getonespeakermetadata():
+def getonetagsetmetadata():
     speakermeta, userprojects = getdbcollections.getdbcollections(
         mongo, "speakerdetails", "userprojects")
 
@@ -96,8 +97,8 @@ def getonespeakermetadata():
     return jsonify(onespeakerdetails=speakermetadata)
 
 
-@app.route('/editfieldspeakermetadata', methods=['GET', 'POST'])
-def editfieldspeakermetadata():
+@app.route('/edittagsetmetadata', methods=['GET', 'POST'])
+def edittagsetmetadata():
     speakermeta, userprojects = getdbcollections.getdbcollections(
         mongo, "speakerdetails", "userprojects")
 
