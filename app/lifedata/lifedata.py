@@ -32,11 +32,16 @@ from app.lifedata.controller import (
     data_project_info,
     savenewdataform,
     create_validation_type_project,
-    save_tagset,
     get_validation_data,
     youtubecrawl,
     sourceid_to_souremetadata
 )
+
+from app.lifetagsets.controller import (
+    save_tagset,
+    tagset_details
+)
+
 from flask_login import login_required
 import os
 from pprint import pformat
@@ -162,21 +167,6 @@ def newdataform():
 
                 return redirect(url_for("lifedata.validation"))
                 # return redirect(url_for("enternewsentences"))
-            elif (project_type == 'annotation'):
-                annotation_collection, tagsets = getdbcollections.getdbcollections(mongo,
-                                                                                   'annotation',
-                                                                                   'tagsets')
-                # logger.debug("project_type: %s", project_type)
-
-                annotation_zip_file = new_data_form_files["annotationtagsetZipFile"]
-                tagset_project_ids, = save_tagset.save_tagset(tagsets,
-                                                              annotation_zip_file,
-                                                              project_name)
-                # logger.debug(tagset_project_ids)
-                projects.update_one({"projectname": project_name},
-                                    {"$set": {
-                                        "tagsetId": tagset_project_ids
-                                    }})
 
             if ("derivefromproject" in new_data_form):
                 # copy all the data from the "derivedfromproject" to "newproject"
@@ -213,6 +203,41 @@ def newdataform():
                                                                           derive_from_project_name,
                                                                           projectname,
                                                                           current_username)
+                    return redirect(url_for("lifedata.annotation"))
+            else:
+                if (project_type == 'annotation'):
+                    annotation_collection, tagsets = getdbcollections.getdbcollections(mongo,
+                                                                                       'annotation',
+                                                                                       'tagsets')
+                    # logger.debug("project_type: %s", project_type)
+                    if 'annotationtagsetZipFile' in new_data_form_files:
+                        annotation_zip_file = new_data_form_files["annotationtagsetZipFile"]
+                        tagset_project_ids, = save_tagset.save_tagset(tagsets,
+                                                                      annotation_zip_file,
+                                                                      project_name)
+                    else:
+                        tagset_name = new_data_form['tagsetname'][0]
+                        tagset_project_ids = tagset_details.get_tagset_id(tagsets,
+                                                                          tagset_name)
+                        # logger.debug(tagset_project_ids)
+                    projects.update_one({"projectname": project_name},
+                                        {"$set": {
+                                            "tagsetId": tagset_project_ids
+                                        }})
+                    if 'annotationdataZipFile' in data_zip_file:
+                        data_zip_file = new_data_form_files["annotationdataZipFile"]
+                        file_format = new_data_form_files["filetype"]
+                        uploaded_sources = annotationdetails.save_multiple_files_data(projects,
+                                                                                      userprojects,
+                                                                                      data_collection,
+                                                                                      projectname,
+                                                                                      current_username,
+                                                                                      data_zip_file,
+                                                                                      file_format)
+
+                    logger.info("Uploaded Files: %s",
+                                pformat(uploaded_sources))
+
                     return redirect(url_for("lifedata.annotation"))
 
             return redirect(url_for("enternewsentences"))
@@ -710,6 +735,7 @@ def crawlerbrowseaction():
 
     return 'OK'
 
+
 @lifedata.route('/crawlerbrowseactionviewdata', methods=['GET', 'POST'])
 @login_required
 def crawlerbrowseactionviewdata():
@@ -743,6 +769,7 @@ def crawlerbrowseactionviewdata():
     except:
         logger.exception("")
         return jsonify(commentInfo={})
+
 
 @lifedata.route('/crawlerbrowsechangepage', methods=['GET', 'POST'])
 @login_required

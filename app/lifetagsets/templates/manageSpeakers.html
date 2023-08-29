@@ -1,0 +1,336 @@
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title> Manage Users </title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
+    <script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css" />
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.1/bootstrap3-editable/css/bootstrap-editable.css"
+        rel="stylesheet">
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.1/bootstrap3-editable/js/bootstrap-editable.js"></script>
+    
+        <link href="{{url_for('.static', filename='addnewtagset.css')}}" rel="stylesheet" />
+
+
+
+
+</head>
+{% extends "links.html" %}
+
+{% block styles %}
+{{super()}}
+{% endblock %}
+
+{% block app_content %}
+{% if activeprojectname is defined %}
+<h4>
+    Project Name : {{ activeprojectname }}
+</h4>
+{% endif %}
+
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <button type="button" id="addnewspeakermanagepageid" class="btn btn-lg btn-primary addnewspeaker"
+            data-toggle="modal" data-target="#addNewSpeakerModal">
+            Add New Source
+        </button>
+    </div>
+
+    <!-- View Field Speaker button -->
+    <!-- Modal -->
+    <div>
+        <div class="modal fade" id="fieldspeakerdetailsmodal" tabindex="-1" role="dialog"
+            aria-labelledby="speakerdetailsmodalLabel">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <!-- <div id="fieldspeakerdetails" style="display: none;"> -->
+
+                    <form role="form" method="post" action="{{url_for('editfieldspeakermetadata')}}">
+                        <button class="pull-right btn-danger" type="button" id="editbutton">Edit</button><br />
+
+                        <div class="modal-header">
+                            <h4 class="modal-title" id="speakerdetailsmodalLabel">Field Metadata</h4>
+                        </div>
+
+                        <input type="hidden" name="lifespeakerid" id="lifespeakerid" value="" />
+                        <div class="modal-body" id="formdisplay">
+                            <div class="form-group">
+                                <label for="idviewname" class="col-form-label">Name:</label>
+                                <input type="text" class="form-control" id="idviewname" name="sname"
+                                    placeholder="--Speaker Name--" style="width:55%" value="" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="idviewage">Age Group: </label> <br>
+                                <select class="age" id="idviewage" name="sagegroup" style="width:55%" required>
+                                    <!-- <div id="ageoptions"></div> -->
+                                </select><br>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="idviewgender">Gender: </label> <br>
+                                <select class="gender" id="idviewgender" name="sgender" style="width:55%">
+                                    <!-- <div id="genderoptions"></div> -->
+
+                                </select><br>
+
+                            </div>
+
+                            <div class="form-group">
+                                <label for="idviewelevel">Educational Level: </label> <br>
+                                <select class="educationlvl" id="idviewelevel" name="educationalevel" style="width:55%">
+                                </select><br>
+                            </div>
+
+
+                            <div class="form-group">
+                                <label for="idviewmediumpre">Medium Of Education (upto 12ᵗʰ): </label><br>
+                                <select class="educationmediumupto12" id="idviewmediumpre" name="moe12" multiple="multiple"
+                                    style="width:55%">
+                                </select><br>
+                            </div>
+
+
+                            <div class="form-group">
+                                <label for="idviewmediumpost">Medium Of Education (After 12ᵗʰ): </label><br>
+                                <select class="educationmediumafter12" id="idviewmediumpost" name="moea12"
+                                    multiple="multiple" style="width:55%">
+                                </select><br>
+                            </div>
+
+
+                            <div class="form-group">
+                                <label for="idviewotherlangs">Other Languages Speaker Could Speak: </label><br>
+                                <select class="speakerspeaklanguage" id="idviewotherlangs" name="sols" multiple="multiple"
+                                    style="width:55%">
+                                </select><br>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="idviewplace" class="col-form-label">Place Of Recording:</label><br>
+                                <!-- <select class="typeofcity" id="idptype" name="toc" multiple="multiple" style="width:45%" required></select> -->
+                                <input type="text" class="form-control" id="idviewplace" name="por"
+                                    placeholder="--Place Of Recording--" style="width:55%;">
+
+                            </div>
+
+                            <div class="form-group">
+                                <label for="idviewptype">Type Of Place: </label> <br>
+                                <select class="typeofcity" id="idviewptype" name="toc" style="width:55%">
+                                </select><br>
+                            </div>
+                        
+
+                            <div id="formsubmit" class="form-group modal-footer">
+                                <button type="button" id="closebutton" class="btn btn-secondary"
+                                    data-dismiss="modal">Close</button>
+                                <input type="submit" value="Submit"> <br><br>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- View YouTube Data Button -->
+    <!-- Modal -->
+    <div>
+        <div class="modal fade" id="youtubedetailsmodal" tabindex="-1" role="dialog"
+            aria-labelledby="youtubedetailsmodalLabel">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <!-- <div id="fieldspeakerdetails" style="display: none;"> -->
+
+                    <form role="form" method="post" action="{{url_for('edityoutubesourcemetadata')}}">
+                        <button class="pull-right btn-danger" type="button" id="editbuttonyt">Edit</button><br />
+
+                        <div class="modal-header">
+                            <h4 class="modal-title" id="youtubedetailsmodalLabel">YouTube Metadata</h4>
+                        </div>
+
+                        <input type="hidden" name="lifespeakerid" id="lifespeakerid" class="lifespeakeridyt" value="" />
+                        <div class="modal-body" id="formdisplayyoutube">
+                            <div class="form-group">
+                                <label class="col-form-label">Youtube Channel Name</label><br>
+                                <input type="text" class="form-control" id="idytchannelname" name="ytchannelname"
+                                    placeholder="--Youtube Channel Name--" style="width:55%;">
+                            </div>
+                            <div class="form-group">
+                                <label class="col-form-label">Youtube Channel URL</label><br>
+                                <input type="url" class="form-control" id="idytchannelurl" name="ytchannelurl"
+                                    placeholder="--Youtube Channel URL--" style="width:55%;">
+                            </div>
+
+
+                            <div class="modal-footer">
+                                <button type="button" id="closebuttonyoutube" class="btn btn-secondary"
+                                    data-dismiss="modal">Close</button>
+                                <input type="submit" value="Submit"> <br><br>
+                            </div>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+    {% for data_source in speaker_data %}
+    <div class="row">
+        <div class="col">
+            <b>
+                <h4>{{data_source}} RECORDS</h4>
+            </b>
+            <p id="totalrecords"><strong>Total Records:</strong>&nbsp;{{ count[data_source] }}</p>
+            <input id="myInput" type="text" placeholder="Search">
+            <table class="table table-striped " id="table" data-toolbar="#toolbar" data-search="true"
+                data-show-refresh="true" data-show-toggle="true" data-show-fullscreen="true" data-show-columns="true"
+                data-show-columns-toggle-all="true" data-detail-view="true" data-show-export="true"
+                data-click-to-select="true" data-detail-formatter="detailFormatter" data-minimum-count-columns="2"
+                data-show-pagination-switch="true" data-pagination="true" data-id-field="id"
+                data-page-list="[10, 25, 50, 100, all]" data-show-footer="true" data-side-pagination="server">
+                <thead>
+                    <tr>
+                        <!-- <th onclick="sortTable(0)">id</th> -->
+                        <th><input type="checkbox" id="headcheckbox" onchange="checkAllLexeme(this)" name="chk[]"
+                                checked />&nbsp;</th>
+                        {% for header in table_headers[data_source] %}
+                        <th onclick="sortTable(2)">{{header}}</th>
+                        {% endfor %}
+                        <th>View</th>
+
+                    </tr>
+                </thead>
+                <tbody id="myTableBody">
+
+                    {% for item in speaker_data[data_source] %}
+
+                    <tr>
+                        <td>
+                            <input type="checkbox" id="lexemecheckbox" onchange="checkLexeme(this)" name="name1"
+                                checked />
+                        </td>
+
+                        <td>
+                            {{item['lifesourceid']}}
+                        </td>
+
+                        {% if data_source == "FIELD" %}
+                        <td>
+                            {{item['current']['sourceMetadata']['name']}}
+                        </td>
+
+                        <td>
+                            {{item['current']['sourceMetadata']['agegroup']}}
+                        </td>
+                        <td>
+                            {{item['current']['sourceMetadata']['gender']}}
+                        </td>
+
+                        <td>
+                            {{item['createdBy']}}
+                        </td>
+
+                        <td>
+                            {{item['current']['updatedBy']}}
+                        </td>
+
+                        <td>
+                            <button type="button" class="btn btn-primary speakerview" id="{{item['lifesourceid']}}"
+                                data-toggle="modal" data-target="#fieldspeakerdetailsmodal">
+                                View
+                            </button>
+                        </td>
+
+                        {% elif data_source == "YOUTUBE" %}
+                        <td>
+                            {{item['current']['sourceMetadata']['channelName']}}
+                        </td>
+
+                        <td>
+                            <a href="{{item['current']['sourceMetadata']['channelUrl']}}"
+                                target="_blank">{{item['current']['sourceMetadata']['channelUrl']}}</a>
+                        </td>
+
+                        <td>
+                            {{item['createdBy']}}
+                        </td>
+
+                        <td>
+                            {{item['current']['updatedBy']}}
+                        </td>
+
+                        <td>
+                            <button type="button" class="btn btn-primary youtubeview" id="{{item['lifesourceid']}}"
+                                data-toggle="modal" data-target="#youtubedetailsmodal">
+                                View
+                            </button>
+                        </td>
+                        {% endif %}
+
+
+
+                    </tr>
+                    {% endfor %}
+
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endfor %}
+
+
+    <!-- Add new Speaker Modal -->
+    <div class="modal fade" id="addNewSpeakerModal" tabindex="-1" role="dialog"
+        aria-labelledby="addNewSpeakerModalLabel">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="addNewSpeakerModalLabel">Project Name: {{ activeprojectname }}</h4>
+                </div>
+                <div class="modal-body">
+                    <!-- <div class="col-xs-6"> -->
+                    <!-- <input id="myInput" class="form-control" type="text" placeholder="Search"> -->
+                    <!-- </div> -->
+                    <br>
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div class="form-group">
+                                <div id="addnewspeakerform"> </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% endblock %}
+
+    {% block scripts %}
+    {{super()}}
+    <script src="{{url_for('.static', filename='addnewtagset.js')}}"></script>
+    <script src="{{url_for('.static', filename='speaker_select2_dropdown.js')}}"></script>
+    <script src="{{url_for('.static', filename='search.js')}}"></script>
+    <script src="{{url_for('.static', filename='sorttable.js')}}"></script>
+    <!-- <script src="{{url_for('.static', filename='managespeakers.js')}}"></script> -->
+
+
+    {% endblock %}
+
+</html>

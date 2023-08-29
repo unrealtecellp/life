@@ -59,3 +59,13 @@ def get_active_transcription_by(projects,
         # project_type = ''
     # logger.debug('project_type: %s', project_type)
     return transcription_by
+
+
+def save_active_transcription_by(projects,
+                                 activeprojectname,
+                                 current_username,
+                                 lastActiveUser):
+    updateactiveuser = 'lastActiveUserTranscription.' + current_username
+
+    projects.update_one({"projectname": activeprojectname},
+                        {'$set': {updateactiveuser: lastActiveUser}})

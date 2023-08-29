@@ -29,5 +29,12 @@ app.register_blueprint(easyAnno, url_prefix='/easyAnno')
 from app.lifedownloader.lifedownloaderroutes import ld
 app.register_blueprint(ld, url_prefix='/download')
 
+from app.lifeuploader.lifeuploaderroutes import lu
+app.register_blueprint(lu, url_prefix='/upload')
+
+from app.lifetagsets.lifetagsetsroutes import ltset
+app.register_blueprint(ltset, url_prefix='/ltset')
+
 from app import routes, models, forms
+
 

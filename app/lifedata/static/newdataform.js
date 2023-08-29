@@ -102,7 +102,7 @@ var dataProjectType = [
   {"id": "", "text": ""},
   {"id": "annotation", "text": "Annotation"},
   {"id": "recordings", "text": "Recordings"},
-  // {"id": "validation", "text": "Validation"},
+  {"id": "validation", "text": "Validation"},
   {"id": "transcriptions", "text": "Speech Transcription and Labeling"},
   // {"id": "crawling", "text": "Crawling"},
 ];

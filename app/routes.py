@@ -3809,6 +3809,15 @@ def shareprojectwith():
                     'sourceIds': 1
                 }
             )
+
+            # Give access only to user's own transcription if access to latest and other's transcriptions are not granted
+            if not sharelatestchecked:
+                projectDetails.save_active_transcription_by(
+                    projects,
+                    activeprojectname,
+                    current_user.username,
+                    current_user.username
+                )
             # print(projectdetails)
             projectdetails['sharedwith'].append(user)
             # print(projectdetails)
@@ -3989,7 +3998,7 @@ def shareprojectwith():
             shared_with_user_email = sender_email_details['email']
 
             if current_user_email != '' and shared_with_user_email != '':
-                print('Sending email')
+                logger.info('Sending email')
                 purpose = 'share'  # share|OTP|notification
 
                 email_status = emailController.sendEmail(
@@ -4005,7 +4014,7 @@ def shareprojectwith():
                 )
             else:
                 email_status = "Email not configured in the app. Project shared but email not sent"
-                print(email_status)
+                logger.info(email_status)
 
     # flash(email_status)
     return redirect(url_for('home'))
@@ -5001,10 +5010,12 @@ def loadtranscriptionbyanyuser():
     # print(updateactivespeakeraudioid)
 
     # Preference set for a specific user in a project - all audio files will show the transcription of the user selected
-    updateactiveuser = 'lastActiveUserTranscription.' + current_user.username
-
-    projects.update_one({"projectname": activeprojectname},
-                        {'$set': {updateactiveuser: lastActiveUser}})
+    projectDetails.save_active_transcription_by(
+        projects,
+        activeprojectname,
+        current_user.username,
+        lastActiveUser
+    )
 
     # if (project_type == 'text'):
     #     return redirect(url_for('textAnno'))
