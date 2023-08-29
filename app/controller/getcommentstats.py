@@ -10,6 +10,7 @@ def getcommentstats(projects,
                     transcriptions,
                     activeprojectname,
                     ID,
+                    speaker_audio_ids,
                     idtype):
     """_summary_
 
@@ -22,28 +23,35 @@ def getcommentstats(projects,
     transcribed = 0
     nottranscribed = 0
     try:
-        speakerinfo = projects.find_one({ "projectname": activeprojectname },
-                                            { "_id" : 0, "speakersAudioIds."+str(ID) : 1 })
-        speakerfiles = speakerinfo['speakersAudioIds'][ID]
-        total_comments = len(speakerfiles)
+        # speakerinfo = projects.find_one({ "projectname": activeprojectname },
+        #                                     { "_id" : 0, "speakersAudioIds."+str(ID) : 1 })
+        # speakerfiles = speakerinfo['speakersAudioIds'][ID]
+        speakerfiles = speaker_audio_ids
+        # total_comments = len(speakerfiles)
 
         transcribedfiles = transcriptions.find({ "projectname": activeprojectname, "speakerId": ID },
                                             {"_id" : 0,
+                                             "audioId": 1,
                                              "transcriptionFLAG" : 1,
                                              "audiodeleteFLAG": 1})
         # print(speakerinfo)
         # print(total_comments)
         for transcribedfile in transcribedfiles:
             # logger.debug('transcribedfile: %s, ', transcribedfile)
-            if (transcribedfile['audiodeleteFLAG'] == 0):
-                if transcribedfile['transcriptionFLAG'] == 1:
-                    transcribed += 1
-                elif transcribedfile['transcriptionFLAG'] == 0:
-                    nottranscribed += 1
+            audioId = transcribedfile['audioId']
+            if (audioId in speakerfiles):
+                if (transcribedfile['audiodeleteFLAG'] == 0):
+                    if transcribedfile['transcriptionFLAG'] == 1:
+                        transcribed += 1
+                    elif transcribedfile['transcriptionFLAG'] == 0:
+                        nottranscribed += 1
+                elif (transcribedfile['audiodeleteFLAG'] == 1):
+                    speakerfiles.remove(audioId)
         # print(transcribed, nottranscribed)
         # logger.debug('total_comments: %s, transcribed: %s, nottranscribed: %s', total_comments, transcribed, nottranscribed)
+        total_comments = len(speakerfiles)
     except:
-        pass
+        logger.exception("")
 
     return (total_comments, transcribed, nottranscribed)
 

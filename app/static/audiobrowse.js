@@ -1,3 +1,17 @@
+var activePageNumber = 1;
+var audioIds = [];
+
+var audioSortingCategories = [
+    {"id": "lifespeakerid", "text": "Source"},
+    {"id": "sourcemetainfo", "text": "Source Meta Info"}
+    // {"id": "agegroup", "text": "Age Group"},
+    // {"id": "gender", "text": "Gender"},
+    // {"id": "educationlevel", "text": "Education Level"},
+    // {"id": "educationmediumupto12", "text": "Education Medium Upto 12"},
+    // {"id": "educationmediumafter12", "text": "Education Medium After 12"},
+    // {"id": "speakerspeaklanguage", "text": "Source Language"}
+]
+
 function createSelect2(eleId, optionsList, selectedOption) {
     let ele = '';
     for (let i=0; i<optionsList.length; i++) {
@@ -9,23 +23,77 @@ function createSelect2(eleId, optionsList, selectedOption) {
             ele += '<option value="'+option+'">'+option+'</option>'
         }
     }
-    $('#'+eleId).append(ele);
+    $('#'+eleId).html(ele);
     $('#'+eleId).select2({
         // data: optionsList
+        });
+}
+
+function createSelect2FromObject(eleId, optionsObject, selectedOption) {
+    let ele = '';
+    for (let i=0; i<optionsObject.length; i++) {
+        optionValue = optionsObject[i]['id'];
+        option = optionsObject[i]['text'];
+        if (option === selectedOption) {
+            ele += '<option value="'+optionValue+'" selected>'+option+'</option>'
+        }
+        else {
+            ele += '<option value="'+optionValue+'">'+option+'</option>'
+        }
+    }
+    $('#'+eleId).html(ele);
+    $('#'+eleId).select2({
+        // data: optionsList
+        });
+}
+
+function createSelect2optgroup(eleId, optionsObject, selectedOption) {
+    let ele = '';
+    for (let [key, value] of Object.entries(optionsObject)) {
+        let optGroup = key;
+        let optGroupId = key.toLowerCase().replaceAll(' ', '');
+        ele += '<optgroup id="'+optGroupId+'" label="'+optGroup+'">';
+        for (let i=0; i<value.length; i++) {
+            option = value[i];
+            if (option === selectedOption) {
+                ele += '<option value="'+option+'" selected>'+option+'</option>'
+            }
+            else {
+                ele += '<option value="'+option+'">'+option+'</option>'
+            }
+        }
+        ele += '</optgroup>';
+    }
+    $('#'+eleId).html(ele);
+    $('#'+eleId).select2({
+        // data: value
+        placeholder: 'Filter Audio On',
+        allowClear: true
         });
 }
 
 function createBrowseActions(projectOwner, currentUsername) {
     let ele = '';
     let browseActionOptionsList = ['Delete']
+    // let tabSpace = '&nbsp;&nbsp;&nbsp;&nbsp;';
     ele += '<label for="browseactiondropdown">Action:&nbsp;</label>'+
-            '<select class="custom-select custom-select-sm" id="browseactiondropdown" style="width: 50%;"></select>&nbsp;&nbsp;&nbsp;&nbsp;';
+            '<select class="custom-select custom-select-sm" id="browseactiondropdown" style="width: 30%;"></select>';
+    // ele += tabSpace;
+    // multiple audio delete
     ele += '<button type="button" class="btn btn-danger" id="multipleaudiodelete"  style="display: inline;">'+
             '<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>'+
-            ' Delete Multiple Audio</button>';
+            ' Multiple</button>';
+    // ele += tabSpace;
+    // multiple audio revove
     ele += '<button type="button" class="btn btn-success" id="multipleaudiorevoke" style="display: none;">'+
             '<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>'+
-            ' Revoke Multiple Audio</button>';
+            ' Multiple</button>';
+    // ele += tabSpace;
+    // multiple audio share
+    ele += '<button type="button" class="btn btn-warning" id="multipleaudioshare" style="display: inline;" data-toggle="modal" data-target="#browseShareModal">'+
+            '<span class="glyphicon glyphicon-share-alt" aria-hidden="true"></span>'+
+            ' Multiple</button>';
+
     $('#browseaudiodropdowns').append(ele);
     if (currentUsername === projectOwner) {
         browseActionOptionsList.push('Revoke');
@@ -33,19 +101,35 @@ function createBrowseActions(projectOwner, currentUsername) {
     createSelect2('browseactiondropdown', browseActionOptionsList, 'Delete');
 }
 
-function createAudioBrowseTable(audioDataFields, audioData, shareMode=0, totalRecords=0, shareChecked="false") {
+function createAudioBrowseTable(
+    audioDataFields,
+    audioData,
+    shareMode=0,
+    totalRecords=0,
+    shareChecked="false",
+    shareInfo=undefined) {
     // console.log(audioData);
     // console.log(shareChecked);
     let count = audioData.length
     let ele = '';
     let browseActionSelectedOption = '';
-    ele += '<p id="actualtotalrecords">Total Records:&nbsp;'+totalRecords+'</p>';
-    ele += '<p id="totalrecords">Showing Records:&nbsp;'+count+'</p>'+
-            '<table class="table table-striped " id="myTable">'+
+    // ele += '<p id="actualtotalrecords">Total Records:&nbsp;'+totalRecords+'</p>';
+    ele += '<div class="col">';
+    ele += '<strong><p id="totalrecords" style="display:inline">Showing Records:&nbsp;'+count+' of '+totalRecords+'</p></strong>';
+    ele += '<div class="pull-right">'+
+            '<input id="myInput" type="text" placeholder="Search">'
+            '</div>';
+    ele +=  '</div>';
+    ele += '<hr>';
+    ele += '<table class="table table-striped " id="myTable">'+
             '<thead>'+
             '<tr>'+
             '<th><input type="checkbox" id="headcheckbox" onchange="checkAllAudio(this)" name="chk[]" checked/>&nbsp;</th>';
     for (let i=0; i<audioDataFields.length; i++) {
+        if (audioDataFields[i] == "audioFilename"){
+            ele += '<th onclick="sortTable('+(i+1)+')" hidden>'+audioDataFields[i]+'</th>';
+            continue;
+        }
         ele += '<th onclick="sortTable('+(i+1)+')">'+audioDataFields[i]+'</th>';
     }
     ele += '<th>View</th>';
@@ -55,6 +139,7 @@ function createAudioBrowseTable(audioDataFields, audioData, shareMode=0, totalRe
     }
     if (shareChecked === 'true') {
         ele += '<th>Share</th>';
+        // ele += '<th>Share Info</th>';
     }
     
     ele += '</tr>'+
@@ -63,15 +148,27 @@ function createAudioBrowseTable(audioDataFields, audioData, shareMode=0, totalRe
             // {% for data in sdata %}
     for (let i=0; i<audioData.length; i++) {
         aData = audioData[i];
+        let audioCount = i+1;
         ele += '<tr>'+
                 '<td><input type="checkbox" id="lexemecheckbox" onchange="checkAudio(this)" name="name1" checked /></td>';
         for (let j=0; j<audioDataFields.length; j++) {
             let field = audioDataFields[j];
             if (field in aData) {
+                if (field == "audioFilename") {
+                    ele += '<td id='+field+' hidden>'+aData[field]+'</td>';
+                    continue;
+                }
                 if (field == 'Audio File') {
-                    ele += '<td id='+field+'>'+
-                            '<audio controls controlslist="nofullscreen nodownload noremoteplayback noplaybackrate"><source src="'+aData[field]+'" type="audio/wav"></audio>'+
+                    ele += '<td>'+
+                            '<button type="button" id="playaudio_'+audioCount+'" class="btn btn-primary playaudioclass">'+
+                            '<span class="glyphicon glyphicon-play" aria-hidden="true"></span>'+
+                            // ' Play Audio'+
+                            '</button>'+
                             '</td>';
+                    // ele += '<td id='+field+'>'+
+                            // '<audio controls oncontextmenu="return false" controlslist="nofullscreen nodownload noremoteplayback noplaybackrate">'+
+                            // '<source src="'+aData[field]+'" type="audio/wav"></audio>'+
+                            // '</td>';
                 }
                 else {
                     ele += '<td id='+field+'>'+aData[field]+'</td>';
@@ -85,28 +182,34 @@ function createAudioBrowseTable(audioDataFields, audioData, shareMode=0, totalRe
         }
         ele += '<td><button type="button" id="viewaudio" class="btn btn-primary viewaudioclass">'+
                     '<span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>'+
-                    ' View Audio'+
+                    // ' View Audio'+
                     '</button></td>';
         if (browseActionSelectedOption === 'Delete') {
             ele += '<td><button type="button" id="deleteaudio" class="btn btn-danger deleteaudioclass">'+
                     '<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>'+
-                    ' Delete Audio'+
+                    // ' Delete Audio'+
                     '</button></td>';
 
         }
         else if (browseActionSelectedOption === 'Revoke') {
             ele += '<td><button type="button" id="revokeaudio" class="btn btn-success revokeaudioclass">'+
                     '<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>'+
-                    ' Revoke Audio'+
+                    // ' Revoke Audio'+
                     '</button></td>';
 
         }
         if (shareChecked === 'true') {
-            ele += '<td><button type="button" id="shareaudio" class="btn btn-warning shareaudioclass">'+
+            ele += '<td><button type="button" id="shareaudio" class="btn btn-warning shareaudioclass"  data-toggle="modal" data-target="#browseShareModal">'+
                     '<span class="glyphicon glyphicon-share-alt" aria-hidden="true"></span>'+
-                    ' Share Audio'+
+                    // ' Share Audio'+
                     '</button></td>';
-
+            // if (shareInfo) {
+            //     ele += '<td>'+shareInfo+'</td>';
+            // }
+            // else {
+            //     // console.log(field);
+            //     ele += '<td> - </td>';
+            // }
         }
         ele += '</tr>';
     }
@@ -129,6 +232,8 @@ function createAudioBrowse(newData) {
     // console.log(activeSpeakerId)
     let audioDataFields = newData['audioDataFields']
     let audioData = newData['audioData']
+    createSelect2FromObject('audiosortingcategoriesdropdown', audioSortingCategories, 'Source');
+    // createSelect2('audiosortingsubcategoriesdropdown', speakerIds, activeSpeakerId);
     createSelect2('speakeridsdropdown', speakerIds, activeSpeakerId);
     createSelect2('audiofilescountdropdown', [10, 20, 50], 10)
     if (shareMode >= 4) {
@@ -144,7 +249,14 @@ function eventsMapping() {
     $("#browseactiondropdown").change(function() {
         let browseActionSelectedOption = document.getElementById('browseactiondropdown').value;
         // console.log(browseActionSelectedOption);
-        updateAudioBrowseTable();
+        let selectedAudioSortingCategories = document.getElementById("audiosortingcategoriesdropdown").value;
+        console.log(selectedAudioSortingCategories);
+        if (selectedAudioSortingCategories === 'sourcemetainfo') {
+            audioFilter();
+        }
+        else {
+            updateAudioBrowseTable();
+        }
         if (browseActionSelectedOption === 'Delete') {
             document.getElementById('multipleaudiorevoke').style.display = "none";
             document.getElementById('multipleaudiodelete').style.display = "inline";
@@ -154,10 +266,22 @@ function eventsMapping() {
             document.getElementById('multipleaudiorevoke').style.display = "inline";
         }
     })
+    // change audio sorting categories
+    $("#audiosortingcategoriesdropdown").change(function() {
+        // console.log(browseActionSelectedOption);
+        updateAudioSortingSubCategoriesDropdown();
+    })
     // change audio file count to show
     $("#audiofilescountdropdown").change(function() {
         // console.log(browseActionSelectedOption);
-        updateAudioBrowseTable();
+        let selectedAudioSortingCategories = document.getElementById("audiosortingcategoriesdropdown").value;
+        console.log(selectedAudioSortingCategories);
+        if (selectedAudioSortingCategories === 'sourcemetainfo') {
+            audioFilter();
+        }
+        else {
+            updateAudioBrowseTable();
+        }
     })
     // delete single audio
     $(".deleteaudioclass").click(function() {
@@ -193,13 +317,101 @@ function eventsMapping() {
             audioBrowseAction(audios);
         }
     });
+    // play single audio
+    $(".playaudioclass").click(function() {
+        let audioInfo = getSingleAudioBrowseAction(this);
+        audioBrowseActionPlay(audioInfo, this);
+    });
+    $(".pauseaudioclass").click(function() {
+        let playingAudioId = this.id;
+        // console.log(playingAudioId);
+        let playingAudioEleId = playingAudioId + "_audioEle";
+        let playingAudioEle = document.getElementById(playingAudioEleId);
+        // console.log(playingAudioEleId, playingAudioEle);
+        playingAudioEle.pause();
+        togglePlayPause(this, 'playaudioclass', 'play');
+        
+    });
     $(".shareaudioclass").click(function() {
         let audioInfo = getSingleAudioBrowseAction(this);
-        shareAudioFLAG = confirm("Share This Audio!!!");
-        if(shareAudioFLAG) {
-            audioBrowseActionShare(audioInfo);
-        }
+        // console.log(audioInfo);
+        // console.log(Object.keys(audioInfo));
+        audioIds = Object.keys(audioInfo);
+        $("#browseShareSelectMode").val(null).trigger('change');
+        $('#browseShareSelectMode').select2({
+        // placeholder: 'Share with',
+        data: browseShareSelMode,
+        // allowClear: true
+        });
+        document.getElementById("browseRemoveShareSelect").style.display = "none";
+        document.getElementById("removesharedfileaccess").style.display = "none";
+        // $('#audioInfo').select2({
+        //     // placeholder: 'Share with',
+        //     data: audioInfo,
+        //     // allowClear: true
+        // });
+        // shareAudioFLAG = confirm("Share This Audio!!!");
+        // if(shareAudioFLAG) {
+        // getAudioSharedWithUsersList(audioInfo);
+        // audioBrowseActionShare(audioInfo);
+        // }
     });
+    $("#multipleaudioshare").click(function() {
+        audios = GetSelected();
+        // console.log(audios);
+        // console.log(Object.keys(audios));
+        audioIds = Object.keys(audios);
+        // $("#browseShareSelectMode").val(null).trigger('change');
+        document.getElementById("browseShareSelectMode").innerHTML = "";
+        $('#browseShareSelectMode').select2({
+        // placeholder: 'Share with',
+        data: ["share"],
+        // allowClear: true
+        });
+        document.getElementById("browseRemoveShareSelect").style.display = "none";
+        document.getElementById("removesharedfileaccess").style.display = "none";
+        // browseShareMode(["share"]);
+        // audioBrowseActionShare(audios);
+    });
+}
+
+function updateAudioSortingSubCategoriesDropdown() {
+    let audioBrowseInfo = getAudioBrowseInfo();
+    let selectedAudioSortingCategories = document.getElementById("audiosortingcategoriesdropdown").value;
+    $.ajax({
+        data : {
+          a : JSON.stringify({
+            "audioBrowseInfo": audioBrowseInfo,
+            "selectedAudioSortingCategories": selectedAudioSortingCategories
+        })
+        },
+        type : 'GET',
+        url : '/updateaudiosortingsubcategories'
+      }).done(function(data){
+        // console.log(data);
+        audioSortingSubCategories = data.audioSortingSubCategories;
+        selectedAudioSortingSubCategories = data.selectedAudioSortingSubCategories;
+        // console.log(audioSortingSubCategories, selectedAudioSortingSubCategories);
+        if (selectedAudioSortingCategories === 'sourcemetainfo') {
+            $('#speakeridsdropdown').select2('destroy');
+            document.getElementById('speakeridsdropdown').style.display = "none";
+            document.getElementById('audiosortingsubcategoriesdropdown').style.display = "block";
+            document.getElementById('audiofilter').style.display = "inline";
+            createSelect2optgroup('audiosortingsubcategoriesdropdown', audioSortingSubCategories, selectedAudioSortingSubCategories);
+            // audiobrowsefilter.js
+            audioFilteringEvent();
+        }
+        else if (selectedAudioSortingCategories === 'lifespeakerid') {
+            $('#audiosortingsubcategoriesdropdown').select2('destroy');
+            document.getElementById('audiosortingsubcategoriesdropdown').style.display = "none";
+            document.getElementById('audiofilter').style.display = "none";
+            document.getElementById('speakeridsdropdown').style.display = "block";
+            createSelect2('speakeridsdropdown', audioSortingSubCategories, selectedAudioSortingSubCategories);
+        }
+        createAudioBrowseTable(data.audioDataFields, data.audioData, data.shareMode, data.totalRecords, data.shareChecked);
+        eventsMapping();
+        createPagination(data.totalRecords)
+      });
 }
 
 function updateAudioBrowseTable() {
@@ -211,7 +423,7 @@ function updateAudioBrowseTable() {
         type : 'GET',
         url : '/updateaudiobrowsetable'
       }).done(function(data){
-        // console.log(data.audioDataFields, data.audioData, data.shareMode);
+        console.log(data.audioDataFields, data.audioData, data.shareMode);
         createAudioBrowseTable(data.audioDataFields, data.audioData, data.shareMode, data.totalRecords, data.shareChecked);
         eventsMapping();
         createPagination(data.totalRecords)
@@ -234,21 +446,61 @@ function audioBrowseAction(audioInfo) {
       });
 }
 
-function audioBrowseActionShare(audioInfo) {
+function audioBrowseActionPlay(audioInfo, audioCountInfo) {
+    // console.log(audioCountInfo);
     let audioBrowseInfo = getAudioBrowseInfo();
-    $.ajax({
-        data : {
-          a : JSON.stringify({
-            "audioInfo": audioInfo,
-            "audioBrowseInfo": audioBrowseInfo
-        })
-        },
-        type : 'GET',
-        url : '/audiobrowseactionshare'
-      }).done(function(data){
-            window.location.reload();
+    audioBrowseInfo['pageId'] = activePageNumber;
+    let data_1 = {
+        audioInfo: audioInfo,
+        audioBrowseInfo: audioBrowseInfo
+    }
+    $.post( "/audiobrowseactionplay", {
+        a: JSON.stringify(data_1)
+    //   }),
+      })
+      .done(function(data){
+            // window.location.reload();
+            // console.log(data)
+            createAudioBrowseTable(data.audioDataFields, data.audioData, data.shareMode, data.totalRecords, data.shareChecked);
+            eventsMapping();
+            // console.log(activePageNumber);
+            createPagination(data.totalRecords, activePageNumber);
+            // console.log(audioCountInfo);
+            audioCountInfo = document.getElementById(audioCountInfo.id);
+            console.log(audioCountInfo);
+            let audioSource = data.audioSource;
+            // console.log(audioSource)
+            // let embededAudio = new Audio(audioSource);
+            // embededAudio = new Audio(audioSource);
+            // console.log(embededAudio);
+            // embededAudio.play();
+            togglePlayPause(audioCountInfo, 'pauseaudioclass', 'pause', audioSource)
+            // let togglePlayPause = '<button type="button" id="'+audioCountInfo.id+'" class="btn btn-primary pauseaudioclass">'+
+            //                         '<span class="glyphicon glyphicon-pause" aria-hidden="true"></span>'+
+            //                         // ' Play Audio'+
+            //                         '</button>';
+            // let embededAudio = '<audio controls autoplay hidden oncontextmenu="return false" controlslist="nofullscreen nodownload noremoteplayback noplaybackrate">'+
+            //                     '<source src="'+audioSource+'" type="audio/wav"></audio>';
+            // audioCountInfo.parentNode.innerHTML = togglePlayPause;
+            // eventsMapping();
       });
 }
+
+// function audioBrowseActionShare(audioInfo) {
+//     let audioBrowseInfo = getAudioBrowseInfo();
+//     $.ajax({
+//         data : {
+//           a : JSON.stringify({
+//             "audioInfo": audioInfo,
+//             "audioBrowseInfo": audioBrowseInfo
+//         })
+//         },
+//         type : 'GET',
+//         url : '/audiobrowseactionshare'
+//       }).done(function(data){
+//             window.location.reload();
+//       });
+// }
 
 function getAudioBrowseInfo() {
     let activeSpeakerId = document.getElementById('speakeridsdropdown').value;
@@ -319,13 +571,15 @@ function checkAllAudio(ele) {
 }
 
 function checkAudio(ele) {
+    // console.log(ele);
     // checkbox in table header true or false when any checkbox of table body is true or false
     var checkboxcount = 0;
     var headcheckbox = document.getElementById('headcheckbox');
     var checkboxes = document.getElementsByTagName('input');
     var totalrecords = document.getElementById('totalrecords').innerHTML;
+    // console.log(totalrecords);
     let totalrecordscount = totalrecords.match(/\d/);
-    // alert(totalrecordscount);
+    // console.log(totalrecordscount);
     if (ele.checked == false) {
         headcheckbox.checked = false;
     }
@@ -361,10 +615,10 @@ function createPagination(totalRecords, active=1) {
     paginationEle +=  '<div class="btn-group">';
     for (let i=1; i<=totalPages; i++) {
         if (i == active) {
-            paginationEle += '<button type="button" class="btn btn-primary" id="'+i+'" onclick="changeAudioBrowsePage(this.id)">'+i+'</button>';
+            paginationEle += '<button type="button" class="btn btn-primary createpagination" id="'+i+'" onclick="changeAudioBrowsePage(this.id)">'+i+'</button>';
         }
         else {
-            paginationEle += '<button type="button" class="btn" id="'+i+'" onclick="changeAudioBrowsePage(this.id)">'+i+'</button>';
+            paginationEle += '<button type="button" class="btn createpagination" id="'+i+'" onclick="changeAudioBrowsePage(this.id)">'+i+'</button>';
         }
     }
     paginationEle += '</div><br><br>';
@@ -375,17 +629,90 @@ function createPagination(totalRecords, active=1) {
 function changeAudioBrowsePage(pageId) {
     // console.log(pageId);
     let audioBrowseInfo = getAudioBrowseInfo();
+    activePageNumber = Number(pageId);
     audioBrowseInfo['pageId'] = Number(pageId);
-    $.ajax({
-        data : {
-          a : JSON.stringify(audioBrowseInfo)
-        },
-        type : 'GET',
-        url : '/audiobrowsechangepage'
-      }).done(function(data){
-        // console.log(data.crawledDataFields, data.crawledData, data.shareMode);
-        createAudioBrowseTable(data.crawledDataFields, data.crawledData, data.shareMode, data.totalRecords, data.shareChecked);
-        eventsMapping();
-        createPagination(data.totalRecords, data.activePage);
-    });
+    let selectedAudioSortingCategories = document.getElementById("audiosortingcategoriesdropdown").value;
+    // console.log(selectedAudioSortingCategories);
+    if (selectedAudioSortingCategories === 'sourcemetainfo') {
+        audioFilter(Number(pageId));
+    }
+    else {
+        $.ajax({
+            data : {
+              a : JSON.stringify(audioBrowseInfo)
+            },
+            type : 'GET',
+            url : '/audiobrowsechangepage'
+          }).done(function(data){
+            // console.log(data.audioDataFields, data.audioData, data.shareMode);
+            createAudioBrowseTable(data.audioDataFields, data.audioData, data.shareMode, data.totalRecords, data.shareChecked);
+            eventsMapping();
+            createPagination(data.totalRecords, data.activePage);
+        });
+    }
 }
+
+function togglePlayPause(ele, state, icon, audioSource=undefined) {
+    let togglePlayPause = '<button type="button" id="'+ele.id+'" class="btn btn-primary '+state+'">'+
+                                    '<span class="glyphicon glyphicon-'+icon+'" aria-hidden="true"></span>'+
+                                    // ' Play Audio'+
+                                    '</button>';
+    if (audioSource) {
+        let embededAudio = '<audio id="'+ele.id+'_audioEle" onended="audioEnded(this)" controls autoplay hidden oncontextmenu="return false" controlslist="nofullscreen nodownload noremoteplayback noplaybackrate">'+
+                        '<source src="'+audioSource+'" type="audio/wav"></audio>';
+        togglePlayPause += embededAudio;
+    }
+    ele.parentNode.innerHTML = togglePlayPause;
+    eventsMapping();
+}
+
+function audioEnded(ele) {
+    let eleId = ele.id;
+    let audioBtnId = eleId.replaceAll("_audioEle", "");
+    // console.log(eleId, audioBtnId);
+    let audioBtnEle = document.getElementById(audioBtnId);
+    togglePlayPause(audioBtnEle, 'playaudioclass', 'play');
+}
+
+// function getAudioSharedWithUsersList(audioInfo) {
+$(document).ready(function() {
+    $("#browseShareSelectMode").change(function() {
+        if (this.value === 'remove') {
+            // console.log(audioIds);
+            $.getJSON('/browsefilesharedwithuserslist', {
+                a : JSON.stringify({
+                    "audioInfo": audioIds,
+                })
+            }, function(data) {
+                // console.log(data, $('#browseRemoveShareSelect').hasClass("select2-hidden-accessible"));
+                // if (!$(obj).hasClass("select2-hidden-accessible"))
+
+                // $('#browseRemoveShareSelect').select2('destroy');
+                document.getElementById("browseRemoveShareSelect").innerHTML = "";
+                $('#browseRemoveShareSelect').select2({
+                    placeholder: 'Remove Access For',
+                    data: data.sharedWithUsers,
+                    allowClear: true
+                });
+                document.getElementById("browseShareSelect").style.display = "none";
+                $('#browseShareSelect').select2('destroy');
+                document.getElementById("browsesharebtn").style.display = "none";
+                document.getElementById("browseRemoveShareSelect").style.display = "block";
+                document.getElementById("removesharedfileaccess").style.display = "inline";
+            });
+            return false;
+        }
+        else if (this.value === 'share') {
+            $('#browseShareSelect').select2({
+                placeholder: 'Share with',
+                // data: usersList,
+                allowClear: true
+            });
+            document.getElementById("browseRemoveShareSelect").style.display = "none";
+            $('#browseRemoveShareSelect').select2('destroy');
+            document.getElementById("removesharedfileaccess").style.display = "none";
+            document.getElementById("browseShareSelect").style.display = "block";
+            document.getElementById("browsesharebtn").style.display = "inline";
+        }
+    });
+});
