@@ -21,6 +21,7 @@ var languages = [
   {"id": "Haryanvi", "text": "Haryanvi"},
   {"id": "Hindi", "text": "Hindi"},
   {"id": "Kannada", "text": "Kannada"},
+  {"id": "Khortha", "text": "Khortha"},
   {"id": "Konkani", "text": "Konkani"},
   {"id": "KokBorok", "text": "Kok Borok"},
   {"id": "Magahi", "text": "Magahi"},

@@ -11,7 +11,7 @@ var shareModeObject = {
   'delete': 4
 }
 var shareModeList = Object.keys(shareModeObject)
-console.log(shareModeList);
+// console.log(shareModeList);
 var shareMode = '';
 var shareLatest = '';
 
