@@ -137,7 +137,7 @@ document.addEventListener('DOMContentLoaded', function () {
         let form = document.forms.edit;
         // console.log(form.dataset, Object.keys(form.dataset), form);
         let regionId = form.dataset.region;
-        // console.log(regionId);
+        console.log(regionId);
         if (regionId) {
             let region = wavesurfer.regions.list[regionId];
             wavesurfer.regions.list[regionId].remove();
@@ -145,6 +145,7 @@ document.addEventListener('DOMContentLoaded', function () {
             form.reset();
             transcriptionFormDisplay(form);
             wavesurfer.pause();
+            console.log ("Region", region)
             startId = region.start.toString().slice(0, 4).replace('.', '');
             if (startId === '0') {
                 startId = '000';
@@ -153,15 +154,16 @@ document.addEventListener('DOMContentLoaded', function () {
             if (endId === '0') {
                 endId = '000';
             }
-            // console.log(startId, endId)
+            console.log(startId, endId)
             rid = startId.concat(endId);
             localStorageRegions = JSON.parse(localStorage.regions);
+            console.log("Local storage region id", rid, localStorageRegions);
             for (let [key, value] of Object.entries(localStorageRegions)) {
-                // console.log(key, value)
+                console.log("Key, value", key, value)
                 if (key in localStorageRegions &&
                     localStorageRegions[key]['boundaryID'] === rid) {
                     localStorageRegions.splice(key, 1)
-                    // console.log(localStorageRegions)
+                    console.log(rid, localStorageRegions)
                     localStorage.setItem("regions", JSON.stringify(localStorageRegions));
                 }
             }
