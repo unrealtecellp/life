@@ -284,6 +284,9 @@ $("#save").click(function() {
       alert("Unable to save the transcription as audio seem to be deleted by one of the shared user.\
       Showing you the next audio in the list.")
     }
+    else {
+      alert("Transcription saved successfully.")
+    }
     // window.location.reload();
   });
 });
