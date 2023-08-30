@@ -134,9 +134,13 @@ def updateonespeakerdetails(activeprojectname, lifesourceid, all_details, speake
     return status.raw_result
 
 
-def generate_speaker_id(name, age=''):
+def generate_speaker_id(name, age='000'):
     name = name.replace(" ", "").replace(".", "").lower()
     age = age.replace("-", "")
+    if name == '':
+        name = 'undefined'
+    if age == '':
+        age = '000'
     new_speaker_id = name+age+'_'+re.sub(r'[-: \.]', '', str(datetime.now()))
 
     return new_speaker_id
@@ -201,6 +205,7 @@ def write_bulk_speaker_metadata(speakerdetails,
     data_columns = excel_data.columns
     data_columns = [col.lower().replace(' ', '') for col in data_columns]
     excel_data.columns = data_columns
+    excel_data.fillna('', inplace=True)
     if 'field' in audio_source:
         if 'educationmediumupto12' in data_columns:
             excel_data['educationmediumupto12'] = excel_data['educationmediumupto12'].apply(

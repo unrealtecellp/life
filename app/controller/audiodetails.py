@@ -93,6 +93,8 @@ def saveaudiofiles(mongo,
                    new_audio_details={},
                    prompt="",
                    update=False,
+                   slice_offset_value=0.1,
+                   min_boundary_size=2.0,
                    **kwargs):
     """mapping of this function is with the 'uploadaudiofiles' route.
 
@@ -146,7 +148,9 @@ def saveaudiofiles(mongo,
                                                                             data_type,
                                                                             new_audio_details,
                                                                             prompt,
-                                                                            update)
+                                                                            update,
+                                                                            slice_offset_value,
+                                                                            min_boundary_size)
             file_states.append(file_state)
             transcription_doc_ids.append(transcription_doc_id)
             fs_file_ids.append(fs_file_id)
@@ -176,7 +180,9 @@ def saveaudiofiles(mongo,
                                                                                      data_type,
                                                                                      new_audio_details,
                                                                                      prompt,
-                                                                                     update)
+                                                                                     update,
+                                                                                     slice_offset_value,
+                                                                                     min_boundary_size)
         else:
             return ([False], ['Unsupported file format'], ['File not stored'])
 
@@ -207,6 +213,8 @@ def savemultipleaudiofiles(mongo,
                            new_audio_details={},
                            prompt="",
                            update=False,
+                           slice_offset_value=0.1,
+                           min_boundary_size=2.0,
                            **kwargs):
     """mapping of this function is with the 'uploadaudiofiles' route.
 
@@ -273,7 +281,9 @@ def savemultipleaudiofiles(mongo,
                                                                                         data_type,
                                                                                         new_audio_details,
                                                                                         prompt,
-                                                                                        update)
+                                                                                        update,
+                                                                                        slice_offset_value,
+                                                                                        min_boundary_size)
 
                         all_file_states.append(file_state)
                         transcription_doc_ids.append(transcription_doc_id)
@@ -314,6 +324,7 @@ def saveoneaudiofile(mongo,
                      prompt="",
                      update=False,
                      slice_offset_value=0.1,
+                     min_boundary_size=2.0,
                      ** kwargs):
     """mapping of this function is with the 'uploadaudiofiles' route.
 
@@ -349,6 +360,9 @@ def saveoneaudiofile(mongo,
     audio_duration, full_audio_file = get_audio_duration_from_file(
         audiowaveform_file)
     audiowaveform_file.stream.seek(0)
+
+    if slice_offset_value > audio_duration:
+        slice_offset_value = audio_duration
 
     split_into_smaller_chunks = is_split_into_smaller_chunks(
         audio_duration, max_slice_size)
@@ -405,6 +419,7 @@ def saveoneaudiofile(mongo,
                                                                                                                    boundary_threshold,
                                                                                                                    slice_threshold,
                                                                                                                    max_slice_size,
+                                                                                                                   min_boundary_size,
                                                                                                                    audio_duration)
 
     # logger.debug('Final generated text grid %s', text_grids)
@@ -412,6 +427,7 @@ def saveoneaudiofile(mongo,
     logger.debug('Final text grid length %s', len(text_grids))
     logger.debug('Final boundary offset length %s',
                  len(boundary_offset_values))
+    logger.debug('Model Details %s', model_details)
     # logger.debug('Final first two text grids %s', text_grids[:3])
 
     new_audio_details["transcriptionFLAG"] = transcriptionFLAG
@@ -421,6 +437,7 @@ def saveoneaudiofile(mongo,
                                           model_details.get(
                                               'vad_model_name', ''),
                                           model_details.get('asr_model_name', ''))
+    logger.debug('Model Details %s', model_details)
 
     if not split_into_smaller_chunks:
         all_audio_ids.append(audio_id)
@@ -447,7 +464,8 @@ def saveoneaudiofile(mongo,
 
     else:
 
-        for i in range(len(text_grids)):
+        # for i in range(len(text_grids)):
+        for i, current_text_grid in enumerate(text_grids):
             # for current_text_gird in text_grids:
             current_audio_id = audio_id + '-slice'+str(i)
             current_audio_filename = (current_audio_id +
@@ -469,11 +487,14 @@ def saveoneaudiofile(mongo,
 
             current_audio_chunk_end = current_audio_chunk['end']*1000
 
-            if (i < len(text_grids)-1):
+            if (i == len(text_grids)-1):
+                current_audio_chunk_end = audio_duration*1000
+            elif (i < len(text_grids)-1):
                 current_audio_chunk_end = current_audio_chunk_end + \
                     (slice_offset_value*1000)
-            else:
-                current_audio_chunk_end = audio_duration
+
+            logger.debug('Current chunk: %s \tTotal chunks:%s, Current chunk end: %s \tAudio end: %s', i, len(
+                text_grids), current_audio_chunk_end, audio_duration)
 
             current_audio_file = full_audio_file[current_audio_chunk_begn:current_audio_chunk_end]
             audio_segment_bytes = BytesIO()
@@ -481,7 +502,7 @@ def saveoneaudiofile(mongo,
             current_audio_file_segment = FileStorage(
                 audio_segment_bytes, filename=current_audio_filename)
 
-            current_text_grid = text_grids[i]
+            # current_text_grid = text_grids[i]
             current_audio_details = json.loads(json.dumps(new_audio_details))
             current_audio_fs_file_id, current_audio_file_path = save_audio_in_mongo_and_localFs(mongo,
                                                                                                 current_audio_filename,
@@ -592,6 +613,7 @@ def save_boundaries_of_one_audio_file(mongo,
                                       boundary_threshold=0.3,
                                       slice_threshold=0.9,
                                       max_slice_size=150,
+                                      min_boundary_size=2.0,
                                       save_for_user=False,
                                       ** kwargs):
 
@@ -620,6 +642,7 @@ def save_boundaries_of_one_audio_file(mongo,
                                                                                                                    boundary_threshold,
                                                                                                                    slice_threshold,
                                                                                                                    max_slice_size,
+                                                                                                                   min_boundary_size,
                                                                                                                    audio_duration)
 
     # logger.debug('Final generated text grid %s', text_grids)
@@ -627,6 +650,7 @@ def save_boundaries_of_one_audio_file(mongo,
     logger.debug('Final text grid length %s', len(text_grids))
     logger.debug('Final boundary offset length %s',
                  len(boundary_offset_values))
+    logger.debug('Model Details %s', model_details)
     # logger.debug('Final first two text grids %s', text_grids[:3])
 
     audio_details_dict["transcriptionFLAG"] = transcriptionFLAG
@@ -748,6 +772,7 @@ def add_text_grid(audio_details_dict,
                   model_metadata,
                   save_for_user=True):
     audio_details_dict["textGrid"] = text_grid
+    logger.debug('Model name %s', model_name)
 
     if save_for_user:
         audio_details_dict[current_username] = {}
@@ -828,9 +853,9 @@ def get_full_model_name(run_vad,
                         vad_model_name,
                         asr_model_name):
     full_model_name = ''
-    if run_vad:
+    if vad_model_name != '':
         full_model_name = vad_model_name
-    if run_asr:
+    if asr_model_name != '':
         full_model_name = vad_model_name + '##' + asr_model_name
 
     return full_model_name
@@ -1709,6 +1734,7 @@ def getaudiometadata(data_collection, audio_id):
 
     return audio_metadata_details
 
+
 def get_audio_filename(data_collection, audio_id):
     """get the audio filename of the audio file
 
@@ -1727,6 +1753,7 @@ def get_audio_filename(data_collection, audio_id):
     else:
         return ''
 
+
 def get_audio_speakerid(data_collection, audio_id):
     """get the audio speaker id of the audio file
 
@@ -1744,6 +1771,7 @@ def get_audio_speakerid(data_collection, audio_id):
         return audio_speakerid['lifesourceid']
     else:
         return None
+
 
 def lastupdatedby(transcriptions, audio_id):
     """get the transcription last updated by
@@ -1769,7 +1797,96 @@ def merge_boundary_with_next(current_end, next_start, span_start, span_end, max_
     return ((next_start-current_end) <= max_pause) and ((span_end-span_start) <= max_boundary_size)
 
 
-def get_new_boundaries(boundaries, max_pause, max_boundary_size=-1, include_transcription=False, transcriptions=None):
+def merge_with_next_boundary(i, current_boundary_start, boundaries, include_transcription, transcriptions, min_boundary_size):
+    new_boundary_transcriptions = ''
+    new_boundary_start = current_boundary_start
+    new_boundary_end = boundaries[i+1]['end']
+    if include_transcription:
+        new_boundary_transcriptions = transcriptions[i] + \
+            ' ' + transcriptions[i+1]
+    next_i = i + 2
+    if new_boundary_end - new_boundary_start < min_boundary_size:
+        while next_i < len(boundaries):
+            next_boundary = boundaries[next_i]
+            next_boundary_start = next_boundary['start']
+            next_boundary_end = next_boundary['end']
+            if next_boundary_end - new_boundary_start < min_boundary_size:
+                new_boundary_end = next_boundary_end
+                if include_transcription:
+                    new_boundary_transcriptions = new_boundary_transcriptions + \
+                        ' ' + transcriptions[next_i]
+                next_i = next_i + 1
+            else:
+                break
+    return new_boundary_start, new_boundary_end, new_boundary_transcriptions, next_i
+
+
+def merge_with_previous_boundary(i, previous_boundary, current_boundary_end, boundaries, include_transcription, transcriptions):
+    new_boundary_start = previous_boundary['start']
+    new_boundary_end = current_boundary_end
+    if include_transcription:
+        new_boundary_transcriptions = transcriptions[i -
+                                                     1] + ' ' + transcriptions[i]
+    else:
+        new_boundary_transcriptions = ''
+    next_i = i+1
+    return new_boundary_start, new_boundary_end, new_boundary_transcriptions, next_i
+
+
+def merge_smaller_boundaries(boundaries, include_transcription=False, transcriptions=[], min_boundary_size=2.0):
+    new_boundaries = []
+    new_transcriptions = []
+    next_i = 0
+    previous_match = False
+    for i, boundary in enumerate(boundaries):
+        if i == next_i:
+            current_boundary_start = boundary['start']
+            current_boundary_end = boundary['end']
+            if current_boundary_end - current_boundary_start < min_boundary_size:
+                if i == 0:
+                    new_boundary_start, new_boundary_end, new_boundary_transcriptions, next_i = merge_with_next_boundary(
+                        i, current_boundary_start, boundaries, include_transcription, transcriptions, min_boundary_size)
+                    previous_match = False
+                elif i > 0 and i < len(boundaries)-1:
+                    next_boundary = boundaries[i+1]
+                    previous_boundary_end = previous_boundary['end']
+                    next_boundary_start = next_boundary['start']
+                    distance_from_previous = current_boundary_start - previous_boundary_end
+                    distance_from_next = next_boundary_start - current_boundary_end
+
+                    if distance_from_next < distance_from_previous:
+                        new_boundary_start, new_boundary_end, new_boundary_transcriptions, next_i = merge_with_next_boundary(
+                            i, current_boundary_start, boundaries, include_transcription, transcriptions, min_boundary_size)
+                        previous_match = False
+                    elif distance_from_previous < distance_from_next:
+                        new_boundary_start, new_boundary_end, new_boundary_transcriptions, next_i = merge_with_previous_boundary(
+                            i, previous_boundary, current_boundary_end, boundaries, include_transcription, transcriptions)
+                        new_boundaries.pop()
+                        if include_transcription:
+                            new_boundary_transcriptions.pop()
+                        previous_match = True
+                elif i == len(boundaries)-1:
+                    new_boundary_start, new_boundary_end, new_boundary_transcriptions, next_i = merge_with_previous_boundary(
+                        i, previous_boundary, current_boundary_end, boundaries, include_transcription, transcriptions)
+                    previous_match = True
+            else:
+                new_boundary_start = current_boundary_start
+                new_boundary_end = current_boundary_end
+                next_i += 1
+
+            new_boundary = {
+                'start': new_boundary_start,
+                'end': new_boundary_end
+            }
+            new_boundaries.append(new_boundary)
+            if include_transcription:
+                new_transcriptions.append(new_boundary_transcriptions)
+            previous_boundary = new_boundary
+
+    return new_boundaries, new_transcriptions
+
+
+def get_new_boundaries(boundaries, max_pause, min_boundary_size=2.0, max_boundary_size=-1, include_transcription=False, transcriptions=None):
     new_boundaries = []
     new_transcriptions = []
 
@@ -1850,6 +1967,9 @@ def get_new_boundaries(boundaries, max_pause, max_boundary_size=-1, include_tran
             new_transcriptions.append(transcriptions[0])
             span_transcription = ''
 
+    # new_boundaries, new_transcriptions = merge_smaller_boundaries(
+    #     new_boundaries, include_transcription, new_transcriptions, min_boundary_size)
+
     logger.debug('Final total boundaries %s', len(new_boundaries))
     logger.debug('Final start %s', new_boundaries[0])
     logger.debug('Final end %s', new_boundaries[-1])
@@ -1925,10 +2045,13 @@ def update_text_grid(mongo, text_grid, new_boundaries, transcription_type, inclu
 
 
 def generate_text_grid_without_transcriptions(
-        mongo, text_grid, boundaries, transcription_type, max_pause, offset_value=0.0):
+        mongo, text_grid, boundaries, transcription_type, max_pause, min_boundary_size=2.0, offset_value=0.0):
 
     new_boundaries = get_new_boundaries(
         boundaries, max_pause)
+
+    # new_boundaries, new_transcriptions = merge_smaller_boundaries(
+    #     new_boundaries, min_boundary_size=min_boundary_size)
 
     text_grid = update_text_grid(
         mongo, text_grid, new_boundaries, transcription_type, boundary_offset_value=offset_value)
@@ -1937,10 +2060,13 @@ def generate_text_grid_without_transcriptions(
 
 
 def generate_text_grid_with_transcriptions(
-        mongo, text_grid, boundaries, transcriptions, transcription_type, max_pause, offset_value=0.0):
+        mongo, text_grid, boundaries, transcriptions, transcription_type, max_pause, min_boundary_size=2.0,  offset_value=0.0):
 
     new_boundaries, new_transcriptions = get_new_boundaries(
         boundaries, max_pause, transcription=True, transcriptions=transcriptions)
+
+    # new_boundaries, new_transcriptions = merge_smaller_boundaries(
+    #     new_boundaries, True, new_transcriptions, min_boundary_size)
 
     text_grid = update_text_grid(
         mongo, text_grid, new_boundaries, transcription_type, include_transcription=True, transcriptions=new_transcriptions, boundary_offset_value=offset_value)
@@ -1961,14 +2087,14 @@ def generate_text_grid_with_transcriptions(
 #     return text_grid
 
 
-def generate_text_grid(mongo, text_grid, boundaries, transcriptions, transcription_type, max_pause, offset_value=0.0):
+def generate_text_grid(mongo, text_grid, boundaries, transcriptions, transcription_type, max_pause, min_boundary_size=2.0, offset_value=0.0):
     logger.debug('Type of the data %s', transcription_type)
     if len(transcriptions) == 0:
         text_grid = generate_text_grid_without_transcriptions(
-            mongo, text_grid, boundaries, transcription_type, max_pause, offset_value)
+            mongo, text_grid, boundaries, transcription_type, max_pause, min_boundary_size, offset_value)
     else:
         text_grid = generate_text_grid_with_transcriptions(
-            mongo, text_grid, boundaries, transcriptions, transcription_type, max_pause, offset_value)
+            mongo, text_grid, boundaries, transcriptions, transcription_type, max_pause, min_boundary_size, offset_value)
     # if transcription_type == "sentence":
     #     text_grid = generate_sentence_text_grid(
     #         text_grid, boundaries, transcriptions, max_pause)
@@ -2160,6 +2286,7 @@ def get_slices_and_text_grids(mongo,
                               max_pause_boundary,
                               max_pause_slice,
                               max_new_file_duration,
+                              min_boundary_size,
                               audio_duration):
 
     model_details = {}
@@ -2259,7 +2386,7 @@ def get_slices_and_text_grids(mongo,
                 "phoneme": {}
             }
             current_text_grid = generate_text_grid(
-                mongo, blank_text_grid, audio_chunk_boundary_list, transcriptions, transcription_type, max_pause_boundary, offset_value=offset_value)
+                mongo, blank_text_grid, audio_chunk_boundary_list, transcriptions, transcription_type, max_pause_boundary, min_boundary_size, offset_value=offset_value)
             all_text_grids.append(current_text_grid)
 
     return audio_chunk_boundaries, all_text_grids, offset_values, transcribed, model_details
@@ -2512,6 +2639,7 @@ def get_n_audios(data_collection,
     return (total_records,
             aggregate_output_list)
 
+
 def get_audio_sorting_subcategories(speakerdetails_collection,
                                     activeprojectname,
                                     speakerids,
@@ -2554,32 +2682,38 @@ def get_audio_sorting_subcategories(speakerdetails_collection,
                 # logger.debug("aggregate_output: %s", pformat(audio_sorting_subcategory))
                 for key, value in audio_sorting_subcategory.items():
                     if (key in selected_audio_sorting_subcategory):
-                        selected_audio_sorting_subcategory_value = selected_audio_sorting_subcategory[key]
+                        selected_audio_sorting_subcategory_value = selected_audio_sorting_subcategory[
+                            key]
                         if (selected_audio_sorting_subcategory_value in aggregate_output_dict):
                             if (isinstance(value, list)):
                                 for subcat in value:
-                                    aggregate_output_dict[selected_audio_sorting_subcategory_value].append(subcat)
+                                    aggregate_output_dict[selected_audio_sorting_subcategory_value].append(
+                                        subcat)
                             else:
-                                aggregate_output_dict[selected_audio_sorting_subcategory_value].append(value)
+                                aggregate_output_dict[selected_audio_sorting_subcategory_value].append(
+                                    value)
                         else:
                             if (isinstance(value, list)):
                                 aggregate_output_dict[selected_audio_sorting_subcategory_value] = value
                             else:
-                                aggregate_output_dict[selected_audio_sorting_subcategory_value] = [value]
-                        aggregate_output_dict[selected_audio_sorting_subcategory_value] = list(set(aggregate_output_dict[selected_audio_sorting_subcategory_value]))
+                                aggregate_output_dict[selected_audio_sorting_subcategory_value] = [
+                                    value]
+                        aggregate_output_dict[selected_audio_sorting_subcategory_value] = list(
+                            set(aggregate_output_dict[selected_audio_sorting_subcategory_value]))
         except:
             logger.exception("")
 
     return aggregate_output_dict
+
 
 def filter_speakers(speakerdetails_collection,
                     activeprojectname,
                     filter_options,
                     logical_operator="and"):
     speakers_match = {
-                "projectname": activeprojectname,
-                "isActive": 1
-            }
+        "projectname": activeprojectname,
+        "isActive": 1
+    }
     for key, value in filter_options.items():
         db_key = "current.sourceMetadata."+key
         value_list_len = len(value)
@@ -2587,7 +2721,7 @@ def filter_speakers(speakerdetails_collection,
             if (value_list_len == 1):
                 speakers_match[db_key] = value[0]
             else:
-                speakers_match[db_key] = { "$in": value }
+                speakers_match[db_key] = {"$in": value}
     # logger.debug("speakers_match: %s", speakers_match)
     aggregate_output = []
     aggregate_output_list = []
@@ -2616,6 +2750,7 @@ def filter_speakers(speakerdetails_collection,
 
     return (list(set(aggregate_output_list)))
 
+
 def combine_speaker_ids(projects_collection,
                         activeprojectname,
                         current_username):
@@ -2624,21 +2759,22 @@ def combine_speaker_ids(projects_collection,
     file_speaker_ids = []
     try:
         speaker_ids = projects_collection.find_one({'projectname': activeprojectname},
-                                            {'_id': 0, 'speakerIds.'+current_username: 1})
+                                                   {'_id': 0, 'speakerIds.'+current_username: 1})
         # logger.debug("speaker_ids: %s", pformat(speaker_ids))
         if (speaker_ids and
             'speakerIds' in speaker_ids and
-            current_username in speaker_ids['speakerIds']):
+                current_username in speaker_ids['speakerIds']):
             speaker_ids = speaker_ids['speakerIds'][current_username]
         else:
             speaker_ids = []
         file_speaker_ids = projects_collection.find_one({'projectname': activeprojectname},
-                                            {'_id': 0, 'fileSpeakerIds.'+current_username: 1})
+                                                        {'_id': 0, 'fileSpeakerIds.'+current_username: 1})
         # logger.debug("file_speaker_ids: %s", pformat(file_speaker_ids))
         if (file_speaker_ids and
             'fileSpeakerIds' in file_speaker_ids and
-            current_username in file_speaker_ids['fileSpeakerIds']):
-            file_speaker_ids = list(file_speaker_ids['fileSpeakerIds'][current_username].keys())
+                current_username in file_speaker_ids['fileSpeakerIds']):
+            file_speaker_ids = list(
+                file_speaker_ids['fileSpeakerIds'][current_username].keys())
         else:
             file_speaker_ids = []
         # logger.debug("file_speaker_ids: %s", file_speaker_ids)
@@ -2650,18 +2786,19 @@ def combine_speaker_ids(projects_collection,
 
     return speaker_ids
 
+
 def get_speaker_audio_ids_new(projects_collection,
-                                activeprojectname,
-                                current_username,
-                                active_speaker_id,
-                                audio_browse_action=0):
+                              activeprojectname,
+                              current_username,
+                              active_speaker_id,
+                              audio_browse_action=0):
     '''Module to get speaker's audio_ids based on current user access(partial/full) to the speaker"'''
     speaker_audio_ids = []
     file_speaker_audio_ids = []
     try:
-        if(audio_browse_action):
+        if (audio_browse_action):
             speaker_ids = projects_collection.find_one({'projectname': activeprojectname},
-                                                        {'_id': 0,
+                                                       {'_id': 0,
                                                         'speakerIds.'+current_username: 1,
                                                         "speakersAudioIdsDeleted."+active_speaker_id: 1})
             # logger.debug("speaker_ids: %s", pformat(speaker_ids))
@@ -2670,11 +2807,11 @@ def get_speaker_audio_ids_new(projects_collection,
                 current_username in speaker_ids['speakerIds'] and
                 active_speaker_id in speaker_ids['speakerIds'][current_username] and
                 'speakersAudioIdsDeleted' in speaker_ids and
-                active_speaker_id in speaker_ids['speakersAudioIdsDeleted']):
-                    speaker_audio_ids = speaker_ids['speakersAudioIdsDeleted'][active_speaker_id]
+                    active_speaker_id in speaker_ids['speakersAudioIdsDeleted']):
+                speaker_audio_ids = speaker_ids['speakersAudioIdsDeleted'][active_speaker_id]
         else:
             speaker_ids = projects_collection.find_one({'projectname': activeprojectname},
-                                                        {'_id': 0,
+                                                       {'_id': 0,
                                                         'speakerIds.'+current_username: 1,
                                                         "speakersAudioIds."+active_speaker_id: 1})
             # logger.debug("speaker_ids: %s", pformat(speaker_ids))
@@ -2683,8 +2820,8 @@ def get_speaker_audio_ids_new(projects_collection,
                 current_username in speaker_ids['speakerIds'] and
                 active_speaker_id in speaker_ids['speakerIds'][current_username] and
                 'speakersAudioIds' in speaker_ids and
-                active_speaker_id in speaker_ids['speakersAudioIds']):
-                    speaker_audio_ids = speaker_ids['speakersAudioIds'][active_speaker_id]
+                    active_speaker_id in speaker_ids['speakersAudioIds']):
+                speaker_audio_ids = speaker_ids['speakersAudioIds'][active_speaker_id]
         if (len(speaker_audio_ids) != 0):
             return speaker_audio_ids
 
@@ -2695,9 +2832,9 @@ def get_speaker_audio_ids_new(projects_collection,
         if (file_speaker_ids and
             'fileSpeakerIds' in file_speaker_ids and
             current_username in file_speaker_ids['fileSpeakerIds'] and
-            active_speaker_id in file_speaker_ids['fileSpeakerIds'][current_username]):
-                file_speaker_audio_ids = file_speaker_ids['fileSpeakerIds'][current_username][active_speaker_id]
-        if(len(file_speaker_audio_ids) != 0):
+                active_speaker_id in file_speaker_ids['fileSpeakerIds'][current_username]):
+            file_speaker_audio_ids = file_speaker_ids['fileSpeakerIds'][current_username][active_speaker_id]
+        if (len(file_speaker_audio_ids) != 0):
             return file_speaker_audio_ids
     except:
         logger.exception("")
