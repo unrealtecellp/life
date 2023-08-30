@@ -408,19 +408,20 @@ def saveoneaudiofile(mongo,
 
     # mongo, audio_path, type, max_pause = 0.5
     logger.debug("Audio File Path %s", audio_file_path)
-    audio_chunks, text_grids, boundary_offset_values, transcriptionFLAG, model_details = get_slices_and_text_grids(mongo,
-                                                                                                                   run_vad,
-                                                                                                                   run_asr,
-                                                                                                                   split_into_smaller_chunks,
-                                                                                                                   vad_model,
-                                                                                                                   asr_model,
-                                                                                                                   audio_file_path,
-                                                                                                                   transcription_type,
-                                                                                                                   boundary_threshold,
-                                                                                                                   slice_threshold,
-                                                                                                                   max_slice_size,
-                                                                                                                   min_boundary_size,
-                                                                                                                   audio_duration)
+    audio_chunks, text_grids, boundary_offset_values, slice_offset_values, transcriptionFLAG, model_details = get_slices_and_text_grids(mongo,
+                                                                                                                                        run_vad,
+                                                                                                                                        run_asr,
+                                                                                                                                        split_into_smaller_chunks,
+                                                                                                                                        vad_model,
+                                                                                                                                        asr_model,
+                                                                                                                                        audio_file_path,
+                                                                                                                                        transcription_type,
+                                                                                                                                        boundary_threshold,
+                                                                                                                                        slice_threshold,
+                                                                                                                                        max_slice_size,
+                                                                                                                                        min_boundary_size,
+                                                                                                                                        audio_duration,
+                                                                                                                                        slice_offset_value)
 
     # logger.debug('Final generated text grid %s', text_grids)
     logger.debug('Final transcription flag %s', transcriptionFLAG)
@@ -475,11 +476,12 @@ def saveoneaudiofile(mongo,
             all_audio_filenames.append(current_audio_filename)
 
             current_audio_chunk = audio_chunks[i]
+            current_slice_offset_value_begn = slice_offset_values[i]
             current_audio_chunk_begn = current_audio_chunk['start']*1000
 
             if i > 0:
                 current_audio_chunk_begn = current_audio_chunk_begn - \
-                    (slice_offset_value*1000)
+                    current_slice_offset_value_begn
                 # delete_previous = False
             else:
                 current_audio_chunk_begn = 0.0
@@ -490,6 +492,13 @@ def saveoneaudiofile(mongo,
             if (i == len(text_grids)-1):
                 current_audio_chunk_end = audio_duration*1000
             elif (i < len(text_grids)-1):
+                # next_audio_chunk_start = audio_chunks[i+1]['start']*1000
+                # chunk_distance = next_audio_chunk_start - current_audio_chunk_end
+                # current_audio_chunk_end = current_audio_chunk_end + \
+                #     ((slice_offset_value*1000) + float(chunk_distance/2))
+                current_slice_offset_value_end = slice_offset_values[i+1]
+                current_audio_chunk_end = current_audio_chunk_end + current_slice_offset_value_end
+            else:
                 current_audio_chunk_end = current_audio_chunk_end + \
                     (slice_offset_value*1000)
 
@@ -631,19 +640,19 @@ def save_boundaries_of_one_audio_file(mongo,
                                                  'audioId'
                                                  )
 
-    audio_chunks, text_grids, boundary_offset_values, transcriptionFLAG, model_details = get_slices_and_text_grids(mongo,
-                                                                                                                   run_vad,
-                                                                                                                   run_asr,
-                                                                                                                   split_into_smaller_chunks,
-                                                                                                                   vad_model,
-                                                                                                                   asr_model,
-                                                                                                                   audio_file_path,
-                                                                                                                   transcription_type,
-                                                                                                                   boundary_threshold,
-                                                                                                                   slice_threshold,
-                                                                                                                   max_slice_size,
-                                                                                                                   min_boundary_size,
-                                                                                                                   audio_duration)
+    audio_chunks, text_grids, boundary_offset_values, slice_offset_values, transcriptionFLAG, model_details = get_slices_and_text_grids(mongo,
+                                                                                                                                        run_vad,
+                                                                                                                                        run_asr,
+                                                                                                                                        split_into_smaller_chunks,
+                                                                                                                                        vad_model,
+                                                                                                                                        asr_model,
+                                                                                                                                        audio_file_path,
+                                                                                                                                        transcription_type,
+                                                                                                                                        boundary_threshold,
+                                                                                                                                        slice_threshold,
+                                                                                                                                        max_slice_size,
+                                                                                                                                        min_boundary_size,
+                                                                                                                                        audio_duration)
 
     # logger.debug('Final generated text grid %s', text_grids)
     logger.debug('Final transcription flag %s', transcriptionFLAG)
@@ -1797,32 +1806,38 @@ def merge_boundary_with_next(current_end, next_start, span_start, span_end, max_
     return ((next_start-current_end) <= max_pause) and ((span_end-span_start) <= max_boundary_size)
 
 
-def merge_with_next_boundary(i, current_boundary_start, boundaries, include_transcription, transcriptions, min_boundary_size):
+def merge_with_next_boundary(i, current_boundary_start, boundaries, include_transcription, transcriptions, min_boundary_size, distance_from_previous=-1):
+    # logger.debug('Current position: %s \tTotal Boundaries: %s',
+    #              i, len(boundaries))
+    # logger.debug('All boundaries: %s', boundaries)
     new_boundary_transcriptions = ''
     new_boundary_start = current_boundary_start
     new_boundary_end = boundaries[i+1]['end']
     if include_transcription:
         new_boundary_transcriptions = transcriptions[i] + \
             ' ' + transcriptions[i+1]
-    next_i = i + 2
-    if new_boundary_end - new_boundary_start < min_boundary_size:
-        while next_i < len(boundaries):
-            next_boundary = boundaries[next_i]
-            next_boundary_start = next_boundary['start']
-            next_boundary_end = next_boundary['end']
-            if next_boundary_end - new_boundary_start < min_boundary_size:
-                new_boundary_end = next_boundary_end
-                if include_transcription:
-                    new_boundary_transcriptions = new_boundary_transcriptions + \
-                        ' ' + transcriptions[next_i]
-                next_i = next_i + 1
-            else:
-                break
-    return new_boundary_start, new_boundary_end, new_boundary_transcriptions, next_i
+    next_i = i + 1
+    if len(boundaries)-1 > next_i:
+        while (new_boundary_end - new_boundary_start) < min_boundary_size:
+            # while next_i < len(boundaries):
+            new_boundary_start, new_boundary_end, new_boundary_transcriptions, next_i = merge_with_next_boundary(
+                next_i, new_boundary_start, boundaries, include_transcription, transcriptions, min_boundary_size)
+            previous_match = False
+        # if next_boundary_end - new_boundary_start < min_boundary_size:
+        #     new_boundary_end = next_boundary_end
+        #     if include_transcription:
+        #         new_boundary_transcriptions = new_boundary_transcriptions + \
+        #             ' ' + transcriptions[next_i]
+        #     next_i = next_i + 1
+        # else:
+        #     break
+    # logger.debug('Next merge returned values %s, %s, %s',
+            #  next_i+1, new_boundary_start, new_boundary_end)
+    return new_boundary_start, new_boundary_end, new_boundary_transcriptions, next_i+1
 
 
-def merge_with_previous_boundary(i, previous_boundary, current_boundary_end, boundaries, include_transcription, transcriptions):
-    new_boundary_start = previous_boundary['start']
+def merge_with_previous_boundary(i, previous_boundary_start, current_boundary_end, boundaries, include_transcription, transcriptions):
+    new_boundary_start = previous_boundary_start
     new_boundary_end = current_boundary_end
     if include_transcription:
         new_boundary_transcriptions = transcriptions[i -
@@ -1842,34 +1857,57 @@ def merge_smaller_boundaries(boundaries, include_transcription=False, transcript
         if i == next_i:
             current_boundary_start = boundary['start']
             current_boundary_end = boundary['end']
+            # logger.debug('Current boundaries %s, %s, %s', current_boundary_start,
+            #  current_boundary_end, (current_boundary_end-current_boundary_start))
             if current_boundary_end - current_boundary_start < min_boundary_size:
-                if i == 0:
-                    new_boundary_start, new_boundary_end, new_boundary_transcriptions, next_i = merge_with_next_boundary(
-                        i, current_boundary_start, boundaries, include_transcription, transcriptions, min_boundary_size)
-                    previous_match = False
-                elif i > 0 and i < len(boundaries)-1:
-                    next_boundary = boundaries[i+1]
-                    previous_boundary_end = previous_boundary['end']
-                    next_boundary_start = next_boundary['start']
-                    distance_from_previous = current_boundary_start - previous_boundary_end
-                    distance_from_next = next_boundary_start - current_boundary_end
-
-                    if distance_from_next < distance_from_previous:
+                if len(boundaries) > 1:
+                    if i == 0 and len(boundaries) > 1:
                         new_boundary_start, new_boundary_end, new_boundary_transcriptions, next_i = merge_with_next_boundary(
                             i, current_boundary_start, boundaries, include_transcription, transcriptions, min_boundary_size)
                         previous_match = False
-                    elif distance_from_previous < distance_from_next:
+                    elif i > 0 and len(boundaries)-1 > i:
+                        next_boundary = boundaries[i+1]
+                        previous_boundary_end = previous_boundary['end']
+                        next_boundary_start = next_boundary['start']
+                        distance_from_previous = current_boundary_start - previous_boundary_end
+                        distance_from_next = next_boundary_start - current_boundary_end
+
+                        if (distance_from_next < distance_from_previous):
+                            new_boundary_start, new_boundary_end, new_boundary_transcriptions, next_i = merge_with_next_boundary(
+                                i, current_boundary_start, boundaries, include_transcription, transcriptions, min_boundary_size, distance_from_previous)
+                            previous_match = False
+                        elif (distance_from_previous < distance_from_next):
+                            new_boundary_start, new_boundary_end, new_boundary_transcriptions, next_i = merge_with_previous_boundary(
+                                i, previous_boundary['start'], current_boundary_end, boundaries, include_transcription, transcriptions)
+                            new_boundaries.pop()
+                            if include_transcription:
+                                new_transcriptions.pop()
+                            previous_match = True
+                        elif distance_from_next == distance_from_previous:
+                            new_boundary_start, current_boundary_end, prev_boundary_transcriptions, next_i = merge_with_previous_boundary(
+                                i, previous_boundary['start'], current_boundary_end, boundaries, include_transcription, transcriptions)
+                            current_boundary_start, new_boundary_end, next_boundary_transcriptions, next_i = merge_with_next_boundary(
+                                i, current_boundary_start, boundaries, include_transcription, transcriptions, min_boundary_size, distance_from_previous)
+                            new_boundaries.pop()
+                            if include_transcription:
+                                new_transcriptions.pop()
+                                new_boundary_transcriptions = transcriptions[i -
+                                                                             1] + ' ' + next_boundary_transcriptions
+
+                            previous_match = True
+                    elif i == len(boundaries)-1:
                         new_boundary_start, new_boundary_end, new_boundary_transcriptions, next_i = merge_with_previous_boundary(
-                            i, previous_boundary, current_boundary_end, boundaries, include_transcription, transcriptions)
+                            i, previous_boundary['start'], current_boundary_end, boundaries, include_transcription, transcriptions)
                         new_boundaries.pop()
                         if include_transcription:
                             new_boundary_transcriptions.pop()
                         previous_match = True
-                elif i == len(boundaries)-1:
-                    new_boundary_start, new_boundary_end, new_boundary_transcriptions, next_i = merge_with_previous_boundary(
-                        i, previous_boundary, current_boundary_end, boundaries, include_transcription, transcriptions)
-                    previous_match = True
+                else:
+                    new_boundary_start = current_boundary_start
+                    new_boundary_end = current_boundary_end
+
             else:
+                # logger.debug('Boundary size fine!')
                 new_boundary_start = current_boundary_start
                 new_boundary_end = current_boundary_end
                 next_i += 1
@@ -1878,7 +1916,9 @@ def merge_smaller_boundaries(boundaries, include_transcription=False, transcript
                 'start': new_boundary_start,
                 'end': new_boundary_end
             }
+            # logger.debug('New boundary to be added %s', new_boundary)
             new_boundaries.append(new_boundary)
+            # logger.debug('All new boundaries %s', new_boundaries)
             if include_transcription:
                 new_transcriptions.append(new_boundary_transcriptions)
             previous_boundary = new_boundary
@@ -1886,7 +1926,7 @@ def merge_smaller_boundaries(boundaries, include_transcription=False, transcript
     return new_boundaries, new_transcriptions
 
 
-def get_new_boundaries(boundaries, max_pause, min_boundary_size=2.0, max_boundary_size=-1, include_transcription=False, transcriptions=None):
+def get_new_boundaries(boundaries, max_pause, min_boundary_size=2.0, max_boundary_size=-1, slice_offset_value=0.0, include_transcription=False, transcriptions=None):
     new_boundaries = []
     new_transcriptions = []
 
@@ -1998,17 +2038,29 @@ def update_text_grid(mongo, text_grid, new_boundaries, transcription_type, inclu
 
     for i in range(len(new_boundaries)):
         current_boundary = new_boundaries[i]
-        start_boundary = current_boundary['start']
-        end_boundary = current_boundary['end']
+
+        start_boundary = float(
+            current_boundary['start'] - boundary_offset_value)
+        end_boundary = float(current_boundary['end'] - boundary_offset_value)
+
         boundary_id_start = str(start_boundary).replace('.', '')[:4]
+        if (boundary_id_start == '0'):
+            boundary_id_start = '000'
+
         boundary_id_end = str(end_boundary).replace('.', '')[:4]
+        if (boundary_id_end == '0'):
+            boundary_id_end = '000'
+
         boundary_id = boundary_id_start+boundary_id_end
 
         text_grid[transcription_type][boundary_id] = {}
-        text_grid[transcription_type][boundary_id]['start'] = float(
-            start_boundary - boundary_offset_value)
-        text_grid[transcription_type][boundary_id]['end'] = float(
-            end_boundary - boundary_offset_value)
+        # text_grid[transcription_type][boundary_id]['start'] = float(
+        #     start_boundary - boundary_offset_value)
+        # text_grid[transcription_type][boundary_id]['end'] = float(
+        #     end_boundary - boundary_offset_value)
+
+        text_grid[transcription_type][boundary_id]['start'] = start_boundary
+        text_grid[transcription_type][boundary_id]['end'] = end_boundary
         text_grid[transcription_type][boundary_id]['speakerId'] = ""
         text_grid[transcription_type][boundary_id]['sentenceId'] = ""
 
@@ -2050,8 +2102,11 @@ def generate_text_grid_without_transcriptions(
     new_boundaries = get_new_boundaries(
         boundaries, max_pause)
 
-    # new_boundaries, new_transcriptions = merge_smaller_boundaries(
-    #     new_boundaries, min_boundary_size=min_boundary_size)
+    logger.debug('New boundaries before merge %s', new_boundaries)
+
+    new_boundaries, new_transcriptions = merge_smaller_boundaries(
+        new_boundaries, min_boundary_size=min_boundary_size)
+    logger.debug('New boundaries after merge %s', new_boundaries)
 
     text_grid = update_text_grid(
         mongo, text_grid, new_boundaries, transcription_type, boundary_offset_value=offset_value)
@@ -2065,8 +2120,8 @@ def generate_text_grid_with_transcriptions(
     new_boundaries, new_transcriptions = get_new_boundaries(
         boundaries, max_pause, transcription=True, transcriptions=transcriptions)
 
-    # new_boundaries, new_transcriptions = merge_smaller_boundaries(
-    #     new_boundaries, True, new_transcriptions, min_boundary_size)
+    new_boundaries, new_transcriptions = merge_smaller_boundaries(
+        new_boundaries, True, new_transcriptions, min_boundary_size)
 
     text_grid = update_text_grid(
         mongo, text_grid, new_boundaries, transcription_type, include_transcription=True, transcriptions=new_transcriptions, boundary_offset_value=offset_value)
@@ -2113,17 +2168,18 @@ def get_smaller_chunks_of_audio(
 
 
 def get_boundary_lists_of_smaller_chunks(
-        audio_chunk_boundaries, boundaries, audio_duration):
+        audio_chunk_boundaries, boundaries, audio_duration, slice_offset_value=0.0):
 
     logger.debug("All boundaries %s", boundaries)
     logger.debug("Audio chunk boundaries %s", audio_chunk_boundaries)
     all_chunk_boundaries = []
     offset_values = []
+    slice_offset_values = []
     all_boundaries_start_values = [boundary['start']
                                    for boundary in boundaries]
     all_boundaries_end_values = [boundary['end'] for boundary in boundaries]
 
-    for audio_chunk_boundary in audio_chunk_boundaries:
+    for i, audio_chunk_boundary in enumerate(audio_chunk_boundaries):
         current_chunk_boundary_start = audio_chunk_boundary['start']
         current_chunk_boundary_end = audio_chunk_boundary['end']
 
@@ -2139,16 +2195,34 @@ def get_boundary_lists_of_smaller_chunks(
             boundary_end_index = all_boundaries_end_values.index(
                 current_chunk_boundary_end)+1
 
-        all_chunk_boundaries.append(
-            boundaries[boundary_start_index: boundary_end_index])
+        current_chunk_boundaries = boundaries[boundary_start_index: boundary_end_index]
+        if i > 0:
+            chunk_distance_prev = current_chunk_boundary_start - previous_chunk_end
+            slice_offset_value_begin = slice_offset_value + \
+                float(chunk_distance_prev/2)
+            # for i, boundary in enumerate(current_chunk_boundaries):
+            #     current_chunk_boundaries[i]['start'] += slice_offset_value
+            #     current_chunk_boundaries[i]['end'] += slice_offset_value
 
-        offset_values.append(current_chunk_boundary_start)
+            # current_chunk_boundaries = [{
+            #     "start": boundary['start'],
+            #     "end": boundary['end']-slice_offset_value_begin
+            # } for boundary in current_chunk_boundaries]
+        else:
+            slice_offset_value_begin = 0.0
+
+        all_chunk_boundaries.append(current_chunk_boundaries)
+
+        offset_values.append(current_chunk_boundary_start -
+                             slice_offset_value_begin)
+        slice_offset_values.append(slice_offset_value_begin)
+        previous_chunk_end = current_chunk_boundary_end
 
     logger.debug("Total Slices with boundaries: %s; Total initial slices: %s", len(
         all_chunk_boundaries), len(audio_chunk_boundaries))
     logger.debug("Final Chunk Boundaries %s", all_chunk_boundaries)
 
-    return all_chunk_boundaries, offset_values
+    return all_chunk_boundaries, offset_values, slice_offset_values
 
 
 def get_current_translation_langscripts(mongo):
@@ -2287,7 +2361,8 @@ def get_slices_and_text_grids(mongo,
                               max_pause_slice,
                               max_new_file_duration,
                               min_boundary_size,
-                              audio_duration):
+                              audio_duration,
+                              slice_offset_value=0.0):
 
     model_details = {}
     all_text_grids = []
@@ -2296,6 +2371,7 @@ def get_slices_and_text_grids(mongo,
 
     boundaries = []
     offset_values = [0.0]
+    slice_offset_values = [0.0]
     transcriptions = {}
     transcribed = 0
 
@@ -2370,8 +2446,8 @@ def get_slices_and_text_grids(mongo,
             audio_chunk_boundaries = get_smaller_chunks_of_audio(
                 boundaries, max_pause_slice, max_new_file_duration, audio_duration)
 
-            audio_chunk_boundary_lists, offset_values = get_boundary_lists_of_smaller_chunks(
-                audio_chunk_boundaries, boundaries, audio_duration)
+            audio_chunk_boundary_lists, offset_values, slice_offset_values = get_boundary_lists_of_smaller_chunks(
+                audio_chunk_boundaries, boundaries, audio_duration, slice_offset_value)
 
         else:
             audio_chunk_boundaries = [
@@ -2389,7 +2465,7 @@ def get_slices_and_text_grids(mongo,
                 mongo, blank_text_grid, audio_chunk_boundary_list, transcriptions, transcription_type, max_pause_boundary, min_boundary_size, offset_value=offset_value)
             all_text_grids.append(current_text_grid)
 
-    return audio_chunk_boundaries, all_text_grids, offset_values, transcribed, model_details
+    return audio_chunk_boundaries, all_text_grids, offset_values, slice_offset_values, transcribed, model_details
 
 
 def save_uploaded_audio_in_localFs(audio_store_path,

@@ -5631,7 +5631,7 @@ def uploadaudiofiles():
         # print(get_audio_json)
 
         if 'minBoundarySize' in data:
-            min_boundary_size = data['minBoundarySize'][0]
+            min_boundary_size = float(data['minBoundarySize'][0])
         else:
             min_boundary_size = 2.0
 
@@ -5741,7 +5741,7 @@ def makeboundary():
         # print(get_audio_json)
 
         if 'minBoundarySize' in data:
-            min_boundary_size = data['minBoundarySize'][0]
+            min_boundary_size = float(data['minBoundarySize'][0])
         else:
             min_boundary_size = 2.0
 
