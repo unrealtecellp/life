@@ -482,6 +482,10 @@ def savetranscription():
     # logger.debug("transcription_regions: %s", pformat(json.loads(transcription_regions)))
     # print(lastActiveId)
     # print(transcription_regions)
+    speaker_audio_ids = audiodetails.get_speaker_audio_ids_new(projects,
+                                                                activeprojectname,
+                                                                current_username,
+                                                                activespeakerid)
     audio_delete_flag = audiodetails.get_audio_delete_flag(transcriptions,
                                                            activeprojectname,
                                                            lastActiveId)
@@ -490,6 +494,7 @@ def savetranscription():
                                                      activeprojectname,
                                                      lastActiveId,
                                                      activespeakerid,
+                                                     speaker_audio_ids,
                                                      'next')
         audiodetails.updatelatestaudioid(projects,
                                          activeprojectname,
@@ -559,6 +564,7 @@ def audiobrowse():
                                                                    activeprojectname,
                                                                    current_username,
                                                                    active_speaker_id)
+        # logger.debug("speaker_audio_ids: %s", pformat(speaker_audio_ids))
         total_records = 0
         if (active_speaker_id != ''):
             total_records, audio_data_list = audiodetails.get_n_audios(transcriptions,
@@ -851,6 +857,11 @@ def audiobrowseaction():
         browse_action = audio_browse_info['browseActionSelectedOption']
         active_speaker_id = audio_browse_info['activeSpeakerId']
         audio_ids_list = list(audio_info.keys())
+        speaker_audio_ids = audiodetails.get_speaker_audio_ids_new(projects_collection,
+                                                                   activeprojectname,
+                                                                   current_username,
+                                                                   active_speaker_id,
+                                                                   audio_browse_action=browse_action)
         active_audio_id = audiodetails.getactiveaudioid(projects_collection,
                                                         activeprojectname,
                                                         active_speaker_id,
@@ -870,7 +881,8 @@ def audiobrowseaction():
                                                   transcriptions_collection,
                                                   activeprojectname,
                                                   active_speaker_id,
-                                                  audio_id)
+                                                  audio_id,
+                                                  speaker_audio_ids)
             else:
                 audiodetails.delete_one_audio_file(projects_collection,
                                                    transcriptions_collection,
@@ -878,6 +890,7 @@ def audiobrowseaction():
                                                    current_username,
                                                    active_speaker_id,
                                                    audio_id,
+                                                   speaker_audio_ids,
                                                    update_latest_audio_id=update_latest_audio_id)
         if (browse_action):
             flash("Audio revoked successfully")
@@ -6083,12 +6096,18 @@ def deleteaudio():
         active_speaker_id = getuserprojectinfo.getuserprojectinfo(userprojects,
                                                                   current_username,
                                                                   activeprojectname)['activespeakerId']
+
+        speaker_audio_ids = audiodetails.get_speaker_audio_ids_new(projects_collection,
+                                                                   activeprojectname,
+                                                                   current_username,
+                                                                   active_speaker_id)
         audiodetails.delete_one_audio_file(projects_collection,
                                            transcriptions_collection,
                                            activeprojectname,
                                            current_username,
                                            active_speaker_id,
-                                           last_active_id)
+                                           last_active_id,
+                                           speaker_audio_ids)
     except:
         logger.exception("")
     flash("Audio deleted successfully")
