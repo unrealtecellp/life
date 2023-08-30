@@ -1935,6 +1935,8 @@ function showRegionInfo(region) {
         boundaryID = getBoundaryId(startTime, endTime);
         sentence = region.data.sentence;
         if (sentence) {
+            console.log("Sentence", sentence)
+            console.log("Boundary ID", boundaryID)
             transciptions = sentence[boundaryID]['transcription'];
             for (let [scriptName, transcription] of Object.entries(transciptions)) {
                 trans += scriptName + ': ' + transcription + '<br>';

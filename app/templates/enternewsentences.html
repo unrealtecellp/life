@@ -329,6 +329,8 @@
               <hr>
 
               <h4>Boundary Options:</h4>
+              <i>Boundaries are anyway created if your file size is greater than the 'maximum file duration' specified below - in that case checking this option will give 
+                you an opportunity to select the parameters - otherwise boundaries are made with default parameter Values</i>
               
               <div class="input-group col-md-4" id="uploadparameters-vad-divid">
               <input type="checkbox" id="uploadparameters-vadid" name="uploadparameters-vad">
@@ -337,10 +339,15 @@
 
               <div class="input-group col-md-8" id="uploadparameters-boundarypause-divid" style="display: none;" aria-disabled="true">              
               <label title="It defines the minimum value of pause at which a new boundary is made"
-                for="uploadparameters-boundarypause">Boundary Pause Threshold (between 0.00001-10.0 seconds) </label><br /> Suggested Values: <i>For sentence: 0.3; For words: 0.01; For phones: 0.001</i><br/>
+                for="uploadparameters-boundarypauseid`">Boundary Pause Threshold (between 0.00001-10.0 seconds) </label><br /> Suggested Values: <i>For sentence: 0.3; For words: 0.01; For phones: 0.001</i><br/>
               
               <input type="number" name="boundaryPause" id="uploadparameters-boundarypauseid" min="0.00001" max="10.0" step="0.00001"
                   placeholder="Value between 0.00001 to 10.0" value="0.3" disabled>
+              
+              <label title="It defines the minimum length of a boundary - smaller boundaries are merged to the next or previous boundaries"
+                    for="uploadparameters-minboundarysizeid">Minimum Boundary Size (between 0.5-10.0 seconds) </label>
+              <input type="number" name="minBoundarySize" id="uploadparameters-minboundarysizeid" min="0.5" max="10.0" step="0.5"
+                placeholder="Value between 0.5 to 10.0" value="2.0" disabled>
               </div>
               
               <hr/>
@@ -489,6 +496,12 @@
   
               <input type="number" name="boundaryPause" id="uploadparameters-boundarypauseid" min="0.00001" max="10.0"
                 step="0.00001" placeholder="Value between 0.00001 to 10.0" value="0.3" required><br/><br>
+
+              <label
+                title="It defines the minimum length of a boundary - smaller boundaries are merged to the next or previous boundaries"
+                for="uploadparameters-minboundarysizeid">Minimum Boundary Size (between 0.5-10.0 seconds) </label>
+              <input type="number" name="minBoundarySize" id="uploadparameters-minboundarysizeid" min="0.5" max="10.0" step="0.5"
+                placeholder="Value between 0.5 to 10.0" value="2.0"><br/>
             </div>
 
             <div class="input-group col-md-4" id="overwrite-my-boundaries-divid">
