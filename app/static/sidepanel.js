@@ -14,16 +14,15 @@ function createSidePanel(shareinfo) {
     var sidePanelElement = '';
 
     sidePanelElement += '<div id="mySidenav" class="sidenav">'+
-                        '<a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>'+
-                        // '<a href="#">About</a>'+
+                        '<a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>';                        // '<a href="#">About</a>'+
                         // '<a href="#">Services</a>'+
                         // '<a href="#">Clients</a>'+
                         // '<a href="#">Contact</a>'+
                         // '<div class="col-sm-7 pull-right">'+
-                        '<a><button type="button" id="progressreport" class="btn btn-primary" data-toggle="modal"'+
-                        'data-target="#myProgressReportModal">'+
-                        'Progress Report'+
-                        '</button></a>';
+                        // '<a><button type="button" id="progressreport" class="btn btn-primary" data-toggle="modal"'+
+                        // 'data-target="#myProgressReportModal">'+
+                        // 'Progress Report'+
+                        // '</button></a>';
     if ('downloadchecked' in shareinfo &&
         shareinfo['downloadchecked'] == 'true') {
         sidePanelElement += '<a><button type="button" id="downloadtranscription" class="btn btn-primary" data-toggle="modal"'+

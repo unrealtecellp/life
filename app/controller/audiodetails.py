@@ -2592,6 +2592,7 @@ def delete_one_audio_file(projects_collection,
                           current_username,
                           active_speaker_id,
                           audio_id,
+                          speaker_audio_ids,
                           update_latest_audio_id=1):
     try:
         # logger.debug("project_name: %s, audio_id: %s", project_name, audio_id)
@@ -2610,6 +2611,7 @@ def delete_one_audio_file(projects_collection,
                                             project_name,
                                             audio_id,
                                             active_speaker_id,
+                                            speaker_audio_ids,
                                             'next')
             updatelatestaudioid(projects_collection,
                                 project_name,
@@ -2646,7 +2648,8 @@ def revoke_deleted_audio(projects_collection,
                          transcriptions_collection,
                          project_name,
                          active_speaker_id,
-                         audio_id):
+                         audio_id,
+                         speaker_audio_ids):
     try:
         # logger.debug("project_name: %s, audio_id: %s", project_name, audio_id)
         transcription_doc_id = transcriptions_collection.find_one_and_update({
