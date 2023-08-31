@@ -2625,6 +2625,8 @@ def delete_one_audio_file(projects_collection,
                                             active_speaker_id,
                                             speaker_audio_ids,
                                             'next')
+            # print(latest_audio_id)
+            # logger.debug("latest_audio_id: %s", latest_audio_id)
             updatelatestaudioid(projects_collection,
                                 project_name,
                                 latest_audio_id,
