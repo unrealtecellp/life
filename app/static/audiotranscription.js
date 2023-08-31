@@ -145,25 +145,35 @@ document.addEventListener('DOMContentLoaded', function () {
             form.reset();
             transcriptionFormDisplay(form);
             wavesurfer.pause();
-            console.log ("Region", region)
-            startId = region.start.toString().slice(0, 4).replace('.', '');
-            if (startId === '0') {
-                startId = '000';
-            }
-            endId = region.end.toString().slice(0, 4).replace('.', '');
-            if (endId === '0') {
-                endId = '000';
-            }
-            console.log(startId, endId)
+            console.log("Region", region)
+            
+            startId = get_boundary_id_from_number(parseFloat(region.start).toFixed(2), 5, "0"); //5 is the length of the returned string and 0 is the prefix
+            endId = get_boundary_id_from_number(parseFloat(region.end).toFixed(2), 5, "0");
+
+            console.log('New', startId, endId)
             rid = startId.concat(endId);
+
+            //Code retained for backward compatibility
+            oldStartId = region.start.toString().slice(0, 4).replace('.', '');
+            if (oldStartId === '0') {
+                oldStartId = '000';
+            }
+            oldEndId = region.end.toString().slice(0, 4).replace('.', '');
+            if (oldEndId === '0') {
+                oldEndId = '000';
+            }
+            oldRid = oldStartId.concat(oldEndId);
+            console.log('Old', oldStartId, oldEndId)
+
             localStorageRegions = JSON.parse(localStorage.regions);
-            console.log("Local storage region id", rid, localStorageRegions);
+            console.log("Local storage region id", rid, oldRid, localStorageRegions);
+            
             for (let [key, value] of Object.entries(localStorageRegions)) {
                 console.log("Key, value", key, value)
-                if (key in localStorageRegions &&
-                    localStorageRegions[key]['boundaryID'] === rid) {
+                if ((key in localStorageRegions) &&
+                    (localStorageRegions[key]['boundaryID'] === rid || localStorageRegions[key]['boundaryID'] === oldRid)) {
                     localStorageRegions.splice(key, 1)
-                    console.log(rid, localStorageRegions)
+                    console.log(rid, oldRid, localStorageRegions)
                     localStorage.setItem("regions", JSON.stringify(localStorageRegions));
                 }
             }
@@ -183,6 +193,10 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
+function get_boundary_id_from_number(number, length, prefix_string) {
+    return number.toString().replace('.', '').padStart(length, prefix_string);
+}
+
 function deleteBoundary(regionId) {
     // console.log('deleteBoundary');
     let form = document.forms.edit;
@@ -195,14 +209,17 @@ function deleteBoundary(regionId) {
         form.reset();
         // transcriptionFormDisplay(form);
         wavesurfer.pause();
-        startId = region.start.toString().slice(0, 4).replace('.', '');
-        if (startId === '0') {
-            startId = '000';
-        }
-        endId = region.end.toString().slice(0, 4).replace('.', '');
-        if (endId === '0') {
-            endId = '000';
-        }
+        startId = get_boundary_id_from_number(parseFloat(region.start).toFixed(2), 5, "0"); //5 is the length of the returned string and 0 is the prefix
+        endId = get_boundary_id_from_number(parseFloat(region.end).toFixed(2), 5, "0");
+
+        // startId = region.start.toString().slice(0, 4).replace('.', '');
+        // if (startId === '0') {
+        //     startId = '000';
+        // }
+        // endId = region.end.toString().slice(0, 4).replace('.', '');
+        // if (endId === '0') {
+        //     endId = '000';
+        // }
         // console.log(startId, endId)
         rid = startId.concat(endId);
         localStorageRegions = JSON.parse(localStorage.regions);
@@ -242,14 +259,18 @@ function saveRegions(region) {
             let region = wavesurfer.regions.list[id];
             // console.log(region)
             region.drag = false;
-            startId = region.start.toString().slice(0, 4).replace('.', '');
-            if (startId === '0') {
-                startId = '000';
-            }
-            endId = region.end.toString().slice(0, 4).replace('.', '');
-            if (endId === '0') {
-                endId = '000';
-            }
+
+            startId = get_boundary_id_from_number(parseFloat(region.start).toFixed(2), 5, "0"); //5 is the length of the returned string and 0 is the prefix
+            endId = get_boundary_id_from_number(parseFloat(region.end).toFixed(2), 5, "0");
+
+            // startId = region.start.toString().slice(0, 4).replace('.', '');
+            // if (startId === '0') {
+            //     startId = '000';
+            // }
+            // endId = region.end.toString().slice(0, 4).replace('.', '');
+            // if (endId === '0') {
+            //     endId = '000';
+            // }
             // console.log(startId, endId)
             rid = startId.concat(endId);
             // rid = region.start.toString().slice(0, 4).replace('.', '').concat(region.end.toString().slice(0, 4).replace('.', ''));
@@ -385,14 +406,17 @@ function editAnnotation(region) {
     var sentence = getActiveRegionSentence(region);
 
     // console.log("Active region sentence", sentence)
-    startId = region.start.toString().slice(0, 4).replace('.', '');
-    if (startId === '0') {
-        startId = '000';
-    }
-    endId = region.end.toString().slice(0, 4).replace('.', '');
-    if (endId === '0') {
-        endId = '000';
-    }
+    startId = get_boundary_id_from_number(parseFloat(region.start).toFixed(2), 5, "0"); //5 is the length of the returned string and 0 is the prefix
+    endId = get_boundary_id_from_number(parseFloat(region.end).toFixed(2), 5, "0");
+
+    // startId = region.start.toString().slice(0, 4).replace('.', '');
+    // if (startId === '0') {
+    //     startId = '000';
+    // }
+    // endId = region.end.toString().slice(0, 4).replace('.', '');
+    // if (endId === '0') {
+    //     endId = '000';
+    // }
     // console.log(startId, endId)
     rid = startId.concat(endId);
     // rid = region.start.toString().slice(0, 4).replace('.', '').concat(region.end.toString().slice(0, 4).replace('.', ''));
@@ -475,14 +499,18 @@ function saveBoundaryData(region, form) {
     for (i = 0; i < regions.length; i++) {
         if (regions[i]['start'] === region.start &&
             regions[i]['end'] === region.end) {
-            startId = region.start.toString().slice(0, 4).replace('.', '');
-            if (startId === '0') {
-                startId = '000';
-            }
-            endId = region.end.toString().slice(0, 4).replace('.', '');
-            if (endId === '0') {
-                endId = '000';
-            }
+            
+            startId = get_boundary_id_from_number(parseFloat(region.start).toFixed(2), 5, "0"); //5 is the length of the returned string and 0 is the prefix
+            endId = get_boundary_id_from_number(parseFloat(region.end).toFixed(2), 5, "0");
+
+            // startId = region.start.toString().slice(0, 4).replace('.', '');
+            // if (startId === '0') {
+            //     startId = '000';
+            // }
+            // endId = region.end.toString().slice(0, 4).replace('.', '');
+            // if (endId === '0') {
+            //     endId = '000';
+            // }
             rid = startId.concat(endId);
             sentence = regions[i]['data']['sentence']
             sentence = updateSentenceDetailsOnSaveBoundary(rid, sentence, region, form)
@@ -1968,14 +1996,17 @@ function hideRegionInfo(region) {
 }
 
 function getBoundaryId(startTime, endTime) {
-    startId = startTime.toString().slice(0, 4).replace('.', '');
-    if (startId === '0') {
-        startId = '000';
-    }
-    endId = endTime.toString().slice(0, 4).replace('.', '');
-    if (endId === '0') {
-        endId = '000';
-    }
+    startId = get_boundary_id_from_number(parseFloat(startTime).toFixed(2), 5, "0"); //5 is the length of the returned string and 0 is the prefix
+    endId = get_boundary_id_from_number(parseFloat(endTime).toFixed(2), 5, "0");
+
+    // startId = startTime.toString().slice(0, 4).replace('.', '');
+    // if (startId === '0') {
+    //     startId = '000';
+    // }
+    // endId = endTime.toString().slice(0, 4).replace('.', '');
+    // if (endId === '0') {
+    //     endId = '000';
+    // }
     // console.log(startId, endId)
     rid = startId.concat(endId);
 

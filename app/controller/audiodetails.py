@@ -2020,6 +2020,10 @@ def get_new_boundaries(boundaries, max_pause, min_boundary_size=2.0, max_boundar
         return new_boundaries
 
 
+def get_boundary_id_from_number(number, length):
+    return str(number).replace('.', '').zfill(length)
+
+
 def update_text_grid(mongo, text_grid, new_boundaries, transcription_type, include_transcription=False, transcriptions={}, boundary_offset_value=0.0):
     logger.debug('Data type %s', transcription_type)
 
@@ -2039,17 +2043,25 @@ def update_text_grid(mongo, text_grid, new_boundaries, transcription_type, inclu
     for i in range(len(new_boundaries)):
         current_boundary = new_boundaries[i]
 
-        start_boundary = float(
-            current_boundary['start'] - boundary_offset_value)
-        end_boundary = float(current_boundary['end'] - boundary_offset_value)
+        start_boundary = round(float(
+            current_boundary['start'] - boundary_offset_value), 2)
+        end_boundary = round(
+            float(current_boundary['end'] - boundary_offset_value), 2)
 
-        boundary_id_start = str(start_boundary).replace('.', '')[:4]
-        if (boundary_id_start == '0'):
-            boundary_id_start = '000'
+        boundary_id_start = get_boundary_id_from_number(
+            format(start_boundary, '.2f'), 5)
+        boundary_id_end = get_boundary_id_from_number(
+            format(end_boundary, '.2f'), 5)
 
-        boundary_id_end = str(end_boundary).replace('.', '')[:4]
-        if (boundary_id_end == '0'):
-            boundary_id_end = '000'
+        # if (start_boundary == 0.0):
+        #     boundary_id_start = '000'
+        # else:
+        #     boundary_id_start = str(start_boundary).replace('.', '')[:4]
+
+        # if (end_boundary == 0.0):
+        #     boundary_id_end = '000'
+        # else:
+        #     boundary_id_end = str(end_boundary).replace('.', '')[:4]
 
         boundary_id = boundary_id_start+boundary_id_end
 
@@ -2199,7 +2211,7 @@ def get_boundary_lists_of_smaller_chunks(
         if i > 0:
             chunk_distance_prev = current_chunk_boundary_start - previous_chunk_end
             slice_offset_value_begin = slice_offset_value + \
-                float(chunk_distance_prev/2)
+                round(float(chunk_distance_prev/2), 2)
             # for i, boundary in enumerate(current_chunk_boundaries):
             #     current_chunk_boundaries[i]['start'] += slice_offset_value
             #     current_chunk_boundaries[i]['end'] += slice_offset_value
