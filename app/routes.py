@@ -5990,8 +5990,13 @@ def projecttype():
     activeprojectname = getactiveprojectname.getactiveprojectname(
         current_username, userprojects)
     project_type = getprojecttype.getprojecttype(projects, activeprojectname)
+    shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
+                                                          current_username,
+                                                          activeprojectname)
+    current_user_sharemode = int(shareinfo['sharemode'])
 
-    return jsonify(projectType=project_type)
+    return jsonify(projectType=project_type,
+                   shareMode=current_user_sharemode)
 
 
 @app.route('/manageapp', methods=['GET', 'POST'])

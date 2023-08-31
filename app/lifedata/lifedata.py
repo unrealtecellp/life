@@ -1,4 +1,4 @@
-"""Module containing the routes for the data part of the LiFe."""
+"""Module containing the routes for the data part of the LiFE."""
 
 from app import mongo
 from flask import (

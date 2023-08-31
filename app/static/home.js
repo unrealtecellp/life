@@ -60,15 +60,22 @@ $("#idhomevieweditbtn").click(function() {
         type : 'GET',
         url : '/projecttype',
         success: function(response){
-            projectType = response.projectType
+            projectType = response.projectType;
+            shareMode = response.shareMode;
             windowHref = window.location.href
             pathname = window.location.pathname
             lastIndexOfPathname = windowHref.lastIndexOf(pathname)
             // console.log(projectType,);
+            console.log(shareMode);
             if (projectType === 'transcriptions') {
-                window.location.href = windowHref.slice(0, lastIndexOfPathname) +  
-                                        windowHref.slice(lastIndexOfPathname).replace(pathname, "/enternewsentences");
-                
+                if (shareMode === 0) {
+                    window.location.href = windowHref.slice(0, lastIndexOfPathname) +  
+                    windowHref.slice(lastIndexOfPathname).replace(pathname, "/lifedata/transcription/audiobrowse");
+                }
+                else if (shareMode >= 2) {
+                    window.location.href = windowHref.slice(0, lastIndexOfPathname) +  
+                    windowHref.slice(lastIndexOfPathname).replace(pathname, "/lifedata/transcription/home");
+                }
             }
             else if (projectType === 'questionnaires') {
                 window.location.href = windowHref.slice(0, lastIndexOfPathname) +  
