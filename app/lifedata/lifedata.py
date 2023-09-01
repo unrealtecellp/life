@@ -240,7 +240,7 @@ def newdataform():
 
                     return redirect(url_for("lifedata.annotation"))
 
-            return redirect(url_for("enternewsentences"))
+            return redirect(url_for("lifedata.transcription.home"))
         return render_template("lifedatahome.html")
     except:
         logger.exception("")

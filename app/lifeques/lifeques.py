@@ -21,7 +21,8 @@ from app.controller import (
                             getprojecttype,
                             getuserprojectinfo,
                             savenewproject,
-                            updateuserprojects
+                            updateuserprojects,
+                            life_logging
                         )
 from app.lifeques.controller import (
                                         downloadquestionnairein,
@@ -44,7 +45,7 @@ from app.lifeques.controller import (
                                     )
 
 import os
-from pprint import pprint
+from pprint import pprint, pformat
 import inspect
 
 lifeques = Blueprint('lifeques', __name__, template_folder='templates', static_folder='static')
@@ -54,6 +55,7 @@ lifeques_download_folder_path = os.path.join(basedir, 'lifequesdownload')
 if not os.path.exists(lifeques_download_folder_path):
     # print('!!!!!', lifeques_download_folder_path)
     os.mkdir(lifeques_download_folder_path)
+logger = life_logging.get_logger()
 
 @lifeques.route('/', methods=['GET', 'POST'])
 @lifeques.route('/home', methods=['GET', 'POST'])
@@ -94,123 +96,126 @@ def getprojectslist():
 @lifeques.route('/newquestionnaireform', methods=['GET', 'POST'])
 @login_required
 def newquestionnaireform():
-    projects, userprojects, projectsform, questionnaires = getdbcollections.getdbcollections(mongo,
-                                                                                            'projects',
-                                                                                            'userprojects',
-                                                                                            'projectsform',
-                                                                                            'questionnaires'
-                                                                                            )
-    current_username = getcurrentusername.getcurrentusername()
-    currentuserprojectsname =  getcurrentuserprojects.getcurrentuserprojects(current_username, userprojects)
+    try:
+        projects, userprojects, projectsform, questionnaires = getdbcollections.getdbcollections(mongo,
+                                                                                                'projects',
+                                                                                                'userprojects',
+                                                                                                'projectsform',
+                                                                                                'questionnaires'
+                                                                                                )
+        current_username = getcurrentusername.getcurrentusername()
+        currentuserprojectsname =  getcurrentuserprojects.getcurrentuserprojects(current_username, userprojects)
 
-    if request.method =='POST':
-        new_ques_form = dict(request.form.lists())
-        # print('New ques form', new_ques_form)
-        projectname = 'Q_'+new_ques_form['projectname'][0]
-        about_project = new_ques_form['aboutproject'][0]
-        project_type = "questionnaires"
-        questionnaireIds = []
+        if request.method =='POST':
+            new_ques_form = dict(request.form.lists())
+            logger.debug('New ques form: %s', pformat(new_ques_form))
+            projectname = 'Q_'+new_ques_form['projectname'][0]
+            about_project = new_ques_form['aboutproject'][0]
+            project_type = "questionnaires"
+            questionnaireIds = []
 
 
-        project_name = savenewproject.savenewproject(projects,
-                                        projectname,
-                                        current_username,
-                                        aboutproject=about_project,
-                                        projectType=project_type,
-                                        questionnaireIds=questionnaireIds
-                                        )
-        if project_name == '':
-            flash(f'Project Name : "{projectname}" already exist!')
-            return redirect(url_for('lifeques.home'))
+            project_name = savenewproject.savenewproject(projects,
+                                            projectname,
+                                            current_username,
+                                            aboutproject=about_project,
+                                            projectType=project_type,
+                                            questionnaireIds=questionnaireIds
+                                            )
+            if project_name == '':
+                flash(f'Project Name : "{projectname}" already exist!')
+                return redirect(url_for('lifeques.home'))
 
-        if ("derivefromproject" in new_ques_form):
-        #     print("line no: 76, derivefromproject in new_ques_form")
-            derive_from_project_name = new_ques_form["derivefromproject"][0]
-            projects.update_one({"projectname": derive_from_project_name},
-                                {"$addToSet": {
-                                    "projectDerivatives": project_name
-                                }})
-            projects.update_one({"projectname": project_name},
-                                {"$addToSet": {
-                                    "derivedFromProject": derive_from_project_name
-                                }})
-            # merge new project form and parent project form
-            derivedfromprojectform = getderivedfromprojectform.getderivedfromprojectform(projectsform,
-                                                                derive_from_project_name)
-            # pprint(derivedfromprojectform)
-            all_keys = set(list(derivedfromprojectform.keys()) + list(new_ques_form.keys()))
-            # for key, value in derivedfromprojectform.items():
-            # print('All keys from both projects', all_keys)
-            for key in all_keys:
-                if (key in derivedfromprojectform):
-                    derivedfromprojectformvalue = derivedfromprojectform[key][1]
-                    # print(key, derivedfromprojectformvalue)
-                    if isinstance(derivedfromprojectformvalue, list):
-                        if (key in new_ques_form):
-                            derivedfromprojectformvalue.extend(new_ques_form[key])
+            if ("derivefromproject" in new_ques_form):
+            #     print("line no: 76, derivefromproject in new_ques_form")
+                derive_from_project_name = new_ques_form["derivefromproject"][0]
+                projects.update_one({"projectname": derive_from_project_name},
+                                    {"$addToSet": {
+                                        "projectDerivatives": project_name
+                                    }})
+                projects.update_one({"projectname": project_name},
+                                    {"$addToSet": {
+                                        "derivedFromProject": derive_from_project_name
+                                    }})
+                # merge new project form and parent project form
+                derivedfromprojectform = getderivedfromprojectform.getderivedfromprojectform(projectsform,
+                                                                    derive_from_project_name)
+                # pprint(derivedfromprojectform)
+                all_keys = set(list(derivedfromprojectform.keys()) + list(new_ques_form.keys()))
+                # for key, value in derivedfromprojectform.items():
+                # print('All keys from both projects', all_keys)
+                for key in all_keys:
+                    if (key in derivedfromprojectform):
+                        derivedfromprojectformvalue = derivedfromprojectform[key][1]
                         # print(key, derivedfromprojectformvalue)
-                        # if("Transcription" in key): continue
-                        # if (key == "Language" or key == "Script"):
-                        #     new_ques_form[key] = list(derivedfromprojectformvalue)
-                        # else:
-                        new_ques_form[key] = list(set(derivedfromprojectformvalue))
-                    if (key == "Prompt Type"):
-                        # derivedfromprojectformvalue = list(derivedfromprojectform[key][1].keys())
-                        derivedfromprojectformvalues = dict(derivedfromprojectform[key][1])
-                        # new_ques_form[key][1].update(derivedfromprojectformvalues)
-                        # new_ques_form[key] = derivedfromprojectformvalue
-                        if (key in new_ques_form):
-                            new_ques_form[key][1].update(derivedfromprojectformvalues)
-                        else:
-                            new_ques_form[key] = ["prompt", derivedfromprojectformvalues]
+                        if isinstance(derivedfromprojectformvalue, list):
+                            if (key in new_ques_form):
+                                derivedfromprojectformvalue.extend(new_ques_form[key])
+                            # print(key, derivedfromprojectformvalue)
+                            # if("Transcription" in key): continue
+                            # if (key == "Language" or key == "Script"):
+                            #     new_ques_form[key] = list(derivedfromprojectformvalue)
+                            # else:
+                            new_ques_form[key] = list(set(derivedfromprojectformvalue))
+                        if (key == "Prompt Type"):
+                            # derivedfromprojectformvalue = list(derivedfromprojectform[key][1].keys())
+                            derivedfromprojectformvalues = dict(derivedfromprojectform[key][1])
+                            # new_ques_form[key][1].update(derivedfromprojectformvalues)
+                            # new_ques_form[key] = derivedfromprojectformvalue
+                            if (key in new_ques_form):
+                                new_ques_form[key][1].update(derivedfromprojectformvalues)
+                            else:
+                                new_ques_form[key] = ["prompt", derivedfromprojectformvalues]
 
-                    if (key == "LangScript"):
-                        # derivedfromprojectformvalue = list(derivedfromprojectform[key][1].keys())
-                        derivedfromprojectformvalues = dict(derivedfromprojectform[key][1])
-                        # new_ques_form[key][1].update(derivedfromprojectformvalues)
-                        # new_ques_form[key] = derivedfromprojectformvalue
-                        if (key in new_ques_form):
-                            new_ques_form[key][1].update(derivedfromprojectformvalues)
-                        else:
-                            new_ques_form[key] = ["", derivedfromprojectformvalues]
+                        if (key == "LangScript"):
+                            # derivedfromprojectformvalue = list(derivedfromprojectform[key][1].keys())
+                            derivedfromprojectformvalues = dict(derivedfromprojectform[key][1])
+                            # new_ques_form[key][1].update(derivedfromprojectformvalues)
+                            # new_ques_form[key] = derivedfromprojectformvalue
+                            if (key in new_ques_form):
+                                new_ques_form[key][1].update(derivedfromprojectformvalues)
+                            else:
+                                new_ques_form[key] = ["", derivedfromprojectformvalues]
 
-                        #     derivedfromprojectformvalue.extend(new_ques_form[key])
-                        #     new_ques_form[key] = list(set(derivedfromprojectformvalue))
-                        #     # print(new_ques_form[key])
-                        # else:
+                            #     derivedfromprojectformvalue.extend(new_ques_form[key])
+                            #     new_ques_form[key] = list(set(derivedfromprojectformvalue))
+                            #     # print(new_ques_form[key])
+                            # else:
 
-                        # if ('Transcription' in derivedfromprojectform):
-                        #     new_ques_form['Transcription'] = derivedfromprojectform['Transcription'][1]
-                        # if ('Instruction' in derivedfromprojectform):
-                        #     new_ques_form['Instruction'] = derivedfromprojectform['Instruction'][1]
-        # print('LINE: 109')
-        # pprint(new_ques_form)
-        updateuserprojects.updateuserprojects(userprojects,
-                                                projectname,
-                                                current_username
-                                                )
-        
-        # print('Intermediate New ques form', new_ques_form)
-        save_ques_form = savenewquestionnaireform.savenewquestionnaireform(projectsform,
-                                                                            projectname,
-                                                                            new_ques_form,
-                                                                            current_username
-                                                                            )
-        createdummyques.createdummyques(questionnaires,
-                                        projectname,
-                                        save_ques_form,
-                                        current_username
-                                        )
-        if ("derivefromproject" in new_ques_form):
-        # copy all the ques from the "derivedfromproject" to "newproject"
-            copyquesfromparentproject.copyquesfromparentproject(projects,
-                                                                questionnaires,
-                                                                projectsform,
-                                                                derive_from_project_name,
-                                                                projectname,
-                                                                current_username)
+                            # if ('Transcription' in derivedfromprojectform):
+                            #     new_ques_form['Transcription'] = derivedfromprojectform['Transcription'][1]
+                            # if ('Instruction' in derivedfromprojectform):
+                            #     new_ques_form['Instruction'] = derivedfromprojectform['Instruction'][1]
+            # print('LINE: 109')
+            # pprint(new_ques_form)
+            updateuserprojects.updateuserprojects(userprojects,
+                                                    projectname,
+                                                    current_username
+                                                    )
+            
+            logger.debug('Intermediate New ques form: %s', pformat(new_ques_form))
+            save_ques_form = savenewquestionnaireform.savenewquestionnaireform(projectsform,
+                                                                                projectname,
+                                                                                new_ques_form,
+                                                                                current_username
+                                                                                )
+            createdummyques.createdummyques(questionnaires,
+                                            projectname,
+                                            save_ques_form,
+                                            current_username
+                                            )
+            if ("derivefromproject" in new_ques_form):
+            # copy all the ques from the "derivedfromproject" to "newproject"
+                copyquesfromparentproject.copyquesfromparentproject(projects,
+                                                                    questionnaires,
+                                                                    projectsform,
+                                                                    derive_from_project_name,
+                                                                    projectname,
+                                                                    current_username)
 
-        return redirect(url_for("lifeques.questionnaire"))
+            return redirect(url_for("lifeques.questionnaire"))
+    except:
+        logger.exception("")
 
     return render_template("lifequeshome.html")
 
