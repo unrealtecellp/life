@@ -67,7 +67,7 @@ LiFe Data Home
       <div id="transcriptionstypeproject" style="display: none;">
         <div class="form-group" id="datasentencelanguage">
           <label for="iddatasentencelanguage">Audio Language</label><br>
-          <select class="datasentencelanguageclass" id="iddatasentencelanguage" name="Sentence Language" style="width: 55%" required></select>
+          <select class="datasentencelanguageclass" id="iddatasentencelanguage" name="Audio Language" style="width: 55%" required></select>
         </div>  
 
         <div class="form-group"> 
@@ -108,6 +108,20 @@ LiFe Data Home
               <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 
             </button>
           </div>
+        </div>
+
+        <div class="col">
+          <label>
+            <input type="checkbox" id="transcriptionstagsetuploadcheckbox" name="transcriptionstagsetuploadcheckbox">
+            Audio Tagging
+          </label>
+        </div>
+        <div class="col" id="transcriptionstagsetupload" style="display: none;">
+          <label class="btn btn-danger">
+            Select ZIP File <input type="file" id="transcriptionstagsetZipFile" name="transcriptionstagsetZipFile" accept="application/zip" hidden>
+          </label>
+          <input class="btn btn-primary" id="transcriptionszipfilesubmit" type="button" value="Upload" onclick="uploadTranscriptionTagsetZipFile(this);" data-toggle="modal">
+          <p id="displayTranscriptionsZipFileName"></p>
         </div>
       </div>
 

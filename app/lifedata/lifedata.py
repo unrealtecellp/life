@@ -42,6 +42,10 @@ from app.lifetagsets.controller import (
     tagset_details
 )
 
+from app.lifedata.transcription.controller import(
+    save_new_transcription_form
+)
+
 from flask_login import login_required
 import os
 from pprint import pformat
@@ -136,13 +140,13 @@ def newdataform():
                                                   current_username
                                                   )
 
-            save_data_form = savenewdataform.savenewdataform(projectsform,
-                                                             projectname,
-                                                             new_data_form,
-                                                             current_username,
-                                                             project_type
-                                                             )
-            logger.debug("save_data_form: %s", pformat(save_data_form))
+            # save_data_form = savenewdataform.savenewdataform(projectsform,
+            #                                                  projectname,
+            #                                                  new_data_form,
+            #                                                  current_username,
+            #                                                  project_type
+            #                                                  )
+            # logger.debug("save_data_form: %s", pformat(save_data_form))
 
             if (project_type == 'validation'):
                 validation_collection, tagsets = getdbcollections.getdbcollections(mongo,
@@ -239,6 +243,32 @@ def newdataform():
                                 pformat(uploaded_sources))
 
                     return redirect(url_for("lifedata.annotation"))
+                elif (project_type == 'transcriptions'):
+                    transcriptions_collection, tagsets = getdbcollections.getdbcollections(mongo,
+                                                                                       'transcriptions',
+                                                                                       'tagsets')
+                    # logger.debug("project_type: %s", project_type)
+                    if ("transcriptionstagsetuploadcheckbox" in new_data_form and
+                        new_data_form["transcriptionstagsetuploadcheckbox"][0] == "on"):
+                        if 'transcriptionstagsetZipFile' in new_data_form_files:
+                            transcriptions_zip_file = new_data_form_files["transcriptionstagsetZipFile"]
+                            tagset_project_ids, = save_tagset.save_tagset(tagsets,
+                                                                        transcriptions_zip_file,
+                                                                        project_name)
+                        else:
+                            tagset_name = new_data_form['tagsetname'][0]
+                            tagset_project_ids = tagset_details.get_tagset_id(tagsets,
+                                                                            tagset_name)
+                            # logger.debug(tagset_project_ids)
+                        projects.update_one({"projectname": project_name},
+                                            {"$set": {
+                                                "tagsetId": tagset_project_ids
+                                            }})
+                    saved_new_transcription_form, save_status = save_new_transcription_form.save_new_transcription_form(projectsform,
+                                                                                                                            projectname,
+                                                                                                                            new_data_form,
+                                                                                                                            current_username)
+                    return redirect(url_for("lifedata.transcription.home"))
 
             return redirect(url_for("lifedata.transcription.home"))
         return render_template("lifedatahome.html")
@@ -337,19 +367,30 @@ def datazipfile():
                                                                'projects',
                                                                'tagsets')
         if request.method == "POST":
-            derive_from_project_name = dict(request.form.lists())
-            derive_from_project_name = derive_from_project_name['deriveFromProjectName'][0]
+            form_data = dict(request.form.lists())
+            logger.debug("form data: %s", pformat(form_data))
+            derive_from_project_name = form_data['deriveFromProjectName'][0]
+            project_type = form_data['projectType'][0]
             # logger.debug("derive_from_project_name: %s", derive_from_project_name)
-            validation_zip_file = request.files.to_dict()
-            validation_zip_file = validation_zip_file['tagsetZipFile']
-            # logger.debug("validation_zip_file: %s", validation_zip_file)
-            completed, message, validation_tagset = readzip.read_zip(
-                tagsets, validation_zip_file)
+            data_zip_file = request.files.to_dict()
+            if (project_type == 'validation'):
+                data_zip_file = data_zip_file['tagsetZipFile']
+            elif (project_type == 'transcriptions'):
+                data_zip_file = data_zip_file['transcriptionstagsetZipFile']
+            # logger.debug("data_zip_file: %s", data_zip_file)
+            completed, message, data_tagset = readzip.read_zip(
+                tagsets, data_zip_file)
             # logger.debug('completed: %s', completed)
             # logger.debug('message: %s', message)
-            # logger.debug('validation_tagset: %s', validation_tagset)
+            # logger.debug('data_tagset: %s', data_tagset)
             if (completed):
-                validation_tagset_keys = list(validation_tagset.keys())
+                if (project_type == 'transcriptions'):
+                    return jsonify(completed=completed,
+                                    message=message,
+                                    mappingTagset={},
+                                    validationTagsetKeys=[])
+                else:
+                    validation_tagset_keys = list(data_tagset.keys())
             else:
                 return jsonify(completed=completed,
                                message=message,

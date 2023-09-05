@@ -312,7 +312,9 @@ function uploadValidatioZipFile(btn) {
     var formData = new FormData();
     formData.append('tagsetZipFile', file);
     let deriveFromProjectName = document.getElementById('idderivefromproject').value;
-    formData.append('deriveFromProjectName', deriveFromProjectName)
+    formData.append('deriveFromProjectName', deriveFromProjectName);
+    let projectType = document.getElementById('idprojecttype').value;
+    formData.append('projectType', projectType);
     $.ajax({
       url: '/lifedata/datazipfile',
       type: 'POST',
@@ -447,3 +449,65 @@ $("#annotationtagsetZipFile").change(function() {
   $("#displayAnnotationZipFileName").html(zipFileName.name);
 
 })
+
+$("#transcriptionstagsetZipFile").change(function() {
+  let zipFileElement = document.getElementById('transcriptionstagsetZipFile');
+  // console.log(zipFileElement);
+  zipFileName = zipFileElement.files[0];
+  // console.log(zipFileName);
+  // displayZipFileName = '<p>'+zipFileName.name+'</p>';
+  $("#displayTranscriptionsZipFileName").html(zipFileName.name);
+})
+
+$("#transcriptionstagsetuploadcheckbox").change(function() {
+  if(this.checked) {
+    enableDisableDataFormSubmitBtn(true);
+    document.getElementById("transcriptionstagsetupload").style.display = "block";
+  }
+  else {
+    enableDisableDataFormSubmitBtn(false);
+    document.getElementById("transcriptionstagsetupload").style.display = "none";
+  }
+});
+
+function uploadTranscriptionTagsetZipFile(btn) {
+  // console.log(btn, btn.id);
+  const file = document.getElementById('transcriptionstagsetZipFile').files[0];
+  // console.log(file);
+  if (file !== undefined) {
+    var formData = new FormData();
+    formData.append('transcriptionstagsetZipFile', file);
+    try {
+      let deriveFromProjectName = document.getElementById('idderivefromproject').value;
+    }
+    catch(err) {
+      // console.log(typeof err.message);
+      deriveFromProjectName = '';
+    }
+    formData.append('deriveFromProjectName', deriveFromProjectName);
+    let projectType = document.getElementById('idprojecttype').value;
+    formData.append('projectType', projectType);
+    $.ajax({
+      url: '/lifedata/datazipfile',
+      type: 'POST',
+      data: formData,
+      contentType: false,
+      cache: false,
+      processData: false,
+      success: function(data) {
+        // console.log(data);
+        if (data.completed) {
+          enableDisableDataFormSubmitBtn(false);
+        }
+        else {
+          alert(data.message);
+        }
+      },
+    });
+    return false;
+  }
+}
+
+$("#transcriptionstagsetZipFile").change(function() {
+  enableDisableDataFormSubmitBtn(true);
+});
