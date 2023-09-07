@@ -25,7 +25,7 @@ $(document).ready(function() {
       if (shareuserlist.includes(d)) {
         sharewithusers.push(d)
       }
-      else if (sharespeakerlist.includes($users[i])) {
+      else if (sharespeakerlist.includes(d)) {
         sharespeakers.push(d)
       }
     }
