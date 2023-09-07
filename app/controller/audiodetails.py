@@ -35,6 +35,7 @@ import subprocess
 import shutil
 from pprint import pprint, pformat
 from pymongo import ReturnDocument
+import numpy as np
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 basedir_parent = '/'.join(basedir.split('/')[:-1])
@@ -360,6 +361,7 @@ def saveoneaudiofile(mongo,
     audio_duration, full_audio_file = get_audio_duration_from_file(
         audiowaveform_file)
     audiowaveform_file.stream.seek(0)
+    # full_audio_file_array = np.array(full_audio_file.get_array_of_samples())
 
     if slice_offset_value > audio_duration:
         slice_offset_value = audio_duration
@@ -428,6 +430,7 @@ def saveoneaudiofile(mongo,
     logger.debug('Final text grid length %s', len(text_grids))
     logger.debug('Final boundary offset length %s',
                  len(boundary_offset_values))
+    logger.debug('Slice Offset values %s', slice_offset_values)
     logger.debug('Model Details %s', model_details)
     # logger.debug('Final first two text grids %s', text_grids[:3])
 
@@ -468,7 +471,7 @@ def saveoneaudiofile(mongo,
         # for i in range(len(text_grids)):
         for i, current_text_grid in enumerate(text_grids):
             # for current_text_gird in text_grids:
-            current_audio_id = audio_id + '-slice'+str(i)
+            current_audio_id = audio_id + '-slice'+(str(i).zfill(4))
             current_audio_filename = (current_audio_id +
                                       '_' +
                                       audio_filename)
@@ -476,12 +479,14 @@ def saveoneaudiofile(mongo,
             all_audio_filenames.append(current_audio_filename)
 
             current_audio_chunk = audio_chunks[i]
-            current_slice_offset_value_begn = slice_offset_values[i]
-            current_audio_chunk_begn = current_audio_chunk['start']*1000
+            # current_slice_offset_value_begn = slice_offset_values[i]
+
+            # current_audio_chunk_begn = current_audio_chunk['start']*1000
 
             if i > 0:
-                current_audio_chunk_begn = current_audio_chunk_begn - \
-                    current_slice_offset_value_begn
+                current_audio_chunk_begn = boundary_offset_values[i]*1000
+                # current_audio_chunk_begn = current_audio_chunk_begn - \
+                #     current_slice_offset_value_begn
                 # delete_previous = False
             else:
                 current_audio_chunk_begn = 0.0
@@ -496,16 +501,36 @@ def saveoneaudiofile(mongo,
                 # chunk_distance = next_audio_chunk_start - current_audio_chunk_end
                 # current_audio_chunk_end = current_audio_chunk_end + \
                 #     ((slice_offset_value*1000) + float(chunk_distance/2))
-                current_slice_offset_value_end = slice_offset_values[i+1]
+                current_slice_offset_value_end = slice_offset_values[i+1]*1000
                 current_audio_chunk_end = current_audio_chunk_end + current_slice_offset_value_end
+                # current_audio_chunk_end = boundary_offset_values[i+1]*1000
+                # logger.debug('Slice based end: %s',
+                #              (slice_offset_values[i+1]*1000)+(current_audio_chunk_end))
+
+                # current_audio_chunk_end = audio_chunks[i+1]['start']*1000
+
+                logger.debug('Actual end %s', current_audio_chunk_end)
             else:
                 current_audio_chunk_end = current_audio_chunk_end + \
                     (slice_offset_value*1000)
 
-            logger.debug('Current chunk: %s \tTotal chunks:%s, Current chunk end: %s \tAudio end: %s', i, len(
-                text_grids), current_audio_chunk_end, audio_duration)
+            logger.debug('Current chunk: %s \tTotal chunks:%s, \tCurrent chunk begin:%s, \tCurrent chunk end: %s \tAudio end: %s', i, len(
+                text_grids), current_audio_chunk_begn, current_audio_chunk_end, audio_duration*1000)
 
-            current_audio_file = full_audio_file[current_audio_chunk_begn:current_audio_chunk_end]
+            current_audio_file = full_audio_file[current_audio_chunk_begn: current_audio_chunk_end]
+            # current_audio_file_array = full_audio_file_array[
+            #     int(current_audio_chunk_begn): int(current_audio_chunk_end)]
+
+            # audio_exp_length = current_audio_chunk_end - current_audio_chunk_begn
+            # audio_actual_length = current_audio_file.duration_seconds
+            # logger.debug('Audio expected length: %s \tAudio Clip Actual Length: %s', audio_exp_length, audio_actual_length
+            #              )
+
+            # current_audio_segment_array = pydub.AudioSegment(current_audio_file_array.tobytes(
+            # ), frame_rate=full_audio_file.frame_rate, sample_width=full_audio_file.sample_width, channels=1)
+            # audio_array_length = current_audio_segment_array.duration_seconds
+            # logger.debug('Audio expected length: %s \tAudio Clip Array Length: %s', audio_exp_length, audio_array_length
+            #              )
             audio_segment_bytes = BytesIO()
             current_audio_file.export(audio_segment_bytes, format="wav")
             current_audio_file_segment = FileStorage(
@@ -539,8 +564,7 @@ def saveoneaudiofile(mongo,
                                   current_slice_number=i,
                                   total_slices=len(text_grids),
                                   boundary_offset_value=boundary_offset_values[i],
-                                  slice_offset_value=slice_offset_value,
-
+                                  slice_offset_value=slice_offset_value
                                   )
 
             if update:
@@ -699,12 +723,7 @@ def delete_all_boundaries_of_one_audio_file(mongo,
                                             ** kwargs):
 
     audio_details_dict = {}
-    blank_text_grid = {
-        "discourse": {},
-        "sentence": {},
-        "word": {},
-        "phoneme": {}
-    }
+    blank_text_grid = get_blank_text_grid()
     audio_id = audio_filename.split('_')[0]
     # if get_audio_json:
     # logger.debug('Final first two text grids %s', text_grids[:3])
@@ -1150,6 +1169,16 @@ def updateaudiofiles(mongo,
         return (False, "", "")
 
 
+def get_blank_text_grid():
+    blank_text_grid = {
+        "discourse": {},
+        "sentence": {},
+        "word": {},
+        "phoneme": {}
+    }
+    return blank_text_grid
+
+
 def getactiveaudioid(projects,
                      activeprojectname,
                      activespeakerId,
@@ -1193,12 +1222,16 @@ def getaudiofiletranscription(data_collection, audio_id, transcription_by=""):
         _type_: _description_
     """
     transcription_details = {}
+    blank_text_grid = get_blank_text_grid()
+
     transcription_data = data_collection.find_one({'audioId': audio_id})
     if transcription_data is not None:
-        if (transcription_by == "") or (transcription_by == "latest") or (transcription_by not in transcription_data):
+        if (transcription_by == "") or (transcription_by == "latest"):
             transcription_details['data'] = transcription_data['textGrid']
         elif transcription_by in transcription_data:
             transcription_details['data'] = transcription_data[transcription_by]
+        elif (transcription_by not in transcription_data):
+            transcription_details['data'] = blank_text_grid
 
     logger.debug("Transcription by %s, transcription details %s",
                  transcription_by, transcription_details)
@@ -1213,11 +1246,18 @@ def get_audio_transcriptions_by(projects, data_collection, project_name, audio_i
     if transcription_data is not None:
         project_shared_with = projectDetails.get_shared_with_users(
             projects, project_name)
-        transcription_data_keys = transcription_data.keys()
-        transcriptions_by = [
-            uname for uname in transcription_data_keys if uname in project_shared_with or uname.startswith("@model")]
-        transcriptions_by.append('latest')
 
+        transcription_data_keys = transcription_data.keys()
+        logger.debug("Project shared with %s, transcription keys %s",
+                     project_shared_with, transcription_data_keys)
+        # transcriptions_by = [
+        #     uname for uname in transcription_data_keys if uname in project_shared_with or uname.startswith("@model")]
+        transcriptions_by = [
+            uname for uname in transcription_data_keys if uname.startswith("@model")]
+        transcriptions_by.append('latest')
+        transcriptions_by.extend(project_shared_with)
+        logger.debug("All transcription by %s",
+                     transcriptions_by)
     return transcriptions_by
 
 
@@ -2039,6 +2079,7 @@ def update_text_grid(mongo, text_grid, new_boundaries, transcription_type, inclu
     # logger.debug('Boundaries to update text grid', new_boundaries)
     logger.debug('Total expected boundaries %s', len(new_boundaries))
     logger.debug('Input Text Grid %s', text_grid)
+    logger.debug('Input Boundaries %s', new_boundaries)
 
     for i in range(len(new_boundaries)):
         current_boundary = new_boundaries[i]
@@ -2104,6 +2145,8 @@ def update_text_grid(mongo, text_grid, new_boundaries, transcription_type, inclu
 
             # logger.debug(f"========Current Text Grid(%i)================ %s", i)
             # logger.debug(text_grid)
+    logger.debug('Boundary Offset Value %s', boundary_offset_value)
+    logger.debug('Output Text Grid %s', text_grid)
 
     return text_grid
 
@@ -2209,9 +2252,13 @@ def get_boundary_lists_of_smaller_chunks(
 
         current_chunk_boundaries = boundaries[boundary_start_index: boundary_end_index]
         if i > 0:
-            chunk_distance_prev = current_chunk_boundary_start - previous_chunk_end
-            slice_offset_value_begin = slice_offset_value + \
-                round(float(chunk_distance_prev/2), 2)
+            chunk_distance_prev = round(
+                float(current_chunk_boundary_start - previous_chunk_end), 2)
+            slice_offset_value_begin = round(
+                float(slice_offset_value + chunk_distance_prev), 2)
+
+            offset_values.append(current_chunk_boundary_start -
+                                 slice_offset_value_begin)
             # for i, boundary in enumerate(current_chunk_boundaries):
             #     current_chunk_boundaries[i]['start'] += slice_offset_value
             #     current_chunk_boundaries[i]['end'] += slice_offset_value
@@ -2222,11 +2269,10 @@ def get_boundary_lists_of_smaller_chunks(
             # } for boundary in current_chunk_boundaries]
         else:
             slice_offset_value_begin = 0.0
+            offset_values.append(slice_offset_value_begin)
 
         all_chunk_boundaries.append(current_chunk_boundaries)
 
-        offset_values.append(current_chunk_boundary_start -
-                             slice_offset_value_begin)
         slice_offset_values.append(slice_offset_value_begin)
         previous_chunk_end = current_chunk_boundary_end
 
@@ -2467,12 +2513,13 @@ def get_slices_and_text_grids(mongo,
             audio_chunk_boundary_lists = [boundaries]
 
         for audio_chunk_boundary_list, offset_value in zip(audio_chunk_boundary_lists, offset_values):
-            blank_text_grid = {
-                "discourse": {},
-                "sentence": {},
-                "word": {},
-                "phoneme": {}
-            }
+            blank_text_grid = get_blank_text_grid()
+            # {
+            #     "discourse": {},
+            #     "sentence": {},
+            #     "word": {},
+            #     "phoneme": {}
+            # }
             current_text_grid = generate_text_grid(
                 mongo, blank_text_grid, audio_chunk_boundary_list, transcriptions, transcription_type, max_pause_boundary, min_boundary_size, offset_value=offset_value)
             all_text_grids.append(current_text_grid)

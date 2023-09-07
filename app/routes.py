@@ -353,7 +353,7 @@ def enternewsentences():
                                                                        activeprojectname,
                                                                        audio_id)
                 if (audio_delete_flag or
-                    audio_id not in speaker_audio_ids):
+                        audio_id not in speaker_audio_ids):
                     latest_audio_id = audiodetails.getnewaudioid(projects,
                                                                  activeprojectname,
                                                                  audio_id,
@@ -462,17 +462,18 @@ def enternewsentences():
 def savetranscription():
     try:
         projects, userprojects, projectsform, transcriptions = getdbcollections.getdbcollections(mongo,
-                                                                                                'projects',
-                                                                                                'userprojects',
-                                                                                                'projectsform',
-                                                                                                'transcriptions')
+                                                                                                 'projects',
+                                                                                                 'userprojects',
+                                                                                                 'projectsform',
+                                                                                                 'transcriptions')
         current_username = getcurrentusername.getcurrentusername()
         activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
-                                                                    userprojects)
-        projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
+                                                                      userprojects)
+        projectowner = getprojectowner.getprojectowner(
+            projects, activeprojectname)
         activeprojectform = getactiveprojectform.getactiveprojectform(projectsform,
-                                                                    projectowner,
-                                                                    activeprojectname)
+                                                                      projectowner,
+                                                                      activeprojectname)
         # activespeakerid = getactivespeakerid.getactivespeakerid(userprojects, current_user.username)
         activespeakerid = getuserprojectinfo.getuserprojectinfo(userprojects,
                                                                 current_username,
@@ -488,42 +489,43 @@ def savetranscription():
         # print(lastActiveId)
         # print(transcription_regions)
         speaker_audio_ids = audiodetails.get_speaker_audio_ids_new(projects,
-                                                                    activeprojectname,
-                                                                    current_username,
-                                                                    activespeakerid)
+                                                                   activeprojectname,
+                                                                   current_username,
+                                                                   activespeakerid)
         # logger.debug("speaker_audio_ids: %s", pformat(speaker_audio_ids))
         audio_delete_flag = audiodetails.get_audio_delete_flag(transcriptions,
-                                                            activeprojectname,
-                                                            lastActiveId)
+                                                               activeprojectname,
+                                                               lastActiveId)
         if (audio_delete_flag or
-            lastActiveId not in speaker_audio_ids):
+                lastActiveId not in speaker_audio_ids):
             latest_audio_id = audiodetails.getnewaudioid(projects,
-                                                        activeprojectname,
-                                                        lastActiveId,
-                                                        activespeakerid,
-                                                        speaker_audio_ids,
-                                                        'next')
+                                                         activeprojectname,
+                                                         lastActiveId,
+                                                         activespeakerid,
+                                                         speaker_audio_ids,
+                                                         'next')
             # logger.debug("latest_audio_id: %s", latest_audio_id)
             if (latest_audio_id):
                 audiodetails.updatelatestaudioid(projects,
-                                                activeprojectname,
-                                                latest_audio_id,
-                                                current_username,
-                                                activespeakerid)
+                                                 activeprojectname,
+                                                 latest_audio_id,
+                                                 current_username,
+                                                 activespeakerid)
             # return redirect(url_for('enternewsentences'))
             return jsonify(savedTranscription=0)
 
         scriptCode = readJSONFile.readJSONFile(scriptCodeJSONFilePath)
         audiodetails.savetranscription(transcriptions,
-                                    activeprojectform,
-                                    scriptCode,
-                                    current_username,
-                                    transcription_regions,
-                                    lastActiveId,
-                                    activespeakerid)
+                                       activeprojectform,
+                                       scriptCode,
+                                       current_username,
+                                       transcription_regions,
+                                       lastActiveId,
+                                       activespeakerid)
         return jsonify(savedTranscription=1)
     except:
         logger.exception("")
+
 
 @app.route('/audiobrowse', methods=['GET', 'POST'])
 @login_required
@@ -5331,44 +5333,77 @@ def addnewspeakerdetails():
     if request.method == 'POST':
         # add_new_speaker_form_data = dict(request.form.lists())
         # print(add_new_speaker_form_data)
-        logger.debug("All form %s", request.form)
+        form_data = request.form
+        logger.debug("All form %s", form_data)
 
-        audio_source = request.form.get('audiosource', '')
-        call_source = request.form.get('sourcecallpage', '')
-        audio_subsource = request.form.get('fieldmetadataschema', '')
-        upload_type = request.form.get('metadataentrytype', '')
+        exclude_fields = ['audiosource', 'sourcecallpage',
+                          'fieldMetadataSchema', 'metadataentrytype', 'audioInternetSource']
+
+        audio_source = form_data.get('audiosource', '')
+        call_source = form_data.get('sourcecallpage', '')
+
+        if audio_source == 'field' and 'fieldMetadataSchema' in form_data:
+            logger.debug('Metadata schema found!')
+            metadata_schema = form_data.get('fieldMetadataSchema', '')
+            logger.debug('Metadata schema name %s', metadata_schema)
+        # if metadata_schema == '':
+        elif audio_source == 'internet' and 'audioInternetSource' in form_data:
+            metadata_schema = form_data.get('audioInternetSource', '')
+        else:
+            logger.debug('Metadata schema not found found!')
+            metadata_schema = ''
+        logger.debug("Metadata Schema %s", metadata_schema)
+        upload_type = form_data.get('metadataentrytype', '')
         logger.debug("Call source %s", call_source)
         metadata_data = {}
-        if upload_type == 'single':
-            if ('field' in audio_source):
-                fname = request.form.get('sname', '')
-                fage = request.form.get('sagegroup', '')
-                fgender = request.form.get('sgender', '')
-                educlvl = request.form.get('educationalevel', '')
-                moe12 = request.form.getlist('moe12')
-                moea12 = request.form.getlist('moea12')
-                sols = request.form.getlist('sols')
-                por = request.form.get('por', '')
-                toc = request.form.get('toc', '')
-                metadata_data.update({"name": fname,
-                                      "agegroup": fage,
-                                      "gender": fgender,
-                                      "educationlevel": educlvl,
-                                      "educationmediumupto12": moe12,
-                                      "educationmediumafter12": moea12,
-                                      "speakerspeaklanguage": sols,
-                                      "recordingplace": por,
-                                      "typeofrecordingplace": toc})
 
-            elif (audio_source == 'internet'):
-                # internet sub source
-                audio_subsource = request.form.get('audiosubsource')
-                if (audio_subsource == 'youtube'):
-                    if upload_type == 'single':
-                        channelname = request.form.get('ytchannelname', '')
-                        channelurl = request.form.get('ytchannelurl', '')
-                        metadata_data.update({"channelName": channelname,
-                                              "channelUrl": channelurl})
+        if upload_type == 'single':
+            # if ('field' in audio_source):
+            for field_name in form_data:
+                if field_name not in exclude_fields:
+                    field_data = form_data.getlist(field_name)
+                    logger.debug('Field name %s', field_name)
+                    if (not field_name.endswith('-list')) and (len(field_data) == 1):
+                        field_data = field_data[0]
+                    metadata_data[field_name] = field_data
+                    # if field_name in metadata_data:
+                    #     current_data = metadata_data[field_name]
+                    #     if type(current_data) == str:
+                    #         metadata_data[field_name] = [current_data]
+
+                    #     metadata_data[field_name].append(
+                    #         form_data[field_name])
+                    # else:
+                    #     metadata_data[field_name] = form_data[field_name]
+
+                # fname = request.form.get('sname', '')
+                # fage = request.form.get('sagegroup', '')
+                # fgender = request.form.get('sgender', '')
+                # educlvl = request.form.get('educationalevel', '')
+                # moe12 = request.form.getlist('moe12')
+                # moea12 = request.form.getlist('moea12')
+                # sols = request.form.getlist('sols')
+                # por = request.form.get('por', '')
+                # toc = request.form.get('toc', '')
+                # metadata_data.update({"name": fname,
+                #                       "agegroup": fage,
+                #                       "gender": fgender,
+                #                       "educationlevel": educlvl,
+                #                       "educationmediumupto12": moe12,
+                #                       "educationmediumafter12": moea12,
+                #                       "speakerspeaklanguage": sols,
+                #                       "recordingplace": por,
+                #                       "typeofrecordingplace": toc})
+
+            # elif (audio_source == 'internet'):
+            #     # internet sub source
+            #     audio_subsource = request.form.get('audiosubsource')
+            #     if (audio_subsource == 'youtube'):
+            #         if upload_type == 'single':
+            #             channelname = request.form.get('ytchannelname', '')
+            #             channelurl = request.form.get('ytchannelurl', '')
+            #             metadata_data.update({"channelName": channelname,
+            #                                   "channelUrl": channelurl})
         else:
             metadata_data = request.files.to_dict().get('metadatafile', '')
 
@@ -5383,7 +5418,7 @@ def addnewspeakerdetails():
                                                       activeprojectname,
                                                       current_username,
                                                       audio_source,
-                                                      audio_subsource,
+                                                      metadata_schema,
                                                       metadata_data,
                                                       upload_type)
 
@@ -5451,6 +5486,49 @@ def getonespeakermetadata():
 
     print("Speaker Metadata", speakermetadata)
     return jsonify(onespeakerdetails=speakermetadata)
+
+
+@app.route('/editsourcemetadata', methods=['GET', 'POST'])
+def editsourcemetadata():
+    projects, userprojects, speakerdetails = getdbcollections.getdbcollections(mongo,
+                                                                               'projects',
+                                                                               'userprojects',
+                                                                               'speakerdetails')
+    current_username = getcurrentusername.getcurrentusername()
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username,
+                                                                  userprojects)
+    projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
+    exclude_fields = ['audiosource', 'sourcecallpage',
+                      'fieldmetadataschema', 'metadataentrytype', 'audioInternetSource', 'lifespeakerid']
+
+    if request.method == 'POST':
+        # add_new_speaker_form_data = dict(request.form.lists())
+        # print(add_new_speaker_form_data)
+        current_dt = str(datetime.now()).replace('.', ':')
+        form_data = request.form
+        lifesourceid = form_data.get('lifespeakerid')
+
+        logger.debug("All form %s", form_data)
+        metadata_data = {}
+        for field_name in form_data:
+            if field_name not in exclude_fields:
+                field_data = form_data.getlist(field_name)
+                logger.debug('Field name %s', field_name)
+                if (not field_name.endswith('-list')) and (len(field_data) == 1):
+                    field_data = field_data[0]
+                metadata_data[field_name] = field_data
+        update_data = {
+            "current": {
+                "updatedBy": current_username,
+                "sourceMetadata": metadata_data,
+                "current_date": current_dt,
+            }
+        }
+        logger.debug("Update Data %s", update_data)
+        updatestatus = speakerDetails.updateonespeakerdetails(
+            activeprojectname, lifesourceid, update_data, speakerdetails)
+
+    return redirect(url_for('managespeakermetadata'))
 
 
 @app.route('/editfieldspeakermetadata', methods=['GET', 'POST'])
