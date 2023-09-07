@@ -331,6 +331,7 @@ def enternewsentences():
                                                                        activeprojectname,
                                                                        current_username,
                                                                        activespeakerid)
+            # logger.debug("speaker_audio_ids: %s", pformat(speaker_audio_ids))
             total_comments, annotated_comments, remaining_comments = getcommentstats.getcommentstats(projects,
                                                                                                      data_collection,
                                                                                                      activeprojectname,
@@ -349,7 +350,8 @@ def enternewsentences():
                 audio_delete_flag = audiodetails.get_audio_delete_flag(transcriptions,
                                                                        activeprojectname,
                                                                        audio_id)
-                if (audio_delete_flag):
+                if (audio_delete_flag or
+                        audio_id not in speaker_audio_ids):
                     latest_audio_id = audiodetails.getnewaudioid(projects,
                                                                  activeprojectname,
                                                                  audio_id,
@@ -361,7 +363,7 @@ def enternewsentences():
                                                      latest_audio_id,
                                                      current_username,
                                                      activespeakerid)
-                    flash(f"Your last active audio seem to be deleted by one of the shared user.\
+                    flash(f"Your last active audio seem to be deleted or revoked access by one of the shared user.\
                         Showing you the next audio in the list.")
                     return redirect(url_for('enternewsentences'))
 
@@ -456,78 +458,71 @@ def enternewsentences():
 @app.route('/savetranscription', methods=['GET', 'POST'])
 @login_required
 def savetranscription():
-    projects, userprojects, projectsform, transcriptions = getdbcollections.getdbcollections(mongo,
-                                                                                             'projects',
-                                                                                             'userprojects',
-                                                                                             'projectsform',
-                                                                                             'transcriptions')
-    current_username = getcurrentusername.getcurrentusername()
-    activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
-                                                                  userprojects)
-    projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
-    activeprojectform = getactiveprojectform.getactiveprojectform(projectsform,
-                                                                  projectowner,
-                                                                  activeprojectname)
-    # activespeakerid = getactivespeakerid.getactivespeakerid(userprojects, current_user.username)
-    activespeakerid = getuserprojectinfo.getuserprojectinfo(userprojects,
-                                                            current_username,
-                                                            activeprojectname)['activespeakerId']
-    # data through ajax
-    transcription_data = json.loads(request.form['a'])
-    # transcription_data = json.loads(request.args.get('a'))
-    transcription_data = dict(transcription_data)
-    # logger.debug("transcription_data: %s", pformat(transcription_data))
-    lastActiveId = transcription_data['lastActiveId']
-    transcription_regions = transcription_data['transcriptionRegions']
-    # logger.debug("transcription_regions: %s", pformat(json.loads(transcription_regions)))
-    # print(lastActiveId)
-    # print(transcription_regions)
-    speaker_audio_ids = audiodetails.get_speaker_audio_ids_new(projects,
+    try:
+        projects, userprojects, projectsform, transcriptions = getdbcollections.getdbcollections(mongo,
+                                                                                                 'projects',
+                                                                                                 'userprojects',
+                                                                                                 'projectsform',
+                                                                                                 'transcriptions')
+        current_username = getcurrentusername.getcurrentusername()
+        activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                      userprojects)
+        projectowner = getprojectowner.getprojectowner(
+            projects, activeprojectname)
+        activeprojectform = getactiveprojectform.getactiveprojectform(projectsform,
+                                                                      projectowner,
+                                                                      activeprojectname)
+        # activespeakerid = getactivespeakerid.getactivespeakerid(userprojects, current_user.username)
+        activespeakerid = getuserprojectinfo.getuserprojectinfo(userprojects,
+                                                                current_username,
+                                                                activeprojectname)['activespeakerId']
+        # data through ajax
+        transcription_data = json.loads(request.form['a'])
+        # transcription_data = json.loads(request.args.get('a'))
+        transcription_data = dict(transcription_data)
+        # logger.debug("transcription_data: %s", pformat(transcription_data))
+        lastActiveId = transcription_data['lastActiveId']
+        transcription_regions = transcription_data['transcriptionRegions']
+        # logger.debug("transcription_regions: %s", pformat(json.loads(transcription_regions)))
+        # print(lastActiveId)
+        # print(transcription_regions)
+        speaker_audio_ids = audiodetails.get_speaker_audio_ids_new(projects,
+                                                                   activeprojectname,
+                                                                   current_username,
+                                                                   activespeakerid)
+        # logger.debug("speaker_audio_ids: %s", pformat(speaker_audio_ids))
+        audio_delete_flag = audiodetails.get_audio_delete_flag(transcriptions,
                                                                activeprojectname,
-                                                               current_username,
-                                                               activespeakerid)
-    audio_delete_flag = audiodetails.get_audio_delete_flag(transcriptions,
-                                                           activeprojectname,
-                                                           lastActiveId)
-    if (audio_delete_flag):
-        latest_audio_id = audiodetails.getnewaudioid(projects,
-                                                     activeprojectname,
-                                                     lastActiveId,
-                                                     activespeakerid,
-                                                     speaker_audio_ids,
-                                                     'next')
-        audiodetails.updatelatestaudioid(projects,
-                                         activeprojectname,
-                                         latest_audio_id,
-                                         current_username,
-                                         activespeakerid)
-        # return redirect(url_for('enternewsentences'))
-        return jsonify(savedTranscription=0)
+                                                               lastActiveId)
+        if (audio_delete_flag or
+                lastActiveId not in speaker_audio_ids):
+            latest_audio_id = audiodetails.getnewaudioid(projects,
+                                                         activeprojectname,
+                                                         lastActiveId,
+                                                         activespeakerid,
+                                                         speaker_audio_ids,
+                                                         'next')
+            # logger.debug("latest_audio_id: %s", latest_audio_id)
+            if (latest_audio_id):
+                audiodetails.updatelatestaudioid(projects,
+                                                 activeprojectname,
+                                                 latest_audio_id,
+                                                 current_username,
+                                                 activespeakerid)
+            # return redirect(url_for('enternewsentences'))
+            return jsonify(savedTranscription=0)
 
-    scriptCode = readJSONFile.readJSONFile(scriptCodeJSONFilePath)
-    audiodetails.savetranscription(transcriptions,
-                                   activeprojectform,
-                                   scriptCode,
-                                   current_username,
-                                   transcription_regions,
-                                   lastActiveId,
-                                   activespeakerid)
-    # latest_audio_id = audiodetails.getnewaudioid(projects,
-    #                                              activeprojectname,
-    #                                              lastActiveId,
-    #                                              activespeakerid,
-    #                                              'next')
-    # audiodetails.updatelatestaudioid(projects,
-    #                                  activeprojectname,
-    #                                  latest_audio_id,
-    #                                  current_username,
-    #                                  activespeakerid)
-    sentenceFieldId = ''
-    gloss = ''
-    sentence = ''
-
-    # return jsonify(sentenceFieldId=sentenceFieldId, gloss=gloss, result2=sentence)
-    return jsonify(savedTranscription=1)
+        scriptCode = readJSONFile.readJSONFile(scriptCodeJSONFilePath)
+        audiodetails.savetranscription(transcriptions,
+                                       activeprojectform,
+                                       scriptCode,
+                                       current_username,
+                                       transcription_regions,
+                                       lastActiveId,
+                                       activespeakerid)
+        return jsonify(savedTranscription=1)
+    except:
+        logger.exception("")
 
 
 @app.route('/audiobrowse', methods=['GET', 'POST'])
