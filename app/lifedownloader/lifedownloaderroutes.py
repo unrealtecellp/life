@@ -45,7 +45,7 @@ ld = Blueprint('lifedownloader', __name__,
 
 @ld.route('/downloadtranscriptions', methods=['GET', 'POST'])
 def downloadtranscriptions():
-    print('Fetching transcription')
+    print('Fetching transcriptions in life downloader')
     userprojects, projectsform, transcriptions = getdbcollections.getdbcollections(
         mongo, 'userprojects', 'projectsform', 'transcriptions')
     current_username = getcurrentusername.getcurrentusername()
@@ -68,9 +68,9 @@ def downloadtranscriptions():
         try:
             empty_string = request.form.get("empty_string")
             if empty_string == None:
-                empty_string = '#'
+                empty_string = '0'
         except:
-            empty_string = '#'
+            empty_string = '0'
 
         try:
             merge_same_intervals = request.form.get("merge_intervals")

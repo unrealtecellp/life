@@ -342,7 +342,7 @@
                 for="uploadparameters-boundarypauseid`">Boundary Pause Threshold (between 0.00001-10.0 seconds) </label><br /> Suggested Values: <i>For sentence: 0.3; For words: 0.01; For phones: 0.001</i><br/>
               
               <input type="number" name="boundaryPause" id="uploadparameters-boundarypauseid" min="0.00001" max="10.0" step="0.00001"
-                  placeholder="Value between 0.00001 to 10.0" value="0.3" disabled>
+                  placeholder="Value between 0.00001 to 10.0" value="0.3" disabled><br />
               
               <label title="It defines the minimum length of a boundary - smaller boundaries are merged to the next or previous boundaries"
                     for="uploadparameters-minboundarysizeid">Minimum Boundary Size (between 0.5-10.0 seconds) </label>
@@ -362,8 +362,8 @@
               </div>
 <!-- sliceOffsetValue -->
               <div class="input-group col-md-8" id="uploadparameters-filesplitthreshold-divid">
-              <label for="uploadparameters-filesplitthresholdid">File Split Pause Threshold (between 0.1-5.0 seconds):</label><br>
-              <input type="number" name="fileSplitThreshold" id="uploadparameters-filesplitthresholdid" min="0.1" max="5.0" step="0.1" value="0.9"
+              <label for="uploadparameters-filesplitthresholdid">File Split Pause Threshold (between 0.1-10.0 seconds):</label><br>
+              <input type="number" name="fileSplitThreshold" id="uploadparameters-filesplitthresholdid" min="0.1" max="10.0" step="0.1" value="0.9"
                 placeholder="Value between 0.1 to 5.0">
               </div>
 
@@ -400,6 +400,8 @@
         <div class="modal-body">
 
           <h4>Download:</h3>
+            {% if ('sharelatestchecked' not in shareinfo) or ('sharelatestchecked' in shareinfo and shareinfo['sharelatestchecked']
+            == 'true') %}
             <div class="btn-group" role="group">
               <button type="b4tton" id="lifejson" class="btn btn-info dropdown-toggle" data-toggle="dropdown"
                 aria-haspopup="true" aria-expanded="false">
@@ -423,6 +425,7 @@
                 <li id="markdown"><a href="#">Markdown</a></li>
               </ul>
             </div>
+            {% endif %}
 
             <div class="btn-group" role="group">
               <button type="button" class="btn btn-warning dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"

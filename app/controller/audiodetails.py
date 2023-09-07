@@ -468,7 +468,7 @@ def saveoneaudiofile(mongo,
         # for i in range(len(text_grids)):
         for i, current_text_grid in enumerate(text_grids):
             # for current_text_gird in text_grids:
-            current_audio_id = audio_id + '-slice'+str(i)
+            current_audio_id = audio_id + '-slice'+(str(i).zfill(4))
             current_audio_filename = (current_audio_id +
                                       '_' +
                                       audio_filename)
@@ -699,12 +699,7 @@ def delete_all_boundaries_of_one_audio_file(mongo,
                                             ** kwargs):
 
     audio_details_dict = {}
-    blank_text_grid = {
-        "discourse": {},
-        "sentence": {},
-        "word": {},
-        "phoneme": {}
-    }
+    blank_text_grid = get_blank_text_grid()
     audio_id = audio_filename.split('_')[0]
     # if get_audio_json:
     # logger.debug('Final first two text grids %s', text_grids[:3])
@@ -1150,6 +1145,16 @@ def updateaudiofiles(mongo,
         return (False, "", "")
 
 
+def get_blank_text_grid():
+    blank_text_grid = {
+        "discourse": {},
+        "sentence": {},
+        "word": {},
+        "phoneme": {}
+    }
+    return blank_text_grid
+
+
 def getactiveaudioid(projects,
                      activeprojectname,
                      activespeakerId,
@@ -1193,12 +1198,16 @@ def getaudiofiletranscription(data_collection, audio_id, transcription_by=""):
         _type_: _description_
     """
     transcription_details = {}
+    blank_text_grid = get_blank_text_grid()
+
     transcription_data = data_collection.find_one({'audioId': audio_id})
     if transcription_data is not None:
-        if (transcription_by == "") or (transcription_by == "latest") or (transcription_by not in transcription_data):
+        if (transcription_by == "") or (transcription_by == "latest"):
             transcription_details['data'] = transcription_data['textGrid']
         elif transcription_by in transcription_data:
             transcription_details['data'] = transcription_data[transcription_by]
+        elif (transcription_by not in transcription_data):
+            transcription_details['data'] = blank_text_grid
 
     logger.debug("Transcription by %s, transcription details %s",
                  transcription_by, transcription_details)
@@ -1213,11 +1222,18 @@ def get_audio_transcriptions_by(projects, data_collection, project_name, audio_i
     if transcription_data is not None:
         project_shared_with = projectDetails.get_shared_with_users(
             projects, project_name)
-        transcription_data_keys = transcription_data.keys()
-        transcriptions_by = [
-            uname for uname in transcription_data_keys if uname in project_shared_with or uname.startswith("@model")]
-        transcriptions_by.append('latest')
 
+        transcription_data_keys = transcription_data.keys()
+        logger.debug("Project shared with %s, transcription keys %s",
+                     project_shared_with, transcription_data_keys)
+        # transcriptions_by = [
+        #     uname for uname in transcription_data_keys if uname in project_shared_with or uname.startswith("@model")]
+        transcriptions_by = [
+            uname for uname in transcription_data_keys if uname.startswith("@model")]
+        transcriptions_by.append('latest')
+        transcriptions_by.extend(project_shared_with)
+        logger.debug("All transcription by %s",
+                     transcriptions_by)
     return transcriptions_by
 
 
@@ -2467,12 +2483,13 @@ def get_slices_and_text_grids(mongo,
             audio_chunk_boundary_lists = [boundaries]
 
         for audio_chunk_boundary_list, offset_value in zip(audio_chunk_boundary_lists, offset_values):
-            blank_text_grid = {
-                "discourse": {},
-                "sentence": {},
-                "word": {},
-                "phoneme": {}
-            }
+            blank_text_grid = get_blank_text_grid()
+            # {
+            #     "discourse": {},
+            #     "sentence": {},
+            #     "word": {},
+            #     "phoneme": {}
+            # }
             current_text_grid = generate_text_grid(
                 mongo, blank_text_grid, audio_chunk_boundary_list, transcriptions, transcription_type, max_pause_boundary, min_boundary_size, offset_value=offset_value)
             all_text_grids.append(current_text_grid)

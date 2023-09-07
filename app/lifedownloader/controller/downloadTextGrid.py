@@ -22,7 +22,8 @@ def downloadTextGridWihoutAudio(transcriptions,
                                 latest,
                                 filetype,
                                 empty_string='',
-                                merge_same_intervals=False):
+                                merge_same_intervals=False,
+                                merge_all_slices=False):
 
     basedir = os.path.abspath(os.path.dirname(__file__))
     basedir = basedir[:basedir.rfind('/')]
@@ -83,19 +84,21 @@ def downloadTextGridWihoutAudio(transcriptions,
 
         print('all_entries', all_entries)
         for cur_entry in all_entries:
-            write_json(cur_entry, text_grid_dir)
+            write_json(cur_entry, text_grid_dir, merge_all_slices)
 
     else:
         if latest:
             all_entries = transcriptions.find({'projectname': activeprojectname,
                                                'transcriptionFLAG': 1, 'audiodeleteFLAG': 0},
-                                              {'textGrid': 1, 'audioId': 1, 'audioFilename': 1, '_id': 0})
+                                              {'textGrid': 1, 'audioId': 1, 'audioFilename': 1, 'additionalInfo.totalSlices': 1, '_id': 0})
         else:
             all_entries = transcriptions.find({'projectname': activeprojectname,
                                                'transcriptionFLAG': 1, 'audiodeleteFLAG': 0},
-                                              {current_username+'.textGrid': 1, 'audioId': 1, 'audioFilename': 1, '_id': 0})
+                                              {current_username+'.textGrid': 1, 'audioId': 1, 'audioFilename': 1, 'additionalInfo.totalSlices': 1, '_id': 0})
 
         # min_max = []
+        total_slices = 1
+
         tiers = {}
 
         for cur_entry in all_entries:
@@ -110,7 +113,7 @@ def downloadTextGridWihoutAudio(transcriptions,
 
             if len(text_grid) > 0:
                 if filetype == 'json':
-                    write_json(cur_entry, text_grid_dir)
+                    write_json(cur_entry, text_grid_dir, merge_all_slices)
                 else:
                     xmin, xmax, tiers = get_boundaries_tiers(
                         activeprojectname, current_projectformelements, text_grid)
@@ -121,8 +124,8 @@ def downloadTextGridWihoutAudio(transcriptions,
 
                         audio_id = cur_entry['audioId']
                         audio_filename = cur_entry['audioFilename']
-                        original_audio_filename = audio_filename[audio_filename.find(
-                            '_')+1:]
+                        original_audio_filename = get_original_audio_filename(
+                            cur_entry, audio_filename, merge_all_slices)
 
                         overall_xmin = 0.0
                         overall_xmax = get_audio_duration(audio_dir, audio_id)
@@ -145,9 +148,11 @@ def downloadTextGridWihoutAudio(transcriptions,
         return '0', 'Empty Directory'
 
 
-def write_json(cur_entry, text_grid_dir):
+def write_json(cur_entry, text_grid_dir, merge_all_slices):
     audio_filename = cur_entry['audioFilename']
-    original_audio_filename = audio_filename[audio_filename.find('_')+1:]
+    # original_audio_filename = audio_filename[audio_filename.find('_')+1:]
+    original_audio_filename = get_original_audio_filename(
+        cur_entry, audio_filename, merge_all_slices)
     text_grid_path = get_text_grid_path(original_audio_filename, text_grid_dir)
     json_path = text_grid_path.replace('.TextGrid', '.json')
     with open(json_path, "w") as outfile:
@@ -190,6 +195,23 @@ def write_tgt_text_grid(original_tgt_text_grid, text_grid_path, filetype, empty_
         elif filetype == 'html':
             text_grid_path_html = text_grid_path.replace('.TextGrid', '.html')
             textgrid_pd.to_html(text_grid_path_html, index=False)
+
+
+def get_original_audio_filename(cur_entry, audio_filename, merge_all_slices):
+    if 'additionalInfo' in cur_entry:
+        total_slices = cur_entry['additionalInfo'].get(
+            'totalSlices', 1)
+    if total_slices > 1:
+        if merge_all_slices:
+            original_audio_filename = audio_filename[audio_filename.find(
+                '_')+1:]
+        else:
+            original_audio_filename = audio_filename[audio_filename.find(
+                '-')+1:]
+    else:
+        original_audio_filename = audio_filename[audio_filename.find(
+            '_')+1:]
+    return original_audio_filename
 
 
 def get_textgrid_df(tgt_text_grid):
