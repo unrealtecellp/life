@@ -90,11 +90,11 @@ def downloadTextGridWihoutAudio(transcriptions,
         if latest:
             all_entries = transcriptions.find({'projectname': activeprojectname,
                                                'transcriptionFLAG': 1, 'audiodeleteFLAG': 0},
-                                              {'textGrid': 1, 'audioId': 1, 'audioFilename': 1, 'additionalInfo.totalSlices': 1, '_id': 0})
+                                              {'textGrid': 1, 'audioId': 1, 'audioFilename': 1, 'additionalInfo.totalSlices': 1, 'additionalInfo.currentSliceNumber': 1, '_id': 0})
         else:
             all_entries = transcriptions.find({'projectname': activeprojectname,
                                                'transcriptionFLAG': 1, 'audiodeleteFLAG': 0},
-                                              {current_username+'.textGrid': 1, 'audioId': 1, 'audioFilename': 1, 'additionalInfo.totalSlices': 1, '_id': 0})
+                                              {current_username+'.textGrid': 1, 'audioId': 1, 'audioFilename': 1, 'additionalInfo.totalSlices': 1, 'additionalInfo.currentSliceNumber': 1, '_id': 0})
 
         # min_max = []
         total_slices = 1
