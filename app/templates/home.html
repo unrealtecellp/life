@@ -12,6 +12,7 @@ Home
 
 
 {% block app_content %}
+<div id="lifehomealert"></div>
 <div>
   <h2>Linguistic Field Data Management and Analysis System<br>[LiFE]</h2>
 </div>
@@ -125,25 +126,7 @@ Home
               aria-hidden="true">&times;</span></button>
           <h4 class="modal-title">LiFE Access Control</h4>
         </div>
-        <div class="modal-body">
-          <h4 id="myShareProjectModalLabel">Project Name: {{ activeprojectname }}</h4>
-          <hr>
-          <div class="row">
-            <div class="col-xs-12">
-              <div class="form-group">
-                
-                <select name="" id="shareProjectSelect" multiple="multiple" style="width: 100%">
-                </select>
-                <br>
-                <div id="shareLatest"></div>
-                <br>
-                <select name="" id="shareSpeakerSelect" multiple="multiple" style="width: 100%">
-                </select>
-                <br>
-                <div class="sharemode"></div>
-              </div>
-            </div>
-          </div>
+        <div class="modal-body" id="sharemodalbodystructure">
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>

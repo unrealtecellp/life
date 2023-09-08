@@ -18,7 +18,7 @@ def getuserprojectinfo(userprojects,
                 # print(shareinfo)
     if (len(userprojectinfo) == 0):
         userprojectinfo = {
-                        'sharemode': 0,
+                        'sharemode': -1,
                         'sharechecked': "false",
                         'activespeakerId': "",
                         'activesourceId': ""
