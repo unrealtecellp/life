@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block title %}
+LiFe Models Home
+{% endblock title %}
+
+{% block styles %}
+{{super()}}
+<link href="{{url_for('.static', filename='lifemodelshome.css')}}" rel="stylesheet" />
+{% endblock %}
+
+
+{% block app_content %}
+  <h2>LiFE - Models</h2>
+  <br/>
+  <hr/>
+  <div id="activeProject">
+    <button type="button" class="btn btn-lg btn-success" onclick="window.location.href='{{ url_for('newproject') }}';">Create New Project</button>
+    <br/>
+    <br/>
+    <hr/>
+  </div> 
+    
+{% endblock %}
+
+{% block scripts %}
+{{super()}}
+<script src="{{url_for('.static', filename='lifemodelshome.js')}}"></script>
+{% endblock %}

@@ -1,0 +1,65 @@
+{
+  "kind": "youtube#videoListResponse",
+  "etag": "Fu7fOEckComufOwqhzfaRpOF8wY",
+  "items": [
+    {
+      "kind": "youtube#video",
+      "etag": "CQiGh4OFT7a9QA4AnXmpjVmdCX0",
+      "id": "Ynz_fqTCuVw",
+      "snippet": {
+        "publishedAt": "2020-08-06T07:31:25Z",
+        "channelId": "UCQ-Jdn6qTX29wChpO_NsDtw",
+        "title": "M.Sc. in Computational Linguistics Structure || CTRANS || DBRAU, Agra",
+        "description": "An overview of the structure of M.Sc. in Computational Linguistics at the Centre for Transdisciplinary Studies, Dr. Bhimrao Ambedkar University, Agra, to be started from Session 2020-21. It will be co-taught by professors from 4 departments - Linguistics, Maths, Statistics and Computer Science - and collaborators from industry and other institutions such as Microsoft Research, Panlingua and IIT-KGP. For more information and application for admission, visit the Centre website - http://www.ctrans.in",
+        "thumbnails": {
+          "default": {
+            "url": "https://i.ytimg.com/vi/Ynz_fqTCuVw/default.jpg",
+            "width": 120,
+            "height": 90
+          },
+          "medium": {
+            "url": "https://i.ytimg.com/vi/Ynz_fqTCuVw/mqdefault.jpg",
+            "width": 320,
+            "height": 180
+          },
+          "high": {
+            "url": "https://i.ytimg.com/vi/Ynz_fqTCuVw/hqdefault.jpg",
+            "width": 480,
+            "height": 360
+          },
+          "standard": {
+            "url": "https://i.ytimg.com/vi/Ynz_fqTCuVw/sddefault.jpg",
+            "width": 640,
+            "height": 480
+          }
+        },
+        "channelTitle": "COLING CTRANS",
+        "categoryId": "22",
+        "liveBroadcastContent": "none",
+        "localized": {
+          "title": "M.Sc. in Computational Linguistics Structure || CTRANS || DBRAU, Agra",
+          "description": "An overview of the structure of M.Sc. in Computational Linguistics at the Centre for Transdisciplinary Studies, Dr. Bhimrao Ambedkar University, Agra, to be started from Session 2020-21. It will be co-taught by professors from 4 departments - Linguistics, Maths, Statistics and Computer Science - and collaborators from industry and other institutions such as Microsoft Research, Panlingua and IIT-KGP. For more information and application for admission, visit the Centre website - http://www.ctrans.in"
+        }
+      },
+      "contentDetails": {
+        "duration": "PT18M48S",
+        "dimension": "2d",
+        "definition": "hd",
+        "caption": "false",
+        "licensedContent": false,
+        "contentRating": {},
+        "projection": "rectangular"
+      },
+      "statistics": {
+        "viewCount": "367",
+        "likeCount": "9",
+        "favoriteCount": "0",
+        "commentCount": "1"
+      }
+    }
+  ],
+  "pageInfo": {
+    "totalResults": 1,
+    "resultsPerPage": 1
+  }
+}

@@ -1,0 +1,21 @@
+/* .vl {
+    border-left: 1px solid black;
+    height: 660px;
+    position: absolute;
+    left: 50%;
+    margin-left: 10px;
+    top: 8%;
+  } */
+
+  .responsive {
+  width: 100%;
+  height: 350px;
+  }
+
+  input[type="radio"]{
+    margin: 0 10px 0 10px;
+  }
+
+  .allanno {
+    margin-right: 5px;
+  }

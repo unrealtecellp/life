@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block extra_nav %}
+<ul id="navBar" class="nav navbar-nav">
+    <li><a href="{{ url_for('enternewlexeme') }}">Text</a></li>
+    <!-- <li><a href="{{ url_for('dictionaryview') }}">View Lexemes</a></li> -->
+    <!-- <li id="image"><a href="#">Image</a></li> -->
+    <!-- <li><a href="{{ url_for('dictionaryview') }}">Upload Lexeme Entry Form</a></li> -->
+    <li><a href="{{ url_for('enternewsentences') }}">Audio</a></li>
+    <li><a href="{{ url_for('audiobrowse') }}">Browse</a></li>
+    <li class="pull-right">
+        <a href="https://docs.google.com/document/d/1TWOt9km-HdCk__bi35ZcUF101PZMWZDo0PgXlkeVLTY/edit?usp=sharing"
+            target="_blank" data-toggle="tooltip" title="Help"><span class="glyphicon glyphicon-info-sign"
+                aria-hidden="true">Manual</span>
+        </a>
+    </li>
+    <!-- <li><a href="#">Multimodal</a></li> -->
+    <!-- <li><a href="{{ url_for('dictionaryview') }}">Browse</a></li> -->
+    <!-- <li><a href="{{ url_for('audiotranscription') }}">Audio Transcription</a></li> -->
+    <!-- <li><a href="#">Automation</a></li> -->
+    <!-- <button type="button" class="btn btn-primary shareprojectwith">Share</button> -->
+    <!-- <li><a href="{{ url_for('dictionaryview') }}">Import Multiple Lexemes</a></li> -->
+    <!-- <li><a>New Lexemes From Sentence</a></li> -->
+    <!-- <li><a>New Lexemes From Narration</a></li> -->
+    <!-- <li><a href="{{ url_for('dictionaryview') }}">View / Edit Dictionary</a></li> -->
+    <!-- <li><a href="{{ url_for('dictionaryview') }}">Print / Export Dictionary</a></li> -->
+    <!-- <li><a href="{{ url_for('dictionaryview') }}">Export Excel</a></li> -->
+    <!-- <li><a>Switch View</a></li> -->
+    <!-- <li><a>Search and Replace</a></li> -->
+</ul>
+<script>
+            // document.getElementById("image").innerHTML = ""
+</script>
+{% endblock %}

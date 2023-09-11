@@ -2,12 +2,15 @@
 
 
 {% block title %}
-    {% if title %}{{ title }}{% else %}Welcome to Dictionary Entry{% endif %}
+    {% if title %}{{ title }}{% else %}Welcome to LiFE{% endif %}
 {% endblock %}
 
 {% block styles %}
 {{super()}}
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
+<link href="{{ url_for('static', filename='highlight-within-textarea/jquery.highlight-within-textarea.css') }}" rel="stylesheet">
+<!-- <link rel="stylesheet" href="{{ url_for('static', filename='jQuery-contextMenu/dist/jquery.contextMenu.css') }}"> -->
+<link href="{{url_for('static', filename='base.css')}}" rel="stylesheet" />
 {% endblock %}
 
 {% block navbar %}
@@ -20,7 +23,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-               <strong><a class="navbar-brand" href="{{ url_for('home') }}">LiFE</a></strong>
+               <strong><a class="navbar-brand" href="{{ url_for('home') }}">LiFE <sub>by UnReaL-TecE</sub></a></strong>
             </div>
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 
@@ -28,21 +31,28 @@
                     {% if current_user.is_anonymous %}
                     <li><a href="{{ url_for('login') }}">Login</a></li>
                     {% else %}
-                        {% if data is defined %}
+                        {# {% if data is defined %}
                         <select class="custom-select custom-select-sm" id="a" style="margin-top:10px">
                             <option selected disabled>Open Existing Project</option>
                             {% for d in data %}
                             <option value="{{ d }}">{{ d }}</option>
                             {% endfor %}
                         </select>
-                        {% endif %}
+                        {% endif %} #}
                     <li style="margin-top:15px ">Welcome,&nbsp</li>
                     {# <li><a href="{{ current_user.username }}">{{ current_user.username }}</a></li> #}
                     <li style="margin-top:15px">{{ current_user.username }}</li>
                     <li><a href="{{ url_for('logout') }}">Logout</a></li>
-
+                    <!-- Rounded switch -->
+                    <!-- <li style="margin-top:14px">
+                        <label class="switch">
+                            <input type="checkbox" id="darkmodetoggleswitch">
+                            <span class="slider round"></span>
+                        </label>
+                    </li> -->
                     {% endif %}
-                </ul>{% block extra_nav %}{% endblock %}
+                </ul>
+                {% block extra_nav %}{% endblock %}
             </div>
         </div>{% block base_navbar %}{% endblock %}
     </nav>
@@ -66,5 +76,15 @@
 {% block scripts %}
 {{super()}}
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
-<script src="{{url_for('.static', filename='changeactiveproject.js')}}"></script>
+<script src="{{url_for('static', filename='changeactiveproject.js')}}"></script>
+<script src="{{url_for('static', filename='base.js')}}"></script>
+<script src="{{url_for('static', filename='wavesurfer/wavesurfer.js')}}"></script>
+<script src="{{url_for('static', filename='wavesurfer/plugin/wavesurfer.regions.js')}}"></script>
+<script src="{{url_for('static', filename='wavesurfer/plugin/wavesurfer.cursor.js')}}"></script>
+<!-- <script src="{{url_for('.static', filename='wavesurfer/plugin/wavesurfer.minimap.js')}}"></script> -->
+<!-- <script src="{{url_for('.static', filename='wavesurfer/plugin/wavesurfer.timeline.js')}}"></script> -->
+<!-- <script src="{{url_for('.static', filename='wavesurfer/plugin/wavesurfer.spectrogram.js')}}"></script> -->
+<script src="{{ url_for('static', filename='highlight-within-textarea/jquery.highlight-within-textarea.js')}}"></script>
+<!-- <script src="{{ url_for('static', filename='jQuery-contextMenu/dist/jquery.contextMenu.js')}}"></script> -->
+<!-- <script src="{{ url_for('static', filename='jQuery-contextMenu/dist/jquery.ui.position.js')}}"></script> -->
 {% endblock %}

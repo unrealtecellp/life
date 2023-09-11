@@ -3,12 +3,13 @@
 import re
 from datetime import datetime
 
+
 def createdummylexemeentry(projects,
-                            lexemes,
-                            activeprojectform,
-                            scriptCode,
-                            langScript,
-                            current_username):
+                           lexemes,
+                           activeprojectform,
+                           scriptCode,
+                           langScript,
+                           current_username):
     """
     Args:
         projects: instance of 'projects' collection.
@@ -23,15 +24,16 @@ def createdummylexemeentry(projects,
     """
 
     newLexemeData = {
-                    'allomorphCount': ['1'],
-                    'senseCount': ['3'],
-                    'variantCount': ['1']
-                    }
+        'allomorphCount': ['1'],
+        'senseCount': ['1'],
+        'variantCount': ['1']
+    }
 
     if activeprojectform is not None:
         for key, value in activeprojectform.items():
             if ('Upload' in key or
-                'username' in key): continue
+                    'username' in key):
+                continue
             elif (key == 'projectname'):
                 newLexemeData[key] = [value]
             elif (key == 'Lexeme Language'):
@@ -54,21 +56,24 @@ def createdummylexemeentry(projects,
                 senseCount = int(newLexemeData['senseCount'][0])
                 for i in range(senseCount):
                     for lang in activeprojectform['Gloss Language']:
-                        newLexemeData['Gloss '+lang+' Sense'+' '+str(i+1)] = ['']
-                        newLexemeData['Definition '+lang+' Sense'+' '+str(i+1)] = ['']
-                    newLexemeData['Grammatical Category Sense '+str(i+1)] = ['']
+                        newLexemeData['Gloss '+lang +
+                                      ' Sense'+' '+str(i+1)] = ['']
+                        newLexemeData['Definition '+lang +
+                                      ' Sense'+' '+str(i+1)] = ['']
+                    newLexemeData['Grammatical Category Sense ' +
+                                  str(i+1)] = ['']
                     newLexemeData['Example Sense '+str(i+1)] = ['']
                     newLexemeData['Free Translation Sense '+str(i+1)] = ['']
                     newLexemeData['Semantic Domain Sense '+str(i+1)] = ['']
                     newLexemeData['Lexical Relation Sense '+str(i+1)] = ['']
             elif (key == 'Custom Fields'):
-                print(value)
+                # print(value)
                 for item in activeprojectform['Custom Fields']:
                     k = str(list(item.keys())[0])
                     v = str(list(item.values())[0])
                     if (v != 'multimedia'):
                         newLexemeData['Custom Field '+k] = ['']
-            else:    
+            else:
                 newLexemeData[key] = ['']
 
     # pprint(newLexemeData)
@@ -86,8 +91,8 @@ def createdummylexemeentry(projects,
         for key, value in newLexemeData.items():
             if 'Script' in key:
                 k = re.search(r'Script (\w+)', key)
-                lexemeFormScriptList.append({k[1] : value[0]})
-        lexemeFormData['headword'] =  list(lexemeFormScriptList[0].values())[0]
+                lexemeFormScriptList.append({k[1]: value[0]})
+        lexemeFormData['headword'] = list(lexemeFormScriptList[0].values())[0]
         return lexemeFormScriptList
 
     def senseListOfDict(senseCount):
@@ -98,9 +103,9 @@ def createdummylexemeentry(projects,
                 if 'Sense '+str(num) in key:
                     k = re.search(r'([\w+\s]+) Sense', key)
                     if k[1] == 'Semantic Domain' or k[1] == 'Lexical Relation':
-                        senselist.append({k[1] : value})
+                        senselist.append({k[1]: value})
                     else:
-                        senselist.append({k[1] : value[0]})
+                        senselist.append({k[1]: value[0]})
             sense['Sense '+str(num)] = senselist
         # pprint.pprint(sense)
         return sense
@@ -149,7 +154,8 @@ def createdummylexemeentry(projects,
     for key, value in newLexemeData.items():
         if ('Sense' in key or
             'Variant' in key or
-            'Allomorph' in key): continue
+                'Allomorph' in key):
+            continue
         elif key == 'senseCount':
             Sense = senseListOfDict(value[0])
             lexemeFormData['Sense'] = Sense
@@ -170,8 +176,9 @@ def createdummylexemeentry(projects,
 
     # create lexemeId
     projectname = newLexemeData['projectname'][0]
-    project = projects.find_one({}, {projectname : 1})
-    lexemeCount = projects.find_one({}, {projectname : 1})[projectname]['lexemeInserted']+1
+    project = projects.find_one({}, {projectname: 1})
+    lexemeCount = projects.find_one({}, {projectname: 1})[
+        projectname]['lexemeInserted']+1
     lexemeId = projectname+lexemeFormData['headword']+str(lexemeCount)
     Id = re.sub(r'[-: \.]', '', str(datetime.now()))
     lexemeId = 'L'+Id
@@ -194,7 +201,8 @@ def createdummylexemeentry(projects,
     langscripts["langcode"] = newLexemeData['Lexeme Language'][0][:3].lower()
     headwordscript = list(lexemeFormData['Lexeme Form Script'][0].keys())[0]
     # langscripts["headwordscript"] = {headwordscript[0]+headwordscript[1:4].lower(): headwordscript}
-    langscripts["headwordscript"] = {scriptCode[headwordscript]: headwordscript}
+    langscripts["headwordscript"] = {
+        scriptCode[headwordscript]: headwordscript}
     lexemeformscripts = {}
     for i in range(len(lexemeFormData['Lexeme Form Script'])):
         for lfs in lexemeFormData['Lexeme Form Script'][i].keys():
@@ -213,7 +221,6 @@ def createdummylexemeentry(projects,
     langscripts["glossscripts"] = glossscripts
     lexemeFormData['langscripts'] = langscripts
 
-
     SenseNew = {}
 
     for key, value in lexemeFormData['Sense'].items():
@@ -224,7 +231,7 @@ def createdummylexemeentry(projects,
         Definition = {}
         Lexical_Relation = {}
         for val in value:
-            
+
             for k, v in val.items():
                 if ("Gloss" in k):
                     Gloss[k.split()[1][:3].lower()] = v
@@ -255,21 +262,19 @@ def createdummylexemeentry(projects,
             lexemeForm[scriptCode[lexKey]] = lexValue
 
     lexemeFormData['Lexeme Form'] = lexemeForm
-    
+
     # keep only new updated keys as in 'lexemeEntry_sir.json' file in 'data_format folder
     # and delete old keys
     lexemeFormData.pop('Sense', None)
     lexemeFormData.pop('Lexeme Form Script', None)
-    
+
     # saving data for that new lexeme to database in lexemes collection
-    lexemes.insert(lexemeFormData)
+    lexemes.insert_one(lexemeFormData)
     # print(f'{"="*80}\nLexeme Form :')
     # pprint(lexemeFormData)
     # print(f'{"="*80}')
 
-
     # update lexemeInserted count of the project in projects collection
     project[projectname]['lexemeInserted'] = lexemeCount
     # print(f'{"#"*80}\n{project}')
-    projects.update_one({}, { '$set' : { projectname : project[projectname] }})
-    
+    projects.update_one({}, {'$set': {projectname: project[projectname]}})

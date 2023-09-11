@@ -1,21 +1,672 @@
-<!DOCTYPE html>
-<html>
-<head>
+{% extends "karyaextlinks.html" %}
+
+{% block title %}
+  Upload Access Code
+{% endblock title %}
+
+{% block styles %}
+  {{super()}}
+  <link href="{{url_for('.static', filename='uploadfile.css')}}" rel="stylesheet" />
+{% endblock %}
+  
+{% block app_content %}
+  <!-- <button type="button" class="btn btn-lg btn-info" onclick="window.location.href='{{ url_for('karya_bp.home_insert') }}';">Karya Extension</button> -->
+  <!-- <br>
+  <br> -->
+  {% if projectName is defined %}
+  <h4>
+      Project Name : {{ projectName }}   
+      <br> 
+      <br> 
+  </h4>
+  {% endif %}
+
+  <form action="{{ url_for('karya_bp.uploadfile') }}" method="POST" enctype="multipart/form-data"> 
+    
+    <div id="uploadaccode"></div>
+    <div class="form-group">
+      <label for="idtask">Task :</label><br>                           
+      <select class="task" id="idtask" name="task"  style="width:55%" required></select><br>
+    </div> 
+
+    <div class="form-group">
+      <label for="idphase">Phase :</label><br>
+      <input type="number" name = "phase" id="idphase" placeholder="--Phase--" required>
+    </div>
+    <div class="form-group">
+      <input type="checkbox" name = "fetchdata" id="idfetchdata">
+      <label for="idfetchdata">Check this if you will use these access code(s) to sync Karya data with LiFE</label>
+    </div>
+    
+    <label for="idaccesscodefile">Upload Access Codes (in CSV format) :</label><br>
+    <input type="file" id="idaccesscodefile" name="accesscodefile" required>
+    <br>        
+    <input style="background-color: #253ded; color: white;" id="submit" type="submit" value="Submit" >
+  </form>
+
+    <br>
+    <br>
+    <br>
+
+<!-- Hidden Table -->
+<div id="hiddenTable" style="display: none;">
+  <table class="table table-striped">
+    <tbody id="hiddenTableBody">
+      <b><center>Active Accesscode </center></b>
+      <tr>
+        <th>Access Code:</th>
+        <td id="hiddenTableAccessCode"></td>
+      </tr>
+      <tr>
+        <th>Karya Speaker ID:</th>
+        <td id="hiddenTableSpeakerID"></td>
+      </tr>
+      <tr>
+        <th>Language Script:</th>
+        <td id="hiddenTableLanguageScript"></td>
+      </tr>
+      <tr>
+
+        <tr>
+          <th>Domain:</th>
+          <td id="hiddenTableDomain"></td>
+        </tr>
+        <tr>
+
+          <tr>
+            <th>Elicitation:</th>
+            <td id="hiddenTableElicitation"></td>
+          </tr>
+          <tr>
+
+            <tr>
+              <th>Task:</th>
+              <td id="hiddenTableTask"></td>
+            </tr>
+            <tr>
+
+              <tr>
+                <th>Phase:</th>
+                <td id="hiddenTablePhase"></td>
+              </tr>
+              <tr>
+
+      <tr>
+        <th>Name:</th>
+        <td id="hiddenTableName"></td>
+      </tr>
+      <tr>
+        <th>Age:</th>
+        <td id="hiddenTableAge"></td>
+      </tr>
+      <tr>
+        <th>Gender:</th>
+        <td id="hiddenTableGender"></td>
+      </tr>
+      
+      <tr>
+        <th>Status:</th>
+        <td id="hiddenTableStatus"></td>
+      </tr>
+      <tr>
+        <th>Fetch Data:</th>
+        <td id="hiddenTableFetchData"></td>
+      </tr>
+      <tr>
+        <th>Education Level:</th>
+        <td id="hiddenTableEducationalevel"></td>
+      </tr>
+      <tr>
+        <th>Education Medium Upto 12:</th>
+        <td id="hiddenTableEducationmediumupto12"></td>
+      </tr>
+      <tr>
+        <th>Education Medium After 12:</th>
+        <td id="hiddenTableEducationmediumafter12"></td>
+      </tr>
+      <tr>
+        <th>Place:</th>
+        <td id="hiddenTablePlace"></td>
+      </tr>
+      <tr>
+        <th>Type Of Place:</th>
+        <td id="hiddenTableTypeofplace"></td>
+      </tr>
+      <tr>
+        <td colspan="2" id="hiddenTableButtons">
+          <button type="button" onclick="editHiddenTableRow()">Edit</button>
+          <button type="button" onclick="saveHiddenTableRow()" style="display: none;">Save</button>
+          <button type="button" onclick="closeHiddenTable()">Close</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>    
 
 
-<h1>LiFe</h1>
-<form action="{{ url_for('karya_bp.uploadfile') }}" method="POST" enctype="multipart/form-data">
+<br>
+<br>
 
-<!-- <h2>Fetch access code with metadata</h2>
-    <a href="register_user.html">
-      <button>Fetch access code</button>
-    </a>
-     -->
-       
-<p>Click on the "Choose File" button to upload a file of access code and metadata*:</p>
-  <input type="file" id="accesscodefile" name="accesscodefile"><br>
+<!-- Main HTML Table -->
 
-  <input class="btn btn-lg btn-primary create" id="submit" type="submit" value="Submit" >
-</form>
-</head>
-</html>
+{% if  shareinfo['sharemode']|int >= 10 %}
+<div class="panel-group" id="activeacodedetails">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h3 class="panel-title">
+        <a data-toggle="collapse" data-parent="#activeacodedetails" href="#activeupdatefetch">
+          Active Access Codes
+        </a>
+      </h3>
+    </div>
+    <div id="activeupdatefetch" class="panel-collapse collapse">
+      <div class="panel-body">
+        <div class="row">
+          <div class="col">
+            <input id="myInput" type="text" placeholder="Search">
+            <table class="table table-striped" id="myTable">
+              <thead>
+                <tr>
+                  <th onclick="sortTable(1)">Access Code</th>
+                  <th onclick="sortTable(2)">Speaker ID</th>
+                  <th onclick="sortTable(4)">Status</th>
+                  <th onclick="sortTable(5)">Fetch Status</th>
+                  <th>View</th>
+                </tr>
+              </thead>
+              <tbody id="myTableBody">
+                {% for item in active_data_table %}
+                <tr>
+                  <td>{{ item.karyaaccesscode }}</td>
+                  <td>{{ item.karyaspeakerid }}</td>
+                  <td>{{ item.isActive }}</td>
+                  <td>{{ item.fetchData }}</td>
+                  <td>
+                    <button style="background-color: #253ded; color: white;" data-code="{{ item.karyaaccesscode }}" type="button" onclick="showTable(event)">View</button>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+<br>
+
+<!-- Hidden Table -->
+<div id="hiddenDTable" style="display: none;">
+  <table class="table table-striped">
+    <tbody id="hiddenDTableBody">
+      <b><center>Inactive Accesscode </center></b>
+      <tr>
+        <th>Access Code:</th>
+        <td id="hiddenDTableDAccessCode"></td>
+      </tr>
+      <tr>
+        <th>Karya Speaker ID:</th>
+        <td id="hiddenDTableDSpeakerID"></td>
+      </tr>
+
+
+      <th>Language Script:</th>
+      <td id="hiddenDTableLanguageScript"></td>
+    </tr>
+    <tr>
+
+      <tr>
+        <th>Domain:</th>
+        <td id="hiddenDTableDomain"></td>
+      </tr>
+      <tr>
+
+        <tr>
+          <th>Elicitation:</th>
+          <td id="hiddenDTableElicitation"></td>
+        </tr>
+        <tr>
+
+          <tr>
+            <th>Task:</th>
+            <td id="hiddenDTableTask"></td>
+          </tr>
+          <tr>
+
+            <tr>
+              <th>Phase:</th>
+              <td id="hiddenDTablePhase"></td>
+            </tr>
+            <tr>
+
+      <tr>
+        <th>Name:</th>
+        <td id="hiddenDTableDName"></td>
+      </tr>
+      <tr>
+        <th>Age:</th>
+        <td id="hiddenDTableDAge"></td>
+      </tr>
+      <tr>
+        <th>Gender:</th>
+        <td id="hiddenDTableDGender"></td>
+      </tr>
+  
+      <tr>
+        <th>Status:</th>
+        <td id="hiddenDTableDStatus"></td>
+      </tr>
+      <tr>
+        <th>Fetch Data:</th>
+        <td id="hiddenDTableDFetchData"></td>
+      </tr>
+      <tr>
+        <th>Education Level:</th>
+        <td id="hiddenDTableDEducationalevel"></td>
+      </tr>
+      <tr>
+        <th>Education Medium Upto 12:</th>
+        <td id="hiddenDTableDEducationmediumupto12"></td>
+      </tr>
+      <tr>
+        <th>Education Medium After 12:</th>
+        <td id="hiddenDTableDEducationmediumafter12"></td>
+      </tr>
+      <tr>
+        <th>Place:</th>
+        <td id="hiddenDTableDPlace"></td>
+      </tr>
+      <tr>
+        <th>Type Of Place:</th>
+        <td id="hiddenDTableDTypeofplace"></td>
+      </tr>
+      <tr>
+        <td colspan="2" id="hiddenDTableButtons">
+          <button type="button" onclick="edithiddenDTableRow()">Edit</button>
+          <button type="button" onclick="savehiddenDTableRow()" style="display: none;">Save</button>
+          <button type="button" onclick="closehiddenDTable()">Close</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>    
+
+<br>
+<br>
+
+{% if  shareinfo['sharemode']|int >= 10 %}
+<!-- Main HTML Table -->
+<div class="panel-group" id="deactiveacodedetails">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h3 class="panel-title">
+        <a data-toggle="collapse" data-parent="#deactiveacodedetails" href="#deactiveupdatefetch">
+          Inactive Access Codes
+        </a>
+      </h3>
+    </div>
+    <div id="deactiveupdatefetch" class="panel-collapse collapse">
+      <div class="panel-body">
+        <div class="row">
+          <div class="col">
+            <input id="myInput" type="text" placeholder="Search">
+            <table class="table table-striped" id="myDTable">
+              <thead>
+                <tr>
+                  <th onclick="sortTable(1)">Access Code</th>
+                  <th onclick="sortTable(2)">Speaker ID</th>
+                  <th onclick="sortTable(4)">Status</th>
+                  <th onclick="sortTable(4)">Fetch Status</th>
+                  <th>View</th>
+                </tr>
+              </thead>
+              <tbody id="myDTableBody">
+                {% for item in deactive_data_table %}
+                <tr>
+                  <td>{{ item.karyaaccesscode }}</td>
+                  <td>{{ item.karyaspeakerid }}</td>
+                  <td>{{ item.isActive }}</td>
+                  <td>{{ item.fetchData }}</td>
+                  <td>
+                    <button class="view-button" data-code="{{ item.karyaaccesscode }}" type="button" onclick="showDTable(event)">View</button>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+<br>
+<br>
+<br>
+<br>
+
+
+  
+
+{% endblock %}
+
+{% block scripts %}
+  {{super()}}
+
+<!-- Your custom scripts -->
+<script src="{{url_for('.static', filename='speaker_select2_dropdown.js')}}"></script>
+<script src="{{url_for('.static', filename='uploadaccesscode.js')}}"></script>
+<script type="text/javascript">uploadaccesscodeform({{ uploadacesscodemetadata | tojson | safe }}, {{ projecttype | tojson | safe }});</script>
+ 
+ 
+<script>
+  function showTable(event) {
+    var code = event.target.dataset.code;
+
+    // Perform AJAX request to fetch data
+    $.ajax({
+      type: 'POST',
+      url: "{{ url_for('karya_bp.active_accesscodes') }}",
+      data: {
+        code: code
+      },
+      success: function(response) {
+        console.log(response);
+        if ($.isEmptyObject(response)) {
+          alert('No data found for the selected code!');
+        } else {
+          var name = response.response.current.workerMetadata.name;
+          var age = response.response.current.workerMetadata.agegroup;
+          var gender = response.response.current.workerMetadata.gender;
+          var accessCode = response.response.karyaaccesscode;
+          var speakerID = response.response.karyaspeakerid;
+          var status = response.response.isActive;
+          var fetchData = response.response.fetchData;
+          var educationalevel = response.response.current.workerMetadata.educationlevel;
+          var educationmediumupto12 = response.response.current.workerMetadata.educationmediumupto12;
+          var educationmediumafter12 = response.response.current.workerMetadata.educationmediumafter12;
+          var speakerlanguage = response.response.current.workerMetadata.speakerlanguage;
+          var place = response.response.current.workerMetadata.recordingplace;
+          var typeofplace = response.response.current.workerMetadata.typeofrecordingplace;
+          var domain = response.response.domain;
+          var language = response.response.language;
+          var task = response.response.task;
+          var elicitationmethod = response.response.elicitationmethod;
+          var phase = response.response.phase;
+
+          // Set values in the hidden table
+          $('#hiddenTableName').text(name);
+          $('#hiddenTableAge').text(age);
+          $('#hiddenTableGender').text(gender);
+          $('#hiddenTableAccessCode').text(accessCode);
+          $('#hiddenTableSpeakerID').text(speakerID);
+          $('#hiddenTableStatus').text(status);
+          $('#hiddenTableFetchData').text(fetchData);
+          $('#hiddenTableEducationalevel').text(educationalevel);
+          $('#hiddenTableEducationmediumupto12').text(educationmediumupto12);
+          $('#hiddenTableEducationmediumafter12').text(educationmediumafter12);
+          $('#hiddenTablePlace').text(place);
+          $('#hiddenTableTypeofplace').text(typeofplace);
+          $('#hiddenTableLanguageScript').text(language);
+          $('#hiddenTableDomain').text(domain);
+          $('#hiddenTableElicitation').text(elicitationmethod);
+          $('#hiddenTablePhase').text(phase);
+          $('#hiddenTableTask').text(task);
+          // Show the hidden table
+          $('#hiddenTable').show();
+        }
+      },
+      error: function(error) {
+        console.log(error);
+      }
+    });
+  }
+
+
+  function editHiddenTableRow() {
+    // Disable view mode for all fields except Status and Task
+    // $('#hiddenTable td:not(:first-child):not(:nth-child(6)):not(:nth-child(8))').each(function() {
+    $('#hiddenTable td:not(:first-child):not(:nth-child(8))').each(function() {
+      var text = $(this).text();
+      $(this).html(text);
+    });
+
+    // Enable edit mode for Status and Task fields
+    // var statusText = $('#hiddenTableStatus').text();
+    // $('#hiddenTableStatus').html('<input type="text" value="' + statusText + '">');
+
+    var taskText = $('#hiddenTableFetchData').text();
+    $('#hiddenTableFetchData').html('<input type="text" value="' + taskText + '">');
+
+    // Show the Save button and disable the Edit button
+    $('#hiddenTable button:nth-child(2)').show();
+    // $('#hiddenTable button:nth-child(1)').prop('disabled', true);
+  }
+
+  //     function editHiddenTableRow() {
+  //   // Enable edit mode
+  //   $('#hiddenTable td:not(:first-child)').each(function() {
+  //     var text = $(this).text();
+  //     $(this).html(`<input type="text" value="${text}">`);
+  //   });
+
+  //   // Show the Save button
+  //   $('#hiddenTable button:nth-child(2)').show();
+  // }
+
+  function saveHiddenTableRow() {
+    var accessCode = $('#hiddenTableAccessCode').text();
+    // var status = $('#hiddenTableStatus input').val();
+    var fetchData = $('#hiddenTableFetchData input').val();
+
+    console.log('Access Code:', accessCode);
+    // console.log('Status:', status);
+    console.log('Fetch Data:', fetchData);
+
+    var data = {
+      accessCode: accessCode,
+      fetchData: fetchData
+    };
+
+    console.log('Data to be updated:', data);
+
+    // Send the updated data to Flask using AJAX
+    $.ajax({
+      type: 'POST',
+      url: "{{ url_for('karya_bp.update_table_data') }}",
+      data: data,
+      success: function(response) {
+        // Handle success response
+        alert('Data updated successfully!');
+        console.log("response:", response);
+
+        // Disable edit mode and hide the Save button
+        $('#hiddenTable td:not(:first-child)').each(function() {
+          var text = $(this).find('input').val();
+          $(this).html(text);
+        });
+        $('#hiddenTable button:nth-child(2)').hide();
+      },
+      error: function(error) {
+        console.log(error);
+      }
+    });
+  }
+
+  // Close button click event handler
+  function closeHiddenTable() {
+    // Hide the hidden table
+    $('#hiddenTable').hide();
+  }
+</script>
+
+
+
+<script>
+  function showDTable(event) {
+    var code = event.target.dataset.code;
+
+    // Perform AJAX request to fetch data
+    $.ajax({
+      type: 'POST',
+      url: "{{ url_for('karya_bp.deactive_accesscodes') }}",
+      data: {
+        code: code
+      },
+      success: function(response) {
+        console.log(response);
+        if ($.isEmptyObject(response)) {
+          alert('No data found for the selected code!');
+        } else {
+          var name = response.response.current.workerMetadata.name;
+          var age = response.response.current.workerMetadata.agegroup;
+          var gender = response.response.current.workerMetadata.gender;
+          var accessCode = response.response.karyaaccesscode;
+          var speakerID = response.response.karyaspeakerid;
+          var status = response.response.isActive;
+          var fetchData = response.response.fetchData;
+          var educationalevel = response.response.current.workerMetadata.educationlevel;
+          var educationmediumupto12 = response.response.current.workerMetadata.educationmediumupto12;
+          var educationmediumafter12 = response.response.current.workerMetadata.educationmediumafter12;
+          var speakerlanguage = response.response.current.workerMetadata.speakerlanguage;
+          var place = response.response.current.workerMetadata.recordingplace;
+          var typeofplace = response.response.current.workerMetadata.typeofrecordingplace;
+          var domain = response.response.domain;
+          var language = response.response.language;
+          var task = response.response.task;
+          var elicitationmethod = response.response.elicitationmethod;
+          var phase = response.response.phase;
+
+          // Set values in the hidden table
+          $('#hiddenDTableDName').text(name);
+          $('#hiddenDTableDAge').text(age);
+          $('#hiddenDTableDGender').text(gender);
+          $('#hiddenDTableDAccessCode').text(accessCode);
+          $('#hiddenDTableDSpeakerID').text(speakerID);
+          $('#hiddenDTableDStatus').text(status);
+          $('#hiddenDTableDFetchData').text(fetchData);
+          $('#hiddenDTableDEducationalevel').text(educationalevel);
+          $('#hiddenDTableDEducationmediumupto12').text(educationmediumupto12);
+          $('#hiddenDTableDEducationmediumafter12').text(educationmediumafter12);
+          $('#hiddenDTableDPlace').text(place);
+          $('#hiddenDTableDTypeofplace').text(typeofplace);
+          $('#hiddenDTableLanguageScript').text(language);
+          $('#hiddenDTableDomain').text(domain);
+          $('#hiddenDTableElicitation').text(elicitationmethod);
+          $('#hiddenDTablePhase').text(phase);
+          $('#hiddenDTableTask').text(task);
+
+          // Show the hidden table
+          $('#hiddenDTable').show();
+        }
+      },
+      error: function(error) {
+        console.log(error);
+      }
+    });
+  }
+
+  // function edithiddenDTableRow() {
+  //   // Disable view mode for all fields except Status and Task
+  //   $('#hiddenDTable td:not(:first-child)').each(function() {
+  //     var text = $(this).text();
+  //     $(this).html('<input type="text" value="' + text + '">');
+  //   });
+
+  //   // Show the Save button and disable the Edit button
+  //   $('#hiddenDTable button:nth-child(2)').show();
+  //   $('#hiddenDTable button:nth-child(1)').prop('disabled', true);
+  // }
+
+
+
+  function edithiddenDTableRow() {
+  // Enable edit mode for the specific fields
+
+  var accessCodeText = $('#hiddenDTableDAccessCode').text();
+  $('#hiddenDTableDAccessCode').html('<input type="text" value="' + accessCodeText + '">');
+
+  var speakerIDText = $('#hiddenDTableDSpeakerID').text();
+  $('#hiddenDTableDSpeakerID').html('<input type="text" value="' + speakerIDText + '">');
+
+  var fetchDataText = $('#hiddenDTableDFetchData').text();
+  $('#hiddenDTableDFetchData').html('<input type="text" value="' + fetchDataText + '">');
+
+  var taskText = $('#hiddenDTableTask').text();
+  $('#hiddenDTableTask').html('<input type="text" value="' + taskText + '">');
+
+  var phaseText = $('#hiddenDTablePhase').text();
+  $('#hiddenDTablePhase').html('<input type="text" value="' + phaseText + '">');
+
+  var languageText = $('#hiddenDTableLanguageScript').text();
+  $('#hiddenDTableLanguageScript').html('<input type="text" value="' + languageText + '">');
+
+  var domainText = $('#hiddenDTableDomain').text();
+  $('#hiddenDTableDomain').html('<input type="text" value="' + domainText + '">');
+
+  var elicitationText = $('#hiddenDTableElicitation').text();
+  $('#hiddenDTableElicitation').html('<input type="text" value="' + elicitationText + '">');
+
+  // Show the Save button and disable the Edit button
+  $('#hiddenDTable button:nth-child(2)').show();
+}
+
+
+
+  function savehiddenDTableRow() {
+    var accessCode = $('#hiddenDTableDAccessCode input').val();
+    var speakerID = $('#hiddenDTableDSpeakerID input').val();
+    var fetchData = $('#hiddenDTableDFetchData input').val();
+    var task = $('#hiddenDTableTask input').val();
+    var phase = $('#hiddenDTablePhase input').val();
+    var languagescript = $('#hiddenDTableLanguageScript input').val();
+    var domain = $('#hiddenDTableDomain input').val();
+    var elicitationmethod = $('#hiddenDTableElicitation input').val();
+
+    var data = {
+      accessCode: accessCode,
+      speakerID: speakerID,
+      fetchData: fetchData,
+      task: task,
+      phase: phase,
+      languagescript: languagescript,
+      domain: domain,
+      elicitationmethod: elicitationmethod
+    };
+
+    console.log('Data to be updated:', data);
+
+    // Send the updated data to Flask using AJAX
+    $.ajax({
+      type: 'POST',
+      url: "{{ url_for('karya_bp.deactive_update_table_data') }}",
+      data: data,
+      success: function(response) {
+        // Handle success response
+        alert('Data updated successfully!');
+        console.log('Response:', response);
+
+        // Disable edit mode and hide the Save button
+        $('#hiddenDTable td:not(:first-child)').each(function() {
+          var text = $(this).find('input').val();
+          $(this).text(text);
+        });
+        $('#hiddenDTable button:nth-child(2)').hide();
+        $('#hiddenDTable button:nth-child(1)').prop('disabled', false);
+      },
+      error: function(error) {
+        console.log(error);
+      }
+    });
+  }
+
+  function closehiddenDTable() {
+    // Hide the hidden table
+    $('#hiddenDTable').hide();
+  }
+</script>
+
+  {% endblock %}

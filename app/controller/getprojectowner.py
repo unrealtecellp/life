@@ -11,8 +11,13 @@ def getprojectowner(projects, activeprojectname):
         String: project owner name
     """
 
-    print(activeprojectname)
+    # print(activeprojectname)
     projectowner = projects.find_one({ "projectname": activeprojectname },
-                                        { "_id" : 0, "projectOwner" : 1 })["projectOwner"]
+                                        { "_id" : 0, "projectOwner" : 1 })
+    # print(projectowner)
+    if (projectowner != None):
+        projectowner = projectowner["projectOwner"]
+    else:
+        projectowner = ''
 
     return projectowner

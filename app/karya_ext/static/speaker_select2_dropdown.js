@@ -58,6 +58,7 @@ var languages = [
 {"id": "", "text": ""},
 {"id": "Assamese", "text": "Assamese"},
 {"id": "Awadhi", "text": "Awadhi"},
+{"id": "Bajjika", "text": "Bajjika"},
 {"id": "Bangla", "text": "Bangla"},
 {"id": "Bhojpuri", "text": "Bhojpuri"},
 {"id": "Bodo", "text": "Bodo"},
@@ -67,6 +68,7 @@ var languages = [
 {"id": "Haryanvi", "text": "Haryanvi"},
 {"id": "Hindi", "text": "Hindi"},
 {"id": "Kannada", "text": "Kannada"},
+{"id": "Khortha", "text": "Khortha"},
 {"id": "Konkani", "text": "Konkani"},
 {"id": "Magahi", "text": "Magahi"},
 {"id": "Maithili", "text": "Maithili"},
@@ -152,6 +154,7 @@ var OtherLanguagesSpeakerCouldSpeak =
   {"id": "Haryanvi", "text": "Haryanvi"},
   {"id": "Hindi", "text": "Hindi"},
   {"id": "Kannada", "text": "Kannada"},
+  {"id": "Khortha", "text": "Khortha"},
   {"id": "Konkani", "text": "Konkani"},
   {"id": "Magahi", "text": "Magahi"},
   {"id": "Maithili", "text": "Maithili"},
@@ -186,6 +189,7 @@ var EducationMedium =
   {"id": "Haryanvi", "text": "Haryanvi"},
   {"id": "Hindi", "text": "Hindi"},
   {"id": "Kannada", "text": "Kannada"},
+  {"id": "Khortha", "text": "Khortha"},
   {"id": "Konkani", "text": "Konkani"},
   {"id": "Magahi", "text": "Magahi"},
   {"id": "Maithili", "text": "Maithili"},
@@ -209,7 +213,6 @@ var EducationLevel =
   {"id": "Post-Graduate", "text": "Post-Graduate"},
   {"id": "Above PG", "text": "Above PG"},
 ];
-
 var gender = 
 [
   {"id": "", "text": ""},
@@ -218,7 +221,6 @@ var gender =
   {"id": "Non-Binary", "text": "Non-Binary"}
 ];
 
-
 var AgeGroup = [
   {"id": "", "text": ""},
   {"id": "18-30", "text": "18-30"},
@@ -226,6 +228,7 @@ var AgeGroup = [
   {"id": "45-60", "text": "45-60"},
   {"id": "60+", "text": "60+"}
 ];
+
 var TypeOfCity = [
   {"id": "", "text": ""},
   {"id": "Town", "text": "Town"},
@@ -233,123 +236,229 @@ var TypeOfCity = [
   {"id": "City", "text": "City"}
 ];
 
+// var QuestionnaireDomain = [
+//   {"id": "", "text": ""},
+//   {"id": "General", "text": "General"},
+//   {"id": "Agriculture", "text": "Agriculture"},
+//   {"id": "Science-Technology", "text": "Science-Technology"},
+//   {"id": "Education", "text": "Education"}
+// ];
 
+
+// var ElicitationMethod = [
+//   {"id": "", "text": ""},
+//   {"id": "Narration", "text": "Narration"},
+//   {"id": "Translation", "text": "Translation"},
+//   {"id": "Role-Play", "text": "Role-Play"},
+//   {"id": "Interview", "text": "Interview"},
+//   {"id": "Picture Book Narration", "text": "Picture Book Narration"},
+//   {"id": "Video Narration", "text": "Video Narration"},
+//   {"id": "Conversation", "text": "Conversation"}
+// ];
+
+
+var target = [
+  {"id": "", "text": ""},
+  {"id": "Anaphors", "text": "Anaphors"},
+  {"id": "Case", "text": "Case"},
+  {"id": "Oral", "text": "Oral"}
+
+];
+
+var task = [
+  {"id": "", "text": ""},
+  {"id": "SPEECH_DATA_COLLECTION", "text": "Recording"},
+  {"id": "SPEECH_VERIFICATION", "text": "Verification of Recordings"},
+  {"id": "SPEECH_TRANSCRIPTION", "text": "Transcription of Recordings"}
+];
+
+var accesscodefor = [
+  {"id": "", "text": ""},
+  {"id": "0", "text": "Data Collection Using Karya"}
+  //{"id": "1", "text": "Syncing Karya Recording with LiFE"}
+];
 
 $(document).ready(function () {
-  $('.typeofcity').select2({
-    // tags: true,
-    placeholder: '--Type Of City:--',
-    data: TypeOfCity ,
-    allowClear: true,
-    // console.log( "ready!" )
+  $.getJSON(('/karyaext/getsharelevel'), {
+    // asycaccesscode:String(accode)
+    }, function(data) {
+
+      // Add Syncing Option for people with add and above privileges
+      console.log(data)
+      var shareLevel = data.shareinfo.sharemode
+      if (shareLevel > 2) {
+        accesscodefor.push({"id": "1", "text": "Syncing Karya Recording with LiFE"})
+      }
+      console.log(accesscodefor)
+      
+      
+      $('.typeofcity').select2({
+        // tags: true,
+        placeholder: '--Type Of City:--',
+        data: TypeOfCity ,
+        allowClear: true,
+        // console.log( "ready!" )
+      });
+
+      $('#idaccesscodefor').select2({
+        placeholder: '--Access Code For--',
+        data: accesscodefor,
+        // allowClear: true,
+        // console.log( "ready!" )
+      });
+
+      $('#idtask').select2({
+        placeholder: '--Task--',
+        data: task,
+        allowClear: true,
+        // console.log( "ready!" )
+      });
+      
+      $('.target').select2({
+        tags: true,
+        placeholder: '-- Target --',
+        data: target ,
+        allowClear: true,
+        // console.log( "ready!" )
+      });
+
+
+      // $('.elicitationmethod').select2({
+      //   tags: true,
+      //   placeholder: '--Elicitation Method--',
+      //   data: ElicitationMethod ,
+      //   allowClear: true,
+      //   // console.log( "ready!" )
+      // });
+
+      // $('.languages').select2({
+      //   tags: true,
+      //   placeholder: '-- Language --',
+      //   data: OtherLanguagesSpeakerCouldSpeak,
+      //   allowClear: true
+      // });
+
+      // $('.questionnairedomain').select2({
+      //   tags: true,
+      //   placeholder: '-- Questionnire Domain --',
+      //   data: QuestionnaireDomain  ,
+      //   allowClear: true
+      // });
+
+      $('.age').select2({
+        // tags: true,
+        placeholder: '--Age Group--',
+        data:  AgeGroup ,
+        allowClear: true
+      });
+
+      $('.gender').select2({
+        // tags: true,
+        placeholder: '--Gender--',
+        data:  gender,
+        allowClear: true
+      });
+
+      $('.educationlvl').select2({
+        // tags: true,
+        placeholder: '-- Educational Level --',
+        data:  EducationLevel ,
+        allowClear: true
+      });
+
+      $('.educationmediumafter12').select2({
+        tags: true,
+        placeholder: '-- Medium Of Education (After 12ᵗʰ) --',
+        data:  EducationMedium ,
+        allowClear: true
+      });
+
+      $('.educationmediumupto12').select2({
+        tags: true,
+        placeholder: '-- Medium Of Education (Upto 12ᵗʰ) --',
+        data: EducationMedium ,
+        allowClear: true
+      });
+
+      $('.speakerspeaklanguage').select2({
+        tags: true,
+        placeholder: '-- Other Languages Speaker Could Speak --',
+        data: OtherLanguagesSpeakerCouldSpeak,
+        allowClear: true
+      });
+
+      $('.transcriptionscript').select2({
+      tags: true,
+      placeholder: '-- Transcription Scripts --',
+      data: scripts,
+      allowClear: true,
+      // sorter: false 
+    });
+
+    // $('.lexemelanguage').select2({
+    //   // tags: true,
+    //   placeholder: 'Lexeme Languages',
+    //   data: languages,
+    //   allowClear: true
+    // });
+
+    // $('.lexemeformscript').select2({
+    //   tags: true,
+    //   placeholder: 'Lexeme Scripts',
+    //   data: scripts,
+    //   allowClear: true,
+    //   // sorter: false
+    // });
+
+    // // partial solution to the select2 multiselect
+    // $("select").on("select2:select", function (evt) {
+    //   var element = evt.params.data.element;
+    //   console.log(element);
+    //   var $element = $(element);
+    //   $element.detach();
+    //   $(this).append($element);
+    //   $(this).trigger("change");
+    // });
+
+    // $('.glosslanguage').select2({
+    //   // tags: true,
+    //   placeholder: 'Gloss Languages',
+    //   data: languages,
+    //   allowClear: true
+    // });
+
+
+    // $('.transcriptionscript').select2({
+    //   // tags: true,
+    //   placeholder: 'Transcription Scripts',
+    //   data: scripts,
+    //   allowClear: true,
+    //   // sorter: false
+    // });
+
+    // $('.translationlanguage').select2({
+    //   // tags: true,
+    //   placeholder: 'Translation Languages',
+    //   data: languages,
+    //   allowClear: true,
+    //   // sorter: false
+    // });
+
+    // $('.translationscript').select2({
+    //   // tags: true,
+    //   placeholder: 'Translation Scripts',
+    //   data: scripts,
+    //   allowClear: true,
+    //   // sorter: false
+    // });
+    // var fListItems = '<option value="">Field Type</option>';
+
+    // for (var i = 0; i < fieldType.length; i++) {
+    //     fListItems += "<option value='" + fieldType[i].value + "'>" + fieldType[i].name + "</option>";
+    // } 
+
+    // $("#fieldType1").html(fListItems);
   });
-
-  $('.age').select2({
-    // tags: true,
-    placeholder: '--Age Group--',
-    data:  AgeGroup ,
-    allowClear: true
-  });
-
-  $('.gender').select2({
-    // tags: true,
-    placeholder: '--Gender--',
-    data:  gender,
-    allowClear: true
-  });
-
-  $('.educationlvl').select2({
-    // tags: true,
-    placeholder: '--Educational Level:--',
-    data:  EducationLevel ,
-    allowClear: true
-  });
-
-  $('.educationmediumafter12').select2({
-    tags: true,
-    placeholder: '--Medium Of Education (After 12ᵗʰ)--',
-    data:  EducationMedium ,
-    allowClear: true
-  });
-
-  $('.educationmediumupto12').select2({
-    tags: true,
-    placeholder: '--Medium Of Education (Upto 12ᵗʰ)--',
-    data: EducationMedium ,
-    allowClear: true
-  });
-
-  $('.speakerspeaklanguage').select2({
-    tags: true,
-    placeholder: '--Other Languages Speaker Could Speak--',
-    data: OtherLanguagesSpeakerCouldSpeak,
-    allowClear: true
-  });
-
-// $('.lexemelanguage').select2({
-//   // tags: true,
-//   placeholder: 'Lexeme Languages',
-//   data: languages,
-//   allowClear: true
-// });
-
-// $('.lexemeformscript').select2({
-//   tags: true,
-//   placeholder: 'Lexeme Scripts',
-//   data: scripts,
-//   allowClear: true,
-//   // sorter: false
-// });
-
-// // partial solution to the select2 multiselect
-// $("select").on("select2:select", function (evt) {
-//   var element = evt.params.data.element;
-//   console.log(element);
-//   var $element = $(element);
-//   $element.detach();
-//   $(this).append($element);
-//   $(this).trigger("change");
-// });
-
-// $('.glosslanguage').select2({
-//   // tags: true,
-//   placeholder: 'Gloss Languages',
-//   data: languages,
-//   allowClear: true
-// });
-
-
-// $('.transcriptionscript').select2({
-//   // tags: true,
-//   placeholder: 'Transcription Scripts',
-//   data: scripts,
-//   allowClear: true,
-//   // sorter: false
-// });
-
-// $('.translationlanguage').select2({
-//   // tags: true,
-//   placeholder: 'Translation Languages',
-//   data: languages,
-//   allowClear: true,
-//   // sorter: false
-// });
-
-// $('.translationscript').select2({
-//   // tags: true,
-//   placeholder: 'Translation Scripts',
-//   data: scripts,
-//   allowClear: true,
-//   // sorter: false
-// });
-// var fListItems = '<option value="">Field Type</option>';
-
-// for (var i = 0; i < fieldType.length; i++) {
-//     fListItems += "<option value='" + fieldType[i].value + "'>" + fieldType[i].name + "</option>";
-// } 
-
-// $("#fieldType1").html(fListItems);
- 
 });
 
 var glossField = 0;

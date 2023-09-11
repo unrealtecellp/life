@@ -1,0 +1,58 @@
+{% extends "enternewsentenceslinks.html" %}
+
+{% block title %}
+Audio Browse
+{% endblock title %}
+
+{% block styles %}
+{{super()}}
+    <link href="{{url_for('.static', filename='audiobrowse.css')}}" rel="stylesheet">
+{% endblock %}
+
+{% block app_content %}
+{% if projectName is defined %}
+    <h4>
+        Project Name : {{ projectName }}
+    </h4>
+{% endif %}
+<br>
+<div class="row">
+    <div class="col col-md-8">
+        <!-- <label for="speakeridsdropdown">Source:</label> -->
+        <select id="audiosortingcategoriesdropdown" style="width: 30%;"></select>
+        <select id="audiosortingsubcategoriesdropdown" multiple="multiple" style="width: 40%; display: none;"></select>
+        <button type="button" class="btn btn-primary" id="audiofilter"  style="display: none;">
+            <span class="glyphicon glyphicon-filter" aria-hidden="true"></span>
+        </button>
+        <!-- <label for="speakeridsdropdown">Source:</label> -->
+        <select id="speakeridsdropdown" style="width: 40%; display: block;"></select>
+        <select id="audiofilescountdropdown" style="width: 10%;"></select>
+        <label for="audiofilescountdropdown">:Files</label>
+    </div>
+    <div class="col col-md-4 pull-right" id="browseaudiodropdowns">
+    </div>
+    <!-- <div class="col col-md-3">
+        <input id="myInput" type="text" placeholder="Search">
+    </div> -->
+</div>
+<br>
+<div id="audiobrowsetable"></div>
+<div class="text-center" id="audiobrowsepagination"></div>
+
+  <!-- Share File/s Modal -->
+  <div id="plugBrowseShareModal"></div>
+
+{% endblock %}
+
+{% block scripts %}
+{{super()}}
+    <script src="{{url_for('.static', filename='audiobrowsefilter.js')}}"></script>
+    <script src="{{url_for('.static', filename='audiobrowse.js')}}"></script>
+    <script src="{{url_for('.static', filename='changeactivespeaker.js')}}"></script>
+    <script type="text/javascript">createAudioBrowse({{ newData | tojson | safe }});</script>
+    <script src="{{url_for('.static', filename='search.js')}}"></script>
+    <script src="{{url_for('.static', filename='sorttable.js')}}"></script>
+    <script src="{{url_for('static', filename='browsesharemodal.js')}}"></script>
+    <script src="{{url_for('static', filename='browseshare.js')}}"></script>
+    <script src="{{url_for('static', filename='browsesharewith.js')}}"></script>
+{% endblock %}

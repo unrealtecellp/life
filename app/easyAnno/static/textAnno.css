@@ -1,0 +1,201 @@
+input[type="radio"] {
+  margin: 0 10px 0 10px;
+}
+
+.allanno {
+  margin-right: 5px;
+}
+
+.active {
+  background-color: #6aca03 !important;
+  color:rgb(255, 255, 250) !important;
+}
+
+label {
+  height: 40px;
+  text-align: center !important;
+  font-size: larger !important;
+}
+
+.button-margin {
+  margin-right: 20px;
+}
+
+
+@media (min-width: 768px){
+  #left {
+    position: absolute;
+    top: 25%;
+    bottom: 5%;
+    left: 5%;
+    width: 45%;
+    overflow-y: scroll;
+  }
+
+  #middle {
+    position: absolute;
+    top: 25%;
+    bottom: 5%;
+    left: 52%;
+    width: 25%;
+    overflow-y: scroll; 
+  }
+  #right {
+    position: absolute;
+    top: 30%;
+    bottom: 22%;
+    right: 5%;
+    width: 16%;
+    text-align: center;
+  }
+  #modalleft {
+    position:relative;
+    /* top: 25%; */
+    /* bottom: 5%; */
+    left: 5%;
+    width: 50%;
+    overflow-y: scroll;
+  }
+  #modalmiddle {
+    position: absolute;
+    /* top: 25%;
+    bottom: 5%; */
+    left: 57%;
+    width: 30%;
+    height: 80%;
+    overflow-y: scroll; 
+  }
+  #modalright {
+    position: absolute;
+    /* top: 30%; */
+    /* bottom: 22%; */
+    right: 2%;
+    width: 10%;
+    text-align: center;
+  }
+}
+
+#left {
+  padding: 2%;
+  background-color: rgb(247, 247, 247); 
+}
+
+#middle {
+  padding: 2%;
+  background-color: rgb(240, 255, 240); 
+}
+#right {
+  padding: 2%;
+  background-color: azure; 
+}
+#modalleft {
+  padding: 2%;
+  background-color: rgb(247, 247, 247);
+}
+#modalmiddle {
+  padding: 2%;
+  background-color: rgb(240, 255, 240);
+}
+#modalright {
+  padding: 2%;
+  background-color: azure; 
+}
+
+.border {
+  border: 1px groove #ddd !important;
+  padding: 0 1.4em 1.4em 1.4em !important;
+  margin: 0 0 1.5em 0 !important;
+  -webkit-box-shadow:  0px 0px 0px 0px #000;
+          box-shadow:  0px 0px 0px 0px #000;
+  background-color: #e0fec1;
+}
+
+legend.scheduler-border {
+    font-size: 1.2em !important;
+    font-weight: bold !important;
+    text-align: left !important;
+    width:auto;
+    padding:0 10px;
+    border-bottom:none;
+}
+
+legend {
+  word-wrap: break-word;
+}
+
+.textcontent {
+  background-color:#DCDCDC;
+  padding: 4%;
+  font-size: large;
+  height: 100%;
+  resize: none;
+  outline: none;
+  width: 100%;
+}
+
+.commentIDs {
+  left: 5% !important;
+  padding-bottom: 30%;
+}
+
+#allanno{
+  width:fit-content;
+}
+
+#allunanno{
+  width:fit-content;
+}
+
+#projname{
+  background-color: rgb(255, 243, 238);
+  /* text-align: center; */
+}
+
+.modaltextcontent {
+  background-color:#DCDCDC;
+  padding: 4%;
+  font-size: large;
+  height: 100%;
+  resize: none;
+  outline: none;
+  width: 100%;
+}
+
+.modal-dialog {
+  width: 90%;
+  padding: 2%;
+}
+
+.hwt-content {
+	border: 0px;
+  padding: 4%;
+}
+
+.hwt-content mark {
+  border-radius: 3px;
+  background-color: #d3b2ff;
+  /* text-decoration: underline wavy red; */
+}
+
+#preModal .modal-dialog {
+  width: 60%;
+  /* padding: 2%; */
+}
+
+#pre_modal_data {
+  padding: 2%;
+}
+
+/* .modal {
+  height: 80%;
+} */
+
+/* .modal-body {
+  height: 80%;
+  overflow-y: scroll;
+} */
+
+/* .modal-content {
+  height: 400px;
+} */
+

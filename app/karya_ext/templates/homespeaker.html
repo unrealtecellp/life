@@ -17,50 +17,28 @@
 
 
 </head>
-
-
-<body>
-  
-
-  <!-- <div class="container">
-      <h3 align="center">DataTable Of User Deatils (Create, Read, Update)</h3>
-      <br />
-  </div> -->
-
-
-<!--Siddharth Code Start-->
-
-
-{% extends "links.html" %}
-
-
+{% extends "karyaextlinks.html" %}
 
 {% block styles %}
 {{super()}}
-<link href="{{url_for('.static', filename='dictionaryview.css')}}" rel="stylesheet">
+<link href="{{url_for('.static', filename='homespeaker.css')}}" rel="stylesheet" />
+
 {% endblock %}
 
 {% block app_content %}
-{% if projectName is defined %}
-  <h4>
+<!-- <button type="button" class="btn btn-lg btn-info" onclick="window.location.href='{{ url_for('karya_bp.home_insert') }}';">Karya Extension</button> -->
+<!-- <br>
+<br> -->
+  {% if projectName is defined %}
+    <h4>
       Project Name : {{ projectName }}
-
-  </h4><br>
-{% endif %}
-
-
-    
-<script>    
-
-      
-</script>
-
-
-
+    </h4>
+  {% endif %}
+  
 <!-- 
 <div> -->
-  <input id="myInput" type="text" placeholder="Search">
-  <div class="btn-group" role="group">
+
+  <!-- <div class="btn-group" role="group">
       <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         Download
         <span class="caret"></span>
@@ -68,37 +46,22 @@
       <ul class="dropdown-menu">
           <li class="json"><a href="#">JSON</a></li>
           <li class="csv"><a href="#">CSV</a></li>
-          <li class="xlsx"><a href="#">XLSX</a></li>
-          <li class="pdf"><a href="#">PDF</a></li>
-          <li class="markdown"><a href="#">MARKDOWN</a></li>
-          <li class="latex"><a href="#">LATEX</a></li>
-          <li class="html"><a href="#">HTML</a></li>
-          <!-- <li class="ods"><a href="#">ODS</a></li> -->
-          <li class="rdfturtle"><a href="#">RDF/Turtle</a></li>
-          <li class="rdfxml"><a href="#">RDF/XML</a></li>
-          <li class="rdfntriples"><a href="#">RDF/N-Triples</a></li>
-          <li class="rdfn3"><a href="#">RDF/N3</a></li>
-          <!-- <li><a href="{{url_for('download')}}">.docx</a></li>
-          <li><a href="{{url_for('download')}}">.odt</a></li>
-          <li><a href="{{url_for('download')}}">.pdf</a></li>
-          <li><a href="{{url_for('download')}}">.xlxs</a></li>
-          <li><a href="{{url_for('download')}}">.ods</a></li> -->
       </ul>
-  </div>
+  </div> -->
 <br>
 
       <div class="panel panel-default">
           <div class="panel-heading">
-          <button type="button" id="newcodebutton" class="btn btn-primary assignaccesscode" data-toggle="modal" data-target="#exampleModal">
-          Get Access Code For New User
-          </button>
+            <button type="button" style="background-color: #ef1e0b; color: white;" id="newcodebutton" class="btn btn-danger assignaccesscode" data-toggle="modal" data-target="#exampleModal">
+              Get New Access Code
+            </button>
           </div>
 
           <script>
             function activeform(buttonType) {
                 var x = document.getElementById("formdisplay");
                 // buttonType = $(this).attr("id");
-                console.log(buttonType)
+                // console.log(buttonType)
 
                 if (x.style.display === "none") {
                   x.style.display = "block";
@@ -107,100 +70,121 @@
                 }
               }
 
-
-
               $(document).ready(function() {
+                $('#idtask').change(function() {
+                  var taskVal = $(this).val();
+                  console.log("Current task value", taskVal);
+                  if (taskVal === "SPEECH_DATA_COLLECTION") {
+                    $('#idspeakerdetailsdiv').show();
+                      $('#idspeakerdetailsdiv').attr('required', '');
+                      $('#idspeakerdetailsdiv').attr('data-error', 'This field is required.')
+                   
+                  }
+                  else {
+                    $('#idspeakerdetailsdiv').hide();
+                      $('#idspeakerdetailsdiv').removeAttr('required');
+                      $('#idspeakerdetailsdiv').removeAttr('data-error');
+                  }
+                });
+               
+
                 $('.lexemeview').click(function() {
+                  $('#accodeformheader').find('input, select').attr('disabled', true);
+                  $('#accodeformheader').find('input, select').attr('required', false);
+                  
+                  document.getElementById("accodeformheader").style.display = "none";
+                  
                   buttonType = $(this).attr("id")
                   activeform(buttonType)
                   $('#formdisplay').find('input, select').attr('disabled', true);
                   $('#editbutton').attr('hidden', false);
+                  // $('#idname').attr('hidden', true);
+                  // $('#idage').attr('hidden', true);
+                  
                   // sending accesscode using AJAX
                   // getting speaker details assigned to that accesscode
               
                   var accode = $(this).attr("id");
-                  console.log(accode)
+                  // console.log(accode)
                   $.getJSON("{{url_for('karya_bp.getonespeakerdetails')}}", {
                     asycaccesscode:String(accode)
                     }, function(data) {
-                        console.log(data)
-                        metadata = data.speakerdetails.current.speakerMetadata
-                        console.log (metadata)
+                        // console.log(data)
+                        metadata = data.speakerdetails.current.workerMetadata
+                        task = data.speakerdetails.task
+                        console.log (metadata, task)
                         // accesscode = data.speakerdetails.accesscode
                         $('#accesscode').attr('value', accode)
-
                        
                         name = metadata.name
                         $('#idname').attr('value', name)
-                        // 
-                        // 
-                 
-                      
-                        // 
                         // 
 
                         agroup = metadata.agegroup
                         ageOption = '<option value="'+agroup+'" selected="selected">'+agroup+'</option>'
                         // document.getElementById('idage').innerHTML=""
-                        // $('#idage').html(ageOption)
+                        // $('#idage').html(ageOption)                        
                         $('#idage').val(agroup).trigger('change');
                         // $('#idgender').select2("val", "25-60");
-                        console.log (agroup)
-
-
+                        // console.log (agroup)
                         
+                        console.log("Current task value", task);
+                        if (task === "SPEECH_DATA_COLLECTION") {
+                          $('#idspeakerdetailsdiv').show();
+                          $('#idspeakerdetailsdiv').attr('required', '');
+                          $('#idspeakerdetailsdiv').attr('data-error', 'This field is required.')
+                          
+                          gender = metadata.gender
+                          // genderOption = '<option value="'+gender+'" selected="selected">'+gender+'</option>'
+                          // $('#idgender').html(genderOption)
+                          $('#idgender').val(gender).trigger('change');
+                          console.log (gender)
+                          
+                          elevel = metadata.educationlevel
+                          elevelOption = '<option value="'+elevel+'" selected="selected">'+elevel+'</option>'
+                          // $('#idelevel').html(elevelOption)
+                          $('#idelevel').val(elevel).trigger('change');
+                  
+                          // mediumpre = metadata.medium-of-education-after-12th
+                          // mediumpost = metadata.medium-of-education-upto-12th
+
+                          mediumupto12 = metadata.educationmediumupto12
+                          mediumupto12option = ''
+                          for (i=0; i<mediumupto12.length; i++) {
+                            mediumupto12option += '<option value="'+mediumupto12[i]+'" selected="selected">'+mediumupto12[i]+'</option>'
+                          }                        
+                          // $('#idmediumpre').html(mediumupto12option)
+                          $('#idmediumpre').val(mediumupto12).trigger('change');
 
 
-                        gender = metadata.gender
-                        // genderOption = '<option value="'+gender+'" selected="selected">'+gender+'</option>'
-                        // $('#idgender').html(genderOption)
-                        $('#idgender').val(gender).trigger('change');
-                        console.log (gender)
-                        
-                        elevel = metadata.educationlevel
-                        elevelOption = '<option value="'+elevel+'" selected="selected">'+elevel+'</option>'
-                        // $('#idelevel').html(elevelOption)
-                        $('#idelevel').val(elevel).trigger('change');
-                
-                        // mediumpre = metadata.medium-of-education-after-12th
-                        // mediumpost = metadata.medium-of-education-upto-12th
+                          mediumafter12 = metadata.educationmediumafter12
+                          mediumafter12option = ''
+                          for (i=0; i<mediumafter12.length; i++) {
+                            mediumafter12option += '<option value="'+mediumafter12[i]+'" selected="selected">'+mediumafter12[i]+'</option>'
+                          }                        
+                          // $('#idmediumpost').html(mediumafter12option)
+                          $('#idmediumpost').val(mediumafter12).trigger('change');
+                          
+                          speakerotherlangs = metadata.speakerspeaklanguage
+                          speakerotherlangsOption = ''
+                          for (i=0; i<speakerotherlangs.length; i++) {
+                            speakerotherlangsOption += '<option value="'+speakerotherlangs[i]+'" selected="selected">'+speakerotherlangs[i]+'</option>'
+                          }                        
+                          // $('#idotherlangs').html(speakerotherlangsOption)
+                          $('#idotherlangs').val(speakerotherlangs).trigger('change');
 
-                        mediumupto12 = metadata.educationmediumupto12
-                        mediumupto12option = ''
-                        for (i=0; i<mediumupto12.length; i++) {
-                          mediumupto12option += '<option value="'+mediumupto12[i]+'" selected="selected">'+mediumupto12[i]+'</option>'
-                        }                        
-                        // $('#idmediumpre').html(mediumupto12option)
-                        $('#idmediumpre').val(mediumupto12).trigger('change');
+                          
+                          // name = metadata.name
+                          // $('#idname').attr('value', name)
+                          place = metadata.recordingplace
+                          // $('#idplace').attr('value', place)
+                          $('#idplace').val(place).trigger('change');
 
-
-                        mediumafter12 = metadata.educationmediumafter12
-                        mediumafter12option = ''
-                        for (i=0; i<mediumafter12.length; i++) {
-                          mediumafter12option += '<option value="'+mediumafter12[i]+'" selected="selected">'+mediumafter12[i]+'</option>'
-                        }                        
-                        // $('#idmediumpost').html(mediumafter12option)
-                        $('#idmediumpost').val(mediumafter12).trigger('change');
-                        
-                        speakerotherlangs = metadata.speakerspeaklanguage
-                        speakerotherlangsOption = ''
-                        for (i=0; i<speakerotherlangs.length; i++) {
-                          speakerotherlangsOption += '<option value="'+speakerotherlangs[i]+'" selected="selected">'+speakerotherlangs[i]+'</option>'
-                        }                        
-                        // $('#idotherlangs').html(speakerotherlangsOption)
-                        $('#idotherlangs').val(speakerotherlangs).trigger('change');
-
-                        
-                        // name = metadata.name
-                        // $('#idname').attr('value', name)
-                        place = metadata.recordingplace
-                        // $('#idplace').attr('value', place)
-                        $('#idplace').val(place).trigger('change');
-
-                        ptype = metadata.typeofrecordingplace
-                        ptypeOption = '<option value="'+ptype+'" selected="selected">'+ptype+'</option>'
-                        // $('#idptype').html(ptypeOption)
-                        $('#idptype').val(ptype).trigger('change');
+                          ptype = metadata.typeofrecordingplace
+                          ptypeOption = '<option value="'+ptype+'" selected="selected">'+ptype+'</option>'
+                          // $('#idptype').html(ptypeOption)
+                          $('#idptype').val(ptype).trigger('change');
+                        }
 
                       
                     });
@@ -208,26 +192,36 @@
                 });
                 
                 $('#editbutton').click(function() {
+
                   $('#formdisplay').find('input, select').attr('disabled', false);
                   $('#editbutton').attr('hidden', true);
-                })
+                  // $('#idname').hidden();
+                  // $('#idage').attr('hidden', false);
+                  document.getElementById('idname').disabled = true;
+                  document.getElementById('idage').disabled = true;
+                  $('#accodeformheader').find('input, select').attr('disabled', true);
+                });
 
                 $('.assignaccesscode').click(function() {
+                  document.getElementById("accodeformheader").style.display = "block";
                   buttonType = $(this).attr("id")
                   activeform(buttonType)
                   // activeform()
                   $('#editbutton').attr('hidden', true)
-
+                  // document.getElementById('idname').style.display = "block";
                   $('#formdisplay').find('input, select').attr('disabled', false);
 
                   // $("#formdisplay").trigger('clear');
                   // $('#formdisplay').reset();
-                  $('#idname').attr('value', '')
-                  $('#idplace').attr('value', '')
+                  // document.getElementById('idname').style.display = "block";
+                  // $('#idname').attr('hidden', true)
+                  $('#idname').attr('value', '');
+                  $('#idplace').attr('value', '');
                   // $('#formdisplay').find('input').attr('value', '')
 
                   // $('#formdisplay').find('select').attr('selected', false)
                   // $('#formdisplay').find('select2').val(null).trigger('change');
+
                   $('#idage').val(" ").trigger("change");
                   $('#idgender').val(" ").trigger("change");
                   $('#idelevel').val(" ").trigger("change");
@@ -262,17 +256,31 @@
               
               <input type ="hidden" id = "accesscode" name = "accode" value = {{accode}}>
               
-              
-              
+
+              <div id="accodeformheader" style="display: block;">
+              <h4>Access Code Metadata</h4>
               <div class="form-group">
+                <label for="idaccesscodefor">Access Code For:</label><br>
+                <select class="accesscodefor" id="idaccesscodefor" name="accesscodefor" style="width:55%" required></select><br>
+              </div>
+
+              <div class="form-group">
+                <label for="idtask">Task :</label><br>
+                <select class="task" id="idtask" name="task"  style="width:55%" required></select><br>
+              </div>
+
+             <div id="uploadaccode" style="display: block;"></div> 
+             <hr>
+            </div>
+            
+              <div class="form-group">
+                <h4>Speaker/Worker Metadata</h4>
 
                 <!-- return render_template('homespeaker.html', data = table_data, speaker_data_accesscode= speaker_data_accesscode, speaker_data_name = speaker_data_name, 
                                                               speaker_data_age =speaker_data_age, speaker_data_gender=speaker_data_gender) -->
                 <label class="col-form-label">Name:</label>
                 <input type="text" class="form-control" id="idname" name="sname" placeholder="--Speaker Name--" style="width:55%" value="" required >
               </div>
-
-            
 
               <div class="form-group">
               <label for="sagegroup">Age Group: </label> <br> 
@@ -281,70 +289,69 @@
               </select><br>
                 </div>
 
- 
-            <div class="form-group">                    
-            <label for="sgender">Gender: </label>  <br>
-            <select class="gender" id="idgender" name="sgender" style="width:55%" required>
-              <!-- <div id="genderoptions"></div> -->
-            
-            </select><br>
-
-            </div>  
-
-            <div class="form-group">
-            <label for="educationalevel">Educational Level: </label> <br>
-            <select class="educationlvl" id="idelevel" name="educationalevel" style="width:55%" required>
-            </select><br>
-            </div>
-          
-
-            <div class="form-group">
-                <label for="moe12">Medium Of Education (upto 12ᵗʰ): </label><br>                           
-                <select class="educationmediumupto12" id="idmediumpre" name="moe12" multiple="multiple" style="width:55%" required>
+            <div id="idspeakerdetailsdiv" style="display: none;">
+                <div class="form-group">                    
+                <label for="sgender">Gender: </label>  <br>
+                <select class="gender" id="idgender" name="sgender" style="width:55%" >
+                  <!-- <div id="genderoptions"></div> -->
+                
                 </select><br>
-            </div> 
-            
-            
-            <div class="form-group">
-                <label for="moea12">Medium Of Education (After 12ᵗʰ): </label><br>                           
-                <select class="educationmediumafter12" id="idmediumpost" name="moea12" multiple="multiple" style="width:55%" required>
-                </select><br>
-            </div> 
-            
-            
-            <div class="form-group">
-                <label for="sols">Other Languages Speaker Could Speak: </label><br>                           
-                <select class="speakerspeaklanguage" id="idotherlangs" name="sols" multiple="multiple" style="width:55%" required></select><br>
-            </div> 
-                                    
-            <div class="form-group">
-              <label class="col-form-label">Place Of Recording:</label><br>
-              <!-- <select class="typeofcity" id="idptype" name="toc" multiple="multiple" style="width:45%" required></select> -->
-              <input type="text" class="form-control" id="idplace" name="por" placeholder="--Place Of Recording--" style="width:55%;" required >
-           
-            </div>                                                 
 
-            <div class="form-group">   
-            <label for="toc">Type Of Place: </label> <br>
-            <select class="typeofcity" id="idptype" name="toc"  style="width:55%" required></select><br>
-            </div>                   
+                </div>  
+
+                <div class="form-group">
+                <label for="educationalevel">Educational Level: </label> <br>
+                <select class="educationlvl" id="idelevel" name="educationalevel" style="width:55%" >
+                </select><br>
+                </div>
+              
+
+                <div class="form-group">
+                    <label for="moe12">Medium Of Education (upto 12ᵗʰ): </label><br>                           
+                    <select class="educationmediumupto12" id="idmediumpre" name="moe12" multiple="multiple" style="width:55%" >
+                    </select><br>
+                </div> 
+                
+                
+                <div class="form-group">
+                    <label for="moea12">Medium Of Education (After 12ᵗʰ): </label><br>                           
+                    <select class="educationmediumafter12" id="idmediumpost" name="moea12" multiple="multiple" style="width:55%" >
+                    </select><br>
+                </div> 
+                
+                
+                <div class="form-group">
+                    <label for="sols">Other Languages Speaker Could Speak: </label><br>                           
+                    <select class="speakerspeaklanguage" id="idotherlangs" name="sols" multiple="multiple" style="width:55%" >
+                    </select><br>
+                </div> 
+
+                <div class="form-group">
+                  <label class="col-form-label">Place Of Recording:</label><br>
+                  <!-- <select class="typeofcity" id="idptype" name="toc" multiple="multiple" style="width:45%" required></select> -->
+                  <input type="text" class="form-control" id="idplace" name="por" placeholder="--Place Of Recording--" style="width:55%;">
+              
+                </div>
+
+                <div class="form-group">   
+                <label for="toc">Type Of Place: </label> <br>
+                <select class="typeofcity" id="idptype" name="toc"  style="width:55%" >
+                </select><br>
+                </div>
+          </div>
+
 
             <button type="button" id="closebutton" class="btn btn-secondary" data-dismiss="modal">Close</button>
             <input type="submit" value="Submit"> <br><br>
             
             </form>
           </div>
-
-<!--Form DIV-->
-
-
-
 <br>
-
+</div>
 <div class="row">
   <div class="col">
-    <p id="totalrecords">Total Records:&nbsp;{{ count }}</p>
-    
+    <p id="totalrecords"><strong>Total Records:</strong>&nbsp;{{ count }}</p>
+    <input  id="myInput" type="text" placeholder="Search">
     <table class="table table-striped " id="myTable">
       <thead>
           <tr>
@@ -355,98 +362,76 @@
           <th onclick="sortTable(3)">Name</th>
           <th onclick="sortTable(4)">Age Group</th>
           <th onclick="sortTable(5)">Gender</th>
+          <th onclick="sortTable(6)">Assigned By</th>
+          <th onclick="sortTable(7)">Assigned For</th>
+          <th onclick="sortTable(8)">Task</th>
+          <th onclick="sortTable(9)">Domain</th>
+          <th onclick="sortTable(10)">Elicitation Method</th>
           <th>View</th>
-          <!-- <th>Edit</th> -->
 
           </tr>
       </thead>
       <tbody id="myTableBody">
-           {% for row in data %}
+           {% for item in data_table %}
            
-               <tr>
-               <td><input type="checkbox" id="lexemecheckbox" onchange="checkLexeme(this)" name="name1" checked/></td> 
-                  {% for item in row %}
+              <tr>
+                <td>
+                  <input type="checkbox" id="lexemecheckbox" onchange="checkLexeme(this)" name="name1" checked/>
+                </td>   
                   
-                  <td>  {{item['karyaaccesscode']}} {{item['lifespeakerid']}} {{item['name']}} {{item['agegroup']}} {{item['gender']}}</td>     
-                  {% endfor %}
-                  <td><button type="button" class="btn btn-primary lexemeview" id="{{row[0]['karyaaccesscode']}}" data-toggle="modal" data-target="#exampleModal">View</button></td>
-                  <!-- <td><button type="button" class="btn btn-warning lexemeedit" id="{{row[0]}}" data-toggle="modal" data-target="#exampleModal">Edit</button></td> -->
-                  <!-- <p> id="{{row[0]}}"</p> -->
+                <td> 
+                  {{item['karyaaccesscode']}}
+                </td>
+                <td>
+                  {{item['lifespeakerid']}}
+                </td>  
+                <td>
+                  {{item['current']['workerMetadata']['name']}}
+                </td>
+                <td>
+                  {{item['current']['workerMetadata']['agegroup']}}
+                </td>
+                <td>
+                  {{item['current']['workerMetadata']['gender']}}
+                </td>
+                <td>
+                  <strong>{{item['assignedBy']}}</strong>
+                </td> 
+                <td>
+                  {{item['fetchData']}}
+                </td> 
+                <td>
+                  {{item['task']}}
+                </td> 
+                <td>
+                  {{item['domain']}}
+                </td>
+                <td>
+                  {{item['elicitationmethod']}}
+                </td>
+                <td>
+                  <button type="button" class="btn btn-primary lexemeview" id="{{item['karyaaccesscode']}}" data-toggle="modal" data-target="#exampleModal">
+                    View
+                  </button>
+                </td>
                 
-                </tr>
-                  {% endfor %}
+              </tr>
+            {% endfor %}
                   
               
-          </tbody>
-          </table>
-      {% endblock %}
+      </tbody>
+    </table>
   </div>
- 
-      </div>
-      
-      <br />
-      <br />
-
-
-<script>
-  function myFunction() {
-      var input, filter, table, tr, td, i;
-      input = document.getElementById("myInput");
-      filter = input.value.toUpperCase();
-      table = document.getElementById("data");
-      tr = table.getElementsByTagName("tr");
-      for (i = 0; i < tr.length; i++) {
-      td = tr[i].getElementsByTagName("td")[1];
-      if (td) {
-          txtValue = td.textContent || td.innerText;
-          if (txtValue.toUpperCase().indexOf(filter) > -1) {
-          tr[i].style.display = "";
-          } else {
-          tr[i].style.display = "none";
-          }
-      }
-      }
-  };
-// $('.lexemeview').click(function(){
-//   var accode = $(this).attr("id");
-//   console.log(accode)
-// });
-
-  function moea(source) {
-checkboxes = document.getElementsByName('moea12');
-for(var i=0, n=checkboxes.length;i<n;i++) {
-  checkboxes[i].checked = source.checked;
-}
-};
-
-function moe(source) {
-checkboxes = document.getElementsByName('moe12');
-for(var i=0, n=checkboxes.length;i<n;i++) {
-  checkboxes[i].checked = source.checked;
-}
-};
-function olscs(source) {
-checkboxes = document.getElementsByName('sols');
-for(var i=0, n=checkboxes.length;i<n;i++) {
-  checkboxes[i].checked = source.checked;
-}
-};
-
-
-</body>
+</div>
+{% endblock %}
 
 {% block scripts %}
 {{super()}}
-<script src="{{url_for('.static', filename='dictionaryview.js')}}"></script>
 <script src="{{url_for('.static', filename='search.js')}}"></script>
 <script src="{{url_for('.static', filename='sorttable.js')}}"></script>
-<script src="{{url_for('.static', filename='lexemeview.js')}}"></script>
-<script src="{{url_for('.static', filename='lexemeedit.js')}}"></script>
-<script src="{{url_for('.static', filename='editlexeme.js')}}"></script>
-<script src="{{url_for('.static', filename='lexemedelete.js')}}"></script>
-<script src="{{url_for('.static', filename='shareproject.js')}}"></script>
-<script src="{{url_for('.static', filename='shareprojectwith.js')}}"></script>
 <script src="{{url_for('.static', filename='speaker_select2_dropdown.js')}}"></script>
+<script src="{{url_for('.static', filename='uploadaccesscode.js')}}"></script>
+<script type="text/javascript">uploadaccesscodeform({{ uploadacesscodemetadata | tojson | safe }}, {{ projecttype | tojson | safe }});</script>
 {% endblock %}
 </html>
 

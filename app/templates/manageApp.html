@@ -1,0 +1,44 @@
+{% extends "manageUsersLinks.html" %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block title %}
+Home
+{% endblock title %}
+
+{% block styles %}
+{{super()}}
+<link href="{{url_for('.static', filename='home.css')}}" rel="stylesheet" />
+{% endblock %}
+
+
+{% block app_content %}
+<div>
+    <h2>LiFE ADMIN CONSOLE</h2>
+</div>
+
+{% if "ADMIN" in usertype %}
+<div>
+    <button type="button" id="manageusers" class="btn btn-lg btn-danger"
+        onclick="window.location.href='{{ url_for('manageusers') }}';">Manage Users</button>
+</div>
+{% endif %}
+<br>
+<hr>
+
+{% if "SUPER-ADMIN" in usertype %}
+<div>
+    <button type="button" id="emailsetup" class="btn btn-lg btn-success"
+        onclick="window.location.href='{{ url_for('emailsetup') }}';">Email Setup</button>
+</div>
+
+
+{%endif%}
+<br>
+<hr>
+<div>
+    <button type="button" id="managetagset" class="btn btn-lg btn-primary"
+        onclick="window.location.href='{{ url_for('lifetagsets.managetagset') }}';">Manage Tagsets</button>
+</div>
+
+
+{% endblock %}

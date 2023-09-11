@@ -6,5 +6,3 @@ class Config(object):
     MONGO_URI = "mongodb://localhost:27017/lifedb"
     
     LOGIN_DISABLED = False
-
-    # print ('Mongo')
