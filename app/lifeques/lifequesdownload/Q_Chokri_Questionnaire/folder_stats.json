@@ -1,0 +1,66 @@
+{
+  "Chokri_Latin_audio": {
+    "json": 15,
+    "audio": 15
+  },
+  "Chokri_Latin_audio_Agriculture": {
+    "json": 5,
+    "audio": 5
+  },
+  "Chokri_Latin_audio_Education": {
+    "json": 5,
+    "audio": 5
+  },
+  "Chokri_Latin_audio_Science-Technology": {
+    "json": 5,
+    "audio": 5
+  },
+  "Chokri_Latin_text": {
+    "json": 15,
+    "audio": "NO AUDIO"
+  },
+  "Chokri_Latin_text_Agriculture": {
+    "json": 5,
+    "audio": "NO AUDIO"
+  },
+  "Chokri_Latin_text_Education": {
+    "json": 5,
+    "audio": "NO AUDIO"
+  },
+  "Chokri_Latin_text_Science-Technology": {
+    "json": 5,
+    "audio": "NO AUDIO"
+  },
+  "English_Latin_text": {
+    "json": 15,
+    "audio": "NO AUDIO"
+  },
+  "English_Latin_text_Agriculture": {
+    "json": 5,
+    "audio": "NO AUDIO"
+  },
+  "English_Latin_text_Education": {
+    "json": 5,
+    "audio": "NO AUDIO"
+  },
+  "English_Latin_text_Science-Technology": {
+    "json": 5,
+    "audio": "NO AUDIO"
+  },
+  "Hindi_Devanagari_text": {
+    "json": 15,
+    "audio": "NO AUDIO"
+  },
+  "Hindi_Devanagari_text_Agriculture": {
+    "json": 5,
+    "audio": "NO AUDIO"
+  },
+  "Hindi_Devanagari_text_Education": {
+    "json": 5,
+    "audio": "NO AUDIO"
+  },
+  "Hindi_Devanagari_text_Science-Technology": {
+    "json": 5,
+    "audio": "NO AUDIO"
+  }
+}

@@ -1,0 +1,2503 @@
+[2023-09-10 11:47:06,755] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 11:47:06,771] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 11:47:46,589] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 11:49:29,280] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 11:49:29,297] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 11:52:47,083] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 11:52:47,100] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 11:52:51,284] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 11:52:51,298] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 11:53:03,579] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 11:53:03,585] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 11:54:17,531] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 11:54:17,547] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 11:54:45,356] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 11:54:45,356] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 11:54:47,076] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 11:54:47,077] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 11:54:48,464] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 11:54:48,476] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 11:54:49,721] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 11:54:49,725] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 11:55:02,838] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 11:55:02,841] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 11:55:07,703] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 11:55:07,709] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 11:55:15,199] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 11:55:15,209] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 11:59:32,555] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 11:59:45,180] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 11:59:45,198] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 11:59:48,527] - logger: life - level: INFO - function: deleteaudio - line: 6116
+last active audio id to delete: A20230910114907633293-slice0002, <class 'str'>
+[2023-09-10 11:59:48,765] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 11:59:48,780] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 12:00:22,282] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 12:00:22,296] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 12:01:31,975] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 12:01:31,989] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 12:07:06,887] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 12:07:20,107] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 12:07:20,126] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 12:07:22,943] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 12:07:42,370] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 12:07:42,384] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 12:07:44,064] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 12:07:44,076] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 12:07:45,760] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 12:07:45,771] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 12:07:46,963] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 12:07:46,978] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 12:08:21,862] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 12:09:45,668] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 12:09:47,657] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 12:09:47,677] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 12:09:51,298] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 12:09:51,308] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 12:10:27,430] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 12:15:43,175] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 12:30:25,897] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 12:30:25,934] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 12:33:17,222] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 12:33:17,229] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 12:34:46,287] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 12:34:46,338] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 12:35:45,989] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 12:38:08,297] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 12:50:42,669] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 12:53:20,034] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 12:53:20,050] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 13:01:30,647] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 13:01:30,681] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 13:08:03,122] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 13:08:03,171] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 13:08:15,576] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 13:18:16,093] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 13:18:16,142] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 13:19:51,644] - logger: life - level: DEBUG - function: get_active_transcription_by - line: 50
+Transcription by data: {}
+[2023-09-10 13:19:51,644] - logger: life - level: DEBUG - function: get_active_transcription_by - line: 56
+Transcription by(): nmathur54
+[2023-09-10 13:19:51,646] - logger: life - level: DEBUG - function: getaudiofiletranscription - line: 1236
+Transcription by nmathur54, transcription details {'data': {'textGrid': {'discourse': {}, 'sentence': {'0007000520': {'start': 0.7, 'end': 5.2, 'speakerId': '', 'sentenceId': '', 'tags': '', 'transcription': {'Devanagari': ''}, 'sentencemorphemicbreak': {'Devanagari': ''}, 'morphemes': {'Devanagari': ''}, 'gloss': {'Devanagari': ''}, 'translation': {}}, '0056001400': {'start': 5.6, 'end': 14.0, 'speakerId': '', 'sentenceId': '', 'tags': '', 'transcription': {'Devanagari': ''}, 'sentencemorphemicbreak': {'Devanagari': ''}, 'morphemes': {'Devanagari': ''}, 'gloss': {'Devanagari': ''}, 'translation': {}}, '0143001780': {'start': 14.3, 'end': 17.8, 'speakerId': '', 'sentenceId': '', 'tags': '', 'transcription': {'Devanagari': ''}, 'sentencemorphemicbreak': {'Devanagari': ''}, 'morphemes': {'Devanagari': ''}, 'gloss': {'Devanagari': ''}, 'translation': {}}, '0184002200': {'start': 18.4, 'end': 22.0, 'speakerId': '', 'sentenceId': '', 'tags': '', 'transcription': {'Devanagari': ''}, 'sentencemorphemicbreak': {'Devanagari': ''}, 'morphemes': {'Devanagari': ''}, 'gloss': {'Devanagari': ''}, 'translation': {}}, '0224002700': {'start': 22.4, 'end': 27.0, 'speakerId': '', 'sentenceId': '', 'tags': '', 'transcription': {'Devanagari': ''}, 'sentencemorphemicbreak': {'Devanagari': ''}, 'morphemes': {'Devanagari': ''}, 'gloss': {'Devanagari': ''}, 'translation': {}}, '0278003540': {'start': 27.8, 'end': 35.4, 'speakerId': '', 'sentenceId': '', 'tags': '', 'transcription': {'Devanagari': ''}, 'sentencemorphemicbreak': {'Devanagari': ''}, 'morphemes': {'Devanagari': ''}, 'gloss': {'Devanagari': ''}, 'translation': {}}, '0357004640': {'start': 35.7, 'end': 46.4, 'speakerId': '', 'sentenceId': '', 'tags': '', 'transcription': {'Devanagari': ''}, 'sentencemorphemicbreak': {'Devanagari': ''}, 'morphemes': {'Devanagari': ''}, 'gloss': {'Devanagari': ''}, 'translation': {}}, '0469005330': {'start': 46.9, 'end': 53.3, 'speakerId': '', 'sentenceId': '', 'tags': '', 'transcription': {'Devanagari': ''}, 'sentencemorphemicbreak': {'Devanagari': ''}, 'morphemes': {'Devanagari': ''}, 'gloss': {'Devanagari': ''}, 'translation': {}}}, 'word': {}, 'phoneme': {}}}}
+[2023-09-10 13:19:51,648] - logger: life - level: DEBUG - function: getaudiotranscriptiondetails - line: 1436
+Transcription data {}
+[2023-09-10 13:19:51,652] - logger: life - level: DEBUG - function: getaudiofiletranscription - line: 1236
+Transcription by nmathur54, transcription details {'data': {'textGrid': {'discourse': {}, 'sentence': {'0007000520': {'start': 0.7, 'end': 5.2, 'speakerId': '', 'sentenceId': '', 'tags': '', 'transcription': {'Devanagari': ''}, 'sentencemorphemicbreak': {'Devanagari': ''}, 'morphemes': {'Devanagari': ''}, 'gloss': {'Devanagari': ''}, 'translation': {}}, '0056001400': {'start': 5.6, 'end': 14.0, 'speakerId': '', 'sentenceId': '', 'tags': '', 'transcription': {'Devanagari': ''}, 'sentencemorphemicbreak': {'Devanagari': ''}, 'morphemes': {'Devanagari': ''}, 'gloss': {'Devanagari': ''}, 'translation': {}}, '0143001780': {'start': 14.3, 'end': 17.8, 'speakerId': '', 'sentenceId': '', 'tags': '', 'transcription': {'Devanagari': ''}, 'sentencemorphemicbreak': {'Devanagari': ''}, 'morphemes': {'Devanagari': ''}, 'gloss': {'Devanagari': ''}, 'translation': {}}, '0184002200': {'start': 18.4, 'end': 22.0, 'speakerId': '', 'sentenceId': '', 'tags': '', 'transcription': {'Devanagari': ''}, 'sentencemorphemicbreak': {'Devanagari': ''}, 'morphemes': {'Devanagari': ''}, 'gloss': {'Devanagari': ''}, 'translation': {}}, '0224002700': {'start': 22.4, 'end': 27.0, 'speakerId': '', 'sentenceId': '', 'tags': '', 'transcription': {'Devanagari': ''}, 'sentencemorphemicbreak': {'Devanagari': ''}, 'morphemes': {'Devanagari': ''}, 'gloss': {'Devanagari': ''}, 'translation': {}}, '0278003540': {'start': 27.8, 'end': 35.4, 'speakerId': '', 'sentenceId': '', 'tags': '', 'transcription': {'Devanagari': ''}, 'sentencemorphemicbreak': {'Devanagari': ''}, 'morphemes': {'Devanagari': ''}, 'gloss': {'Devanagari': ''}, 'translation': {}}, '0357004640': {'start': 35.7, 'end': 46.4, 'speakerId': '', 'sentenceId': '', 'tags': '', 'transcription': {'Devanagari': ''}, 'sentencemorphemicbreak': {'Devanagari': ''}, 'morphemes': {'Devanagari': ''}, 'gloss': {'Devanagari': ''}, 'translation': {}}, '0469005330': {'start': 46.9, 'end': 53.3, 'speakerId': '', 'sentenceId': '', 'tags': '', 'transcription': {'Devanagari': ''}, 'sentencemorphemicbreak': {'Devanagari': ''}, 'morphemes': {'Devanagari': ''}, 'gloss': {'Devanagari': ''}, 'translation': {}}}, 'word': {}, 'phoneme': {}}}}
+[2023-09-10 13:19:51,652] - logger: life - level: DEBUG - function: getaudiotranscriptiondetails - line: 1449
+t_data!!!!! {'textGrid': {'discourse': {}, 'sentence': {'0007000520': {'start': 0.7, 'end': 5.2, 'speakerId': '', 'sentenceId': '', 'tags': '', 'transcription': {'Devanagari': ''}, 'sentencemorphemicbreak': {'Devanagari': ''}, 'morphemes': {'Devanagari': ''}, 'gloss': {'Devanagari': ''}, 'translation': {}}, '0056001400': {'start': 5.6, 'end': 14.0, 'speakerId': '', 'sentenceId': '', 'tags': '', 'transcription': {'Devanagari': ''}, 'sentencemorphemicbreak': {'Devanagari': ''}, 'morphemes': {'Devanagari': ''}, 'gloss': {'Devanagari': ''}, 'translation': {}}, '0143001780': {'start': 14.3, 'end': 17.8, 'speakerId': '', 'sentenceId': '', 'tags': '', 'transcription': {'Devanagari': ''}, 'sentencemorphemicbreak': {'Devanagari': ''}, 'morphemes': {'Devanagari': ''}, 'gloss': {'Devanagari': ''}, 'translation': {}}, '0184002200': {'start': 18.4, 'end': 22.0, 'speakerId': '', 'sentenceId': '', 'tags': '', 'transcription': {'Devanagari': ''}, 'sentencemorphemicbreak': {'Devanagari': ''}, 'morphemes': {'Devanagari': ''}, 'gloss': {'Devanagari': ''}, 'translation': {}}, '0224002700': {'start': 22.4, 'end': 27.0, 'speakerId': '', 'sentenceId': '', 'tags': '', 'transcription': {'Devanagari': ''}, 'sentencemorphemicbreak': {'Devanagari': ''}, 'morphemes': {'Devanagari': ''}, 'gloss': {'Devanagari': ''}, 'translation': {}}, '0278003540': {'start': 27.8, 'end': 35.4, 'speakerId': '', 'sentenceId': '', 'tags': '', 'transcription': {'Devanagari': ''}, 'sentencemorphemicbreak': {'Devanagari': ''}, 'morphemes': {'Devanagari': ''}, 'gloss': {'Devanagari': ''}, 'translation': {}}, '0357004640': {'start': 35.7, 'end': 46.4, 'speakerId': '', 'sentenceId': '', 'tags': '', 'transcription': {'Devanagari': ''}, 'sentencemorphemicbreak': {'Devanagari': ''}, 'morphemes': {'Devanagari': ''}, 'gloss': {'Devanagari': ''}, 'translation': {}}, '0469005330': {'start': 46.9, 'end': 53.3, 'speakerId': '', 'sentenceId': '', 'tags': '', 'transcription': {'Devanagari': ''}, 'sentencemorphemicbreak': {'Devanagari': ''}, 'morphemes': {'Devanagari': ''}, 'gloss': {'Devanagari': ''}, 'translation': {}}}, 'word': {}, 'phoneme': {}}}
+[2023-09-10 13:19:51,652] - logger: life - level: DEBUG - function: getaudiotranscriptiondetails - line: 1456
+Transcription data {'discourse': {}, 'sentence': {'0007000520': {'start': 0.7, 'end': 5.2, 'speakerId': '', 'sentenceId': '', 'tags': '', 'transcription': {'Devanagari': ''}, 'sentencemorphemicbreak': {'Devanagari': ''}, 'morphemes': {'Devanagari': ''}, 'gloss': {'Devanagari': ''}, 'translation': {}}, '0056001400': {'start': 5.6, 'end': 14.0, 'speakerId': '', 'sentenceId': '', 'tags': '', 'transcription': {'Devanagari': ''}, 'sentencemorphemicbreak': {'Devanagari': ''}, 'morphemes': {'Devanagari': ''}, 'gloss': {'Devanagari': ''}, 'translation': {}}, '0143001780': {'start': 14.3, 'end': 17.8, 'speakerId': '', 'sentenceId': '', 'tags': '', 'transcription': {'Devanagari': ''}, 'sentencemorphemicbreak': {'Devanagari': ''}, 'morphemes': {'Devanagari': ''}, 'gloss': {'Devanagari': ''}, 'translation': {}}, '0184002200': {'start': 18.4, 'end': 22.0, 'speakerId': '', 'sentenceId': '', 'tags': '', 'transcription': {'Devanagari': ''}, 'sentencemorphemicbreak': {'Devanagari': ''}, 'morphemes': {'Devanagari': ''}, 'gloss': {'Devanagari': ''}, 'translation': {}}, '0224002700': {'start': 22.4, 'end': 27.0, 'speakerId': '', 'sentenceId': '', 'tags': '', 'transcription': {'Devanagari': ''}, 'sentencemorphemicbreak': {'Devanagari': ''}, 'morphemes': {'Devanagari': ''}, 'gloss': {'Devanagari': ''}, 'translation': {}}, '0278003540': {'start': 27.8, 'end': 35.4, 'speakerId': '', 'sentenceId': '', 'tags': '', 'transcription': {'Devanagari': ''}, 'sentencemorphemicbreak': {'Devanagari': ''}, 'morphemes': {'Devanagari': ''}, 'gloss': {'Devanagari': ''}, 'translation': {}}, '0357004640': {'start': 35.7, 'end': 46.4, 'speakerId': '', 'sentenceId': '', 'tags': '', 'transcription': {'Devanagari': ''}, 'sentencemorphemicbreak': {'Devanagari': ''}, 'morphemes': {'Devanagari': ''}, 'gloss': {'Devanagari': ''}, 'translation': {}}, '0469005330': {'start': 46.9, 'end': 53.3, 'speakerId': '', 'sentenceId': '', 'tags': '', 'transcription': {'Devanagari': ''}, 'sentencemorphemicbreak': {'Devanagari': ''}, 'morphemes': {'Devanagari': ''}, 'gloss': {'Devanagari': ''}, 'translation': {}}}, 'word': {}, 'phoneme': {}}
+[2023-09-10 13:19:51,662] - logger: life - level: DEBUG - function: get_audio_transcriptions_by - line: 1251
+Project shared with ['nmathur54'], transcription keys dict_keys(['_id', 'username', 'projectname', 'updatedBy', 'audiodeleteFLAG', 'audioverifiedFLAG', 'prompt', 'dataType', 'lifesourceid', 'speakerId', 'additionalInfo', 'audioMetadata', 'transcriptionFLAG', 'audioId', 'audioFilename', 'textGrid', 'nmathur54', '@model##vadsilero'])
+[2023-09-10 13:19:51,662] - logger: life - level: DEBUG - function: get_audio_transcriptions_by - line: 1259
+All transcription by ['@model##vadsilero', 'latest', 'nmathur54']
+[2023-09-10 13:19:51,946] - logger: life - level: DEBUG - function: retrieve - line: 4338
+Now in retrieve
+[2023-09-10 13:19:51,949] - logger: life - level: ERROR - function: retrieve - line: 4357
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4354, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 13:19:51,952] - logger: life - level: DEBUG - function: retrieve - line: 4338
+Now in retrieve
+[2023-09-10 13:19:51,955] - logger: life - level: ERROR - function: retrieve - line: 4357
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4354, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 13:22:22,659] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 13:22:22,710] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 13:25:50,978] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 13:25:50,987] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 13:35:39,793] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 13:44:03,769] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 13:44:06,113] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 13:44:06,124] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 13:44:18,525] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 13:44:18,533] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 13:44:21,649] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 13:44:21,657] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 13:44:23,450] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 13:44:23,457] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 13:44:25,901] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 13:44:25,906] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 13:45:13,738] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 13:45:13,744] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 13:52:11,148] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4295, in retrieve
+    current_username = getcurreccntusername.getcurrentusername()
+NameError: name 'getcurreccntusername' is not defined
+[2023-09-10 13:52:11,150] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4295, in retrieve
+    current_username = getcurreccntusername.getcurrentusername()
+NameError: name 'getcurreccntusername' is not defined
+[2023-09-10 13:52:40,291] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 13:52:40,295] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 13:53:01,078] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 13:53:01,083] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 16:38:50,972] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 16:38:58,434] - logger: life - level: INFO - function: deleteaudio - line: 6116
+last active audio id to delete: A20230910122955624224-slice0000, <class 'str'>
+[2023-09-10 16:38:58,816] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 16:38:58,841] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 16:39:06,754] - logger: life - level: INFO - function: audiobrowseaction - line: 872
+audio id to delete: A20230910122955624224-slice0001, <class 'str'>
+[2023-09-10 16:39:06,759] - logger: life - level: INFO - function: audiobrowseaction - line: 872
+audio id to delete: A20230910122955624224-slice0002, <class 'str'>
+[2023-09-10 16:39:06,776] - logger: life - level: INFO - function: audiobrowseaction - line: 872
+audio id to delete: A20230910122955624224-slice0003, <class 'str'>
+[2023-09-10 16:39:06,780] - logger: life - level: INFO - function: audiobrowseaction - line: 872
+audio id to delete: A20230910122955624224-slice0004, <class 'str'>
+[2023-09-10 16:39:06,783] - logger: life - level: INFO - function: audiobrowseaction - line: 872
+audio id to delete: A20230910122955624224-slice0005, <class 'str'>
+[2023-09-10 16:39:06,788] - logger: life - level: INFO - function: audiobrowseaction - line: 872
+audio id to delete: A20230910122955624224-slice0006, <class 'str'>
+[2023-09-10 16:39:06,790] - logger: life - level: INFO - function: audiobrowseaction - line: 872
+audio id to delete: A20230910122955624224-slice0007, <class 'str'>
+[2023-09-10 16:39:06,793] - logger: life - level: INFO - function: audiobrowseaction - line: 872
+audio id to delete: A20230910122955624224-slice0008, <class 'str'>
+[2023-09-10 16:39:06,795] - logger: life - level: INFO - function: audiobrowseaction - line: 872
+audio id to delete: A20230910122955624224-slice0009, <class 'str'>
+[2023-09-10 16:39:31,350] - logger: life - level: INFO - function: audiobrowseaction - line: 869
+audio id to revoke: A20230910122955624224-slice0000, <class 'str'>
+[2023-09-10 16:39:31,351] - logger: life - level: INFO - function: audiobrowseaction - line: 869
+audio id to revoke: A20230910122955624224-slice0001, <class 'str'>
+[2023-09-10 16:39:31,352] - logger: life - level: INFO - function: audiobrowseaction - line: 869
+audio id to revoke: A20230910122955624224-slice0002, <class 'str'>
+[2023-09-10 16:39:31,354] - logger: life - level: INFO - function: audiobrowseaction - line: 869
+audio id to revoke: A20230910122955624224-slice0003, <class 'str'>
+[2023-09-10 16:39:31,355] - logger: life - level: INFO - function: audiobrowseaction - line: 869
+audio id to revoke: A20230910122955624224-slice0004, <class 'str'>
+[2023-09-10 16:39:31,356] - logger: life - level: INFO - function: audiobrowseaction - line: 869
+audio id to revoke: A20230910122955624224-slice0005, <class 'str'>
+[2023-09-10 16:39:31,357] - logger: life - level: INFO - function: audiobrowseaction - line: 869
+audio id to revoke: A20230910122955624224-slice0006, <class 'str'>
+[2023-09-10 16:39:31,358] - logger: life - level: INFO - function: audiobrowseaction - line: 869
+audio id to revoke: A20230910122955624224-slice0007, <class 'str'>
+[2023-09-10 16:39:31,360] - logger: life - level: INFO - function: audiobrowseaction - line: 869
+audio id to revoke: A20230910122955624224-slice0008, <class 'str'>
+[2023-09-10 16:39:31,361] - logger: life - level: INFO - function: audiobrowseaction - line: 869
+audio id to revoke: A20230910122955624224-slice0009, <class 'str'>
+[2023-09-10 16:39:32,342] - logger: life - level: INFO - function: audiobrowseaction - line: 869
+audio id to revoke: A20230910122955624224-slice0000, <class 'str'>
+[2023-09-10 16:39:32,344] - logger: life - level: INFO - function: audiobrowseaction - line: 869
+audio id to revoke: A20230910122955624224-slice0001, <class 'str'>
+[2023-09-10 16:39:32,346] - logger: life - level: INFO - function: audiobrowseaction - line: 869
+audio id to revoke: A20230910122955624224-slice0002, <class 'str'>
+[2023-09-10 16:39:32,349] - logger: life - level: INFO - function: audiobrowseaction - line: 869
+audio id to revoke: A20230910122955624224-slice0003, <class 'str'>
+[2023-09-10 16:39:32,352] - logger: life - level: INFO - function: audiobrowseaction - line: 869
+audio id to revoke: A20230910122955624224-slice0004, <class 'str'>
+[2023-09-10 16:39:32,357] - logger: life - level: INFO - function: audiobrowseaction - line: 869
+audio id to revoke: A20230910122955624224-slice0005, <class 'str'>
+[2023-09-10 16:39:32,360] - logger: life - level: INFO - function: audiobrowseaction - line: 869
+audio id to revoke: A20230910122955624224-slice0006, <class 'str'>
+[2023-09-10 16:39:32,362] - logger: life - level: INFO - function: audiobrowseaction - line: 869
+audio id to revoke: A20230910122955624224-slice0007, <class 'str'>
+[2023-09-10 16:39:32,368] - logger: life - level: INFO - function: audiobrowseaction - line: 869
+audio id to revoke: A20230910122955624224-slice0008, <class 'str'>
+[2023-09-10 16:39:32,371] - logger: life - level: INFO - function: audiobrowseaction - line: 869
+audio id to revoke: A20230910122955624224-slice0009, <class 'str'>
+[2023-09-10 16:39:36,784] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 16:39:50,333] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 16:39:50,348] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 16:40:07,596] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 16:40:07,608] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 17:07:33,439] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 17:07:33,440] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 17:39:19,578] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 17:39:19,617] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 17:39:57,714] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 17:39:57,737] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 17:40:29,842] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 17:41:43,479] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 17:41:43,482] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 17:49:55,581] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 17:49:55,582] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 17:50:17,646] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 17:50:17,667] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 17:51:55,465] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 17:51:55,466] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 17:51:58,593] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 17:51:58,594] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:00:28,623] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:00:28,658] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:02:40,220] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:02:40,292] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:02:53,781] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:02:53,798] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:02:55,083] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:02:55,110] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:02:56,289] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:02:56,309] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:03:06,438] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:03:36,805] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:03:36,810] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:03:50,308] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:03:50,331] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:10:03,404] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:10:03,405] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:12:40,558] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:12:40,559] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:13:30,868] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:13:30,886] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:14:21,402] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:14:21,429] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:15:12,467] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:15:12,473] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:15:14,290] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:15:14,293] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:15:27,541] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:15:27,560] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:15:31,159] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:15:33,924] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:15:33,926] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:15:37,879] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:15:38,656] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:15:38,677] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:15:39,482] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:15:39,483] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:15:40,281] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:15:40,282] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:15:41,911] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:15:41,911] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:16:41,705] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:16:41,749] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:16:44,167] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:16:44,178] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:16:53,691] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:16:53,706] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:18:47,059] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:19:22,789] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:19:22,801] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:19:45,511] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:19:45,563] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:19:47,190] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:19:47,205] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:19:50,813] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:20:05,085] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:26:49,476] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:26:52,022] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:29:58,956] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:31:28,551] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:31:32,359] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:31:32,364] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:31:36,253] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:31:36,262] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:31:38,931] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:31:38,937] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:32:18,796] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:32:18,798] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:32:42,694] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:32:44,032] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:32:44,034] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:32:45,596] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:32:45,597] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:32:57,477] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:32:58,378] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:32:58,378] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:32:59,257] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:32:59,258] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:33:06,410] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:33:06,422] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:34:53,253] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:34:53,263] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:36:07,753] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:36:07,765] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:36:09,446] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:36:09,448] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:36:19,828] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:36:19,844] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:36:41,626] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:36:41,641] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:37:22,648] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:37:22,661] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:38:56,573] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 18:38:56,599] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 23:30:13,658] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
+[2023-09-10 23:30:13,659] - logger: life - level: ERROR - function: retrieve - line: 4308
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 4305, in retrieve
+    x = mongo.send_file(filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_pymongo/__init__.py", line 206, in send_file
+    response.set_etag(fileobj.md5)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/sansio/response.py", line 502, in set_etag
+    self.headers["ETag"] = quote_etag(etag, weak)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
+    if '"' in etag:
+TypeError: argument of type 'NoneType' is not iterable
