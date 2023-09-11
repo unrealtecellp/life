@@ -372,7 +372,8 @@ def saveoneaudiofile(mongo,
     store_in_local = is_store_in_local(
         get_audio_json, run_vad, run_asr, split_into_smaller_chunks)
 
-    store_in_mongo = is_store_in_mongo(split_into_smaller_chunks)
+    # store_in_mongo = is_store_in_mongo(split_into_smaller_chunks)
+    store_in_mongo = True
 
     new_audio_details = get_audio_doc_details(projectowner,
                                               activeprojectname,
@@ -457,7 +458,9 @@ def saveoneaudiofile(mongo,
                               audiowaveform_json_dir_path,
                               audio_json_parent_dir,
                               full_model_name,
-                              model_details
+                              model_details,
+                              audio_duration=audio_duration,
+                              current_slice_duration=audio_duration
                               )
         if update:
             transcription_doc_id = transcriptions.update_one({"audioId": audio_id},
@@ -518,6 +521,7 @@ def saveoneaudiofile(mongo,
                 text_grids), current_audio_chunk_begn, current_audio_chunk_end, audio_duration*1000)
 
             current_audio_file = full_audio_file[current_audio_chunk_begn: current_audio_chunk_end]
+            current_slice_duration = current_audio_file.duration_seconds
             # current_audio_file_array = full_audio_file_array[
             #     int(current_audio_chunk_begn): int(current_audio_chunk_end)]
 
@@ -564,7 +568,11 @@ def saveoneaudiofile(mongo,
                                   current_slice_number=i,
                                   total_slices=len(text_grids),
                                   boundary_offset_value=boundary_offset_values[i],
-                                  slice_offset_value=slice_offset_value
+                                  slice_offset_value=current_slice_offset_value_end,
+                                  slice_overlap_region=slice_offset_value,
+                                  audio_duration=audio_duration,
+                                  current_slice_duration=current_slice_duration,
+                                  original_audio_id=audio_id
                                   )
 
             if update:
@@ -756,16 +764,29 @@ def add_audio_doc_details(audio_details_dict,
                           total_slices=1,
                           boundary_offset_value=0.0,
                           slice_offset_value=0.0,
+                          slice_overlap_region=0.0,
+                          audio_duration=0.0,
+                          current_slice_duration=0.0,
+                          original_audio_id=""
                           ):
     audio_details_dict['audioId'] = audio_id
     audio_details_dict['audioFilename'] = updated_audio_filename
+
+    if original_audio_id == "":
+        original_audio_id = audio_id
 
     add_additional_info(audio_details_dict,
                         current_slice_number,
                         total_slices,
                         boundary_offset_value,
-                        slice_offset_value
+                        slice_offset_value,
+                        slice_overlap_region,
+                        original_audio_id
                         )
+
+    add_audio_metadata(audio_details_dict,
+                       audio_duration,
+                       current_slice_duration)
 
     add_text_grid(audio_details_dict,
                   current_username,
@@ -780,17 +801,33 @@ def add_audio_doc_details(audio_details_dict,
                           updated_audio_filename)
 
 
+def add_audio_metadata(audio_details_dict,
+                       audio_duration,
+                       current_slice_duration):
+    if 'audioMetadata' in audio_details_dict:
+        audio_details_dict['audioMetadata'].update([
+            ('audioDuration', audio_duration), ('currentSliceDuration', current_slice_duration)])
+    else:
+        audio_details_dict['audioMetadata'] = {
+            'audioDuration': audio_duration, 'currentSliceDuration': current_slice_duration}
+
+
 def add_additional_info(audio_details_dict,
                         current_slice_number,
                         total_slices,
                         boundary_offset_value,
-                        slice_offset_value):
+                        slice_offset_value,
+                        slice_overlap_region,
+                        original_audio_id):
     if 'additionalInfo' in audio_details_dict:
         audio_details_dict['additionalInfo'].update([
-            ('totalSlices', total_slices), ('currentSliceNumber', current_slice_number), ('boundaryOffsetValue', boundary_offset_value), ('sliceOffsetValue', slice_offset_value)])
+            ('totalSlices', total_slices), ('currentSliceNumber',
+                                            current_slice_number), ('boundaryOffsetValue', boundary_offset_value),
+            ('sliceOffsetValue', slice_offset_value), ('sliceOverlapRegion', slice_overlap_region), ('isSliceOf', original_audio_id)])
     else:
         audio_details_dict['additionalInfo'] = {
-            'totalSlices': total_slices, 'currentSliceNumber': current_slice_number}
+            'totalSlices': total_slices, 'currentSliceNumber': current_slice_number, 'boundaryOffsetValue': boundary_offset_value,
+            'sliceOffsetValue': slice_offset_value, 'sliceOverlapRegion': slice_overlap_region, 'isSliceOf': original_audio_id}
 
 
 def add_text_grid(audio_details_dict,
@@ -2523,6 +2560,11 @@ def get_slices_and_text_grids(mongo,
             current_text_grid = generate_text_grid(
                 mongo, blank_text_grid, audio_chunk_boundary_list, transcriptions, transcription_type, max_pause_boundary, min_boundary_size, offset_value=offset_value)
             all_text_grids.append(current_text_grid)
+    else:
+        blank_text_grid = get_blank_text_grid()
+        audio_chunk_boundaries = []
+        all_text_grids = [blank_text_grid]
+        model_details = {}
 
     return audio_chunk_boundaries, all_text_grids, offset_values, slice_offset_values, transcribed, model_details
 

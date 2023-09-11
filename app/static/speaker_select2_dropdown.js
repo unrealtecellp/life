@@ -271,6 +271,23 @@ var audioInterntSources = [
   // {"id": "facebook", "text": "Facebook"}
 ];
 
+var downloadFormats = [
+  { "id": "textgrid", "text": "Praat TextGrid" },
+  { "id": "csv", "text": "CSV" },
+  { "id": "tsv", "text": "TSV" },
+  { "id": "json", "text": "JSON" },
+  { "id": "xlsx", "text": "XLSX" },
+  { "id": "latex", "text": "LaTeX" },
+  { "id": "html", "text": "HTML" },
+  { "id": "markdown", "text": "Markdown" }
+]
+
+var transcriptionBy = [
+  {"id": "", "text": ""},
+  { "id": "latest", "text": "Latest" },
+  { "id": "mytranscription", "text": "My Transcriptions" }
+]
+
 // var QuestionnaireDomain = [
 //   {"id": "", "text": ""},
 //   {"id": "General", "text": "General"},
