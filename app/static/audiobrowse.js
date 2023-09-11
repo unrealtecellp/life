@@ -72,33 +72,39 @@ function createSelect2optgroup(eleId, optionsObject, selectedOption) {
         });
 }
 
-function createBrowseActions(projectOwner, currentUsername) {
+function createBrowseActions(projectOwner, currentUsername, shareMode, shareChecked) {
     let ele = '';
     let browseActionOptionsList = ['Delete']
-    // let tabSpace = '&nbsp;&nbsp;&nbsp;&nbsp;';
-    ele += '<label for="browseactiondropdown">Action:&nbsp;</label>'+
-            '<select class="custom-select custom-select-sm" id="browseactiondropdown" style="width: 30%;"></select>';
-    // ele += tabSpace;
-    // multiple audio delete
-    ele += '<button type="button" class="btn btn-danger" id="multipleaudiodelete"  style="display: inline;">'+
-            '<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>'+
-            ' Multiple</button>';
-    // ele += tabSpace;
-    // multiple audio revove
-    ele += '<button type="button" class="btn btn-success" id="multipleaudiorevoke" style="display: none;">'+
-            '<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>'+
-            ' Multiple</button>';
-    // ele += tabSpace;
-    // multiple audio share
-    ele += '<button type="button" class="btn btn-warning" id="multipleaudioshare" style="display: inline;" data-toggle="modal" data-target="#browseShareModal">'+
-            '<span class="glyphicon glyphicon-share-alt" aria-hidden="true"></span>'+
-            ' Multiple</button>';
-
-    $('#browseaudiodropdowns').append(ele);
-    if (currentUsername === projectOwner) {
-        browseActionOptionsList.push('Revoke');
+    if (shareMode >= 4) {
+        
+        // let tabSpace = '&nbsp;&nbsp;&nbsp;&nbsp;';
+        ele += '<label for="browseactiondropdown">Action:&nbsp;</label>'+
+                '<select class="custom-select custom-select-sm" id="browseactiondropdown" style="width: 30%;"></select>';
+        // ele += tabSpace;
+        // multiple audio delete
+        ele += '<button type="button" class="btn btn-danger" id="multipleaudiodelete"  style="display: inline;">'+
+                '<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>'+
+                ' Multiple</button>';
+        // ele += tabSpace;
+        // multiple audio revove
+        ele += '<button type="button" class="btn btn-success" id="multipleaudiorevoke" style="display: none;">'+
+                '<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>'+
+                ' Multiple</button>';
+        // ele += tabSpace;
     }
-    createSelect2('browseactiondropdown', browseActionOptionsList, 'Delete');
+    if (shareChecked === 'true') {
+        // multiple audio share
+        ele += '<button type="button" class="btn btn-warning" id="multipleaudioshare" style="display: inline;" data-toggle="modal" data-target="#browseShareModal">'+
+        '<span class="glyphicon glyphicon-share-alt" aria-hidden="true"></span>'+
+        ' Multiple</button>';
+    }
+    $('#browseaudiodropdowns').append(ele);
+    if (shareMode >= 4) {
+        if (currentUsername === projectOwner) {
+            browseActionOptionsList.push('Revoke');
+        }
+        createSelect2('browseactiondropdown', browseActionOptionsList, 'Delete');
+    }
 }
 
 function createAudioBrowseTable(
@@ -236,9 +242,9 @@ function createAudioBrowse(newData) {
     // createSelect2('audiosortingsubcategoriesdropdown', speakerIds, activeSpeakerId);
     createSelect2('speakeridsdropdown', speakerIds, activeSpeakerId);
     createSelect2('audiofilescountdropdown', [10, 20, 50], 10)
-    if (shareMode >= 4) {
-        createBrowseActions(projectOwner, currentUsername);
-    }
+    // if (shareMode >= 4) {
+    createBrowseActions(projectOwner, currentUsername, shareMode, shareChecked);
+    // }
     createAudioBrowseTable(audioDataFields, audioData, shareMode, totalRecords, shareChecked)
     eventsMapping();
     createPagination(totalRecords)

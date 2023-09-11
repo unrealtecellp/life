@@ -3917,12 +3917,17 @@ def userslist():
                                                                           'userprojects')
     current_username = getcurrentusername.getcurrentusername()
     try:
-        share_action = 'share'
-        project_name, share_with_users_list, sourceList, share_info, current_user_sharemode = lifeshare.get_users_list(projects,
+        data = json.loads(request.args.get('a'))
+        logger.debug("data: %s, %s", data, type(data))
+        share_action = data["shareAction"]
+        selected_user = data["selectedUser"]
+        logger.debug("share_action: %s, selected_user: %s", share_action, selected_user)
+        project_name, share_with_users_list, sourceList, share_info, current_user_sharemode, selected_user_shareinfo = lifeshare.get_users_list(projects,
                                                                                                                         userprojects,
                                                                                                                         userlogin,
                                                                                                                         current_username,
-                                                                                                                        share_action)
+                                                                                                                        share_action=share_action,
+                                                                                                                        selected_user=selected_user)
     except:
         logger.exception("")
 
@@ -3930,7 +3935,8 @@ def userslist():
                    usersList=sorted(share_with_users_list),
                    sourceList=sorted(sourceList),
                    shareInfo=share_info,
-                   sharemode=current_user_sharemode)
+                   sharemode=current_user_sharemode,
+                   selectedUserShareInfo=selected_user_shareinfo)
 
 # modal view with complete detail of a lexeme for edit
 # edit button on dictionary view table
@@ -3956,6 +3962,7 @@ def shareprojectwith():
     data = request.args.get('data')
     data = eval(data)
     logger.debug('Sharing Information: %s', pformat(data))
+    shareaction = data['shareaction']
     users = data['sharewithusers']
     # print(type(users))
     speakers = data['sharespeakers']
@@ -6192,23 +6199,10 @@ def browseshareuserslist():
                 else:
                     # print(f"username!!!: {username}")
                     share_with_users_list.append(username)
-        project_shared_with = projects.find_one({'projectname': activeprojectname},
-                                                {'_id': 0, 'sharedwith': 1})["sharedwith"]
-        share_with_users_list = list(
-            set(share_with_users_list) & set(project_shared_with))
-        # print(usersList, share_with_users_list)
-        # if (project_type == 'recordings' or
-        #     project_type == 'transcriptions'):
-        #     speakersDict = projects.find_one({'projectname': activeprojectname},
-        #                                     {'_id': 0, 'speakerIds.'+current_username: 1})
-        #     if (len(speakersDict) != 0):
-        #         sourceList = speakersDict['speakerIds'][current_username]
-        # elif (project_type == 'crawling' or
-        #     project_type == 'annotation'):
-        #     sourceDict = projects.find_one({'projectname': activeprojectname},
-        #                                     {'_id': 0, 'sourceIds.'+current_username: 1})
-        #     if (len(sourceDict) != 0):
-        #         sourceList = sourceDict['sourceIds'][current_username]
+        # project_shared_with = projects.find_one({'projectname': activeprojectname},
+        #                                         {'_id': 0, 'sharedwith': 1})["sharedwith"]
+        # share_with_users_list = list(set(share_with_users_list) & set(project_shared_with))
+        share_with_users_list = shareinfo["isharedwith"]
     except:
         logger.exception("")
 
@@ -6229,6 +6223,10 @@ def browsefilesharedwithuserslist():
         current_username = getcurrentusername.getcurrentusername()
         activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
                                                                       userprojects)
+        
+        shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
+                                                          current_username,
+                                                          activeprojectname)
 
         # projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
         # project_type = getprojecttype.getprojecttype(projects,
@@ -6251,8 +6249,12 @@ def browsefilesharedwithuserslist():
             if (speakerid is not None and file_speaker_ids is not None):
                 for user, speaker_ids in file_speaker_ids.items():
                     if (speakerid in speaker_ids and
-                            audio_id in speaker_ids[speakerid]):
+                            audio_id in speaker_ids[speakerid] and
+                            user in shareinfo["isharedwith"]):
                         browse_file_sharedwith_userslist.append(user)
+        browse_file_sharedwith_userslist.remove(current_username)
+        for user_name in shareinfo["tomesharedby"]:
+            browse_file_sharedwith_userslist.remove(user_name)
     except:
         logger.exception("")
 
