@@ -2,7 +2,9 @@ import parselmouth as plm
 import tgt
 import audioread
 from app.controller import (
-    getfilefromfs
+    getfilefromfs,
+    life_logging,
+    audiodetails
 )
 
 import copy
@@ -13,27 +15,37 @@ import pandas as pd
 from io import StringIO
 from app import mongo
 from flask import flash
+import re
+
+logger = life_logging.get_logger()
 
 
-def downloadTextGridWihoutAudio(transcriptions,
-                                projectsform,
-                                current_username,
-                                activeprojectname,
-                                latest,
-                                filetype,
-                                empty_string='',
-                                merge_same_intervals=False,
-                                merge_all_slices=False):
+def downloadTextGridOld(transcriptions,
+                        projectsform,
+                        current_username,
+                        activeprojectname,
+                        latest,
+                        filetype,
+                        empty_string='',
+                        merge_same_intervals=False,
+                        download_audio=False,
+                        merge_all_slices=False):
 
     basedir = os.path.abspath(os.path.dirname(__file__))
     basedir = basedir[:basedir.rfind('/')]
     basedir = os.path.join(basedir, 'downloads')
     if os.path.exists(basedir):
+        print('Removing basedir: ', basedir)
         shutil.rmtree(basedir)
     os.makedirs(basedir)
 
-    audio_dir = os.path.join(basedir, 'audio')
     text_grid_dir = os.path.join(basedir, 'textgrids')
+
+    if download_audio:
+        audio_dir = text_grid_dir
+    else:
+        audio_dir = os.path.join(basedir, 'audio')
+
     zipfilename = activeprojectname+'_textgrids'
     zipfilepath = os.path.join(basedir, zipfilename)
     print('Zipfilepath', zipfilepath)
@@ -90,11 +102,11 @@ def downloadTextGridWihoutAudio(transcriptions,
         if latest:
             all_entries = transcriptions.find({'projectname': activeprojectname,
                                                'transcriptionFLAG': 1, 'audiodeleteFLAG': 0},
-                                              {'textGrid': 1, 'audioId': 1, 'audioFilename': 1, 'additionalInfo.totalSlices': 1, 'additionalInfo.currentSliceNumber': 1, '_id': 0})
+                                              {'textGrid': 1, 'audioId': 1, 'audioFilename': 1, 'additionalInfo.totalSlices': 1, 'additionalInfo.currentSliceNumber': 1, 'audioMetadata.currentSliceDuration': 1, '_id': 0})
         else:
             all_entries = transcriptions.find({'projectname': activeprojectname,
                                                'transcriptionFLAG': 1, 'audiodeleteFLAG': 0},
-                                              {current_username+'.textGrid': 1, 'audioId': 1, 'audioFilename': 1, 'additionalInfo.totalSlices': 1, 'additionalInfo.currentSliceNumber': 1, '_id': 0})
+                                              {current_username+'.textGrid': 1, 'audioId': 1, 'audioFilename': 1, 'additionalInfo.totalSlices': 1, 'additionalInfo.currentSliceNumber': 1, 'audioMetadata.currentSliceDuration': 1, '_id': 0})
 
         # min_max = []
         total_slices = 1
@@ -102,7 +114,7 @@ def downloadTextGridWihoutAudio(transcriptions,
         tiers = {}
 
         for cur_entry in all_entries:
-            # print (cur_entry)
+            print("Current entry", cur_entry)
             if latest:
                 text_grid = cur_entry['textGrid']
             else:
@@ -110,7 +122,11 @@ def downloadTextGridWihoutAudio(transcriptions,
                     text_grid = cur_entry[current_username]['textGrid']
                 else:
                     text_grid = {}
+            if 'audioMetadata' in all_entries:
+                slice_duration = all_entries['audioMetadata'].get(
+                    'currentSliceDuration', 0.0)
 
+            print("Text Grid", text_grid)
             if len(text_grid) > 0:
                 if filetype == 'json':
                     write_json(cur_entry, text_grid_dir, merge_all_slices)
@@ -124,11 +140,16 @@ def downloadTextGridWihoutAudio(transcriptions,
 
                         audio_id = cur_entry['audioId']
                         audio_filename = cur_entry['audioFilename']
+
                         original_audio_filename = get_original_audio_filename(
                             cur_entry, audio_filename, merge_all_slices)
 
                         overall_xmin = 0.0
-                        overall_xmax = get_audio_duration(audio_dir, audio_id)
+                        if slice_duration == 0.0 or download_audio:
+                            overall_xmax = get_audio_with_duration(
+                                audio_dir, audio_id, original_audio_filename)
+                        else:
+                            overall_xmax = slice_duration
 
                         text_grid_path = get_text_grid_path(
                             original_audio_filename, text_grid_dir)
@@ -138,6 +159,244 @@ def downloadTextGridWihoutAudio(transcriptions,
 
                         write_tgt_text_grid(
                             tgt_text_grid, text_grid_path, filetype, empty_string, merge_same_intervals)
+
+    if len(os.listdir(text_grid_dir)) > 0:
+        print('Text grid dir', text_grid_dir)
+        shutil.make_archive(zipfilepath, 'zip', text_grid_dir)
+        return '200', zipfilepath+'.zip'
+    else:
+        print('Text grid dir empty', text_grid_dir)
+        return '0', 'Empty Directory'
+
+
+def downloadTextGrid(transcriptions,
+                     projectsform,
+                     current_username,
+                     activeprojectname,
+                     transcription_by,
+                     filetype,
+                     empty_string='',
+                     merge_same_intervals=False,
+                     download_audio=False,
+                     get_individual_slices=True,
+                     merge_all_slices=True,
+                     retain_original_filename=True):
+
+    basedir = os.path.abspath(os.path.dirname(__file__))
+    basedir = basedir[:basedir.rfind('/')]
+    basedir = os.path.join(basedir, 'downloads')
+    if os.path.exists(basedir):
+        shutil.rmtree(basedir)
+    os.makedirs(basedir)
+
+    # audio_dir = os.path.join(basedir, 'audio')
+    text_grid_dir = os.path.join(basedir, 'merged_textgrids')
+    if download_audio:
+        audio_dir = text_grid_dir
+    else:
+        audio_dir = os.path.join(basedir, 'audio')
+    zipfilename = activeprojectname+'_textgrids'
+    zipfilepath = os.path.join(basedir, zipfilename)
+    print('Zipfilepath', zipfilepath)
+
+    if os.path.exists(audio_dir):
+        shutil.rmtree(audio_dir)
+    os.mkdir(audio_dir)
+
+    if os.path.exists(text_grid_dir):
+        shutil.rmtree(text_grid_dir)
+    os.mkdir(text_grid_dir)
+
+    print('Basedir', basedir)
+    print('Format received', filetype)
+
+    # TODO: Its a temporary fix for issues related to data not getting saved as per the
+    # projectforms. Currently irrespective of what is there is projectsform, morphemic
+    # break, gloss and translation are getting saved in 'transcriptions' project.
+    # This is so even though these fields are not displayed on the interface.
+    # This needs to be fixed - once done, this code will no longer be needed.
+    formelement_textgrid_map = {
+        'Transcription Script': 'transcription',
+        'Interlinear Gloss Script': 'gloss',
+        'Interlinear Gloss Language': 'sentencemorphemicbreak',
+        'Translation Script': 'translation'
+    }
+    current_projectformelements = []
+    projectformelements = projectsform.find({'projectname': activeprojectname},
+                                            {'_id': 0, 'username': 0, 'projectname': 0})
+
+    for current_element in projectformelements:
+        # current_element_dict = projectformelements[current_element]
+        for current_element_key in current_element:
+            # print ('Current element', current_element)
+            if current_element_key in formelement_textgrid_map:
+                current_projectformelements.append(
+                    formelement_textgrid_map[current_element_key])
+
+    print('Current project form elements', current_projectformelements)
+
+    # Currently it returns the full entry, excluding the audiowaveform 'data' -
+    # anyway we may not be using that and its a HUGE list of just numbers, making
+    # JSON unreadable but it could be included if one really wants to
+    if filetype == 'lifejson':
+        print('Lifejson format')
+        all_entries = transcriptions.find({'projectname': activeprojectname,
+                                           'transcriptionFLAG': 1, 'audiodeleteFLAG': 0}, {'_id': 0, 'audioMetadata.audiowaveform.data': 0})
+
+        print('all_entries', all_entries)
+        for cur_entry in all_entries:
+            write_json(cur_entry, text_grid_dir, merge_all_slices)
+
+    else:
+        if transcription_by == "latest":
+            all_entries = transcriptions.find({'projectname': activeprojectname,
+                                               'transcriptionFLAG': 1, 'audiodeleteFLAG': 0},
+                                              {'textGrid': 1, 'audioId': 1, 'audioFilename': 1, 'additionalInfo': 1, 'audioMetadata': 1, '_id': 0})
+        else:
+            all_entries = transcriptions.find({'projectname': activeprojectname,
+                                               'transcriptionFLAG': 1, 'audiodeleteFLAG': 0},
+                                              {transcription_by+'.textGrid': 1, 'audioId': 1, 'audioFilename': 1, 'additionalInfo': 1, 'audioMetadata': 1, '_id': 0})
+
+        # min_max = []
+        total_slices = 1
+
+        tiers = {}
+
+        for cur_entry in all_entries:
+            # print("Current entry", cur_entry)
+            if transcription_by == "latest":
+                text_grid = cur_entry['textGrid']
+            else:
+                if transcription_by in cur_entry:
+                    text_grid = cur_entry[transcription_by]['textGrid']
+                else:
+                    text_grid = {}
+
+            # print("Text Grid", text_grid)
+            audio_id = cur_entry['audioId']
+            audio_filename = cur_entry['audioFilename']
+
+            if 'audioMetadata' in cur_entry:
+                audio_duration = cur_entry['audioMetadata'].get(
+                    'audioDuration', 0.0)
+                slice_duration = cur_entry['audioMetadata'].get(
+                    'currentSliceDuration', 0.0)
+
+            if 'additionalInfo' in cur_entry:
+                total_slices = cur_entry['additionalInfo'].get(
+                    'totalSlices', 1)
+                boundary_offset = cur_entry['additionalInfo'].get(
+                    'boundaryOffsetValue', 0.0)
+                slice_offset = cur_entry['additionalInfo'].get(
+                    'sliceOffsetValue', 0.0)
+                slice_overlap = cur_entry['additionalInfo'].get(
+                    'sliceOverlapRegion', 0.0)
+                is_slice_of = cur_entry['additionalInfo'].get(
+                    'isSliceOf', audio_id)
+                current_slice_number = cur_entry['additionalInfo'].get(
+                    'currentSliceNumber', 0)
+            else:
+                total_slices = 1
+                boundary_offset = 0.0
+                slice_offset = 0.0
+                slice_overlap = 0.0
+                is_slice_of = audio_id
+                current_slice_number = 0
+
+            print("Text Grid Length", len(text_grid))
+            if len(text_grid) > 0:
+                if filetype == 'json':
+                    write_json(cur_entry, text_grid_dir, merge_all_slices)
+                else:
+                    # if xmin > -1 and xmax > 0 and len(tiers) > 0:
+                    print("Tiers Length", len(text_grid))
+
+                    # min_max.append(list([xmin, xmax]))
+                    overall_xmin = 0.0
+
+                    print("Total Slices",
+                          total_slices)
+                    print("Merge all?",
+                          merge_all_slices)
+                    print("Current slice number", current_slice_number)
+
+                    if get_individual_slices or total_slices == 1:
+                        if retain_original_filename:
+                            original_audio_filename = get_original_audio_filename(
+                                cur_entry, audio_filename)
+                        else:
+                            original_audio_filename = audio_filename
+
+                        print("Original Audio Filename",
+                              original_audio_filename)
+                        print("Getting single text grid")
+                        xmin, xmax, tiers = get_boundaries_tiers(
+                            activeprojectname, current_projectformelements, text_grid, offset=boundary_offset)
+
+                        if audio_duration == 0.0 or download_audio:
+                            overall_xmax = get_audio_with_duration(
+                                audio_dir, audio_id, original_audio_filename)
+                        else:
+                            overall_xmax = audio_duration
+
+                        if len(tiers) > 0:
+                            print('Length of tiers single', len(tiers))
+                            text_grid_path = get_text_grid_path(
+                                original_audio_filename, text_grid_dir)
+
+                            tgt_text_grid = get_tgt_text_grid(
+                                tiers, xmin, xmax, overall_xmin, overall_xmax, text_grid_path)
+
+                            write_tgt_text_grid(
+                                tgt_text_grid, text_grid_path, filetype, empty_string, merge_same_intervals)
+
+                    if merge_all_slices and total_slices > 1:
+                        if current_slice_number == 0:
+                            print("Merging all text grids")
+                            if retain_original_filename:
+                                original_audio_filename = get_original_audio_filename(
+                                    cur_entry, audio_filename, merge_all_slices)
+                            else:
+                                original_audio_filename = get_audio_filename_without_slice(audio_filename,
+                                                                                           '-slice', '_')
+                            xmin, xmax, tiers, overall_xmax = get_merged_text_grid_of_multiple_slices(transcriptions,
+                                                                                                      activeprojectname,
+                                                                                                      is_slice_of,
+                                                                                                      current_username,
+                                                                                                      current_projectformelements,
+                                                                                                      audio_dir,
+                                                                                                      original_audio_filename,
+                                                                                                      audio_duration,
+                                                                                                      download_audio,
+                                                                                                      transcription_by,
+                                                                                                      get_individual_slices,
+                                                                                                      retain_original_filename)
+                            if len(tiers) > 0:
+                                print('Length of tiers merged', len(tiers))
+                                text_grid_path = get_text_grid_path(
+                                    original_audio_filename, text_grid_dir)
+
+                                tgt_text_grid = get_tgt_text_grid(
+                                    tiers, xmin, xmax, overall_xmin, overall_xmax, text_grid_path)
+
+                                write_tgt_text_grid(
+                                    tgt_text_grid, text_grid_path, filetype, empty_string, merge_same_intervals)
+                            # if audio_duration == 0.0:
+                            # overall_xmax += slice_overall_xmax
+                            # xmin.extend(slice_xmin)
+                            # xmax.extend(slice_xmax)
+                            # for k, v in slice_tiers.items():
+                            #     tiers[k].extend(v)
+                        else:
+                            print("Continuing")
+                            continue
+
+                    # else:
+                    #     tgt_text_grid = get_tgt_text_grid(
+                    #         tiers, xmin, xmax, overall_xmin, overall_xmax, text_grid_path)
+
+                    #     write_tgt_text_grid(
+                    #         tgt_text_grid, text_grid_path, filetype, empty_string, merge_same_intervals)
 
     if len(os.listdir(text_grid_dir)) > 0:
         print('Text grid dir', text_grid_dir)
@@ -197,7 +456,94 @@ def write_tgt_text_grid(original_tgt_text_grid, text_grid_path, filetype, empty_
             textgrid_pd.to_html(text_grid_path_html, index=False)
 
 
-def get_original_audio_filename(cur_entry, audio_filename, merge_all_slices):
+def get_merged_text_grid_of_multiple_slices(transcriptions,
+                                            activeprojectname,
+                                            audio_id,
+                                            current_username,
+                                            current_projectformelements,
+                                            audio_dir,
+                                            original_audio_filename,
+                                            audio_duration=0.0,
+                                            download_audio=False,
+                                            transcription_by="",
+                                            get_individual_slices=False,
+                                            retain_original_filename=True):
+
+    print("Audio ID", audio_id)
+    if transcription_by == "latest":
+        all_entries = transcriptions.find({'projectname': activeprojectname, 'additionalInfo.isSliceOf': audio_id,
+                                           'audiodeleteFLAG': 0},
+                                          {'textGrid': 1, 'audioId': 1, 'audioFilename': 1, 'additionalInfo': 1, 'audioMetadata': 1, '_id': 0})
+    else:
+        all_entries = transcriptions.find({'projectname': activeprojectname, 'additionalInfo.isSliceOf': audio_id,
+                                           'audiodeleteFLAG': 0},
+                                          {transcription_by+'.textGrid': 1, 'audioId': 1, 'audioFilename': 1, 'additionalInfo': 1, 'audioMetadata': 1, '_id': 0})
+
+    tiers = {}
+    xmin = []
+    xmax = []
+    overall_xmax = 0.0
+
+    for cur_entry in all_entries:
+        # print (cur_entry)
+        if transcription_by == "latest":
+            text_grid = cur_entry['textGrid']
+        else:
+            if transcription_by in cur_entry:
+                text_grid = cur_entry[transcription_by]['textGrid']
+            else:
+                text_grid = {}
+        print("Length of text grid in merge", len(text_grid))
+        if 'audioMetadata' in cur_entry:
+            audio_duration = cur_entry['audioMetadata'].get(
+                'audioDuration', 0.0)
+            slice_duration = cur_entry['audioMetadata'].get(
+                'currentSliceDuration', 0.0)
+
+        total_slices = cur_entry['additionalInfo']['totalSlices']
+        slice_number = cur_entry['additionalInfo']['currentSliceNumber']
+        boundary_offset = cur_entry['additionalInfo']['boundaryOffsetValue']
+        slice_offset = cur_entry['additionalInfo']['sliceOffsetValue']
+        slice_overlap = cur_entry['additionalInfo']['sliceOverlapRegion']
+
+        if len(text_grid) > 0:
+            slice_xmin, slice_xmax, slice_tiers = get_boundaries_tiers(
+                activeprojectname, current_projectformelements, text_grid, offset=boundary_offset)
+            xmin.extend(slice_xmin)
+            xmax.extend(slice_xmax)
+            for k, v in slice_tiers.items():
+                if k in tiers:
+                    tiers[k].extend(v)
+                else:
+                    tiers[k] = v
+
+            if audio_duration == 0.0 or (download_audio and not get_individual_slices):
+                current_slice_audio_id = cur_entry['audioId']
+
+                current_slice_audio_filename = cur_entry['audioFilename']
+                if retain_original_filename:
+                    current_slice_audio_filename = get_original_audio_filename(
+                        cur_entry, current_slice_audio_filename, merge_all_slices=False)
+
+                slice_duration = get_audio_with_duration(
+                    audio_dir, current_slice_audio_id, current_slice_audio_filename)
+
+                if audio_duration == 0.0 and total_slices > 1:
+                    overall_xmax += slice_duration - \
+                        (slice_offset+slice_overlap)
+                else:
+                    overall_xmax = slice_duration
+
+    return xmin, xmax, tiers, overall_xmax
+
+
+def get_audio_filename_without_slice(audio_filename, slice_start, slice_end):
+    fname_pattern = '(A[0-9]+)('+slice_start+'[0-9]+'+slice_end+')(.*)'
+    new_audio_filename = re.sub(fname_pattern, '\\1_\\3', audio_filename)
+    return new_audio_filename
+
+
+def get_original_audio_filename(cur_entry, audio_filename, merge_all_slices=False, remove_slice_number=False):
     if 'additionalInfo' in cur_entry:
         total_slices = cur_entry['additionalInfo'].get(
             'totalSlices', 1)
@@ -250,9 +596,11 @@ def get_text_grid_path(original_audio_filename, text_grid_dir):
     return text_grid_path
 
 
-def get_audio_duration(audio_dir, audio_id):
+def get_audio_with_duration(audio_dir, audio_id, audio_filename):
+    print('Input audio dir', audio_dir)
+    print('Input audio ID', audio_id)
     audio_file_path = getfilefromfs.getfilefromfs(
-        mongo, audio_dir, audio_id, 'audio', 'audioId')
+        mongo, audio_dir, audio_id, 'audio', 'audioId', file_name=audio_filename)
     print('Audio file path', audio_file_path)
     with audioread.audio_open(audio_file_path) as f:
         overall_xmax = f.duration
@@ -260,7 +608,7 @@ def get_audio_duration(audio_dir, audio_id):
     return overall_xmax
 
 
-def get_boundaries_tiers(activeprojectname, projectelements, text_grid):
+def get_boundaries_tiers(activeprojectname, projectelements, text_grid, offset=0.0):
     xmin = []
     xmax = []
     tiers = {}
@@ -278,9 +626,9 @@ def get_boundaries_tiers(activeprojectname, projectelements, text_grid):
                 for cur_boundary_element in boundary_element:
                     # print ('Boundary element', cur_boundary_element)
                     if cur_boundary_element == 'start':
-                        xmin.append(boundary_element['start'])
+                        xmin.append(boundary_element['start']+offset)
                     elif cur_boundary_element == 'end':
-                        xmax.append(boundary_element['end'])
+                        xmax.append(boundary_element['end']+offset)
                     else:
                         # If the element is in projectelements only then
                         # its tiers are being fetched
