@@ -544,6 +544,10 @@ def audiobrowse():
         shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
                                                           current_username,
                                                           activeprojectname)
+
+        project_shared_with = projectDetails.get_shared_with_users(
+            projects, activeprojectname)
+        project_shared_with.append("latest")
         # speakerids = projects.find_one({"projectname": activeprojectname},
         #                                {"_id": 0, "speakerIds." + current_username: 1})
         # # logger.debug('speakerids: %s', pformat(speakerids))
@@ -591,6 +595,7 @@ def audiobrowse():
         new_data['audioDataFields'] = [
             'audioId', 'audioFilename', 'Audio File']
         new_data['totalRecords'] = total_records
+        new_data['transcriptionsBy'] = project_shared_with
     except:
         logger.exception("")
 
@@ -645,6 +650,7 @@ def updateaudiosortingsubcategories():
         total_records = 0
         share_mode = shareinfo['sharemode']
         share_checked = shareinfo['sharechecked']
+        download_checked = shareinfo['downloadchecked']
         if (selected_audio_sorting_category == 'sourcemetainfo'):
             audio_sorting_sub_categories = audiodetails.get_audio_sorting_subcategories(speakerdetails_collection,
                                                                                         activeprojectname,
@@ -680,7 +686,8 @@ def updateaudiosortingsubcategories():
                    audioData=new_audio_data_list,
                    shareMode=share_mode,
                    totalRecords=total_records,
-                   shareChecked=share_checked)
+                   shareChecked=share_checked,
+                   downloadChecked=download_checked)
 
 
 @app.route('/filteraudiobrowsetable', methods=['GET', 'POST'])
@@ -755,6 +762,7 @@ def filteraudiobrowsetable():
                                                           activeprojectname)
         share_mode = shareinfo['sharemode']
         share_checked = shareinfo['sharechecked']
+        download_checked = shareinfo['downloadchecked']
         new_audio_data_list = audio_data_list[start_from:number_of_audios]
         logger.debug("new_audio_data_list count: %s", len(new_audio_data_list))
         logger.debug("total_records count: %s", total_records)
@@ -766,7 +774,8 @@ def filteraudiobrowsetable():
                    shareMode=share_mode,
                    totalRecords=total_records,
                    shareChecked=share_checked,
-                   activePage=page_id)
+                   activePage=page_id,
+                   downloadChecked=download_checked)
 
 
 @app.route('/updateaudiobrowsetable', methods=['GET', 'POST'])
@@ -813,6 +822,7 @@ def updateaudiobrowsetable():
                                                           activeprojectname)
         share_mode = shareinfo['sharemode']
         share_checked = shareinfo['sharechecked']
+        download_checked = shareinfo['downloadchecked']
         new_audio_data_list = audio_data_list
         # new_audio_data_list = []
         # for audio_data in audio_data_list:
@@ -829,7 +839,8 @@ def updateaudiobrowsetable():
                    audioData=new_audio_data_list,
                    shareMode=share_mode,
                    totalRecords=total_records,
-                   shareChecked=share_checked)
+                   shareChecked=share_checked,
+                   downloadChecked=download_checked)
 
 
 @app.route('/audiobrowseaction', methods=['GET', 'POST'])
@@ -958,6 +969,7 @@ def audiobrowseactionplay():
                                                               activeprojectname)
             share_mode = shareinfo['sharemode']
             share_checked = shareinfo['sharechecked']
+            download_checked = shareinfo['downloadchecked']
             new_audio_data_list = audio_data_list
             return jsonify(
                 audioDataFields=audio_data_fields,
@@ -965,7 +977,8 @@ def audiobrowseactionplay():
                 shareMode=share_mode,
                 totalRecords=total_records,
                 shareChecked=share_checked,
-                audioSource=audio_src
+                audioSource=audio_src,
+                downloadChecked=download_checked
             )
     except:
         logger.exception("")
@@ -1047,6 +1060,7 @@ def audiobrowsechangepage():
                                                           activeprojectname)
         share_mode = shareinfo['sharemode']
         share_checked = shareinfo['sharechecked']
+        download_checked = shareinfo['downloadchecked']
         new_audio_data_list = audio_data_list
         # new_audio_data_list = []
         # for audio_data in audio_data_list:
@@ -1064,7 +1078,8 @@ def audiobrowsechangepage():
                    shareMode=share_mode,
                    totalRecords=total_records,
                    shareChecked=share_checked,
-                   activePage=page_id)
+                   activePage=page_id,
+                   downloadChecked=download_checked)
 
 # new automation route
 # buttons working for different automation(POS, morph analyser)
@@ -3921,13 +3936,14 @@ def userslist():
         logger.debug("data: %s, %s", data, type(data))
         share_action = data["shareAction"]
         selected_user = data["selectedUser"]
-        logger.debug("share_action: %s, selected_user: %s", share_action, selected_user)
+        logger.debug("share_action: %s, selected_user: %s",
+                     share_action, selected_user)
         project_name, share_with_users_list, sourceList, share_info, current_user_sharemode, selected_user_shareinfo = lifeshare.get_users_list(projects,
-                                                                                                                        userprojects,
-                                                                                                                        userlogin,
-                                                                                                                        current_username,
-                                                                                                                        share_action=share_action,
-                                                                                                                        selected_user=selected_user)
+                                                                                                                                                userprojects,
+                                                                                                                                                userlogin,
+                                                                                                                                                current_username,
+                                                                                                                                                share_action=share_action,
+                                                                                                                                                selected_user=selected_user)
     except:
         logger.exception("")
 
@@ -6223,7 +6239,7 @@ def browsefilesharedwithuserslist():
         current_username = getcurrentusername.getcurrentusername()
         activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
                                                                       userprojects)
-        
+
         shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
                                                           current_username,
                                                           activeprojectname)
