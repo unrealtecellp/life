@@ -1833,9 +1833,10 @@ function getAudiDuration(audiFilePath) {
         // console.log('I got length ' + length, (length/60).toFixed(2));
         audioDur = (length / 60).toFixed(2)
         audioDurMin = audioDur.split('.')[0]
-        audioDurSec = audioDur.split('.')[1] * 60
-        // console.log(audioDur, audioDurMin, audioDurSec);
+        audioDurSec = (audioDur.split('.')[1] * .6).toFixed(0)
+        // console.log(audioDur, audioDurMin, audioDur.split('.')[1], audioDur.split('.')[1] * .6, audioDurSec);
         let showDur = '<br><span>Duration: <span id="currentaudioduration">' + audioDur + '</span> minutes</span>';
+        // let showDur = '<br><span>Duration: <span id="currentaudioduration">' + audioDurMin + '</span> minutes ' + audioDurSec + ' seconds</span>';
         // document.getElementById("idaudiometadata").append(showDur);
         $('#idaudiometadata').append(showDur);
     });
@@ -1974,6 +1975,7 @@ function showRegionInfo(region) {
         // regionInfo += '<br>Boundary ID: ' + id;
         regionInfo += '<br>Start Time: ' + startTime;
         regionInfo += '<br>End Time: ' + endTime;
+        regionInfo += '<br>Total Time: ' + (endTime-startTime);
         regionInfo += '<br>' + trans;
     }
     catch (err) {
