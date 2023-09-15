@@ -143,7 +143,8 @@ var OtherLanguagesSpeakerCouldSpeak =
   {"id": "Chokri", "text": "Chokri"},
   {"id": "Kokborok", "text": "Kokborok"},
   {"id": "Nyishi", "text": "Nyishi"},
-  {"id": "Toto", "text": "Toto"},
+    { "id": "Toto", "text": "Toto" },
+    { "id": "Chattisgarhi", "text": "Chattisgarhi" },
   {"id": "Assamese", "text": "Assamese"},
   {"id": "Awadhi", "text": "Awadhi"},
   {"id": "Bangla", "text": "Bangla"},
@@ -204,6 +205,14 @@ var EducationMedium =
   {"id": "Telugu", "text": "Telugu"}
 ];
 
+var LdcilEducationLevel = 
+[
+  {"id": "", "text": ""},
+  {"id": "School", "text": "School"},
+  {"id": "Bachelor", "text": "Bachelor"},
+  {"id": "Master", "text": "Master"}
+  ];
+
 var EducationLevel = 
 [
   {"id": "", "text": ""},
@@ -212,7 +221,8 @@ var EducationLevel =
   {"id": "Graduate", "text": "Graduate"},
   {"id": "Post-Graduate", "text": "Post-Graduate"},
   {"id": "Above PG", "text": "Above PG"},
-];
+  ];
+
 var gender = 
 [
   {"id": "", "text": ""},
@@ -227,6 +237,13 @@ var AgeGroup = [
   {"id": "30-45", "text": "30-45"},
   {"id": "45-60", "text": "45-60"},
   {"id": "60+", "text": "60+"}
+];
+
+var LdcilAgeGroup = [
+  {"id": "", "text": ""},
+  {"id": "16To20", "text": "16To20"},
+  {"id": "21To50", "text": "21To50"},
+  {"id": "Above50", "text": "Above50"}
 ];
 
 var TypeOfCity = [
@@ -248,11 +265,28 @@ var metadataSchema = [
   {"id": "ldcil", "text": "LDC-IL "}
 ];
 
-var audioSubSource = [
+var audioInterntSources = [
   {"id": "", "text": ""},
   {"id": "youtube", "text": "Youtube"},
   // {"id": "facebook", "text": "Facebook"}
 ];
+
+var downloadFormats = [
+  { "id": "textgrid", "text": "Praat TextGrid" },
+  { "id": "csv", "text": "CSV" },
+  { "id": "tsv", "text": "TSV" },
+  { "id": "json", "text": "JSON" },
+  { "id": "xlsx", "text": "XLSX" },
+  { "id": "latex", "text": "LaTeX" },
+  { "id": "html", "text": "HTML" },
+  { "id": "markdown", "text": "Markdown" }
+]
+
+var transcriptionBy = [
+  {"id": "", "text": ""},
+  { "id": "latest", "text": "Latest" },
+  { "id": "mytranscription", "text": "My Transcriptions" }
+]
 
 // var QuestionnaireDomain = [
 //   {"id": "", "text": ""},

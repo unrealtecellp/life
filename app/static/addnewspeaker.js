@@ -14,6 +14,39 @@ $(document).on("hidden.bs.modal", "#addNewSpeakerModal", function () {
     document.getElementById('addnewspeakerform').innerHTML = '';
 });
 
+$('.metadataview').click(function () {
+    var lifespeakerid = $(this).attr("id");
+    console.log('Speaker ID', lifespeakerid)
+    
+    $.getJSON("/getonespeakermetadata", {
+        lifespeakerid: String(lifespeakerid)
+    }, function (data) {
+        console.log("Received data", data)
+        console.log("End Received data")
+
+        metadata = data.onespeakerdetails.current.sourceMetadata
+        lifespeakerid = data.onespeakerdetails.lifesourceid
+        datasource = data.onespeakerdetails.metadataSchema
+
+        // accesscode = data.speakerdetails.accesscode
+        console.log("Metadata", metadata)
+        console.log("Data source", datasource)
+        $('#lifespeakerid').attr('value', lifespeakerid)
+
+        form_html = window[datasource + "MetadataForm"](metadata);
+        console.log("Form", form_html)
+        $('#idmetadataformdisplaydiv').html(form_html);
+        $('#idmetadataformdisplaydiv').show();
+        $('#idmetadataformdisplaydiv').attr('required', '');
+        $('#idmetadataformdisplaydiv').attr('data-error', 'This field is required.')
+
+        $('#idmetadataformdisplaydiv').find('input, select').attr('disabled', true);
+        
+        addNewSpeakerFormEvents();
+        addNewSpeakerSelect2();
+    });
+});
+
 
 $('.speakerview').click(function () {
     // $('#fieldspeakerdetailsmodal').show.bs.modal
@@ -203,7 +236,8 @@ function activeform(buttonType) {
 
 $('#editbutton').click(function () {
 
-    $('#formdisplay').find('input, select').attr('disabled', false);
+    $('#idmetadataformdisplaydiv').find('input, select').attr('disabled', false);
+    $('#metadatasubmitid').attr('disabled', false);
     $('#editbutton').attr('hidden', true);
     // $('#idname').hidden();
     // $('#idage').attr('hidden', false);
@@ -297,7 +331,9 @@ function speakerDetailForm(cur_id) {
     sourceinpt += '<input type="hidden" value="' +
         cur_id +
         '"name = "sourcecallpage" id="sourcecallpageid">';
+    
     sourceinpt += '<div id="formdisplayinitial" style="display: block;">';
+    
     sourceinpt += '<div class="form-group">' +
         '<input type="radio" name="metadataentrytype" value="single" id="entrytypesingleid" class="metadatauploadtypeclass">' +
         '<label for="entrytypesingleid" name="metadatauploadtypesingle" class="btn btn-lg btn-inline-block btn-info metadatauploadtypesingle" style="width:35%">Single Entry</label> &nbsp;&nbsp;&nbsp;&nbsp;' +
@@ -310,7 +346,7 @@ function speakerDetailForm(cur_id) {
     sourceinpt += '<h4> Bulk Metadata Entry</h4>';
     
     sourceinpt += '<div  class="col-xs-12">' +
-        '<a href="https://docs.google.com/spreadsheets/d/1-_ryNLIw4ZC1L78oiDBAoWAMVsXaBC_H0EzHL76PEmY/export?format=xlsx">' +
+        '<a target="_blank" href="https://drive.google.com/drive/folders/1TxyW6D5mlqQVaFrJaLGXiYgtBCODjALs">' +
         '<button type="button" class="btn btn-warning pull-right">' +
         'Metadata Form <span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span>' +
         '</button > ' +
@@ -327,15 +363,16 @@ function speakerDetailForm(cur_id) {
     subsourceinpt += '<div id="idfieldmetadataschemabulkdiv" style="display: none;">' +
         '<div class="form-group">' +
         '<label for="idfieldmetadataschemabulk">Metadata Schema </label> <br>' +
-        '<select class="fieldmetadataschemaclassbulk" id="idfieldmetadataschemabulk" name="fieldmetadataschema" style="width:55%" >' +
+        '<select class="fieldmetadataschemaclassbulk" id="idfieldmetadataschemabulk" name="fieldMetadataSchema" style="width:55%" disabled="disabled">' +
         '</select><br>' +
         '</div></div>';
-    subsourceinpt += '<div id="idsubsourcebulkdiv" style="display: none;">' +
+    subsourceinpt += '<div id="idaudiointernetsourcebulkdiv" style="display: none;">' +
         '<div class="form-group">' +
-        '<label for="idaudiosubsourcebulk">Audio Sub Source </label> <br>' +
-        '<select class="audiosubsourceclassbulk" id="idaudiosubsourcebulk" name="audiosubsourcebulk" style="width:55%" >' +
+        '<label for="idaudiosubsourcebulk">Audio Internet Source </label> <br>' +
+        '<select class="classaudiointernetsourcebulk" id="idaudiointernetsourcebulk" name="audioInternetSource" style="width:55%" disabled="disabled">' +
         '</select><br>' +
         '</div></div>';
+         
     sourceinpt += subsourceinpt;
     sourceinpt += '<div class="form-group">' +
         '<label for="metadata-upload-button">Select Metadata Form:</label> <br/>' +
@@ -356,13 +393,16 @@ function speakerDetailForm(cur_id) {
         '<select class="audiosourceclass" id="idaudiosource" name="audiosource" style="width:55%" >' +
         '</select><br>' +
         '</div>';
+    
     subsourceinpt = '<div id="idfieldmetadataschemadiv" style="display: none;">' +
         '<div class="form-group">' +
         '<label for="idfieldmetadataschema">Metadata Schema </label> <br>' +
-        '<select class="fieldmetadataschemaclass" id="idfieldmetadataschema" name="fieldmetadataschema" style="width:55%" >' +
+        '<select class="fieldmetadataschemaclass" id="idfieldmetadataschema" name="fieldMetadataSchema" style="width:55%" disabled="true">' +
         '</select><br>' +
         '</div>';
-    subsourceinpt += '<div id="idspeakerdetailsdiv" style="display: none;">' +
+    subsourceinpt += '<div id="idspeakerdetailsdiv" style="display: none;"></div>';
+    subsourceinpt += '</div>';
+    
         // '<form role="form" method="post" action="/addnewspeakerdetails">'+
 
         // '<button class="pull-right btn-danger" type="button" id ="editbutton">Edit</button><br/>'+
@@ -385,93 +425,24 @@ function speakerDetailForm(cur_id) {
         // '<div id="uploadaccode" style="display: block;"></div> '+
         // '<hr>'+
         // '</div>'+
-
-        '<div class="form-group">' +
-        '<h4>Speaker Metadata</h4>' +
-
-        '<label class="col-form-label">Name:</label>' +
-        '<input type="text" class="form-control" id="idname" name="sname" placeholder="--Speaker Name--" style="width:55%" value="">' +
-        '</div>' +
-
-        '<div class="form-group">' +
-        '<label for="sagegroup">Age Group: </label><br>' +
-        '<select class="age" id="idage" name="sagegroup" style="width:55%">' +
-        '</select><br>' +
-        '</div>' +
-
-        // '<div id="idspeakerdetailsdiv" style="display: block;">'+
-        '<div class="form-group">' +
-        '<label for="sgender">Gender: </label><br>' +
-        '<select class="gender" id="idgender" name="sgender" style="width:55%" >' +
-        '</select><br>' +
-        '</div>' +
-
-        '<div class="form-group">' +
-        '<label for="educationalevel">Educational Level: </label> <br>' +
-        '<select class="educationlvl" id="idelevel" name="educationalevel" style="width:55%" >' +
-        '</select><br>' +
-        '</div>' +
-
-
-        '<div class="form-group">' +
-        '<label for="moe12">Medium Of Education (upto 12ᵗʰ): </label><br>' +
-        '<select class="educationmediumupto12" id="idmediumpre" name="moe12" multiple="multiple" style="width:55%" >' +
-        '</select><br>' +
-        '</div>' +
-
-
-        '<div class="form-group">' +
-        '<label for="moea12">Medium Of Education (After 12ᵗʰ): </label><br>' +
-        '<select class="educationmediumafter12" id="idmediumpost" name="moea12" multiple="multiple" style="width:55%" >' +
-        '</select><br>' +
-        '</div>' +
-
-        '<div class="form-group">' +
-        '<label for="sols">Other Languages Speaker Could Speak: </label><br>' +
-        '<select class="speakerspeaklanguage" id="idotherlangs" name="sols" multiple="multiple" style="width:55%" >' +
-        '</select><br>' +
-        '</div>' +
-
-        '<div class="form-group">' +
-        '<label class="col-form-label">Place Of Recording:</label><br>' +
-        '<input type="text" class="form-control" id="idplace" name="por" placeholder="--Place Of Recording--" style="width:55%;">' +
-        '</div>' +
-
-        '<div class="form-group">' +
-        '<label for="toc">Type Of Place: </label> <br>' +
-        '<select class="typeofcity" id="idptype" name="toc"  style="width:55%" >' +
-        '</select><br>' +
-        '</div>' +
-        '</div>';
-
-        // '</form>'; 
-        // '</div>';
     
-    subsourceinpt += '</div>'; // div of idfieldmetadataschemadiv
+    // subsourceinpt += ; // div of idfieldmetadataschemadiv
     
-    subsourceinpt += '<div id="idsubsourcediv" style="display: none;">' +
+    subsourceinpt += '<div id="idinternetsourcediv" style="display: none;">' +
         '<div class="form-group">' +
-        '<label for="idaudiosubsource">Audio Sub Source </label> <br>' +
-        '<select class="audiosubsourceclass" id="idaudiosubsource" name="audiosubsource" style="width:55%" >' +
+        '<label for="idaudiointernetsource">Audio Internet Source </label> <br>' +
+        '<select class="classaudiointernetsource" id="idaudiointernetsource" name="audioInternetSource" style="width:55%; disabled: true;" disabled=true>' +
         '</select><br>' +
-        '</div>';
-    subsourceinpt += '<div id="idytsubsourcediv" style="display: none;">' +
-        '<div class="form-group">' +
-        '<label class="col-form-label">Youtube Channel Name</label><br>' +
-        '<input type="text" class="form-control" id="idytchannelname" name="ytchannelname" placeholder="--Youtube Channel Name--" style="width:55%;">' +
-        '</div>' +
-        '<div class="form-group">' +
-        '<label class="col-form-label">Youtube Channel URL</label><br>' +
-        '<input type="url" class="form-control" id="idytchannelurl" name="ytchannelurl" placeholder="--Youtube Channel URL--" style="width:55%;">' +
-        '</div>' +
-        '</div>';
+        '</div>';    
+    // subsourceinpt += </div>';
+    subsourceinpt += '<div id="idinternetsourcedetailsdiv" style="display: none;"></div>';
     subsourceinpt += '</div>';
+
     sourceinpt += subsourceinpt;
 
-
-    sourceinpt +=   '<button type="button" id="closebutton" class="btn btn-secondary" data-dismiss="modal">Close</button>' +
-        '<input type="submit" value="Submit"> <br><br>';
-
+    sourceinpt +=   '<button type="button" id="closebutton" class="btn btn-warning" data-dismiss="modal">Cancel</button>' +
+        '<input type="submit" class="btn btn-primary" value="Save Metadata"> <br><br>';
+    sourceinpt += '</div>';
     sourceinpt += '</div>';
     sourceinpt += '</form>';
     // speakerinpt += sourceinpt;
@@ -482,6 +453,258 @@ function speakerDetailForm(cur_id) {
     addNewSpeakerFormEvents();
     addNewSpeakerSelect2();
 }
+
+// function internetMetadataForm() {
+//     metadataForm = '<div class="form-group">' +
+//         '<label for="idaudiosubsource">Audio Sub Source </label> <br>' +
+//         '<select class="audiosubsourceclass" id="idaudiosubsource" name="audiosubsource" style="width:55%" >' +
+//         '</select><br>' +
+//         '</div>';
+//     return metadataForm
+// }
+
+function youtubeMetadataForm(form_vals = {}) {
+    metadataForm = '<h4>YouTube Metadata</h4>';
+    metadataForm += '<div class="form-group">' +
+        '<label class="col-form-label">Youtube Channel Name</label><br>' +
+        '<input type="text" class="form-control" id="idytchannelname" name="youtubeChannelName" placeholder="--Youtube Channel Name--" style="width:55%;" value="';
+    if (form_vals["youtubeChannelName"]) {
+        metadataForm += form_vals["youtubeChannelName"];
+    }
+    metadataForm += '">' +
+        '</div>';
+        
+    metadataForm += '<div class="form-group">' +
+        '<label class="col-form-label">Youtube Channel URL</label><br>' +
+        '<input type="url" class="form-control" id="idytchannelurl" name="youtubeChannelUrl" placeholder="--Youtube Channel URL--" style="width:55%;" value="';
+    if (form_vals["youtubeChannelUrl"]) {
+        metadataForm += form_vals["youtubeChannelUrl"];
+    }
+    metadataForm += '">' +
+        '</div>';
+    return metadataForm
+}
+
+function speedMetadataForm(form_vals = {}) {
+
+    console.log("Form values", form_vals);
+    
+    metadataForm = '<h4>Speaker Metadata</h4>';
+
+    //Name
+    metadataForm += '<div class="form-group">' +
+        '<label class="col-form-label">Name:</label>' +
+        '<input type="text" class="form-control classname" id="idname" name="name" placeholder="--Speaker Name--" style="width:55%" value="';    
+    if (form_vals["name"]) {
+        metadataForm += form_vals["name"];
+    }
+    metadataForm += '">' +
+        '</div>';
+
+    //Age Group
+    metadataForm += '<div class="form-group">' +
+        '<label for="sagegroup">Age Group: </label><br>' +
+        '<select class="classagegroup" id="idagegroup" name="ageGroup" style="width:55%">';    
+    if (form_vals["ageGroup"]) {
+        metadataForm += '<option value="' + form_vals["ageGroup"] + '" selected="selected">' + form_vals["ageGroup"] + '</option>';
+    }
+    metadataForm += '</select><br>' +
+        '</div>';
+
+    //Gender
+    metadataForm += '<div class="form-group">' +
+        '<label for="sgender">Gender: </label><br>' +
+        '<select class="classgender" id="idgender" name="gender" style="width:55%" >';
+    if (form_vals["gender"]) {
+        metadataForm += '<option value="' + form_vals["gender"] + '" selected="selected">' + form_vals["gender"] + '</option>';
+    }
+    metadataForm += '</select><br>' +
+        '</div>';
+
+    //Educational Level
+    metadataForm += '<div class="form-group">' +
+        '<label for="educationlevel">Educational Level: </label> <br>' +
+        '<select class="classeducationlevel" id="ideducationlevel" name="educationLevel" style="width:55%" >';
+    if (form_vals["educationLevel"]) {
+        
+        metadataForm += '<option value="' + form_vals["educationLevel"] + '">' + form_vals["educationLevel"] + '</option>';
+    }
+    metadataForm += '</select><br>' +
+        '</div>';
+
+    //Medium of Education (upto 12th)
+    metadataForm += '<div class="form-group">' +
+        '<label for="moe12">Medium Of Education (upto 12ᵗʰ): </label><br>' +
+        '<select class="classeducationmediumupto12" id="idmeducationmediumupto12" name="educationMediumUpto12-list" multiple="multiple" style="width:55%">';
+    if (form_vals["educationMediumUpto12-list"]) {
+        edMed = form_vals["educationMediumUpto12-list"]
+        if (typeof edMed === 'string' || edMed instanceof String) {
+            edMed = [edMed]
+        }
+        for (i = 0; i < edMed.length; i++) {
+            current_medium = edMed[i]
+            metadataForm += '<option value="' + current_medium + '" selected="selected">' + current_medium + '</option>';
+        }
+    }
+    metadataForm += '</select><br>' +
+        '</div>';
+
+    
+    //Medium of Education (after 12th)
+    metadataForm += '<div class="form-group">' +
+        '<label for="moea12">Medium Of Education (After 12ᵗʰ): </label><br>' +
+        '<select class="classeducationmediumafter12" id="ideducationmediumafter12" name="educationMediumAfter12-list" multiple="multiple" style="width:55%" >';
+    if (form_vals["educationMediumAfter12-list"]) {
+        for (i = 0; i < form_vals["educationMediumAfter12-list"].length; i++) {
+            current_medium = form_vals["educationMediumAfter12-list"][i]
+            metadataForm += '<option value="' + current_medium + '" selected="selected">' + current_medium + '</option>';
+        }
+    }
+    metadataForm += '</select><br>' +
+        '</div>';
+
+    //Other Languages Speaker could speak
+    metadataForm += '<div class="form-group">' +
+        '<label for="sols">Other Languages Speaker Could Speak: </label><br>' +
+        '<select class="classotherlanguages" id="idotherlanguages" name="otherLanguages-list" multiple="multiple" style="width:55%" >';
+    if (form_vals["otherLanguages-list"]) {
+        for (i = 0; i < form_vals["otherLanguages-list"].length; i++) {
+            current_language = form_vals["otherLanguages-list"][i]
+            metadataForm += '<option value="' + current_language + '" selected="selected"> '+ current_language +'</option>';
+        }
+    }
+    metadataForm += '</select><br>' +
+        '</div>';
+
+    //Place of Recording
+    metadataForm += '<div class="form-group">' +
+        '<label class="col-form-label">Place Of Recording:</label><br>' +
+        '<input type="text" class="form-control classplaceofrecording" id="idplaceofrecording" name="placeOfRecording" placeholder="--Place Of Recording--" style="width:55%;" value="';
+    if (form_vals["placeOfRecording"]) {
+        metadataForm += form_vals["placeOfRecording"];
+    }
+    metadataForm += '"> ' +
+        '</div>';
+
+    //Type of Place
+    metadataForm += '<div class="form-group">' +
+            '<label for="toc">Type Of Place: </label> <br>' +
+            '<select class="classtypeofplace" id="idptypeofplace" name="typeOfPlace"  style="width:55%" >';
+    if (form_vals["typeOfPlace"]) {
+        metadataForm += '<option value="' + form_vals["typeOfPlace"] + '" selected="selected">' + form_vals["typeOfPlace"] + '</option>';
+    }
+    metadataForm += '</select><br>' +
+        '</div>' +
+        '</div>';
+
+    return metadataForm
+}
+
+function ldcilMetadataForm(form_vals={}) {
+    console.log("Form values", form_vals);
+    
+    metadataForm = '<h4>Speaker Metadata</h4>';
+
+    //Language
+    metadataForm += '<div class="form-group">' +
+        '<label for="language">Language: </label> <br>' +
+        '<select class="classlanguage" id="idlanguage" name="language" style="width:55%">';
+    if (form_vals["language"]) {
+        
+        metadataForm += '<option value="' + form_vals["language"] + '" selected="selected">' + form_vals["language"] + '</option>';
+    }
+    metadataForm += '</select><br>' +
+        '</div>';
+
+    //Name
+    metadataForm += '<div class="form-group">' +
+        '<label class="col-form-label">Name/Speaker ID:</label>' +
+        '<input type="text" class="form-control classname" id="idname" name="name" placeholder="--Speaker Name--" style="width:55%" value="';    
+    if (form_vals["name"]) {
+        metadataForm += form_vals["name"];
+    }
+    metadataForm += '">' +
+        '</div>';
+
+    //Age Group
+    metadataForm += '<div class="form-group">' +
+        '<label for="sagegroup">Age Group: </label><br>' +
+        '<select class="classldcilagegroup" id="idagegroup" name="ageGroup" style="width:55%">';    
+    if (form_vals["ageGroup"]) {
+        metadataForm += '<option value="' + form_vals["ageGroup"] + '" selected="selected">' + form_vals["ageGroup"] + '</option>';
+    }
+    metadataForm += '</select><br>' +
+        '</div>';
+
+    //Gender
+    metadataForm += '<div class="form-group">' +
+        '<label for="sgender">Gender: </label><br>' +
+        '<select class="classgender" id="idgender" name="gender" style="width:55%" >';
+    if (form_vals["gender"]) {
+        metadataForm += '<option value="' + form_vals["gender"] + '" selected="selected">' + form_vals["gender"] + '</option>';
+    }
+    metadataForm += '</select><br>' +
+        '</div>';
+
+    //Educational Level
+    metadataForm += '<div class="form-group">' +
+        '<label for="educationlevel">Education: </label> <br>' +
+        '<select class="classldcileducationlevel" id="ideducationlevel" name="educationLevel" style="width:55%" >';
+    if (form_vals["educationLevel"]) {
+        
+        metadataForm += '<option value="' + form_vals["educationLevel"] + '">' + form_vals["educationLevel"] + '</option>';
+    }
+    metadataForm += '</select><br>' +
+        '</div>';
+    
+    //Place of Elementary Education
+    metadataForm += '<div class="form-group">' +
+        '<label for="placeOfElementaryEducation">Place of Elementary Education: </label> <br>' +
+        '<input type="text" class="form-control classplaceOfElementaryEducation" id="idplaceOfElementaryEducation" name="placeOfElementaryEducation" style="width:55%" value="';
+    if (form_vals["placeOfElementaryEducation"]) {
+        
+        metadataForm += form_vals["placeOfElementaryEducation"];
+    }
+    metadataForm += '">' +
+        '</div>';
+    
+    
+    //State
+    metadataForm += '<div class="form-group">' +
+        '<label for="state">State: </label> <br>' +
+        '<input type="text" class="form-control classstate" id="idstate" name="state" style="width:55%" value="';
+   if (form_vals["state"]) {
+        
+        metadataForm += form_vals["state"];
+    }
+    metadataForm += '">' +
+        '</div>';
+
+    //District
+    metadataForm += '<div class="form-group">' +
+        '<label for="district">District: </label> <br>' +
+        '<input type="text" class="form-control classdistrict" id="iddistrict" name="district" style="width:55%" value="';
+    if (form_vals["district"]) {
+        
+        metadataForm += form_vals["district"];
+    }
+    metadataForm += '">' +
+        '</div>';
+
+    //Place of Recording
+    metadataForm += '<div class="form-group">' +
+        '<label class="col-form-label">Place Of Recording:</label><br>' +
+        '<input type="text" class="form-control classplaceofrecording" id="idplaceofrecording" name="placeOfRecording" placeholder="--Place Of Recording--" style="width:55%;" value="';
+    if (form_vals["placeOfRecording"]) {
+        metadataForm += form_vals["placeOfRecording"];
+    }
+    metadataForm += '"> ' +
+        '</div>';
+
+    
+    return metadataForm
+}
+
 
 function addNewSpeakerSelect2() {
 
@@ -499,17 +722,17 @@ function addNewSpeakerSelect2() {
         // allowClear: true
     });
 
-    $('#idaudiosubsource').select2({
+    $('#idaudiointernetsource').select2({
         // tags: true,
-        placeholder: '--Audio Sub Source--',
-        data: audioSubSource,
+        placeholder: '--Audio Internet Source--',
+        data: audioInterntSources,
         // allowClear: true
     });
 
-    $('#idaudiosubsourcebulk').select2({
+    $('#idaudiointernetsourcebulk').select2({
         // tags: true,
-        placeholder: '--Audio Sub Source--',
-        data: audioSubSource,
+        placeholder: '--Audio Internet Source--',
+        data: audioInterntSources,
         // allowClear: true
     });
 
@@ -527,49 +750,70 @@ function addNewSpeakerSelect2() {
         // allowClear: true
     });
 
-    $('.age').select2({
+    $('.classlanguage').select2({
+        // tags: true,
+        placeholder: '--Language--',
+        data: OtherLanguagesSpeakerCouldSpeak,
+        // allowClear: true
+    });
+
+    $('.classagegroup').select2({
         // tags: true,
         placeholder: '--Age Group--',
         data: AgeGroup,
         // allowClear: true
     });
 
-    $('.gender').select2({
+    $('.classldcilagegroup').select2({
+        // tags: true,
+        placeholder: '--Age Group--',
+        data: LdcilAgeGroup,
+        // allowClear: true
+    });
+
+    $('.classgender').select2({
         // tags: true,
         placeholder: '--Gender--',
         data: gender,
         // allowClear: true
     });
 
-    $('.educationlvl').select2({
+    $('.classeducationlevel').select2({
         // tags: true,
         placeholder: '-- Educational Level --',
         data: EducationLevel,
         // allowClear: true
     });
 
-    $('.educationmediumafter12').select2({
+    $('.classldcileducationlevel').select2({
+        // tags: true,
+        placeholder: '-- Educational Level --',
+        data: LdcilEducationLevel,
+        // allowClear: true
+    });
+
+    $('.classeducationmediumafter12').select2({
         tags: true,
         placeholder: '-- Medium Of Education (After 12ᵗʰ) --',
         data: EducationMedium,
         // allowClear: true
     });
 
-    $('.educationmediumupto12').select2({
+    $('.classeducationmediumupto12').select2({
         tags: true,
         placeholder: '-- Medium Of Education (Upto 12ᵗʰ) --',
         data: EducationMedium,
         // allowClear: true
     });
 
-    $('.speakerspeaklanguage').select2({
+    $('.classotherlanguages').select2({
         tags: true,
         placeholder: '-- Other Languages Speaker Could Speak --',
         data: OtherLanguagesSpeakerCouldSpeak,
         // allowClear: true
     });
 
-    $('.typeofcity').select2({
+    $('.classtypeofplace').select2({
         // tags: true,
         placeholder: '--Type Of Place:--',
         data: TypeOfCity,
@@ -585,9 +829,12 @@ function addNewSpeakerFormEvents() {
         var sourceVal = $(this).val();
         console.log("Current task value", sourceVal);
         if (sourceVal === "field" || sourceVal === "field-ldcil") {
-            $('#idsubsourcediv').hide();
-            $('#idsubsourcediv').removeAttr('required');
-            $('#idsubsourcediv').removeAttr('data-error');
+            // $('#idinternetsourcediv').html("");
+            $('#idinternetsourcediv').hide();
+            $('#idinternetsourcediv').removeAttr('required');
+            $('#idinternetsourcediv').removeAttr('data-error');
+            $('#idaudiointernetsource').val("");
+            $('#idinternetsourcedetailsdiv').html("");
             // $('#idspeakerdetailsdiv').show();
             $('#idfieldmetadataschemadiv').show();
             $('#idfieldmetadataschemadiv').attr('required', '');
@@ -595,28 +842,40 @@ function addNewSpeakerFormEvents() {
 
         }
         else if (sourceVal === "internet") {
+            // $('#idfieldmetadataschemadiv').html("");
             $('#idfieldmetadataschemadiv').hide();
             $('#idfieldmetadataschemadiv').removeAttr('required', '');
             $('#idfieldmetadataschemadiv').removeAttr('data-error', 'This field is required.')
+            $('#idfieldmetadataschema').val("");
+            $('#idspeakerdetailsdiv').html ("");
             // $('#idspeakerdetailsdiv').hide();
             // $('#idspeakerdetailsdiv').removeAttr('required');
             // $('#idspeakerdetailsdiv').removeAttr('data-error');
-            $('#idsubsourcediv').show();
-            $('#idsubsourcediv').attr('required', '');
-            $('#idsubsourcediv').attr('data-error', 'This field is required.')
+            // form_html = internetMetadataForm();
+            // console.log(form_html); 
+            // $('#idinternetsourcediv').html(form_html);
+            $('#idinternetsourcediv').show();
+            $('#idinternetsourcediv').attr('required', '');
+            $('#idinternetsourcediv').attr('data-error', 'This field is required.')
 
         }
         else {
             // $('#idspeakerdetailsdiv').hide();
             // $('#idspeakerdetailsdiv').removeAttr('required');
             // $('#idspeakerdetailsdiv').removeAttr('data-error');
+            // $('#idfieldmetadataschemadiv').html("");
             $('#idfieldmetadataschemadiv').hide();
             $('#idfieldmetadataschemadiv').removeAttr('required', '');
             $('#idfieldmetadataschemadiv').removeAttr('data-error', 'This field is required.')
-            $('#idsubsourcediv').hide();
-            $('#idsubsourcediv').removeAttr('required');
-            $('#idsubsourcediv').removeAttr('data-error');
+            $('#idfieldmetadataschema').val("");
+            // $('#idinternetsourcediv').html("");
+            $('#idinternetsourcediv').hide();
+            $('#idinternetsourcediv').removeAttr('required');
+            $('#idinternetsourcediv').removeAttr('data-error');
+            $('#idaudiointernetsource').val("");
         }
+        addNewSpeakerFormEvents();
+        addNewSpeakerSelect2();
     });
 
     $('#idaudiosourcebulk').change(function () {
@@ -624,9 +883,10 @@ function addNewSpeakerFormEvents() {
         var sourceVal = $(this).val();
         console.log("Current task value", sourceVal);
         if (sourceVal === "field") {
-            $('#idsubsourcebulkdiv').hide();
-            $('#idsubsourcebulkdiv').removeAttr('required');
-            $('#idsubsourcebulkdiv').removeAttr('data-error');
+            $('#idaudiointernetsourcebulkdiv').hide();
+            $('#idaudiointernetsourcebulkdiv').removeAttr('required');
+            $('#idaudiointernetsourcebulkdiv').removeAttr('data-error');
+            $('#idfieldmetadataschemabulk').val("");
             // $('#idspeakerdetailsdiv').show();
             $('#idfieldmetadataschemabulkdiv').show();
             $('#idfieldmetadataschemabulkdiv').attr('required', '');
@@ -637,12 +897,13 @@ function addNewSpeakerFormEvents() {
             $('#idfieldmetadataschemabulkdiv').hide();
             $('#idfieldmetadataschemabulkdiv').removeAttr('required', '');
             $('#idfieldmetadataschemabulkdiv').removeAttr('data-error', 'This field is required.')
+            $('#idaudiointernetsourcebulk').val("");
             // $('#idspeakerdetailsdiv').hide();
             // $('#idspeakerdetailsdiv').removeAttr('required');
             // $('#idspeakerdetailsdiv').removeAttr('data-error');
-            $('#idsubsourcebulkdiv').show();
-            $('#idsubsourcebulkdiv').attr('required', '');
-            $('#idsubsourcebulkdiv').attr('data-error', 'This field is required.')
+            $('#idaudiointernetsourcebulkdiv').show();
+            $('#idaudiointernetsourcebulkdiv').attr('required', '');
+            $('#idaudiointernetsourcebulkdiv').attr('data-error', 'This field is required.')
 
         }
         else {
@@ -652,50 +913,82 @@ function addNewSpeakerFormEvents() {
             $('#idfieldmetadataschemabulkdiv').hide();
             $('#idfieldmetadataschemabulkdiv').removeAttr('required', '');
             $('#idfieldmetadataschemabulkdiv').removeAttr('data-error', 'This field is required.')
-            $('#idsubsourcebulkdiv').hide();
-            $('#idsubsourcebulkdiv').removeAttr('required');
-            $('#idsubsourcebulkdiv').removeAttr('data-error');
+            $('#idaudiointernetsourcebulkdiv').hide();
+            $('#idaudiointernetsourcebulkdiv').removeAttr('required');
+            $('#idaudiointernetsourcebulkdiv').removeAttr('data-error');
         }
+        addNewSpeakerFormEvents();
+        addNewSpeakerSelect2();
     });
 
-    $('#idaudiosubsource').change(function () {
-        console.log('idsubsourcediv');
+    $('#idaudiointernetsource').change(function () {
+        console.log('audioInternetSource');
         var subSourceVal = $(this).val();
         console.log("Current task value", subSourceVal);
-        if (subSourceVal === "youtube") {
-            $('#idytsubsourcediv').show();
-            $('#idytsubsourcediv').attr('required', '');
-            $('#idytsubsourcediv').attr('data-error', 'This field is required.')
+        form_html = window[subSourceVal + "MetadataForm"]();
+        $('#idspeakerdetailsdiv').html("");
+        $('#idinternetsourcedetailsdiv').html(form_html);
+        $('#idinternetsourcedetailsdiv').show();
+        $('#idinternetsourcedetailsdiv').attr('required', '');
+        $('#idinternetsourcedetailsdiv').attr('data-error', 'This field is required.')
 
-        }
-        // else if (sourceVal === "internet") {
-        //     $('#idspeakerdetailsdiv').hide();
-        //         $('#idspeakerdetailsdiv').removeAttr('required');
-        //         $('#idspeakerdetailsdiv').removeAttr('data-error');
-        //     $('#idsubsourcediv').show();
-        //         $('#idsubsourcediv').attr('required', '');
-        //         $('#idsubsourcediv').attr('data-error', 'This field is required.')
+        // if (subSourceVal === "youtube") {
+        //     form_html = youtubeMetadataForm();
+        //     console.log(form_html);
+        //     $('#idinternetsourcedetailsdiv').html(form_html);
+        //     $('#idinternetsourcedetailsdiv').show();
+        //     $('#idinternetsourcedetailsdiv').attr('required', '');
+        //     $('#idinternetsourcedetailsdiv').attr('data-error', 'This field is required.')
 
-        //     }
-        else {
-            $('#idytsubsourcediv').hide();
-            $('#idytsubsourcediv').removeAttr('required');
-            $('#idytsubsourcediv').removeAttr('data-error');
-        }
+        // }
+        // // else if (sourceVal === "internet") {
+        // //     $('#idspeakerdetailsdiv').hide();
+        // //         $('#idspeakerdetailsdiv').removeAttr('required');
+        // //         $('#idspeakerdetailsdiv').removeAttr('data-error');
+        // //     $('#idsubsourcediv').show();
+        // //         $('#idsubsourcediv').attr('required', '');
+        // //         $('#idsubsourcediv').attr('data-error', 'This field is required.')
+
+        // //     }
+        // else {
+        //     $('#idinternetsourcedetailsdiv').html("");
+        //     $('#idinternetsourcedetailsdiv').hide();
+        //     $('#idinternetsourcedetailsdiv').removeAttr('required');
+        //     $('#idinternetsourcedetailsdiv').removeAttr('data-error');
+        // }
+        addNewSpeakerFormEvents();
+        addNewSpeakerSelect2();
     });
 
     $('#idfieldmetadataschema').change(function () {
         console.log('idfieldmetadataschema');
         var schemaVal = $(this).val();
         console.log("Current schema value", schemaVal);
-        if (schemaVal === "speed") {
-            // $('#idsubsourcediv').hide();
-            // $('#idsubsourcediv').removeAttr('required');
-            // $('#idsubsourcediv').removeAttr('data-error');
-            $('#idspeakerdetailsdiv').show();
-            $('#idspeakerdetailsdiv').attr('required', '');
-            $('#idspeakerdetailsdiv').attr('data-error', 'This field is required.')
-        }
+        form_val = {'name': 'Ritesh', 'ageGroup': '18-31', 'educationMediumAfter12-list': ['Hindi', 'English', 'Konkani', 'Toto', 'Mahisu']}
+        $('#idspeakerdetailsdiv').show();   
+        // $('#idspeakerdetailsdiv').innerHTML = "";  
+        $('#idinternetsourcedetailsdiv').html("");
+        form_html = window[schemaVal + "MetadataForm"](form_val);
+        
+        // if (schemaVal === "speed") {
+        //     // $('#idsubsourcediv').hide();
+        //     // $('#idsubsourcediv').removeAttr('required');
+        //     // $('#idsubsourcediv').removeAttr('data-error');
+        //     // console.log(speedMetadataForm())
+        //     form_html = speedMetadataForm();
+        //     // $('#idspeakerdetailsdiv').innerHTML += form_html;
+        // }
+        // else if (schemaVal == "ldcil") {
+        //     form_html = ldcilMetadataForm();
+        // }
+        // else {
+        //     form_html = "";
+        // }
+        $('#idspeakerdetailsdiv').html (form_html);
+        $('#idspeakerdetailsdiv').attr('required', '');
+        $('#idspeakerdetailsdiv').attr('data-error', 'This field is required.')
+        addNewSpeakerFormEvents();
+        addNewSpeakerSelect2();
         // else if (sourceVal === "internet") {
         //     $('#idspeakerdetailsdiv').hide();
         //         $('#idspeakerdetailsdiv').removeAttr('required');
@@ -705,25 +998,29 @@ function addNewSpeakerFormEvents() {
         //         $('#idsubsourcediv').attr('data-error', 'This field is required.')
 
         //     }
-        else if (schemaVal == "ldcil") {
-            // $('#idsubsourcediv').hide();
-            // $('#idsubsourcediv').removeAttr('required');
-            // $('#idsubsourcediv').removeAttr('data-error');
-            $('#idspeakerdetailsdiv').show();
-            $('#idspeakerdetailsdiv').attr('required', '');
-            $('#idspeakerdetailsdiv').attr('data-error', 'This field is required.')
-        }
-        else {
-            // $('#idsubsourcediv').hide();
-            // $('#idsubsourcediv').removeAttr('required');
-            // $('#idsubsourcediv').removeAttr('data-error');
-            // $('#idspeakerdetailsdiv').show();
-            // $('#idspeakerdetailsdiv').attr('required', '');
-            // $('#idspeakerdetailsdiv').attr('data-error', 'This field is required.')
-            $('#idspeakerdetailsdiv').hide();
-            $('#idspeakerdetailsdiv').removeAttr('required');
-            $('#idspeakerdetailsdiv').removeAttr('data-error');
-        }
+        // else if (schemaVal == "ldcil") {
+        //     // $('#idsubsourcediv').hide();
+        //     // $('#idsubsourcediv').removeAttr('required');
+        //     // $('#idsubsourcediv').removeAttr('data-error');
+        //     $('#idspeakerdetailsdiv').innerHTML = "";
+        //     $('#idspeakerdetailsdiv').innerHTML = speedMetadataForm();
+        //     addNewSpeakerFormEvents();
+        //     addNewSpeakerSelect2();
+        //     $('#idspeakerdetailsdiv').show();
+        //     $('#idspeakerdetailsdiv').attr('required', '');
+        //     $('#idspeakerdetailsdiv').attr('data-error', 'This field is required.')
+        // }
+        // else {
+        //     // $('#idsubsourcediv').hide();
+        //     // $('#idsubsourcediv').removeAttr('required');
+        //     // $('#idsubsourcediv').removeAttr('data-error');
+        //     // $('#idspeakerdetailsdiv').show();
+        //     // $('#idspeakerdetailsdiv').attr('required', '');
+        //     // $('#idspeakerdetailsdiv').attr('data-error', 'This field is required.')
+        //     $('#idspeakerdetailsdiv').hide();
+        //     $('#idspeakerdetailsdiv').removeAttr('required');
+        //     $('#idspeakerdetailsdiv').removeAttr('data-error');
+        // }
     });
 
     $(".metadatauploadtypeclass").change(function() {

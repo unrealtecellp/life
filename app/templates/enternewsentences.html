@@ -362,8 +362,8 @@
               </div>
 <!-- sliceOffsetValue -->
               <div class="input-group col-md-8" id="uploadparameters-filesplitthreshold-divid">
-              <label for="uploadparameters-filesplitthresholdid">File Split Pause Threshold (between 0.1-5.0 seconds):</label><br>
-              <input type="number" name="fileSplitThreshold" id="uploadparameters-filesplitthresholdid" min="0.1" max="5.0" step="0.1" value="0.9"
+              <label for="uploadparameters-filesplitthresholdid">File Split Pause Threshold (between 0.1-10.0 seconds):</label><br>
+              <input type="number" name="fileSplitThreshold" id="uploadparameters-filesplitthresholdid" min="0.1" max="10.0" step="0.1" value="0.9"
                 placeholder="Value between 0.1 to 5.0">
               </div>
 
@@ -388,66 +388,7 @@
   </div>
 
   <!-- Download Transcription Modal -->
-  <div class="modal fade" id="myDownloadTranscriptionModal" tabindex="-1" role="dialog"
-    aria-labelledby="myDownloadTranscriptionModalLabel">
-    <div class="modal-dialog modal-lg" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-              aria-hidden="true">&times;</span></button>
-          <h4 class="modal-title" id="myDownloadTranscriptionModalLabel">Project Name: {{ projectName }}</h4>
-        </div>
-        <div class="modal-body">
-
-          <h4>Download:</h3>
-            <div class="btn-group" role="group">
-              <button type="b4tton" id="lifejson" class="btn btn-info dropdown-toggle" data-toggle="dropdown"
-                aria-haspopup="true" aria-expanded="false">
-                LiFE JSON
-              </button>
-            </div>
-            <div class="btn-group" role="group">
-              <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
-                aria-expanded="false">
-                Latest Transcriptions
-                <span class="caret"></span>
-              </button>
-              <ul class="dropdown-menu">
-                <li id="praattexgrid"><a href="#">Praat Textgrid</a></li>
-                <li id="csv"><a href="#">CSV</a></li>
-                <li id="tsv"><a href="#">TSV</a></li>
-                <li id="json"><a href="#">JSON</a></li>
-                <li id="xlsx"><a href="#">XLSX</a></li>
-                <li id="latex"><a href="#">LaTeX</a></li>
-                <li id="html"><a href="#">HTML</a></li>
-                <li id="markdown"><a href="#">Markdown</a></li>
-              </ul>
-            </div>
-
-            <div class="btn-group" role="group">
-              <button type="button" class="btn btn-warning dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
-                aria-expanded="false">
-                My Transcriptions
-                <span class="caret"></span>
-              </button>
-              <ul class="dropdown-menu">
-                <li id="mypraattexgrid"><a href="#">Praat Textgrid</a></li>
-                <li id="mycsv"><a href="#">CSV</a></li>
-                <li id="mytsv"><a href="#">TSV</a></li>
-                <li id="myjson"><a href="#">JSON</a></li>
-                <li id="myxlsx"><a href="#">XLSX</a></li>
-                <li id="mylatex"><a href="#">LaTeX</a></li>
-                <li id="myhtml"><a href="#">HTML</a></li>
-                <li id="mymarkdown"><a href="#">Markdown</a></li>
-              </ul>
-            </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-        </div>
-      </div>
-    </div>
-  </div>
+  <div id="idTranscriptionDownloadModal"></div>
 
 
   <!-- Make Boundary Modal -->
@@ -561,4 +502,5 @@
   <script type="text/javascript">myFunction({{ newData | tojson | safe }});</script>
   <script src="{{url_for('.static', filename='audiotranscription.js')}}"></script>
   <script src="{{url_for('.static', filename='downloader/transcriptiondownload.js')}}"></script>
+  <script type="text/javascript">generateDownloadForm({{ shareinfo | tojson | safe }}, {{ transcriptionsby | tojson | safe}}, {{ activetranscriptionby | tojson | safe}}, {{ projectName | tojson | safe}});</script>
 {% endblock %}
