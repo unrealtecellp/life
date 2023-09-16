@@ -1,0 +1,27 @@
+{% extends "crawlerlinks.html" %}
+
+{% block title %}
+  Data Crawler
+{% endblock title %}
+
+{% block styles %}
+{{super()}}
+  <link href="{{url_for('.static', filename='crawler.css')}}" rel="stylesheet" />
+{% endblock %}
+
+{% block app_content %}
+    <div class="row">
+        <div class="col-sm-5">
+        {% if projectName is defined %}
+            <h4>Project Name : {{ projectName }}</h4>
+        {% endif %}
+        </div>
+    </div>
+    <div id="crawlerinterface"></div>
+{% endblock %}
+
+{% block scripts %}
+  {{super()}}
+  <script src="{{url_for('.static', filename='crawler.js')}}"></script>
+  <script type="text/javascript">crawlerInterface({{ dataSubSource | tojson | safe }});</script>
+{% endblock %}

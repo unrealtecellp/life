@@ -1,6 +1,8 @@
 
 {% extends "karyaextlinks.html" %}
 
+
+
 {% block title %}
   Karya Extension
 {% endblock title %}
@@ -23,29 +25,40 @@
   {% endif %}
 
   <div>
+    <!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"> -->
 
     <div id="uploadmanage">
       <br>
       {% if  shareinfo['sharemode']|int >= 4 %}
-        <input type="button" class="btn btn-lg btn-danger" value="Fetch/Upload Access Code" onclick="window.location.href='{{url_for('karya_bp.uploadfile')}}';">
+        <input type="button" style="background-color: #f33d06; color: white;" class="btn btn-lg btn-danger" value="Fetch/Upload Access Code" onclick="window.location.href='{{url_for('karya_bp.uploadfile')}}';">
       {% endif %}
 
       <br><br>
       {% if  shareinfo['sharemode']|int >= 2 %}
-        <input class="btn btn-lg btn-success" type="button" value="Manage Access Code" onclick="window.location.href='{{url_for('karya_bp.homespeaker')}}'; window">
+        <input style="background-color: #55c410; color: white;" class="btn btn-lg btn-success" type="button" value="Manage Access Code" onclick="window.location.href='{{url_for('karya_bp.homespeaker')}}'; window">
+      {% endif %}
+      <br>
+
+    <br>
+      {% if  shareinfo['sharemode']|int >= 2 %}
+        <input  style="background-color: #343a40; color: white;"  class="btn btn-lg btn-secondary" type="button" value="Manage Audio" onclick="window.location.href='{{url_for('karya_bp.karyaaudiobrowse')}}'; window">
       {% endif %}
       <br>
       <hr>
     </div>
-    
+
+
+
     <div class="row karyaaudiodata">
       {% if  shareinfo['sharemode']|int >= 3 %}
         <div class="col-md-6 fetchkaryarecording">
+          <br>
           <h3><b>Fetch Karya Recordings</b></h3>
           <form name="fetchdata" method="POST" action="{{url_for('karya_bp.fetch_karya_audio')}}">
             <!-- <label for="piaccesscode">Access Code: </label> -->
             <!-- <input type="text" name="access_code" id="piaccesscode" placeholder="Enter Access Code"/> -->
             <br>
+
             <style>
               .dropdown-container {
                   display: flex;
@@ -58,7 +71,7 @@
                   padding: 5px;
                   border-radius: 5px;
                   margin-left: 10px;
-                  background-color: #f1f1f1fb;
+                  background-color: #fcfcfc;
               }
           </style>
           <p>To Fetch Karya Recoding Select The Task To Get Access Code(s) : </p>
@@ -93,21 +106,27 @@
             </select>
           </div>
 
-        
-            <br>
+          <div class="dropdown-container">
+            <label for="recordingDropdown" id="recordingLabel" style="display: none;">Access Code:</label>
+            <select id="recordingDropdown" name="recordingDropdown" style="display: none;">
+              {% for item in recording_access_code_list %}
+              <option value="{{ item }}">{{ item }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
             <div id="idforworker"></div>
             <br>
-            <label for="pimobilenumber">Mobile Number:</label>
+            <label for="pimobilenumber">Mobile Number :</label>
             <input type="text" name="mobile_number" id="pimobilenumber" placeholder="Enter Mobile Number" required>
             <br>
-            <input type="button" class="btn btn-info" id="getotpid" value="Get OTP">
+            <input type="button" style="background-color: #55c410; color: white;"  class="btn btn-lg btn-info" id="getotpid" value="Get OTP">
             <br>
-            <br>
-            <label for="karyaotp">Enter OTP:</label>
+            <label for="karyaotp">Enter OTP : </label>
             <input type="text" name="karya_otp" id="karyaotp" hidden required>
             <br>
             <br>
-            <input type="submit" class="btn btn-primary" id="fetchaudioid" value="Fetch Audio">
+            <input type="submit" style="background-color: #253ded; color: white;" class="btn btn-lg btn-primary" id="fetchaudioid" value="Fetch Audio">
             <br>
              </form>
    
@@ -131,10 +150,10 @@
               -->
             <br>
               <p>Click on the "Choose File" button to upload a zip file*:<p>
-              <input type="file" id="accesscodefile" name="accesscodefile">
+              <input type="file" style="background-color: #d84214; color: white;" class="btn btn-lg btn-danger" id="accesscodefile" name="accesscodefile">
               <br>
           
-            <input class="btn btn-primary" id="submit" type="submit" value="Submit" >
+            <input style="background-color: #253ded; color: white;" class="btn btn-lg btn-danger" id="submit" type="submit" value="Submit" >
           </form>
         </div>
       {% endif %}
@@ -178,16 +197,29 @@
         verificationLabel.style.display = "block";
         transcriptionDropdown.style.display = "none";
         transcriptionLabel.style.display = "none";
+        recordingDropdown.style.display = "none";
+        recordingLabel.style.display = "none";
       } else if (selectedOption === "newTranscription") {
         verificationDropdown.style.display = "none";
         verificationLabel.style.display = "none";
         transcriptionDropdown.style.display = "block";
         transcriptionLabel.style.display = "block";
+        recordingDropdown.style.display = "none";
+        recordingLabel.style.display = "none";
+      } else if (selectedOption == "completedRecordings") {
+        verificationDropdown.style.display = "none";
+        verificationLabel.style.display = "none";
+        transcriptionDropdown.style.display = "none";
+        transcriptionLabel.style.display = "none";
+        recordingDropdown.style.display = "block";
+        recordingLabel.style.display = "block";
       } else {
         verificationDropdown.style.display = "none";
         verificationLabel.style.display = "none";
         transcriptionDropdown.style.display = "none";
         transcriptionLabel.style.display = "none";
+        recordingDropdown.style.display = "none";
+        recordingLabel.style.display = "none";
       }
     });
   });
@@ -210,6 +242,10 @@
         // Code for Transcription Access Code selected
         var transAccessCodeSelect = document.getElementById("transcriptionDropdown");
         acode = transAccessCodeSelect.value;
+      } else if (selectedValue === "completedRecordings") {
+        // Code for Transcription Access Code selected
+        var recordAccessCodeSelect = document.getElementById("recordingDropdown");
+        acode = recordAccessCodeSelect.value
       }
 
       var mob = $('#pimobilenumber').val();

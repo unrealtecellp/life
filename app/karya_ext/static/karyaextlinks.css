@@ -1,0 +1,149 @@
+/* karyaextlinks.css */
+
+body {
+    background-color: #b62e2e;
+  }
+  
+  h4 {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+  }
+  
+  #uploadmanage {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  #uploadmanage input[type="button"],
+  #uploadmanage input[type="submit"] {
+    font-size: 16px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    margin-top: 10px;
+    cursor: pointer;
+  }
+  
+  .karyaaudiodata {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .karyaaudiodata h3 {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 20px;
+  }
+  
+  .karyaaudiodata p {
+    font-size: 16px;
+    margin-bottom: 10px;
+  }
+  
+  .karyaaudiodata form {
+    margin-top: 10px;
+  }
+  
+  .dropdown-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  
+  .dropdown-container h5 {
+    font-size: 16px;
+    font-weight: bold;
+    margin-right: 10px;
+  }
+  
+  .dropdown-container select {
+    width: 200px;
+    height: 30px;
+    padding: 5px;
+    border-radius: 5px;
+    margin-left: 10px;
+    background-color: #f1f1f1;
+  }
+  
+  #idforworker {
+    margin-top: 10px;
+  }
+  
+  #pimobilenumber {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+  }
+  
+  #getotpid {
+    font-size: 16px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    margin-top: 10px;
+    cursor: pointer;
+    background-color: #5cb85c;
+    color: #fff;
+  }
+  
+  #getotpid:hover {
+    background-color: #449d44;
+  }
+  
+  #karyaotp {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    margin-top: 10px;
+  }
+  
+  #fetchaudioid {
+    font-size: 16px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    margin-top: 10px;
+    cursor: pointer;
+    background-color: #337ab7;
+    color: #fff;
+  }
+  
+  #fetchaudioid:hover {
+    background-color: #286090;
+  }
+  
+  .uploadkaryarecording {
+    margin-top: 20px;
+  }
+  
+  .uploadkaryarecording input[type="file"] {
+    margin-bottom: 10px;
+  }
+  
+  .uploadkaryarecording input[type="submit"] {
+    font-size: 16px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: #337ab7;
+    color: #fff;
+  }
+  
+  .uploadkaryarecording input[type="submit"]:hover {
+    background-color: #286090;
+  }
+  
+  /* Add hover effect to table rows */
+  .karyaaudiodata table tr:hover {
+    background-color: #f2f2f2;
+  }
+  

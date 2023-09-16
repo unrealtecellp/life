@@ -12,4 +12,9 @@ pip3 install -r requirements.txt
 echo "============Installing MongoDB==============="
 sudo apt install mongodb
 
+echo "============Installing audiowaveform==============="
+sudo add-apt-repository ppa:chris-needham/ppa
+sudo apt-get update
+sudo apt-get install audiowaveform
+
 echo "==========Done=========="

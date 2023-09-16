@@ -23,7 +23,7 @@ from flask import Response, stream_with_context
 import base64
 import re
 from datetime import datetime
-from pprint import pprint
+from pprint import pprint, pformat
 from jsondiff import diff
 from pytesseract import image_to_string, image_to_osd
 from PIL import Image
@@ -43,8 +43,11 @@ from app.controller import (
     getprojecttype,
     readJSONFile,
     savenewproject,
-    updateuserprojects
+    updateuserprojects,
+    life_logging
 )
+
+logger = life_logging.get_logger()
 
 easyAnno = Blueprint('easyAnno', __name__, template_folder='templates', static_folder='static')
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -896,20 +899,25 @@ def textAnno():
             project_details['tagSetMetaData']['defaultCategoryTags'] = {**defaultAnnotation, **currentAnnotation}
 
             # pprint(project_details)
+            logger.debug('project_details: %s', pformat(project_details))
+            logger.debug('project_details: %s', pformat(list(project_details.keys())))
 
             return render_template('textAnno.html',
                                    projectName=activeprojectname,
                                    proj_data=project_details,
                                    data=currentuserprojectsname)
         else:
+            # logger.debug('project_details: %s', pformat(project_details))
 
             return render_template('textAnno.html',
                                    projectName=activeprojectname,
                                    proj_data=project_details,
                                    data=currentuserprojectsname)
     else:
-        flash('File not in the database', 'danger') 
-    
+        flash('File not in the database', 'danger')
+
+    # logger.debug('project_details: %s', pformat(project_details))
+
     return render_template('textAnno.html',
                            projectName=activeprojectname,
                            proj_data=project_details,
@@ -2355,25 +2363,33 @@ def downloadoneuserallannotatedfiles(username):
     
         proj_count = 0
 
-        projects_detail = projects.find({}, \
-                        {"_id": 0, "projectname": 1, "projectType": 1, "sharedwith": 1, \
+        projects_detail = projects.find({"projectType": "text"}, \
+                        {"_id": 0, "projectname": 1, "projectType": 1, "sharedwith": 1, "sharedWith": 1,\
                             'tagSet': 1, 'textData': 1, 'imageFiles': 1})
 
         for proj_detail in projects_detail:
+            
             projectname = proj_detail["projectname"]
+            print(projectname)
+            # print(proj_detail)
             log += f"{'-'*80}\n"
-            log += f'Project Name: {projectname}, Shared With: {str(proj_detail["sharedwith"])},  Shared with {username}: {str(username in proj_detail["sharedwith"])}\n'
+            # log += f'Project Name: {projectname}, Shared With: {str(proj_detail["sharedwith"])},  Shared with {username}: {str(username in proj_detail["sharedwith"])}\n'
             # print(os.listdir('download'))
             if projectname+'.csv' in os.listdir(basedir+'/download'): 
                 log += f'Already downloaded :)\n'
                 continue
             
-            if username in proj_detail["sharedwith"]:
+            if (('sharedwith' in proj_detail and
+                 username in proj_detail["sharedwith"]) or
+                ('sharedWith' in proj_detail and
+                 username in proj_detail["sharedWith"]) and
+                'projectType' in proj_detail):
                 # print(proj_count) 
                 project_type = proj_detail["projectType"]
                 log += f'{proj_detail["projectType"]}\n'
                 proj_count += 1
                 log += f'{str(proj_count)}. {projectname}\n'
+                print(log)
                 
                 if (proj_detail["projectType"] == 'text'):
                     text_data = proj_detail["textData"]
@@ -2393,7 +2409,8 @@ def downloadoneuserallannotatedfiles(username):
                         # pprint(annotated_text)
                         if (annotated_text != None and username in annotated_text):
                             annotated_text[username]["textId"] = annotated_text["textId"]
-                            annotated_text[username]["ID"] = annotated_text["ID"]
+                            if('ID' in annotated_text):
+                                annotated_text[username]["ID"] = annotated_text["ID"]
                             annotated_text[username]["Text"] = annotated_text["Text"] 
                             # get annotated comments count
                             annotatedFLAG = annotated_text[username]["annotatedFLAG"]
@@ -2455,11 +2472,12 @@ def downloadoneuserallannotatedfiles(username):
                         # imageBytes = imageFile["imageBytes"]
                         # open(basedir+'/download/'+filename, 'wb').write(imageBytes)
                     remaining_comments = total_comments - annotated_comments
-
+                else:
+                    continue
                 annotated_file_path = basedir+'/download/'
                 log += f'Total Comments: {total_comments}\nAnnotated Comments: {annotated_comments}\nRemaining Comments: {remaining_comments}\n'
-                if (remaining_comments == 0):
-                    df.to_csv(annotated_file_path+projectname+'.csv', sep='\t', index=False)
+                # if (remaining_comments == 0):
+                df.to_csv(annotated_file_path+projectname+'.csv', sep='\t', index=False)
 
         with open(basedir+'/download/log.txt', 'w') as logFile:
             logFile.write(log)

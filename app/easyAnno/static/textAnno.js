@@ -557,7 +557,7 @@ function unAnnotated() {
         data: { 'data': JSON.stringify(unanno) },
         contentType: "application/json; charset=utf-8",
         success: function (response) {
-            // console.log(response);
+            console.log(response);
             allunanno = response.allunanno;
             allanno = response.allanno;
             var inpt = '';

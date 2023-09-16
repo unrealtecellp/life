@@ -6,6 +6,7 @@
 
 {% block styles %}
   {{super()}}
+  <link href="{{url_for('.static', filename='uploadfile.css')}}" rel="stylesheet" />
 {% endblock %}
   
 {% block app_content %}
@@ -40,7 +41,8 @@
     <label for="idaccesscodefile">Upload Access Codes (in CSV format) :</label><br>
     <input type="file" id="idaccesscodefile" name="accesscodefile" required>
     <br>        
-    <input class="btn btn-lg btn-primary create" id="submit" type="submit" value="Submit" >
+    <input style="background-color: #253ded; color: white;" id="submit" type="submit" value="Submit" >
+  </form>
 
     <br>
     <br>
@@ -180,7 +182,7 @@
                   <td>{{ item.isActive }}</td>
                   <td>{{ item.fetchData }}</td>
                   <td>
-                    <button class="view-button" data-code="{{ item.karyaaccesscode }}" type="button" onclick="showTable(event)">View</button>
+                    <button style="background-color: #253ded; color: white;" data-code="{{ item.karyaaccesscode }}" type="button" onclick="showTable(event)">View</button>
                   </td>
                 </tr>
                 {% endfor %}
@@ -347,7 +349,7 @@
 <br>
 
 
-  </form>
+  
 
 {% endblock %}
 

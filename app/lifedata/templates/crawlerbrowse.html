@@ -1,0 +1,50 @@
+{% extends "crawlerlinks.html" %}
+
+{% block title %}
+  Data Crawler Browse
+{% endblock title %}
+
+{% block styles %}
+{{super()}}
+  <link href="{{url_for('.static', filename='crawlerbrowse.css')}}" rel="stylesheet" />
+{% endblock %}
+
+{% block app_content %}
+  {% if projectName is defined %}
+      <h4>
+          Project Name : {{ projectName }}
+      </h4>
+      <br>
+  {% endif %}
+  <br>
+  <div class="row">
+      <div class="col col-md-6">
+          <label for="sourceidsdropdown">Data from Source:&nbsp;</label>
+          <select id="sourceidsdropdown" style="width: 40%;"></select>
+          <select id="sourcedatacountdropdown" style="width: 10%;"></select>
+          <label for="sourcedatacountdropdown">&nbsp;:Data</label><br/>
+          
+          <label for="datatypedropdown">Data Type:&nbsp;</label>
+          <select id="datatypedropdown" style="width: 30%;"></select>
+      </div>
+      <div class="col col-md-6 pull-right" id="browsedatadropdowns">
+      </div>
+  </div>
+  <br>
+  <div>
+      <input id="myInput" type="text" placeholder="Search">
+  </div>
+  <br>
+  <div id="crawlerbrowsetable"></div>
+  <div id="crawlerbrowsedataview"></div>
+  <div class="text-center" id="crawlerbrowsepagination"></div>
+{% endblock %}
+
+{% block scripts %}
+  {{super()}}
+  <script src="{{url_for('.static', filename='crawlerbrowse.js')}}"></script>
+  <script src="{{url_for('static', filename='changeactivesource.js')}}"></script>
+  <script type="text/javascript">createCrawlerBrowse({{ newData | tojson | safe }});</script>
+  <script src="{{url_for('static', filename='search.js')}}"></script>
+  <script src="{{url_for('static', filename='sorttable.js')}}"></script>
+{% endblock %}

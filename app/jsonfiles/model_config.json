@@ -1,94 +1,90 @@
 {
-    "textGrid_boundary": [
-        {
-            "source": "audioFilename",
-            "target": "",
-            "model": {
-                "local": [
-                    "vadsilero"
-                ],
-                "localpath": "snakers4/silero-vad",
-                "api": []
-            },
-            "executeAt": "backend"
-        }
-    ],
-    "transcription": [
-        {
-            "source": "audioFilename",
-            "target": "hin-Deva",
-            "model": {
-                "local": [],
-                "localpath": "",
-                "api": []
-            },
-            "executeAt": "backend"
-        },
-        {
-            "source": "audioFilename",
-            "target": "cha-Deva",
-            "model": {
-                "local": [],
-                "localpath": "",
-                "api": []
-            },
-            "executeAt": "backend"
-        }
-    ],
-    "translation": [
-        {
-            "source": "hin-Deva",
-            "target": "eng-Ltn",
-            "model": {
-                "local": [],
-                "localpath": "",
-                "api": []
-            },
-            "executeAt": "frontend"
-        },
-        {
-            "source": "cha-Deva",
-            "target": "eng-Ltn",
-            "model": {
-                "local": [],
-                "localpath": "",
-                "api": []
-            },
-            "executeAt": "frontend"
-        }
-    ],
-    "transliteration": [
-        {
-            "source": "hin-Deva",
-            "target": "hin-Ltn",
-            "model": {
-                "local": [],
-                "localpath": "",
-                "api": []
-            },
-            "executeAt": "frontend"
-        },
-        {
-            "source": "cha-Deva",
-            "target": "cha-Ltn",
-            "model": {
-                "local": [],
-                "localpath": "",
-                "api": []
-            },
-            "executeAt": "frontend"
-        },
-        {
-            "source": "mni-IPA",
-            "target": "mni-Mtei",
-            "model": {
-                "local": [
-                    "rulebasedipatomayek"
-                ],
-                "localpath": "",
-                "api": []
-            },
-            "executeAt": "frontend"
-        }
-    ]
+  "textGrid_boundary": [
+    {
+      "source": "audioFilename",
+      "target": "",
+      "model": {
+        "local": ["vadsilero"],
+        "localpath": ["snakers4/silero-vad"],
+        "api": []
+      },
+      "executeAt": "backend"
+    }
+  ],
+  "transcription": [
+    {
+      "source": "audioFilename",
+      "target": "hin-Deva",
+      "model": {
+        "local": [],
+        "localpath": [],
+        "api": []
+      },
+      "executeAt": "backend"
+    },
+    {
+      "source": "audioFilename",
+      "target": "cha-Deva",
+      "model": {
+        "local": [],
+        "localpath": [],
+        "api": []
+      },
+      "executeAt": "backend"
+    }
+  ],
+  "translation": [
+    {
+      "source": "hin-Deva",
+      "target": "eng-Ltn",
+      "model": {
+        "local": [],
+        "localpath": [],
+        "api": []
+      },
+      "executeAt": "frontend"
+    },
+    {
+      "source": "cha-Deva",
+      "target": "eng-Ltn",
+      "model": {
+        "local": [],
+        "localpath": [],
+        "api": []
+      },
+      "executeAt": "frontend"
+    }
+  ],
+  "transliteration": [
+    {
+      "source": "hin-Deva",
+      "target": "hin-Ltn",
+      "model": {
+        "local": [],
+        "localpath": [],
+        "api": []
+      },
+      "executeAt": "frontend"
+    },
+    {
+      "source": "cha-Deva",
+      "target": "cha-Ltn",
+      "model": {
+        "local": [],
+        "localpath": [],
+        "api": []
+      },
+      "executeAt": "frontend"
+    },
+    {
+      "source": "mni-IPA",
+      "target": "mni-Mtei",
+      "model": {
+        "local": ["rulebasedipatomayek"],
+        "localpath": [],
+        "api": []
+      },
+      "executeAt": "frontend"
+    }
+  ]
 }

@@ -58,6 +58,7 @@ var languages = [
 {"id": "", "text": ""},
 {"id": "Assamese", "text": "Assamese"},
 {"id": "Awadhi", "text": "Awadhi"},
+{"id": "Bajjika", "text": "Bajjika"},
 {"id": "Bangla", "text": "Bangla"},
 {"id": "Bhojpuri", "text": "Bhojpuri"},
 {"id": "Bodo", "text": "Bodo"},
@@ -67,6 +68,7 @@ var languages = [
 {"id": "Haryanvi", "text": "Haryanvi"},
 {"id": "Hindi", "text": "Hindi"},
 {"id": "Kannada", "text": "Kannada"},
+{"id": "Khortha", "text": "Khortha"},
 {"id": "Konkani", "text": "Konkani"},
 {"id": "Magahi", "text": "Magahi"},
 {"id": "Maithili", "text": "Maithili"},
@@ -141,7 +143,8 @@ var OtherLanguagesSpeakerCouldSpeak =
   {"id": "Chokri", "text": "Chokri"},
   {"id": "Kokborok", "text": "Kokborok"},
   {"id": "Nyishi", "text": "Nyishi"},
-  {"id": "Toto", "text": "Toto"},
+    { "id": "Toto", "text": "Toto" },
+    { "id": "Chattisgarhi", "text": "Chattisgarhi" },
   {"id": "Assamese", "text": "Assamese"},
   {"id": "Awadhi", "text": "Awadhi"},
   {"id": "Bangla", "text": "Bangla"},
@@ -152,6 +155,7 @@ var OtherLanguagesSpeakerCouldSpeak =
   {"id": "Haryanvi", "text": "Haryanvi"},
   {"id": "Hindi", "text": "Hindi"},
   {"id": "Kannada", "text": "Kannada"},
+  {"id": "Khortha", "text": "Khortha"},
   {"id": "Konkani", "text": "Konkani"},
   {"id": "Magahi", "text": "Magahi"},
   {"id": "Maithili", "text": "Maithili"},
@@ -186,6 +190,7 @@ var EducationMedium =
   {"id": "Haryanvi", "text": "Haryanvi"},
   {"id": "Hindi", "text": "Hindi"},
   {"id": "Kannada", "text": "Kannada"},
+  {"id": "Khortha", "text": "Khortha"},
   {"id": "Konkani", "text": "Konkani"},
   {"id": "Magahi", "text": "Magahi"},
   {"id": "Maithili", "text": "Maithili"},
@@ -200,15 +205,24 @@ var EducationMedium =
   {"id": "Telugu", "text": "Telugu"}
 ];
 
+var LdcilEducationLevel = 
+[
+  {"id": "", "text": ""},
+  {"id": "School", "text": "School"},
+  {"id": "Bachelor", "text": "Bachelor"},
+  {"id": "Master", "text": "Master"}
+  ];
+
 var EducationLevel = 
 [
   {"id": "", "text": ""},
   {"id": "No Schooling", "text": "No Schooling"},
-  {"id": "Upto 12ᵗʰ", "text": "Upto 12ᵗʰ"},
+  {"id": "Upto 12th", "text": "Upto 12ᵗʰ"},
   {"id": "Graduate", "text": "Graduate"},
   {"id": "Post-Graduate", "text": "Post-Graduate"},
   {"id": "Above PG", "text": "Above PG"},
-];
+  ];
+
 var gender = 
 [
   {"id": "", "text": ""},
@@ -225,6 +239,13 @@ var AgeGroup = [
   {"id": "60+", "text": "60+"}
 ];
 
+var LdcilAgeGroup = [
+  {"id": "", "text": ""},
+  {"id": "16To20", "text": "16To20"},
+  {"id": "21To50", "text": "21To50"},
+  {"id": "Above50", "text": "Above50"}
+];
+
 var TypeOfCity = [
   {"id": "", "text": ""},
   {"id": "Town", "text": "Town"},
@@ -234,15 +255,38 @@ var TypeOfCity = [
 
 var audioSource = [
   {"id": "", "text": ""},
-  {"id": "field", "text": "Field"},
+  { "id": "field", "text": "Field" },
   {"id": "internet", "text": "Internet"}
 ];
 
-var audioSubSource = [
+var metadataSchema = [
+  {"id": "", "text": ""},
+  { "id": "speed", "text": "SpeeD-IL" },
+  {"id": "ldcil", "text": "LDC-IL "}
+];
+
+var audioInterntSources = [
   {"id": "", "text": ""},
   {"id": "youtube", "text": "Youtube"},
   // {"id": "facebook", "text": "Facebook"}
 ];
+
+var downloadFormats = [
+  { "id": "textgrid", "text": "Praat TextGrid" },
+  { "id": "csv", "text": "CSV" },
+  { "id": "tsv", "text": "TSV" },
+  { "id": "json", "text": "JSON" },
+  { "id": "xlsx", "text": "XLSX" },
+  { "id": "latex", "text": "LaTeX" },
+  { "id": "html", "text": "HTML" },
+  { "id": "markdown", "text": "Markdown" }
+]
+
+var transcriptionBy = [
+  {"id": "", "text": ""},
+  { "id": "latest", "text": "Latest" },
+  { "id": "mytranscription", "text": "My Transcriptions" }
+]
 
 // var QuestionnaireDomain = [
 //   {"id": "", "text": ""},

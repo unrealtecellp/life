@@ -8,6 +8,7 @@ var languages = [
   {"id": "", "text": ""},
   {"id": "Assamese", "text": "Assamese"},
   {"id": "Awadhi", "text": "Awadhi"},
+  {"id": "Bajjika", "text": "Bajjika"},
   {"id": "Bangla", "text": "Bangla"},
   {"id": "Bhojpuri", "text": "Bhojpuri"},
   {"id": "Bodo", "text": "Bodo"},
@@ -20,6 +21,7 @@ var languages = [
   {"id": "Haryanvi", "text": "Haryanvi"},
   {"id": "Hindi", "text": "Hindi"},
   {"id": "Kannada", "text": "Kannada"},
+  {"id": "Khortha", "text": "Khortha"},
   {"id": "Konkani", "text": "Konkani"},
   {"id": "KokBorok", "text": "Kok Borok"},
   {"id": "Magahi", "text": "Magahi"},
@@ -99,11 +101,11 @@ var scripts =
 
 var dataProjectType = [
   {"id": "", "text": ""},
+  {"id": "annotation", "text": "Annotation"},
   {"id": "recordings", "text": "Recordings"},
-  // {"id": "validation", "text": "Validation"},
+  {"id": "validation", "text": "Validation"},
   {"id": "transcriptions", "text": "Speech Transcription and Labeling"},
   // {"id": "crawling", "text": "Crawling"},
-  // {"id": "annotation", "text": "Annotation"}
 ];
 
 $('.dataprojecttype').select2({
@@ -253,7 +255,6 @@ $("#idprojecttype").change(function() {
     enableDisableDataFormSubmitBtn(true);
     let addModal = addModalElement('validationTagsetMapping');
     $('#addModal').html(addModal);
-
   }
   else {
     enableDisableDataFormSubmitBtn(false);
@@ -436,3 +437,13 @@ function enableDisableDataFormSubmitBtn(bool) {
   // console.log(bool);
   document.getElementById('dataformsubmit').disabled = bool;
 }
+
+$("#annotationtagsetZipFile").change(function() {
+  let zipFileElement = document.getElementById('annotationtagsetZipFile');
+  // console.log(zipFileElement);
+  zipFileName = zipFileElement.files[0];
+  // console.log(zipFileName);
+  // displayZipFileName = '<p>'+zipFileName.name+'</p>';
+  $("#displayAnnotationZipFileName").html(zipFileName.name);
+
+})

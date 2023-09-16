@@ -4,11 +4,13 @@ import gridfs
 import os
 import shutil
 
+
 def getfilefromfs(mongo,
-                    folder_path,
-                    file_id,
-                    file_type,
-                    file_key_name):
+                  folder_path,
+                  file_id,
+                  file_type,
+                  file_key_name,
+                  file_name=""):
     """get file from fs collection save it to local storage 'static' folder
 
     Args:
@@ -22,7 +24,7 @@ def getfilefromfs(mongo,
     """
     # print(file_type, file_id)
     # creating GridFS instance to get required files
-    fs =  gridfs.GridFS(mongo.db)
+    fs = gridfs.GridFS(mongo.db)
     # if file_type == 'audio':
     #     file = fs.find_one({ 'audioId': file_id })
     # else:
@@ -33,15 +35,17 @@ def getfilefromfs(mongo,
     # if (os.path.exists(audioFolder)):
     #     shutil.rmtree(audioFolder)
     # os.mkdir(audioFolder)
-    print ('file: ', file)
+    print('file: ', file)
     # print ('file_id', file_id)
     # print ('content type', file.contentType)
     # print ('file_type', file_type)
     # print ('file_type in file.contentType', file_type in file.contentType)
     if (file is not None and
-        file_type in file.contentType):
-        file_name = file.filename
-        audiofile = fs.get_last_version(filename=file_name)
+            file_type in file.contentType):
+        mongo_filename = file.filename
+        if file_name == "":
+            file_name = mongo_filename
+        audiofile = fs.get_last_version(filename=mongo_filename)
         audiofileBytes = audiofile.read()
         if len(audiofileBytes) != 0:
             file_path = os.path.join(folder_path, file_name)
