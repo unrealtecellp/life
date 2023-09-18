@@ -119,3 +119,30 @@ $("#zipFile").change(function() {
     // displayZipFileName = '<p>'+zipFileName.name+'</p>';
     $("#displayZipFileName").append(zipFileName.name);
 })
+
+// event fire from thew home page to get the route for View/Edit Project button
+$("#ideasyannohomevieweditbtn").click(function() {
+
+    $.ajax({
+    data : {},
+    type : 'GET',
+    url : '/projecttype',
+    success: function(response){
+        projectType = response.projectType
+        windowHref = window.location.href
+        pathname = window.location.pathname
+        lastIndexOfPathname = windowHref.lastIndexOf(pathname)
+        // console.log(projectType,);
+        if (projectType === 'text') {
+            window.location.href = windowHref.slice(0, lastIndexOfPathname) +  
+                                    windowHref.slice(lastIndexOfPathname).replace(pathname, '/easyAnno/textAnno');
+            // window.location.href = window.location.href.replace(pathname, '/lifeques/questionnaire');
+        }
+        else if (projectType === 'image') {
+            window.location.href = windowHref.slice(0, lastIndexOfPathname) +  
+                                    windowHref.slice(lastIndexOfPathname).replace(pathname, '/easyAnno/imageAnno');
+            // window.location.href = window.location.href.replace(pathname, '/lifeques/questionnaire');
+        }
+    }
+})
+});

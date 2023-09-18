@@ -44,12 +44,18 @@ easyAnno Home
       <div id="easyannoallfileslist"></div>
       {% if data|length > 0 %}
       <h3>Currently Working On: {{ activeproject }}</h3>
-      <div>    
+      <div>
+      {% if activeproject != '' %}
+        <button type="button" class="btn btn-lg btn-primary" id="ideasyannohomevieweditbtn">View/Edit File</button>
+        {% if shareinfo['sharechecked'] == 'true' %}
           <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myShareProjectModal">
               Share File
           </button>
-          
+        {% endif %}
+        {% if 'downloadchecked' in shareinfo and shareinfo['downloadchecked'] == 'true' %}
           <button type="button" class="btn btn-primary btn-lg" onclick="window.location.href='{{ url_for('easyAnno.downloadannotationfile') }}';">Download File</button>
+        {% endif %}
+      {% endif %}
       </div>
     </div>
     </div>
@@ -86,9 +92,10 @@ easyAnno Home
        <div class="modal-content">
          <div class="modal-header">
            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-           <h4 class="modal-title" id="myShareProjectModalLabel">File: {{ activeproject }}</h4>
+           {# <h4 class="modal-title" id="myShareProjectModalLabel">File: {{ activeproject }}</h4> #}
+           <h4 class="modal-title">easyAnno Access Control</h4>
          </div>
-         <div class="modal-body">
+         {# <div class="modal-body">
            <div class="row">
              <!-- <div class="col-xs-12">Select A State</div> -->
              <div class="col-xs-12">
@@ -98,10 +105,18 @@ easyAnno Home
                </div>
              </div>
            </div>
-         </div>
+         </div> #}
+         <div class="modal-body" id="sharemodalbodystructure">
+        </div>
          <div class="modal-footer">
            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-           <button type="button" class="btn btn-primary shareprojectwith" data-dismiss="modal">Share</button>
+           <button type="button" class="btn btn-sm btn-danger shareprojectwith" id="removesharedaccess"  style="display: none;">
+            Remove Access
+          </button>
+          <button type="button" class="btn btn-sm btn-warning shareprojectwith" id="updatesharedaccess"  style="display: none;">
+            Update Access
+          </button>
+           <button type="button" class="btn btn-primary shareprojectwith" id="sharesharedaccess" data-dismiss="modal">Share</button>
          </div>
        </div>
      </div>
