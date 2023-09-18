@@ -44,8 +44,9 @@ easyAnno Home
       <div id="easyannoallfileslist"></div>
       {% if data|length > 0 %}
       <h3>Currently Working On: {{ activeproject }}</h3>
-      {% if activeproject != '' %}
       <div>
+      {% if activeproject != '' %}
+        <button type="button" class="btn btn-lg btn-primary" id="ideasyannohomevieweditbtn">View/Edit File</button>
         {% if shareinfo['sharechecked'] == 'true' %}
           <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myShareProjectModal">
               Share File
@@ -54,8 +55,8 @@ easyAnno Home
         {% if 'downloadchecked' in shareinfo and shareinfo['downloadchecked'] == 'true' %}
           <button type="button" class="btn btn-primary btn-lg" onclick="window.location.href='{{ url_for('easyAnno.downloadannotationfile') }}';">Download File</button>
         {% endif %}
-      </div>
       {% endif %}
+      </div>
     </div>
     </div>
     </br><hr/>
