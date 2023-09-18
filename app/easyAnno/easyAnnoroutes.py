@@ -44,7 +44,8 @@ from app.controller import (
     readJSONFile,
     savenewproject,
     updateuserprojects,
-    life_logging
+    life_logging,
+    getuserprojectinfo
 )
 
 logger = life_logging.get_logger()
@@ -72,6 +73,9 @@ def home():
     projectcompleted = project_comments_stats(currentuserprojectsname)
 
     active_project_type = getprojecttype.getprojecttype(projects, activeprojectname)
+    shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
+                                                      current_username,
+                                                      activeprojectname)
     if (active_project_type not in project_type_list):
         activeprojectname = ''
 
@@ -98,7 +102,8 @@ def home():
     return render_template('easyannohome.html',
                             data=currentuserprojectsname,
                             activeproject=activeprojectname,
-                            projectcompleted=projectcompleted
+                            projectcompleted=projectcompleted,
+                            shareinfo=shareinfo
                         )
 
 def checkEmptyRowInID(text_data_df, project_name):
@@ -731,6 +736,9 @@ def textAnno():
     activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
                                                                     userprojects)
     projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
+    shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
+                                                      current_username,
+                                                      activeprojectname)
 
     project_details = projects.find_one({"projectname": activeprojectname},
                                         {"_id": 0, "projectType": 1, "tagSet": 1, "lastActiveId": 1})
@@ -802,6 +810,7 @@ def textAnno():
         project_details["remainingComments"]  = remaining_comments   
         project_details["textData"] = project_details["textData"][last_active_id]
         project_details["lastActiveId"] = last_active_id
+        project_details["shareinfo"] = shareinfo
 
         # print(last_active_id)
         text_meta_data = textanno.find_one({"projectname": activeprojectname, "textId": last_active_id},
