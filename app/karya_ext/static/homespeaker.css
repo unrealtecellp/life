@@ -26,7 +26,7 @@
   }
 
 
-  #newcodebutton {
+  /* #newcodebutton {
     font-size: 16px;
     padding: 10px 20px;
     border: none;
@@ -35,8 +35,8 @@
     cursor: pointer;
     background-color: #337ab7;
     color: #fff;
-  }
+  } */
   
-  #newcodebutton:hover {
+  /* #newcodebutton:hover {
     background-color: #286090;
-  }
+  } */

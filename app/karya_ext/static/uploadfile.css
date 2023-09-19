@@ -6,7 +6,7 @@ body
     margin-bottom: 20px;
   }
   
-  #submit {
+  /* #submit {
     font-size: 16px;
     padding: 10px 20px;
     border: none;
@@ -19,6 +19,6 @@ body
   
   #submit:hover {
     background-color: #03101d;
-  }
+  } */
 
  

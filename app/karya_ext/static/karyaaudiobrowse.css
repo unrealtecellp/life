@@ -36,10 +36,10 @@
         background-color: #0056b3;
     }
 
-    #deleteSelectedBtn {
+    /* #deleteSelectedBtn {
         background-color: red;
         color: #fff;
-    }
+    } */
 
     /* New styles */
     h4 {
@@ -93,9 +93,9 @@
         cursor: pointer;
     }
 
-    #deleteSelectedBtn:hover {
+    /* #deleteSelectedBtn:hover {
         background-color: #5ecc27;
-    }
+    } */
 
     table {
         display: none;
