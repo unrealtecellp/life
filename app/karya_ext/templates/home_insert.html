@@ -47,7 +47,7 @@
     <br>
       {% if  shareinfo['sharemode']|int >= 2 %}
         <!-- <input  style="background-color: #343a40; color: white;"  class="btn btn-lg btn-secondary" type="button" value="Manage Audio" onclick="window.location.href='{{url_for('karya_bp.karyaaudiobrowse')}}'; window"> -->
-        <input  type="button" class="btn btn-lg btn-secondary"  value="Manage Audio" onclick="window.location.href='{{url_for('karya_bp.karyaaudiobrowse')}}'; window">
+        <input  type="button" class="btn btn-warning"  value="Manage Audio" onclick="window.location.href='{{url_for('karya_bp.karyaaudiobrowse')}}'; window">
         {% endif %}
       <br>
       <hr>
