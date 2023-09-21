@@ -1270,8 +1270,8 @@ def getaudiofiletranscription(data_collection, audio_id, transcription_by=""):
         elif (transcription_by not in transcription_data):
             transcription_details['data'] = blank_text_grid
 
-    logger.debug("Transcription by %s, transcription details %s",
-                 transcription_by, transcription_details)
+    # logger.debug("Transcription by %s, transcription details %s",
+    #              transcription_by, transcription_details)
 
     return transcription_details
 
@@ -1285,16 +1285,16 @@ def get_audio_transcriptions_by(projects, data_collection, project_name, audio_i
             projects, project_name)
 
         transcription_data_keys = transcription_data.keys()
-        logger.debug("Project shared with %s, transcription keys %s",
-                     project_shared_with, transcription_data_keys)
+        # logger.debug("Project shared with %s, transcription keys %s",
+        #              project_shared_with, transcription_data_keys)
         # transcriptions_by = [
         #     uname for uname in transcription_data_keys if uname in project_shared_with or uname.startswith("@model")]
         transcriptions_by = [
             uname for uname in transcription_data_keys if uname.startswith("@model")]
         transcriptions_by.append('latest')
         transcriptions_by.extend(project_shared_with)
-        logger.debug("All transcription by %s",
-                     transcriptions_by)
+        # logger.debug("All transcription by %s",
+        #              transcriptions_by)
     return transcriptions_by
 
 
@@ -1327,8 +1327,8 @@ def getaudiowaveformfilefromfs(mongo,
 
     if delete_previous_files:
         if (os.path.exists(audioFolder)):
-            logger.debug('Audio folder path exists %s',
-                         audioFolder, 'deleting')
+            # logger.debug('Audio folder path exists %s',
+            #              audioFolder, 'deleting')
             shutil.rmtree(audioFolder)
         os.mkdir(audioFolder)
     else:
@@ -1470,7 +1470,7 @@ def getaudiotranscriptiondetails(transcriptions, audio_id, transcription_by="", 
     gloss = {}
     pos = {}
     boundary_count = 0
-    logger.debug('Transcription data %s', transcription_data)
+    # logger.debug('Transcription data %s', transcription_data)
     try:
         if 'data' in transcription_data:
             t_data = transcription_data['data']
@@ -1483,14 +1483,14 @@ def getaudiotranscriptiondetails(transcriptions, audio_id, transcription_by="", 
         # t_data = transcriptions.find_one({'audioId': audio_id},
                 #  {'_id': 0, 'textGrid.sentence': 1})
 
-        logger.debug('t_data!!!!! %s', t_data)
+        # logger.debug('t_data!!!!! %s', t_data)
         if t_data is not None:
             if 'textGrid' in t_data:
                 transcription_data = t_data['textGrid']
             else:
                 transcription_data = t_data
         # plogger.debug(transcription_data)
-        logger.debug('Transcription data %s', transcription_data)
+        # logger.debug('Transcription data %s', transcription_data)
         if 'sentence' in transcription_data:
             sentence = transcription_data['sentence']
         else:

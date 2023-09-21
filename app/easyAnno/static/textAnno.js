@@ -443,6 +443,7 @@ function myFunction(projData) {
     let currentUserAnnotation = projData[currentUser];
     let tagSet = projData["tagSet"];
     let defaultCategoryTags = projData["tagSetMetaData"]["defaultCategoryTags"]
+    let shareInfo = projData["shareinfo"];
     let inpt = '';
     
     inpt += '<span class="textFormAlert"></span><div class="row">' +
@@ -501,7 +502,9 @@ function myFunction(projData) {
         '<button type="button" id="previous" class="btn btn-info btn-lg btn-block" onclick="previousText()">Previous</button><br/>' +
         '<button type="button" id="next" class="btn btn-lg btn-info btn-block" onclick="nextText()">Next</button><br/>' +
         '</div>';
-    inpt += '<br><button type="button" id="mainsave" class="btn btn-lg btn-danger btn-block"  onclick="mainSave(this)">Save</button>';
+    if (shareInfo["sharemode"] >= 1) {
+        inpt += '<br><button type="button" id="mainsave" class="btn btn-lg btn-danger btn-block"  onclick="mainSave(this)">Save</button>';
+    }
     inpt += '</div>'; //right div close
     // inpt += '<br><button type="submit" id="mainsave" class="btn btn-lg btn-danger btn-block"  onclick="mainSave(this)">Save</button>';
     inpt += '</form></div>';
