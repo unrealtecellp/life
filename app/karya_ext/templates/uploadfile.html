@@ -41,7 +41,7 @@
     <label for="idaccesscodefile">Upload Access Codes (in CSV format) :</label><br>
     <input type="file" id="idaccesscodefile" name="accesscodefile" required>
     <br>        
-    <input style="background-color: #253ded; color: white;" id="submit" type="submit" value="Submit" >
+    <input type="submit" class="btn btn-danger" id="submit" value="Submit" >
   </form>
 
     <br>
@@ -134,9 +134,9 @@
       </tr>
       <tr>
         <td colspan="2" id="hiddenTableButtons">
-          <button type="button" onclick="editHiddenTableRow()">Edit</button>
-          <button type="button" onclick="saveHiddenTableRow()" style="display: none;">Save</button>
-          <button type="button" onclick="closeHiddenTable()">Close</button>
+          <button type="button" class="btn btn-success" onclick="editHiddenTableRow()">Edit</button>
+          <button type="button" class="btn btn-danger" onclick="saveHiddenTableRow()" style="display: none;">Save</button>
+          <button type="button" class="btn btn-primary" onclick="closeHiddenTable()">Close</button>
         </td>
       </tr>
     </tbody>
@@ -182,7 +182,7 @@
                   <td>{{ item.isActive }}</td>
                   <td>{{ item.fetchData }}</td>
                   <td>
-                    <button style="background-color: #253ded; color: white;" data-code="{{ item.karyaaccesscode }}" type="button" onclick="showTable(event)">View</button>
+                    <button type="button" class="btn btn-primary" data-code="{{ item.karyaaccesscode }}" onclick="showTable(event)">View</button>
                   </td>
                 </tr>
                 {% endfor %}
@@ -284,9 +284,9 @@
       </tr>
       <tr>
         <td colspan="2" id="hiddenDTableButtons">
-          <button type="button" onclick="edithiddenDTableRow()">Edit</button>
-          <button type="button" onclick="savehiddenDTableRow()" style="display: none;">Save</button>
-          <button type="button" onclick="closehiddenDTable()">Close</button>
+          <button type="button" class="btn btn-success" onclick="edithiddenDTableRow()">Edit</button>
+          <button type="button" class="btn btn-danger" onclick="savehiddenDTableRow()" style="display: none;">Save</button>
+          <button type="button" class="btn btn-primary" onclick="closehiddenDTable()">Close</button>
         </td>
       </tr>
     </tbody>
@@ -330,7 +330,7 @@
                   <td>{{ item.isActive }}</td>
                   <td>{{ item.fetchData }}</td>
                   <td>
-                    <button class="view-button" data-code="{{ item.karyaaccesscode }}" type="button" onclick="showDTable(event)">View</button>
+                    <button type="button" class="btn btn-primary" data-code="{{ item.karyaaccesscode }}" type="button" onclick="showDTable(event)">View</button>
                   </td>
                 </tr>
                 {% endfor %}

@@ -47,13 +47,13 @@ def get_active_transcription_by(projects,
         # logger.debug("projectname from getprojecttype(): %s", activeprojectname)
         transcription_by_data = projects.find_one({"projectname": activeprojectname},
                                                   {"_id": 0, transcription_by_key: 1})
-        logger.debug('Transcription by data: %s', transcription_by_data)
+        # logger.debug('Transcription by data: %s', transcription_by_data)
         if transcription_by_data is not None and 'lastActiveUserTranscription' in transcription_by_data:
             data = transcription_by_data['lastActiveUserTranscription']
             if current_username in data:
                 transcription_by = data[current_username]
 
-        logger.debug("Transcription by(): %s", transcription_by)
+        # logger.debug("Transcription by(): %s", transcription_by)
     except:
         logger.exception("")
         # project_type = ''
