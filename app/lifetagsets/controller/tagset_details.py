@@ -45,11 +45,11 @@ def get_tagset_details(tagset_collection, current_username):
         ]
     }, {
         'projectname': 1,
-        'tagSetMetadata': 1
+        'tagSetMetadata': 1,
+        'tagSet': 1,
+        '_id': 0
     })
+    tagset_details = list(tagset_details)
+    logger.debug('Tagset Details %s', tagset_details)
 
-
-def update_use_in_project(tagset_collection, tagset_name, use_in_project):
-    tagset_collection.update_one(
-        {'projectname': tagset_name, 'projectDeleteFLAG': 0, 'projectType': 'tagset'},
-        {'$addToSet': {'useInProjects': use_in_project}})
+    return tagset_details

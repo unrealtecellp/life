@@ -14,7 +14,7 @@ import re
 logger = life_logging.get_logger()
 
 
-def save_tagset(tagsets, zip_file, use_in_project=''):
+def save_tagset(tagsets, zip_file, use_in_project='', about_project='', is_public='', derived_from=[], derivatives=[]):
     current_username = getcurrentusername.getcurrentusername()
     try:
         with ZipFile(zip_file) as myzip:
@@ -105,11 +105,12 @@ def save_tagset(tagsets, zip_file, use_in_project=''):
                 tagset_project_details["tagSetMetaData"] = tag_set_meta_data
                 tagset_project_details["sharedwith"] = [project_owner]
                 tagset_project_details["projectdeleteFLAG"] = 0
-                tagset_project_details["isPublic"] = 0
-                tagset_project_details["derivedFromProject"] = []
-                tagset_project_details["projectDerivatives"] = []
-                tagset_project_details["aboutproject"] = ''
+                tagset_project_details["isPublic"] = is_public
+                tagset_project_details["derivedFromProject"] = derived_from
+                tagset_project_details["projectDerivatives"] = derivatives
+                tagset_project_details["aboutproject"] = about_project
                 tagset_project_details["useInProjects"] = [use_in_project]
+                tagset_project_details["updatedBy"] = project_owner
 
                 tagset_project_id = tagsets.insert_one(tagset_project_details)
                 # logger.debug('tagset_project_id: %s', tagset_project_id)
@@ -131,3 +132,9 @@ def save_tagset(tagsets, zip_file, use_in_project=''):
 
     logger.debug('tagset_project_ids from save_tagset: %s', tagset_project_ids)
     return tuple(tagset_project_ids)
+
+
+def update_use_in_project(tagset_collection, tagset_name, use_in_project):
+    tagset_collection.update_one(
+        {'projectname': tagset_name, 'projectDeleteFLAG': 0, 'projectType': 'tagset'},
+        {'$addToSet': {'useInProjects': use_in_project}})
