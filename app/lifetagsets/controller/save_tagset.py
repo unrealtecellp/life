@@ -14,7 +14,7 @@ import re
 logger = life_logging.get_logger()
 
 
-def save_tagset(tagsets, zip_file, use_in_project='', about_project='', is_public='', derived_from=[], derivatives=[]):
+def save_tagset(tagsets, zip_file, use_in_project='', about_project='', is_public='', derived_from=[], derivatives=[], supported_languages=[], supported_tasks={}):
     current_username = getcurrentusername.getcurrentusername()
     try:
         with ZipFile(zip_file) as myzip:
@@ -110,6 +110,8 @@ def save_tagset(tagsets, zip_file, use_in_project='', about_project='', is_publi
                 tagset_project_details["projectDerivatives"] = derivatives
                 tagset_project_details["aboutproject"] = about_project
                 tagset_project_details["useInProjects"] = [use_in_project]
+                tagset_project_details["supportedLanguages"] = supported_languages
+                tagset_project_details["supportedTasks"] = supported_tasks
                 tagset_project_details["updatedBy"] = project_owner
 
                 tagset_project_id = tagsets.insert_one(tagset_project_details)

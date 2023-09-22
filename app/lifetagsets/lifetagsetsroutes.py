@@ -67,12 +67,11 @@ def managetagset():
     # shareinfo = getuserprojectinfo.getuserprojectinfo(
     #     userprojects, current_username, activeprojectname)
 
-    alltagsetdetails, alldatalengths, allkeys, shareinfo = tagset_details.get_tagset_details(
+    alltagsetdetails, alldatalengths, allkeys = tagset_details.get_all_tagset_details(
         tagsets, current_username)
 
     return render_template("manageTagsets.html",
                            tagset_data=alltagsetdetails,
-                           shareinfo=shareinfo,
                            usertype=usertype,
                            count=alldatalengths,
                            table_headers=allkeys)

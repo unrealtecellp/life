@@ -36,20 +36,26 @@ def get_tagset_id(tagset_collection, tagset_name):
         return tuple()
 
 
-def get_tagset_details(tagset_collection, current_username):
+def get_all_tagset_details(tagset_collection, current_username):
     tagset_details = tagset_collection.find({
         "$or": [
-            {'projectDeleteFLAG': 0, 'isPublic': 1},
-            {'projectDeleteFLAG': 0, 'projectOwner': current_username},
-            {'projectDeleteFLAG': 0, 'sharedwith': {"$in": [current_username]}}
+            {'projectdeleteFLAG': 0, 'isPublic': 1},
+            {'projectdeleteFLAG': 0, 'projectOwner': current_username},
+            {'projectdeleteFLAG': 0, 'sharedwith': {"$in": [current_username]}}
         ]
     }, {
         'projectname': 1,
         'tagSetMetadata': 1,
         'tagSet': 1,
-        '_id': 0
+        'projectOwner': 1,
+        'updatedBy': 1
     })
-    tagset_details = list(tagset_details)
-    logger.debug('Tagset Details %s', tagset_details)
 
-    return tagset_details
+    all_tagset_details = list(tagset_details)
+    all_tagsets = {'Tagsets': all_tagset_details}
+    tagset_length = {'Tagsets': len(all_tagset_details)}
+    all_keys = {'Tagsets': ['Tagset Name',
+                            'Tagset', 'Created by', 'Updated by']}
+    logger.debug('All tagsets %s', all_tagsets)
+
+    return all_tagsets, tagset_length, all_keys
