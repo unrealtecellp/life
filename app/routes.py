@@ -47,7 +47,7 @@ from app.controller import (manageAppConfig, questionnairedetails,
                             readJSONFile, removeallaccess, savenewlexeme,
                             savenewproject, savenewprojectform,
                             savenewsentence, unannotatedfilename, updateuserprojects,
-                            userdetails, life_logging)
+                            userdetails, life_logging, processHTMLForm)
 from app.forms import RegistrationForm, UserLoginForm
 from app.models import UserLogin
 
@@ -5354,88 +5354,22 @@ def addnewspeakerdetails():
                                                                   userprojects)
     projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
     if request.method == 'POST':
-        # add_new_speaker_form_data = dict(request.form.lists())
-        # print(add_new_speaker_form_data)
         form_data = request.form
+        uploaded_files = request.files
+
         logger.debug("All form %s", form_data)
 
-        exclude_fields = ['audiosource', 'sourcecallpage',
-                          'fieldMetadataSchema', 'metadataentrytype', 'audioInternetSource']
+        metadata_schema, audio_source, call_source, upload_type, exclude_fields = processHTMLForm.get_metadata_header_details(
+            form_data)
 
-        audio_source = form_data.get('audiosource', '')
-        call_source = form_data.get('sourcecallpage', '')
-
-        if audio_source == 'field' and 'fieldMetadataSchema' in form_data:
-            logger.debug('Metadata schema found!')
-            metadata_schema = form_data.get('fieldMetadataSchema', '')
-            logger.debug('Metadata schema name %s', metadata_schema)
-        # if metadata_schema == '':
-        elif audio_source == 'internet' and 'audioInternetSource' in form_data:
-            metadata_schema = form_data.get('audioInternetSource', '')
-        else:
-            logger.debug('Metadata schema not found found!')
-            metadata_schema = ''
         logger.debug("Metadata Schema %s", metadata_schema)
-        upload_type = form_data.get('metadataentrytype', '')
         logger.debug("Call source %s", call_source)
-        metadata_data = {}
 
-        if upload_type == 'single':
-            # if ('field' in audio_source):
-            for field_name in form_data:
-                if field_name not in exclude_fields:
-                    field_data = form_data.getlist(field_name)
-                    logger.debug('Field name %s', field_name)
-                    if (not field_name.endswith('-list')) and (len(field_data) == 1):
-                        field_data = field_data[0]
-                    metadata_data[field_name] = field_data
-                    # if field_name in metadata_data:
-                    #     current_data = metadata_data[field_name]
-                    #     if type(current_data) == str:
-                    #         metadata_data[field_name] = [current_data]
+        metadata_data = processHTMLForm.get_metadata_data(form_data,
+                                                          form_files=uploaded_files,
+                                                          upload_type=upload_type,
+                                                          exclude_fields=exclude_fields)
 
-                    #     metadata_data[field_name].append(
-                    #         form_data[field_name])
-                    # else:
-                    #     metadata_data[field_name] = form_data[field_name]
-
-                # fname = request.form.get('sname', '')
-                # fage = request.form.get('sagegroup', '')
-                # fgender = request.form.get('sgender', '')
-                # educlvl = request.form.get('educationalevel', '')
-                # moe12 = request.form.getlist('moe12')
-                # moea12 = request.form.getlist('moea12')
-                # sols = request.form.getlist('sols')
-                # por = request.form.get('por', '')
-                # toc = request.form.get('toc', '')
-                # metadata_data.update({"name": fname,
-                #                       "agegroup": fage,
-                #                       "gender": fgender,
-                #                       "educationlevel": educlvl,
-                #                       "educationmediumupto12": moe12,
-                #                       "educationmediumafter12": moea12,
-                #                       "speakerspeaklanguage": sols,
-                #                       "recordingplace": por,
-                #                       "typeofrecordingplace": toc})
-
-            # elif (audio_source == 'internet'):
-            #     # internet sub source
-            #     audio_subsource = request.form.get('audiosubsource')
-            #     if (audio_subsource == 'youtube'):
-            #         if upload_type == 'single':
-            #             channelname = request.form.get('ytchannelname', '')
-            #             channelurl = request.form.get('ytchannelurl', '')
-            #             metadata_data.update({"channelName": channelname,
-            #                                   "channelUrl": channelurl})
-        else:
-            metadata_data = request.files.to_dict().get('metadatafile', '')
-
-            # logger.debug('Metadata info %s', metadata_data)
-            # excel_data = pd.read_excel(
-            #     metadata_data, engine="openpyxl")
-            # excel_data['educationmediumupto12'] = excel_data['educationmediumupto12'].apply(
-            #     lambda x: x.split(','))
-            # logger.debug('File data %s', excel_data.to_dict(orient='records'))
         speakerDetails.write_speaker_metadata_details(speakerdetails,
                                                       projectowner,
                                                       activeprojectname,
@@ -5445,7 +5379,52 @@ def addnewspeakerdetails():
                                                       metadata_data,
                                                       upload_type)
 
-        # # TODO: Redirect to different pages based on button click
+        # if ('field' in audio_source):
+
+        # if field_name in metadata_data:
+        #     current_data = metadata_data[field_name]
+        #     if type(current_data) == str:
+        #         metadata_data[field_name] = [current_data]
+
+        #     metadata_data[field_name].append(
+        #         form_data[field_name])
+        # else:
+        #     metadata_data[field_name] = form_data[field_name]
+
+        # fname = request.form.get('sname', '')
+        # fage = request.form.get('sagegroup', '')
+        # fgender = request.form.get('sgender', '')
+        # educlvl = request.form.get('educationalevel', '')
+        # moe12 = request.form.getlist('moe12')
+        # moea12 = request.form.getlist('moea12')
+        # sols = request.form.getlist('sols')
+        # por = request.form.get('por', '')
+        # toc = request.form.get('toc', '')
+        # metadata_data.update({"name": fname,
+        #                       "agegroup": fage,
+        #                       "gender": fgender,
+        #                       "educationlevel": educlvl,
+        #                       "educationmediumupto12": moe12,
+        #                       "educationmediumafter12": moea12,
+        #                       "speakerspeaklanguage": sols,
+        #                       "recordingplace": por,
+        #                       "typeofrecordingplace": toc})
+
+        # elif (audio_source == 'internet'):
+        #     # internet sub source
+        #     audio_subsource = request.form.get('audiosubsource')
+        #     if (audio_subsource == 'youtube'):
+        #         if upload_type == 'single':
+        #             channelname = request.form.get('ytchannelname', '')
+        #             channelurl = request.form.get('ytchannelurl', '')
+        #             metadata_data.update({"channelName": channelname,
+        #                                   "channelUrl": channelurl})
+        # logger.debug('Metadata info %s', metadata_data)
+        # excel_data = pd.read_excel(
+        #     metadata_data, engine="openpyxl")
+        # excel_data['educationmediumupto12'] = excel_data['educationmediumupto12'].apply(
+        #     lambda x: x.split(','))
+        # logger.debug('File data %s', excel_data.to_dict(orient='records'))
 
         if "managepage" in call_source:
             flash(
@@ -5520,9 +5499,9 @@ def editsourcemetadata():
     current_username = getcurrentusername.getcurrentusername()
     activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username,
                                                                   userprojects)
-    projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
-    exclude_fields = ['audiosource', 'sourcecallpage',
-                      'fieldmetadataschema', 'metadataentrytype', 'audioInternetSource', 'lifespeakerid']
+    # projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
+    # exclude_fields = ['audiosource', 'sourcecallpage',
+    #                   'fieldmetadataschema', 'metadataentrytype', 'audioInternetSource', 'lifespeakerid']
 
     if request.method == 'POST':
         # add_new_speaker_form_data = dict(request.form.lists())
@@ -5532,14 +5511,10 @@ def editsourcemetadata():
         lifesourceid = form_data.get('lifespeakerid')
 
         logger.debug("All form %s", form_data)
-        metadata_data = {}
-        for field_name in form_data:
-            if field_name not in exclude_fields:
-                field_data = form_data.getlist(field_name)
-                logger.debug('Field name %s', field_name)
-                if (not field_name.endswith('-list')) and (len(field_data) == 1):
-                    field_data = field_data[0]
-                metadata_data[field_name] = field_data
+        metadata_data = processHTMLForm.get_metadata_data(
+            form_data
+        )
+
         update_data = {
             "current": {
                 "updatedBy": current_username,

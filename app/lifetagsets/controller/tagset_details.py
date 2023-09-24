@@ -28,78 +28,34 @@ def get_full_tagset_with_metadata(tagset_collection, tagset_name):
 
 
 def get_tagset_id(tagset_collection, tagset_name):
-    logger.debug("tagset_name: %s", tagset_name)
     tagset_id = tagset_collection.find_one(
-        {'projectname': tagset_name, 'projectdeleteFLAG': 0, 'projectType': 'tagset'}, {'_id': 1})
+        {'projectname': tagset_name, 'projectDeleteFLAG': 0, 'projectType': 'tagset'}, {'_id': 1})
     if '_id' in tagset_id:
-        logger.debug("tagset_id['_id']: %s\nType: %s",
-                     tagset_id['_id'],
-                     type(tagset_id['_id']))
-        tagset_id = tagset_id['_id']
-        logger.debug("tagset_id: %s\nType: %s",
-                     tagset_id,
-                     type(tagset_id))
-        return [tagset_id]
+        return tuple(tagset_id['_id'])
     else:
-        return []
+        return tuple()
 
 
-def get_tagset_details(tagset_collection, current_username):
+def get_all_tagset_details(tagset_collection, current_username):
     tagset_details = tagset_collection.find({
         "$or": [
-            {'projectDeleteFLAG': 0, 'isPublic': 1},
-            {'projectDeleteFLAG': 0, 'projectOwner': current_username},
-            {'projectDeleteFLAG': 0, 'sharedwith': {"$in": [current_username]}}
+            {'projectdeleteFLAG': 0, 'isPublic': 1},
+            {'projectdeleteFLAG': 0, 'projectOwner': current_username},
+            {'projectdeleteFLAG': 0, 'sharedwith': {"$in": [current_username]}}
         ]
     }, {
         'projectname': 1,
-        'tagSetMetadata': 1
+        'tagSetMetadata': 1,
+        'tagSet': 1,
+        'projectOwner': 1,
+        'updatedBy': 1
     })
 
+    all_tagset_details = list(tagset_details)
+    all_tagsets = {'Tagsets': all_tagset_details}
+    tagset_length = {'Tagsets': len(all_tagset_details)}
+    all_keys = {'Tagsets': ['Tagset Name',
+                            'Tagset', 'Created by', 'Updated by']}
+    logger.debug('All tagsets %s', all_tagsets)
 
-def update_use_in_project(tagset_collection, tagset_name, use_in_project):
-    tagset_collection.update_one(
-        {'projectname': tagset_name, 'projectDeleteFLAG': 0, 'projectType': 'tagset'},
-        {'$addToSet': {'useInProjects': use_in_project}})
-
-def get_tagsets_list(tagsets_collection,
-                     current_username,
-                     isPublic=1,
-                     projectdeleteFLAG=0):
-    """Module to get the tagsets list for current user."""
-    aggregate_output_list = []
-    try:
-        aggregate_output = tagsets_collection.aggregate(
-            [
-                {
-                    "$match": {
-                        "$and": [ 
-                            { "projectdeleteFLAG": projectdeleteFLAG },
-                            {"$or": [
-                                {"projectOwner": current_username},
-                                {"isPublic": isPublic},
-                                {"sharedwith": {
-                                    "$in": [ current_username ]
-                                }
-                                }
-                            ]}
-                        ]
-                    }
-                },
-                {
-                    "$project": {
-                        "_id": 0,
-                        "projectname": 1,
-                    }
-                }
-            ]
-        )
-        for doc in aggregate_output:
-            # logger.debug("aggregate_output: %s", pformat(doc))
-            tagset_name = doc["projectname"]
-            aggregate_output_list.append(tagset_name)
-    except:
-        logger.exception("")
-    # logger.debug("%s", len(aggregate_output_list))
-
-    return aggregate_output_list
+    return all_tagsets, tagset_length, all_keys

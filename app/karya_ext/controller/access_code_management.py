@@ -240,7 +240,11 @@ def upload_access_code_metadata_from_file(
         # datafromdb = karyaaccesscodedetails.find({},{"_id" :0})
     return return_obj
 
-
+"""
+finding a new access code = isActive:0, if there is any blank access code that doesn't have speaker details and isActive:0
+it will find that access code randomly ... Note - this is not saving any data; this is just to find the new/fresh access code
+which is uploaded from the karya extension - fetch/upload access code button
+"""
 def get_new_accesscode_speakerid(
     accesscodedetails,
     activeprojectname,
@@ -269,7 +273,8 @@ def get_new_accesscode_speakerid(
 
     return speakerid, acode
 
-
+""" Adding speaker details for new/fresh access code {Manage access code -> Get new access code button } in accesscodedetails
+ collection """
 def add_access_code_metadata(
     accesscodedetails,
     activeprojectname,
