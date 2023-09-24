@@ -33,7 +33,7 @@ function createSidePanel(shareinfo) {
                         
     if (shareinfo['sharemode'] >= 3) {
         sidePanelElement += '<a><button type="button" id="addnewspeakertranscriptionid" class="btn btn-primary addnewspeaker"'+
-                            'data-toggle="modal" data-target="#addNewSpeakerModal">'+
+                            'data-toggle="modal" data-target="#addNewSpeakerModal" onclick="getMetadataForm(this)">'+
                             'Add New Source'+
                             '</button></a>'+
                             '<a><button type="button" id="uploadaudioid" class="btn btn-primary uploadaudio" data-toggle="modal"'+
