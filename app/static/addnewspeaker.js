@@ -386,7 +386,6 @@ function speakerDetailForm(curId, submitRoute="/addnewspeakerdetails", includeFi
     }
     subsourceinpt += '</div>';
     
-    
     subsourceinpt += '<div id="idaudiointernetsourcebulkdiv" style="display: none;">';
     if (includeInternetMetadata) {
         subsourceinpt += '<div class="form-group">' +
@@ -885,8 +884,8 @@ function addNewSpeakerFormEvents() {
 
         if (sourceVal === "field" || sourceVal === "field-ldcil") {
             // $('#idinternetsourcediv').html("");
-            field_element = document.getElementById("idfieldmetadataschemadiv");
-            if (field_element) {
+            // field_element = document.getElementById("idfieldmetadataschemadiv");
+            // if (field_element) {
                 $('#idinternetsourcediv').hide();
                 $('#idinternetsourcediv').removeAttr('required');
                 $('#idinternetsourcediv').removeAttr('data-error');
@@ -896,7 +895,7 @@ function addNewSpeakerFormEvents() {
                 $('#idfieldmetadataschemadiv').show();
                 $('#idfieldmetadataschemadiv').attr('required', '');
                 $('#idfieldmetadataschemadiv').attr('data-error', 'This field is required.')
-            }
+            // }
             
 
         }
@@ -943,7 +942,7 @@ function addNewSpeakerFormEvents() {
         // console.log('idaudiosourcebulk');
         var sourceVal = $(this).val();
         // console.log("Current task value", sourceVal);
-        
+        $('#idmetadatauploadbutton').prop("disabled", true);
         if (sourceVal === "field") {
             $('#idaudiointernetsourcebulkdiv').hide();
             $('#idaudiointernetsourcebulkdiv').removeAttr('required');
@@ -953,6 +952,9 @@ function addNewSpeakerFormEvents() {
             $('#idfieldmetadataschemabulkdiv').show();
             $('#idfieldmetadataschemabulkdiv').attr('required', '');
             $('#idfieldmetadataschemabulkdiv').attr('data-error', 'This field is required.')
+            
+            field_element = document.getElementById("idfieldmetadataschemabulk");
+             
 
         }
         else if (sourceVal === "internet") {
@@ -966,6 +968,8 @@ function addNewSpeakerFormEvents() {
             $('#idaudiointernetsourcebulkdiv').show();
             $('#idaudiointernetsourcebulkdiv').attr('required', '');
             $('#idaudiointernetsourcebulkdiv').attr('data-error', 'This field is required.')
+            
+            field_element = document.getElementById("idaudiointernetsourcebulk");
 
         }
         else {
@@ -979,8 +983,10 @@ function addNewSpeakerFormEvents() {
             $('#idaudiointernetsourcebulkdiv').removeAttr('required');
             $('#idaudiointernetsourcebulkdiv').removeAttr('data-error');
         }
-        $('#idmetadatasubmitbutton').attr("disabled", true);
-        $('#idmetadatauploadbutton').attr("disabled", false);
+        $('#idmetadatasubmitbutton').prop("disabled", true);
+        if (field_element) {
+            $('#idmetadatauploadbutton').prop("disabled", false);
+        }
         addNewSpeakerFormEvents();
         addNewSpeakerSelect2();
     });
@@ -995,7 +1001,7 @@ function addNewSpeakerFormEvents() {
         $('#idinternetsourcedetailsdiv').show();
         $('#idinternetsourcedetailsdiv').attr('required', '');
         $('#idinternetsourcedetailsdiv').attr('data-error', 'This field is required.')
-        $('#idmetadatasubmitbutton').attr("disabled", false);
+        $('#idmetadatasubmitbutton').prop("disabled", false);
 
         // if (subSourceVal === "youtube") {
         //     form_html = youtubeMetadataForm();
@@ -1052,7 +1058,7 @@ function addNewSpeakerFormEvents() {
         $('#idspeakerdetailsdiv').html (form_html);
         $('#idspeakerdetailsdiv').attr('required', '');
         $('#idspeakerdetailsdiv').attr('data-error', 'This field is required.')
-        $('#idmetadatasubmitbutton').attr("disabled", false);
+        $('#idmetadatasubmitbutton').prop("disabled", false);
         addNewSpeakerFormEvents();
         addNewSpeakerSelect2();
         // else if (sourceVal === "internet") {
