@@ -375,7 +375,7 @@ function speakerDetailForm(curId, submitRoute="/addnewspeakerdetails", includeFi
     if (includeFieldMetadata) {
         subsourceinpt += '<div class="form-group">' +
             '<label for="idfieldmetadataschemabulk">Metadata Schema </label> <br>' +
-            '<select class="fieldmetadataschemaclassbulk" id="idfieldmetadataschemabulk" name="fieldMetadataSchema" style="width:55%" disabled="disabled">' +
+            '<select class="fieldmetadataschemaclassbulk" id="idfieldmetadataschemabulk" name="fieldMetadataSchema" style="width:55%" required>' +
             '</select><br>';
         subsourceinpt += '</div>';
     }
@@ -391,7 +391,7 @@ function speakerDetailForm(curId, submitRoute="/addnewspeakerdetails", includeFi
     if (includeInternetMetadata) {
         subsourceinpt += '<div class="form-group">' +
             '<label for="idaudiosubsourcebulk">Audio Internet Source </label> <br>' +
-            '<select class="classaudiointernetsourcebulk" id="idaudiointernetsourcebulk" name="audioInternetSource" style="width:55%" disabled="disabled">' +
+            '<select class="classaudiointernetsourcebulk" id="idaudiointernetsourcebulk" name="audioInternetSource" style="width:55%" required>' +
             '</select><br>';
         subsourceinpt += '</div>';
     }
@@ -407,7 +407,7 @@ function speakerDetailForm(curId, submitRoute="/addnewspeakerdetails", includeFi
     sourceinpt += '<div class="form-group">' +
         '<label for="metadata-upload-button">Select Metadata Form:</label> <br/>' +
         '<input type="file" class="form-control col-xs-6 " style="width:55%" id="metadata-upload-button" name="metadatafile" required><br /><br />' +
-        '<input class="btn btn-success" id="submit" type="submit" value="Upload Metadata">' +
+        '<input class="btn btn-success classmetadatauploadbutton" id="idmetadatauploadbutton" type="submit" value="Upload Metadata" disabled>' +
         // '</form>' +
         '</div>'
     sourceinpt += '</div>';
@@ -428,7 +428,7 @@ function speakerDetailForm(curId, submitRoute="/addnewspeakerdetails", includeFi
     if (includeFieldMetadata) {
         subsourceinpt += '<div class="form-group">' +
             '<label for="idfieldmetadataschema">Metadata Schema </label> <br>' +
-            '<select class="fieldmetadataschemaclass" id="idfieldmetadataschema" name="fieldMetadataSchema" style="width:55%" disabled="true">' +
+            '<select class="fieldmetadataschemaclass" id="idfieldmetadataschema" name="fieldMetadataSchema" style="width:55%">' +
             '</select><br>' +
             '</div>';
     }
@@ -488,12 +488,13 @@ function speakerDetailForm(curId, submitRoute="/addnewspeakerdetails", includeFi
         }
     subsourceinpt += '</div>';
     
-        subsourceinpt += '</div>';
+    subsourceinpt +=   '<button type="button" id="closebutton" class="btn btn-warning" data-dismiss="modal">Cancel</button>' +
+        '<input type="submit" class="btn btn-primary clasmetadatasubmitbutton" id="idmetadatasubmitbutton" value="Save Metadata" disabled> <br><br>';
+    
+    subsourceinpt += '</div>';
 
     sourceinpt += subsourceinpt;
-
-    sourceinpt +=   '<button type="button" id="closebutton" class="btn btn-warning" data-dismiss="modal">Cancel</button>' +
-        '<input type="submit" class="btn btn-primary" value="Save Metadata" disabled> <br><br>';
+    
     sourceinpt += '</div>';
     sourceinpt += '</div>';
     sourceinpt += '</form>';
@@ -880,6 +881,7 @@ function addNewSpeakerFormEvents() {
         console.log('idaudiosource');
         var sourceVal = $(this).val();
         console.log("Current task value", sourceVal);
+        // 
 
         if (sourceVal === "field" || sourceVal === "field-ldcil") {
             // $('#idinternetsourcediv').html("");
@@ -931,6 +933,8 @@ function addNewSpeakerFormEvents() {
             $('#idinternetsourcediv').removeAttr('data-error');
             $('#idaudiointernetsource').val("");
         }
+        $('#idmetadatasubmitbutton').prop("disabled", true);
+        $('#idmetadatauploadbutton').prop("disabled", true);
         addNewSpeakerFormEvents();
         addNewSpeakerSelect2();
     });
@@ -939,6 +943,7 @@ function addNewSpeakerFormEvents() {
         // console.log('idaudiosourcebulk');
         var sourceVal = $(this).val();
         // console.log("Current task value", sourceVal);
+        
         if (sourceVal === "field") {
             $('#idaudiointernetsourcebulkdiv').hide();
             $('#idaudiointernetsourcebulkdiv').removeAttr('required');
@@ -974,6 +979,8 @@ function addNewSpeakerFormEvents() {
             $('#idaudiointernetsourcebulkdiv').removeAttr('required');
             $('#idaudiointernetsourcebulkdiv').removeAttr('data-error');
         }
+        $('#idmetadatasubmitbutton').attr("disabled", true);
+        $('#idmetadatauploadbutton').attr("disabled", false);
         addNewSpeakerFormEvents();
         addNewSpeakerSelect2();
     });
@@ -988,6 +995,7 @@ function addNewSpeakerFormEvents() {
         $('#idinternetsourcedetailsdiv').show();
         $('#idinternetsourcedetailsdiv').attr('required', '');
         $('#idinternetsourcedetailsdiv').attr('data-error', 'This field is required.')
+        $('#idmetadatasubmitbutton').attr("disabled", false);
 
         // if (subSourceVal === "youtube") {
         //     form_html = youtubeMetadataForm();
@@ -1044,6 +1052,7 @@ function addNewSpeakerFormEvents() {
         $('#idspeakerdetailsdiv').html (form_html);
         $('#idspeakerdetailsdiv').attr('required', '');
         $('#idspeakerdetailsdiv').attr('data-error', 'This field is required.')
+        $('#idmetadatasubmitbutton').attr("disabled", false);
         addNewSpeakerFormEvents();
         addNewSpeakerSelect2();
         // else if (sourceVal === "internet") {
@@ -1083,6 +1092,7 @@ function addNewSpeakerFormEvents() {
     $(".metadatauploadtypeclass").change(function() {
         // remove the background color from all labels.
         // alert("Changed!")
+        
         selected_val = $("input[name='metadataentrytype']:checked").val();
         // alert("Value"+ selected_val);
         if (selected_val === "single") {
@@ -1117,6 +1127,9 @@ function addNewSpeakerFormEvents() {
             $("#formdisplaysingle :input").prop("disabled", true);
             
         }
+
+        $('#idmetadatasubmitbutton').prop("disabled", true);
+        $('#idmetadatauploadbutton').prop("disabled", true);
 
         // $("label").removeClass("btn-info");
             
