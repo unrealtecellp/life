@@ -1109,7 +1109,7 @@ function createSentenceForm(formElement, boundaryID) {
     // $(".sentencefield").html(activeSentenceMorphemicBreak);
     // console.log('createSentenceForm(formElement)', formElement, boundaryID)
     inpt = '';
-    // console.log('formElement', formElement)
+    console.log('formElement', formElement)
     activeprojectform = JSON.parse(localStorage.activeprojectform)
     for (let [key, value] of Object.entries(formElement)) {
         // console.log('first', key, value)

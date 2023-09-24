@@ -281,7 +281,7 @@ $("#save").click(function() {
   .done(function( data ) {
     // console.log(data.savedTranscription);
     if (!data.savedTranscription) {
-      alert("Unable to save the transcription as audio seem to be deleted or revoked access by one of the shared users. Showing you the next audio in the list.")
+      alert("Unable to save the transcription as audio seem to be deleted or revoked access by one of the shared user. Showing you the next audio in the list.")
       window.location.reload();
     }
     else {
@@ -308,11 +308,7 @@ function myFunction(newData) {
   localStorage.setItem("transcriptionDetails", JSON.stringify([newData['transcriptionDetails']]));
   localStorage.setItem("AudioFilePath", JSON.stringify(newData['AudioFilePath']));
   for (let [key, value] of Object.entries(newData)){
-    if (key === 'Sentence Language') {
-      // inpt += '<div class="col"><div class="form-group">'+
-      //             '<label for="'+key+'">Audio Language:</label>'+
-      //             '<input type="text" class="form-control" id="'+key+'" name="'+key+'" value="'+newData[key]+'" readonly>'+
-      //             '</div></div>'; 
+    if (key === 'Audio Language') {
       inpt += '<strong>Audio Language: </strong><strong id="'+key+'">'+newData[key]+'</strong>';
           $('.lexemelang').append(inpt);
           inpt = '';

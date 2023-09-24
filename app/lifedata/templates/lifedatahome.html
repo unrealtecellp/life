@@ -110,19 +110,41 @@ LiFe Data Home
           </div>
         </div>
 
-        <div class="col">
+        <!-- <div class="col">
           <label>
             <input type="checkbox" id="transcriptionstagsetuploadcheckbox" name="transcriptionstagsetuploadcheckbox">
             Audio Tagging
           </label>
-        </div>
-        <div class="col" id="transcriptionstagsetupload" style="display: none;">
-          <label class="btn btn-danger">
-            Select ZIP File <input type="file" id="transcriptionstagsetZipFile" name="transcriptionstagsetZipFile" accept="application/zip" hidden>
+          <div class="col" id="transcriptionstagsetupload" style="display: none;">
+            <label for="idtranscriptionstagsetuploadselect">Select Tagset: </label>
+            <select class="transcriptionstagsetuploadselectclass" id="idtranscriptionstagsetuploadselect" name="transcriptionstagsetuploadselect" style="width: 45%"></select>
+            <br>
+            <p><strong>OR</strong></p>
+            <label class="btn btn-danger">
+              Select Tagset ZIP File <input type="file" id="transcriptionstagsetZipFile" name="transcriptionstagsetZipFile" accept="application/zip" hidden>
+            </label>
+            <input class="btn btn-primary" id="transcriptionszipfilesubmit" type="button" value="Upload" onclick="uploadTranscriptionTagsetZipFile(this);" data-toggle="modal">
+            <p id="transcriptionstagsetZipFileName"></p>
+          </div>
+        </div> -->
+
+        <!-- <div class="col">
+          <label>
+            <input type="checkbox" id="transcriptionsboundarytagsetuploadcheckbox" name="transcriptionsboundarytagsetuploadcheckbox">
+            Boundary Tagging
           </label>
-          <input class="btn btn-primary" id="transcriptionszipfilesubmit" type="button" value="Upload" onclick="uploadTranscriptionTagsetZipFile(this);" data-toggle="modal">
-          <p id="displayTranscriptionsZipFileName"></p>
-        </div>
+          <div class="col" id="transcriptionsboundarytagsetupload" style="display: none;">
+            <label for="idtranscriptionsboundarytagsetuploadselect">Select Tagset: </label>
+            <select class="transcriptionsboundarytagsetuploadselectclass" id="idtranscriptionsboundarytagsetuploadselect" name="transcriptionsboundarytagsetuploadselect" style="width: 45%"></select>
+            <br>
+            <p><strong>OR</strong></p>
+            <label class="btn btn-danger">
+              Select Tagset ZIP File <input type="file" id="transcriptionsboundarytagsetZipFile" name="transcriptionsboundarytagsetZipFile" accept="application/zip" hidden>
+            </label>
+            <input class="btn btn-primary" id="transcriptionsboundaryzipfilesubmit" type="button" value="Upload" onclick="uploadTranscriptionTagsetZipFile(this);" data-toggle="modal">
+            <p id="transcriptionsboundarytagsetZipFileName"></p>
+          </div>
+        </div> -->
       </div>
 
       <div id="recordingstypeproject" style="display: none;">

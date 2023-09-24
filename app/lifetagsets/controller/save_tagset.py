@@ -113,7 +113,9 @@ def save_tagset(tagsets, zip_file, use_in_project=''):
 
                 tagset_project_id = tagsets.insert_one(tagset_project_details)
                 # logger.debug('tagset_project_id: %s', tagset_project_id)
-                logger.debug("insertedId: %s", tagset_project_id.inserted_id)
+                logger.debug("insertedId: %s\nType: %s",
+                             tagset_project_id.inserted_id,
+                             type(tagset_project_id.inserted_id))
                 tagset_project_ids.append(tagset_project_id.inserted_id)
                 # projectname = tagset_project_details['projectname']
                 # updateuserprojects.updateuserprojects(userprojects,
@@ -130,4 +132,4 @@ def save_tagset(tagsets, zip_file, use_in_project=''):
         return redirect(url_for('lifedata.home'))
 
     logger.debug('tagset_project_ids from save_tagset: %s', tagset_project_ids)
-    return tuple(tagset_project_ids)
+    return tagset_project_ids

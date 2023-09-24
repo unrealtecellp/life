@@ -450,16 +450,73 @@ $("#annotationtagsetZipFile").change(function() {
 
 })
 
+function showZipFileName(id, zipFileName='') {
+  let pTagId = id.replace("ZipFile", "ZipFileName")
+  $("#"+pTagId).html(zipFileName);
+}
+
 $("#transcriptionstagsetZipFile").change(function() {
   let zipFileElement = document.getElementById('transcriptionstagsetZipFile');
   // console.log(zipFileElement);
   zipFileName = zipFileElement.files[0];
   // console.log(zipFileName);
   // displayZipFileName = '<p>'+zipFileName.name+'</p>';
-  $("#displayTranscriptionsZipFileName").html(zipFileName.name);
+  // $("#displayTranscriptionsZipFileName").html(zipFileName.name);
+  showZipFileName("transcriptionstagsetZipFile", zipFileName.name);
+  $("#idtranscriptionstagsetuploadselect").val(null).trigger('change');
+  enableDisableDataFormSubmitBtn(true);
+})
+
+$("#transcriptionsboundarytagsetZipFile").change(function() {
+  let zipFileElement = document.getElementById('transcriptionsboundarytagsetZipFile');
+  // console.log(zipFileElement);
+  zipFileName = zipFileElement.files[0];
+  // console.log(zipFileName);
+  // displayZipFileName = '<p>'+zipFileName.name+'</p>';
+  // $("#displayTranscriptionsBoundaryZipFileName").html(zipFileName.name);
+  showZipFileName("transcriptionsboundarytagsetZipFile", zipFileName.name);
+  $("#idtranscriptionsboundarytagsetuploadselect").val(null).trigger('change');
+  enableDisableDataFormSubmitBtn(true);
+})
+
+$("#idtranscriptionstagsetuploadselect").change(function() {
+  let ele = document.getElementById("idtranscriptionstagsetuploadselect");
+  let eleValue = ele.value;
+  // console.log(eleValue);
+  if (eleValue !== '') {
+    resetZipFile("transcriptionstagsetuploadcheckbox");
+    enableDisableDataFormSubmitBtn(false);
+  }
+  else if (eleValue === '') {
+    if (document.getElementById("transcriptionstagsetuploadcheckbox").checked == false) {
+      enableDisableDataFormSubmitBtn(false);
+    }
+    else {
+      enableDisableDataFormSubmitBtn(true);
+    }
+  }
+})
+
+$("#idtranscriptionsboundarytagsetuploadselect").change(function() {
+  let ele = document.getElementById("idtranscriptionsboundarytagsetuploadselect");
+  let eleValue = ele.value;
+  // console.log(eleValue);
+  if (eleValue !== '') {
+    resetZipFile("transcriptionsboundarytagsetuploadcheckbox");
+    enableDisableDataFormSubmitBtn(false);
+  }
+  else if (eleValue === '') {
+    if (document.getElementById("transcriptionsboundarytagsetuploadcheckbox").checked == false) {
+      enableDisableDataFormSubmitBtn(false);
+    }
+    else {
+      enableDisableDataFormSubmitBtn(true);
+    }
+  }
 })
 
 $("#transcriptionstagsetuploadcheckbox").change(function() {
+  getTagsetsList("transcriptionstagsetuploadcheckbox");
   if(this.checked) {
     enableDisableDataFormSubmitBtn(true);
     document.getElementById("transcriptionstagsetupload").style.display = "block";
@@ -467,12 +524,45 @@ $("#transcriptionstagsetuploadcheckbox").change(function() {
   else {
     enableDisableDataFormSubmitBtn(false);
     document.getElementById("transcriptionstagsetupload").style.display = "none";
+    resetZipFile("transcriptionstagsetuploadcheckbox");
+    // $('#idtranscriptionstagsetuploadselect').select2('destroy');
   }
 });
 
+$("#transcriptionsboundarytagsetuploadcheckbox").change(function() {
+  getTagsetsList("transcriptionsboundarytagsetuploadcheckbox");
+  if(this.checked) {
+    enableDisableDataFormSubmitBtn(true);
+    document.getElementById("transcriptionsboundarytagsetupload").style.display = "block";
+  }
+  else {
+    enableDisableDataFormSubmitBtn(false);
+    document.getElementById("transcriptionsboundarytagsetupload").style.display = "none";
+    resetZipFile("transcriptionsboundarytagsetuploadcheckbox");
+  }
+});
+
+function resetZipFile(id) {
+  let inputEleId = id.replace("uploadcheckbox", "ZipFile")
+  const file = document.getElementById(inputEleId);
+  // console.log(file);
+  file.value = '';
+  showZipFileName(inputEleId);
+}
+
 function uploadTranscriptionTagsetZipFile(btn) {
   // console.log(btn, btn.id);
-  const file = document.getElementById('transcriptionstagsetZipFile').files[0];
+  let uploadBtnId = btn.id;
+  let file = '';;
+  let activeTagsetCheckbox = '';
+  if (uploadBtnId.includes("boundary")) {
+    file = document.getElementById('transcriptionsboundarytagsetZipFile').files[0];
+    activeTagsetCheckbox = "transcriptionsboundarytagsetuploadcheckbox"
+  }
+  else{
+    file = document.getElementById('transcriptionstagsetZipFile').files[0];
+    activeTagsetCheckbox = "transcriptionstagsetuploadcheckbox"
+  }
   // console.log(file);
   if (file !== undefined) {
     var formData = new FormData();
@@ -487,6 +577,7 @@ function uploadTranscriptionTagsetZipFile(btn) {
     formData.append('deriveFromProjectName', deriveFromProjectName);
     let projectType = document.getElementById('idprojecttype').value;
     formData.append('projectType', projectType);
+    // console.log(formData);
     $.ajax({
       url: '/lifedata/datazipfile',
       type: 'POST',
@@ -501,13 +592,34 @@ function uploadTranscriptionTagsetZipFile(btn) {
         }
         else {
           alert(data.message);
+          resetZipFile(activeTagsetCheckbox);
+
         }
       },
     });
     return false;
   }
+  else {
+    alert("Please Select Tagset ZIP File ");
+  }
 }
 
-$("#transcriptionstagsetZipFile").change(function() {
-  enableDisableDataFormSubmitBtn(true);
-});
+// $("#transcriptionstagsetZipFile").change(function() {
+//   enableDisableDataFormSubmitBtn(true);
+// });
+
+function getTagsetsList(id) {
+  let selectId = id.replace("checkbox", "select");
+  $.getJSON('gettagsetslist',
+    {}, 
+    function(data) {
+        let tagsetsList = data.tagsetsList;
+        $('#id'+selectId).select2({
+            placeholder: 'Tagset Name',
+            data: tagsetsList,
+            allowClear: true,
+        });
+        $("#id"+selectId).val(null).trigger('change');
+    }
+  );
+}

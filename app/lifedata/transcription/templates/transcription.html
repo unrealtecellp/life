@@ -558,7 +558,7 @@
   <script src="{{url_for('.static', filename='speaker_select2_dropdown.js')}}"></script>
   <script src="{{url_for('.static', filename='search.js')}}"></script>
   <script src="{{url_for('.static', filename='sorttable.js')}}"></script>
-  <script type="text/javascript">myFunction({{ newData | tojson | safe }});</script>
+  <script type="text/javascript">createTranscriptionForm({{ newData | tojson | safe }});</script>
   <script src="{{url_for('.static', filename='audiotranscription.js')}}"></script>
   <script src="{{url_for('.static', filename='downloader/transcriptiondownload.js')}}"></script>
 {% endblock %}
