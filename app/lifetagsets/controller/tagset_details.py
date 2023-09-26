@@ -1,3 +1,4 @@
+# 809c58c868dbc905738f09235094b89eb7f4fea6
 '''
 Module to manage the tagset collection
 '''
@@ -59,3 +60,46 @@ def get_all_tagset_details(tagset_collection, current_username):
     logger.debug('All tagsets %s', all_tagsets)
 
     return all_tagsets, tagset_length, all_keys
+
+
+def get_tagsets_list(tagsets_collection,
+                     current_username,
+                     isPublic=1,
+                     projectdeleteFLAG=0):
+    """Module to get the tagsets list for current user."""
+    aggregate_output_list = []
+    try:
+        aggregate_output = tagsets_collection.aggregate(
+            [
+                {
+                    "$match": {
+                        "$and": [ 
+                            { "projectdeleteFLAG": projectdeleteFLAG },
+                            {"$or": [
+                                {"projectOwner": current_username},
+                                {"isPublic": isPublic},
+                                {"sharedwith": {
+                                    "$in": [ current_username ]
+                                }
+                                }
+                            ]}
+                        ]
+                    }
+                },
+                {
+                    "$project": {
+                        "_id": 0,
+                        "projectname": 1,
+                    }
+                }
+            ]
+        )
+        for doc in aggregate_output:
+            # logger.debug("aggregate_output: %s", pformat(doc))
+            tagset_name = doc["projectname"]
+            aggregate_output_list.append(tagset_name)
+    except:
+        logger.exception("")
+    # logger.debug("%s", len(aggregate_output_list))
+
+    return aggregate_output_list

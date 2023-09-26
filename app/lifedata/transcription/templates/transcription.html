@@ -1,3 +1,4 @@
+<!-- 0f68669d4707698f408dee157433dba3aaee701d -->
 {% extends "transcriptionlinks.html" %}
 
 {% block title %}
@@ -189,6 +190,7 @@
   <form id="boundaryForm" role="form" name="edit" style="display: none; margin: 30px 0;">
     <div class="form-group transcription1" id="transcription2"></div>
     <div class="form-group translationfield1" id="translationfield2"></div>
+    <div class="form-group interlineargloss1" id="interlineargloss2"></div>
 
     <!-- <div class="row"> -->
       <!-- <div class="form-group col-sm-6"> -->
@@ -201,13 +203,11 @@
         <input type="hidden" class="form-control" id="end" name="end" readonly required />
       <!-- </div> -->
     <!-- </div> -->
-    
+    <hr>
     <div class="form-group comments" id="transcription-comments"></div>
 
     <div class="row">
-      <div class=" col-sm-3">
-        
-      </div>
+      <div class=" col-sm-3"></div>
       <div class=" col-sm-5 pull-right">
         <!-- <button type="submit" class="btn btn-success btn-lg pull-right" id="saveTempTranscription">Save This
           Boundary
@@ -228,9 +228,6 @@
       <span class="nextaudio glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
     </button>
   </div> -->
-  <br>
-  <div class="interlineargloss"></div>
-  <div class="clear"></div>
 
   <!-- Progress Report Modal -->
   <div class="modal fade" id="myProgressReportModal" tabindex="-1" role="dialog"
@@ -299,7 +296,7 @@
           <h4 class="modal-title" id="myUploadAudioModalLabel">Project Name: {{ projectName }}</h4>
         </div>
         <div class="modal-body">
-          <form name="newaudioupload" action="/uploadaudiofiles" method="POST" enctype="multipart/form-data">
+          <form name="newaudioupload" action="/lifedata/transcription/uploadaudiofiles" method="POST" enctype="multipart/form-data">
             <!-- <div class="col upload"> -->
               <!-- <strong>Audio Files from Source: </strong> -->
               <h4>Select File:</h4>
@@ -343,9 +340,9 @@
               
               <input type="number" name="boundaryPause" id="uploadparameters-boundarypauseid" min="0.00001" max="10.0" step="0.00001"
                   placeholder="Value between 0.00001 to 10.0" value="0.3" disabled>
-              
+              <br>
               <label title="It defines the minimum length of a boundary - smaller boundaries are merged to the next or previous boundaries"
-                    for="uploadparameters-minboundarysizeid">Minimum Boundary Size (between 0.5-10.0 seconds) </label>
+                    for="uploadparameters-minboundarysizeid">Minimum Boundary Size (between 0.5-10.0 seconds) </label><br>
               <input type="number" name="minBoundarySize" id="uploadparameters-minboundarysizeid" min="0.5" max="10.0" step="0.5"
                 placeholder="Value between 0.5 to 10.0" value="2.0" disabled>
               </div>
@@ -460,7 +457,7 @@
           <h4 class="modal-title" id="myMakeBoundaryModalLabel">Project Name: {{ projectName }}</h4>
         </div>
         <div class="modal-body">
-          <form name="makeboundary" action="/makeboundary" method="POST" enctype="multipart/form-data">
+          <form name="makeboundary" action="/lifedata/transcription/makeboundary" method="POST" enctype="multipart/form-data">
             <!-- <div class="col upload"> -->
             <!-- <strong>Audio Files from Source: </strong> -->
             <h4>Make Boundaries for this file </h4>
@@ -528,23 +525,6 @@
     </div>
   </div>
 
-  {% for data in sdata %}
-    {% if data['sentenceId'] is defined %}
-      {% if data['interlineargloss'] is defined %}
-        <p id='sentenceId'><strong>Sentence ID: </strong>{{ data['sentenceId'] }}</p>
-        <input type="text" class="form-control" placeholder="{{ data['interlineargloss']['level_1'] }}"
-          name="interlinearglosslevel_1" value="{{ data['interlineargloss']['level_1'] }}" disabled>
-        <input type="text" class="form-control" placeholder="{{ data['interlineargloss']['level_2'] }}"
-          name="interlinearglosslevel_2" value="{{ data['interlineargloss']['level_2'] }}" disabled>
-        <input type="text" class="form-control" placeholder="{{ data['interlineargloss']['level_3'] }}"
-          name="interlinearglosslevel_3" value="{{ data['interlineargloss']['level_3'] }}" disabled>
-        <br>
-        <button type="button" class="btn btn-primary " onclick="editSentenceBtn()">Edit Sentence</button>
-        <hr>
-      {% endif %}
-    {% endif %}
-  {% endfor %}
-
 {% endblock %}
 
 {% block scripts %}
@@ -558,7 +538,7 @@
   <script src="{{url_for('.static', filename='speaker_select2_dropdown.js')}}"></script>
   <script src="{{url_for('.static', filename='search.js')}}"></script>
   <script src="{{url_for('.static', filename='sorttable.js')}}"></script>
-  <script type="text/javascript">createTranscriptionForm({{ newData | tojson | safe }});</script>
+  <script type="text/javascript">createTranscriptionInterfaceForm({{ newData | tojson | safe }});</script>
   <script src="{{url_for('.static', filename='audiotranscription.js')}}"></script>
   <script src="{{url_for('.static', filename='downloader/transcriptiondownload.js')}}"></script>
 {% endblock %}

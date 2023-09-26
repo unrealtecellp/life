@@ -1,3 +1,4 @@
+# 87bb4a4008392471de988181193f7e6e98e0d195
 import glob
 import json
 import os
@@ -6010,9 +6011,10 @@ def documentation():
 @app.route('/projecttype', methods=['GET', 'POST'])
 @login_required
 def projecttype():
-    projects, userprojects = getdbcollections.getdbcollections(mongo,
+    projects, userprojects, projectsform = getdbcollections.getdbcollections(mongo,
                                                                'projects',
-                                                               'userprojects')
+                                                               'userprojects',
+                                                               'projectsform')
     current_username = getcurrentusername.getcurrentusername()
     activeprojectname = getactiveprojectname.getactiveprojectname(
         current_username, userprojects)
@@ -6022,8 +6024,15 @@ def projecttype():
                                                           activeprojectname)
     current_user_sharemode = int(shareinfo['sharemode'])
 
+    projectowner = getprojectowner.getprojectowner(projects,
+                                                   activeprojectname)
+    activeprojectform = getactiveprojectform.getactiveprojectform(projectsform,
+                                                                    projectowner,
+                                                                    activeprojectname)
+
     return jsonify(projectType=project_type,
-                   shareMode=current_user_sharemode)
+                   shareMode=current_user_sharemode,
+                   activeprojectform=activeprojectform)
 
 
 @app.route('/manageapp', methods=['GET', 'POST'])
@@ -6338,3 +6347,18 @@ def browsesharewith():
         logger.exception("")
 
     return jsonify(users=users)
+
+@app.route('/get_jsonfile_data', methods=['GET', 'POST'])
+@login_required
+def get_jsonfile_data():
+    # data through ajax
+    data = json.loads(request.args.get('data'))
+    # logger.debug('JSON Files name: %s', pformat(data))
+    json_data = {}
+    for var, filename in data.items():
+        # logger.debug('JSON File name: %s', filename)
+        JSONFilePath = os.path.join(basedir, 'jsonfiles', filename)
+        json_data[var] = readJSONFile.readJSONFile(JSONFilePath)
+    # logger.debug('json_data: %s', pformat(json_data))
+
+    return jsonify(jsonData=json_data)

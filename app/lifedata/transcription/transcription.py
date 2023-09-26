@@ -1,3 +1,4 @@
+# 6ae7e44db9ce6bad1ee4bbcf32e70edbc251fe65
 """Module containing the routes for the transcription part of the LiFE."""
 
 from app import mongo
@@ -26,25 +27,12 @@ from app.controller import (
     readzip,
     savenewsentence,
     getactiveprojectform,
-    audiodetails,
+    # audiodetails,
     getcommentstats,
     projectDetails
 )
-from app.lifedata.controller import (
-    annotationdetails,
-    copydatafromparentproject,
-    crawled_data_details,
-    data_project_info,
-    savenewdataform,
-    create_validation_type_project,
-    get_validation_data,
-    youtubecrawl,
-    sourceid_to_souremetadata
-)
-
-from app.lifetagsets.controller import (
-    save_tagset,
-    tagset_details
+from app.lifedata.transcription.controller import (
+    transcription_audiodetails
 )
 
 from flask_login import login_required
@@ -110,7 +98,7 @@ def home():
                 activespeakerid = getuserprojectinfo.getuserprojectinfo(userprojects,
                                                                         current_username,
                                                                         activeprojectname)['activespeakerId']
-                speaker_audio_ids = audiodetails.get_speaker_audio_ids_new(projects,
+                speaker_audio_ids = transcription_audiodetails.get_speaker_audio_ids_new(projects,
                                                                         activeprojectname,
                                                                         current_username,
                                                                         activespeakerid)
@@ -124,24 +112,24 @@ def home():
                 commentstats = [total_comments,
                                 annotated_comments, remaining_comments]
                 # logger.debug("commentstats: %s", commentstats)
-                audio_id = audiodetails.getactiveaudioid(projects,
+                audio_id = transcription_audiodetails.getactiveaudioid(projects,
                                                         activeprojectname,
                                                         activespeakerid,
                                                         current_username)
                 # logger.debug("audio_id: %s", audio_id)
                 if (audio_id != ''):
-                    audio_delete_flag = audiodetails.get_audio_delete_flag(transcriptions,
+                    audio_delete_flag = transcription_audiodetails.get_audio_delete_flag(transcriptions,
                                                                         activeprojectname,
                                                                         audio_id)
                     if (audio_delete_flag or
                         audio_id not in speaker_audio_ids):
-                        latest_audio_id = audiodetails.getnewaudioid(projects,
+                        latest_audio_id = transcription_audiodetails.getnewaudioid(projects,
                                                                     activeprojectname,
                                                                     audio_id,
                                                                     activespeakerid,
                                                                     speaker_audio_ids,
                                                                     'next')
-                        audiodetails.updatelatestaudioid(projects,
+                        transcription_audiodetails.updatelatestaudioid(projects,
                                                         activeprojectname,
                                                         latest_audio_id,
                                                         current_username,
@@ -155,23 +143,23 @@ def home():
                                                                             current_username,
                                                                             activespeakerid,
                                                                             audio_id)
-                transcription_details = audiodetails.getaudiofiletranscription(data_collection,
+                transcription_details = transcription_audiodetails.getaudiofiletranscription(data_collection,
                                                                             audio_id,
                                                                             transcription_by)
 
-                audio_metadata = audiodetails.getaudiometadata(data_collection,
+                audio_metadata = transcription_audiodetails.getaudiometadata(data_collection,
                                                             audio_id)
                 # logger.debug('audio_metadata: %s', pformat(audio_metadata))
                 # pprint(audio_metadata)
                 activeprojectform['audioMetadata'] = audio_metadata['audioMetadata']
-                last_updated_by = audiodetails.lastupdatedby(data_collection,
+                last_updated_by = transcription_audiodetails.lastupdatedby(data_collection,
                                                             audio_id)
                 activeprojectform['lastUpdatedBy'] = last_updated_by['updatedBy']
-                # file_path = audiodetails.getaudiofilefromfs(mongo,
+                # file_path = transcription_audiodetails.getaudiofilefromfs(mongo,
                 #                                             basedir,
                 #                                             audio_id,
                 #                                             'audioId')
-                audio_filename = audiodetails.get_audio_filename(data_collection,
+                audio_filename = transcription_audiodetails.get_audio_filename(data_collection,
                                                                 audio_id)
                 file_path = url_for('retrieve', filename=audio_filename)
                 # logger.debug("audio_filename: %s, file_path: %s", audio_filename, file_path)
@@ -179,11 +167,12 @@ def home():
                 activeprojectform['transcriptionDetails'] = transcription_details
                 # print(transcription_details)
                 activeprojectform['AudioFilePath'] = file_path
-                transcription_regions, gloss, pos, boundary_count = audiodetails.getaudiotranscriptiondetails(
+                transcription_regions, gloss, pos, boundary_count = transcription_audiodetails.getaudiotranscriptiondetails(
                     data_collection, audio_id, transcription_by, transcription_details)
                 activeprojectform['transcriptionRegions'] = transcription_regions
                 # print(transcription_regions)
                 activeprojectform['boundaryCount'] = boundary_count
+                # logger.debug("gloss: %s", gloss)
                 if (len(gloss) != 0):
                     activeprojectform['glossDetails'] = gloss
                 if (len(pos) != 0):
@@ -193,13 +182,13 @@ def home():
                     #                                {"_id": 0, "speakerIds." +
                     #                                    current_username: 1}
                     #                                )["speakerIds"][current_username]
-                    speakerids = audiodetails.combine_speaker_ids(projects,
+                    speakerids = transcription_audiodetails.combine_speaker_ids(projects,
                                                                 activeprojectname,
                                                                 current_username)
-                    added_speaker_ids = audiodetails.addedspeakerids(
+                    added_speaker_ids = transcription_audiodetails.addedspeakerids(
                         speakerdetails, activeprojectname)
 
-                    transcriptions_by = audiodetails.get_audio_transcriptions_by(
+                    transcriptions_by = transcription_audiodetails.get_audio_transcriptions_by(
                         projects, transcriptions, activeprojectname, audio_id)
 
                 except:
@@ -209,6 +198,8 @@ def home():
                 activeprojectform['scriptCode'] = scriptCode
                 langScript = readJSONFile.readJSONFile(langScriptJSONFilePath)
                 activeprojectform['langScript'] = langScript
+                # logger.debug("activeprojectform: %s", activeprojectform)
+
                 return render_template('transcription.html',
                                     projectName=activeprojectname,
                                     newData=activeprojectform,
@@ -224,6 +215,7 @@ def home():
                 logger.exception("")
                 flash('Upload first audio file.')
         
+        # logger.debug("activeprojectform: %s", pformat(activeprojectform))
         return render_template('transcription.html',
                             projectName=activeprojectname,
                             newData=activeprojectform,
@@ -249,19 +241,19 @@ def audiobrowse():
         shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
                                                           current_username,
                                                           activeprojectname)
-        speakerids = audiodetails.combine_speaker_ids(projects,
+        speakerids = transcription_audiodetails.combine_speaker_ids(projects,
                                                       activeprojectname,
                                                       current_username)
         speakerids.append('')
         active_speaker_id = shareinfo['activespeakerId']
-        speaker_audio_ids = audiodetails.get_speaker_audio_ids_new(projects,
+        speaker_audio_ids = transcription_audiodetails.get_speaker_audio_ids_new(projects,
                                                                    activeprojectname,
                                                                    current_username,
                                                                    active_speaker_id)
         # logger.debug("speaker_audio_ids: %s", pformat(speaker_audio_ids))
         total_records = 0
         if (active_speaker_id != ''):
-            total_records, audio_data_list = audiodetails.get_n_audios(transcriptions,
+            total_records, audio_data_list = transcription_audiodetails.get_n_audios(transcriptions,
                                                                        activeprojectname,
                                                                        active_speaker_id,
                                                                        speaker_audio_ids)
@@ -319,7 +311,7 @@ def updateaudiosortingsubcategories():
         logger.debug('selected_audio_sorting_category: %s',
                      selected_audio_sorting_category)
 
-        speakerids = audiodetails.combine_speaker_ids(projects,
+        speakerids = transcription_audiodetails.combine_speaker_ids(projects,
                                                       activeprojectname,
                                                       current_username)
         speakerids.append('')
@@ -331,7 +323,7 @@ def updateaudiosortingsubcategories():
         share_mode = shareinfo['sharemode']
         share_checked = shareinfo['sharechecked']
         if (selected_audio_sorting_category == 'sourcemetainfo'):
-            audio_sorting_sub_categories = audiodetails.get_audio_sorting_subcategories(speakerdetails_collection,
+            audio_sorting_sub_categories = transcription_audiodetails.get_audio_sorting_subcategories(speakerdetails_collection,
                                                                                         activeprojectname,
                                                                                         speakerids,
                                                                                         selected_audio_sorting_category
@@ -340,7 +332,7 @@ def updateaudiosortingsubcategories():
         elif (selected_audio_sorting_category == 'lifespeakerid'):
             audio_sorting_sub_categories = speakerids
             active_speaker_id = shareinfo['activespeakerId']
-            speaker_audio_ids = audiodetails.get_speaker_audio_ids_new(projects,
+            speaker_audio_ids = transcription_audiodetails.get_speaker_audio_ids_new(projects,
                                                                        activeprojectname,
                                                                        current_username,
                                                                        active_speaker_id)
@@ -348,7 +340,7 @@ def updateaudiosortingsubcategories():
             selected_audio_sorting_sub_categories = active_speaker_id
 
             if (active_speaker_id != ''):
-                total_records, audio_data_list = audiodetails.get_n_audios(transcriptions,
+                total_records, audio_data_list = transcription_audiodetails.get_n_audios(transcriptions,
                                                                            activeprojectname,
                                                                            active_speaker_id,
                                                                            speaker_audio_ids,
@@ -402,23 +394,23 @@ def filteraudiobrowsetable():
         filter_options = data['selectedFilterOptions']
         total_records = 0
         audio_data_list = []
-        speakerids = audiodetails.combine_speaker_ids(projects,
+        speakerids = transcription_audiodetails.combine_speaker_ids(projects,
                                                       activeprojectname,
                                                       current_username)
     #     # logger.debug(audio_browse_info['activeSpeakerId'])
     #     active_speaker_id = audio_browse_info['activeSpeakerId']
 
-        filtered_speakers_list = audiodetails.filter_speakers(speakerdetails_collection,
+        filtered_speakers_list = transcription_audiodetails.filter_speakers(speakerdetails_collection,
                                                               activeprojectname,
                                                               filter_options=filter_options)
         for speaker in filtered_speakers_list:
-            speaker_audio_ids = audiodetails.get_speaker_audio_ids_new(projects,
+            speaker_audio_ids = transcription_audiodetails.get_speaker_audio_ids_new(projects,
                                                                        activeprojectname,
                                                                        current_username,
                                                                        speaker,
                                                                        audio_browse_action=audio_browse_action)
             if (speaker in speakerids):
-                temp_total_records, temp_audio_data_list = audiodetails.get_n_audios(transcriptions,
+                temp_total_records, temp_audio_data_list = transcription_audiodetails.get_n_audios(transcriptions,
                                                                                      activeprojectname,
                                                                                      speaker,
                                                                                      speaker_audio_ids,
@@ -475,13 +467,13 @@ def updateaudiobrowsetable():
         audio_file_count = audio_browse_info['audioFilesCount']
         audio_browse_action = audio_browse_info['browseActionSelectedOption']
         total_records = 0
-        speaker_audio_ids = audiodetails.get_speaker_audio_ids_new(projects,
+        speaker_audio_ids = transcription_audiodetails.get_speaker_audio_ids_new(projects,
                                                                    activeprojectname,
                                                                    current_username,
                                                                    active_speaker_id,
                                                                    audio_browse_action=audio_browse_action)
         if (active_speaker_id != ''):
-            total_records, audio_data_list = audiodetails.get_n_audios(transcriptions,
+            total_records, audio_data_list = transcription_audiodetails.get_n_audios(transcriptions,
                                                                        activeprojectname,
                                                                        active_speaker_id,
                                                                        speaker_audio_ids,
@@ -539,12 +531,12 @@ def audiobrowseaction():
         browse_action = audio_browse_info['browseActionSelectedOption']
         active_speaker_id = audio_browse_info['activeSpeakerId']
         audio_ids_list = list(audio_info.keys())
-        speaker_audio_ids = audiodetails.get_speaker_audio_ids_new(projects_collection,
+        speaker_audio_ids = transcription_audiodetails.get_speaker_audio_ids_new(projects_collection,
                                                                    activeprojectname,
                                                                    current_username,
                                                                    active_speaker_id,
                                                                    audio_browse_action=browse_action)
-        active_audio_id = audiodetails.getactiveaudioid(projects_collection,
+        active_audio_id = transcription_audiodetails.getactiveaudioid(projects_collection,
                                                         activeprojectname,
                                                         active_speaker_id,
                                                         current_username)
@@ -559,14 +551,14 @@ def audiobrowseaction():
             if (audio_id == active_audio_id):
                 update_latest_audio_id = 1
             if (browse_action):
-                audiodetails.revoke_deleted_audio(projects_collection,
+                transcription_audiodetails.revoke_deleted_audio(projects_collection,
                                                   transcriptions_collection,
                                                   activeprojectname,
                                                   active_speaker_id,
                                                   audio_id,
                                                   speaker_audio_ids)
             else:
-                audiodetails.delete_one_audio_file(projects_collection,
+                transcription_audiodetails.delete_one_audio_file(projects_collection,
                                                    transcriptions_collection,
                                                    activeprojectname,
                                                    current_username,
@@ -619,7 +611,7 @@ def audiobrowseactionplay():
             # logger.debug(audio_browse_info['activeSpeakerId'])
             active_speaker_id = audio_browse_info['activeSpeakerId']
             audio_browse_action = audio_browse_info['browseActionSelectedOption']
-            speaker_audio_ids = audiodetails.get_speaker_audio_ids_new(projects,
+            speaker_audio_ids = transcription_audiodetails.get_speaker_audio_ids_new(projects,
                                                                        activeprojectname,
                                                                        current_username,
                                                                        active_speaker_id,
@@ -627,7 +619,7 @@ def audiobrowseactionplay():
             # audio_file_count = audio_browse_info['audioFilesCount']
             total_records = 0
             if (active_speaker_id != ''):
-                total_records, audio_data_list = audiodetails.get_n_audios(transcriptions,
+                total_records, audio_data_list = transcription_audiodetails.get_n_audios(transcriptions,
                                                                            activeprojectname,
                                                                            active_speaker_id,
                                                                            speaker_audio_ids,
@@ -702,7 +694,7 @@ def audiobrowsechangepage():
                                                                       userprojects)
         # logger.debug(crawler_browse_info['activeSourceId'])
         active_speaker_id = audio_browse_info['activeSpeakerId']
-        speaker_audio_ids = audiodetails.get_speaker_audio_ids_new(projects,
+        speaker_audio_ids = transcription_audiodetails.get_speaker_audio_ids_new(projects,
                                                                    activeprojectname,
                                                                    current_username,
                                                                    active_speaker_id)
@@ -715,7 +707,7 @@ def audiobrowsechangepage():
         #  page_id, start_from, number_of_audios)
         total_records = 0
         if (active_speaker_id != ''):
-            total_records, audio_data_list = audiodetails.get_n_audios(transcriptions,
+            total_records, audio_data_list = transcription_audiodetails.get_n_audios(transcriptions,
                                                                        activeprojectname,
                                                                        active_speaker_id,
                                                                        speaker_audio_ids,
@@ -750,3 +742,210 @@ def audiobrowsechangepage():
                    totalRecords=total_records,
                    shareChecked=share_checked,
                    activePage=page_id)
+
+# uploadaudiofiles route
+@transcription.route('/uploadaudiofiles', methods=['GET', 'POST'])
+@login_required
+def uploadaudiofiles():
+    projects, userprojects, transcriptions = getdbcollections.getdbcollections(mongo,
+                                                                               'projects',
+                                                                               'userprojects',
+                                                                               'transcriptions')
+    current_username = getcurrentusername.getcurrentusername()
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                  userprojects)
+    projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
+    if request.method == 'POST':
+        run_vad = False
+        run_asr = False
+        split_into_smaller_chunks = True
+        get_audio_json = True
+
+        data = dict(request.form.lists())
+        logger.debug("Form data %s", data)
+        speakerId = data['speakerId'][0]
+        new_audio_file = request.files.to_dict()
+
+        if 'uploadparameters-vad' in data:
+            run_vad = True
+
+        if 'boundaryPause' in data:
+            boundary_threshold = float(data['boundaryPause'][0])
+        else:
+            boundary_threshold = 0.3
+
+        if 'sliceOffsetValue' in data:
+            slice_offset = float(data['sliceOffsetValue'][0])
+        else:
+            slice_offset = 0.1
+
+        slice_threshold = float(data['fileSplitThreshold'][0])
+        slice_size = float(data['maxFileSize'][0])
+
+        if 'uploadparameters-optimisefor' in data:
+            get_audio_json = data['uploadparameters-optimisefor'][0] == 'True'
+        # print(get_audio_json)
+
+        if 'minBoundarySize' in data:
+            min_boundary_size = float(data['minBoundarySize'][0])
+        else:
+            min_boundary_size = 2.0
+
+        '''
+        ASR Model and VAD Model Dict Formats
+
+        asr_model = {
+            'model_name': "name_1",
+            'model_type': "local", (or "api")
+            'model_params': {
+                'model_path': "path_1",
+                'model_api': 'api_endpoint'
+            },
+            'target': 'hin-Deva'
+        }
+
+
+        vad_model = {
+            'model_name': "name_1",
+            'model_type': "local", (or "api")
+            'model_params': {
+                'model_path': "path_1",
+                'model_api': 'api_endpoint'
+            }
+        }
+        '''
+
+        transcription_audiodetails.saveaudiofiles(mongo,
+                                    projects,
+                                    userprojects,
+                                    transcriptions,
+                                    projectowner,
+                                    activeprojectname,
+                                    current_username,
+                                    speakerId,
+                                    new_audio_file,
+                                    # change this and boundary_threshold for automatic detection of boundaries of different kinds
+                                    run_vad=run_vad,
+                                    run_asr=run_asr,
+                                    split_into_smaller_chunks=split_into_smaller_chunks,
+                                    get_audio_json=get_audio_json,
+                                    vad_model={},
+                                    asr_model={},
+                                    transcription_type='sentence',
+                                    boundary_threshold=boundary_threshold,
+                                    slice_threshold=slice_threshold,
+                                    # max size of each slice (in seconds), if large audio is to be automatically divided into multiple parts
+                                    slice_size=slice_size,
+                                    data_type="audio",
+                                    new_audio_details={},
+                                    prompt="",
+                                    update=False,
+                                    slice_offset_value=slice_offset,
+                                    min_boundary_size=min_boundary_size
+                                    )
+
+    return redirect(url_for('lifedata.transcription.home'))
+
+
+# makeboundary route
+@transcription.route('/makeboundary', methods=['GET', 'POST'])
+@login_required
+def makeboundary():
+    projects, userprojects, transcriptions = getdbcollections.getdbcollections(mongo,
+                                                                               'projects',
+                                                                               'userprojects',
+                                                                               'transcriptions')
+    current_username = getcurrentusername.getcurrentusername()
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                  userprojects)
+    projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
+    if request.method == 'POST':
+        run_vad = True
+        run_asr = False
+        get_audio_json = False
+        split_into_smaller_chunks = False
+        overwrite_user = False
+
+        data = dict(request.form.lists())
+        logger.debug("Form data %s", data)
+        speakerId = data['speakerId'][0]
+        # new_audio_file = request.files.to_dict()
+        audio_filename = data['audiofile'][0]
+        # converts into seconds
+        audio_duration = float(data['audioduration'][0]) * 60
+        existing_audio_details = transcriptions.find_one(
+            {'projectname': activeprojectname, 'audioFilename': audio_filename})
+        logger.debug("Existing audio data %s", existing_audio_details)
+
+        if 'boundaryPause' in data:
+            boundary_threshold = float(data['boundaryPause'][0])
+        else:
+            boundary_threshold = 0.3
+
+        if 'sliceOffsetValue' in data:
+            slice_offset = float(data['sliceOffsetValue'][0])
+        else:
+            slice_offset = 0.1
+
+        slice_threshold = 2.0
+        slice_size = 150.0
+
+        if 'createaudiojson' in data:
+            get_audio_json = True
+
+        if 'overwrite-my-boundaries' in data:
+            overwrite_user = True
+        # print(get_audio_json)
+
+        if 'minBoundarySize' in data:
+            min_boundary_size = float(data['minBoundarySize'][0])
+        else:
+            min_boundary_size = 2.0
+
+        '''
+        ASR Model and VAD Model Dict Formats
+
+        asr_model = {
+            'model_name': "name_1",
+            'model_type': "local", (or "api")
+            'model_params': {
+                'model_path': "path_1",
+                'model_api': 'api_endpoint'
+            },
+            'target': 'hin-Deva'
+        }
+
+
+        vad_model = {
+            'model_name': "name_1",
+            'model_type': "local", (or "api")
+            'model_params': {
+                'model_path': "path_1",
+                'model_api': 'api_endpoint'
+            }
+        }
+        '''
+
+        transcription_audiodetails.save_boundaries_of_one_audio_file(mongo,
+                                                       projects,
+                                                       userprojects,
+                                                       transcriptions,
+                                                       projectowner,
+                                                       activeprojectname,
+                                                       current_username,
+                                                       audio_filename,
+                                                       audio_duration,
+                                                       # change this and boundary_threshold for automatic detection of boundaries of different kinds
+                                                       run_vad=run_vad,
+                                                       run_asr=run_asr,
+                                                       split_into_smaller_chunks=split_into_smaller_chunks,
+                                                       get_audio_json=get_audio_json,
+                                                       vad_model={},
+                                                       asr_model={},
+                                                       transcription_type='sentence',
+                                                       boundary_threshold=boundary_threshold,
+                                                       min_boundary_size=min_boundary_size,
+                                                       save_for_user=overwrite_user
+                                                       )
+
+    return redirect(url_for('lifedata.transcription.home'))
