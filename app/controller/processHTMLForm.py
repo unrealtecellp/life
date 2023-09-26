@@ -5,9 +5,10 @@ from app.controller import (
 logger = life_logging.get_logger()
 
 
-def get_metadata_header_details(form_data):
-    exclude_fields = ['audiosource', 'sourcecallpage',
-                      'fieldMetadataSchema', 'metadataentrytype', 'audioInternetSource']
+def get_metadata_header_details(form_data, exclude_fields=[]):
+    if len(exclude_fields) == 0:
+        exclude_fields = ['audiosource', 'sourcecallpage',
+                          'fieldMetadataSchema', 'metadataentrytype', 'audioInternetSource']
 
     audio_source = form_data.get('audiosource', '')
     call_source = form_data.get('sourcecallpage', '')

@@ -1,5 +1,5 @@
 function getMetadataForm(ele, options) {
-    let defaults = { submitRoute: "/addnewspeakerdetails", 'text': 'text', includeFieldMetadata: true, includeInternetMetadata: true };
+    let defaults = { submitRoute: "/addnewspeakerdetails", includeFieldMetadata: true, includeInternetMetadata: true };
     options = Object.assign({}, defaults, options); //first it assigns defaults to the options and then overwrites those with the values present in 'options' object
     let { submitRoute, includeFieldMetadata, includeInternetMetadata } = options;
 
@@ -322,7 +322,7 @@ $('.assignaccesscode').click(function () {
 
 
 
-function speakerDetailForm(curId, submitRoute="/addnewspeakerdetails", includeFieldMetadata=false, includeInternetMetadata=true) {
+function speakerDetailForm(curId, submitRoute="/addnewspeakerdetails", includeFieldMetadata=true, includeInternetMetadata=true) {
     console.log('Current ID', curId)
 
     var speakerMetadata = ['Name', 'Age', 'Gender', 'Occupation']
@@ -363,7 +363,7 @@ function speakerDetailForm(curId, submitRoute="/addnewspeakerdetails", includeFi
         '</a><br /><br/>' +
         '</div>';          
     
-    sourceinpt += '<div class="col-xs-12" >';
+    sourceinpt += '<div id="idbulkmetadatamainformdiv" class="col-xs-12 classmetadatamainformdiv" >';
     // sourceinpt += '<input type="hidden" name="uploadtype" value="bulk">'
     sourceinpt += '<div class="form-group">' +
         '<label for="idaudiosourcebulk">Audio Source </label> <br>' +
@@ -412,11 +412,13 @@ function speakerDetailForm(curId, submitRoute="/addnewspeakerdetails", includeFi
     sourceinpt += '</div>';
     sourceinpt += '</div>';
 
-
+    
     sourceinpt += '<div id="formdisplaysingle" style="display: none;">'
         // '<form role="form" method="post" action="/addnewspeakerdetails">';
     // sourceinpt += '<input type="hidden" name="uploadtype" value="single">'
     sourceinpt += '<h4> Single Metadata Entry</h4>';
+
+    sourceinpt += '<div id="idsinglemetadatamainformdiv" class="col-xs-12 classmetadatamainformdiv" >';
     sourceinpt += '<div class="form-group">' +
         '<label for="idaudiosource">Audio Source </label> <br>' +
         '<select class="audiosourceclass" id="idaudiosource" name="audiosource" style="width:55%" >' +
@@ -468,28 +470,29 @@ function speakerDetailForm(curId, submitRoute="/addnewspeakerdetails", includeFi
     
     // subsourceinpt += ; // div of idfieldmetadataschemadiv
     
-        subsourceinpt += '<div id="idinternetsourcediv" style="display: none;">';
-        if (includeInternetMetadata) {
-            subsourceinpt += '<div class="form-group">' +
-                '<label for="idaudiointernetsource">Audio Internet Source </label> <br>' +
-                '<select class="classaudiointernetsource" id="idaudiointernetsource" name="audioInternetSource" style="width:55%;">' +
-                '</select><br>' +
-                '</div>';
-            // subsourceinpt += </div>';
-            subsourceinpt += '<div id="idinternetsourcedetailsdiv" style="display: none;"></div>';
-        }
-        else {
-            subsourceinpt += '<div class="alert alert-danger alert-dismissible" role="alert">' +
-                'No schema available for internet source!' +
-                '<button type="button" class="close" data-dismiss="alert" aria-label="Close">'+
-                '<span aria-hidden="true">&times;</span>' +
-                '</div>';
-        }
+    subsourceinpt += '<div id="idinternetsourcediv" style="display: none;">';
+    if (includeInternetMetadata) {
+        subsourceinpt += '<div class="form-group">' +
+            '<label for="idaudiointernetsource">Audio Internet Source </label> <br>' +
+            '<select class="classaudiointernetsource" id="idaudiointernetsource" name="audioInternetSource" style="width:55%;">' +
+            '</select><br>' +
+            '</div>';
+        // subsourceinpt += </div>';
+        subsourceinpt += '<div id="idinternetsourcedetailsdiv" style="display: none;"></div>';
+    }
+    else {
+        subsourceinpt += '<div class="alert alert-danger alert-dismissible" role="alert">' +
+            'No schema available for internet source!' +
+            '<button type="button" class="close" data-dismiss="alert" aria-label="Close">'+
+            '<span aria-hidden="true">&times;</span>' +
+            '</div>';
+    }
     subsourceinpt += '</div>';
     
     subsourceinpt +=   '<button type="button" id="closebutton" class="btn btn-warning" data-dismiss="modal">Cancel</button>' +
         '<input type="submit" class="btn btn-primary clasmetadatasubmitbutton" id="idmetadatasubmitbutton" value="Save Metadata" disabled> <br><br>';
     
+    subsourceinpt += '</div>';
     subsourceinpt += '</div>';
 
     sourceinpt += subsourceinpt;
@@ -545,7 +548,7 @@ function speedMetadataForm(form_vals = {}) {
 
     //Name
     metadataForm += '<div class="form-group">' +
-        '<label class="col-form-label">Name:</label>' +
+        '<label for="idname" class="col-form-label">Name:</label>' +
         '<input type="text" class="form-control classname" id="idname" name="name" placeholder="--Speaker Name--" style="width:55%" value="';    
     if (form_vals["name"]) {
         metadataForm += form_vals["name"];
@@ -555,7 +558,7 @@ function speedMetadataForm(form_vals = {}) {
 
     //Age Group
     metadataForm += '<div class="form-group">' +
-        '<label for="sagegroup">Age Group: </label><br>' +
+        '<label for="idagegroup">Age Group: </label><br>' +
         '<select class="classagegroup" id="idagegroup" name="ageGroup" style="width:55%">';    
     if (form_vals["ageGroup"]) {
         metadataForm += '<option value="' + form_vals["ageGroup"] + '" selected="selected">' + form_vals["ageGroup"] + '</option>';
@@ -565,7 +568,7 @@ function speedMetadataForm(form_vals = {}) {
 
     //Gender
     metadataForm += '<div class="form-group">' +
-        '<label for="sgender">Gender: </label><br>' +
+        '<label for="idgender">Gender: </label><br>' +
         '<select class="classgender" id="idgender" name="gender" style="width:55%" >';
     if (form_vals["gender"]) {
         metadataForm += '<option value="' + form_vals["gender"] + '" selected="selected">' + form_vals["gender"] + '</option>';
@@ -575,7 +578,7 @@ function speedMetadataForm(form_vals = {}) {
 
     //Educational Level
     metadataForm += '<div class="form-group">' +
-        '<label for="educationlevel">Educational Level: </label> <br>' +
+        '<label for="ideducationlevel">Educational Level: </label> <br>' +
         '<select class="classeducationlevel" id="ideducationlevel" name="educationLevel" style="width:55%" >';
     if (form_vals["educationLevel"]) {
         
@@ -586,7 +589,7 @@ function speedMetadataForm(form_vals = {}) {
 
     //Medium of Education (upto 12th)
     metadataForm += '<div class="form-group">' +
-        '<label for="moe12">Medium Of Education (upto 12ᵗʰ): </label><br>' +
+        '<label for="idmeducationmediumupto12">Medium Of Education (upto 12ᵗʰ): </label><br>' +
         '<select class="classeducationmediumupto12" id="idmeducationmediumupto12" name="educationMediumUpto12-list" multiple="multiple" style="width:55%">';
     if (form_vals["educationMediumUpto12-list"]) {
         edMed = form_vals["educationMediumUpto12-list"]
@@ -604,7 +607,7 @@ function speedMetadataForm(form_vals = {}) {
     
     //Medium of Education (after 12th)
     metadataForm += '<div class="form-group">' +
-        '<label for="moea12">Medium Of Education (After 12ᵗʰ): </label><br>' +
+        '<label for="ideducationmediumafter12">Medium Of Education (After 12ᵗʰ): </label><br>' +
         '<select class="classeducationmediumafter12" id="ideducationmediumafter12" name="educationMediumAfter12-list" multiple="multiple" style="width:55%" >';
     if (form_vals["educationMediumAfter12-list"]) {
         for (i = 0; i < form_vals["educationMediumAfter12-list"].length; i++) {
@@ -617,7 +620,7 @@ function speedMetadataForm(form_vals = {}) {
 
     //Other Languages Speaker could speak
     metadataForm += '<div class="form-group">' +
-        '<label for="sols">Other Languages Speaker Could Speak: </label><br>' +
+        '<label for="idotherlanguages">Other Languages Speaker Could Speak: </label><br>' +
         '<select class="classotherlanguages" id="idotherlanguages" name="otherLanguages-list" multiple="multiple" style="width:55%" >';
     if (form_vals["otherLanguages-list"]) {
         for (i = 0; i < form_vals["otherLanguages-list"].length; i++) {
@@ -630,7 +633,7 @@ function speedMetadataForm(form_vals = {}) {
 
     //Place of Recording
     metadataForm += '<div class="form-group">' +
-        '<label class="col-form-label">Place Of Recording:</label><br>' +
+        '<label for="idplaceofrecording" class="col-form-label">Place Of Recording:</label><br>' +
         '<input type="text" class="form-control classplaceofrecording" id="idplaceofrecording" name="placeOfRecording" placeholder="--Place Of Recording--" style="width:55%;" value="';
     if (form_vals["placeOfRecording"]) {
         metadataForm += form_vals["placeOfRecording"];
@@ -640,7 +643,7 @@ function speedMetadataForm(form_vals = {}) {
 
     //Type of Place
     metadataForm += '<div class="form-group">' +
-            '<label for="toc">Type Of Place: </label> <br>' +
+            '<label for="idptypeofplace">Type Of Place: </label> <br>' +
             '<select class="classtypeofplace" id="idptypeofplace" name="typeOfPlace"  style="width:55%" >';
     if (form_vals["typeOfPlace"]) {
         metadataForm += '<option value="' + form_vals["typeOfPlace"] + '" selected="selected">' + form_vals["typeOfPlace"] + '</option>';
@@ -659,7 +662,7 @@ function ldcilMetadataForm(form_vals={}) {
 
     //Language
     metadataForm += '<div class="form-group">' +
-        '<label for="language">Language: </label> <br>' +
+        '<label for="idlanguage">Language: </label> <br>' +
         '<select class="classlanguage" id="idlanguage" name="language" style="width:55%">';
     if (form_vals["language"]) {
         
@@ -670,7 +673,7 @@ function ldcilMetadataForm(form_vals={}) {
 
     //Name
     metadataForm += '<div class="form-group">' +
-        '<label class="col-form-label">Name/Speaker ID:</label>' +
+        '<label for="idname" class="col-form-label">Name/Speaker ID:</label>' +
         '<input type="text" class="form-control classname" id="idname" name="name" placeholder="--Speaker Name--" style="width:55%" value="';    
     if (form_vals["name"]) {
         metadataForm += form_vals["name"];
@@ -680,7 +683,7 @@ function ldcilMetadataForm(form_vals={}) {
 
     //Age Group
     metadataForm += '<div class="form-group">' +
-        '<label for="sagegroup">Age Group: </label><br>' +
+        '<label for="idagegroup">Age Group: </label><br>' +
         '<select class="classldcilagegroup" id="idagegroup" name="ageGroup" style="width:55%">';    
     if (form_vals["ageGroup"]) {
         metadataForm += '<option value="' + form_vals["ageGroup"] + '" selected="selected">' + form_vals["ageGroup"] + '</option>';
@@ -690,7 +693,7 @@ function ldcilMetadataForm(form_vals={}) {
 
     //Gender
     metadataForm += '<div class="form-group">' +
-        '<label for="sgender">Gender: </label><br>' +
+        '<label for="idgender">Gender: </label><br>' +
         '<select class="classgender" id="idgender" name="gender" style="width:55%" >';
     if (form_vals["gender"]) {
         metadataForm += '<option value="' + form_vals["gender"] + '" selected="selected">' + form_vals["gender"] + '</option>';
@@ -700,7 +703,7 @@ function ldcilMetadataForm(form_vals={}) {
 
     //Educational Level
     metadataForm += '<div class="form-group">' +
-        '<label for="educationlevel">Education: </label> <br>' +
+        '<label for="ideducationlevel">Education: </label> <br>' +
         '<select class="classldcileducationlevel" id="ideducationlevel" name="educationLevel" style="width:55%" >';
     if (form_vals["educationLevel"]) {
         
@@ -711,7 +714,7 @@ function ldcilMetadataForm(form_vals={}) {
     
     //Place of Elementary Education
     metadataForm += '<div class="form-group">' +
-        '<label for="placeOfElementaryEducation">Place of Elementary Education: </label> <br>' +
+        '<label for="idplaceOfElementaryEducation">Place of Elementary Education: </label> <br>' +
         '<input type="text" class="form-control classplaceOfElementaryEducation" id="idplaceOfElementaryEducation" name="placeOfElementaryEducation" style="width:55%" value="';
     if (form_vals["placeOfElementaryEducation"]) {
         
@@ -723,7 +726,7 @@ function ldcilMetadataForm(form_vals={}) {
     
     //State
     metadataForm += '<div class="form-group">' +
-        '<label for="state">State: </label> <br>' +
+        '<label for="idstate">State: </label> <br>' +
         '<input type="text" class="form-control classstate" id="idstate" name="state" style="width:55%" value="';
    if (form_vals["state"]) {
         
@@ -734,7 +737,7 @@ function ldcilMetadataForm(form_vals={}) {
 
     //District
     metadataForm += '<div class="form-group">' +
-        '<label for="district">District: </label> <br>' +
+        '<label for="iddistrict">District: </label> <br>' +
         '<input type="text" class="form-control classdistrict" id="iddistrict" name="district" style="width:55%" value="';
     if (form_vals["district"]) {
         
@@ -745,7 +748,7 @@ function ldcilMetadataForm(form_vals={}) {
 
     //Place of Recording
     metadataForm += '<div class="form-group">' +
-        '<label class="col-form-label">Place Of Recording:</label><br>' +
+        '<label for="idplaceofrecording" class="col-form-label">Place Of Recording:</label><br>' +
         '<input type="text" class="form-control classplaceofrecording" id="idplaceofrecording" name="placeOfRecording" placeholder="--Place Of Recording--" style="width:55%;" value="';
     if (form_vals["placeOfRecording"]) {
         metadataForm += form_vals["placeOfRecording"];
@@ -1035,11 +1038,11 @@ function addNewSpeakerFormEvents() {
         // console.log('idfieldmetadataschema');
         var schemaVal = $(this).val();
         // console.log("Current schema value", schemaVal);
-        form_val = {'name': 'Ritesh', 'ageGroup': '18-31', 'educationMediumAfter12-list': ['Hindi', 'English', 'Konkani', 'Toto', 'Mahisu']}
+        // form_val = {'name': 'Ritesh', 'ageGroup': '18-31', 'educationMediumAfter12-list': ['Hindi', 'English', 'Konkani', 'Toto', 'Mahisu']}
         $('#idspeakerdetailsdiv').show();   
         // $('#idspeakerdetailsdiv').innerHTML = "";  
         $('#idinternetsourcedetailsdiv').html("");
-        form_html = window[schemaVal + "MetadataForm"](form_val);
+        form_html = window[schemaVal + "MetadataForm"]();
         
         // if (schemaVal === "speed") {
         //     // $('#idsubsourcediv').hide();
