@@ -41,7 +41,7 @@ function createTagsetsForm() {
 }
 
 function createTranscriptionInterfaceForm(newData) {
-    console.log(newData);
+    // console.log(newData);
     localStorage.setItem("activeprojectform", JSON.stringify(newData));
     localStorage.setItem("regions", JSON.stringify(newData['transcriptionRegions']));
     localStorage.setItem("transcriptionDetails", JSON.stringify([newData['transcriptionDetails']]));
@@ -188,7 +188,7 @@ function getWordPos(morphemicSplitSentence, name) {
 // get the sentence enter by the user when green check button is clicked and 
 // create the boxes for words and morphemes
 function getSentence(value, name) {
-  console.log(value, name);
+  // console.log(value, name);
   var morphemicSplitSentence = [];
   value = document.getElementById("Transcription_" + name).value.trim();
   // if (value === '') {
@@ -273,7 +273,7 @@ function getSentence(value, name) {
       morphemicSplitSentence.push(sentence_morphemic_break[i]);
     }
   }
-  console.log('morphemicSplitSentence', morphemicSplitSentence)
+  // console.log('morphemicSplitSentence', morphemicSplitSentence)
 
   document.getElementById("sentenceMorphemicBreak_"+name).readOnly = true;
   var checkBtn = '<button class="btn btn-warning" type="button" id="editSentenceField"'+
@@ -301,8 +301,8 @@ function morphemeFieldsSelect2(morphemicSplitSentence, name) {
       morphemicGloss = response.jsonData.morphemicGloss;
       morphType = response.jsonData.morphType;
       posCategories = response.jsonData.posCategories;
-      console.log(morphemicGloss);
-      console.log('.morphemicgloss'+ name +(i+1))
+      // console.log(morphemicGloss);
+      // console.log('.morphemicgloss'+ name +(i+1))
       for(let i = 0; i < morphemicSplitSentence.length; i++) {
         $('.morphemicgloss'+ name +(i+1)).select2({
           tags: true,
@@ -408,7 +408,7 @@ $("#save").click(function() {
 });
 
 function myFunction(newData) {
-  console.log(newData);
+  // console.log(newData);
   localStorage.setItem("activeprojectform", JSON.stringify(newData));
   localStorage.setItem("regions", JSON.stringify(newData['transcriptionRegions']));
   var activeAudioFilename = newData["AudioFilePath"].split('/')[2];
@@ -539,7 +539,7 @@ function loadUnAnnoText() {
 
 function loadAnnoText() {
   newAudioFilename = document.getElementById('allanno').value;
-  console.log(newAudioFilename)
+  // console.log(newAudioFilename)
   // loadRandomAudio(newAudioFilename)
   $.ajax({
       url: '/loadunannotext',
@@ -556,7 +556,7 @@ function loadAnnoText() {
 function loadUserTranscription() {
   var username = document.getElementById('transcriptionbydropdown').value;
   var lastActiveId = document.getElementById("lastActiveId").value;
-  console.log('Load transcription', username, lastActiveId)
+  // console.log('Load transcription', username, lastActiveId)
   // loadRandomAudio(newAudioFilename)
   $.ajax({
       url: '/loadtranscriptionbyanyuser',
@@ -617,13 +617,13 @@ placeholder: 'Select preset value or enter a custom value',
 $("#audiofile").change(function() {
     let zipFileElement = document.getElementById('audiofile');
     zipFileName = zipFileElement.files[0];
-    console.log(zipFileName);
+    // console.log(zipFileName);
     zipFileSize = zipFileName.size
-    console.log(typeof zipFileSize, Math.round((zipFileSize/1024)));
+    // console.log(typeof zipFileSize, Math.round((zipFileSize/1024)));
     if (! (zipFileSize <= 200000000)) {
       
       const size = (zipFileSize / 1000 / 1000).toFixed(2);
-      console.log(zipFileSize, size);
+      // console.log(zipFileSize, size);
       alert('Please upload file upto 200 MB. This file size is: ' + size + " MB");
       window.location.reload(true);
     }
@@ -654,7 +654,7 @@ $("#deleteaudio").click(function() {
     deleteAudioFLAG = confirm("Delete This Audio!!!");
   }
   if(deleteAudioFLAG) {
-    console.log(deleteAudioFLAG, lastActiveId);
+    // console.log(deleteAudioFLAG, lastActiveId);
     $.post( "/deleteaudio", {
       a: JSON.stringify(lastActiveId)
     })
