@@ -1,3 +1,94 @@
+// 7fcbad4950b4adad46de5a9ca28efedb3f8cfbb9
+function createTextareaElement(key, elevalue, type, defaultdatavalue) {
+    var qform = '';
+    for (let i=0; i<elevalue.length; i++) {
+      eval = key + ' ' + elevalue[i]
+      var keyid = eval.replace(new RegExp(' ', 'g'), '_');
+      qform += '<div class="form-group">'+
+                '<label for="'+ keyid +'">'+ eval +'</label><br>'+
+                '<textarea id="'+ keyid +'" name="'+ eval +'" rows="4" cols="50">'+
+                '</textarea>'+
+                '</div>';
+    }
+
+    return qform;
+}
+
+function createTranscriptionForm(key, elevalue, eletype, defaultdatavalue) {
+    let transcriptionForm = '';
+    transcriptionForm += createTextareaElement(key, elevalue, eletype, defaultdatavalue)
+
+    return transcriptionForm
+}
+
+function createTranslationForm() {
+    let translationForm = '';
+    translationForm += createTextareaElement(key, elevalue, eletype, defaultdatavalue)
+
+    return translationForm
+}
+
+function createInterlinearglossForm() {
+    let interlinearglossForm = '';
+
+    return interlinearglossForm
+}
+
+function createTagsetsForm() {
+    let tagsetsForm = '';
+
+    return tagsetsForm
+}
+
+function createTranscriptionInterfaceForm(newData) {
+    // console.log(newData);
+    localStorage.setItem("activeprojectform", JSON.stringify(newData));
+    localStorage.setItem("regions", JSON.stringify(newData['transcriptionRegions']));
+    localStorage.setItem("transcriptionDetails", JSON.stringify([newData['transcriptionDetails']]));
+    localStorage.setItem("AudioFilePath", JSON.stringify(newData['AudioFilePath']));
+    var activeAudioFilename = newData["AudioFilePath"].split('/')[2];
+    if (activeAudioFilename === undefined) {
+      activeAudioFilename = '';
+    }
+    var inpt = '<span>Audio Filename: </span><span id="audioFilename">'+ activeAudioFilename +'</span>';
+    $(".defaultfield").append(inpt);
+    lastActiveId = newData["lastActiveId"]
+    inpt = '<input type="hidden" id="lastActiveId" name="lastActiveId" value="'+lastActiveId+'">';
+    $('.defaultfield').append(inpt);
+    inpt = ''
+    let transcription_form = '';
+    let translation_form = '';
+    let interlineargloss_form = '';
+    let tagsets_form = '';
+    for (let [key, value] of Object.entries(newData)){
+        // console.log(key, value);
+        eletype = value[0];
+        elevalue = value[1];
+        if (eletype === 'text') {
+            if (key === 'Audio Language') {
+                inpt += '<strong>Audio Language: </strong><strong id="'+key+'">'+elevalue+'</strong>';
+                    $('.lexemelang').append(inpt);
+                    inpt = '';
+            }
+        }
+        // else if (eletype === 'textarea') {
+        //     if (key === 'Transcription') {
+        //         transcription_form += createTranscriptionForm(key, elevalue, eletype, defaultdatavalue);
+        //     }
+        //     if (key === 'Translation') {
+        //         translation_form += createTranslationForm();
+        //     }
+        // }
+        // else if (eletype === 'interlineargloss') {
+        //     interlineargloss_form += createInterlinearglossForm();
+        // }
+        // else if (eletype === 'tagsets') {
+        //     tagsets_form += createTagsetsForm();
+        // }
+    }
+}
+
+//  transcription old
 var activeTranslationField = '<input type="checkbox" id="activeTranslationField" name="activeTranslationField" value="false">'+
                             '<label for="activeTranslationField">&nbsp; Add Translation</label><br></br>'+
                             '<div id="translationlangs" style="display: none;"></div>';
@@ -97,15 +188,17 @@ function getWordPos(morphemicSplitSentence, name) {
 // get the sentence enter by the user when green check button is clicked and 
 // create the boxes for words and morphemes
 function getSentence(value, name) {
+  // console.log(value, name);
   var morphemicSplitSentence = [];
-  if (value === '') {
-    value = document.getElementById("Transcription_" + name).value.trim();
-  }
+  value = document.getElementById("Transcription_" + name).value.trim();
+  // if (value === '') {
+  //   value = document.getElementById("Transcription_" + name).value.trim();
+  // }
   sentence = value.trim().split(' ');
   sentence_morphemic_break_full = document.getElementById("sentenceMorphemicBreak_" + name).value.trim(); // Find the text
   sentence_morphemic_break = document.getElementById("sentenceMorphemicBreak_" + name).value.trim().split(' '); // Find the text
 
-  replaceObj = new RegExp('[#-]', 'g')
+  let replaceObj = new RegExp('[#-]', 'g')
   if (value !== sentence_morphemic_break_full.replace(replaceObj, '')) {
     alert('Sentence do not match to: '+value)
     return false;
@@ -180,7 +273,7 @@ function getSentence(value, name) {
       morphemicSplitSentence.push(sentence_morphemic_break[i]);
     }
   }
-  console.log('morphemicSplitSentence', morphemicSplitSentence)
+  // console.log('morphemicSplitSentence', morphemicSplitSentence)
 
   document.getElementById("sentenceMorphemicBreak_"+name).readOnly = true;
   var checkBtn = '<button class="btn btn-warning" type="button" id="editSentenceField"'+
@@ -190,13 +283,59 @@ function getSentence(value, name) {
   getWordPos(morphemicSplitSentence, name)
 }  
 
+function morphemeFieldsSelect2(morphemicSplitSentence, name) {
+  let jsonFileNames = {
+    morphemicGloss: "select2_morphemic_gloss.json",
+    morphType: "select2_morpheme_type.json",
+    posCategories: "select2_pos_categories.json"
+  }
+  var morphemicGloss = "";
+  var morphType = "";
+  var posCategories = "";
+  $.ajax({
+    url: '/get_jsonfile_data',
+    type: 'GET',
+    data: {'data': JSON.stringify(jsonFileNames)},
+    contentType: "application/json; charset=utf-8", 
+    success: function(response){
+      morphemicGloss = response.jsonData.morphemicGloss;
+      morphType = response.jsonData.morphType;
+      posCategories = response.jsonData.posCategories;
+      // console.log(morphemicGloss);
+      // console.log('.morphemicgloss'+ name +(i+1))
+      for(let i = 0; i < morphemicSplitSentence.length; i++) {
+        $('.morphemicgloss'+ name +(i+1)).select2({
+          tags: true,
+          placeholder: 'Gloss',
+          data: morphemicGloss,
+          allowClear: true
+        });
+      
+        $('.lextype'+ name +(i+1)).select2({
+          tags: true,
+          placeholder: 'Morph Type',
+          data: morphType
+          // allowClear: true
+        });
+        
+        $('.pos'+ name +(i+1)).select2({
+          tags: true,
+          placeholder: 'POS',
+          data: posCategories
+          // allowClear: true
+        });
+      }
+    }
+  });
+}
+
 function morphemeFields(morphemicSplitSentence, name, morphemePOS) {
   var morphemeinput = '<div class="morphemefield_' + name + '">';
   morphemeinput += '<div class="row">'+
   '<div class="col-sm-3"><strong>Morphemes</strong></div>'+
   '<div class="col-sm-3"><strong>Gloss</strong></div>'+
   '<div class="col-sm-3"><strong>Morph Type</strong></div>'+
-  '<div class="col-sm-3"><strong>POS</strong></div>'+
+  '<div class="col-sm-3"><strong>POS</strong></div><br><br>'+
   '</div>';
   morphemeCount = morphemicSplitSentence.length
   for(let i = 0; i < morphemeCount; i++) {
@@ -204,12 +343,12 @@ function morphemeFields(morphemicSplitSentence, name, morphemePOS) {
     morphemeinput += '<div class="input-group">'+
                       '<input type="text" class="form-control" name="morph_morpheme_' + name + '_' +  (i+1) +'"'+
                       'placeholder="'+ morphemicSplitSentence[i] +'" value="'+morphemicSplitSentence[i]+'"'+
-                      'id="morphemeField' + name + (i+1) +'" readonly/>'+
+                      'id="morphemeField' + name + (i+1) +'" readonly  style="float:none;width: 200px;"/>'+
                       '<span class="input-group-btn" style="width:50px;"></span>'+
                       '<select class="morphemicgloss' + name + (i+1) +'" name="morph_gloss_' + name + '_' +  (i+1) +'"'+
-                      ' multiple="multiple" style="width: 210px"></select>'+
+                      ' multiple="multiple" style="width: 200px"></select>'+
                       '<span class="input-group-btn" style="width:50px;"></span>'+
-                      '<select class="lextype' + name + (i+1) +'" name="morph_lextype_' + name + '_' +  (i+1) +'" style="width: 210px">'+
+                      '<select class="lextype' + name + (i+1) +'" name="morph_lextype_' + name + '_' +  (i+1) +'"  onchange="autoSavetranscription(event,this)" style="width: 200px">'+
                       '<option value="affix" selected>affix</option></select>'+
                       '<span class="input-group-btn" style="width:50px;"></span></div><br>';
     }
@@ -217,14 +356,14 @@ function morphemeFields(morphemicSplitSentence, name, morphemePOS) {
     morphemeinput += '<div class="input-group">'+
                       '<input type="text" class="form-control" name="morph_morpheme_' + name + '_' +  (i+1) +'"'+
                       'placeholder="'+ morphemicSplitSentence[i] +'" value="'+ morphemicSplitSentence[i] +'"'+
-                      'id="morphemeField' + name + (i+1) +'" readonly/>'+
+                      'id="morphemeField' + name + (i+1) +'" readonly  style="float:none;width: 200px;"/>'+
                       '<span class="input-group-btn" style="width:50px;"></span>'+
                       '<input type="text" class="form-control" name="morph_gloss_' + name + '_' +  (i+1) +'"'+
-                      ' id="morphemicgloss' + name + (i+1) +'"/>'+
+                      ' id="morphemicgloss' + name + (i+1) +'" onkeyup="autoSavetranscription(event,this)" style="float:none;width: 200px;"/>'+
                       '<span class="input-group-btn" style="width:50px;"></span>'+
-                      '<select class="lextype' + name + (i+1) +'" name="morph_lextype_' + name + '_' +  (i+1) +'" style="width: 210px"></select>'+
+                      '<select class="lextype' + name + (i+1) +'" name="morph_lextype_' + name + '_' +  (i+1) +'"  onchange="autoSavetranscription(event,this)" style="width: 200px"></select>'+
                       '<span class="input-group-btn" style="width:50px;"></span>'+
-                      '<select class="pos' + name + (i+1) +'" name="morph_pos_' + name + '_' +  (i+1) +'" style="width: 210px">'+
+                      '<select class="pos' + name + (i+1) +'" name="morph_pos_' + name + '_' +  (i+1) +'" style="width: 200px">'+
                       '<option value="'+ morphemePOS[i][1] +'" selected>'+ morphemePOS[i][1] +'</option>'+
                       '</select></div><br>';
 
@@ -233,31 +372,8 @@ function morphemeFields(morphemicSplitSentence, name, morphemePOS) {
   morphemeinput += ' <input type="text" id="morphcount" name="morphcount'+ name +'" value="'+ morphemeCount +'" hidden>';
   $(".morphemefield_"+name).remove();
   $("#morphemicDetail_"+name).append(morphemeinput);
-  for(let i = 0; i < morphemicSplitSentence.length; i++) {
-  $('.morphemicgloss'+ name +(i+1)).select2({
-  tags: true,
-  placeholder: 'Gloss',
-  data: morphemicGloss,
-  allowClear: true
-  });
-
-  $('.lextype'+ name +(i+1)).select2({
-  tags: true,
-  placeholder: 'Morph Type',
-  data: morphType
-  // allowClear: true
-  });
-
-  $('.pos'+ name +(i+1)).select2({
-  tags: true,
-  placeholder: 'POS',
-  data: posCategories
-  // allowClear: true
-  });
-
-  }
+  morphemeFieldsSelect2(morphemicSplitSentence, name);
 }
-
 
 function editMorphemicBreakSentence(transcriptionvalue, transcriptionkey) {
   document.getElementById("sentenceMorphemicBreak_"+transcriptionkey).readOnly = false;
@@ -281,7 +397,7 @@ $("#save").click(function() {
   .done(function( data ) {
     // console.log(data.savedTranscription);
     if (!data.savedTranscription) {
-      alert("Unable to save the transcription as audio seem to be deleted or revoked access by one of the shared users. Showing you the next audio in the list.")
+      alert("Unable to save the transcription as audio seem to be deleted or revoked access by one of the shared user. Showing you the next audio in the list.")
       window.location.reload();
     }
     else {
@@ -292,7 +408,7 @@ $("#save").click(function() {
 });
 
 function myFunction(newData) {
-  console.log(newData);
+  // console.log(newData);
   localStorage.setItem("activeprojectform", JSON.stringify(newData));
   localStorage.setItem("regions", JSON.stringify(newData['transcriptionRegions']));
   var activeAudioFilename = newData["AudioFilePath"].split('/')[2];
@@ -308,11 +424,7 @@ function myFunction(newData) {
   localStorage.setItem("transcriptionDetails", JSON.stringify([newData['transcriptionDetails']]));
   localStorage.setItem("AudioFilePath", JSON.stringify(newData['AudioFilePath']));
   for (let [key, value] of Object.entries(newData)){
-    if (key === 'Sentence Language') {
-      // inpt += '<div class="col"><div class="form-group">'+
-      //             '<label for="'+key+'">Audio Language:</label>'+
-      //             '<input type="text" class="form-control" id="'+key+'" name="'+key+'" value="'+newData[key]+'" readonly>'+
-      //             '</div></div>'; 
+    if (key === 'Audio Language') {
       inpt += '<strong>Audio Language: </strong><strong id="'+key+'">'+newData[key]+'</strong>';
           $('.lexemelang').append(inpt);
           inpt = '';
@@ -427,7 +539,7 @@ function loadUnAnnoText() {
 
 function loadAnnoText() {
   newAudioFilename = document.getElementById('allanno').value;
-  console.log(newAudioFilename)
+  // console.log(newAudioFilename)
   // loadRandomAudio(newAudioFilename)
   $.ajax({
       url: '/loadunannotext',
@@ -444,7 +556,7 @@ function loadAnnoText() {
 function loadUserTranscription() {
   var username = document.getElementById('transcriptionbydropdown').value;
   var lastActiveId = document.getElementById("lastActiveId").value;
-  console.log('Load transcription', username, lastActiveId)
+  // console.log('Load transcription', username, lastActiveId)
   // loadRandomAudio(newAudioFilename)
   $.ajax({
       url: '/loadtranscriptionbyanyuser',
@@ -505,13 +617,13 @@ placeholder: 'Select preset value or enter a custom value',
 $("#audiofile").change(function() {
     let zipFileElement = document.getElementById('audiofile');
     zipFileName = zipFileElement.files[0];
-    console.log(zipFileName);
+    // console.log(zipFileName);
     zipFileSize = zipFileName.size
-    console.log(typeof zipFileSize, Math.round((zipFileSize/1024)));
+    // console.log(typeof zipFileSize, Math.round((zipFileSize/1024)));
     if (! (zipFileSize <= 200000000)) {
       
       const size = (zipFileSize / 1000 / 1000).toFixed(2);
-      console.log(zipFileSize, size);
+      // console.log(zipFileSize, size);
       alert('Please upload file upto 200 MB. This file size is: ' + size + " MB");
       window.location.reload(true);
     }
@@ -542,7 +654,7 @@ $("#deleteaudio").click(function() {
     deleteAudioFLAG = confirm("Delete This Audio!!!");
   }
   if(deleteAudioFLAG) {
-    console.log(deleteAudioFLAG, lastActiveId);
+    // console.log(deleteAudioFLAG, lastActiveId);
     $.post( "/deleteaudio", {
       a: JSON.stringify(lastActiveId)
     })
