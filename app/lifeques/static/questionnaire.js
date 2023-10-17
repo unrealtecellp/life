@@ -283,6 +283,7 @@ function createSelectElement(key, elevalue, type, quesdatavalue) {
 }
 
 function createquesform(quesprojectform) {
+  console.log(quesprojectform);
   // quesprojectform = questionaireprojectform;
   localStorage.setItem("quesactiveprojectform", JSON.stringify(quesprojectform));
   // console.log(newData);

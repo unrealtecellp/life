@@ -18,6 +18,8 @@ from app.lifeques.lifeques import lifeques
 app.register_blueprint(lifeques, url_prefix='/lifeques')
 
 from app.lifedata.lifedata import lifedata
+from app.lifedata.transcription.transcription import transcription
+lifedata.register_blueprint(transcription, url_prefix='/transcription')
 app.register_blueprint(lifedata, url_prefix='/lifedata')
 
 from app.lifemodels.lifemodelsroutes import lifemodels
