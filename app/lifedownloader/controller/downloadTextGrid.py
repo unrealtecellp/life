@@ -17,6 +17,7 @@ from app import mongo
 from flask import flash
 import re
 from collections import defaultdict
+from collections import OrderedDict
 
 logger = life_logging.get_logger()
 
@@ -679,6 +680,13 @@ def get_audio_with_duration(audio_dir, audio_id, audio_filename):
     return overall_xmax
 
 
+# def get_adjusted_xmin(i, current_xmin, all_boundary_ids, threshold=0.001):
+#     if i > 0:
+#         previous_boundary_id = all_boundary_ids[i-1]
+#         logger.debug('%s Previous boundary id %s', i-1, previous_boundary_id)
+#     return current_xmin
+
+
 def get_boundaries_tiers(activeprojectname, projectelements, text_grid, offset=0.0):
     xmin = []
     xmax = []
@@ -686,20 +694,28 @@ def get_boundaries_tiers(activeprojectname, projectelements, text_grid, offset=0
 
     for tier in text_grid:
         # print ('Tier', tier)
+        logger.debug('Tier %s', tier)
         if len(tier) > 0:
             tier_name = tier
-            all_boundary_ids = text_grid[tier]
-            # print('All boundary IDs', all_boundary_ids)
-            for cur_boundary_id in all_boundary_ids:
-                # print ('Boundary ID', cur_boundary_id)
+            all_boundary_ids = OrderedDict(text_grid[tier])
+            logger.debug('All boundary IDs %s %s', all_boundary_ids,
+                         type(all_boundary_ids))
+            for i, cur_boundary_id in enumerate(all_boundary_ids):
+                logger.debug('%\tCurrent Boundary ID %s', i, cur_boundary_id)
+
                 boundary_element = all_boundary_ids[cur_boundary_id]
-                # print('Boundary element', boundary_element)
+                logger.debug('Boundary element %s', boundary_element)
                 for cur_boundary_element in boundary_element:
-                    # print ('Boundary element', cur_boundary_element)
+                    logger.debug('Current Boundary element',
+                                 cur_boundary_element)
                     if cur_boundary_element == 'start':
-                        xmin.append(boundary_element['start']+offset)
+                        current_xmin = boundary_element['start']
+                        # current_xmin = get_adjusted_xmin(
+                        #     i, current_xmin, all_boundary_ids)
+                        xmin.append(current_xmin+offset)
                     elif cur_boundary_element == 'end':
-                        xmax.append(boundary_element['end']+offset)
+                        current_xmax = boundary_element['end']
+                        xmax.append(current_xmax+offset)
                     else:
                         # If the element is in projectelements only then
                         # its tiers are being fetched
@@ -748,7 +764,7 @@ def get_boundaries_tiers(activeprojectname, projectelements, text_grid, offset=0
     return xmin, xmax, tiers
 
 
-def correct_start_end_times_and_fill_gaps(textgrid, empty_string='', merge_same_intervals=False):
+def correct_start_end_times_and_fill_gaps(textgrid, empty_string='', merge_same_intervals=False, joined_interval_threshold=0.001, delete_flag='@@##DELETE ME##@@'):
     '''Correct the start/end times of all tiers and fill gaps.
     Returns a copy of a textgrid, where empty gaps between intervals
     are filled with empty intervals and where start and end times are
@@ -763,6 +779,29 @@ def correct_start_end_times_and_fill_gaps(textgrid, empty_string='', merge_same_
             if merge_same_intervals:
                 tier_corrected = tier_corrected.get_copy_with_same_intervals_merged()
 
+            for i in range(1, len(tier_corrected.intervals) - 1):
+                current_start_time = tier_corrected.intervals[i].start_time
+                current_end_time = tier_corrected.intervals[i].end_time
+                current_interval_annotation = tier_corrected.get_annotation_by_start_time(
+                    current_start_time)
+                current_interval_text = current_interval_annotation.text
+                logger.debug('Current interval text %s \t Empty String %s',
+                             current_interval_text, empty_string)
+                if current_interval_text == empty_string:
+                    interval_duration = current_end_time - \
+                        current_end_time
+                    if interval_duration <= joined_interval_threshold:
+                        tier_corrected.intervals[i -
+                                                 1].end_time = current_end_time
+                        # tier_corrected.intervals[i +
+                        #                          1].start_time = tier_corrected.intervals[i].end_time
+                        tier_corrected.intervals[i].text = delete_flag
+                        # tier_corrected.delete_annotation_by_start_time(
+                        #     current_start_time)
+
+            tier_corrected.delete_annotations_with_text(delete_flag)
+
             position = textgrid_copy.tiers.index(tier)
             textgrid_copy.tiers[position] = tier_corrected
+
     return textgrid_copy
