@@ -1,3 +1,4 @@
+// 1c10c4e2fe71e0f346311f143ac085b119561e67
 function createSelectElement(elevalue, activeprojectname) {
     // console.log(activeprojectname)
     var qform = '';
@@ -60,15 +61,44 @@ $("#idhomevieweditbtn").click(function() {
         type : 'GET',
         url : '/projecttype',
         success: function(response){
-            projectType = response.projectType
+            projectType = response.projectType;
+            shareMode = response.shareMode;
+            activeprojectform = response.activeprojectform;
             windowHref = window.location.href
             pathname = window.location.pathname
             lastIndexOfPathname = windowHref.lastIndexOf(pathname)
             // console.log(projectType,);
+            console.log(shareMode);
             if (projectType === 'transcriptions') {
-                window.location.href = windowHref.slice(0, lastIndexOfPathname) +  
-                                        windowHref.slice(lastIndexOfPathname).replace(pathname, "/enternewsentences");
-                
+                console.log(activeprojectform);
+                if ('Sentence Language' in activeprojectform) {
+                    if (shareMode === 0) {
+                        window.location.href = windowHref.slice(0, lastIndexOfPathname) +  
+                        windowHref.slice(lastIndexOfPathname).replace(pathname, "/audiobrowse");
+                    }
+                    else if (shareMode >= 2) {
+                        window.location.href = windowHref.slice(0, lastIndexOfPathname) +  
+                        windowHref.slice(lastIndexOfPathname).replace(pathname, "/enternewsentences");
+                    }
+                }
+                else {
+                    if (shareMode === 0) {
+                        window.location.href = windowHref.slice(0, lastIndexOfPathname) +  
+                        windowHref.slice(lastIndexOfPathname).replace(pathname, "/lifedata/transcription/audiobrowse");
+                    }
+                    else if (shareMode >= 2) {
+                        window.location.href = windowHref.slice(0, lastIndexOfPathname) +  
+                        windowHref.slice(lastIndexOfPathname).replace(pathname, "/lifedata/transcription/home");
+                    }
+                }
+                // if (shareMode === 0) {
+                //     window.location.href = windowHref.slice(0, lastIndexOfPathname) +  
+                //     windowHref.slice(lastIndexOfPathname).replace(pathname, "/lifedata/transcription/audiobrowse");
+                // }
+                // else if (shareMode >= 2) {
+                //     window.location.href = windowHref.slice(0, lastIndexOfPathname) +  
+                //     windowHref.slice(lastIndexOfPathname).replace(pathname, "/lifedata/transcription/home");
+                // }
             }
             else if (projectType === 'questionnaires') {
                 window.location.href = windowHref.slice(0, lastIndexOfPathname) +  

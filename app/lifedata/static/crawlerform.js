@@ -97,7 +97,7 @@ var languages = [
 var crawlerLanguageField = 1;
 
 $("#datacrawlbtn").click(function() {
-    console.log('crawler')
+    // console.log('crawler')
     var x = document.getElementById("crawldataform");
     var y = document.getElementById("dataform");;
     var z = '';
@@ -169,7 +169,7 @@ function crawlDataForm() {
     sourceinpt += subsourceinpt;
     project_info += sourceinpt;
     langScript = createCrawlerFormLangScript();
-    console.log(langScript);
+    // console.log(langScript);
     project_info += langScript;
     project_info += '<br>'+
         '<input class="btn btn-lg btn-primary create" id="crawldataformsubmit" type="submit" value="Create Form">'+
@@ -181,7 +181,7 @@ function crawlDataForm() {
     $.getJSON('/lifedata/datasubsource', {
     }, function(data) {
         dataSubSource = data.dataSubSource;
-        console.log(dataSubSource)
+        // console.log(dataSubSource);
         $('.datasubsourceclass').select2({
             data: dataSubSource
         });
