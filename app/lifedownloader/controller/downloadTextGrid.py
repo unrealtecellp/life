@@ -694,20 +694,20 @@ def get_boundaries_tiers(activeprojectname, projectelements, text_grid, offset=0
 
     for tier in text_grid:
         # print ('Tier', tier)
-        logger.debug('Tier %s', tier)
+        # logger.debug('Tier %s', tier)
         if len(tier) > 0:
             tier_name = tier
             all_boundary_ids = OrderedDict(text_grid[tier])
-            logger.debug('All boundary IDs %s %s', all_boundary_ids,
-                         type(all_boundary_ids))
+            # logger.debug('All boundary IDs %s %s', all_boundary_ids,
+            #              type(all_boundary_ids))
             for i, cur_boundary_id in enumerate(all_boundary_ids):
-                logger.debug('%\tCurrent Boundary ID %s', i, cur_boundary_id)
+                # logger.debug('%s \tCurrent Boundary ID %s', i, cur_boundary_id)
 
                 boundary_element = all_boundary_ids[cur_boundary_id]
-                logger.debug('Boundary element %s', boundary_element)
+                # logger.debug('Boundary element %s', boundary_element)
                 for cur_boundary_element in boundary_element:
-                    logger.debug('Current Boundary element',
-                                 cur_boundary_element)
+                    # logger.debug('Current Boundary element %s',
+                    #              cur_boundary_element)
                     if cur_boundary_element == 'start':
                         current_xmin = boundary_element['start']
                         # current_xmin = get_adjusted_xmin(
@@ -790,8 +790,8 @@ def correct_start_end_times_and_fill_gaps(textgrid, empty_string='', merge_same_
                 if current_interval_text == empty_string:
                     interval_duration = round(
                         current_end_time - current_start_time, 3)
-                    logger.debug('Current Interval Duration %s \t Threshold %s',
-                                 interval_duration, joined_interval_threshold)
+                    # logger.debug('Current Interval Duration %s \t Threshold %s',
+                    #              interval_duration, joined_interval_threshold)
                     if interval_duration <= joined_interval_threshold:
                         tier_corrected.intervals[i -
                                                  1].end_time = current_end_time
