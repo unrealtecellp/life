@@ -788,8 +788,10 @@ def correct_start_end_times_and_fill_gaps(textgrid, empty_string='', merge_same_
                 logger.debug('Current interval text %s \t Empty String %s',
                              current_interval_text, empty_string)
                 if current_interval_text == empty_string:
-                    interval_duration = current_end_time - \
-                        current_end_time
+                    interval_duration = round(
+                        current_end_time - current_start_time, 3)
+                    logger.debug('Current Interval Duration %s \t Threshold %s',
+                                 interval_duration, joined_interval_threshold)
                     if interval_duration <= joined_interval_threshold:
                         tier_corrected.intervals[i -
                                                  1].end_time = current_end_time
