@@ -1,12 +1,12 @@
 quesId	Q_Id	prompt.Domain	prompt.Elicitation Method	prompt.content.English-Latin.text.000000.startindex	prompt.content.English-Latin.text.000000.endindex	prompt.content.English-Latin.text.000000.textspan.Latin	prompt.content.Hindi-Devanagari.text.000000.startindex	prompt.content.Hindi-Devanagari.text.000000.endindex	prompt.content.Hindi-Devanagari.text.000000.textspan.Devanagari
-	ED-01	[Education]	Narration			How do your community view people who attend school and who does not?			आपका समुदाय उन लोगों को कैसे देखता है जो स्कूल जाते हैं और जो नहीं जाते?
-	ED-02	[Education]	Narration			Can you tell us something about how formal education brought changes into your community?			क्या आप हमें इस बारे में कुछ बता सकते हैं कि औपचारिक शिक्षा ने आपके समुदाय में कैसे बदलाव लाए?
-	ED-03	[Education]	Narration			Can you tell us about the changes you witnessed in the educational institutions in your area as you grew up?			क्या आप हमें उन बदलाबों के बारे में बता सकते हैं जो आपने बड़े होने पर शैक्षणिक संस्थानों में देखे थे?
-	ED-04	[Education]	Narration			What are the state of schools and colleges when you were young and how are they now? 			जब आप छोटे थे तो स्कूलों और कॉलेजों की क्या स्थिति थी और अब वे कैसे हैं?
-	ED-05	[Education]	Narration			Can you tell us something about the formal/indigenous education system of your state/community?			क्या आप हमें अपने राज्य या समुदाय की औपचारिक या स्वदेशी शिक्षा प्रणाली के बारे में कुछ बता सकते हैं?
-	ED-06	[Education]	Narration			How is your formal/indigenous education system valuable to the present society?			आपकी औपचारिक या स्वदेशी शिक्षा प्रणाली वर्तमान समाज के लिए किस प्रकार से मूल्यवान है?
-	ED-07	[Education]	Narration			How do we evaluate your formal/indigenous education system?			हम आपकी औपचारिक या स्वदेशी शिक्षा प्रणाली का मूल्यांकन कैसे करते हैं?
-	ED-08	[Education]	Narration			How should we improve our education system?			हमें अपनी शिक्षा प्रणाली में सुधार कैसे करना चाहिए?
+	ED-01	[Education]	Narration			rhase hiko te zü ce, daru bizü sü yo me? me rhase vo vekuto la udo kükre kro-o ba?			rhase hiko te zü ce, daru bizü sü yo me? me rhase vo vekuto la udo kükre kro-o ba?
+	ED-02	[Education]	Narration			dipü bi non khü lü mha te küto la jü pü vori yo?			dipü bi non khü lü mha te küto la jü pü vori yo?
+	ED-03	[Education]	Narration			Türü mo zü ce dipü bi no jü pu vori no n khü lo mütsü süyo?			Türü mo zü ce dipü bi no jü pu vori no n khü lo mütsü süyo?
+	ED-04	[Education]	Narration			sübo hiko te zü ce, daru bizü sü yo me? me sübo vo vekuto la udo kükre kro-o ba?			sübo hiko te zü ce, daru bizü sü yo me? me sübo vo vekuto la udo kükre kro-o ba?
+	ED-05	[Education]	Narration			zho no pü mhathi-e küve pari küto la pütü didu-o yiyo?			zho no pü mhathi-e küve pari küto la pütü didu-o yiyo?
+	ED-06	[Education]	Narration			dipü bi non khü lü mha te küto la jü pü vori yo?			dipü bi non khü lü mha te küto la jü pü vori yo?
+	ED-07	[Education]	Narration			manyo(technology) hiko di pu bi no süyo?			manyo(technology) hiko di pu bi no süyo?
+	ED-08	[Education]	Narration			mhanyo süko sü no di pu bino n thüma ko la matho thi reri ku wa?			mhanyo süko sü no di pu bino n thüma ko la matho thi reri ku wa?
 	ED-09	[Education]	Narration			How do you passed indigenous education system to the next generation?			आपने अगली पीढ़ी को स्वदेशी शिक्षा प्रणाली कैसे दी?
 	ED-10	[Education]	Narration			How do you inspired by educated / achievers of your community?			आप अपने समुदाय के शिक्षित या विजेताओं से कैसे प्रेरित होते हैं?
 	ED-11	[Education]	Narration			How does education system promote peace and harmony in your community?			शिक्षा प्रणाली आपके समुदाय में शांति और सद्भाव को कैसे बढ़ावा देती है?

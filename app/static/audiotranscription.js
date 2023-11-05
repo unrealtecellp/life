@@ -6,6 +6,7 @@ var activeprojectform = JSON.parse(localStorage.getItem('activeprojectform'));
 var audiowaveformData;
 var boundaryCount;
 var lstUpdatedBy;
+var currentCursorTime = 0;
 
 try {
     audiowaveformData = activeprojectform.audioMetadata.audiowaveform.data;
@@ -32,7 +33,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Init wavesurfer
     wavesurfer = WaveSurfer.create({
         container: '#waveform',
-        height: 150,
+        height: 120,
         pixelRatio: 1,
         scrollParent: true,
         normalize: true,
@@ -94,7 +95,8 @@ document.addEventListener('DOMContentLoaded', function () {
             loadRegions(JSON.parse(localStorage.regions));
         }
     });
-    wavesurfer.on('region-click', function (region, e) {
+    wavesurfer.on('region-dblclick', function (region, e) {
+        updateCurrentCursorTime()
         // console.log(wavesurfer);
         // console.log(region);
         e.stopPropagation();
@@ -108,7 +110,11 @@ document.addEventListener('DOMContentLoaded', function () {
     // wavesurfer.on('region-removed', saveRegions);
     // wavesurfer.on('region-updated', saveRegions);
     wavesurfer.on('region-update-end', saveRegions);
-    wavesurfer.on('region-in', showNote);
+    wavesurfer.on('region-update-end', function (region) {
+        preventOverlapBoundaries(region);
+    });
+    wavesurfer.on('region-update-end', editAnnotation);
+    // wavesurfer.on('region-in', showNote);
 
     wavesurfer.on('region-play', function (region) {
         togglePlayPause(1);
@@ -120,13 +126,18 @@ document.addEventListener('DOMContentLoaded', function () {
     wavesurfer.on('finish', function () {
         // $(".audioplaypause").addClass('glyphicon-play').removeClass('glyphicon-pause');
         togglePlayPause(0);
+        togglePlayPauseBoundary(0);
+        togglePlayPauseBoundaryStart(0);
     });
 
     document.querySelector(
         '[data-action="delete-region"]'
     ).addEventListener('click', function () {
+        // deleteBoundary();
         let form = document.forms.edit;
+        // console.log(form.dataset, Object.keys(form.dataset), form);
         let regionId = form.dataset.region;
+        console.log(regionId);
         if (regionId) {
             let region = wavesurfer.regions.list[regionId];
             wavesurfer.regions.list[regionId].remove();
@@ -134,47 +145,132 @@ document.addEventListener('DOMContentLoaded', function () {
             form.reset();
             transcriptionFormDisplay(form);
             wavesurfer.pause();
-            startId = region.start.toString().slice(0, 4).replace('.', '');
-            if (startId === '0') {
-                startId = '000';
-            }
-            endId = region.end.toString().slice(0, 4).replace('.', '');
-            if (endId === '0') {
-                endId = '000';
-            }
-            // console.log(startId, endId)
+            console.log("Region", region)
+            
+            startId = get_boundary_id_from_number(parseFloat(region.start).toFixed(2), 5, "0"); //5 is the length of the returned string and 0 is the prefix
+            endId = get_boundary_id_from_number(parseFloat(region.end).toFixed(2), 5, "0");
+
+            console.log('New', startId, endId)
             rid = startId.concat(endId);
-            localStorageRegions = JSON.parse(localStorage.regions)
+
+            //Code retained for backward compatibility
+            oldStartId = region.start.toString().slice(0, 4).replace('.', '');
+            if (oldStartId === '0') {
+                oldStartId = '000';
+            }
+            oldEndId = region.end.toString().slice(0, 4).replace('.', '');
+            if (oldEndId === '0') {
+                oldEndId = '000';
+            }
+            oldRid = oldStartId.concat(oldEndId);
+            console.log('Old', oldStartId, oldEndId)
+
+            localStorageRegions = JSON.parse(localStorage.regions);
+            console.log("Local storage region id", rid, oldRid, localStorageRegions);
+            
             for (let [key, value] of Object.entries(localStorageRegions)) {
-                // console.log(key, value)
-                if (localStorageRegions[key]['boundaryID'] === rid) {
+                console.log("Key, value", key, value)
+                if ((key in localStorageRegions) &&
+                    (localStorageRegions[key]['boundaryID'] === rid || localStorageRegions[key]['boundaryID'] === oldRid)) {
                     localStorageRegions.splice(key, 1)
-                    // console.log(localStorageRegions)
+                    console.log(rid, oldRid, localStorageRegions)
                     localStorage.setItem("regions", JSON.stringify(localStorageRegions));
                 }
             }
         }
     });
+
+    document.querySelector(
+        '[data-action="delete-region-all"]'
+    ).addEventListener('click', function () {
+        confirm_msg = confirm("Delete all boundaries?");
+        // alert(confirm_msg);
+        if (confirm_msg) {
+            wavesurfer.clearRegions();
+            // alert(wavesurfer.regions.list);
+            localStorage.setItem("regions", "[]");
+        }
+    });
 });
+
+function get_boundary_id_from_number(number, length, prefix_string) {
+    return number.toString().replace('.', '').padStart(length, prefix_string);
+}
+
+function deleteBoundary(regionId) {
+    // console.log('deleteBoundary');
+    let form = document.forms.edit;
+    // let regionId = form.dataset.region;
+    // console.log(form.dataset, Object.keys(form.dataset), form);
+    if (regionId) {
+        let region = wavesurfer.regions.list[regionId];
+        wavesurfer.regions.list[regionId].remove();
+
+        form.reset();
+        // transcriptionFormDisplay(form);
+        wavesurfer.pause();
+        startId = get_boundary_id_from_number(parseFloat(region.start).toFixed(2), 5, "0"); //5 is the length of the returned string and 0 is the prefix
+        endId = get_boundary_id_from_number(parseFloat(region.end).toFixed(2), 5, "0");
+
+        // startId = region.start.toString().slice(0, 4).replace('.', '');
+        // if (startId === '0') {
+        //     startId = '000';
+        // }
+        // endId = region.end.toString().slice(0, 4).replace('.', '');
+        // if (endId === '0') {
+        //     endId = '000';
+        // }
+        // console.log(startId, endId)
+        rid = startId.concat(endId);
+        localStorageRegions = JSON.parse(localStorage.regions);
+        for (let [key, value] of Object.entries(localStorageRegions)) {
+            // console.log(key, value)
+            if (key in localStorageRegions &&
+                localStorageRegions[key]['boundaryID'] === rid) {
+                localStorageRegions.splice(key, 1)
+                // console.log(localStorageRegions)
+                localStorage.setItem("regions", JSON.stringify(localStorageRegions));
+            }
+        }
+    }
+}
+
+function updateCurrentCursorTime(from='') {
+    if (from == 'edit') {
+        wavesurfer.on('seek', function (position) {
+            currentCursorTime = position * wavesurfer.getDuration();
+            // console.log(currentCursorTime)
+        });
+    }
+    else {
+        currentCursorTime = wavesurfer.getCurrentTime();
+    }
+}
 
 /**
  * Save annotations to localStorage.
  */
 function saveRegions(region) {
+    // console.log(wavesurfer.regions.list);
     // region.color =  boundaryColor(255, 0, 0, 0.1),
     console.log('WHERE')
     localStorage.regions = JSON.stringify(
         Object.keys(wavesurfer.regions.list).map(function (id) {
             let region = wavesurfer.regions.list[id];
             // console.log(region)
-            startId = region.start.toString().slice(0, 4).replace('.', '');
-            if (startId === '0') {
-                startId = '000';
-            }
-            endId = region.end.toString().slice(0, 4).replace('.', '');
-            if (endId === '0') {
-                endId = '000';
-            }
+            region.drag = false;
+
+            startId = get_boundary_id_from_number(parseFloat(region.start).toFixed(2), 5, "0"); //5 is the length of the returned string and 0 is the prefix
+            endId = get_boundary_id_from_number(parseFloat(region.end).toFixed(2), 5, "0");
+
+            // startId = region.start.toString().slice(0, 4).replace('.', '');
+            // if (startId === '0') {
+            //     startId = '000';
+            // }
+            // endId = region.end.toString().slice(0, 4).replace('.', '');
+            // if (endId === '0') {
+            //     endId = '000';
+            // }
             // console.log(startId, endId)
             rid = startId.concat(endId);
             // rid = region.start.toString().slice(0, 4).replace('.', '').concat(region.end.toString().slice(0, 4).replace('.', ''));
@@ -187,7 +283,7 @@ function saveRegions(region) {
                 start: region.start,
                 end: region.end,
                 attributes: region.attributes,
-                data: region.data
+                data: region.data,
                 // comment: region.comment
                 // sentence: updateSentenceDetails(rid, sentence, region)
             };
@@ -202,6 +298,7 @@ function loadRegions(regions) {
     // console.log(regions)
     regions.forEach(function (region) {
         region.color = boundaryColor(0, 255, 0, 0.1);
+        region.drag = false;
         // console.log(region)
         wavesurfer.addRegion(region);
     });
@@ -295,6 +392,7 @@ function randomColor(alpha) {
  * Edit annotation for a region.
  */
 function editAnnotation(region) {
+    updateCurrentCursorTime(from="edit");
     // wavesurfer.playPause();
     region.color = boundaryColor(255, 0, 0, 0.1);
     // console.log('editAnnotation(region)')
@@ -308,14 +406,17 @@ function editAnnotation(region) {
     var sentence = getActiveRegionSentence(region);
 
     // console.log("Active region sentence", sentence)
-    startId = region.start.toString().slice(0, 4).replace('.', '');
-    if (startId === '0') {
-        startId = '000';
-    }
-    endId = region.end.toString().slice(0, 4).replace('.', '');
-    if (endId === '0') {
-        endId = '000';
-    }
+    startId = get_boundary_id_from_number(parseFloat(region.start).toFixed(2), 5, "0"); //5 is the length of the returned string and 0 is the prefix
+    endId = get_boundary_id_from_number(parseFloat(region.end).toFixed(2), 5, "0");
+
+    // startId = region.start.toString().slice(0, 4).replace('.', '');
+    // if (startId === '0') {
+    //     startId = '000';
+    // }
+    // endId = region.end.toString().slice(0, 4).replace('.', '');
+    // if (endId === '0') {
+    //     endId = '000';
+    // }
     // console.log(startId, endId)
     rid = startId.concat(endId);
     // rid = region.start.toString().slice(0, 4).replace('.', '').concat(region.end.toString().slice(0, 4).replace('.', ''));
@@ -398,14 +499,18 @@ function saveBoundaryData(region, form) {
     for (i = 0; i < regions.length; i++) {
         if (regions[i]['start'] === region.start &&
             regions[i]['end'] === region.end) {
-            startId = region.start.toString().slice(0, 4).replace('.', '');
-            if (startId === '0') {
-                startId = '000';
-            }
-            endId = region.end.toString().slice(0, 4).replace('.', '');
-            if (endId === '0') {
-                endId = '000';
-            }
+            
+            startId = get_boundary_id_from_number(parseFloat(region.start).toFixed(2), 5, "0"); //5 is the length of the returned string and 0 is the prefix
+            endId = get_boundary_id_from_number(parseFloat(region.end).toFixed(2), 5, "0");
+
+            // startId = region.start.toString().slice(0, 4).replace('.', '');
+            // if (startId === '0') {
+            //     startId = '000';
+            // }
+            // endId = region.end.toString().slice(0, 4).replace('.', '');
+            // if (endId === '0') {
+            //     endId = '000';
+            // }
             rid = startId.concat(endId);
             sentence = regions[i]['data']['sentence']
             sentence = updateSentenceDetailsOnSaveBoundary(rid, sentence, region, form)
@@ -426,14 +531,10 @@ function saveBoundaryData(region, form) {
  * Display annotation.
  */
 function showNote(region) {
-    // console.log(showNote.el);
-    // if (!showNote.el) {
-    //     showNote.el = document.querySelector('#subtitle');
-    // }
-    // showNote.el.textContent = region.data.note || '–';
     let form = document.forms.edit;
-    // console.log(form[2].id, form[2].value);
-    let firstTranscriptionFieldValue = form[2].value;
+    // console.log(form);
+    // console.log(form[0].id, form[0].value);
+    let firstTranscriptionFieldValue = form[0].value;
     let subtitle = document.getElementById('subtitle');
     // console.log(subtitle, firstTranscriptionFieldValue);
     if (firstTranscriptionFieldValue !== '') {
@@ -464,7 +565,7 @@ function updateSentenceDetailsOnSaveBoundary(boundaryID, sentence, region, form)
     // console.log(document.forms.edit.elements);
 
     if ("comment-box" in form) {
-        console.log("Comment box found in form")
+        // console.log("Comment box found in form")
         key = "comment";
         if (key in sentence[boundaryID]) {
             eleName = 'comment-box'
@@ -1186,8 +1287,8 @@ function createSentenceForm(formElement, boundaryID) {
         }
 
 
-        console.log("Comment in create", commentVal)
-        console.log(formElement)
+        // console.log("Comment in create", commentVal)
+        // console.log(formElement)
         inpt += '<div class="form-group">';
         inpt += '<label for="comment-box-id">Comments:</label>'
         inpt += '<textarea class="form-control comment-box" id="comment-box-id" ' +
@@ -1470,7 +1571,33 @@ $("#playPauseAudio").click(function () {
     }
 });
 
-$("#playPauseBoundary").click(function () {
+
+function playPauseBoundaryStart() {
+    let form = document.forms.edit;
+    // console.log(form[2].id);
+    let regionId = form.dataset.region;
+    // console.log(regionId);
+    if (regionId) {
+        let region = wavesurfer.regions.list[regionId];
+        startTime = region.start
+        endTime = region.end
+        if (wavesurfer.isPlaying()) {
+            wavesurfer.pause();
+            togglePlayPauseBoundaryStart(0);
+            // togglePlayPause(0);
+        }
+        else {
+            wavesurfer.play(startTime, endTime);
+            // togglePlayPause(1);
+            togglePlayPauseBoundaryStart(1);
+        }
+    }
+}
+$("#playPauseBoundaryStart").click(function () {
+    playPauseBoundaryStart();
+});
+
+function playPauseBoundary() {  
     let form = document.forms.edit;
     // console.log(form[2].id);
     let regionId = form.dataset.region;
@@ -1478,27 +1605,34 @@ $("#playPauseBoundary").click(function () {
         let region = wavesurfer.regions.list[regionId];
         startTime = region.start
         endTime = region.end
-        currentTime = wavesurfer.getCurrentTime();
-        console.log(startTime, endTime, currentTime);
+        // currentCursorTime = wavesurfer.getCurrentTime();
+        // console.log(startTime, endTime, currentCursorTime);
     }
-    if (currentTime !== startTime) {
+    if (currentCursorTime !== startTime) {
+        // console.log(startTime, endTime, currentCursorTime);
         if (wavesurfer.isPlaying()) {
+            console.log(startTime, endTime, currentCursorTime);
             wavesurfer.pause();
-            togglePlayPause(0);
+            // togglePlayPause(0);
+            togglePlayPauseBoundary(0);
         }
-        else if (currentTime === endTime) {
-            console.log(startTime, endTime, currentTime);
-            wavesurfer.play(startTime, endTime);
-            togglePlayPause(1);
-        }
+        // else if (Math.trunc(currentCursorTime) === Math.trunc(endTime)) {
+        //     console.log(startTime, endTime, currentCursorTime);
+        //     wavesurfer.play(startTime, endTime);
+        //     togglePlayPause(1);
+        // }
         else {
-            wavesurfer.play(currentTime, endTime);
-            togglePlayPause(1);
+            // console.log(startTime, endTime, currentCursorTime);
+            wavesurfer.play(currentCursorTime, endTime);
+            // togglePlayPause(1);
+            togglePlayPauseBoundary(1);
         }
     }
-    else if (currentTime === startTime) {
+    else if (currentCursorTime === startTime) {
+        // console.log(startTime, endTime, currentCursorTime);
         wavesurfer.play(startTime, endTime);
         togglePlayPause(1);
+        // togglePlayPauseBoundary(1);
     }
     // wavesurfer.playPause();
     // playPauseState = $(".playPauseBoundaryClass").attr('class');
@@ -1514,6 +1648,18 @@ $("#playPauseBoundary").click(function () {
     //     // playPauseState.innerText = 'Pause This Boundary'
     //     togglePlayPause(0);
     // }
+}
+
+function KeyPress(e) {
+    var evtobj = window.event? event : e
+    if (evtobj.keyCode == 32 && evtobj.ctrlKey) {
+        playPauseBoundary();
+    }
+}
+document.onkeydown = KeyPress;
+
+$("#playPauseBoundary").click(function () {
+    playPauseBoundary();
 });
 
 function togglePlayPause(state) {
@@ -1526,6 +1672,34 @@ function togglePlayPause(state) {
         $(".audioplaypause").addClass('glyphicon-play').removeClass('glyphicon-pause');
     }
 }
+
+function togglePlayPauseBoundary(state) {
+    if (state === 1) {
+        $(".audioplaypauseboundary").addClass('glyphicon-pause').removeClass('glyphicon-play');
+        // $(".playPauseBoundaryClass").addClass('glyphicon-pause').removeClass('glyphicon-play');
+    }
+    else if (state === 0) {
+        // $(".playPauseBoundaryClass").addClass('glyphicon-play').removeClass('glyphicon-pause');
+        $(".audioplaypauseboundary").addClass('glyphicon-play').removeClass('glyphicon-pause');
+    }
+}
+
+function togglePlayPauseBoundaryStart(state) {
+    if (state === 1) {
+        $(".audioplaypauseboundarystart").addClass('glyphicon-pause').removeClass('glyphicon-play');
+        // $(".playPauseBoundaryClass").addClass('glyphicon-pause').removeClass('glyphicon-play');
+    }
+    else if (state === 0) {
+        // $(".playPauseBoundaryClass").addClass('glyphicon-play').removeClass('glyphicon-pause');
+        $(".audioplaypauseboundarystart").addClass('glyphicon-play').removeClass('glyphicon-pause');
+    }
+}
+
+function drawBoundaries(state) {
+    
+}
+
+
 function transcriptionFormDisplay(form, mode) {
     if (form.style.display === "none") {
         form.style.display = "block";
@@ -1659,9 +1833,10 @@ function getAudiDuration(audiFilePath) {
         // console.log('I got length ' + length, (length/60).toFixed(2));
         audioDur = (length / 60).toFixed(2)
         audioDurMin = audioDur.split('.')[0]
-        audioDurSec = audioDur.split('.')[1] * 60
-        // console.log(audioDur, audioDurMin, audioDurSec);
-        let showDur = '<br><span><strong>Duration: ' + audioDur + ' minutes<strong></span>';
+        audioDurSec = (audioDur.split('.')[1] * .6).toFixed(0)
+        // console.log(audioDur, audioDurMin, audioDur.split('.')[1], audioDur.split('.')[1] * .6, audioDurSec);
+        let showDur = '<br><span>Duration: <span id="currentaudioduration">' + audioDur + '</span> minutes</span>';
+        // let showDur = '<br><span>Duration: <span id="currentaudioduration">' + audioDurMin + '</span> minutes ' + audioDurSec + ' seconds</span>';
         // document.getElementById("idaudiometadata").append(showDur);
         $('#idaudiometadata').append(showDur);
     });
@@ -1669,17 +1844,17 @@ function getAudiDuration(audiFilePath) {
 
 function showBoundaryCount(boundaryCount) {
     if (boundaryCount !== '') {
-        let showBCount = '<span><strong>Boundary Count: ' + boundaryCount + '<strong></span>';
+        let showBCount = '<span>Boundary Count: ' + boundaryCount + '</span>';
         // document.getElementById("idaudiometadata").append(showDur);
         $('#idaudiometadata').append(showBCount);
     }
 }
 
 function lastUpdatedBy(lstUpdatedBy) {
-    console.log(lstUpdatedBy);
+    // console.log(lstUpdatedBy);
     // lstUpdatedBy = '';
     if (lstUpdatedBy !== '') {
-        let lastUpdate = '<br><span><strong>Last Updated By: ' + lstUpdatedBy + '<strong></span>';
+        let lastUpdate = '<br><span>Last Updated By: ' + lstUpdatedBy + '</span>';
         // document.getElementById("idaudiometadata").append(showDur);
         // $('#idaudiometadata').append(lastUpdate);
         $('#iddefaultfield').append(lastUpdate);
@@ -1702,7 +1877,7 @@ function autoSavetranscription(e, transcriptionField) {
         // console.log("Replace enter");
     }
 
-    showNote();
+    // showNote();
 
     activeTranscriptionFieldId = transcriptionField.id
     transciptionLang = activeTranscriptionFieldId.split('_')[1]
@@ -1714,7 +1889,12 @@ function autoSavetranscription(e, transcriptionField) {
     if (regionId) {
         let region = wavesurfer.regions.list[regionId];
         // console.log(region);
-        saveBoundaryData(region, form);
+        if (region) {
+            saveBoundaryData(region, form);
+        }
+        // else if (region === undefined) {
+        //     transcriptionFormDisplay(form);
+        // }
     }
     // startTime = document.getElementById('start').value
     // endTime = document.getElementById('end').value
@@ -1776,21 +1956,30 @@ function updateBoundaryColor(activeRegion) {
 
 function showRegionInfo(region) {
     let regionInfo = '';
+    let trans = '';
     try {
         id = region.id;
         startTime = region.start;
         endTime = region.end;
         boundaryID = getBoundaryId(startTime, endTime);
-        sentence = region.data.sentence
-        transciptions = sentence[boundaryID]['transcription'];
-        let trans = '';
-        for (let [scriptName, transcription] of Object.entries(transciptions)) {
-            trans += scriptName + ': ' + transcription + '<br>';
+        sentence = region.data.sentence;
+        if (sentence) {
+            console.log("Sentence", sentence)
+            console.log("Boundary ID", boundaryID)
+            transciptions = sentence[boundaryID]['transcription'];
+            for (let [scriptName, transcription] of Object.entries(transciptions)) {
+                trans += scriptName + ': ' + transcription + '<br>';
+            }
         }
         // let regionInfo = '<br>Boundary ID: '+id+'<br>Start Time: '+startTime+'<br>End Time: '+endTime+'<br>'+trans;
-        regionInfo = '<br>Boundary ID: ' + id + '<br>Start Time: ' + startTime + '<br>End Time: ' + endTime + '<br>' + trans;
+        // regionInfo += '<br>Boundary ID: ' + id;
+        regionInfo += '<br>Start Time: ' + startTime;
+        regionInfo += '<br>End Time: ' + endTime;
+        regionInfo += '<br>Total Time: ' + (endTime-startTime);
+        regionInfo += '<br>' + trans;
     }
     catch (err) {
+        console.log(err);
         regionInfo = '<br>You still have to listen to this boundary';
     }
     $('#regioninfo').html(regionInfo);
@@ -1809,16 +1998,118 @@ function hideRegionInfo(region) {
 }
 
 function getBoundaryId(startTime, endTime) {
-    startId = startTime.toString().slice(0, 4).replace('.', '');
-    if (startId === '0') {
-        startId = '000';
-    }
-    endId = endTime.toString().slice(0, 4).replace('.', '');
-    if (endId === '0') {
-        endId = '000';
-    }
+    startId = get_boundary_id_from_number(parseFloat(startTime).toFixed(2), 5, "0"); //5 is the length of the returned string and 0 is the prefix
+    endId = get_boundary_id_from_number(parseFloat(endTime).toFixed(2), 5, "0");
+
+    // startId = startTime.toString().slice(0, 4).replace('.', '');
+    // if (startId === '0') {
+    //     startId = '000';
+    // }
+    // endId = endTime.toString().slice(0, 4).replace('.', '');
+    // if (endId === '0') {
+    //     endId = '000';
+    // }
     // console.log(startId, endId)
     rid = startId.concat(endId);
 
     return rid
 }
+
+function openAudioMetaData() {
+    let audioMetadataDisplay = document.getElementById('audiometadata')
+    if(audioMetadataDisplay.style.display == 'none') {
+        audioMetadataDisplay.style.display = 'block'
+    }
+    else if(audioMetadataDisplay.style.display == 'block') {
+        audioMetadataDisplay.style.display = 'none'
+    }
+}
+
+function closestBoundary(region, overlapBoundary, dragDirection='left', diff=0.001) {
+    const min = Math.min(...overlapBoundary)
+    console.log(min)
+    if (dragDirection == 'left') {
+        region.end = min-diff;
+    }
+    if (dragDirection == 'right') {
+        region.start = min+diff;
+    }
+    saveRegions();
+}
+
+function preventOverlapBoundaries(region) {
+    // console.log(region);
+    // console.log(region.wrapper);
+    // console.log(region.scrollSpeed);
+    // console.log(region.start, region.end);
+    localStorageRegions = JSON.parse(localStorage.regions);
+    // console.log(localStorageRegions);
+    let overlapBoundaryStarts = [];
+    let overlapBoundaryEnds = [];
+    for (i=0; i< localStorageRegions.length; i++) {
+        localStorageRegion = localStorageRegions[i];
+        if (region.start == localStorageRegion.start ||
+            region.end == localStorageRegion.end) {
+                continue
+            }
+        if ((region.start<localStorageRegion.end &&
+            region.start>localStorageRegion.start)) {
+                // console.log(region.start, localStorageRegion.end);
+                // console.log(region.end, localStorageRegion.start);
+                // console.log('OVERLAP!!!... RIGHT DRAG');
+                // console.log('FALLING IN REGION: ', localStorageRegion);
+                overlapBoundaryEnds.push(localStorageRegion.end);
+                // deleteBoundary(region.id);
+            }
+        else if ((region.end<localStorageRegion.end &&
+                region.end>localStorageRegion.start)) {
+                // console.log(region.start, localStorageRegion.end);
+                // console.log(region.end, localStorageRegion.start);
+                // console.log('OVERLAP!!!... LEFT DRAG');
+                // console.log('FALLING IN REGION: ', localStorageRegion);
+                // deleteBoundary();
+                overlapBoundaryStarts.push(localStorageRegion.start);
+            }
+        else if ((localStorageRegion.start>region.start &&
+                localStorageRegion.start<region.end) &&
+                (localStorageRegion.end>region.start &&
+                localStorageRegion.end<region.end)) {
+                // console.log(region.start, localStorageRegion.end);
+                // console.log(region.end, localStorageRegion.start);
+                // console.log('OVERLAP!!!');
+                // console.log('FALLING IN REGION COMPLETE OERLAP: ', localStorageRegion);
+                alert("This new region is completely covering the other regions. DELETING new region.");
+                deleteBoundary(region.id);
+                break;
+                // let dltBoundary = confirm("OK will delete the overlap boungary")
+                // if (dltBoundary) {
+                //     deleteBoundary();
+                // }
+                // else {
+                //     window.location.reload();
+                // }
+                
+            }
+    }
+    if (overlapBoundaryStarts.length) {
+        closestBoundary(region, overlapBoundaryStarts, dragDirection='left')
+    }
+    if (overlapBoundaryEnds.length) {
+        closestBoundary(region, overlapBoundaryEnds, dragDirection='right')
+    }
+}
+
+
+$('#myMakeBoundaryModalButton').on('click', function (e) {
+//   alert("Opened!")
+    activeSpeaker = document.getElementById("speakeridsdropdown").value;
+    filename = document.getElementById("audioFilename").textContent;
+    audioDuration = document.getElementById("currentaudioduration").textContent;
+    // alert(audioDuration) 
+    document.getElementById("makeboundaryspeakeriduploaddropdown").value = activeSpeaker;
+    document.getElementById("makeboundaryaudiofileid").value = filename
+    document.getElementById("makeboundaryaudiodurationid").value = audioDuration
+    // document.getElementById("speakeriduploaddropdown-divid").innerHTML = activeSpeaker;
+    $('#myMakeBoundaryModal').show.bs.modal;
+
+})

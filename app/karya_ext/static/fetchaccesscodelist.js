@@ -65,3 +65,46 @@ function karyaSpeakerIdsList(karya_speaker_ids) {
       allowClear: true
   });
 }
+
+
+
+function fetchTransAccessCodeList(fetchtransaccesscodelist) {
+  // console.log(fetchaccesscodelist);
+  var fetchtransaccodeform = ''
+  fetchtransaccodeform += createSelectElement('transcription_access_code', fetchtransaccesscodelist, '', [], 'fetchtransaccodeselect')
+
+  $('#pitransaccesscode').html(fetchtransaccodeform);
+  $('.fetchtransaccodeselect').select2({
+      placeholder: 'select',
+      // data: usersList,
+      allowClear: true
+  });
+}
+
+
+function fetchVerAccessCodeList(fetchveraccesscodelist) {
+  // console.log(fetchaccesscodelist);
+  var fetchveraccodeform = ''
+  fetchveraccodeform += createSelectElement('verification_access_code', fetchveraccesscodelist, '', [], 'fetchveraccodeselect')
+
+  $('#piveraccesscode').html(fetchveraccodeform);
+  $('.fetchveraccodeselect').select2({
+      placeholder: 'select',
+      // data: usersList,
+      allowClear: true
+  });
+}
+
+
+function fetchRecAccessCodeList(fetchveraccesscodelist) {
+  // console.log(fetchaccesscodelist);
+  var fetchveraccodeform = ''
+  fetchveraccodeform += createSelectElement('recording_access_code_list', fetchrecaccesscodelist, '', [], 'fetchrecaccodeselect')
+
+  $('#pirecaccesscode').html(fetchrecaccodeform);
+  $('.fetchrecaccodeselect').select2({
+      placeholder: 'select',
+      // data: usersList,
+      allowClear: true
+  });
+}

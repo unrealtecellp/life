@@ -7,10 +7,13 @@
     <!-- <li id="image"><a href="#">Image</a></li> -->
     <!-- <li><a href="{{ url_for('dictionaryview') }}">Upload Lexeme Entry Form</a></li> -->
     <li><a href="{{ url_for('enternewsentences') }}">Audio</a></li>
-    <li class="pull-right"><a
-            href="https://docs.google.com/document/d/1TWOt9km-HdCk__bi35ZcUF101PZMWZDo0PgXlkeVLTY/edit?usp=sharing"
+    <li><a href="{{ url_for('audiobrowse') }}">Browse</a></li>
+    <li class="pull-right">
+        <a href="https://docs.google.com/document/d/1TWOt9km-HdCk__bi35ZcUF101PZMWZDo0PgXlkeVLTY/edit?usp=sharing"
             target="_blank" data-toggle="tooltip" title="Help"><span class="glyphicon glyphicon-info-sign"
-                aria-hidden="true">Manual</span></a></li>
+                aria-hidden="true">Manual</span>
+        </a>
+    </li>
     <!-- <li><a href="#">Multimodal</a></li> -->
     <!-- <li><a href="{{ url_for('dictionaryview') }}">Browse</a></li> -->
     <!-- <li><a href="{{ url_for('audiotranscription') }}">Audio Transcription</a></li> -->

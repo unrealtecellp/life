@@ -76,7 +76,7 @@ $("#derivefromdatabtn").click(function() {
 
 $("#datamanualentrybtn").click(function() {
     var x = document.getElementById("dataform");
-    var y = '';
+    var y = document.getElementById("crawldataform");
     var z = '';
     hidedisplaydiv(x, y, z)
     $('#beforefield').empty();
@@ -91,7 +91,7 @@ $("#datamanualentrybtn").click(function() {
 
 $("#derivefromdataselect").change(function(){
     var derivedprojectvalue = document.getElementById("derivefromdataselect").value;
-    console.log(derivedprojectvalue)
+    // console.log(derivedprojectvalue)
     var derivedprojectform = '';
 
     derivedprojectform += '<label for="idderivefromproject">Derive From Project</label>'+

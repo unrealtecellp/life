@@ -24,6 +24,8 @@ def get_boundaries_vadsilero(model_params):
     remove_pauses = model_params["remove_pauses"]
     USE_ONNX = model_params["USE_ONNX"]
     model_path = model_params['model_path']
+    min_speech_duration = model_params['minimum_speech_duration']
+    min_silence_duration = model_params['minimum_silence_duration']
 
     model, utils = torch.hub.load(repo_or_dir=model_path,
                                   model='silero_vad',
@@ -40,12 +42,12 @@ def get_boundaries_vadsilero(model_params):
 
     # get speech timestamps from full audio file
     speech_timestamps = get_speech_timestamps(
-        wav, model, return_seconds=True, sampling_rate=SAMPLING_RATE)
+        wav, model, return_seconds=True, sampling_rate=SAMPLING_RATE, min_speech_duration_ms=min_speech_duration, min_silence_duration_ms=min_silence_duration)
 
     # TODO: implement this to save audio without pauses in MongoDB
     if remove_pauses:
         # wav = save_audio('only_speech.wav',
-                        #  collect_chunks(speech_timestamps, wav), sampling_rate=SAMPLING_RATE)
+        #  collect_chunks(speech_timestamps, wav), sampling_rate=SAMPLING_RATE)
         wav = collect_chunks(speech_timestamps, wav)
 
     return speech_timestamps, wav

@@ -14,3 +14,8 @@ New User Registration
         </div>
     </div>
 {% endblock %}
+
+{% block scripts %}
+{{super()}}
+    <script src="{{url_for('.static', filename='register.js')}}"></script>
+{% endblock %}

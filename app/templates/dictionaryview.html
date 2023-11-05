@@ -18,6 +18,7 @@ Dictionary View
 {% endif %}
 <div>
     <input id="myInput" type="text" placeholder="Search">
+    {% if 'downloadchecked' in shareinfo and shareinfo['downloadchecked'] == 'true' %}
     <div class="btn-group" role="group">
         <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           Download Lexicon
@@ -43,6 +44,7 @@ Dictionary View
             <li><a href="{{url_for('download')}}">.ods</a></li> -->
         </ul>
     </div>
+    {% endif %}
     <!-- <button type="button" class="btn btn-primary shareproject">Share Project</button> -->
     <!-- Button trigger share project modal -->
     <!-- <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myShareProjectModal">
@@ -68,10 +70,9 @@ Dictionary View
             <tr>
             <!-- <th onclick="sortTable(0)">Id</th> -->
             <th><input type="checkbox" id="headcheckbox" onchange="checkAllLexeme(this)" name="chk[]" checked/>&nbsp;</th>
-            <th onclick="sortTable(1)">Lexeme ID</th>
-            <th onclick="sortTable(2)">Lexeme</th>
-            <th onclick="sortTable(3)">Gloss</th>
-            <th onclick="sortTable(4)">Grammatical Info</th>
+            {% for i in range(0, (fields|length)) %}
+            <th onclick="sortTable({{i+1}})">{{fields[i]}}</th>
+            {%endfor%}
             <th>View</th>
             <th>Edit</th>
             <th>Delete</th>
@@ -79,34 +80,35 @@ Dictionary View
         </thead>
         <tbody id="myTableBody">    
             {% for data in sdata %}
-                <tr>
-                <td><input type="checkbox" id="lexemecheckbox" onchange="checkLexeme(this)" name="name1" checked/></td>
-                {% if data['lexemeId'] is defined %}
-                    <td id='lexemeId'>{{ data['lexemeId'] }}</td>
+            <tr>
+                <td><input type="checkbox" id="lexemecheckbox" onchange="checkLexeme(this)" name="name1" checked /></td>
+            {% for field in fields %}
+                {% if data[field] is defined %}
+                    {% if ((data[field]|length) <= 1) %}
+                    <td id='{{field}}'>{{ data[field][0] }}</td>
+                    {%else%}
+                        <td id='{{field}}'>{{data[field][0]}}
+                        {% for i in range(1, (data[field]|length)) %}
+                            
+                            <br/>
+                            {{data[field][i]}}
+                            {% if (data[field][i]|trim)|length %}
+                            <sup>{{i}}</sup>
+                            {%endif%}
+                          
+                        {%endfor%}
+                        </td>
+                    {%endif%}
                 {% else %}
                     <td> - </td>    
                 {% endif %}
-                {% if data['headword'] is defined %}
-                    <td id='headword'>{{ data['headword'] }}</td>
-                {% else %}
-                    <td> - </td>    
-                {% endif %}
-                {% if data['gloss'] is defined %}
-                    <td>{{ data['gloss'] }}</td>
-                {% else %}
-                <td> - </td>    
-                {% endif %}
-                {% if data['grammaticalcategory'] is defined %}
-                    <td>{{ data['grammaticalcategory'] }}</td>
-                {% else %}
-                    <td> - </td>    
-                {% endif %}
-                
+                {%endfor%}
                 <td><button type="button" class="btn btn-primary lexemeview">View</button></td>
                 <td><button type="button" class="btn btn-warning lexemeedit">Edit</button></td>
                 <td><button type="button" class="btn btn-danger lexemedelete">Delete</button></td>
-            {% endfor %}
             </tr>
+            {% endfor %}
+            
         </tbody>    
       </table>
     </div>

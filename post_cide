@@ -1,0 +1,27 @@
+var server_data = [
+  {"QTc": formatedQTc},
+  {"prolonged": prolonged},
+  {"HR": heartRate},
+  {"QT": qtInt},
+  {"Sex": selectedSex}
+];
+
+$.ajax({
+  type: "POST",
+  url: "/process_qtc",
+  data: JSON.stringify(server_data),
+  contentType: "application/json",
+  dataType: 'json',
+  success: function(result) {
+    console.log("Result:");
+    console.log(result);
+  } 
+});
+
+
+
+@app.route('/process_qtc', methods=['POST', 'GET'])
+def process_qt_calculation():
+  if request.method == "POST":
+    qtc_data = request.get_json()
+    print(qtc_data)

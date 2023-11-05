@@ -1,0 +1,255 @@
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title> Manage Tagsets </title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
+    <script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css" />
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.1/bootstrap3-editable/css/bootstrap-editable.css"
+        rel="stylesheet">
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.1/bootstrap3-editable/js/bootstrap-editable.js"></script>
+    
+        <link href="{{url_for('.static', filename='addnewtagset.css')}}" rel="stylesheet" />
+<link href="{{url_for('easyAnno.static', filename='easyannohome.css')}}" rel="stylesheet" />
+
+
+
+</head>
+{% extends "manageUsersLinks.html" %}
+
+{% block styles %}
+{{super()}}
+{% endblock %}
+
+{% block app_content %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+
+<!-- {% if activeprojectname is defined %}
+<h4>
+    Project Name : {{ activeprojectname }}
+</h4>
+{% endif %} -->
+<h4>
+    Manage Tagsets
+</h4>
+
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <button type="button" id="addnewtagsetmanagepageid" class="btn btn-lg btn-primary addnewtagset"
+            data-toggle="modal" data-target="#addNewtagsetModal">
+            Add New Tagset
+        </button>
+    </div>
+
+    <!-- View Field tagset button -->
+    <!-- Modal -->
+    <div>
+        <div class="modal fade" id="fieldtagsetdetailsmodal" tabindex="-1" role="dialog"
+            aria-labelledby="tagsetdetailsmodalLabel">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <!-- <div id="fieldtagsetdetails" style="display: none;"> -->
+
+                    <form role="form" method="post" action="{{url_for('edittagsetmetadata')}}">
+                        <button class="pull-right btn-danger" type="button" id="editbutton">Edit</button><br />
+
+                        <div class="modal-header">
+                            <h4 class="modal-title" id="tagsetdetailsmodalLabel">Tagset <Details></Details></h4>
+                        </div>
+
+                        <input type="hidden" name="lifetagsetid" id="lifetagsetid" value="" />
+                        <div class="modal-body" id="formdisplay">
+                            <div class="form-group">
+                                <label for="idtagsetname" class="col-form-label">Tagset Name:</label>
+                                <input type="text" class="form-control classtagsetname" id="idtagsetname" name="tagsetname"
+                                    placeholder="--tagset Name--" style="width:55%" value="" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="idtagsetdesc">Tagset Description: </label> <br>
+                                <select class="classtagsetdesc" id="idtagsetdesc" name="tagsetdesc" style="width:55%" required>
+                                    <!-- <div id="ageoptions"></div> -->
+                                </select><br>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="idtagcategory">Tagset: </label> <br>
+                                <select class="classtagcategory" id="idtagcategory" name="tagcategory" style="width:45%">
+                                </select>
+                                <label for="idtaglabels">Labels: </label> <br>
+                                <select class="classtaglabels" id="idtaglabels" name="taglabels" style="width:45%">
+                                </select>
+                                <br>
+                            </div>
+
+                            <div id="formsubmit" class="form-group modal-footer">
+                                <button type="button" id="closebutton" class="btn btn-secondary"
+                                    data-dismiss="modal">Close</button>
+                                <input type="submit" value="Submit"> <br><br>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+    {% for data_source in tagset_data %}
+    <div class="row">
+        <div class="col">
+            <b>
+                <h4>Tagsets</h4>
+            </b>
+            <p id="totalrecords"><strong>Total Tagsets:</strong>&nbsp;{{ count[data_source] }}</p>
+            <input id="myInput" type="text" placeholder="Search">
+            <table class="table table-striped" id="table" data-toolbar="#toolbar" data-search="true"
+                data-show-refresh="true" data-show-toggle="true" data-show-fullscreen="true" data-show-columns="true"
+                data-show-columns-toggle-all="true" data-detail-view="true" data-show-export="true"
+                data-click-to-select="true" data-detail-formatter="detailFormatter" data-minimum-count-columns="2"
+                data-show-pagination-switch="true" data-pagination="true" data-id-field="id"
+                data-page-list="[10, 25, 50, 100, all]" data-show-footer="true" data-side-pagination="server">
+                <thead>
+                    <tr>
+                        <!-- <th onclick="sortTable(0)">id</th> -->
+                        <th><input type="checkbox" id="headcheckbox" onchange="checkAllLexeme(this)" name="chk[]"
+                                checked />&nbsp;</th>
+                        {% for header in table_headers[data_source] %}
+                        <th onclick="sortTable(2)">{{header}}</th>
+                        {% endfor %}
+                        <th>View</th>
+                        <th>Download</th>
+                        <th>Share</th>
+                        <th>Delete</th>
+
+                    </tr>
+                </thead>
+                <tbody id="myTableBody">
+
+                    {% for item in tagset_data[data_source] %}
+
+                    <tr>
+                        <td>
+                            <input type="checkbox" id="lexemecheckbox" onchange="checkLexeme(this)" name="name1"
+                                checked />
+                        </td>
+
+                        <td>
+                            {{item['projectname']}}
+                        </td>
+                        
+                        <td>                            
+                            <table class="table table-striped">
+                        {% for tagset_category in item['tagSet'] %}
+                        
+                        <tr>
+                        <td>
+                            <b>{{tagset_category}}: </b>
+                        
+                        {% for tag_label in item['tagSet'][tagset_category] %}                        
+                            {{tag_label}},                            
+                        {% endfor %}
+                        </td>
+                        </tr>
+                        
+                        {% endfor %}
+                        </table>
+                        </td>
+
+                        <td>
+                            {{item['projectOwner']}}
+                        </td>
+
+                        <td>
+                            {% if 'updatedBy' in item %}
+                            {{item['updatedBy']}}
+                            {% else %}
+                            {{item['projectOwner']}}
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            <button type="button" class="btn btn-primary tagsetview" id="{{item['projectname']}}"
+                                data-toggle="modal" data-target="#tagsetdetailsmodal">
+                                <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>
+                            </button>
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-success tagsetdownload" id="{{item['projectname']}}" data-toggle="modal"
+                                data-target="#tagsetdownloadmodal">
+                                <span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span>
+                            </button>
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-warning tagsetshare" id="{{item['projectname']}}" data-toggle="modal"
+                                data-target="#tagsetsharemodal">
+                                <span class="glyphicon glyphicon-share-alt" aria-hidden="true"></span>
+                            </button>
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-danger tagsetdelete" id="{{item['projectname']}}">
+                                <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+                            </button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endfor %}
+
+
+    <!-- Add new tagset Modal -->
+    <div class="modal fade" id="addNewtagsetModal" tabindex="-1" role="dialog"
+        aria-labelledby="addNewtagsetModalLabel">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="addNewtagsetModalLabel">Upload New Tagset</h4>
+                </div>
+                <div class="modal-body">
+                    <!-- <div class="col-xs-6"> -->
+                    <!-- <input id="myInput" class="form-control" type="text" placeholder="Search"> -->
+                    <!-- </div> -->
+                    <!-- <br>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group"> -->
+                                <div id="addnewtagsetform"> </div>
+                            <!-- </div>
+                        </div>
+                    </div> -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% endblock %}
+
+    {% block scripts %}
+    {{super()}}
+    <script src="{{url_for('.static', filename='addnewtagset.js')}}"></script>
+    <script src="{{url_for('.static', filename='tagset_select2_dropdown.js')}}"></script>
+    <script src="{{url_for('static', filename='search.js')}}"></script>
+    <script src="{{url_for('static', filename='sorttable.js')}}"></script>
+    <!-- <script src="{{url_for('.static', filename='managespeakers.js')}}"></script> -->
+
+
+    {% endblock %}
+
+</html>

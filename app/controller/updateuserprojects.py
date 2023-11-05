@@ -23,6 +23,8 @@ def updateuserprojects(userprojects,
                                             'tomesharedby': [],
                                             'isharedwith': [],
                                             'sharechecked': "true",
+                                            'downloadchecked': "true",
+                                            'sharelatestchecked': "true",
                                             'activespeakerId': ''
                                         }
     # when testing comment these to avoid any database update/changes

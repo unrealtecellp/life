@@ -1,0 +1,179 @@
+{% extends "karyaextlinks.html" %}
+
+{% block title %}
+Audio Browse
+{% endblock title %}
+
+{% block styles %}
+{{ super() }}
+<link href="{{url_for('.static', filename='karyaaudiobrowse.css')}}" rel="stylesheet" />
+
+{% endblock %}
+
+{% block app_content %}
+{% if projectName is defined %}
+<h4>
+    Project Name: {{ projectName }}
+</h4>
+<br>
+{% endif %}
+<br>
+<div class="row">
+    <div class="col col-md-6">
+        <!-- <div>
+            <input id="myInput" type="text" placeholder="Search">
+        </div> -->
+        <br>
+        <label for="speakerId">Select Speaker:</label>
+        <select name="speakerId" id="speakerId" onchange="updateTable()" style="width: 45%;">
+            <option value="">--Select Speaker ID--</option>
+            {% for speakerId in data %}
+                <option value="{{ speakerId }}">{{ speakerId }}</option>
+            {% endfor %}
+        </select>
+        
+        <select id="audiofilescountdropdown" style="width: 10%;"></select>
+        <label for="audiofilescountdropdown">&nbsp;:Audio Files</label>
+    </div>
+    <div class="col col-md-6 pull-right" id="browseaudiodropdowns">
+    </div>
+</div>
+
+
+<br>
+
+
+<button id="deleteSelectedBtn" class="btn btn-danger" onclick="deleteSelected()">Delete Selected</button>
+<br>
+<br>
+<br>
+<table id="audioTable" style="display: none;">
+    <thead>
+        <tr>
+            <th>
+                <input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll()">
+                Select All
+            </th>
+            <th>Speaker ID</th>
+            <th>Audio ID</th>
+            <th>Audio Filename</th>
+            <th>Karya Fetched Audio ID</th>
+            <th>Access Code</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for speakerId, audioList in data.items() %}
+            {% for audioData in audioList %}
+                <tr class="{{ speakerId }}">
+                    <td><input type="checkbox" id="checkbox_{{ audioData.audioId }}" name="selectedRows" value="{{ audioData.audioId }}"></td>
+                    <td>{{ audioData.speakerId }}</td>
+                    <td>{{ audioData.audioId }}</td>
+                    <td>{{ audioData.audioFilename }}</td>
+                    <td>{{ audioData.karyaInfo.karyaFetchedAudioId }}</td>
+                    <td>{{ audioData.accesscode }}</td>
+                    <td>
+                        <audio controls>
+                            <source src="{{ audioData.audioUrl }}" type="audio/mp3">
+                            Your browser does not support the audio element.
+                        </audio>
+                    </td>
+                    
+                </tr>
+            {% endfor %}
+        {% endfor %}
+    </tbody>
+    
+</table>
+
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    function updateTable() {
+        var selectedSpeakerId = document.getElementById("speakerId").value;
+        var table = document.getElementById("audioTable");
+        var rows = table.getElementsByTagName("tr");
+
+        // Hide all rows except the header
+        for (var i = 1; i < rows.length; i++) {
+            rows[i].style.display = "none";
+        }
+
+        // Show rows that match the selected speaker ID
+        var speakerRows = table.getElementsByClassName(selectedSpeakerId);
+        for (var j = 0; j < speakerRows.length; j++) {
+            speakerRows[j].style.display = "";
+        }
+        
+        // Show or hide the table based on the selected speaker ID
+        table.style.display = (selectedSpeakerId !== "") ? "table" : "none";
+    }
+
+
+
+    function deleteSelected() {
+    var selectedRows = document.getElementsByName("selectedRows");
+    var selectedData = [];
+
+    for (var i = 0; i < selectedRows.length; i++) {
+        if (selectedRows[i].checked) {
+            var audioId = selectedRows[i].value;
+            var checkboxId = "checkbox_" + audioId;
+            var speakerId = document.getElementById(checkboxId).closest("tr").querySelector("td:nth-child(2)").innerText;
+            var audioFilename = document.getElementById(checkboxId).closest("tr").querySelector("td:nth-child(4)").innerText;
+            var karyaFetchedAudioIds = document.getElementById(checkboxId).closest("tr").querySelector("td:nth-child(5)").innerText;
+            var karyaacode = document.getElementById(checkboxId).closest("tr").querySelector("td:nth-child(6)").innerText;
+            var data = {
+                speakerId: speakerId,
+                audioId: audioId,
+                audioFilename: audioFilename,
+                karyaFetchedAudioIds: karyaFetchedAudioIds,
+                karyaacode:karyaacode
+
+            };
+            selectedData.push(data);
+        }
+    }
+
+    
+        
+        if (selectedData.length > 0) {
+            if (confirm("Do you really want to delete the selected audio file(s)?")) {
+                // Send selectedData via AJAX
+                $.ajax({
+                    url: "{{ url_for('karya_bp.karyadeleteaudiobrowse') }}",
+                    type: 'POST',
+                    data: JSON.stringify(selectedData),
+                    contentType: 'application/json',
+                    success: function(response) {
+                        console.log(response);
+                        alert("Delete successful."); // Display delete successful popup message
+                        location.reload(); // Reload the page after delete button is clicked
+                    },
+                    error: function(xhr, status, error) {
+                        console.error(xhr.responseText);
+                        alert("Delete failed."); // Display delete failed popup message
+                    }
+                });
+            }
+        } else {
+            alert("No audio files selected.");
+        }
+    }
+    
+    function toggleSelectAll() {
+        var selectAllCheckbox = document.getElementById("selectAllCheckbox");
+        var selectedRows = document.getElementsByName("selectedRows");
+
+        for (var i = 0; i < selectedRows.length; i++) {
+            if (selectedRows[i].parentNode.parentNode.style.display !== "none") {
+                selectedRows[i].checked = selectAllCheckbox.checked;
+            }
+        }
+    }
+</script>
+{% endblock %}
