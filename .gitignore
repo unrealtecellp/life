@@ -32,9 +32,6 @@ app/jsonfiles/languagesSet.txt
 app/jsonfiles/tagSet.json
 app/jsonfiles/tagSetMetaData.json
 ubuntuPackages.sh
-app/jsonfiles/tagSet.json
-app/jsonfiles/tagSetMetaData.json
-ubuntuPackages.sh
 LiFE.log
 logging.config
 linksnotparse.txt
