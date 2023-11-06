@@ -5,9 +5,9 @@
   Questionnaire
 {% endblock title %}
 
-
 {% block styles %}
 {{super()}}
+  <link href="{{url_for('static', filename='sidepanel.css')}}" rel="stylesheet" />
 {% endblock %}
 
 {% block app_content %}
@@ -141,6 +141,7 @@
 
 {% block scripts %}
 {{super()}}
+<script src="{{url_for('static', filename='sidepanel.js')}}"></script>
 <script src="{{url_for('.static', filename='questionnaire.js')}}"></script>
 <script src="{{url_for('.static', filename='quesaudiowaveform.js')}}"></script>
 <script src="{{url_for('.static', filename='downloadquestionnaire.js')}}"></script>
