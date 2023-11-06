@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block extra_nav %}
+<ul id="navBar" class="nav navbar-nav">
+    {% if shareinfo['sharemode']|int >= 2 %}
+        <li><a href="{{ url_for('enternewlexeme') }}">Text</a></li>
+    {% endif %}
+    {% if shareinfo['sharemode']|int >= 2 %}
+        <li><a href="{{ url_for('lifedata.transcription.home') }}">Audio</a></li>
+    {% endif %}
+    <li><a href="{{ url_for('lifedata.transcription.audiobrowse') }}">Browse</a></li>
+    <li class="pull-right">
+        <a href="https://docs.google.com/document/d/1TWOt9km-HdCk__bi35ZcUF101PZMWZDo0PgXlkeVLTY/edit?usp=sharing"
+            target="_blank" data-toggle="tooltip" title="Help"><span class="glyphicon glyphicon-info-sign"
+                aria-hidden="true">Manual</span>
+        </a>
+    </li>
+</ul>
+<script>
+</script>
+{% endblock %}

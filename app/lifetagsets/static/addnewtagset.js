@@ -1,3 +1,14 @@
+function getTagsetForm(ele, options) {
+    let defaults = { submitRoute: "/ltset/addnestagset" };
+    options = Object.assign({}, defaults, options); //first it assigns defaults to the options and then overwrites those with the values present in 'options' object
+    let { submitRoute, includeFieldMetadata, includeInternetMetadata } = options;
+
+    cur_id = $(ele).attr('id')
+    console.log('Current ID', cur_id);
+    console.log('Options', options);
+    tagsetDetailForm(cur_id, submitRoute);
+}
+
 $('.addnewtagset').on('click', function () {
     console.log('on click');
     cur_id = $(this).attr('id')
@@ -30,13 +41,45 @@ function removesupportedtaksfield(rid) {
   }
 
 
-function tagsetDetailForm(cur_id, form_vals={}) {
+function tagsetDetailForm(cur_id, submitRoute) {
     let sourceinpt = ''
-    sourceinpt += '<form id="newtagsetform" action="/addnewtagset" method="POST" enctype="multipart/form-data">';
+    
+    sourceinpt += '<form id="newtagsetform" action="' + submitRoute + '" method="POST" enctype="multipart/form-data">';
+    
     sourceinpt += '<input type="hidden" value="' +
         cur_id +
         '"name = "sourcecallpage" id="sourcecallpageid">';
+    
     sourceinpt += '<div id="formdisplayinitial" style="display: block;">';
+
+    sourceinpt += '<div id="idtagsetmetadatadiv" style="display: none;"></div>';
+
+    sourceinpt += '<div id="idtagsetupload" style="display: none;"></div>';
+    
+    sourceinpt += '<input class="btn btn-lg btn-primary upload" id="uploadtagsetsubmit" type="submit" value="Upload Tagset">';
+
+    $("#addnewtagsetform").html("");
+    $("#addnewtagsetform").append(sourceinpt);
+        
+    addNewTagsetFormEvents();
+    addNewTagsetSelect2();
+}
+
+function createUploadFields() {
+    sourceinpt = '';
+    
+    sourceinpt += '<div class="col upload">' +
+        '<label class="btn btn-danger">' +
+        'Select ZIP File <input type="file" id="annotationtagsetZipFile" name="annotationtagsetZipFile" accept="application/zip" hidden>' +
+        '</label>' +
+        '<p id="displayAnnotationZipFileName"></p>' +
+        '</div>';
+    
+    return sourceinpt
+}
+
+function uploadMetadataTagsetForm(form_vals = {}) {
+    sourceinpt = '';
 
     sourceinpt += '<div class="form-group">' +
         '<label for="idtagsetname">Tagset Name</label>' +
@@ -47,6 +90,7 @@ function tagsetDetailForm(cur_id, form_vals={}) {
         '<label for= "idabout">About the Tagset</label><br>' +
         '<textarea id="idabout" name="abouttagset" style="width:55%" required></textarea>' +
         '</div>';
+    
     sourceinpt += '<div class="row ">' +
         '<div class="col-md-3">' +
         '<label>Supported Languages and Scripts</label>' +
@@ -67,6 +111,7 @@ function tagsetDetailForm(cur_id, form_vals={}) {
         '</div>' +
         '</div>' +
         '<div class="col-md-12 tagsetlangscripts"></div>';
+    
     sourceinpt += '<div class="row ">' +
         '<div class="col-md-3">' +
         '<label>Supported Tasks</label>' +
@@ -82,26 +127,13 @@ function tagsetDetailForm(cur_id, form_vals={}) {
         '</div>' +
         '</div>' +
         '<div class="col-md-12 supportedtaks"></div>';
+    
     sourceinpt += '<div class="form-group">' +
         '<input type="checkbox" id="idisprivate" name="isprivate" checked>' +
         '<label for="idisprivate">Private Tagset</label><br>' +
         '</div>';
     
-    sourceinpt += '<div id="tagsetupload" style="display: block;">' +
-        '<div class="col upload">' +
-        '<label class="btn btn-danger">' +
-        'Select ZIP File <input type="file" id="annotationtagsetZipFile" name="annotationtagsetZipFile" accept="application/zip" hidden>' +
-        '</label>' +
-        '<p id="displayAnnotationZipFileName"></p>' +
-        '</div>' +
-        '</div>';
-    sourceinpt += '<input class="btn btn-lg btn-primary upload" id="uploadtagsetsubmit" type="submit" value="Upload Tagset">';
-
-    $("#addnewtagsetform").html("");
-    $("#addnewtagsetform").append(sourceinpt);
-        
-    addNewTagsetFormEvents();
-    addNewTagsetSelect2();
+    return sourceinpt
 }
 
 function addSupportedTasks(fieldid) {
