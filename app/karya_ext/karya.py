@@ -1422,9 +1422,18 @@ def karyadeleteaudiobrowse():
                                            transcriptions,
                                            activeprojectname,
                                            current_username,
-                                           speaker_id,
+                                           transcription_id,
                                            audio_id,
+                                           speaker_id,
                                            update_latest_audio_id=1)
+
+        # audiodetails.delete_one_audio_file(projects,
+        #                                    transcriptions,
+        #                                    activeprojectname,
+        #                                    current_username,
+        #                                    speaker_id,
+        #                                    audio_id,
+        #                                    update_latest_audio_id=1)
 
         # print("transcriptions_result_find : " ,transcriptions_result_find['_id'])
 
