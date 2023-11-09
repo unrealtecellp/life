@@ -29,6 +29,7 @@ from app.controller import (
     getprojectowner,
     getcurrentusername,
     audiodetails,
+    speakerDetails,
     getuserprojectinfo,
     getprojecttype,
     life_logging
@@ -602,9 +603,10 @@ def update_table_data():
 @login_required
 def add():
     # print ('Adding speaker info into server')
-    accesscodedetails, userprojects = getdbcollections.getdbcollections(mongo,
-                                                                        "accesscodedetails",
-                                                                        'userprojects')
+    accesscodedetails, userprojects, speakerdetails = getdbcollections.getdbcollections(mongo,
+                                                                        'accesscodedetails',
+                                                                        'userprojects', 
+                                                                        'speakerdetails')
     current_username = getcurrentusername.getcurrentusername()
     activeprojectname = getactiveprojectname.getactiveprojectname(
         current_username, userprojects)
@@ -643,6 +645,22 @@ def add():
                 return redirect(url_for('karya_bp.home_insert'))
 
             if fage is not None and fname is not None:
+                
+                # new_metadata = {"current": {"updatedBy": current_username,
+                #              "sourceMetadata": {"name": fname,
+                #                                 "agegroup": fage,
+                #                                 "gender": fgender,
+                #                                 "educationlevel": educlvl,
+                #                                 "educationmediumupto12": moe12,
+                #                                 "educationmediumafter12": moea12,
+                #                                 "speakerspeaklanguage": sols,
+                #                                 "recordingplace": por,
+                #                                 "typeofrecordingplace": toc},
+                #                                 "current_date": current_dt}
+                #                                 }
+
+
+                #metadata save to accesscodedetails 
                 access_code_management.add_access_code_metadata(
                     accesscodedetails,
                     activeprojectname,
@@ -659,8 +677,99 @@ def add():
                     por,
                     toc
                 )
+
+                #metadata save to speakerdetails 
+                find_accesscodedetails = accesscodedetails.find_one({"karyaaccesscode": accesscode,
+                                                        "projectname": activeprojectname},
+                                                {"lifespeakerid":1,
+                                                "karyaspeakerid": 1,
+                                                "current.workerMetadata.name":1, 
+                                                "current.workerMetadata.agegroup": 1,
+                                                    "_id": 0})
+                
+                current_dt = str(datetime.now()).replace('.', ':')
+                metadata_schema = 'speed'
+                audio_source = 'field'
+                upload_type = 'single'
+
+                new_metadata = {"name": fname,
+                                "agegroup": fage,
+                                "gender": fgender,
+                                "educationlevel": educlvl,
+                                "educationmediumupto12": moe12,
+                                "educationmediumafter12": moea12,
+                                "speakerspeaklanguage": sols,
+                                "recordingplace": por,
+                                "typeofrecordingplace": toc,
+                                "lifespeakerid": find_accesscodedetails['lifespeakerid'],
+                                "karyaaccesscode": accesscode,
+                                "karyaspeakerid": find_accesscodedetails["karyaspeakerid"]}
+                                                
+
+                speakerDetails.write_speaker_metadata_details(speakerdetails,
+                                                      current_username,
+                                                      activeprojectname,
+                                                      current_username,
+                                                      audio_source,
+                                                      metadata_schema,
+                                                      new_metadata,
+                                                      upload_type)
         # Runs if a metadata of already assigned access code is to be updated
         else:
+            #metadata save to speakerdetails 
+            current_dt = str(datetime.now()).replace('.', ':')
+            metadata_schema = 'speed'
+            audio_source = 'field'
+            upload_type = 'single'
+
+            find_accesscodedetails = accesscodedetails.find_one({"karyaaccesscode": accesscode,
+                                                                   "projectname": activeprojectname},
+                                                         {"lifespeakerid":1,
+                                                          "karyaspeakerid": 1,
+                                                          "current.workerMetadata.name":1, 
+                                                           "current.workerMetadata.agegroup": 1,
+                                                             "_id": 0})
+            
+            previous_speakerdetails = speakerdetails.find_one({"current.sourceMetadata.lifespeakerid": find_accesscodedetails['lifespeakerid'],
+                                                                   "projectname": activeprojectname},
+                                                         {"lifesourceid":1, "_id": 0})
+            
+            print("speraker_id: ", previous_speakerdetails["lifesourceid"])
+            
+            edit_metadata = {"name": find_accesscodedetails["current"]["workerMetadata"]["name"],
+                                "agegroup": find_accesscodedetails["current"]["workerMetadata"]["agegroup"],
+                                "gender": fgender,
+                                "educationlevel": educlvl,
+                                "educationmediumupto12": moe12,
+                                "educationmediumafter12": moea12,
+                                "speakerspeaklanguage": sols,
+                                "recordingplace": por,
+                                "typeofrecordingplace": toc, 
+                                "lifespeakerid": find_accesscodedetails['lifespeakerid'],
+                                "karyaaccesscode": accesscode,
+                                "karyaspeakerid": find_accesscodedetails["karyaspeakerid"]}
+
+            # edit_metadata = {"name": find_accesscodedetails["current"]["workerMetadata"]["name"],
+            #                     "agegroup": find_accesscodedetails["current"]["workerMetadata"]["agegroup"],
+            #                     "gender": fgender,
+            #                     "educationlevel": educlvl,
+            #                     "educationmediumupto12": moe12,
+            #                     "educationmediumafter12": moea12,
+            #                     "speakerspeaklanguage": sols,
+            #                     "recordingplace": por,
+            #                     "typeofrecordingplace": toc}
+
+            edit_update_metadata = {"current": {"updatedBy": current_username,
+                                                "sourceMetadata": edit_metadata,
+                                                "current_date": current_dt} }
+            
+            print('edit_metadata ................','\n',edit_update_metadata)
+            
+            logger.debug("Update Data %s", edit_update_metadata)
+            updatestatus = speakerDetails.updateonespeakerdetails(
+                activeprojectname, previous_speakerdetails['lifesourceid'], edit_update_metadata, speakerdetails)
+            
+            #metadata save to accesscodedetails
             access_code_management.update_access_code_metadata(
                 accesscodedetails,
                 activeprojectname,
