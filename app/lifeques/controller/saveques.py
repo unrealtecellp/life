@@ -81,14 +81,13 @@ def saveques(questionnaires,
                 # print(text_boundary_data)
                 # content[lang_name] = value
                 prompt['content'][lang_name]['text'] = text_boundary_data
-        # text_boundary_data['startindex'] = startindex
-        # text_boundary_data['endindex'] = endindex    
-        # text[text_boundary_id] = text_boundary_data
-        # text['content'] = content
-        # prompt['text'] = text
-
-        # print('saveques()')
-        # pprint(quesdata)
+            if ('Instruction' in key):
+                prompt_type = key.split()[0]
+                prompt_type_lower = prompt_type.lower()
+                lang_name = key.split()[-1]
+                instruction_script = lang_name.split('-')[1]
+                instruction = value[0]
+                prompt['content'][lang_name][prompt_type_lower][prompt_type_lower+'Instruction'] = instruction
 
         saved_ques = questionnaires.update_one({"quesId": last_active_ques_id},
                                     {"$set" : { 

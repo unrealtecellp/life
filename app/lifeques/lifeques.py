@@ -22,7 +22,8 @@ from app.controller import (
                             getuserprojectinfo,
                             savenewproject,
                             updateuserprojects,
-                            life_logging
+                            life_logging,
+                            projectDetails
                         )
 from app.lifeques.controller import (
                                         downloadquestionnairein,
@@ -226,6 +227,7 @@ def newquestionnaireform():
 @lifeques.route('/questionnaire', methods=['GET', 'POST'])
 @login_required
 def questionnaire():
+    audioWaveform = 0
     projects, userprojects, projectsform, questionnaires = getdbcollections.getdbcollections(mongo,
                                                                                             'projects',
                                                                                             'userprojects',
@@ -260,9 +262,9 @@ def questionnaire():
     last_active_ques_id = getactivequestionnaireid.getactivequestionnaireid(projects,
                                                         activeprojectname,
                                                         current_username)
-    logger.debug("last_active_ques_id: %s", last_active_ques_id)
+    # logger.debug("last_active_ques_id: %s", last_active_ques_id)
     quesdata = questionnaires.find_one({"quesId": last_active_ques_id}, {"_id": 0})
-    logger.debug("quesdata: %s", pformat(quesdata))
+    # logger.debug("quesdata: %s", pformat(quesdata))
     # print(f"{inspect.currentframe().f_lineno}: {quesprojectform}")
     # print(f"{inspect.currentframe().f_lineno}: {type(quesdata)}")
     # print(f"{inspect.currentframe().f_lineno}: {quesdata}")
@@ -290,14 +292,19 @@ def questionnaire():
                             # print('file_path', type(file_path), file_path)
                             file_path_key = '_'.join([lang, prompt_type, 'FilePath'])
                             quesprojectform[file_path_key] = file_path
-                            if ('textGrid' in prompt_type_info):
+                            if ('textGrid' in prompt_type_info and
+                                not audioWaveform):
+                                # logger.debug("prompt_type_info: %s\naudioWaveform: %s",
+                                #              pformat(prompt_type_info),
+                                #              audioWaveform)
                                 quesprojectform['QuesAudioFilePath'] = file_path
                                 transcription_regions = questranscriptionaudiodetails.getquesfiletranscriptiondetails(questionnaires, last_active_ques_id, lang, prompt_type)
                                 # print(type(transcription_regions))
                                 quesprojectform['transcriptionRegions'] = transcription_regions
+                                audioWaveform = 1
     if ('QuesAudioFilePath' not in quesprojectform):
         quesprojectform['QuesAudioFilePath'] = ''
-    # print(f"{inspect.currentframe().f_lineno}: {quesprojectform}")
+    # logger.debug("quesprojectform: %s", pformat(quesprojectform))
 
     # project_type = getprojecttype.getprojecttype(projects, activeprojectname)
     # print('project_type', project_type)
@@ -382,14 +389,14 @@ def savequestionnaire():
                             )
 
             # load next ques
-            latest_ques_id = getnewquesid.getnewquesid(projects,
-                                                    activeprojectname,
-                                                    last_active_ques_id,
-                                                    'next')
-            updatelatestquesid.updatelatestquesid(projects,
-                                            activeprojectname,
-                                            latest_ques_id,
-                                            current_username)
+            # latest_ques_id = getnewquesid.getnewquesid(projects,
+            #                                         activeprojectname,
+            #                                         last_active_ques_id,
+            #                                         'next')
+            # updatelatestquesid.updatelatestquesid(projects,
+            #                                 activeprojectname,
+            #                                 latest_ques_id,
+            #                                 current_username)
 
         return jsonify(savedQuestionnaire=savedQuestionnaire)
     except:
@@ -698,3 +705,82 @@ def deleteques():
     flash("Question deleted successfully")
 
     return "OK"
+
+
+@lifeques.route('/quesbrowse', methods=['GET', 'POST'])
+@login_required
+def quesbrowse():
+    try:
+        new_data = {}
+        projects, userprojects, transcriptions = getdbcollections.getdbcollections(mongo,
+                                                                                   'projects',
+                                                                                   'userprojects',
+                                                                                   'transcriptions')
+        current_username = getcurrentusername.getcurrentusername()
+        activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                      userprojects)
+        projectowner = getprojectowner.getprojectowner(projects,
+                                                       activeprojectname)
+        shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
+                                                          current_username,
+                                                          activeprojectname)
+
+        project_shared_with = projectDetails.get_shared_with_users(
+            projects, activeprojectname)
+        project_shared_with.append("latest")
+        # speakerids = projects.find_one({"projectname": activeprojectname},
+        #                                {"_id": 0, "speakerIds." + current_username: 1})
+        # # logger.debug('speakerids: %s', pformat(speakerids))
+        # if ("speakerIds" in speakerids and speakerids["speakerIds"]):
+        #     speakerids = speakerids["speakerIds"][current_username]
+        #     speakerids.append('')
+        # else:
+        #     speakerids = ['']
+        speakerids = ques_details.combine_speaker_ids(projects,
+                                                      activeprojectname,
+                                                      current_username)
+        speakerids.append('')
+        active_speaker_id = shareinfo['activespeakerId']
+        speaker_ques_ids = ques_details.get_speaker_ques_ids_new(projects,
+                                                                   activeprojectname,
+                                                                   current_username,
+                                                                   active_speaker_id)
+        # logger.debug("speaker_ques_ids: %s", pformat(speaker_ques_ids))
+        total_records = 0
+        if (active_speaker_id != ''):
+            total_records, ques_data_list = ques_details.get_n_quess(transcriptions,
+                                                                       activeprojectname,
+                                                                       active_speaker_id,
+                                                                       speaker_ques_ids)
+        else:
+            ques_data_list = []
+        # get ques file src
+        new_ques_data_list = ques_data_list
+        # logger.debug("new_ques_data_list: %s", pformat(new_ques_data_list))
+        # new_ques_data_list = []
+        # for ques_data in ques_data_list:
+        #     new_ques_data = ques_data
+        #     ques_filename = ques_data['quesFilename']
+        #     # if ("downloadchecked" in shareinfo and
+        #     #     shareinfo["downloadchecked"] == 'true'):
+        #     # new_ques_data['Audio File'] = url_for('retrieve', filename=ques_filename)
+        #     # logger.debug("retrieved ques: %s", new_ques_data['Audio File'])
+        #     new_ques_data_list.append(new_ques_data)
+        new_data['currentUsername'] = current_username
+        new_data['activeProjectName'] = activeprojectname
+        new_data['projectOwner'] = projectowner
+        new_data['shareInfo'] = shareinfo
+        new_data['speakerIds'] = speakerids
+        new_data['quesData'] = new_ques_data_list
+        new_data['quesDataFields'] = [
+            'quesId', 'quesFilename', 'Audio File']
+        new_data['totalRecords'] = total_records
+        new_data['transcriptionsBy'] = project_shared_with
+    except:
+        logger.exception("")
+
+    return render_template('lifeques.quesbrowse.html',
+                           projectName=activeprojectname,
+                           newData=new_data)
+    #    data=currentuserprojectsname)
+

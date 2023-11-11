@@ -177,7 +177,7 @@ var testquesdata = {
   }
 }
 
-targets = [
+var targets = [
   {"id": "Simple and Complex", "text": "Simple and Complex"},
   {"id": "Case", "text": "Case"},
   {"id": "Classifiers", "text": "Classifiers"},
@@ -199,11 +199,13 @@ targets = [
   {"id": "Miscellaneous", "text": "Miscellaneous"}
 ]
 
+var audioWaveform = 0
+
 function createInputElement(key, elevalue, type, quesdatavalue) {
-  console.log(key, elevalue, type, quesdatavalue);
+  // console.log(key, elevalue, type, quesdatavalue);
   var qform = '';
   for (let i=0; i<elevalue.length; i++) {
-    console.log(elevalue[i], quesdatavalue);
+    // console.log(elevalue[i], quesdatavalue);
     if (elevalue[i] === '') {
       eval = key
     }
@@ -291,7 +293,7 @@ function createSelectElement(key, elevalue, type, quesdatavalue) {
 }
 
 function createquesform(quesprojectform) {
-  console.log(quesprojectform);
+  // console.log(quesprojectform);
   // quesprojectform = questionaireprojectform;
   localStorage.setItem("quesactiveprojectform", JSON.stringify(quesprojectform));
   if (!('quesdata' in quesprojectform) ||
@@ -339,7 +341,7 @@ function createquesform(quesprojectform) {
     let qform = '<form id="idsavequesform" action="/lifeques/savequestionnaire" method="POST" enctype="multipart/form-data">';
 
     for (let [key, value] of Object.entries(quesprojectform)) {
-      console.log(key, value, value[0], typeof value, quesdata['prompt'][key]);
+      // console.log(key, value, value[0], typeof value, quesdata['prompt'][key]);
       
       if (key === 'Instruction') {
         continue;
@@ -399,7 +401,7 @@ function createquesform(quesprojectform) {
                       'onclick="collapsePrompt('+testpromptTypeKey+')">'+
                       '<span class="glyphicon glyphicon-chevron-down s'+testpromptTypeKey+'" aria-hidden="true"></span>'+
                       '</button></legend>';
-          // console.log(testpromptTypeKey, testpromptTypeValue);
+          console.log(testpromptTypeKey, testpromptTypeValue);
           // console.log(key, elevalue, eletype, quesdatavalue);
           langData = testquesdata['prompt']['content'][testpromptTypeKey]
           langText = testquesdata['prompt']['content'][testpromptTypeKey]['text']
@@ -410,8 +412,9 @@ function createquesform(quesprojectform) {
           console.log(key, elevalue, eletype, quesdatavalue, promptquesdatavalue);
           testquesform += createInputElement('Language', [testpromptTypeKey], 'text', promptquesdatavalue)
           for (let [testpromptTypeValueKey, testpromptTypeValueInfo] of Object.entries(testpromptTypeValue)) {
-            // console.log(testpromptTypeValueKey, testpromptTypeValueInfo);
+            console.log(testpromptTypeValueKey, testpromptTypeValueInfo);
             transcriptionBoundaryForm = '';
+            temp_testpromptTypeValueKey = testpromptTypeValueKey;
             update_key = key.replace('Type', '')+testpromptTypeValueKey;
             if (testpromptTypeValueKey === 'Text') continue;
             testpromptTypeValueKey = testpromptTypeValueKey.toLowerCase();
@@ -421,21 +424,34 @@ function createquesform(quesprojectform) {
             // console.log(filePathKey);
             let filePath = quesprojectform[filePathKey]
             // console.log(filePath);
-            if (testpromptTypeValueInfo[0] === 'waveform') {
+            if (testpromptTypeValueInfo[0] === 'waveform' &&
+                testpromptTypeValueKey === 'audio' &&
+                !audioWaveform) {
               substr = createInputElement('Language', [testpromptTypeKey], 'text', promptquesdatavalue)
+              console.log(substr);
               testquesform = testquesform.replace(substr, '');
               transcriptionBoundaryForm = testwaveFormFunction(update_key, testpromptTypeKey, testpromptTypeValue, quesdatavalue, filePath, langScript)
               if (transcriptionBoundaryForm === undefined) {
                 transcriptionBoundaryForm = '';
               }
+              else {
+                audioWaveform = 1
+              }
             }
-            else if (testpromptTypeValueInfo[0] === 'file') {
+            else if (testpromptTypeValueInfo[0] === 'file' ||
+                      testpromptTypeValueKey === 'multimedia' ||
+                      audioWaveform) {
               transcriptionBoundaryForm = testpromptFileFunction(update_key, testpromptTypeKey, testpromptTypeValue, quesdatavalue, filePath)
               if (transcriptionBoundaryForm === undefined) {
                 transcriptionBoundaryForm = '';
               }
             }
             testquesform += transcriptionBoundaryForm;
+            if (testpromptTypeValueInfo[1] === 'text') {
+              console.log('Instruction', [testpromptTypeKey], 'text', '')
+              let instructionForm = createInputElement(temp_testpromptTypeValueKey+' Instruction', [testpromptTypeKey], 'text', '')
+              testquesform += instructionForm
+            }
           }
           testquesform += '</fieldset>';
           // console.log(testquesform);
@@ -554,12 +570,12 @@ function testwaveFormFunction(key, promptTypeKey, promptTypeValue, quesdatavalue
     transcriptionBoundaryForm += waveform + waveformController;
     
     transcriptionBoundaryForm += '<div class="form-group">'+
-                                  '<label for="start">Boundary Start Time</label>'+
-                                  '<input class="form-control" id="start" name="start" value="'+start+'" required/>'+
+                                  // '<label for="start">Boundary Start Time</label>'+
+                                  '<input type="hidden" class="form-control" id="start" name="start" value="'+start+'" required/>'+
                                   '</div>'+
                                   '<div class="form-group">'+
-                                  '<label for="end">Boundary End Time</label>'+
-                                  '<input class="form-control" id="end" name="end" value="'+end+'" required/>'+
+                                  // '<label for="end">Boundary End Time</label>'+
+                                  '<input type="hidden" class="form-control" id="end" name="end" value="'+end+'" required/>'+
                                   '</div>';
     transcriptionBoundaryForm += quesTranscription;
     
@@ -569,7 +585,7 @@ function testwaveFormFunction(key, promptTypeKey, promptTypeValue, quesdatavalue
 
 function testpromptFileFunction(key, promptTypeKey, promptTypeValue, quesdatavalue, filePath) {
   // console.log(key, promptTypeKey, promptTypeValue, quesdatavalue);
-  console.log(quesdatavalue['fileId']);
+  // console.log(quesdatavalue['fileId']);
   let transcriptionBoundaryForm = '';
   let quesTranscription = '';
   // console.log(quesdatavalue['fileId'])
@@ -822,120 +838,6 @@ $("#save").click(function() {
   //   // window.location.reload();
   // });
 });
-
-function creatNewQues(quesprojectform) {
-  let newquesform = '';
-  let quesdata = Object();
-  let quesdatavalue = '';
-  console.log(quesprojectform);
-  newquesform += createInputElement('Q_Id', [''], 'text', quesdatavalue)
-  for (let [key, value] of Object.entries(quesprojectform)) {
-    console.log(key, value)
-    if (value) {
-      let eletype = value[0];
-      let elevalue = value[1];
-      console.log(eletype, elevalue);
-      if (eletype === 'text') {
-          newquesform += createInputElement(key, elevalue, eletype, quesdatavalue)
-      }
-      else if (eletype === 'textarea') {
-        newquesform += createTextareaElement(key, elevalue, eletype, quesdatavalue)
-      }
-      else if (eletype === 'file') {
-        newquesform += createInputElement(key, elevalue, eletype, quesdatavalue)
-      }
-      else if (eletype === 'select') {
-        newquesform += createSelectElement(key, elevalue, '', quesdatavalue)
-      }
-      else if (eletype === 'multiselect') {
-        newquesform += createSelectElement(key, elevalue, 'multiple', quesdatavalue)
-      }
-      else if (eletype === 'prompt') {
-        
-        var testquesform = ''
-        // testtype = questionaireprojectform[key][0];
-        // testvalue = questionaireprojectform[key][1];
-        testquesdata = quesdata;
-        testtype = eletype
-        testvalue = elevalue
-        // console.log(questionaireprojectform[key], testtype, testvalue);
-        // console.log(quesprojectform[key], testtype, testvalue);
-        for (let [testpromptTypeKey, testpromptTypeValue] of Object.entries(testvalue)) {
-          transcriptionBoundaryForm = '';
-          var promptquesdatavalue = Object();
-          testquesform += '<fieldset class="form-group border">'+
-                      '<legend class="col-form-label">'+
-                      'Prompt'+' '+ testpromptTypeKey +
-                      '<button class="btn btn-default pull-right" type="button" data-toggle="collapse"'+
-                      'data-target=".sense' + testpromptTypeKey +'" aria-expanded="false" aria-controls="sense' + testpromptTypeKey +'" '+
-                      'onclick="collapsePrompt('+testpromptTypeKey+')">'+
-                      '<span class="glyphicon glyphicon-chevron-down s'+testpromptTypeKey+'" aria-hidden="true"></span>'+
-                      '</button></legend>';
-          console.log(testpromptTypeKey, testpromptTypeValue);
-          // console.log(key, elevalue, eletype, quesdatavalue);
-          // langData = testquesdata['prompt']['content'][testpromptTypeKey]
-          // langText = testquesdata['prompt']['content'][testpromptTypeKey]['text']
-          // langTextBoundary = Object.keys(langText)[0]
-          langScript = quesprojectform['LangScript'][1][testpromptTypeKey]
-          // console.log(langText, langTextBoundary, langScript);
-          promptquesdatavalue[testpromptTypeKey] = ''
-          // console.log(key, elevalue, eletype, quesdatavalue, promptquesdatavalue);
-          testquesform += createInputElement('Language', [testpromptTypeKey], 'text', promptquesdatavalue)
-          for (let [testpromptTypeValueKey, testpromptTypeValueInfo] of Object.entries(testpromptTypeValue)) {
-            // console.log(testpromptTypeValueKey, testpromptTypeValueInfo);
-            transcriptionBoundaryForm = '';
-            update_key = key.replace('Type', '')+testpromptTypeValueKey;
-            if (testpromptTypeValueKey === 'Text') continue;
-            testpromptTypeValueKey = testpromptTypeValueKey.toLowerCase();
-            // quesdatavalue = langData[testpromptTypeValueKey]
-            // console.log(langData[testpromptTypeValueKey])
-            let filePathKey = [testpromptTypeKey, testpromptTypeValueKey.toLocaleLowerCase(), 'FilePath'].join('_')
-            // console.log(filePathKey);
-            let filePath = quesprojectform[filePathKey]
-            // console.log(filePath);
-            if (testpromptTypeValueInfo[0] === 'waveform') {
-              substr = createInputElement('Language', [testpromptTypeKey], 'text', promptquesdatavalue)
-              testquesform = testquesform.replace(substr, '');
-              transcriptionBoundaryForm = testwaveFormFunction(update_key, testpromptTypeKey, testpromptTypeValue, quesdatavalue, filePath, langScript)
-              if (transcriptionBoundaryForm === undefined) {
-                transcriptionBoundaryForm = '';
-              }
-            }
-            else if (testpromptTypeValueInfo[0] === 'file') {
-              transcriptionBoundaryForm = testpromptFileFunction(update_key, testpromptTypeKey, testpromptTypeValue, quesdatavalue, filePath)
-              if (transcriptionBoundaryForm === undefined) {
-                transcriptionBoundaryForm = '';
-              }
-            }
-            testquesform += transcriptionBoundaryForm;
-          }
-          testquesform += '</fieldset>';
-          // console.log(testquesform);
-        }
-        // $('.testfield').html(testquesform);
-        newquesform += testquesform
-      }
-    }
-  }
-  let qform = '<form id="idsavequesform" action="/lifeques/savequestionnaire" method="POST" enctype="multipart/form-data">';
-  qform += '<hr>' + newquesform;
-  qform += '</form>'
-  // console.log(quesform)
-  
-  $('#quesform').html(qform);
-
-  $('.quesselect').select2({
-    placeholder: 'select',
-    allowClear: true
-  });
-  $('#Target').select2({
-    placeholder: 'select',
-    data: targets,
-    allowClear: true
-  });
-
-  quesIdDetails('', '')
-}
 
 $("#addnewques").click(function() {
   $.get( "/lifeques/createnewques", {
