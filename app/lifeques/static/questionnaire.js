@@ -401,7 +401,7 @@ function createquesform(quesprojectform) {
                       'onclick="collapsePrompt('+testpromptTypeKey+')">'+
                       '<span class="glyphicon glyphicon-chevron-down s'+testpromptTypeKey+'" aria-hidden="true"></span>'+
                       '</button></legend>';
-          console.log(testpromptTypeKey, testpromptTypeValue);
+          // console.log(testpromptTypeKey, testpromptTypeValue);
           // console.log(key, elevalue, eletype, quesdatavalue);
           langData = testquesdata['prompt']['content'][testpromptTypeKey]
           langText = testquesdata['prompt']['content'][testpromptTypeKey]['text']
@@ -409,10 +409,10 @@ function createquesform(quesprojectform) {
           langScript = quesprojectform['LangScript'][1][testpromptTypeKey]
           // console.log(langText, langTextBoundary, langScript);
           promptquesdatavalue[testpromptTypeKey] = langText[langTextBoundary]['textspan'][langScript]
-          console.log(key, elevalue, eletype, quesdatavalue, promptquesdatavalue);
+          // console.log(key, elevalue, eletype, quesdatavalue, promptquesdatavalue);
           testquesform += createInputElement('Language', [testpromptTypeKey], 'text', promptquesdatavalue)
           for (let [testpromptTypeValueKey, testpromptTypeValueInfo] of Object.entries(testpromptTypeValue)) {
-            console.log(testpromptTypeValueKey, testpromptTypeValueInfo);
+            // console.log(testpromptTypeValueKey, testpromptTypeValueInfo);
             transcriptionBoundaryForm = '';
             temp_testpromptTypeValueKey = testpromptTypeValueKey;
             update_key = key.replace('Type', '')+testpromptTypeValueKey;
@@ -428,7 +428,7 @@ function createquesform(quesprojectform) {
                 testpromptTypeValueKey === 'audio' &&
                 !audioWaveform) {
               substr = createInputElement('Language', [testpromptTypeKey], 'text', promptquesdatavalue)
-              console.log(substr);
+              // console.log(substr);
               testquesform = testquesform.replace(substr, '');
               transcriptionBoundaryForm = testwaveFormFunction(update_key, testpromptTypeKey, testpromptTypeValue, quesdatavalue, filePath, langScript)
               if (transcriptionBoundaryForm === undefined) {
@@ -448,7 +448,7 @@ function createquesform(quesprojectform) {
             }
             testquesform += transcriptionBoundaryForm;
             if (testpromptTypeValueInfo[1] === 'text') {
-              console.log('Instruction', [testpromptTypeKey], 'text', '')
+              // console.log('Instruction', [testpromptTypeKey], 'text', '')
               let instructionForm = createInputElement(temp_testpromptTypeValueKey+' Instruction', [testpromptTypeKey], 'text', '')
               testquesform += instructionForm
             }
@@ -503,8 +503,8 @@ function createquesform(quesprojectform) {
 }
 
 function testwaveFormFunction(key, promptTypeKey, promptTypeValue, quesdatavalue, filePath, langScript) {
-  console.log(key, promptTypeKey, promptTypeValue, quesdatavalue, filePath, langScript);
-  console.log(quesdatavalue['fileId']);
+  // console.log(key, promptTypeKey, promptTypeValue, quesdatavalue, filePath, langScript);
+  // console.log(quesdatavalue['fileId']);
   
   let transcriptionBoundaryForm = '';
   let quesTranscription = ''

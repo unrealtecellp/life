@@ -1,12 +1,12 @@
-{% extends "enternewsentenceslinks.html" %}
+{% extends "questionnairelinks.html" %}
 
 {% block title %}
-    Audio Browse
+    Questionnaire Browse
 {% endblock title %}
 
 {% block styles %}
 {{super()}}
-    <link href="{{url_for('.static', filename='audiobrowse.css')}}" rel="stylesheet">
+    <link href="{{url_for('.static', filename='quesbrowse.css')}}" rel="stylesheet">
 {% endblock %}
 
 {% block app_content %}
@@ -19,25 +19,25 @@
 <div class="row">
     <div class="col col-md-8">
         <!-- <label for="speakeridsdropdown">Source:</label> -->
-        <select id="audiosortingcategoriesdropdown" style="width: 30%;"></select>
-        <select id="audiosortingsubcategoriesdropdown" multiple="multiple" style="width: 40%; display: none;"></select>
-        <button type="button" class="btn btn-primary" id="audiofilter"  style="display: none;">
+        <!-- <select id="quessortingcategoriesdropdown" style="width: 30%;"></select> -->
+        <!-- <select id="quessortingsubcategoriesdropdown" multiple="multiple" style="width: 40%; display: none;"></select> -->
+        <!-- <button type="button" class="btn btn-primary" id="quesfilter"  style="display: none;">
             <span class="glyphicon glyphicon-filter" aria-hidden="true"></span>
-        </button>
+        </button> -->
         <!-- <label for="speakeridsdropdown">Source:</label> -->
-        <select id="speakeridsdropdown" style="width: 40%; display: block;"></select>
-        <select id="audiofilescountdropdown" style="width: 10%;"></select>
-        <label for="audiofilescountdropdown">:Files</label>
+        <!-- <select id="speakeridsdropdown" style="width: 40%; display: block;"></select> -->
+        <select id="quesfilescountdropdown" style="width: 10%;"></select>
+        <label for="quesfilescountdropdown">:Files</label>
     </div>
-    <div class="col col-md-4 pull-right" id="browseaudiodropdowns">
+    <div class="col col-md-4 pull-right" id="browsequesdropdowns">
     </div>
     <!-- <div class="col col-md-3">
         <input id="myInput" type="text" placeholder="Search">
     </div> -->
 </div>
 <br>
-<div id="audiobrowsetable"></div>
-<div class="text-center" id="audiobrowsepagination"></div>
+<div id="quesbrowsetable"></div>
+<div class="text-center" id="quesbrowsepagination"></div>
 
   <!-- Share File/s Modal -->
   <div id="plugBrowseShareModal"></div>
@@ -49,12 +49,12 @@
 
 {% block scripts %}
 {{super()}}
-    <script src="{{url_for('.static', filename='downloader/transcriptiondownload.js')}}"></script>
-    <script src="{{url_for('.static', filename='speaker_select2_dropdown.js')}}"></script>
-    <script src="{{url_for('.static', filename='audiobrowsefilter.js')}}"></script>
-    <script src="{{url_for('.static', filename='audiobrowse.js')}}"></script>
-    <script src="{{url_for('.static', filename='changeactivespeaker.js')}}"></script>
-    <script type="text/javascript">createAudioBrowse({{ newData | tojson | safe }});</script>
+    <!-- <script src="{{url_for('.static', filename='downloader/transcriptiondownload.js')}}"></script> -->
+    <!-- <script src="{{url_for('.static', filename='speaker_select2_dropdown.js')}}"></script> -->
+    <script src="{{url_for('.static', filename='quesbrowsefilter.js')}}"></script>
+    <script src="{{url_for('.static', filename='quesbrowse.js')}}"></script>
+    <!-- <script src="{{url_for('.static', filename='changeactivespeaker.js')}}"></script> -->
+    <script type="text/javascript">createQuesBrowse({{ newData | tojson | safe }});</script>
     <script src="{{url_for('.static', filename='search.js')}}"></script>
     <script src="{{url_for('.static', filename='sorttable.js')}}"></script>
     <script src="{{url_for('static', filename='browsesharemodal.js')}}"></script>
