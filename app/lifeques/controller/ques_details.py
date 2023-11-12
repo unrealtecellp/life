@@ -175,3 +175,16 @@ def revoke_deleted_ques(projects_collection,
         questionnaire_doc_id = False
 
     return questionnaire_doc_id
+
+def get_ques_delete_flag(questionnaires_collection,
+                          project_name,
+                          ques_id):
+    # logger.debug("%s, %s, %s", questionnaires_collection,
+    #              project_name,
+    #              ques_id)
+    ques_delete_flag = questionnaires_collection.find_one({"projectname": project_name,
+                                                            "quesId": ques_id},
+                                                           {"_id": 0,
+                                                            "quesdeleteFLAG": 1})["quesdeleteFLAG"]
+
+    return ques_delete_flag

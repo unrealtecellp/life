@@ -16,6 +16,8 @@ def getnewquesid(projects,
     if len(ques_ids_list) != 0:
         ques_ids_list = ques_ids_list['questionnaireIds']                                   
         # print('ques_ids_list', ques_ids_list)
+    if (not (last_active_id in ques_ids_list)):
+        last_active_id = ques_ids_list[0]
     ques_id_index = ques_ids_list.index(last_active_id)
     # print('latestquesId Index!!!!!!!', ques_id_index)
     if which_one == 'previous':

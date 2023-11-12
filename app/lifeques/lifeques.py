@@ -262,6 +262,21 @@ def questionnaire():
                                                         activeprojectname,
                                                         current_username)
     # logger.debug("last_active_ques_id: %s", last_active_ques_id)
+    ques_delete_flag = ques_details.get_ques_delete_flag(questionnaires,
+                                                         activeprojectname,
+                                                         last_active_ques_id)
+    if (ques_delete_flag):
+        last_active_ques_id = getnewquesid.getnewquesid(projects,
+                                                activeprojectname,
+                                                last_active_ques_id,
+                                                'next')
+        updatelatestquesid.updatelatestquesid(projects,
+                                            activeprojectname,
+                                            last_active_ques_id,
+                                            current_username)
+        flash(f"This question seem to be deleted or revoked access by one of the shared user.\
+                        Showing you the next question in the queue.")
+        return redirect(url_for('lifeques.questionnaire'))
     quesdata = questionnaires.find_one({"quesId": last_active_ques_id}, {"_id": 0})
     # logger.debug("quesdata: %s", pformat(quesdata))
     # print(f"{inspect.currentframe().f_lineno}: {quesprojectform}")
@@ -957,3 +972,36 @@ def quesbrowsechangepage():
                    shareChecked=share_checked,
                    activePage=page_id,
                    downloadChecked=download_checked)
+
+
+@lifeques.route('/quesbrowseview', methods=['GET', 'POST'])
+@login_required
+def quesbrowseview():
+    try:
+        route='questionnaire'
+        projects_collection, userprojects, questionnaires_collection = getdbcollections.getdbcollections(mongo,
+                                                                                                         'projects',
+                                                                                                         'userprojects',
+                                                                                                         'questionnaires')
+        current_username = getcurrentusername.getcurrentusername()
+        activeprojectname = getactiveprojectname.getactiveprojectname(
+            current_username, userprojects)
+        # logger.debug("%s,%s", current_username, activeprojectname)
+        # data from ajax
+        data = json.loads(request.args.get('a'))
+        logger.debug('data: %s', pformat(data))
+        ques_info = data['quesInfo']
+        # logger.debug('ques_info: %s', pformat(ques_info))
+        ques_browse_info = data['quesBrowseInfo']
+        # logger.debug('ques_browse_info: %s', pformat(ques_browse_info))
+        browse_action = ques_browse_info['browseActionSelectedOption']
+        # active_speaker_id = ques_browse_info['activeSpeakerId']
+        latest_ques_id = list(ques_info.keys())[0]
+        updatelatestquesid.updatelatestquesid(projects_collection,
+                                                activeprojectname,
+                                                latest_ques_id,
+                                                current_username)
+    except:
+        logger.exception("")
+
+    return jsonify(route=route)

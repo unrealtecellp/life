@@ -455,6 +455,12 @@ function eventsMapping() {
         // browseShareMode(["share"]);
         // quesBrowseActionShare(ques);
     });
+    // view single ques
+    $(".viewquesclass").click(function() {
+        let quesInfo = getSingleQuesBrowseAction(this);
+        console.log("Single ques info", quesInfo);
+        quesBrowseView(quesInfo);
+    });
 }
 
 function updateQuesSortingSubCategoriesDropdown() {
@@ -798,3 +804,26 @@ $(document).ready(function() {
         }
     });
 });
+
+function quesBrowseView(quesInfo) {
+    let quesBrowseInfo = getQuesBrowseInfo();
+    $.ajax({
+        data : {
+          a : JSON.stringify({
+            "quesInfo": quesInfo,
+            "quesBrowseInfo": quesBrowseInfo
+        })
+        },
+        type : 'GET',
+        url : '/lifeques/quesbrowseview'
+      }).done(function(data){
+            console.log(data);
+            route = data.route;
+            // window.location.reload();
+            windowHref = window.location.href
+            // pathname = window.location.pathname
+            // lastIndexOfPathname = windowHref.lastIndexOf(pathname)
+            // console.log(windowHref, pathname, lastIndexOfPathname);
+            window.location.href = windowHref.replace('quesbrowse', route);
+      });
+}
