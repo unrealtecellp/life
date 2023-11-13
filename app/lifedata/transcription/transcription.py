@@ -29,7 +29,9 @@ from app.controller import (
     getactiveprojectform,
     # audiodetails,
     getcommentstats,
-    projectDetails
+    projectDetails,
+    processHTMLForm,
+    speakerDetails
 )
 from app.lifedata.transcription.controller import (
     transcription_audiodetails
@@ -947,5 +949,52 @@ def makeboundary():
                                                        min_boundary_size=min_boundary_size,
                                                        save_for_user=overwrite_user
                                                        )
+
+    return redirect(url_for('lifedata.transcription.home'))
+
+@transcription.route('/addnewspeakerdetails', methods=['GET', 'POST'])
+@login_required
+def addnewspeakerdetails():
+    projects, userprojects, speakerdetails = getdbcollections.getdbcollections(mongo,
+                                                                               'projects',
+                                                                               'userprojects',
+                                                                               'speakerdetails')
+    current_username = getcurrentusername.getcurrentusername()
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                  userprojects)
+    projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
+    if request.method == 'POST':
+        form_data = request.form
+        uploaded_files = request.files
+
+        logger.debug("All form %s", form_data)
+
+        metadata_schema, audio_source, call_source, upload_type, exclude_fields = processHTMLForm.get_metadata_header_details(
+            form_data)
+
+        logger.debug("Metadata Schema %s", metadata_schema)
+        logger.debug("Call source %s", call_source)
+
+        metadata_data = processHTMLForm.get_metadata_data(form_data,
+                                                          form_files=uploaded_files,
+                                                          upload_type=upload_type,
+                                                          exclude_fields=exclude_fields)
+
+        speakerDetails.write_speaker_metadata_details(speakerdetails,
+                                                      projectowner,
+                                                      activeprojectname,
+                                                      current_username,
+                                                      audio_source,
+                                                      metadata_schema,
+                                                      metadata_data,
+                                                      upload_type)
+        if "managepage" in call_source:
+            flash(
+                'New source details added. Now you can upload the data for this source.')
+            return redirect(url_for('managespeakermetadata'))
+        else:
+            flash(
+                'New source details added. Now you can upload the data for this source.')
+            return redirect(url_for('lifedata.transcription.home'))
 
     return redirect(url_for('lifedata.transcription.home'))
