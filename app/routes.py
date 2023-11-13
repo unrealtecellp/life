@@ -421,6 +421,7 @@ def enternewsentences():
 
                 transcriptions_by = audiodetails.get_audio_transcriptions_by(
                     projects, transcriptions, activeprojectname, audio_id)
+                # logger.debug("transcriptions_by: %s", transcriptions_by)
 
             except:
                 speakerids = ''

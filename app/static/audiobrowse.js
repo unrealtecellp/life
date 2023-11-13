@@ -270,6 +270,7 @@ function createAudioBrowse(newData) {
     let audioDataFields = newData['audioDataFields']
     let audioData = newData['audioData']
     let transcriptionsBy = newData['transcriptionsBy']
+    // console.log(transcriptionsBy);
     createSelect2FromObject('audiosortingcategoriesdropdown', audioSortingCategories, 'Source');
     // createSelect2('audiosortingsubcategoriesdropdown', speakerIds, activeSpeakerId);
     createSelect2('speakeridsdropdown', speakerIds, activeSpeakerId);

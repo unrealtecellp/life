@@ -192,6 +192,7 @@ def home():
 
                     transcriptions_by = transcription_audiodetails.get_audio_transcriptions_by(
                         projects, transcriptions, activeprojectname, audio_id)
+                    # logger.debug("transcriptions_by: %s", transcriptions_by)
 
                 except:
                     speakerids = ''
@@ -243,6 +244,18 @@ def audiobrowse():
         shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
                                                           current_username,
                                                           activeprojectname)
+
+        project_shared_with = projectDetails.get_shared_with_users(
+            projects, activeprojectname)
+        project_shared_with.append("latest")
+        # speakerids = projects.find_one({"projectname": activeprojectname},
+        #                                {"_id": 0, "speakerIds." + current_username: 1})
+        # # logger.debug('speakerids: %s', pformat(speakerids))
+        # if ("speakerIds" in speakerids and speakerids["speakerIds"]):
+        #     speakerids = speakerids["speakerIds"][current_username]
+        #     speakerids.append('')
+        # else:
+        #     speakerids = ['']
         speakerids = transcription_audiodetails.combine_speaker_ids(projects,
                                                       activeprojectname,
                                                       current_username)
@@ -261,7 +274,18 @@ def audiobrowse():
                                                                        speaker_audio_ids)
         else:
             audio_data_list = []
+        # get audio file src
         new_audio_data_list = audio_data_list
+        # logger.debug("new_audio_data_list: %s", pformat(new_audio_data_list))
+        # new_audio_data_list = []
+        # for audio_data in audio_data_list:
+        #     new_audio_data = audio_data
+        #     audio_filename = audio_data['audioFilename']
+        #     # if ("downloadchecked" in shareinfo and
+        #     #     shareinfo["downloadchecked"] == 'true'):
+        #     # new_audio_data['Audio File'] = url_for('retrieve', filename=audio_filename)
+        #     # logger.debug("retrieved audio: %s", new_audio_data['Audio File'])
+        #     new_audio_data_list.append(new_audio_data)
         new_data['currentUsername'] = current_username
         new_data['activeProjectName'] = activeprojectname
         new_data['projectOwner'] = projectowner
@@ -271,6 +295,7 @@ def audiobrowse():
         new_data['audioDataFields'] = [
             'audioId', 'audioFilename', 'Audio File']
         new_data['totalRecords'] = total_records
+        new_data['transcriptionsBy'] = project_shared_with
     except:
         logger.exception("")
 

@@ -547,5 +547,6 @@
   <script src="{{url_for('.static', filename='sorttable.js')}}"></script>
   <script type="text/javascript">createTranscriptionInterfaceForm({{ newData | tojson | safe }});</script>
   <script src="{{url_for('.static', filename='audiotranscription.js')}}"></script>
-  <script src="{{url_for('.static', filename='downloader/transcriptiondownload.js')}}"></script>
+  <script src="{{url_for('static', filename='downloader/transcriptiondownload.js')}}"></script>
+  <script type="text/javascript">generateDownloadForm({{ shareinfo | tojson | safe }}, {{ transcriptionsby | tojson | safe}}, {{ activetranscriptionby | tojson | safe}}, {{ projectName | tojson | safe}});</script>
 {% endblock %}
