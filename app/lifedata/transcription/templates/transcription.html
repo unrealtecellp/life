@@ -24,7 +24,7 @@
       {% endif %}
       <!-- &nbsp;&nbsp; -->
     </div>
-    <div class="col-sm-6">
+    <div class="col-sm-5">
       <button class="btn btn-info" type="button" id="previous" data-toggle="tooltip" title="Previous Audio" onclick="previousAudio()">
         <span class="previousaudio glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
       </button>
@@ -38,10 +38,17 @@
       </button>
       <!-- &nbsp;&nbsp; -->
     </div>
-    <div class="col-sm-1">
+    <div class="col-sm-2">
+      <button class="btn btn-success" id="markcomplete" data-toggle="tooltip" title="Mark Complete">
+        <span class="markcompleteaudio glyphicon glyphicon-ok" aria-hidden="true"></span>
+      </button>
+      <button class="btn btn-danger" id="markincomplete" data-toggle="tooltip" title="Mark Incomplete"" style="display: none;">
+        <span class="markincompleteaudio glyphicon glyphicon-remove" aria-hidden="true"></span>
+      </button>
       <span class="pull-right" style="font-size:30px; position:absolute; cursor:pointer" data-toggle="tooltip" title="Info" onclick="openAudioMetaData()">
         <i class="glyphicon glyphicon-info-sign"></i>
       </span>
+      
     </div>
     <span class="pull-right" style="font-size:30px; position:absolute; right:10px;cursor:pointer" onclick="openNav()"><i class="glyphicon glyphicon-menu-hamburger"></i></span>
     <div id="sidepanel"></div>
@@ -215,6 +222,7 @@
       </div>
     </div>
   </form>
+  <div class="form-group transcriptionpromptfield1" id="transcriptionpromptfield2"></div>
   <!-- <br>
   <br>
   <br> -->
@@ -385,7 +393,8 @@
   </div>
 
   <!-- Download Transcription Modal -->
-  <div class="modal fade" id="myDownloadTranscriptionModal" tabindex="-1" role="dialog"
+  <div id="idTranscriptionDownloadModal"></div>
+  <!-- <div class="modal fade" id="myDownloadTranscriptionModal" tabindex="-1" role="dialog"
     aria-labelledby="myDownloadTranscriptionModalLabel">
     <div class="modal-dialog modal-lg" role="document">
       <div class="modal-content">
@@ -444,7 +453,7 @@
         </div>
       </div>
     </div>
-  </div>
+  </div> -->
 
 
   <!-- Make Boundary Modal -->
@@ -535,10 +544,11 @@
   <script src="{{url_for('.static', filename='changeactivespeaker.js')}}"></script>
   <script src="{{url_for('.static', filename='progressreport.js')}}"></script>
   <script src="{{url_for('.static', filename='addnewspeaker.js')}}"></script>
-  <script src="{{url_for('.static', filename='speaker_select2_dropdown.js')}}"></script>
+  <script src="{{url_for('static', filename='speaker_select2_dropdown.js')}}"></script>
   <script src="{{url_for('.static', filename='search.js')}}"></script>
   <script src="{{url_for('.static', filename='sorttable.js')}}"></script>
   <script type="text/javascript">createTranscriptionInterfaceForm({{ newData | tojson | safe }});</script>
   <script src="{{url_for('.static', filename='audiotranscription.js')}}"></script>
-  <script src="{{url_for('.static', filename='downloader/transcriptiondownload.js')}}"></script>
+  <script src="{{url_for('static', filename='downloader/transcriptiondownload.js')}}"></script>
+  <script type="text/javascript">generateDownloadForm({{ shareinfo | tojson | safe }}, {{ transcriptionsby | tojson | safe}}, {{ activetranscriptionby | tojson | safe}}, {{ projectName | tojson | safe}});</script>
 {% endblock %}

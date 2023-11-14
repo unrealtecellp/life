@@ -42,10 +42,15 @@
   <!-- Share File/s Modal -->
   <div id="plugBrowseShareModal"></div>
 
+<!-- Download Transcription Modal -->
+<div id="idTranscriptionDownloadModal"></div>
+
 {% endblock %}
 
 {% block scripts %}
 {{super()}}
+    <script src="{{url_for('static', filename='downloader/transcriptiondownload.js')}}"></script>
+    <script src="{{url_for('static', filename='speaker_select2_dropdown.js')}}"></script>
     <script src="{{url_for('.static', filename='audiobrowsefilter.js')}}"></script>
     <script src="{{url_for('.static', filename='audiobrowse.js')}}"></script>
     <script src="{{url_for('.static', filename='changeactivespeaker.js')}}"></script>
