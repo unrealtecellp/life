@@ -393,13 +393,14 @@ function createquesform(quesprojectform) {
         for (let [testpromptTypeKey, testpromptTypeValue] of Object.entries(testvalue)) {
           transcriptionBoundaryForm = '';
           var promptquesdatavalue = Object();
+          testquesform += '<div class="form-group ' + testpromptTypeKey +'">';
           testquesform += '<fieldset class="form-group border">'+
                       '<legend class="col-form-label">'+
                       'Prompt'+' '+ testpromptTypeKey +
                       '<button class="btn btn-default pull-right" type="button" data-toggle="collapse"'+
-                      'data-target=".sense' + testpromptTypeKey +'" aria-expanded="false" aria-controls="sense' + testpromptTypeKey +'" '+
-                      'onclick="collapsePrompt('+testpromptTypeKey+')">'+
-                      '<span class="glyphicon glyphicon-chevron-down s'+testpromptTypeKey+'" aria-hidden="true"></span>'+
+                      'data-target=".prompt' + testpromptTypeKey +'" aria-expanded="false" aria-controls="' + testpromptTypeKey +'" '+
+                      'onclick="collapsePrompt(\''+testpromptTypeKey+'\')">'+
+                      '<span class="glyphicon glyphicon-chevron-up promp'+testpromptTypeKey+'" aria-hidden="true"></span>'+
                       '</button></legend>';
           // console.log(testpromptTypeKey, testpromptTypeValue);
           // console.log(key, elevalue, eletype, quesdatavalue);
@@ -410,6 +411,7 @@ function createquesform(quesprojectform) {
           // console.log(langText, langTextBoundary, langScript);
           promptquesdatavalue[testpromptTypeKey] = langText[langTextBoundary]['textspan'][langScript]
           // console.log(key, elevalue, eletype, quesdatavalue, promptquesdatavalue);
+          testquesform += '<div class="form-group prompt'+testpromptTypeKey+' collapse in">';
           testquesform += createInputElement('Language', [testpromptTypeKey], 'text', promptquesdatavalue)
           for (let [testpromptTypeValueKey, testpromptTypeValueInfo] of Object.entries(testpromptTypeValue)) {
             // console.log(testpromptTypeValueKey, testpromptTypeValueInfo);
@@ -453,7 +455,9 @@ function createquesform(quesprojectform) {
               testquesform += instructionForm
             }
           }
+          testquesform += '</div>';
           testquesform += '</fieldset>';
+          testquesform += '</div>';
           // console.log(testquesform);
         }
         // $('.testfield').html(testquesform);
@@ -752,12 +756,13 @@ function loadAnnoQues() {
 }
 
 function collapsePrompt(eleClass) {
+  // console.log(eleClass);
   $(".prompt"+eleClass).ready(function(){
     $(".prompt"+eleClass).on('shown.bs.collapse', function(){
-      $(".s"+eleClass).addClass('glyphicon-chevron-up').removeClass('glyphicon-chevron-down');
+      $(".promp"+eleClass).addClass('glyphicon-chevron-up').removeClass('glyphicon-chevron-down');
     });  
     $(".prompt"+eleClass).on('hidden.bs.collapse', function() {
-      $(".s"+eleClass).addClass('glyphicon-chevron-down').removeClass('glyphicon-chevron-up');
+      $(".promp"+eleClass).addClass('glyphicon-chevron-down').removeClass('glyphicon-chevron-up');
     });   
   });
 }

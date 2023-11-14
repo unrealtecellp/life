@@ -100,18 +100,18 @@
         <h4>Project Name : {{ projectName }}</h4>
       {% endif %}
     </div>
-    {% if quesstats is defined %}
+    {% if questats is defined %}
       <div class="quesStats">
       </div>
-    {% if quesstats[0] != 0 %}
+    {% if questats[0] != 0 %}
       <div class="progress">
         <div class="progress-bar progress-bar-success" role="progressbar"
-          style="width:{{ quesstats[1]/quesstats[0]*100 }}%">
-          Completed : {{ quesstats[1] }}
+          style="width:{{ questats[1]/questats[0]*100 }}%">
+          Completed : {{ questats[1] }}
         </div>
         <div class="progress-bar progress-bar-danger" role="progressbar"
-          style="width:{{ quesstats[2]/quesstats[0]*100 }}%">
-          Remaining : {{ quesstats[2] }}
+          style="width:{{ questats[2]/questats[0]*100 }}%">
+          Remaining : {{ questats[2] }}
         </div>
       </div>
     {% endif %}
@@ -169,11 +169,11 @@
   <!-- <div class="col-sm-7 commentIDs">
       <button type="button" id="uNAnnotated" class="btn btn-light" onclick="unAnnotated()">All Question Ids</button>
   </div> -->
-  <!-- {% if quesstats is defined %}
+  <!-- {% if questats is defined %}
     <div class="col-sm-3 quesStats pull-right">
-      <strong>Total Files: {{ quesstats[0] }}</strong><br> 
-      <strong>Annotated Files: {{ quesstats[1] }}</strong><br>
-      <strong>Remaining Files: {{ quesstats[2] }}</strong><br>
+      <strong>Total Files: {{ questats[0] }}</strong><br> 
+      <strong>Annotated Files: {{ questats[1] }}</strong><br>
+      <strong>Remaining Files: {{ questats[2] }}</strong><br>
     </div>
   {% endif %} -->
 </div>

@@ -329,6 +329,7 @@ def questionnaire():
                                                                                         'ID',
                                                                                         'idtype')
     questats = [total_ques, completed, notcompleted]
+    # logger.debug('questats: %s', questats)
 
     return render_template('questionnaire.html',
                             projectName=activeprojectname,
