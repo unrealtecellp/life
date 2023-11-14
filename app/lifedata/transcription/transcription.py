@@ -34,7 +34,8 @@ from app.controller import (
     speakerDetails
 )
 from app.lifedata.transcription.controller import (
-    transcription_audiodetails
+    transcription_audiodetails,
+    save_transcription_prompt
 )
 
 from flask_login import login_required
@@ -201,6 +202,12 @@ def home():
                 activeprojectform['scriptCode'] = scriptCode
                 langScript = readJSONFile.readJSONFile(langScriptJSONFilePath)
                 activeprojectform['langScript'] = langScript
+                # print(audio_id)
+                prompt = transcriptions.find_one({"projectname": activeprojectname,
+                                                  "audioId": audio_id},
+                                                   {"_id": 0, "prompt": 1}
+                                                   )["prompt"]
+                activeprojectform['prompt'] = prompt
                 # logger.debug("activeprojectform: %s", activeprojectform)
 
                 return render_template('transcription.html',
@@ -890,7 +897,7 @@ def uploadaudiofiles():
                                     slice_size=slice_size,
                                     data_type="audio",
                                     new_audio_details={},
-                                    prompt="",
+                                    prompt={},
                                     update=False,
                                     slice_offset_value=slice_offset,
                                     min_boundary_size=min_boundary_size
@@ -1048,3 +1055,102 @@ def addnewspeakerdetails():
             return redirect(url_for('lifedata.transcription.home'))
 
     return redirect(url_for('lifedata.transcription.home'))
+
+
+@transcription.route('/transcriptionpromptfile', methods=['GET', 'POST'])
+@login_required
+def transcriptionpromptfile():
+    try:
+        projects, userprojects, projectsform, transcriptions = getdbcollections.getdbcollections(mongo,
+                                                                                                'projects',
+                                                                                                'userprojects',
+                                                                                                'projectsform',
+                                                                                                'transcriptions'
+                                                                                                )
+        current_username = getcurrentusername.getcurrentusername()
+        activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                        userprojects)
+        projectowner = getprojectowner.getprojectowner(projects,
+                                                        activeprojectname)
+        
+        # ques_audio_file = request.files
+        # print(ques_audio_file)
+        # last_active_ques_id = getactivequestionnaireid.getactivequestionnaireid(projects,
+        #                                                                         activeprojectname,
+        #                                                                         current_username)
+        activespeakerid = getuserprojectinfo.getuserprojectinfo(userprojects,
+                                                                current_username,
+                                                                activeprojectname)['activespeakerId']
+        audio_id = transcription_audiodetails.getactiveaudioid(projects,
+                                                            activeprojectname,
+                                                            activespeakerid,
+                                                            current_username)
+        
+        if request.method == "POST":
+            prompt_file = request.files.to_dict()
+            logger.debug('prompt_file: %s', prompt_file)
+            prompt_type = list(prompt_file.keys())[0].split('_')[1]
+            # print(prompt_type)
+        save_transcription_prompt.savepromptfile(mongo,
+                                                projects,
+                                                userprojects,
+                                                projectsform,
+                                                transcriptions,
+                                                projectowner,
+                                                activeprojectname,
+                                                current_username,
+                                                audio_id,
+                                                prompt_file)
+    except:
+        logger.exception("")
+
+    return redirect(url_for("lifedata.transcription.home"))
+
+@transcription.route('/transcriptionprompttext', methods=['GET', 'POST'])
+@login_required
+def transcriptionprompttext():
+    try:
+        projects, userprojects, projectsform, transcriptions = getdbcollections.getdbcollections(mongo,
+                                                                                                'projects',
+                                                                                                'userprojects',
+                                                                                                'projectsform',
+                                                                                                'transcriptions'
+                                                                                                )
+        current_username = getcurrentusername.getcurrentusername()
+        activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                        userprojects)
+        projectowner = getprojectowner.getprojectowner(projects,
+                                                        activeprojectname)
+        
+        # ques_audio_file = request.files
+        # print(ques_audio_file)
+        # last_active_ques_id = getactivequestionnaireid.getactivequestionnaireid(projects,
+        #                                                                         activeprojectname,
+        #                                                                         current_username)
+        activespeakerid = getuserprojectinfo.getuserprojectinfo(userprojects,
+                                                                current_username,
+                                                                activeprojectname)['activespeakerId']
+        audio_id = transcription_audiodetails.getactiveaudioid(projects,
+                                                            activeprojectname,
+                                                            activespeakerid,
+                                                            current_username)
+        
+        if request.method == "POST":
+            prompt_text = request.form.to_dict()
+            logger.debug('prompt_text: %s', prompt_text)
+            prompt_type = list(prompt_text.keys())[0].split('_')[1]
+            # print(prompt_type)
+        save_transcription_prompt.saveprompttext(mongo,
+                                                projects,
+                                                userprojects,
+                                                projectsform,
+                                                transcriptions,
+                                                projectowner,
+                                                activeprojectname,
+                                                current_username,
+                                                audio_id,
+                                                prompt_text)
+    except:
+        logger.exception("")
+
+    return redirect(url_for("lifedata.transcription.home"))

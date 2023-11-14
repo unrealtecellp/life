@@ -40,6 +40,163 @@ function createTagsetsForm() {
     return tagsetsForm
 }
 
+function uploadTranscriptionPromptFile(btn) {
+  // console.log(btn, btn.id);
+  promptFileUploadBtnId = btn.id
+  promptFileId = promptFileUploadBtnId.replace(new RegExp('ques|submit', 'g'), '');
+  console.log(promptFileId);
+  const file = document.getElementById(promptFileId).files[0];
+  var formData = new FormData();
+  formData.append(promptFileId, file);
+  // console.log(formData);
+  $.ajax({
+    url: '/lifedata/transcription/transcriptionpromptfile',
+    type: 'POST',
+    data: formData,
+    contentType: false,
+    cache: false,
+    processData: false,
+    success: function(data) {
+        // console.log('Success!');
+        window.location.reload();
+    },
+  });
+  return false;
+}
+
+function saveTranscriptionPromptText(btn) {
+  // console.log(btn, btn.id);
+  promptTextSaveBtnId = btn.id
+  promptTextId = promptTextSaveBtnId.replace(new RegExp('ques|submit', 'g'), '');
+  console.log(promptTextId);
+  const data = document.getElementById(promptTextId).value;
+  var formData = new FormData();
+  formData.append(promptTextId, data);
+  // console.log(formData);
+  $.ajax({
+    url: '/lifedata/transcription/transcriptionprompttext',
+    type: 'POST',
+    data: formData,
+    contentType: false,
+    cache: false,
+    processData: false,
+    success: function(data) {
+        // console.log('Success!');
+        window.location.reload();
+    },
+  });
+  return false;
+}
+
+function collapseTranscriptionPrompt() {
+  // console.log("collapseTranscriptionPrompt");
+  $(".prompt").ready(function(){
+    // console.log("collapseTranscriptionPrompt");
+      $(".prompt").on('shown.bs.collapse', function(){
+        // console.log("collapseTranscriptionPrompt");
+        $(".promp").addClass('glyphicon-chevron-up').removeClass('glyphicon-chevron-down');
+      });  
+      $('.prompt').on('hidden.bs.collapse', function() {
+        // console.log("collapseTranscriptionPrompt");
+        $(".promp").addClass('glyphicon-chevron-down').removeClass('glyphicon-chevron-up');
+      });   
+  });
+}
+
+function createTranscriptionPrompt(audio_lang_script) {
+  let activeprojectform = JSON.parse(localStorage.activeprojectform);
+  let prompt = activeprojectform['prompt']
+  // console.log(prompt);
+  let promptInpt = '';
+  promptInpt += '<fieldset class="form-group border">'+
+              '<legend class="col-form-label">'+
+              'Prompt'+
+              '<button class="btn btn-default pull-right" type="button" data-toggle="collapse"'+
+              'data-target=".prompt" aria-expanded="false" aria-controls="transcriptionpromptfield1"'+
+              'onclick="collapseTranscriptionPrompt()">'+
+              '<span class="glyphicon glyphicon-chevron-down promp" aria-hidden="true"></span>'+
+              '</button></legend>';
+  if (Object.keys(prompt).length === 0) {
+    promptInpt += '<div class="form-group prompt collapse">';
+    promptInpt += '<label for="prompt_text_'+audio_lang_script+'">Promt Text</label>';
+                    
+    promptInpt += '<textarea class="form-control translation-box" id="prompt_text_'+audio_lang_script+'"' +
+                  'placeholder="Promt Text " name="prompt_text_'+audio_lang_script+'' +
+                  'value=""></textarea>';
+    promptInpt += '<input class="btn btn-primary pull-right" id="prompt_text_'+audio_lang_script+'submit"'+
+                  'type="button" value="Save" onclick="saveTranscriptionPromptText(this);">';
+    promptInpt += '</div>';
+
+    promptInpt += '<br>';
+
+    promptInpt += '<div class="form-group prompt collapse">'+
+                  '<label for="prompt_image_'+audio_lang_script+'">Prompt File</label>'+
+                  '<input type="file" class="form-control" id="prompt_image_'+audio_lang_script+'"'+ 
+                  'name="prompt_image_'+audio_lang_script+'" accept="image/png, image/jpeg" />';
+    promptInpt += '<input class="btn btn-primary pull-right" id="prompt_image_'+audio_lang_script+'submit"'+
+                  'type="button" value="Upload" onclick="uploadTranscriptionPromptFile(this);">';
+    promptInpt += '</div>';
+    // promptInpt += '</div>';
+    promptInpt += '<br>';
+  }
+  else {
+    // console.log(prompt['content'][audio_lang_script]);
+    let prompt_text_val = '';
+    let filePath = ''
+    try {
+      let prompt_text_object = prompt['content'][audio_lang_script]['text']
+      let prompt_text_boundary = Object.keys(prompt_text_object)[0]
+      let lang_script_array = audio_lang_script.split('-');
+      let lang_script = lang_script_array[lang_script_array.length-1]
+      // console.log(lang_script);
+      prompt_text_val = prompt_text_object[prompt_text_boundary]['textspan'][lang_script]
+      // console.log(prompt_text_val);
+    }
+    catch {
+      prompt_text_val = '';
+    }
+    promptInpt += '<div class="form-group prompt collapse">';
+    promptInpt += '<label for="prompt_text_'+audio_lang_script+'">Prompt Text</label>';
+                    
+    promptInpt += '<textarea class="form-control translation-box" id="prompt_text_'+audio_lang_script+'"' +
+                  'placeholder="Promt Text " name="prompt_text_'+audio_lang_script+'' +
+                  'value="'+prompt_text_val+'">'+prompt_text_val+'</textarea>';
+    promptInpt += '<input class="btn btn-primary pull-right" id="prompt_text_'+audio_lang_script+'submit"'+
+                  'type="button" value="Save" onclick="saveTranscriptionPromptText(this);">';
+    promptInpt += '</div>';
+
+    promptInpt += '<br>';
+    // console.log(filePath);
+
+    try {
+      filePath = '/retrieve/'+prompt['content'][audio_lang_script]['image']['filename'];
+    }
+    catch {
+      filePath = '';
+    }
+    if (filePath !== '') {
+      promptInpt += '<div class="form-group prompt collapse">'+
+                  '<label for="prompt_image">Prompt Image</label><br>'+
+                  '<img src="'+filePath+'" alt="prompt image" width="400" height="341" />'+
+                  '</div>';
+    }
+
+    promptInpt += '<div class="form-group prompt collapse">'+
+                  '<label for="prompt_image_'+audio_lang_script+'">Prompt File</label>'+
+                  '<input type="file" class="form-control" id="prompt_image_'+audio_lang_script+'"'+ 
+                  'name="prompt_image_'+audio_lang_script+'" accept="image/png, image/jpeg" />';
+    promptInpt += '<input class="btn btn-primary pull-right" id="prompt_image_'+audio_lang_script+'submit"'+
+                  'type="button" value="Upload" onclick="uploadTranscriptionPromptFile(this);">';
+    promptInpt += '</div>';
+    // promptInpt += '</div>';
+    promptInpt += '<br>';
+  }
+  promptInpt += '</fieldset>';
+  document.getElementById("transcriptionpromptfield2").innerHTML = "";
+  $('#transcriptionpromptfield2').append(promptInpt);
+  promptInpt = '';
+}
+
 function createTranscriptionInterfaceForm(newData) {
     // console.log(newData);
     localStorage.setItem("activeprojectform", JSON.stringify(newData));
@@ -60,6 +217,9 @@ function createTranscriptionInterfaceForm(newData) {
     let translation_form = '';
     let interlineargloss_form = '';
     let tagsets_form = '';
+    let audio_language = newData['Audio Language'][1][0]
+    let audio_script = newData['Transcription'][1][0]
+    let audio_lang_script = audio_language+'-'+audio_script
     for (let [key, value] of Object.entries(newData)){
         // console.log(key, value);
         eletype = value[0];
@@ -86,6 +246,7 @@ function createTranscriptionInterfaceForm(newData) {
         //     tagsets_form += createTagsetsForm();
         // }
     }
+    createTranscriptionPrompt(audio_lang_script);
 }
 
 //  transcription old
