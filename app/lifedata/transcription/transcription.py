@@ -227,6 +227,34 @@ def home():
     except:
         logger.exception("")
 
+# retrieve files from database
+# TODO: User not able to download the data
+@transcription.route('/retrieve/<filename>', methods=['GET'])
+@login_required
+def retrieve(filename):
+    logger.debug('Now in retrieve')
+    x = ''
+    try:
+        userprojects, = getdbcollections.getdbcollections(mongo,
+                                                          'userprojects')
+
+        current_username = getcurrentusername.getcurrentusername()
+        activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                      userprojects)
+
+        # share_info = getuserprojectinfo.getuserprojectinfo(userprojects,
+        #                                                     current_username,
+        #                                                     activeprojectname)
+        # if ("downloadchecked" in share_info and
+        #     share_info["downloadchecked"] == 'true'):
+        # logger.debug("share_info: %s", share_info)
+        x = mongo.send_file(filename)
+        # logger.debug("mongo send file: %s, %s, %s, %s, %s, %s", x.response, x.status, x.headers, x.mimetype, x.content_type, x.direct_passthrough)
+    except:
+        logger.exception("")
+
+    return x
+
 @transcription.route('/audiobrowse', methods=['GET', 'POST'])
 @login_required
 def audiobrowse():
@@ -277,15 +305,6 @@ def audiobrowse():
         # get audio file src
         new_audio_data_list = audio_data_list
         # logger.debug("new_audio_data_list: %s", pformat(new_audio_data_list))
-        # new_audio_data_list = []
-        # for audio_data in audio_data_list:
-        #     new_audio_data = audio_data
-        #     audio_filename = audio_data['audioFilename']
-        #     # if ("downloadchecked" in shareinfo and
-        #     #     shareinfo["downloadchecked"] == 'true'):
-        #     # new_audio_data['Audio File'] = url_for('retrieve', filename=audio_filename)
-        #     # logger.debug("retrieved audio: %s", new_audio_data['Audio File'])
-        #     new_audio_data_list.append(new_audio_data)
         new_data['currentUsername'] = current_username
         new_data['activeProjectName'] = activeprojectname
         new_data['projectOwner'] = projectowner
@@ -335,8 +354,8 @@ def updateaudiosortingsubcategories():
         # logger.debug('audio_browse_info: %s', pformat(audio_browse_info))
         audio_browse_action = audio_browse_info['browseActionSelectedOption']
         selected_audio_sorting_category = data['selectedAudioSortingCategories']
-        logger.debug('selected_audio_sorting_category: %s',
-                     selected_audio_sorting_category)
+        # logger.debug('selected_audio_sorting_category: %s',
+        #              selected_audio_sorting_category)
 
         speakerids = transcription_audiodetails.combine_speaker_ids(projects,
                                                       activeprojectname,
@@ -349,6 +368,7 @@ def updateaudiosortingsubcategories():
         total_records = 0
         share_mode = shareinfo['sharemode']
         share_checked = shareinfo['sharechecked']
+        download_checked = shareinfo['downloadchecked']
         if (selected_audio_sorting_category == 'sourcemetainfo'):
             audio_sorting_sub_categories = transcription_audiodetails.get_audio_sorting_subcategories(speakerdetails_collection,
                                                                                         activeprojectname,
@@ -384,7 +404,8 @@ def updateaudiosortingsubcategories():
                    audioData=new_audio_data_list,
                    shareMode=share_mode,
                    totalRecords=total_records,
-                   shareChecked=share_checked)
+                   shareChecked=share_checked,
+                   downloadChecked=download_checked)
 
 
 @transcription.route('/filteraudiobrowsetable', methods=['GET', 'POST'])
@@ -411,7 +432,7 @@ def filteraudiobrowsetable():
         #     speakerids = []
         # data through ajax
         data = json.loads(request.args.get('a'))
-        logger.debug('audio_browse_info: %s', pformat(data))
+        # logger.debug('audio_browse_info: %s', pformat(data))
         audio_browse_info = data['audioBrowseInfo']
         audio_file_count = audio_browse_info['audioFilesCount']
         audio_browse_action = audio_browse_info['browseActionSelectedOption']
@@ -459,9 +480,10 @@ def filteraudiobrowsetable():
                                                           activeprojectname)
         share_mode = shareinfo['sharemode']
         share_checked = shareinfo['sharechecked']
+        download_checked = shareinfo['downloadchecked']
         new_audio_data_list = audio_data_list[start_from:number_of_audios]
-        logger.debug("new_audio_data_list count: %s", len(new_audio_data_list))
-        logger.debug("total_records count: %s", total_records)
+        # logger.debug("new_audio_data_list count: %s", len(new_audio_data_list))
+        # logger.debug("total_records count: %s", total_records)
     except:
         logger.exception("")
 
@@ -470,7 +492,8 @@ def filteraudiobrowsetable():
                    shareMode=share_mode,
                    totalRecords=total_records,
                    shareChecked=share_checked,
-                   activePage=page_id)
+                   activePage=page_id,
+                   downloadChecked=download_checked)
 
 
 @transcription.route('/updateaudiobrowsetable', methods=['GET', 'POST'])
@@ -481,7 +504,7 @@ def updateaudiobrowsetable():
     try:
         # data through ajax
         audio_browse_info = json.loads(request.args.get('a'))
-        logger.debug('audio_browse_info: %s', audio_browse_info)
+        logger.debug('audio_browse_info: %s', pformat(audio_browse_info))
         projects, userprojects, transcriptions = getdbcollections.getdbcollections(mongo,
                                                                                    'projects',
                                                                                    'userprojects',
@@ -517,15 +540,8 @@ def updateaudiobrowsetable():
                                                           activeprojectname)
         share_mode = shareinfo['sharemode']
         share_checked = shareinfo['sharechecked']
+        download_checked = shareinfo['downloadchecked']
         new_audio_data_list = audio_data_list
-        # new_audio_data_list = []
-        # for audio_data in audio_data_list:
-        #     new_audio_data = audio_data
-        #     audio_filename = audio_data['audioFilename']
-        #     # if ("downloadchecked" in shareinfo and
-        #     #     shareinfo["downloadchecked"] == 'true'):
-        #     # new_audio_data['Audio File'] = url_for('retrieve', filename=audio_filename)
-        #     new_audio_data_list.append(new_audio_data)
     except:
         logger.exception("")
 
@@ -533,7 +549,8 @@ def updateaudiobrowsetable():
                    audioData=new_audio_data_list,
                    shareMode=share_mode,
                    totalRecords=total_records,
-                   shareChecked=share_checked)
+                   shareChecked=share_checked,
+                   downloadChecked=download_checked)
 
 
 @transcription.route('/audiobrowseaction', methods=['GET', 'POST'])
@@ -621,7 +638,7 @@ def audiobrowseactionplay():
         # data from ajax
         if request.method == 'POST':
             data = json.loads(request.form['a'])
-            logger.debug('data: %s', pformat(data))
+            # logger.debug('data lifedata/transcription/audiobrowseactionplay: : %s', pformat(data))
 
             # data = json.loads(request.args.get('a'))
             # logger.debug('data: %s', pformat(data))
@@ -660,8 +677,10 @@ def audiobrowseactionplay():
             shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
                                                               current_username,
                                                               activeprojectname)
+            # logger.debug("shareinfo: %s", shareinfo)
             share_mode = shareinfo['sharemode']
             share_checked = shareinfo['sharechecked']
+            download_checked = shareinfo['downloadchecked']
             new_audio_data_list = audio_data_list
             return jsonify(
                 audioDataFields=audio_data_fields,
@@ -669,7 +688,8 @@ def audiobrowseactionplay():
                 shareMode=share_mode,
                 totalRecords=total_records,
                 shareChecked=share_checked,
-                audioSource=audio_src
+                audioSource=audio_src,
+                downloadChecked=download_checked
             )
     except:
         logger.exception("")
@@ -711,7 +731,14 @@ def audiobrowsechangepage():
     try:
         # data through ajax
         audio_browse_info = json.loads(request.args.get('a'))
-        logger.debug('audio_browse_info: %s', pformat(audio_browse_info))
+        # logger.debug('audio_browse_info: %s', pformat(audio_browse_info))
+        audio_count = audio_browse_info['audioFilesCount']
+        audio_browse_action = audio_browse_info['browseActionSelectedOption']
+        page_id = audio_browse_info['pageId']
+        start_from = ((page_id*audio_count)-audio_count)
+        number_of_audios = page_id*audio_count
+        # logger.debug('pageId: %s, start_from: %s, number_of_audio_data: %s',
+        #  page_id, start_from, number_of_audios)
         projects, userprojects, transcriptions = getdbcollections.getdbcollections(mongo,
                                                                                    'projects',
                                                                                    'userprojects',
@@ -724,14 +751,9 @@ def audiobrowsechangepage():
         speaker_audio_ids = transcription_audiodetails.get_speaker_audio_ids_new(projects,
                                                                    activeprojectname,
                                                                    current_username,
-                                                                   active_speaker_id)
-        audio_count = audio_browse_info['audioFilesCount']
-        audio_browse_action = audio_browse_info['browseActionSelectedOption']
-        page_id = audio_browse_info['pageId']
-        start_from = ((page_id*audio_count)-audio_count)
-        number_of_audios = page_id*audio_count
-        # logger.debug('pageId: %s, start_from: %s, number_of_audio_data: %s',
-        #  page_id, start_from, number_of_audios)
+                                                                   active_speaker_id,
+                                                                   audio_browse_action=audio_browse_action)
+        # logger.debug("speaker_audio_ids: %s", speaker_audio_ids)
         total_records = 0
         if (active_speaker_id != ''):
             total_records, audio_data_list = transcription_audiodetails.get_n_audios(transcriptions,
@@ -749,8 +771,10 @@ def audiobrowsechangepage():
         shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
                                                           current_username,
                                                           activeprojectname)
+        # logger.debug("shareinfo: %s", pformat(shareinfo))
         share_mode = shareinfo['sharemode']
         share_checked = shareinfo['sharechecked']
+        download_checked = shareinfo['downloadchecked']
         new_audio_data_list = audio_data_list
         # new_audio_data_list = []
         # for audio_data in audio_data_list:
@@ -768,7 +792,8 @@ def audiobrowsechangepage():
                    shareMode=share_mode,
                    totalRecords=total_records,
                    shareChecked=share_checked,
-                   activePage=page_id)
+                   activePage=page_id,
+                   downloadChecked=download_checked)
 
 # uploadaudiofiles route
 @transcription.route('/uploadaudiofiles', methods=['GET', 'POST'])

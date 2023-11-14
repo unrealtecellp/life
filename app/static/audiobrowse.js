@@ -550,7 +550,7 @@ function audioBrowseActionPlay(audioInfo, audioCountInfo) {
             createPagination(data.totalRecords, activePageNumber);
             // console.log(audioCountInfo);
             audioCountInfo = document.getElementById(audioCountInfo.id);
-            console.log(audioCountInfo);
+            // console.log(audioCountInfo);
             let audioSource = data.audioSource;
             // console.log(audioSource)
             // let embededAudio = new Audio(audioSource);

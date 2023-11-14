@@ -2,7 +2,7 @@ function generateDownloadForm(shareinfo, transcriptionsBy, activeTranscriptionBy
     // console.log('GenDown Share info', shareinfo)
     // console.log('GenDown Transc by', transcriptionsBy)
     // console.log('GenDown Active Transc by', activeTranscriptionBy)
-    console.log('Audio IDs empty', $.isEmptyObject(audioIds), audioIds)
+    // console.log('Audio IDs empty', $.isEmptyObject(audioIds), audioIds)
     var downloadModal = ''
 
     downloadModal += '<div class="modal fade" id="myDownloadTranscriptionModal" tabindex="-1" role="dialog" aria-labelledby="myDownloadTranscriptionModalLabel">' +

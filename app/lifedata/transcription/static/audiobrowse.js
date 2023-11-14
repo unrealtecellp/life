@@ -254,7 +254,7 @@ function createAudioBrowseTable(
 }
 
 function createAudioBrowse(newData) {
-    console.log(newData);
+    // console.log(newData);
     let speakerIds = newData['speakerIds'];
     let currentUsername = newData['currentUsername']
     let projectOwner = newData['projectOwner']
@@ -270,7 +270,7 @@ function createAudioBrowse(newData) {
     let audioDataFields = newData['audioDataFields']
     let audioData = newData['audioData']
     let transcriptionsBy = newData['transcriptionsBy']
-    console.log(transcriptionsBy);
+    // console.log(transcriptionsBy);
     createSelect2FromObject('audiosortingcategoriesdropdown', audioSortingCategories, 'Source');
     // createSelect2('audiosortingsubcategoriesdropdown', speakerIds, activeSpeakerId);
     createSelect2('speakeridsdropdown', speakerIds, activeSpeakerId);
@@ -278,9 +278,17 @@ function createAudioBrowse(newData) {
     // if (shareMode >= 4) {
     createBrowseActions(projectOwner, currentUsername, shareMode, shareChecked, downloadChecked);
     // }
-    createAudioBrowseTable(audioDataFields, audioData, shareMode, totalRecords, shareChecked, downloadChecked);
+    createAudioBrowseTable(audioDataFields,
+        audioData,
+        shareMode,
+        totalRecords,
+        shareChecked,
+        downloadChecked);
 
-    generateDownloadForm(shareInfo, transcriptionsBy, currentUsername, projectName);
+    generateDownloadForm(shareInfo,
+        transcriptionsBy,
+        currentUsername,
+        projectName);
 
     // downloadModalSelect2();
 
@@ -294,7 +302,7 @@ function eventsMapping() {
         let browseActionSelectedOption = document.getElementById('browseactiondropdown').value;
         // console.log(browseActionSelectedOption);
         let selectedAudioSortingCategories = document.getElementById("audiosortingcategoriesdropdown").value;
-        console.log(selectedAudioSortingCategories);
+        // console.log(selectedAudioSortingCategories);
         if (selectedAudioSortingCategories === 'sourcemetainfo') {
             audioFilter();
         }
@@ -469,7 +477,7 @@ function updateAudioSortingSubCategoriesDropdown() {
         })
         },
         type : 'GET',
-        url : '/updateaudiosortingsubcategories'
+        url : '/lifedata/transcription/updateaudiosortingsubcategories'
       }).done(function(data){
         // console.log(data);
         audioSortingSubCategories = data.audioSortingSubCategories;
@@ -491,7 +499,12 @@ function updateAudioSortingSubCategoriesDropdown() {
             document.getElementById('speakeridsdropdown').style.display = "block";
             createSelect2('speakeridsdropdown', audioSortingSubCategories, selectedAudioSortingSubCategories);
         }
-        createAudioBrowseTable(data.audioDataFields, data.audioData, data.shareMode, data.totalRecords, data.shareChecked, data.downloadChecked);
+        createAudioBrowseTable(data.audioDataFields,
+            data.audioData,
+            data.shareMode,
+            data.totalRecords,
+            data.shareChecked,
+            data.downloadChecked);
         eventsMapping();
         createPagination(data.totalRecords)
       });
@@ -504,10 +517,15 @@ function updateAudioBrowseTable() {
           a : JSON.stringify(audioBrowseInfo)
         },
         type : 'GET',
-        url : '/updateaudiobrowsetable'
+        url : '/lifedata/transcription/updateaudiobrowsetable'
       }).done(function(data){
-        console.log(data.audioDataFields, data.audioData, data.shareMode);
-        createAudioBrowseTable(data.audioDataFields, data.audioData, data.shareMode, data.totalRecords, data.shareChecked, data.downloadChecked);
+        // console.log(data.audioDataFields, data.audioData, data.shareMode);
+        createAudioBrowseTable(data.audioDataFields,
+            data.audioData,
+            data.shareMode,
+            data.totalRecords,
+            data.shareChecked,
+            data.downloadChecked);
         eventsMapping();
         createPagination(data.totalRecords)
       });
@@ -523,7 +541,7 @@ function audioBrowseAction(audioInfo) {
         })
         },
         type : 'GET',
-        url : '/audiobrowseaction'
+        url : '/lifedata/transcription/audiobrowseaction'
       }).done(function(data){
             window.location.reload();
       });
@@ -537,20 +555,26 @@ function audioBrowseActionPlay(audioInfo, audioCountInfo) {
         audioInfo: audioInfo,
         audioBrowseInfo: audioBrowseInfo
     }
-    $.post( "/audiobrowseactionplay", {
+    $.post( "/lifedata/transcription/audiobrowseactionplay", {
         a: JSON.stringify(data_1)
     //   }),
       })
       .done(function(data){
             // window.location.reload();
             // console.log(data)
-            createAudioBrowseTable(data.audioDataFields, data.audioData, data.shareMode, data.totalRecords, data.shareChecked, data.downloadChecked);
+            // console.log(data.downloadChecked, data.shareChecked)
+            createAudioBrowseTable(data.audioDataFields,
+                data.audioData,
+                data.shareMode,
+                data.totalRecords,
+                data.shareChecked,
+                data.downloadChecked);
             eventsMapping();
             // console.log(activePageNumber);
             createPagination(data.totalRecords, activePageNumber);
             // console.log(audioCountInfo);
             audioCountInfo = document.getElementById(audioCountInfo.id);
-            console.log(audioCountInfo);
+            // console.log(audioCountInfo);
             let audioSource = data.audioSource;
             // console.log(audioSource)
             // let embededAudio = new Audio(audioSource);
@@ -579,7 +603,7 @@ function audioBrowseActionPlay(audioInfo, audioCountInfo) {
 //         })
 //         },
 //         type : 'GET',
-//         url : '/audiobrowseactionshare'
+//         url : '/lifedata/transcription/audiobrowseactionshare'
 //       }).done(function(data){
 //             window.location.reload();
 //       });
@@ -725,10 +749,16 @@ function changeAudioBrowsePage(pageId) {
               a : JSON.stringify(audioBrowseInfo)
             },
             type : 'GET',
-            url : '/audiobrowsechangepage'
+            url : '/lifedata/transcription/audiobrowsechangepage'
           }).done(function(data){
             // console.log(data.audioDataFields, data.audioData, data.shareMode);
-            createAudioBrowseTable(data.audioDataFields, data.audioData, data.shareMode, data.totalRecords, data.shareChecked, data.downloadChecked);
+            // console.log(data.downloadChecked)
+            createAudioBrowseTable(data.audioDataFields,
+                data.audioData,
+                data.shareMode,
+                data.totalRecords,
+                data.shareChecked,
+                data.downloadChecked);
             eventsMapping();
             createPagination(data.totalRecords, data.activePage);
         });
