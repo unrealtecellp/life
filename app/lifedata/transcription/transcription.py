@@ -94,6 +94,20 @@ def home():
         activeprojectform = getactiveprojectform.getactiveprojectform(projectsform,
                                                                     projectowner,
                                                                     activeprojectname)
+        all_ques_ids = ''
+        derived_from_project_type, derived_from_project_name = getprojecttype.getderivedfromprojectdetails(projects,
+                                                                                                           activeprojectname)
+        # logger.debug("derived_from_project_type: %s, derived_from_project_name: %s", 
+        #              derived_from_project_type, derived_from_project_name)
+        if (derived_from_project_type == 'questionnaires'):
+            all_ques_ids = ['New']
+            ques_ids = projects.find_one({"projectname": derived_from_project_name},
+                                         {
+                                             "_id": 0,
+                                             "questionnaireIds": 1
+                                         })["questionnaireIds"]
+            all_ques_ids.extend(ques_ids)
+            # logger.debug("all_ques_ids: %s", pformat(all_ques_ids))
         if activeprojectform is not None:
             try:
                 # , audio_file_path, transcription_details
@@ -120,7 +134,14 @@ def home():
                                                         activespeakerid,
                                                         current_username)
                 # logger.debug("audio_id: %s", audio_id)
+                activeprojectform['prompt'] = ''
                 if (audio_id != ''):
+
+                    prompt = transcriptions.find_one({"projectname": activeprojectname,
+                                                    "audioId": audio_id},
+                                                    {"_id": 0, "prompt": 1}
+                                                    )["prompt"]
+                    activeprojectform['prompt'] = prompt
                     audio_delete_flag = transcription_audiodetails.get_audio_delete_flag(transcriptions,
                                                                         activeprojectname,
                                                                         audio_id)
@@ -146,6 +167,7 @@ def home():
                                                                             current_username,
                                                                             activespeakerid,
                                                                             audio_id)
+                # logger.debug("transcription_by: %s", transcription_by)
                 transcription_details = transcription_audiodetails.getaudiofiletranscription(data_collection,
                                                                             audio_id,
                                                                             transcription_by)
@@ -203,11 +225,6 @@ def home():
                 langScript = readJSONFile.readJSONFile(langScriptJSONFilePath)
                 activeprojectform['langScript'] = langScript
                 # print(audio_id)
-                prompt = transcriptions.find_one({"projectname": activeprojectname,
-                                                  "audioId": audio_id},
-                                                   {"_id": 0, "prompt": 1}
-                                                   )["prompt"]
-                activeprojectform['prompt'] = prompt
                 # logger.debug("activeprojectform: %s", activeprojectform)
 
                 return render_template('transcription.html',
@@ -220,7 +237,8 @@ def home():
                                     activetranscriptionby=transcription_by,
                                     activespeakerid=activespeakerid,
                                     commentstats=commentstats,
-                                    shareinfo=shareinfo)
+                                    shareinfo=shareinfo,
+                                    allQuesIds=all_ques_ids)
             except:
                 logger.exception("")
                 flash('Upload first audio file.')
@@ -806,10 +824,11 @@ def audiobrowsechangepage():
 @transcription.route('/uploadaudiofiles', methods=['GET', 'POST'])
 @login_required
 def uploadaudiofiles():
-    projects, userprojects, transcriptions = getdbcollections.getdbcollections(mongo,
+    projects, userprojects, transcriptions, questionnaires = getdbcollections.getdbcollections(mongo,
                                                                                'projects',
                                                                                'userprojects',
-                                                                               'transcriptions')
+                                                                               'transcriptions',
+                                                                               'questionnaires')
     current_username = getcurrentusername.getcurrentusername()
     activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
                                                                   userprojects)
@@ -819,9 +838,29 @@ def uploadaudiofiles():
         run_asr = False
         split_into_smaller_chunks = True
         get_audio_json = True
+        prompt = {}
+        derivedfromprojectdetails = {}
 
         data = dict(request.form.lists())
         logger.debug("Form data %s", data)
+        if ('quesId' in data):
+            quesId = data['quesId'][0]
+            logger.debug("quesId: %s", quesId)
+            found_prompt = questionnaires.find_one({"quesId": quesId},
+                                             {"_id": 0, "prompt": 1})
+            if (found_prompt):
+                prompt = found_prompt['prompt']
+                logger.debug("found prompt: %s", prompt)
+                derived_from_project_type, derived_from_project_name = getprojecttype.getderivedfromprojectdetails(projects,
+                                                                                                           activeprojectname)
+                derivedfromprojectdetails = {
+                    "derivedfromprojectname": derived_from_project_name,
+                    "quesId": quesId
+                }
+                logger.debug("derivedfromprojectdetails: %s", derivedfromprojectdetails)
+            else:
+                logger.debug("not found prompt: %s", found_prompt)
+        # return redirect(url_for('lifedata.transcription.home'))
         speakerId = data['speakerId'][0]
         new_audio_file = request.files.to_dict()
 
@@ -897,10 +936,11 @@ def uploadaudiofiles():
                                     slice_size=slice_size,
                                     data_type="audio",
                                     new_audio_details={},
-                                    prompt={},
+                                    prompt=prompt,
                                     update=False,
                                     slice_offset_value=slice_offset,
-                                    min_boundary_size=min_boundary_size
+                                    min_boundary_size=min_boundary_size,
+                                    derivedfromprojectdetails=derivedfromprojectdetails
                                     )
 
     return redirect(url_for('lifedata.transcription.home'))

@@ -4,8 +4,8 @@ function getMetadataForm(ele, options) {
     let { submitRoute, includeFieldMetadata, includeInternetMetadata } = options;
 
     cur_id = $(ele).attr('id')
-    console.log('Current ID', cur_id);
-    console.log('Options', options);
+    // console.log('Current ID', cur_id);
+    // console.log('Options', options);
     speakerDetailForm(cur_id, submitRoute, includeFieldMetadata, includeInternetMetadata);
 }
 // $('.addnewspeaker').on('click', function () {
@@ -323,7 +323,7 @@ $('.assignaccesscode').click(function () {
 
 
 function speakerDetailForm(curId, submitRoute="/lifedata/transcription/addnewspeakerdetails", includeFieldMetadata=true, includeInternetMetadata=true) {
-    console.log('Current ID', curId)
+    // console.log('Current ID', curId)
 
     var speakerMetadata = ['Name', 'Age', 'Gender', 'Occupation']
     var speakerinpt = ''

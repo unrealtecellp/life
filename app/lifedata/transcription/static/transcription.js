@@ -220,6 +220,8 @@ function createTranscriptionInterfaceForm(newData) {
     let audio_language = newData['Audio Language'][1][0]
     let audio_script = newData['Transcription'][1][0]
     let audio_lang_script = audio_language+'-'+audio_script
+    // let audio_lang_script = audio_language
+    // console.log(audio_lang_script);
     for (let [key, value] of Object.entries(newData)){
         // console.log(key, value);
         eletype = value[0];
@@ -246,7 +248,9 @@ function createTranscriptionInterfaceForm(newData) {
         //     tagsets_form += createTagsetsForm();
         // }
     }
-    createTranscriptionPrompt(audio_lang_script);
+    if (lastActiveId != ''){
+      createTranscriptionPrompt(audio_lang_script);
+    }
 }
 
 //  transcription old
@@ -826,3 +830,28 @@ $("#deleteaudio").click(function() {
 });
 
 replaceZoomSlider();
+
+function questionnaireDerived(allQuesIds) {
+  if (allQuesIds !== '') {
+    // console.log(allQuesIds);
+    let quesIds = '';
+    quesIds += '<h4>Prompt for Transcription:</h4>'+
+                '<div class="input-group col-md-12" id="quesiddropdown-divid">'+
+                '<label for="quesiddropdown">Select Question: </label>'+
+                '<select class="custom-select custom-select-sm" id="quesiddropdown" name="quesId" style="width:30%" required>';
+    for (i=0; i<allQuesIds.length; i++) {
+      quesIds += '<option value="'+allQuesIds[i]+'">'+allQuesIds[i]+'</option>';
+    }
+    quesIds += '</select>';
+    quesIds += '</div>';
+    quesIds += '<hr>';
+    $('#questionnairederived').append(quesIds);
+
+    $('#quesiddropdown').select2({
+      // tags: true,
+      // placeholder: 'select user',
+      // data: posCategories
+      // allowClear: true
+      });
+  }
+}

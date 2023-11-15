@@ -307,6 +307,7 @@
           <form name="newaudioupload" action="/lifedata/transcription/uploadaudiofiles" method="POST" enctype="multipart/form-data">
             <!-- <div class="col upload"> -->
               <!-- <strong>Audio Files from Source: </strong> -->
+              <div id="questionnairederived"></div>
               <h4>Select File:</h4>
               <div class="input-group col-md-12 upload" id="speakeriduploaddropdown-divid">
               <label for="speakeriduploaddropdown">Audio Files for Source: </label>
@@ -541,13 +542,14 @@
   <script src="{{url_for('.static', filename='sidepanel.js')}}"></script>
   <script type="text/javascript">createSidePanel({{ shareinfo | tojson | safe }});</script>
   <script src="{{url_for('.static', filename='transcription.js')}}"></script>
+  <script type="text/javascript">createTranscriptionInterfaceForm({{ newData | tojson | safe }});</script>
+  <script type="text/javascript">questionnaireDerived({{ allQuesIds | tojson | safe }});</script>
   <script src="{{url_for('.static', filename='changeactivespeaker.js')}}"></script>
   <script src="{{url_for('.static', filename='progressreport.js')}}"></script>
   <script src="{{url_for('.static', filename='addnewspeaker.js')}}"></script>
   <script src="{{url_for('static', filename='speaker_select2_dropdown.js')}}"></script>
   <script src="{{url_for('.static', filename='search.js')}}"></script>
   <script src="{{url_for('.static', filename='sorttable.js')}}"></script>
-  <script type="text/javascript">createTranscriptionInterfaceForm({{ newData | tojson | safe }});</script>
   <script src="{{url_for('.static', filename='audiotranscription.js')}}"></script>
   <script src="{{url_for('static', filename='downloader/transcriptiondownload.js')}}"></script>
   <script type="text/javascript">generateDownloadForm({{ shareinfo | tojson | safe }}, {{ transcriptionsby | tojson | safe}}, {{ activetranscriptionby | tojson | safe}}, {{ projectName | tojson | safe}});</script>

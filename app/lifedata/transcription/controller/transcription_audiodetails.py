@@ -115,6 +115,8 @@ def saveaudiofiles(mongo,
         slice_threshold: the threshold value of 'pause' where the file will be split into another files (0=no slice)
     """
 
+    # logger.debug("**kwargs: %s", kwargs)
+    # return ('', '', '')
     type = 'audiofile'
     # logger.debug ('New ques file %s', new_ques_file)
     file_states = []
@@ -152,7 +154,8 @@ def saveaudiofiles(mongo,
                                                                             prompt,
                                                                             update,
                                                                             slice_offset_value,
-                                                                            min_boundary_size)
+                                                                            min_boundary_size,
+                                                                            **kwargs)
             file_states.append(file_state)
             transcription_doc_ids.append(transcription_doc_id)
             fs_file_ids.append(fs_file_id)
@@ -346,7 +349,6 @@ def saveoneaudiofile(mongo,
         max_slice_size: the recommended size of each slice (might have some offset value). Slices should not be larger than this but might be lower than this.
         slice_offset_value: this is the amount of audio (in seconds) that is repeated / retained across different slices made by automatically slicing the audio into smaller chunks. This is added to the end and substracted from the beginning.
     """
-
     all_transcription_doc_ids = []
     all_audio_fs_file_ids = []
 
@@ -386,11 +388,24 @@ def saveoneaudiofile(mongo,
                                               new_audio_details,
                                               update,
                                               kwargs.items())
+    
+    logger.debug("new_audio_details: %s", pformat(new_audio_details))
 
     audio_id, audio_filename = get_audio_id_filename(new_audio_file)
     updated_audio_filename = (audio_id +
                               '_' +
                               audio_filename)
+    
+
+    logger.debug("**kwargs: %s", kwargs)
+    for kwargs_key, kwargs_value in kwargs.items():
+        # logger.debug("kwargs_key: %s, kwargs_value: %s",
+        #              kwargs_key, kwargs_value)
+        if (kwargs_key == 'derivedfromprojectdetails'):
+            new_audio_details[kwargs_key] = kwargs_value
+    # return ('', '', '')
+
+    logger.debug("new_audio_details: %s", pformat(new_audio_details))
 
     # Save audio file in mongoDb and also get it in Local File System
 
