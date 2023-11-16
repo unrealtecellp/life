@@ -1,3 +1,8 @@
+from app.controller import (
+    life_logging
+)
+logger = life_logging.get_logger()
+
 def getnewquesid(projects,
                     activeprojectname,
                     last_active_id,
@@ -12,10 +17,13 @@ def getnewquesid(projects,
     """
     ques_ids_list = projects.find_one({ 'projectname': activeprojectname },
                                         { '_id': 0, 'questionnaireIds': 1 })
-    # print('ques_ids_list', ques_ids_list)
+    # logger.debug('ques_ids_list: %s', ques_ids_list)
     if len(ques_ids_list) != 0:
         ques_ids_list = ques_ids_list['questionnaireIds']                                   
-        # print('ques_ids_list', ques_ids_list)
+        # logger.debug('ques_ids_list: %s', ques_ids_list)
+    if (len(ques_ids_list) == 0):
+        latest_ques_id = ''
+        return latest_ques_id
     if (not (last_active_id in ques_ids_list)):
         last_active_id = ques_ids_list[0]
     ques_id_index = ques_ids_list.index(last_active_id)
