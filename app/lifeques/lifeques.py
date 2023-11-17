@@ -301,12 +301,16 @@ def questionnaire():
                         if (prompt_type != 'text'):
                             fileId = prompt_type_info['fileId']
                             if (fileId != ''):
-                                file_path = questranscriptionaudiodetails.getquesfilefromfs(mongo,
+                                file_path, file_name = questranscriptionaudiodetails.getquesfilefromfs(mongo,
                                                                                                 basedir,
                                                                                                 fileId,
                                                                                                 'fileId')
-                                # print('file_path', type(file_path), file_path)
+                                # logger.debug('file_path: %s, %s',
+                                #              type(file_path),
+                                #              file_path)
+                                file_path = file_path.replace('static/audio/', 'retrieve/')
                                 file_path_key = '_'.join([lang, prompt_type, 'FilePath'])
+                                # logger.debug('file_path_key: %s', file_path_key)
                                 quesprojectform[file_path_key] = file_path
                                 if ('textGrid' in prompt_type_info and
                                     not audioWaveform):
@@ -1010,3 +1014,32 @@ def quesbrowseview():
         logger.exception("")
 
     return jsonify(route=route)
+
+
+# retrieve files from database
+# TODO: User not able to download the data
+@lifeques.route('/retrieve/<filename>', methods=['GET'])
+@login_required
+def retrieve(filename):
+    logger.debug('Now in retrieve')
+    x = ''
+    try:
+        userprojects, = getdbcollections.getdbcollections(mongo,
+                                                          'userprojects')
+
+        current_username = getcurrentusername.getcurrentusername()
+        activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                      userprojects)
+
+        # share_info = getuserprojectinfo.getuserprojectinfo(userprojects,
+        #                                                     current_username,
+        #                                                     activeprojectname)
+        # if ("downloadchecked" in share_info and
+        #     share_info["downloadchecked"] == 'true'):
+        # logger.debug("share_info: %s", share_info)
+        x = mongo.send_file(filename)
+        # logger.debug("mongo send file: %s, %s, %s, %s, %s, %s", x.response, x.status, x.headers, x.mimetype, x.content_type, x.direct_passthrough)
+    except:
+        logger.exception("")
+
+    return x

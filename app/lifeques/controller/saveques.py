@@ -82,12 +82,15 @@ def saveques(questionnaires,
                 # content[lang_name] = value
                 prompt['content'][lang_name]['text'] = text_boundary_data
             if ('Instruction' in key):
+                # logger.debug("key: %s, value: %s",
+                #              key, value)
                 prompt_type = key.split()[0]
                 prompt_type_lower = prompt_type.lower()
                 lang_name = key.split()[-1]
                 instruction_script = lang_name.split('-')[1]
                 instruction = value[0]
                 prompt['content'][lang_name][prompt_type_lower][prompt_type_lower+'Instruction'] = instruction
+                # logger.debug("prompt: %s", pformat(prompt))
 
         saved_ques = questionnaires.update_one({"quesId": last_active_ques_id},
                                     {"$set" : { 

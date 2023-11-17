@@ -349,6 +349,7 @@ function createquesform(quesprojectform) {
 
       let eletype = value[0];
       let elevalue = value[1];
+      // console.log(eletype, elevalue);
       quesdatavalue = quesdata['prompt'][key]
       if (eletype === 'text') {
         if (key === 'Language') {
@@ -450,8 +451,10 @@ function createquesform(quesprojectform) {
             }
             testquesform += transcriptionBoundaryForm;
             if (testpromptTypeValueInfo[1] === 'text') {
-              // console.log('Instruction', [testpromptTypeKey], 'text', '')
-              let instructionForm = createInputElement(temp_testpromptTypeValueKey+' Instruction', [testpromptTypeKey], 'text', '')
+              let instructionVal = testquesdata['prompt']['content'][testpromptTypeKey][testpromptTypeValueKey][testpromptTypeValueKey+'Instruction']
+              // console.log('Instruction', [testpromptTypeKey], 'text', instructionVal);
+              // console.log(instructionVal);
+              let instructionForm = createInputElement(temp_testpromptTypeValueKey+' Instruction', [testpromptTypeKey], 'text', instructionVal)
               testquesform += instructionForm
             }
           }
