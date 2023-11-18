@@ -280,7 +280,7 @@ def questionnaire():
                                 Showing you the next question in the queue.")
                 return redirect(url_for('lifeques.questionnaire'))
         quesdata = questionnaires.find_one({"quesId": last_active_ques_id}, {"_id": 0})
-        logger.debug("quesdata: %s", pformat(quesdata))
+        # logger.debug("quesdata: %s", pformat(quesdata))
         # print(f"{inspect.currentframe().f_lineno}: {quesprojectform}")
         # print(f"{inspect.currentframe().f_lineno}: {type(quesdata)}")
         # print(f"{inspect.currentframe().f_lineno}: {quesdata}")

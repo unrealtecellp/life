@@ -1,6 +1,9 @@
 """Module to download questionnaire in different format."""
 
-from pprint import pprint
+from pprint import pprint, pformat
+from app.controller import (
+    life_logging
+)
 from app.controller.createprojectdirectory import createprojectdirectory
 from app.controller.createzip import createzip
 from app.controller.getfilefromfs import getfilefromfs
@@ -8,6 +11,9 @@ import os
 import json
 import shutil
 import ffmpeg
+import librosa
+
+logger = life_logging.get_logger()
 
 def datafolder_stats(folder_path, file_type):
     if (file_type == 'audio'):
@@ -48,7 +54,7 @@ def karyajson(mongo,
                                         )
 
     for ques_data in saved_ques_data:
-        print("Q_Id: ", ques_data["Q_Id"])
+        # print("Q_Id: ", ques_data["Q_Id"])
         prompt = ques_data['prompt']
         content = prompt['content']
         for lang_script, lang_info in content.items():
@@ -90,12 +96,17 @@ def karyajson(mongo,
                                                     audio_fileId,
                                                     'audio',
                                                     'fileId')
-                    print('audio_file_path: ', audio_file_path)
+                    # logger.debug('audio_file_path: %s', audio_file_path)
                     if (audio_file_path != ''):
                         # crop audio from start to end time
                         start_time = prompt_data['textGrid']['sentence'][boundaryId]['startindex']
                         end_time = prompt_data['textGrid']['sentence'][boundaryId]['endindex']
-                        # print(f"start time: {start_time}, end time: {end_time}")
+                        # logger.debug("Audio duration: %s", librosa.get_duration(filename=audio_file_path))
+                        if (start_time == ''):
+                            start_time = 0
+                        if (end_time == ''):
+                            end_time = librosa.get_duration(filename=audio_file_path)
+                        # logger.debug("start time: %s, end time: %s", start_time, end_time)
                         # TODO: use ffmpeg to trim audio. Try using 'ffmpeg-python' library
                         # link: https://github.com/kkroening/ffmpeg-python
                         actual_audio_file = ffmpeg.input(audio_file_path)
