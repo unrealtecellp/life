@@ -8,6 +8,7 @@ import os
 import json
 import shutil
 import ffmpeg
+import librosa
 
 def datafolder_stats(folder_path, file_type):
     if (file_type == 'audio'):
@@ -48,7 +49,7 @@ def karyajson(mongo,
                                         )
 
     for ques_data in saved_ques_data:
-        print("Q_Id: ", ques_data["Q_Id"])
+        # print("Q_Id: ", ques_data["Q_Id"])
         prompt = ques_data['prompt']
         content = prompt['content']
         for lang_script, lang_info in content.items():
@@ -90,11 +91,15 @@ def karyajson(mongo,
                                                     audio_fileId,
                                                     'audio',
                                                     'fileId')
-                    print('audio_file_path: ', audio_file_path)
+                    # print('audio_file_path: ', audio_file_path)
                     if (audio_file_path != ''):
                         # crop audio from start to end time
                         start_time = prompt_data['textGrid']['sentence'][boundaryId]['startindex']
                         end_time = prompt_data['textGrid']['sentence'][boundaryId]['endindex']
+                        if (start_time == ''):
+                            start_time = 0
+                        if (end_time == ''):
+                            end_time = librosa.get_duration(filename=audio_file_path)
                         # print(f"start time: {start_time}, end time: {end_time}")
                         # TODO: use ffmpeg to trim audio. Try using 'ffmpeg-python' library
                         # link: https://github.com/kkroening/ffmpeg-python
