@@ -453,6 +453,9 @@ function createquesform(quesprojectform) {
             if (testpromptTypeValueInfo[1] === 'text') {
               let instructionVal = testquesdata['prompt']['content'][testpromptTypeKey][testpromptTypeValueKey][testpromptTypeValueKey+'Instruction']
               // console.log('Instruction', [testpromptTypeKey], 'text', instructionVal);
+              if (instructionVal === undefined) {
+                instructionVal = ''
+              }
               // console.log(instructionVal);
               let instructionForm = createInputElement(temp_testpromptTypeValueKey+' Instruction', [testpromptTypeKey], 'text', instructionVal)
               testquesform += instructionForm
