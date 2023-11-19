@@ -163,6 +163,37 @@ def get_access_code_metadata_transcription_for_form(projects, projectsform, proj
     return acesscodemetadata
 
 
+
+def get_access_code_metadata_new_transcription_for_form(projects, projectsform, project_name, derived_from_project_type, derivedFromProjectName):
+    langscript = []
+    projectform = projectsform.find_one({"projectname": project_name})
+    # langscript.append(projectform["Sentence Language"][0])
+    langscript.append(projectform["Translation"][1])
+    derivedFromProject = projects.find_one({"projectname": project_name},
+                                           {"_id": 0, "derivedFromProject": 1})
+    derivedFromProjectName = derivedFromProject['derivedFromProject'][0]
+    derived_from_project_type = getprojecttype.getprojecttype(
+        projects, derivedFromProjectName)
+
+    if (derived_from_project_type == "questionnaires"):
+        derivefromprojectform = projectsform.find_one(
+            {"projectname": derivedFromProjectName})
+
+        domain = derivefromprojectform["Domain"][1]
+        elicitation = derivefromprojectform["Elicitation Method"][1]
+
+    acesscodemetadata = {
+        "langscript": langscript,
+        "domain": domain,
+        "elicitation": elicitation
+    }
+
+    return acesscodemetadata
+
+
+
+
+
 def get_access_code_metadata_questionnaire_for_form(projectsform, project_name):
     langscript = []
     # domain, elictationmethod ,langscript-[1]

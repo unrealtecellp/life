@@ -832,6 +832,7 @@ def homespeaker():
         derived_from_project_name
     )
 
+    print('formacesscodemetadata', formacesscodemetadata)
     # This defines the minimum share level of the user who will get info
     # of all access codes (incl those assigned by the other users)
     # Users with share level lower than this will get info of only those
