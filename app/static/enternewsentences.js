@@ -292,7 +292,7 @@ $("#save").click(function() {
 });
 
 function myFunction(newData) {
-  console.log(newData);
+  // console.log(newData);
   localStorage.setItem("activeprojectform", JSON.stringify(newData));
   localStorage.setItem("regions", JSON.stringify(newData['transcriptionRegions']));
   var activeAudioFilename = newData["AudioFilePath"].split('/')[2];

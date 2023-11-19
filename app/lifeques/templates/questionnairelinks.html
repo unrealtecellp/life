@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+
+{% block extra_nav %}
+    <ul class="nav navbar-nav">
+        <li><a href="{{ url_for('lifeques.questionnaire') }}">Questionnaire</a></li>
+        <li><a href="{{ url_for('lifeques.quesbrowse') }}">Browse</a></li>
+    </ul>      
+{% endblock %}

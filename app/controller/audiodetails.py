@@ -2363,13 +2363,28 @@ def get_current_transcription_langscripts(mongo):
     activeprojectname = getactiveprojectname.getactiveprojectname(
         current_username, userprojects)
 
-    current_project_scripts = projectsform.find_one({'projectname': activeprojectname}, {
-        'Transcription Script': 1, 'Sentence Language': 1, '_id': 0})
+    # logger.debug("activeprojectname: %s", activeprojectname)
+    current_project_scripts = projectsform.find_one({'projectname': activeprojectname},
+                                                    {
+                                                        'Transcription Script': 1,
+                                                        'Sentence Language': 1,
+                                                        '_id': 0,
+                                                        'Audio Language': 1,
+                                                        'Transcription': 1
+                                                    })
+    
+    # logger.debug("current_project_scripts: %s", pformat(current_project_scripts))
 
-    project_language = current_project_scripts['Sentence Language']
+    if ('Audio Language' in current_project_scripts):
+        project_language = current_project_scripts['Audio Language'][1]
+    else:
+        project_language = current_project_scripts['Sentence Language']
     project_language_code = project_language[0][:3].lower()
 
-    project_scripts = current_project_scripts['Transcription Script']
+    if ('Transcription' in current_project_scripts):
+        project_scripts = current_project_scripts['Transcription'][1]
+    else:
+        project_scripts = current_project_scripts['Transcription Script']
 
     scriptCodeJSONFilePath = os.path.join(
         basedir_parent, 'static/json/scriptCode.json')

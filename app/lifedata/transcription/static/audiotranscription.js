@@ -1135,6 +1135,8 @@ function createSentenceForm(formElement, boundaryID) {
     for (let [key, value] of Object.entries(formElement)) {
         // console.log('first', key, value)
         if (key === 'transcription') {
+            var transcriptionScript = formElement[key];
+            // if (Object.keys(transcriptionScript).length > 0) {
             inpt += '<fieldset class="form-group border">'+
                     '<legend class="col-form-label">'+
                     'Transcription'+
@@ -1145,15 +1147,14 @@ function createSentenceForm(formElement, boundaryID) {
                     '</button></legend>';
             // inpt += '</fieldset>';
             let glossInpt = '';
-                glossInpt += '<fieldset class="form-group border">'+
-                            '<legend class="col-form-label">'+
-                            'Interlinear Gloss'+
-                            '<button class="btn btn-default pull-right" type="button" data-toggle="collapse"'+
-                            'data-target=".interlineargloss" aria-expanded="false" aria-controls="interlineargloss1"'+
-                            'onclick="collapseInterlineargloss()">'+
-                            '<span class="glyphicon glyphicon-chevron-up intlingloss" aria-hidden="true"></span>'+
-                            '</button></legend>';
-            var transcriptionScript = formElement[key];
+            glossInpt += '<fieldset class="form-group border">'+
+                        '<legend class="col-form-label">'+
+                        'Interlinear Gloss'+
+                        '<button class="btn btn-default pull-right" type="button" data-toggle="collapse"'+
+                        'data-target=".interlineargloss" aria-expanded="false" aria-controls="interlineargloss1"'+
+                        'onclick="collapseInterlineargloss()">'+
+                        '<span class="glyphicon glyphicon-chevron-up intlingloss" aria-hidden="true"></span>'+
+                        '</button></legend>';
             // console.log(transcriptionScript)
             // console.log('second', 'Object.keys(transcriptionScript)[0]', Object.keys(transcriptionScript)[0]);
             firstTranscriptionScript = Object.keys(transcriptionScript)[0]
@@ -1255,23 +1256,28 @@ function createSentenceForm(formElement, boundaryID) {
             // $('.transcription1').append(inpt);
             $('#transcription2').append(inpt);
             // console.log(document.getElementById("transcription2").innerHTML)
+            // console.log(activeprojectform['Interlinear Gloss'][1]);
+            if (Object.keys(activeprojectform['Interlinear Gloss'][1]).length === 0) {
+                glossInpt = '';
+            }
             document.getElementById("interlineargloss2").innerHTML = "";
             $('#interlineargloss2').append(glossInpt);
             inpt = '';
             glossInpt = '';
         }
         else if (key === 'translation') {
-            inpt += '<fieldset class="form-group border">'+
-                    '<legend class="col-form-label">'+
-                    'Translation'+
-                    '<button class="btn btn-default pull-right" type="button" data-toggle="collapse"'+
-                    'data-target=".translation" aria-expanded="false" aria-controls="translationfield1"'+
-                    'onclick="collapseTranslation()">'+
-                    '<span class="glyphicon glyphicon-chevron-up translate" aria-hidden="true"></span>'+
-                    '</button></legend>';
             translationLang = formElement[key];
-            // console.log(translationLang, Object.keys(translationLang).length);
             if (Object.keys(translationLang).length > 0) {
+                inpt += '<fieldset class="form-group border">'+
+                        '<legend class="col-form-label">'+
+                        'Translation'+
+                        '<button class="btn btn-default pull-right" type="button" data-toggle="collapse"'+
+                        'data-target=".translation" aria-expanded="false" aria-controls="translationfield1"'+
+                        'onclick="collapseTranslation()">'+
+                        '<span class="glyphicon glyphicon-chevron-up translate" aria-hidden="true"></span>'+
+                        '</button></legend>';
+            // console.log(translationLang, Object.keys(translationLang).length);
+            // if (Object.keys(translationLang).length > 0) {
                 // console.log(translationLang, Object.keys(translationLang).length)
                 // var activeTranslationField = '<input type="checkbox" id="activeTranslationField" name="activeTranslationField" value="false" onclick="activeTranslationLangs()" checked disabled>' +
                 //     '<label for="activeTranslationField">&nbsp; Add Translation</label><br></br>' +
