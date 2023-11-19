@@ -196,6 +196,9 @@ var targets = [
   {"id": "Comparatives and Superlatives", "text": "Comparatives and Superlatives"},
   {"id": "Sentences with Adverbs", "text": "Sentences with Adverbs"},
   {"id": "Quantifiers and Intensifiers", "text": "Quantifiers and Intensifiers"},
+  {"id": "Scrambling", "text": "Scrambling"},
+  {"id": "Modifiers", "text": "Modifiers"},
+  {"id": "Agreement", "text": "Agreement"},
   {"id": "Miscellaneous", "text": "Miscellaneous"}
 ]
 
