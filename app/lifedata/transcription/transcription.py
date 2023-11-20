@@ -62,13 +62,14 @@ langScriptJSONFilePath = os.path.join(jsonfilesdir, 'langScript.json')
 @login_required
 def home():
     try:
-        projects, userprojects, projectsform, sentences, transcriptions, speakerdetails = getdbcollections.getdbcollections(mongo,
+        projects, userprojects, projectsform, sentences, transcriptions, speakerdetails, questionnaires = getdbcollections.getdbcollections(mongo,
                                                                                                                             'projects',
                                                                                                                             'userprojects',
                                                                                                                             'projectsform',
                                                                                                                             'sentences',
                                                                                                                             'transcriptions',
-                                                                                                                            'speakerdetails')
+                                                                                                                            'speakerdetails',
+                                                                                                                            'questionnaires')
         current_username = getcurrentusername.getcurrentusername()
         currentuserprojectsname = getcurrentuserprojects.getcurrentuserprojects(current_username,
                                                                                 userprojects)
@@ -100,13 +101,22 @@ def home():
         # logger.debug("derived_from_project_type: %s, derived_from_project_name: %s", 
         #              derived_from_project_type, derived_from_project_name)
         if (derived_from_project_type == 'questionnaires'):
-            all_ques_ids = ['New']
+            all_ques_ids = {'New': 'New'}
             ques_ids = projects.find_one({"projectname": derived_from_project_name},
                                          {
                                              "_id": 0,
                                              "questionnaireIds": 1
                                          })["questionnaireIds"]
-            all_ques_ids.extend(ques_ids)
+            # all_ques_ids.extend(ques_ids)
+            for ques_id in ques_ids:
+                Q_Id = questionnaires.find_one({"projectname": derived_from_project_name,
+                                                "quesId": ques_id,
+                                                "quesdeleteFLAG": 0},
+                                                {
+                                                    "_id": 0,
+                                                    "Q_Id": 1
+                                                })["Q_Id"]
+                all_ques_ids[ques_id] = Q_Id
             # logger.debug("all_ques_ids: %s", pformat(all_ques_ids))
         if activeprojectform is not None:
             try:

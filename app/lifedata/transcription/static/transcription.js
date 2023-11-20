@@ -839,8 +839,10 @@ function questionnaireDerived(allQuesIds) {
                 '<div class="input-group col-md-12" id="quesiddropdown-divid">'+
                 '<label for="quesiddropdown">Select Question: </label>'+
                 '<select class="custom-select custom-select-sm" id="quesiddropdown" name="quesId" style="width:30%" required>';
-    for (i=0; i<allQuesIds.length; i++) {
-      quesIds += '<option value="'+allQuesIds[i]+'">'+allQuesIds[i]+'</option>';
+    // for (i=0; i<allQuesIds.length; i++) {
+      for (let [quesId, Q_Id] of Object.entries(allQuesIds)){
+      // quesIds += '<option value="'+allQuesIds[i]+'">'+allQuesIds[i]+'</option>';
+      quesIds += '<option value="'+quesId+'">'+Q_Id+'</option>';
     }
     quesIds += '</select>';
     quesIds += '</div>';
