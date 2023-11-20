@@ -31,13 +31,17 @@ Home
         onclick="window.location.href='{{ url_for('emailsetup') }}';">Email Setup</button>
 </div>
 
-
 {%endif%}
 <br>
 <hr>
 <div>
     <button type="button" id="managetagset" class="btn btn-lg btn-primary"
         onclick="window.location.href='{{ url_for('lifetagsets.managetagset') }}';">Manage Tagsets</button>
+</div>
+
+<div>
+    <button type="button" id="hfmodelsetup" class="btn btn-lg btn-info"
+        onclick="window.location.href='{{ url_for('hfmodelsetup') }}';">HuggingFace Model Setup</button>
 </div>
 
 

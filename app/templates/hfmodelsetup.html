@@ -1,0 +1,113 @@
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Add/ Update User Details </title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
+    <script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css" />
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.1/bootstrap3-editable/css/bootstrap-editable.css"
+        rel="stylesheet">
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.1/bootstrap3-editable/js/bootstrap-editable.js"></script>
+
+    <style>
+        .divtextuserdetails {
+            border: ridge 1px;
+            padding: 5px;
+            width: 20em;
+            min-height: 1em;
+            overflow: auto;
+        }
+    </style>
+
+</head>
+{% extends "manageUsersLinks.html" %}
+
+{% block styles %}
+{{super()}}
+{% endblock %}
+
+{% block app_content %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+
+<div id="formdisplay" style="display: block;">
+    <div class="form-group">
+        <h3> HuggingFace Models Configuration </h3>
+        <h4>Please fill up this information correctly and carefully. If this is not filled
+            up correctly then model prediction and training will not work correctly.
+        </h4>
+    </div>
+    <hr>
+    <form role="form" method="post" action="{{url_for('hfmodelsetup')}}">
+        <!-- <div id="userdisplay" class="form-group" style="display: none;"> -->        
+        <div class="form-group">
+            <label for="idapiTokens">HuggingFace API Tokens: </label><br>
+            <select class="class++apiTokens" id="idapiTokens" name="nameuser++apiTokens" multiple="multiple" required readonly style="width:55%">
+                {% for item in hfmodelconfiguser %}
+                    <option value="{{item}}" selected>{{item}}</option>
+                {% endfor %}
+            </select><br/>
+            <!-- <input type="text" id="display++{{item}}" name="user++{{item}}" style="width:55%"
+                value="{{hfmodelconfiguser[item]}}" required readonly> -->
+        </div>
+        
+
+        
+        
+        <div class="form-group">
+            <label for="idtaskType">Task Type: </label><br>
+            <select class="class++taskType" id="idtaskType" name="nameglobal++taskType" required readonly style="width:55%">
+                {% for item in hfmodelconfigadmin %}
+                
+                <option value="{{item}}"
+                {% if item == "automatic-speech-recognition" %} selected {%endif%}
+                >{{item}}</option>
+                {% endfor %}
+            </select><br />
+            <!-- <input type="text" id="display++{{item}}" name="global++{{item}}" style="width:55%"
+                    value="{{hfmodelconfigadmin[item]}}" required readonly> -->
+        </div>
+        <div class="form-group">
+            <label for="idauthorsList">Authors List: </label><br>
+            <select class="class++authorsList" id="idauthorsList" name="nameglobal++authorsList" multiple="multiple" required readonly style="width:55%">
+                {% for item in hfmodelconfigadmin["automatic-speech-recognition"] %}
+                <option value="{{item}}" selected>{{item}}</option>
+                {% endfor %}
+            </select><br />
+            <!-- <input type="text" id="display++{{item}}" name="global++{{item}}" style="width:55%"
+                            value="{{hfmodelconfigadmin[item]}}" required readonly> -->
+        </div>
+        
+        
+
+        <div class="form-group">
+            <button class="btn-danger" type="button" id="editbutton">Edit</button>
+            <input type="submit" id="submitbutton" class="btn-primary submitbutton" value="Submit" disabled="disabled">
+        </div>
+    </form>
+    <form role="form" method="post" action="{{url_for('lifemodels.syncExistingModels')}}">
+        <div class="pull-right">
+            <button type="submit" id="synchfmodels" class="btn btn-lg btn-success pull-right">Sync HF Models</button>
+            <!-- <button type="submit" id="synchfmodels" class="btn btn-lg btn-success pull-right"
+                onclick="window.location.href='{{ url_for('lifemodels.syncExistingModels') }}';">Sync HF Models</button> -->
+        </div>
+    </form>
+</div>
+
+
+{% endblock %}
+{% block scripts %}
+{{super()}}
+<script src="{{url_for('.static', filename='appsetup.js')}}"></script>
+<script type="text/javascript">addHFDataDetails({{ hfmodelconfiguser | tojson | safe }}, {{ hfmodelconfigadmin | tojson | safe }}, {{ usertype | tojson | safe }});</script>
+
+
+{% endblock %}
+
+</html>

@@ -52,6 +52,9 @@ from app.controller import (manageAppConfig, questionnairedetails,
 from app.forms import RegistrationForm, UserLoginForm
 from app.models import UserLogin
 
+from app.languages.controller import languageManager as lman
+from app.lifemodels.controller import modelManager as mman
+
 basedir = os.path.abspath(os.path.dirname(__file__))
 scriptCodeJSONFilePath = os.path.join(basedir, 'static/json/scriptCode.json')
 langScriptJSONFilePath = os.path.join(basedir, 'static/json/langScript.json')
@@ -4774,6 +4777,8 @@ def login():
     generateadmin(userlogin)
     dummyUserandProject()
     manageAppConfig.generateDummyAppConfig()
+    lman.generate_languages_database()
+    mman.generate_models_database()
 
     if current_user.is_authenticated:
         return redirect(url_for('home'))
@@ -6012,23 +6017,23 @@ def documentation():
 @login_required
 def projecttype():
     projects, userprojects, projectsform = getdbcollections.getdbcollections(mongo,
-                                                               'projects',
-                                                               'userprojects',
-                                                               'projectsform')
+                                                                             'projects',
+                                                                             'userprojects',
+                                                                             'projectsform')
     current_username = getcurrentusername.getcurrentusername()
     activeprojectname = getactiveprojectname.getactiveprojectname(
         current_username, userprojects)
     project_type = getprojecttype.getprojecttype(projects, activeprojectname)
     shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
-                                                          current_username,
-                                                          activeprojectname)
+                                                      current_username,
+                                                      activeprojectname)
     current_user_sharemode = int(shareinfo['sharemode'])
 
     projectowner = getprojectowner.getprojectowner(projects,
                                                    activeprojectname)
     activeprojectform = getactiveprojectform.getactiveprojectform(projectsform,
-                                                                    projectowner,
-                                                                    activeprojectname)
+                                                                  projectowner,
+                                                                  activeprojectname)
 
     return jsonify(projectType=project_type,
                    shareMode=current_user_sharemode,
@@ -6099,6 +6104,92 @@ def emailsetup():
         usertype=usertype
     )
 
+
+@app.route('/hfmodelsetup', methods=['GET', 'POST'])
+@login_required
+def hfmodelsetup():
+    userlogin, lifeappconfigs = getdbcollections.getdbcollections(
+        mongo, 'userlogin', 'lifeappconfigs')
+    current_username = getcurrentusername.getcurrentusername()
+    print('USERNAME: ', current_username)
+    usertype = userdetails.get_user_type(
+        userlogin, current_username)
+    print('USERTYPE: ', usertype)
+    # print(ADMIN_USER, SUB_ADMINS)
+    # manageAppConfig.generateDummyAppConfig()
+    hfmodelconfig = {}
+    labelmap = []
+    hfmodelconfigglobal={}
+    hfmodelconfiguser={}
+
+
+    if request.method == 'POST':
+        authors_list = request.form.getlist('nameglobal++authorsList')
+        task_type = request.form.get('nameglobal++taskType')
+        if 'SUPER-ADMIN' in usertype:
+            hfmodelconfigglobal = {
+                'globals': {
+                    task_type: {
+                        'authorsList': authors_list
+                    }
+                }
+            }
+            hfmodelconfig.update(hfmodelconfigglobal)
+        
+        api_tokens = request.form.getlist('nameuser++apiTokens')
+        hfmodelconfiguser = {
+            'usersData': {
+                current_username: {
+                    'apiTokens': api_tokens,
+                    'globals': {
+                        task_type: {
+                            'authorsList': authors_list
+                        }
+                    }
+                }
+            }
+        }
+        hfmodelconfig.update(hfmodelconfiguser)
+
+        logger.debug("Final config sent %s", hfmodelconfig)
+
+        labelmap = manageAppConfig.updateHuggingFaceModelConfig(
+                lifeappconfigs, hfmodelconfig)
+    else:
+        hfmodelconfig, labelmap = manageAppConfig.getHuggingFaceModelConfig(lifeappconfigs, current_username, usertype)
+        
+        
+    
+    if 'SUPER-ADMIN' in usertype:
+        global_config = hfmodelconfig['globals']
+    else:
+        global_config = hfmodelconfig['usersData'].get(current_username, {'globals': {}})
+
+    # TODO: Write a function to get the list of authors given a task - this will be used
+    # for calling it via AJAX and getting Author List when a specific task is selected
+    # on the manage page. At present only ASR is being implemented and supported
+    hfmodelconfigval = global_config.get('automatic-speech-recognition', {'authorsList': []})        
+    # logger.debug('Model config %s', hfmodelconfigval)
+    hfmodelconfigglobal['automatic-speech-recognition'] = hfmodelconfigval['authorsList']
+    # logger.debug('Model config Global %s', hfmodelconfigglobal)
+
+    for task_type, author_list in global_config.items():
+        # if task_type == current_username:
+        hfmodelconfigglobal[task_type] = author_list.get('authorsList', [])
+    logger.debug('Model config Global %s', hfmodelconfigglobal)
+    # hfmodelconfigglobal['taskType'] = 'automatic-speech-recognition'
+    hfmodelconfiguser = hfmodelconfig['usersData'].get(current_username, {'apiTokens': []})['apiTokens']
+    
+    logger.debug('Model config Global %s', hfmodelconfigglobal)
+    logger.debug('Model config user %s', hfmodelconfiguser)
+
+    return render_template(
+        'hfmodelsetup.html',
+        hfmodelconfiguser=hfmodelconfiguser,
+        hfmodelconfigadmin=hfmodelconfigglobal,
+        labelmap=labelmap,
+        usertype=usertype
+    )
 
 @app.errorhandler(404)
 def page_not_found(e):
@@ -6347,6 +6438,7 @@ def browsesharewith():
         logger.exception("")
 
     return jsonify(users=users)
+
 
 @app.route('/get_jsonfile_data', methods=['GET', 'POST'])
 @login_required

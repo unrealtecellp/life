@@ -38,11 +38,11 @@ from app.lifedata.controller import (
 )
 
 from app.lifetagsets.controller import (
-    save_tagset,
+    saveTagset,
     tagset_details
 )
 
-from app.lifedata.transcription.controller import(
+from app.lifedata.transcription.controller import (
     save_new_transcription_form
 )
 
@@ -93,6 +93,7 @@ def getprojectslist():
 
     return jsonify(projectslist=projectslist)
 
+
 @lifedata.route('/gettagsetslist', methods=['GET', 'POST'])
 @login_required
 def gettagsetslist():
@@ -100,14 +101,16 @@ def gettagsetslist():
     """
     tagsets_list = []
     try:
-        tagsets_collection, = getdbcollections.getdbcollections(mongo, 'tagsets')
+        tagsets_collection, = getdbcollections.getdbcollections(
+            mongo, 'tagsets')
         current_username = getcurrentusername.getcurrentusername()
         tagsets_list = tagset_details.get_tagsets_list(tagsets_collection,
-                                                        current_username)
+                                                       current_username)
     except:
         logger.exception("")
 
     return jsonify(tagsetsList=tagsets_list)
+
 
 @lifedata.route('/newdataform', methods=['GET', 'POST'])
 @login_required
@@ -170,9 +173,9 @@ def newdataform():
                 # logger.debug("project_type: %s", project_type)
 
                 validation_zip_file = new_data_form_files["tagsetZipFile"]
-                tagset_project_ids, = save_tagset.save_tagset(tagsets,
-                                                              validation_zip_file,
-                                                              project_name)
+                tagset_project_ids, = saveTagset.save_tagset(tagsets,
+                                                             validation_zip_file,
+                                                             project_name)
                 # logger.debug(tagset_project_ids)
                 projects.update_one({"projectname": project_name},
                                     {"$set": {
@@ -231,9 +234,9 @@ def newdataform():
                     # logger.debug("project_type: %s", project_type)
                     if 'annotationtagsetZipFile' in new_data_form_files:
                         annotation_zip_file = new_data_form_files["annotationtagsetZipFile"]
-                        tagset_project_ids, = save_tagset.save_tagset(tagsets,
-                                                                      annotation_zip_file,
-                                                                      project_name)
+                        tagset_project_ids, = saveTagset.save_tagset(tagsets,
+                                                                     annotation_zip_file,
+                                                                     project_name)
                     else:
                         tagset_name = new_data_form['tagsetname'][0]
                         tagset_project_ids = tagset_details.get_tagset_id(tagsets,
@@ -260,12 +263,12 @@ def newdataform():
                     return redirect(url_for("lifedata.annotation"))
                 elif (project_type == 'transcriptions'):
                     transcriptions_collection, tagsets = getdbcollections.getdbcollections(mongo,
-                                                                                       'transcriptions',
-                                                                                       'tagsets')
+                                                                                           'transcriptions',
+                                                                                           'tagsets')
                     final_tagset_project_ids = []
                     # logger.debug("project_type: %s", project_type)
                     if ("transcriptionstagsetuploadcheckbox" in new_data_form and
-                        new_data_form["transcriptionstagsetuploadcheckbox"][0] == "on"):
+                            new_data_form["transcriptionstagsetuploadcheckbox"][0] == "on"):
                         if 'transcriptionstagsetZipFile' in new_data_form_files:
                             transcriptions_zip_file = new_data_form_files["transcriptionstagsetZipFile"]
                             # logger.debug("transcriptions_zip_file: %s\n%s\n%s\n%s\n%s",
@@ -274,56 +277,61 @@ def newdataform():
                             #              transcriptions_zip_file.filename,
                             #              len(transcriptions_zip_file.filename),
                             #              transcriptions_zip_file.headers)
-                            transcriptions_zip_filename = transcriptions_zip_file.filename.split('.')[0]
+                            transcriptions_zip_filename = transcriptions_zip_file.filename.split('.')[
+                                0]
                             # logger.debug("transcriptions_zip_file: %s\n%s",
                             #              transcriptions_zip_filename,
                             #              len(transcriptions_zip_filename))
                             if (len(transcriptions_zip_filename) != 0):
-                                tagset_project_ids = save_tagset.save_tagset(tagsets,
-                                                                                transcriptions_zip_file,
-                                                                                project_name)
+                                tagset_project_ids = saveTagset.save_tagset(tagsets,
+                                                                            transcriptions_zip_file,
+                                                                            project_name)
                             else:
                                 tagset_name = new_data_form['transcriptionstagsetuploadselect'][0]
                                 tagset_project_ids = tagset_details.get_tagset_id(tagsets,
-                                                                                tagset_name)
+                                                                                  tagset_name)
                         else:
                             tagset_name = new_data_form['transcriptionstagsetuploadselect'][0]
                             tagset_project_ids = tagset_details.get_tagset_id(tagsets,
-                                                                            tagset_name)
+                                                                              tagset_name)
                         logger.debug("tagset_project_ids: %s,\nType: %s",
-                                        tagset_project_ids,
-                                        type(tagset_project_ids))
-                        final_tagset_project_ids.extend(list(tagset_project_ids))
+                                     tagset_project_ids,
+                                     type(tagset_project_ids))
+                        final_tagset_project_ids.extend(
+                            list(tagset_project_ids))
                     if ("transcriptionsboundarytagsetuploadcheckbox" in new_data_form and
-                        new_data_form["transcriptionsboundarytagsetuploadcheckbox"][0] == "on"):
+                            new_data_form["transcriptionsboundarytagsetuploadcheckbox"][0] == "on"):
                         if 'transcriptionsboundarytagsetZipFile' in new_data_form_files:
-                            transcriptions_zip_file = new_data_form_files["transcriptionsboundarytagsetZipFile"]
+                            transcriptions_zip_file = new_data_form_files[
+                                "transcriptionsboundarytagsetZipFile"]
                             # logger.debug("transcriptions_zip_file: %s\n%s\n%s\n%s\n%s",
                             #              type(transcriptions_zip_file),
                             #              transcriptions_zip_file,
                             #              transcriptions_zip_file.filename,
                             #              len(transcriptions_zip_file.filename),
                             #              transcriptions_zip_file.headers)
-                            transcriptions_zip_filename = transcriptions_zip_file.filename.split('.')[0]
+                            transcriptions_zip_filename = transcriptions_zip_file.filename.split('.')[
+                                0]
                             # logger.debug("transcriptions_zip_file: %s\n%s",
                             #              transcriptions_zip_filename,
                             #              len(transcriptions_zip_filename))
                             if (len(transcriptions_zip_filename) != 0):
-                                tagset_project_ids = save_tagset.save_tagset(tagsets,
-                                                                                transcriptions_zip_file,
-                                                                                project_name)
+                                tagset_project_ids = saveTagset.save_tagset(tagsets,
+                                                                            transcriptions_zip_file,
+                                                                            project_name)
                             else:
                                 tagset_name = new_data_form['transcriptionsboundarytagsetuploadselect'][0]
                                 tagset_project_ids = tagset_details.get_tagset_id(tagsets,
-                                                                                tagset_name)
+                                                                                  tagset_name)
                         else:
                             tagset_name = new_data_form['transcriptionsboundarytagsetuploadselect'][0]
                             tagset_project_ids = tagset_details.get_tagset_id(tagsets,
-                                                                            tagset_name)
+                                                                              tagset_name)
                         logger.debug("tagset_project_ids: %s,\nType: %s",
-                                 tagset_project_ids,
-                                 type(tagset_project_ids))
-                        final_tagset_project_ids.extend(list(tagset_project_ids))
+                                     tagset_project_ids,
+                                     type(tagset_project_ids))
+                        final_tagset_project_ids.extend(
+                            list(tagset_project_ids))
                     logger.debug("tagset_project_ids: %s,\nType: %s",
                                  final_tagset_project_ids,
                                  type(final_tagset_project_ids))
@@ -332,9 +340,9 @@ def newdataform():
                                             "tagsetId": final_tagset_project_ids
                                         }})
                     saved_new_transcription_form, save_status = save_new_transcription_form.save_new_transcription_form(projectsform,
-                                                                                                                            projectname,
-                                                                                                                            new_data_form,
-                                                                                                                            current_username)
+                                                                                                                        projectname,
+                                                                                                                        new_data_form,
+                                                                                                                        current_username)
                     return redirect(url_for("lifedata.transcription.home"))
 
             return redirect(url_for("lifedata.transcription.home"))
@@ -454,9 +462,9 @@ def datazipfile():
             if (completed):
                 if (project_type == 'transcriptions'):
                     return jsonify(completed=completed,
-                                    message=message,
-                                    mappingTagset={},
-                                    validationTagsetKeys=[])
+                                   message=message,
+                                   mappingTagset={},
+                                   validationTagsetKeys=[])
                 else:
                     validation_tagset_keys = list(data_tagset.keys())
             else:
