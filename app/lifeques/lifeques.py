@@ -642,6 +642,11 @@ def downloadquestionnaire():
                                                                     basedir,
                                                                     questionnaires,
                                                                     activeprojectname)
+    elif (download_format == 'karyajson2'):
+        project_folder_path = downloadquestionnairein.karyajson2(mongo,
+                                                                    basedir,
+                                                                    questionnaires,
+                                                                    activeprojectname)
     
     zip_file_path = createzip.createzip(project_folder_path, activeprojectname)
 
