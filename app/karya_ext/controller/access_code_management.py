@@ -205,8 +205,10 @@ def upload_access_code_metadata_from_file(
     elicitationmethod,
     fetch_data,
     data_df,
-
 ):
+
+    return_obj = None  # Initialize return_obj outside the loop
+
     for index, item in data_df.iterrows():
         current_dt = str(datetime.now()).replace('.', ':')
         checkaccesscode = item["access_code"]
@@ -236,8 +238,9 @@ def upload_access_code_metadata_from_file(
             "isActive": 0,
             "additionalInfo": {}
         }
+        
         return_obj = karyaaccesscodedetails.insert_one(insert_dict)
-        # datafromdb = karyaaccesscodedetails.find({},{"_id" :0})
+        
     return return_obj
 
 """
