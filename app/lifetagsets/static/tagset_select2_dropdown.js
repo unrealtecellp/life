@@ -1,7 +1,7 @@
 var languages = [
-
   {"id": "", "text": ""},
   {"id": "Assamese", "text": "Assamese"},
+  {"id": "Angika", "text": "Angika"},
   {"id": "Awadhi", "text": "Awadhi"},
   {"id": "Bajjika", "text": "Bajjika"},
   {"id": "Bangla", "text": "Bangla"},
@@ -9,11 +9,14 @@ var languages = [
   {"id": "Bodo", "text": "Bodo"},
   {"id": "Braj", "text": "Braj"},
   {"id": "Bundeli", "text": "Bundeli"},
+  {"id": "Chhattisgarhi", "text": "Chhattisgarhi"},
   {"id": "Chokri", "text": "Chokri"},
+  {"id": "Dogri", "text": "Dogri"},
   {"id": "English", "text": "English"},
   {"id": "Gujarati", "text": "Gujarati"},
   {"id": "Haryanvi", "text": "Haryanvi"},
   {"id": "Hindi", "text": "Hindi"},
+  {"id": "Kashmiri", "text": "Kashmiri"},
   {"id": "Kannada", "text": "Kannada"},
   {"id": "Khortha", "text": "Khortha"},
   {"id": "Konkani", "text": "Konkani"},
@@ -23,14 +26,19 @@ var languages = [
   {"id": "Malayalam", "text": "Malayalam"},
   {"id": "Marathi", "text": "Marathi"},
   {"id": "Meitei", "text": "Meitei"},
+  {"id": "Nagamese", "text": "Nagamese"},
   {"id": "Nepali", "text": "Nepali"},
   {"id": "Nyishi", "text": "Nyishi"},
   {"id": "Odia", "text": "Odia"},
   {"id": "Punjabi", "text": "Punjabi"},
+  {"id": "Sadri", "text": "Sadri"},
+  {"id": "Sanskrit", "text": "Sanskrit"},
   {"id": "Santali", "text": "Santali"},
+  {"id": "Sambalpuri", "text": "Sambalpuri"},
   {"id": "Tamil", "text": "Tamil"},
   {"id": "Telugu", "text": "Telugu"},
-  {"id": "Toto", "text": "Toto"}
+  {"id": "Toto", "text": "Toto"},
+  {"id": "Urdu", "text": "Urdu"}
 ]
 
 var scripts = 

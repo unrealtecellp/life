@@ -22,7 +22,8 @@ from app.controller import (
                             getuserprojectinfo,
                             savenewproject,
                             updateuserprojects,
-                            life_logging
+                            life_logging,
+                            projectDetails
                         )
 from app.lifeques.controller import (
                                         downloadquestionnairein,
@@ -41,12 +42,15 @@ from app.lifeques.controller import (
                                         questranscriptionaudiodetails,
                                         getquestionnairestats,
                                         savequespromptfile,
-                                        getquesfromprompttext
+                                        getquesfromprompttext,
+                                        create_new_ques,
+                                        ques_details,
                                     )
 
 import os
 from pprint import pprint, pformat
 import inspect
+import json
 
 lifeques = Blueprint('lifeques', __name__, template_folder='templates', static_folder='static')
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -222,93 +226,124 @@ def newquestionnaireform():
 @lifeques.route('/questionnaire', methods=['GET', 'POST'])
 @login_required
 def questionnaire():
-    projects, userprojects, projectsform, questionnaires = getdbcollections.getdbcollections(mongo,
-                                                                                            'projects',
-                                                                                            'userprojects',
-                                                                                            'projectsform',
-                                                                                            'questionnaires')
-    current_username = getcurrentusername.getcurrentusername()
-    currentuserprojectsname =  getcurrentuserprojects.getcurrentuserprojects(current_username,
-                                                                                userprojects)
-    activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
-                                                                    userprojects)
-    
-    lastActiveIdDetails = projects.find_one({"projectname": activeprojectname},
-                                        {'_id': 0, 'lastActiveId': 1, "questionnaireIds": 1})
-    
-    if (current_username not in lastActiveIdDetails['lastActiveId']):
-        lastActiveId = lastActiveIdDetails['questionnaireIds'][0]
-        # print(lastActiveId)
-        updatequesid = 'lastActiveId.'+current_username+'.'+activeprojectname
-        # print(updatequesid)
+    try:
+        audioWaveform = 0
+        projects, userprojects, projectsform, questionnaires = getdbcollections.getdbcollections(mongo,
+                                                                                                'projects',
+                                                                                                'userprojects',
+                                                                                                'projectsform',
+                                                                                                'questionnaires')
+        current_username = getcurrentusername.getcurrentusername()
+        currentuserprojectsname =  getcurrentuserprojects.getcurrentuserprojects(current_username,
+                                                                                    userprojects)
+        activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                        userprojects)
+        
+        lastActiveIdDetails = projects.find_one({"projectname": activeprojectname},
+                                            {'_id': 0, 'lastActiveId': 1, "questionnaireIds": 1})
+        
+        if (current_username not in lastActiveIdDetails['lastActiveId']):
+            lastActiveId = lastActiveIdDetails['questionnaireIds'][0]
+            # print(lastActiveId)
+            updatequesid = 'lastActiveId.'+current_username+'.'+activeprojectname
+            # print(updatequesid)
 
-        projects.update_one({"projectname": activeprojectname},
-            { '$set' : { updatequesid: lastActiveId }})
+            projects.update_one({"projectname": activeprojectname},
+                { '$set' : { updatequesid: lastActiveId }})
 
-    projectowner = getprojectowner.getprojectowner(projects,
-                                                    activeprojectname)
-    quesprojectform = getactiveprojectform.getactiveprojectform(projectsform,
-                                                                projectowner,
-                                                                activeprojectname)
-    shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
-                                                        current_username,
+        projectowner = getprojectowner.getprojectowner(projects,
                                                         activeprojectname)
-    last_active_ques_id = getactivequestionnaireid.getactivequestionnaireid(projects,
+        quesprojectform = getactiveprojectform.getactiveprojectform(projectsform,
+                                                                    projectowner,
+                                                                    activeprojectname)
+        shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
+                                                            current_username,
+                                                            activeprojectname)
+        last_active_ques_id = getactivequestionnaireid.getactivequestionnaireid(projects,
+                                                            activeprojectname,
+                                                            current_username)
+        # logger.debug("last_active_ques_id: %s", last_active_ques_id)
+        if (last_active_ques_id != ''):
+            ques_delete_flag = ques_details.get_ques_delete_flag(questionnaires,
+                                                                activeprojectname,
+                                                                last_active_ques_id)
+            if (ques_delete_flag):
+                last_active_ques_id = getnewquesid.getnewquesid(projects,
                                                         activeprojectname,
-                                                        current_username)
-    # print(last_active_ques_id)
-    quesdata = questionnaires.find_one({"quesId": last_active_ques_id}, {"_id": 0})
-    # print(f"{inspect.currentframe().f_lineno}: {quesprojectform}")
-    # print(f"{inspect.currentframe().f_lineno}: {type(quesdata)}")
-    # print(f"{inspect.currentframe().f_lineno}: {quesdata}")
-    quesprojectform['quesdata'] = quesdata
-    # print(f"{inspect.currentframe().f_lineno}: {quesdata}")
-    file_path = ''
-    # if (quesdata is not None and 'Transcription' in quesdata['prompt']):
+                                                        last_active_ques_id,
+                                                        'next')
+                updatelatestquesid.updatelatestquesid(projects,
+                                                    activeprojectname,
+                                                    last_active_ques_id,
+                                                    current_username)
+                flash(f"This question seem to be deleted or revoked access by one of the shared user.\
+                                Showing you the next question in the queue.")
+                return redirect(url_for('lifeques.questionnaire'))
+        quesdata = questionnaires.find_one({"quesId": last_active_ques_id}, {"_id": 0})
+        # logger.debug("quesdata: %s", pformat(quesdata))
+        # print(f"{inspect.currentframe().f_lineno}: {quesprojectform}")
+        # print(f"{inspect.currentframe().f_lineno}: {type(quesdata)}")
+        # print(f"{inspect.currentframe().f_lineno}: {quesdata}")
+        quesprojectform['quesdata'] = quesdata
+        # print(f"{inspect.currentframe().f_lineno}: {quesdata}")
+        file_path = ''
+        # if (quesdata is not None and 'Transcription' in quesdata['prompt']):
+        
+        if (quesdata is not None):
+            ques_data_prompt = quesdata['prompt']
+            if ('content' in ques_data_prompt):
+                ques_data_prompt_content = quesdata['prompt']['content']
+                # ques_id = quesdata['prompt']['Transcription']['quesId']
+                for lang, lang_info in ques_data_prompt_content.items():
+                    # print(lang, lang_info)
+                    for prompt_type, prompt_type_info in lang_info.items():
+                        # print(prompt_type, prompt_type_info)
+                        if (prompt_type != 'text'):
+                            fileId = prompt_type_info['fileId']
+                            if (fileId != ''):
+                                file_path, file_name = questranscriptionaudiodetails.getquesfilefromfs(mongo,
+                                                                                                basedir,
+                                                                                                fileId,
+                                                                                                'fileId')
+                                # logger.debug('file_path: %s, %s',
+                                #              type(file_path),
+                                #              file_path)
+                                file_path = file_path.replace('static/audio/', 'retrieve/')
+                                file_path_key = '_'.join([lang, prompt_type, 'FilePath'])
+                                # logger.debug('file_path_key: %s', file_path_key)
+                                quesprojectform[file_path_key] = file_path
+                                if ('textGrid' in prompt_type_info and
+                                    not audioWaveform):
+                                    # logger.debug("prompt_type_info: %s\naudioWaveform: %s",
+                                    #              pformat(prompt_type_info),
+                                    #              audioWaveform)
+                                    quesprojectform['QuesAudioFilePath'] = file_path
+                                    transcription_regions = questranscriptionaudiodetails.getquesfiletranscriptiondetails(questionnaires, last_active_ques_id, lang, prompt_type)
+                                    # print(type(transcription_regions))
+                                    quesprojectform['transcriptionRegions'] = transcription_regions
+                                    audioWaveform = 1
+        if ('QuesAudioFilePath' not in quesprojectform):
+            quesprojectform['QuesAudioFilePath'] = ''
+        # logger.debug("quesprojectform: %s", pformat(quesprojectform))
+
+        # project_type = getprojecttype.getprojecttype(projects, activeprojectname)
+        # print('project_type', project_type)
+
+        total_ques, completed, notcompleted = getquestionnairestats.getquestionnairestats(projects,
+                                                                                            questionnaires,
+                                                                                            activeprojectname,
+                                                                                            'ID',
+                                                                                            'idtype')
+        questats = [total_ques, completed, notcompleted]
+        # logger.debug('questats: %s', questats)
+    except:
+        logger.exception("")
     
-    if (quesdata is not None):
-        ques_data_prompt = quesdata['prompt']
-        if ('content' in ques_data_prompt):
-            ques_data_prompt_content = quesdata['prompt']['content']
-            # audio_id = quesdata['prompt']['Transcription']['audioId']
-            for lang, lang_info in ques_data_prompt_content.items():
-                # print(lang, lang_info)
-                for prompt_type, prompt_type_info in lang_info.items():
-                    # print(prompt_type, prompt_type_info)
-                    if (prompt_type != 'text'):
-                        fileId = prompt_type_info['fileId']
-                        if (fileId != ''):
-                            file_path = questranscriptionaudiodetails.getquesfilefromfs(mongo,
-                                                                                            basedir,
-                                                                                            fileId,
-                                                                                            'fileId')
-                            # print('file_path', type(file_path), file_path)
-                            file_path_key = '_'.join([lang, prompt_type, 'FilePath'])
-                            quesprojectform[file_path_key] = file_path
-                            if ('textGrid' in prompt_type_info):
-                                quesprojectform['QuesAudioFilePath'] = file_path
-                                transcription_regions = questranscriptionaudiodetails.getquesfiletranscriptiondetails(questionnaires, last_active_ques_id, lang, prompt_type)
-                                # print(type(transcription_regions))
-                                quesprojectform['transcriptionRegions'] = transcription_regions
-    if ('QuesAudioFilePath' not in quesprojectform):
-        quesprojectform['QuesAudioFilePath'] = ''
-    # print(f"{inspect.currentframe().f_lineno}: {quesprojectform}")
-
-    # project_type = getprojecttype.getprojecttype(projects, activeprojectname)
-    # print('project_type', project_type)
-
-    total_ques, completed, notcompleted = getquestionnairestats.getquestionnairestats(projects,
-                                                                                        questionnaires,
-                                                                                        activeprojectname,
-                                                                                        'ID',
-                                                                                        'idtype')
-    quesstats = [total_ques, completed, notcompleted]
-
     return render_template('questionnaire.html',
                             projectName=activeprojectname,
                             quesprojectform=quesprojectform,
                             data=currentuserprojectsname,
-                            quesstats=quesstats,
+                            questats=questats,
                             shareinfo=shareinfo)
 
 @lifeques.route('/questranscriptionaudio', methods=['GET', 'POST'])
@@ -348,43 +383,48 @@ def questranscriptionaudio():
 @lifeques.route('/savequestionnaire', methods=['GET', 'POST'])
 @login_required
 def savequestionnaire():
-    projects, userprojects, projectsform, questionnaires = getdbcollections.getdbcollections(mongo,
-                                                                                            'projects',
-                                                                                            'userprojects',
-                                                                                            'projectsform',
-                                                                                            'questionnaires'
-                                                                                            )
-    current_username = getcurrentusername.getcurrentusername()
-    activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
-                                                                    userprojects)
+    try:
+        projects, userprojects, projectsform, questionnaires = getdbcollections.getdbcollections(mongo,
+                                                                                                'projects',
+                                                                                                'userprojects',
+                                                                                                'projectsform',
+                                                                                                'questionnaires'
+                                                                                                )
+        current_username = getcurrentusername.getcurrentusername()
+        activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                        userprojects)
 
-    if request.method =='POST':
-        ques_data = dict(request.form.lists())
-        # print('LINE 241: ')
-        # pprint(ques_data)
-        # ques_data_file = request.files.to_dict()
-        # pprint(ques_data_file)
+        if request.method =='POST':
+            # ques_data = dict(request.form.lists())
+            ques_data = json.loads(request.form['a'])
+            # print('LINE 241: ')
+            logger.debug('ques_data: %s', pformat(ques_data))
+            # ques_data_file = request.files.to_dict()
+            # pprint(ques_data_file)
 
-        last_active_ques_id = getactivequestionnaireid.getactivequestionnaireid(projects,
-                                                                                activeprojectname,
-                                                                                current_username)
-        saveques.saveques(questionnaires,
-                            ques_data,
-                            last_active_ques_id,
-                            current_username
-                        )
+            last_active_ques_id = getactivequestionnaireid.getactivequestionnaireid(projects,
+                                                                                    activeprojectname,
+                                                                                    current_username)
+            savedQuestionnaire = saveques.saveques(questionnaires,
+                                ques_data,
+                                last_active_ques_id,
+                                current_username
+                            )
 
-        # load next ques
-        latest_ques_id = getnewquesid.getnewquesid(projects,
-                                                activeprojectname,
-                                                last_active_ques_id,
-                                                'next')
-        updatelatestquesid.updatelatestquesid(projects,
-                                        activeprojectname,
-                                        latest_ques_id,
-                                        current_username)
+            # load next ques
+            # latest_ques_id = getnewquesid.getnewquesid(projects,
+            #                                         activeprojectname,
+            #                                         last_active_ques_id,
+            #                                         'next')
+            # updatelatestquesid.updatelatestquesid(projects,
+            #                                 activeprojectname,
+            #                                 latest_ques_id,
+            #                                 current_username)
 
-    return redirect(url_for("lifeques.questionnaire"))
+        return jsonify(savedQuestionnaire=savedQuestionnaire)
+    except:
+        logger.exception("")
+    # return redirect(url_for("lifeques.questionnaire"))
 
 # uploadquesfiles route
 @lifeques.route('/uploadquesfiles', methods=['GET', 'POST'])
@@ -419,7 +459,7 @@ def uploadquesfiles():
         #         basedir,
         #         new_ques_file,
         #         current_username)
-        quesstate, quesextra = uploadquesdataexcel.queskeymapping(mongo,
+        questate, quesextra = uploadquesdataexcel.queskeymapping(mongo,
                                                                     projects,
                                                                     userprojects,
                                                                     projectsform,
@@ -430,11 +470,11 @@ def uploadquesfiles():
                                                                     new_ques_file,
                                                                     current_username)
 
-        if (1 <= quesstate <= 4):
-            flash(f"{flashmgs[quesstate]} {quesextra}")
+        if (1 <= questate <= 4):
+            flash(f"{flashmgs[questate]} {quesextra}")
             return redirect(url_for('lifeques.questionnaire'))
-        elif (6 <= quesstate <= 6):
-            flash(f"{flashmgs[quesstate]}")
+        elif (6 <= questate <= 6):
+            flash(f"{flashmgs[questate]}")
             return render_template('queskeymapping.html', not_mapped_data=quesextra)
 
     return redirect(url_for('lifeques.questionnaire'))
@@ -602,6 +642,11 @@ def downloadquestionnaire():
                                                                     basedir,
                                                                     questionnaires,
                                                                     activeprojectname)
+    elif (download_format == 'karyajson2'):
+        project_folder_path = downloadquestionnairein.karyajson2(mongo,
+                                                                    basedir,
+                                                                    questionnaires,
+                                                                    activeprojectname)
     
     zip_file_path = createzip.createzip(project_folder_path, activeprojectname)
 
@@ -619,3 +664,387 @@ def lifequesdownloadquestionnaire():
     zip_file_path = os.path.join(basedir, 'lifequesdownload', activeprojectname, activeprojectname+'.tgz')
 
     return send_file(zip_file_path, as_attachment=True)
+
+@lifeques.route('/createnewques', methods=['GET', 'POST'])
+def createnewques():
+    try:
+        projects, userprojects, projectsform, questionnaires = getdbcollections.getdbcollections(mongo,
+                                                                                                'projects',
+                                                                                                'userprojects',
+                                                                                                'projectsform',
+                                                                                                'questionnaires')
+        current_username = getcurrentusername.getcurrentusername()
+        activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                        userprojects)
+        projectowner = getprojectowner.getprojectowner(projects,
+                                                    activeprojectname)
+        quesprojectform = getactiveprojectform.getactiveprojectform(projectsform,
+                                                                    projectowner,
+                                                                    activeprojectname)
+        quesId, questionnaire_id, save_state = create_new_ques.create_new_ques(questionnaires,
+                                                                        activeprojectname,
+                                                                        quesprojectform,
+                                                                        current_username)
+        logger.debug("quesId: %s", quesId)
+        if (quesId):
+            updatelatestquesid.updatelatestquesid(projects,
+                                            activeprojectname,
+                                            quesId,
+                                            current_username)
+            projects.update_one({"projectname": activeprojectname},
+                            {
+                                "$addToSet": {
+                                    "questionnaireIds": quesId
+                                }
+                            })
+    except:
+        logger.exception("")
+    
+    return jsonify(saveState=save_state)
+
+@lifeques.route('/deleteques', methods=['GET', 'POST'])
+@login_required
+def deleteques():
+    try:
+        projects_collection, userprojects, questionnaires_collection = getdbcollections.getdbcollections(mongo,
+                                                                                                         'projects',
+                                                                                                         'userprojects',
+                                                                                                         'questionnaires')
+        current_username = getcurrentusername.getcurrentusername()
+        activeprojectname = getactiveprojectname.getactiveprojectname(
+            current_username, userprojects)
+        logger.debug("%s,%s", current_username, activeprojectname)
+        last_active_id = json.loads(request.form['a'])
+        logger.info("last active ques id to delete: %s, %s",
+                    last_active_id, type(last_active_id))
+
+        # ques_ids = ques_details.get_ques_ids(projects_collection,
+        #                                         activeprojectname,
+        #                                         current_username,
+        #                                         last_active_id)
+        ques_details.delete_one_ques_doc(projects_collection,
+                                           questionnaires_collection,
+                                           activeprojectname,
+                                           current_username,
+                                           last_active_id,
+                                           ques_ids=[])
+    except:
+        logger.exception("")
+    flash("Question deleted successfully")
+
+    return "OK"
+
+
+@lifeques.route('/quesbrowse', methods=['GET', 'POST'])
+@login_required
+def quesbrowse():
+    try:
+        new_data = {}
+        projects, userprojects, questionnaires = getdbcollections.getdbcollections(mongo,
+                                                                                   'projects',
+                                                                                   'userprojects',
+                                                                                   'questionnaires')
+        current_username = getcurrentusername.getcurrentusername()
+        activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                      userprojects)
+        projectowner = getprojectowner.getprojectowner(projects,
+                                                       activeprojectname)
+        shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
+                                                          current_username,
+                                                          activeprojectname)
+
+        project_shared_with = projectDetails.get_shared_with_users(
+            projects, activeprojectname)
+        # project_shared_with.append("latest")
+        # speakerids = projects.find_one({"projectname": activeprojectname},
+        #                                {"_id": 0, "speakerIds." + current_username: 1})
+        # # logger.debug('speakerids: %s', pformat(speakerids))
+        # if ("speakerIds" in speakerids and speakerids["speakerIds"]):
+        #     speakerids = speakerids["speakerIds"][current_username]
+        #     speakerids.append('')
+        # else:
+        #     speakerids = ['']
+        # speakerids = ques_details.combine_speaker_ids(projects,
+        #                                               activeprojectname,
+        #                                               current_username)
+        # speakerids.append('')
+        # active_speaker_id = shareinfo['activespeakerId']
+        # speaker_ques_ids = ques_details.get_speaker_ques_ids_new(projects,
+        #                                                            activeprojectname,
+        #                                                            current_username,
+        #                                                            active_speaker_id)
+        # logger.debug("speaker_ques_ids: %s", pformat(speaker_ques_ids))
+        total_records = 0
+        ques_data_list = []
+        # if (active_speaker_id != ''):
+        total_records, ques_data_list = ques_details.get_n_ques(questionnaires,
+                                                                    activeprojectname)
+        # else:
+        #     ques_data_list = []
+        # get ques file src
+        new_ques_data_list = ques_data_list
+        new_data['currentUsername'] = current_username
+        new_data['activeProjectName'] = activeprojectname
+        new_data['projectOwner'] = projectowner
+        new_data['shareInfo'] = shareinfo
+        # new_data['speakerIds'] = speakerids
+        new_data['quesData'] = new_ques_data_list
+        new_data['quesDataFields'] = ['quesId', 'Q_Id']
+        new_data['totalRecords'] = total_records
+        # new_data['questionnairesBy'] = project_shared_with
+    except:
+        logger.exception("")
+
+    return render_template('quesbrowse.html',
+                           projectName=activeprojectname,
+                           newData=new_data)
+    #    data=currentuserprojectsname)
+
+
+@lifeques.route('/updatequesbrowsetable', methods=['GET', 'POST'])
+@login_required
+def updatequesbrowsetable():
+    ques_data_fields = ['quesId', 'Q_Id']
+    ques_data_list = []
+    try:
+        # data through ajax
+        ques_browse_info = json.loads(request.args.get('a'))
+        # logger.debug('ques_browse_info: %s', ques_browse_info)
+        projects, userprojects, questionnaires = getdbcollections.getdbcollections(mongo,
+                                                                                   'projects',
+                                                                                   'userprojects',
+                                                                                   'questionnaires')
+        current_username = getcurrentusername.getcurrentusername()
+        activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                      userprojects)
+        # logger.debug(ques_browse_info['activeSpeakerId'])
+        # active_speaker_id = ques_browse_info['activeSpeakerId']
+        ques_file_count = ques_browse_info['quesFilesCount']
+        ques_browse_action = ques_browse_info['browseActionSelectedOption']
+        total_records = 0
+        ques_data_list = []
+        # speaker_ques_ids = ques_details.get_speaker_ques_ids_new(projects,
+        #                                                            activeprojectname,
+        #                                                            current_username,
+        #                                                            active_speaker_id,
+        #                                                            ques_browse_action=ques_browse_action)
+        # if (active_speaker_id != ''):
+        total_records, ques_data_list = ques_details.get_n_ques(questionnaires,
+                                                                    activeprojectname,
+                                                                    # active_speaker_id,
+                                                                    # speaker_ques_ids,
+                                                                    start_from=0,
+                                                                    number_of_ques=ques_file_count,
+                                                                    ques_delete_flag=ques_browse_action)
+        # else:
+        #     ques_data_list = []
+        # logger.debug('ques_data_list: %s', pformat(ques_data_list))
+        # get ques file src
+
+        shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
+                                                          current_username,
+                                                          activeprojectname)
+        share_mode = shareinfo['sharemode']
+        share_checked = shareinfo['sharechecked']
+        download_checked = shareinfo['downloadchecked']
+        new_ques_data_list = ques_data_list
+    except:
+        logger.exception("")
+
+    return jsonify(quesDataFields=ques_data_fields,
+                   quesData=new_ques_data_list,
+                   shareMode=share_mode,
+                   totalRecords=total_records,
+                   shareChecked=share_checked,
+                   downloadChecked=download_checked)
+
+
+@lifeques.route('/quesbrowseaction', methods=['GET', 'POST'])
+@login_required
+def quesbrowseaction():
+    try:
+        projects_collection, userprojects, questionnaires_collection = getdbcollections.getdbcollections(mongo,
+                                                                                                         'projects',
+                                                                                                         'userprojects',
+                                                                                                         'questionnaires')
+        current_username = getcurrentusername.getcurrentusername()
+        activeprojectname = getactiveprojectname.getactiveprojectname(
+            current_username, userprojects)
+        # logger.debug("%s,%s", current_username, activeprojectname)
+        # data from ajax
+        data = json.loads(request.args.get('a'))
+        # logger.debug('data: %s', pformat(data))
+        ques_info = data['quesInfo']
+        # logger.debug('ques_info: %s', pformat(ques_info))
+        ques_browse_info = data['quesBrowseInfo']
+        # logger.debug('ques_browse_info: %s', pformat(ques_browse_info))
+        browse_action = ques_browse_info['browseActionSelectedOption']
+        # active_speaker_id = ques_browse_info['activeSpeakerId']
+        ques_ids_list = list(ques_info.keys())
+        # speaker_ques_ids = ques_details.get_speaker_ques_ids_new(projects_collection,
+        #                                                            activeprojectname,
+        #                                                            current_username,
+        #                                                            active_speaker_id,
+        #                                                            ques_browse_action=browse_action)
+        active_ques_id = getactivequestionnaireid.getactivequestionnaireid(projects_collection,
+                                                                            activeprojectname,
+                                                                            current_username)
+        update_latest_ques_id = 0
+        for ques_id in ques_ids_list:
+            if (browse_action):
+                logger.info("ques id to revoke: %s, %s",
+                            ques_id, type(ques_id))
+            else:
+                logger.info("ques id to delete: %s, %s",
+                            ques_id, type(ques_id))
+            if (ques_id == active_ques_id):
+                update_latest_ques_id = 1
+            if (browse_action):
+                ques_details.revoke_deleted_ques(projects_collection,
+                                                  questionnaires_collection,
+                                                  activeprojectname,
+                                                #   active_speaker_id,
+                                                  ques_id,
+                                                #   speaker_ques_ids
+                                                  )
+            else:
+                ques_details.delete_one_ques_doc(projects_collection,
+                                                   questionnaires_collection,
+                                                   activeprojectname,
+                                                   current_username,
+                                                   ques_id,
+                                                   ques_ids=[],
+                                                   update_latest_ques_id=update_latest_ques_id)
+        if (browse_action):
+            flash("Question revoked successfully")
+        else:
+            flash("Question deleted successfully")
+    except:
+        logger.exception("")
+
+    return 'OK'
+
+
+@lifeques.route('/quesbrowsechangepage', methods=['GET', 'POST'])
+@login_required
+def quesbrowsechangepage():
+    ques_data_fields = ['quesId', 'Q_Id']
+    ques_data_list = []
+    try:
+        # data through ajax
+        ques_browse_info = json.loads(request.args.get('a'))
+        # logger.debug('ques_browse_info: %s', pformat(ques_browse_info))
+        projects, userprojects, questionnaires = getdbcollections.getdbcollections(mongo,
+                                                                                   'projects',
+                                                                                   'userprojects',
+                                                                                   'questionnaires')
+        current_username = getcurrentusername.getcurrentusername()
+        activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                      userprojects)
+        # logger.debug(crawler_browse_info['activeSourceId'])
+        # active_speaker_id = ques_browse_info['activeSpeakerId']
+        # speaker_ques_ids = ques_details.get_speaker_ques_ids_new(projects,
+        #                                                            activeprojectname,
+        #                                                            current_username,
+        #                                                            active_speaker_id)
+        ques_count = ques_browse_info['quesFilesCount']
+        ques_browse_action = ques_browse_info['browseActionSelectedOption']
+        page_id = ques_browse_info['pageId']
+        start_from = ((page_id*ques_count)-ques_count)
+        number_of_ques = page_id*ques_count
+        # logger.debug('pageId: %s, start_from: %s, number_of_ques_data: %s',
+        #  page_id, start_from, number_of_ques)
+        total_records = 0
+        ques_data_list = []
+        # if (active_speaker_id != ''):
+        total_records, ques_data_list = ques_details.get_n_ques(questionnaires,
+                                                                    activeprojectname,
+                                                                    # active_speaker_id,
+                                                                    # speaker_ques_ids,
+                                                                    start_from=start_from,
+                                                                    number_of_ques=number_of_ques,
+                                                                    ques_delete_flag=ques_browse_action)
+        # else:
+            # ques_data_list = []
+        # logger.debug('ques_data_list: %s', pformat(ques_data_list))
+        # get ques file src
+
+        shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
+                                                          current_username,
+                                                          activeprojectname)
+        share_mode = shareinfo['sharemode']
+        share_checked = shareinfo['sharechecked']
+        download_checked = shareinfo['downloadchecked']
+        new_ques_data_list = ques_data_list
+    except:
+        logger.exception("")
+
+    return jsonify(quesDataFields=ques_data_fields,
+                   quesData=new_ques_data_list,
+                   shareMode=share_mode,
+                   totalRecords=total_records,
+                   shareChecked=share_checked,
+                   activePage=page_id,
+                   downloadChecked=download_checked)
+
+
+@lifeques.route('/quesbrowseview', methods=['GET', 'POST'])
+@login_required
+def quesbrowseview():
+    try:
+        route='questionnaire'
+        projects_collection, userprojects, questionnaires_collection = getdbcollections.getdbcollections(mongo,
+                                                                                                         'projects',
+                                                                                                         'userprojects',
+                                                                                                         'questionnaires')
+        current_username = getcurrentusername.getcurrentusername()
+        activeprojectname = getactiveprojectname.getactiveprojectname(
+            current_username, userprojects)
+        # logger.debug("%s,%s", current_username, activeprojectname)
+        # data from ajax
+        data = json.loads(request.args.get('a'))
+        logger.debug('data: %s', pformat(data))
+        ques_info = data['quesInfo']
+        # logger.debug('ques_info: %s', pformat(ques_info))
+        ques_browse_info = data['quesBrowseInfo']
+        # logger.debug('ques_browse_info: %s', pformat(ques_browse_info))
+        browse_action = ques_browse_info['browseActionSelectedOption']
+        # active_speaker_id = ques_browse_info['activeSpeakerId']
+        latest_ques_id = list(ques_info.keys())[0]
+        updatelatestquesid.updatelatestquesid(projects_collection,
+                                                activeprojectname,
+                                                latest_ques_id,
+                                                current_username)
+    except:
+        logger.exception("")
+
+    return jsonify(route=route)
+
+
+# retrieve files from database
+# TODO: User not able to download the data
+@lifeques.route('/retrieve/<filename>', methods=['GET'])
+@login_required
+def retrieve(filename):
+    logger.debug('Now in retrieve')
+    x = ''
+    try:
+        userprojects, = getdbcollections.getdbcollections(mongo,
+                                                          'userprojects')
+
+        current_username = getcurrentusername.getcurrentusername()
+        activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                      userprojects)
+
+        # share_info = getuserprojectinfo.getuserprojectinfo(userprojects,
+        #                                                     current_username,
+        #                                                     activeprojectname)
+        # if ("downloadchecked" in share_info and
+        #     share_info["downloadchecked"] == 'true'):
+        # logger.debug("share_info: %s", share_info)
+        x = mongo.send_file(filename)
+        # logger.debug("mongo send file: %s, %s, %s, %s, %s, %s", x.response, x.status, x.headers, x.mimetype, x.content_type, x.direct_passthrough)
+    except:
+        logger.exception("")
+
+    return x

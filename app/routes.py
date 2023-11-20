@@ -424,6 +424,7 @@ def enternewsentences():
 
                 transcriptions_by = audiodetails.get_audio_transcriptions_by(
                     projects, transcriptions, activeprojectname, audio_id)
+                # logger.debug("transcriptions_by: %s", transcriptions_by)
 
             except:
                 speakerids = ''
@@ -790,7 +791,7 @@ def updateaudiobrowsetable():
     try:
         # data through ajax
         audio_browse_info = json.loads(request.args.get('a'))
-        logger.debug('audio_browse_info: %s', audio_browse_info)
+        # logger.debug('audio_browse_info: %s', audio_browse_info)
         projects, userprojects, transcriptions = getdbcollections.getdbcollections(mongo,
                                                                                    'projects',
                                                                                    'userprojects',
@@ -932,7 +933,7 @@ def audiobrowseactionplay():
         # data from ajax
         if request.method == 'POST':
             data = json.loads(request.form['a'])
-            logger.debug('data: %s', pformat(data))
+            # logger.debug('data: %s', pformat(data))
 
             # data = json.loads(request.args.get('a'))
             # logger.debug('data: %s', pformat(data))

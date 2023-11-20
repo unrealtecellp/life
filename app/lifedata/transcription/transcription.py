@@ -29,10 +29,13 @@ from app.controller import (
     getactiveprojectform,
     # audiodetails,
     getcommentstats,
-    projectDetails
+    projectDetails,
+    processHTMLForm,
+    speakerDetails
 )
 from app.lifedata.transcription.controller import (
-    transcription_audiodetails
+    transcription_audiodetails,
+    save_transcription_prompt
 )
 
 from flask_login import login_required
@@ -59,13 +62,14 @@ langScriptJSONFilePath = os.path.join(jsonfilesdir, 'langScript.json')
 @login_required
 def home():
     try:
-        projects, userprojects, projectsform, sentences, transcriptions, speakerdetails = getdbcollections.getdbcollections(mongo,
+        projects, userprojects, projectsform, sentences, transcriptions, speakerdetails, questionnaires = getdbcollections.getdbcollections(mongo,
                                                                                                                             'projects',
                                                                                                                             'userprojects',
                                                                                                                             'projectsform',
                                                                                                                             'sentences',
                                                                                                                             'transcriptions',
-                                                                                                                            'speakerdetails')
+                                                                                                                            'speakerdetails',
+                                                                                                                            'questionnaires')
         current_username = getcurrentusername.getcurrentusername()
         currentuserprojectsname = getcurrentuserprojects.getcurrentuserprojects(current_username,
                                                                                 userprojects)
@@ -91,6 +95,29 @@ def home():
         activeprojectform = getactiveprojectform.getactiveprojectform(projectsform,
                                                                     projectowner,
                                                                     activeprojectname)
+        all_ques_ids = ''
+        derived_from_project_type, derived_from_project_name = getprojecttype.getderivedfromprojectdetails(projects,
+                                                                                                           activeprojectname)
+        # logger.debug("derived_from_project_type: %s, derived_from_project_name: %s", 
+        #              derived_from_project_type, derived_from_project_name)
+        if (derived_from_project_type == 'questionnaires'):
+            all_ques_ids = {'New': 'New'}
+            ques_ids = projects.find_one({"projectname": derived_from_project_name},
+                                         {
+                                             "_id": 0,
+                                             "questionnaireIds": 1
+                                         })["questionnaireIds"]
+            # all_ques_ids.extend(ques_ids)
+            for ques_id in ques_ids:
+                Q_Id = questionnaires.find_one({"projectname": derived_from_project_name,
+                                                "quesId": ques_id,
+                                                "quesdeleteFLAG": 0},
+                                                {
+                                                    "_id": 0,
+                                                    "Q_Id": 1
+                                                })["Q_Id"]
+                all_ques_ids[ques_id] = Q_Id
+            # logger.debug("all_ques_ids: %s", pformat(all_ques_ids))
         if activeprojectform is not None:
             try:
                 # , audio_file_path, transcription_details
@@ -117,7 +144,14 @@ def home():
                                                         activespeakerid,
                                                         current_username)
                 # logger.debug("audio_id: %s", audio_id)
+                activeprojectform['prompt'] = ''
                 if (audio_id != ''):
+
+                    prompt = transcriptions.find_one({"projectname": activeprojectname,
+                                                    "audioId": audio_id},
+                                                    {"_id": 0, "prompt": 1}
+                                                    )["prompt"]
+                    activeprojectform['prompt'] = prompt
                     audio_delete_flag = transcription_audiodetails.get_audio_delete_flag(transcriptions,
                                                                         activeprojectname,
                                                                         audio_id)
@@ -143,6 +177,7 @@ def home():
                                                                             current_username,
                                                                             activespeakerid,
                                                                             audio_id)
+                # logger.debug("transcription_by: %s", transcription_by)
                 transcription_details = transcription_audiodetails.getaudiofiletranscription(data_collection,
                                                                             audio_id,
                                                                             transcription_by)
@@ -190,6 +225,7 @@ def home():
 
                     transcriptions_by = transcription_audiodetails.get_audio_transcriptions_by(
                         projects, transcriptions, activeprojectname, audio_id)
+                    # logger.debug("transcriptions_by: %s", transcriptions_by)
 
                 except:
                     speakerids = ''
@@ -198,6 +234,7 @@ def home():
                 activeprojectform['scriptCode'] = scriptCode
                 langScript = readJSONFile.readJSONFile(langScriptJSONFilePath)
                 activeprojectform['langScript'] = langScript
+                # print(audio_id)
                 # logger.debug("activeprojectform: %s", activeprojectform)
 
                 return render_template('transcription.html',
@@ -210,7 +247,8 @@ def home():
                                     activetranscriptionby=transcription_by,
                                     activespeakerid=activespeakerid,
                                     commentstats=commentstats,
-                                    shareinfo=shareinfo)
+                                    shareinfo=shareinfo,
+                                    allQuesIds=all_ques_ids)
             except:
                 logger.exception("")
                 flash('Upload first audio file.')
@@ -223,6 +261,34 @@ def home():
                             shareinfo=shareinfo)
     except:
         logger.exception("")
+
+# retrieve files from database
+# TODO: User not able to download the data
+@transcription.route('/retrieve/<filename>', methods=['GET'])
+@login_required
+def retrieve(filename):
+    logger.debug('Now in retrieve')
+    x = ''
+    try:
+        userprojects, = getdbcollections.getdbcollections(mongo,
+                                                          'userprojects')
+
+        current_username = getcurrentusername.getcurrentusername()
+        activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                      userprojects)
+
+        # share_info = getuserprojectinfo.getuserprojectinfo(userprojects,
+        #                                                     current_username,
+        #                                                     activeprojectname)
+        # if ("downloadchecked" in share_info and
+        #     share_info["downloadchecked"] == 'true'):
+        # logger.debug("share_info: %s", share_info)
+        x = mongo.send_file(filename)
+        # logger.debug("mongo send file: %s, %s, %s, %s, %s, %s", x.response, x.status, x.headers, x.mimetype, x.content_type, x.direct_passthrough)
+    except:
+        logger.exception("")
+
+    return x
 
 @transcription.route('/audiobrowse', methods=['GET', 'POST'])
 @login_required
@@ -241,6 +307,18 @@ def audiobrowse():
         shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
                                                           current_username,
                                                           activeprojectname)
+
+        project_shared_with = projectDetails.get_shared_with_users(
+            projects, activeprojectname)
+        project_shared_with.append("latest")
+        # speakerids = projects.find_one({"projectname": activeprojectname},
+        #                                {"_id": 0, "speakerIds." + current_username: 1})
+        # # logger.debug('speakerids: %s', pformat(speakerids))
+        # if ("speakerIds" in speakerids and speakerids["speakerIds"]):
+        #     speakerids = speakerids["speakerIds"][current_username]
+        #     speakerids.append('')
+        # else:
+        #     speakerids = ['']
         speakerids = transcription_audiodetails.combine_speaker_ids(projects,
                                                       activeprojectname,
                                                       current_username)
@@ -259,7 +337,9 @@ def audiobrowse():
                                                                        speaker_audio_ids)
         else:
             audio_data_list = []
+        # get audio file src
         new_audio_data_list = audio_data_list
+        # logger.debug("new_audio_data_list: %s", pformat(new_audio_data_list))
         new_data['currentUsername'] = current_username
         new_data['activeProjectName'] = activeprojectname
         new_data['projectOwner'] = projectowner
@@ -269,6 +349,7 @@ def audiobrowse():
         new_data['audioDataFields'] = [
             'audioId', 'audioFilename', 'Audio File']
         new_data['totalRecords'] = total_records
+        new_data['transcriptionsBy'] = project_shared_with
     except:
         logger.exception("")
 
@@ -280,7 +361,7 @@ def audiobrowse():
 @transcription.route('/updateaudiosortingsubcategories', methods=['GET', 'POST'])
 @login_required
 def updateaudiosortingsubcategories():
-    audio_sorting_sub_categories = ''
+    audio_sorting_sub_categories = {}
     audio_data_fields = ['audioId', 'audioFilename', 'Audio File']
     audio_data_list = []
     try:
@@ -308,13 +389,14 @@ def updateaudiosortingsubcategories():
         # logger.debug('audio_browse_info: %s', pformat(audio_browse_info))
         audio_browse_action = audio_browse_info['browseActionSelectedOption']
         selected_audio_sorting_category = data['selectedAudioSortingCategories']
-        logger.debug('selected_audio_sorting_category: %s',
-                     selected_audio_sorting_category)
+        # logger.debug('selected_audio_sorting_category: %s',
+        #              selected_audio_sorting_category)
 
         speakerids = transcription_audiodetails.combine_speaker_ids(projects,
                                                       activeprojectname,
                                                       current_username)
         speakerids.append('')
+        # logger.debug("speakerids: %s", pformat(speakerids))
 
         shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
                                                           current_username,
@@ -322,6 +404,10 @@ def updateaudiosortingsubcategories():
         total_records = 0
         share_mode = shareinfo['sharemode']
         share_checked = shareinfo['sharechecked']
+        download_checked = shareinfo['downloadchecked']
+
+        derived_from_project_type, derived_from_project_name = getprojecttype.getderivedfromprojectdetails(projects,
+                                                                                                           activeprojectname)
         if (selected_audio_sorting_category == 'sourcemetainfo'):
             audio_sorting_sub_categories = transcription_audiodetails.get_audio_sorting_subcategories(speakerdetails_collection,
                                                                                         activeprojectname,
@@ -329,6 +415,17 @@ def updateaudiosortingsubcategories():
                                                                                         selected_audio_sorting_category
                                                                                         )
             selected_audio_sorting_sub_categories = ''
+            # logger.debug("audio_sorting_sub_categories: %s", audio_sorting_sub_categories)
+            if (derived_from_project_type != '' and
+                derived_from_project_name != ''):
+                if (derived_from_project_type == 'questionnaires'):
+                    audio_sorting_sub_categories_derived = transcription_audiodetails.get_audio_sorting_subcategories_derived(transcriptions,
+                                                                                                                            activeprojectname,
+                                                                                                                            speakerids,
+                                                                                                                            audio_sorting_sub_categories
+                                                                                                                            )
+                    # logger.debug("audio_sorting_sub_categories_derived: %s", audio_sorting_sub_categories_derived)
+            # logger.debug("audio_sorting_sub_categories: %s", audio_sorting_sub_categories)
         elif (selected_audio_sorting_category == 'lifespeakerid'):
             audio_sorting_sub_categories = speakerids
             active_speaker_id = shareinfo['activespeakerId']
@@ -357,7 +454,8 @@ def updateaudiosortingsubcategories():
                    audioData=new_audio_data_list,
                    shareMode=share_mode,
                    totalRecords=total_records,
-                   shareChecked=share_checked)
+                   shareChecked=share_checked,
+                   downloadChecked=download_checked)
 
 
 @transcription.route('/filteraudiobrowsetable', methods=['GET', 'POST'])
@@ -401,8 +499,20 @@ def filteraudiobrowsetable():
     #     active_speaker_id = audio_browse_info['activeSpeakerId']
 
         filtered_speakers_list = transcription_audiodetails.filter_speakers(speakerdetails_collection,
-                                                              activeprojectname,
-                                                              filter_options=filter_options)
+                                                                            activeprojectname,
+                                                                            filter_options=filter_options)
+        logger.debug("filtered_speakers_list: %s", filtered_speakers_list)
+        derived_from_project_type, derived_from_project_name = getprojecttype.getderivedfromprojectdetails(projects,
+                                                                                                           activeprojectname)
+        if (derived_from_project_type != '' and
+                derived_from_project_name != ''):
+                if (derived_from_project_type == 'questionnaires'):
+                    filtered_speakers_list_derived = transcription_audiodetails.filter_speakers_derived(transcriptions,
+                                                                                                        activeprojectname,
+                                                                                                        filter_options=filter_options)
+                    logger.debug("filtered_speakers_list_derived: %s", filtered_speakers_list_derived)
+                    filtered_speakers_list.extend(filtered_speakers_list_derived)
+        logger.debug("filtered_speakers_list: %s", filtered_speakers_list)
         for speaker in filtered_speakers_list:
             speaker_audio_ids = transcription_audiodetails.get_speaker_audio_ids_new(projects,
                                                                        activeprojectname,
@@ -432,9 +542,10 @@ def filteraudiobrowsetable():
                                                           activeprojectname)
         share_mode = shareinfo['sharemode']
         share_checked = shareinfo['sharechecked']
+        download_checked = shareinfo['downloadchecked']
         new_audio_data_list = audio_data_list[start_from:number_of_audios]
-        logger.debug("new_audio_data_list count: %s", len(new_audio_data_list))
-        logger.debug("total_records count: %s", total_records)
+        # logger.debug("new_audio_data_list count: %s", len(new_audio_data_list))
+        # logger.debug("total_records count: %s", total_records)
     except:
         logger.exception("")
 
@@ -443,7 +554,8 @@ def filteraudiobrowsetable():
                    shareMode=share_mode,
                    totalRecords=total_records,
                    shareChecked=share_checked,
-                   activePage=page_id)
+                   activePage=page_id,
+                   downloadChecked=download_checked)
 
 
 @transcription.route('/updateaudiobrowsetable', methods=['GET', 'POST'])
@@ -454,7 +566,7 @@ def updateaudiobrowsetable():
     try:
         # data through ajax
         audio_browse_info = json.loads(request.args.get('a'))
-        logger.debug('audio_browse_info: %s', audio_browse_info)
+        logger.debug('audio_browse_info: %s', pformat(audio_browse_info))
         projects, userprojects, transcriptions = getdbcollections.getdbcollections(mongo,
                                                                                    'projects',
                                                                                    'userprojects',
@@ -490,15 +602,8 @@ def updateaudiobrowsetable():
                                                           activeprojectname)
         share_mode = shareinfo['sharemode']
         share_checked = shareinfo['sharechecked']
+        download_checked = shareinfo['downloadchecked']
         new_audio_data_list = audio_data_list
-        # new_audio_data_list = []
-        # for audio_data in audio_data_list:
-        #     new_audio_data = audio_data
-        #     audio_filename = audio_data['audioFilename']
-        #     # if ("downloadchecked" in shareinfo and
-        #     #     shareinfo["downloadchecked"] == 'true'):
-        #     # new_audio_data['Audio File'] = url_for('retrieve', filename=audio_filename)
-        #     new_audio_data_list.append(new_audio_data)
     except:
         logger.exception("")
 
@@ -506,7 +611,8 @@ def updateaudiobrowsetable():
                    audioData=new_audio_data_list,
                    shareMode=share_mode,
                    totalRecords=total_records,
-                   shareChecked=share_checked)
+                   shareChecked=share_checked,
+                   downloadChecked=download_checked)
 
 
 @transcription.route('/audiobrowseaction', methods=['GET', 'POST'])
@@ -594,7 +700,7 @@ def audiobrowseactionplay():
         # data from ajax
         if request.method == 'POST':
             data = json.loads(request.form['a'])
-            logger.debug('data: %s', pformat(data))
+            # logger.debug('data lifedata/transcription/audiobrowseactionplay: : %s', pformat(data))
 
             # data = json.loads(request.args.get('a'))
             # logger.debug('data: %s', pformat(data))
@@ -633,8 +739,10 @@ def audiobrowseactionplay():
             shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
                                                               current_username,
                                                               activeprojectname)
+            # logger.debug("shareinfo: %s", shareinfo)
             share_mode = shareinfo['sharemode']
             share_checked = shareinfo['sharechecked']
+            download_checked = shareinfo['downloadchecked']
             new_audio_data_list = audio_data_list
             return jsonify(
                 audioDataFields=audio_data_fields,
@@ -642,7 +750,8 @@ def audiobrowseactionplay():
                 shareMode=share_mode,
                 totalRecords=total_records,
                 shareChecked=share_checked,
-                audioSource=audio_src
+                audioSource=audio_src,
+                downloadChecked=download_checked
             )
     except:
         logger.exception("")
@@ -684,7 +793,14 @@ def audiobrowsechangepage():
     try:
         # data through ajax
         audio_browse_info = json.loads(request.args.get('a'))
-        logger.debug('audio_browse_info: %s', pformat(audio_browse_info))
+        # logger.debug('audio_browse_info: %s', pformat(audio_browse_info))
+        audio_count = audio_browse_info['audioFilesCount']
+        audio_browse_action = audio_browse_info['browseActionSelectedOption']
+        page_id = audio_browse_info['pageId']
+        start_from = ((page_id*audio_count)-audio_count)
+        number_of_audios = page_id*audio_count
+        # logger.debug('pageId: %s, start_from: %s, number_of_audio_data: %s',
+        #  page_id, start_from, number_of_audios)
         projects, userprojects, transcriptions = getdbcollections.getdbcollections(mongo,
                                                                                    'projects',
                                                                                    'userprojects',
@@ -697,14 +813,9 @@ def audiobrowsechangepage():
         speaker_audio_ids = transcription_audiodetails.get_speaker_audio_ids_new(projects,
                                                                    activeprojectname,
                                                                    current_username,
-                                                                   active_speaker_id)
-        audio_count = audio_browse_info['audioFilesCount']
-        audio_browse_action = audio_browse_info['browseActionSelectedOption']
-        page_id = audio_browse_info['pageId']
-        start_from = ((page_id*audio_count)-audio_count)
-        number_of_audios = page_id*audio_count
-        # logger.debug('pageId: %s, start_from: %s, number_of_audio_data: %s',
-        #  page_id, start_from, number_of_audios)
+                                                                   active_speaker_id,
+                                                                   audio_browse_action=audio_browse_action)
+        # logger.debug("speaker_audio_ids: %s", speaker_audio_ids)
         total_records = 0
         if (active_speaker_id != ''):
             total_records, audio_data_list = transcription_audiodetails.get_n_audios(transcriptions,
@@ -722,8 +833,10 @@ def audiobrowsechangepage():
         shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
                                                           current_username,
                                                           activeprojectname)
+        # logger.debug("shareinfo: %s", pformat(shareinfo))
         share_mode = shareinfo['sharemode']
         share_checked = shareinfo['sharechecked']
+        download_checked = shareinfo['downloadchecked']
         new_audio_data_list = audio_data_list
         # new_audio_data_list = []
         # for audio_data in audio_data_list:
@@ -741,16 +854,18 @@ def audiobrowsechangepage():
                    shareMode=share_mode,
                    totalRecords=total_records,
                    shareChecked=share_checked,
-                   activePage=page_id)
+                   activePage=page_id,
+                   downloadChecked=download_checked)
 
 # uploadaudiofiles route
 @transcription.route('/uploadaudiofiles', methods=['GET', 'POST'])
 @login_required
 def uploadaudiofiles():
-    projects, userprojects, transcriptions = getdbcollections.getdbcollections(mongo,
+    projects, userprojects, transcriptions, questionnaires = getdbcollections.getdbcollections(mongo,
                                                                                'projects',
                                                                                'userprojects',
-                                                                               'transcriptions')
+                                                                               'transcriptions',
+                                                                               'questionnaires')
     current_username = getcurrentusername.getcurrentusername()
     activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
                                                                   userprojects)
@@ -760,9 +875,29 @@ def uploadaudiofiles():
         run_asr = False
         split_into_smaller_chunks = True
         get_audio_json = True
+        prompt = {}
+        derivedfromprojectdetails = {}
 
         data = dict(request.form.lists())
         logger.debug("Form data %s", data)
+        if ('quesId' in data):
+            quesId = data['quesId'][0]
+            logger.debug("quesId: %s", quesId)
+            found_prompt = questionnaires.find_one({"quesId": quesId},
+                                             {"_id": 0, "prompt": 1})
+            if (found_prompt):
+                prompt = found_prompt['prompt']
+                logger.debug("found prompt: %s", prompt)
+                derived_from_project_type, derived_from_project_name = getprojecttype.getderivedfromprojectdetails(projects,
+                                                                                                           activeprojectname)
+                derivedfromprojectdetails = {
+                    "derivedfromprojectname": derived_from_project_name,
+                    "quesId": quesId
+                }
+                logger.debug("derivedfromprojectdetails: %s", derivedfromprojectdetails)
+            else:
+                logger.debug("not found prompt: %s", found_prompt)
+        # return redirect(url_for('lifedata.transcription.home'))
         speakerId = data['speakerId'][0]
         new_audio_file = request.files.to_dict()
 
@@ -838,10 +973,11 @@ def uploadaudiofiles():
                                     slice_size=slice_size,
                                     data_type="audio",
                                     new_audio_details={},
-                                    prompt="",
+                                    prompt=prompt,
                                     update=False,
                                     slice_offset_value=slice_offset,
-                                    min_boundary_size=min_boundary_size
+                                    min_boundary_size=min_boundary_size,
+                                    derivedfromprojectdetails=derivedfromprojectdetails
                                     )
 
     return redirect(url_for('lifedata.transcription.home'))
@@ -949,3 +1085,149 @@ def makeboundary():
                                                        )
 
     return redirect(url_for('lifedata.transcription.home'))
+
+@transcription.route('/addnewspeakerdetails', methods=['GET', 'POST'])
+@login_required
+def addnewspeakerdetails():
+    projects, userprojects, speakerdetails = getdbcollections.getdbcollections(mongo,
+                                                                               'projects',
+                                                                               'userprojects',
+                                                                               'speakerdetails')
+    current_username = getcurrentusername.getcurrentusername()
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                  userprojects)
+    projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
+    if request.method == 'POST':
+        form_data = request.form
+        uploaded_files = request.files
+
+        logger.debug("All form %s", form_data)
+
+        metadata_schema, audio_source, call_source, upload_type, exclude_fields = processHTMLForm.get_metadata_header_details(
+            form_data)
+
+        logger.debug("Metadata Schema %s", metadata_schema)
+        logger.debug("Call source %s", call_source)
+
+        metadata_data = processHTMLForm.get_metadata_data(form_data,
+                                                          form_files=uploaded_files,
+                                                          upload_type=upload_type,
+                                                          exclude_fields=exclude_fields)
+
+        speakerDetails.write_speaker_metadata_details(speakerdetails,
+                                                      projectowner,
+                                                      activeprojectname,
+                                                      current_username,
+                                                      audio_source,
+                                                      metadata_schema,
+                                                      metadata_data,
+                                                      upload_type)
+        if "managepage" in call_source:
+            flash(
+                'New source details added. Now you can upload the data for this source.')
+            return redirect(url_for('managespeakermetadata'))
+        else:
+            flash(
+                'New source details added. Now you can upload the data for this source.')
+            return redirect(url_for('lifedata.transcription.home'))
+
+    return redirect(url_for('lifedata.transcription.home'))
+
+
+@transcription.route('/transcriptionpromptfile', methods=['GET', 'POST'])
+@login_required
+def transcriptionpromptfile():
+    try:
+        projects, userprojects, projectsform, transcriptions = getdbcollections.getdbcollections(mongo,
+                                                                                                'projects',
+                                                                                                'userprojects',
+                                                                                                'projectsform',
+                                                                                                'transcriptions'
+                                                                                                )
+        current_username = getcurrentusername.getcurrentusername()
+        activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                        userprojects)
+        projectowner = getprojectowner.getprojectowner(projects,
+                                                        activeprojectname)
+        
+        # ques_audio_file = request.files
+        # print(ques_audio_file)
+        # last_active_ques_id = getactivequestionnaireid.getactivequestionnaireid(projects,
+        #                                                                         activeprojectname,
+        #                                                                         current_username)
+        activespeakerid = getuserprojectinfo.getuserprojectinfo(userprojects,
+                                                                current_username,
+                                                                activeprojectname)['activespeakerId']
+        audio_id = transcription_audiodetails.getactiveaudioid(projects,
+                                                            activeprojectname,
+                                                            activespeakerid,
+                                                            current_username)
+        
+        if request.method == "POST":
+            prompt_file = request.files.to_dict()
+            logger.debug('prompt_file: %s', prompt_file)
+            prompt_type = list(prompt_file.keys())[0].split('_')[1]
+            # print(prompt_type)
+        save_transcription_prompt.savepromptfile(mongo,
+                                                projects,
+                                                userprojects,
+                                                projectsform,
+                                                transcriptions,
+                                                projectowner,
+                                                activeprojectname,
+                                                current_username,
+                                                audio_id,
+                                                prompt_file)
+    except:
+        logger.exception("")
+
+    return redirect(url_for("lifedata.transcription.home"))
+
+@transcription.route('/transcriptionprompttext', methods=['GET', 'POST'])
+@login_required
+def transcriptionprompttext():
+    try:
+        projects, userprojects, projectsform, transcriptions = getdbcollections.getdbcollections(mongo,
+                                                                                                'projects',
+                                                                                                'userprojects',
+                                                                                                'projectsform',
+                                                                                                'transcriptions'
+                                                                                                )
+        current_username = getcurrentusername.getcurrentusername()
+        activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                        userprojects)
+        projectowner = getprojectowner.getprojectowner(projects,
+                                                        activeprojectname)
+        
+        # ques_audio_file = request.files
+        # print(ques_audio_file)
+        # last_active_ques_id = getactivequestionnaireid.getactivequestionnaireid(projects,
+        #                                                                         activeprojectname,
+        #                                                                         current_username)
+        activespeakerid = getuserprojectinfo.getuserprojectinfo(userprojects,
+                                                                current_username,
+                                                                activeprojectname)['activespeakerId']
+        audio_id = transcription_audiodetails.getactiveaudioid(projects,
+                                                            activeprojectname,
+                                                            activespeakerid,
+                                                            current_username)
+        
+        if request.method == "POST":
+            prompt_text = request.form.to_dict()
+            logger.debug('prompt_text: %s', prompt_text)
+            prompt_type = list(prompt_text.keys())[0].split('_')[1]
+            # print(prompt_type)
+        save_transcription_prompt.saveprompttext(mongo,
+                                                projects,
+                                                userprojects,
+                                                projectsform,
+                                                transcriptions,
+                                                projectowner,
+                                                activeprojectname,
+                                                current_username,
+                                                audio_id,
+                                                prompt_text)
+    except:
+        logger.exception("")
+
+    return redirect(url_for("lifedata.transcription.home"))

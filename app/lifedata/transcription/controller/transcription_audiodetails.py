@@ -115,6 +115,8 @@ def saveaudiofiles(mongo,
         slice_threshold: the threshold value of 'pause' where the file will be split into another files (0=no slice)
     """
 
+    # logger.debug("**kwargs: %s", kwargs)
+    # return ('', '', '')
     type = 'audiofile'
     # logger.debug ('New ques file %s', new_ques_file)
     file_states = []
@@ -152,7 +154,8 @@ def saveaudiofiles(mongo,
                                                                             prompt,
                                                                             update,
                                                                             slice_offset_value,
-                                                                            min_boundary_size)
+                                                                            min_boundary_size,
+                                                                            **kwargs)
             file_states.append(file_state)
             transcription_doc_ids.append(transcription_doc_id)
             fs_file_ids.append(fs_file_id)
@@ -346,7 +349,6 @@ def saveoneaudiofile(mongo,
         max_slice_size: the recommended size of each slice (might have some offset value). Slices should not be larger than this but might be lower than this.
         slice_offset_value: this is the amount of audio (in seconds) that is repeated / retained across different slices made by automatically slicing the audio into smaller chunks. This is added to the end and substracted from the beginning.
     """
-
     all_transcription_doc_ids = []
     all_audio_fs_file_ids = []
 
@@ -386,11 +388,24 @@ def saveoneaudiofile(mongo,
                                               new_audio_details,
                                               update,
                                               kwargs.items())
+    
+    logger.debug("new_audio_details: %s", pformat(new_audio_details))
 
     audio_id, audio_filename = get_audio_id_filename(new_audio_file)
     updated_audio_filename = (audio_id +
                               '_' +
                               audio_filename)
+    
+
+    logger.debug("**kwargs: %s", kwargs)
+    for kwargs_key, kwargs_value in kwargs.items():
+        # logger.debug("kwargs_key: %s, kwargs_value: %s",
+        #              kwargs_key, kwargs_value)
+        if (kwargs_key == 'derivedfromprojectdetails'):
+            new_audio_details[kwargs_key] = kwargs_value
+    # return ('', '', '')
+
+    logger.debug("new_audio_details: %s", pformat(new_audio_details))
 
     # Save audio file in mongoDb and also get it in Local File System
 
@@ -2902,6 +2917,70 @@ def get_audio_sorting_subcategories(speakerdetails_collection,
 
     return aggregate_output_dict
 
+def get_audio_sorting_subcategories_derived(transcriptions_collection,
+                                            activeprojectname,
+                                            speakerids,
+                                            audio_sorting_sub_categories
+                                            ):
+    # logger.debug("speakerids: %s", pformat(speakerids))
+    # selected_audio_sorting_subcategory = {
+    #     "agegroup": "Age Group",
+    #     "gender": "Gender",
+    #     "educationlevel": "Education Level",
+    #     "educationmediumupto12": "Education Medium Upto 12",
+    #     "educationmediumafter12": "Education Medium After 12",
+    #     "speakerspeaklanguage": "Speaker Speak Language"
+    # }
+    aggregate_output = transcriptions_collection.aggregate([
+        {
+            "$match": {
+                "projectname": activeprojectname,
+                "audiodeleteFLAG": 0
+            }
+        },
+        {
+            "$project": {
+                "_id": 0,
+                # "current.sourceMetadata."+selected_audio_sorting_category: 1
+                "prompt": 1,
+                "speakerId": 1
+            }
+        }
+    ])
+    # logger.debug("aggregate_output: %s", aggregate_output)
+    # audio_sorting_sub_categories = {}
+    for doc in aggregate_output:
+        # logger.debug("aggregate_output: %s", pformat(doc))
+        try:
+            speaker = doc["speakerId"]
+            if (speaker != '' and
+                speaker in speakerids):
+                # audio_sorting_subcategory = doc["current"]["sourceMetadata"][selected_audio_sorting_category]
+                audio_sorting_subcategory = doc["prompt"]
+                # logger.debug("aggregate_output: %s", pformat(audio_sorting_subcategory))
+                for key, value in audio_sorting_subcategory.items():
+                    if (key != 'content'):
+                        selected_audio_sorting_subcategory_value = key
+                        if (selected_audio_sorting_subcategory_value in audio_sorting_sub_categories):
+                            if (isinstance(value, list)):
+                                for subcat in value:
+                                    audio_sorting_sub_categories[selected_audio_sorting_subcategory_value].append(
+                                        subcat)
+                            else:
+                                audio_sorting_sub_categories[selected_audio_sorting_subcategory_value].append(
+                                    value)
+                        else:
+                            if (isinstance(value, list)):
+                                audio_sorting_sub_categories[selected_audio_sorting_subcategory_value] = value
+                            else:
+                                audio_sorting_sub_categories[selected_audio_sorting_subcategory_value] = [
+                                    value]
+                        audio_sorting_sub_categories[selected_audio_sorting_subcategory_value] = list(
+                            set(audio_sorting_sub_categories[selected_audio_sorting_subcategory_value]))
+        except:
+            logger.exception("")
+
+    return audio_sorting_sub_categories
 
 def filter_speakers(speakerdetails_collection,
                     activeprojectname,
@@ -2944,6 +3023,57 @@ def filter_speakers(speakerdetails_collection,
         # logger.debug("aggregate_output: %s", pformat(doc))
         aggregate_output_list.append(doc["lifesourceid"])
     # logger.debug('aggregate_output_list: %s', pformat(aggregate_output_list))
+
+    return (list(set(aggregate_output_list)))
+
+def filter_speakers_derived(transcriptions_collection,
+                            activeprojectname,
+                            filter_options,
+                            logical_operator="and"):
+    prompt_map = {
+        'domain': 'Domain',
+        'elicitationmethod': 'Elicitation Method',
+        'target': 'Target'
+    }
+    speakers_match = {
+        "projectname": activeprojectname,
+        "audiodeleteFLAG": 0
+    }
+    for key, value in filter_options.items():
+        db_key = "prompt."+prompt_map[key]
+        value_list_len = len(value)
+        if (value_list_len != 0):
+            if (value_list_len == 1):
+                speakers_match[db_key] = value[0]
+            else:
+                speakers_match[db_key] = {"$in": value}
+    logger.debug("speakers_match: %s", speakers_match)
+    aggregate_output = []
+    aggregate_output_list = []
+    if (len(speakers_match) > 2):
+        aggregate_output = transcriptions_collection.aggregate([
+            {
+                "$match": speakers_match
+            },
+            {
+                "$sort": {
+                    "speakerId": 1
+                }
+            },
+            {
+                "$project": {
+                    "_id": 0,
+                    "speakerId": 1
+                }
+            }
+        ])
+    logger.debug("aggregate_output: %s", aggregate_output)
+    for doc in aggregate_output:
+        logger.debug("aggregate_output: %s", pformat(doc))
+        speaker = doc["speakerId"]
+        if (speaker !=''):
+            aggregate_output_list.append(speaker)
+    logger.debug('aggregate_output_list: %s', pformat(aggregate_output_list))
 
     return (list(set(aggregate_output_list)))
 

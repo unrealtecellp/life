@@ -24,7 +24,11 @@ def save_new_transcription_form(projectsform_collection,
 
         for key, value in new_transcription_form.items():
             # logger.debug("key: %s,\nvalue: %s", key, value)
-            if key == 'Audio Language':
+            if (key == 'Audio Language' or
+                key == 'Sentence Language'):
+                if ('-' in value[0]):
+                    value = [value[0].split('-')[0]]
+                    # logger.debug("key: %s,\nvalue: %s", key, value)
                 saved_form['Audio Language'] = ["text", value]
             elif key == 'Transcription Script':
                 saved_form['Transcription'] = ["textarea", value]
