@@ -62,13 +62,14 @@ langScriptJSONFilePath = os.path.join(jsonfilesdir, 'langScript.json')
 @login_required
 def home():
     try:
-        projects, userprojects, projectsform, sentences, transcriptions, speakerdetails = getdbcollections.getdbcollections(mongo,
+        projects, userprojects, projectsform, sentences, transcriptions, speakerdetails, questionnaires = getdbcollections.getdbcollections(mongo,
                                                                                                                             'projects',
                                                                                                                             'userprojects',
                                                                                                                             'projectsform',
                                                                                                                             'sentences',
                                                                                                                             'transcriptions',
-                                                                                                                            'speakerdetails')
+                                                                                                                            'speakerdetails',
+                                                                                                                            'questionnaires')
         current_username = getcurrentusername.getcurrentusername()
         currentuserprojectsname = getcurrentuserprojects.getcurrentuserprojects(current_username,
                                                                                 userprojects)
@@ -100,13 +101,22 @@ def home():
         # logger.debug("derived_from_project_type: %s, derived_from_project_name: %s", 
         #              derived_from_project_type, derived_from_project_name)
         if (derived_from_project_type == 'questionnaires'):
-            all_ques_ids = ['New']
+            all_ques_ids = {'New': 'New'}
             ques_ids = projects.find_one({"projectname": derived_from_project_name},
                                          {
                                              "_id": 0,
                                              "questionnaireIds": 1
                                          })["questionnaireIds"]
-            all_ques_ids.extend(ques_ids)
+            # all_ques_ids.extend(ques_ids)
+            for ques_id in ques_ids:
+                Q_Id = questionnaires.find_one({"projectname": derived_from_project_name,
+                                                "quesId": ques_id,
+                                                "quesdeleteFLAG": 0},
+                                                {
+                                                    "_id": 0,
+                                                    "Q_Id": 1
+                                                })["Q_Id"]
+                all_ques_ids[ques_id] = Q_Id
             # logger.debug("all_ques_ids: %s", pformat(all_ques_ids))
         if activeprojectform is not None:
             try:
@@ -351,7 +361,7 @@ def audiobrowse():
 @transcription.route('/updateaudiosortingsubcategories', methods=['GET', 'POST'])
 @login_required
 def updateaudiosortingsubcategories():
-    audio_sorting_sub_categories = ''
+    audio_sorting_sub_categories = {}
     audio_data_fields = ['audioId', 'audioFilename', 'Audio File']
     audio_data_list = []
     try:
@@ -386,6 +396,7 @@ def updateaudiosortingsubcategories():
                                                       activeprojectname,
                                                       current_username)
         speakerids.append('')
+        # logger.debug("speakerids: %s", pformat(speakerids))
 
         shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
                                                           current_username,
@@ -394,6 +405,9 @@ def updateaudiosortingsubcategories():
         share_mode = shareinfo['sharemode']
         share_checked = shareinfo['sharechecked']
         download_checked = shareinfo['downloadchecked']
+
+        derived_from_project_type, derived_from_project_name = getprojecttype.getderivedfromprojectdetails(projects,
+                                                                                                           activeprojectname)
         if (selected_audio_sorting_category == 'sourcemetainfo'):
             audio_sorting_sub_categories = transcription_audiodetails.get_audio_sorting_subcategories(speakerdetails_collection,
                                                                                         activeprojectname,
@@ -401,6 +415,17 @@ def updateaudiosortingsubcategories():
                                                                                         selected_audio_sorting_category
                                                                                         )
             selected_audio_sorting_sub_categories = ''
+            # logger.debug("audio_sorting_sub_categories: %s", audio_sorting_sub_categories)
+            if (derived_from_project_type != '' and
+                derived_from_project_name != ''):
+                if (derived_from_project_type == 'questionnaires'):
+                    audio_sorting_sub_categories_derived = transcription_audiodetails.get_audio_sorting_subcategories_derived(transcriptions,
+                                                                                                                            activeprojectname,
+                                                                                                                            speakerids,
+                                                                                                                            audio_sorting_sub_categories
+                                                                                                                            )
+                    # logger.debug("audio_sorting_sub_categories_derived: %s", audio_sorting_sub_categories_derived)
+            # logger.debug("audio_sorting_sub_categories: %s", audio_sorting_sub_categories)
         elif (selected_audio_sorting_category == 'lifespeakerid'):
             audio_sorting_sub_categories = speakerids
             active_speaker_id = shareinfo['activespeakerId']
@@ -457,7 +482,7 @@ def filteraudiobrowsetable():
         #     speakerids = []
         # data through ajax
         data = json.loads(request.args.get('a'))
-        # logger.debug('audio_browse_info: %s', pformat(data))
+        logger.debug('audio_browse_info: %s', pformat(data))
         audio_browse_info = data['audioBrowseInfo']
         audio_file_count = audio_browse_info['audioFilesCount']
         audio_browse_action = audio_browse_info['browseActionSelectedOption']
@@ -465,6 +490,8 @@ def filteraudiobrowsetable():
         start_from = ((page_id*audio_file_count)-audio_file_count)
         number_of_audios = page_id*audio_file_count
         filter_options = data['selectedFilterOptions']
+        temp_audio_data_list = []
+        temp_audio_data_list_derived = []
         total_records = 0
         audio_data_list = []
         speakerids = transcription_audiodetails.combine_speaker_ids(projects,
@@ -474,8 +501,10 @@ def filteraudiobrowsetable():
     #     active_speaker_id = audio_browse_info['activeSpeakerId']
 
         filtered_speakers_list = transcription_audiodetails.filter_speakers(speakerdetails_collection,
-                                                              activeprojectname,
-                                                              filter_options=filter_options)
+                                                                            activeprojectname,
+                                                                            filter_options=filter_options)
+        logger.debug("filtered_speakers_list: %s", filtered_speakers_list)
+        # logger.debug("filtered_speakers_list: %s", filtered_speakers_list)
         for speaker in filtered_speakers_list:
             speaker_audio_ids = transcription_audiodetails.get_speaker_audio_ids_new(projects,
                                                                        activeprojectname,
@@ -491,15 +520,63 @@ def filteraudiobrowsetable():
                                                                                      number_of_audios=audio_file_count,
                                                                                      audio_delete_flag=audio_browse_action,
                                                                                      all_data=True)
-                logger.debug("temp_audio_data_list count: %s",
-                             len(temp_audio_data_list))
-                logger.debug("temp_total_records count: %s",
-                             temp_total_records)
-                audio_data_list.extend(temp_audio_data_list)
-                logger.debug("audio_data_list count: %s", len(audio_data_list))
-                total_records += temp_total_records
+                # logger.debug("temp_audio_data_list count: %s",
+                #              len(temp_audio_data_list))
+                # logger.debug("temp_audio_data_list: %s",
+                #              temp_audio_data_list)
+                # logger.debug("temp_total_records count: %s",
+                #              temp_total_records)
+                # audio_data_list.extend(temp_audio_data_list)
+                # logger.debug("audio_data_list count: %s", len(audio_data_list))
+                # total_records += temp_total_records
                 # if (len(audio_data_list) == audio_file_count):
                 #     break
+        
+        derived_from_project_type, derived_from_project_name = getprojecttype.getderivedfromprojectdetails(projects,
+                                                                                                           activeprojectname)
+        if (derived_from_project_type != '' and
+                derived_from_project_name != ''):
+                if (derived_from_project_type == 'questionnaires'):
+                    # filtered_speakers_list_derived = transcription_audiodetails.filter_speakers_derived(transcriptions,
+                    #                                                                                     activeprojectname,
+                    #                                                                                     filter_options=filter_options)
+                    temp_total_records_derived, temp_audio_data_list_derived = transcription_audiodetails.filter_speakers_derived(transcriptions,
+                                                                                                        activeprojectname,
+                                                                                                        filter_options=filter_options)
+                    # logger.debug("temp_audio_data_list_derived count: %s",
+                    #             len(temp_audio_data_list_derived))
+                    # logger.debug("temp_audio_data_list_derived: %s",
+                    #             temp_audio_data_list_derived)
+                    # logger.debug("temp_total_records_derived count: %s",
+                    #             temp_total_records_derived)
+                    # audio_data_list.extend(temp_audio_data_list)
+                    # total_records += temp_total_records
+                    # logger.debug("filtered_speakers_list_derived: %s", filtered_speakers_list_derived)
+                    # filtered_speakers_list.extend(filtered_speakers_list_derived)
+        # if (temp_audio_data_list):
+        #     logger.debug("if (temp_audio_data_list): %s", temp_audio_data_list)
+        # else:
+        #     logger.debug("if (temp_audio_data_list): %s", temp_audio_data_list)
+        for audio_info_derived in temp_audio_data_list_derived:
+            if (temp_audio_data_list):
+                if (audio_info_derived in temp_audio_data_list):
+                    # logger.debug("audio_info_derived: %s", audio_info_derived)
+                    if (audio_info_derived not in audio_data_list):
+                        audio_data_list.append(audio_info_derived)
+            else:
+                audio_data_list = temp_audio_data_list_derived
+        for audio_info in temp_audio_data_list:
+            if (temp_audio_data_list_derived):
+                if (audio_info in temp_audio_data_list_derived):
+                    # logger.debug("audio_info: %s", audio_info)
+                    if (audio_info not in audio_data_list):
+                        audio_data_list.append(audio_info)
+            else:
+                audio_data_list = temp_audio_data_list
+            # audio_id_derived = audio_info_derived["audioId"]
+            # for audio_info in temp_audio_data_list:
+            #     audio_id
+        total_records += len(audio_data_list)
         shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
                                                           current_username,
                                                           activeprojectname)
@@ -507,6 +584,8 @@ def filteraudiobrowsetable():
         share_checked = shareinfo['sharechecked']
         download_checked = shareinfo['downloadchecked']
         new_audio_data_list = audio_data_list[start_from:number_of_audios]
+        # new_audio_data_list = list(set(new_audio_data_list))
+        # logger.debug("new_audio_data_list: %s", new_audio_data_list)
         # logger.debug("new_audio_data_list count: %s", len(new_audio_data_list))
         # logger.debug("total_records count: %s", total_records)
     except:

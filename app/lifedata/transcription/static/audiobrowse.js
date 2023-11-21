@@ -134,6 +134,7 @@ function createAudioBrowseTable(
     let count = audioData.length
     let ele = '';
     let browseActionSelectedOption = '';
+    let audioIdAdded = [];
     // ele += '<p id="actualtotalrecords">Total Records:&nbsp;'+totalRecords+'</p>';
     ele += '<div class="col">';
     ele += '<strong><p id="totalrecords" style="display:inline">Showing Records:&nbsp;'+count+' of '+totalRecords+'</p></strong>';
@@ -147,6 +148,7 @@ function createAudioBrowseTable(
             '<tr>'+
             '<th><input type="checkbox" id="headcheckbox" onchange="checkAllAudio(this)" name="chk[]" checked/>&nbsp;</th>';
     for (let i=0; i<audioDataFields.length; i++) {
+        // console.log(audioDataFields[i]);
         if (audioDataFields[i] == "audioFilename"){
             ele += '<th onclick="sortTable('+(i+1)+')" hidden>'+audioDataFields[i]+'</th>';
             continue;
@@ -181,11 +183,12 @@ function createAudioBrowseTable(
         for (let j=0; j<audioDataFields.length; j++) {
             let field = audioDataFields[j];
             if (field in aData) {
+                // console.log(field);
                 if (field == "audioFilename") {
                     ele += '<td id='+field+' hidden>'+aData[field]+'</td>';
                     continue;
                 }
-                if (field == 'Audio File') {
+                else if (field == 'Audio File') {
                     ele += '<td>'+
                             '<button type="button" id="playaudio_'+audioCount+'" class="btn btn-primary playaudioclass">'+
                             '<span class="glyphicon glyphicon-play" aria-hidden="true"></span>'+
@@ -196,6 +199,16 @@ function createAudioBrowseTable(
                             // '<audio controls oncontextmenu="return false" controlslist="nofullscreen nodownload noremoteplayback noplaybackrate">'+
                             // '<source src="'+aData[field]+'" type="audio/wav"></audio>'+
                             // '</td>';
+                }
+                else if (field == "audioId"){
+                    if (audioIdAdded.includes(aData[field])){
+                        continue
+                    }
+                    else {
+                        ele += '<td id='+field+'>'+aData[field]+'</td>';
+                        audioIdAdded.push(aData[field]);
+                    }
+                    console.log(audioIdAdded);
                 }
                 else {
                     ele += '<td id='+field+'>'+aData[field]+'</td>';
