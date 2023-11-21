@@ -398,12 +398,14 @@ def karyajson2(mongo,
                     domain = prompt['Domain'][0]
                     # print('domain:', domain)
                     elicitation_method = prompt['Elicitation Method']
+                    final_temp_dict = {}
                     temp_dict = {
                         "quesId": ques_data["quesId"],
                         "Q_Id": ques_data["Q_Id"],
                         "Domain": domain,
                         "Elicitation Method": elicitation_method
                     }
+                    files = {}
                     if (prompt_type+'Instruction' in prompt_data):
                         temp_dict['instruction'] = prompt_data[prompt_type+'Instruction']
                     audio_fileId = ''
@@ -418,6 +420,7 @@ def karyajson2(mongo,
                         sentence = prompt_data[boundaryId]['textspan'][script]
                         temp_dict['sentence'] = sentence
                         temp_dict['hint'] = ''
+                        files['hint'] = ''
                     elif (prompt_type == 'audio'):
                         # logger.debug("lang_wise_ques_key: %s", lang_wise_ques_key)
                         lang_wise_ques_key = lang_script.replace('-', '_')+'_'+prompt_type
@@ -426,6 +429,8 @@ def karyajson2(mongo,
                         sentence = prompt_data['textGrid']['sentence'][boundaryId]['transcription'][script]
                         temp_dict['sentence'] = sentence
                         temp_dict['hint'] = prompt_data['filename']
+                        files['hint'] = prompt_data['filename']
+                        # logger.debug("files: %s", files)
                         audio_fileId = prompt_data['fileId']
                         # get the file to local storage from database 'fs' collection
                         # print(mongo,
@@ -471,6 +476,7 @@ def karyajson2(mongo,
                         multimedia_fileId = prompt_data['fileId']
                         if (multimedia_fileId != ''):
                             temp_dict['hint'] = prompt_data['filename']
+                            files['hint'] = prompt_data['filename']
                             multimedia_file_path = getfilefromfs(mongo,
                                                             project_folder_path,
                                                             multimedia_fileId,
@@ -488,6 +494,7 @@ def karyajson2(mongo,
                         image_fileId = prompt_data['fileId']
                         if (image_fileId != ''):
                             temp_dict['hint'] = prompt_data['filename']
+                            files['hint'] = prompt_data['filename']
                             image_file_path = getfilefromfs(mongo,
                                                             project_folder_path,
                                                             image_fileId,
@@ -518,14 +525,20 @@ def karyajson2(mongo,
                         # os.mkdir(lang_wise_ques_key_audio_path)
                         # os.mkdir(lang_wise_ques_key_image_path)
                         # os.mkdir(lang_wise_ques_key_multimedia_path)
+                    final_temp_dict = {
+                                "data": temp_dict,
+                                "files": files
+                            }
                     if (lang_wise_ques_key != ''):
                         if (lang_wise_ques_key in lang_wise_ques):
                             # logger.debug('prompt_type: %s', prompt_type)
                             # logger.debug("lang_wise_ques_key: %s", lang_wise_ques_key)
                             # logger.debug("temp_dict: %s", pformat(temp_dict))
-                            lang_wise_ques[lang_wise_ques_key].append(temp_dict)
+                            # lang_wise_ques[lang_wise_ques_key].append(temp_dict)
+                            lang_wise_ques[lang_wise_ques_key].append(final_temp_dict)
                         else:
-                            lang_wise_ques[lang_wise_ques_key] = [temp_dict]
+                            # lang_wise_ques[lang_wise_ques_key] = [temp_dict]
+                            lang_wise_ques[lang_wise_ques_key] = [final_temp_dict]
                             # logger.debug('lang_wise_ques: %s', pformat(lang_wise_ques))
 
                         domain_wise_ques_key = lang_wise_ques_key+'_'+domain
@@ -547,9 +560,11 @@ def karyajson2(mongo,
                             # os.mkdir(domain_wise_ques_key_multimedia_path)
                         
                         if (domain_wise_ques_key in lang_wise_ques):
-                            lang_wise_ques[domain_wise_ques_key].append(temp_dict)
+                            # lang_wise_ques[domain_wise_ques_key].append(temp_dict)
+                            lang_wise_ques[domain_wise_ques_key].append(final_temp_dict)
                         else:
-                            lang_wise_ques[domain_wise_ques_key] = [temp_dict]
+                            # lang_wise_ques[domain_wise_ques_key] = [temp_dict]
+                            lang_wise_ques[domain_wise_ques_key] = [final_temp_dict]
 
                     if (audio_fileId != '' and audio_file_path != ''):
                         # logger.debug("prompt_type: %s, lang_wise_ques_key_prompt_type_path: %s",
