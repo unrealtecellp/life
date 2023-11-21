@@ -815,6 +815,7 @@ def homespeaker():
         current_username, userprojects)
 
     project_type = getprojecttype.getprojecttype(projects, activeprojectname)
+    print(project_type)
 
     shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
                                                       current_username,
@@ -823,6 +824,7 @@ def homespeaker():
 
     derived_from_project_type, derived_from_project_name = getprojecttype.getderivedfromprojectdetails(
         projects, activeprojectname)
+    
     formacesscodemetadata = access_code_management.get_access_code_metadata_for_form(
         projects,
         projectsform,
@@ -832,7 +834,56 @@ def homespeaker():
         derived_from_project_name
     )
 
+    print("############################################################")
+    print(projects)
+    print(projectsform)
+    print(activeprojectname)
+    print(project_type)
+    print(derived_from_project_name)
+    print(derived_from_project_type)
     print('formacesscodemetadata', formacesscodemetadata)
+
+    ###############################################################################################
+    # langscript = []
+    # # domain, elictationmethod ,langscript-[1]
+    # projectform = projectsform.find_one({"projectname": activeprojectname})
+    # langscripts = list((projectform["Prompt Type"][1]).keys())
+    
+    # for lang_script, lang_info in langscripts.items():
+    #     if ('Audio' in lang_info):
+    #         langscript.append(lang_script)
+    # print('ques lang script :',langscript)
+
+    ################################################################################################
+ 
+    # projectform = projectsform.find_one({"projectname": activeprojectname})
+    # # langscript.append(projectform["Sentence Language"][0])
+    # langscript = projectform["Audio Language"][1]
+    # print(langscript)
+    # derivedFromProject = projects.find_one({"projectname": activeprojectname},
+    #                                        {"_id": 0, "derivedFromProject": 1})
+    # derivedFromProjectName = derivedFromProject['derivedFromProject'][0]
+    # derived_from_project_type = getprojecttype.getprojecttype(
+    #     projects, derivedFromProjectName)
+
+    # if (derived_from_project_type == "questionnaires"):
+    #     derivefromprojectform = projectsform.find_one(
+    #         {"projectname": derivedFromProjectName})
+
+    #     domain = derivefromprojectform["Domain"][1]
+    #     elicitation = derivefromprojectform["Elicitation Method"][1]
+    #     # elicitation = derivefromprojectform["Transcription"][1]
+       
+
+    # acesscodemetadata = {
+    #     "langscript": langscript,
+    #     "domain": domain,
+    #     "elicitation": elicitation
+    # }
+
+    # print(acesscodemetadata)
+##########################################################################################
+
     # This defines the minimum share level of the user who will get info
     # of all access codes (incl those assigned by the other users)
     # Users with share level lower than this will get info of only those

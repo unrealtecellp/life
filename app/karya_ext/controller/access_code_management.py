@@ -136,70 +136,108 @@ def get_access_code_metadata_for_form(projects, projectsform, project_name, proj
         logger.exception("")
 
 
+# def get_access_code_metadata_transcription_for_form(projects, projectsform, project_name, derived_from_project_type, derivedFromProjectName):
+#     langscript = []
+#     projectform = projectsform.find_one({"projectname": project_name})
+#     if projectform["Transcription"][1] is None:
+#         langscript.append(projectform["Sentence Language"][0])
+#     else:
+#         langscript = projectform["Transcription"][1]
+
+#     derivedFromProject = projects.find_one({"projectname": project_name},
+#                                            {"_id": 0, "derivedFromProject": 1})
+#     derivedFromProjectName = derivedFromProject['derivedFromProject'][0]
+#     derived_from_project_type = getprojecttype.getprojecttype(
+#         projects, derivedFromProjectName)
+
+#     if (derived_from_project_type == "questionnaires"):
+#         derivefromprojectform = projectsform.find_one(
+#             {"projectname": derivedFromProjectName})
+
+#         domain = derivefromprojectform["Domain"][1]
+#         elicitation = derivefromprojectform["Elicitation Method"][1]
+
+#     acesscodemetadata = {
+#         "langscript": langscript,
+#         "domain": domain,
+#         "elicitation": elicitation
+#     }
+
+#     return acesscodemetadata
 def get_access_code_metadata_transcription_for_form(projects, projectsform, project_name, derived_from_project_type, derivedFromProjectName):
     langscript = []
+    domain = None
+    elicitation = None
+
     projectform = projectsform.find_one({"projectname": project_name})
-    langscript.append(projectform["Sentence Language"][0])
 
-    derivedFromProject = projects.find_one({"projectname": project_name},
-                                           {"_id": 0, "derivedFromProject": 1})
-    derivedFromProjectName = derivedFromProject['derivedFromProject'][0]
-    derived_from_project_type = getprojecttype.getprojecttype(
-        projects, derivedFromProjectName)
+    if projectform:
+        if projectform.get("Transcription") is None:
+            langscript.append(projectform.get("Sentence Language"))
+        else:
+            langscript = projectform.get("Transcription")
+    else:
+        # Handle situation when projectform is None or key values are missing
+        print("Project form not found or data missing")
 
-    if (derived_from_project_type == "questionnaires"):
-        derivefromprojectform = projectsform.find_one(
-            {"projectname": derivedFromProjectName})
+    derivedFromProject = projects.find_one(
+        {"projectname": project_name}, {"_id": 0, "derivedFromProject": 1})
+    
+    if derivedFromProject and "derivedFromProject" in derivedFromProject:
+        derivedFromProjectName = derivedFromProject['derivedFromProject'][0]
+        derived_from_project_type = getprojecttype.getprojecttype(
+            projects, derivedFromProjectName)
 
-        domain = derivefromprojectform["Domain"][1]
-        elicitation = derivefromprojectform["Elicitation Method"][1]
+        if (derived_from_project_type == "questionnaires"):
+            derivefromprojectform = projectsform.find_one(
+                {"projectname": derivedFromProjectName})
 
-    acesscodemetadata = {
+            if derivefromprojectform and "Domain" in derivefromprojectform and "Elicitation Method" in derivefromprojectform:
+                domain = derivefromprojectform["Domain"][1]
+                elicitation = derivefromprojectform["Elicitation Method"][1]
+            else:
+                # Handle missing keys or data in the derived project form
+                print("Keys 'Domain' or 'Elicitation Method' missing in derived project form")
+    else:
+        # Handle missing or invalid derivedFromProject data
+        print("Derived project data not found or invalid")
+
+    access_code_metadata = {
         "langscript": langscript,
         "domain": domain,
         "elicitation": elicitation
     }
 
-    return acesscodemetadata
-
-
-
-def get_access_code_metadata_new_transcription_for_form(projects, projectsform, project_name, derived_from_project_type, derivedFromProjectName):
-    langscript = []
-    projectform = projectsform.find_one({"projectname": project_name})
-    # langscript.append(projectform["Sentence Language"][0])
-    langscript.append(projectform["Translation"][1])
-    derivedFromProject = projects.find_one({"projectname": project_name},
-                                           {"_id": 0, "derivedFromProject": 1})
-    derivedFromProjectName = derivedFromProject['derivedFromProject'][0]
-    derived_from_project_type = getprojecttype.getprojecttype(
-        projects, derivedFromProjectName)
-
-    if (derived_from_project_type == "questionnaires"):
-        derivefromprojectform = projectsform.find_one(
-            {"projectname": derivedFromProjectName})
-
-        domain = derivefromprojectform["Domain"][1]
-        elicitation = derivefromprojectform["Elicitation Method"][1]
-
-    acesscodemetadata = {
-        "langscript": langscript,
-        "domain": domain,
-        "elicitation": elicitation
-    }
-
-    return acesscodemetadata
+    return access_code_metadata
 
 
 
 
+# def get_access_code_metadata_questionnaire_for_form(projectsform, project_name):
+#     langscript = []
+#     # domain, elictationmethod ,langscript-[1]
+#     projectform = projectsform.find_one({"projectname": project_name})
+#     langscripts = projectform["Prompt Type"][1]
+
+#     for lang_script, lang_info in langscripts.items():
+#         if ('Audio' in lang_info):
+#             langscript.append(lang_script)
+
+#     domain = projectform["Domain"][1]
+#     elicitation = projectform["Elicitation Method"][1]
+#     acesscodemetadata = {
+#         "langscript": langscript,
+#         "domain": domain,
+#         "elicitation": elicitation
+#     }
+
+#     return acesscodemetadata
 
 def get_access_code_metadata_questionnaire_for_form(projectsform, project_name):
     langscript = []
     # domain, elictationmethod ,langscript-[1]
     projectform = projectsform.find_one({"projectname": project_name})
     langscripts = projectform["Prompt Type"][1]
-
     for lang_script, lang_info in langscripts.items():
         if ('Audio' in lang_info):
             langscript.append(lang_script)
@@ -213,6 +251,7 @@ def get_access_code_metadata_questionnaire_for_form(projectsform, project_name):
     }
 
     return acesscodemetadata
+
 
 
 def get_upload_df(access_code_file):
