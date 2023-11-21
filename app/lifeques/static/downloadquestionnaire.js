@@ -40,7 +40,7 @@ $(document).ready(function() {
 
 $(document).ready(function() {
   $("#karyajson2").click(function() {
-    questionnaire['downloadFormat'] = "karyajson";
+    questionnaire['downloadFormat'] = "karyajson2";
   //   console.log(questionnaire)
     $.ajax({
           url: '/lifeques/downloadquestionnaire',
