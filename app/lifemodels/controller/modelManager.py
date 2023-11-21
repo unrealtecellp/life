@@ -8,6 +8,7 @@ from app import mongo
 
 
 from app.lifemodels.controller import huggingFaceUtils as hfu
+from app.languages.controller import languageManager as lmn
 from datetime import datetime
 import re
 
@@ -47,8 +48,63 @@ def generate_models_database():
         models_collection = mongo.db.models
         generate_dummy_model_entry(models_collection)
 
-def get_model_list (models, languages, lang_name='Hindi'):
-    pass
+def get_model_list (models, languages, featured_authors=[], lang_name='Hindi', task='automatic-speech-recognition', get_related=True, get_only_featured=True):
+    models_of_lang, lang_names = lmn.get_models_of_language(languages, lang_name)
+    logger.debug ('Original Models %s', models_of_lang)
+
+    if (len(models_of_lang) == 0) or get_related:
+        related_langs = lmn.get_langs_related_by_family(languages, lang_name)
+        logger.debug ('Related Langs %s', len(related_langs))
+
+        related_langs_country = lmn.get_langs_related_by_country(languages, lang_name)
+        logger.debug ('Related Langs country %s', len(related_langs_country))
+
+        final_langs = dict(related_langs.items() & related_langs_country.items())
+        logger.debug ('Final Langs %s, %s', final_langs.keys(), len(final_langs))
+
+        models_of_related_lang, related_lang_names = lmn.get_models_of_multiple_languages(languages, list(final_langs.keys()))
+        
+        models_of_lang.update(models_of_related_lang)
+        lang_names.update(related_lang_names)
+        logger.debug ('All models %s, %s, %s', models_of_lang.keys(), len(models_of_lang), len(models_of_lang.values()))
+    
+    all_model_ids = list(models_of_lang.values())
+    all_model_ids = sum(all_model_ids, [])
+    logger.debug('All model IDs %s, %s', all_model_ids[:5], len(all_model_ids))
+    models_info = models.find({'modelId': {'$in': all_model_ids}},
+                                {'modelId': 1,
+                                'modelMetadata.hfModelID': 1,
+                                'modelMetadata.hfModelAuthor': 1,
+                                '_id': 0})
+    
+
+    model_id_map = {}
+    if not models_info is None:
+        for model_info in models_info:
+            hf_id = model_info['modelMetadata']['hfModelID']
+            hf_author = model_info['modelMetadata']['hfModelAuthor']
+            if get_only_featured and hf_author in featured_authors:
+                model_id_map[model_info['modelId']] = {'modelId': hf_id, 'modelAuthor': hf_author}
+    logger.debug('Total featured author model %s, %s', model_id_map, len(model_id_map))
+    
+    model_list = []
+    for lang_code, models in models_of_lang.items():
+        lang_name = lang_names.get(lang_code, '')
+        for model_id in models:
+            current_model_list = {}
+            if model_id in model_id_map:
+                model_info = model_id_map[model_id]
+                model_name = model_info['modelId']
+                display_model_name = lang_name+'-'+model_name
+                current_model_list['text'] = display_model_name
+                current_model_list['id'] = model_name
+                # current_model_list[display_model_name] = model_name
+                model_list.append(current_model_list)
+    logger.debug('Model List %s', len(model_list))
+    
+    return model_list
+
+    
 
 def generate_dummy_model_entry(models):
     current_model_entry={}

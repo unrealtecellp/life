@@ -1,10 +1,12 @@
 """Module containing the routes for the models part of the LiFe."""
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
 from flask_login import current_user, login_required, login_user, logout_user
 from app.controller import (
     getdbcollections,
     getcurrentusername,
+    getactiveprojectname,
     userdetails,
+    projectDetails,
     life_logging
 )
 
@@ -56,5 +58,22 @@ def syncExistingModels():
             flash ('This action is not allowed for you. Please contact an administrator')
             return redirect(url_for('hfmodelsetup'))
 
-
-
+@lifemodels.route('/getModelList', methods=['GET', 'POST'])
+@login_required
+def getModelList():
+    userprojects, projectsform, models, languages, app_config = getdbcollections.getdbcollections(
+        mongo, 'userprojects', 'projectsform', 'models', 'languages', 'lifeappconfigs')
+    current_username = getcurrentusername.getcurrentusername()
+    logger.debug('USERNAME: %s', current_username)
+    # usertype = userdetails.get_user_type(
+    #     userlogin, current_username)
+    # logger.debug('User Type: %s', usertype)
+    logger.debug('Request method: %s', request.method)
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_username, userprojects)
+    language_scripts = projectDetails.get_audio_language_scripts(projectsform, activeprojectname)
+    logger.debug('Language Scripts: %s', language_scripts)
+    featured_authors = modelManager.get_featured_authors(app_config, current_username)
+    # models = modelManager.get_model_list(models, languages, featured_authors, language_scripts['language'])
+    if request.method == 'POST':
+        models = modelManager.get_model_list(models, languages, featured_authors, language_scripts['language'])
+    return jsonify({'models': models, 'scripts': language_scripts['scripts']})

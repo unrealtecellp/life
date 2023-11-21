@@ -432,3 +432,101 @@ def get_glottolog_info(langs_collection, dirpath, iso_info):
             glottolog_data[lang_code] = iso_entry
 
     return glottolog_data
+
+def get_models_of_language(languages, lang_name, task_name='asr'):
+    all_models = []
+    model_info = languages.find_one({'$or': [{'codeISO6393': lang_name},
+                                            {'part2bISO639': lang_name}, 
+                                            {'part2tISO639': lang_name},
+                                            {'part1ISO639': lang_name},
+                                            {'languageNameISO639': lang_name},
+                                            {'glottologName': lang_name}]},
+                                            {'models.'+task_name: 1,
+                                            'codeISO6393': 1,
+                                            'languageNameISO639': 1,
+                                            '_id': 0})
+    logger.debug ('Lang name, %s, models %s', lang_name, model_info)
+    if not model_info is None:
+        all_model_details = model_info.get('models', {})
+        task_model_details = all_model_details.get(task_name, [])
+        for model_detail in task_model_details:
+            current_model_id = model_detail['modelId']
+            all_models.append(current_model_id)
+        lang_code = model_info.get('codeISO6393', '')
+        lang_name = model_info.get('languageNameISO639', '')
+    return {lang_code: all_models}, {lang_code: lang_name}
+
+def get_models_of_multiple_languages(languages, lang_names, task_name='asr'):
+    all_models = {}
+    all_langs = {}
+    model_infos = languages.find({'codeISO6393': {'$in': lang_names}},
+                                            {'models.'+task_name: 1,
+                                            'codeISO6393': 1,
+                                            'languageNameISO639': 1,
+                                            '_id': 0})
+    if not model_infos is None:
+        for model_info in model_infos:
+            all_model_details = model_info.get('models', {})
+            task_model_details = all_model_details.get(task_name, [])
+            lang_code = model_info.get('codeISO6393', '')
+            lang_name = model_info.get('languageNameISO639', '')
+            all_langs[lang_code] = lang_name
+            for model_detail in task_model_details:
+                current_model_id = model_detail['modelId']
+                if lang_code in all_models:
+                    all_models[lang_code].append(current_model_id)
+                else:
+                    all_models[lang_code] = [current_model_id]
+    return all_models, all_langs
+
+def get_family_of_lang(languages, lang_name):
+    family_info = languages.find_one({'$or': [{'codeISO6393': lang_name},
+                                            {'part2bISO639': lang_name}, 
+                                            {'part2tISO639': lang_name},
+                                            {'part1ISO639': lang_name},
+                                            {'languageNameISO639': lang_name},
+                                            {'glottologName': lang_name}]},
+                                            {'glottolog.language_details.Family_ID': 1,
+                                            '_id': 0})
+    if not family_info is None:
+        lang_family = family_info['glottolog']['language_details']['Family_ID']
+    else:
+        lang_family = ''
+    return lang_family
+
+def get_langs_related_by_family(languages, lang_name):
+    all_langs = {}
+    lang_family = get_family_of_lang(languages, lang_name)
+    langs_info = languages.find({'glottolog.language_details.Family_ID': lang_family},
+    {'codeISO6393': 1, 'languageNameISO639': 1, '_id': 0})
+    if not langs_info is None:
+        for lang in langs_info:
+            all_langs[lang['codeISO6393']] = lang['languageNameISO639']
+    return all_langs
+
+def get_countries_of_lang(languages, lang_name):
+    country_info = languages.find_one({'$or': [{'codeISO6393': lang_name},
+                                            {'part2bISO639': lang_name}, 
+                                            {'part2tISO639': lang_name},
+                                            {'part1ISO639': lang_name},
+                                            {'languageNameISO639': lang_name},
+                                            {'glottologName': lang_name}]},
+                                            {'glottolog.language_details.Countries': 1,
+                                            '_id': 0})
+    if not country_info is None:
+        country = country_info['glottolog']['language_details']['Countries']
+        country = country.split(';')
+    else:
+        country = []
+    return country
+
+def get_langs_related_by_country(languages, lang_name):
+    all_langs = {}
+    countries = get_countries_of_lang(languages, lang_name)
+    for country in countries:
+        langs_info = languages.find({'glottolog.language_details.Countries': {'$regex': country}},
+        {'codeISO6393': 1, 'languageNameISO639': 1, '_id': 0})
+        if not langs_info is None:
+            for lang in langs_info:
+                all_langs[lang['codeISO6393']] = lang['languageNameISO639']
+    return all_langs
