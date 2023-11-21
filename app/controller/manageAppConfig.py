@@ -1,4 +1,9 @@
 from app import mongo
+from app.controller import (
+    life_logging
+)
+
+logger = life_logging.get_logger()
 
 def generateDummyAppConfig():
     try:
@@ -57,6 +62,50 @@ def getAppSendEmailDetails(lifeappconfigs):
     print ("All config docs", all_config_params)
     return all_config_params, label_map
 
+def getHuggingFaceModelConfig(lifeappconfigs, current_username, usertype='SUPER-ADMIN'):
+    label_map = {
+        'authorsList': 'List of Featured Authors',
+        'taskType': 'HuggingFace Task'
+    }
+    allconfigdocs = lifeappconfigs.find_one(
+            {
+                'configtype': 'huggingfacemodel'
+            },
+            {
+                '_id': 0,
+                'configparams': 1
+            }
+        )
+    default_entry = {
+        'globals': 
+            {'automatic-speech-recognition': 
+                {'authorsList': []}
+            }
+        ,
+        'usersData': 
+            {current_username: 
+                {'apiTokens': [],
+                'globals': 
+                    {'automatic-speech-recognition': 
+                        {'authorsList': []}
+                    }
+                }
+            }        
+    }
+    
+    if allconfigdocs is not None:
+        all_config_params = allconfigdocs.get('configparams', default_entry)
+    else:
+        all_config_params = default_entry
+        lifeappconfigs.insert_one(
+            {
+                'configtype': 'huggingfacemodel',
+                'configparams': default_entry
+            }
+        )
+
+    logger.debug ("All config docs %s", all_config_params)
+    return all_config_params, label_map
 
 def updateAppSendEmailDetails(lifeappconfigs, updatedata):
     update_details={'configparams': updatedata}
@@ -69,6 +118,24 @@ def updateAppSendEmailDetails(lifeappconfigs, updatedata):
     lifeappconfigs.update_one(
             {
                 'configtype': 'emailsetup'
+            },
+            {
+                '$set': update_details
+            }
+        )
+
+    return label_map
+
+def updateHuggingFaceModelConfig(lifeappconfigs, updatedata):
+    update_details={'configparams': updatedata}
+    label_map = {
+        'authorsList': 'List of Featured Authors',
+        'taskType': 'HuggingFace Task'
+    }
+    logger.debug('Update Data %s', update_details)
+    lifeappconfigs.update_one(
+            {
+                'configtype': 'huggingfacemodel'
             },
             {
                 '$set': update_details

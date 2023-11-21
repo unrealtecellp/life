@@ -256,11 +256,12 @@ def get_access_code_metadata_questionnaire_for_form(projectsform, project_name):
 
 def get_upload_df(access_code_file):
     data = pd.read_csv(access_code_file)
-    df = pd.DataFrame(data)
+    data = data.fillna('')
+    # df = pd.DataFrame(data)
 
-    df["id"] = df["id"].str[1:]
-    df["access_code"] = df["access_code"].str[1:]
-    df["phone_number"] = df["phone_number"].str[1:]
+    # df["id"] = df["id"].str[1:]
+    # df["access_code"] = df["access_code"].str[1:]
+    # df["phone_number"] = df["phone_number"].str[1:]
     return data
 
 

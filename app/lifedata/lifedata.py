@@ -38,11 +38,11 @@ from app.lifedata.controller import (
 )
 
 from app.lifetagsets.controller import (
-    save_tagset,
+    saveTagset,
     tagset_details
 )
 
-from app.lifedata.transcription.controller import(
+from app.lifedata.transcription.controller import (
     save_new_transcription_form
 )
 
@@ -93,6 +93,7 @@ def getprojectslist():
 
     return jsonify(projectslist=projectslist)
 
+
 @lifedata.route('/gettagsetslist', methods=['GET', 'POST'])
 @login_required
 def gettagsetslist():
@@ -100,14 +101,16 @@ def gettagsetslist():
     """
     tagsets_list = []
     try:
-        tagsets_collection, = getdbcollections.getdbcollections(mongo, 'tagsets')
+        tagsets_collection, = getdbcollections.getdbcollections(
+            mongo, 'tagsets')
         current_username = getcurrentusername.getcurrentusername()
         tagsets_list = tagset_details.get_tagsets_list(tagsets_collection,
-                                                        current_username)
+                                                       current_username)
     except:
         logger.exception("")
 
     return jsonify(tagsetsList=tagsets_list)
+
 
 @lifedata.route('/newdataform', methods=['GET', 'POST'])
 @login_required
@@ -170,9 +173,9 @@ def newdataform():
                 # logger.debug("project_type: %s", project_type)
 
                 validation_zip_file = new_data_form_files["tagsetZipFile"]
-                tagset_project_ids, = save_tagset.save_tagset(tagsets,
-                                                              validation_zip_file,
-                                                              project_name)
+                tagset_project_ids, = saveTagset.save_tagset(tagsets,
+                                                             validation_zip_file,
+                                                             project_name)
                 # logger.debug(tagset_project_ids)
                 projects.update_one({"projectname": project_name},
                                     {"$set": {
@@ -235,9 +238,9 @@ def newdataform():
                     # logger.debug("project_type: %s", project_type)
                     if 'annotationtagsetZipFile' in new_data_form_files:
                         annotation_zip_file = new_data_form_files["annotationtagsetZipFile"]
-                        tagset_project_ids, = save_tagset.save_tagset(tagsets,
-                                                                      annotation_zip_file,
-                                                                      project_name)
+                        tagset_project_ids, = saveTagset.save_tagset(tagsets,
+                                                                     annotation_zip_file,
+                                                                     project_name)
                     else:
                         tagset_name = new_data_form['tagsetname'][0]
                         tagset_project_ids = tagset_details.get_tagset_id(tagsets,
@@ -468,9 +471,9 @@ def datazipfile():
             if (completed):
                 if (project_type == 'transcriptions'):
                     return jsonify(completed=completed,
-                                    message=message,
-                                    mappingTagset={},
-                                    validationTagsetKeys=[])
+                                   message=message,
+                                   mappingTagset={},
+                                   validationTagsetKeys=[])
                 else:
                     validation_tagset_keys = list(data_tagset.keys())
             else:

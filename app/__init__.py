@@ -37,6 +37,9 @@ app.register_blueprint(lu, url_prefix='/upload')
 from app.lifetagsets.lifetagsetsroutes import ltset
 app.register_blueprint(ltset, url_prefix='/ltset')
 
+from app.languages.languagesroutes import langs
+app.register_blueprint(langs, url_prefix='/langs')
+
 from app import routes, models, forms
 
 
