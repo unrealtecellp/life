@@ -557,8 +557,18 @@
             <i>
               <font color="red">It will overwrite any boundaries creeated earlier</font>
             </i>
+            <div class="input-group col-md-12" id="asraudiofilename-divid">
+              <label for="audiofile">Filename: </label><br />
+              <input class="col-md-6" type="text" id="asraudiofileid" name="audiofile" readonly>
+            </div>
+            <br>
+            <div class="input-group col-md-12" id="asraudioduration-divid">
+              <label for="asraudiodurationid">Audio Duration: </label><br />
+              <input class="col-md-6" type="text" id="asraudiodurationid" name="audioduration" readonly>
+            </div>
+            <hr>
             <div class="input-group col-md-12 modelSource" id="asrselectdivid">
-              <label for="myASRModelListSelect2">Source: </label><br />
+              <label for="myASRModelListSelect2">Model: </label><br />
               <select class="custom-select custom-select-sm" id="myASRModelListSelect2" name="modelId" style="width: 50%;"> 
 
               </select>             
@@ -571,7 +581,7 @@
             </div>
             <hr>
             <div class="input-group" id="doasr-divid">
-              <input class="btn btn-primary asrbtn" type="buton" value="Transcribe">
+              <input class="btn btn-primary asrbtn" id="transcribebtnid" type="button" value="Transcribe">
             </div>
             <!-- </div> -->
           </form>

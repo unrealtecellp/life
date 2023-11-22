@@ -1,19 +1,23 @@
 $('#myASRModalButton').on('click', function (e) {
   console.log("Opened!")
-    $.ajax({
+  $.ajax({
     url: '/lifemodels/getModelList',
     type: 'POST',
     // data: formData,
     contentType: false,
     cache: false,
     processData: false,
-    success: function(data) {
+    success: function (data) {
       console.log('Success!');
       console.log(data)
+      filename = document.getElementById("audioFilename").textContent;
+      audioDuration = document.getElementById("currentaudioduration").textContent;
+      document.getElementById("asraudiofileid").value = filename
+      document.getElementById("asraudiodurationid").value = audioDuration
       for (entry of data.models) {
         $('#myASRModelListSelect2').select2({
           // tags: true,
-          placeholder: 'Select preset value or enter a custom value',
+          placeholder: 'Select Model Name',
           dropdownParent: $("#myASRModal")
           // data: posCategories
           // allowClear: true
@@ -33,7 +37,7 @@ $('#myASRModalButton').on('click', function (e) {
           // data: posCategories
           // allowClear: true
         });
-        var newOption = new Option(entry, entry, false, false);
+        var newOption = new Option(entry, "Transcription_" + entry, false, false);
         $('#myASRScriptListSelect2').append(newOption);
       }
       $('#myASRModelListSelect2').trigger('change');
@@ -41,14 +45,25 @@ $('#myASRModalButton').on('click', function (e) {
       $('#myASRModal').show.bs.modal;
     },
   });
-    // activeSpeaker = document.getElementById("speakeridsdropdown").value;
-    // filename = document.getElementById("audioFilename").textContent;
-    // audioDuration = document.getElementById("currentaudioduration").textContent;
-    // // alert(audioDuration) 
-    // document.getElementById("makeboundaryspeakeriduploaddropdown").value = activeSpeaker;
-    // document.getElementById("makeboundaryaudiofileid").value = filename
-    // document.getElementById("makeboundaryaudiodurationid").value = audioDuration
-    // // document.getElementById("speakeriduploaddropdown-divid").innerHTML = activeSpeaker;
-    // $('#myMakeBoundaryModal').show.bs.modal;
+  // activeSpeaker = document.getElementById("speakeridsdropdown").value;
+  // filename = document.getElementById("audioFilename").textContent;
+  // audioDuration = document.getElementById("currentaudioduration").textContent;
+  // // alert(audioDuration) 
+  // document.getElementById("makeboundaryspeakeriduploaddropdown").value = activeSpeaker;
+  // document.getElementById("makeboundaryaudiofileid").value = filename
+  // document.getElementById("makeboundaryaudiodurationid").value = audioDuration
+  // // document.getElementById("speakeriduploaddropdown-divid").innerHTML = activeSpeaker;
+  // $('#myMakeBoundaryModal').show.bs.modal;
 
-})
+});
+
+$('#transcribebtnid').on('click', function (e) {
+  // alert("Clicked!");
+  let fname = document.getElementById("asraudiofileid").value
+  let duration = document.getElementById("asraudiodurationid").value
+  let model_name = document.getElementById("myASRModelListSelect2").value
+  let elem_name = document.getElementById("myASRScriptListSelect2").value
+  document.getElementById(elem_name).innerHTML = 'Transcription of audio';
+  console.log(fname, duration, model_name, elem_name);
+  $('#myASRModal').hide .bs.modal;
+});
