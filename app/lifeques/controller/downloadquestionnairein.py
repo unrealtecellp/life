@@ -374,7 +374,7 @@ def karyajson2(mongo,
         # dictionary containing lang-script as key and list of dictionaries(karya json format) as value
         lang_wise_ques = {}
         # karya_json_data = []
-        saved_ques_data = questionnaires.find({'projectname': activeprojectname, 'quessaveFLAG': 1},
+        saved_ques_data = questionnaires.find({'projectname': activeprojectname, 'quessaveFLAG': 1, 'quesdeleteFLAG': 0},
                                                 {
                                                     "_id": 0,
                                                     "quesId": 1,
