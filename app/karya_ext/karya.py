@@ -326,8 +326,6 @@ def uploadfile():
 
 
 '''Getting active accesscode details form data base.'''
-
-
 @karya_bp.route('/active_accesscodes', methods=['POST'])
 @login_required
 def active_accesscodes():
@@ -365,8 +363,6 @@ def active_accesscodes():
 
 
 '''Getting Inactive accesscode details form data base.'''
-
-
 @karya_bp.route('/deactive_accesscodes', methods=['POST'])
 @login_required
 def deactive_accesscodes():
@@ -1125,7 +1121,8 @@ def fetch_karya_audio():
 
         logger.debug("r_j: %s\nhederr: %s", r_j, hederr)
         #############################################################################################
-        language = accesscodedetails.find_one({"projectname": activeprojectname, "karyaaccesscode": access_code},
+        language = accesscodedetails.find_one({"projectname": activeprojectname,
+                                                "karyaaccesscode": access_code},
                                               {'language': 1, '_id': 0})['language']
         logger.debug("language: %s", language)
         ################################ Get already fetched audio list and quesIDs   ########################################

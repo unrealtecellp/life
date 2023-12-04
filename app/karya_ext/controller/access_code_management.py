@@ -262,6 +262,10 @@ def get_upload_df(access_code_file):
     # df["id"] = df["id"].str[1:]
     # df["access_code"] = df["access_code"].str[1:]
     # df["phone_number"] = df["phone_number"].str[1:]
+    df = pd.DataFrame(data)
+    df["id"] = df["id"].str[1:]
+    df["access_code"] = df["access_code"].str[1:]
+    df["phone_number"] = df["phone_number"].str[1:]
     return data
 
 

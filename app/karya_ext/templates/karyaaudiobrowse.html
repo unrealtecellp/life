@@ -74,7 +74,8 @@ Audio Browse
                     <td>{{ audioData.accesscode }}</td>
                     <td>
                         <audio controls>
-                            <source src="{{ audioData.audioUrl }}" type="audio/mp3">
+                            <!-- <source src="{{ audioData.audioUrl }}" type="audio/mp3"> -->
+                            <source src="{{ url_for('get_audio', audio_id=audio_id) }}" type="audio/wav">
                             Your browser does not support the audio element.
                         </audio>
                     </td>
