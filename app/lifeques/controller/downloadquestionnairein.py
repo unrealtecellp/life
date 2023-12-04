@@ -374,7 +374,7 @@ def karyajson2(mongo,
         # dictionary containing lang-script as key and list of dictionaries(karya json format) as value
         lang_wise_ques = {}
         # karya_json_data = []
-        saved_ques_data = questionnaires.find({'projectname': activeprojectname, 'quessaveFLAG': 1},
+        saved_ques_data = questionnaires.find({'projectname': activeprojectname, 'quessaveFLAG': 1, 'quesdeleteFLAG': 0},
                                                 {
                                                     "_id": 0,
                                                     "quesId": 1,
@@ -419,8 +419,8 @@ def karyajson2(mongo,
                         boundaryId = list(prompt_data.keys())[0]
                         sentence = prompt_data[boundaryId]['textspan'][script]
                         temp_dict['sentence'] = sentence
-                        temp_dict['hint'] = ''
-                        files['hint'] = ''
+                        # temp_dict['hint'] = ''
+                        # files['hint'] = ''
                     elif (prompt_type == 'audio'):
                         # logger.debug("lang_wise_ques_key: %s", lang_wise_ques_key)
                         lang_wise_ques_key = lang_script.replace('-', '_')+'_'+prompt_type
@@ -428,7 +428,7 @@ def karyajson2(mongo,
                         boundaryId = list(prompt_data['textGrid']['sentence'].keys())[0]
                         sentence = prompt_data['textGrid']['sentence'][boundaryId]['transcription'][script]
                         temp_dict['sentence'] = sentence
-                        temp_dict['hint'] = prompt_data['filename']
+                        # temp_dict['hint'] = prompt_data['filename']
                         files['hint'] = prompt_data['filename']
                         # logger.debug("files: %s", files)
                         audio_fileId = prompt_data['fileId']
@@ -475,7 +475,7 @@ def karyajson2(mongo,
                         # temp_dict['sentence'] = sentence
                         multimedia_fileId = prompt_data['fileId']
                         if (multimedia_fileId != ''):
-                            temp_dict['hint'] = prompt_data['filename']
+                            # temp_dict['hint'] = prompt_data['filename']
                             files['hint'] = prompt_data['filename']
                             multimedia_file_path = getfilefromfs(mongo,
                                                             project_folder_path,
@@ -493,7 +493,7 @@ def karyajson2(mongo,
                         # temp_dict['sentence'] = sentence
                         image_fileId = prompt_data['fileId']
                         if (image_fileId != ''):
-                            temp_dict['hint'] = prompt_data['filename']
+                            # temp_dict['hint'] = prompt_data['filename']
                             files['hint'] = prompt_data['filename']
                             image_file_path = getfilefromfs(mongo,
                                                             project_folder_path,
