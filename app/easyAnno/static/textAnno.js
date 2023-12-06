@@ -143,6 +143,7 @@ function checkModalKey(tagSet, key, categoryDependency) {
                     dependOnListBig.splice(-1);
                     // console.log('dependOnListBig', dependOnListBig);
                     dependOnList = dependOnListBig;
+                    // break loop1;
                     continue loop2;
                 }
                 // dependentOnList = [];
@@ -173,7 +174,7 @@ function createElement(tagSet,
     // ele+='</legend>';
     // ele += '<h4><strong>' + key + ': </strong></h4>';
 
-    ele+='<legend>'+key+': </legend>'
+    ele+='<legend>'+key.replaceAll('_', ' ')+'</legend>'
     let categoryDependencyInfoList = categoryDependencyInfo(key, value, categoryDependency);
     let dependentOnClass = dependentOn(tagSet, key, categoryDependency).join(' ');
     for (let i = 0; i < value.length; i++) {
