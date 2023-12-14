@@ -123,7 +123,8 @@ def compareTagSet(project_name, tag_set):
     projects = mongo.db.projects              # collection of users and their respective projects
     # check if tagset given by user and one saved with the project details match or not
     # when tagset file(tsv file already read from the zip file)
-    existing_tag_set = projects.find_one({"projectname": project_name}, {'_id' : 0, "tagSet": 1})["tagSet"]
+    existing_tag_set = projects.find_one({"projectname": project_name},
+                                         {'_id' : 0, "tagSet": 1})["tagSet"]
     
     tag_set_differ = diff(tag_set, existing_tag_set)
     # if difference in both tagset
@@ -132,18 +133,21 @@ def compareTagSet(project_name, tag_set):
         return redirect(url_for('easyAnno.home'))
 
 def compareTagSetandFileColumn(text_data_df, tag_set, project_name):
+    # logger.debug(tag_set)
     # check categories in the columns of the file and the tagset tsv file match or not
     uploaded_file_columns = list(text_data_df.columns)
-    # print(uploaded_file_columns)
+    # logger.debug(uploaded_file_columns)
     uploaded_tagset_category  = list(tag_set.keys()) + ["ID", "Text"]
-    # print(uploaded_tagset_category)
+    # logger.debug(uploaded_tagset_category)
     if (len(uploaded_tagset_category) >= len(uploaded_file_columns)):
         tags_category_mismatch = list(set(uploaded_tagset_category) - set(uploaded_file_columns))
+        # print(tags_category_mismatch)
         if (len(tags_category_mismatch) != 0):
             flash(f'Missing categories: {tags_category_mismatch} in your data file: {project_name}.csv', 'warning')
             return redirect(url_for('easyAnno.home'))
     else:
         tags_category_mismatch = list(set(uploaded_file_columns) - set(uploaded_tagset_category))
+        # logger.debug(tags_category_mismatch)
         if (len(tags_category_mismatch) != 0):
             flash(f'Missing categories: {tags_category_mismatch} in your tagset file: textAnno_tags.tsv', 'warning')
             return redirect(url_for('easyAnno.home'))
@@ -198,12 +202,16 @@ def saveNewProjectDetails(project_name, tag_set, text_data, tag_set_meta_data):
 
     # pprint(project_details)
     # get curent user project list and update
-    userprojectnamelist = userprojects.find_one({'username' : current_user.username})["myproject"]
+    # userprojectnamelist = userprojects.find_one({'username' : current_user.username})["myproject"]
     # print(f'{"#"*80}\n{userprojectnamelist}')
-    userprojectnamelist.append(project_name)
+    # userprojectnamelist.append(project_name)
+    updateuserprojects.updateuserprojects(userprojects,
+                                                project_name,
+                                                project_owner
+                                                )
     # print(f'{"#"*80}\n{userprojectnamelist}')
-    userprojects.update_one({ 'username' : current_user.username }, \
-        { '$set' : { 'myproject' : userprojectnamelist, 'activeprojectname' :  project_name}})
+    # userprojects.update_one({ 'username' : current_user.username }, \
+    #     { '$set' : { 'myproject' : userprojectnamelist, 'activeprojectname' :  project_name}})
     
     projects.insert_one(project_details)
 
@@ -224,12 +232,16 @@ def updateProjectDetails(project_name, project_shared_with):
     projects.update_one({ "projectname": project_name }, \
         { '$set' : { 'sharedwith' : list(set(shared_with)), "lastActiveId": lastActiveId}})
     # get curent user project list and update
-    userprojectnamelist = userprojects.find_one({'username' : current_user.username})["myproject"]
+    # userprojectnamelist = userprojects.find_one({'username' : current_user.username})["myproject"]
     # print(f'{"#"*80}\n{userprojectnamelist}')
-    userprojectnamelist.append(project_name)
+    # userprojectnamelist.append(project_name)
+    updateuserprojects.updateuserprojects(userprojects,
+                                                project_name,
+                                                current_user.username
+                                                )
     # print(userprojectnamelist)
-    userprojects.update_one({ 'username' : current_user.username }, \
-        { '$set' : { 'myproject' : list(set(userprojectnamelist)), 'activeprojectname' :  project_name}})
+    # userprojects.update_one({ 'username' : current_user.username }, \
+    #     { '$set' : { 'myproject' : list(set(userprojectnamelist)), 'activeprojectname' :  project_name}})
 
     # # print(project_details)   
 
@@ -370,11 +382,15 @@ def createAnnotatedTextAnno(zipFile):
     tag_set_meta_data = {}
     categoryDependency = {}
     defaultCategoryTags = {}
+    categoryHtmlElement = {}
+    categoryHtmlElementProperties = {}
     try:
         with ZipFile(zipFile) as myzip:
             with myzip.open('textAnno_tags.tsv') as myfile:
                 # print('textAnno_tags.tsv')
-                tags_df = pd.read_csv(io.BytesIO(myfile.read()), sep='\t', dtype=str).dropna()
+                tags_df = pd.read_csv(io.BytesIO(myfile.read()), sep='\t', dtype=str)
+
+                # logger.debug(tags_df)
 
                 # version 1
                 # # print(type(tags))
@@ -394,7 +410,28 @@ def createAnnotatedTextAnno(zipFile):
                         defaultCategoryTags[tags_df.iloc[i, 0]] = re.sub(' ', '', tags_df.iloc[i, 3]).split(',')[0]
                     tag_set_meta_data['categoryDependency'] = categoryDependency
                     tag_set_meta_data['defaultCategoryTags'] = defaultCategoryTags
-
+                elif (len(tags_df.columns) == 6):
+                    for i in range(len(tags_df)):
+                        print(tags_df.iloc[i, 0], tags_df.iloc[i, 1], type(tags_df.iloc[i, 1]))
+                        if (str(tags_df.iloc[i, 1]) == 'nan'):
+                            tag_set[tags_df.iloc[i, 0]] = ['']
+                        else:
+                            tag_set[tags_df.iloc[i, 0]] = re.sub(' ', '', tags_df.iloc[i, 1]).split(',')
+                        if (re.sub(' ', '', tags_df.iloc[i, 3]).split(',')[0] != 'NONE'):
+                            categoryDependency[tags_df.iloc[i, 0]] = re.sub(' ', '', tags_df.iloc[i, 3]).split(',')[0]
+                        if (str(tags_df.iloc[i, 2]) == 'nan'):
+                            defaultCategoryTags[tags_df.iloc[i, 0]] = ''
+                        elif (str(tags_df.iloc[i, 4]) == 'select'):
+                            defaultCategoryTags[tags_df.iloc[i, 0]] = [re.sub(' ', '', tags_df.iloc[i, 2]).split(',')[0]]
+                        else:
+                            defaultCategoryTags[tags_df.iloc[i, 0]] = re.sub(' ', '', tags_df.iloc[i, 2]).split(',')[0]
+                        categoryHtmlElement[tags_df.iloc[i, 0]] = re.sub(' ', '', tags_df.iloc[i, 4]).split(',')[0]
+                        categoryHtmlElementProperties[tags_df.iloc[i, 0]] = re.sub(' ', '', tags_df.iloc[i, 5]).split(',')[0]
+                    tag_set_meta_data['categoryDependency'] = categoryDependency
+                    tag_set_meta_data['defaultCategoryTags'] = defaultCategoryTags
+                    tag_set_meta_data['categoryHtmlElement'] = categoryHtmlElement
+                    tag_set_meta_data['categoryHtmlElementProperties'] = categoryHtmlElementProperties
+            # print(tag_set)
             for file_name in myzip.namelist():
                 with myzip.open(file_name) as myfile:
                     # print(myfile.read())
@@ -446,6 +483,7 @@ def createAnnotatedTextAnno(zipFile):
                             saveNewProjectDetails(project_name, tag_set, text_data, tag_set_meta_data)
         
     except:
+        logger.exception("")
         # flash('Please check the imageAnno_tags.tsv file format!')
         flash('Please upload a zip file. Check the file format at the link provided for the Sample File', 'warning')
 
@@ -489,7 +527,7 @@ def createTextAnno(zipFile):
             with myzip.open('textAnno_tags.tsv') as myfile:
                 
                 # print('textAnno_tags.tsv')
-                tags_df = pd.read_csv(io.BytesIO(myfile.read()), sep='\t', dtype=str).dropna()
+                tags_df = pd.read_csv(io.BytesIO(myfile.read()), sep='\t', dtype=str)
 
                 # version 1
                 # # print(type(tags))
@@ -908,8 +946,8 @@ def textAnno():
             project_details['tagSetMetaData']['defaultCategoryTags'] = {**defaultAnnotation, **currentAnnotation}
 
             # pprint(project_details)
-            logger.debug('project_details: %s', pformat(project_details))
-            logger.debug('project_details: %s', pformat(list(project_details.keys())))
+            # logger.debug('project_details: %s', pformat(project_details))
+            # logger.debug('project_details: %s', pformat(list(project_details.keys())))
 
             return render_template('textAnno.html',
                                    projectName=activeprojectname,
