@@ -735,7 +735,7 @@ function openCategoryModal(eleId, start=0, end=0, selectedText='') {
             spanStart,
             spanEnd
         );
-        // console.log(selection);
+        // console.log(spanStart, spanEnd, selection);
         if (!start || !end) {
             // console.log(start, end);
             let text = document.getElementById('maintextcontent');
@@ -745,7 +745,7 @@ function openCategoryModal(eleId, start=0, end=0, selectedText='') {
                 spanStart,
                 spanEnd
             );
-            // console.log(selection);
+            // console.log(spanStart, spanEnd, selection);
         }
         leftModalForm(selection, spanStart, spanEnd, eleId)
         middleModalForm(selection, spanStart, spanEnd, eleId);
@@ -860,6 +860,7 @@ function textareaScrollHeight(eleId1, eleId2) {
 }
 
 function leftModalForm(selection, spanStart, spanEnd, eleId) {
+    // console.log(selection, spanStart, spanEnd, eleId);
     let leftModalData = '';
     let projData = JSON.parse(localStorage.getItem('projData'));
     let eleValue = projData['tagSet'][eleId][0];
@@ -881,6 +882,7 @@ function leftModalForm(selection, spanStart, spanEnd, eleId) {
                     // '<textarea class="modaltextcontent" id="spantextcontent" name="textspan" onselect=spanAnnotation(this,"'+eleId+'") readonly>' + selection + '</textarea>';
                     '<textarea class="modaltextcontent" id="spantextcontent" name="textspan" readonly>' + selection + '</textarea>';
     
+    // console.log(leftModalData);
     $('#modalleft').html(leftModalData);
 }
 
@@ -992,17 +994,22 @@ function getModalDefaultTag(defaultCategoryTags, key, eleId, spanStart, spanEnd)
 }
 
 function textSpanId(spanStart, spanEnd) {
+    let maxSpanLength = 7;
     // console.log(spanStart, spanEnd);
+    spanStart = String(spanStart);
+    spanEnd = String(spanEnd);
     let spanStartLength = spanStart.length;
-    let spanEndLength = spanEnd.length
-    while(spanStartLength != 5) {
+    let spanEndLength = spanEnd.length;
+    // console.log(spanStartLength, spanEndLength);
+    while(spanStartLength != maxSpanLength) {
         spanStart = '0'+spanStart;
         spanStartLength = spanStart.length;
     }
-    while(spanEndLength != 5) {
+    while(spanEndLength != maxSpanLength) {
         spanEnd = '0'+spanEnd;
         spanEndLength = spanEnd.length;
     }
+    // console.log(spanStartLength, spanEndLength);
     spanId = spanStart+spanEnd;
 
     return spanId;
