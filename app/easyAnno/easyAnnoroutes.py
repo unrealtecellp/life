@@ -821,7 +821,7 @@ def textAnno():
             last_active_id = tIds[0]
             projects.update_one({ "projectname": activeprojectname },
                                     { '$set' : 
-                                        { "lastActiveId": {current_username: last_active_id} }})
+                                        { "lastActiveId."+current_username: last_active_id }})
 
         # print(project_details["textData"][last_active_id])
         # print(last_active_id)
@@ -883,8 +883,9 @@ def textAnno():
                                         'additionalInfo': {},
                                         'prompt': ''
                                     }})
-        if (current_username in missing_keys and 'annotationGrid' not in missing_keys[current_username]):
-            print('123')
+        if (current_username in missing_keys and
+            'annotationGrid' not in missing_keys[current_username]):
+            # print('123')
             current_user_anno = missing_keys[current_username]
             del current_user_anno['annotatedFLAG']
             textanno.update_one({"projectname": activeprojectname, "textId": last_active_id},
@@ -925,8 +926,10 @@ def textAnno():
 
         currentText = textanno.find_one({"projectname": activeprojectname, "textId": last_active_id},
                                             {"_id": 0, current_username: 1})
-        # print(len(currentText.keys()))
-        # pprint(project_details)
+        # logger.debug(pformat(currentText))
+        # logger.debug(list(currentText.keys()))
+        # logger.debug(len(currentText.keys()))
+        # logger.debug(project_details)
 
         if (currentText != None and
             len(currentText.keys()) != 0 and
@@ -955,6 +958,28 @@ def textAnno():
                                    data=currentuserprojectsname)
         else:
             # logger.debug('project_details: %s', pformat(project_details))
+
+            annotation_available = textanno.find_one({"projectname": activeprojectname, "textId": last_active_id},
+                                            {"_id": 0, "annotationGrid": 1})
+            # logger.debug(pformat(annotation_available))
+            # logger.debug(annotation_available!=None)
+            # logger.debug(annotation_available["annotationGrid"])
+            # logger.debug(len(annotation_available["annotationGrid"])!=0)
+
+            if (annotation_available!=None and
+                len(annotation_available["annotationGrid"])!=0):
+                # logger.debug("annotation available")
+                project_details[current_username] = annotation_available["annotationGrid"]
+                project_details['currentUser'] = current_username
+                # print(project_details)
+                # pprint(project_details)
+                currentAnnotation = project_details[current_username]
+                defaultAnnotation = project_details['tagSetMetaData']['defaultCategoryTags']
+                # pprint(currentAnnotation)
+                # pprint(defaultAnnotation)
+                project_details['tagSetMetaData']['defaultCategoryTags'] = {**defaultAnnotation, **currentAnnotation}
+            # else:
+            #     logger.debug("annotation NOT available")
 
             return render_template('textAnno.html',
                                    projectName=activeprojectname,
