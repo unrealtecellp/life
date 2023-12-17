@@ -226,20 +226,36 @@ def downloadTextGrid(transcriptions,
         'Transcription Script': 'transcription',
         'Interlinear Gloss Script': 'gloss',
         'Interlinear Gloss Language': 'sentencemorphemicbreak',
-        'Translation Script': 'translation'
+        'Translation Script': 'translation',
+        'Transcription': 'transcription',
+        'Translation': 'translation',
+        'Interlinear Gloss': 'gloss'
     }
+    new_form_elements = ['Transcription',
+                         'Translation',
+                         'Interlinear Gloss']
     current_projectformelements = []
     projectformelements = projectsform.find({'projectname': activeprojectname},
                                             {'_id': 0, 'username': 0, 'projectname': 0})
 
     for current_element in projectformelements:
         # current_element_dict = projectformelements[current_element]
-        for current_element_key in current_element:
+        for current_element_key, current_element_vals in current_element.items():
             # print ('Current element', current_element)
             if current_element_key in formelement_textgrid_map:
-                current_projectformelements.append(
-                    formelement_textgrid_map[current_element_key])
+                if current_element_key in new_form_elements:
+                    current_element_val = current_element_vals[1]
+                    logger.debug('Current element %s; its vals %s',
+                                 current_element_key, current_element_vals)
+                    if len(current_element_val) > 0:
+                        current_projectformelements.append(
+                            formelement_textgrid_map[current_element_key])
+                else:
+                    current_projectformelements.append(
+                        formelement_textgrid_map[current_element_key])
 
+    logger.info('Current Form elements (only these will be downloaded) %s',
+                current_projectformelements)
     # print('Current project form elements', current_projectformelements)
 
     # Currently it returns the full entry, excluding the audiowaveform 'data' -
@@ -362,6 +378,7 @@ def downloadTextGrid(transcriptions,
 
                         xmin, xmax, tiers = get_boundaries_tiers(
                             activeprojectname, current_projectformelements, text_grid, offset=boundary_offset)
+                        logger.debug('Tiers %s', tiers)
 
                         if audio_duration == 0.0 or download_audio:
                             overall_xmax = get_audio_with_duration(
@@ -758,6 +775,7 @@ def get_boundaries_tiers(activeprojectname, projectelements, text_grid, offset=0
 
     logger.debug("Project: %s, XMin lenngth: %s", activeprojectname, len(xmin))
     logger.debug("Project: %s, XMax lenngth: %s", activeprojectname, len(xmax))
+    logger.debug("All tiers lenngth: %s", len(tiers))
     # print(activeprojectname, 'Xmax', len(xmax))
     # print(xmin)
     # print(xmax)
