@@ -1902,25 +1902,35 @@ def downloadannotationfile():
             df_dict[category] = []
         df_dict["Duplicate"] = []
         df_dict["annotatorComment"] = []    
-        # print(df)
+        # logger.debug(df_dict)
 
         df = pd.DataFrame.from_dict(df_dict)
-        # print(df)
+        # logger.debug(df)
 
         for text_id in list(text_data.keys()):
             annotated_text = textanno.find_one({ "textId": text_id },
-                                                { "_id": 0, "ID": 1, "textMetadata": 1, "Text": 1, current_username: 1 })
-            # print(annotated_text)
+                                                { "_id": 0,
+                                                 "ID": 1,
+                                                 "textMetadata": 1,
+                                                 "Text": 1,
+                                                 current_username: 1 })
+            # logger.debug(annotated_text)
+            # logger.debug(current_username in annotated_text)
+            # logger.debug('annotationGrid' in annotated_text[current_username])
             if (annotated_text != None and current_username in annotated_text):
                 annotated_text[current_username]["textId"] = text_id
+                # logger.debug(annotated_text)
+                if ('annotationGrid' in annotated_text[current_username]):
+                    annotated_text[current_username].update(annotated_text[current_username]['annotationGrid'])
                 if ('textMetadata' in annotated_text):
                     for textMetadata_key, textMetadata_value in annotated_text['textMetadata'].items():
                         annotated_text[current_username][textMetadata_key] = textMetadata_value
                 else:
                     annotated_text[current_username]["ID"] = annotated_text["ID"]
+                # logger.debug(annotated_text)
                 annotated_text[current_username]["Text"] = annotated_text["Text"]
                 annotated_text =  annotated_text[current_username] 
-                # print(annotated_text)
+                # logger.debug(annotated_text)
                 annotated_text_df = pd.DataFrame.from_dict(annotated_text.items()).T
                 annotated_text_df.columns = annotated_text_df.iloc[0]
                 annotated_text_df = annotated_text_df[1:]
@@ -2428,7 +2438,9 @@ def downloadallusersallannotationfiles():
 
 @easyAnno.route('/downloadoneuserallannotatedfiles/<username>')
 def downloadoneuserallannotatedfiles(username):
-    if (current_user.username == 'ritesh' or current_user.username == 'ComMA' or current_user.username == 'siddharth'):
+    if (current_user.username == 'ritesh' or
+        current_user.username == 'ComMA' or
+        current_user.username == 'siddharth'):
         log = ''
         log += f"{username}\n"
         projects = mongo.db.projects              # collection of users and their respective projects
@@ -2481,15 +2493,30 @@ def downloadoneuserallannotatedfiles(username):
                         # pprint(annotated_text)
                         if (annotated_text != None and username in annotated_text):
                             annotated_text[username]["textId"] = annotated_text["textId"]
-                            if('ID' in annotated_text):
+                            # logger.debug(annotated_text)
+                            if ('annotationGrid' in annotated_text[username]):
+                                annotated_text[username].update(annotated_text[username]['annotationGrid'])
+                            if ('textMetadata' in annotated_text):
+                                for textMetadata_key, textMetadata_value in annotated_text['textMetadata'].items():
+                                    annotated_text[username][textMetadata_key] = textMetadata_value
+                            else:
                                 annotated_text[username]["ID"] = annotated_text["ID"]
-                            annotated_text[username]["Text"] = annotated_text["Text"] 
+                            # logger.debug(annotated_text)
+                            annotated_text[username]["Text"] = annotated_text["Text"]
+                            # annotated_text =  annotated_text[username]
+                            # logger.debug(annotated_text)
                             # get annotated comments count
                             annotatedFLAG = annotated_text[username]["annotatedFLAG"]
                             if (annotatedFLAG == 1):
                                 annotated_comments += 1
-                            annotated_text =  annotated_text[username]    
+                            annotated_text =  annotated_text[username]
+                            # logger.debug(annotated_text)
                         else:
+                            text_id = annotated_text["textId"]
+                            annotated_text = {}
+                            annotated_text["textId"] = text_id
+                            annotated_text["ID"]  = text_data[text_id]["ID"]
+                            annotated_text["Text"]  = text_data[text_id]["Text"]
                             for category in list(tag_set.keys()):
                                 annotated_text[category] = ''
                             annotated_text["Duplicate"] = ''
@@ -2585,7 +2612,12 @@ def get_file_data(db, file_name, file_type, username):
     if (file_type == 'text'):
         textanno = db.textanno
         file_detail = textanno.find({ "projectname": file_name },\
-                        { "_id": 0, "textId": 1, "ID": 1, "Text": 1, username: 1 })
+                        { "_id": 0,
+                         "textId": 1,
+                         "ID": 1,
+                         "textMetadata": 1,
+                         "Text": 1,
+                         username: 1 })
 
     elif (file_type == 'image'):
         imageanno = db.imageanno
