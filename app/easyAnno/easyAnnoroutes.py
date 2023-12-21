@@ -245,8 +245,8 @@ def updateProjectDetails(project_name, project_shared_with):
 
     # # print(project_details)   
 
-def saveAnnotatedData(project_name, text_data_df):
-    # print("Creatinggggggggggggg Newwwwwwwwwwwwwwwwwwwwwwww")
+def saveAnnotatedData(project_name, text_data_df, tag_set_meta_data):
+    # logger.debug("Creatinggggggggggggg Newwwwwwwwwwwwwwwwwwwwwwww")
     textanno = mongo.db.textanno
 
     id_test_list = []
@@ -257,10 +257,13 @@ def saveAnnotatedData(project_name, text_data_df):
     # print(col_names)
     col_names.pop("ID")
     col_names.pop("Text")
+    annotatedFLAG_count = 0
+    unannotatedFLAG_count = 0
     for i in range(len(text_data_df)):
         NaN_count = 0
         text_id = 'T'+re.sub(r'[-: \.]', '', str(datetime.now()))
         id_test_list.append(text_id)
+        # logger.debug('textId: %s', text_id)
         single_row = {}
         single_row["ID"] = text_data_df.iloc[i, 0]
         single_row["Text"] = text_data_df.iloc[i, 1]
@@ -276,23 +279,31 @@ def saveAnnotatedData(project_name, text_data_df):
             for category, index in col_names.items():
                 if pd.isna(text_data_df.iloc[i, index]):
                     NaN_count += 1
-                    # print(text_data_df.iloc[i, index])
+                    # logger.debug('index: %s, category: %s', i, category)
+                    # logger.debug(index)
+                    # logger.debug(text_data_df.iloc[i, index])
                     user_annotation[category] = ''
-                else:    
-                    user_annotation[category] = text_data_df.iloc[i, index]
+                else:
+                    if ('categoryHtmlElement' in tag_set_meta_data and
+                        tag_set_meta_data['categoryHtmlElement'][category] == 'select'):
+                        user_annotation[category] = text_data_df.iloc[i, index].split(',')
+                    else:
+                        user_annotation[category] = text_data_df.iloc[i, index]
 
             # version 1        
             # if (len(col_names.keys()) == NaN_count):
             #     user_annotation["annotatedFLAG"] = 0
             # else:    
             #     user_annotation["annotatedFLAG"] = 1
-
+            # logger.debug('NaN_count: %s', NaN_count)
             # version 2
             if (NaN_count > 2):
                 user_annotation["annotatedFLAG"] = 0
+                unannotatedFLAG_count += 1
             else:    
                 user_annotation["annotatedFLAG"] = 1
-
+                annotatedFLAG_count += 1
+            # logger.debug('user_annotation["annotatedFLAG"]: %s', user_annotation["annotatedFLAG"])
             user_annotation['Duplicate'] = "No"
             user_annotation['annotatorComment'] = ""
             # print(user_annotation)
@@ -307,6 +318,8 @@ def saveAnnotatedData(project_name, text_data_df):
     # print(text_data)
     # print(text_anno_detail)
     # textanno.insert_one(text_anno_detail)
+    # logger.debug('annotatedFLAG_count: %s, unannotatedFLAG_count: %s',
+    #              annotatedFLAG_count, unannotatedFLAG_count)
 
     return text_data
 
@@ -431,12 +444,12 @@ def createAnnotatedTextAnno(zipFile):
                     tag_set_meta_data['defaultCategoryTags'] = defaultCategoryTags
                     tag_set_meta_data['categoryHtmlElement'] = categoryHtmlElement
                     tag_set_meta_data['categoryHtmlElementProperties'] = categoryHtmlElementProperties
-            # print(tag_set)
+            # logger.debug(tag_set)
             for file_name in myzip.namelist():
                 with myzip.open(file_name) as myfile:
-                    # print(myfile.read())
+                    # logger.debug(myfile.read())
                     if (not file_name.endswith('.tsv')):
-                        # print(file_name)
+                        # logger.debug(file_name)
                         project_name = file_name.split('.')[0]
 
                         # check project/file name do not already exist
@@ -473,13 +486,13 @@ def createAnnotatedTextAnno(zipFile):
                         else:
                             # when project/file name do not exist in the database
                             text_data_df = pd.read_csv(io.BytesIO(myfile.read()), sep='\t', dtype=str)
-                            # print(text_data_df.head())
+                            # logger.debug(text_data_df.head())
                             # check if any row in ID column is empty
                             if checkEmptyRowInID(text_data_df, project_name):
                                 return redirect(url_for('easyAnno.home'))
                             if compareTagSetandFileColumn(text_data_df, tag_set, project_name):
                                 return redirect(url_for('easyAnno.home'))
-                            text_data = saveAnnotatedData(project_name, text_data_df)
+                            text_data = saveAnnotatedData(project_name, text_data_df, tag_set_meta_data)
                             saveNewProjectDetails(project_name, tag_set, text_data, tag_set_meta_data)
         
     except:
@@ -1919,7 +1932,7 @@ def downloadannotationfile():
             # logger.debug('annotationGrid' in annotated_text[current_username])
             if (annotated_text != None and current_username in annotated_text):
                 annotated_text[current_username]["textId"] = text_id
-                # logger.debug(annotated_text)
+                logger.debug(annotated_text)
                 if ('annotationGrid' in annotated_text[current_username]):
                     annotated_text[current_username].update(annotated_text[current_username]['annotationGrid'])
                 if ('textMetadata' in annotated_text):
@@ -1930,6 +1943,10 @@ def downloadannotationfile():
                 # logger.debug(annotated_text)
                 annotated_text[current_username]["Text"] = annotated_text["Text"]
                 annotated_text =  annotated_text[current_username] 
+                # logger.debug(annotated_text)
+                for category in list(tag_set.keys()):
+                    if (isinstance(annotated_text[category], list)):
+                        annotated_text[category] = ','.join(annotated_text[category])
                 # logger.debug(annotated_text)
                 annotated_text_df = pd.DataFrame.from_dict(annotated_text.items()).T
                 annotated_text_df.columns = annotated_text_df.iloc[0]
@@ -2510,6 +2527,11 @@ def downloadoneuserallannotatedfiles(username):
                             if (annotatedFLAG == 1):
                                 annotated_comments += 1
                             annotated_text =  annotated_text[username]
+                            # logger.debug(annotated_text)
+
+                            for category in list(tag_set.keys()):
+                                if (isinstance(annotated_text[category], list)):
+                                    annotated_text[category] = ','.join(annotated_text[category])
                             # logger.debug(annotated_text)
                         else:
                             text_id = annotated_text["textId"]
