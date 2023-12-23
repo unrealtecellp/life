@@ -250,7 +250,9 @@ function createElement(tagSet,
                     defaultCategoryTag.length !== 0) {
                     for (s = 0; s < defaultCategoryTag.length; s++) {
                         eval = defaultCategoryTag[s];
-                        ele += '<option value="' + eval + '" selected>' + eval + '</option>';
+                        if (value.includes(eval)) {
+                            ele += '<option value="' + eval + '" selected>' + eval + '</option>';
+                        }
                     }
                 }
                 ele += '</select>';
@@ -262,6 +264,7 @@ function createElement(tagSet,
                     if (!select2Keys.includes(key))
                         select2Keys.push(key);
                 }
+                // console.log(select2Keys);
             }
             else if ((defaultCategoryTag === '' &&
                         !select2Keys.concat(modalSelect2Keys).includes(key))) {
@@ -284,6 +287,41 @@ function createElement(tagSet,
                     if (!select2Keys.includes(key))
                         select2Keys.push(key);
                 }
+                // console.log(select2Keys);
+            }
+            else if ((!defaultCategoryTag.includes(value[i]) &&
+                        defaultCategoryTag!== 'NONE' &&
+                        defaultCategoryTag.length !== 0 &&
+                        !select2Keys.concat(modalSelect2Keys).includes(key))) {
+                    let defaulter = false;
+                    let notDefaulter = false;
+                    for (s = 0; s < defaultCategoryTag.length; s++) {
+                        eval = defaultCategoryTag[s];
+                        if (!value.includes(eval)) {
+                            defaulter = true;
+                        }
+                        else if (value.includes(eval)) {
+                            notDefaulter = true;
+                        }
+                    }
+                    if (notDefaulter) {
+                        continue
+                    }
+                    else if (defaulter) {
+                        // console.log(key, element, elementProperties, value[i], defaultCategoryTag);
+                        ele += '<select class="' + elementClass + '" id="' + key+'_select' + '" name="' + key + '" '+elementProperties.replace('#', ' ')+' style="width: 100%">';
+                        ele += '</select>';
+
+                        if (modalEle && !modalSelect2Keys.includes(key)) {
+                            modalSelect2Keys.push(key);
+                        }
+                        else {
+                            if (!select2Keys.includes(key))
+                                select2Keys.push(key);
+                        }
+                        // console.log(select2Keys);
+                    }
+                // continue
             }
             // else if (defaultCategoryTag.includes(value[i])) {
             //     if (defaultCategoryTag!== 'NONE' &&
