@@ -1932,6 +1932,7 @@ def downloadannotationfile():
             # logger.debug('annotationGrid' in annotated_text[current_username])
             if (annotated_text != None and current_username in annotated_text):
                 annotated_text[current_username]["textId"] = text_id
+                # print(text_id)
                 logger.debug(annotated_text)
                 if ('annotationGrid' in annotated_text[current_username]):
                     annotated_text[current_username].update(annotated_text[current_username]['annotationGrid'])
@@ -1945,8 +1946,13 @@ def downloadannotationfile():
                 annotated_text =  annotated_text[current_username] 
                 # logger.debug(annotated_text)
                 for category in list(tag_set.keys()):
-                    if (isinstance(annotated_text[category], list)):
-                        annotated_text[category] = ','.join(annotated_text[category])
+                    # print(annotated_text.keys())
+                    # print(category)
+                    if (category in annotated_text):
+                        if (isinstance(annotated_text[category], list)):
+                            annotated_text[category] = ','.join(annotated_text[category])
+                    else:
+                        annotated_text[category] = ''
                 # logger.debug(annotated_text)
                 annotated_text_df = pd.DataFrame.from_dict(annotated_text.items()).T
                 annotated_text_df.columns = annotated_text_df.iloc[0]
@@ -2530,8 +2536,11 @@ def downloadoneuserallannotatedfiles(username):
                             # logger.debug(annotated_text)
 
                             for category in list(tag_set.keys()):
-                                if (isinstance(annotated_text[category], list)):
-                                    annotated_text[category] = ','.join(annotated_text[category])
+                                if (category in annotated_text):
+                                    if (isinstance(annotated_text[category], list)):
+                                        annotated_text[category] = ','.join(annotated_text[category])
+                                else:
+                                    annotated_text[category] = ''
                             # logger.debug(annotated_text)
                         else:
                             text_id = annotated_text["textId"]
