@@ -253,7 +253,7 @@ def get_access_code_metadata_questionnaire_for_form(projectsform, project_name):
     return acesscodemetadata
 
 
-
+'''
 def get_upload_df(access_code_file):
     data = pd.read_csv(access_code_file)
     data = data.fillna('')
@@ -267,6 +267,33 @@ def get_upload_df(access_code_file):
     df["access_code"] = df["access_code"].str[1:]
     df["phone_number"] = df["phone_number"].str[1:]
     return data
+'''
+def get_upload_df(access_code_file):
+    data = pd.read_csv(access_code_file)
+    data = data.fillna('')
+
+    # Function to remove leading alphabet if present for string columns
+    #here id is worker_id
+    def remove_leading_alpha(value):
+        if isinstance(value, str) and value and value[0].isalpha():
+            return value[1:]
+        return value
+
+    # Process 'id' column as string without decimal and leading alphabet
+    if 'id' in data.columns:
+        data['id'] = data['id'].astype(str).apply(remove_leading_alpha).str.split('.').str[0]
+    
+    # Process 'access_code' column
+    if 'access_code' in data.columns:
+        data['access_code'] = data['access_code'].apply(remove_leading_alpha).astype(str)
+    
+    # Process 'phone_number' column if it exists
+    if 'phone_number' in data.columns:
+        data['phone_number'] = data['phone_number'].apply(remove_leading_alpha).astype(str)
+
+    return data
+
+
 
 
 def upload_access_code_metadata_from_file(

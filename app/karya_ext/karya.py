@@ -1441,8 +1441,8 @@ def update_speaker_ids():
 @login_required
 def karyaaudiobrowse():
     try:
-        projects, userprojects, transcriptions, accesscodedetails = getdbcollections.getdbcollections(
-            mongo, 'projects', 'userprojects', 'transcriptions', 'accesscodedetails')
+        projects, userprojects, transcriptions, accesscodedetails, fs_files, fs_chunks = getdbcollections.getdbcollections(
+            mongo, 'projects', 'userprojects', 'transcriptions', 'accesscodedetails', 'fs.files', 'fs.chunks')
         current_username = getcurrentusername.getcurrentusername()
         activeprojectname = getactiveprojectname.getactiveprojectname(
             current_username, userprojects)
@@ -1484,6 +1484,23 @@ def karyaaudiobrowse():
                     transcription["accesscode"] = access_code
                     print("access_code : ", access_code)
         print(100*"#", "\n", data)
+
+        #################################################################
+        ########################################################################      
+        print('speaker_id : ', speaker_id)
+        print(100*"#", "\n")
+        audio_filenames = [item['audioFilename'] for item in data[speaker_id]]
+        print(audio_filenames)
+        for audio_filename in audio_filenames:
+            files = fs_files.find({"filename": audio_filename}, {"_id": 1})
+            for file in files: 
+                print('files: ',file)
+                file_chunk = fs_chunks.find_one({"files_id": file['_id']}, {"_id": 0, "data":1} )
+        ########################################################################  
+        ########################################################################      
+    
+
+
 
     except Exception as e:
         logger.exception(e)
