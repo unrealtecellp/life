@@ -1,5 +1,5 @@
 """Module containing the routes for the models part of the LiFe."""
-from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
+from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify, send_file
 from flask_login import current_user, login_required, login_user, logout_user
 from app.controller import (
     getdbcollections,
@@ -16,6 +16,10 @@ from app.lifemodels.controller import (
 )
 
 from app import mongo
+import pandas as pd
+import io
+from datetime import datetime
+import re
 
 logger = life_logging.get_logger()
 
@@ -61,19 +65,89 @@ def syncExistingModels():
 @lifemodels.route('/getModelList', methods=['GET', 'POST'])
 @login_required
 def getModelList():
-    userprojects, projectsform, models, languages, app_config = getdbcollections.getdbcollections(
-        mongo, 'userprojects', 'projectsform', 'models', 'languages', 'lifeappconfigs')
-    current_username = getcurrentusername.getcurrentusername()
-    logger.debug('USERNAME: %s', current_username)
-    # usertype = userdetails.get_user_type(
-    #     userlogin, current_username)
-    # logger.debug('User Type: %s', usertype)
-    logger.debug('Request method: %s', request.method)
-    activeprojectname = getactiveprojectname.getactiveprojectname(current_username, userprojects)
-    language_scripts = projectDetails.get_audio_language_scripts(projectsform, activeprojectname)
-    logger.debug('Language Scripts: %s', language_scripts)
-    featured_authors = modelManager.get_featured_authors(app_config, current_username)
-    # models = modelManager.get_model_list(models, languages, featured_authors, language_scripts['language'])
-    if request.method == 'POST':
-        models = modelManager.get_model_list(models, languages, featured_authors, language_scripts['language'])
-    return jsonify({'models': models, 'scripts': language_scripts['scripts']})
+    try:
+        userprojects, projectsform, models, languages, app_config = getdbcollections.getdbcollections(
+            mongo, 'userprojects', 'projectsform', 'models', 'languages', 'lifeappconfigs')
+        current_username = getcurrentusername.getcurrentusername()
+        logger.debug('USERNAME: %s', current_username)
+        # usertype = userdetails.get_user_type(
+        #     userlogin, current_username)
+        # logger.debug('User Type: %s', usertype)
+        logger.debug('Request method: %s', request.method)
+        activeprojectname = getactiveprojectname.getactiveprojectname(current_username, userprojects)
+        language_scripts = projectDetails.get_audio_language_scripts(projectsform, activeprojectname)
+        logger.debug('Language Scripts: %s', language_scripts)
+        featured_authors = modelManager.get_featured_authors(app_config, current_username)
+        # models = modelManager.get_model_list(models, languages, featured_authors, language_scripts['language'])
+        if request.method == 'POST':
+            models = modelManager.get_model_list(models, languages, featured_authors, language_scripts['language'])
+        return jsonify({'models': models, 'scripts': language_scripts['scripts']})
+    except:
+        logger.exception("")
+
+
+
+@lifemodels.route('/models_playground', methods=['GET', 'POST'])
+def models_playground():
+    """_summary_
+
+    Returns:
+        _type_: _description_
+    """
+    models, languages = getdbcollections.getdbcollections(
+            mongo, 'models', 'languages')
+    model_list = modelManager.get_model_list(models, languages)
+    logger.debug(model_list)
+
+    if (request.method == 'POST'):
+        try:
+            data = dict(request.form.lists())
+            logger.debug("Form data %s", data)
+            selected_model = data['modelId'][0]
+            if ('myModelPlaygroundFileCheckbox' in data):
+                input_type = 'file'
+                input_data = request.files.to_dict()                
+                file_name = input_data['myModelPlaygroundFile'].filename
+                logger.debug('%s', file_name)
+                input_data = pd.read_csv(io.BytesIO(input_data['myModelPlaygroundFile'].read()),
+                                         header=None,
+                                         dtype=str)
+                input_data = input_data.iloc[:, 0].to_list()
+            else:
+                input_type = 'text'
+                file_name = '.csv'
+                input_data = data['myModelPlaygroundTextArea'][0].strip().split('\r\n')
+                input_data = [x for x in input_data if x != '']
+            logger.debug('%s, %s, %s', selected_model, input_type, input_data)
+
+            # create file for prediction
+            prediction_df = pd.DataFrame(columns=['Text', 'labels'])
+            prediction_df['Text'] = input_data
+            prediction_df['labels'] = ''
+
+            logger.debug(prediction_df)
+            
+            timestamp = '_' + re.sub(r'[-: \.]', '', str(datetime.now())) + '_prediction.csv'
+            download_prediction_filename = file_name.replace('.csv', timestamp)
+            download_prediction_filename_zip = download_prediction_filename.replace('.csv', '.zip')
+            logger.debug('%s, %s', download_prediction_filename, download_prediction_filename_zip)
+            
+            compression_opts = dict(method='zip', archive_name=download_prediction_filename)
+
+            csv_buffer = io.BytesIO()
+            prediction_df.to_csv(csv_buffer, 
+                                    index=False,
+                                    compression=compression_opts)
+            csv_buffer.seek(0)
+
+            return send_file(csv_buffer,
+                             mimetype='application/zip',
+                             download_name=download_prediction_filename_zip,
+                             as_attachment=True)
+        except Exception as e:
+            flash('Wrong file format!')
+            logger.exception("")
+        return redirect(url_for('lifemodels.models_playground'))
+
+    return render_template("lifemodelsplayground.html",
+                           models=model_list)

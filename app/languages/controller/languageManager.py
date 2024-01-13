@@ -445,7 +445,7 @@ def get_models_of_language(languages, lang_name, task_name='asr'):
                                             'codeISO6393': 1,
                                             'languageNameISO639': 1,
                                             '_id': 0})
-    logger.debug ('Lang name, %s, models %s', lang_name, model_info)
+    # logger.debug ('Lang name, %s, models %s', lang_name, model_info)
     if not model_info is None:
         all_model_details = model_info.get('models', {})
         task_model_details = all_model_details.get(task_name, [])
