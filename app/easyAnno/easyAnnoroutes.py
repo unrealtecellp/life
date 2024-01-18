@@ -2661,8 +2661,8 @@ def downloadoneuserstats(username):
             user_updates_list = []
             
             projectname = proj_detail["projectname"]
-            logger.debug('projectname: %s', projectname)
-            logger.debug('user_updates_list: %s', pformat(user_updates_list))
+            # logger.debug('projectname: %s', projectname)
+            # logger.debug('user_updates_list: %s', pformat(user_updates_list))
             # print(proj_detail)
             log += f"{'-'*80}\n"
             # log += f'Project Name: {projectname}, Shared With: {str(proj_detail["sharedwith"])},  Shared with {username}: {str(username in proj_detail["sharedwith"])}\n'
@@ -2683,7 +2683,7 @@ def downloadoneuserstats(username):
                 log += f'{str(proj_count)}. {projectname}\n'
                 project_count_list.append(proj_count)
                 project_name_list.append(projectname)
-                logger.debug(log)
+                # logger.debug(log)
                 
                 if (proj_detail["projectType"] == 'text'):
                     text_data = proj_detail["textData"]
@@ -2704,57 +2704,16 @@ def downloadoneuserstats(username):
                         if (annotated_text != None and username in annotated_text):
                             if (username in annotated_text['allUpdates']):
                                 user_updates_list.append(annotated_text['allUpdates'][username][-1])
-                            # annotated_text[username]["textId"] = annotated_text["textId"]
-                            # # logger.debug(annotated_text)
-                            # if ('annotationGrid' in annotated_text[username]):
-                            #     annotated_text[username].update(annotated_text[username]['annotationGrid'])
-                            # if ('textMetadata' in annotated_text):
-                            #     for textMetadata_key, textMetadata_value in annotated_text['textMetadata'].items():
-                            #         annotated_text[username][textMetadata_key] = textMetadata_value
-                            # else:
-                            #     annotated_text[username]["ID"] = annotated_text["ID"]
-                            # # logger.debug(annotated_text)
-                            # annotated_text[username]["Text"] = annotated_text["Text"]
-                            # annotated_text =  annotated_text[username]
-                            # logger.debug(annotated_text)
-                            # get annotated comments count
                             annotatedFLAG = annotated_text[username]["annotatedFLAG"]
                             if (annotatedFLAG == 1):
                                 annotated_comments += 1
-                            # annotated_text =  annotated_text[username]
-                            # logger.debug(annotated_text)
-
-                            # for category in list(tag_set.keys()):
-                            #     if (category in annotated_text):
-                            #         if (isinstance(annotated_text[category], list)):
-                            #             annotated_text[category] = ','.join(annotated_text[category])
-                            #     else:
-                            #         annotated_text[category] = ''
-                            # logger.debug(annotated_text)
-                        # else:
-                        #     text_id = annotated_text["textId"]
-                        #     annotated_text = {}
-                        #     annotated_text["textId"] = text_id
-                        #     annotated_text["ID"]  = text_data[text_id]["ID"]
-                        #     annotated_text["Text"]  = text_data[text_id]["Text"]
-                        #     for category in list(tag_set.keys()):
-                        #         annotated_text[category] = ''
-                        #     annotated_text["Duplicate"] = ''
-                        #     annotated_text["annotatorComment"] = ''
-                        # print(annotated_text)
-                        # annotated_text_df = pd.DataFrame.from_dict(annotated_text.items()).T
-                        # annotated_text_df.columns = annotated_text_df.iloc[0]
-                        # annotated_text_df = annotated_text_df[1:]
-                        # # print(annotated_text_df, '\n')
-                        # df = df.append(annotated_text_df, ignore_index=True)
-                    # print(df.columns)
                     remaining_comments = total_comments - annotated_comments
                     total_comments_list.append(total_comments)
                     annotated_comments_list.append(annotated_comments)
                     remaining_comments_list.append(remaining_comments)
-                    logger.debug('user_updates_list: %s', pformat(user_updates_list))
+                    # logger.debug('user_updates_list: %s', pformat(user_updates_list))
                     all_updates_list.append(sorted(user_updates_list, reverse=True)[:5])
-                    logger.debug('all_updates_list: %s', pformat(all_updates_list))
+                    # logger.debug('all_updates_list: %s', pformat(all_updates_list))
                 elif (proj_detail["projectType"] == 'image'):
                     # continue
                     image_data = proj_detail["imageFiles"]
@@ -2801,8 +2760,6 @@ def downloadoneuserstats(username):
                     continue
                 # annotated_file_path = basedir+'/download/'
                 log += f'Total Comments: {total_comments}\nAnnotated Comments: {annotated_comments}\nRemaining Comments: {remaining_comments}\n'
-                # if (remaining_comments == 0):
-                # df.to_csv(annotated_file_path+projectname+'.csv', sep='\t', index=False)
 
         user_stats_df = pd.DataFrame(columns=['Project Number',
                                               'Project Name',
@@ -2810,6 +2767,12 @@ def downloadoneuserstats(username):
                                               'Annotated Data',
                                               'Remaining Data',
                                               'Last 5 Updation Times'])
+        project_count_list.append('TOTAL')
+        project_name_list.append('-')
+        total_comments_list.append(sum(total_comments_list))
+        remaining_comments_list.append(sum(remaining_comments_list))
+        annotated_comments_list.append(sum(annotated_comments_list))
+        all_updates_list.append('-')
         user_stats_df['Project Number'] = project_count_list
         user_stats_df['Project Name'] = project_name_list
         user_stats_df['Total Data'] = total_comments_list
@@ -2817,45 +2780,23 @@ def downloadoneuserstats(username):
         user_stats_df['Remaining Data'] = remaining_comments_list
         user_stats_df['Last 5 Updation Times'] = all_updates_list
 
-        logger.debug(user_stats_df)
+        # logger.debug(user_stats_df)
         
         download_user_stats_filename = re.sub(r'[-: \.]', '', str(datetime.now())) + '_' +username + '_stats.csv'
         download_user_stats_filename_zip = download_user_stats_filename.replace('.csv', '.zip')
-        logger.debug('%s, %s', download_user_stats_filename, download_user_stats_filename_zip)
+        # logger.debug('%s, %s', download_user_stats_filename, download_user_stats_filename_zip)
         
         compression_opts = dict(method='zip', archive_name=download_user_stats_filename)
 
         csv_buffer = io.BytesIO()
         user_stats_df.to_csv(csv_buffer, 
-                                index=False,
-                                compression=compression_opts)
+                                index=False)
         csv_buffer.seek(0)
 
         return send_file(csv_buffer,
-                            mimetype='application/zip',
-                            download_name=download_user_stats_filename_zip,
+                            mimetype='text/csv',
+                            download_name=download_user_stats_filename,
                             as_attachment=True)
-        # with open(basedir+'/download/'+username+'_stats.txt', 'w') as logFile:
-        #     logFile.write(log)
-
-        # files = glob.glob(basedir+'/download/*')
-        
-        # if (os.path.exists('download.zip')):
-        #     os.remove('download.zip')
-
-        # with ZipFile('download.zip', 'w') as zip:
-        #     # writing each file one by one 
-        #     for file in sorted(files): 
-        #         # zip.write(file, os.path.join(activeprojectname, os.path.basename(file)))
-        #         zip.write(file, os.path.basename(file))
-        # print('All files zipped successfully!')
-
-        # # deleting all files from storage
-        # for f in files:
-        #     # print(f)
-        #     os.remove(f)
-        
-        # return send_file('../download.zip', as_attachment=True)
     else:
         print('You are not ritesh or ComMA :(', current_user.username)
         return redirect(url_for('easyAnno.home'))
