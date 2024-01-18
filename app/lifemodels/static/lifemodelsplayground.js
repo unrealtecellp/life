@@ -1,4 +1,5 @@
 function modelsList(models) {
+    // console.log(models);
     // models = ['123'];
     $('#myModelPlaygroundListSelect2').select2({
         // tags: true,
@@ -6,6 +7,8 @@ function modelsList(models) {
         data: models,
         // allowClear: true
     });
+    $('#myModelPlaygroundListSelect2').val(models[models.length-1]); // Select the option with a value of '1'
+    $('#myModelPlaygroundListSelect2').trigger('change'); // Notify any JS components that the value changed
 }
 
 function uploadFile(checkboxEle) {
