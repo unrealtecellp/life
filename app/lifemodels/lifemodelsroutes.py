@@ -12,7 +12,8 @@ from app.controller import (
 
 from app.lifemodels.controller import (
     huggingFaceUtils,
-    modelManager
+    modelManager,
+    modelPrediction
 )
 
 from app import mongo
@@ -20,10 +21,13 @@ import pandas as pd
 import io
 from datetime import datetime
 import re
+import os
 
 logger = life_logging.get_logger()
 
 lifemodels = Blueprint('lifemodels', __name__, template_folder='templates', static_folder='static')
+
+basedir = os.path.abspath(os.path.dirname(__file__))
 
 @lifemodels.route('/', methods=['GET', 'POST'])
 @lifemodels.route('/home', methods=['GET', 'POST'])
@@ -99,6 +103,14 @@ def models_playground():
     model_list = modelManager.get_model_list(models, languages)
     logger.debug(model_list)
 
+    model_path = os.path.join('/'.join(basedir.split('/')[:-2]), 'trainedModels')
+
+    logger.debug(basedir)
+    logger.debug((model_path))
+
+    model_list.extend(os.listdir(model_path))
+    logger.debug(model_list)
+
     if (request.method == 'POST'):
         try:
             data = dict(request.form.lists())
@@ -118,12 +130,17 @@ def models_playground():
                 file_name = '.csv'
                 input_data = data['myModelPlaygroundTextArea'][0].strip().split('\r\n')
                 input_data = [x for x in input_data if x != '']
-            logger.debug('%s, %s, %s', selected_model, input_type, input_data)
+            input_data = input_data[:50]
+            logger.debug('%s, %s, %s, %s', selected_model, input_type, input_data, len(input_data))
 
             # create file for prediction
             prediction_df = pd.DataFrame(columns=['Text', 'labels'])
             prediction_df['Text'] = input_data
-            prediction_df['labels'] = ''
+            selected_model_path = os.path.join(model_path, selected_model)
+            model_type = selected_model.split('_')[-1]
+            prediction_df['labels'] = modelPrediction.model_prediction(model_type,
+                                                                       selected_model_path,
+                                                                       input_data)
 
             logger.debug(prediction_df)
             

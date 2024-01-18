@@ -1,5 +1,5 @@
 function modelsList(models) {
-    models = ['123']
+    // models = ['123'];
     $('#myModelPlaygroundListSelect2').select2({
         // tags: true,
         placeholder: 'Select Model Name',
