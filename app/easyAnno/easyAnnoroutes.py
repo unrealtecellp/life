@@ -2661,7 +2661,8 @@ def downloadoneuserstats(username):
             user_updates_list = []
             
             projectname = proj_detail["projectname"]
-            print(projectname)
+            logger.debug('projectname: %s', projectname)
+            logger.debug('user_updates_list: %s', pformat(user_updates_list))
             # print(proj_detail)
             log += f"{'-'*80}\n"
             # log += f'Project Name: {projectname}, Shared With: {str(proj_detail["sharedwith"])},  Shared with {username}: {str(username in proj_detail["sharedwith"])}\n'
@@ -2682,7 +2683,7 @@ def downloadoneuserstats(username):
                 log += f'{str(proj_count)}. {projectname}\n'
                 project_count_list.append(proj_count)
                 project_name_list.append(projectname)
-                print(log)
+                logger.debug(log)
                 
                 if (proj_detail["projectType"] == 'text'):
                     text_data = proj_detail["textData"]
@@ -2699,7 +2700,7 @@ def downloadoneuserstats(username):
                     total_comments = len(text_data)
                     annotated_comments = 0
                     for annotated_text in get_file_data(mongo.db, projectname, project_type, username):
-                        logger.debug(annotated_text)
+                        # logger.debug(annotated_text)
                         if (annotated_text != None and username in annotated_text):
                             if (username in annotated_text['allUpdates']):
                                 user_updates_list.append(annotated_text['allUpdates'][username][-1])
@@ -2751,6 +2752,7 @@ def downloadoneuserstats(username):
                     total_comments_list.append(total_comments)
                     annotated_comments_list.append(annotated_comments)
                     remaining_comments_list.append(remaining_comments)
+                    logger.debug('user_updates_list: %s', pformat(user_updates_list))
                     all_updates_list.append(sorted(user_updates_list, reverse=True)[:5])
                     logger.debug('all_updates_list: %s', pformat(all_updates_list))
                 elif (proj_detail["projectType"] == 'image'):
