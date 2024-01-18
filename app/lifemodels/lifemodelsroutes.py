@@ -111,6 +111,11 @@ def models_playground():
     model_list.extend(os.listdir(model_path))
     logger.debug(model_list)
 
+    model_type_mapping = {
+        "ai4bharat": "albert",
+        "distilbert": "distilbert"
+    }
+
     if (request.method == 'POST'):
         try:
             data = dict(request.form.lists())
@@ -137,7 +142,7 @@ def models_playground():
             prediction_df = pd.DataFrame(columns=['Text', 'labels'])
             prediction_df['Text'] = input_data
             selected_model_path = os.path.join(model_path, selected_model)
-            model_type = selected_model.split('_')[-1]
+            model_type = model_type_mapping[selected_model.split('_')[-1]]
             prediction_df['labels'] = modelPrediction.model_prediction(model_type,
                                                                        selected_model_path,
                                                                        input_data)
