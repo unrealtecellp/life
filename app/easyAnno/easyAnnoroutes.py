@@ -2634,6 +2634,174 @@ def downloadoneuserallannotatedfiles(username):
         print('You are not ritesh or ComMA :(', current_user.username)
         return redirect(url_for('easyAnno.home'))
 
+@easyAnno.route('/downloadoneuserstats/<username>')
+def downloadoneuserstats(username):
+    if (current_user.username == 'ritesh' or
+        current_user.username == 'ComMA' or
+        current_user.username == 'siddharth'):
+        log = ''
+        log += f"{username}\n"
+        projects = mongo.db.projects              # collection of users and their respective projects
+    
+        proj_count = 0
+
+        projects_detail = projects.find({"projectType": "text"}, \
+                        {"_id": 0, "projectname": 1, "projectType": 1, "sharedwith": 1, "sharedWith": 1,\
+                            'tagSet': 1, 'textData': 1, 'imageFiles': 1})
+
+        project_count_list = []
+        project_name_list = []
+        total_comments_list = []
+        annotated_comments_list = []
+        remaining_comments_list = []
+        all_updates_list = []
+
+        for proj_detail in projects_detail:
+
+            user_updates_list = []
+            
+            projectname = proj_detail["projectname"]
+            # logger.debug('projectname: %s', projectname)
+            # logger.debug('user_updates_list: %s', pformat(user_updates_list))
+            # print(proj_detail)
+            log += f"{'-'*80}\n"
+            # log += f'Project Name: {projectname}, Shared With: {str(proj_detail["sharedwith"])},  Shared with {username}: {str(username in proj_detail["sharedwith"])}\n'
+            # print(os.listdir('download'))
+            if projectname+'.csv' in os.listdir(basedir+'/download'): 
+                log += f'Already downloaded :)\n'
+                continue
+            
+            if (('sharedwith' in proj_detail and
+                 username in proj_detail["sharedwith"]) or
+                ('sharedWith' in proj_detail and
+                 username in proj_detail["sharedWith"]) and
+                'projectType' in proj_detail):
+                # print(proj_count) 
+                project_type = proj_detail["projectType"]
+                log += f'{proj_detail["projectType"]}\n'
+                proj_count += 1
+                log += f'{str(proj_count)}. {projectname}\n'
+                project_count_list.append(proj_count)
+                project_name_list.append(projectname)
+                # logger.debug(log)
+                
+                if (proj_detail["projectType"] == 'text'):
+                    text_data = proj_detail["textData"]
+                    tag_set = proj_detail["tagSet"]
+                    df_dict = {"textId": [], "ID": [], "Text": []}
+                    for category in list(tag_set.keys()):
+                        df_dict[category] = []
+                    df_dict["Duplicate"] = []
+                    df_dict["annotatorComment"] = []    
+                    # print(df)
+
+                    df = pd.DataFrame.from_dict(df_dict)
+                    # print(df)
+                    total_comments = len(text_data)
+                    annotated_comments = 0
+                    for annotated_text in get_file_data(mongo.db, projectname, project_type, username):
+                        # logger.debug(annotated_text)
+                        if (annotated_text != None and username in annotated_text):
+                            if (username in annotated_text['allUpdates']):
+                                user_updates_list.append(annotated_text['allUpdates'][username][-1])
+                            annotatedFLAG = annotated_text[username]["annotatedFLAG"]
+                            if (annotatedFLAG == 1):
+                                annotated_comments += 1
+                    remaining_comments = total_comments - annotated_comments
+                    total_comments_list.append(total_comments)
+                    annotated_comments_list.append(annotated_comments)
+                    remaining_comments_list.append(remaining_comments)
+                    # logger.debug('user_updates_list: %s', pformat(user_updates_list))
+                    all_updates_list.append(sorted(user_updates_list, reverse=True)[:5])
+                    # logger.debug('all_updates_list: %s', pformat(all_updates_list))
+                elif (proj_detail["projectType"] == 'image'):
+                    # continue
+                    image_data = proj_detail["imageFiles"]
+                    tag_set = proj_detail["tagSet"]
+                    df_dict = {"imageId": [], "fileName": []}
+                    for category in list(tag_set.keys()):
+                        df_dict[category] = []
+                    df_dict["Duplicate"] = []
+                    df_dict["annotatorComment"] = []    
+                    # print(df)
+
+                    df = pd.DataFrame.from_dict(df_dict)
+                    # print(df)
+                    total_comments = len(image_data)
+                    annotated_comments = 0
+                    for annotated_image in get_file_data(mongo.db, projectname, project_type, username):
+                        if (annotated_image != None and username in annotated_image):
+                            annotated_image[username]["imageId"] = annotated_image["imageId"]
+                            annotated_image[username]["fileName"] = annotated_image["filename"]
+                            # get annotated comments count
+                            annotatedFLAG = annotated_image[username]["annotatedFLAG"]
+                            if (annotatedFLAG == 1):
+                                annotated_comments += 1
+                            annotated_image =  annotated_image[username] 
+                        else:
+                            for category in list(tag_set.keys()):
+                                annotated_image[category] = ''
+                            annotated_image["Duplicate"] = ''
+                            annotated_image["annotatorComment"] = ''
+                        # print(annotated_image)
+                        annotated_image_df = pd.DataFrame.from_dict(annotated_image.items()).T
+                        annotated_image_df.columns = annotated_image_df.iloc[0]
+                        annotated_image_df = annotated_image_df[1:]
+                        # print(annotated_image_df, '\n')
+                        df = df.append(annotated_image_df, ignore_index=True)
+                    # print(df.columns)
+                        # # retrieve images from the database
+                        # imageFile = fetch_image_files(image_id)
+                        # filename = imageFile["filename"]
+                        # imageBytes = imageFile["imageBytes"]
+                        # open(basedir+'/download/'+filename, 'wb').write(imageBytes)
+                    remaining_comments = total_comments - annotated_comments
+                else:
+                    continue
+                # annotated_file_path = basedir+'/download/'
+                log += f'Total Comments: {total_comments}\nAnnotated Comments: {annotated_comments}\nRemaining Comments: {remaining_comments}\n'
+
+        user_stats_df = pd.DataFrame(columns=['Project Number',
+                                              'Project Name',
+                                              'Total Data',
+                                              'Annotated Data',
+                                              'Remaining Data',
+                                              'Last 5 Updation Times'])
+        project_count_list.append('TOTAL')
+        project_name_list.append('-')
+        total_comments_list.append(sum(total_comments_list))
+        remaining_comments_list.append(sum(remaining_comments_list))
+        annotated_comments_list.append(sum(annotated_comments_list))
+        all_updates_list.append('-')
+        user_stats_df['Project Number'] = project_count_list
+        user_stats_df['Project Name'] = project_name_list
+        user_stats_df['Total Data'] = total_comments_list
+        user_stats_df['Annotated Data'] = annotated_comments_list
+        user_stats_df['Remaining Data'] = remaining_comments_list
+        user_stats_df['Last 5 Updation Times'] = all_updates_list
+
+        # logger.debug(user_stats_df)
+        
+        download_user_stats_filename = re.sub(r'[-: \.]', '', str(datetime.now())) + '_' +username + '_stats.csv'
+        download_user_stats_filename_zip = download_user_stats_filename.replace('.csv', '.zip')
+        # logger.debug('%s, %s', download_user_stats_filename, download_user_stats_filename_zip)
+        
+        compression_opts = dict(method='zip', archive_name=download_user_stats_filename)
+
+        csv_buffer = io.BytesIO()
+        user_stats_df.to_csv(csv_buffer, 
+                                index=False)
+        csv_buffer.seek(0)
+
+        return send_file(csv_buffer,
+                            mimetype='text/csv',
+                            download_name=download_user_stats_filename,
+                            as_attachment=True)
+    else:
+        print('You are not ritesh or ComMA :(', current_user.username)
+        return redirect(url_for('easyAnno.home'))
+
+
 def get_file_data(db, file_name, file_type, username):
     '''
     get all the text and their detail present in the file
@@ -2648,6 +2816,7 @@ def get_file_data(db, file_name, file_type, username):
                          "ID": 1,
                          "textMetadata": 1,
                          "Text": 1,
+                         "allUpdates": 1,
                          username: 1 })
 
     elif (file_type == 'image'):
