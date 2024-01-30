@@ -1,0 +1,59 @@
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Add/ Update User Details </title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
+    <script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css" />
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.1/bootstrap3-editable/css/bootstrap-editable.css"
+        rel="stylesheet">
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.1/bootstrap3-editable/js/bootstrap-editable.js"></script>
+
+    <style>
+        .divtextuserdetails {
+            border: ridge 1px;
+            padding: 5px;
+            width: 20em;
+            min-height: 1em;
+            overflow: auto;
+        }
+    </style>
+
+</head>
+{% extends "manageUsersLinks.html" %}
+
+{% block styles %}
+{{super()}}
+{% endblock %}
+
+{% block app_content %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+
+<div id="formdisplay" style="display: block;">
+
+    <form role="form" method="post" action="{{url_for('regeneratelanguages')}}">
+        <!-- <div id="userdisplay" class="form-group" style="display: none;"> -->
+            <div class="form-group">
+                <button type="submit" id="regenlangsid" class="btn btn-lg btn-danger">Regenerate Languages Database</button>
+                <!-- <button type="submit" id="synchfmodels" class="btn btn-lg btn-success pull-right"
+                            onclick="window.location.href='{{ url_for('lifemodels.syncExistingModels') }}';">Sync HF Models</button> -->
+            </div>
+    </form>
+</div>
+
+
+{% endblock %}
+{% block scripts %}
+{{super()}}
+<script src="{{url_for('.static', filename='appemailsetup.js')}}"></script>
+
+{% endblock %}
+
+</html>

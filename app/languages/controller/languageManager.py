@@ -52,50 +52,55 @@ lang_list = [
 ]
 
 lang_list2 = [
-{"id": "", "text": ""},
-{"id": "Assamese", "text": "Assamese"},
-{"id": "Awadhi", "text": "Awadhi"},
-{"id": "Bajjika", "text": "Bajjika"},
-{"id": "Bangla", "text": "Bangla"},
-{"id": "Bhojpuri", "text": "Bhojpuri"},
-{"id": "Bodo", "text": "Bodo"},
-{"id": "Braj", "text": "Braj"},
-{"id": "Bundeli", "text": "Bundeli"},
-{"id": "Gujarati", "text": "Gujarati"},
-{"id": "Haryanvi", "text": "Haryanvi"},
-{"id": "Hindi", "text": "Hindi"},
-{"id": "Kannada", "text": "Kannada"},
-{"id": "Khortha", "text": "Khortha"},
-{"id": "Konkani", "text": "Konkani"},
-{"id": "Magahi", "text": "Magahi"},
-{"id": "Maithili", "text": "Maithili"},
-{"id": "Malayalam", "text": "Malayalam"},
-{"id": "Marathi", "text": "Marathi"},
-{"id": "Meitei", "text": "Meitei"},
-{"id": "Nepali", "text": "Nepali"},
-{"id": "Odia", "text": "Odia"},
-{"id": "Punjabi", "text": "Punjabi"},
-{"id": "Santali", "text": "Santali"},
-{"id": "Tamil", "text": "Tamil"},
-{"id": "Telugu", "text": "Telugu"},
-{"id": "Sambalpuri", "text": "Sambalpuri"},
-{"id": "Nagamese", "text": "Nagamese"},
-{"id": "Sadri", "text": "Sadri"},
-{"id": "Kannauji", "text": "Kannauji"},
-{"id": "Nagamese", "text": "Nagamese"}
+    {"id": "", "text": ""},
+    {"id": "Assamese", "text": "Assamese"},
+    {"id": "Awadhi", "text": "Awadhi"},
+    {"id": "Bajjika", "text": "Bajjika"},
+    {"id": "Bangla", "text": "Bangla"},
+    {"id": "Bhojpuri", "text": "Bhojpuri"},
+    {"id": "Bodo", "text": "Bodo"},
+    {"id": "Braj", "text": "Braj"},
+    {"id": "Bundeli", "text": "Bundeli"},
+    {"id": "Gujarati", "text": "Gujarati"},
+    {"id": "Haryanvi", "text": "Haryanvi"},
+    {"id": "Hindi", "text": "Hindi"},
+    {"id": "Kannada", "text": "Kannada"},
+    {"id": "Khortha", "text": "Khortha"},
+    {"id": "Konkani", "text": "Konkani"},
+    {"id": "Magahi", "text": "Magahi"},
+    {"id": "Maithili", "text": "Maithili"},
+    {"id": "Malayalam", "text": "Malayalam"},
+    {"id": "Marathi", "text": "Marathi"},
+    {"id": "Meitei", "text": "Meitei"},
+    {"id": "Nepali", "text": "Nepali"},
+    {"id": "Odia", "text": "Odia"},
+    {"id": "Punjabi", "text": "Punjabi"},
+    {"id": "Santali", "text": "Santali"},
+    {"id": "Tamil", "text": "Tamil"},
+    {"id": "Telugu", "text": "Telugu"},
+    {"id": "Sambalpuri", "text": "Sambalpuri"},
+    {"id": "Nagamese", "text": "Nagamese"},
+    {"id": "Sadri", "text": "Sadri"},
+    {"id": "Kannauji", "text": "Kannauji"},
+    {"id": "Nagamese", "text": "Nagamese"}
 ]
 
 lang_list.extend(lang_list2)
 
-mapping = {'Nagamese': 'nag', 'Kannauji': 'bjj', 'Bodo': 'brx', 'Punjabi': 'pan', 'Konkani': 'gom', 'Khortha': 'mag'}
+mapping = {'Nagamese': 'nag', 'Kannauji': 'bjj', 'Bodo': 'brx',
+           'Punjabi': 'pan', 'Konkani': 'gom', 'Khortha': 'mag'}
 
 logger = life_logging.get_logger()
 
 
-def generate_languages_database():
+def generate_languages_database(regenerate=False):
     try:
         mongo.db.validate_collection("languages")
         logger.info('language Database found!')
+        if regenerate:
+            mongo.db.drop_collection("languages")
+            langs_collection = mongo.db.languages
+            update_all_available_databases(langs_collection)
     except Exception as e:
         logger.info('Creating Languages Database %s', e)
         langs_collection = mongo.db.languages
@@ -117,45 +122,50 @@ def update_all_available_databases(langs_collection):
     # other_data = {}
     lang_databases_path = get_lang_database_path()
 
-    
     iso_info = get_iso639_info(langs_collection, lang_databases_path)
     # iso_data = iso_info.to_dict(orient="records")
-    
+
     data_info = get_langtags_info(
         langs_collection, lang_databases_path, iso_info)
     # other_data['langtag'] = langtags_info
     # data_info = merge_iso_with_others(iso_data, other_data)
     logger.debug('Complete entries %s', data_info['bra'])
 
-    data_info = get_glottolog_info(langs_collection, lang_databases_path, data_info)
+    data_info = get_glottolog_info(
+        langs_collection, lang_databases_path, data_info)
     # other_data.append(glottlog_info)
 
     logger.debug('Complete entry braj %s', data_info['braj1242'])
-    varieties = data_info['braj1242']['glottologVarieties']
-    for i, variety in enumerate(varieties):
-        logger.debug('Complete entry braj variety %s, %s, %s', i, variety, data_info[variety])
+    # varieties = data_info['braj1242']['glottologVarieties']
+    # for i, variety in enumerate(varieties):
+    #     logger.debug('Complete entry braj variety %s, %s, %s',
+    #                  i, variety, data_info[variety])
 
     final_data = list(data_info.values())
-    all_lang_names = []
-    for data_entry in final_data:
-        lang_name = data_entry['glottologName']
-        all_lang_names.append(lang_name)
-    logger.debug ('All lang names %s, %s', all_lang_names[:20], len(all_lang_names))
 
-    for entry in lang_list:
-        current_lang_name = entry['text'].strip()
-        # logger.debug('testing for %s', current_lang_name)
-        if current_lang_name in all_lang_names:
-            pass
-            # logger.debug ('Lang name found %s, %s', current_lang_name, entry)
-        else:
-            logger.debug ('Lang name not found %s, %s', current_lang_name, entry)
+    # all_lang_names = []
+    # for data_entry in final_data:
+    #     lang_name = data_entry['glottologName']
+    #     all_lang_names.append(lang_name)
+    # logger.debug('All lang names %s, %s',
+    #              all_lang_names[:20], len(all_lang_names))
+
+    # for entry in lang_list:
+    #     current_lang_name = entry['text'].strip()
+    #     # logger.debug('testing for %s', current_lang_name)
+    #     if current_lang_name in all_lang_names:
+    #         pass
+    #         # logger.debug ('Lang name found %s, %s', current_lang_name, entry)
+    #     else:
+    #         logger.debug('Lang name not found %s, %s',
+    #                      current_lang_name, entry)
 
     langs_collection.insert_many(final_data)
 
-    
+
 def update_original_lang_entry_with_variety_name(iso_code, key="glottologVarieties"):
     pass
+
 
 def merge_iso_with_others(iso_data, other_data):
     merged_entries = []
@@ -214,22 +224,22 @@ def get_iso639_info(langs_collection, dirpath):
     fname = 'iso-639-3.tab'
     fpath = os.path.join(dirpath, fname)
     isomap = {
-        "Id": "codeISO6393", 
-        "Part2B": "part2bISO639", 
+        "Id": "codeISO6393",
+        "Part2B": "part2bISO639",
         "Part2T": "part2tISO639",
-        "Part1": "part1ISO639", 
-        "Scope": "scopeISO639", 
-        "Language_Type": "languageTypeISO639", 
+        "Part1": "part1ISO639",
+        "Scope": "scopeISO639",
+        "Language_Type": "languageTypeISO639",
         "Ref_Name": "languageNameISO639"
-        }
+    }
     with open(fpath) as f_r:
         reader = csv.DictReader(f_r, delimiter='\t')
         for row in reader:
             # logger.debug ('Row %s', row)
             lang_id = row['Id']
-            iso_vals = {isomap.get(k, k):v for k, v in row.items()}
+            iso_vals = {isomap.get(k, k): v for k, v in row.items()}
             iso_vals.pop("Comment", "")
-            iso_data[lang_id] = iso_vals    
+            iso_data[lang_id] = iso_vals
 
     # lang_pd = pd.read_csv(fpath, sep='\t')
     # lang_pd = lang_pd.drop('Comment', axis=1)
@@ -275,10 +285,10 @@ def get_langtags_info(langs_collection, dirpath, iso_data):
             # logger.debug('Name %s Code %s', name, iso_code)
         else:
             logger.debug('Entry %s', entry)
-        
+
         iso_entry = iso_data.get(iso_code, {})
         # logger.debug('ISO Entry %s, %s', iso_code, iso_entry)
-        
+
         if len(iso_entry) == 0:
             iso_entry = get_blank_iso()
 
@@ -290,7 +300,7 @@ def get_langtags_info(langs_collection, dirpath, iso_data):
         langtag_entry.append(entry)
         # langtag_entry['langtag'] = langtag_entry
         if iso_code in iso_data:
-            iso_data[iso_code]['langtag']=langtag_entry
+            iso_data[iso_code]['langtag'] = langtag_entry
         else:
             iso_data[iso_code] = get_blank_iso()
             iso_data[iso_code]["codeISO6393"] = iso_code
@@ -317,46 +327,47 @@ def get_autotyp_info(langs_collection, dirpath):
 def get_grambank_info(langs_collection, dirpath):
     pass
 
+
 def get_blank_iso():
     iso_entry = {
-            "codeISO6393": '', 
-            "part2bISO639": '', 
-            "part2tISO639": '', 
-            "part1ISO639": '', 
-            "scopeISO639": '', 
-            "languageTypeISO639": '', 
-            "languageNameISO639": '',
-            "glottologLevel": '',
-            "glottologID": '',
-            "glottologName": '',
-            "glottologVarieties": [],
-            "glottolog": {},
-            "langtag": []
-        }
+        "codeISO6393": '',
+        "part2bISO639": '',
+        "part2tISO639": '',
+        "part1ISO639": '',
+        "scopeISO639": '',
+        "languageTypeISO639": '',
+        "languageNameISO639": '',
+        "glottologLevel": '',
+        "glottologID": '',
+        "glottologName": '',
+        "glottologVarieties": [],
+        "glottolog": {},
+        "langtag": []
+    }
     return iso_entry
+
 
 def get_glottolog_info(langs_collection, dirpath, iso_info):
     glottolog_data = {}
-    
+
     data_dir = 'glottolog'
     values_fname = 'values.csv'
     data_path = os.path.join(dirpath, data_dir)
     values_path = os.path.join(data_path, values_fname)
-    
+
     languages_data = get_cldf_csv_data(data_path)
     codes_data = get_cldf_csv_data(data_path, fname='codes.csv')
 
-    
     with open(values_path) as f_r:
         reader = csv.DictReader(f_r)
         for row in reader:
             parameter_code = row['Code_ID']
             parameter_details = codes_data.get(parameter_code, {})
-            
+
             parameter_id = row['Parameter_ID'].strip()
             parameter_value = row['Value'].strip()
 
-            classifications = {}            
+            classifications = {}
 
             if parameter_id == 'level':
                 lang_code = row['Language_ID']
@@ -371,26 +382,30 @@ def get_glottolog_info(langs_collection, dirpath, iso_info):
                     elif parameter_value == 'dialect':
                         language_id = languages_data[lang_code]['Language_ID']
                         iso_code = languages_data[language_id]['ISO639P3code']
-                        
+
                         if language_id in glottolog_data:
                             lang_entry = glottolog_data.get(language_id)
                             if 'glottologVarieties' in lang_entry:
-                                glottolog_data[language_id]['glottologVarieties'].append(lang_code)
+                                glottolog_data[language_id]['glottologVarieties'].append(
+                                    lang_code)
                             else:
-                                glottolog_data[language_id]['glottologVarieties'] = [lang_code]
+                                glottolog_data[language_id]['glottologVarieties'] = [
+                                    lang_code]
                         elif iso_code in iso_info:
                             lang_entry = iso_info.get(iso_code)
                             if 'glottologVarieties' in lang_entry:
-                                iso_info[iso_code]['glottologVarieties'].append(lang_code)
+                                iso_info[iso_code]['glottologVarieties'].append(
+                                    lang_code)
                             else:
-                                iso_info[iso_code]['glottologVarieties'] = [lang_code]
+                                iso_info[iso_code]['glottologVarieties'] = [
+                                    lang_code]
                         else:
                             lang_entry = get_blank_iso()
-                            glottolog_data[language_id]['glottologVarieties'].append(lang_code)
-
+                            glottolog_data[language_id]['glottologVarieties'].append(
+                                lang_code)
 
                     iso_entry = iso_info.get(iso_code, get_blank_iso())
-                    
+
                     if len(iso_entry) == 0:
                         iso_entry = get_blank_iso()
                     else:
@@ -414,24 +429,25 @@ def get_glottolog_info(langs_collection, dirpath, iso_info):
                     #     'Level_0': parameter_values[-1],
                     #     'Level_1': parameter_values[-2],
                     #     'Level_2': parameter_values[-3]
-                    # }    
-                
+                    # }
+
             iso_entry["glottolog"].update({
-                    parameter_id: {
-                        'ID': row['ID'],
-                        'Parameter_ID': parameter_id,
-                        'Value': parameter_value,
-                        'Classification': classifications,
-                        'Code_ID': parameter_details,
-                        'Comment': row['Comment'],
-                        'Source': row['Source'],
-                        'codeReference': row['codeReference']
-                    }
-                })
-            
+                parameter_id: {
+                    'ID': row['ID'],
+                    'Parameter_ID': parameter_id,
+                    'Value': parameter_value,
+                    'Classification': classifications,
+                    'Code_ID': parameter_details,
+                    'Comment': row['Comment'],
+                    'Source': row['Source'],
+                    'codeReference': row['codeReference']
+                }
+            })
+
             glottolog_data[lang_code] = iso_entry
 
     return glottolog_data
+
 
 def get_models_of_language(languages, lang_name, task_name='asr'):
     all_models = []
@@ -456,14 +472,15 @@ def get_models_of_language(languages, lang_name, task_name='asr'):
         lang_name = model_info.get('languageNameISO639', '')
     return {lang_code: all_models}, {lang_code: lang_name}
 
-def get_models_of_multiple_languages(languages, lang_names, task_name='asr'):
+
+def get_models_of_multiple_languages(languages, lang_names, task_name='automatic-speech-recognition'):
     all_models = {}
     all_langs = {}
     model_infos = languages.find({'codeISO6393': {'$in': lang_names}},
-                                            {'models.'+task_name: 1,
-                                            'codeISO6393': 1,
-                                            'languageNameISO639': 1,
-                                            '_id': 0})
+                                 {'models.'+task_name: 1,
+                                  'codeISO6393': 1,
+                                  'languageNameISO639': 1,
+                                  '_id': 0})
     if not model_infos is None:
         for model_info in model_infos:
             all_model_details = model_info.get('models', {})
@@ -479,40 +496,43 @@ def get_models_of_multiple_languages(languages, lang_names, task_name='asr'):
                     all_models[lang_code] = [current_model_id]
     return all_models, all_langs
 
+
 def get_family_of_lang(languages, lang_name):
     family_info = languages.find_one({'$or': [{'codeISO6393': lang_name},
-                                            {'part2bISO639': lang_name}, 
-                                            {'part2tISO639': lang_name},
-                                            {'part1ISO639': lang_name},
-                                            {'languageNameISO639': lang_name},
-                                            {'glottologName': lang_name}]},
-                                            {'glottolog.language_details.Family_ID': 1,
-                                            '_id': 0})
+                                              {'part2bISO639': lang_name},
+                                              {'part2tISO639': lang_name},
+                                              {'part1ISO639': lang_name},
+                                              {'languageNameISO639': lang_name},
+                                              {'glottologName': lang_name}]},
+                                     {'glottolog.language_details.Family_ID': 1,
+                                      '_id': 0})
     if not family_info is None:
         lang_family = family_info['glottolog']['language_details']['Family_ID']
     else:
         lang_family = ''
     return lang_family
 
+
 def get_langs_related_by_family(languages, lang_name):
     all_langs = {}
     lang_family = get_family_of_lang(languages, lang_name)
     langs_info = languages.find({'glottolog.language_details.Family_ID': lang_family},
-    {'codeISO6393': 1, 'languageNameISO639': 1, '_id': 0})
+                                {'codeISO6393': 1, 'languageNameISO639': 1, '_id': 0})
     if not langs_info is None:
         for lang in langs_info:
             all_langs[lang['codeISO6393']] = lang['languageNameISO639']
     return all_langs
 
+
 def get_countries_of_lang(languages, lang_name):
     country_info = languages.find_one({'$or': [{'codeISO6393': lang_name},
-                                            {'part2bISO639': lang_name}, 
-                                            {'part2tISO639': lang_name},
-                                            {'part1ISO639': lang_name},
-                                            {'languageNameISO639': lang_name},
-                                            {'glottologName': lang_name}]},
-                                            {'glottolog.language_details.Countries': 1,
-                                            '_id': 0})
+                                               {'part2bISO639': lang_name},
+                                               {'part2tISO639': lang_name},
+                                               {'part1ISO639': lang_name},
+                                               {'languageNameISO639': lang_name},
+                                               {'glottologName': lang_name}]},
+                                      {'glottolog.language_details.Countries': 1,
+                                       '_id': 0})
     if not country_info is None:
         country = country_info['glottolog']['language_details']['Countries']
         country = country.split(';')
@@ -520,12 +540,13 @@ def get_countries_of_lang(languages, lang_name):
         country = []
     return country
 
+
 def get_langs_related_by_country(languages, lang_name):
     all_langs = {}
     countries = get_countries_of_lang(languages, lang_name)
     for country in countries:
         langs_info = languages.find({'glottolog.language_details.Countries': {'$regex': country}},
-        {'codeISO6393': 1, 'languageNameISO639': 1, '_id': 0})
+                                    {'codeISO6393': 1, 'languageNameISO639': 1, '_id': 0})
         if not langs_info is None:
             for lang in langs_info:
                 all_langs[lang['codeISO6393']] = lang['languageNameISO639']

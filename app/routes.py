@@ -4807,7 +4807,7 @@ def login():
         if 'isActive' in isUserAvailable and 'userdeleteFLAG' in isUserAvailable:
             isUserActive = isUserAvailable['isActive']
             isUserDelete = isUserAvailable['userdeleteFLAG']
-            logger.debug('User active status', isUserActive)
+            logger.debug('User active status %s', isUserActive)
             if (isUserActive == 1 and isUserDelete == 0):
                 pass
                 # print(isUserActive)
@@ -6120,9 +6120,13 @@ def hfmodelsetup():
     # manageAppConfig.generateDummyAppConfig()
     hfmodelconfig = {}
     labelmap = []
-    hfmodelconfigglobal={}
-    hfmodelconfiguser={}
+    hfmodelconfigglobal = {}
+    hfmodelconfiguser = {}
 
+    featured_authors_default = ['ai4bharat', 'Harveenchadha', 'facebook', 'meta-llama',
+                                'google', 'microsoft', 'allenai', 'Intel', 'openai', 'openchat', 'writer', 'amazon',
+                                'assemblyai', 'EleutherAI', 'tiiuae', 'bigscience', 'Salesforce', 'lmsys', 'mosaicml', 'databricks',
+                                'stabilityai', 'Open-Orca', 'mistralai', 'HuggingFaceH4', 'distil-whisper', 'sarvamai']
 
     if request.method == 'POST':
         authors_list = request.form.getlist('nameglobal++authorsList')
@@ -6136,7 +6140,7 @@ def hfmodelsetup():
                 }
             }
             hfmodelconfig.update(hfmodelconfigglobal)
-        
+
         api_tokens = request.form.getlist('nameuser++apiTokens')
         hfmodelconfiguser = {
             'usersData': {
@@ -6155,32 +6159,44 @@ def hfmodelsetup():
         logger.debug("Final config sent %s", hfmodelconfig)
 
         labelmap = manageAppConfig.updateHuggingFaceModelConfig(
-                lifeappconfigs, hfmodelconfig)
+            lifeappconfigs, hfmodelconfig)
     else:
-        hfmodelconfig, labelmap = manageAppConfig.getHuggingFaceModelConfig(lifeappconfigs, current_username, usertype)
-        
-        
-    
+        hfmodelconfig, labelmap = manageAppConfig.getHuggingFaceModelConfig(
+            lifeappconfigs, current_username, usertype)
+
     if 'SUPER-ADMIN' in usertype:
         global_config = hfmodelconfig['globals']
     else:
-        global_config = hfmodelconfig['usersData'].get(current_username, {'globals': {}})
+        global_config = hfmodelconfig['usersData'].get(
+            current_username, {'globals': {}})
 
     # TODO: Write a function to get the list of authors given a task - this will be used
     # for calling it via AJAX and getting Author List when a specific task is selected
     # on the manage page. At present only ASR is being implemented and supported
-    hfmodelconfigval = global_config.get('automatic-speech-recognition', {'authorsList': []})        
-    # logger.debug('Model config %s', hfmodelconfigval)
-    hfmodelconfigglobal['automatic-speech-recognition'] = hfmodelconfigval['authorsList']
-    # logger.debug('Model config Global %s', hfmodelconfigglobal)
+    # hfmodelconfigval = global_config.get(
+    #     'automatic-speech-recognition', {'authorsList': featured_authors_default})
+    # logger.debug('Model config %s %s', hfmodelconfigval,
+    #              len(hfmodelconfigval['authorsList']))
+    # if len(hfmodelconfigval['authorsList']) > 0:
+    #     hfmodelconfigglobal['automatic-speech-recognition'] = hfmodelconfigval['authorsList']
+    # else:
+    #     hfmodelconfigglobal['automatic-speech-recognition'] = featured_authors_default
+
+    logger.debug('Model config Global %s', hfmodelconfigglobal)
 
     for task_type, author_list in global_config.items():
         # if task_type == current_username:
-        hfmodelconfigglobal[task_type] = author_list.get('authorsList', [])
+        author_list = author_list.get(
+            'authorsList', featured_authors_default)
+        if len(author_list) == 0:
+            author_list = featured_authors_default
+        hfmodelconfigglobal[task_type] = author_list
+
     logger.debug('Model config Global %s', hfmodelconfigglobal)
     # hfmodelconfigglobal['taskType'] = 'automatic-speech-recognition'
-    hfmodelconfiguser = hfmodelconfig['usersData'].get(current_username, {'apiTokens': []})['apiTokens']
-    
+    hfmodelconfiguser = hfmodelconfig['usersData'].get(
+        current_username, {'apiTokens': []})['apiTokens']
+
     logger.debug('Model config Global %s', hfmodelconfigglobal)
     logger.debug('Model config user %s', hfmodelconfiguser)
 
@@ -6191,6 +6207,45 @@ def hfmodelsetup():
         labelmap=labelmap,
         usertype=usertype
     )
+
+
+@app.route('/languagesetup', methods=['GET', 'POST'])
+@login_required
+def languagesetup():
+    userlogin, lifeappconfigs = getdbcollections.getdbcollections(
+        mongo, 'userlogin', 'lifeappconfigs')
+    current_username = getcurrentusername.getcurrentusername()
+    print('USERNAME: ', current_username)
+    usertype = userdetails.get_user_type(
+        userlogin, current_username)
+    print('USERTYPE: ', usertype)
+    if 'SUPER-ADMIN' in usertype:
+        return render_template(
+            'languagesetup.html'
+        )
+    else:
+        flash("This action is not allowed for you")
+        return "Permission denied"
+
+
+@app.route('/regeneratelanguages', methods=['GET', 'POST'])
+@login_required
+def regeneratelanguages():
+    userlogin, lifeappconfigs = getdbcollections.getdbcollections(
+        mongo, 'userlogin', 'lifeappconfigs')
+    current_username = getcurrentusername.getcurrentusername()
+    print('USERNAME: ', current_username)
+    usertype = userdetails.get_user_type(
+        userlogin, current_username)
+    print('USERTYPE: ', usertype)
+    if 'SUPER-ADMIN' in usertype:
+        lman.generate_languages_database(regenerate=True)
+        flash("The languages databse is successfully regenerated. You will need to sync models again now!")
+        return redirect(url_for('languagesetup'))
+    else:
+        flash("This action is not allowed for you")
+        return "Permission denied"
+
 
 @app.errorhandler(404)
 def page_not_found(e):

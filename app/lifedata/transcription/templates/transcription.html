@@ -477,7 +477,7 @@
             <h4>Make Boundaries for this file </h4>
             <i><font color="red">It will overwrite any boundaries made earlier using this model</font></i>
             <div class="input-group col-md-12 upload" id="  ">
-              <label for="speakeriduploaddropdown">Source: </label><br />
+              <label for="makeboundaryspeakeriduploaddropdown">Source: </label><br />
               <input class="col-md-6" type="text" id="makeboundaryspeakeriduploaddropdown" name="speakerId" value="" readonly>
               <!-- <select class="custom-select custom-select-sm" id="speakeriduploaddropdown" name="speakerId" -->
                 <!-- style="width:30%" readonly> -->
@@ -554,9 +554,20 @@
             <!-- <div class="col upload"> -->
             <!-- <strong>Audio Files from Source: </strong> -->
             <h4>Generate Transcription for this file </h4>
-            <i>
+            <!-- <i>
               <font color="red">It will overwrite any boundaries creeated earlier</font>
-            </i>
+            </i> -->
+            <div class="input-group col-md-12 upload" id="  ">
+              <label for="asrspeakeriduploaddropdown">Source: </label><br />
+              <input class="col-md-6" type="text" id="asrspeakeriduploaddropdown" name="asrSpeakerId" value="" readonly>
+              <!-- <select class="custom-select custom-select-sm" id="speakeriduploaddropdown" name="speakerId" -->
+              <!-- style="width:30%" readonly> -->
+              <!-- <option selected disabled></option> -->
+              <!-- {% for d in addedspeakerids %}
+                            <option value="{{ d }}">{{ d }}</option>
+                            {% endfor %}
+                          </select> -->
+            </div>
             <div class="input-group col-md-12" id="asraudiofilename-divid">
               <label for="audiofile">Filename: </label><br />
               <input class="col-md-6" type="text" id="asraudiofileid" name="audiofile" readonly>
@@ -579,9 +590,20 @@
               <select class="custom-select custom-select-sm" id="myASRScriptListSelect2" name="scriptName" style="width: 50%;">
             </select>
             </div>
-            <hr>
+            <div class="input-group col-md-4" id="overwrite-my-boundaries-divid">
+              <input type="checkbox" id="overwrite-my-boundariesid" name="overwrite-my-boundaries">
+              <label for="overwrite-my-boundariesid">Create New Boundaries</label>
+              <!-- <i>
+                <font color="red">*It will overwrite any boundaries creeated earlier</font>
+              </i> -->
+            </div>
+            <div class="input-group col-md-4" id="overwrite-my-transcriptions-divid">
+              <input type="checkbox" id="overwrite-my-transcriptionsid" name="overwrite-my-transcriptions">
+              <label for="overwrite-my-transcriptionsid">Overwrite my Transcriptions</label>              
+            </div>
+            <hr>            
             <div class="input-group" id="doasr-divid">
-              <input class="btn btn-primary asrbtn" id="transcribebtnid" type="button" value="Transcribe">
+              <input class="btn btn-primary asrbtn" id="transcribebtnid" type="submit" value="Transcribe">
             </div>
             <!-- </div> -->
           </form>

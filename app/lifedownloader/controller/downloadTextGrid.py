@@ -326,6 +326,9 @@ def downloadTextGrid(transcriptions,
                         'audioDuration', 0.0)
                     slice_duration = cur_entry['audioMetadata'].get(
                         'currentSliceDuration', 0.0)
+                else:
+                    slice_duration = get_audio_with_duration(
+                        audio_dir, audio_id, original_audio_filename)
 
                 if 'additionalInfo' in cur_entry:
                     total_slices = cur_entry['additionalInfo'].get(
@@ -376,8 +379,10 @@ def downloadTextGrid(transcriptions,
                         # print("Original Audio Filename",
                         #       original_audio_filename)
 
+                        # xmin, xmax, tiers = get_boundaries_tiers(
+                        #     activeprojectname, current_projectformelements, text_grid, offset=boundary_offset)
                         xmin, xmax, tiers = get_boundaries_tiers(
-                            activeprojectname, current_projectformelements, text_grid, offset=boundary_offset)
+                            activeprojectname, current_projectformelements, text_grid)
                         logger.debug('Tiers %s', tiers)
 
                         if audio_duration == 0.0 or download_audio:
@@ -425,6 +430,7 @@ def downloadTextGrid(transcriptions,
                                                                                                           audio_dir,
                                                                                                           original_audio_filename,
                                                                                                           audio_duration,
+                                                                                                          slice_duration,
                                                                                                           download_audio,
                                                                                                           transcription_by,
                                                                                                           get_individual_slices,
@@ -434,6 +440,8 @@ def downloadTextGrid(transcriptions,
                                         'Length of tiers single %s', len(tiers))
                                     text_grid_path = get_text_grid_path(
                                         original_audio_filename, text_grid_dir)
+                                    logger.debug(
+                                        'Text grid path %s', text_grid_path)
 
                                     tgt_text_grid = get_tgt_text_grid(
                                         tiers, xmin, xmax, overall_xmin, overall_xmax, text_grid_path)
@@ -544,6 +552,7 @@ def get_merged_text_grid_of_multiple_slices(transcriptions,
                                             audio_dir,
                                             original_audio_filename,
                                             audio_duration=0.0,
+                                            slice_duration=0.0,
                                             download_audio=False,
                                             transcription_by="",
                                             get_individual_slices=False,
@@ -563,8 +572,13 @@ def get_merged_text_grid_of_multiple_slices(transcriptions,
     xmin = []
     xmax = []
     overall_xmax = 0.0
+    previous_slices_duration = 0.0
+    previous_slice_offset = 0.0
+    total_duration = 0.0
+    adjusted_duration = 0.0
+    total_expected = 0.0
 
-    for cur_entry in all_entries:
+    for i, cur_entry in enumerate(list(all_entries)):
         # print (cur_entry)
         if transcription_by == "latest":
             text_grid = cur_entry['textGrid']
@@ -574,28 +588,39 @@ def get_merged_text_grid_of_multiple_slices(transcriptions,
             else:
                 text_grid = {}
         # print("Length of text grid in merge", len(text_grid))
-        if 'audioMetadata' in cur_entry:
-            audio_duration = cur_entry['audioMetadata'].get(
-                'audioDuration', 0.0)
-            slice_duration = cur_entry['audioMetadata'].get(
-                'currentSliceDuration', 0.0)
 
+        audio_duration = cur_entry['audioMetadata'].get(
+            'audioDuration', 0.0)
         total_slices = cur_entry['additionalInfo']['totalSlices']
         slice_number = cur_entry['additionalInfo']['currentSliceNumber']
         boundary_offset = cur_entry['additionalInfo']['boundaryOffsetValue']
-        slice_offset = cur_entry['additionalInfo']['sliceOffsetValue']
+        slice_offset = round(
+            cur_entry['additionalInfo']['sliceOffsetValue'] / 1000, 2)
         slice_overlap = cur_entry['additionalInfo']['sliceOverlapRegion']
+        slice_duration = cur_entry['audioMetadata'].get(
+            'currentSliceDuration', 0.0)
+        slice_offset += slice_overlap
+        expected_duration_current = slice_duration - previous_slice_offset
+        total_expected += expected_duration_current
+
+        # if i == 0:
+        current_slice_offset = slice_offset
+        slice_offset = previous_slice_offset
+
+        # slice_duration -= slice_overlap
+        # elif i == 1:
+        #     previous_slices_duration
 
         if len(text_grid) > 0:
-            slice_xmin, slice_xmax, slice_tiers = get_boundaries_tiers(
-                activeprojectname, current_projectformelements, text_grid, offset=boundary_offset)
-            xmin.extend(slice_xmin)
-            xmax.extend(slice_xmax)
-            for k, v in slice_tiers.items():
-                if k in tiers:
-                    tiers[k].extend(v)
-                else:
-                    tiers[k] = v
+            xmin, xmax, tiers = get_boundaries_tiers(
+                activeprojectname, current_projectformelements, text_grid, offset=previous_slices_duration, slice_overlap=slice_offset, xmin=xmin, xmax=xmax, tiers=tiers)
+            # xmin.extend(slice_xmin)
+            # xmax.extend(slice_xmax)
+            # for k, v in slice_tiers.items():
+            #     if k in tiers:
+            #         tiers[k].extend(v)
+            #     else:
+            #         tiers[k] = v
 
             if audio_duration == 0.0 or (download_audio and not get_individual_slices):
                 current_slice_audio_id = cur_entry['audioId']
@@ -609,10 +634,44 @@ def get_merged_text_grid_of_multiple_slices(transcriptions,
                     audio_dir, current_slice_audio_id, current_slice_audio_filename)
 
                 if audio_duration == 0.0 and total_slices > 1:
-                    overall_xmax += slice_duration - \
-                        (slice_offset+slice_overlap)
+                    overall_xmax += (slice_duration -
+                                     previous_slice_offset)
+                elif total_slices > 1:
+                    overall_xmax = audio_duration
                 else:
                     overall_xmax = slice_duration
+        # effective_duration = slice_duration+slice_overlap
+        # total_duration += (slice_duration)
+
+        # if i >= 1:
+        #     adjusted_duration += (slice_duration - slice_offset)
+        # if i >= 1:
+        #     slice_duration -= slice_overlap
+        # if previous_slices_duration == 0.0:
+        #     slice_duration += slice_overlap
+
+        previous_slices_duration += round(slice_duration, 7)
+        # if i >= 1:
+        previous_slices_duration = round(previous_slices_duration, 7)
+        previous_slices_duration -= round(previous_slice_offset, 7)
+        previous_slice_offset = current_slice_offset
+        logger.debug('Current slice duration %s Slice Offset %s, Total slice duration %s',
+                     slice_duration, slice_offset, previous_slices_duration)
+        logger.debug('Total duration till now %s, Audio duration %s',
+                     previous_slices_duration, audio_duration)
+        logger.debug('Current slice duration (excl overlap) %s, Total epected duration %s',
+                     expected_duration_current, total_expected)
+        logger.debug('Length of xmin %s Xmax %s, Tiers %s, Overall Xmax %s', len(
+            xmin), len(xmax), len(tiers), overall_xmax)
+        logger.debug('Tiers keys %s', tiers.keys())
+        for k, v in tiers.items():
+            logger.debug('Tier Length %s, %s', k, len(v))
+
+    if 'audioMetadata' in cur_entry:
+        overall_xmax = cur_entry['audioMetadata'].get(
+            'audioDuration', 0.0)
+        # slice_duration = cur_entry['audioMetadata'].get(
+        #     'currentSliceDuration', 0.0)
 
     return xmin, xmax, tiers, overall_xmax
 
@@ -657,11 +716,16 @@ def get_textgrid_df(tgt_text_grid):
 
 
 def get_tgt_text_grid(tiers, xmin, xmax, overall_xmin, overall_xmax, text_grid_path):
+
     tgt_text_grid = tgt.core.TextGrid(filename=text_grid_path)
 
     for cur_tier in tiers:
         tier_transcriptions = tiers[cur_tier]
+        i = 0
         for current_min, current_max, cur_transcription in zip(xmin, xmax, tier_transcriptions):
+            i += 1
+            logger.debug('%s Current Xmin %s \tCurrent Xmax %s',
+                         i, current_min, current_max)
             boundary_interval = tgt.core.Interval(
                 current_min, current_max, cur_transcription)
 
@@ -702,38 +766,170 @@ def get_audio_with_duration(audio_dir, audio_id, audio_filename):
 #         previous_boundary_id = all_boundary_ids[i-1]
 #         logger.debug('%s Previous boundary id %s', i-1, previous_boundary_id)
 #     return current_xmin
+def get_boundary_ids_sorted_by_start(boundaries):
+    all_starts = {}
+    for i, cur_boundary_id in enumerate(boundaries):
+        boundary_element = boundaries[cur_boundary_id]
+        current_start = boundary_element['start']
+        all_starts[cur_boundary_id] = current_start
+
+    sorted_boundaries = sorted(all_starts, key=all_starts.get)
+    return sorted_boundaries
 
 
-def get_boundaries_tiers(activeprojectname, projectelements, text_grid, offset=0.0):
-    xmin = []
-    xmax = []
-    tiers = {}
+def get_boundaries_tiers(activeprojectname, projectelements, text_grid, offset=0.0, slice_overlap=0.0, xmin=[], xmax=[], tiers={}):
+    # xmin = []
+    # xmax = []
+    # tiers = {}
 
-    for tier in text_grid:
+    for i, tier in enumerate(text_grid):
         # print ('Tier', tier)
         # logger.debug('Tier %s', tier)
         if len(tier) > 0:
             tier_name = tier
             all_boundary_ids = OrderedDict(text_grid[tier])
+            sorted_boundary_ids = get_boundary_ids_sorted_by_start(
+                all_boundary_ids)
+
             # logger.debug('All boundary IDs %s %s', all_boundary_ids,
             #              type(all_boundary_ids))
-            for i, cur_boundary_id in enumerate(all_boundary_ids):
-                # logger.debug('%s \tCurrent Boundary ID %s', i, cur_boundary_id)
+            # for i, cur_boundary_id in enumerate(sorted(all_boundary_ids, key=lambda x: int(x))):
+            for i, cur_boundary_id in enumerate(sorted_boundary_ids):
+                add_bundary = False
+                logger.debug('%s \tCurrent Boundary ID %s', i, cur_boundary_id)
 
                 boundary_element = all_boundary_ids[cur_boundary_id]
-                # logger.debug('Boundary element %s', boundary_element)
-                for cur_boundary_element in boundary_element:
-                    # logger.debug('Current Boundary element %s',
-                    #              cur_boundary_element)
-                    if cur_boundary_element == 'start':
-                        current_xmin = boundary_element['start']
-                        # current_xmin = get_adjusted_xmin(
-                        #     i, current_xmin, all_boundary_ids)
-                        xmin.append(current_xmin+offset)
-                    elif cur_boundary_element == 'end':
-                        current_xmax = boundary_element['end']
-                        xmax.append(current_xmax+offset)
-                    else:
+
+                current_xmin = boundary_element['start']
+                current_xmin = round(current_xmin, 2)
+
+                current_xmax = boundary_element['end']
+                current_xmax = round(current_xmax, 2)
+
+                logger.debug('Received xmin %s Offset %s Overlap %s',
+                             current_xmin, offset, slice_overlap)
+                logger.debug('Received xmax %s Offset %s Overlap %s',
+                             current_xmax, offset, slice_overlap)
+                if current_xmin < slice_overlap:
+                    # previous_without_overlap = offset-slice_overlap
+                    # previous_xmax = xmax[-1]
+                    # logger.debug('Previous without overlap %s Previous xmax %s', previous_without_overlap, previous_xmax)
+                    # if previous_xmax < previous_without_overlap:
+                    # if overlap_boundary > 0:
+                    # overlap_boundary = current_xmin-slice_overlap
+                    # overlap_boundary = slice_overlap - current_xmin
+                    # overlap_with_max = slice_overlap - current_xmax
+                    if current_xmax > slice_overlap:
+                        # original_slice_overlap = slice_overlap
+                        previous_without_overlap = offset-slice_overlap
+                        previous_xmax = xmax[-1]
+                        logger.debug('Previous without overlap %s',
+                                     previous_without_overlap)
+                        # previous_no_boundary = previous_xmax - previous_without_overlap
+                        if previous_xmax > previous_without_overlap:
+                            logger.debug('Previous max covering overlap')
+                            previous_covered_overlap = previous_xmax - previous_without_overlap
+                            if previous_covered_overlap > slice_overlap:
+                                previous_covered_overlap = slice_overlap
+                            logger.debug(
+                                'Covered overlap portion in previous %s', previous_covered_overlap)
+                            overlap_remaining_in_previous = slice_overlap - previous_covered_overlap
+                            logger.debug('Free portion in previous %s',
+                                         overlap_remaining_in_previous)
+                            remaining_overlap_for_current = slice_overlap - overlap_remaining_in_previous
+                            logger.debug('Adjusted Overlap %s',
+                                         remaining_overlap_for_current)
+                            overlap_covered_in_previous = slice_overlap - previous_covered_overlap
+
+                            slice_overlap = remaining_overlap_for_current
+                            offset -= overlap_covered_in_previous
+                        else:
+                            # previous_covered_overlap = 0.0
+                            logger.debug('Previous max without overlap')
+                            offset -= slice_overlap
+
+                            # slice_overlap = -slice_overlap
+                            slice_overlap = 0.0
+
+                            # overlap_remaining_in_previous = slice_overlap
+                            # remaining_overlap_for_current = slice_overlap
+
+                        # slice_overlap += overlap_covered_in_previous
+
+                        # current_starting_point =
+
+                        # current_xmin = 0.0
+                        logger.debug('Adjusted offset %s', offset)
+                        logger.debug(
+                            'Adjusted Slice Overlap %s', slice_overlap)
+                        current_xmin -= slice_overlap
+                        if current_xmin < 0.0:
+                            current_xmin = 0.0
+                        current_xmin += offset
+                        xmin.append(current_xmin)
+
+                        current_xmax -= slice_overlap
+                        current_xmax += offset
+                        xmax.append(current_xmax)
+                        add_bundary = True
+                        # else:
+                        #     current_xmin -= slice_overlap
+                        #     xmin.append(current_xmin+offset)
+
+                        #     current_xmax -= slice_overlap
+                        #     xmax.append(current_xmax+offset)
+
+                        #     add_bundary = True
+                        #     # slice_overlap -= overlap_boundary
+                        # offset -= overlap_boundary
+                        # add_boundary = True
+                        # offset -= slice_overlap
+                        # slice_overlap = 0.0
+                        # xmin.append(current_xmin+offset)
+                        # xmax.append(current_xmax+offset)
+                        # add_bundary = True
+
+                        # current_xmax = boundary_element['end']
+                        # current_xmax = round(current_xmax, 2)
+                        # current_xmax -= slice_overlap
+                        # logger.debug('Added Xmax value %s', xmax[-1])
+                    # else:
+                    #     current_xmin = 0.0
+                    #     xmin.append(current_xmin+offset)
+                else:
+                    current_xmin -= slice_overlap
+                    xmin.append(current_xmin+offset)
+
+                    current_xmax -= slice_overlap
+                    xmax.append(current_xmax+offset)
+
+                    add_bundary = True
+
+                logger.debug('Added Xmin value %s', xmin[-1])
+                logger.debug('Added Xmax value %s', xmax[-1])
+
+                # if (len(xmin) - len(xmax)) == 1:
+                # current_xmax = boundary_element['end']
+                # current_xmax = round(current_xmax, 2)
+                # # overlap_boundary = original_slice_overlap - current_xmax
+                # # logger.debug('Received xmax value %s Offset %s Overlap %s',
+                # #              current_xmax, offset, slice_overlap)
+                # # # if current_xmax < slice_overlap:
+                # # if overlap_boundary > 0:
+                # #     # if (len(xmin) - len(xmax)) == 1:
+                # #     if previous_xmax <= previous_without_overlap:
+                # #         xmax.append(current_xmax+offset)
+                # #     else:
+                # #         xmin.pop()
+                # # else:
+                # current_xmax -= slice_overlap
+                # xmax.append(current_xmax+offset)
+                # logger.debug('Added Xmax value %s', xmax[-1])
+                if add_bundary:
+                    boundary_element.pop('start', 'start not found')
+                    boundary_element.pop('end', 'end not found')
+                    # logger.debug('Boundary element %s', boundary_element)
+                    for cur_boundary_element in boundary_element:
                         # If the element is in projectelements only then
                         # its tiers are being fetched
                         if cur_boundary_element in projectelements:
@@ -775,7 +971,7 @@ def get_boundaries_tiers(activeprojectname, projectelements, text_grid, offset=0
 
     logger.debug("Project: %s, XMin lenngth: %s", activeprojectname, len(xmin))
     logger.debug("Project: %s, XMax lenngth: %s", activeprojectname, len(xmax))
-    logger.debug("All tiers lenngth: %s", len(tiers))
+    logger.debug("All tiers length: %s", len(tiers))
     # print(activeprojectname, 'Xmax', len(xmax))
     # print(xmin)
     # print(xmax)
