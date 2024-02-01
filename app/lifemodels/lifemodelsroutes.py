@@ -13,7 +13,7 @@ from app.controller import (
 from app.lifemodels.controller import (
     huggingFaceUtils,
     modelManager,
-    modelPrediction
+    modelsPlayground
 )
 
 from app import mongo
@@ -22,6 +22,7 @@ import io
 from datetime import datetime
 import re
 import os
+from collections import Counter
 
 logger = life_logging.get_logger()
 
@@ -115,15 +116,33 @@ def models_playground():
         "ai4bharat": "albert",
         "distilbert": "distilbert"
     }
+    data_info = {}
+    selected_model = ''
 
     if (request.method == 'POST'):
         try:
             data = dict(request.form.lists())
             logger.debug("Form data %s", data)
             selected_model = data['modelId'][0]
-            if ('myModelPlaygroundFileCheckbox' in data):
+            if ('myModelPlaygroundCrawlerCheckbox' in data):
+                input_type = 'crawler'
+                file_name = '.csv'
+                api_key = data['youtubeAPIKey'][0]
+                video_ids = []
+                for key, value in data.items():
+                    if ('videoschannelId' in key):
+                        for link in value:
+                            if('youtu.be' in link):
+                                video_id = link.split('?')[0].split('/')[-1]
+                            else:
+                                video_id = link[link.find('?v=')+3:].strip()
+                            video_ids.append(video_id)
+                logger.debug('video_ids: %s', video_ids)
+                input_data = modelsPlayground.get_crawled_data(api_key, video_ids)
+                logger.debug('input_data: %s', input_data)
+            elif ('myModelPlaygroundFileCheckbox' in data):
                 input_type = 'file'
-                input_data = request.files.to_dict()                
+                input_data = request.files.to_dict()
                 file_name = input_data['myModelPlaygroundFile'].filename
                 logger.debug('%s', file_name)
                 input_data = pd.read_csv(io.BytesIO(input_data['myModelPlaygroundFile'].read()),
@@ -143,33 +162,37 @@ def models_playground():
             prediction_df['Text'] = input_data
             selected_model_path = os.path.join(model_path, selected_model)
             model_type = model_type_mapping[selected_model.split('_')[-1]]
-            prediction_df['labels'] = modelPrediction.model_prediction(model_type,
+            prediction_df['labels'] = modelsPlayground.model_prediction(model_type,
                                                                        selected_model_path,
                                                                        input_data)
 
             logger.debug(prediction_df)
             
-            timestamp = '_' + re.sub(r'[-: \.]', '', str(datetime.now())) + '_prediction.csv'
-            download_prediction_filename = file_name.replace('.csv', timestamp)
-            download_prediction_filename_zip = download_prediction_filename.replace('.csv', '.zip')
-            logger.debug('%s, %s', download_prediction_filename, download_prediction_filename_zip)
+            # timestamp = '_' + re.sub(r'[-: \.]', '', str(datetime.now())) + '_prediction.csv'
+            # download_prediction_filename = file_name.replace('.csv', timestamp)
+            # download_prediction_filename_zip = download_prediction_filename.replace('.csv', '.zip')
+            # logger.debug('%s, %s', download_prediction_filename, download_prediction_filename_zip)
             
-            compression_opts = dict(method='zip', archive_name=download_prediction_filename)
+            # compression_opts = dict(method='zip', archive_name=download_prediction_filename)
 
-            csv_buffer = io.BytesIO()
-            prediction_df.to_csv(csv_buffer, 
-                                    index=False,
-                                    compression=compression_opts)
-            csv_buffer.seek(0)
+            # csv_buffer = io.BytesIO()
+            # prediction_df.to_csv(csv_buffer, 
+            #                         index=False,
+            #                         compression=compression_opts)
+            # csv_buffer.seek(0)
 
-            return send_file(csv_buffer,
-                             mimetype='application/zip',
-                             download_name=download_prediction_filename_zip,
-                             as_attachment=True)
+            # return send_file(csv_buffer,
+            #                  mimetype='application/zip',
+            #                  download_name=download_prediction_filename_zip,
+            #                  as_attachment=True)
+            data_info['selectedModel'] = selected_model
+            data = dict(Counter(prediction_df['labels'].to_list()))
+            data_info['data'] = [{"value": value, "name": key} for key, value in data.items()]
         except Exception as e:
             flash('Wrong file format!')
             logger.exception("")
-        return redirect(url_for('lifemodels.models_playground'))
+            return redirect(url_for('lifemodels.models_playground'))
 
     return render_template("lifemodelsplayground.html",
-                           models=model_list)
+                           models=model_list,
+                           data_info=data_info)

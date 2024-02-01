@@ -23,22 +23,16 @@
         <select class="form-control" id="myModelPlaygroundListSelect2" name="modelId" style="width: 100%;"> 
             
         </select>
-        <br>
-        <br>
-        <div id="modelPlaygroundTextArea" style="display: block;">
-          <label for="myModelPlaygroundTextArea">Input: </label><br />
-          <textarea class="form-control" id="myModelPlaygroundTextArea" rows="3" name="myModelPlaygroundTextArea" placeholder="Use newline for new text" required></textarea>
-        </div>
-        <input type="checkbox" id="myModelPlaygroundFileCheckbox" name="myModelPlaygroundFileCheckbox" onchange="uploadFile(this)"/>
-        <label for="myModelPlaygroundFileCheckbox">Upload File (in CSV format) :</label><br>
-        <div id="modelPlaygroundFile" style="display: none;">
-          <input type="file" id="myModelPlaygroundFile" name="myModelPlaygroundFile" accept=".csv" disabled>
-        </div>
-    <!-- <br> -->
     </div>
+    <br>
+    <br>
+    <div class="input-group col-md-6" id="modelPlaygroundDataForm"></div>
     <br>
     <input class="btn btn-primary" type="submit" value="Submit">
   </form>
+  <hr>
+
+  <div id="main" style="width: 600px;height:400px;"></div>
 <div class="footer">
   <p>
     Developed By:
@@ -58,4 +52,6 @@
 {{super()}}
 <script src="{{url_for('.static', filename='lifemodelsplayground.js')}}"></script>
 <script type="text/javascript">modelsList({{ models | tojson | safe }});</script>
+<script src="{{url_for('.static', filename='modelsplaygroundcharts.js')}}"></script>
+<script type="text/javascript">createChart({{ data_info | tojson | safe }});</script>
 {% endblock %}
