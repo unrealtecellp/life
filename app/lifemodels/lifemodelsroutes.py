@@ -167,8 +167,7 @@ def models_playground_prediction():
                 uploaded_files = request.files.to_dict(flat=False)
                 logger.debug('uploaded_files: %s', uploaded_files)
                 uploaded_files = uploaded_files['myModelPlaygroundFile']
-                for i in range(5):
-                    uploaded_file = uploaded_files[i]
+                for uploaded_file in uploaded_files[:5]:
                     file_name = uploaded_file.filename
                     logger.debug('%s', file_name)
                     uploaded_data_id = file_name.replace('.csv', '')
