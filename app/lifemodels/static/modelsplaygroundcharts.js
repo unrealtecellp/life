@@ -15,7 +15,7 @@ function createAnalysisChart(inputFileName, selectedModel, data) {
     },
     legend: {
         orient: 'vertical',
-        left: 'left'
+        left: 'right'
     },
     series: [
         {

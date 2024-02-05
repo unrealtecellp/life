@@ -8,6 +8,7 @@
 {% block styles %}
 {{super()}}
   <link href="{{url_for('.static', filename='lifemodelsplayground.css')}}" rel="stylesheet" />
+  <link href="{{url_for('static', filename='loader.css')}}" rel="stylesheet" />
 {% endblock %}
 
 
@@ -30,6 +31,7 @@
     <br>
     <button type="button" id="modelplaygroundformsubmitbtn" class="btn btn btn-primary" onclick="getPrediction(this)">Submit</button>
   </form>
+  <div id="loader" style="display:none;"></div>
   <hr>
 
   <div id="dataAnalysisCharts">

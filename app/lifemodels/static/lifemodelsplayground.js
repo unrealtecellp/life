@@ -115,6 +115,7 @@ function youtubeCrawlerInterface() {
 }
 
 function getPrediction() {
+    document.getElementById("loader").style.display = "block";
     let form_ele = document.getElementById("modelplaygroundformid");
     // const formData = new FormData(submit_span_form_ele, ele);
     const formData = new FormData(form_ele);
@@ -140,15 +141,21 @@ function getPrediction() {
         success: function(data) {
             // console.log('Success!');
             let data_info = data.data_info;
+            console.log(data_info);
+            if (data_info === undefined) {
+                alert('No data to analyse!');
+            }
             let data_info_size = Object.keys(data_info).length;
             console.log(Object.keys(data_info).length);
             if (data_info_size > 0){
+                document.getElementById("main").scrollIntoView({behavior: 'smooth'});
                 createChart(data_info);
             }
             else{
                 alert('No data to analyse!');
             }
             // window.location.reload();
+            document.getElementById("loader").style.display = "none";
         },
     });
 }
