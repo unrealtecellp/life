@@ -25,12 +25,18 @@ import os
 from collections import Counter
 import itertools
 from pprint import pformat
+import json
+import openpyxl
 
 logger = life_logging.get_logger()
 
 lifemodels = Blueprint('lifemodels', __name__, template_folder='templates', static_folder='static')
 
 basedir = os.path.abspath(os.path.dirname(__file__))
+
+download_folder_path = os.path.join(basedir, 'model_prediction_download')
+if (not os.path.exists(download_folder_path)):
+    os.mkdir(download_folder_path)
 
 @lifemodels.route('/', methods=['GET', 'POST'])
 @lifemodels.route('/home', methods=['GET', 'POST'])
@@ -221,8 +227,60 @@ def models_playground_prediction():
 
 @lifemodels.route('/models_playground_file_download', methods=['GET', 'POST'])
 def models_playground_file_download():
-    csv_buffer, download_prediction_filename_zip = modelsPlayground.download_file()
-    return send_file(csv_buffer,
-                        mimetype='application/zip',
-                        download_name=download_prediction_filename_zip,
+    if (request.method == 'POST'):
+        try:
+            data = json.loads(request.form['a'])
+            logger.debug("data_info %s", data)
+            timestamp = re.sub(r'[-: \.]', '', str(datetime.now())) + '_prediction.xlsx'
+            # timestamp = 'prediction.xlsx'
+            output_file_path = os.path.join(download_folder_path, timestamp)
+            if (os.path.exists(output_file_path)):
+                os.remove(output_file_path)
+            prediction_df = pd.DataFrame(columns=[])
+            with pd.ExcelWriter(output_file_path, engine="openpyxl") as writer:
+                prediction_df.to_excel(
+                    writer, header=True, index=False)
+            for file_name, file_info in data.items():
+                logger.debug(file_name)
+                # df_cols = list(file_info.keys())
+                # prediction_df = pd.DataFrame(columns=[])
+                prediction_df['Text'] = file_info['Text']
+                for key, value in file_info.items():
+                    logger.debug(key)
+                    logger.debug(value)
+                    if (key == 'Text'): continue
+                    else:
+                        prediction_df[key] = value['prediction']
+                logger.debug(prediction_df)
+                with pd.ExcelWriter(output_file_path, engine="openpyxl", mode='a') as writer:
+                        prediction_df.to_excel(
+                            writer, sheet_name=file_name, header=True, index=False)
+                # csv_buffer, download_prediction_filename_zip = modelsPlayground.download_file(prediction_df, file_name)
+            workbook=openpyxl.load_workbook(output_file_path)
+            Sheet1 = workbook['Sheet1']
+            workbook.remove(Sheet1)
+            workbook.save(output_file_path)
+        except:
+            logger.exception("")
+    
+    return jsonify(fileName=timestamp)
+
+
+@lifemodels.route('/file_download/<download_name>', methods=['GET', 'POST'])
+def file_download(download_name):
+    # download_name = 'prediction.xlsx'
+    file_path = os.path.join(download_folder_path, download_name)
+    return send_file(file_path,
+                        mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                        download_name=download_name,
                         as_attachment=True)
+
+@lifemodels.route('/delete_prediction_file/<download_name>', methods=['GET', 'POST'])
+def delete_prediction_file(download_name):
+    # download_name = 'prediction.xlsx'
+    logger.debug(download_name)
+    file_path = os.path.join(download_folder_path, download_name)
+    logger.debug(os.path.exists(file_path))
+    os.remove(file_path)
+
+    return 'OK'

@@ -131,7 +131,7 @@ def get_prediction(model_path,
 
 def download_file(prediction_df, file_name):
     timestamp = '_' + re.sub(r'[-: \.]', '', str(datetime.now())) + '_prediction.csv'
-    download_prediction_filename = file_name.replace('.csv', timestamp)
+    download_prediction_filename = file_name+timestamp
     download_prediction_filename_zip = download_prediction_filename.replace('.csv', '.zip')
     logger.debug('%s, %s', download_prediction_filename, download_prediction_filename_zip)
     

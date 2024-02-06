@@ -84,6 +84,7 @@ function createModelSelect2(inputFileName, selectedOptionInfo, selectedModel) {
     ele += '</div>';
     $('#dataAnalysisChartsControl').append(ele);
     applySelect2('idChartModels', modelList, 'Select Models', false, [selectedModel]);
+    createDownloadFileBtn();
     createAnalysisChart(inputFileName, selectedModel, dataAnalysis);
     dataAnalysisChartsControlEvents();
 }
@@ -133,5 +134,18 @@ function dataAnalysisChartsControlEvents() {
         console.log(chartInputFileEleValue, chartModelEleValue)
         createInputFileSelect2(chartInputFileEleValue, chartModelEleValue);
      }
+}
 
+function downloadPrediction(ele) {
+    let data_info = JSON.parse(localStorage.getItem('modelsPlaygroundDataInfo'));
+    console.log(data_info);
+    $.post( "/lifemodels/models_playground_file_download", {
+        a: JSON.stringify(data_info )
+      })
+      .done(function( data ) {
+        console.log(data);
+        // window.location.reload();
+        localStorage.setItem("modelsPlayground", JSON.stringify(data_info));
+        window.location.href = window.location.href.replace("models_playground", "file_download/"+data.fileName);
+      });
 }
