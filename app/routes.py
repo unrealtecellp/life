@@ -4314,7 +4314,7 @@ def shareprojectwith():
 @app.route('/retrieve/<filename>', methods=['GET'])
 @login_required
 def retrieve(filename):
-    logger.debug('Now in retrieve')
+    # logger.debug('Now in retrieve')
     x = ''
     try:
         userprojects, = getdbcollections.getdbcollections(mongo,
@@ -4807,7 +4807,7 @@ def login():
         if 'isActive' in isUserAvailable and 'userdeleteFLAG' in isUserAvailable:
             isUserActive = isUserAvailable['isActive']
             isUserDelete = isUserAvailable['userdeleteFLAG']
-            logger.debug('User active status %s', isUserActive)
+            # logger.debug('User active status %s', isUserActive)
             if (isUserActive == 1 and isUserDelete == 0):
                 pass
                 # print(isUserActive)

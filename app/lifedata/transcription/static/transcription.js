@@ -103,6 +103,63 @@ function collapseTranscriptionPrompt() {
   });
 }
 
+function showTranslationSubtitle() {
+  // console.log('translationtab');
+  let firstTranscriptionFieldValue = document.getElementsByClassName('transcription-box')[0].value;
+  let translationsubtitle = document.getElementById('translationsubtitle');
+  // console.log(firstTranscriptionFieldValue, translationsubtitle);
+  if (firstTranscriptionFieldValue !== '') {
+    translationsubtitle.innerHTML = firstTranscriptionFieldValue;
+    translationsubtitle.style.display = 'block';
+  }
+  else {
+    translationsubtitle.style.display = 'none';
+  }
+  // console.log(translationsubtitle.innerHTML, firstTranscriptionFieldValue);
+}
+
+// function translationSubtitle() {
+//   document.getElementById("translationtab").onclick = function() {showTranslationSubtitle()};
+// }
+
+function getActiveTag() {
+  let innerHtml = document.getElementsByClassName('tab-pane');
+  // console.log(innerHtml);
+  for (let tabEle of Object.values(innerHtml)) {
+    if (Object.values(tabEle.classList).includes('active')) {
+      // console.log(tabEle.id);
+      return tabEle.id;
+    }
+  }
+}
+
+function createNavTabs(activeprojectform, activeTag='transcription2') {
+  // console.log(activeTag);
+  let tabs = '';
+  let tabsOptions = ['Transcription', 'Translation', 'Interlinear Gloss', 'Annotation']
+  tabs += '<ul class="nav nav-tabs">';
+  for (let i=0; i< tabsOptions.length; i++) {
+    let tabsOption = tabsOptions[i];
+    if (tabsOption in activeprojectform ||
+      (tabsOption == 'Annotation' && 'Tagsets' in activeprojectform)) {
+      let tabsOptionAnchor = tabsOption.toLowerCase().replace(' ', '')+'2';
+      if (tabsOptionAnchor == activeTag) {
+        tabs += '<li id="'+tabsOptionAnchor.replace("2", "tab")+'" role="presentation" class="active">'+
+                '<a data-toggle="tab" href="#'+tabsOptionAnchor+'">'+tabsOption+'</a>'+
+                '</li>';
+      }
+      else {
+        tabs += '<li id="'+tabsOptionAnchor.replace("2", "tab")+'" role="presentation">'+
+                '<a data-toggle="tab" href="#'+tabsOptionAnchor+'">'+tabsOption+'</a>'+
+                '</li>';
+      }
+    }
+  }
+  tabs += '</ul>';
+
+  $('#tabsfield2').html(tabs);
+}
+
 function createTranscriptionPrompt(audio_lang_script) {
   let activeprojectform = JSON.parse(localStorage.activeprojectform);
   let prompt = activeprojectform['prompt']
@@ -222,7 +279,7 @@ function createTranscriptionInterfaceForm(newData) {
     let audio_lang_script = audio_language+'-'+audio_script
     // let audio_lang_script = audio_language
     // console.log(audio_lang_script);
-    for (let [key, value] of Object.entries(newData)){
+    for (let [key, value] of Object.entries(newData)) {
         // console.log(key, value);
         eletype = value[0];
         elevalue = value[1];
@@ -806,7 +863,6 @@ $('#uploadparameters-vadid').change(function () {
   }
 })
 
-
 function replaceZoomSlider() {
   let slider = '<input id="slider" data-action="zoom" type="range" min="20" max="100" value="0" style="width: 50%">';
   $("#sliderdivid").html(slider);
@@ -828,8 +884,6 @@ $("#deleteaudio").click(function() {
     });
   }
 });
-
-replaceZoomSlider();
 
 function questionnaireDerived(allQuesIds) {
   if (allQuesIds !== '') {
@@ -857,3 +911,5 @@ function questionnaireDerived(allQuesIds) {
       });
   }
 }
+
+replaceZoomSlider();

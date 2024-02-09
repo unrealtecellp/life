@@ -77,16 +77,16 @@ def home():
                                                                                 userprojects)
         activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
                                                                       userprojects)
+        if activeprojectname == '':
+            flash(f"select a project from 'Change Active Project' to work on!")
+            return redirect(url_for('home'))
+
         shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
                                                           current_username,
                                                           activeprojectname)
         # print(shareinfo)
         if (shareinfo["sharemode"] == 0):
             return redirect(url_for('lifedata.transcription.audiobrowse'))
-
-        if activeprojectname == '':
-            flash(f"select a project from 'Change Active Project' to work on!")
-            return redirect(url_for('home'))
 
         project_type = getprojecttype.getprojecttype(
             projects, activeprojectname)
@@ -100,6 +100,7 @@ def home():
         activeprojectform = getactiveprojectform.getactiveprojectform(projectsform,
                                                                       projectowner,
                                                                       activeprojectname)
+        logger.debug('trancription active project form: %s', pformat(activeprojectform))
         all_ques_ids = ''
         derived_from_project_type, derived_from_project_name = getprojecttype.getderivedfromprojectdetails(projects,
                                                                                                            activeprojectname)
