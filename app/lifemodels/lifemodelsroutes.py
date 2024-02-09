@@ -274,13 +274,3 @@ def file_download(download_name):
                         mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
                         download_name=download_name,
                         as_attachment=True)
-
-@lifemodels.route('/delete_prediction_file/<download_name>', methods=['GET', 'POST'])
-def delete_prediction_file(download_name):
-    # download_name = 'prediction.xlsx'
-    logger.debug(download_name)
-    file_path = os.path.join(download_folder_path, download_name)
-    logger.debug(os.path.exists(file_path))
-    os.remove(file_path)
-
-    return 'OK'

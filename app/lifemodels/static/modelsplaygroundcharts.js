@@ -143,9 +143,7 @@ function downloadPrediction(ele) {
         a: JSON.stringify(data_info )
       })
       .done(function( data ) {
-        console.log(data);
-        // window.location.reload();
-        localStorage.setItem("modelsPlayground", JSON.stringify(data_info));
+        // console.log(data);
         window.location.href = window.location.href.replace("models_playground", "file_download/"+data.fileName);
       });
 }
