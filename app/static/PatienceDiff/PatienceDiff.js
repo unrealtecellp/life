@@ -27,7 +27,7 @@
 
 function patienceDiff( aLines, bLines, diffPlusFlag ) {
 
-	console.log(aLines, bLines, diffPlusFlag);
+	// console.log(aLines, bLines, diffPlusFlag);
 
 	//
 	// findUnique finds all unique values in arr[lo..hi], inclusive.  This

@@ -241,7 +241,7 @@ def home():
                 langScript = readJSONFile.readJSONFile(langScriptJSONFilePath)
                 activeprojectform['langScript'] = langScript
                 # print(audio_id)
-                # logger.debug("activeprojectform: %s", activeprojectform)
+                logger.debug("activeprojectform: %s", activeprojectform)
 
                 return render_template('transcription.html',
                                        projectName=activeprojectname,

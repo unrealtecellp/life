@@ -567,7 +567,7 @@ function mapTranscriptionInterlinearGloss(e, sentencemorphemicbreakEle) {
             let bLines = transcriptionEle.value.trim();
             console.log(aLines, bLines);
             let sentDiff = patienceDiff( aLines, bLines, false )
-            // console.log(sentDiff);
+            console.log(sentDiff);
             // console.log(sentencemorphemicbreakEle, transcriptionEle);
             // console.log(sentencemorphemicbreakEle.value)
             // console.log(sentencemorphemicbreakEle.value.trim().replace(/[#-]/g, ''))
@@ -584,10 +584,13 @@ function mapTranscriptionInterlinearGloss(e, sentencemorphemicbreakEle) {
 
 function updateSentenceDetailsOnSaveBoundary(boundaryID, sentence, region, form) {
 
+    let activeprojectform = JSON.parse(localStorage.getItem('activeprojectform'));
+
     // console.log(boundaryID);
     // console.log(sentence);
     // console.log(region);
     // console.log("Form in update", form);
+    console.log("Form in update", Object.keys(form));
     // console.log("Comment", form["comment-box"].textContent)
     // console.log("Comment Val", form["comment-box"].value)
     // console.log(document.forms.edit.elements);
@@ -618,7 +621,8 @@ function updateSentenceDetailsOnSaveBoundary(boundaryID, sentence, region, form)
                 sentence[boundaryID][key][k] = form[eleName].value;
             }
         }
-        else if (key === 'translation') {
+        else if ('Translation' in activeprojectform &&
+        key === 'translation') {
             for (let [k, v] of Object.entries(sentence[boundaryID][key])) {
                 // console.log(k, v)
                 tk = k.split('-')[1]
@@ -767,7 +771,10 @@ function updateSentenceDetails(boundaryID, sentence, region) {
         // console.log(scriptCode)
         scripts = activeprojectform["Transcription"][1];
         // console.log(scripts)
-        translationlangscripts = activeprojectform["Translation"][1]
+        let translationlangscripts = undefined;
+        if ("Translation" in activeprojectform) {
+            translationlangscripts = activeprojectform["Translation"][1];
+        }
         // translationlang = activeprojectform["Translation Language"]
         // console.log(translationlang);
         for (i = 0; i < scripts.length; i++) {
@@ -1135,11 +1142,11 @@ function createSentenceForm(formElement, boundaryID) {
     // $(".sentencefield").html(activeSentenceMorphemicBreak);
     // console.log('createSentenceForm(formElement)', formElement, boundaryID);
     inpt = '';
-    // console.log('formElement', formElement);
+    console.log('formElement', formElement);
     let activeprojectform = JSON.parse(localStorage.activeprojectform);
     let activeTag = getActiveTag();
     createNavTabs(activeprojectform, activeTag);
-    // console.log("activeprojectform", activeprojectform);
+    console.log("activeprojectform", activeprojectform);
     for (let [key, value] of Object.entries(formElement)) {
         // console.log('first', key, value)
         if (key === 'transcription') {
@@ -1277,7 +1284,8 @@ function createSentenceForm(formElement, boundaryID) {
             $('#transcription2').append(inpt);
             // console.log(document.getElementById("transcription2").innerHTML)
             // console.log(activeprojectform['Interlinear Gloss'][1]);
-            if (Object.keys(activeprojectform['Interlinear Gloss'][1]).length === 0) {
+            if ('Interlinear Gloss' in activeprojectform &&
+            Object.keys(activeprojectform['Interlinear Gloss'][1]).length === 0) {
                 glossInpt = '';
             }
             document.getElementById("interlineargloss2").innerHTML = "";
@@ -1285,11 +1293,13 @@ function createSentenceForm(formElement, boundaryID) {
             inpt = '';
             glossInpt = '';
         }
-        else if (key === 'translation') {
-            inpt += '<p id="translationsubtitle" class="text-center text-info" style="display: none;">&nbsp;</p>';
-            // translationSubtitle();
+        else if ('Translation' in activeprojectform &&
+        key === 'translation') {
             translationLang = formElement[key];
+            // console.log(translationLang);
             if (Object.keys(translationLang).length > 0) {
+                inpt += '<p id="translationsubtitle" class="text-center text-info" style="display: none;">&nbsp;</p>';
+                translationSubtitle();
                 // add fieldset
                 // inpt += '<fieldset class="form-group border">'+
                 //         '<legend class="col-form-label">'+

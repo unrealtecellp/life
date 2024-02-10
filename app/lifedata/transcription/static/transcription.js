@@ -108,19 +108,21 @@ function showTranslationSubtitle() {
   let firstTranscriptionFieldValue = document.getElementsByClassName('transcription-box')[0].value;
   let translationsubtitle = document.getElementById('translationsubtitle');
   // console.log(firstTranscriptionFieldValue, translationsubtitle);
-  if (firstTranscriptionFieldValue !== '') {
-    translationsubtitle.innerHTML = firstTranscriptionFieldValue;
-    translationsubtitle.style.display = 'block';
-  }
-  else {
-    translationsubtitle.style.display = 'none';
+  if (translationsubtitle) {
+    if (firstTranscriptionFieldValue !== '') {
+      translationsubtitle.innerHTML = firstTranscriptionFieldValue;
+      translationsubtitle.style.display = 'block';
+    }
+    else {
+      translationsubtitle.style.display = 'none';
+    }
   }
   // console.log(translationsubtitle.innerHTML, firstTranscriptionFieldValue);
 }
 
-// function translationSubtitle() {
-//   document.getElementById("translationtab").onclick = function() {showTranslationSubtitle()};
-// }
+function translationSubtitle() {
+  document.getElementById("translationtab").onclick = function() {showTranslationSubtitle()};
+}
 
 function getActiveTag() {
   let innerHtml = document.getElementsByClassName('tab-pane');
