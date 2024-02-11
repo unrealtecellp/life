@@ -512,7 +512,7 @@ function updateQuesBrowseTable() {
         type : 'GET',
         url : '/lifeques/updatequesbrowsetable'
       }).done(function(data){
-        console.log(data.quesDataFields, data.quesData, data.shareMode);
+        // console.log(data.quesDataFields, data.quesData, data.shareMode);
         createQuesBrowseTable(data.quesDataFields, data.quesData, data.shareMode, data.totalRecords, data.shareChecked, data.downloadChecked);
         eventsMapping();
         createPagination(data.totalRecords)
