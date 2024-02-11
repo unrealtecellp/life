@@ -11,7 +11,7 @@ logger = life_logging.get_logger()
 
 def get_full_tagset(tagset_collection, tagset_name):
     full_tagset = tagset_collection.find_one(
-        {'projectname': tagset_name, 'projectDeleteFLAG': 0, 'projectType': 'tagset'}, {'tagSet': 1, '_id': 0})
+        {'projectname': tagset_name, 'projectdeleteFLAG': 0, 'projectType': 'tagset'}, {'tagSet': 1, '_id': 0})
     if 'tagSet' in full_tagset:
         return full_tagset['tagSet']
     else:
@@ -20,7 +20,7 @@ def get_full_tagset(tagset_collection, tagset_name):
 
 def get_full_tagset_with_metadata(tagset_collection, tagset_name):
     full_tagset = tagset_collection.find_one(
-        {'projectname': tagset_name, 'projectDeleteFLAG': 0, 'projectType': 'tagset'}, {'tagSet': 1, 'tagSetMetaData': 1, '_id': 0})
+        {'projectname': tagset_name, 'projectdeleteFLAG': 0, 'projectType': 'tagset'}, {'tagSet': 1, 'tagSetMetaData': 1, '_id': 0})
 
     if 'tagSet' in full_tagset:
         return full_tagset
@@ -30,11 +30,11 @@ def get_full_tagset_with_metadata(tagset_collection, tagset_name):
 
 def get_tagset_id(tagset_collection, tagset_name):
     tagset_id = tagset_collection.find_one(
-        {'projectname': tagset_name, 'projectDeleteFLAG': 0, 'projectType': 'tagset'}, {'_id': 1})
+        {'projectname': tagset_name, 'projectdeleteFLAG': 0, 'projectType': 'tagset'}, {'_id': 1})
     if '_id' in tagset_id:
-        return tuple(tagset_id['_id'])
+        return [str(tagset_id['_id'])]
     else:
-        return tuple()
+        return []
 
 
 def get_all_tagset_details(tagset_collection, current_username):

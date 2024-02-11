@@ -42,10 +42,10 @@ def save_new_transcription_form(projectsform_collection,
                     script = new_transcription_form['Interlinear Gloss Script'][i]
                     lang_script = value[i]+'-'+script
                     interlinear_gloss_dict[lang_script] = script
-            elif key == 'Audio Tagging':
-                tagsets_dict["Audio Tagging"] = value
-            elif key == 'Boundary Tagging':
-                tagsets_dict["Boundary Tagging"] = value
+            elif key == 'Audio Annotation':
+                tagsets_dict["Audio Annotation"] = value
+            elif key == 'Boundary Annotation':
+                tagsets_dict["Boundary Annotation"] = value
         logger.debug("%s, %s, %s",
                      len(translation_dict),
                      len(interlinear_gloss_dict),
@@ -79,8 +79,8 @@ def save_new_transcription_form(projectsform_collection,
 #     'transcriptionsboundarytagsetuploadselect': ['textAnno_tags_1'],
 #     'transcriptionstagsetuploadcheckbox': ['on'],
 #     'transcriptionstagsetuploadselect': ['textAnno_tags'],
-#     "Audio Tagging": "",
-#     "Boundary Tagging": ""
+#     "Audio Annotation": "",
+#     "Boundary Annotation": ""
 #     }
 
 # save_new_transcription_form("",

@@ -173,7 +173,7 @@ def newdataform():
                 # logger.debug("project_type: %s", project_type)
 
                 validation_zip_file = new_data_form_files["tagsetZipFile"]
-                tagset_project_ids, = saveTagset.save_tagset(tagsets,
+                tagset_project_ids = saveTagset.save_tagset(tagsets,
                                                              validation_zip_file,
                                                              project_name)
                 # logger.debug(tagset_project_ids)
@@ -238,7 +238,7 @@ def newdataform():
                     # logger.debug("project_type: %s", project_type)
                     if 'annotationtagsetZipFile' in new_data_form_files:
                         annotation_zip_file = new_data_form_files["annotationtagsetZipFile"]
-                        tagset_project_ids, = saveTagset.save_tagset(tagsets,
+                        tagset_project_ids = saveTagset.save_tagset(tagsets,
                                                                      annotation_zip_file,
                                                                      project_name)
                     else:
@@ -287,6 +287,7 @@ def new_transcription_form(project_name,
                                                                                         'tagsets')
     current_username = getcurrentusername.getcurrentusername()
     final_tagset_project_ids = []
+    tagset_project_ids = {}
     # logger.debug("project_type: %s", project_type)
     if ("transcriptionstagsetuploadcheckbox" in new_data_form and
         new_data_form["transcriptionstagsetuploadcheckbox"][0] == "on"):
@@ -303,21 +304,21 @@ def new_transcription_form(project_name,
             #              transcriptions_zip_filename,
             #              len(transcriptions_zip_filename))
             if (len(transcriptions_zip_filename) != 0):
-                tagset_project_ids = save_tagset.save_tagset(tagsets,
+                tagset_project_ids["Audio Annotation"] = saveTagset.save_tagset(tagsets,
                                                                 transcriptions_zip_file,
                                                                 project_name)
             else:
                 tagset_name = new_data_form['transcriptionstagsetuploadselect'][0]
-                tagset_project_ids = tagset_details.get_tagset_id(tagsets,
+                tagset_project_ids["Audio Annotation"] = tagset_details.get_tagset_id(tagsets,
                                                                 tagset_name)
         else:
             tagset_name = new_data_form['transcriptionstagsetuploadselect'][0]
-            tagset_project_ids = tagset_details.get_tagset_id(tagsets,
+            tagset_project_ids["Audio Annotation"] = tagset_details.get_tagset_id(tagsets,
                                                             tagset_name)
         logger.debug("tagset_project_ids: %s,\nType: %s",
                         tagset_project_ids,
                         type(tagset_project_ids))
-        final_tagset_project_ids.extend(list(tagset_project_ids))
+        final_tagset_project_ids.extend(tagset_project_ids["Audio Annotation"])
     if ("transcriptionsboundarytagsetuploadcheckbox" in new_data_form and
         new_data_form["transcriptionsboundarytagsetuploadcheckbox"][0] == "on"):
         if 'transcriptionsboundarytagsetZipFile' in new_data_form_files:
@@ -333,28 +334,30 @@ def new_transcription_form(project_name,
             #              transcriptions_zip_filename,
             #              len(transcriptions_zip_filename))
             if (len(transcriptions_zip_filename) != 0):
-                tagset_project_ids = save_tagset.save_tagset(tagsets,
+                tagset_project_ids["Boundary Annotation"] = saveTagset.save_tagset(tagsets,
                                                                 transcriptions_zip_file,
                                                                 project_name)
             else:
                 tagset_name = new_data_form['transcriptionsboundarytagsetuploadselect'][0]
-                tagset_project_ids = tagset_details.get_tagset_id(tagsets,
+                tagset_project_ids["Boundary Annotation"] = tagset_details.get_tagset_id(tagsets,
                                                                 tagset_name)
         else:
             tagset_name = new_data_form['transcriptionsboundarytagsetuploadselect'][0]
-            tagset_project_ids = tagset_details.get_tagset_id(tagsets,
+            tagset_project_ids["Boundary Annotation"] = tagset_details.get_tagset_id(tagsets,
                                                             tagset_name)
         logger.debug("tagset_project_ids: %s,\nType: %s",
                     tagset_project_ids,
                     type(tagset_project_ids))
-        final_tagset_project_ids.extend(list(tagset_project_ids))
-    logger.debug("tagset_project_ids: %s,\nType: %s",
+        final_tagset_project_ids.extend(tagset_project_ids["Boundary Annotation"])
+    logger.debug("final tagset_project_ids: %s,\nType: %s",
                     final_tagset_project_ids,
                     type(final_tagset_project_ids))
     projects.update_one({"projectname": project_name},
                         {"$set": {
                             "tagsetId": final_tagset_project_ids
                         }})
+    if (len(tagset_project_ids) != 0):
+        new_data_form.update(tagset_project_ids)
     saved_new_transcription_form, save_status = save_new_transcription_form.save_new_transcription_form(projectsform,
                                                                                                             project_name,
                                                                                                             new_data_form,
