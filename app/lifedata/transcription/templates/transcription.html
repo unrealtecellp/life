@@ -10,6 +10,7 @@
 {{super()}}
   <link href="{{url_for('.static', filename='transcription.css')}}" rel="stylesheet" />
   <link href="{{url_for('.static', filename='audiotranscription.css')}}" rel="stylesheet" />
+  <link href="{{url_for('.static', filename='transcriptionannotation.css')}}" rel="stylesheet" />
   <link href="{{url_for('.static', filename='sidepanel.css')}}" rel="stylesheet" />
   <link href="{{url_for('.static', filename='addnewspeaker.css')}}" rel="stylesheet" />
 {% endblock %}
@@ -650,6 +651,7 @@
   <script src="{{url_for('.static', filename='search.js')}}"></script>
   <script src="{{url_for('.static', filename='sorttable.js')}}"></script>
   <script src="{{url_for('.static', filename='audiotranscription.js')}}"></script>
+  <script src="{{url_for('.static', filename='transcriptionannotation.js')}}"></script>
   <script src="{{url_for('.static', filename='asr.js')}}"></script>
   <script src="{{url_for('static', filename='downloader/transcriptiondownload.js')}}"></script>
   <script type="text/javascript">generateDownloadForm({{ shareinfo | tojson | safe }}, {{ transcriptionsby | tojson | safe}}, {{ activetranscriptionby | tojson | safe}}, {{ projectName | tojson | safe}});</script>

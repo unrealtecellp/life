@@ -590,7 +590,7 @@ function updateSentenceDetailsOnSaveBoundary(boundaryID, sentence, region, form)
     // console.log(sentence);
     // console.log(region);
     // console.log("Form in update", form);
-    console.log("Form in update", Object.keys(form));
+    // console.log("Form in update", Object.keys(form));
     // console.log("Comment", form["comment-box"].textContent)
     // console.log("Comment Val", form["comment-box"].value)
     // console.log(document.forms.edit.elements);
@@ -1146,7 +1146,7 @@ function createSentenceForm(formElement, boundaryID) {
     let activeprojectform = JSON.parse(localStorage.activeprojectform);
     let activeTag = getActiveTag();
     createNavTabs(activeprojectform, activeTag);
-    console.log("activeprojectform", activeprojectform);
+    // console.log("activeprojectform", activeprojectform);
     for (let [key, value] of Object.entries(formElement)) {
         // console.log('first', key, value)
         if (key === 'transcription') {
@@ -1351,23 +1351,15 @@ function createSentenceForm(formElement, boundaryID) {
         // else if (key === 'pos') {
 
         // }
-        // else if (key === 'tags') {
-        //     var tagsData = formElement[key]
-        //     let value = ''
-        //     for (let [tagskey, tagsvalue] of Object.entries(tagsData)) {
-        //         value = value + ';' + tagskey + ':' + tagsvalue
-        //     }
-        //     var activeTagsField = '<input type="checkbox" id="activeTagsField" name="activeTagsField" value="false" onclick="activeTags()">' +
-        //         '<label for="activeTagsField">&nbsp; Add Tags</label><br></br>' +
-        //         '<div id="tags" style="display: none;">' +
-        //         '<div class="form-group">' +
-        //         '<label for="Tags">Tags</label>' +
-        //         '<input type="text" class="form-control" id="Tags" name="Tags" value="' + value + '">' +
-        //         '</div></div></div>';
-        //     // document.getElementById("tagsfield2").innerHTML = "";          
-        //     // $(".tagsfield1").append(activeTagsField);
-        //     inpt = '';
-        // }
+        else if ('Tagsets' in activeprojectform &&
+        'Boundary Annotation' in activeprojectform &&
+        key === 'tags' ) {
+            let tagsetWithMetadata = activeprojectform['Boundary Annotation']
+            let tagsField = transcriptAnnotationInterface(tagsetWithMetadata)
+            // document.getElementById("annotation2").innerHTML = "";
+            // $(".annotation1").append(tagsField);
+            // inpt = '';
+        }
         // else if (key === 'gloss') {
         //     activeprojectform = JSON.parse(localStorage.activeprojectform)
         //     glossDetail = activeprojectform['glossDetails']

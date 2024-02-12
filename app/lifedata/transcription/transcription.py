@@ -38,6 +38,10 @@ from app.lifedata.transcription.controller import (
     save_transcription_prompt
 )
 
+from app.lifetagsets.controller import (
+    tagset_details
+)
+
 from app.lifemodels.controller import modelManager
 
 from flask_login import login_required
@@ -64,14 +68,15 @@ langScriptJSONFilePath = os.path.join(jsonfilesdir, 'langScript.json')
 @login_required
 def home():
     try:
-        projects, userprojects, projectsform, sentences, transcriptions, speakerdetails, questionnaires = getdbcollections.getdbcollections(mongo,
+        projects, userprojects, projectsform, sentences, transcriptions, speakerdetails, questionnaires, tagsets_collection = getdbcollections.getdbcollections(mongo,
                                                                                                                                             'projects',
                                                                                                                                             'userprojects',
                                                                                                                                             'projectsform',
                                                                                                                                             'sentences',
                                                                                                                                             'transcriptions',
                                                                                                                                             'speakerdetails',
-                                                                                                                                            'questionnaires')
+                                                                                                                                            'questionnaires',
+                                                                                                                                            'tagsets')
         current_username = getcurrentusername.getcurrentusername()
         currentuserprojectsname = getcurrentuserprojects.getcurrentuserprojects(current_username,
                                                                                 userprojects)
@@ -241,6 +246,18 @@ def home():
                 langScript = readJSONFile.readJSONFile(langScriptJSONFilePath)
                 activeprojectform['langScript'] = langScript
                 # print(audio_id)
+
+                if ('Tagsets' in activeprojectform):
+                    annotation_types = activeprojectform['Tagsets'][1]
+                    for annotation_type, tagset_ids in annotation_types.items():
+                        if (len(tagset_ids) != 0):
+                            tagset_id = tagset_ids[0]
+                            tagset_name = tagset_details.get_tagset_name(tagsets_collection, tagset_id)
+                            if (len(tagset_name) != 0):
+                                activeprojectform[annotation_type] = tagset_details.get_full_tagset_with_metadata(tagsets_collection, tagset_name)
+                            else: continue
+                        else: continue
+
                 logger.debug("activeprojectform: %s", activeprojectform)
 
                 return render_template('transcription.html',

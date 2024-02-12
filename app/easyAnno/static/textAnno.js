@@ -559,7 +559,6 @@ function myFunction(projData) {
     textareaScrollHeight('maintextcontent', 'maintextcontent');
     createSelect2(select2Keys, tagSet);
     createTextSpanDetails(tagSet, defaultCategoryTags)
-
 }
 
 function previousText() {

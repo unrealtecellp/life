@@ -5,6 +5,7 @@ Module to manage the tagset collection
 from app.controller import (
     life_logging
 )
+from bson.objectid import ObjectId
 
 logger = life_logging.get_logger()
 
@@ -35,6 +36,15 @@ def get_tagset_id(tagset_collection, tagset_name):
         return [str(tagset_id['_id'])]
     else:
         return []
+
+
+def get_tagset_name(tagset_collection, tagset_id):
+    tagset_name = tagset_collection.find_one(
+        {'_id': ObjectId(tagset_id), 'projectdeleteFLAG': 0, 'projectType': 'tagset'}, {'_id': 0, 'projectname': 1})
+    if 'projectname' in tagset_name:
+        return tagset_name['projectname']
+    else:
+        return ''
 
 
 def get_all_tagset_details(tagset_collection, current_username):
