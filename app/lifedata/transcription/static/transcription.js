@@ -177,10 +177,10 @@ function createTranscriptionPrompt(audio_lang_script) {
               '</button></legend>';
   if (Object.keys(prompt).length === 0) {
     promptInpt += '<div class="form-group prompt collapse">';
-    promptInpt += '<label for="prompt_text_'+audio_lang_script+'">Promt Text</label>';
+    promptInpt += '<label for="prompt_text_'+audio_lang_script+'">Prompt Text</label>';
                     
     promptInpt += '<textarea class="form-control translation-box" id="prompt_text_'+audio_lang_script+'"' +
-                  'placeholder="Promt Text " name="prompt_text_'+audio_lang_script+'' +
+                  'placeholder="Prompt Text " name="prompt_text_'+audio_lang_script+'' +
                   'value=""></textarea>';
     promptInpt += '<input class="btn btn-primary pull-right" id="prompt_text_'+audio_lang_script+'submit"'+
                   'type="button" value="Save" onclick="saveTranscriptionPromptText(this);">';
@@ -218,7 +218,7 @@ function createTranscriptionPrompt(audio_lang_script) {
     promptInpt += '<label for="prompt_text_'+audio_lang_script+'">Prompt Text</label>';
                     
     promptInpt += '<textarea class="form-control translation-box" id="prompt_text_'+audio_lang_script+'"' +
-                  'placeholder="Promt Text " name="prompt_text_'+audio_lang_script+'' +
+                  'placeholder="Prompt Text " name="prompt_text_'+audio_lang_script+'' +
                   'value="'+prompt_text_val+'">'+prompt_text_val+'</textarea>';
     promptInpt += '<input class="btn btn-primary pull-right" id="prompt_text_'+audio_lang_script+'submit"'+
                   'type="button" value="Save" onclick="saveTranscriptionPromptText(this);">';
