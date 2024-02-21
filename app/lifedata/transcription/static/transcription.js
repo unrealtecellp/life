@@ -44,7 +44,7 @@ function uploadTranscriptionPromptFile(btn) {
   // console.log(btn, btn.id);
   promptFileUploadBtnId = btn.id
   promptFileId = promptFileUploadBtnId.replace(new RegExp('ques|submit', 'g'), '');
-  console.log(promptFileId);
+  // console.log(promptFileId);
   const file = document.getElementById(promptFileId).files[0];
   var formData = new FormData();
   formData.append(promptFileId, file);
@@ -68,7 +68,7 @@ function saveTranscriptionPromptText(btn) {
   // console.log(btn, btn.id);
   promptTextSaveBtnId = btn.id
   promptTextId = promptTextSaveBtnId.replace(new RegExp('ques|submit', 'g'), '');
-  console.log(promptTextId);
+  // console.log(promptTextId);
   const data = document.getElementById(promptTextId).value;
   var formData = new FormData();
   formData.append(promptTextId, data);
@@ -257,7 +257,7 @@ function createTranscriptionPrompt(audio_lang_script) {
 }
 
 function createTranscriptionInterfaceForm(newData) {
-    console.log(newData);
+    // console.log(newData);
     localStorage.setItem("activeprojectform", JSON.stringify(newData));
     localStorage.setItem("regions", JSON.stringify(newData['transcriptionRegions']));
     localStorage.setItem("transcriptionDetails", JSON.stringify([newData['transcriptionDetails']]));
@@ -392,18 +392,111 @@ function activeTags() {
 
 // remove a sentence element
 function removeSentenceFields(rid) {
-$(".containerremovesentencefield"+rid).remove();
-$("#sentenceForm"+rid).remove();
-document.getElementById("addSentenceField").disabled = false;
+  $(".containerremovesentencefield"+rid).remove();
+  $("#sentenceForm"+rid).remove();
+  document.getElementById("addSentenceField").disabled = false;
+}
 
-}  
+function morphemeFieldsSelect2(morphemicSplitSentence, name) {
+  let jsonFileNames = {
+    morphemicGloss: "select2_morphemic_gloss.json",
+    morphType: "select2_morpheme_type.json",
+    posCategories: "select2_pos_categories.json"
+  }
+  var morphemicGloss = "";
+  var morphType = "";
+  var posCategories = "";
+  $.ajax({
+    url: '/get_jsonfile_data',
+    type: 'GET',
+    data: {'data': JSON.stringify(jsonFileNames)},
+    contentType: "application/json; charset=utf-8", 
+    success: function(response){
+      morphemicGloss = response.jsonData.morphemicGloss;
+      morphType = response.jsonData.morphType;
+      posCategories = response.jsonData.posCategories;
+      // console.log(morphemicGloss);
+      // console.log('.morphemicgloss'+ name +(i+1))
+      for(let i = 0; i < morphemicSplitSentence.length; i++) {
+        $('.morphemicgloss'+ name +(i+1)).select2({
+          tags: true,
+          placeholder: 'Gloss',
+          data: morphemicGloss,
+          allowClear: true
+        });
+      
+        $('.lextype'+ name +(i+1)).select2({
+          tags: true,
+          placeholder: 'Morph Type',
+          data: morphType
+          // allowClear: true
+        });
+        
+        $('.pos'+ name +(i+1)).select2({
+          tags: true,
+          placeholder: 'POS',
+          data: posCategories
+          // allowClear: true
+        });
+      }
+      autoSavetranscriptionSubPart();
+    }
+  });
+}
 
-function getWordPos(morphemicSplitSentence, name) {
+function morphemeFields(morphemicSplitSentence, name, morphemePOS, updateInterlinearGloss) {
+  // console.log(morphemicSplitSentence, name, morphemePOS, updateInterlinearGloss);
+  var morphemeinput = '<div class="morphemefield_' + name + '">';
+  morphemeinput += '<div class="row">'+
+  '<div class="col-sm-3"><strong>Morphemes</strong></div>'+
+  '<div class="col-sm-3"><strong>Gloss</strong></div>'+
+  '<div class="col-sm-3"><strong>Morph Type</strong></div>'+
+  '<div class="col-sm-3"><strong>POS</strong></div><br><br>'+
+  '</div>';
+  morphemeCount = morphemicSplitSentence.length;
+  for(let i = 0; i < morphemeCount; i++) {
+    if (morphemicSplitSentence[i].includes('-')) {
+    morphemeinput += '<div class="input-group">'+
+                      '<input type="text" class="form-control" name="morph_morpheme_' + name + '_' +  (i+1) +'"'+
+                      'placeholder="'+ morphemicSplitSentence[i] +'" value="'+morphemicSplitSentence[i]+'"'+
+                      'id="morphemeField' + name + (i+1) +'" readonly  style="float:none;width: 200px;"/>'+
+                      '<span class="input-group-btn" style="width:50px;"></span>'+
+                      '<select class="morphemicgloss' + name + (i+1) +'" name="morph_gloss_' + name + '_' +  (i+1) +'"'+
+                      ' multiple="multiple" style="width: 200px"></select>'+
+                      '<span class="input-group-btn" style="width:50px;"></span>'+
+                      '<select class="lextype' + name + (i+1) +'" name="morph_lextype_' + name + '_' +  (i+1) +'"  onchange="autoSavetranscription(event,this)" style="width: 200px">'+
+                      '<option value="affix" selected>affix</option></select>'+
+                      '<span class="input-group-btn" style="width:50px;"></span></div><br>';
+    }
+    else {
+    morphemeinput += '<div class="input-group">'+
+                      '<input type="text" class="form-control" name="morph_morpheme_' + name + '_' +  (i+1) +'"'+
+                      'placeholder="'+ morphemicSplitSentence[i] +'" value="'+ morphemicSplitSentence[i] +'"'+
+                      'id="morphemeField' + name + (i+1) +'" readonly  style="float:none;width: 200px;"/>'+
+                      '<span class="input-group-btn" style="width:50px;"></span>'+
+                      '<input type="text" class="form-control" name="morph_gloss_' + name + '_' +  (i+1) +'"'+
+                      ' id="morphemicgloss' + name + (i+1) +'" onkeyup="autoSavetranscription(event,this)" style="float:none;width: 200px;"/>'+
+                      '<span class="input-group-btn" style="width:50px;"></span>'+
+                      '<select class="lextype' + name + (i+1) +'" name="morph_lextype_' + name + '_' +  (i+1) +'"  onchange="autoSavetranscription(event,this)" style="width: 200px"></select>'+
+                      '<span class="input-group-btn" style="width:50px;"></span>'+
+                      '<select class="pos' + name + (i+1) +'" name="morph_pos_' + name + '_' +  (i+1) +'" style="width: 200px">'+
+                      '<option value="'+ morphemePOS[i][1] +'" selected>'+ morphemePOS[i][1] +'</option>'+
+                      '</select></div><br>';
+
+    }
+  }
+  morphemeinput += ' <input type="text" id="morphcount" name="morphcount'+ name +'" value="'+ morphemeCount +'" hidden>';
+  $(".morphemefield_"+name).remove();
+  $("#morphemicDetail_"+name).append(morphemeinput);
+  morphemeFieldsSelect2(morphemicSplitSentence, name);
+}
+
+function getWordPos(morphemicSplitSentence, name, updateInterlinearGloss) {
   $.getJSON('/predictPOSNaiveBayes', {
 
   a:String(morphemicSplitSentence)
   }, function(data) {
-  morphemeFields(morphemicSplitSentence, name, data.predictedPOS);
+  morphemeFields(morphemicSplitSentence, name, data.predictedPOS, updateInterlinearGloss);
   
   });
   return false;
@@ -413,14 +506,15 @@ function getWordPos(morphemicSplitSentence, name) {
 // create the boxes for words and morphemes
 function getSentence(value, name) {
   // console.log(value, name);
+  let localStorageRegions = JSON.parse(localStorage.regions);
   var morphemicSplitSentence = [];
   value = document.getElementById("Transcription_" + name).value.trim();
   // if (value === '') {
   //   value = document.getElementById("Transcription_" + name).value.trim();
   // }
-  sentence = value.trim().split(' ');
-  sentence_morphemic_break_full = document.getElementById("sentenceMorphemicBreak_" + name).value.trim(); // Find the text
-  sentence_morphemic_break = document.getElementById("sentenceMorphemicBreak_" + name).value.trim().split(' '); // Find the text
+  let sentence = value.trim().split(' ');
+  let sentence_morphemic_break_full = document.getElementById("sentenceMorphemicBreak_" + name).value.trim(); // Find the text
+  let sentence_morphemic_break = document.getElementById("sentenceMorphemicBreak_" + name).value.trim().split(' '); // Find the text
 
   let replaceObj = new RegExp('[#-]', 'g')
   if (value !== sentence_morphemic_break_full.replace(replaceObj, '')) {
@@ -449,6 +543,7 @@ function getSentence(value, name) {
   }
 
   for (i = 0; i < sentence_morphemic_break.length; i++) {
+    // console.log(sentence_morphemic_break[i]);
     if (sentence_morphemic_break[i].includes('#') || sentence_morphemic_break[i].includes('-')) {
       if (sentence_morphemic_break[i].includes('#') && sentence_morphemic_break[i].includes('-')) {
         morphSplit = sentence_morphemic_break[i].split('#')
@@ -497,107 +592,73 @@ function getSentence(value, name) {
       morphemicSplitSentence.push(sentence_morphemic_break[i]);
     }
   }
-  // console.log('morphemicSplitSentence', morphemicSplitSentence)
+  // console.log('morphemicSplitSentence', morphemicSplitSentence);
+  // console.log('sentence_morphemic_break_full', sentence_morphemic_break_full);
+  
+  let activeBoundaryID = document.getElementById('activeBoundaryID').value;
+  // console.log(activeBoundaryID);
+  // console.log(localStorageRegions);
+  let updateInterlinearGloss = {};
+  let sentence_morphemic_break_full_old = '';
+  let glossDetails = '';
+  let posDetails = '';
+  let morphemeDetails = '';
+  for (let p=0; p<localStorageRegions.length; p++) {
+    if (localStorageRegions[p]['boundaryID'] === activeBoundaryID) {
+      // console.log(localStorageRegions[p]);
+      sentence_morphemic_break_full_old = localStorageRegions[p]['data']['sentence'][activeBoundaryID]['sentencemorphemicbreak'][name];
+      glossDetails = localStorageRegions[p]['data']['sentence'][activeBoundaryID]['gloss'][name];
+      posDetails = localStorageRegions[p]['data']['sentence'][activeBoundaryID]['pos'];
+      morphemeDetails = localStorageRegions[p]['data']['sentence'][activeBoundaryID]['morphemes'][name];
+      // console.log(sentence_morphemic_break_full_old, glossDetails, posDetails, morphemeDetails);
+      break;
+    }
+  }
+  updateInterlinearGloss['glossDetails'] = glossDetails;
+  updateInterlinearGloss['posDetails'] = posDetails;
+  updateInterlinearGloss['morphemeDetails'] = morphemeDetails;
+  let sentence_morphemic_break_diff = patienceDiff( sentence_morphemic_break_full_old+' ', sentence_morphemic_break_full+' ', false )
+  // console.log(sentence_morphemic_break_diff);
+  let lines = sentence_morphemic_break_diff['lines'];
+  let errorFlag = 0;
+  let newWord = '';
+  let oldWord = '';
+  let wordCount = 0;
+  for (let l=0; l<lines.length; l++) {
+    // console.log(wordId, oldWord, newWord, 'ERROR', errorFlag);
+    let lineData = lines[l];
+    if (lineData['aIndex'] !== -1) {
+      oldWord += lineData['line'];
+    }
+    if (lineData['bIndex'] !== -1) {
+      newWord += lineData['line'];
+    }
+    let wordId = 'W00'+String(wordCount+1);
+    if (lineData['aIndex'] === -1 || lineData['bIndex'] === -1) {
+      // console.log(l, errorFlag);
+      errorFlag = 1;
+      // console.log(l, errorFlag);
+    }
+    if (lineData['line'] == ' ' && errorFlag === 1) {
+      // console.log(wordId, oldWord, newWord, 'ERROR', errorFlag);
+    }
+    if (lineData['line'] === ' ') {
+      updateInterlinearGloss[wordId] = [oldWord, newWord, errorFlag]
+      errorFlag = 0;
+      oldWord = '';
+      newWord = '';
+      wordCount += 1;
+    }
+  }
+  // console.log(updateInterlinearGloss);
 
   document.getElementById("sentenceMorphemicBreak_"+name).readOnly = true;
   var checkBtn = '<button class="btn btn-warning" type="button" id="editSentenceField"'+
               'onclick="editMorphemicBreakSentence(\''+value+'\', \''+name+'\');">'+
               '<span class="glyphicon glyphicon-edit" aria-hidden="true"></span></button><br>';
   $("#editsentmorpbreak").html(checkBtn);
-  getWordPos(morphemicSplitSentence, name)
+  getWordPos(morphemicSplitSentence, name, updateInterlinearGloss);
 }  
-
-function morphemeFieldsSelect2(morphemicSplitSentence, name) {
-  let jsonFileNames = {
-    morphemicGloss: "select2_morphemic_gloss.json",
-    morphType: "select2_morpheme_type.json",
-    posCategories: "select2_pos_categories.json"
-  }
-  var morphemicGloss = "";
-  var morphType = "";
-  var posCategories = "";
-  $.ajax({
-    url: '/get_jsonfile_data',
-    type: 'GET',
-    data: {'data': JSON.stringify(jsonFileNames)},
-    contentType: "application/json; charset=utf-8", 
-    success: function(response){
-      morphemicGloss = response.jsonData.morphemicGloss;
-      morphType = response.jsonData.morphType;
-      posCategories = response.jsonData.posCategories;
-      // console.log(morphemicGloss);
-      // console.log('.morphemicgloss'+ name +(i+1))
-      for(let i = 0; i < morphemicSplitSentence.length; i++) {
-        $('.morphemicgloss'+ name +(i+1)).select2({
-          tags: true,
-          placeholder: 'Gloss',
-          data: morphemicGloss,
-          allowClear: true
-        });
-      
-        $('.lextype'+ name +(i+1)).select2({
-          tags: true,
-          placeholder: 'Morph Type',
-          data: morphType
-          // allowClear: true
-        });
-        
-        $('.pos'+ name +(i+1)).select2({
-          tags: true,
-          placeholder: 'POS',
-          data: posCategories
-          // allowClear: true
-        });
-      }
-    }
-  });
-}
-
-function morphemeFields(morphemicSplitSentence, name, morphemePOS) {
-  var morphemeinput = '<div class="morphemefield_' + name + '">';
-  morphemeinput += '<div class="row">'+
-  '<div class="col-sm-3"><strong>Morphemes</strong></div>'+
-  '<div class="col-sm-3"><strong>Gloss</strong></div>'+
-  '<div class="col-sm-3"><strong>Morph Type</strong></div>'+
-  '<div class="col-sm-3"><strong>POS</strong></div><br><br>'+
-  '</div>';
-  morphemeCount = morphemicSplitSentence.length
-  for(let i = 0; i < morphemeCount; i++) {
-    if (morphemicSplitSentence[i].includes('-')) {
-    morphemeinput += '<div class="input-group">'+
-                      '<input type="text" class="form-control" name="morph_morpheme_' + name + '_' +  (i+1) +'"'+
-                      'placeholder="'+ morphemicSplitSentence[i] +'" value="'+morphemicSplitSentence[i]+'"'+
-                      'id="morphemeField' + name + (i+1) +'" readonly  style="float:none;width: 200px;"/>'+
-                      '<span class="input-group-btn" style="width:50px;"></span>'+
-                      '<select class="morphemicgloss' + name + (i+1) +'" name="morph_gloss_' + name + '_' +  (i+1) +'"'+
-                      ' multiple="multiple" style="width: 200px"></select>'+
-                      '<span class="input-group-btn" style="width:50px;"></span>'+
-                      '<select class="lextype' + name + (i+1) +'" name="morph_lextype_' + name + '_' +  (i+1) +'"  onchange="autoSavetranscription(event,this)" style="width: 200px">'+
-                      '<option value="affix" selected>affix</option></select>'+
-                      '<span class="input-group-btn" style="width:50px;"></span></div><br>';
-    }
-    else {
-    morphemeinput += '<div class="input-group">'+
-                      '<input type="text" class="form-control" name="morph_morpheme_' + name + '_' +  (i+1) +'"'+
-                      'placeholder="'+ morphemicSplitSentence[i] +'" value="'+ morphemicSplitSentence[i] +'"'+
-                      'id="morphemeField' + name + (i+1) +'" readonly  style="float:none;width: 200px;"/>'+
-                      '<span class="input-group-btn" style="width:50px;"></span>'+
-                      '<input type="text" class="form-control" name="morph_gloss_' + name + '_' +  (i+1) +'"'+
-                      ' id="morphemicgloss' + name + (i+1) +'" onkeyup="autoSavetranscription(event,this)" style="float:none;width: 200px;"/>'+
-                      '<span class="input-group-btn" style="width:50px;"></span>'+
-                      '<select class="lextype' + name + (i+1) +'" name="morph_lextype_' + name + '_' +  (i+1) +'"  onchange="autoSavetranscription(event,this)" style="width: 200px"></select>'+
-                      '<span class="input-group-btn" style="width:50px;"></span>'+
-                      '<select class="pos' + name + (i+1) +'" name="morph_pos_' + name + '_' +  (i+1) +'" style="width: 200px">'+
-                      '<option value="'+ morphemePOS[i][1] +'" selected>'+ morphemePOS[i][1] +'</option>'+
-                      '</select></div><br>';
-
-    }
-  }
-  morphemeinput += ' <input type="text" id="morphcount" name="morphcount'+ name +'" value="'+ morphemeCount +'" hidden>';
-  $(".morphemefield_"+name).remove();
-  $("#morphemicDetail_"+name).append(morphemeinput);
-  morphemeFieldsSelect2(morphemicSplitSentence, name);
-}
 
 function editMorphemicBreakSentence(transcriptionvalue, transcriptionkey) {
   document.getElementById("sentenceMorphemicBreak_"+transcriptionkey).readOnly = false;

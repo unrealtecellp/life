@@ -1129,16 +1129,22 @@ def predictPOSNaiveBayes():
     # data through ajax
     wordList = request.args.get('a').split(',')
     if (len(wordList) != 0):
-        # load model
-        with open('trainedModels/naiveBayesPOSModel.pkl', 'rb') as f:
-            clf = pickle.load(f)
-        # loading pickled vectorizer
-        vectorizer = joblib.load("trainedModels/naiveBayesPOSVectorizer.pkl")
-        x_test = vectorizer.transform(wordList)
-        predictedpos = list(clf.predict(x_test))
-        predictedPOS = []
-        for word, pos in zip(wordList, predictedpos):
-            predictedPOS.append([word, pos])
+        try:
+            # load model
+            with open('trainedModels/naiveBayesPOSModel.pkl', 'rb') as f:
+                clf = pickle.load(f)
+            # loading pickled vectorizer
+            vectorizer = joblib.load("trainedModels/naiveBayesPOSVectorizer.pkl")
+            x_test = vectorizer.transform(wordList)
+            predictedpos = list(clf.predict(x_test))
+            predictedPOS = []
+            for word, pos in zip(wordList, predictedpos):
+                predictedPOS.append([word, pos])
+        except:
+            logger.exception("")
+            predictedPOS = []
+            for word in wordList:
+                predictedPOS.append([word, 'Determiner'])
 
         return jsonify(predictedPOS=predictedPOS)
 
