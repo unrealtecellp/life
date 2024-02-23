@@ -56,6 +56,25 @@ all_model_names = readJSONFile.readJSONFile(modelConfigPath)
 
 allowed_file_formats = ['mp3', 'wav']
 
+
+selected_audio_sorting_subcategory_self_map = {
+        "agegroup": "ageGroup",
+        "gender": "Gender",
+        "educationlevel": "educationLevel",
+        "educationmediumupto12": "educationMediumUpto12-list",
+        "educationmediumafter12": "educationMediumAfter12-list",
+        "speakerspeaklanguage": "Speaker Speak Language"
+    }
+
+selected_audio_sorting_subcategory_new = {
+        "ageGroup": "Age Group",
+        "gender": "Gender",
+        "educationLevel": "Education Level",
+        "educationMediumUpto12-list": "Education Medium Upto 12",
+        "educationMediumAfter12-list": "Education Medium After 12",
+        "speakerspeaklanguage": "Speaker Speak Language"
+    }
+
 # TODO: This should be saved in a separate document in MongoDB that will bind
 # specific keys in database to specific models
 
@@ -3070,7 +3089,13 @@ def get_audio_sorting_subcategories(speakerdetails_collection,
                 audio_sorting_subcategory = doc["current"]["sourceMetadata"]
                 # logger.debug("aggregate_output: %s", pformat(audio_sorting_subcategory))
                 for key, value in audio_sorting_subcategory.items():
-                    if (key in selected_audio_sorting_subcategory):
+                    logger.debug('%s, %s', key, value)
+                    if (key in list(selected_audio_sorting_subcategory_self_map.values())):
+                        selected_audio_sorting_subcategory = selected_audio_sorting_subcategory_new
+                    if (key in selected_audio_sorting_subcategory or
+                        key in list(selected_audio_sorting_subcategory_self_map.values())):
+                        logger.debug(key)
+                        logger.debug(selected_audio_sorting_subcategory)
                         selected_audio_sorting_subcategory_value = selected_audio_sorting_subcategory[
                             key]
                         if (selected_audio_sorting_subcategory_value in aggregate_output_dict):
@@ -3181,6 +3206,7 @@ def filter_speakers(speakerdetails_collection,
         # logger.debug("key: %s", key)
         if (key in selected_audio_sorting_subcategory):
             # logger.debug("key: %s", key)
+            key = selected_audio_sorting_subcategory_self_map[key]
             db_key = "current.sourceMetadata."+key
             value_list_len = len(value)
             if (value_list_len != 0):

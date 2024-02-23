@@ -442,7 +442,7 @@ def updateaudiosortingsubcategories():
                                                                                                       selected_audio_sorting_category
                                                                                                       )
             selected_audio_sorting_sub_categories = ''
-            # logger.debug("audio_sorting_sub_categories: %s", audio_sorting_sub_categories)
+            logger.debug("audio_sorting_sub_categories: %s", audio_sorting_sub_categories)
             if (derived_from_project_type != '' and
                     derived_from_project_name != ''):
                 if (derived_from_project_type == 'questionnaires'):

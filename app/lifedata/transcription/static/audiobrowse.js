@@ -492,7 +492,7 @@ function updateAudioSortingSubCategoriesDropdown() {
         type : 'GET',
         url : '/lifedata/transcription/updateaudiosortingsubcategories'
       }).done(function(data){
-        // console.log(data);
+        console.log(data);
         audioSortingSubCategories = data.audioSortingSubCategories;
         selectedAudioSortingSubCategories = data.selectedAudioSortingSubCategories;
         // console.log(audioSortingSubCategories, selectedAudioSortingSubCategories);
