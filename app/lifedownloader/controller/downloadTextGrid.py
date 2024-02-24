@@ -382,7 +382,7 @@ def downloadTextGrid(transcriptions,
                         # xmin, xmax, tiers = get_boundaries_tiers(
                         #     activeprojectname, current_projectformelements, text_grid, offset=boundary_offset)
                         xmin, xmax, tiers = get_boundaries_tiers(
-                            activeprojectname, current_projectformelements, text_grid)
+                            activeprojectname, current_projectformelements, text_grid, xmin=[], xmax=[], tiers={})
                         logger.debug('Tiers %s', tiers)
 
                         if audio_duration == 0.0 or download_audio:

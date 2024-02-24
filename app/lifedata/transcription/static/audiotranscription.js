@@ -1405,11 +1405,11 @@ function createSentenceForm(formElement, boundaryID) {
     // $(".sentencefield").html(activeSentenceMorphemicBreak);
     // console.log('createSentenceForm(formElement)', formElement, boundaryID);
     inpt = '';
-    // console.log('formElement', formElement);
+    console.log('formElement', formElement);
     let activeprojectform = JSON.parse(localStorage.activeprojectform);
     let activeTag = getActiveTag();
     createNavTabs(activeprojectform, activeTag);
-    // console.log("activeprojectform", activeprojectform);
+    console.log("activeprojectform", activeprojectform);
     for (let [key, value] of Object.entries(formElement)) {
         // console.log('first', key, value)
         if (key === 'transcription') {
@@ -1571,7 +1571,7 @@ function createSentenceForm(formElement, boundaryID) {
         else if ('Translation' in activeprojectform &&
         key === 'translation') {
             translationLang = formElement[key];
-            // console.log(translationLang);
+            console.log(translationLang);
             if (Object.keys(translationLang).length > 0) {
                 inpt += '<p id="translationsubtitle" class="text-center text-info" style="display: none;">&nbsp;</p>';
                 translationSubtitle();
