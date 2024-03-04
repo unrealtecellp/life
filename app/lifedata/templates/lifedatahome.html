@@ -67,7 +67,7 @@ LiFe Data Home
       <div id="transcriptionstypeproject" style="display: none;">
         <div class="form-group" id="datasentencelanguage">
           <label for="iddatasentencelanguage">Audio Language</label><br>
-          <select class="datasentencelanguageclass" id="iddatasentencelanguage" name="Sentence Language" style="width: 55%" required></select>
+          <select class="datasentencelanguageclass" id="iddatasentencelanguage" name="Audio Language" style="width: 55%" required></select>
         </div>  
 
         <div class="form-group"> 
@@ -107,6 +107,42 @@ LiFe Data Home
             <button class="btn btn-success" type="button" id="addInterlinearGlossField"> 
               <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 
             </button>
+          </div>
+        </div>
+
+        <div class="col">
+          <label>
+            <input type="checkbox" id="transcriptionstagsetuploadcheckbox" name="transcriptionstagsetuploadcheckbox">
+            Audio Annotation
+          </label>
+          <div class="col" id="transcriptionstagsetupload" style="display: none;">
+            <label for="idtranscriptionstagsetuploadselect">Select Tagset: </label>
+            <select class="transcriptionstagsetuploadselectclass" id="idtranscriptionstagsetuploadselect" name="transcriptionstagsetuploadselect" style="width: 45%"></select>
+            <br>
+            <p><strong>OR</strong></p>
+            <label class="btn btn-danger">
+              Select Tagset ZIP File <input type="file" id="transcriptionstagsetZipFile" name="transcriptionstagsetZipFile" accept="application/zip" hidden>
+            </label>
+            <input class="btn btn-primary" id="transcriptionszipfilesubmit" type="button" value="Upload" onclick="uploadTranscriptionTagsetZipFile(this);" data-toggle="modal">
+            <p id="transcriptionstagsetZipFileName"></p>
+          </div>
+        </div>
+
+        <div class="col">
+          <label>
+            <input type="checkbox" id="transcriptionsboundarytagsetuploadcheckbox" name="transcriptionsboundarytagsetuploadcheckbox">
+            Boundary Annotation
+          </label>
+          <div class="col" id="transcriptionsboundarytagsetupload" style="display: none;">
+            <label for="idtranscriptionsboundarytagsetuploadselect">Select Tagset: </label>
+            <select class="transcriptionsboundarytagsetuploadselectclass" id="idtranscriptionsboundarytagsetuploadselect" name="transcriptionsboundarytagsetuploadselect" style="width: 45%"></select>
+            <br>
+            <p><strong>OR</strong></p>
+            <label class="btn btn-danger">
+              Select Tagset ZIP File <input type="file" id="transcriptionsboundarytagsetZipFile" name="transcriptionsboundarytagsetZipFile" accept="application/zip" hidden>
+            </label>
+            <input class="btn btn-primary" id="transcriptionsboundaryzipfilesubmit" type="button" value="Upload" onclick="uploadTranscriptionTagsetZipFile(this);" data-toggle="modal">
+            <p id="transcriptionsboundarytagsetZipFileName"></p>
           </div>
         </div>
       </div>

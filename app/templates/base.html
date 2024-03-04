@@ -11,6 +11,7 @@
 <link href="{{ url_for('static', filename='highlight-within-textarea/jquery.highlight-within-textarea.css') }}" rel="stylesheet">
 <!-- <link rel="stylesheet" href="{{ url_for('static', filename='jQuery-contextMenu/dist/jquery.contextMenu.css') }}"> -->
 <link href="{{url_for('static', filename='base.css')}}" rel="stylesheet" />
+<link rel="shortcut icon" href="{{ url_for('static', filename='/image/logo_unreal_tece.png') }}">
 {% endblock %}
 
 {% block navbar %}
@@ -28,6 +29,7 @@
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 
                 <ul class="nav navbar-nav navbar-right">
+                    <li><a href="{{ url_for('lifemodels.models_playground') }}">Models Playground</a></li>
                     {% if current_user.is_anonymous %}
                     <li><a href="{{ url_for('login') }}">Login</a></li>
                     {% else %}
@@ -52,9 +54,13 @@
                     </li> -->
                     {% endif %}
                 </ul>
-                {% block extra_nav %}{% endblock %}
+                {% block extra_nav %}
+                    
+                {% endblock %}
             </div>
-        </div>{% block base_navbar %}{% endblock %}
+        </div>
+        {% block base_navbar %}
+        {% endblock %}
     </nav>
 {% endblock %}
 
@@ -85,6 +91,8 @@
 <!-- <script src="{{url_for('.static', filename='wavesurfer/plugin/wavesurfer.timeline.js')}}"></script> -->
 <!-- <script src="{{url_for('.static', filename='wavesurfer/plugin/wavesurfer.spectrogram.js')}}"></script> -->
 <script src="{{ url_for('static', filename='highlight-within-textarea/jquery.highlight-within-textarea.js')}}"></script>
+<script src=" https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js "></script>
+<script src="{{ url_for('static', filename='PatienceDiff/PatienceDiff.js')}}"></script>
 <!-- <script src="{{ url_for('static', filename='jQuery-contextMenu/dist/jquery.contextMenu.js')}}"></script> -->
 <!-- <script src="{{ url_for('static', filename='jQuery-contextMenu/dist/jquery.ui.position.js')}}"></script> -->
 {% endblock %}

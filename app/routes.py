@@ -1,3 +1,4 @@
+# 87bb4a4008392471de988181193f7e6e98e0d195
 import glob
 import json
 import os
@@ -47,9 +48,12 @@ from app.controller import (manageAppConfig, questionnairedetails,
                             readJSONFile, removeallaccess, savenewlexeme,
                             savenewproject, savenewprojectform,
                             savenewsentence, unannotatedfilename, updateuserprojects,
-                            userdetails, life_logging)
+                            userdetails, life_logging, processHTMLForm)
 from app.forms import RegistrationForm, UserLoginForm
 from app.models import UserLogin
+
+from app.languages.controller import languageManager as lman
+from app.lifemodels.controller import modelManager as mman
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 scriptCodeJSONFilePath = os.path.join(basedir, 'static/json/scriptCode.json')
@@ -66,10 +70,10 @@ userlogin, = getdbcollections.getdbcollections(
 # if ADMIN_USER is None:
 ADMIN_USER = 'life_admin'
 
-# print('admin', ADMIN_USER, SUB_ADMINS)
+# logger.debug('admin', ADMIN_USER, SUB_ADMINS)
 admin_reminder = f'App admin <<{ADMIN_USER}>> user created! Please create new password for this account to login'
 
-# print(f'{"#"*80}\nBase directory:\n{basedir}\n{"#"*80}')
+# logger.debug(f'{"#"*80}\nBase directory:\n{basedir}\n{"#"*80}')
 
 # home page route
 
@@ -81,7 +85,7 @@ def home():
     userprojects, userlogin, projects = getdbcollections.getdbcollections(
         mongo, 'userprojects', 'userlogin', 'projects')
     current_username = getcurrentusername.getcurrentusername()
-    print('USERNAME: ', current_username)
+    # logger.debug('USERNAME: ', current_username)
     usertype = userdetails.get_user_type(
         userlogin, current_username)
     currentuserprojectsname = getcurrentuserprojects.getcurrentuserprojects(
@@ -104,8 +108,8 @@ def home():
 
     project_type = getprojecttype.getprojecttype(projects, activeprojectname)
     # logger.debug('project_type: %s', project_type)
-    # print(shareinfo)
-    # print('activeprojectname', activeprojectname)
+    # logger.debug(shareinfo)
+    # logger.debug('activeprojectname', activeprojectname)
 
     return render_template('home.html',
                            data=currentuserprojectsname,
@@ -123,11 +127,11 @@ def manageusers():
     userlogin, = getdbcollections.getdbcollections(
         mongo, 'userlogin')
     current_username = getcurrentusername.getcurrentusername()
-    print('USERNAME: ', current_username)
+    # logger.debug('USERNAME: ', current_username)
     usertype = userdetails.get_user_type(
         userlogin, current_username)
-    print('USERTYPE: ', usertype)
-    # print(ADMIN_USER, SUB_ADMINS)
+    # logger.debug('USERTYPE: ', usertype)
+    # logger.debug(ADMIN_USER, SUB_ADMINS)
 
     if 'ADMIN' in usertype:
         allusers = userdetails.getuserdetails(userlogin)
@@ -149,11 +153,11 @@ def getoneuserdetails():
     userlogin, = getdbcollections.getdbcollections(
         mongo, 'userlogin')
     current_username = getcurrentusername.getcurrentusername()
-    print('USERNAME: ', current_username)
+    # logger.debug('USERNAME: ', current_username)
     usertype = userdetails.get_user_type(
         userlogin, current_username)
-    print('USERTYPE: ', usertype)
-    # print(ADMIN_USER, SUB_ADMINS)
+    # logger.debug('USERTYPE: ', usertype)
+    # logger.debug(ADMIN_USER, SUB_ADMINS)
 
     if 'ADMIN' in usertype:
         required_username = request.args.get('username')
@@ -161,7 +165,7 @@ def getoneuserdetails():
             userlogin, required_username)
         required_user_details['username'] = required_username
 
-        print(required_user_details)
+        # logger.debug(required_user_details)
 
     return jsonify(userdetails=required_user_details)
 
@@ -172,11 +176,11 @@ def updateuserstatus():
     userlogin, = getdbcollections.getdbcollections(
         mongo, 'userlogin')
     current_username = getcurrentusername.getcurrentusername()
-    print('USERNAME: ', current_username)
+    # logger.debug('USERNAME: ', current_username)
     usertype = userdetails.get_user_type(
         userlogin, current_username)
-    print('USERTYPE: ', usertype)
-    # print(ADMIN_USER, SUB_ADMINS)
+    # logger.debug('USERTYPE: ', usertype)
+    # logger.debug(ADMIN_USER, SUB_ADMINS)
 
     if 'ADMIN' in usertype:
         current_username = request.args.get('username')
@@ -188,7 +192,7 @@ def updateuserstatus():
         # allusers = userdetails.getuserdetails(userlogin)
         # userprofilelist = userdetails.getuserprofilestructure(userlogin)
 
-    print('User details updated')
+    # logger.debug('User details updated')
     flash(
         'The account details are successfully updated.')
     return redirect(url_for('manageusers'))
@@ -199,7 +203,7 @@ def updateuserstatus():
     #     userprofilelist=userprofilelist
     # )
 
-    # print(required_user_details)
+    # logger.debug(required_user_details)
 
     # # return 'Ok'
 
@@ -214,7 +218,7 @@ def manageproject():
     userprojects, userlogin = getdbcollections.getdbcollections(
         mongo, 'userprojects', 'userlogin')
     current_username = getcurrentusername.getcurrentusername()
-    print('USERNAME: ', current_username)
+    # logger.debug('USERNAME: ', current_username)
     usertype = userdetails.get_user_type(
         userlogin, current_username)
     currentuserprojectsname = getcurrentuserprojects.getcurrentuserprojects(
@@ -254,7 +258,7 @@ def newproject():
             flash(f'Project Name : {project_name} already exist!')
             return redirect(url_for('newproject'))
         else:
-            # print(project_name)
+            # logger.debug(project_name)
             updateuserprojects.updateuserprojects(userprojects,
                                                   project_name,
                                                   current_user.username)
@@ -273,7 +277,7 @@ def newproject():
 
 def sentence_lexeme_to_lexemes(oneSentenceDetail, oneLexemeDetail):
     for key, value in oneLexemeDetail.items():
-        # print(key, ' : ', value)
+        # logger.debug(key, ' : ', value)
         pass
 
 
@@ -298,7 +302,7 @@ def enternewsentences():
     shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
                                                       current_username,
                                                       activeprojectname)
-    # print(shareinfo)
+    # logger.debug(shareinfo)
 
     if activeprojectname == '':
         flash(f"select a project from 'Change Active Project' to work on!")
@@ -381,7 +385,7 @@ def enternewsentences():
             audio_metadata = audiodetails.getaudiometadata(data_collection,
                                                            audio_id)
             # logger.debug('audio_metadata: %s', pformat(audio_metadata))
-            # pprint(audio_metadata)
+            # logger.debug(audio_metadata)
             activeprojectform['audioMetadata'] = audio_metadata['audioMetadata']
             last_updated_by = audiodetails.lastupdatedby(data_collection,
                                                          audio_id)
@@ -396,12 +400,12 @@ def enternewsentences():
             # logger.debug("audio_filename: %s, file_path: %s", audio_filename, file_path)
             activeprojectform['lastActiveId'] = audio_id
             activeprojectform['transcriptionDetails'] = transcription_details
-            # print(transcription_details)
+            # logger.debug(transcription_details)
             activeprojectform['AudioFilePath'] = file_path
             transcription_regions, gloss, pos, boundary_count = audiodetails.getaudiotranscriptiondetails(
                 data_collection, audio_id, transcription_by, transcription_details)
             activeprojectform['transcriptionRegions'] = transcription_regions
-            # print(transcription_regions)
+            # logger.debug(transcription_regions)
             activeprojectform['boundaryCount'] = boundary_count
             if (len(gloss) != 0):
                 activeprojectform['glossDetails'] = gloss
@@ -420,6 +424,7 @@ def enternewsentences():
 
                 transcriptions_by = audiodetails.get_audio_transcriptions_by(
                     projects, transcriptions, activeprojectname, audio_id)
+                # logger.debug("transcriptions_by: %s", transcriptions_by)
 
             except:
                 speakerids = ''
@@ -430,12 +435,12 @@ def enternewsentences():
             activeprojectform['langScript'] = langScript
             # ipaToMeetei = readJSONFile.readJSONFile(ipatomeeteiFilePath)
             # activeprojectform['ipaToMeetei'] = ipaToMeetei
-            # print('currentuserprojectsname', currentuserprojectsname)
-            # print('speakerids', speakerids)
-            # pprint(activeprojectform)
+            # logger.debug('currentuserprojectsname', currentuserprojectsname)
+            # logger.debug('speakerids', speakerids)
+            # logger.debug(activeprojectform)
             # logger.debug('activespeakerid: %s\ncommentstats: %s\nshareinfo: %s\ntranscriptions by: %s', activespeakerid, commentstats, shareinfo, transcriptions_by)
             # logger.debug('speaker IDs: %s', speakerids)
-            # print(commentstats)
+            # logger.debug(commentstats)
             return render_template('enternewsentences.html',
                                    projectName=activeprojectname,
                                    newData=activeprojectform,
@@ -486,8 +491,8 @@ def savetranscription():
         lastActiveId = transcription_data['lastActiveId']
         transcription_regions = transcription_data['transcriptionRegions']
         # logger.debug("transcription_regions: %s", pformat(json.loads(transcription_regions)))
-        # print(lastActiveId)
-        # print(transcription_regions)
+        # logger.debug(lastActiveId)
+        # logger.debug(transcription_regions)
         speaker_audio_ids = audiodetails.get_speaker_audio_ids_new(projects,
                                                                    activeprojectname,
                                                                    current_username,
@@ -786,7 +791,7 @@ def updateaudiobrowsetable():
     try:
         # data through ajax
         audio_browse_info = json.loads(request.args.get('a'))
-        logger.debug('audio_browse_info: %s', audio_browse_info)
+        # logger.debug('audio_browse_info: %s', audio_browse_info)
         projects, userprojects, transcriptions = getdbcollections.getdbcollections(mongo,
                                                                                    'projects',
                                                                                    'userprojects',
@@ -928,7 +933,7 @@ def audiobrowseactionplay():
         # data from ajax
         if request.method == 'POST':
             data = json.loads(request.form['a'])
-            logger.debug('data: %s', pformat(data))
+            # logger.debug('data: %s', pformat(data))
 
             # data = json.loads(request.args.get('a'))
             # logger.debug('data: %s', pformat(data))
@@ -1124,16 +1129,22 @@ def predictPOSNaiveBayes():
     # data through ajax
     wordList = request.args.get('a').split(',')
     if (len(wordList) != 0):
-        # load model
-        with open('trainedModels/naiveBayesPOSModel.pkl', 'rb') as f:
-            clf = pickle.load(f)
-        # loading pickled vectorizer
-        vectorizer = joblib.load("trainedModels/naiveBayesPOSVectorizer.pkl")
-        x_test = vectorizer.transform(wordList)
-        predictedpos = list(clf.predict(x_test))
-        predictedPOS = []
-        for word, pos in zip(wordList, predictedpos):
-            predictedPOS.append([word, pos])
+        try:
+            # load model
+            with open('trainedModels/naiveBayesPOSModel.pkl', 'rb') as f:
+                clf = pickle.load(f)
+            # loading pickled vectorizer
+            vectorizer = joblib.load("trainedModels/naiveBayesPOSVectorizer.pkl")
+            x_test = vectorizer.transform(wordList)
+            predictedpos = list(clf.predict(x_test))
+            predictedPOS = []
+            for word, pos in zip(wordList, predictedpos):
+                predictedPOS.append([word, pos])
+        except:
+            logger.exception("")
+            predictedPOS = []
+            for word in wordList:
+                predictedPOS.append([word, 'Determiner'])
 
         return jsonify(predictedPOS=predictedPOS)
 
@@ -1237,18 +1248,18 @@ def dictionaryview():
             {'username': current_username})["myproject"])
         shared_projects = len(userprojects.find_one(
             {'username': current_username})["projectsharedwithme"])
-        # print(f"MY PROJECTS: {my_projects}, SHARED PROJECTS: {shared_projects}")
+        # logger.debug(f"MY PROJECTS: {my_projects}, SHARED PROJECTS: {shared_projects}")
         if (my_projects+shared_projects) == 0:
             flash('Please create your first project')
             return redirect(url_for('home'))
     except:
-        print(f'{"#"*80}\nCurrent user details not in database!!!')
+        # logger.debug(f'{"#"*80}\nCurrent user details not in database!!!')
         flash('Please create your first project')
         return redirect(url_for('home'))
     # get the list of lexeme entries for current project to show in dictionary view table
     lst = list()
     try:
-        # print(activeprojectname)
+        # logger.debug(activeprojectname)
         # optionally takes field_list, if provided by the user for showing dictionary entries
         all_fields, lst = lexicondetails.get_all_lexicon_details(
             lexemes, activeprojectname)
@@ -1292,7 +1303,7 @@ def enternewlexeme():
     #         flash(f'Project Name : {project_name} already exist!')
     #         return redirect(url_for('newproject'))
     #     else:
-    #         print(project_name)
+    #         logger.debug(project_name)
     #         updateuserprojects.updateuserprojects(userprojects,
     #                                                 project_name,
     #                                                 current_user.username)
@@ -1345,16 +1356,16 @@ def enterlexemefromuploadedfile(alllexemedf):
     current_project_form = projectsform.find_one(
         {'projectname': projectname}, {'_id': 0})
 
-    print('df data', alllexemedf.keys())
+    # logger.debug('df data', alllexemedf.keys())
     # if 'langscripts' in lexemedf.columns:
-    #     print(lexemedf['langscripts'])
+    #     logger.debug(lexemedf['langscripts'])
 
     def removelangscriptsblank(lexemedf):
         drop_cols = [
             c for c in lexemedf.columns if c.startswith('langscripts.')]
         lexemedf.drop(columns=drop_cols, inplace=True)
         # return lexemedf
-    # print('Project form', project_form)
+    # logger.debug('Project form', project_form)
     # if projectname in project_form:
     #     current_projct_form = project_form[projectname]
 
@@ -1373,10 +1384,10 @@ def enterlexemefromuploadedfile(alllexemedf):
     # when testing comment these to avoid any database update/changes
     # saving data for that new lexeme to database in lexemes collection
     # try:
-    # print(lexemedf)
+    # logger.debug(lexemedf)
     for lexeme_type, lexemedf in alllexemedf.items():
-        print('Data key', lexeme_type)
-        print(lexemedf)
+        # logger.debug('Data key', lexeme_type)
+        # logger.debug(lexemedf)
         for index, row in lexemedf.iterrows():
             uploadedFileLexeme = {
                 "username": projectowner,
@@ -1393,16 +1404,16 @@ def enterlexemefromuploadedfile(alllexemedf):
 
             lexemeId = str(row['lexemeId'])
             getlexemeId = None
-            # print(f"{index}\t{lexemeId}\t{len(lexemeId)}\t{type(lexemeId)}")
+            # logger.debug(f"{index}\t{lexemeId}\t{len(lexemeId)}\t{type(lexemeId)}")
             if (lexemeId == 'nan' or lexemeId == ''):
                 lexemeId, lexemeCount = lexmetadata()
-                # print(lexemeId, lexemeCount)
+                # logger.debug(lexemeId, lexemeCount)
             else:
                 getlexemeId = lexemes.find_one({'lexemeId': lexemeId},
                                                {'_id': 0, 'lexemeId': 1, 'projectname': 1})
-                # print(getlexemeId)
+                # logger.debug(getlexemeId)
                 if (getlexemeId == None):
-                    # print(f"lexemeId not in DB")
+                    # logger.debug(f"lexemeId not in DB")
                     lexemeId, lexemeCount = lexmetadata()
                 else:
                     if (getlexemeId['projectname'] != activeprojectname):
@@ -1411,27 +1422,27 @@ def enterlexemefromuploadedfile(alllexemedf):
                         return redirect(url_for('enternewlexeme'))
 
             uploadedFileLexeme['lexemeId'] = lexemeId
-            # pprint(uploadedFileLexeme)
+            # logger.debug(uploadedFileLexeme)
             if (getlexemeId != None):
-                # print(f"LEXEME ALREADY EXISTS")
+                # logger.debug(f"LEXEME ALREADY EXISTS")
                 lexemes.update_one({'lexemeId': lexemeId}, {
                     '$set': uploadedFileLexeme})
             else:
                 lexemes.insert_one(uploadedFileLexeme)
                 # update lexemeInserted count of the project in projects collection
                 # project[projectname]['lexemeInserted'] = lexemeCount
-                # print(f'{"#"*80}\n{project}')
+                # logger.debug(f'{"#"*80}\n{project}')
                 projects.update_one({'projectname': projectname}, {
                                     '$set': {'lexemeInserted': lexemeCount}})
                 # projects.update_one({}, { '$set' : { projectname : project[projectname] }})
 
             for column_name in list(lexemedf.columns):
-                # print(column_name)
+                # logger.debug(column_name)
                 # if (column_name.endswith('Example')):
                 #     continue
                 if (column_name not in uploadedFileLexeme):
                     value = str(row[column_name])
-                    # print(value)
+                    # logger.debug(value)
                     if (value == 'nan'):
                         value = ''
                     if ('Sense 1.Gloss.eng' in column_name):
@@ -1440,16 +1451,16 @@ def enterlexemefromuploadedfile(alllexemedf):
                         uploadedFileLexeme['grammaticalcategory'] = value
                     uploadedFileLexeme[column_name] = value
 
-            # print(f'{"="*80}\nLexeme Form :')
-            pprint(uploadedFileLexeme)
-            # print(f'{"="*80}')
+            # logger.debug(f'{"="*80}\nLexeme Form :')
+            # logger.debug(uploadedFileLexeme)
+            # logger.debug(f'{"="*80}')
 
             lexemes.update_one({'lexemeId': lexemeId}, {
                 '$set': uploadedFileLexeme})
 
-            # print(f'{"="*80}\nLexeme Form :')
-            # pprint(uploadedFileLexeme)
-            # print(f'{"="*80}')
+            # logger.debug(f'{"="*80}\nLexeme Form :')
+            # logger.debug(uploadedFileLexeme)
+            # logger.debug(f'{"="*80}')
 
     flash('Successfully added new lexemes')
     return redirect(url_for('enternewlexeme'))
@@ -1505,7 +1516,7 @@ def lifeuploader(fileFormat, uploadedFileContent, field_map={}, headword_mapped=
 
     def get_script_name(wordform):
         lang_name = wordform.attrib['lang']
-        # print (lang_name)
+        # logger.debug(lang_name)
         parts = lang_name.split('-')
         if len(parts) > 1:
             script_name = parts[1]
@@ -1516,7 +1527,7 @@ def lifeuploader(fileFormat, uploadedFileContent, field_map={}, headword_mapped=
 
     def get_lang_name(wordform):
         lang_name_full = wordform.attrib['lang']
-        # print (lang_name_full)
+        # logger.debug(lang_name_full)
         lang_name = lang_name_full.split('-')[0]
         # if len(parts) > 1:
         #     script_name = parts[1]
@@ -1527,9 +1538,9 @@ def lifeuploader(fileFormat, uploadedFileContent, field_map={}, headword_mapped=
 
     def get_scripts_map(lex_fields):
         scripts_map = {}
-        # print (lex_fields)
+        # logger.debug(lex_fields)
         for lex_field in lex_fields:
-            # print ('Lex field', lex_field)
+            # logger.debug('Lex field', lex_field)
             script_name = lex_field.split('.')[-1]
             if 'langscripts.headwordscript' in lex_field:
                 scripts_map['langscripts.headwordscript'] = script_name
@@ -1546,33 +1557,33 @@ def lifeuploader(fileFormat, uploadedFileContent, field_map={}, headword_mapped=
                 else:
                     scripts_map['langscripts.glosslangs'] = [script_name]
                 # scripts_map.get('langscripts.glosslangs', []).append(script_name)
-        # print(f"{'-'*80}\nIN get_scripts_map(lex_fields) function\n\nscript_map:\n{scripts_map}")
+        # logger.debug(f"{'-'*80}\nIN get_scripts_map(lex_fields) function\n\nscript_map:\n{scripts_map}")
 
         return scripts_map
 
     def map_lift(file_stream, field_map, lex_fields):
-        # print(f"{'-'*80}\nIN map_lift(file_stream, field_map, lex_fields) function\n")
+        # logger.debug(f"{'-'*80}\nIN map_lift(file_stream, field_map, lex_fields) function\n")
         mapped_lift = {}
         all_mapped = True
 
         life_scripts_map = get_scripts_map(lex_fields)
-        print(life_scripts_map)
+        # logger.debug(life_scripts_map)
 
         if len(field_map) == 0:
             field_map = get_lift_map()
 
-        # print(f"{'-'*80}\nget_lift_map():\n{field_map}")
-        # print(f"{'-'*80}\nFILE STREAM TYPE:{type(file_stream)}")
+        # logger.debug(f"{'-'*80}\nget_lift_map():\n{field_map}")
+        # logger.debug(f"{'-'*80}\nFILE STREAM TYPE:{type(file_stream)}")
         # exit()
         # tree = ET.parse(file_stream)
         root = ET.fromstring(file_stream)
-        # print(f"TYPE OF TREE: {type(tree)}")
+        # logger.debug(f"TYPE OF TREE: {type(tree)}")
         # exit()
         # root = tree.getroot()
-        # print(f"{'-'*80}\nroot:\n{root}")
+        # logger.debug(f"{'-'*80}\nroot:\n{root}")
         # exit()
         entries = root.findall('.//entry')
-        # print(f"entries:\n{entries}")
+        # logger.debug(f"entries:\n{entries}")
         # exit()
         mapped_life_langs_lexeme_form = []
         unmapped_lift_langs_lexeme_form = []
@@ -1599,7 +1610,7 @@ def lifeuploader(fileFormat, uploadedFileContent, field_map={}, headword_mapped=
                 variant_num = 0
                 entry_part_tag = entry_part.tag
                 if entry_part_tag != 'entry':
-                    # print (entry_part_tag)
+                    # logger.debug(entry_part_tag)
                     if entry_part_tag == 'lexical-unit':
                         life_key_headword = field_map[entry_part_tag]
 
@@ -1638,7 +1649,7 @@ def lifeuploader(fileFormat, uploadedFileContent, field_map={}, headword_mapped=
                                         lift_tag)
                                 # mapped_lift[other_lexeme_forms] = lexeme_form_scripts
 
-                        #     print ('Script', script_name)
+                        #     logger.debug('Script', script_name)
                         #     # txt = wordform[0].text
                         #     life_val = life_key #+'.'+script_name
                         #     entry_part_tag = entry_part_tag + '.' + script_name
@@ -1661,7 +1672,7 @@ def lifeuploader(fileFormat, uploadedFileContent, field_map={}, headword_mapped=
                         #                 mapped_lift[other_entries].append(life_val_other)
                         # # else:
                         # #     script_name = get_script_name(wordforms[0])
-                        # #     print ('Script', script_name)
+                        # #     logger.debug('Script', script_name)
                         # #     mapped_lift[entry_part_tag] = life_key+'.'+script_name
                     elif entry_part_tag == 'sense':
                         sense_num += 1
@@ -1671,14 +1682,14 @@ def lifeuploader(fileFormat, uploadedFileContent, field_map={}, headword_mapped=
 
                         for sense_part in entry_part:
                             sense_part_tag = sense_part.tag
-                            # print ('sense_part_tag', sense_part_tag, sense_part.attrib, sense_part.find('text'))
+                            # logger.debug('sense_part_tag', sense_part_tag, sense_part.attrib, sense_part.find('text'))
                             life_key_sense = field_map[sense_part_tag]
 
                             if sense_part_tag == 'gloss' or sense_part_tag == 'definition' or sense_part_tag == 'example':
                                 if len(sense_part.attrib) == 0:
                                     sense_part_tag_form = sense_part.find(
                                         'form')
-                                    print(sense_part_tag_form)
+                                    logger.debug(sense_part_tag_form)
                                     lift_lang_name, lift_full_lang = get_script_name(
                                         sense_part_tag_form)
                                 else:
@@ -1707,7 +1718,7 @@ def lifeuploader(fileFormat, uploadedFileContent, field_map={}, headword_mapped=
                             elif sense_part_tag == 'grammatical-info':
                                 life_key = field_map.get(sense_part_tag, [])
                                 # lift_tag = './/entry/sense/'+sense_part_tag
-                                print(entry_part[0].tag)
+                                logger.debug(entry_part[0].tag)
                                 # gram_categ = entry_part[0].attrib['value']
 
                                 # +'[@value="'+gram_categ+'"]'
@@ -1728,7 +1739,7 @@ def lifeuploader(fileFormat, uploadedFileContent, field_map={}, headword_mapped=
 
                         for variant_part in entry_part:
                             variant_part_tag = variant_part.tag
-                            print('variant_part_tag', variant_part_tag,
+                            logger.debug('variant_part_tag', variant_part_tag,
                                   variant_part.attrib, variant_part.find('text'))
                             # life_key_sense = field_map[variant_part_tag]
 
@@ -1736,7 +1747,7 @@ def lifeuploader(fileFormat, uploadedFileContent, field_map={}, headword_mapped=
                                 if len(variant_part.attrib) == 0:
                                     variant_part_tag_form = variant_part.find(
                                         'form')
-                                    print(variant_part_tag_form)
+                                    logger.debug(variant_part_tag_form)
                                     lift_lang_name, lift_full_lang = get_script_name(
                                         variant_part_tag_form)
                                 else:
@@ -1799,7 +1810,7 @@ def lifeuploader(fileFormat, uploadedFileContent, field_map={}, headword_mapped=
         all_life_gloss_langs = set(life_gloss_langs)
         life_unmapped_gloss_langs = all_life_gloss_langs - mapped_life_langs_gloss_set
         # unmapped_lift_langs_gloss = []
-        # print ('Unmapped gloss', unmapped_lift_langs_gloss)
+        # logger.debug('Unmapped gloss', unmapped_lift_langs_gloss)
 
         # mapped_life_langs_variant_set = set(mapped_life_langs_variant)
         # all_life_variant_langs = set(life_variant_langs)
@@ -1822,8 +1833,8 @@ def lifeuploader(fileFormat, uploadedFileContent, field_map={}, headword_mapped=
 
         # for lift_unmapped_variant in unmapped_lift_langs_variant:
         #     mapped_lift[lift_unmapped_variant] = list(life_unmapped_variant_langs)
-        # print (mapped_lift)
-        # print (headword_mapped)
+        # logger.debug(mapped_lift)
+        # logger.debug(headword_mapped)
 
         if len(unmapped_lift_langs_lexeme_form) > 0 or len(unmapped_lift_langs_gloss) > 0:
             all_mapped = False
@@ -1831,8 +1842,8 @@ def lifeuploader(fileFormat, uploadedFileContent, field_map={}, headword_mapped=
         if len(unmapped_lift_langs_lexeme_form) > 0 or len(unmapped_lift_langs_variant) > 0:
             all_mapped = False
 
-        # print(f"{'-'*80}\nheadword_mapped:\n{headword_mapped}\nall_mapped:\n{all_mapped}\nmapped_lift:\n{mapped_lift}\nroot:\n{root}")
-        print("All mapped", mapped_lift)
+        # logger.debug(f"{'-'*80}\nheadword_mapped:\n{headword_mapped}\nall_mapped:\n{all_mapped}\nmapped_lift:\n{mapped_lift}\nroot:\n{root}")
+        logger.debug("All mapped", mapped_lift)
         return headword_mapped, all_mapped, mapped_lift, root
 
     def get_sense_col(lift_tag, field_name, lang_name):
@@ -1887,17 +1898,17 @@ def lifeuploader(fileFormat, uploadedFileContent, field_map={}, headword_mapped=
             # data.columns = data_columns
 
     def lift_to_df(root, field_map, lex_fields):
-        # print(f"{'-'*80}\nIN lift_to_df (root, field_map, lex_fields) function\n")
+        # logger.debug(f"{'-'*80}\nIN lift_to_df (root, field_map, lex_fields) function\n")
         all_data = {}
 
         # lex_fields_without_sense = [lex_field for lex_field in lex_fields if 'sense' not in lex_field]
 
         life_scripts_map = get_scripts_map(lex_fields)
-        print(life_scripts_map)
+        logger.debug(life_scripts_map)
 
         # if len(field_map) == 0:
         lift_life_field_map = get_lift_map()
-        print(f"{'-'*80}\nIN lift_to_df (root, field_map, lex_fields) function: get_lift_map():\n{lift_life_field_map}")
+        logger.debug(f"{'-'*80}\nIN lift_to_df (root, field_map, lex_fields) function: get_lift_map():\n{lift_life_field_map}")
 
         # tree = ET.parse(file_stream)
         # root = tree.getroot()
@@ -1914,7 +1925,7 @@ def lifeuploader(fileFormat, uploadedFileContent, field_map={}, headword_mapped=
         # life_gloss_langs = life_scripts_map['langscripts.glosslangs']
         field_map = group_fields(field_map)
 
-        print(
+        logger.debug(
             f"{'-'*80}\nIN lift_to_df (root, field_map, lex_fields) function: {field_map}")
 
         # highest_sense_num = 0
@@ -1925,11 +1936,11 @@ def lifeuploader(fileFormat, uploadedFileContent, field_map={}, headword_mapped=
             senseNotAdded = True
             variantNotAdded = True
             for lift_tag_groups, life_key_maps in field_map.items():
-                print('Entry', entry)
+                logger.debug('Entry', entry)
                 if len(life_key_maps) > 0:
                     if 'lexical-unit' in lift_tag_groups:
                         # txt = entry.findall(lift_tag+'/text').text
-                        # print (lift_tag)
+                        # logger.debug(lift_tag)
                         for lift_tag, life_key in life_key_maps.items():
                             lexical_unit = entry.find('lexical-unit')
                             lexical_unit_text = lexical_unit.find('text')
@@ -1967,7 +1978,7 @@ def lifeuploader(fileFormat, uploadedFileContent, field_map={}, headword_mapped=
                         all_sense = entry.findall('.//sense')
                         for full_sense in all_sense:
                             sense_num += 1
-                            print('Sense number', sense_num,
+                            logger.debug('Sense number', sense_num,
                                   full_sense)
 
                             for lift_tag, life_key in life_key_maps.items():
@@ -1976,16 +1987,16 @@ def lifeuploader(fileFormat, uploadedFileContent, field_map={}, headword_mapped=
                                     life_key_name = lift_life_field_map['grammatical-info']
                                     gram_info_tag = full_sense.find(
                                         'grammatical-info')
-                                    print('Grammar tag', gram_info_tag,
+                                    logger.debug('Grammar tag', gram_info_tag,
                                           gram_info_tag.tag)
                                     # life_key = lift_life_field_map[lift_tag]
 
                                     if not gram_info_tag is None:
                                         try:
                                             gram_info = gram_info_tag.attrib['value']
-                                            print('Gram info', gram_info)
+                                            logger.debug('Gram info', gram_info)
                                         except Exception as e:
-                                            print(
+                                            logger.debug(
                                                 'Exception in grammatical info', e)
                                             gram_info = ''
                                         df_col = 'SenseNew.Sense ' + \
@@ -2009,7 +2020,7 @@ def lifeuploader(fileFormat, uploadedFileContent, field_map={}, headword_mapped=
                                     else:
                                         life_key_name = ''
 
-                                    # print (sense.tag)
+                                    # logger.debug(sense.tag)
                                     if life_key_name != '':
                                         try:
                                             txt_entry = current_sense_tag.find(
@@ -2044,10 +2055,10 @@ def lifeuploader(fileFormat, uploadedFileContent, field_map={}, headword_mapped=
                         for variant in all_variants:
                             variant_num += 1
                             # create_df_columns(data, 'Variant', variant_num)
-                            print('Variant number', variant_num, variant)
-                            # print('DF columns', data.columns)
+                            logger.debug('Variant number', variant_num, variant)
+                            # logger.debug('DF columns', data.columns)
 
-                            # print (sense.tag)
+                            # logger.debug(sense.tag)
                             for lift_tag, life_key in life_key_maps.items():
                                 txt_entry = variant.find('text')
                                 if txt_entry is None:
@@ -2064,7 +2075,7 @@ def lifeuploader(fileFormat, uploadedFileContent, field_map={}, headword_mapped=
                         # variantNotAdded = False
 
                     else:
-                        # print (lift_tag)
+                        # logger.debug(lift_tag)
                         txt_entry = entry.find(lift_tag)
                         if lift_tag in lift_life_field_map:
                             life_key = lift_life_field_map[lift_tag]
@@ -2074,7 +2085,7 @@ def lifeuploader(fileFormat, uploadedFileContent, field_map={}, headword_mapped=
 
                             df_row[life_key] = txt
 
-            print('Current DF Row', df_row)
+            logger.debug('Current DF Row', df_row)
             current_sense_variant = (sense_num, variant_num)
 
             if current_sense_variant in all_data:
@@ -2088,21 +2099,21 @@ def lifeuploader(fileFormat, uploadedFileContent, field_map={}, headword_mapped=
                 if variant_num > 1:
                     create_df_columns(data, 'Variant', variant_num)
 
-                print('DF columns', data.columns)
+                logger.debug('DF columns', data.columns)
                 data = data.append(df_row, ignore_index=True)
 
             data.fillna('', inplace=True)
             all_data[current_sense_variant] = data
 
-        print('Final data', all_data)
+        logger.debug('Final data', all_data)
 
         headword_mapped = True
         all_mapped = True
 
         # data.to_csv(os.path.join(basedir, 'testliftXML.tsv'), sep='\t', index=False)
 
-        # print(f"{'-'*80}\nIN lift_to_df (root, field_map, lex_fields) FUNCTION\n\nheadword_mapped\n{headword_mapped}\n\nall_mapped:\n{all_mapped}\n\ndata:\n{data}\n\nroot:\n{root}")
-        # print(f"{'-'*80}\nIN lift_to_df (root, field_map, lex_fields) FUNCTION\n\nheadword_mapped\n{type(headword_mapped)}\n\nall_mapped:\n{type(all_mapped)}\n\ndata:\n{type(data)}\n\nroot:\n{type(root)}")
+        # logger.debug(f"{'-'*80}\nIN lift_to_df (root, field_map, lex_fields) FUNCTION\n\nheadword_mapped\n{headword_mapped}\n\nall_mapped:\n{all_mapped}\n\ndata:\n{data}\n\nroot:\n{root}")
+        # logger.debug(f"{'-'*80}\nIN lift_to_df (root, field_map, lex_fields) FUNCTION\n\nheadword_mapped\n{type(headword_mapped)}\n\nall_mapped:\n{type(all_mapped)}\n\ndata:\n{type(data)}\n\nroot:\n{type(root)}")
 
         return headword_mapped, all_mapped, all_data, root
 
@@ -2139,36 +2150,36 @@ def lifeuploader(fileFormat, uploadedFileContent, field_map={}, headword_mapped=
         final_map = {}
         for key_col in key_cols:
             final_map[key_col] = list(val_cols)
-        # print(f"{'-'*80}\nIN generate_all_possible_mappings(key_cols, val_cols) function\nFINAL MAP:\n{final_map}")
+        # logger.debug(f"{'-'*80}\nIN generate_all_possible_mappings(key_cols, val_cols) function\nFINAL MAP:\n{final_map}")
         return final_map
 
     def map_excel(file_stream, lex_fields):
-        # print(f"{'-'*80}\nIN MAP EXCEL function map_excel(file_stream, lex_fields)")
+        # logger.debug(f"{'-'*80}\nIN MAP EXCEL function map_excel(file_stream, lex_fields)")
         excel_data = pd.read_excel(file_stream, engine="openpyxl")
-        # print(excel_data)
+        # logger.debug(excel_data)
         excel_data_cols = set(excel_data.columns)
         lex_field_cols = set(lex_fields)
-        # print(f"{'-'*80}\nexcel_data_cols:\n{excel_data.columns}")
-        # print(f"{'-'*80}\nNUMBER OF ELEMENTS IN excel_data_cols: {len(excel_data_cols)}")
-        # print(f"{'-'*80}\nNUMBER OF ELEMENTS IN lex_field_cols: {len(lex_field_cols)}")
+        # logger.debug(f"{'-'*80}\nexcel_data_cols:\n{excel_data.columns}")
+        # logger.debug(f"{'-'*80}\nNUMBER OF ELEMENTS IN excel_data_cols: {len(excel_data_cols)}")
+        # logger.debug(f"{'-'*80}\nNUMBER OF ELEMENTS IN lex_field_cols: {len(lex_field_cols)}")
 
-        # print(f"{'-'*80}\nlex_field_cols-excel_data_cols:\n{lex_field_cols-excel_data_cols}")
+        # logger.debug(f"{'-'*80}\nlex_field_cols-excel_data_cols:\n{lex_field_cols-excel_data_cols}")
 
         if excel_data_cols == lex_field_cols:
-            # print(f"{'-'*80}\nexcel_data_cols == lex_field_cols")
+            # logger.debug(f"{'-'*80}\nexcel_data_cols == lex_field_cols")
             mapped = True
             headword_mapped = True
             return headword_mapped, mapped, {}, excel_data
         else:
-            # print(f"{'-'*80}\nexcel_data_cols != lex_field_cols")
+            # logger.debug(f"{'-'*80}\nexcel_data_cols != lex_field_cols")
             headword_mapped = True
             mapped = False
             excel_remaining = excel_data_cols - lex_field_cols
             lex_remaining = lex_field_cols - excel_data_cols
-            # print(f"{'-'*80}\nexcel_remaining:\n{excel_remaining}\n{'-'*80}\nlex_remaining:\n{lex_remaining}")
+            # logger.debug(f"{'-'*80}\nexcel_remaining:\n{excel_remaining}\n{'-'*80}\nlex_remaining:\n{lex_remaining}")
             field_map = generate_all_possible_mappings(
                 excel_remaining, lex_remaining)
-            # print(f"{'-'*80}\nheadword_mapped\n{headword_mapped}\n\nmapped:\n{mapped}\n\nfield_map:\n{field_map}\n\nexcel_data:\n{excel_data}")
+            # logger.debug(f"{'-'*80}\nheadword_mapped\n{headword_mapped}\n\nmapped:\n{mapped}\n\nfield_map:\n{field_map}\n\nexcel_data:\n{excel_data}")
             return headword_mapped, mapped, field_map, excel_data
 
     def upload_excel(excel_data, field_map, lex_fields):
@@ -2181,49 +2192,49 @@ def lifeuploader(fileFormat, uploadedFileContent, field_map={}, headword_mapped=
 
     def upload_lexicon(lexicon, file_stream, format, field_map, headword_mapped=False, all_mapped=False):
         lexicon = lexicon[1:]
-        # print(f"{'-'*80}\nLEXICON:\n{lexicon}")
+        # logger.debug(f"{'-'*80}\nLEXICON:\n{lexicon}")
         norm_lex = prepare_lex(lexicon)
-        # print(f"{'-'*80}\nNORM LEX:\n{norm_lex}")
+        # logger.debug(f"{'-'*80}\nNORM LEX:\n{norm_lex}")
         lex_fields = norm_lex.columns
-        # print(f"{'-'*80}\nLEX FIELDS:\n{lex_fields}")
-        # print(f"{'-'*80}\nFILE STREAM TYPE:{type(file_stream)}")
+        # logger.debug(f"{'-'*80}\nLEX FIELDS:\n{lex_fields}")
+        # logger.debug(f"{'-'*80}\nFILE STREAM TYPE:{type(file_stream)}")
 
         if format == 'lift-xml':
-            # print(f"{'-'*80}\nFIELD MAP:\n{len(field_map)}")
+            # logger.debug(f"{'-'*80}\nFIELD MAP:\n{len(field_map)}")
             if len(field_map) == 0:
-                # print(f"{'-'*80}\nlift-xml: len(field_map) == 0")
+                # logger.debug(f"{'-'*80}\nlift-xml: len(field_map) == 0")
 
                 # headword_mapped, all_mapped, field_map, root = map_lift(
                 # file_stream, field_map, lex_fields)
 
                 if headword_mapped and all_mapped:
-                    # print(f"{'-'*80}\nheadword_mapped and all_mapped")
+                    # logger.debug(f"{'-'*80}\nheadword_mapped and all_mapped")
                     headword_mapped, all_mapped, data, root = lift_to_df(
                         root, field_map, lex_fields)
-                    # print(f"{'-'*80}\nheadword_mapped:\n{type(headword_mapped)}\nall_mapped:\n{type(all_mapped)}\nmapped_lift/data:\n{type(data)}\nroot:\n{type(root)}")
+                    # logger.debug(f"{'-'*80}\nheadword_mapped:\n{type(headword_mapped)}\nall_mapped:\n{type(all_mapped)}\nmapped_lift/data:\n{type(data)}\nroot:\n{type(root)}")
                     return headword_mapped, all_mapped, data, root
 
                 else:
-                    # print(f"{'-'*80}\nheadword_mapped and all_mapped: NOT")
-                    # print(f"{'-'*80}\nheadword_mapped:\n{type(headword_mapped)}\nall_mapped:\n{type(all_mapped)}\nmapped_lift/data:\n{type(field_map)}\nroot:\n{type(root)}")
+                    # logger.debug(f"{'-'*80}\nheadword_mapped and all_mapped: NOT")
+                    # logger.debug(f"{'-'*80}\nheadword_mapped:\n{type(headword_mapped)}\nall_mapped:\n{type(all_mapped)}\nmapped_lift/data:\n{type(field_map)}\nroot:\n{type(root)}")
                     headword_mapped, all_mapped, field_map, root = map_lift(
                         file_stream, field_map, lex_fields)
                     return headword_mapped, all_mapped, field_map, root
             else:
-                # print(f"{'-'*80}\nlift-xml: len(field_map) != 0")
+                # logger.debug(f"{'-'*80}\nlift-xml: len(field_map) != 0")
                 headword_mapped, all_mapped, life_df, root = lift_to_df(
                     file_stream, field_map, lex_fields)
-                # print (life_df.head())
-                # print(life_df.loc[0,:])
+                # logger.debug(life_df.head())
+                # logger.debug(life_df.loc[0,:])
                 return headword_mapped, all_mapped, life_df
         elif format == 'xlsx':
             if len(field_map) == 0:
-                # print(f"{'-'*80}\nxlsx: len(field_map) == 0")
+                # logger.debug(f"{'-'*80}\nxlsx: len(field_map) == 0")
                 headword_mapped, all_mapped, field_map, df = map_excel(
                     file_stream, lex_fields)
                 return headword_mapped, all_mapped, field_map, df
             else:
-                # print(f"{'-'*80}\nxlsx: len(field_map) != 0")
+                # logger.debug(f"{'-'*80}\nxlsx: len(field_map) != 0")
                 headword_mapped, all_mapped, data = upload_excel(
                     file_stream, field_map, lex_fields)
                 return headword_mapped, all_mapped, data
@@ -2231,10 +2242,10 @@ def lifeuploader(fileFormat, uploadedFileContent, field_map={}, headword_mapped=
     working_dir = basedir
     # upload_file = os.path.join(working_dir, 'LiFE.lift')
     upload_file = uploadedFileContent
-    # print(upload_file)
+    # logger.debug(upload_file)
     # format = 'lift-xml'
     format = fileFormat
-    # print(f"{'-'*80}\nFILE FORMAT:{fileFormat}")
+    # logger.debug(f"{'-'*80}\nFILE FORMAT:{fileFormat}")
     with open(os.path.join(working_dir, 'lexemeEntry.json')) as f_r:
         lex = json.load(f_r)
 
@@ -2248,20 +2259,20 @@ def uploadlexemeexcelliftxml():
     if request.method == 'POST':
         lexkeymapping = dict(request.form.lists())
         # lexkeymapping = lexkeymapping.keys().decode('unicode-escape')
-        # print(lexkeymapping)
-        # print(type(lexkeymapping))
+        # logger.debug(lexkeymapping)
+        # logger.debug(type(lexkeymapping))
         lexkeymappingNew = {}
         for key, value in lexkeymapping.items():
             key = key.replace('%22', '"')
             lexkeymappingNew[key] = value[0]
-        # print(lexkeymappingNew)
+        # logger.debug(lexkeymappingNew)
         field_map = lexkeymappingNew
         life_uploaded_file_content_path = os.path.join(
             basedir, 'lifeUploadedFileContent.pkl')
         # Open the file in binary mode
         with open(life_uploaded_file_content_path, 'rb') as file:
             retrieve_uploaded_file_content = pickle.load(file)
-            # print(retrieve_uploaded_file_content.keys())
+            # logger.debug(retrieve_uploaded_file_content.keys())
             file_format = retrieve_uploaded_file_content['file_format']
             uploaded_file_content = retrieve_uploaded_file_content['uploaded_file_content']
         if (file_format == 'lift-xml'):
@@ -2270,20 +2281,20 @@ def uploadlexemeexcelliftxml():
             root = tree.getroot()
             headword_mapped = True
             all_mapped = True
-            # print(f"{'-'*80}\nIN uploadlexemeexcelliftxml() FUNCTION\n\nfile_format\n{file_format}\n\nfield_map:\n{field_map}\n\nroot:\n{root}")
-            # print(f"{'-'*80}\nIN uploadlexemeexcelliftxml() FUNCTION\n\nfile_format\n{type(file_format)}\n\nfield_map:\n{type(field_map)}\n\nroot:\n{type(root)}")
+            # logger.debug(f"{'-'*80}\nIN uploadlexemeexcelliftxml() FUNCTION\n\nfile_format\n{file_format}\n\nfield_map:\n{field_map}\n\nroot:\n{root}")
+            # logger.debug(f"{'-'*80}\nIN uploadlexemeexcelliftxml() FUNCTION\n\nfile_format\n{type(file_format)}\n\nfield_map:\n{type(field_map)}\n\nroot:\n{type(root)}")
 
             headword_mapped, all_mapped, life_df = lifeuploader(
                 file_format, root, field_map, headword_mapped, all_mapped)
-            # print(f"{'-'*80}\nIN uploadlexemeexcelliftxml() FUNCTION\n\nheadword_mapped\n{headword_mapped}\n\nall_mapped:\n{all_mapped}\n\nlife_df:\n{life_df}\n\nroot:\n{root}")
-            # print(f"{'-'*80}\nIN uploadlexemeexcelliftxml() FUNCTION\n\nheadword_mapped\n{type(headword_mapped)}\n\nall_mapped:\n{type(all_mapped)}\n\nlife_df:\n{type(life_df)}\n\nroot:\n{type(root)}")
+            # logger.debug(f"{'-'*80}\nIN uploadlexemeexcelliftxml() FUNCTION\n\nheadword_mapped\n{headword_mapped}\n\nall_mapped:\n{all_mapped}\n\nlife_df:\n{life_df}\n\nroot:\n{root}")
+            # logger.debug(f"{'-'*80}\nIN uploadlexemeexcelliftxml() FUNCTION\n\nheadword_mapped\n{type(headword_mapped)}\n\nall_mapped:\n{type(all_mapped)}\n\nlife_df:\n{type(life_df)}\n\nroot:\n{type(root)}")
         elif (file_format == 'xlsx'):
             life_xlsx_root_path = os.path.join(basedir, 'lifexlsxdf.tsv')
             df = pd.read_csv(life_xlsx_root_path, sep='\t', dtype=str)
             headword_mapped, all_mapped, data = lifeuploader(
                 file_format, df, field_map)
-            # print(f"{'-'*80}\nIN uploadlexemeexcelliftxml() FUNCTION\n\nheadword_mapped\n{headword_mapped}\n\nall_mapped:\n{all_mapped}\n\ndata:\n{data}\n\ndf:\n{df}")
-            # print(f"{'-'*80}\nIN uploadlexemeexcelliftxml() FUNCTION\n\nheadword_mapped\n{type(headword_mapped)}\n\nall_mapped:\n{type(all_mapped)}\n\ndata:\n{type(data)}\n\ndf:\n{type(df)}")
+            # logger.debug(f"{'-'*80}\nIN uploadlexemeexcelliftxml() FUNCTION\n\nheadword_mapped\n{headword_mapped}\n\nall_mapped:\n{all_mapped}\n\ndata:\n{data}\n\ndf:\n{df}")
+            # logger.debug(f"{'-'*80}\nIN uploadlexemeexcelliftxml() FUNCTION\n\nheadword_mapped\n{type(headword_mapped)}\n\nall_mapped:\n{type(all_mapped)}\n\ndata:\n{type(data)}\n\ndf:\n{type(df)}")
 
         if (not headword_mapped):
             flash("headword is missing from the file")
@@ -2291,7 +2302,7 @@ def uploadlexemeexcelliftxml():
 
         elif (not all_mapped and len(field_map) != 0):
             not_mapped_data = field_map
-            # print('create a modal/page where user can give the mapping of the columns')
+            # logger.debug('create a modal/page where user can give the mapping of the columns')
             return render_template('lexemekeymapping.html', not_mapped_data=not_mapped_data)
         else:
             if (file_format == 'lift-xml'):
@@ -2319,7 +2330,7 @@ def lexemekeymapping():
     for lexeme in lexemes.find({'projectname': projectname, 'lexemedeleteFLAG': 0}, {'_id': 0}):
         lst.append(lexeme)
 
-    # pprint(lst)
+    # logger.debug(lst)
     # Serializing json
     json_object = json.dumps(lst, indent=2, ensure_ascii=False)
 
@@ -2328,29 +2339,29 @@ def lexemekeymapping():
 
     if request.method == 'POST':
         newLexemeFiles = request.files.to_dict()
-        # print(newLexemeFiles)
+        # logger.debug(newLexemeFiles)
         key = 'Upload Excel LiftXML'
-        # print(type(newLexemeFiles[key].read()))
+        # logger.debug(type(newLexemeFiles[key].read()))
         if newLexemeFiles[key].filename != '':
             filename = newLexemeFiles[key].filename
-            # print(filename)
+            # logger.debug(filename)
             file_format = filename.rsplit('.', 1)[-1]
             if (file_format == 'xlsx' or file_format == 'lift'):
                 uploaded_file_content = newLexemeFiles[key].read()
                 if (file_format == 'lift'):
                     file_format = file_format+'-xml'
                     uploaded_file_content = str(uploaded_file_content, 'UTF-8')
-                # print(file_format)
+                # logger.debug(file_format)
                 pass
                 # flash(f"File format is correct")
                 # return redirect(url_for('enternewlexeme'))
             else:
                 flash("File should be in 'xlsx' or 'lift' format")
                 return redirect(url_for('enternewlexeme'))
-        # print("File format is correct")
+        # logger.debug("File format is correct")
 
         # df = pd.read_excel(uploaded_file_content)
-        # print(df)
+        # logger.debug(df)
         # save uploaded file details in pickle file for future use
         store_uploaded_file_content = {}
         store_uploaded_file_content['file_format'] = file_format
@@ -2362,8 +2373,8 @@ def lexemekeymapping():
         if (file_format == 'lift-xml'):
             headword_mapped, all_mapped, field_map, root = lifeuploader(
                 file_format, uploaded_file_content, field_map={})
-            # print(f"{'-'*80}\nIN lexemekeymapping() FUNCTION\n\nheadword_mapped\n{headword_mapped}\n\nall_mapped:\n{all_mapped}\n\nfield_map:\n{field_map}\n\nroot:\n{root}")
-            # print(f"{'-'*80}\nIN lexemekeymapping() FUNCTION\n\nheadword_mapped\n{type(headword_mapped)}\n\nall_mapped:\n{type(all_mapped)}\n\nfield_map:\n{type(field_map)}\n\nroot:\n{type(root)}")
+            # logger.debug(f"{'-'*80}\nIN lexemekeymapping() FUNCTION\n\nheadword_mapped\n{headword_mapped}\n\nall_mapped:\n{all_mapped}\n\nfield_map:\n{field_map}\n\nroot:\n{root}")
+            # logger.debug(f"{'-'*80}\nIN lexemekeymapping() FUNCTION\n\nheadword_mapped\n{type(headword_mapped)}\n\nall_mapped:\n{type(all_mapped)}\n\nfield_map:\n{type(field_map)}\n\nroot:\n{type(root)}")
             tree = ElementTree(root)
             life_lift_root_path = os.path.join(basedir, 'lifeliftroot.xml')
             with open(life_lift_root_path, 'wb') as f:
@@ -2371,8 +2382,8 @@ def lexemekeymapping():
         elif (file_format == 'xlsx'):
             headword_mapped, all_mapped, field_map, df = lifeuploader(
                 file_format, uploaded_file_content, field_map={})
-            # print(f"{'-'*80}\nIN lexemekeymapping() FUNCTION\n\nheadword_mapped\n{headword_mapped}\n\nall_mapped:\n{all_mapped}\n\nfield_map:\n{field_map}\n\ndf:\n{df}")
-            # print(f"{'-'*80}\nIN lexemekeymapping() FUNCTION\n\nheadword_mapped\n{type(headword_mapped)}\n\nall_mapped:\n{type(all_mapped)}\n\nfield_map:\n{type(field_map)}\n\ndf:\n{type(df)}")
+            # logger.debug(f"{'-'*80}\nIN lexemekeymapping() FUNCTION\n\nheadword_mapped\n{headword_mapped}\n\nall_mapped:\n{all_mapped}\n\nfield_map:\n{field_map}\n\ndf:\n{df}")
+            # logger.debug(f"{'-'*80}\nIN lexemekeymapping() FUNCTION\n\nheadword_mapped\n{type(headword_mapped)}\n\nall_mapped:\n{type(all_mapped)}\n\nfield_map:\n{type(field_map)}\n\ndf:\n{type(df)}")
             life_xlsx_root_path = os.path.join(basedir, 'lifexlsxdf.tsv')
             df.to_csv(life_xlsx_root_path, sep='\t', index=False)
 
@@ -2390,9 +2401,9 @@ def lexemekeymapping():
             #     './sense/gloss[@lang="anp"]': ['Odi', 'Ass', 'Eng'],
             #     './sense/gloss[@lang="en"]': ['Odi', 'Ass', 'Eng']
             # }
-            print("Field Map", field_map)
+            logger.debug("Field Map", field_map)
             not_mapped_data = field_map
-            # print('create a modal/page where user can give the mapping of the columns')
+            # logger.debug('create a modal/page where user can give the mapping of the columns')
             return render_template('lexemekeymapping.html', not_mapped_data=not_mapped_data)
         else:
             if (file_format == 'xlsx'):
@@ -2419,7 +2430,7 @@ def downloadlexemeformexcel():
         if (len(lexeme['headword']) != 0):
             lst.append(lexeme)
 
-    # pprint(lst)
+    # logger.debug(lst)
     # Serializing json
     json_object = json.dumps(lst, indent=2, ensure_ascii=False)
 
@@ -2427,7 +2438,7 @@ def downloadlexemeformexcel():
         outfile.write(json_object)
 
     def preprocess_csv_excel(lexicon):
-        # pprint(lexicon)
+        # logger.debug(lexicon)
         df = pd.json_normalize(lexicon)
         columns = df.columns
         drop_cols = [c for c in df.columns if c.startswith('langscripts.')]
@@ -2451,8 +2462,8 @@ def downloadlexemeformexcel():
         drop_cols.extend(drop_oldscript)
         drop_cols.extend(drop_files)
 
-        # print(list(df.columns))
-        # print(drop_cols)
+        # logger.debug(list(df.columns))
+        # logger.debug(drop_cols)
         # drop_cols = [c for c in df.columns if c.startswith('langscripts.')]
         df.drop(columns=drop_cols, inplace=True)
 
@@ -2468,25 +2479,25 @@ def downloadlexemeformexcel():
                          output_format='xlsx'):
         file_ext_map = {'xlsx': '.xlsx'}
 
-        # pprint(lex_json)
+        # logger.debug(lex_json)
         metadata = lex_json[0]
         project = metadata['projectname']
 
         lexicon = lex_json[1:]
-        # pprint(lexicon)
+        # logger.debug(lexicon)
         if output_format == 'xlsx':
             file_ext = file_ext_map[output_format]
             write_file = os.path.join(write_path, 'lexicon_'+project+file_ext)
             generate_xlsx(write_file, lexicon)
         else:
-            print('File type\t', output_format, '\tnot supported')
-            print('Supported File Types', file_ext_map.keys())
+            logger.debug('File type\t', output_format, '\tnot supported')
+            logger.debug('Supported File Types', file_ext_map.keys())
 
     lexeme_dir = basedir
     working_dir = basedir+'/download'
     with open(os.path.join(lexeme_dir, 'lexemeEntry.json')) as f_r:
         lex = json.load(f_r)
-        # pprint(lex)
+        # logger.debug(lex)
         out_form = 'xlsx'
         download_lexicon(lex, working_dir, out_form)
 
@@ -2496,11 +2507,11 @@ def downloadlexemeformexcel():
         # writing each file one by one
         for file in files:
             zip.write(file, os.path.join(projectname, os.path.basename(file)))
-    print('All files zipped successfully!')
+    logger.debug('All files zipped successfully!')
 
     # deleting all files from storage
     for f in files:
-        # print(f)
+        # logger.debug(f)
         os.remove(f)
 
     return send_file('../download.zip', as_attachment=True)
@@ -2533,14 +2544,14 @@ def downloadselectedlexeme():
 
     if headwords != None:
         headwords = eval(headwords)
-    # print(f'{"="*80}\nheadwords from downloadselectedlexeme route:\n {headwords}\n{"="*80}')
+    # logger.debug(f'{"="*80}\nheadwords from downloadselectedlexeme route:\n {headwords}\n{"="*80}')
 
     download_format = headwords['downloadFormat']
-    # print(download_format)
+    # logger.debug(download_format)
 
     del headwords['downloadFormat']
 
-    # print(f'{"="*80}\ndelete download format:\n {headwords}\n{"="*80}')
+    # logger.debug(f'{"="*80}\ndelete download format:\n {headwords}\n{"="*80}')
 
     activeprojectname = userprojects.find_one({'username': current_user.username})[
         'activeprojectname']
@@ -2598,7 +2609,7 @@ def downloadselectedlexeme():
     # #     g.bind("foaf", FOAF)
     # #     g.bind("xsd", XSD)
 
-    # #     print(g.serialize(format="turtle"))
+    # #     logger.debug(g.serialize(format="turtle"))
 
     # def add_canonical_form(g_form, life, lex_entry, lex_item, ipa, dict_lang):
     #     # g_form = Graph()
@@ -2618,7 +2629,7 @@ def downloadselectedlexeme():
     #     ))
 
     #     headword_script = list(lex_entry['langscripts']['headwordscript'])[0]
-    #     print ('Headword script', headword_script)
+    #     logger.debug('Headword script', headword_script)
     #     headword_lang = dict_lang+'-'+headword_script
 
     #     g_form.add((
@@ -2932,7 +2943,7 @@ def downloadselectedlexeme():
 
     #     domain_name = 'http://lifeapp.in'
 
-    #     pprint(lex_json)
+    #     logger.debug(lex_json)
     #     metadata = lex_json[0]
     #     project = metadata['projectname']
 
@@ -2963,8 +2974,8 @@ def downloadselectedlexeme():
     #             elif output_format == 'json':
     #                 generate_json(lex_json)
     #     else:
-    #         print ('File type\t', output_format, '\tnot supported')
-    #         print ('Supported File Types', file_ext_map.keys())
+    #         logger.debug('File type\t', output_format, '\tnot supported')
+    #         logger.debug('Supported File Types', file_ext_map.keys())
 
     def test():
         g = Graph()
@@ -2980,7 +2991,7 @@ def downloadselectedlexeme():
         g.bind("foaf", FOAF)
         g.bind("xsd", XSD)
 
-        print(g.serialize(format="turtle"))
+        logger.debug(g.serialize(format="turtle"))
 
     def add_canonical_form(g_form, life, lex_entry, lex_item, enc_lex_form, ipa, dict_lang):
         # g_form = Graph()
@@ -3000,7 +3011,7 @@ def downloadselectedlexeme():
         ))
 
         headword_script = list(lex_entry['langscripts']['headwordscript'])[0]
-        print('Headword script', headword_script)
+        logger.debug('Headword script', headword_script)
         headword_lang = dict_lang+'-'+headword_script
 
         g_form.add((
@@ -3202,7 +3213,7 @@ def downloadselectedlexeme():
         enc_lex_pron = requote_uri(lex_pron)
 
         lex_sense = lex_entry['SenseNew']
-        # print("Entry", lex_entry)
+        # logger.debug("Entry", lex_entry)
         dict_lang = lex_entry['langscripts']['langcode'].strip()
 
         # ontolex = URIRef('http://www.w3.org/ns/lemon/ontolex#')
@@ -3275,7 +3286,7 @@ def downloadselectedlexeme():
         # with open (write_path, 'w') as f_w:
         # rdf_out = g_lex.serialize(format=rdf_format, destination=write_path)
         g_lex.serialize(format=rdf_format, destination=write_path)
-        # print(type(rdf_out))
+        # logger.debug(type(rdf_out))
         # f_w.write(rdf_out)
 
     def preprocess_csv_excel(lexicon):
@@ -3444,8 +3455,8 @@ def downloadselectedlexeme():
                 elif output_format == 'xlsx':
                     generate_xlsx(write_file, lexicon)
                 elif output_format == 'pdf':
-                    # print("...................cur_fields.................")
-                    # pprint(cur_fields)
+                    # logger.debug("...................cur_fields.................")
+                    # logger.debug(cur_fields)
                     # generate_pdf(write_file, lexicon, project, fields=[], formatting_options={})
                     # generate_pdf(write_file, lexicon, lexicon_df, project, fields=cur_fields)
                     lg.generate_formatted_latex(
@@ -3459,8 +3470,8 @@ def downloadselectedlexeme():
                 elif output_format == 'ods':
                     generate_ods(write_file, lexicon)
                 elif output_format == 'latex_dict':
-                    # print("...................cur_fields.................")
-                    # pprint(cur_fields)
+                    # logger.debug("...................cur_fields.................")
+                    # logger.debug(cur_fields)
                     # generate_formatted_latex(write_file, lexicon, project, fields=[], formatting_options={})
                     # generate_formatted_latex(write_file, lexicon, project, fields=cur_fields, formatting_options={})
                     # generate_formatted_latex(
@@ -3470,8 +3481,8 @@ def downloadselectedlexeme():
                 elif output_format == 'json':
                     generate_json(lex_json)
         else:
-            print('File type\t', output_format, '\tnot supported')
-            print('Supported File Types', file_ext_map.keys())
+            logger.debug('File type\t', output_format, '\tnot supported')
+            logger.debug('Supported File Types', file_ext_map.keys())
 
     lexeme_dir = basedir
     # working_dir = basedir+'/app/download'
@@ -3479,11 +3490,11 @@ def downloadselectedlexeme():
     with open(os.path.join(lexeme_dir, 'lexemeEntry.json')) as f_r:
         lex = json.load(f_r)
         out_form = download_format
-        # print(out_form)
+        # logger.debug(out_form)
         if ('rdf' in out_form):
             rdf_format = out_form[3:]
             out_form = 'rdf'
-            # print(rdf_format)
+            # logger.debug(rdf_format)
             download_lexicon(lex, working_dir, out_form, rdf_format=rdf_format)
         else:
             download_lexicon(lex, working_dir, out_form)
@@ -3502,11 +3513,11 @@ def downloadselectedlexeme():
         # writing each file one by one
         for file in files:
             zip.write(file, os.path.join(projectname, os.path.basename(file)))
-    print('All files zipped successfully!')
+    logger.debug('All files zipped successfully!')
 
     # deleting all files from storage
     for f in files:
-        # print(f)
+        # logger.debug(f)
         os.remove(f)
 
     # return send_file('../download.zip', as_attachment=True)
@@ -3533,7 +3544,7 @@ def downloadproject():
         mongo, 'userprojects', 'userlogin', 'projects', 'lexemes', 'sentences',
         'questionnaires', 'transcriptions')
     current_username = getcurrentusername.getcurrentusername()
-    print('USERNAME: ', current_username)
+    logger.debug('USERNAME: ', current_username)
     # usertype = userdetails.get_user_type(
     #     userlogin, current_username)
     # currentuserprojectsname = getcurrentuserprojects.getcurrentuserprojects(
@@ -3582,7 +3593,7 @@ def downloadproject():
                                        {'_id': 0}):
                 lst.append(lexeme)
                 # save current user mutimedia files of each lexeme to local storage
-                # print(lst)
+                # logger.debug(lst)
             for lexeme in lst:
                 for lexkey, lexvalue in lexeme.items():
                     if (lexkey == 'lexemeId'):
@@ -3590,9 +3601,9 @@ def downloadproject():
                             {'projectname': projectname, 'lexemeId': lexvalue})
                         for file in files:
                             name = file.filename
-                            # print(f'{"#"*80}')
-                            # print(basedir+'/app/download/'+name)
-                            # print(f'{"#"*80}')
+                            # logger.debug(f'{"#"*80}')
+                            # logger.debug(basedir+'/app/download/'+name)
+                            # logger.debug(f'{"#"*80}')
                             # open(basedir+'/app/download/'+name, 'wb').write(file.read())
                             open(basedir+'/download/'+name,
                                  'wb').write(file.read())
@@ -3601,9 +3612,9 @@ def downloadproject():
             json_object = json.dumps(lst, indent=2, ensure_ascii=False)
 
             # writing to currentprojectname.json
-            # print(f'{"#"*80}')
-            # print(basedir+"/app/download/lexicon_"+activeprojectname+".json")
-            # print(f'{"#"*80}')
+            # logger.debug(f'{"#"*80}')
+            # logger.debug(basedir+"/app/download/lexicon_"+activeprojectname+".json")
+            # logger.debug(f'{"#"*80}')
             # with open(basedir+"/app/download/lexicon_"+activeprojectname+".json", "w") as outfile:
             with open(basedir+"/download/lexicon_"+activeprojectname+".json", "w") as outfile:
                 outfile.write(json_object)
@@ -3614,7 +3625,7 @@ def downloadproject():
                                            {'_id': 0}):
                 sentenceLst.append(sentence)
 
-            # print(sentenceLst)
+            # logger.debug(sentenceLst)
                 # save current user mutimedia files of each lexeme to local storage
             for sentence in sentenceLst:
                 for sentkey, sentvalue in sentence.items():
@@ -3643,11 +3654,11 @@ def downloadproject():
             for file in files:
                 zip.write(file, os.path.join(
                     projectname, os.path.basename(file)))
-        print('All files zipped successfully!')
+        logger.debug('All files zipped successfully!')
 
         # # deleting all files from storage
         # for f in files:
-        #     # print(files)
+        #     # logger.debug(files)
         #     os.remove(f)
 
         return send_file('../download.zip', as_attachment=True)
@@ -3810,26 +3821,26 @@ def downloaddictionary():
             cur_fields = fields
 
         if (output_format in file_ext_map):
-            print(f"pdf is match")
+            logger.debug(f"pdf is match")
             file_ext = file_ext_map[output_format]
             write_file = os.path.join(write_path, 'lexicon_'+project+file_ext)
             if output_format == 'pdf':
-                # print("...................cur_fields.................")
-                # pprint(cur_fields)
+                # logger.debug("...................cur_fields.................")
+                # logger.debug(cur_fields)
                 lg.generate_formatted_latex(
                     write_file, lexicon, lexicon_df, project, fields=cur_fields)
                 # generate_pdf(write_file, lexicon, project, fields=fields, formatting_options={})
             elif output_format == 'latex':
                 generate_latex(write_file, lexicon)
             elif output_format == 'latex_dict':
-                # print("...................cur_fields.................")
-                # pprint(cur_fields)
+                # logger.debug("...................cur_fields.................")
+                # logger.debug(cur_fields)
                 lg.generate_formatted_latex(
                     write_file, lexicon, lexicon_df, project, fields=cur_fields)
                 # generate_formatted_latex(write_file, lexicon, project, fields=fields, formatting_options={})
         else:
-            print('File type\t', output_format, '\tnot supported')
-            print('Supported File Types', file_ext_map.keys())
+            logger.debug('File type\t', output_format, '\tnot supported')
+            logger.debug('Supported File Types', file_ext_map.keys())
 
     lexeme_dir = basedir
     working_dir = basedir+'/download'
@@ -3846,11 +3857,11 @@ def downloaddictionary():
         # writing each file one by one
         for file in files:
             zip.write(file, os.path.join(projectname, os.path.basename(file)))
-    print('All files zipped successfully!')
+    logger.debug('All files zipped successfully!')
 
     # deleting all files from storage
     for f in files:
-        # print(f)
+        # logger.debug(f)
         os.remove(f)
 
     return send_file('../download.zip', as_attachment=True)
@@ -3874,7 +3885,7 @@ def download():
     projectname = userprojects.find_one({'username': current_user.username},
                                         {'_id': 0, 'activeprojectname': 1})['activeprojectname']
     lst.append(projectname)
-    # print(f'{"#"*80}\n{projectname}')
+    # logger.debug(f'{"#"*80}\n{projectname}')
     for lexeme in lexemes.find({'username': current_user.username, 'projectname': projectname},
                                {'_id': 0, 'username': 0, 'projectname': 0}):
         lst.append(lexeme)
@@ -3895,16 +3906,16 @@ def download():
 
     # printing the list of all files to be zipped
     files = glob.glob(basedir+'/download/*')
-    # print('Following files will be zipped:')
+    # logger.debug('Following files will be zipped:')
     # for file_name in files:
-    #     print(file_name)
+    #     logger.debug(file_name)
 
     # writing files to a zipfile
     with ZipFile('download.zip', 'w') as zip:
         # writing each file one by one
         for file in files:
             zip.write(file, os.path.join(projectname, os.path.basename(file)))
-    print('All files zipped successfully!')
+    logger.debug('All files zipped successfully!')
 
     # deleting all files from storage
     for f in files:
@@ -3968,7 +3979,7 @@ def shareprojectwith():
     current_username = getcurrentusername.getcurrentusername()
     activeprojectname = getactiveprojectname.getactiveprojectname(
         current_username, userprojects)
-    # print('2758: activeprojectname', activeprojectname)
+    # logger.debug('2758: activeprojectname', activeprojectname)
 
     projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
     project_type = getprojecttype.getprojecttype(projects,
@@ -3980,18 +3991,18 @@ def shareprojectwith():
     logger.debug('Sharing Information: %s', pformat(data))
     shareaction = data['shareaction']
     users = data['sharewithusers']
-    # print(type(users))
+    # logger.debug(type(users))
     speakers = data['sharespeakers']
     logger.debug("speakers: %s", speakers)
     sharemode = data['sharemode']
-    # print(sharemode)
+    # logger.debug(sharemode)
     if (sharemode == ''):
         sharemode = 0
     sharechecked = str(data['sharechecked'])
     downloadchecked = str(data['downloadchecked'])
     sharelatestchecked = str(data['sharelatestchecked'])
 
-    # print('123', users, speakers, sharemode, sharechecked)
+    # logger.debug('123', users, speakers, sharemode, sharechecked)
 
     if (len(users) != 0):
         # Sender email details
@@ -4015,7 +4026,7 @@ def shareprojectwith():
         )
         # loop on users with whom the project is to be shared
         for user in users:
-            # print(user)
+            # logger.debug(user)
             userdict = {}
             # get list of projects shared with the user
             usershareprojectsname = userprojects.find_one(
@@ -4098,9 +4109,9 @@ def shareprojectwith():
                     current_user.username,
                     current_user.username
                 )
-            # print(projectdetails)
+            # logger.debug(projectdetails)
             projectdetails['sharedwith'].append(user)
-            # print(projectdetails)
+            # logger.debug(projectdetails)
             # update list of projects shared with the user in collection
             userprojects.update_one(
                 {
@@ -4309,7 +4320,7 @@ def shareprojectwith():
 @app.route('/retrieve/<filename>', methods=['GET'])
 @login_required
 def retrieve(filename):
-    logger.debug('Now in retrieve')
+    # logger.debug('Now in retrieve')
     x = ''
     try:
         userprojects, = getdbcollections.getdbcollections(mongo,
@@ -4352,7 +4363,7 @@ def lexemeview():
     lexeme = lexemes.find_one({'username': projectOwner, 'lexemeId': headword[0], },
                               {'_id': 0, 'username': 0})
 
-    # print(lexeme["lemon"])
+    # logger.debug(lexeme["lemon"])
     logger.debug('lexeme: %s', pformat(lexeme))
 
     filen = {}
@@ -4382,21 +4393,21 @@ def lexemeedit():
 
     headword = request.args.get('a').split(
         ',')                    # data through ajax
-    # print(headword)
+    # logger.debug(headword)
 
     activeprojectname = userprojects.find_one({'username': current_user.username})[
         'activeprojectname']
-    # print(activeprojectname)
+    # logger.debug(activeprojectname)
 
     projectOwner = projects.find_one({'projectname': activeprojectname}, {
                                      'projectOwner': 1})['projectOwner']
     # projectOwner = projects.find_one({}, {"_id" : 0, activeprojectname : 1})[activeprojectname]["projectOwner"]
-    # print(projectOwner)
+    # logger.debug(projectOwner)
 
     if request.method == 'POST':
 
         newLexemeData = request.form.to_dict()
-        # print(newLexemeData)
+        # logger.debug(newLexemeData)
         return redirect(url_for('dictionaryview'))
 
     # activeprojectname = userprojects.find_one({ 'username' : current_user.username },\
@@ -4404,7 +4415,7 @@ def lexemeedit():
     lexeme = lexemes.find_one({'username': projectOwner, 'lexemeId': headword[0], },
                               {'_id': 0, 'username': 0})
 
-    # pprint(lexeme)
+    # logger.debug(lexeme)
 
     filen = []
     if 'filesname' in lexeme:
@@ -4437,15 +4448,15 @@ def lexemeupdate():
     activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username,
                                                                   userprojects)
     projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
-    # print(f"PROJECT OWNER: {projectOwner}")
+    # logger.debug(f"PROJECT OWNER: {projectOwner}")
     # new lexeme details coming from current project form
     if request.method == 'POST':
 
         # newLexemeData = request.form.to_dict()
         newLexemeData = dict(request.form.lists())
         newLexemeFiles = request.files.to_dict()
-        # print(newLexemeFiles)
-        # pprint(newLexemeData)
+        # logger.debug(newLexemeFiles)
+        # logger.debug(newLexemeData)
         lexemeId = newLexemeData['lexemeId'][0]
         # dictionary to store files name
         newLexemeFilesName = {}
@@ -4487,7 +4498,7 @@ def lexemeupdate():
                         else:
                             senselist.append({k[1]: value[0]})
                 sense['Sense '+str(num)] = senselist
-            # pprint.pprint(sense)
+            # logger.debug(sense)
             return sense
 
         def variantListOfDict(variantCount):
@@ -4501,7 +4512,7 @@ def lexemeupdate():
                         # variantlist.append({k[1] : value[0]})
                         variantdict[k[1]] = value[0]
                 variant['Variant '+str(num)] = variantdict
-            # pprint.pprint(variant)
+            # logger.debug(variant)
             return variant
 
         def allomorphListOfDict(allomorphCount):
@@ -4516,7 +4527,7 @@ def lexemeupdate():
                         allomorphdict[k[1]] = value[0]
                 # allomorph['Allomorph '+str(num)] = allomorphlist
                 allomorph['Allomorph '+str(num)] = allomorphdict
-            # pprint.pprint(allomorph)
+            # logger.debug(allomorph)
             return allomorph
 
         def customFields():
@@ -4528,7 +4539,7 @@ def lexemeupdate():
                     k = re.search(r'Field (\w+)', key)
                     # customFieldsList.append({k[1] : value[0]})
                     customFieldsDict[k[1]] = value[0]
-            # pprint.pprint(sense)
+            # logger.debug(sense)
             return customFieldsDict
 
         for key, value in newLexemeData.items():
@@ -4550,18 +4561,18 @@ def lexemeupdate():
             elif key == 'Lexeme Language':
                 pass
             else:
-                # print(lexemeFormData)
-                # print(key)
+                # logger.debug(lexemeFormData)
+                # logger.debug(key)
                 lexemeFormData[key] = value[0]
 
-        # print(f"{'#'*80}\n{list(lexemeFormData['Sense']['Sense 1'][0].keys())}")
+        # logger.debug(f"{'#'*80}\n{list(lexemeFormData['Sense']['Sense 1'][0].keys())}")
         gloss = list(lexemeFormData['Sense']['Sense 1'][0].keys())
         lexemeFormData['gloss'] = lexemeFormData['Sense']['Sense 1'][0][gloss[0]]
         # grammaticalcategory  = list(lexemeFormData['Sense']['Sense 1'][4].keys())
-        # print(f"{'#'*80}\n{lexemeFormData['Sense']['Sense 1']}")
+        # logger.debug(f"{'#'*80}\n{lexemeFormData['Sense']['Sense 1']}")
         for senseData in lexemeFormData['Sense']['Sense 1']:
             if list(senseData.keys())[0] == 'Grammatical Category':
-                # print(f"{'#'*80}\n{list(senseData.values())[0]}")
+                # logger.debug(f"{'#'*80}\n{list(senseData.values())[0]}")
                 lexemeFormData['grammaticalcategory'] = list(senseData.values())[
                     0]
         lexemeFormData['lexemedeleteFLAG'] = 0
@@ -4577,7 +4588,7 @@ def lexemeupdate():
         for key, value in lexemeFormData['Sense'].items():
             keyParent = key
             key = {}
-            # print(keyParent)
+            # logger.debug(keyParent)
             Gloss = {}
             Definition = {}
             Lexical_Relation = {}
@@ -4586,7 +4597,7 @@ def lexemeupdate():
                 for k, v in val.items():
                     if ("Gloss" in k):
                         Gloss[k.split()[1][:3].lower()] = v
-                        # print(key, k, v)
+                        # logger.debug(key, k, v)
                     elif ("Definition" in k):
                         Definition[k.split()[1][:3].lower()] = v
                     elif ("Lexical Relation" in k):
@@ -4604,7 +4615,7 @@ def lexemeupdate():
             # key['Lexical Relation'] = Lexical_Relation
 
             SenseNew[keyParent] = key
-        # pprint(SenseNew)
+        # logger.debug(SenseNew)
         lexemeFormData['SenseNew'] = SenseNew
 
         lexemeForm = {}
@@ -4623,7 +4634,7 @@ def lexemeupdate():
         # when testing comment these to avoid any database update/changes
         # saving files for the new lexeme to the database in fs collection
         for (filename, key) in zip(newLexemeFilesName.values(), newLexemeFiles):
-            # print(filename, key, newLexemeFiles[key])
+            # logger.debug(filename, key, newLexemeFiles[key])
             mongo.save_file(filename, newLexemeFiles[key], lexemeId=lexemeId, username=current_user.username,
                             projectname=lexemeFormData['projectname'], headword=lexemeFormData['headword'],
                             updatedBy=current_user.username)
@@ -4631,7 +4642,7 @@ def lexemeupdate():
        # prevent deletion of old files name from lexeme details
         oldFilesOfLexeme = lexemes.find_one(
             {'lexemeId': lexemeId}, {'_id': 0, 'filesname': 1})
-        # print(oldFilesOfLexeme)
+        # logger.debug(oldFilesOfLexeme)
         if (len(oldFilesOfLexeme) != 0):
             oldFilesOfLexeme = oldFilesOfLexeme['filesname']
             for key, fname in oldFilesOfLexeme.items():
@@ -4642,9 +4653,9 @@ def lexemeupdate():
             lexemeFormData['filesname'] = newLexemeFilesName
         # saving data for that new lexeme to database in lexemes collection
         # lexemes.insert(lexemeFormData)
-        # print(f'{"="*80}\nLexeme Form :')
-        # pprint(lexemeFormData)
-        # print(f'{"="*80}')
+        # logger.debug(f'{"="*80}\nLexeme Form :')
+        # logger.debug(lexemeFormData)
+        # logger.debug(f'{"="*80}')
         lexemes.update_one({'lexemeId': lexemeId}, {'$set': lexemeFormData})
 
         flash('Successfully Updated lexeme')
@@ -4656,33 +4667,33 @@ def lexemeupdate():
             {'username': current_user.username})["myproject"])
         shared_projects = len(userprojects.find_one(
             {'username': current_user.username})["projectsharedwithme"])
-        # print(f"MY PROJECTS: {my_projects}, SHARED PROJECTS: {shared_projects}")
+        # logger.debug(f"MY PROJECTS: {my_projects}, SHARED PROJECTS: {shared_projects}")
         if (my_projects+shared_projects) == 0:
             flash('Please create your first project')
             return redirect(url_for('home'))
     except:
-        # print(f'{"#"*80}\nCurrent user details not in database!!!')
+        # logger.debug(f'{"#"*80}\nCurrent user details not in database!!!')
         flash('Please create your first project')
         return redirect(url_for('home'))
     # get the list of lexeme entries for current project to show in dictionary view table
     lst = list()
 
     # projectOwner = projects.find_one({}, {"_id" : 0, activeprojectname : 1})[activeprojectname]["projectOwner"]
-    # print(projectOwner)
+    # logger.debug(projectOwner)
     try:
-        # print(activeprojectname)
+        # logger.debug(activeprojectname)
         projectOwner = projects.find_one({}, {"_id": 0, activeprojectname: 1})[
             activeprojectname]["projectOwner"]
-        # print(projectOwner)
+        # logger.debug(projectOwner)
         for lexeme in lexemes.find({'username': projectOwner, 'projectname': activeprojectname, 'lexemedeleteFLAG': 0},
                                    {'_id': 0, 'headword': 1, 'gloss': 1, 'grammaticalcategory': 1, 'lexemeId': 1}):
-            # pprint(lexeme)
+            # logger.debug(lexeme)
             if (len(lexeme['headword']) != 0):
                 lst.append(lexeme)
     except:
         flash('Enter first lexeme of the project')
 
-    # print(lst)
+    # logger.debug(lst)
     return render_template('dictionaryview.html', projectName=activeprojectname, sdata=lst, count=len(lst), data=currentuserprojectsname)
 
 
@@ -4721,7 +4732,7 @@ def deletemultiplelexemes():
     headwords = request.args.get('data')
     headwords = eval(headwords)
 
-    # print(headwords)
+    # logger.debug(headwords)
     for headwordId in headwords.keys():
         lexemes.update_one({'username': projectowner, 'lexemeId': headwordId,
                             }, {'$set': {'lexemedeleteFLAG': 1}})
@@ -4749,7 +4760,7 @@ def activeprojectname():
 
 def adminfirstlogin(userlogin, string_password):
     password = generate_password_hash(string_password)
-    # print(user, password)
+    # logger.debug(user, password)
 
     userlogin.update_one({"username": ADMIN_USER},
                          {'$set': {"password": password,
@@ -4773,6 +4784,8 @@ def login():
     generateadmin(userlogin)
     dummyUserandProject()
     manageAppConfig.generateDummyAppConfig()
+    lman.generate_languages_database()
+    mman.generate_models_database()
 
     if current_user.is_authenticated:
         return redirect(url_for('home'))
@@ -4781,30 +4794,30 @@ def login():
         # username = userlogin.find_one({"username": form.username.data})
         user = UserLogin(username=form.username.data)
         password = form.password.data
-        # print('Original password', password)
-        # print(user)
+        # logger.debug('Original password', password)
+        # logger.debug(user)
         if user.username == ADMIN_USER:
             if user.password_hash == '':
                 admin_password = adminfirstlogin(userlogin, password)
                 user.password_hash = admin_password
 
-        # print ('Create password', password)
+        # logger.debug('Create password', password)
         if user is None or not user.check_password(password):
             flash('Invalid username or password')
             return redirect(url_for('login'))
 
         isUserAvailable = userlogin.find_one(
             {'username': form.username.data}, {"_id": 1, "isActive": 1, "userdeleteFLAG": 1})
-        # print(len(isUserActive))
+        # logger.debug(len(isUserActive))
         # if (len(isUserActive) != 0):
         if 'isActive' in isUserAvailable and 'userdeleteFLAG' in isUserAvailable:
             isUserActive = isUserAvailable['isActive']
             isUserDelete = isUserAvailable['userdeleteFLAG']
-            logger.debug('User active status', isUserActive)
+            # logger.debug('User active status %s', isUserActive)
             if (isUserActive == 1 and isUserDelete == 0):
                 pass
-                # print(isUserActive)
-                # print('123')
+                # logger.debug(isUserActive)
+                # logger.debug('123')
             else:
                 if (isUserDelete == 1):
                     if (isUserActive == 2):
@@ -4895,17 +4908,17 @@ def save_registration_form(form, current_user):
                          'password2', 'csrf_token', 'submit']
 
     if form.validate_on_submit():
-        # print(form)
+        # logger.debug(form)
         for form_data in form:
-            # print(form_data)
-            # print(type(form_data))
-            # print(form_data.data)
+            # logger.debug(form_data)
+            # logger.debug(type(form_data))
+            # logger.debug(form_data.data)
             if (form_data.name not in excludeFormFields):
                 userProfile[form_data.name] = form_data.data
-        # print(userProfile)
+        # logger.debug(userProfile)
         # user = UserLogin(username=form.username.data)
         password = generate_password_hash(form.password.data)
-        # print(user, password)
+        # logger.debug(user, password)
 
         userlogin.insert_one({"username": form.username.data,
                               "password": password,
@@ -4953,7 +4966,7 @@ def register():
         save_registration_form(form, current_user)
         if current_user.is_authenticated:
             current_username = getcurrentusername.getcurrentusername()
-            print("Current username after submit", current_username)
+            logger.debug("Current username after submit", current_username)
             usertype = userdetails.get_user_type(userlogin, current_username)
             if 'ADMIN' in usertype:
                 flash(
@@ -4969,7 +4982,7 @@ def register():
             return render_template('register.html', form=form)
             # return redirect(url_for('manageusers'))
         else:
-            # print(current_user.get_id())
+            # logger.debug(current_user.get_id())
             return redirect(url_for('home'))
     else:
         return render_template('register.html', form=form)
@@ -4981,7 +4994,7 @@ def register():
 
 def dummyUserandProject():
     """ Creates dummy user and project if the database has no collection """
-    print("Creates dummy user and project if the database has no collection")
+    logger.debug("Creates dummy user and project if the database has no collection")
     # collection of users and their projectlist and active project
     userprojects = mongo.db.userprojects
     projects = mongo.db.projects
@@ -5088,11 +5101,11 @@ def audiotranscription():
     for file in files:
         if ('audio' in file.contentType):
             name = file.filename
-            # print(file.projectname)
-            # print(name)
+            # logger.debug(file.projectname)
+            # logger.debug(name)
             audiofile = fs.get_last_version(filename=name)
             audiofileBytes = audiofile.read()
-            # print(len(audiofile.read()))
+            # logger.debug(len(audiofile.read()))
             if (len(audiofileBytes) != 0):
                 open(basedir+'/static/audio/'+name, 'wb').write(audiofileBytes)
 
@@ -5100,7 +5113,7 @@ def audiotranscription():
 
         newLexemeData = dict(request.form.lists())
         newLexemeFiles = request.files.to_dict()
-        # pprint(newLexemeData)
+        # logger.debug(newLexemeData)
         # dictionary to store files name
         newLexemeFilesName = {}
         for key in newLexemeFiles:
@@ -5108,8 +5121,8 @@ def audiotranscription():
                 # adding microseconds of current time to differ two files of same name
                 newLexemeFilesName[key] = (datetime.now().strftime(
                     '%f')+'_'+newLexemeFiles[key].filename)
-        # print(newLexemeFiles)
-        # print(newLexemeFilesName)
+        # logger.debug(newLexemeFiles)
+        # logger.debug(newLexemeFilesName)
 
         return redirect(url_for('audiotranscription'))
 
@@ -5120,14 +5133,14 @@ def audiotranscription():
 @app.route('/assignkaryaaccesscode', methods=['GET', 'POST'])
 @login_required
 def assignkaryaaccesscode():
-    # print(f"IN KARYA ACCESS CODE ASSIGNMENT FUNCTION")
+    # logger.debug(f"IN KARYA ACCESS CODE ASSIGNMENT FUNCTION")
     return redirect(url_for('home'))
 
 
 @app.route('/datetimeasid', methods=['GET'])
 def datetimeasid():
     Id = re.sub(r'[-: \.]', '', str(datetime.now()))
-    # print(Id)
+    # logger.debug(Id)
     return jsonify(Id=Id)
 
 
@@ -5186,7 +5199,7 @@ def loadnextaudio():
     # data through ajax
     lastActiveId = request.args.get('data')
     lastActiveId = eval(lastActiveId)
-    # print('lastActiveId', type(lastActiveId), len(lastActiveId))
+    # logger.debug('lastActiveId', type(lastActiveId), len(lastActiveId))
     latest_audio_id = ''
     if (len(lastActiveId) != 0):
         # newAudioFilePath = getAudioFilename(lastActiveFilename, 'previous')
@@ -5200,7 +5213,7 @@ def loadnextaudio():
                                                      activespeakerid,
                                                      speaker_audio_ids,
                                                      'next')
-        # print('latest_audio_id ROUTES', latest_audio_id)
+        # logger.debug('latest_audio_id ROUTES', latest_audio_id)
         audiodetails.updatelatestaudioid(projects,
                                          activeprojectname,
                                          latest_audio_id,
@@ -5215,7 +5228,7 @@ def getAudioFilename(lastActiveFilename, whichOne):
     audioFilesPath = 'static/audio'
     baseAudioFilesPath = os.path.join(basedir, audioFilesPath)
     audioFilesList = sorted(os.listdir(baseAudioFilesPath))
-    # print(audioFilesList)
+    # logger.debug(audioFilesList)
     audioFileIndex = audioFilesList.index(lastActiveFilename)
     if (whichOne == 'next'):
         audioFileIndex = audioFileIndex + 1
@@ -5276,14 +5289,14 @@ def loadunannotext():
                                                             current_user.username,
                                                             activeprojectname)['activespeakerId']
 
-    # print(f'{"="*80}\nUn-Anno\n{"="*80}')
+    # logger.debug(f'{"="*80}\nUn-Anno\n{"="*80}')
 
     lastActiveId = request.args.get('data')
     lastActiveId = eval(lastActiveId)
-    # print(lastActiveId)
+    # logger.debug(lastActiveId)
     updateactivespeakeraudioid = 'lastActiveId.' + \
         current_user.username+'.'+activespeakerid+'.audioId'
-    # print(updateactivespeakeraudioid)
+    # logger.debug(updateactivespeakeraudioid)
 
     projects.update_one({"projectname": activeprojectname},
                         {'$set': {updateactivespeakeraudioid: lastActiveId}})
@@ -5308,7 +5321,7 @@ def loadtranscriptionbyanyuser():
                                                             current_user.username,
                                                             activeprojectname)['activespeakerId']
 
-    # print(f'{"="*80}\nUn-Anno\n{"="*80}')
+    # logger.debug(f'{"="*80}\nUn-Anno\n{"="*80}')
 
     # receivedData =
     lastActiveUser = request.args.get('transcriptionUser')
@@ -5318,12 +5331,12 @@ def loadtranscriptionbyanyuser():
     # lastActiveUser = eval(lastActiveUser)
     # lastActiveAudioId = eval(lastActiveAudioId)
     # logger.debug('Final data %s\t%s', lastActiveUser, lastActiveAudioId)
-    # print(lastActiveId)
+    # logger.debug(lastActiveId)
 
     # Preference set for each Audio file separately
     # updateactiveuser = 'lastActiveUserTranscription.' + \
     #     current_user.username+'.'+activespeakerid+'.' + lastActiveAudioId
-    # print(updateactivespeakeraudioid)
+    # logger.debug(updateactivespeakeraudioid)
 
     # Preference set for a specific user in a project - all audio files will show the transcription of the user selected
     projectDetails.save_active_transcription_by(
@@ -5354,88 +5367,22 @@ def addnewspeakerdetails():
                                                                   userprojects)
     projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
     if request.method == 'POST':
-        # add_new_speaker_form_data = dict(request.form.lists())
-        # print(add_new_speaker_form_data)
         form_data = request.form
+        uploaded_files = request.files
+
         logger.debug("All form %s", form_data)
 
-        exclude_fields = ['audiosource', 'sourcecallpage',
-                          'fieldMetadataSchema', 'metadataentrytype', 'audioInternetSource']
+        metadata_schema, audio_source, call_source, upload_type, exclude_fields = processHTMLForm.get_metadata_header_details(
+            form_data)
 
-        audio_source = form_data.get('audiosource', '')
-        call_source = form_data.get('sourcecallpage', '')
-
-        if audio_source == 'field' and 'fieldMetadataSchema' in form_data:
-            logger.debug('Metadata schema found!')
-            metadata_schema = form_data.get('fieldMetadataSchema', '')
-            logger.debug('Metadata schema name %s', metadata_schema)
-        # if metadata_schema == '':
-        elif audio_source == 'internet' and 'audioInternetSource' in form_data:
-            metadata_schema = form_data.get('audioInternetSource', '')
-        else:
-            logger.debug('Metadata schema not found found!')
-            metadata_schema = ''
         logger.debug("Metadata Schema %s", metadata_schema)
-        upload_type = form_data.get('metadataentrytype', '')
         logger.debug("Call source %s", call_source)
-        metadata_data = {}
 
-        if upload_type == 'single':
-            # if ('field' in audio_source):
-            for field_name in form_data:
-                if field_name not in exclude_fields:
-                    field_data = form_data.getlist(field_name)
-                    logger.debug('Field name %s', field_name)
-                    if (not field_name.endswith('-list')) and (len(field_data) == 1):
-                        field_data = field_data[0]
-                    metadata_data[field_name] = field_data
-                    # if field_name in metadata_data:
-                    #     current_data = metadata_data[field_name]
-                    #     if type(current_data) == str:
-                    #         metadata_data[field_name] = [current_data]
+        metadata_data = processHTMLForm.get_metadata_data(form_data,
+                                                          form_files=uploaded_files,
+                                                          upload_type=upload_type,
+                                                          exclude_fields=exclude_fields)
 
-                    #     metadata_data[field_name].append(
-                    #         form_data[field_name])
-                    # else:
-                    #     metadata_data[field_name] = form_data[field_name]
-
-                # fname = request.form.get('sname', '')
-                # fage = request.form.get('sagegroup', '')
-                # fgender = request.form.get('sgender', '')
-                # educlvl = request.form.get('educationalevel', '')
-                # moe12 = request.form.getlist('moe12')
-                # moea12 = request.form.getlist('moea12')
-                # sols = request.form.getlist('sols')
-                # por = request.form.get('por', '')
-                # toc = request.form.get('toc', '')
-                # metadata_data.update({"name": fname,
-                #                       "agegroup": fage,
-                #                       "gender": fgender,
-                #                       "educationlevel": educlvl,
-                #                       "educationmediumupto12": moe12,
-                #                       "educationmediumafter12": moea12,
-                #                       "speakerspeaklanguage": sols,
-                #                       "recordingplace": por,
-                #                       "typeofrecordingplace": toc})
-
-            # elif (audio_source == 'internet'):
-            #     # internet sub source
-            #     audio_subsource = request.form.get('audiosubsource')
-            #     if (audio_subsource == 'youtube'):
-            #         if upload_type == 'single':
-            #             channelname = request.form.get('ytchannelname', '')
-            #             channelurl = request.form.get('ytchannelurl', '')
-            #             metadata_data.update({"channelName": channelname,
-            #                                   "channelUrl": channelurl})
-        else:
-            metadata_data = request.files.to_dict().get('metadatafile', '')
-
-            # logger.debug('Metadata info %s', metadata_data)
-            # excel_data = pd.read_excel(
-            #     metadata_data, engine="openpyxl")
-            # excel_data['educationmediumupto12'] = excel_data['educationmediumupto12'].apply(
-            #     lambda x: x.split(','))
-            # logger.debug('File data %s', excel_data.to_dict(orient='records'))
         speakerDetails.write_speaker_metadata_details(speakerdetails,
                                                       projectowner,
                                                       activeprojectname,
@@ -5445,7 +5392,52 @@ def addnewspeakerdetails():
                                                       metadata_data,
                                                       upload_type)
 
-        # # TODO: Redirect to different pages based on button click
+        # if ('field' in audio_source):
+
+        # if field_name in metadata_data:
+        #     current_data = metadata_data[field_name]
+        #     if type(current_data) == str:
+        #         metadata_data[field_name] = [current_data]
+
+        #     metadata_data[field_name].append(
+        #         form_data[field_name])
+        # else:
+        #     metadata_data[field_name] = form_data[field_name]
+
+        # fname = request.form.get('sname', '')
+        # fage = request.form.get('sagegroup', '')
+        # fgender = request.form.get('sgender', '')
+        # educlvl = request.form.get('educationalevel', '')
+        # moe12 = request.form.getlist('moe12')
+        # moea12 = request.form.getlist('moea12')
+        # sols = request.form.getlist('sols')
+        # por = request.form.get('por', '')
+        # toc = request.form.get('toc', '')
+        # metadata_data.update({"name": fname,
+        #                       "agegroup": fage,
+        #                       "gender": fgender,
+        #                       "educationlevel": educlvl,
+        #                       "educationmediumupto12": moe12,
+        #                       "educationmediumafter12": moea12,
+        #                       "speakerspeaklanguage": sols,
+        #                       "recordingplace": por,
+        #                       "typeofrecordingplace": toc})
+
+        # elif (audio_source == 'internet'):
+        #     # internet sub source
+        #     audio_subsource = request.form.get('audiosubsource')
+        #     if (audio_subsource == 'youtube'):
+        #         if upload_type == 'single':
+        #             channelname = request.form.get('ytchannelname', '')
+        #             channelurl = request.form.get('ytchannelurl', '')
+        #             metadata_data.update({"channelName": channelname,
+        #                                   "channelUrl": channelurl})
+        # logger.debug('Metadata info %s', metadata_data)
+        # excel_data = pd.read_excel(
+        #     metadata_data, engine="openpyxl")
+        # excel_data['educationmediumupto12'] = excel_data['educationmediumupto12'].apply(
+        #     lambda x: x.split(','))
+        # logger.debug('File data %s', excel_data.to_dict(orient='records'))
 
         if "managepage" in call_source:
             flash(
@@ -5466,7 +5458,7 @@ def managespeakermetadata():
     userprojects, userlogin, speakermeta = getdbcollections.getdbcollections(
         mongo, 'userprojects', 'userlogin', 'speakerdetails')
     current_username = getcurrentusername.getcurrentusername()
-    print('USERNAME: ', current_username)
+    logger.debug('USERNAME: ', current_username)
     usertype = userdetails.get_user_type(
         userlogin, current_username)
     currentuserprojectsname = getcurrentuserprojects.getcurrentuserprojects(
@@ -5478,8 +5470,8 @@ def managespeakermetadata():
     allspeakerdetails, alldatalengths, allkeys = speakerDetails.getspeakerdetails(
         activeprojectname, speakermeta)
 
-    # pprint (allspeakerdetails)
-    # pprint(alldatalengths)
+    # logger.debug(allspeakerdetails)
+    # logger.debug(alldatalengths)
 
     return render_template(
         'manageSpeakers.html',
@@ -5503,11 +5495,11 @@ def getonespeakermetadata():
 
     # data through ajax
     lifesourceid = request.args.get('lifespeakerid')
-    print("Life source ID", lifesourceid)
+    logger.debug("Life source ID", lifesourceid)
     speakermetadata = speakerDetails.getonespeakerdetails(
         activeprojectname, lifesourceid, speakermeta)
 
-    print("Speaker Metadata", speakermetadata)
+    logger.debug("Speaker Metadata", speakermetadata)
     return jsonify(onespeakerdetails=speakermetadata)
 
 
@@ -5520,26 +5512,22 @@ def editsourcemetadata():
     current_username = getcurrentusername.getcurrentusername()
     activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username,
                                                                   userprojects)
-    projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
-    exclude_fields = ['audiosource', 'sourcecallpage',
-                      'fieldmetadataschema', 'metadataentrytype', 'audioInternetSource', 'lifespeakerid']
+    # projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
+    # exclude_fields = ['audiosource', 'sourcecallpage',
+    #                   'fieldmetadataschema', 'metadataentrytype', 'audioInternetSource', 'lifespeakerid']
 
     if request.method == 'POST':
         # add_new_speaker_form_data = dict(request.form.lists())
-        # print(add_new_speaker_form_data)
+        # logger.debug(add_new_speaker_form_data)
         current_dt = str(datetime.now()).replace('.', ':')
         form_data = request.form
         lifesourceid = form_data.get('lifespeakerid')
 
         logger.debug("All form %s", form_data)
-        metadata_data = {}
-        for field_name in form_data:
-            if field_name not in exclude_fields:
-                field_data = form_data.getlist(field_name)
-                logger.debug('Field name %s', field_name)
-                if (not field_name.endswith('-list')) and (len(field_data) == 1):
-                    field_data = field_data[0]
-                metadata_data[field_name] = field_data
+        metadata_data = processHTMLForm.get_metadata_data(
+            form_data
+        )
+
         update_data = {
             "current": {
                 "updatedBy": current_username,
@@ -5673,7 +5661,7 @@ def uploadaudiofiles():
 
         if 'uploadparameters-optimisefor' in data:
             get_audio_json = data['uploadparameters-optimisefor'][0] == 'True'
-        # print(get_audio_json)
+        # logger.debug(get_audio_json)
 
         if 'minBoundarySize' in data:
             min_boundary_size = float(data['minBoundarySize'][0])
@@ -5783,7 +5771,7 @@ def makeboundary():
 
         if 'overwrite-my-boundaries' in data:
             overwrite_user = True
-        # print(get_audio_json)
+        # logger.debug(get_audio_json)
 
         if 'minBoundarySize' in data:
             min_boundary_size = float(data['minBoundarySize'][0])
@@ -5850,17 +5838,17 @@ def changespeakerid():
 
     # data through ajax
     speakerId = str(request.args.get('a'))
-    # print(speakerId)
+    # logger.debug(speakerId)
     projectinfo = userprojects.find_one({'username': current_user.username},
                                         {'_id': 0, 'myproject': 1, 'projectsharedwithme': 1})
 
-    # print(projectinfo)
+    # logger.debug(projectinfo)
     userprojectinfo = ''
     for key, value in projectinfo.items():
         if len(value) != 0:
             if activeprojectname in value:
                 userprojectinfo = key+'.'+activeprojectname+".activespeakerId"
-    # print(userprojectinfo)
+    # logger.debug(userprojectinfo)
     userprojects.update_one({"username": current_user.username},
                             {"$set": {
                                 userprojectinfo: speakerId
@@ -5880,17 +5868,17 @@ def changesourceid():
 
     # data through ajax
     sourceId = str(request.args.get('a'))
-    # print(sourceId)
+    # logger.debug(sourceId)
     projectinfo = userprojects.find_one({'username': current_user.username},
                                         {'_id': 0, 'myproject': 1, 'projectsharedwithme': 1})
 
-    # print(projectinfo)
+    # logger.debug(projectinfo)
     userprojectinfo = ''
     for key, value in projectinfo.items():
         if len(value) != 0:
             if activeprojectname in value:
                 userprojectinfo = key+'.'+activeprojectname+".activesourceId"
-    # print(userprojectinfo)
+    # logger.debug(userprojectinfo)
     userprojects.update_one({"username": current_user.username},
                             {"$set": {
                                 userprojectinfo: sourceId
@@ -5914,23 +5902,23 @@ def progressreport():
 
     progressreport = ''
 
-    # print(current_username, activeprojectname)
+    # logger.debug(current_username, activeprojectname)
     shareinfo = getuserprojectinfo.getuserprojectinfo(
         userprojects, current_username, activeprojectname)
-    # print(shareinfo)
+    # logger.debug(shareinfo)
 
     if 'isharedwith' in shareinfo:
         isharedwith = shareinfo['isharedwith']
-        # print('isharedwith', isharedwith)
+        # logger.debug('isharedwith', isharedwith)
         isharedwith.append(current_username)
-        # print('isharedwith_2', isharedwith)
+        # logger.debug('isharedwith_2', isharedwith)
         progressreport = audiodetails.getaudioprogressreport(projects,
                                                              transcriptions,
                                                              speakerdetails,
                                                              activeprojectname,
                                                              isharedwith)
 
-    # print(progressreport)
+    # logger.debug(progressreport)
 
     return jsonify(progressreport=progressreport)
 
@@ -5959,12 +5947,12 @@ def test():
                                                       current_username,
                                                       activeprojectname)
 
-    # print('current_username', current_username)
-    # print('currentuserprojectsname', currentuserprojectsname)
-    # print('activeprojectname', activeprojectname)
-    # print('projectowner', projectowner)
-    # print('quesprojectform', quesprojectform)
-    # print('shareinfo', shareinfo)
+    # logger.debug('current_username', current_username)
+    # logger.debug('currentuserprojectsname', currentuserprojectsname)
+    # logger.debug('activeprojectname', activeprojectname)
+    # logger.debug('projectowner', projectowner)
+    # logger.debug('quesprojectform', quesprojectform)
+    # logger.debug('shareinfo', shareinfo)
 
     return render_template('test.html',
                            projectName=activeprojectname,
@@ -6035,15 +6023,28 @@ def documentation():
 @app.route('/projecttype', methods=['GET', 'POST'])
 @login_required
 def projecttype():
-    projects, userprojects = getdbcollections.getdbcollections(mongo,
-                                                               'projects',
-                                                               'userprojects')
+    projects, userprojects, projectsform = getdbcollections.getdbcollections(mongo,
+                                                                             'projects',
+                                                                             'userprojects',
+                                                                             'projectsform')
     current_username = getcurrentusername.getcurrentusername()
     activeprojectname = getactiveprojectname.getactiveprojectname(
         current_username, userprojects)
     project_type = getprojecttype.getprojecttype(projects, activeprojectname)
+    shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
+                                                      current_username,
+                                                      activeprojectname)
+    current_user_sharemode = int(shareinfo['sharemode'])
 
-    return jsonify(projectType=project_type)
+    projectowner = getprojectowner.getprojectowner(projects,
+                                                   activeprojectname)
+    activeprojectform = getactiveprojectform.getactiveprojectform(projectsform,
+                                                                  projectowner,
+                                                                  activeprojectname)
+
+    return jsonify(projectType=project_type,
+                   shareMode=current_user_sharemode,
+                   activeprojectform=activeprojectform)
 
 
 @app.route('/manageapp', methods=['GET', 'POST'])
@@ -6052,11 +6053,11 @@ def manageapp():
     userlogin, = getdbcollections.getdbcollections(
         mongo, 'userlogin')
     current_username = getcurrentusername.getcurrentusername()
-    print('USERNAME: ', current_username)
+    logger.debug('USERNAME: ', current_username)
     usertype = userdetails.get_user_type(
         userlogin, current_username)
-    print('USERTYPE: ', usertype)
-    # print(ADMIN_USER, SUB_ADMINS)
+    logger.debug('USERTYPE: ', usertype)
+    # logger.debug(ADMIN_USER, SUB_ADMINS)
 
     if 'ADMIN' in usertype:
         allusers = userdetails.getuserdetails(userlogin)
@@ -6076,11 +6077,11 @@ def emailsetup():
     userlogin, lifeappconfigs = getdbcollections.getdbcollections(
         mongo, 'userlogin', 'lifeappconfigs')
     current_username = getcurrentusername.getcurrentusername()
-    print('USERNAME: ', current_username)
+    logger.debug('USERNAME: ', current_username)
     usertype = userdetails.get_user_type(
         userlogin, current_username)
-    print('USERTYPE: ', usertype)
-    # print(ADMIN_USER, SUB_ADMINS)
+    logger.debug('USERTYPE: ', usertype)
+    # logger.debug(ADMIN_USER, SUB_ADMINS)
     manageAppConfig.generateDummyAppConfig()
 
     if 'SUPER-ADMIN' in usertype:
@@ -6109,6 +6110,147 @@ def emailsetup():
         labelmap=labelmap,
         usertype=usertype
     )
+
+
+@app.route('/hfmodelsetup', methods=['GET', 'POST'])
+@login_required
+def hfmodelsetup():
+    userlogin, lifeappconfigs = getdbcollections.getdbcollections(
+        mongo, 'userlogin', 'lifeappconfigs')
+    current_username = getcurrentusername.getcurrentusername()
+    logger.debug('USERNAME: ', current_username)
+    usertype = userdetails.get_user_type(
+        userlogin, current_username)
+    logger.debug('USERTYPE: ', usertype)
+    # logger.debug(ADMIN_USER, SUB_ADMINS)
+    # manageAppConfig.generateDummyAppConfig()
+    hfmodelconfig = {}
+    labelmap = []
+    hfmodelconfigglobal = {}
+    hfmodelconfiguser = {}
+
+    featured_authors_default = ['ai4bharat', 'Harveenchadha', 'facebook', 'meta-llama',
+                                'google', 'microsoft', 'allenai', 'Intel', 'openai', 'openchat', 'writer', 'amazon',
+                                'assemblyai', 'EleutherAI', 'tiiuae', 'bigscience', 'Salesforce', 'lmsys', 'mosaicml', 'databricks',
+                                'stabilityai', 'Open-Orca', 'mistralai', 'HuggingFaceH4', 'distil-whisper', 'sarvamai']
+
+    if request.method == 'POST':
+        authors_list = request.form.getlist('nameglobal++authorsList')
+        task_type = request.form.get('nameglobal++taskType')
+        if 'SUPER-ADMIN' in usertype:
+            hfmodelconfigglobal = {
+                'globals': {
+                    task_type: {
+                        'authorsList': authors_list
+                    }
+                }
+            }
+            hfmodelconfig.update(hfmodelconfigglobal)
+
+        api_tokens = request.form.getlist('nameuser++apiTokens')
+        hfmodelconfiguser = {
+            'usersData': {
+                current_username: {
+                    'apiTokens': api_tokens,
+                    'globals': {
+                        task_type: {
+                            'authorsList': authors_list
+                        }
+                    }
+                }
+            }
+        }
+        hfmodelconfig.update(hfmodelconfiguser)
+
+        logger.debug("Final config sent %s", hfmodelconfig)
+
+        labelmap = manageAppConfig.updateHuggingFaceModelConfig(
+            lifeappconfigs, hfmodelconfig)
+    else:
+        hfmodelconfig, labelmap = manageAppConfig.getHuggingFaceModelConfig(
+            lifeappconfigs, current_username, usertype)
+
+    if 'SUPER-ADMIN' in usertype:
+        global_config = hfmodelconfig['globals']
+    else:
+        global_config = hfmodelconfig['usersData'].get(
+            current_username, {'globals': {}})
+
+    # TODO: Write a function to get the list of authors given a task - this will be used
+    # for calling it via AJAX and getting Author List when a specific task is selected
+    # on the manage page. At present only ASR is being implemented and supported
+    # hfmodelconfigval = global_config.get(
+    #     'automatic-speech-recognition', {'authorsList': featured_authors_default})
+    # logger.debug('Model config %s %s', hfmodelconfigval,
+    #              len(hfmodelconfigval['authorsList']))
+    # if len(hfmodelconfigval['authorsList']) > 0:
+    #     hfmodelconfigglobal['automatic-speech-recognition'] = hfmodelconfigval['authorsList']
+    # else:
+    #     hfmodelconfigglobal['automatic-speech-recognition'] = featured_authors_default
+
+    logger.debug('Model config Global %s', hfmodelconfigglobal)
+
+    for task_type, author_list in global_config.items():
+        # if task_type == current_username:
+        author_list = author_list.get(
+            'authorsList', featured_authors_default)
+        if len(author_list) == 0:
+            author_list = featured_authors_default
+        hfmodelconfigglobal[task_type] = author_list
+
+    logger.debug('Model config Global %s', hfmodelconfigglobal)
+    # hfmodelconfigglobal['taskType'] = 'automatic-speech-recognition'
+    hfmodelconfiguser = hfmodelconfig['usersData'].get(
+        current_username, {'apiTokens': []})['apiTokens']
+
+    logger.debug('Model config Global %s', hfmodelconfigglobal)
+    logger.debug('Model config user %s', hfmodelconfiguser)
+
+    return render_template(
+        'hfmodelsetup.html',
+        hfmodelconfiguser=hfmodelconfiguser,
+        hfmodelconfigadmin=hfmodelconfigglobal,
+        labelmap=labelmap,
+        usertype=usertype
+    )
+
+
+@app.route('/languagesetup', methods=['GET', 'POST'])
+@login_required
+def languagesetup():
+    userlogin, lifeappconfigs = getdbcollections.getdbcollections(
+        mongo, 'userlogin', 'lifeappconfigs')
+    current_username = getcurrentusername.getcurrentusername()
+    logger.debug('USERNAME: ', current_username)
+    usertype = userdetails.get_user_type(
+        userlogin, current_username)
+    logger.debug('USERTYPE: ', usertype)
+    if 'SUPER-ADMIN' in usertype:
+        return render_template(
+            'languagesetup.html'
+        )
+    else:
+        flash("This action is not allowed for you")
+        return "Permission denied"
+
+
+@app.route('/regeneratelanguages', methods=['GET', 'POST'])
+@login_required
+def regeneratelanguages():
+    userlogin, lifeappconfigs = getdbcollections.getdbcollections(
+        mongo, 'userlogin', 'lifeappconfigs')
+    current_username = getcurrentusername.getcurrentusername()
+    logger.debug('USERNAME: ', current_username)
+    usertype = userdetails.get_user_type(
+        userlogin, current_username)
+    logger.debug('USERTYPE: ', usertype)
+    if 'SUPER-ADMIN' in usertype:
+        lman.generate_languages_database(regenerate=True)
+        flash("The languages databse is successfully regenerated. You will need to sync models again now!")
+        return redirect(url_for('languagesetup'))
+    else:
+        flash("This action is not allowed for you")
+        return "Permission denied"
 
 
 @app.errorhandler(404)
@@ -6186,34 +6328,34 @@ def browseshareuserslist():
 
         # get list of all the users registered in the application LiFE
         for user in userlogin.find({}, {"_id": 0, "username": 1, "isActive": 1}):
-            # print(user)
+            # logger.debug(user)
             if ('isActive' in user and user['isActive'] == 1):
                 usersList.append(user["username"])
-                # print(user)
+                # logger.debug(user)
         if (current_username == projectowner):
             usersList.remove(projectowner)
             share_with_users_list = usersList
         else:
-            # print(usersList)
+            # logger.debug(usersList)
             usersList.remove(projectowner)
             usersList.remove(current_username)
-            # print(usersList)
+            # logger.debug(usersList)
             # share_with_users_list = usersList
-            # print(usersList)
+            # logger.debug(usersList)
             for username in usersList:
-                # print(username)
+                # logger.debug(username)
                 usershareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
                                                                       username,
                                                                       activeprojectname)
                 usersharemode = int(usershareinfo['sharemode'])
-                # print(current_username, current_user_sharemode, username, usersharemode)
-                # print(current_username, type(current_user_sharemode), username, type(usersharemode))
+                # logger.debug(current_username, current_user_sharemode, username, usersharemode)
+                # logger.debug(current_username, type(current_user_sharemode), username, type(usersharemode))
                 if (current_user_sharemode <= usersharemode):
-                    # print(f"username!!!: {username}")
+                    # logger.debug(f"username!!!: {username}")
                     # share_with_users_list.remove(username)
                     pass
                 else:
-                    # print(f"username!!!: {username}")
+                    # logger.debug(f"username!!!: {username}")
                     share_with_users_list.append(username)
         # project_shared_with = projects.find_one({'projectname': activeprojectname},
         #                                         {'_id': 0, 'sharedwith': 1})["sharedwith"]
@@ -6358,3 +6500,19 @@ def browsesharewith():
         logger.exception("")
 
     return jsonify(users=users)
+
+
+@app.route('/get_jsonfile_data', methods=['GET', 'POST'])
+@login_required
+def get_jsonfile_data():
+    # data through ajax
+    data = json.loads(request.args.get('data'))
+    # logger.debug('JSON Files name: %s', pformat(data))
+    json_data = {}
+    for var, filename in data.items():
+        # logger.debug('JSON File name: %s', filename)
+        JSONFilePath = os.path.join(basedir, 'jsonfiles', filename)
+        json_data[var] = readJSONFile.readJSONFile(JSONFilePath)
+    # logger.debug('json_data: %s', pformat(json_data))
+
+    return jsonify(jsonData=json_data)

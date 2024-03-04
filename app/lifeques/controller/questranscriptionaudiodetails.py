@@ -112,8 +112,9 @@ def getquesfilefromfs(mongo,
             open(save_file_path, 'wb').write(audiofileBytes)
     else:
         file_path = ''
+        file_name = ''
 
-    return file_path
+    return (file_path, file_name)
 
 def getquesfiletranscriptiondetails(questionnaires, quesId, lang, prompt_type,):
     

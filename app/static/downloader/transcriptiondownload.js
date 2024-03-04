@@ -2,7 +2,7 @@ function generateDownloadForm(shareinfo, transcriptionsBy, activeTranscriptionBy
     // console.log('GenDown Share info', shareinfo)
     // console.log('GenDown Transc by', transcriptionsBy)
     // console.log('GenDown Active Transc by', activeTranscriptionBy)
-    console.log('Audio IDs empty', $.isEmptyObject(audioIds), audioIds)
+    // console.log('Audio IDs empty', $.isEmptyObject(audioIds), audioIds)
     var downloadModal = ''
 
     downloadModal += '<div class="modal fade" id="myDownloadTranscriptionModal" tabindex="-1" role="dialog" aria-labelledby="myDownloadTranscriptionModalLabel">' +
@@ -172,17 +172,23 @@ $(document).ready(function () {
         console.log("Form data", formData, formData.get("downloadFormat"));
         // console.log("Audio IDS", audioIds);
         $.ajax({
-            url: 'download/downloadtranscriptions',
+            url: '/download/downloadtranscriptions',
             type: 'POST',
             data: formData,
             processData: false,
             contentType: false,
             success: function (response) {
                 // window.location.href = "http://127.0.0.1:5000/downloadjson";
-                var cur_location = window.location.href;
+                let cur_location = window.location.href;
                 console.log("Location", cur_location);
                 if (response != "0") {
-                    if (cur_location.includes("enternewsentences")) {
+                    if (cur_location.includes("lifedata/transcription/home")) {
+                        window.location.href = window.location.href.replace("lifedata/transcription/home", "download/tgdownloader");
+                    }
+                    else if (cur_location.includes("lifedata/transcription/audiobrowse")) {
+                        window.location.href = window.location.href.replace("lifedata/transcription/audiobrowse", "download/tgdownloader");
+                    }
+                    else if (cur_location.includes("enternewsentences")) {
                         window.location.href = window.location.href.replace("enternewsentences", "download/tgdownloader");
                     }
                     else if (cur_location.includes("audiobrowse")) {
@@ -223,16 +229,22 @@ $(document).ready(function () {
         // send_details = new FormData(document.querySelector("#iddownloadtranscriptionsform"));
         // alert(downloadFormat)
         //JSON.stringify(send_details)
-        $.post("download/downloadtranscriptions", {
+        $.post("/download/downloadtranscriptions", {
             formDataLifeJSON: JSON.stringify(send_details)
         })
             .success(function (response) {
             // window.location.href = window.location.href.replace("enternewsentences", "download/tgdownloader");
             //     window.location.href = window.location.href.replace("audiobrowse", "download/tgdownloader");
-                var cur_location = window.location.href;
+                let cur_location = window.location.href;
                 console.log("Location", cur_location);
                 if (response != "0") {
-                    if (cur_location.includes("enternewsentences")) {
+                    if (cur_location.includes("lifedata/transcription/home")) {
+                        window.location.href = window.location.href.replace("lifedata/transcription/home", "download/tgdownloader");
+                    }
+                    else if (cur_location.includes("lifedata/transcription/audiobrowse")) {
+                        window.location.href = window.location.href.replace("lifedata/transcription/audiobrowse", "download/tgdownloader");
+                    }
+                    else if (cur_location.includes("enternewsentences")) {
                         window.location.href = window.location.href.replace("enternewsentences", "download/tgdownloader");
                     }
                     else if (cur_location.includes("audiobrowse")) {
@@ -269,16 +281,22 @@ $(document).ready(function () {
         // send_details = new FormData(document.querySelector("#iddownloadtranscriptionsform"));
         // alert(downloadFormat)
         //JSON.stringify(send_details)
-        $.post("download/downloadtranscriptions", {
+        $.post("/download/downloadtranscriptions", {
             formDataLifeJSON: JSON.stringify(send_details)
         })
             .success(function (response) {
             // window.location.href = window.location.href.replace("enternewsentences", "download/tgdownloader");
             //     window.location.href = window.location.href.replace("audiobrowse", "download/tgdownloader");
-                var cur_location = window.location.href;
+                let cur_location = window.location.href;
                 console.log("Location", cur_location);
                 if (response != "0") {
-                    if (cur_location.includes("enternewsentences")) {
+                    if (cur_location.includes("lifedata/transcription/home")) {
+                        window.location.href = window.location.href.replace("lifedata/transcription/home", "download/tgdownloader");
+                    }
+                    else if (cur_location.includes("lifedata/transcription/audiobrowse")) {
+                        window.location.href = window.location.href.replace("lifedata/transcription/audiobrowse", "download/tgdownloader");
+                    }
+                    else if (cur_location.includes("enternewsentences")) {
                         window.location.href = window.location.href.replace("enternewsentences", "download/tgdownloader");
                     }
                     else if (cur_location.includes("audiobrowse")) {
@@ -313,13 +331,19 @@ $(document).ready(function () {
         console.log("Audio IDS", audioIds);
         send_details = { "downloadFormat": downloadFormat, "includeAudio": "on", "audioIds": audioIds};
         // alert(downloadFormat)
-        $.post("download/downloadtranscriptions", {
+        $.post("/download/downloadtranscriptions", {
             formDataLifeJSON: JSON.stringify(send_details)
         }).success(function (response) {
-           var cur_location = window.location.href;
+            let cur_location = window.location.href;
                 console.log("Location", cur_location);
                 if (response != "0") {
-                    if (cur_location.includes("enternewsentences")) {
+                    if (cur_location.includes("lifedata/transcription/home")) {
+                        window.location.href = window.location.href.replace("lifedata/transcription/home", "download/tgdownloader");
+                    }
+                    else if (cur_location.includes("lifedata/transcription/audiobrowse")) {
+                        window.location.href = window.location.href.replace("lifedata/transcription/audiobrowse", "download/tgdownloader");
+                    }
+                    else if (cur_location.includes("enternewsentences")) {
                         window.location.href = window.location.href.replace("enternewsentences", "download/tgdownloader");
                     }
                     else if (cur_location.includes("audiobrowse")) {
@@ -354,7 +378,7 @@ $(document).ready(function () {
         send_details = { "format": downloadFormat, "latest": true, "includeAudio": false };
         // alert(downloadFormat)
         $.ajax({
-            url: 'download/downloadtranscriptions',
+            url: '/download/downloadtranscriptions',
             type: 'GET',
             data: { 'data': JSON.stringify(send_details) },
             contentType: "application/textgrid; charset=utf-8",
@@ -375,7 +399,7 @@ $(document).ready(function () {
         send_details = { "format": downloadFormat, "latest": true, "includeAudio": false };
         // alert(downloadFormat)
         $.ajax({
-            url: 'download/downloadtranscriptions',
+            url: '/download/downloadtranscriptions',
             type: 'GET',
             data: { 'data': JSON.stringify(send_details) },
             contentType: "application/csv; charset=utf-8",
@@ -396,7 +420,7 @@ $(document).ready(function () {
         send_details = { "format": downloadFormat, "latest": true, "includeAudio": false };
         // alert(downloadFormat)
         $.ajax({
-            url: 'download/downloadtranscriptions',
+            url: '/download/downloadtranscriptions',
             type: 'GET',
             data: { 'data': JSON.stringify(send_details) },
             contentType: "application/tsv; charset=utf-8",
@@ -417,7 +441,7 @@ $(document).ready(function () {
         send_details = { "format": downloadFormat, "latest": true, "includeAudio": false };
         // alert(downloadFormat)
         $.ajax({
-            url: 'download/downloadtranscriptions',
+            url: '/download/downloadtranscriptions',
             type: 'GET',
             data: { 'data': JSON.stringify(send_details) },
             contentType: "application/xlsx; charset=utf-8",
@@ -438,7 +462,7 @@ $(document).ready(function () {
         send_details = { "format": downloadFormat, "latest": true, "includeAudio": false };
         // alert(downloadFormat)
         $.ajax({
-            url: 'download/downloadtranscriptions',
+            url: '/download/downloadtranscriptions',
             type: 'GET',
             data: { 'data': JSON.stringify(send_details) },
             contentType: "application/json; charset=utf-8",
@@ -460,7 +484,7 @@ $(document).ready(function () {
         send_details = { "format": downloadFormat, "latest": true, "includeAudio": false };
         // alert(downloadFormat)
         $.ajax({
-            url: 'download/downloadtranscriptions',
+            url: '/download/downloadtranscriptions',
             type: 'GET',
             data: { 'data': JSON.stringify(send_details) },
             contentType: "application/tex; charset=utf-8",
@@ -481,7 +505,7 @@ $(document).ready(function () {
         send_details = { "format": downloadFormat, "latest": true, "includeAudio": false };
         // alert(downloadFormat)
         $.ajax({
-            url: 'download/downloadtranscriptions',
+            url: '/download/downloadtranscriptions',
             type: 'GET',
             data: { 'data': JSON.stringify(send_details) },
             contentType: "application/html; charset=utf-8",
@@ -502,7 +526,7 @@ $(document).ready(function () {
         send_details = { "format": downloadFormat, "latest": true, "includeAudio": false };
         // alert(downloadFormat)
         $.ajax({
-            url: 'download/downloadtranscriptions',
+            url: '/download/downloadtranscriptions',
             type: 'GET',
             data: { 'data': JSON.stringify(send_details) },
             contentType: "application/markdown; charset=utf-8",
@@ -524,7 +548,7 @@ $(document).ready(function () {
         // alert(downloadFormat)
         send_details = { "format": downloadFormat, "latest": false, "includeAudio": false };
         $.ajax({
-            url: 'download/downloadtranscriptions',
+            url: '/download/downloadtranscriptions',
             type: 'GET',
             data: { 'data': JSON.stringify(send_details) },
             contentType: "application/textgrid; charset=utf-8",
@@ -545,7 +569,7 @@ $(document).ready(function () {
         // alert(downloadFormat)
         send_details = { "format": downloadFormat, "latest": false, "includeAudio": false };
         $.ajax({
-            url: 'download/downloadtranscriptions',
+            url: '/download/downloadtranscriptions',
             type: 'GET',
             data: { 'data': JSON.stringify(send_details) },
             contentType: "application/csv; charset=utf-8",
@@ -566,7 +590,7 @@ $(document).ready(function () {
         // alert(downloadFormat)
         send_details = { "format": downloadFormat, "latest": false, "includeAudio": false };
         $.ajax({
-            url: 'download/downloadtranscriptions',
+            url: '/download/downloadtranscriptions',
             type: 'GET',
             data: { 'data': JSON.stringify(send_details) },
             contentType: "application/tsv; charset=utf-8",
@@ -588,7 +612,7 @@ $(document).ready(function () {
         // alert(downloadFormat)
         send_details = { "format": downloadFormat, "latest": false, "includeAudio": false };
         $.ajax({
-            url: 'download/downloadtranscriptions',
+            url: '/download/downloadtranscriptions',
             type: 'GET',
             data: { 'data': JSON.stringify(send_details) },
             contentType: "application/json; charset=utf-8",
@@ -610,7 +634,7 @@ $(document).ready(function () {
         // alert(downloadFormat)
         send_details = { "format": downloadFormat, "latest": false, "includeAudio": false };
         $.ajax({
-            url: 'download/downloadtranscriptions',
+            url: '/download/downloadtranscriptions',
             type: 'GET',
             data: { 'data': JSON.stringify(send_details) },
             contentType: "application/xlsx; charset=utf-8",
@@ -631,7 +655,7 @@ $(document).ready(function () {
         // alert(downloadFormat)
         send_details = { "format": downloadFormat, "latest": false, "includeAudio": false };
         $.ajax({
-            url: 'download/downloadtranscriptions',
+            url: '/download/downloadtranscriptions',
             type: 'GET',
             data: { 'data': JSON.stringify(send_details) },
             contentType: "application/tex; charset=utf-8",
@@ -652,7 +676,7 @@ $(document).ready(function () {
         // alert(downloadFormat)
         send_details = { "format": downloadFormat, "latest": false, "includeAudio": false };
         $.ajax({
-            url: 'download/downloadtranscriptions',
+            url: '/download/downloadtranscriptions',
             type: 'GET',
             data: { 'data': JSON.stringify(send_details) },
             contentType: "application/html; charset=utf-8",
@@ -673,13 +697,20 @@ $(document).ready(function () {
         // alert(downloadFormat)
         send_details = { "format": downloadFormat, "latest": false, "includeAudio": false };
         $.ajax({
-            url: 'download/downloadtranscriptions',
+            url: '/download/downloadtranscriptions',
             type: 'GET',
             data: { 'data': JSON.stringify(send_details) },
             contentType: "application/xlsx; charset=utf-8",
             success: function (response) {
+                let cur_location = window.location.href;
+                console.log("Location", cur_location);
                 // window.location.href = "http://127.0.0.1:5000/downloadjson";
-                window.location.href = window.location.href.replace("enternewsentences", "download/tgdownloader");
+                if (cur_location.includes("lifedata/transcription/home")) {
+                    window.location.href = window.location.href.replace("lifedata/transcription/home", "download/tgdownloader");
+                }
+                else if (cur_location.includes("enternewsentences")) {
+                    window.location.href = window.location.href.replace("enternewsentences", "download/tgdownloader");
+                }
                 // window.location.reload();
                 // console.info(response);
             }
