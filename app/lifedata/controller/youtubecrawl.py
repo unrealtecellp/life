@@ -510,6 +510,8 @@ def getVideoData(mongo, projects_collection,
                     logger.debug('Downloading audio of video: %s', vlink)
                     audio_stream = downloadYoutubeAudio(
                         vlink)
+                    logger.debug('audio_stream: %s', audio_stream)
+                    logger.debug('audio_stream: %s', type(audio_stream))
                     if audio_stream != '':
                         write_data = True
                 else:
@@ -635,15 +637,28 @@ def write_mongodb_audio(mongo,
                         audio_stream):
     new_audio_file = {}
 
+    logger.debug('audio_stream.title: %s',
+                 audio_stream.title)
+    logger.debug('filesize_mb: %s',
+                 audio_stream.filesize_mb)
+
+    audio_stream.download()
+
+    logger.debug('audio_stream: %s', type(audio_stream))
+
     string_file_name = audio_stream.title
-    file_name = string_file_name[:15]+'_'+speakerId+'_audio.mp4a'
+    file_name = string_file_name[:15]+'_'+speakerId+'_audio.mp4'
+
+    logger.debug('audio_stream: %s', type(audio_stream))
 
     file_content = io.BytesIO()
     audio_stream.stream_to_buffer(file_content)
-    # logger.debug ("File content", file_content)
+    logger.debug ("File content: %s", file_content)
     # logger.debug ("Upload type", fileType)
     new_audio_file['audiofile'] = FileStorage(
-        file_content, filename=file_name)
+        file_content, filename=file_name, content_type='audio/mp4')
+    logger.debug('audio_stream: %s', type(audio_stream))
+    logger.debug(new_audio_file)
     file_state, transcription_doc_id, fs_file_id = audiodetails.saveoneaudiofile(mongo,
                                                                                  projects,
                                                                                  userprojects,
@@ -744,6 +759,16 @@ def write_crawled_data(mongo, co3h,
     if 'mongodb' in save_format:
         if 'audio' in download_items:
             logger.debug('Writing audio of video: %s to mongodb', vlink)
+            # new_audio_file = {}
+            # file_content = io.BytesIO()
+            # audio_stream.stream_to_buffer(file_content)
+            # file_name = audio_stream.title
+            # if len(file_name) > 10:
+            #     file_name = file_name[:10]
+            #     file_name = file_name.replace(' ', '_')
+
+            # new_audio_file['audiofile'] = FileStorage(
+            #                 file_content, filename=file_name)
             audio_doc_id, fs_audio_id, audio_filename, file_state = write_mongodb_audio(mongo,
                                                                                         projects_collection,
                                                                                         userprojects_collection,

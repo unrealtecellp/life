@@ -3,18 +3,18 @@ var crawlerVideosChannelsId = 0;
 function youtubeCrawlerInterface() {
     let ele = '';
     ele += '<div id="formdisplay" style="display: block;">' +
-        '<form role="form" method="post" action="/lifedata/youtubecrawler">';
+        '<form role="form" method="post" action="/lifedata/youtubecrawler" onsubmit="return runLoader()">';
     
     ele += '<div class="form-group">' +
         '<label for="idyoutubeapikey">Youtube API Key</label>' +
-        '<input type="password" class="form-control" id="idyoutubeapikey" placeholder="Youtube API Key" name="youtubeAPIKey" style="width: 55%" required>' +
+        '<input type="password" class="form-control" id="idyoutubeapikey" placeholder="Youtube API Key" name="youtubeAPIKey" style="width: 55%"  value="AIzaSyDkzGzNgMOPQKEC4A5Y4fM7aRd3AmlvNTc" required>' +
         '</div>';
     
     ele += '<div class="form-group">' +
         '<label for="idyoutubedatatypes">Data Type</label><br>' +
         '<select class="classyoutubedatatypes" id="idyoutubedatatypes" name="youtubeDataType" placeholder="Select the data type that is to be stored" style="width:55%" required multiple="multiple">' +
         '<option value="comments">Comments</option>' +
-        '<option value="audio">Audio</option>' +
+        '<option value="audio" selected>Audio</option>' +
         '<option value="video">Video</option>' +
         '</select><br>' +
         '</div>';
@@ -196,12 +196,24 @@ function crawlerInterfaceEvents() {
             $(".classspecificlinksdiv :input").prop("disabled", false);
             // var $drillDown = $("#drilldown");
         }
+        // document.getElementById('crawlersubmit').disabled = false;
     });
 
+    // $("#crawlersubmit").click(function() {
+    //     console.log('123213');
+    //     console.log(document.getElementById("loader"));
+    //     document.getElementById("loader").style.display = "block";
+    // });
 
 }
 
 // remove a translation element
 function removeVideosChannelsIdsFields(rid) {
     $(".removecrawlervideoschannelsId"+rid).remove();
+}
+
+function runLoader() {
+    console.log('123213');
+    console.log(document.getElementById("loader"));
+    document.getElementById("loader").style.display = "block";
 }

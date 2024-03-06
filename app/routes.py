@@ -6516,3 +6516,31 @@ def get_jsonfile_data():
     # logger.debug('json_data: %s', pformat(json_data))
 
     return jsonify(jsonData=json_data)
+
+
+@app.route('/checkprojectnameexist', methods=['GET', 'POST'])
+@login_required
+def checkprojectnameexist():
+    try:
+        projects_collection, = getdbcollections.getdbcollections(mongo,
+                                                        'projects')
+        # data through ajax
+        projectname = str(request.args.get('a'))
+        logger.debug("projectname: %s", pformat(projectname))
+        projectname_exist = projects_collection.find_one(
+                                                            {
+                                                                "$or": [
+                                                                        { 'projectname' : projectname },
+                                                                        { 'projectname' : 'D_'+projectname },
+                                                                        { 'projectname' : 'Q_'+projectname }
+                                                                    ]
+                                                            },
+                                                            { '_id': 0, 'projectname': 1 }
+                                                            )
+        if (projectname_exist):
+            logger.debug('projectname_exist: %s', projectname_exist)
+            return jsonify(status=True)
+    except:
+        logger.exception("")
+    
+    return jsonify(status=False)
