@@ -7,14 +7,14 @@ function youtubeCrawlerInterface() {
     
     ele += '<div class="form-group">' +
         '<label for="idyoutubeapikey">Youtube API Key</label>' +
-        '<input type="password" class="form-control" id="idyoutubeapikey" placeholder="Youtube API Key" name="youtubeAPIKey" style="width: 55%"  value="AIzaSyDkzGzNgMOPQKEC4A5Y4fM7aRd3AmlvNTc" required>' +
+        '<input type="password" class="form-control" id="idyoutubeapikey" placeholder="Youtube API Key" name="youtubeAPIKey" style="width: 55%" required>' +
         '</div>';
     
     ele += '<div class="form-group">' +
         '<label for="idyoutubedatatypes">Data Type</label><br>' +
         '<select class="classyoutubedatatypes" id="idyoutubedatatypes" name="youtubeDataType" placeholder="Select the data type that is to be stored" style="width:55%" required multiple="multiple">' +
         '<option value="comments">Comments</option>' +
-        '<option value="audio" selected>Audio</option>' +
+        '<option value="audio">Audio</option>' +
         '<option value="video">Video</option>' +
         '</select><br>' +
         '</div>';
