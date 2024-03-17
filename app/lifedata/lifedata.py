@@ -558,14 +558,20 @@ def crawler():
         else:
             activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
                                                                           userprojects)
+            shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
+                                                          current_username,
+                                                          activeprojectname)
             data_sub_source = data_project_info.get_data_sub_source(projects,
                                                                     activeprojectname)
+            if (shareinfo["sharemode"] == 0):
+                return redirect(url_for('lifedata.crawlerbrowse'))
 
     except:
         logger.exception("")
 
     return render_template('crawler.html',
                            projectName=activeprojectname,
+                           shareinfo=shareinfo,
                            dataSubSource=data_sub_source)
 
 
@@ -588,6 +594,7 @@ def youtubecrawler():
         logger.debug("Current active project name %s", activeprojectname)
 
         if request.method == 'POST':
+            to_crawl_video_ids = []
             youtube_crawler_info = dict(request.form.lists())
             logger.debug('youtube_crawler_info: %s',
                          pformat(youtube_crawler_info))
@@ -615,6 +622,8 @@ def youtubecrawler():
                         youtube_crawler_info['youtubeTopNSearchTags'])
                 for link in topn_video_links:
                     data_links_info[link] = searchkeywords_value
+                    video_id = link[link.find('?v=')+3:].strip()
+                    to_crawl_video_ids.append(video_id)
             else:
                 for key, value in youtube_crawler_info.items():
                     if ('videoschannelId' in key):
@@ -626,6 +635,8 @@ def youtubecrawler():
                             searchkeywords_value = []
                         for link in value:
                             data_links_info[link] = searchkeywords_value
+                            video_id = link[link.find('?v=')+3:].strip()
+                            to_crawl_video_ids.append(video_id)
                         # logger.debug('key: %s, videoschannelId_count: %s, value: %s, searchkeywords_key: %s, searchkeywords_value: %s',
                         #              key, videoschannelId_count, value, searchkeywords_key, searchkeywords_value)
             data_links[youtube_data_for] = data_links_info
@@ -633,7 +644,7 @@ def youtubecrawler():
             logger.debug("data_links: %s", pformat(data_links))
 
             logger.debug("Current active project name %s", activeprojectname)
-            youtubecrawl.run_youtube_crawler(mongo, projects_collection,
+            crawled_video_ids = youtubecrawl.run_youtube_crawler(mongo, projects_collection,
                                              userprojects_collection,
                                              sourcedetails_collection,
                                              crawling_collection,
@@ -643,6 +654,25 @@ def youtubecrawler():
                                              api_key,
                                              data_links,
                                              download_items=youtube_data_type)
+            # logger.debug('to_crawl_video_ids: %s, crawled_video_ids: %s',
+            #              to_crawl_video_ids,
+            #              crawled_video_ids)
+            crawl_video_ids_diff = list(set(to_crawl_video_ids)-set(crawled_video_ids))
+            # logger.debug("crawl_video_ids_diff: %s", crawl_video_ids_diff)
+            projects_collection.update_one(
+                                {
+                                    'projectname': activeprojectname
+                                },
+                                {
+                                    '$addToSet':
+                                    {
+                                        'sourceIds.'+current_username: 
+                                            {
+                                                '$each': crawl_video_ids_diff
+                                            }
+                                    }
+                                }
+                            )
             flash("Crawling Complete.")
             return redirect(url_for("lifedata.crawler"))
     except:
@@ -804,9 +834,11 @@ def crawlerbrowse():
             source_metadata = sourceid_to_souremetadata.get_source_metadata(sourcedetails_collection,
                                                                             sourceids,
                                                                             activeprojectname)
-            sourceids.append('')
+            # logger.debug('source_metadata: %s', source_metadata)
+            # sourceids.append('')
         else:
-            sourceids = ['']
+            # sourceids = ['']
+            source_metadata = {}
         if ('activesourceId' in shareinfo):
             active_source_id = shareinfo['activesourceId']
         else:
@@ -834,9 +866,10 @@ def crawlerbrowse():
                                                                                        activeprojectname,
                                                                                        active_source_id,
                                                                                        data_type=default_data_type)
-
         else:
             crawled_data_list = []
+            default_data_type = ''
+            source_data_types = []
 
         # logger.debug('crawled_data_list: %s', crawled_data_list)
 
@@ -879,6 +912,7 @@ def crawlerbrowse():
 
     return render_template('crawlerbrowse.html',
                            projectName=activeprojectname,
+                           shareinfo=shareinfo,
                            newData=new_data)
 
 

@@ -691,10 +691,20 @@ def write_mongodb_audio(mongo,
                                                                                  get_audio_json=False)
     
     audio_doc_id = transcription_doc_id[0].inserted_id
+    # logger.debug("audio_doc_id: %s", audio_doc_id)
     updated_filename = crawling.find_one(
-        {'_id': audio_doc_id, 'projectname': activeprojectname,
-            'username': current_username, 'speakerId': speakerId, 'dataType': "audio"},
-        {'audioFilename': 1, '_id': 0})['audioFilename']
+        {
+            '_id': audio_doc_id,
+            'projectname': activeprojectname,
+            # 'username': current_username,
+            'speakerId': speakerId,
+            'dataType': "audio"
+        },
+        {
+            'audioFilename': 1,
+            '_id': 0
+        }
+    )['audioFilename']
     # logger.debug('transcription_doc_id: %s, fs_file_id: %s, updated_filename: %s, file_state: %s',
     #              transcription_doc_id, fs_file_id, updated_filename, file_state)
     return transcription_doc_id, fs_file_id, updated_filename, file_state
@@ -968,6 +978,7 @@ def run_youtube_crawler(mongo, projects_collection,
     global data_links_info
 
     ytids = []
+    crawled_video_ids = []
 
     if ('channels' in data_links):
         data_links_info = data_links['channels']
@@ -1122,6 +1133,10 @@ def run_youtube_crawler(mongo, projects_collection,
                             logger.debug(
                                 'Expected complete: %s', totalPages*50)
                             logger.debug('pToken: %s', pToken)
+        crawled_video_ids.append(ytid)
+        # logger.debug("crawled_video_ids: %s", crawled_video_ids)
+
+    return crawled_video_ids
 
 
 # Get link to top n videos for the given search query

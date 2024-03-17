@@ -3971,262 +3971,211 @@ def userslist():
 
 @app.route('/shareprojectwith', methods=['GET', 'POST'])
 def shareprojectwith():
-    projects, userprojects, userlogin, lifeappconfigs = getdbcollections.getdbcollections(mongo,
-                                                                                          'projects',
-                                                                                          'userprojects',
-                                                                                          'userlogin',
-                                                                                          'lifeappconfigs')
-    current_username = getcurrentusername.getcurrentusername()
-    activeprojectname = getactiveprojectname.getactiveprojectname(
-        current_username, userprojects)
-    # logger.debug('2758: activeprojectname', activeprojectname)
+    try:
+        projects, userprojects, userlogin, lifeappconfigs = getdbcollections.getdbcollections(mongo,
+                                                                                            'projects',
+                                                                                            'userprojects',
+                                                                                            'userlogin',
+                                                                                            'lifeappconfigs')
+        current_username = getcurrentusername.getcurrentusername()
+        activeprojectname = getactiveprojectname.getactiveprojectname(
+            current_username, userprojects)
+        # logger.debug('2758: activeprojectname', activeprojectname)
 
-    projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
-    project_type = getprojecttype.getprojecttype(projects,
-                                                 activeprojectname)
+        projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
+        project_type = getprojecttype.getprojecttype(projects,
+                                                    activeprojectname)
+        sourceIdsKeyName='speakerIds'
+        if (project_type == 'crawling'):
+            sourceIdsKeyName = 'sourceIds'
 
-    # data through ajax
-    data = request.args.get('data')
-    data = eval(data)
-    logger.debug('Sharing Information: %s', pformat(data))
-    shareaction = data['shareaction']
-    users = data['sharewithusers']
-    # logger.debug(type(users))
-    speakers = data['sharespeakers']
-    logger.debug("speakers: %s", speakers)
-    sharemode = data['sharemode']
-    # logger.debug(sharemode)
-    if (sharemode == ''):
-        sharemode = 0
-    sharechecked = str(data['sharechecked'])
-    downloadchecked = str(data['downloadchecked'])
-    sharelatestchecked = str(data['sharelatestchecked'])
+        # data through ajax
+        data = request.args.get('data')
+        data = eval(data)
+        logger.debug('Sharing Information: %s', pformat(data))
+        shareaction = data['shareaction']
+        users = data['sharewithusers']
+        # logger.debug(type(users))
+        speakers = data['sharespeakers']
+        logger.debug("speakers: %s", speakers)
+        sharemode = data['sharemode']
+        # logger.debug(sharemode)
+        if (sharemode == ''):
+            sharemode = 0
+        sharechecked = str(data['sharechecked'])
+        downloadchecked = str(data['downloadchecked'])
+        sharelatestchecked = str(data['sharelatestchecked'])
 
-    # logger.debug('123', users, speakers, sharemode, sharechecked)
+        # logger.debug('123', users, speakers, sharemode, sharechecked)
 
-    if (len(users) != 0):
-        # Sender email details
-        sender_email_details = emailController.getSenderDetails(lifeappconfigs)
+        if (len(users) != 0):
+            # Sender email details
+            sender_email_details = emailController.getSenderDetails(lifeappconfigs)
 
-        # Get Base URL
-        current_url = request.base_url
-        base_url_index = current_url.rfind(os.sep)
-        base_url = current_url[:base_url_index]
+            # Get Base URL
+            current_url = request.base_url
+            base_url_index = current_url.rfind(os.sep)
+            base_url = current_url[:base_url_index]
 
-        # projectinfo of the user sharing the project
-        projectinfo = userprojects.find_one(
-            {
-                'username': current_username
-            },
-            {
-                '_id': 0,
-                'myproject': 1,
-                'projectsharedwithme': 1
-            }
-        )
-        # loop on users with whom the project is to be shared
-        for user in users:
-            # logger.debug(user)
-            userdict = {}
-            # get list of projects shared with the user
-            usershareprojectsname = userprojects.find_one(
+            # projectinfo of the user sharing the project
+            projectinfo = userprojects.find_one(
                 {
-                    'username': user
+                    'username': current_username
                 },
                 {
                     '_id': 0,
+                    'myproject': 1,
                     'projectsharedwithme': 1
                 }
             )
-            usershareprojectsname = usershareprojectsname['projectsharedwithme']
-
-            # if (sharemode == -1 and activeprojectname in usershareprojectsname):
-            #         removed_user = removeallaccess.removeallaccess(projects,
-            #                                         userprojects,
-            #                                         activeprojectname,
-            #                                         current_username,
-            #                                         user)
-            #         return removed_user
-            # else:
-            #     return f'This project: {activeprojectname} is not shared with this user: {user}'
-
-            if activeprojectname in usershareprojectsname:
-                if (sharemode == -1):
-                    removed_user = removeallaccess.removeallaccess(projects,
-                                                                   userprojects,
-                                                                   activeprojectname,
-                                                                   current_username,
-                                                                   user,
-                                                                   speakers)
-                    return removed_user
-
-                tomesharedby = usershareprojectsname[activeprojectname]['tomesharedby']
-                tomesharedby.append(current_username)
-                isharedwith = usershareprojectsname[activeprojectname]['isharedwith']
-                usershareprojectsname[activeprojectname] = {
-                    'sharemode': sharemode,
-                    'tomesharedby': list(set(tomesharedby)),
-                    'isharedwith': isharedwith,
-                    'sharechecked': sharechecked,
-                    'downloadchecked': downloadchecked,
-                    'sharelatestchecked': sharelatestchecked,
-                    'activespeakerId': '',
-                    'activesourceId': ''
-                }
-            else:
-                if (sharemode == -1):
-                    return f'This project: {activeprojectname} is not shared with this user: {user}'
-
-                usershareprojectsname[activeprojectname] = {
-                    'sharemode': sharemode,
-                    'tomesharedby': [current_user.username],
-                    'isharedwith': [],
-                    'sharechecked': sharechecked,
-                    'downloadchecked': downloadchecked,
-                    'sharelatestchecked': sharelatestchecked,
-                    'activespeakerId': '',
-                    'activesourceId': ''
-                }
-
-            projectdetails = projects.find_one(
-                {
-                    'projectname': activeprojectname
-                },
-                {
-                    '_id': 0,
-                    'sharedwith': 1,
-                    'lastActiveId': 1,
-                    'speakerIds': 1,
-                    'sourceIds': 1
-                }
-            )
-
-            # Give access only to user's own transcription if access to latest and other's transcriptions are not granted
-            if not sharelatestchecked:
-                projectDetails.save_active_transcription_by(
-                    projects,
-                    activeprojectname,
-                    current_user.username,
-                    current_user.username
+            # loop on users with whom the project is to be shared
+            for user in users:
+                # logger.debug(user)
+                userdict = {}
+                # get list of projects shared with the user
+                usershareprojectsname = userprojects.find_one(
+                    {
+                        'username': user
+                    },
+                    {
+                        '_id': 0,
+                        'projectsharedwithme': 1
+                    }
                 )
-            # logger.debug(projectdetails)
-            projectdetails['sharedwith'].append(user)
-            # logger.debug(projectdetails)
-            # update list of projects shared with the user in collection
-            userprojects.update_one(
-                {
-                    'username': user
-                },
-                {
-                    '$set':
-                    {
-                        'projectsharedwithme': usershareprojectsname
+                usershareprojectsname = usershareprojectsname['projectsharedwithme']
+
+                # if (sharemode == -1 and activeprojectname in usershareprojectsname):
+                #         removed_user = removeallaccess.removeallaccess(projects,
+                #                                         userprojects,
+                #                                         activeprojectname,
+                #                                         current_username,
+                #                                         user)
+                #         return removed_user
+                # else:
+                #     return f'This project: {activeprojectname} is not shared with this user: {user}'
+
+                if activeprojectname in usershareprojectsname:
+                    if (sharemode == -1):
+                        removed_user = removeallaccess.removeallaccess(projects,
+                                                                    userprojects,
+                                                                    activeprojectname,
+                                                                    current_username,
+                                                                    user,
+                                                                    speakers,
+                                                                    sourceIdsKeyName)
+                        return removed_user
+
+                    tomesharedby = usershareprojectsname[activeprojectname]['tomesharedby']
+                    tomesharedby.append(current_username)
+                    isharedwith = usershareprojectsname[activeprojectname]['isharedwith']
+                    usershareprojectsname[activeprojectname] = {
+                        'sharemode': sharemode,
+                        'tomesharedby': list(set(tomesharedby)),
+                        'isharedwith': isharedwith,
+                        'sharechecked': sharechecked,
+                        'downloadchecked': downloadchecked,
+                        'sharelatestchecked': sharelatestchecked,
+                        'activespeakerId': '',
+                        'activesourceId': ''
                     }
-                }
-            )
-            projects.update_one(
-                {
-                    'projectname': activeprojectname
-                },
-                {
-                    '$set':
-                    {
-                        'sharedwith': list(set(projectdetails['sharedwith']))
+                else:
+                    if (sharemode == -1):
+                        return f'This project: {activeprojectname} is not shared with this user: {user}'
+
+                    usershareprojectsname[activeprojectname] = {
+                        'sharemode': sharemode,
+                        'tomesharedby': [current_user.username],
+                        'isharedwith': [],
+                        'sharechecked': sharechecked,
+                        'downloadchecked': downloadchecked,
+                        'sharelatestchecked': sharelatestchecked,
+                        'activespeakerId': '',
+                        'activesourceId': ''
                     }
-                }
-            )
 
-            if ('speakerIds' in projectdetails):
-                if (len(speakers) != 0):
-                    userprojectinfo = ''
-                    for key, value in projectinfo.items():
-                        if len(value) != 0:
-                            if activeprojectname in value:
-                                userprojectinfo = key+'.'+activeprojectname+".activespeakerId"
-                    userprojects.update_one(
-                        {
-                            "username": current_username
-                        },
-                        {
-                            "$set":
-                            {
-                                userprojectinfo: speakers[-1]
-                            }
-                        }
+                projectdetails = projects.find_one(
+                    {
+                        'projectname': activeprojectname
+                    },
+                    {
+                        '_id': 0,
+                        'sharedwith': 1,
+                        'lastActiveId': 1,
+                        'speakerIds': 1,
+                        'sourceIds': 1
+                    }
+                )
+
+                logger.debug('projectdetails: %s', projectdetails)
+
+                # Give access only to user's own transcription if access to latest and other's transcriptions are not granted
+                if not sharelatestchecked:
+                    projectDetails.save_active_transcription_by(
+                        projects,
+                        activeprojectname,
+                        current_user.username,
+                        current_user.username
                     )
+                # logger.debug(projectdetails)
+                projectdetails['sharedwith'].append(user)
+                # logger.debug(projectdetails)
+                # update list of projects shared with the user in collection
+                userprojects.update_one(
+                    {
+                        'username': user
+                    },
+                    {
+                        '$set':
+                        {
+                            'projectsharedwithme': usershareprojectsname
+                        }
+                    }
+                )
+                projects.update_one(
+                    {
+                        'projectname': activeprojectname
+                    },
+                    {
+                        '$set':
+                        {
+                            'sharedwith': list(set(projectdetails['sharedwith']))
+                        }
+                    }
+                )
 
-                    for speaker in speakers:
-                        # logger.debug("speaker: %s", speaker)
-                        projects.update_one(
+                if ('speakerIds' in projectdetails):
+                    if (len(speakers) != 0):
+                        userprojectinfo = ''
+                        for key, value in projectinfo.items():
+                            if len(value) != 0:
+                                if activeprojectname in value:
+                                    userprojectinfo = key+'.'+activeprojectname+".activespeakerId"
+                        userprojects.update_one(
                             {
-                                'projectname': activeprojectname
+                                "username": current_username
                             },
                             {
-                                '$addToSet':
+                                "$set":
                                 {
-                                    'speakerIds.'+user: speaker
+                                    userprojectinfo: speakers[-1]
                                 }
                             }
                         )
-                        userlastactiveId = projectdetails['lastActiveId'][current_username][speaker]['audioId']
-                        projects.update_one(
-                            {
-                                'projectname': activeprojectname
-                            },
-                            {
-                                '$set':
-                                {
-                                    'lastActiveId.'+user+'.'+speaker+'.audioId': userlastactiveId
-                                }
-                            }
-                        )
-                elif user not in projectdetails['speakerIds']:
-                    projects.update_one(
-                        {
-                            'projectname': activeprojectname
-                        },
-                        {
-                            '$set':
-                            {
-                                'lastActiveId.'+user: {}
-                            }
-                        }
-                    )
-            elif ('sourceIds' in projectdetails):
-                logger.debug("FOUND sourceIds source[-1]: %s", speakers[-1])
-                if (len(speakers) != 0):
-                    userprojectinfo = ''
-                    for key, value in projectinfo.items():
-                        if len(value) != 0:
-                            if activeprojectname in value:
-                                userprojectinfo = key+'.'+activeprojectname+".activesourceId"
-                    userprojects.update_one(
-                        {
-                            "username": current_username
-                        },
-                        {
-                            "$set":
-                            {
-                                userprojectinfo: speakers[-1]
-                            }
-                        }
-                    )
 
-                    for speaker in speakers:
-                        logger.debug("sourceId: %s", speaker)
-                        projects.update_one(
-                            {
-                                'projectname': activeprojectname
-                            },
-                            {
-                                '$addToSet':
+                        for speaker in speakers:
+                            # logger.debug("speaker: %s", speaker)
+                            projects.update_one(
                                 {
-                                    'sourceIds.'+user: speaker
+                                    'projectname': activeprojectname
+                                },
+                                {
+                                    '$addToSet':
+                                    {
+                                        'speakerIds.'+user: speaker
+                                    }
                                 }
-                            }
-                        )
-                        if (project_type == 'annotation'):
-                            userlastactiveId = projectdetails['lastActiveId'][current_username][speaker]['dataId']
+                            )
+                            userlastactiveId = projectdetails['lastActiveId'][current_username][speaker]['audioId']
                             projects.update_one(
                                 {
                                     'projectname': activeprojectname
@@ -4234,78 +4183,156 @@ def shareprojectwith():
                                 {
                                     '$set':
                                     {
-                                        'lastActiveId.'+user+'.'+speaker+'.dataId': userlastactiveId
+                                        'lastActiveId.'+user+'.'+speaker+'.audioId': userlastactiveId
                                     }
                                 }
                             )
-                elif user not in projectdetails['sourceIds']:
-                    projects.update_one(
-                        {
-                            'projectname': activeprojectname
-                        },
-                        {
-                            '$set':
+                    elif user not in projectdetails['speakerIds']:
+                        projects.update_one(
                             {
-                                'lastActiveId.'+user: {}
-                            }
-                        }
-                    )
-
-            # update "isharedwith" of the current user and the projectowner
-            for key, value in projectinfo.items():
-                if (len(value) != 0 and
-                        activeprojectname in value):
-                    userprojects.update_one(
-                        {
-                            "username": current_username
-                        },
-                        {
-                            "$addToSet":
-                            {
-                                key+'.'+activeprojectname+'.isharedwith': user
-                            }
-                        }
-                    )
-                    if projectowner != current_username:
-                        userprojects.update_one(
-                            {
-                                "username": projectowner
+                                'projectname': activeprojectname
                             },
                             {
-                                "$addToSet":
+                                '$set':
                                 {
-                                    'myproject.'+activeprojectname+'.isharedwith': user
+                                    'lastActiveId.'+user: {}
+                                }
+                            }
+                        )
+                elif ('sourceIds' in projectdetails):
+                    if (len(speakers) != 0):
+                        logger.debug("FOUND sourceIds source[-1]: %s", speakers[-1])
+                        userprojectinfo = ''
+                        for key, value in projectinfo.items():
+                            if len(value) != 0:
+                                if activeprojectname in value:
+                                    logger.debug('key: %s, activeprojectname: %s',
+                                                key,
+                                                activeprojectname)
+                                    userprojectinfo = key+'.'+activeprojectname+".activesourceId"
+                        userprojects.update_one(
+                            {
+                                "username": current_username
+                            },
+                            {
+                                "$set":
+                                {
+                                    userprojectinfo: speakers[-1]
                                 }
                             }
                         )
 
-            # Send email to the user
-            current_user_email = emailController.getCurrentUserEmail(
-                userlogin, user)
+                        # update 'activesourceId' for sharedwith user
+                        userprojects.update_one(
+                            {
+                                "username": user
+                            },
+                            {
+                                "$set":
+                                {
+                                    'projectsharedwithme.'+activeprojectname+'.activesourceId': speakers[-1]
+                                }
+                            }
+                        )
 
-            if current_user_email == '':
-                current_user_email = 'unreal.tece@gmail.com'
+                        for speaker in speakers:
+                            logger.debug("sourceId: %s", speaker)
+                            projects.update_one(
+                                {
+                                    'projectname': activeprojectname
+                                },
+                                {
+                                    '$addToSet':
+                                    {
+                                        'sourceIds.'+user: speaker
+                                    }
+                                }
+                            )
+                            if (project_type == 'annotation'):
+                                userlastactiveId = projectdetails['lastActiveId'][current_username][speaker]['dataId']
+                                projects.update_one(
+                                    {
+                                        'projectname': activeprojectname
+                                    },
+                                    {
+                                        '$set':
+                                        {
+                                            'lastActiveId.'+user+'.'+speaker+'.dataId': userlastactiveId
+                                        }
+                                    }
+                                )
+                    elif user not in projectdetails['sourceIds']:
+                        projects.update_one(
+                            {
+                                'projectname': activeprojectname
+                            },
+                            {
+                                '$set':
+                                {
+                                    'lastActiveId.'+user: {}
+                                }
+                            }
+                        )
 
-            shared_with_user_email = sender_email_details['email']
+                # update "isharedwith" of the current user and the projectowner
+                for key, value in projectinfo.items():
+                    logger.debug('update "isharedwith" of the current user and the projectowner 1')
+                    if (len(value) != 0 and
+                            activeprojectname in value):
+                        logger.debug('update "isharedwith" of the current user and the projectowner 2')
+                        userprojects.update_one(
+                            {
+                                "username": current_username
+                            },
+                            {
+                                "$addToSet":
+                                {
+                                    key+'.'+activeprojectname+'.isharedwith': user
+                                }
+                            }
+                        )
+                        if projectowner != current_username:
+                            userprojects.update_one(
+                                {
+                                    "username": projectowner
+                                },
+                                {
+                                    "$addToSet":
+                                    {
+                                        'myproject.'+activeprojectname+'.isharedwith': user
+                                    }
+                                }
+                            )
 
-            if current_user_email != '' and shared_with_user_email != '':
-                logger.info('Sending email')
-                purpose = 'share'  # share|OTP|notification
+                # Send email to the user
+                current_user_email = emailController.getCurrentUserEmail(
+                    userlogin, user)
 
-                email_status = emailController.sendEmail(
-                    activeprojectname,
-                    user,
-                    base_url,
-                    purpose,
-                    shared_with_user_email,
-                    current_user_email,
-                    sender_email_details['password'],
-                    sender_email_details['smtp_server'],
-                    sender_email_details['port']
-                )
-            else:
-                email_status = "Email not configured in the app. Project shared but email not sent"
-                logger.info(email_status)
+                if current_user_email == '':
+                    current_user_email = 'unreal.tece@gmail.com'
+
+                shared_with_user_email = sender_email_details['email']
+
+                if current_user_email != '' and shared_with_user_email != '':
+                    logger.info('Sending email')
+                    purpose = 'share'  # share|OTP|notification
+
+                    email_status = emailController.sendEmail(
+                        activeprojectname,
+                        user,
+                        base_url,
+                        purpose,
+                        shared_with_user_email,
+                        current_user_email,
+                        sender_email_details['password'],
+                        sender_email_details['smtp_server'],
+                        sender_email_details['port']
+                    )
+                else:
+                    email_status = "Email not configured in the app. Project shared but email not sent"
+                    logger.info(email_status)
+    except:
+        logger.exception("")
 
     # flash(email_status)
     return redirect(url_for('home'))

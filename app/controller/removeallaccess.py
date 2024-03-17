@@ -9,22 +9,25 @@ def remove_partial_access(projects,
                             userprojects,
                             activeprojectname,
                             user_to_remove,
-                            speakers_to_remove):
+                            speakers_to_remove,
+                            sourceIdsKeyName):
     try:
+        activeIdKeyName = 'active'+sourceIdsKeyName[:-1]
+        # logger.debug("activeIdKeyName: %s", activeIdKeyName)
         for speaker in speakers_to_remove:
             projects.update_one({ "projectname": activeprojectname },
                         {
                             "$unset": { "lastActiveId."+user_to_remove+'.'+speaker: "",
                                        "fileSpeakerIds."+user_to_remove+'.'+speaker: ""},
-                            "$pull": {"speakerIds."+user_to_remove: speaker}
+                            "$pull": {sourceIdsKeyName+"."+user_to_remove: speaker}
                         })
             userprojectsdetails = userprojects.find_one({"username": user_to_remove})
-            user_activespeakerid = userprojectsdetails["projectsharedwithme"][activeprojectname]["activespeakerId"]
+            user_activespeakerid = userprojectsdetails["projectsharedwithme"][activeprojectname][activeIdKeyName]
             if (speaker == user_activespeakerid):
                 userprojects.update_one({"username": user_to_remove},
                                         {"$set": 
                                             { 
-                                                "projectsharedwithme."+activeprojectname+".activespeakerId": ""
+                                                "projectsharedwithme."+activeprojectname+"."+activeIdKeyName: ""
                                             }
                                         })
     except:
@@ -37,14 +40,15 @@ def removeallaccess(projects,
                     activeprojectname,
                     current_username,
                     user_to_remove,
-                    speakers_to_remove):
+                    speakers_to_remove,
+                    sourceIdsKeyName):
     try:
         # print(f"In removeallaccess()")
         if (len(speakers_to_remove) == 0):
             projects.update_one({ "projectname": activeprojectname },
                                 {
                                     "$unset": { "lastActiveId."+user_to_remove: "",
-                                            "speakerIds."+user_to_remove: ""},
+                                            sourceIdsKeyName+"."+user_to_remove: ""},
                                     "$pull": {"sharedwith": user_to_remove}
                                 })
             
@@ -80,7 +84,8 @@ def removeallaccess(projects,
                                     userprojects,
                                     activeprojectname,
                                     user_to_remove,
-                                    speakers_to_remove)
+                                    speakers_to_remove,
+                                    sourceIdsKeyName)
     except:
         logger.exception("")
     

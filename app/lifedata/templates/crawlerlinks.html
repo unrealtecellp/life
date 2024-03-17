@@ -2,7 +2,9 @@
 
 {% block extra_nav %}
     <ul class="nav navbar-nav">
-        <li><a href="{{ url_for('lifedata.crawler') }}">Crawler</a></li>
+        {% if shareinfo['sharemode']|int >= 3 %}
+            <li><a href="{{ url_for('lifedata.crawler') }}">Crawler</a></li>
+        {% endif %}
         <li><a href="{{ url_for('lifedata.crawlerbrowse') }}">Browse</a></li>
     </ul>      
 {% endblock %}
