@@ -354,6 +354,8 @@ def saveoneaudiofile(mongo,
 
     project_type = getprojecttype.getprojecttype(projects, activeprojectname)
 
+    # logger.debug(project_type)
+
     audiowaveform_json_dir_path = get_audio_dir_path()
     audio_json_parent_dir = 'audiowaveform'
 
@@ -467,6 +469,9 @@ def saveoneaudiofile(mongo,
                                                              {"$set": new_audio_details})
         else:
             transcription_doc_id = transcriptions.insert_one(new_audio_details)
+            # logger.debug('transcription_doc_id: %s, transcription_doc_id: %s',
+            #              transcription_doc_id,
+            #              transcription_doc_id.inserted_id)
         all_transcription_doc_ids.append(transcription_doc_id)
 
     else:
@@ -581,6 +586,7 @@ def saveoneaudiofile(mongo,
             else:
                 transcription_doc_id = transcriptions.insert_one(
                     current_audio_details)
+                # logger.debug('transcription_doc_id 2: %s', transcription_doc_id)
 
             all_transcription_doc_ids.append(transcription_doc_id)
 
@@ -625,6 +631,9 @@ def saveoneaudiofile(mongo,
 
     # logger.debug('audiowaveform_audio_path %s', audiowaveform_audio_path)
     # audiowaveform_audio_path = os.path.join(audiowaveform_audio_path, updated_audio_filename)
+
+    # logger.debug('all_transcription_doc_ids: %s, all_audio_fs_file_ids: %s',
+    #              all_transcription_doc_ids, all_audio_fs_file_ids)
 
     return (True, all_transcription_doc_ids, all_audio_fs_file_ids)
 
@@ -2356,14 +2365,15 @@ def get_current_translation_langscripts(mongo):
 
 
 def get_current_transcription_langscripts(mongo):
-    userprojects, projectsform = getdbcollections.getdbcollections(
-        mongo, 'userprojects', 'projectsform')
+    projects, userprojects, projectsform = getdbcollections.getdbcollections(
+        mongo, 'projects', 'userprojects', 'projectsform')
     current_username = getcurrentusername.getcurrentusername()
     logger.debug('USERNAME: %s', current_username)
     activeprojectname = getactiveprojectname.getactiveprojectname(
         current_username, userprojects)
 
     # logger.debug("activeprojectname: %s", activeprojectname)
+    project_type = getprojecttype.getprojecttype(projects, activeprojectname)
     current_project_scripts = projectsform.find_one({'projectname': activeprojectname},
                                                     {
                                                         'Transcription Script': 1,
@@ -2374,14 +2384,25 @@ def get_current_transcription_langscripts(mongo):
                                                     })
     
     # logger.debug("current_project_scripts: %s", pformat(current_project_scripts))
-
-    if ('Audio Language' in current_project_scripts):
+    if (project_type == 'crawling'):
+        project_language = projects.find_one({'projectname': activeprojectname},
+                                             {
+                                                 '_id': 0,
+                                                 'crawlerLanguage': 1
+                                             })['crawlerLanguage']
+    elif ('Audio Language' in current_project_scripts):
         project_language = current_project_scripts['Audio Language'][1]
     else:
         project_language = current_project_scripts['Sentence Language']
     project_language_code = project_language[0][:3].lower()
 
-    if ('Transcription' in current_project_scripts):
+    if (project_type == 'crawling'):
+        project_scripts = projects.find_one({'projectname': activeprojectname},
+                                             {
+                                                 '_id': 0,
+                                                 'crawlerScript': 1
+                                             })['crawlerScript']
+    elif ('Transcription' in current_project_scripts):
         project_scripts = current_project_scripts['Transcription'][1]
     else:
         project_scripts = current_project_scripts['Transcription Script']

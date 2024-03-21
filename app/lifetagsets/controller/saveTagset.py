@@ -135,7 +135,7 @@ def save_tagset(tagsets, zip_file, use_in_project='', about_project='', is_publi
         return redirect(url_for('lifedata.home'))
 
     logger.debug('tagset_project_ids from save_tagset: %s', tagset_project_ids)
-    return tuple(tagset_project_ids)
+    return tagset_project_ids
 
 
 def update_use_in_project(tagset_collection, tagset_name, use_in_project):

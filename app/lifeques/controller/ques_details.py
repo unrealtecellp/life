@@ -59,6 +59,7 @@ def get_ques_ids(projects_collection,
 
 def get_n_ques(data_collection,
                  activeprojectname,
+                 text_prompt_key,
                 #  active_speaker_id,
                 #  speaker_ques_ids,
                  start_from=0,
@@ -87,7 +88,8 @@ def get_n_ques(data_collection,
                     "_id": 0,
                     "quesId": 1,
                     # "quesFilename": 1
-                    "Q_Id": 1
+                    "Q_Id": 1,
+                    "text": "$prompt.content."+text_prompt_key+".text"
                 }
             }
         ])
@@ -96,6 +98,9 @@ def get_n_ques(data_collection,
             # logger.debug("aggregate_output: %s", pformat(doc))
             # if (doc['quesId'] in speaker_ques_ids):
             #     doc['Audio File'] = ''
+            prompt_text = doc["text"][list(doc["text"].keys())[0]]["textspan"][text_prompt_key.split('-')[-1]]
+            # logger.debug(prompt_text)
+            doc['prompt_text'] = prompt_text
             aggregate_output_list.append(doc)
         # logger.debug('aggregate_output_list: %s', pformat(aggregate_output_list))
         total_records = len(aggregate_output_list)

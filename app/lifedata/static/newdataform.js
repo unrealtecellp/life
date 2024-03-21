@@ -444,7 +444,7 @@ function addValidationTagsetMappingToMainForm(modalData) {
 }
 
 function enableDisableDataFormSubmitBtn(bool) {
-  // console.log(bool);
+  console.log(bool);
   document.getElementById('dataformsubmit').disabled = bool;
 }
 
@@ -631,3 +631,26 @@ function getTagsetsList(id) {
     }
   );
 }
+
+$(document).on('keyup', '#idprojectname', function (e) {
+  let inputProjectName = e.target.value;
+  console.log(inputProjectName);
+  // $.ajax({
+  //   data : {
+  //     a : inputProjectName
+  //   },
+  //   type : 'GET',
+  //   url : '/checkprojectnameexist'
+  // }).done(function(data){
+  //     console.log(data);
+  //     let status = data.status;
+  //     document.getElementById('crawldataformsubmit').disabled = status;
+  //     enableDisableDataFormSubmitBtn(status);
+  //     if (status) {
+  //       document.getElementById('projectnameexist').style.display = 'block';
+  //     }
+  //     else {
+  //       document.getElementById('projectnameexist').style.display = 'none';
+  //     }
+  // });
+});
