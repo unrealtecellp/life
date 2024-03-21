@@ -558,14 +558,20 @@ def crawler():
         else:
             activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
                                                                           userprojects)
+            shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
+                                                          current_username,
+                                                          activeprojectname)
             data_sub_source = data_project_info.get_data_sub_source(projects,
                                                                     activeprojectname)
+            if (shareinfo["sharemode"] == 0):
+                return redirect(url_for('lifedata.crawlerbrowse'))
 
     except:
         logger.exception("")
 
     return render_template('crawler.html',
                            projectName=activeprojectname,
+                           shareinfo=shareinfo,
                            dataSubSource=data_sub_source)
 
 
@@ -588,6 +594,7 @@ def youtubecrawler():
         logger.debug("Current active project name %s", activeprojectname)
 
         if request.method == 'POST':
+            to_crawl_video_ids = []
             youtube_crawler_info = dict(request.form.lists())
             logger.debug('youtube_crawler_info: %s',
                          pformat(youtube_crawler_info))
@@ -615,6 +622,8 @@ def youtubecrawler():
                         youtube_crawler_info['youtubeTopNSearchTags'])
                 for link in topn_video_links:
                     data_links_info[link] = searchkeywords_value
+                    video_id = link[link.find('?v=')+3:].strip()
+                    to_crawl_video_ids.append(video_id)
             else:
                 for key, value in youtube_crawler_info.items():
                     if ('videoschannelId' in key):
@@ -626,6 +635,8 @@ def youtubecrawler():
                             searchkeywords_value = []
                         for link in value:
                             data_links_info[link] = searchkeywords_value
+                            video_id = link[link.find('?v=')+3:].strip()
+                            to_crawl_video_ids.append(video_id)
                         # logger.debug('key: %s, videoschannelId_count: %s, value: %s, searchkeywords_key: %s, searchkeywords_value: %s',
                         #              key, videoschannelId_count, value, searchkeywords_key, searchkeywords_value)
             data_links[youtube_data_for] = data_links_info
@@ -633,7 +644,7 @@ def youtubecrawler():
             logger.debug("data_links: %s", pformat(data_links))
 
             logger.debug("Current active project name %s", activeprojectname)
-            youtubecrawl.run_youtube_crawler(mongo, projects_collection,
+            crawled_video_ids = youtubecrawl.run_youtube_crawler(mongo, projects_collection,
                                              userprojects_collection,
                                              sourcedetails_collection,
                                              crawling_collection,
@@ -643,6 +654,25 @@ def youtubecrawler():
                                              api_key,
                                              data_links,
                                              download_items=youtube_data_type)
+            # logger.debug('to_crawl_video_ids: %s, crawled_video_ids: %s',
+            #              to_crawl_video_ids,
+            #              crawled_video_ids)
+            crawl_video_ids_diff = list(set(to_crawl_video_ids)-set(crawled_video_ids))
+            # logger.debug("crawl_video_ids_diff: %s", crawl_video_ids_diff)
+            projects_collection.update_one(
+                                {
+                                    'projectname': activeprojectname
+                                },
+                                {
+                                    '$addToSet':
+                                    {
+                                        'sourceIds.'+current_username: 
+                                            {
+                                                '$each': crawl_video_ids_diff
+                                            }
+                                    }
+                                }
+                            )
             flash("Crawling Complete.")
             return redirect(url_for("lifedata.crawler"))
     except:
@@ -651,9 +681,136 @@ def youtubecrawler():
     return redirect(url_for("lifedata.crawler"))
 
 
+@lifedata.route('/retrieve/<filename>', methods=['GET'])
+@login_required
+def retrieve(filename):
+    logger.debug('Now in retrieve')
+    x = ''
+    try:
+        userprojects, = getdbcollections.getdbcollections(mongo,
+                                                          'userprojects')
+
+        current_username = getcurrentusername.getcurrentusername()
+        activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                      userprojects)
+
+        # share_info = getuserprojectinfo.getuserprojectinfo(userprojects,
+        #                                                     current_username,
+        #                                                     activeprojectname)
+        # if ("downloadchecked" in share_info and
+        #     share_info["downloadchecked"] == 'true'):
+        # logger.debug("share_info: %s", share_info)
+        x = mongo.send_file(filename)
+        # logger.debug("mongo send file: %s, %s, %s, %s, %s, %s", x.response, x.status, x.headers, x.mimetype, x.content_type, x.direct_passthrough)
+    except:
+        logger.exception("")
+
+    return x
+
+@lifedata.route('/crawleraudiobrowseactionplay', methods=['GET', 'POST'])
+@login_required
+def crawleraudiobrowseactionplay():
+    audio_data_fields = ['audioId', 'audioFilename', 'Audio File']
+    audio_data_list = []
+    try:
+        projects, userprojects, crawling, sourcedetails_collection = getdbcollections.getdbcollections(mongo,
+                                                                                   'projects',
+                                                                                   'userprojects',
+                                                                                   'crawling',
+                                                                                   'sourcedetails')
+        current_username = getcurrentusername.getcurrentusername()
+        activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                      userprojects)
+        # logger.debug("%s,%s", current_username, activeprojectname)
+        # logger.debug("THe data: %s", pformat(request.form['a']))
+        # data from ajax
+        if request.method == 'POST':
+            data = json.loads(request.form['a'])
+            # logger.debug('data lifedata/audiobrowseactionplay: : %s', pformat(data))
+
+            # data = json.loads(request.args.get('a'))
+            # logger.debug('data: %s', pformat(data))
+            data_info = data['audioInfo']
+            audio_browse_info = data['audioBrowseInfo']
+            audio_filename = list(data_info.values())[0]
+            audio_count = audio_browse_info['audioFilesCount']
+            page_id = audio_browse_info['pageId']
+            start_from = ((page_id*audio_count)-audio_count)
+            number_of_crawled_data = page_id*audio_count
+            # logger.debug("audio_filename: %s", audio_filename)
+            # audio_src = url_for('retrieve', filename=audio_filename)
+            audio_src = os.path.join('retrieve', audio_filename)
+            # logger.debug(audio_browse_info['activeSpeakerId'])
+            active_source_id = audio_browse_info['activeSpeakerId']
+            crawled_data_browse_action = audio_browse_info['browseActionSelectedOption']
+            # speaker_audio_ids = transcription_audiodetails.get_speaker_audio_ids_new(projects,
+            #                                                                          activeprojectname,
+            #                                                                          current_username,
+            #                                                                          active_speaker_id,
+            #                                                                          audio_browse_action=audio_browse_action)
+            # audio_file_count = audio_browse_info['audioFilesCount']
+            total_records = 0
+            if (active_source_id != ''):
+                source_data_types = sourceid_to_souremetadata.get_data_types(sourcedetails_collection,
+                                                                         active_source_id,
+                                                                         activeprojectname)
+
+                # logger.debug("Source Data Types %s", source_data_types)
+
+                if 'text' in source_data_types:
+                    default_data_type = 'text'
+                elif 'video' in source_data_types:
+                    default_data_type = 'video'
+                elif 'audio' in source_data_types:
+                    default_data_type = 'audio'
+                else:
+                    default_data_type = 'text'
+
+                logger.debug("Default Data Type %s", default_data_type)
+                total_records, audio_data_list = crawled_data_details.get_n_crawled_data(crawling,
+                                                                                       activeprojectname,
+                                                                                       active_source_id,
+                                                                                       data_type=default_data_type,
+                                                                                       start_from=start_from,
+                                                                                       number_of_crawled_data=number_of_crawled_data,
+                                                                                       crawled_data_delete_flag=crawled_data_browse_action)
+            else:
+                audio_data_list = []
+
+            if default_data_type == 'audio':
+                # audio_filename = crawled_data_list['audioFilename']
+                for i, crawled_data in enumerate(audio_data_list):
+                    audio_filename = crawled_data['Data']
+                    audio_data_list[i]['audioFilename'] = audio_filename
+                    audio_data_list[i]['Audio File'] = url_for(
+                        'retrieve', filename=audio_filename)
+            # crawler_data_fields = ['audioId', 'audioFilename', 'Audio File']
+
+            shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
+                                                              current_username,
+                                                              activeprojectname)
+            logger.debug("shareinfo: %s", shareinfo)
+            share_mode = shareinfo['sharemode']
+            share_checked = shareinfo['sharechecked']
+            download_checked = shareinfo['downloadchecked']
+            new_audio_data_list = audio_data_list
+            return jsonify(
+                audioDataFields=audio_data_fields,
+                audioData=new_audio_data_list,
+                shareMode=share_mode,
+                totalRecords=total_records,
+                shareChecked=share_checked,
+                audioSource=audio_src,
+                downloadChecked=download_checked
+            )
+    except:
+        logger.exception("")
+        return jsonify(audioSource='')
+
 @lifedata.route('/crawlerbrowse', methods=['GET', 'POST'])
 @login_required
 def crawlerbrowse():
+    crawler_data_fields = ['dataId', 'Data']
     try:
         new_data = {}
         projects, userprojects, crawling, sourcedetails_collection = getdbcollections.getdbcollections(mongo,
@@ -677,9 +834,11 @@ def crawlerbrowse():
             source_metadata = sourceid_to_souremetadata.get_source_metadata(sourcedetails_collection,
                                                                             sourceids,
                                                                             activeprojectname)
-            sourceids.append('')
+            # logger.debug('source_metadata: %s', source_metadata)
+            # sourceids.append('')
         else:
-            sourceids = ['']
+            # sourceids = ['']
+            source_metadata = {}
         if ('activesourceId' in shareinfo):
             active_source_id = shareinfo['activesourceId']
         else:
@@ -690,7 +849,7 @@ def crawlerbrowse():
                                                                          active_source_id,
                                                                          activeprojectname)
 
-            logger.debug("Source Data Types %s", source_data_types)
+            # logger.debug("Source Data Types %s", source_data_types)
 
             if 'text' in source_data_types:
                 default_data_type = 'text'
@@ -701,27 +860,34 @@ def crawlerbrowse():
             else:
                 default_data_type = 'text'
 
-            logger.debug("Default Data Type %s", default_data_type)
+            # logger.debug("Default Data Type %s", default_data_type)
 
             total_records, crawled_data_list = crawled_data_details.get_n_crawled_data(crawling,
                                                                                        activeprojectname,
                                                                                        active_source_id,
                                                                                        data_type=default_data_type)
-
         else:
             crawled_data_list = []
+            default_data_type = ''
+            source_data_types = []
+
+        # logger.debug('crawled_data_list: %s', crawled_data_list)
 
         if default_data_type == 'audio':
-            audio_filename = crawled_data_list['audioFilename']
-            crawled_data_list['Audio File'] = url_for(
-                'retrieve', filename=audio_filename)
+            # audio_filename = crawled_data_list['audioFilename']
+            for i, crawled_data in enumerate(crawled_data_list):
+                audio_filename = crawled_data['Data']
+                crawled_data_list[i]['audioFilename'] = audio_filename
+                crawled_data_list[i]['Audio File'] = url_for(
+                    'retrieve', filename=audio_filename)
+            crawler_data_fields = ['audioId', 'audioFilename', 'Audio File']
 
         if default_data_type == 'video':
             video_filename = crawled_data_list['videoFilename']
             crawled_data_list['Video File'] = url_for(
                 'retrieve', filename=video_filename)
 
-        logger.debug("Crawled data list %s", crawled_data_list)
+        # logger.debug("Crawled data list %s", crawled_data_list)
         # get crawled file src
         # new_crawled_data_list = []
         # for crawled_data in crawled_data_list:
@@ -735,7 +901,7 @@ def crawlerbrowse():
         new_data['shareInfo'] = shareinfo
         new_data['sourceIds'] = sourceids
         new_data['crawlerData'] = crawled_data_list
-        new_data['crawlerDataFields'] = ['dataId', 'Data']
+        new_data['crawlerDataFields'] = crawler_data_fields
         new_data['sourceMetadata'] = source_metadata
         new_data['totalRecords'] = total_records
         new_data['dataTypes'] = source_data_types
@@ -746,6 +912,7 @@ def crawlerbrowse():
 
     return render_template('crawlerbrowse.html',
                            projectName=activeprojectname,
+                           shareinfo=shareinfo,
                            newData=new_data)
 
 
@@ -781,9 +948,13 @@ def updatecrawlerbrowsetable():
             crawled_data_list = []
 
         if data_type == 'audio':
-            audio_filename = crawled_data_list['audioFilename']
-            crawled_data_list['Audio File'] = url_for(
-                'retrieve', filename=audio_filename)
+            # audio_filename = crawled_data_list['audioFilename']
+            for i, crawled_data in enumerate(crawled_data_list):
+                audio_filename = crawled_data['Data']
+                crawled_data_list[i]['audioFilename'] = audio_filename
+                crawled_data_list[i]['Audio File'] = url_for(
+                    'retrieve', filename=audio_filename)
+            crawler_data_fields = ['audioId', 'audioFilename', 'Audio File']
 
         if data_type == 'video':
             video_filename = crawled_data_list['videoFilename']
@@ -937,6 +1108,17 @@ def crawlerbrowsechangepage():
         else:
             crawled_data_list = []
         # logger.debug('crawled_data_list: %s', pformat(crawled_data_list))
+        
+
+        if data_type == 'audio':
+            # audio_filename = crawled_data_list['audioFilename']
+            for i, crawled_data in enumerate(crawled_data_list):
+                audio_filename = crawled_data['Data']
+                crawled_data_list[i]['audioFilename'] = audio_filename
+                crawled_data_list[i]['Audio File'] = url_for(
+                    'retrieve', filename=audio_filename)
+            crawler_data_fields = ['audioId', 'audioFilename', 'Audio File']
+
         shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
                                                           current_username,
                                                           activeprojectname)
