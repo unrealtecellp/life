@@ -38,3 +38,5 @@ LiFE.log
 logging.config
 linksnotparse.txt
 app/lifedata/download
+recovery
+app/lifedata/transcription/audiowaveform
