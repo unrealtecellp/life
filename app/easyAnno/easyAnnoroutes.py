@@ -44,7 +44,8 @@ from app.controller import (
     readJSONFile,
     savenewproject,
     updateuserprojects,
-    life_logging
+    life_logging,
+    getuserprojectinfo
 )
 
 logger = life_logging.get_logger()
@@ -72,6 +73,9 @@ def home():
     projectcompleted = project_comments_stats(currentuserprojectsname)
 
     active_project_type = getprojecttype.getprojecttype(projects, activeprojectname)
+    shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
+                                                      current_username,
+                                                      activeprojectname)
     if (active_project_type not in project_type_list):
         activeprojectname = ''
 
@@ -98,7 +102,8 @@ def home():
     return render_template('easyannohome.html',
                             data=currentuserprojectsname,
                             activeproject=activeprojectname,
-                            projectcompleted=projectcompleted
+                            projectcompleted=projectcompleted,
+                            shareinfo=shareinfo
                         )
 
 def checkEmptyRowInID(text_data_df, project_name):
@@ -118,7 +123,8 @@ def compareTagSet(project_name, tag_set):
     projects = mongo.db.projects              # collection of users and their respective projects
     # check if tagset given by user and one saved with the project details match or not
     # when tagset file(tsv file already read from the zip file)
-    existing_tag_set = projects.find_one({"projectname": project_name}, {'_id' : 0, "tagSet": 1})["tagSet"]
+    existing_tag_set = projects.find_one({"projectname": project_name},
+                                         {'_id' : 0, "tagSet": 1})["tagSet"]
     
     tag_set_differ = diff(tag_set, existing_tag_set)
     # if difference in both tagset
@@ -127,18 +133,21 @@ def compareTagSet(project_name, tag_set):
         return redirect(url_for('easyAnno.home'))
 
 def compareTagSetandFileColumn(text_data_df, tag_set, project_name):
+    # logger.debug(tag_set)
     # check categories in the columns of the file and the tagset tsv file match or not
     uploaded_file_columns = list(text_data_df.columns)
-    # print(uploaded_file_columns)
+    # logger.debug(uploaded_file_columns)
     uploaded_tagset_category  = list(tag_set.keys()) + ["ID", "Text"]
-    # print(uploaded_tagset_category)
+    # logger.debug(uploaded_tagset_category)
     if (len(uploaded_tagset_category) >= len(uploaded_file_columns)):
         tags_category_mismatch = list(set(uploaded_tagset_category) - set(uploaded_file_columns))
+        # print(tags_category_mismatch)
         if (len(tags_category_mismatch) != 0):
             flash(f'Missing categories: {tags_category_mismatch} in your data file: {project_name}.csv', 'warning')
             return redirect(url_for('easyAnno.home'))
     else:
         tags_category_mismatch = list(set(uploaded_file_columns) - set(uploaded_tagset_category))
+        # logger.debug(tags_category_mismatch)
         if (len(tags_category_mismatch) != 0):
             flash(f'Missing categories: {tags_category_mismatch} in your tagset file: textAnno_tags.tsv', 'warning')
             return redirect(url_for('easyAnno.home'))
@@ -193,12 +202,16 @@ def saveNewProjectDetails(project_name, tag_set, text_data, tag_set_meta_data):
 
     # pprint(project_details)
     # get curent user project list and update
-    userprojectnamelist = userprojects.find_one({'username' : current_user.username})["myproject"]
+    # userprojectnamelist = userprojects.find_one({'username' : current_user.username})["myproject"]
     # print(f'{"#"*80}\n{userprojectnamelist}')
-    userprojectnamelist.append(project_name)
+    # userprojectnamelist.append(project_name)
+    updateuserprojects.updateuserprojects(userprojects,
+                                                project_name,
+                                                project_owner
+                                                )
     # print(f'{"#"*80}\n{userprojectnamelist}')
-    userprojects.update_one({ 'username' : current_user.username }, \
-        { '$set' : { 'myproject' : userprojectnamelist, 'activeprojectname' :  project_name}})
+    # userprojects.update_one({ 'username' : current_user.username }, \
+    #     { '$set' : { 'myproject' : userprojectnamelist, 'activeprojectname' :  project_name}})
     
     projects.insert_one(project_details)
 
@@ -219,17 +232,21 @@ def updateProjectDetails(project_name, project_shared_with):
     projects.update_one({ "projectname": project_name }, \
         { '$set' : { 'sharedwith' : list(set(shared_with)), "lastActiveId": lastActiveId}})
     # get curent user project list and update
-    userprojectnamelist = userprojects.find_one({'username' : current_user.username})["myproject"]
+    # userprojectnamelist = userprojects.find_one({'username' : current_user.username})["myproject"]
     # print(f'{"#"*80}\n{userprojectnamelist}')
-    userprojectnamelist.append(project_name)
+    # userprojectnamelist.append(project_name)
+    updateuserprojects.updateuserprojects(userprojects,
+                                                project_name,
+                                                current_user.username
+                                                )
     # print(userprojectnamelist)
-    userprojects.update_one({ 'username' : current_user.username }, \
-        { '$set' : { 'myproject' : list(set(userprojectnamelist)), 'activeprojectname' :  project_name}})
+    # userprojects.update_one({ 'username' : current_user.username }, \
+    #     { '$set' : { 'myproject' : list(set(userprojectnamelist)), 'activeprojectname' :  project_name}})
 
     # # print(project_details)   
 
-def saveAnnotatedData(project_name, text_data_df):
-    # print("Creatinggggggggggggg Newwwwwwwwwwwwwwwwwwwwwwww")
+def saveAnnotatedData(project_name, text_data_df, tag_set_meta_data):
+    # logger.debug("Creatinggggggggggggg Newwwwwwwwwwwwwwwwwwwwwwww")
     textanno = mongo.db.textanno
 
     id_test_list = []
@@ -240,10 +257,13 @@ def saveAnnotatedData(project_name, text_data_df):
     # print(col_names)
     col_names.pop("ID")
     col_names.pop("Text")
+    annotatedFLAG_count = 0
+    unannotatedFLAG_count = 0
     for i in range(len(text_data_df)):
         NaN_count = 0
         text_id = 'T'+re.sub(r'[-: \.]', '', str(datetime.now()))
         id_test_list.append(text_id)
+        # logger.debug('textId: %s', text_id)
         single_row = {}
         single_row["ID"] = text_data_df.iloc[i, 0]
         single_row["Text"] = text_data_df.iloc[i, 1]
@@ -259,23 +279,31 @@ def saveAnnotatedData(project_name, text_data_df):
             for category, index in col_names.items():
                 if pd.isna(text_data_df.iloc[i, index]):
                     NaN_count += 1
-                    # print(text_data_df.iloc[i, index])
+                    # logger.debug('index: %s, category: %s', i, category)
+                    # logger.debug(index)
+                    # logger.debug(text_data_df.iloc[i, index])
                     user_annotation[category] = ''
-                else:    
-                    user_annotation[category] = text_data_df.iloc[i, index]
+                else:
+                    if ('categoryHtmlElement' in tag_set_meta_data and
+                        tag_set_meta_data['categoryHtmlElement'][category] == 'select'):
+                        user_annotation[category] = text_data_df.iloc[i, index].split(',')
+                    else:
+                        user_annotation[category] = text_data_df.iloc[i, index]
 
             # version 1        
             # if (len(col_names.keys()) == NaN_count):
             #     user_annotation["annotatedFLAG"] = 0
             # else:    
             #     user_annotation["annotatedFLAG"] = 1
-
+            # logger.debug('NaN_count: %s', NaN_count)
             # version 2
             if (NaN_count > 2):
                 user_annotation["annotatedFLAG"] = 0
+                unannotatedFLAG_count += 1
             else:    
                 user_annotation["annotatedFLAG"] = 1
-
+                annotatedFLAG_count += 1
+            # logger.debug('user_annotation["annotatedFLAG"]: %s', user_annotation["annotatedFLAG"])
             user_annotation['Duplicate'] = "No"
             user_annotation['annotatorComment'] = ""
             # print(user_annotation)
@@ -290,6 +318,8 @@ def saveAnnotatedData(project_name, text_data_df):
     # print(text_data)
     # print(text_anno_detail)
     # textanno.insert_one(text_anno_detail)
+    # logger.debug('annotatedFLAG_count: %s, unannotatedFLAG_count: %s',
+    #              annotatedFLAG_count, unannotatedFLAG_count)
 
     return text_data
 
@@ -365,11 +395,15 @@ def createAnnotatedTextAnno(zipFile):
     tag_set_meta_data = {}
     categoryDependency = {}
     defaultCategoryTags = {}
+    categoryHtmlElement = {}
+    categoryHtmlElementProperties = {}
     try:
         with ZipFile(zipFile) as myzip:
             with myzip.open('textAnno_tags.tsv') as myfile:
                 # print('textAnno_tags.tsv')
-                tags_df = pd.read_csv(io.BytesIO(myfile.read()), sep='\t', dtype=str).dropna()
+                tags_df = pd.read_csv(io.BytesIO(myfile.read()), sep='\t', dtype=str)
+
+                # logger.debug(tags_df)
 
                 # version 1
                 # # print(type(tags))
@@ -389,12 +423,33 @@ def createAnnotatedTextAnno(zipFile):
                         defaultCategoryTags[tags_df.iloc[i, 0]] = re.sub(' ', '', tags_df.iloc[i, 3]).split(',')[0]
                     tag_set_meta_data['categoryDependency'] = categoryDependency
                     tag_set_meta_data['defaultCategoryTags'] = defaultCategoryTags
-
+                elif (len(tags_df.columns) == 6):
+                    for i in range(len(tags_df)):
+                        print(tags_df.iloc[i, 0], tags_df.iloc[i, 1], type(tags_df.iloc[i, 1]))
+                        if (str(tags_df.iloc[i, 1]) == 'nan'):
+                            tag_set[tags_df.iloc[i, 0]] = ['']
+                        else:
+                            tag_set[tags_df.iloc[i, 0]] = re.sub(' ', '', tags_df.iloc[i, 1]).split(',')
+                        if (re.sub(' ', '', tags_df.iloc[i, 3]).split(',')[0] != 'NONE'):
+                            categoryDependency[tags_df.iloc[i, 0]] = re.sub(' ', '', tags_df.iloc[i, 3]).split(',')[0]
+                        if (str(tags_df.iloc[i, 2]) == 'nan'):
+                            defaultCategoryTags[tags_df.iloc[i, 0]] = ''
+                        elif (str(tags_df.iloc[i, 4]) == 'select'):
+                            defaultCategoryTags[tags_df.iloc[i, 0]] = [re.sub(' ', '', tags_df.iloc[i, 2]).split(',')[0]]
+                        else:
+                            defaultCategoryTags[tags_df.iloc[i, 0]] = re.sub(' ', '', tags_df.iloc[i, 2]).split(',')[0]
+                        categoryHtmlElement[tags_df.iloc[i, 0]] = re.sub(' ', '', tags_df.iloc[i, 4]).split(',')[0]
+                        categoryHtmlElementProperties[tags_df.iloc[i, 0]] = re.sub(' ', '', tags_df.iloc[i, 5]).split(',')[0]
+                    tag_set_meta_data['categoryDependency'] = categoryDependency
+                    tag_set_meta_data['defaultCategoryTags'] = defaultCategoryTags
+                    tag_set_meta_data['categoryHtmlElement'] = categoryHtmlElement
+                    tag_set_meta_data['categoryHtmlElementProperties'] = categoryHtmlElementProperties
+            # logger.debug(tag_set)
             for file_name in myzip.namelist():
                 with myzip.open(file_name) as myfile:
-                    # print(myfile.read())
+                    # logger.debug(myfile.read())
                     if (not file_name.endswith('.tsv')):
-                        # print(file_name)
+                        # logger.debug(file_name)
                         project_name = file_name.split('.')[0]
 
                         # check project/file name do not already exist
@@ -431,16 +486,17 @@ def createAnnotatedTextAnno(zipFile):
                         else:
                             # when project/file name do not exist in the database
                             text_data_df = pd.read_csv(io.BytesIO(myfile.read()), sep='\t', dtype=str)
-                            # print(text_data_df.head())
+                            # logger.debug(text_data_df.head())
                             # check if any row in ID column is empty
                             if checkEmptyRowInID(text_data_df, project_name):
                                 return redirect(url_for('easyAnno.home'))
                             if compareTagSetandFileColumn(text_data_df, tag_set, project_name):
                                 return redirect(url_for('easyAnno.home'))
-                            text_data = saveAnnotatedData(project_name, text_data_df)
+                            text_data = saveAnnotatedData(project_name, text_data_df, tag_set_meta_data)
                             saveNewProjectDetails(project_name, tag_set, text_data, tag_set_meta_data)
         
     except:
+        logger.exception("")
         # flash('Please check the imageAnno_tags.tsv file format!')
         flash('Please upload a zip file. Check the file format at the link provided for the Sample File', 'warning')
 
@@ -484,7 +540,7 @@ def createTextAnno(zipFile):
             with myzip.open('textAnno_tags.tsv') as myfile:
                 
                 # print('textAnno_tags.tsv')
-                tags_df = pd.read_csv(io.BytesIO(myfile.read()), sep='\t', dtype=str).dropna()
+                tags_df = pd.read_csv(io.BytesIO(myfile.read()), sep='\t', dtype=str)
 
                 # version 1
                 # # print(type(tags))
@@ -731,6 +787,9 @@ def textAnno():
     activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
                                                                     userprojects)
     projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
+    shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
+                                                      current_username,
+                                                      activeprojectname)
 
     project_details = projects.find_one({"projectname": activeprojectname},
                                         {"_id": 0, "projectType": 1, "tagSet": 1, "lastActiveId": 1})
@@ -775,7 +834,7 @@ def textAnno():
             last_active_id = tIds[0]
             projects.update_one({ "projectname": activeprojectname },
                                     { '$set' : 
-                                        { "lastActiveId": {current_username: last_active_id} }})
+                                        { "lastActiveId."+current_username: last_active_id }})
 
         # print(project_details["textData"][last_active_id])
         # print(last_active_id)
@@ -802,6 +861,7 @@ def textAnno():
         project_details["remainingComments"]  = remaining_comments   
         project_details["textData"] = project_details["textData"][last_active_id]
         project_details["lastActiveId"] = last_active_id
+        project_details["shareinfo"] = shareinfo
 
         # print(last_active_id)
         text_meta_data = textanno.find_one({"projectname": activeprojectname, "textId": last_active_id},
@@ -836,8 +896,9 @@ def textAnno():
                                         'additionalInfo': {},
                                         'prompt': ''
                                     }})
-        if (current_username in missing_keys and 'annotationGrid' not in missing_keys[current_username]):
-            print('123')
+        if (current_username in missing_keys and
+            'annotationGrid' not in missing_keys[current_username]):
+            # print('123')
             current_user_anno = missing_keys[current_username]
             del current_user_anno['annotatedFLAG']
             textanno.update_one({"projectname": activeprojectname, "textId": last_active_id},
@@ -878,8 +939,10 @@ def textAnno():
 
         currentText = textanno.find_one({"projectname": activeprojectname, "textId": last_active_id},
                                             {"_id": 0, current_username: 1})
-        # print(len(currentText.keys()))
-        # pprint(project_details)
+        # logger.debug(pformat(currentText))
+        # logger.debug(list(currentText.keys()))
+        # logger.debug(len(currentText.keys()))
+        # logger.debug(project_details)
 
         if (currentText != None and
             len(currentText.keys()) != 0 and
@@ -899,8 +962,8 @@ def textAnno():
             project_details['tagSetMetaData']['defaultCategoryTags'] = {**defaultAnnotation, **currentAnnotation}
 
             # pprint(project_details)
-            logger.debug('project_details: %s', pformat(project_details))
-            logger.debug('project_details: %s', pformat(list(project_details.keys())))
+            # logger.debug('project_details: %s', pformat(project_details))
+            # logger.debug('project_details: %s', pformat(list(project_details.keys())))
 
             return render_template('textAnno.html',
                                    projectName=activeprojectname,
@@ -908,6 +971,28 @@ def textAnno():
                                    data=currentuserprojectsname)
         else:
             # logger.debug('project_details: %s', pformat(project_details))
+
+            annotation_available = textanno.find_one({"projectname": activeprojectname, "textId": last_active_id},
+                                            {"_id": 0, "annotationGrid": 1})
+            # logger.debug(pformat(annotation_available))
+            # logger.debug(annotation_available!=None)
+            # logger.debug(annotation_available["annotationGrid"])
+            # logger.debug(len(annotation_available["annotationGrid"])!=0)
+
+            if (annotation_available!=None and
+                len(annotation_available["annotationGrid"])!=0):
+                # logger.debug("annotation available")
+                project_details[current_username] = annotation_available["annotationGrid"]
+                project_details['currentUser'] = current_username
+                # print(project_details)
+                # pprint(project_details)
+                currentAnnotation = project_details[current_username]
+                defaultAnnotation = project_details['tagSetMetaData']['defaultCategoryTags']
+                # pprint(currentAnnotation)
+                # pprint(defaultAnnotation)
+                project_details['tagSetMetaData']['defaultCategoryTags'] = {**defaultAnnotation, **currentAnnotation}
+            # else:
+            #     logger.debug("annotation NOT available")
 
             return render_template('textAnno.html',
                                    projectName=activeprojectname,
@@ -1830,25 +1915,45 @@ def downloadannotationfile():
             df_dict[category] = []
         df_dict["Duplicate"] = []
         df_dict["annotatorComment"] = []    
-        # print(df)
+        # logger.debug(df_dict)
 
         df = pd.DataFrame.from_dict(df_dict)
-        # print(df)
+        # logger.debug(df)
 
         for text_id in list(text_data.keys()):
             annotated_text = textanno.find_one({ "textId": text_id },
-                                                { "_id": 0, "ID": 1, "textMetadata": 1, "Text": 1, current_username: 1 })
-            # print(annotated_text)
+                                                { "_id": 0,
+                                                 "ID": 1,
+                                                 "textMetadata": 1,
+                                                 "Text": 1,
+                                                 current_username: 1 })
+            # logger.debug(annotated_text)
+            # logger.debug(current_username in annotated_text)
+            # logger.debug('annotationGrid' in annotated_text[current_username])
             if (annotated_text != None and current_username in annotated_text):
                 annotated_text[current_username]["textId"] = text_id
+                # print(text_id)
+                logger.debug(annotated_text)
+                if ('annotationGrid' in annotated_text[current_username]):
+                    annotated_text[current_username].update(annotated_text[current_username]['annotationGrid'])
                 if ('textMetadata' in annotated_text):
                     for textMetadata_key, textMetadata_value in annotated_text['textMetadata'].items():
                         annotated_text[current_username][textMetadata_key] = textMetadata_value
                 else:
                     annotated_text[current_username]["ID"] = annotated_text["ID"]
+                # logger.debug(annotated_text)
                 annotated_text[current_username]["Text"] = annotated_text["Text"]
                 annotated_text =  annotated_text[current_username] 
-                # print(annotated_text)
+                # logger.debug(annotated_text)
+                for category in list(tag_set.keys()):
+                    # print(annotated_text.keys())
+                    # print(category)
+                    if (category in annotated_text):
+                        if (isinstance(annotated_text[category], list)):
+                            annotated_text[category] = ','.join(annotated_text[category])
+                    else:
+                        annotated_text[category] = ''
+                # logger.debug(annotated_text)
                 annotated_text_df = pd.DataFrame.from_dict(annotated_text.items()).T
                 annotated_text_df.columns = annotated_text_df.iloc[0]
                 annotated_text_df = annotated_text_df[1:]
@@ -2356,7 +2461,9 @@ def downloadallusersallannotationfiles():
 
 @easyAnno.route('/downloadoneuserallannotatedfiles/<username>')
 def downloadoneuserallannotatedfiles(username):
-    if (current_user.username == 'ritesh' or current_user.username == 'ComMA' or current_user.username == 'siddharth'):
+    if (current_user.username == 'ritesh' or
+        current_user.username == 'ComMA' or
+        current_user.username == 'siddharth'):
         log = ''
         log += f"{username}\n"
         projects = mongo.db.projects              # collection of users and their respective projects
@@ -2409,15 +2516,38 @@ def downloadoneuserallannotatedfiles(username):
                         # pprint(annotated_text)
                         if (annotated_text != None and username in annotated_text):
                             annotated_text[username]["textId"] = annotated_text["textId"]
-                            if('ID' in annotated_text):
+                            # logger.debug(annotated_text)
+                            if ('annotationGrid' in annotated_text[username]):
+                                annotated_text[username].update(annotated_text[username]['annotationGrid'])
+                            if ('textMetadata' in annotated_text):
+                                for textMetadata_key, textMetadata_value in annotated_text['textMetadata'].items():
+                                    annotated_text[username][textMetadata_key] = textMetadata_value
+                            else:
                                 annotated_text[username]["ID"] = annotated_text["ID"]
-                            annotated_text[username]["Text"] = annotated_text["Text"] 
+                            # logger.debug(annotated_text)
+                            annotated_text[username]["Text"] = annotated_text["Text"]
+                            # annotated_text =  annotated_text[username]
+                            # logger.debug(annotated_text)
                             # get annotated comments count
                             annotatedFLAG = annotated_text[username]["annotatedFLAG"]
                             if (annotatedFLAG == 1):
                                 annotated_comments += 1
-                            annotated_text =  annotated_text[username]    
+                            annotated_text =  annotated_text[username]
+                            # logger.debug(annotated_text)
+
+                            for category in list(tag_set.keys()):
+                                if (category in annotated_text):
+                                    if (isinstance(annotated_text[category], list)):
+                                        annotated_text[category] = ','.join(annotated_text[category])
+                                else:
+                                    annotated_text[category] = ''
+                            # logger.debug(annotated_text)
                         else:
+                            text_id = annotated_text["textId"]
+                            annotated_text = {}
+                            annotated_text["textId"] = text_id
+                            annotated_text["ID"]  = text_data[text_id]["ID"]
+                            annotated_text["Text"]  = text_data[text_id]["Text"]
                             for category in list(tag_set.keys()):
                                 annotated_text[category] = ''
                             annotated_text["Duplicate"] = ''
@@ -2504,6 +2634,174 @@ def downloadoneuserallannotatedfiles(username):
         print('You are not ritesh or ComMA :(', current_user.username)
         return redirect(url_for('easyAnno.home'))
 
+@easyAnno.route('/downloadoneuserstats/<username>')
+def downloadoneuserstats(username):
+    if (current_user.username == 'ritesh' or
+        current_user.username == 'ComMA' or
+        current_user.username == 'siddharth'):
+        log = ''
+        log += f"{username}\n"
+        projects = mongo.db.projects              # collection of users and their respective projects
+    
+        proj_count = 0
+
+        projects_detail = projects.find({"projectType": "text"}, \
+                        {"_id": 0, "projectname": 1, "projectType": 1, "sharedwith": 1, "sharedWith": 1,\
+                            'tagSet': 1, 'textData': 1, 'imageFiles': 1})
+
+        project_count_list = []
+        project_name_list = []
+        total_comments_list = []
+        annotated_comments_list = []
+        remaining_comments_list = []
+        all_updates_list = []
+
+        for proj_detail in projects_detail:
+
+            user_updates_list = []
+            
+            projectname = proj_detail["projectname"]
+            # logger.debug('projectname: %s', projectname)
+            # logger.debug('user_updates_list: %s', pformat(user_updates_list))
+            # print(proj_detail)
+            log += f"{'-'*80}\n"
+            # log += f'Project Name: {projectname}, Shared With: {str(proj_detail["sharedwith"])},  Shared with {username}: {str(username in proj_detail["sharedwith"])}\n'
+            # print(os.listdir('download'))
+            if projectname+'.csv' in os.listdir(basedir+'/download'): 
+                log += f'Already downloaded :)\n'
+                continue
+            
+            if (('sharedwith' in proj_detail and
+                 username in proj_detail["sharedwith"]) or
+                ('sharedWith' in proj_detail and
+                 username in proj_detail["sharedWith"]) and
+                'projectType' in proj_detail):
+                # print(proj_count) 
+                project_type = proj_detail["projectType"]
+                log += f'{proj_detail["projectType"]}\n'
+                proj_count += 1
+                log += f'{str(proj_count)}. {projectname}\n'
+                project_count_list.append(proj_count)
+                project_name_list.append(projectname)
+                # logger.debug(log)
+                
+                if (proj_detail["projectType"] == 'text'):
+                    text_data = proj_detail["textData"]
+                    tag_set = proj_detail["tagSet"]
+                    df_dict = {"textId": [], "ID": [], "Text": []}
+                    for category in list(tag_set.keys()):
+                        df_dict[category] = []
+                    df_dict["Duplicate"] = []
+                    df_dict["annotatorComment"] = []    
+                    # print(df)
+
+                    df = pd.DataFrame.from_dict(df_dict)
+                    # print(df)
+                    total_comments = len(text_data)
+                    annotated_comments = 0
+                    for annotated_text in get_file_data(mongo.db, projectname, project_type, username):
+                        # logger.debug(annotated_text)
+                        if (annotated_text != None and username in annotated_text):
+                            if (username in annotated_text['allUpdates']):
+                                user_updates_list.append(annotated_text['allUpdates'][username][-1])
+                            annotatedFLAG = annotated_text[username]["annotatedFLAG"]
+                            if (annotatedFLAG == 1):
+                                annotated_comments += 1
+                    remaining_comments = total_comments - annotated_comments
+                    total_comments_list.append(total_comments)
+                    annotated_comments_list.append(annotated_comments)
+                    remaining_comments_list.append(remaining_comments)
+                    # logger.debug('user_updates_list: %s', pformat(user_updates_list))
+                    all_updates_list.append(sorted(user_updates_list, reverse=True)[:5])
+                    # logger.debug('all_updates_list: %s', pformat(all_updates_list))
+                elif (proj_detail["projectType"] == 'image'):
+                    # continue
+                    image_data = proj_detail["imageFiles"]
+                    tag_set = proj_detail["tagSet"]
+                    df_dict = {"imageId": [], "fileName": []}
+                    for category in list(tag_set.keys()):
+                        df_dict[category] = []
+                    df_dict["Duplicate"] = []
+                    df_dict["annotatorComment"] = []    
+                    # print(df)
+
+                    df = pd.DataFrame.from_dict(df_dict)
+                    # print(df)
+                    total_comments = len(image_data)
+                    annotated_comments = 0
+                    for annotated_image in get_file_data(mongo.db, projectname, project_type, username):
+                        if (annotated_image != None and username in annotated_image):
+                            annotated_image[username]["imageId"] = annotated_image["imageId"]
+                            annotated_image[username]["fileName"] = annotated_image["filename"]
+                            # get annotated comments count
+                            annotatedFLAG = annotated_image[username]["annotatedFLAG"]
+                            if (annotatedFLAG == 1):
+                                annotated_comments += 1
+                            annotated_image =  annotated_image[username] 
+                        else:
+                            for category in list(tag_set.keys()):
+                                annotated_image[category] = ''
+                            annotated_image["Duplicate"] = ''
+                            annotated_image["annotatorComment"] = ''
+                        # print(annotated_image)
+                        annotated_image_df = pd.DataFrame.from_dict(annotated_image.items()).T
+                        annotated_image_df.columns = annotated_image_df.iloc[0]
+                        annotated_image_df = annotated_image_df[1:]
+                        # print(annotated_image_df, '\n')
+                        df = df.append(annotated_image_df, ignore_index=True)
+                    # print(df.columns)
+                        # # retrieve images from the database
+                        # imageFile = fetch_image_files(image_id)
+                        # filename = imageFile["filename"]
+                        # imageBytes = imageFile["imageBytes"]
+                        # open(basedir+'/download/'+filename, 'wb').write(imageBytes)
+                    remaining_comments = total_comments - annotated_comments
+                else:
+                    continue
+                # annotated_file_path = basedir+'/download/'
+                log += f'Total Comments: {total_comments}\nAnnotated Comments: {annotated_comments}\nRemaining Comments: {remaining_comments}\n'
+
+        user_stats_df = pd.DataFrame(columns=['Project Number',
+                                              'Project Name',
+                                              'Total Data',
+                                              'Annotated Data',
+                                              'Remaining Data',
+                                              'Last 5 Updation Times'])
+        project_count_list.append('TOTAL')
+        project_name_list.append('-')
+        total_comments_list.append(sum(total_comments_list))
+        remaining_comments_list.append(sum(remaining_comments_list))
+        annotated_comments_list.append(sum(annotated_comments_list))
+        all_updates_list.append('-')
+        user_stats_df['Project Number'] = project_count_list
+        user_stats_df['Project Name'] = project_name_list
+        user_stats_df['Total Data'] = total_comments_list
+        user_stats_df['Annotated Data'] = annotated_comments_list
+        user_stats_df['Remaining Data'] = remaining_comments_list
+        user_stats_df['Last 5 Updation Times'] = all_updates_list
+
+        # logger.debug(user_stats_df)
+        
+        download_user_stats_filename = re.sub(r'[-: \.]', '', str(datetime.now())) + '_' +username + '_stats.csv'
+        download_user_stats_filename_zip = download_user_stats_filename.replace('.csv', '.zip')
+        # logger.debug('%s, %s', download_user_stats_filename, download_user_stats_filename_zip)
+        
+        compression_opts = dict(method='zip', archive_name=download_user_stats_filename)
+
+        csv_buffer = io.BytesIO()
+        user_stats_df.to_csv(csv_buffer, 
+                                index=False)
+        csv_buffer.seek(0)
+
+        return send_file(csv_buffer,
+                            mimetype='text/csv',
+                            download_name=download_user_stats_filename,
+                            as_attachment=True)
+    else:
+        print('You are not ritesh or ComMA :(', current_user.username)
+        return redirect(url_for('easyAnno.home'))
+
+
 def get_file_data(db, file_name, file_type, username):
     '''
     get all the text and their detail present in the file
@@ -2513,7 +2811,13 @@ def get_file_data(db, file_name, file_type, username):
     if (file_type == 'text'):
         textanno = db.textanno
         file_detail = textanno.find({ "projectname": file_name },\
-                        { "_id": 0, "textId": 1, "ID": 1, "Text": 1, username: 1 })
+                        { "_id": 0,
+                         "textId": 1,
+                         "ID": 1,
+                         "textMetadata": 1,
+                         "Text": 1,
+                         "allUpdates": 1,
+                         username: 1 })
 
     elif (file_type == 'image'):
         imageanno = db.imageanno

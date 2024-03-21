@@ -37,7 +37,7 @@ function createBrowseActions(projectOwner, currentUsername) {
     crawlerCreateSelect2('browsedataactiondropdowns', browseActionOptionsList, 'Delete');
 }
 
-function createCrawlerBrowseTable(crawlerDataFields, crawlerData, shareMode=0, totalRecords=0) {
+function createCrawlerBrowseTable(crawlerDataFields, crawlerData, shareMode=0, totalRecords=0, dataType="text") {
     // console.log(crawlerData);
     let count = crawlerData.length;
     let ele = '';
@@ -68,9 +68,22 @@ function createCrawlerBrowseTable(crawlerDataFields, crawlerData, shareMode=0, t
         for (let j=0; j<crawlerDataFields.length; j++) {
             let field = crawlerDataFields[j];
             if (field in aData) {
-                if (field == 'Crawler File') {
+                if (field == 'Crawler Audio') {
                     ele += '<td id='+field+'>'+
-                            '<crawler controls><source src="'+aData[field]+'" type="crawler/wav"></crawler>'+
+                            '<audio controls><source src="'+aData[field]+'" type="audio/wav"></audio>'+
+                            '</td>';
+                }
+                else if (field == 'Crawler Video') {
+                    ele += '<td id='+field+'>'+ 
+                            '<video width="320" height="240" controls>' +
+                                '<source src="'+aData[field]+'" type="video/mp4">' +
+                                'Your browser does not support the video tag.' +
+                            '</video>' +
+                            '</td>';
+                }
+                 else   if (field == 'Crawler Image') {
+                    ele += '<td id='+field+'>'+
+                            '<img src="'+aData[field]+'" height="240">'+
                             '</td>';
                 }
                 else {
@@ -121,12 +134,15 @@ function createCrawlerBrowse(newData) {
     // console.log(activeSourceId)
     let crawlerDataFields = newData['crawlerDataFields']
     let crawlerData = newData['crawlerData']
+    let dataTypes = newData['dataTypes']
+    let defaultDataType = newData['defaultDataType']
     crawlerCreateSelect2('sourceidsdropdown', sourceIds, activeSourceId, sourceMetadata, 'video_title');
+    crawlerCreateSelect2('datatypedropdown', dataTypes, defaultDataType)
     crawlerCreateSelect2('sourcedatacountdropdown', [10, 20, 50], 10)
     if (shareMode >= 4) {
         createBrowseActions(projectOwner, currentUsername);
     }
-    createCrawlerBrowseTable(crawlerDataFields, crawlerData, shareMode, totalRecords)
+    createCrawlerBrowseTable(crawlerDataFields, crawlerData, shareMode, totalRecords, defaultDataType)
     eventsMapping();
     createPagination(totalRecords);
 }
@@ -151,6 +167,13 @@ function eventsMapping() {
         // console.log(browseActionSelectedOption);
         updateCrawlerBrowseTable();
     })
+
+    // change data type to show
+    $("#datatypedropdown").change(function() {
+        // console.log(browseActionSelectedOption);
+        updateCrawlerBrowseTable();
+    })
+
     // delete single crawler
     $(".deletedataclass").click(function() {
         let dataInfo = getSingleCrawlerBrowseAction(this);
@@ -204,7 +227,7 @@ function updateCrawlerBrowseTable() {
         url : '/lifedata/updatecrawlerbrowsetable'
       }).done(function(data){
         // console.log(data.crawledDataFields, data.crawledData, data.shareMode);
-        createCrawlerBrowseTable(data.crawledDataFields, data.crawledData, data.shareMode, data.totalRecords);
+        createCrawlerBrowseTable(data.crawledDataFields, data.crawledData, data.shareMode, data.totalRecords, data.dataType);
         eventsMapping();
         createPagination(data.totalRecords);
       });
@@ -266,6 +289,7 @@ function crawlerBrowseActionViewData(dataInfo) {
 function getCrawlerBrowseInfo() {
     let activeSourceId = document.getElementById('sourceidsdropdown').value;
     let crawledDataCount = Number(document.getElementById('sourcedatacountdropdown').value);
+    let dataType = document.getElementById('datatypedropdown').value;
     let browseActionSelectedOption = '';
     try {
         browseActionSelectedOption = document.getElementById('browsedataactiondropdowns').value;
@@ -282,7 +306,8 @@ function getCrawlerBrowseInfo() {
     let crawlerBrowseInfo = {
         "activeSourceId": activeSourceId,
         "crawledDataCount": crawledDataCount,
-        "browseActionSelectedOption": browseActionSelectedOption
+        "browseActionSelectedOption": browseActionSelectedOption,
+        "dataType": dataType
     }
     // console.log(crawlerBrowseInfo);
 
@@ -397,7 +422,7 @@ function changeCrawlerBrowsePage(pageId) {
         url : '/lifedata/crawlerbrowsechangepage'
       }).done(function(data){
         // console.log(data.crawledDataFields, data.crawledData, data.shareMode);
-        createCrawlerBrowseTable(data.crawledDataFields, data.crawledData, data.shareMode, data.totalRecords);
+        createCrawlerBrowseTable(data.crawledDataFields, data.crawledData, data.shareMode, data.totalRecords, data.dataType);
         eventsMapping();
         createPagination(data.totalRecords, data.activePage);
     });

@@ -12,6 +12,7 @@ Home
 
 
 {% block app_content %}
+<div id="lifehomealert"></div>
 <div>
   <h2>Linguistic Field Data Management and Analysis System<br>[LiFE]</h2>
 </div>
@@ -21,6 +22,7 @@ Home
   <button type="button" id="manageusers" class="btn btn-lg btn-danger pull-right"
     onclick="window.location.href='{{ url_for('manageapp') }}';">Manage App</button>
 </div>
+
 {% endif %}
 <br>
 <hr>
@@ -124,63 +126,21 @@ Home
               aria-hidden="true">&times;</span></button>
           <h4 class="modal-title">LiFE Access Control</h4>
         </div>
-        <div class="modal-body">
-          <h4 id="myShareProjectModalLabel">Project Name: {{ activeprojectname }}</h4>
-          <hr>
-          <div class="row">
-            <div class="col-xs-12">
-              <div class="form-group">
-                
-                <select name="" id="shareProjectSelect" multiple="multiple" style="width: 100%">
-                </select>
-                <br>
-                <div id="shareLatest"></div>
-                <br>
-                <select name="" id="shareSpeakerSelect" multiple="multiple" style="width: 100%">
-                </select>
-                <br>
-                <div class="sharemode"></div>
-              </div>
-            </div>
-          </div>
+        <div class="modal-body" id="sharemodalbodystructure">
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary shareprojectwith">Share</button>
+          <button type="button" class="btn btn-sm btn-danger shareprojectwith" id="removesharedaccess"  style="display: none;">
+            Remove Access
+          </button>
+          <button type="button" class="btn btn-sm btn-warning shareprojectwith" id="updatesharedaccess"  style="display: none;">
+            Update Access
+          </button>
+          <button type="button" class="btn btn-primary shareprojectwith" id="sharesharedaccess">Share</button>
         </div>
       </div>
     </div>
   </div>
-
-  <!-- Assign Karya Access Code Modal -->
-  {# <div class="modal fade" id="assignKaryaAccessCodeModal" tabindex="-1" role="dialog"
-    aria-labelledby="assignKaryaAccessCodeModalLabel">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-              aria-hidden="true">&times;</span></button>
-          <h4 class="modal-title" id="assignKaryaAccessCodeModalLabel">Project Name: {{ activeproject }}</h4>
-        </div>
-        <div class="modal-body">
-          <div class="row">
-            <!-- <div class="col-xs-12">Select A State</div> -->
-            <div class="col-xs-12">
-              <form action="{{ url_for('dictionaryview') }}" method="POST" enctype="multipart/form-data">
-
-                <div id="speakerdetail" class="speakerdetail"></div>
-                <input class="btn btn-primary" id="submit" type="submit" value="Submit">
-              </form>
-            </div>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary savespeakerdata">Save Speaker Data</button>
-        </div>
-      </div>
-    </div>
-  </div> #}
 </div>
 <!-- <p class="output"></p>
 <button type="button" class="btn btn-lg btn-primary" id="speak">

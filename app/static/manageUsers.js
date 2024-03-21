@@ -19,7 +19,7 @@ $('.userview').click(function () {
 
     // $.getJSON("{{url_for('getoneuserdetails')}}", {
     $.getJSON("/getoneuserdetails", {
-        username: String(username)
+        username: String(username) 
     }, function (data) {
         console.log("Received data", data.userdetails)
         console.log("End Received data")
@@ -68,7 +68,7 @@ $('.addnewuser').click(function () {
 
 $('#closebutton').click(function () {
     buttonType = $(this).attr("id")
-    activeform(buttonType)
+    // activeform(buttonType)
     // activeform()
     // $('#formdisplay').find('input, select').attr('disabled', false);
     // $('#editbutton').attr('hidden', true)

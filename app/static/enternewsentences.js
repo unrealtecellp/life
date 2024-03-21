@@ -271,6 +271,7 @@ function editMorphemicBreakSentence(transcriptionvalue, transcriptionkey) {
 $("#save").click(function() {
   var transcriptionData = Object();
   var transcriptionRegions = localStorage.regions;
+  // console.log(JSON.parse(transcriptionRegions));
   var lastActiveId = document.getElementById("lastActiveId").value;
   transcriptionData['lastActiveId'] = lastActiveId;
   transcriptionData['transcriptionRegions'] = transcriptionRegions;
@@ -280,21 +281,25 @@ $("#save").click(function() {
   .done(function( data ) {
     // console.log(data.savedTranscription);
     if (!data.savedTranscription) {
-      alert("Unable to save the transcription as audio seem to be deleted by one of the shared user.\
-      Showing you the next audio in the list.")
+      alert("Unable to save the transcription as audio seem to be deleted or revoked access by one of the shared users. Showing you the next audio in the list.")
+      window.location.reload();
     }
-    window.location.reload();
+    else {
+      alert("Transcription saved successfully.")
+    }
+    // window.location.reload();
   });
 });
 
 function myFunction(newData) {
+  // console.log(newData);
   localStorage.setItem("activeprojectform", JSON.stringify(newData));
   localStorage.setItem("regions", JSON.stringify(newData['transcriptionRegions']));
   var activeAudioFilename = newData["AudioFilePath"].split('/')[2];
   if (activeAudioFilename === undefined) {
     activeAudioFilename = '';
   }
-  var inpt = '<strong>Audio Filename: </strong><strong id="audioFilename">'+ activeAudioFilename +'</strong>'
+  var inpt = '<span>Audio Filename: </span><span id="audioFilename">'+ activeAudioFilename +'</span>';
   $(".defaultfield").append(inpt);
   lastActiveId = newData["lastActiveId"]
   inpt = '<input type="hidden" id="lastActiveId" name="lastActiveId" value="'+lastActiveId+'">';
@@ -304,10 +309,11 @@ function myFunction(newData) {
   localStorage.setItem("AudioFilePath", JSON.stringify(newData['AudioFilePath']));
   for (let [key, value] of Object.entries(newData)){
     if (key === 'Sentence Language') {
-      inpt += '<div class="col"><div class="form-group">'+
-                  '<label for="'+key+'">'+key+'</label>'+
-                  '<input type="text" class="form-control" id="'+key+'" name="'+key+'" value="'+newData[key]+'" readonly>'+
-                  '</div></div>'; 
+      // inpt += '<div class="col"><div class="form-group">'+
+      //             '<label for="'+key+'">Audio Language:</label>'+
+      //             '<input type="text" class="form-control" id="'+key+'" name="'+key+'" value="'+newData[key]+'" readonly>'+
+      //             '</div></div>'; 
+      inpt += '<strong>Audio Language: </strong><strong id="'+key+'">'+newData[key]+'</strong>';
           $('.lexemelang').append(inpt);
           inpt = '';
         }
@@ -379,13 +385,13 @@ function unAnnotated() {
           allanno = response.allanno;
           // console.log(allanno)
           var inpt = '';
-          inpt += '<select class="col-sm-3 allanno" id="allanno" onchange="loadAnnoText()" style="width: 10%">'+
+          inpt += '<select class="col-sm-3 allanno" id="allanno" onchange="loadAnnoText()" style="width: 45%">'+
                   '<option selected disabled>Completed</option>';
                   for (i=0; i<allanno.length; i++) {
                       inpt += '<option value="'+allanno[i]+'">'+allanno[i]+'</option>';
                   }
           inpt += '</select>&nbsp; ';
-          inpt += '<select class="pr-4 col-sm-3" id="allunanno" onchange="loadUnAnnoText()"style="width: 10%">'+
+          inpt += '<select class="pr-4 col-sm-3" id="allunanno" onchange="loadUnAnnoText()"style="width: 45%">'+
                   '<option selected disabled>Not Completed</option>';
                   for (i=0; i<allunanno.length; i++) {
                       inpt += '<option value="'+allunanno[i]+'">'+allunanno[i]+'</option>';
@@ -435,6 +441,23 @@ function loadAnnoText() {
   return false;
 }
 
+function loadUserTranscription() {
+  var username = document.getElementById('transcriptionbydropdown').value;
+  var lastActiveId = document.getElementById("lastActiveId").value;
+  console.log('Load transcription', username, lastActiveId)
+  // loadRandomAudio(newAudioFilename)
+  $.ajax({
+      url: '/loadtranscriptionbyanyuser',
+      type: 'GET',
+      data: {'transcriptionUser': username, 'activeId': lastActiveId},
+      contentType: "application/json; charset=utf-8", 
+      success: function(response){
+          window.location.reload();
+      }
+  });
+  return false;
+}
+
 function loadRandomAudio(newAudioFilename) {
   filePath = JSON.parse(localStorage.getItem('AudioFilePath'));
   currentAudioFilename = filePath.split('/')[2];
@@ -455,6 +478,13 @@ $('#speakeridsdropdown').select2({
   placeholder: 'select speaker',
   // data: posCategories
   // allowClear: true
+});
+  
+$('#transcriptionbydropdown').select2({
+  // tags: true,
+  placeholder: 'Select Transcription by',
+  // data: posCategories
+  // allowClear: true
   });
 
 $('#speakeriduploaddropdown').select2({
@@ -463,6 +493,14 @@ $('#speakeriduploaddropdown').select2({
   // data: posCategories
   // allowClear: true
   });
+
+$('#boundarypausedropdown').select2({
+tags: true,
+placeholder: 'Select preset value or enter a custom value',
+// data: posCategories
+// allowClear: true
+});
+
 
 $("#audiofile").change(function() {
     let zipFileElement = document.getElementById('audiofile');
@@ -479,6 +517,18 @@ $("#audiofile").change(function() {
     }
     
 })
+
+$('#uploadparameters-vadid').change(function () {
+  if (this.checked) {
+    $('#uploadparameters-boundarypause-divid').css("display", "block");
+    $("#uploadparameters-boundarypause-divid :input").prop("disabled", false);
+  }
+  else {
+    $('#uploadparameters-boundarypause-divid').css("display", "none");
+    $("#uploadparameters-boundarypause-divid :input").prop("disabled", true);
+  }
+})
+
 
 function replaceZoomSlider() {
   let slider = '<input id="slider" data-action="zoom" type="range" min="20" max="100" value="0" style="width: 50%">';

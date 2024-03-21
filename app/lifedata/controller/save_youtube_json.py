@@ -5,6 +5,7 @@ import datetime
 import isodate
 import xmltodict
 import xml.etree.ElementTree as ET
+from pytube import YouTube
 
 
 def save_video_json(vlink, key):
@@ -107,6 +108,21 @@ def test_xml_to_json():
     print(async_info)
 
 
+def downloadYoutubeAudio(video_link):
+    try:
+        print("Loading")
+        yt = YouTube(video_link)
+        print("filtering")
+        # relevant_streams = yt.streams
+        print("getting")
+        download_stream = yt.streams.get_by_itag(140)
+    except Exception as e:
+        # logger.exception("")
+        print("Exception", e)
+        download_stream = ""
+    return download_stream
+
+
 if __name__ == '__main__':
     # api_key = 'AIzaSyDt5xEn8OzVHsfB9_s5TJDfSxwzswhVnYA' #GITHUB
     # api_key = 'AIzaSyBO3HIMZn3lgXC3MIQomKd-4RUYebcu96A' #riteshkrjnu
@@ -130,4 +146,6 @@ if __name__ == '__main__':
     # get_json_data(search_json, "search")
     # get_json_data(video_json, "video")
 
-    test_xml_to_json()
+    # test_xml_to_json()
+    vlink = 'https://www.youtube.com/watch?v=HJWCjeiv3mU'
+    stream = downloadYoutubeAudio(vlink)

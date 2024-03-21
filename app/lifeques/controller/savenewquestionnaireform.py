@@ -1,6 +1,11 @@
 """Module to save new questionnaire project form in database."""
 
-from pprint import pprint
+from app.controller import (
+    life_logging
+)
+from pprint import pprint, pformat
+
+logger = life_logging.get_logger()
 
 def savenewquestionnaireform(projectsform,
                                 projectname,
@@ -18,84 +23,87 @@ def savenewquestionnaireform(projectsform,
     Returns:
         _type_: _description_
     """
-    
-    save_ques_form = {}
-    
-    if 'Prompt Type' in new_ques_form:
-        prompt_array = new_ques_form['Prompt Type'][1]
-    else:
-        prompt_array = {}
-    
-    if 'LangScript' in new_ques_form:
-        lang_script_array = new_ques_form['LangScript'][1]
-    else:
-        lang_script_array = {}
-
-    save_ques_form['username'] = current_username
-    save_ques_form['projectname'] = projectname
-    
-    print (new_ques_form.items())
-    for key, value in new_ques_form.items():
-        # if key == 'Language':
+    try:
+        save_ques_form = {}
         
-        if 'Language' in key:
-            # save_ques_form[key] = ["text", value]
-            key_id = key[key.find('_')+1:]
+        if 'Prompt Type' in new_ques_form:
+            prompt_array = new_ques_form['Prompt Type'][1]
+        else:
+            prompt_array = {}
+        
+        if 'LangScript' in new_ques_form:
+            lang_script_array = new_ques_form['LangScript'][1]
+        else:
+            lang_script_array = {}
 
-            script_name = new_ques_form['Script_'+key_id][0]
-
-            print ('Value', value[0], 'Script name', script_name)
-            lang_name = value[0]+'-'+script_name
-            lang_script_array.update({lang_name: script_name})
-            # if 'Language_Script' in save_ques_form:
-            #     save_ques_form['Language_Script'][lang_name] = script_name
-            # else:
-            #     save_ques_form['Language_Script'] = {lang_name: script_name}
+        save_ques_form['username'] = current_username
+        save_ques_form['projectname'] = projectname
+        
+        print (new_ques_form.items())
+        for key, value in new_ques_form.items():
+            # if key == 'Language':
             
-            prompt_array.update(createpromptform(new_ques_form, lang_name, key_id))
-             
-            # if 'Prompt Type' in save_ques_form:
-            #     save_ques_form['Prompt Type'][1] = prompt_array
-            # else:
-            #     save_ques_form['Prompt Type'] = ["prompt", prompt_array]
+            if 'Language' in key:
+                # save_ques_form[key] = ["text", value]
+                key_id = key[key.find('_')+1:]
 
-        # elif key == 'Script':
-        #     save_ques_form[key] = ["", value]
-        # elif key == 'Prompt Type':
-        #     prompt_array = createpromptform(new_ques_form, value)
-        #     save_ques_form[key] = ["prompt", prompt_array]
-        # elif ((key == 'Transcription Language' or
-        #     key == 'Transcription Script') and
-        #     'Transcription' in new_ques_form):
-        #     save_ques_form[key] = ["", value]
-        elif key == 'Domain':
-            save_ques_form[key] = ["multiselect", value]
-        elif key == 'Elicitation Method':
-            save_ques_form[key] = ["select", value]
-        elif key =='Target':
-            save_ques_form[key] = ['multiselect', value]
-        elif 'customField' in key:
-            save_ques_form['Custom Field '+value[0]] = [new_ques_form['fieldType'+key[-1]][0], value]
-    # if 'Transcription' in new_ques_form:
-    #     # save_ques_form['Transcription'] = ['waveform', new_ques_form['Transcription Language']]
-    #     save_ques_form['Transcription'] = ['', new_ques_form['Transcription']]
-    # # else:
-    # #     save_ques_form['Transcription'] = ['', []]
-    # if 'Instruction' in new_ques_form:
-    #     save_ques_form['Instruction'] = ['', new_ques_form['Instruction']]
-    #     # save_ques_form['Instruction'] = new_ques_form['Instruction']
-    # # else:
-    # #     save_ques_form['Instruction'] = ['', []]
-    # # pprint(save_ques_form)
+                script_name = new_ques_form['Script_'+key_id][0]
 
-    save_ques_form['LangScript'] = ["", lang_script_array]
-    save_ques_form['Prompt Type'] = ["prompt", prompt_array]
-    projectsform.insert_one(save_ques_form)
+                print ('Value', value[0], 'Script name', script_name)
+                lang_name = value[0]+'-'+script_name
+                lang_script_array.update({lang_name: script_name})
+                # if 'Language_Script' in save_ques_form:
+                #     save_ques_form['Language_Script'][lang_name] = script_name
+                # else:
+                #     save_ques_form['Language_Script'] = {lang_name: script_name}
+                
+                prompt_array.update(createpromptform(new_ques_form, lang_name, key_id))
+                
+                # if 'Prompt Type' in save_ques_form:
+                #     save_ques_form['Prompt Type'][1] = prompt_array
+                # else:
+                #     save_ques_form['Prompt Type'] = ["prompt", prompt_array]
 
-    if "_id" in save_ques_form:
-        del save_ques_form["_id"]
+            # elif key == 'Script':
+            #     save_ques_form[key] = ["", value]
+            # elif key == 'Prompt Type':
+            #     prompt_array = createpromptform(new_ques_form, value)
+            #     save_ques_form[key] = ["prompt", prompt_array]
+            # elif ((key == 'Transcription Language' or
+            #     key == 'Transcription Script') and
+            #     'Transcription' in new_ques_form):
+            #     save_ques_form[key] = ["", value]
+            elif key == 'Domain':
+                save_ques_form[key] = ["multiselect", value]
+            elif key == 'Elicitation Method':
+                save_ques_form[key] = ["select", value]
+            elif key =='Target':
+                save_ques_form[key] = ['multiselect', value]
+            elif 'customField' in key:
+                save_ques_form['Custom Field '+value[0]] = [new_ques_form['fieldType'+key[-1]][0], value]
+        # if 'Transcription' in new_ques_form:
+        #     # save_ques_form['Transcription'] = ['waveform', new_ques_form['Transcription Language']]
+        #     save_ques_form['Transcription'] = ['', new_ques_form['Transcription']]
+        # # else:
+        # #     save_ques_form['Transcription'] = ['', []]
+        # if 'Instruction' in new_ques_form:
+        #     save_ques_form['Instruction'] = ['', new_ques_form['Instruction']]
+        #     # save_ques_form['Instruction'] = new_ques_form['Instruction']
+        # # else:
+        # #     save_ques_form['Instruction'] = ['', []]
+        # # pprint(save_ques_form)
 
-    return save_ques_form
+        save_ques_form['LangScript'] = ["", lang_script_array]
+        save_ques_form['Prompt Type'] = ["prompt", prompt_array]
+        logger.debug("save_ques_form: %s", pformat(save_ques_form))
+        projectsform.insert_one(save_ques_form)
+
+        if "_id" in save_ques_form:
+            del save_ques_form["_id"]
+        return save_ques_form
+    except:
+        logger.exception("")
+        return None
 
 def createpromptform(new_ques_form, lang_name, key_id):
     # print(new_ques_form, prompt_type_value)

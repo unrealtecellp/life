@@ -1,5 +1,10 @@
 """Module to get the user project info of the project."""
 
+from app.controller import (
+    life_logging
+)
+
+logger = life_logging.get_logger()
 
 def getuserprojectinfo(userprojects,
                         current_username,
@@ -8,20 +13,25 @@ def getuserprojectinfo(userprojects,
     projectinfo = userprojects.find_one({'username' : current_username},
                                         {'_id': 0, 'myproject': 1, 'projectsharedwithme': 1})
 
-    # print(projectinfo)
+    # logger.debug("current_username: %s, projectinfo: %s", current_username, projectinfo)
     userprojectinfo = {}
-    for key, value in projectinfo.items():
-        if (len(value) != 0):
-            if (activeprojectname in value):
-                # print(current_username, key, value, value[activeprojectname])
-                userprojectinfo = value[activeprojectname]
-                # print(shareinfo)
+    if (projectinfo is not None):
+        for key, value in projectinfo.items():
+            if (len(value) != 0):
+                if (activeprojectname in value):
+                    # print(current_username, key, value, value[activeprojectname])
+                    userprojectinfo = value[activeprojectname]
+                    # print(shareinfo)
     if (len(userprojectinfo) == 0):
         userprojectinfo = {
-                        'sharemode': 0,
+                        'sharemode': -1,
                         'sharechecked': "false",
                         'activespeakerId': "",
-                        'activesourceId': ""
+                        'activesourceId': "",
+                        'sharelatestchecked': "false",
+                        'downloadchecked': "false",
+                        'isharedwith': [],
+                        'tomesharedby': []
                     }
 
     return userprojectinfo

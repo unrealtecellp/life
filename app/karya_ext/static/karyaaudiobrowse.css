@@ -36,10 +36,10 @@
         background-color: #0056b3;
     }
 
-    #deleteSelectedBtn {
+    /* #deleteSelectedBtn {
         background-color: red;
         color: #fff;
-    }
+    } */
 
     /* New styles */
     h4 {
@@ -93,9 +93,9 @@
         cursor: pointer;
     }
 
-    #deleteSelectedBtn:hover {
-        background-color: #c40000;
-    }
+    /* #deleteSelectedBtn:hover {
+        background-color: #5ecc27;
+    } */
 
     table {
         display: none;
@@ -108,4 +108,15 @@
 
     tbody tr:hover {
         background-color: #f2f2f2;
+    }
+
+
+
+
+
+
+    .audio::-webkit-media-controls-play-button,
+    audio::-webkit-media-controls-panel {
+    background-color: #62e84b;
+    color: #010101;
     }

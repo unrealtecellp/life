@@ -1,36 +1,45 @@
 var languages = [
-
-    {"id": "", "text": ""},
-    {"id": "Assamese", "text": "Assamese"},
-    {"id": "Awadhi", "text": "Awadhi"},
-    {"id": "Bangla", "text": "Bangla"},
-    {"id": "Bhojpuri", "text": "Bhojpuri"},
-    {"id": "Bodo", "text": "Bodo"},
-    {"id": "Braj", "text": "Braj"},
-    {"id": "Bundeli", "text": "Bundeli"},
-    {"id": "Chhattisgarhi", "text": "Chhattisgarhi"},
-    {"id": "Chokri", "text": "Chokri"},
-    {"id": "English", "text": "English"},
-    {"id": "Gujarati", "text": "Gujarati"},
-    {"id": "Haryanvi", "text": "Haryanvi"},
-    {"id": "Hindi", "text": "Hindi"},
-    {"id": "Kannada", "text": "Kannada"},
-    {"id": "Konkani", "text": "Konkani"},
-    {"id": "KokBorok", "text": "Kok Borok"},
-    {"id": "Magahi", "text": "Magahi"},
-    {"id": "Maithili", "text": "Maithili"},
-    {"id": "Malayalam", "text": "Malayalam"},
-    {"id": "Marathi", "text": "Marathi"},
-    {"id": "Meitei", "text": "Meitei"},
-    {"id": "Nepali", "text": "Nepali"},
-    {"id": "Nyishi", "text": "Nyishi"},
-    {"id": "Odia", "text": "Odia"},
-    {"id": "Punjabi", "text": "Punjabi"},
-    {"id": "Santali", "text": "Santali"},
-    {"id": "Tamil", "text": "Tamil"},
-    {"id": "Telugu", "text": "Telugu"},
-    {"id": "Toto", "text": "Toto"}
-  ]
+  {"id": "", "text": ""},
+  {"id": "Assamese", "text": "Assamese"},
+  {"id": "Angika", "text": "Angika"},
+  {"id": "Awadhi", "text": "Awadhi"},
+  {"id": "Bajjika", "text": "Bajjika"},
+  {"id": "Bangla", "text": "Bangla"},
+  {"id": "Bhojpuri", "text": "Bhojpuri"},
+  {"id": "Bodo", "text": "Bodo"},
+  {"id": "Braj", "text": "Braj"},
+  {"id": "Bundeli", "text": "Bundeli"},
+  {"id": "Chhattisgarhi", "text": "Chhattisgarhi"},
+  {"id": "Chokri", "text": "Chokri"},
+  {"id": "Dogri", "text": "Dogri"},
+  {"id": "English", "text": "English"},
+  {"id": "Gujarati", "text": "Gujarati"},
+  {"id": "Haryanvi", "text": "Haryanvi"},
+  {"id": "Hindi", "text": "Hindi"},
+  {"id": "Kashmiri", "text": "Kashmiri"},
+  {"id": "Kannada", "text": "Kannada"},
+  {"id": "Khortha", "text": "Khortha"},
+  {"id": "Konkani", "text": "Konkani"},
+  {"id": "KokBorok", "text": "Kok Borok"},
+  {"id": "Magahi", "text": "Magahi"},
+  {"id": "Maithili", "text": "Maithili"},
+  {"id": "Malayalam", "text": "Malayalam"},
+  {"id": "Marathi", "text": "Marathi"},
+  {"id": "Meitei", "text": "Meitei"},
+  {"id": "Nagamese", "text": "Nagamese"},
+  {"id": "Nepali", "text": "Nepali"},
+  {"id": "Nyishi", "text": "Nyishi"},
+  {"id": "Odia", "text": "Odia"},
+  {"id": "Punjabi", "text": "Punjabi"},
+  {"id": "Sadri", "text": "Sadri"},
+  {"id": "Sanskrit", "text": "Sanskrit"},
+  {"id": "Santali", "text": "Santali"},
+  {"id": "Sambalpuri", "text": "Sambalpuri"},
+  {"id": "Tamil", "text": "Tamil"},
+  {"id": "Telugu", "text": "Telugu"},
+  {"id": "Toto", "text": "Toto"},
+  {"id": "Urdu", "text": "Urdu"}
+]
   
   var scripts = 
   [    
@@ -95,7 +104,7 @@ var languages = [
 var crawlerLanguageField = 1;
 
 $("#datacrawlbtn").click(function() {
-    console.log('crawler')
+    // console.log('crawler')
     var x = document.getElementById("crawldataform");
     var y = document.getElementById("dataform");;
     var z = '';
@@ -167,7 +176,7 @@ function crawlDataForm() {
     sourceinpt += subsourceinpt;
     project_info += sourceinpt;
     langScript = createCrawlerFormLangScript();
-    console.log(langScript);
+    // console.log(langScript);
     project_info += langScript;
     project_info += '<br>'+
         '<input class="btn btn-lg btn-primary create" id="crawldataformsubmit" type="submit" value="Create Form">'+
@@ -179,7 +188,7 @@ function crawlDataForm() {
     $.getJSON('/lifedata/datasubsource', {
     }, function(data) {
         dataSubSource = data.dataSubSource;
-        console.log(dataSubSource)
+        // console.log(dataSubSource);
         $('.datasubsourceclass').select2({
             data: dataSubSource
         });

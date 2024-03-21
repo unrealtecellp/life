@@ -72,6 +72,12 @@ If you would like to set up the app on your own server / system for testing and 
     mongod --version
 
     sudo systemctl status mongodb
+
+7. Setup audiowaveform[https://github.com/bbc/audiowaveform]
+    ```
+    sudo add-apt-repository ppa:chris-needham/ppa
+    sudo apt-get update
+    sudo apt-get install audiowaveform
     ```
 7. Run the application
     ```

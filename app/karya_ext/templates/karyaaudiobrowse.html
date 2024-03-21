@@ -43,7 +43,7 @@ Audio Browse
 <br>
 
 
-<button id="deleteSelectedBtn" onclick="deleteSelected()">Delete Selected</button>
+<button id="deleteSelectedBtn" class="btn btn-danger" onclick="deleteSelected()">Delete Selected</button>
 <br>
 <br>
 <br>
@@ -73,8 +73,12 @@ Audio Browse
                     <td>{{ audioData.karyaInfo.karyaFetchedAudioId }}</td>
                     <td>{{ audioData.accesscode }}</td>
                     <td>
-                        <button class="playPauseBtn" data-audioid="{{ audioData.audioId }}">Play/Pause</button>
+                        <audio controls>
+                            <source src="{{ audioData.audioFilename }}" type="audio/wav">
+                            Your browser does not support the audio element.
+                        </audio>
                     </td>
+                    
                 </tr>
             {% endfor %}
         {% endfor %}

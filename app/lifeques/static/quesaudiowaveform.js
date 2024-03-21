@@ -72,7 +72,7 @@
          '[data-action="delete-region"]'
      ).addEventListener('click', function() {
         //  let form = document.forms.edit;
-        let form = document.forms[document.forms.length-1];
+        let form = document.forms[getFormNumber()];
         let regionId = form.dataset.region;
 
         // form.elements[2].setAttribute("value", '0');
@@ -234,8 +234,9 @@
  function editAnnotation(region) {
      // console.log('editAnnotation(region)')
      // console.log(region)
+    //  console.log(document.forms)
      document.getElementById("deleteboundary").disabled = false;
-     let form = document.forms[document.forms.length-1]
+     let form = document.forms[getFormNumber()]
      console.log(form);
      (form.elements.start.value = region.start),
      (form.elements.end.value = region.end);
@@ -554,7 +555,7 @@
  
  function sentenceDetails(sentenceData) {
     //  formData = document.forms.edit.elements;
-    formData = document.forms[document.forms.length-1].elements;
+    formData = document.forms[getFormNumber()].elements;
      // console.log(typeof formData)
      // let sentenceData = new Object();
      let transcriptionData = new Object();
@@ -1277,7 +1278,7 @@ document.querySelector(
      activetranscriptionscript = displayRadioValue()
      // console.log(activetranscriptionscript);
     //  let form = document.forms.edit;
-    let form = document.forms[document.forms.length-1];
+    let form = document.forms[getFormNumber()];
      let id = form.dataset.region;
      let wavesurferregion = wavesurfer.regions.list[id];
      // console.log(wavesurferregion)
@@ -1348,4 +1349,10 @@ document.querySelector(
      }
  } 
  
- 
+ function getFormNumber() {
+    let formNumber = 0;
+    // formNumber = document.forms.length-1;
+
+    return formNumber
+ }
+

@@ -1,4 +1,4 @@
-"""Module containing the routes for the data part of the LiFe."""
+"""Module containing the routes for the data part of the LiFE."""
 
 from app import mongo
 from flask import (
@@ -32,11 +32,20 @@ from app.lifedata.controller import (
     data_project_info,
     savenewdataform,
     create_validation_type_project,
-    save_tagset,
     get_validation_data,
     youtubecrawl,
     sourceid_to_souremetadata
 )
+
+from app.lifetagsets.controller import (
+    saveTagset,
+    tagset_details
+)
+
+from app.lifedata.transcription.controller import (
+    save_new_transcription_form
+)
+
 from flask_login import login_required
 import os
 from pprint import pformat
@@ -85,6 +94,24 @@ def getprojectslist():
     return jsonify(projectslist=projectslist)
 
 
+@lifedata.route('/gettagsetslist', methods=['GET', 'POST'])
+@login_required
+def gettagsetslist():
+    """_summary_
+    """
+    tagsets_list = []
+    try:
+        tagsets_collection, = getdbcollections.getdbcollections(
+            mongo, 'tagsets')
+        current_username = getcurrentusername.getcurrentusername()
+        tagsets_list = tagset_details.get_tagsets_list(tagsets_collection,
+                                                       current_username)
+    except:
+        logger.exception("")
+
+    return jsonify(tagsetsList=tagsets_list)
+
+
 @lifedata.route('/newdataform', methods=['GET', 'POST'])
 @login_required
 def newdataform():
@@ -131,13 +158,13 @@ def newdataform():
                                                   current_username
                                                   )
 
-            save_data_form = savenewdataform.savenewdataform(projectsform,
-                                                             projectname,
-                                                             new_data_form,
-                                                             current_username,
-                                                             project_type
-                                                             )
-            logger.debug("save_data_form: %s", pformat(save_data_form))
+            # save_data_form = savenewdataform.savenewdataform(projectsform,
+            #                                                  projectname,
+            #                                                  new_data_form,
+            #                                                  current_username,
+            #                                                  project_type
+            #                                                  )
+            # logger.debug("save_data_form: %s", pformat(save_data_form))
 
             if (project_type == 'validation'):
                 validation_collection, tagsets = getdbcollections.getdbcollections(mongo,
@@ -146,9 +173,9 @@ def newdataform():
                 # logger.debug("project_type: %s", project_type)
 
                 validation_zip_file = new_data_form_files["tagsetZipFile"]
-                tagset_project_ids, = save_tagset.save_tagset(tagsets,
-                                                              validation_zip_file,
-                                                              project_name)
+                tagset_project_ids, = saveTagset.save_tagset(tagsets,
+                                                             validation_zip_file,
+                                                             project_name)
                 # logger.debug(tagset_project_ids)
                 projects.update_one({"projectname": project_name},
                                     {"$set": {
@@ -162,21 +189,6 @@ def newdataform():
 
                 return redirect(url_for("lifedata.validation"))
                 # return redirect(url_for("enternewsentences"))
-            elif (project_type == 'annotation'):
-                annotation_collection, tagsets = getdbcollections.getdbcollections(mongo,
-                                                                                   'annotation',
-                                                                                   'tagsets')
-                # logger.debug("project_type: %s", project_type)
-
-                annotation_zip_file = new_data_form_files["annotationtagsetZipFile"]
-                tagset_project_ids, = save_tagset.save_tagset(tagsets,
-                                                              annotation_zip_file,
-                                                              project_name)
-                # logger.debug(tagset_project_ids)
-                projects.update_one({"projectname": project_name},
-                                    {"$set": {
-                                        "tagsetId": tagset_project_ids
-                                    }})
 
             if ("derivefromproject" in new_data_form):
                 # copy all the data from the "derivedfromproject" to "newproject"
@@ -202,6 +214,10 @@ def newdataform():
                                                                       derive_from_project_name,
                                                                       projectname,
                                                                       current_username)
+                    if (project_type == 'transcriptions'):
+                        new_transcription_form(project_name,
+                                                new_data_form,
+                                                new_data_form_files)
                 if (derive_from_project_type == 'crawling' and
                         project_type == 'annotation'):
                     data_collection, = getdbcollections.getdbcollections(
@@ -214,13 +230,136 @@ def newdataform():
                                                                           projectname,
                                                                           current_username)
                     return redirect(url_for("lifedata.annotation"))
+            else:
+                if (project_type == 'annotation'):
+                    annotation_collection, tagsets = getdbcollections.getdbcollections(mongo,
+                                                                                       'annotation',
+                                                                                       'tagsets')
+                    # logger.debug("project_type: %s", project_type)
+                    if 'annotationtagsetZipFile' in new_data_form_files:
+                        annotation_zip_file = new_data_form_files["annotationtagsetZipFile"]
+                        tagset_project_ids, = saveTagset.save_tagset(tagsets,
+                                                                     annotation_zip_file,
+                                                                     project_name)
+                    else:
+                        tagset_name = new_data_form['tagsetname'][0]
+                        tagset_project_ids = tagset_details.get_tagset_id(tagsets,
+                                                                          tagset_name)
+                        # logger.debug(tagset_project_ids)
+                    projects.update_one({"projectname": project_name},
+                                        {"$set": {
+                                            "tagsetId": tagset_project_ids
+                                        }})
+                    if 'annotationdataZipFile' in data_zip_file:
+                        data_zip_file = new_data_form_files["annotationdataZipFile"]
+                        file_format = new_data_form_files["filetype"]
+                        uploaded_sources = annotationdetails.save_multiple_files_data(projects,
+                                                                                      userprojects,
+                                                                                      data_collection,
+                                                                                      projectname,
+                                                                                      current_username,
+                                                                                      data_zip_file,
+                                                                                      file_format)
 
-            return redirect(url_for("enternewsentences"))
+                    logger.info("Uploaded Files: %s",
+                                pformat(uploaded_sources))
+
+                    return redirect(url_for("lifedata.annotation"))
+                elif (project_type == 'transcriptions'):
+                    new_transcription_form(project_name,
+                                            new_data_form,
+                                            new_data_form_files)
+
+            return redirect(url_for("lifedata.transcription.home"))
         return render_template("lifedatahome.html")
     except:
         logger.exception("")
         flash("Some error occured!!!")
         return render_template("lifedatahome.html")
+
+def new_transcription_form(project_name,
+                           new_data_form,
+                           new_data_form_files):
+    projects, projectsform, transcriptions_collection, tagsets = getdbcollections.getdbcollections(mongo,
+                                                                                        'projects',
+                                                                                        'projectsform',
+                                                                                        'transcriptions',
+                                                                                        'tagsets')
+    current_username = getcurrentusername.getcurrentusername()
+    final_tagset_project_ids = []
+    # logger.debug("project_type: %s", project_type)
+    if ("transcriptionstagsetuploadcheckbox" in new_data_form and
+        new_data_form["transcriptionstagsetuploadcheckbox"][0] == "on"):
+        if 'transcriptionstagsetZipFile' in new_data_form_files:
+            transcriptions_zip_file = new_data_form_files["transcriptionstagsetZipFile"]
+            # logger.debug("transcriptions_zip_file: %s\n%s\n%s\n%s\n%s",
+            #              type(transcriptions_zip_file),
+            #              transcriptions_zip_file,
+            #              transcriptions_zip_file.filename,
+            #              len(transcriptions_zip_file.filename),
+            #              transcriptions_zip_file.headers)
+            transcriptions_zip_filename = transcriptions_zip_file.filename.split('.')[0]
+            # logger.debug("transcriptions_zip_file: %s\n%s",
+            #              transcriptions_zip_filename,
+            #              len(transcriptions_zip_filename))
+            if (len(transcriptions_zip_filename) != 0):
+                tagset_project_ids = save_tagset.save_tagset(tagsets,
+                                                                transcriptions_zip_file,
+                                                                project_name)
+            else:
+                tagset_name = new_data_form['transcriptionstagsetuploadselect'][0]
+                tagset_project_ids = tagset_details.get_tagset_id(tagsets,
+                                                                tagset_name)
+        else:
+            tagset_name = new_data_form['transcriptionstagsetuploadselect'][0]
+            tagset_project_ids = tagset_details.get_tagset_id(tagsets,
+                                                            tagset_name)
+        logger.debug("tagset_project_ids: %s,\nType: %s",
+                        tagset_project_ids,
+                        type(tagset_project_ids))
+        final_tagset_project_ids.extend(list(tagset_project_ids))
+    if ("transcriptionsboundarytagsetuploadcheckbox" in new_data_form and
+        new_data_form["transcriptionsboundarytagsetuploadcheckbox"][0] == "on"):
+        if 'transcriptionsboundarytagsetZipFile' in new_data_form_files:
+            transcriptions_zip_file = new_data_form_files["transcriptionsboundarytagsetZipFile"]
+            # logger.debug("transcriptions_zip_file: %s\n%s\n%s\n%s\n%s",
+            #              type(transcriptions_zip_file),
+            #              transcriptions_zip_file,
+            #              transcriptions_zip_file.filename,
+            #              len(transcriptions_zip_file.filename),
+            #              transcriptions_zip_file.headers)
+            transcriptions_zip_filename = transcriptions_zip_file.filename.split('.')[0]
+            # logger.debug("transcriptions_zip_file: %s\n%s",
+            #              transcriptions_zip_filename,
+            #              len(transcriptions_zip_filename))
+            if (len(transcriptions_zip_filename) != 0):
+                tagset_project_ids = save_tagset.save_tagset(tagsets,
+                                                                transcriptions_zip_file,
+                                                                project_name)
+            else:
+                tagset_name = new_data_form['transcriptionsboundarytagsetuploadselect'][0]
+                tagset_project_ids = tagset_details.get_tagset_id(tagsets,
+                                                                tagset_name)
+        else:
+            tagset_name = new_data_form['transcriptionsboundarytagsetuploadselect'][0]
+            tagset_project_ids = tagset_details.get_tagset_id(tagsets,
+                                                            tagset_name)
+        logger.debug("tagset_project_ids: %s,\nType: %s",
+                    tagset_project_ids,
+                    type(tagset_project_ids))
+        final_tagset_project_ids.extend(list(tagset_project_ids))
+    logger.debug("tagset_project_ids: %s,\nType: %s",
+                    final_tagset_project_ids,
+                    type(final_tagset_project_ids))
+    projects.update_one({"projectname": project_name},
+                        {"$set": {
+                            "tagsetId": final_tagset_project_ids
+                        }})
+    saved_new_transcription_form, save_status = save_new_transcription_form.save_new_transcription_form(projectsform,
+                                                                                                            project_name,
+                                                                                                            new_data_form,
+                                                                                                            current_username)
+    return redirect(url_for("lifedata.transcription.home"))
 
 
 @lifedata.route('/annotation', methods=['GET', 'POST'])
@@ -312,19 +451,31 @@ def datazipfile():
                                                                'projects',
                                                                'tagsets')
         if request.method == "POST":
-            derive_from_project_name = dict(request.form.lists())
-            derive_from_project_name = derive_from_project_name['deriveFromProjectName'][0]
+            form_data = dict(request.form.lists())
+            logger.debug("form data: %s", pformat(form_data))
+            derive_from_project_name = form_data['deriveFromProjectName'][0]
+            project_type = form_data['projectType'][0]
             # logger.debug("derive_from_project_name: %s", derive_from_project_name)
-            validation_zip_file = request.files.to_dict()
-            validation_zip_file = validation_zip_file['tagsetZipFile']
-            # logger.debug("validation_zip_file: %s", validation_zip_file)
-            completed, message, validation_tagset = readzip.read_zip(
-                tagsets, validation_zip_file)
+            data_zip_file = request.files.to_dict()
+            logger.debug("data_zip_file: %s", data_zip_file)
+            if (project_type == 'validation'):
+                data_zip_file = data_zip_file['tagsetZipFile']
+            elif (project_type == 'transcriptions'):
+                data_zip_file = data_zip_file['transcriptionstagsetZipFile']
+            # logger.debug("data_zip_file: %s", data_zip_file)
+            completed, message, data_tagset = readzip.read_zip(
+                tagsets, data_zip_file)
             # logger.debug('completed: %s', completed)
             # logger.debug('message: %s', message)
-            # logger.debug('validation_tagset: %s', validation_tagset)
+            # logger.debug('data_tagset: %s', data_tagset)
             if (completed):
-                validation_tagset_keys = list(validation_tagset.keys())
+                if (project_type == 'transcriptions'):
+                    return jsonify(completed=completed,
+                                   message=message,
+                                   mappingTagset={},
+                                   validationTagsetKeys=[])
+                else:
+                    validation_tagset_keys = list(data_tagset.keys())
             else:
                 return jsonify(completed=completed,
                                message=message,
@@ -440,6 +591,7 @@ def youtubecrawler():
             # logger.debug('%s', pformat(youtube_crawler_info['dataLinks'][0].split('\r\n')))
             api_key = youtube_crawler_info['youtubeAPIKey'][0]
             youtube_data_for = youtube_crawler_info['youtubeDataFor'][0]
+            youtube_data_type = youtube_crawler_info['youtubeDataType']
             data_links = {}
             # data_links_list = youtube_crawler_info['dataLinks'][0].split('\r\n')
             # data_links = {youtube_data_for: data_links_list}
@@ -478,7 +630,7 @@ def youtubecrawler():
             logger.debug("data_links: %s", pformat(data_links))
 
             logger.debug("Current active project name %s", activeprojectname)
-            youtubecrawl.run_youtube_crawler(projects_collection,
+            youtubecrawl.run_youtube_crawler(mongo, projects_collection,
                                              userprojects_collection,
                                              sourcedetails_collection,
                                              crawling_collection,
@@ -486,7 +638,8 @@ def youtubecrawler():
                                              current_username,
                                              activeprojectname,
                                              api_key,
-                                             data_links)
+                                             data_links,
+                                             download_items=youtube_data_type)
             flash("Crawling Complete.")
             return redirect(url_for("lifedata.crawler"))
     except:
@@ -530,11 +683,42 @@ def crawlerbrowse():
             active_source_id = ''
         total_records = 0
         if (active_source_id != ''):
+            source_data_types = sourceid_to_souremetadata.get_data_types(sourcedetails_collection,
+                                                                         active_source_id,
+                                                                         activeprojectname)
+
+            logger.debug("Source Data Types %s", source_data_types)
+
+            if 'text' in source_data_types:
+                default_data_type = 'text'
+            elif 'video' in source_data_types:
+                default_data_type = 'video'
+            elif 'audio' in source_data_types:
+                default_data_type = 'audio'
+            else:
+                default_data_type = 'text'
+
+            logger.debug("Default Data Type %s", default_data_type)
+
             total_records, crawled_data_list = crawled_data_details.get_n_crawled_data(crawling,
                                                                                        activeprojectname,
-                                                                                       active_source_id)
+                                                                                       active_source_id,
+                                                                                       data_type=default_data_type)
+
         else:
             crawled_data_list = []
+
+        if default_data_type == 'audio':
+            audio_filename = crawled_data_list['audioFilename']
+            crawled_data_list['Audio File'] = url_for(
+                'retrieve', filename=audio_filename)
+
+        if default_data_type == 'video':
+            video_filename = crawled_data_list['videoFilename']
+            crawled_data_list['Video File'] = url_for(
+                'retrieve', filename=video_filename)
+
+        logger.debug("Crawled data list %s", crawled_data_list)
         # get crawled file src
         # new_crawled_data_list = []
         # for crawled_data in crawled_data_list:
@@ -551,6 +735,8 @@ def crawlerbrowse():
         new_data['crawlerDataFields'] = ['dataId', 'Data']
         new_data['sourceMetadata'] = source_metadata
         new_data['totalRecords'] = total_records
+        new_data['dataTypes'] = source_data_types
+        new_data['defaultDataType'] = default_data_type
         # logger.debug('new_data: %s', pformat(new_data))
     except:
         logger.exception("")
@@ -579,15 +765,28 @@ def updatecrawlerbrowsetable():
         active_source_id = crawler_browse_info['activeSourceId']
         crawled_data_count = crawler_browse_info['crawledDataCount']
         crawled_data_browse_action = crawler_browse_info['browseActionSelectedOption']
+        data_type = crawler_browse_info['dataType']
         if (active_source_id != ''):
             total_records, crawled_data_list = crawled_data_details.get_n_crawled_data(crawling,
                                                                                        activeprojectname,
                                                                                        active_source_id,
+                                                                                       data_type=data_type,
                                                                                        start_from=0,
                                                                                        number_of_crawled_data=crawled_data_count,
                                                                                        crawled_data_delete_flag=crawled_data_browse_action)
         else:
             crawled_data_list = []
+
+        if data_type == 'audio':
+            audio_filename = crawled_data_list['audioFilename']
+            crawled_data_list['Audio File'] = url_for(
+                'retrieve', filename=audio_filename)
+
+        if data_type == 'video':
+            video_filename = crawled_data_list['videoFilename']
+            crawled_data_list['Video File'] = url_for(
+                'retrieve', filename=video_filename)
+            # crawled_data_list.append(new_audio_data)
         # logger.debug('crawler_data_list: %s', pformat(crawler_data_list))
         # get crawler file src
         # new_crawled_data_list = []
@@ -606,7 +805,8 @@ def updatecrawlerbrowsetable():
     return jsonify(crawledDataFields=crawler_data_fields,
                    crawledData=crawled_data_list,
                    shareMode=share_mode,
-                   totalRecords=total_records)
+                   totalRecords=total_records,
+                   dataType=data_type)
 
 
 @lifedata.route('/crawlerbrowseaction', methods=['GET', 'POST'])
@@ -713,6 +913,7 @@ def crawlerbrowsechangepage():
         activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
                                                                       userprojects)
         # logger.debug(crawler_browse_info['activeSourceId'])
+        data_type = crawler_browse_info['dataType']
         active_source_id = crawler_browse_info['activeSourceId']
         crawled_data_count = crawler_browse_info['crawledDataCount']
         crawled_data_browse_action = crawler_browse_info['browseActionSelectedOption']
@@ -726,6 +927,7 @@ def crawlerbrowsechangepage():
             total_records, crawled_data_list = crawled_data_details.get_n_crawled_data(crawling,
                                                                                        activeprojectname,
                                                                                        active_source_id,
+                                                                                       data_type=data_type,
                                                                                        start_from=start_from,
                                                                                        number_of_crawled_data=number_of_crawled_data,
                                                                                        crawled_data_delete_flag=crawled_data_browse_action)
@@ -743,7 +945,8 @@ def crawlerbrowsechangepage():
                    crawledData=crawled_data_list,
                    shareMode=share_mode,
                    totalRecords=total_records,
-                   activePage=page_id)
+                   activePage=page_id,
+                   dataType=data_type)
 
 
 @lifedata.route('/getIdList', methods=['GET', 'POST'])
