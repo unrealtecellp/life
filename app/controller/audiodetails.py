@@ -354,6 +354,8 @@ def saveoneaudiofile(mongo,
 
     project_type = getprojecttype.getprojecttype(projects, activeprojectname)
 
+    # logger.debug(project_type)
+
     audiowaveform_json_dir_path = get_audio_dir_path()
     audio_json_parent_dir = 'audiowaveform'
 
@@ -372,7 +374,8 @@ def saveoneaudiofile(mongo,
     store_in_local = is_store_in_local(
         get_audio_json, run_vad, run_asr, split_into_smaller_chunks)
 
-    store_in_mongo = is_store_in_mongo(split_into_smaller_chunks)
+    # store_in_mongo = is_store_in_mongo(split_into_smaller_chunks)
+    store_in_mongo = True
 
     new_audio_details = get_audio_doc_details(projectowner,
                                               activeprojectname,
@@ -457,13 +460,18 @@ def saveoneaudiofile(mongo,
                               audiowaveform_json_dir_path,
                               audio_json_parent_dir,
                               full_model_name,
-                              model_details
+                              model_details,
+                              audio_duration=audio_duration,
+                              current_slice_duration=audio_duration
                               )
         if update:
             transcription_doc_id = transcriptions.update_one({"audioId": audio_id},
                                                              {"$set": new_audio_details})
         else:
             transcription_doc_id = transcriptions.insert_one(new_audio_details)
+            # logger.debug('transcription_doc_id: %s, transcription_doc_id: %s',
+            #              transcription_doc_id,
+            #              transcription_doc_id.inserted_id)
         all_transcription_doc_ids.append(transcription_doc_id)
 
     else:
@@ -518,6 +526,7 @@ def saveoneaudiofile(mongo,
                 text_grids), current_audio_chunk_begn, current_audio_chunk_end, audio_duration*1000)
 
             current_audio_file = full_audio_file[current_audio_chunk_begn: current_audio_chunk_end]
+            current_slice_duration = current_audio_file.duration_seconds
             # current_audio_file_array = full_audio_file_array[
             #     int(current_audio_chunk_begn): int(current_audio_chunk_end)]
 
@@ -564,7 +573,11 @@ def saveoneaudiofile(mongo,
                                   current_slice_number=i,
                                   total_slices=len(text_grids),
                                   boundary_offset_value=boundary_offset_values[i],
-                                  slice_offset_value=slice_offset_value
+                                  slice_offset_value=current_slice_offset_value_end,
+                                  slice_overlap_region=slice_offset_value,
+                                  audio_duration=audio_duration,
+                                  current_slice_duration=current_slice_duration,
+                                  original_audio_id=audio_id
                                   )
 
             if update:
@@ -573,6 +586,7 @@ def saveoneaudiofile(mongo,
             else:
                 transcription_doc_id = transcriptions.insert_one(
                     current_audio_details)
+                # logger.debug('transcription_doc_id 2: %s', transcription_doc_id)
 
             all_transcription_doc_ids.append(transcription_doc_id)
 
@@ -617,6 +631,9 @@ def saveoneaudiofile(mongo,
 
     # logger.debug('audiowaveform_audio_path %s', audiowaveform_audio_path)
     # audiowaveform_audio_path = os.path.join(audiowaveform_audio_path, updated_audio_filename)
+
+    # logger.debug('all_transcription_doc_ids: %s, all_audio_fs_file_ids: %s',
+    #              all_transcription_doc_ids, all_audio_fs_file_ids)
 
     return (True, all_transcription_doc_ids, all_audio_fs_file_ids)
 
@@ -756,16 +773,29 @@ def add_audio_doc_details(audio_details_dict,
                           total_slices=1,
                           boundary_offset_value=0.0,
                           slice_offset_value=0.0,
+                          slice_overlap_region=0.0,
+                          audio_duration=0.0,
+                          current_slice_duration=0.0,
+                          original_audio_id=""
                           ):
     audio_details_dict['audioId'] = audio_id
     audio_details_dict['audioFilename'] = updated_audio_filename
+
+    if original_audio_id == "":
+        original_audio_id = audio_id
 
     add_additional_info(audio_details_dict,
                         current_slice_number,
                         total_slices,
                         boundary_offset_value,
-                        slice_offset_value
+                        slice_offset_value,
+                        slice_overlap_region,
+                        original_audio_id
                         )
+
+    add_audio_metadata(audio_details_dict,
+                       audio_duration,
+                       current_slice_duration)
 
     add_text_grid(audio_details_dict,
                   current_username,
@@ -780,17 +810,33 @@ def add_audio_doc_details(audio_details_dict,
                           updated_audio_filename)
 
 
+def add_audio_metadata(audio_details_dict,
+                       audio_duration,
+                       current_slice_duration):
+    if 'audioMetadata' in audio_details_dict:
+        audio_details_dict['audioMetadata'].update([
+            ('audioDuration', audio_duration), ('currentSliceDuration', current_slice_duration)])
+    else:
+        audio_details_dict['audioMetadata'] = {
+            'audioDuration': audio_duration, 'currentSliceDuration': current_slice_duration}
+
+
 def add_additional_info(audio_details_dict,
                         current_slice_number,
                         total_slices,
                         boundary_offset_value,
-                        slice_offset_value):
+                        slice_offset_value,
+                        slice_overlap_region,
+                        original_audio_id):
     if 'additionalInfo' in audio_details_dict:
         audio_details_dict['additionalInfo'].update([
-            ('totalSlices', total_slices), ('currentSliceNumber', current_slice_number), ('boundaryOffsetValue', boundary_offset_value), ('sliceOffsetValue', slice_offset_value)])
+            ('totalSlices', total_slices), ('currentSliceNumber',
+                                            current_slice_number), ('boundaryOffsetValue', boundary_offset_value),
+            ('sliceOffsetValue', slice_offset_value), ('sliceOverlapRegion', slice_overlap_region), ('isSliceOf', original_audio_id)])
     else:
         audio_details_dict['additionalInfo'] = {
-            'totalSlices': total_slices, 'currentSliceNumber': current_slice_number}
+            'totalSlices': total_slices, 'currentSliceNumber': current_slice_number, 'boundaryOffsetValue': boundary_offset_value,
+            'sliceOffsetValue': slice_offset_value, 'sliceOverlapRegion': slice_overlap_region, 'isSliceOf': original_audio_id}
 
 
 def add_text_grid(audio_details_dict,
@@ -1233,8 +1279,8 @@ def getaudiofiletranscription(data_collection, audio_id, transcription_by=""):
         elif (transcription_by not in transcription_data):
             transcription_details['data'] = blank_text_grid
 
-    logger.debug("Transcription by %s, transcription details %s",
-                 transcription_by, transcription_details)
+    # logger.debug("Transcription by %s, transcription details %s",
+    #              transcription_by, transcription_details)
 
     return transcription_details
 
@@ -1248,16 +1294,16 @@ def get_audio_transcriptions_by(projects, data_collection, project_name, audio_i
             projects, project_name)
 
         transcription_data_keys = transcription_data.keys()
-        logger.debug("Project shared with %s, transcription keys %s",
-                     project_shared_with, transcription_data_keys)
+        # logger.debug("Project shared with %s, transcription keys %s",
+        #              project_shared_with, transcription_data_keys)
         # transcriptions_by = [
         #     uname for uname in transcription_data_keys if uname in project_shared_with or uname.startswith("@model")]
         transcriptions_by = [
             uname for uname in transcription_data_keys if uname.startswith("@model")]
         transcriptions_by.append('latest')
         transcriptions_by.extend(project_shared_with)
-        logger.debug("All transcription by %s",
-                     transcriptions_by)
+        # logger.debug("All transcription by %s",
+        #              transcriptions_by)
     return transcriptions_by
 
 
@@ -1290,8 +1336,8 @@ def getaudiowaveformfilefromfs(mongo,
 
     if delete_previous_files:
         if (os.path.exists(audioFolder)):
-            logger.debug('Audio folder path exists %s',
-                         audioFolder, 'deleting')
+            # logger.debug('Audio folder path exists %s',
+            #              audioFolder, 'deleting')
             shutil.rmtree(audioFolder)
         os.mkdir(audioFolder)
     else:
@@ -1433,7 +1479,7 @@ def getaudiotranscriptiondetails(transcriptions, audio_id, transcription_by="", 
     gloss = {}
     pos = {}
     boundary_count = 0
-    logger.debug('Transcription data %s', transcription_data)
+    # logger.debug('Transcription data %s', transcription_data)
     try:
         if 'data' in transcription_data:
             t_data = transcription_data['data']
@@ -1446,14 +1492,14 @@ def getaudiotranscriptiondetails(transcriptions, audio_id, transcription_by="", 
         # t_data = transcriptions.find_one({'audioId': audio_id},
                 #  {'_id': 0, 'textGrid.sentence': 1})
 
-        logger.debug('t_data!!!!! %s', t_data)
+        # logger.debug('t_data!!!!! %s', t_data)
         if t_data is not None:
             if 'textGrid' in t_data:
                 transcription_data = t_data['textGrid']
             else:
                 transcription_data = t_data
         # plogger.debug(transcription_data)
-        logger.debug('Transcription data %s', transcription_data)
+        # logger.debug('Transcription data %s', transcription_data)
         if 'sentence' in transcription_data:
             sentence = transcription_data['sentence']
         else:
@@ -2319,20 +2365,47 @@ def get_current_translation_langscripts(mongo):
 
 
 def get_current_transcription_langscripts(mongo):
-    userprojects, projectsform = getdbcollections.getdbcollections(
-        mongo, 'userprojects', 'projectsform')
+    projects, userprojects, projectsform = getdbcollections.getdbcollections(
+        mongo, 'projects', 'userprojects', 'projectsform')
     current_username = getcurrentusername.getcurrentusername()
     logger.debug('USERNAME: %s', current_username)
     activeprojectname = getactiveprojectname.getactiveprojectname(
         current_username, userprojects)
 
-    current_project_scripts = projectsform.find_one({'projectname': activeprojectname}, {
-        'Transcription Script': 1, 'Sentence Language': 1, '_id': 0})
-
-    project_language = current_project_scripts['Sentence Language']
+    # logger.debug("activeprojectname: %s", activeprojectname)
+    project_type = getprojecttype.getprojecttype(projects, activeprojectname)
+    current_project_scripts = projectsform.find_one({'projectname': activeprojectname},
+                                                    {
+                                                        'Transcription Script': 1,
+                                                        'Sentence Language': 1,
+                                                        '_id': 0,
+                                                        'Audio Language': 1,
+                                                        'Transcription': 1
+                                                    })
+    
+    # logger.debug("current_project_scripts: %s", pformat(current_project_scripts))
+    if (project_type == 'crawling'):
+        project_language = projects.find_one({'projectname': activeprojectname},
+                                             {
+                                                 '_id': 0,
+                                                 'crawlerLanguage': 1
+                                             })['crawlerLanguage']
+    elif ('Audio Language' in current_project_scripts):
+        project_language = current_project_scripts['Audio Language'][1]
+    else:
+        project_language = current_project_scripts['Sentence Language']
     project_language_code = project_language[0][:3].lower()
 
-    project_scripts = current_project_scripts['Transcription Script']
+    if (project_type == 'crawling'):
+        project_scripts = projects.find_one({'projectname': activeprojectname},
+                                             {
+                                                 '_id': 0,
+                                                 'crawlerScript': 1
+                                             })['crawlerScript']
+    elif ('Transcription' in current_project_scripts):
+        project_scripts = current_project_scripts['Transcription'][1]
+    else:
+        project_scripts = current_project_scripts['Transcription Script']
 
     scriptCodeJSONFilePath = os.path.join(
         basedir_parent, 'static/json/scriptCode.json')
@@ -2523,6 +2596,11 @@ def get_slices_and_text_grids(mongo,
             current_text_grid = generate_text_grid(
                 mongo, blank_text_grid, audio_chunk_boundary_list, transcriptions, transcription_type, max_pause_boundary, min_boundary_size, offset_value=offset_value)
             all_text_grids.append(current_text_grid)
+    else:
+        blank_text_grid = get_blank_text_grid()
+        audio_chunk_boundaries = []
+        all_text_grids = [blank_text_grid]
+        model_details = {}
 
     return audio_chunk_boundaries, all_text_grids, offset_values, slice_offset_values, transcribed, model_details
 

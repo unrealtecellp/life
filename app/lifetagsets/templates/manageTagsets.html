@@ -16,7 +16,7 @@
         src="https://cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.1/bootstrap3-editable/js/bootstrap-editable.js"></script>
     
         <link href="{{url_for('.static', filename='addnewtagset.css')}}" rel="stylesheet" />
-
+<link href="{{url_for('easyAnno.static', filename='easyannohome.css')}}" rel="stylesheet" />
 
 
 
@@ -110,9 +110,9 @@
             <b>
                 <h4>Tagsets</h4>
             </b>
-            <p id="totalrecords"><strong>Total Records:</strong>&nbsp;{{ count[data_source] }}</p>
+            <p id="totalrecords"><strong>Total Tagsets:</strong>&nbsp;{{ count[data_source] }}</p>
             <input id="myInput" type="text" placeholder="Search">
-            <table class="table table-striped " id="table" data-toolbar="#toolbar" data-search="true"
+            <table class="table table-striped" id="table" data-toolbar="#toolbar" data-search="true"
                 data-show-refresh="true" data-show-toggle="true" data-show-fullscreen="true" data-show-columns="true"
                 data-show-columns-toggle-all="true" data-detail-view="true" data-show-export="true"
                 data-click-to-select="true" data-detail-formatter="detailFormatter" data-minimum-count-columns="2"
@@ -127,6 +127,9 @@
                         <th onclick="sortTable(2)">{{header}}</th>
                         {% endfor %}
                         <th>View</th>
+                        <th>Download</th>
+                        <th>Share</th>
+                        <th>Delete</th>
 
                     </tr>
                 </thead>
@@ -143,46 +146,58 @@
                         <td>
                             {{item['projectname']}}
                         </td>
-
-                        {% for tagset_category in item[tagSet] %}
+                        
+                        <td>                            
+                            <table class="table table-striped">
+                        {% for tagset_category in item['tagSet'] %}
+                        
+                        <tr>
                         <td>
-                            {{tagset_category}}
-                        </td>
-
-                        <td>
-                            {% for tag_label in tagset_category %}
-                            <tr>
-                                <td>
-                                {{item[tagSet][tagset_category][tag_label]}}
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </td>
+                            <b>{{tagset_category}}: </b>
+                        
+                        {% for tag_label in item['tagSet'][tagset_category] %}                        
+                            {{tag_label}},                            
                         {% endfor %}
-
-                        <td>
-                            {{item['createdBy']}}
+                        </td>
+                        </tr>
+                        
+                        {% endfor %}
+                        </table>
                         </td>
 
                         <td>
+                            {{item['projectOwner']}}
+                        </td>
+
+                        <td>
+                            {% if 'updatedBy' in item %}
                             {{item['updatedBy']}}
+                            {% else %}
+                            {{item['projectOwner']}}
+                            {% endif %}
                         </td>
 
                         <td>
-                            <button type="button" class="btn btn-primary tagsetview" id="{{item['tagsetid']}}"
+                            <button type="button" class="btn btn-primary tagsetview" id="{{item['projectname']}}"
                                 data-toggle="modal" data-target="#tagsetdetailsmodal">
-                                View
+                                <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>
                             </button>
                         </td>
                         <td>
-                            <button type="button" class="btn btn-primary tagsetview" id="{{item['tagsetid']}}">
-                                Delete
+                            <button type="button" class="btn btn-success tagsetdownload" id="{{item['projectname']}}" data-toggle="modal"
+                                data-target="#tagsetdownloadmodal">
+                                <span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span>
                             </button>
                         </td>
                         <td>
-                            <button type="button" class="btn btn-primary tagsetview" id="{{item['tagsetid']}}" data-toggle="modal"
+                            <button type="button" class="btn btn-warning tagsetshare" id="{{item['projectname']}}" data-toggle="modal"
                                 data-target="#tagsetsharemodal">
-                                Share
+                                <span class="glyphicon glyphicon-share-alt" aria-hidden="true"></span>
+                            </button>
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-danger tagsetdelete" id="{{item['projectname']}}">
+                                <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
                             </button>
                         </td>
                     </tr>
@@ -208,14 +223,14 @@
                     <!-- <div class="col-xs-6"> -->
                     <!-- <input id="myInput" class="form-control" type="text" placeholder="Search"> -->
                     <!-- </div> -->
-                    <br>
+                    <!-- <br>
                     <div class="row">
-                        <div class="col-xs-12">
-                            <div class="form-group">
+                        <div class="col-md-12">
+                            <div class="form-group"> -->
                                 <div id="addnewtagsetform"> </div>
-                            </div>
+                            <!-- </div>
                         </div>
-                    </div>
+                    </div> -->
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>

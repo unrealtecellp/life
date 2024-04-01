@@ -29,7 +29,7 @@ function audioFilter(pageId=1) {
         url : '/filteraudiobrowsetable'
         }).done(function(data){
         console.log(data.audioDataFields, data.audioData, data.shareMode);
-        createAudioBrowseTable(data.audioDataFields, data.audioData, data.shareMode, data.totalRecords, data.shareChecked);
+        createAudioBrowseTable(data.audioDataFields, data.audioData, data.shareMode, data.totalRecords, data.shareChecked, data.downloadChecked);
         eventsMapping();
         createPagination(data.totalRecords, data.activePage);
         });

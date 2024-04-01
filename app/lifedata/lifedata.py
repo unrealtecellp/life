@@ -1,4 +1,4 @@
-"""Module containing the routes for the data part of the LiFe."""
+"""Module containing the routes for the data part of the LiFE."""
 
 from app import mongo
 from flask import (
@@ -38,8 +38,12 @@ from app.lifedata.controller import (
 )
 
 from app.lifetagsets.controller import (
-    save_tagset,
+    saveTagset,
     tagset_details
+)
+
+from app.lifedata.transcription.controller import (
+    save_new_transcription_form
 )
 
 from flask_login import login_required
@@ -90,6 +94,24 @@ def getprojectslist():
     return jsonify(projectslist=projectslist)
 
 
+@lifedata.route('/gettagsetslist', methods=['GET', 'POST'])
+@login_required
+def gettagsetslist():
+    """_summary_
+    """
+    tagsets_list = []
+    try:
+        tagsets_collection, = getdbcollections.getdbcollections(
+            mongo, 'tagsets')
+        current_username = getcurrentusername.getcurrentusername()
+        tagsets_list = tagset_details.get_tagsets_list(tagsets_collection,
+                                                       current_username)
+    except:
+        logger.exception("")
+
+    return jsonify(tagsetsList=tagsets_list)
+
+
 @lifedata.route('/newdataform', methods=['GET', 'POST'])
 @login_required
 def newdataform():
@@ -136,13 +158,13 @@ def newdataform():
                                                   current_username
                                                   )
 
-            save_data_form = savenewdataform.savenewdataform(projectsform,
-                                                             projectname,
-                                                             new_data_form,
-                                                             current_username,
-                                                             project_type
-                                                             )
-            logger.debug("save_data_form: %s", pformat(save_data_form))
+            # save_data_form = savenewdataform.savenewdataform(projectsform,
+            #                                                  projectname,
+            #                                                  new_data_form,
+            #                                                  current_username,
+            #                                                  project_type
+            #                                                  )
+            # logger.debug("save_data_form: %s", pformat(save_data_form))
 
             if (project_type == 'validation'):
                 validation_collection, tagsets = getdbcollections.getdbcollections(mongo,
@@ -151,9 +173,9 @@ def newdataform():
                 # logger.debug("project_type: %s", project_type)
 
                 validation_zip_file = new_data_form_files["tagsetZipFile"]
-                tagset_project_ids, = save_tagset.save_tagset(tagsets,
-                                                              validation_zip_file,
-                                                              project_name)
+                tagset_project_ids = saveTagset.save_tagset(tagsets,
+                                                             validation_zip_file,
+                                                             project_name)
                 # logger.debug(tagset_project_ids)
                 projects.update_one({"projectname": project_name},
                                     {"$set": {
@@ -192,6 +214,10 @@ def newdataform():
                                                                       derive_from_project_name,
                                                                       projectname,
                                                                       current_username)
+                    if (project_type == 'transcriptions'):
+                        new_transcription_form(project_name,
+                                                new_data_form,
+                                                new_data_form_files)
                 if (derive_from_project_type == 'crawling' and
                         project_type == 'annotation'):
                     data_collection, = getdbcollections.getdbcollections(
@@ -212,9 +238,9 @@ def newdataform():
                     # logger.debug("project_type: %s", project_type)
                     if 'annotationtagsetZipFile' in new_data_form_files:
                         annotation_zip_file = new_data_form_files["annotationtagsetZipFile"]
-                        tagset_project_ids, = save_tagset.save_tagset(tagsets,
-                                                                      annotation_zip_file,
-                                                                      project_name)
+                        tagset_project_ids = saveTagset.save_tagset(tagsets,
+                                                                     annotation_zip_file,
+                                                                     project_name)
                     else:
                         tagset_name = new_data_form['tagsetname'][0]
                         tagset_project_ids = tagset_details.get_tagset_id(tagsets,
@@ -239,13 +265,104 @@ def newdataform():
                                 pformat(uploaded_sources))
 
                     return redirect(url_for("lifedata.annotation"))
+                elif (project_type == 'transcriptions'):
+                    new_transcription_form(project_name,
+                                            new_data_form,
+                                            new_data_form_files)
 
-            return redirect(url_for("enternewsentences"))
+            return redirect(url_for("lifedata.transcription.home"))
         return render_template("lifedatahome.html")
     except:
         logger.exception("")
         flash("Some error occured!!!")
         return render_template("lifedatahome.html")
+
+def new_transcription_form(project_name,
+                           new_data_form,
+                           new_data_form_files):
+    projects, projectsform, transcriptions_collection, tagsets = getdbcollections.getdbcollections(mongo,
+                                                                                        'projects',
+                                                                                        'projectsform',
+                                                                                        'transcriptions',
+                                                                                        'tagsets')
+    current_username = getcurrentusername.getcurrentusername()
+    final_tagset_project_ids = []
+    tagset_project_ids = {}
+    # logger.debug("project_type: %s", project_type)
+    if ("transcriptionstagsetuploadcheckbox" in new_data_form and
+        new_data_form["transcriptionstagsetuploadcheckbox"][0] == "on"):
+        if 'transcriptionstagsetZipFile' in new_data_form_files:
+            transcriptions_zip_file = new_data_form_files["transcriptionstagsetZipFile"]
+            # logger.debug("transcriptions_zip_file: %s\n%s\n%s\n%s\n%s",
+            #              type(transcriptions_zip_file),
+            #              transcriptions_zip_file,
+            #              transcriptions_zip_file.filename,
+            #              len(transcriptions_zip_file.filename),
+            #              transcriptions_zip_file.headers)
+            transcriptions_zip_filename = transcriptions_zip_file.filename.split('.')[0]
+            # logger.debug("transcriptions_zip_file: %s\n%s",
+            #              transcriptions_zip_filename,
+            #              len(transcriptions_zip_filename))
+            if (len(transcriptions_zip_filename) != 0):
+                tagset_project_ids["Audio Annotation"] = saveTagset.save_tagset(tagsets,
+                                                                transcriptions_zip_file,
+                                                                project_name)
+            else:
+                tagset_name = new_data_form['transcriptionstagsetuploadselect'][0]
+                tagset_project_ids["Audio Annotation"] = tagset_details.get_tagset_id(tagsets,
+                                                                tagset_name)
+        else:
+            tagset_name = new_data_form['transcriptionstagsetuploadselect'][0]
+            tagset_project_ids["Audio Annotation"] = tagset_details.get_tagset_id(tagsets,
+                                                            tagset_name)
+        logger.debug("tagset_project_ids: %s,\nType: %s",
+                        tagset_project_ids,
+                        type(tagset_project_ids))
+        final_tagset_project_ids.extend(tagset_project_ids["Audio Annotation"])
+    if ("transcriptionsboundarytagsetuploadcheckbox" in new_data_form and
+        new_data_form["transcriptionsboundarytagsetuploadcheckbox"][0] == "on"):
+        if 'transcriptionsboundarytagsetZipFile' in new_data_form_files:
+            transcriptions_zip_file = new_data_form_files["transcriptionsboundarytagsetZipFile"]
+            # logger.debug("transcriptions_zip_file: %s\n%s\n%s\n%s\n%s",
+            #              type(transcriptions_zip_file),
+            #              transcriptions_zip_file,
+            #              transcriptions_zip_file.filename,
+            #              len(transcriptions_zip_file.filename),
+            #              transcriptions_zip_file.headers)
+            transcriptions_zip_filename = transcriptions_zip_file.filename.split('.')[0]
+            # logger.debug("transcriptions_zip_file: %s\n%s",
+            #              transcriptions_zip_filename,
+            #              len(transcriptions_zip_filename))
+            if (len(transcriptions_zip_filename) != 0):
+                tagset_project_ids["Boundary Annotation"] = saveTagset.save_tagset(tagsets,
+                                                                transcriptions_zip_file,
+                                                                project_name)
+            else:
+                tagset_name = new_data_form['transcriptionsboundarytagsetuploadselect'][0]
+                tagset_project_ids["Boundary Annotation"] = tagset_details.get_tagset_id(tagsets,
+                                                                tagset_name)
+        else:
+            tagset_name = new_data_form['transcriptionsboundarytagsetuploadselect'][0]
+            tagset_project_ids["Boundary Annotation"] = tagset_details.get_tagset_id(tagsets,
+                                                            tagset_name)
+        logger.debug("tagset_project_ids: %s,\nType: %s",
+                    tagset_project_ids,
+                    type(tagset_project_ids))
+        final_tagset_project_ids.extend(tagset_project_ids["Boundary Annotation"])
+    logger.debug("final tagset_project_ids: %s,\nType: %s",
+                    final_tagset_project_ids,
+                    type(final_tagset_project_ids))
+    projects.update_one({"projectname": project_name},
+                        {"$set": {
+                            "tagsetId": final_tagset_project_ids
+                        }})
+    if (len(tagset_project_ids) != 0):
+        new_data_form.update(tagset_project_ids)
+    saved_new_transcription_form, save_status = save_new_transcription_form.save_new_transcription_form(projectsform,
+                                                                                                            project_name,
+                                                                                                            new_data_form,
+                                                                                                            current_username)
+    return redirect(url_for("lifedata.transcription.home"))
 
 
 @lifedata.route('/annotation', methods=['GET', 'POST'])
@@ -337,19 +454,31 @@ def datazipfile():
                                                                'projects',
                                                                'tagsets')
         if request.method == "POST":
-            derive_from_project_name = dict(request.form.lists())
-            derive_from_project_name = derive_from_project_name['deriveFromProjectName'][0]
+            form_data = dict(request.form.lists())
+            logger.debug("form data: %s", pformat(form_data))
+            derive_from_project_name = form_data['deriveFromProjectName'][0]
+            project_type = form_data['projectType'][0]
             # logger.debug("derive_from_project_name: %s", derive_from_project_name)
-            validation_zip_file = request.files.to_dict()
-            validation_zip_file = validation_zip_file['tagsetZipFile']
-            # logger.debug("validation_zip_file: %s", validation_zip_file)
-            completed, message, validation_tagset = readzip.read_zip(
-                tagsets, validation_zip_file)
+            data_zip_file = request.files.to_dict()
+            logger.debug("data_zip_file: %s", data_zip_file)
+            if (project_type == 'validation'):
+                data_zip_file = data_zip_file['tagsetZipFile']
+            elif (project_type == 'transcriptions'):
+                data_zip_file = data_zip_file['transcriptionstagsetZipFile']
+            # logger.debug("data_zip_file: %s", data_zip_file)
+            completed, message, data_tagset = readzip.read_zip(
+                tagsets, data_zip_file)
             # logger.debug('completed: %s', completed)
             # logger.debug('message: %s', message)
-            # logger.debug('validation_tagset: %s', validation_tagset)
+            # logger.debug('data_tagset: %s', data_tagset)
             if (completed):
-                validation_tagset_keys = list(validation_tagset.keys())
+                if (project_type == 'transcriptions'):
+                    return jsonify(completed=completed,
+                                   message=message,
+                                   mappingTagset={},
+                                   validationTagsetKeys=[])
+                else:
+                    validation_tagset_keys = list(data_tagset.keys())
             else:
                 return jsonify(completed=completed,
                                message=message,
@@ -429,14 +558,20 @@ def crawler():
         else:
             activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
                                                                           userprojects)
+            shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
+                                                          current_username,
+                                                          activeprojectname)
             data_sub_source = data_project_info.get_data_sub_source(projects,
                                                                     activeprojectname)
+            if (shareinfo["sharemode"] == 0):
+                return redirect(url_for('lifedata.crawlerbrowse'))
 
     except:
         logger.exception("")
 
     return render_template('crawler.html',
                            projectName=activeprojectname,
+                           shareinfo=shareinfo,
                            dataSubSource=data_sub_source)
 
 
@@ -459,6 +594,7 @@ def youtubecrawler():
         logger.debug("Current active project name %s", activeprojectname)
 
         if request.method == 'POST':
+            to_crawl_video_ids = []
             youtube_crawler_info = dict(request.form.lists())
             logger.debug('youtube_crawler_info: %s',
                          pformat(youtube_crawler_info))
@@ -486,6 +622,8 @@ def youtubecrawler():
                         youtube_crawler_info['youtubeTopNSearchTags'])
                 for link in topn_video_links:
                     data_links_info[link] = searchkeywords_value
+                    video_id = link[link.find('?v=')+3:].strip()
+                    to_crawl_video_ids.append(video_id)
             else:
                 for key, value in youtube_crawler_info.items():
                     if ('videoschannelId' in key):
@@ -497,6 +635,8 @@ def youtubecrawler():
                             searchkeywords_value = []
                         for link in value:
                             data_links_info[link] = searchkeywords_value
+                            video_id = link[link.find('?v=')+3:].strip()
+                            to_crawl_video_ids.append(video_id)
                         # logger.debug('key: %s, videoschannelId_count: %s, value: %s, searchkeywords_key: %s, searchkeywords_value: %s',
                         #              key, videoschannelId_count, value, searchkeywords_key, searchkeywords_value)
             data_links[youtube_data_for] = data_links_info
@@ -504,7 +644,7 @@ def youtubecrawler():
             logger.debug("data_links: %s", pformat(data_links))
 
             logger.debug("Current active project name %s", activeprojectname)
-            youtubecrawl.run_youtube_crawler(mongo, projects_collection,
+            crawled_video_ids = youtubecrawl.run_youtube_crawler(mongo, projects_collection,
                                              userprojects_collection,
                                              sourcedetails_collection,
                                              crawling_collection,
@@ -514,6 +654,25 @@ def youtubecrawler():
                                              api_key,
                                              data_links,
                                              download_items=youtube_data_type)
+            # logger.debug('to_crawl_video_ids: %s, crawled_video_ids: %s',
+            #              to_crawl_video_ids,
+            #              crawled_video_ids)
+            crawl_video_ids_diff = list(set(to_crawl_video_ids)-set(crawled_video_ids))
+            # logger.debug("crawl_video_ids_diff: %s", crawl_video_ids_diff)
+            projects_collection.update_one(
+                                {
+                                    'projectname': activeprojectname
+                                },
+                                {
+                                    '$addToSet':
+                                    {
+                                        'sourceIds.'+current_username: 
+                                            {
+                                                '$each': crawl_video_ids_diff
+                                            }
+                                    }
+                                }
+                            )
             flash("Crawling Complete.")
             return redirect(url_for("lifedata.crawler"))
     except:
@@ -522,9 +681,136 @@ def youtubecrawler():
     return redirect(url_for("lifedata.crawler"))
 
 
+@lifedata.route('/retrieve/<filename>', methods=['GET'])
+@login_required
+def retrieve(filename):
+    logger.debug('Now in retrieve')
+    x = ''
+    try:
+        userprojects, = getdbcollections.getdbcollections(mongo,
+                                                          'userprojects')
+
+        current_username = getcurrentusername.getcurrentusername()
+        activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                      userprojects)
+
+        # share_info = getuserprojectinfo.getuserprojectinfo(userprojects,
+        #                                                     current_username,
+        #                                                     activeprojectname)
+        # if ("downloadchecked" in share_info and
+        #     share_info["downloadchecked"] == 'true'):
+        # logger.debug("share_info: %s", share_info)
+        x = mongo.send_file(filename)
+        # logger.debug("mongo send file: %s, %s, %s, %s, %s, %s", x.response, x.status, x.headers, x.mimetype, x.content_type, x.direct_passthrough)
+    except:
+        logger.exception("")
+
+    return x
+
+@lifedata.route('/crawleraudiobrowseactionplay', methods=['GET', 'POST'])
+@login_required
+def crawleraudiobrowseactionplay():
+    audio_data_fields = ['audioId', 'audioFilename', 'Audio File']
+    audio_data_list = []
+    try:
+        projects, userprojects, crawling, sourcedetails_collection = getdbcollections.getdbcollections(mongo,
+                                                                                   'projects',
+                                                                                   'userprojects',
+                                                                                   'crawling',
+                                                                                   'sourcedetails')
+        current_username = getcurrentusername.getcurrentusername()
+        activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                      userprojects)
+        # logger.debug("%s,%s", current_username, activeprojectname)
+        # logger.debug("THe data: %s", pformat(request.form['a']))
+        # data from ajax
+        if request.method == 'POST':
+            data = json.loads(request.form['a'])
+            # logger.debug('data lifedata/audiobrowseactionplay: : %s', pformat(data))
+
+            # data = json.loads(request.args.get('a'))
+            # logger.debug('data: %s', pformat(data))
+            data_info = data['audioInfo']
+            audio_browse_info = data['audioBrowseInfo']
+            audio_filename = list(data_info.values())[0]
+            audio_count = audio_browse_info['audioFilesCount']
+            page_id = audio_browse_info['pageId']
+            start_from = ((page_id*audio_count)-audio_count)
+            number_of_crawled_data = page_id*audio_count
+            # logger.debug("audio_filename: %s", audio_filename)
+            # audio_src = url_for('retrieve', filename=audio_filename)
+            audio_src = os.path.join('retrieve', audio_filename)
+            # logger.debug(audio_browse_info['activeSpeakerId'])
+            active_source_id = audio_browse_info['activeSpeakerId']
+            crawled_data_browse_action = audio_browse_info['browseActionSelectedOption']
+            # speaker_audio_ids = transcription_audiodetails.get_speaker_audio_ids_new(projects,
+            #                                                                          activeprojectname,
+            #                                                                          current_username,
+            #                                                                          active_speaker_id,
+            #                                                                          audio_browse_action=audio_browse_action)
+            # audio_file_count = audio_browse_info['audioFilesCount']
+            total_records = 0
+            if (active_source_id != ''):
+                source_data_types = sourceid_to_souremetadata.get_data_types(sourcedetails_collection,
+                                                                         active_source_id,
+                                                                         activeprojectname)
+
+                # logger.debug("Source Data Types %s", source_data_types)
+
+                if 'text' in source_data_types:
+                    default_data_type = 'text'
+                elif 'video' in source_data_types:
+                    default_data_type = 'video'
+                elif 'audio' in source_data_types:
+                    default_data_type = 'audio'
+                else:
+                    default_data_type = 'text'
+
+                logger.debug("Default Data Type %s", default_data_type)
+                total_records, audio_data_list = crawled_data_details.get_n_crawled_data(crawling,
+                                                                                       activeprojectname,
+                                                                                       active_source_id,
+                                                                                       data_type=default_data_type,
+                                                                                       start_from=start_from,
+                                                                                       number_of_crawled_data=number_of_crawled_data,
+                                                                                       crawled_data_delete_flag=crawled_data_browse_action)
+            else:
+                audio_data_list = []
+
+            if default_data_type == 'audio':
+                # audio_filename = crawled_data_list['audioFilename']
+                for i, crawled_data in enumerate(audio_data_list):
+                    audio_filename = crawled_data['Data']
+                    audio_data_list[i]['audioFilename'] = audio_filename
+                    audio_data_list[i]['Audio File'] = url_for(
+                        'retrieve', filename=audio_filename)
+            # crawler_data_fields = ['audioId', 'audioFilename', 'Audio File']
+
+            shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
+                                                              current_username,
+                                                              activeprojectname)
+            logger.debug("shareinfo: %s", shareinfo)
+            share_mode = shareinfo['sharemode']
+            share_checked = shareinfo['sharechecked']
+            download_checked = shareinfo['downloadchecked']
+            new_audio_data_list = audio_data_list
+            return jsonify(
+                audioDataFields=audio_data_fields,
+                audioData=new_audio_data_list,
+                shareMode=share_mode,
+                totalRecords=total_records,
+                shareChecked=share_checked,
+                audioSource=audio_src,
+                downloadChecked=download_checked
+            )
+    except:
+        logger.exception("")
+        return jsonify(audioSource='')
+
 @lifedata.route('/crawlerbrowse', methods=['GET', 'POST'])
 @login_required
 def crawlerbrowse():
+    crawler_data_fields = ['dataId', 'Data']
     try:
         new_data = {}
         projects, userprojects, crawling, sourcedetails_collection = getdbcollections.getdbcollections(mongo,
@@ -548,9 +834,11 @@ def crawlerbrowse():
             source_metadata = sourceid_to_souremetadata.get_source_metadata(sourcedetails_collection,
                                                                             sourceids,
                                                                             activeprojectname)
-            sourceids.append('')
+            # logger.debug('source_metadata: %s', source_metadata)
+            # sourceids.append('')
         else:
-            sourceids = ['']
+            # sourceids = ['']
+            source_metadata = {}
         if ('activesourceId' in shareinfo):
             active_source_id = shareinfo['activesourceId']
         else:
@@ -561,7 +849,7 @@ def crawlerbrowse():
                                                                          active_source_id,
                                                                          activeprojectname)
 
-            logger.debug("Source Data Types %s", source_data_types)
+            # logger.debug("Source Data Types %s", source_data_types)
 
             if 'text' in source_data_types:
                 default_data_type = 'text'
@@ -572,27 +860,34 @@ def crawlerbrowse():
             else:
                 default_data_type = 'text'
 
-            logger.debug("Default Data Type %s", default_data_type)
+            # logger.debug("Default Data Type %s", default_data_type)
 
             total_records, crawled_data_list = crawled_data_details.get_n_crawled_data(crawling,
                                                                                        activeprojectname,
                                                                                        active_source_id,
                                                                                        data_type=default_data_type)
-
         else:
             crawled_data_list = []
+            default_data_type = ''
+            source_data_types = []
+
+        # logger.debug('crawled_data_list: %s', crawled_data_list)
 
         if default_data_type == 'audio':
-            audio_filename = crawled_data_list['audioFilename']
-            crawled_data_list['Audio File'] = url_for(
-                'retrieve', filename=audio_filename)
+            # audio_filename = crawled_data_list['audioFilename']
+            for i, crawled_data in enumerate(crawled_data_list):
+                audio_filename = crawled_data['Data']
+                crawled_data_list[i]['audioFilename'] = audio_filename
+                crawled_data_list[i]['Audio File'] = url_for(
+                    'retrieve', filename=audio_filename)
+            crawler_data_fields = ['audioId', 'audioFilename', 'Audio File']
 
         if default_data_type == 'video':
             video_filename = crawled_data_list['videoFilename']
             crawled_data_list['Video File'] = url_for(
                 'retrieve', filename=video_filename)
 
-        logger.debug("Crawled data list %s", crawled_data_list)
+        # logger.debug("Crawled data list %s", crawled_data_list)
         # get crawled file src
         # new_crawled_data_list = []
         # for crawled_data in crawled_data_list:
@@ -606,7 +901,7 @@ def crawlerbrowse():
         new_data['shareInfo'] = shareinfo
         new_data['sourceIds'] = sourceids
         new_data['crawlerData'] = crawled_data_list
-        new_data['crawlerDataFields'] = ['dataId', 'Data']
+        new_data['crawlerDataFields'] = crawler_data_fields
         new_data['sourceMetadata'] = source_metadata
         new_data['totalRecords'] = total_records
         new_data['dataTypes'] = source_data_types
@@ -617,6 +912,7 @@ def crawlerbrowse():
 
     return render_template('crawlerbrowse.html',
                            projectName=activeprojectname,
+                           shareinfo=shareinfo,
                            newData=new_data)
 
 
@@ -652,9 +948,13 @@ def updatecrawlerbrowsetable():
             crawled_data_list = []
 
         if data_type == 'audio':
-            audio_filename = crawled_data_list['audioFilename']
-            crawled_data_list['Audio File'] = url_for(
-                'retrieve', filename=audio_filename)
+            # audio_filename = crawled_data_list['audioFilename']
+            for i, crawled_data in enumerate(crawled_data_list):
+                audio_filename = crawled_data['Data']
+                crawled_data_list[i]['audioFilename'] = audio_filename
+                crawled_data_list[i]['Audio File'] = url_for(
+                    'retrieve', filename=audio_filename)
+            crawler_data_fields = ['audioId', 'audioFilename', 'Audio File']
 
         if data_type == 'video':
             video_filename = crawled_data_list['videoFilename']
@@ -808,6 +1108,17 @@ def crawlerbrowsechangepage():
         else:
             crawled_data_list = []
         # logger.debug('crawled_data_list: %s', pformat(crawled_data_list))
+        
+
+        if data_type == 'audio':
+            # audio_filename = crawled_data_list['audioFilename']
+            for i, crawled_data in enumerate(crawled_data_list):
+                audio_filename = crawled_data['Data']
+                crawled_data_list[i]['audioFilename'] = audio_filename
+                crawled_data_list[i]['Audio File'] = url_for(
+                    'retrieve', filename=audio_filename)
+            crawler_data_fields = ['audioId', 'audioFilename', 'Audio File']
+
         shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
                                                           current_username,
                                                           activeprojectname)

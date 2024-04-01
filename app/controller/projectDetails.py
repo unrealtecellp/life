@@ -47,19 +47,29 @@ def get_active_transcription_by(projects,
         # logger.debug("projectname from getprojecttype(): %s", activeprojectname)
         transcription_by_data = projects.find_one({"projectname": activeprojectname},
                                                   {"_id": 0, transcription_by_key: 1})
-        logger.debug('Transcription by data: %s', transcription_by_data)
+        # logger.debug('Transcription by data: %s', transcription_by_data)
         if transcription_by_data is not None and 'lastActiveUserTranscription' in transcription_by_data:
             data = transcription_by_data['lastActiveUserTranscription']
             if current_username in data:
                 transcription_by = data[current_username]
 
-        logger.debug("Transcription by(): %s", transcription_by)
+        # logger.debug("Transcription by(): %s", transcription_by)
     except:
         logger.exception("")
         # project_type = ''
     # logger.debug('project_type: %s', project_type)
     return transcription_by
 
+def get_audio_language_scripts(projectform,
+                                 activeprojectname):
+    
+    audio_info = projectform.find_one({"projectname": activeprojectname},
+    {"_id": 0, "Audio Language": 1, "Transcription": 1})
+    if not audio_info is None:
+        audio_lang = audio_info.get("Audio Language")[1][0]
+        scripts = audio_info.get("Transcription")[1]
+    audio_info = {"language": audio_lang, "scripts": scripts}
+    return audio_info
 
 def save_active_transcription_by(projects,
                                  activeprojectname,
@@ -69,3 +79,5 @@ def save_active_transcription_by(projects,
 
     projects.update_one({"projectname": activeprojectname},
                         {'$set': {updateactiveuser: lastActiveUser}})
+
+

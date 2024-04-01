@@ -281,7 +281,7 @@ $("#save").click(function() {
   .done(function( data ) {
     // console.log(data.savedTranscription);
     if (!data.savedTranscription) {
-      alert("Unable to save the transcription as audio seem to be deleted or revoked access by one of the shared user. Showing you the next audio in the list.")
+      alert("Unable to save the transcription as audio seem to be deleted or revoked access by one of the shared users. Showing you the next audio in the list.")
       window.location.reload();
     }
     else {

@@ -143,6 +143,7 @@ function checkModalKey(tagSet, key, categoryDependency) {
                     dependOnListBig.splice(-1);
                     // console.log('dependOnListBig', dependOnListBig);
                     dependOnList = dependOnListBig;
+                    // break loop1;
                     continue loop2;
                 }
                 // dependentOnList = [];
@@ -173,7 +174,7 @@ function createElement(tagSet,
     // ele+='</legend>';
     // ele += '<h4><strong>' + key + ': </strong></h4>';
 
-    ele+='<legend>'+key+': </legend>'
+    ele+='<legend>'+key.replaceAll('_', ' ')+'</legend>'
     let categoryDependencyInfoList = categoryDependencyInfo(key, value, categoryDependency);
     let dependentOnClass = dependentOn(tagSet, key, categoryDependency).join(' ');
     for (let i = 0; i < value.length; i++) {
@@ -249,7 +250,9 @@ function createElement(tagSet,
                     defaultCategoryTag.length !== 0) {
                     for (s = 0; s < defaultCategoryTag.length; s++) {
                         eval = defaultCategoryTag[s];
-                        ele += '<option value="' + eval + '" selected>' + eval + '</option>';
+                        if (value.includes(eval)) {
+                            ele += '<option value="' + eval + '" selected>' + eval + '</option>';
+                        }
                     }
                 }
                 ele += '</select>';
@@ -261,6 +264,7 @@ function createElement(tagSet,
                     if (!select2Keys.includes(key))
                         select2Keys.push(key);
                 }
+                // console.log(select2Keys);
             }
             else if ((defaultCategoryTag === '' &&
                         !select2Keys.concat(modalSelect2Keys).includes(key))) {
@@ -283,6 +287,41 @@ function createElement(tagSet,
                     if (!select2Keys.includes(key))
                         select2Keys.push(key);
                 }
+                // console.log(select2Keys);
+            }
+            else if ((!defaultCategoryTag.includes(value[i]) &&
+                        defaultCategoryTag!== 'NONE' &&
+                        defaultCategoryTag.length !== 0 &&
+                        !select2Keys.concat(modalSelect2Keys).includes(key))) {
+                    let defaulter = false;
+                    let notDefaulter = false;
+                    for (s = 0; s < defaultCategoryTag.length; s++) {
+                        eval = defaultCategoryTag[s];
+                        if (!value.includes(eval)) {
+                            defaulter = true;
+                        }
+                        else if (value.includes(eval)) {
+                            notDefaulter = true;
+                        }
+                    }
+                    if (notDefaulter) {
+                        continue
+                    }
+                    else if (defaulter) {
+                        // console.log(key, element, elementProperties, value[i], defaultCategoryTag);
+                        ele += '<select class="' + elementClass + '" id="' + key+'_select' + '" name="' + key + '" '+elementProperties.replace('#', ' ')+' style="width: 100%">';
+                        ele += '</select>';
+
+                        if (modalEle && !modalSelect2Keys.includes(key)) {
+                            modalSelect2Keys.push(key);
+                        }
+                        else {
+                            if (!select2Keys.includes(key))
+                                select2Keys.push(key);
+                        }
+                        // console.log(select2Keys);
+                    }
+                // continue
             }
             // else if (defaultCategoryTag.includes(value[i])) {
             //     if (defaultCategoryTag!== 'NONE' &&
@@ -443,6 +482,7 @@ function myFunction(projData) {
     let currentUserAnnotation = projData[currentUser];
     let tagSet = projData["tagSet"];
     let defaultCategoryTags = projData["tagSetMetaData"]["defaultCategoryTags"]
+    let shareInfo = projData["shareinfo"];
     let inpt = '';
     
     inpt += '<span class="textFormAlert"></span><div class="row">' +
@@ -501,7 +541,9 @@ function myFunction(projData) {
         '<button type="button" id="previous" class="btn btn-info btn-lg btn-block" onclick="previousText()">Previous</button><br/>' +
         '<button type="button" id="next" class="btn btn-lg btn-info btn-block" onclick="nextText()">Next</button><br/>' +
         '</div>';
-    inpt += '<br><button type="button" id="mainsave" class="btn btn-lg btn-danger btn-block"  onclick="mainSave(this)">Save</button>';
+    if (shareInfo["sharemode"] >= 1) {
+        inpt += '<br><button type="button" id="mainsave" class="btn btn-lg btn-danger btn-block"  onclick="mainSave(this)">Save</button>';
+    }
     inpt += '</div>'; //right div close
     // inpt += '<br><button type="submit" id="mainsave" class="btn btn-lg btn-danger btn-block"  onclick="mainSave(this)">Save</button>';
     inpt += '</form></div>';
@@ -517,7 +559,6 @@ function myFunction(projData) {
     textareaScrollHeight('maintextcontent', 'maintextcontent');
     createSelect2(select2Keys, tagSet);
     createTextSpanDetails(tagSet, defaultCategoryTags)
-
 }
 
 function previousText() {
@@ -731,7 +772,7 @@ function openCategoryModal(eleId, start=0, end=0, selectedText='') {
             spanStart,
             spanEnd
         );
-        // console.log(selection);
+        // console.log(spanStart, spanEnd, selection);
         if (!start || !end) {
             // console.log(start, end);
             let text = document.getElementById('maintextcontent');
@@ -741,7 +782,7 @@ function openCategoryModal(eleId, start=0, end=0, selectedText='') {
                 spanStart,
                 spanEnd
             );
-            // console.log(selection);
+            // console.log(spanStart, spanEnd, selection);
         }
         leftModalForm(selection, spanStart, spanEnd, eleId)
         middleModalForm(selection, spanStart, spanEnd, eleId);
@@ -856,6 +897,7 @@ function textareaScrollHeight(eleId1, eleId2) {
 }
 
 function leftModalForm(selection, spanStart, spanEnd, eleId) {
+    // console.log(selection, spanStart, spanEnd, eleId);
     let leftModalData = '';
     let projData = JSON.parse(localStorage.getItem('projData'));
     let eleValue = projData['tagSet'][eleId][0];
@@ -877,6 +919,7 @@ function leftModalForm(selection, spanStart, spanEnd, eleId) {
                     // '<textarea class="modaltextcontent" id="spantextcontent" name="textspan" onselect=spanAnnotation(this,"'+eleId+'") readonly>' + selection + '</textarea>';
                     '<textarea class="modaltextcontent" id="spantextcontent" name="textspan" readonly>' + selection + '</textarea>';
     
+    // console.log(leftModalData);
     $('#modalleft').html(leftModalData);
 }
 
@@ -988,17 +1031,22 @@ function getModalDefaultTag(defaultCategoryTags, key, eleId, spanStart, spanEnd)
 }
 
 function textSpanId(spanStart, spanEnd) {
+    let maxSpanLength = 7;
     // console.log(spanStart, spanEnd);
+    spanStart = String(spanStart);
+    spanEnd = String(spanEnd);
     let spanStartLength = spanStart.length;
-    let spanEndLength = spanEnd.length
-    while(spanStartLength != 5) {
+    let spanEndLength = spanEnd.length;
+    // console.log(spanStartLength, spanEndLength);
+    while(spanStartLength != maxSpanLength) {
         spanStart = '0'+spanStart;
         spanStartLength = spanStart.length;
     }
-    while(spanEndLength != 5) {
+    while(spanEndLength != maxSpanLength) {
         spanEnd = '0'+spanEnd;
         spanEndLength = spanEnd.length;
     }
+    // console.log(spanStartLength, spanEndLength);
     spanId = spanStart+spanEnd;
 
     return spanId;

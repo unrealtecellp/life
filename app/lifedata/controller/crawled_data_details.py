@@ -89,21 +89,34 @@ def get_n_crawled_data(data_collection,
     aggregate_output = data_collection.aggregate([
         {
             "$match": {
-                "projectname": activeprojectname,
-                "lifesourceid": active_source_id,
-                "dataType": data_type,
-                "datadeleteFLAG": crawled_data_delete_flag
+            #     "projectname": activeprojectname,
+            #     "lifesourceid": active_source_id,
+            #     "dataType": data_type,
+            #     "datadeleteFLAG": crawled_data_delete_flag
+            # }
+            # {
+                "$and": [ 
+                    { "projectname": activeprojectname },
+                    { "lifesourceid": active_source_id },
+                    { "dataType": data_type },
+                    {"$or": [
+                        {"datadeleteFLAG": crawled_data_delete_flag},
+                        {"audiodeleteFLAG": crawled_data_delete_flag},
+                    ]}
+                ]
             }
         },
         {
             "$sort": {
-                "dataId": 1
+                "dataId": 1,
+                "audioId": 1
             }
         },
         {
             "$project": {
                 "_id": 0,
                 "dataId": 1,
+                "audioId": 1,
                 "Data": {
                     "$switch": {
                         "branches": [
@@ -133,7 +146,7 @@ def get_n_crawled_data(data_collection,
         aggregate_output_list.append(doc)
     # logger.debug('aggregate_output_list: %s', pformat(aggregate_output_list))
     total_records = len(aggregate_output_list)
-    logger.debug('total_records: %s', total_records)
+    # logger.debug('total_records: %s', total_records)
 
     return (total_records,
             aggregate_output_list[start_from:number_of_crawled_data])

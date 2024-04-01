@@ -3,7 +3,7 @@ var crawlerVideosChannelsId = 0;
 function youtubeCrawlerInterface() {
     let ele = '';
     ele += '<div id="formdisplay" style="display: block;">' +
-        '<form role="form" method="post" action="/lifedata/youtubecrawler">';
+        '<form role="form" method="post" action="/lifedata/youtubecrawler" onsubmit="return runLoader()">';
     
     ele += '<div class="form-group">' +
         '<label for="idyoutubeapikey">Youtube API Key</label>' +
@@ -196,12 +196,24 @@ function crawlerInterfaceEvents() {
             $(".classspecificlinksdiv :input").prop("disabled", false);
             // var $drillDown = $("#drilldown");
         }
+        // document.getElementById('crawlersubmit').disabled = false;
     });
 
+    // $("#crawlersubmit").click(function() {
+    //     console.log('123213');
+    //     console.log(document.getElementById("loader"));
+    //     document.getElementById("loader").style.display = "block";
+    // });
 
 }
 
 // remove a translation element
 function removeVideosChannelsIdsFields(rid) {
     $(".removecrawlervideoschannelsId"+rid).remove();
+}
+
+function runLoader() {
+    console.log('123213');
+    console.log(document.getElementById("loader"));
+    document.getElementById("loader").style.display = "block";
 }

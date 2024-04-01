@@ -55,33 +55,47 @@ var fieldType = [{
 ];
 
 var languages = [
-{"id": "", "text": ""},
-{"id": "Assamese", "text": "Assamese"},
-{"id": "Awadhi", "text": "Awadhi"},
-{"id": "Bajjika", "text": "Bajjika"},
-{"id": "Bangla", "text": "Bangla"},
-{"id": "Bhojpuri", "text": "Bhojpuri"},
-{"id": "Bodo", "text": "Bodo"},
-{"id": "Braj", "text": "Braj"},
-{"id": "Bundeli", "text": "Bundeli"},
-{"id": "Gujarati", "text": "Gujarati"},
-{"id": "Haryanvi", "text": "Haryanvi"},
-{"id": "Hindi", "text": "Hindi"},
-{"id": "Kannada", "text": "Kannada"},
-{"id": "Khortha", "text": "Khortha"},
-{"id": "Konkani", "text": "Konkani"},
-{"id": "Magahi", "text": "Magahi"},
-{"id": "Maithili", "text": "Maithili"},
-{"id": "Malayalam", "text": "Malayalam"},
-{"id": "Marathi", "text": "Marathi"},
-{"id": "Meitei", "text": "Meitei"},
-{"id": "Nepali", "text": "Nepali"},
-{"id": "Odia", "text": "Odia"},
-{"id": "Punjabi", "text": "Punjabi"},
-{"id": "Santali", "text": "Santali"},
-{"id": "Tamil", "text": "Tamil"},
-{"id": "Telugu", "text": "Telugu"}
-];
+  {"id": "", "text": ""},
+  {"id": "Assamese", "text": "Assamese"},
+  {"id": "Angika", "text": "Angika"},
+  {"id": "Awadhi", "text": "Awadhi"},
+  {"id": "Bajjika", "text": "Bajjika"},
+  {"id": "Bangla", "text": "Bangla"},
+  {"id": "Bhojpuri", "text": "Bhojpuri"},
+  {"id": "Bodo", "text": "Bodo"},
+  {"id": "Braj", "text": "Braj"},
+  {"id": "Bundeli", "text": "Bundeli"},
+  {"id": "Chhattisgarhi", "text": "Chhattisgarhi"},
+  {"id": "Chokri", "text": "Chokri"},
+  {"id": "Dogri", "text": "Dogri"},
+  {"id": "English", "text": "English"},
+  {"id": "Gujarati", "text": "Gujarati"},
+  {"id": "Haryanvi", "text": "Haryanvi"},
+  {"id": "Hindi", "text": "Hindi"},
+  {"id": "Kashmiri", "text": "Kashmiri"},
+  {"id": "Kannada", "text": "Kannada"},
+  {"id": "Khortha", "text": "Khortha"},
+  {"id": "Konkani", "text": "Konkani"},
+  {"id": "KokBorok", "text": "Kok Borok"},
+  {"id": "Magahi", "text": "Magahi"},
+  {"id": "Maithili", "text": "Maithili"},
+  {"id": "Malayalam", "text": "Malayalam"},
+  {"id": "Marathi", "text": "Marathi"},
+  {"id": "Meitei", "text": "Meitei"},
+  {"id": "Nagamese", "text": "Nagamese"},
+  {"id": "Nepali", "text": "Nepali"},
+  {"id": "Nyishi", "text": "Nyishi"},
+  {"id": "Odia", "text": "Odia"},
+  {"id": "Punjabi", "text": "Punjabi"},
+  {"id": "Sadri", "text": "Sadri"},
+  {"id": "Sanskrit", "text": "Sanskrit"},
+  {"id": "Santali", "text": "Santali"},
+  {"id": "Sambalpuri", "text": "Sambalpuri"},
+  {"id": "Tamil", "text": "Tamil"},
+  {"id": "Telugu", "text": "Telugu"},
+  {"id": "Toto", "text": "Toto"},
+  {"id": "Urdu", "text": "Urdu"}
+]
 
 var scripts = 
 [
@@ -138,72 +152,90 @@ var scripts =
 var OtherLanguagesSpeakerCouldSpeak = 
 [
   {"id": "", "text": ""},
-  {"id": "Bodo", "text": "Bodo"},
-  {"id": "Meetei", "text": "Meetei"},
-  {"id": "Chokri", "text": "Chokri"},
-  {"id": "Kokborok", "text": "Kokborok"},
-  {"id": "Nyishi", "text": "Nyishi"},
-    { "id": "Toto", "text": "Toto" },
-    { "id": "Chattisgarhi", "text": "Chattisgarhi" },
   {"id": "Assamese", "text": "Assamese"},
+  {"id": "Angika", "text": "Angika"},
   {"id": "Awadhi", "text": "Awadhi"},
+  {"id": "Bajjika", "text": "Bajjika"},
   {"id": "Bangla", "text": "Bangla"},
   {"id": "Bhojpuri", "text": "Bhojpuri"},
+  {"id": "Bodo", "text": "Bodo"},
   {"id": "Braj", "text": "Braj"},
   {"id": "Bundeli", "text": "Bundeli"},
+  {"id": "Chhattisgarhi", "text": "Chhattisgarhi"},
+  {"id": "Chokri", "text": "Chokri"},
+  {"id": "Dogri", "text": "Dogri"},
+  {"id": "English", "text": "English"},
   {"id": "Gujarati", "text": "Gujarati"},
   {"id": "Haryanvi", "text": "Haryanvi"},
   {"id": "Hindi", "text": "Hindi"},
+  {"id": "Kashmiri", "text": "Kashmiri"},
   {"id": "Kannada", "text": "Kannada"},
   {"id": "Khortha", "text": "Khortha"},
   {"id": "Konkani", "text": "Konkani"},
+  {"id": "KokBorok", "text": "Kok Borok"},
   {"id": "Magahi", "text": "Magahi"},
   {"id": "Maithili", "text": "Maithili"},
   {"id": "Malayalam", "text": "Malayalam"},
   {"id": "Marathi", "text": "Marathi"},
   {"id": "Meitei", "text": "Meitei"},
+  {"id": "Nagamese", "text": "Nagamese"},
   {"id": "Nepali", "text": "Nepali"},
+  {"id": "Nyishi", "text": "Nyishi"},
   {"id": "Odia", "text": "Odia"},
   {"id": "Punjabi", "text": "Punjabi"},
+  {"id": "Sadri", "text": "Sadri"},
+  {"id": "Sanskrit", "text": "Sanskrit"},
   {"id": "Santali", "text": "Santali"},
+  {"id": "Sambalpuri", "text": "Sambalpuri"},
   {"id": "Tamil", "text": "Tamil"},
-  {"id": "Telugu", "text": "Telugu"}
-];
+  {"id": "Telugu", "text": "Telugu"},
+  {"id": "Toto", "text": "Toto"},
+  {"id": "Urdu", "text": "Urdu"}
+]
 
 var EducationMedium = 
 [
   {"id": "", "text": ""},
-  {"id": "English", "text": "English"},
-  {"id": "Bodo", "text": "Bodo"},
-  {"id": "Meetei", "text": "Meetei"},
-  {"id": "Chokri", "text": "Chokri"},
-  {"id": "Kokborok", "text": "Kokborok"},
-  {"id": "Nyishi", "text": "Nyishi"},
-  {"id": "Toto", "text": "Toto"},
   {"id": "Assamese", "text": "Assamese"},
+  {"id": "Angika", "text": "Angika"},
   {"id": "Awadhi", "text": "Awadhi"},
+  {"id": "Bajjika", "text": "Bajjika"},
   {"id": "Bangla", "text": "Bangla"},
   {"id": "Bhojpuri", "text": "Bhojpuri"},
+  {"id": "Bodo", "text": "Bodo"},
   {"id": "Braj", "text": "Braj"},
   {"id": "Bundeli", "text": "Bundeli"},
+  {"id": "Chhattisgarhi", "text": "Chhattisgarhi"},
+  {"id": "Chokri", "text": "Chokri"},
+  {"id": "Dogri", "text": "Dogri"},
+  {"id": "English", "text": "English"},
   {"id": "Gujarati", "text": "Gujarati"},
   {"id": "Haryanvi", "text": "Haryanvi"},
   {"id": "Hindi", "text": "Hindi"},
+  {"id": "Kashmiri", "text": "Kashmiri"},
   {"id": "Kannada", "text": "Kannada"},
   {"id": "Khortha", "text": "Khortha"},
   {"id": "Konkani", "text": "Konkani"},
+  {"id": "KokBorok", "text": "Kok Borok"},
   {"id": "Magahi", "text": "Magahi"},
   {"id": "Maithili", "text": "Maithili"},
   {"id": "Malayalam", "text": "Malayalam"},
   {"id": "Marathi", "text": "Marathi"},
   {"id": "Meitei", "text": "Meitei"},
+  {"id": "Nagamese", "text": "Nagamese"},
   {"id": "Nepali", "text": "Nepali"},
+  {"id": "Nyishi", "text": "Nyishi"},
   {"id": "Odia", "text": "Odia"},
   {"id": "Punjabi", "text": "Punjabi"},
+  {"id": "Sadri", "text": "Sadri"},
+  {"id": "Sanskrit", "text": "Sanskrit"},
   {"id": "Santali", "text": "Santali"},
+  {"id": "Sambalpuri", "text": "Sambalpuri"},
   {"id": "Tamil", "text": "Tamil"},
-  {"id": "Telugu", "text": "Telugu"}
-];
+  {"id": "Telugu", "text": "Telugu"},
+  {"id": "Toto", "text": "Toto"},
+  {"id": "Urdu", "text": "Urdu"}
+]
 
 var LdcilEducationLevel = 
 [
@@ -270,6 +302,23 @@ var audioInterntSources = [
   {"id": "youtube", "text": "Youtube"},
   // {"id": "facebook", "text": "Facebook"}
 ];
+
+var downloadFormats = [
+  { "id": "textgrid", "text": "Praat TextGrid" },
+  { "id": "csv", "text": "CSV" },
+  { "id": "tsv", "text": "TSV" },
+  { "id": "json", "text": "JSON" },
+  { "id": "xlsx", "text": "XLSX" },
+  { "id": "latex", "text": "LaTeX" },
+  { "id": "html", "text": "HTML" },
+  { "id": "markdown", "text": "Markdown" }
+]
+
+var transcriptionBy = [
+  {"id": "", "text": ""},
+  { "id": "latest", "text": "Latest" },
+  { "id": "mytranscription", "text": "My Transcriptions" }
+]
 
 // var QuestionnaireDomain = [
 //   {"id": "", "text": ""},

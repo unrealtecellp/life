@@ -1,27 +1,63 @@
-{% extends "base.html" %}
-{% import 'bootstrap/wtf.html' as wtf %}
+{% extends "questionnairelinks.html" %}
 
 {% block title %}
   Questionnaire
 {% endblock title %}
 
-
 {% block styles %}
 {{super()}}
+<link href="{{url_for('.static', filename='sidepanel.css')}}" rel="stylesheet" />
+<!-- <link href="{{url_for('.static', filename='questionnaire.css')}}" rel="stylesheet" /> -->
 {% endblock %}
 
 {% block app_content %}
-<div class="row">
+  <div class="row fixedElement">
+    <div class="col-sm-5">
+      {% if shareinfo['sharemode']|int >= 4 %}
+        <button type="button" id="deleteques" class="btn btn-danger" data-toggle="tooltip" title="Delete Questionnaire">
+          <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+        </button>
+      {% endif %}
+      <!-- &nbsp;&nbsp; -->
+    </div>
+    <div class="col-sm-6">
+      {% if shareinfo['sharemode']|int >= 3 %}
+        <button type="button" id="addnewques" class="btn btn-success" data-toggle="tooltip" title="Add New Questionnaire">
+          <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+        </button>
+      {% endif %}
+      <button class="btn btn-info" type="button" id="previous" data-toggle="tooltip" title="Previous Questionnaire" onclick="previousQues()">
+        <span class="previousques glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+      </button>
+      <!-- &nbsp; -->
+      <button class="btn btn-info" type="button" id="next" data-toggle="tooltip" title="Next Questionnaire" onclick="nextQues()">
+        <span class="nextques glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+      </button>
+      <!-- &nbsp; -->
+      <button class="btn btn-warning" id="save" data-toggle="tooltip" title="Save Questionnaire">
+        <span class="saveques glyphicon glyphicon-floppy-open" aria-hidden="true"></span>
+      </button>
+      <!-- &nbsp;&nbsp; -->
+    </div>
+    <div class="col-sm-1">
+      <span class="pull-right" style="font-size:30px; position:absolute; cursor:pointer" data-toggle="tooltip" title="Info" onclick="openQuesMetaData()">
+        <i class="glyphicon glyphicon-info-sign"></i>
+      </span>
+    </div>
+    <span class="pull-right" style="font-size:30px; position:absolute; right:10px;cursor:pointer" onclick="openNav()"><i class="glyphicon glyphicon-menu-hamburger"></i></span>
+    <div id="sidepanel"></div>
+  </div>
+<!-- <div class="row">
     <div class="col-md-9">
       {% if projectName is defined %}
         <h4>Project Name : {{ projectName }}</h4><br>
-      {% endif %}
-      <button type="button" id="quesprogressreport" class="btn btn-lg btn-warning" data-toggle="modal" data-target="#myProgressReportModal" disabled>
+      {% endif %} -->
+      <!-- <button type="button" id="quesprogressreport" class="btn btn-lg btn-warning" data-toggle="modal" data-target="#myProgressReportModal" disabled>
         Progress Report
-      </button>
-      <br>
-    </div>
-    <div class="col-md-3 pull-right">
+      </button> -->
+      <!-- <br>
+    </div> -->
+    <!-- <div class="col-md-3 pull-right">
       {% if  shareinfo['sharemode']|int >= 3 %}
         <a href="{{url_for('lifeques.downloadformexcel')}}">
           <button type="button" class="btn btn-primary downloadquesform">
@@ -53,26 +89,98 @@
             <li id="karyajson"><a href="#">Karya JSON</a></li>
         </ul>
       </div>
-    {% endif %}
-</div>
-<hr>
-<div class="row">
-  <div class="col-sm-7 commentIDs">
-      <button type="button" id="uNAnnotated" class="btn btn-light" onclick="unAnnotated()">All Question Ids</button>
-  </div>
-  {% if quesstats is defined %}
-    <div class="col-sm-3 quesStats pull-right">
-      <strong>Total Files: {{ quesstats[0] }}</strong><br> 
-      <strong>Annotated Files: {{ quesstats[1] }}</strong><br>
-      <strong>Remaining Files: {{ quesstats[2] }}</strong><br>
+    {% endif %} -->
+<!-- </div> -->
+<div class="row" id="quesmetadata" style="display: none;">
+  <br>
+  <hr>
+  <div class="row">
+    <div class="col-sm-6">
+      {% if projectName is defined %}
+        <h4>Project Name : {{ projectName }}</h4>
+      {% endif %}
     </div>
-  {% endif %}
+    {% if questats is defined %}
+      <div class="quesStats">
+      </div>
+    {% if questats[0] != 0 %}
+      <div class="progress">
+        <div class="progress-bar progress-bar-success" role="progressbar"
+          style="width:{{ questats[1]/questats[0]*100 }}%">
+          Completed : {{ questats[1] }}
+        </div>
+        <div class="progress-bar progress-bar-danger" role="progressbar"
+          style="width:{{ questats[2]/questats[0]*100 }}%">
+          Remaining : {{ questats[2] }}
+        </div>
+      </div>
+    {% endif %}
+    {% endif %}
+  </div>
+  <!-- <hr>
+  <div class="row">
+    <div class="col-md-6">
+      {% if speakerids is defined %}
+        <label for="speakeridsdropdown">Audio Source: </label>
+        <select class="custom-select custom-select-sm" id="speakeridsdropdown" style="width: 50%;">
+          <option selected disabled>{{ activespeakerid }}</option>
+          {% for d in speakerids %}
+            {% if d != activespeakerid %}
+              <option value="{{ d }}">{{ d }}</option>
+            {% endif %}
+          {% endfor %}
+        </select>
+      {% endif %}
+    </div>
+    {% if ('sharelatestchecked' not in shareinfo) or ('sharelatestchecked' in shareinfo and shareinfo['sharelatestchecked'] == 'true') %}
+    <div class="col-md-6">
+      {% if transcriptionsby is defined %}
+      <label for="transcriptionsbydropdown">Transcription Source: </label>
+      <select class="custom-select custom-select-sm" id="transcriptionbydropdown" style="width: 50%;" onchange="loadUserTranscription()">
+        <option selected disabled>{{ activetranscriptionby }}</option>
+        {% for d in transcriptionsby %}
+        {% if d != activetranscriptionby %}
+        <option value="{{ d }}">{{ d }}</option>
+        {% endif %}
+        {% endfor %}
+      </select>
+      {% endif %}
+    </div>
+    {% endif %}
+  </div> -->
+  <hr>
+  <div class="row">
+  <div class="col-md-8">
+    <label>Go to: </label>
+    <span class="commentIDs">
+      <button type="button" id="uNAnnotated" class="btn btn-light" onclick="unAnnotated()">All Question Ids</button>
+    </span>
+  </div>
+  </div>
+  <!-- <hr>
+  <div class="row">
+    <div class="col-md-3 lexemelang"></div>
+    <div class="col-md-6 defaultfield" id="iddefaultfield"></div>
+    <div class="col-md-3 classquesmetadata" id="idquesmetadata"></div>
+    
+  </div> -->
 </div>
-<br>
+<div class="row">
+  <!-- <div class="col-sm-7 commentIDs">
+      <button type="button" id="uNAnnotated" class="btn btn-light" onclick="unAnnotated()">All Question Ids</button>
+  </div> -->
+  <!-- {% if questats is defined %}
+    <div class="col-sm-3 quesStats pull-right">
+      <strong>Total Files: {{ questats[0] }}</strong><br> 
+      <strong>Annotated Files: {{ questats[1] }}</strong><br>
+      <strong>Remaining Files: {{ questats[2] }}</strong><br>
+    </div>
+  {% endif %} -->
+</div>
+<!-- <br> -->
 <!-- <div class="testfield">
 </div> -->
-<div class="defaultfield">
-</div>
+<div class="defaultfield"></div>
 <!-- <br>
 <div id="questranscriptionwaveform" style="display: none;">
   <div id="wave-timeline"></div>
@@ -104,11 +212,84 @@
     <div id="questranscriptionaudio"></div>
     <input class="btn btn-primary pull-right" id="questranscriptionsubmit" type="submit" value="Upload" style="display: none;">
   </form> -->
-  <br>
-  <hr>
+  <!-- <br>
+  <hr> -->
     <div id="quesform"></div>
 </div>
 
+  <!-- Download Ques Modal -->
+  <div class="modal fade" id="downloadQuesModal" tabindex="-1" role="dialog" aria-labelledby="downloadQuesModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="downloadQuesModalLabel">Project Name: {{ projectName }}</h4>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="btn-group" role="group">
+                <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  Download Questionnaire
+                  <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu">
+                    <li id="json"><a href="#">JSON</a></li>
+                    <!-- <li id="csv"><a href="#">CSV</a></li> -->
+                    <!-- <li id="xlsx"><a href="#">XLSX</a></li> -->
+                    <li id="karyajson"><a href="#">Karya JSON</a></li>
+                    <li id="karyajson2"><a href="#">Karya JSON 2</a></li>
+                </ul>
+              </div>
+            </div>
+            <div class="col-md-6 pull-right">
+              <a href="{{url_for('lifeques.downloadformexcel')}}">
+                <button type="button" class="btn btn-primary downloadquesform">
+                  Download Questionnaire Entry/Edit Form
+                  <i class="fa fa-download" aria-hidden="true"></i>
+                </button>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Upload Ques Modal -->
+  <div class="modal fade" id="uploadQuesModal" tabindex="-1" role="dialog" aria-labelledby="uploadQuesModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="uploadQuesModalLabel">Project Name: {{ projectName }}</h4>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-6">
+              <form name="newquesupload" action="{{url_for('lifeques.uploadquesfiles')}}" method="POST" enctype="multipart/form-data">
+                <input type="file" class="form-control" id="uploadquesfile" name="uploadquesfile" required>
+                <br>
+                <input class="btn btn-primary uploadbtn" type="submit" value="Upload Questionnaire">
+              </form>
+              <a href="https://docs.google.com/spreadsheets/d/17IHUcACEqrZL4AGMuX9dxt1tJST9gtmDocMmKXiy0AY/edit?usp=sharing" target="_blank">
+                Sample File
+              </a>
+            </div>
+            <div class="col-md-6 pull-right">
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
   <!-- Progress Report Modal -->
   <div class="modal fade" id="myProgressReportModal" tabindex="-1" role="dialog" aria-labelledby="myProgressReportModalLabel">
     <div class="modal-dialog modal-lg" role="document">
@@ -141,6 +322,8 @@
 
 {% block scripts %}
 {{super()}}
+<script src="{{url_for('.static', filename='sidepanel.js')}}"></script>
+<script type="text/javascript">createSidePanel({{ shareinfo | tojson | safe }});</script>
 <script src="{{url_for('.static', filename='questionnaire.js')}}"></script>
 <script src="{{url_for('.static', filename='quesaudiowaveform.js')}}"></script>
 <script src="{{url_for('.static', filename='downloadquestionnaire.js')}}"></script>

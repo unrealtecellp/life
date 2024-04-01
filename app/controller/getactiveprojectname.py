@@ -1,6 +1,9 @@
 """Module to get the active project name of the current user"""
 
-from flask import flash
+from app.controller import  (
+    life_logging
+)
+logger = life_logging.get_logger()
 
 def getactiveprojectname(current_username, userprojects_collection):
     """
@@ -14,7 +17,7 @@ def getactiveprojectname(current_username, userprojects_collection):
 
     activeprojectname = userprojects_collection.find_one({ 'username' : current_username },\
                     {'_id' : 0, 'activeprojectname': 1})
-
+    # logger.debug("activeprojectname: %s", activeprojectname)
     if len(activeprojectname) != 0:
         activeprojectname = activeprojectname['activeprojectname']
     else:

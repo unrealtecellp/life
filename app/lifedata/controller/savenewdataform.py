@@ -9,6 +9,7 @@ import pandas as pd
 import io
 from flask import flash, redirect, url_for
 import re
+from pprint import pformat
 
 logger = life_logging.get_logger()
 
@@ -32,6 +33,7 @@ def savenewdataform(projectsform,
         elif (project_type == 'annotation'):
             return project_form
 
+        logger.debug("data_project_form: %s", pformat(project_form))
         projectsform.insert_one(project_form)
     except:
         logger.exception("")

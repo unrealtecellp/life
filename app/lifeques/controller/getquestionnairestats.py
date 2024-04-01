@@ -1,5 +1,10 @@
 """Module to get the comment stats for a ques/annotator."""
 
+from app.controller import (
+    life_logging
+)
+logger = life_logging.get_logger()
+
 def getquestionnairestats(projects, questionnaires, activeprojectname, ID, idtype):
     """_summary_
 
@@ -18,18 +23,23 @@ def getquestionnairestats(projects, questionnaires, activeprojectname, ID, idtyp
         total_ques = len(quesfiles)
 
         completedfiles = questionnaires.find({ "projectname": activeprojectname },
-                                            { "_id" : 0, "quessaveFLAG" : 1 })
+                                            { "_id" : 0,
+                                             "quessaveFLAG" : 1,
+                                             "quesdeleteFLAG" : 1,
+                                             })
         # print(quesinfo)
         # print(total_ques)
         for completedfile in completedfiles:
             # print(completedfile, completedfile['quessaveFLAG'])
-            if completedfile['quessaveFLAG'] == 1:
-                completed += 1
-            elif completedfile['quessaveFLAG'] == 0:
-                notcompleted += 1
+            ques_delete_flag = completedfile['quesdeleteFLAG']
+            if (not ques_delete_flag):
+                if completedfile['quessaveFLAG'] == 1:
+                    completed += 1
+                elif completedfile['quessaveFLAG'] == 0:
+                    notcompleted += 1
         # print('completed: ', completed, "notcompleted:", notcompleted)
     except:
-        pass
+        logger.exception("")
 
     return (total_ques, completed, notcompleted)
     

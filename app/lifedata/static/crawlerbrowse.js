@@ -1,3 +1,5 @@
+var activePageNumber = 1;
+
 function crawlerCreateSelect2(eleId, optionsList, selectedOption, moreInfo={}, optionKey='') {
     let ele = '';
     for (let i=0; i<optionsList.length; i++) {
@@ -21,15 +23,15 @@ function crawlerCreateSelect2(eleId, optionsList, selectedOption, moreInfo={}, o
 
 function createBrowseActions(projectOwner, currentUsername) {
     let ele = '';
-    let browseActionOptionsList = ['Delete']
-    ele += '<label for="browsedataactiondropdowns">Action:&nbsp;</label>'+
-            '<select class="custom-select custom-select-sm" id="browsedataactiondropdowns" style="width: 50%;"></select>&nbsp;&nbsp;&nbsp;&nbsp;';
+    let browseActionOptionsList = ['Delete'];
+    // ele += '<label for="browsedataactiondropdowns">Action:&nbsp;</label>';
+    ele += '<select class="custom-select custom-select-sm" id="browsedataactiondropdowns" style="width: 70%;"></select>';
     ele += '<button type="button" class="btn btn-danger" id="multipledatadelete"  style="display: inline;">'+
             '<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>'+
-            ' Delete Multiple Data</button>';
+            ' +1</button>';
     ele += '<button type="button" class="btn btn-success" id="multipledatarevoke" style="display: none;">'+
             '<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>'+
-            ' Revoke Multiple Data</button>';
+            ' +1</button>';
     $('#browsedatadropdowns').append(ele);
     if (currentUsername === projectOwner) {
         browseActionOptionsList.push('Revoke');
@@ -37,18 +39,36 @@ function createBrowseActions(projectOwner, currentUsername) {
     crawlerCreateSelect2('browsedataactiondropdowns', browseActionOptionsList, 'Delete');
 }
 
-function createCrawlerBrowseTable(crawlerDataFields, crawlerData, shareMode=0, totalRecords=0, dataType="text") {
+function createCrawlerBrowseTable(crawlerDataFields,
+    crawlerData,
+    shareMode=0,
+    totalRecords=0,
+    dataType="text",
+    shareChecked = "false",
+    downloadChecked = "false",) {
     // console.log(crawlerData);
     let count = crawlerData.length;
     let ele = '';
     let browseActionSelectedOption = '';
-    ele += '<p id="actualtotalrecords">Total Records:&nbsp;'+totalRecords+'</p>';
-    ele += '<p id="totalrecords">Showing Records:&nbsp;'+count+'</p>'+
-            '<table class="table table-striped " id="myTable">'+
+    // ele += '<p id="actualtotalrecords">Total Records:&nbsp;'+totalRecords+'</p>';
+    // ele += '<p id="totalrecords">Showing Records:&nbsp;'+count+'</p>'+
+    //         '<table class="table table-striped " id="myTable">'+
+    ele += '<div class="col">';
+    ele += '<strong><p id="totalrecords" style="display:inline">Showing Records:&nbsp;'+count+' of '+totalRecords+'</p></strong>';
+    ele += '<div class="pull-right">'+
+            '<input id="myInput" type="text" placeholder="Search">'
+            '</div>';
+    ele +=  '</div>';
+    ele += '<hr>';
+    ele += '<table class="table table-striped " id="myTable">'+
             '<thead>'+
             '<tr>'+
             '<th><input type="checkbox" id="headcheckbox" onchange="checkAllData(this)" name="chk[]" checked/>&nbsp;</th>';
     for (let i=0; i<crawlerDataFields.length; i++) {
+        if (crawlerDataFields[i] == "audioFilename"){
+            ele += '<th onclick="sortTable('+(i+1)+')" hidden>'+crawlerDataFields[i]+'</th>';
+            continue;
+        }
         ele += '<th onclick="sortTable('+(i+1)+')">'+crawlerDataFields[i]+'</th>';
     }
     ele += '<th>View</th>';
@@ -63,15 +83,33 @@ function createCrawlerBrowseTable(crawlerDataFields, crawlerData, shareMode=0, t
             // {% for data in sdata %}
     for (let i=0; i<crawlerData.length; i++) {
         aData = crawlerData[i];
+        let audioCount = i+1;
         ele += '<tr>'+
                 '<td><input type="checkbox" id="lexemecheckbox" onchange="checkData(this)" name="name1" checked /></td>';
         for (let j=0; j<crawlerDataFields.length; j++) {
             let field = crawlerDataFields[j];
+            // console.log(field);
             if (field in aData) {
+                if (field == "audioFilename") {
+                    ele += '<td id='+field+' hidden>'+aData[field]+'</td>';
+                    continue;
+                }
                 if (field == 'Crawler Audio') {
                     ele += '<td id='+field+'>'+
                             '<audio controls><source src="'+aData[field]+'" type="audio/wav"></audio>'+
                             '</td>';
+                }
+                else if (field == 'Audio File') {
+                    ele += '<td>'+
+                            '<button type="button" id="playaudio_'+audioCount+'" class="btn btn-primary playaudioclass">'+
+                            '<span class="glyphicon glyphicon-play" aria-hidden="true"></span>'+
+                            // ' Play Audio'+
+                            '</button>'+
+                            '</td>';
+                    // ele += '<td id='+field+'>'+
+                            // '<audio controls oncontextmenu="return false" controlslist="nofullscreen nodownload noremoteplayback noplaybackrate">'+
+                            // '<source src="'+aData[field]+'" type="audio/wav"></audio>'+
+                            // '</td>';
                 }
                 else if (field == 'Crawler Video') {
                     ele += '<td id='+field+'>'+ 
@@ -98,12 +136,12 @@ function createCrawlerBrowseTable(crawlerDataFields, crawlerData, shareMode=0, t
         }
         ele += '<td><button type="button" id="viewcrawler" class="btn btn-primary viewdataclass">'+
                     '<span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>'+
-                    ' View Data'+
+                    // ' View Data'+
                     '</button></td>';
         if (browseActionSelectedOption === 'Delete') {
             ele += '<td><button type="button" id="deletecrawler" class="btn btn-danger deletedataclass">'+
                     '<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>'+
-                    ' Delete Data'+
+                    // ' Delete Data'+
                     '</button></td>';
 
         }
@@ -142,9 +180,105 @@ function createCrawlerBrowse(newData) {
     if (shareMode >= 4) {
         createBrowseActions(projectOwner, currentUsername);
     }
-    createCrawlerBrowseTable(crawlerDataFields, crawlerData, shareMode, totalRecords, defaultDataType)
+    createCrawlerBrowseTable(crawlerDataFields,
+        crawlerData,
+        shareMode,
+        totalRecords,
+        defaultDataType)
     eventsMapping();
     createPagination(totalRecords);
+}
+
+function getSingleAudioBrowseAction(element) {
+
+    var audioInfo = {}
+    var $row = $(element).closest("tr");    // Find the row
+    var audioId = $row.find("#audioId").text(); // Find the text
+    var audioFilename = $row.find("#audioFilename").text(); // Find the text
+    audioInfo[audioId] = audioFilename
+    console.log(audioInfo);
+
+    return audioInfo
+}
+
+function getAudioBrowseInfo() {
+    let activeSpeakerId = document.getElementById('sourceidsdropdown').value;
+    let audioFilesCount = Number(document.getElementById('sourcedatacountdropdown').value);
+    let browseActionSelectedOption = '';
+    try {
+        browseActionSelectedOption = document.getElementById('browsedataactiondropdowns').value;
+        if (browseActionSelectedOption === 'Delete') {
+            browseActionSelectedOption = 0
+        }
+        else if (browseActionSelectedOption === 'Revoke') {
+            browseActionSelectedOption = 1
+        }
+    }
+    catch (err) {
+        browseActionSelectedOption = 0
+    }
+    let audioBrowseInfo = {
+        "activeSpeakerId": activeSpeakerId,
+        "audioFilesCount": audioFilesCount,
+        "browseActionSelectedOption": browseActionSelectedOption
+    }
+
+    return audioBrowseInfo
+}
+
+function audioEnded(ele) {
+    let eleId = ele.id;
+    let audioBtnId = eleId.replaceAll("_audioEle", "");
+    // console.log(eleId, audioBtnId);
+    let audioBtnEle = document.getElementById(audioBtnId);
+    togglePlayPause(audioBtnEle, 'playaudioclass', 'play');
+}
+
+function togglePlayPause(ele, state, icon, audioSource=undefined) {
+    let togglePlayPause = '<button type="button" id="'+ele.id+'" class="btn btn-primary '+state+'">'+
+                                    '<span class="glyphicon glyphicon-'+icon+'" aria-hidden="true"></span>'+
+                                    // ' Play Audio'+
+                                    '</button>';
+    if (audioSource) {
+        let embededAudio = '<audio id="'+ele.id+'_audioEle" onended="audioEnded(this)" controls autoplay hidden oncontextmenu="return false" controlslist="nofullscreen nodownload noremoteplayback noplaybackrate">'+
+                        '<source src="'+audioSource+'" type="audio/wav"></audio>';
+        togglePlayPause += embededAudio;
+    }
+    ele.parentNode.innerHTML = togglePlayPause;
+    eventsMapping();
+}
+
+function audioBrowseActionPlay(audioInfo, audioCountInfo) {
+    console.log(audioCountInfo);
+    console.log(audioCountInfo.id);
+    let audioBrowseInfo = getAudioBrowseInfo();
+    console.log(activePageNumber);
+    audioBrowseInfo['pageId'] = activePageNumber;
+    let data_1 = {
+        audioInfo: audioInfo,
+        audioBrowseInfo: audioBrowseInfo
+    }
+    $.post( "/lifedata/crawleraudiobrowseactionplay", {
+        a: JSON.stringify(data_1)
+    //   }),
+      })
+      .done(function(data){
+        console.log(data);
+        // console.log(audioCountInfo.id);
+        createCrawlerBrowseTable(data.audioDataFields,
+            data.audioData,
+            data.shareMode,
+            data.totalRecords,
+            data.shareChecked,
+            data.downloadChecked);
+        eventsMapping();
+        console.log(activePageNumber);
+        createPagination(data.totalRecords, activePageNumber);
+        audioCountInfo = document.getElementById(audioCountInfo.id);
+        // console.log(audioCountInfo.id);
+        let audioSource = data.audioSource;
+        togglePlayPause(audioCountInfo, 'pauseaudioclass', 'pause', audioSource)
+      });
 }
 
 function eventsMapping() {
@@ -215,6 +349,22 @@ function eventsMapping() {
     $("#loadnextbutton").click(function() {
         loadNextNData();
     });
+
+    // play single audio
+    $(".playaudioclass").click(function() {
+        let audioInfo = getSingleAudioBrowseAction(this);
+        audioBrowseActionPlay(audioInfo, this);
+    });
+    $(".pauseaudioclass").click(function() {
+        let playingAudioId = this.id;
+        // console.log(playingAudioId);
+        let playingAudioEleId = playingAudioId + "_audioEle";
+        let playingAudioEle = document.getElementById(playingAudioEleId);
+        // console.log(playingAudioEleId, playingAudioEle);
+        playingAudioEle.pause();
+        togglePlayPause(this, 'playaudioclass', 'play');
+        
+    });
 }
 
 function updateCrawlerBrowseTable() {
@@ -226,8 +376,13 @@ function updateCrawlerBrowseTable() {
         type : 'GET',
         url : '/lifedata/updatecrawlerbrowsetable'
       }).done(function(data){
+        // console.log(data);
         // console.log(data.crawledDataFields, data.crawledData, data.shareMode);
-        createCrawlerBrowseTable(data.crawledDataFields, data.crawledData, data.shareMode, data.totalRecords, data.dataType);
+        createCrawlerBrowseTable(data.crawledDataFields,
+            data.crawledData,
+            data.shareMode,
+            data.totalRecords,
+            data.dataType);
         eventsMapping();
         createPagination(data.totalRecords);
       });
@@ -413,6 +568,7 @@ function createPagination(totalRecords, active=1) {
 function changeCrawlerBrowsePage(pageId) {
     // console.log(pageId);
     let crawlerBrowseInfo = getCrawlerBrowseInfo();
+    activePageNumber = Number(pageId);
     crawlerBrowseInfo['pageId'] = Number(pageId);
     $.ajax({
         data : {
@@ -421,8 +577,13 @@ function changeCrawlerBrowsePage(pageId) {
         type : 'GET',
         url : '/lifedata/crawlerbrowsechangepage'
       }).done(function(data){
+        console.log(data);
         // console.log(data.crawledDataFields, data.crawledData, data.shareMode);
-        createCrawlerBrowseTable(data.crawledDataFields, data.crawledData, data.shareMode, data.totalRecords, data.dataType);
+        createCrawlerBrowseTable(data.crawledDataFields,
+            data.crawledData,
+            data.shareMode,
+            data.totalRecords,
+            data.dataType);
         eventsMapping();
         createPagination(data.totalRecords, data.activePage);
     });
