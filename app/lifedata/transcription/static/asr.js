@@ -1,8 +1,15 @@
+
+// {
+//   "name": "BHASHINI",
+//   "value": "bhashini"
+//   }]
+
 $('#myASRModalButton').on('click', function (e) {
   console.log("Opened!")
   model_list = document.getElementById('myASRModelListSelect2')
   console.log('All options', model_list, model_list.length)
   if (model_list.length == 0) {
+    
     $.ajax({
       url: '/lifemodels/getModelList',
       type: 'POST',
@@ -19,6 +26,56 @@ $('#myASRModalButton').on('click', function (e) {
         document.getElementById("asrspeakeriduploaddropdown").value = activeSpeaker;
         document.getElementById("asraudiofileid").value = filename
         document.getElementById("asraudiodurationid").value = audioDuration
+
+        asrmodels = [{
+          "text": "HF Local",
+          "id": "hfpipeline"
+          },
+        {
+          "text": "HF Inference API",
+          "id": "hfinference"
+        }
+        ];
+
+        boundaryLevels = [{
+          "text": "",
+          "id": ""
+        },
+        {
+          "text": "Sentence",
+          "id": "sentence"
+        },
+        {
+          "text": "Word",
+          "id": "word"
+        },
+        {
+          "text": "Word Segment (only for Whisper)",
+          "id": "wordseg"
+        },  
+        {
+          "text": "Character (not for whisper)",
+          "id": "character"
+        }
+        ];
+        
+        // console.log('Models list', asrmodels)
+        $('#transcribeUsingSelect2Id').select2({
+            // tags: true,
+        placeholder: 'Select Transcription Source',
+        dropdownParent: $("#myASRModal"),
+        data: asrmodels
+        // allowClear: true
+        });
+        
+        $('#overwriteMyBoundariesid').select2({
+            // tags: true,
+        placeholder: 'Select Boundary Level',
+        dropdownParent: $("#myASRModal"),
+        data: boundaryLevels,
+        allowClear: true
+        });
+        
 
         for (entry of data.models) {
           $('#myASRModelListSelect2').select2({

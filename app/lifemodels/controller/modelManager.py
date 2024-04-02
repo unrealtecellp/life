@@ -19,6 +19,7 @@ def get_hf_tokens(app_config, current_username):
     # current_username = getcurrentusername()
     hf_config = app_config.find_one({'configtype': 'huggingfacemodel'}, {
                                     '_id': 0, 'configparams.usersData': 1})
+    token = ''
     if not hf_config is None:
         param_data = hf_config['configparams']['usersData']
         user_data = param_data.get(current_username, {})

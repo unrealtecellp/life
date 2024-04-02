@@ -3,6 +3,8 @@ from app.controller import (
     getcurrentusername,
     updateuserprojects
 )
+
+
 from flask import flash, redirect, url_for
 import re
 
@@ -551,3 +553,30 @@ def get_langs_related_by_country(languages, lang_name):
             for lang in langs_info:
                 all_langs[lang['codeISO6393']] = lang['languageNameISO639']
     return all_langs
+
+
+def get_language_codes(languages, lang_name):
+    lang_info = languages.find_one({'$or': [{'codeISO6393': lang_name},
+                                            {'part2bISO639': lang_name},
+                                            {'part2tISO639': lang_name},
+                                            {'part1ISO639': lang_name},
+                                            {'languageNameISO639': lang_name},
+                                            {'glottologName': lang_name}]},
+                                   {'codeISO6393': 1,
+                                    'languageNameISO639': 1,
+                                    'part2bISO639': 1,
+                                    'part2tISO639': 1,
+                                    'part1ISO639': 1,
+                                    'glottologName': 1,
+                                    '_id': 0})
+    return lang_info
+
+
+def get_bcp_language_code(languages, lang_name):
+    lang_info = get_language_codes(languages, lang_name)
+    code = lang_info['part1ISO639']
+    iso639 = lang_info['codeISO6393']
+    if code == '':
+        code = iso639
+
+    return code

@@ -80,6 +80,10 @@ Werkzeug==2.2.3
 WTForms==3.0.1
 XlsxWriter==3.0.8
 xmltodict==0.13.0
+transformers
+huggingface_hub
+accelerate
+sentencex
 zipp==3.14.0
 conllu
 conll-df

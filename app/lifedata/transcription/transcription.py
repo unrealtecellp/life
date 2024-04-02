@@ -39,6 +39,7 @@ from app.lifedata.transcription.controller import (
 )
 
 from app.lifemodels.controller import modelManager
+from app.languages.controller import languageManager
 
 from flask_login import login_required
 import os
@@ -1141,19 +1142,26 @@ def makeboundary():
     return redirect(url_for('lifedata.transcription.home'))
 
 
-# makeboundary route
+# maketranscription route
 @transcription.route('/maketranscription', methods=['GET', 'POST'])
 @login_required
 def maketranscription():
-    projects, userprojects, transcriptions, lifeappconfigs = getdbcollections.getdbcollections(mongo,
-                                                                                               'projects',
-                                                                                               'userprojects',
-                                                                                               'transcriptions',
-                                                                                               'lifeappconfigs')
+    projects, userprojects, transcriptions, lifeappconfigs, projectsform, languages = getdbcollections.getdbcollections(mongo,
+                                                                                                                        'projects',
+                                                                                                                        'userprojects',
+                                                                                                                        'transcriptions',
+                                                                                                                        'lifeappconfigs',
+                                                                                                                        'projectsform',
+                                                                                                                        'languages')
     current_username = getcurrentusername.getcurrentusername()
     activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
                                                                   userprojects)
     projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
+    audio_language = getactiveprojectform.getaudiolanguage(
+        projectsform, projectowner, activeprojectname)
+    audio_lang_code = languageManager.get_bcp_language_code(
+        languages, audio_language)
+
     if request.method == 'POST':
         run_vad = False
         run_asr = True
@@ -1163,6 +1171,15 @@ def maketranscription():
 
         data = dict(request.form.lists())
         logger.debug("Form data %s", data)
+        transcription_source = data['transcribeUsingSelect2'][0]
+
+        if transcription_source == 'hfinference':
+            if not 'hfinferenceagree' in data:
+                # flash('')
+                flash(
+                    'We do not have sufficient permission to send the data to HF Inference Server.', category='error')
+                return redirect(url_for('lifedata.transcription.home'))
+
         speakerId = data['asrSpeakerId'][0]
         # new_audio_file = request.files.to_dict()
         audio_filename = data['audiofile'][0]
@@ -1199,7 +1216,11 @@ def maketranscription():
             get_audio_json = True
 
         if 'overwrite-my-boundaries' in data:
-            create_boundaries = True
+            boundary_level = data['overwrite-my-boundaries'][0].strip()
+            if boundary_level == '':
+                create_boundaries = False
+            else:
+                create_boundaries = True
         else:
             create_boundaries = False
 
@@ -1245,7 +1266,9 @@ def maketranscription():
             'model_type': "hfapi",
             'model_params': {
                 'model_path': model_name,
-                'model_api': 'huggingface_inference'
+                'model_api': transcription_source,
+                'boundary_level': boundary_level,
+                'language_code': audio_lang_code
             },
             'target': script_name
         }

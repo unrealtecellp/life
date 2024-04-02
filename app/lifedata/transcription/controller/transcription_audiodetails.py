@@ -2153,18 +2153,50 @@ def update_existing_text_grid(text_grid, transcription_type, update_data={}, upd
     return text_grid
 
 
+def update_blank_text_grid(mongo, text_grid, transcription_type, update_data={}, update_field='transcription'):
+    # transcription_scripts = get_current_transcription_langscripts(mongo)
+    # translation_langscripts = get_current_translation_langscripts(mongo)
+    logger.debug('Existing TG %s', text_grid)
+    logger.debug('Update Data %s', update_data)
+    logger.debug('Transcription type %s', transcription_type)
+    text_grid_boundaries = update_data[transcription_type][update_field]
+
+    for boundary_id, boundary_elements in text_grid_boundaries.items():
+        logger.debug('Boundary elements %s', boundary_elements)
+        # all_fields=text_grid[boundary_id]
+        # if update_field in update_data:
+
+        # logger.debug('Data to update %s', data_to_update)
+        # logger.debug(
+        #     'Original Data %s', text_grid[transcription_type][boundary_id][update_field])
+        data_to_update = update_data[transcription_type][update_field][boundary_id]
+
+        boundary_vals = data_to_update.pop('boundary')
+        logger.debug('Data to update %s', data_to_update)
+        logger.debug('Boundary vals %s', boundary_vals)
+
+        start_boundary = boundary_vals['start']
+        end_boundary = boundary_vals['end']
+        # start_boundary = boundary_elements['boundary']['start']
+        # end_boundary = boundary_elements['boundary']['end']
+
+        text_grid = generate_new_boundary(mongo, text_grid, start_boundary, end_boundary,
+                                          transcription_type, boundary_id)
+
+        text_grid[transcription_type][boundary_id][update_field] = data_to_update
+
+    # data_to_update = update_data[transcription_type]
+
+    # text_grid[transcription_type] = data_to_update
+    logger.debug('Updated TG %s', text_grid)
+    return text_grid
+
+
 def update_text_grid(mongo, text_grid, new_boundaries, transcription_type, include_transcription=False, transcriptions={}, boundary_offset_value=0.0, update_existing=False):
     logger.debug('Data type %s', transcription_type)
 
     # if include_transcription:
     #     transcription_scripts = list(transcriptions.keys())
-
-    transcription_scripts = get_current_transcription_langscripts(mongo)
-    # transcription_scripts = list(transcriptions.keys())
-    logger.debug('All transcription lang scripts %s', transcription_scripts)
-
-    translation_langscripts = get_current_translation_langscripts(mongo)
-    logger.debug('All translation lang scripts %s', translation_langscripts)
 
     # logger.debug('Boundaries to update text grid', new_boundaries)
     logger.debug('Total expected boundaries %s', len(new_boundaries))
@@ -2195,55 +2227,69 @@ def update_text_grid(mongo, text_grid, new_boundaries, transcription_type, inclu
         #     boundary_id_end = str(end_boundary).replace('.', '')[:4]
 
         boundary_id = generate_boundary_id(current_boundary)
+        text_grid = generate_new_boundary(mongo, text_grid, start_boundary, end_boundary,
+                                          transcription_type, boundary_id)
 
-        text_grid[transcription_type][boundary_id] = {}
         # text_grid[transcription_type][boundary_id]['start'] = float(
         #     start_boundary - boundary_offset_value)
         # text_grid[transcription_type][boundary_id]['end'] = float(
         #     end_boundary - boundary_offset_value)
 
-        text_grid[transcription_type][boundary_id]['start'] = start_boundary
-        text_grid[transcription_type][boundary_id]['end'] = end_boundary
-        text_grid[transcription_type][boundary_id]['speakerId'] = ""
-        text_grid[transcription_type][boundary_id]['sentenceId'] = ""
-        text_grid[transcription_type][boundary_id]['transcription'] = {}
-        text_grid[transcription_type][boundary_id]['translation'] = {}
-        text_grid[transcription_type][boundary_id]['sentencemorphemicbreak'] = {}
-        text_grid[transcription_type][boundary_id]['morphemes'] = {}
-        text_grid[transcription_type][boundary_id]['gloss'] = {}
-        text_grid[transcription_type][boundary_id]['pos'] = {}
+        # text_grid[boundary_id_key+'.transcription'] = ""
 
-        if transcription_type == 'sentence':
-            text_grid[transcription_type][boundary_id]['tags'] = ""
-
-        # for langscript_code, script_name in transcription_scripts.items():
-        #     logger.debug("langscript_code: %s\nscript_name: %s",
-        #                  langscript_code, script_name)
-        for script_name in transcription_scripts:
-            logger.debug("Transcription script name %s", script_name)
-            if include_transcription and script_name in transcriptions:
-                # text_grid[transcription_type][boundary_id]['transcription'][script_name] = transcriptions[script_name][i]
-                text_grid[transcription_type][boundary_id]['transcription'][script_name] = transcriptions[
-                    transcription_type]['transcription'][boundary_id][script_name]
-
-            else:
-                text_grid[transcription_type][boundary_id]['transcription'][script_name] = ""
-
-            text_grid[transcription_type][boundary_id]['sentencemorphemicbreak'][script_name] = ""
-            text_grid[transcription_type][boundary_id]['morphemes'][script_name] = ""
-            text_grid[transcription_type][boundary_id]['gloss'][script_name] = ""
-        if (len(translation_langscripts) != 0):
-            for langscript_code, script_name in translation_langscripts.items():
-                text_grid[transcription_type][boundary_id]['translation'][langscript_code] = ""
-        else:
-            text_grid[transcription_type][boundary_id]['translation'] = {}
-
-            # text_grid[boundary_id_key+'.transcription'] = ""
-
-            # logger.debug(f"========Current Text Grid(%i)================ %s", i)
-            # logger.debug(text_grid)
+        # logger.debug(f"========Current Text Grid(%i)================ %s", i)
+        # logger.debug(text_grid)
     logger.debug('Boundary Offset Value %s', boundary_offset_value)
     logger.debug('Output Text Grid %s', pformat(text_grid))
+
+    return text_grid
+
+
+def generate_new_boundary(mongo, text_grid, start_boundary, end_boundary, transcription_type, boundary_id):
+    text_grid[transcription_type][boundary_id] = {}
+
+    transcription_scripts = get_current_transcription_langscripts(mongo)
+    # transcription_scripts = list(transcriptions.keys())
+    logger.debug('All transcription lang scripts %s', transcription_scripts)
+
+    translation_langscripts = get_current_translation_langscripts(mongo)
+    logger.debug('All translation lang scripts %s', translation_langscripts)
+
+    text_grid[transcription_type][boundary_id]['start'] = start_boundary
+    text_grid[transcription_type][boundary_id]['end'] = end_boundary
+    text_grid[transcription_type][boundary_id]['speakerId'] = ""
+    text_grid[transcription_type][boundary_id]['sentenceId'] = ""
+    text_grid[transcription_type][boundary_id]['transcription'] = {}
+    text_grid[transcription_type][boundary_id]['translation'] = {}
+    text_grid[transcription_type][boundary_id]['sentencemorphemicbreak'] = {}
+    text_grid[transcription_type][boundary_id]['morphemes'] = {}
+    text_grid[transcription_type][boundary_id]['gloss'] = {}
+    text_grid[transcription_type][boundary_id]['pos'] = {}
+
+    if transcription_type == 'sentence':
+        text_grid[transcription_type][boundary_id]['tags'] = ""
+
+    # for langscript_code, script_name in transcription_scripts.items():
+    #     logger.debug("langscript_code: %s\nscript_name: %s",
+    #                  langscript_code, script_name)
+    for script_name in transcription_scripts:
+        logger.debug("Transcription script name %s", script_name)
+        # if include_transcription and script_name in transcriptions:
+        #     # text_grid[transcription_type][boundary_id]['transcription'][script_name] = transcriptions[script_name][i]
+        #     text_grid[transcription_type][boundary_id]['transcription'][script_name] = transcriptions[
+        #         transcription_type]['transcription'][boundary_id][script_name]
+
+        # else:
+        text_grid[transcription_type][boundary_id]['transcription'][script_name] = ""
+
+        text_grid[transcription_type][boundary_id]['sentencemorphemicbreak'][script_name] = ""
+        text_grid[transcription_type][boundary_id]['morphemes'][script_name] = ""
+        text_grid[transcription_type][boundary_id]['gloss'][script_name] = ""
+    if (len(translation_langscripts) != 0):
+        for langscript_code, script_name in translation_langscripts.items():
+            text_grid[transcription_type][boundary_id]['translation'][langscript_code] = ""
+    else:
+        text_grid[transcription_type][boundary_id]['translation'] = {}
 
     return text_grid
 
@@ -2542,7 +2588,7 @@ def generate_boundary_id(current_boundary):
         format(start_boundary, '.2f'), 5)
     boundary_id_end = get_boundary_id_from_number(
         format(end_boundary, '.2f'), 5)
-    boundary_id = boundary_id_end+boundary_id_start
+    boundary_id = boundary_id_start+boundary_id_end
     return boundary_id
 
 
@@ -2644,7 +2690,10 @@ def get_slices_and_text_grids(mongo,
                 {'start': boundaries[0], 'end': boundaries[-1]}]
             audio_chunk_boundary_lists = [boundaries]
 
+        logger.debug('Total audio chunk boundaries %s Total offset values %s Total slice offset values %s', len(
+            audio_chunk_boundary_lists), len(offset_values), len(slice_offset_values))
         for audio_chunk_boundary_list, offset_value in zip(audio_chunk_boundary_lists, offset_values):
+            logger.debug('Length of all text grids %s', len(all_text_grids))
             blank_text_grid = get_blank_text_grid()
             # {
             #     "discourse": {},
@@ -2654,6 +2703,7 @@ def get_slices_and_text_grids(mongo,
             # }
             current_text_grid = generate_text_grid(
                 mongo, blank_text_grid, audio_chunk_boundary_list, transcriptions, transcription_type, max_pause_boundary, min_boundary_size, offset_value=offset_value)
+            print('length of current text grid %s', len(current_text_grid))
             all_text_grids.append(current_text_grid)
 
         # if run_asr and 'transcription' in all_model_names:
@@ -2661,33 +2711,33 @@ def get_slices_and_text_grids(mongo,
         # audio_duration, audio_file = get_audio_duration_from_file(audio_path)
         logger.info('Running ASR on file %s', audio_path)
         audio_file = AudioSegment.from_file(audio_path)
-        if create_new_boundaries:
-            boundaries, __, vad_model_name, vad_start, vad_end, vad_model_params = generate_boundaries(vad_model,
-                                                                                                       max_pause_boundary,
-                                                                                                       audio_path
-                                                                                                       )
-            model_details.update([('vad_model_name', vad_model_name), ('vad_model_params',
-                                                                       vad_model_params), ('vad_start', vad_start), ('vad_end', vad_end)])
-            audio_chunk_boundaries = [
-                {'start': boundaries[0], 'end': boundaries[-1]}]
-            audio_chunk_boundary_lists = [boundaries]
+        # if create_new_boundaries:
+        #     boundaries, __, vad_model_name, vad_start, vad_end, vad_model_params = generate_boundaries(vad_model,
+        #                                                                                                max_pause_boundary,
+        #                                                                                                audio_path
+        #                                                                                                )
+        #     model_details.update([('vad_model_name', vad_model_name), ('vad_model_params',
+        #                                                                vad_model_params), ('vad_start', vad_start), ('vad_end', vad_end)])
+        #     audio_chunk_boundaries = [
+        #         {'start': boundaries[0], 'end': boundaries[-1]}]
+        #     audio_chunk_boundary_lists = [boundaries]
 
-            blank_text_grid = get_blank_text_grid()
-            all_text_grids = []
-            for audio_chunk_boundary_list in audio_chunk_boundary_lists:
-                current_text_grid = generate_text_grid(
-                    mongo, blank_text_grid, audio_chunk_boundary_list, transcriptions, transcription_type, max_pause_boundary, min_boundary_size)
-                all_text_grids.append(current_text_grid)
-            # audio_file = AudioSegment.from_file(audio_path)
+        #     blank_text_grid = get_blank_text_grid()
+        #     all_text_grids = []
+        #     for audio_chunk_boundary_list in audio_chunk_boundary_lists:
+        #         current_text_grid = generate_text_grid(
+        #             mongo, blank_text_grid, audio_chunk_boundary_list, transcriptions, transcription_type, max_pause_boundary, min_boundary_size)
+        #         all_text_grids.append(current_text_grid)
+        # audio_file = AudioSegment.from_file(audio_path)
 
-            # for i, current_boundary in enumerate(boundaries):
-            #     start_boundary = round(float(current_boundary['start']), 2)
-            #     end_boundary = round(float(current_boundary['end']), 2)
-            #     boundary_id = generate_boundary_id(current_boundary)
-            #     all_audio_bytes[boundary_id] = get_audio_chunk_bytes(
-            #         audio_file, start_boundary, end_boundary, boundary_id, audio_path)
-                # current_audio_file_segment = FileStorage(
-                # audio_segment_bytes, filename=current_audio_filename)
+        # for i, current_boundary in enumerate(boundaries):
+        #     start_boundary = round(float(current_boundary['start']), 2)
+        #     end_boundary = round(float(current_boundary['end']), 2)
+        #     boundary_id = generate_boundary_id(current_boundary)
+        #     all_audio_bytes[boundary_id] = get_audio_chunk_bytes(
+        #         audio_file, start_boundary, end_boundary, boundary_id, audio_path)
+        # current_audio_file_segment = FileStorage(
+        # audio_segment_bytes, filename=current_audio_filename)
         # else:
         # audio_file = AudioSegment.from_file(audio_path)
         logger.info('Running ASR on existing boundaries')
@@ -2696,7 +2746,7 @@ def get_slices_and_text_grids(mongo,
                      all_text_grids, len(all_text_grids))
         logger.debug('Current Text Grid %s', current_text_grid)
 
-        if len(current_text_grid) > 0:
+        if (len(current_text_grid) > 0) and (not create_new_boundaries):
             for boundary_id, boundary_details in current_text_grid.items():
                 start_boundary = round(float(boundary_details['start']), 2)
                 end_boundary = round(float(boundary_details['end']), 2)
@@ -2713,15 +2763,17 @@ def get_slices_and_text_grids(mongo,
             boundary_id = generate_boundary_id(current_boundary)
             all_audio_bytes[boundary_id] = get_audio_chunk_bytes(
                 audio_file, start_boundary, end_boundary, boundary_id, audio_path)
-            create_new_boundaries = True
+
+            # create_new_boundaries = True
+
+            blank_text_grid = get_blank_text_grid()
+            all_text_grids = [blank_text_grid]
+
             audio_chunk_boundaries = [
                 {'start': start_boundary, 'end': end_boundary}]
             boundaries.append(
                 {'start': start_boundary, 'end': end_boundary})
             audio_chunk_boundary_lists = [boundaries]
-
-            blank_text_grid = get_blank_text_grid()
-            all_text_grids = []
             for audio_chunk_boundary_list in audio_chunk_boundary_lists:
                 current_text_grid = generate_text_grid(
                     mongo, blank_text_grid, audio_chunk_boundary_list, transcriptions, transcription_type, max_pause_boundary, min_boundary_size)
@@ -2762,9 +2814,15 @@ def get_slices_and_text_grids(mongo,
         #             mongo, blank_text_grid, audio_chunk_boundary_list, transcriptions, transcription_type, max_pause_boundary, min_boundary_size)
         #         all_text_grids.append(current_text_grid)
         # else:
-        current_text_grid = all_text_grids[0]
-        current_text_grid = update_existing_text_grid(
-            current_text_grid, transcription_type, transcriptions)
+
+        if create_new_boundaries:
+            current_text_grid = get_blank_text_grid()
+            current_text_grid = update_blank_text_grid(
+                mongo, current_text_grid, transcription_type, transcriptions)
+        else:
+            current_text_grid = all_text_grids[0]
+            current_text_grid = update_existing_text_grid(
+                current_text_grid, transcription_type, transcriptions)
         all_text_grids = [current_text_grid]
 
     else:
