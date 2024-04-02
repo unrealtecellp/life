@@ -5497,7 +5497,6 @@ def syncspeakermetadata():
         userprojects, current_username, activeprojectname)
     allspeakerdetails, alldatalengths, allkeys = speakerDetails.getspeakerdetails(
         activeprojectname, speakermeta)
-    print("hello")
 
     find_task = accesscodedetails.find_one({ "projectname": activeprojectname},{"task":1,"_id": 0})
     # print(find_task)
