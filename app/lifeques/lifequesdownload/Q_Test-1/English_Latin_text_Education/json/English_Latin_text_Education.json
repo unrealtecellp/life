@@ -1,0 +1,42 @@
+[
+  {
+    "quesId": "Q20230416152953133470",
+    "Q_Id": "ED-01",
+    "Domain": "Education",
+    "Elicitation Method": "Narration",
+    "sentence": "What role does your family play in your educations?",
+    "hint": ""
+  },
+  {
+    "quesId": "Q20230416152953135021",
+    "Q_Id": "ED-02",
+    "Domain": "Education",
+    "Elicitation Method": "Narration",
+    "sentence": "What has education taught you in your life as you grew up?",
+    "hint": ""
+  },
+  {
+    "quesId": "Q20230416152953136408",
+    "Q_Id": "ED-03",
+    "Domain": "Education",
+    "Elicitation Method": "Narration",
+    "sentence": "In what way language plays an important role in education? (in the sense teaching in local dialect or english)",
+    "hint": ""
+  },
+  {
+    "quesId": "Q20230416152953137754",
+    "Q_Id": "ED-04",
+    "Domain": "Education",
+    "Elicitation Method": "Narration",
+    "sentence": "Why did you choose the subject/degree you took as a student?",
+    "hint": ""
+  },
+  {
+    "quesId": "Q20230416152953138989",
+    "Q_Id": "ED-05",
+    "Domain": "Education",
+    "Elicitation Method": "Narration",
+    "sentence": "What do you want to learn about in shool/college?",
+    "hint": ""
+  }
+]

@@ -598,29 +598,69 @@
               <input class="col-md-6" type="text" id="asraudiodurationid" name="audioduration" readonly>
             </div>
             <hr>
+            <div class="input-group col-md-12" id="transcribeUsingSelect2-divid">
+              <label for="transcribeUsingSelect2Id">Transcribe using: </label><br/>
+              <select class="custom-select custom-select-sm" id="transcribeUsingSelect2Id" name="transcribeUsingSelect2" style="width: 50%;">
+              </select>
+              <br>
+              *<i><font color="red"> HF Inference API sends the data to HuggingFace server for inference.
+                <!-- which is governed
+                by their privacy and might be stored on their server. However, since they might have better hardware capabilities
+                it might be quicker. HF Local runs inference using HF library (and its pipeline module) on the local server 
+                and it might be slower and generate errors for some models. -->
+              </font></i>
+            </div>
+            <div class="input-group col-md-12" id="hfinferenceagree-divid">
+              <input type="checkbox" id="hfinferenceagreeid" name="hfinferenceagree">
+              <label for="hfinferenceagreeid"> I agree to HuggingFace Privacy Policy for using HF Inference API.
+                <!-- and understand that my data will be sent to an external server (that being made available by HuggingFace) for inference. -->
+              </label>
+              <br>
+              <!-- <i>
+                  <font color="red">*If not checked, no output will be generated if HF Inference API is selected above</font>
+                </i> -->
+            </div>
+            <hr/>
             <div class="input-group col-md-12 modelSource" id="asrselectdivid">
               <label for="myASRModelListSelect2">Model: </label><br />
               <select class="custom-select custom-select-sm" id="myASRModelListSelect2" name="modelId" style="width: 50%;"> 
 
               </select>             
             </div>
-            <br>
+            <hr>
             <div class="input-group col-md-12 targetScript" id="asrtargetdivid">
               <label for="myASRScriptListSelect2">Target Script: </label><br />
               <select class="custom-select custom-select-sm" id="myASRScriptListSelect2" name="scriptName" style="width: 50%;">
             </select>
             </div>
-            <div class="input-group col-md-4" id="overwrite-my-boundaries-divid">
-              <input type="checkbox" id="overwrite-my-boundariesid" name="overwrite-my-boundaries">
-              <label for="overwrite-my-boundariesid">Create New Boundaries</label>
-              <!-- <i>
-                <font color="red">*It will overwrite any boundaries creeated earlier</font>
-              </i> -->
+            <hr/>
+            <div class="input-group col-md-8" id="overwrite-my-boundaries-divid">
+              <!-- <input type="checkbox" id="overwrite-my-boundariesid" name="overwrite-my-boundaries"> -->
+              <label for="overwrite-my-boundariesid">Create New Boundaries at level: </label><br/>
+              <select class="custom-select custom-select-sm" id="overwriteMyBoundariesid" name="overwrite-my-boundaries"
+                style="width: 50%;">
+              </select>
+              <br/>
+              <i>
+                <font color="red">*It will force inference on Local server</font>
+              </i>
             </div>
+            <!-- <div class="input-group col-md-8" id="sentence-delimiter-divid">
+              <input type="checkbox" id="overwrite-my-boundariesid" name="overwrite-my-boundaries">
+              <label for="sentence-delimiterid">Use sentence delimiter of: </label>
+              <select class="custom-select custom-select-sm" id="sentenceDelimiterid" name="sentence-delimiter"
+                style="width: 50%;">
+              </select>
+              <br />
+              <i>
+                <font color="red">*It will be used if boundary level is 'sentence'</font>
+              </i>
+            </div> -->
+            <hr>
             <div class="input-group col-md-4" id="overwrite-my-transcriptions-divid">
               <input type="checkbox" id="overwrite-my-transcriptionsid" name="overwrite-my-transcriptions">
               <label for="overwrite-my-transcriptionsid">Overwrite my Transcriptions</label>              
-            </div>
+            </div>            
             <hr>            
             <div class="input-group" id="doasr-divid">
               <input class="btn btn-primary asrbtn" id="transcribebtnid" type="submit" value="Transcribe">

@@ -1,0 +1,42 @@
+[
+  {
+    "quesId": "Q20230417211234023903",
+    "Q_Id": "AG_1",
+    "Domain": "Agriculture",
+    "Elicitation Method": "Narration",
+    "sentence": "आपके समाज के लोग किस प्रकार की फसलें उगाते हैं?",
+    "hint": ""
+  },
+  {
+    "quesId": "Q20230417211234025000",
+    "Q_Id": "AG_2",
+    "Domain": "Agriculture",
+    "Elicitation Method": "Narration",
+    "sentence": "फसल उगाने वाले लोगों को क्या कहा जाता है? क्या वे केवल फसल उगाते हैं या वे अन्य गतिविधियों में भी लगे हुए हैं? वे किस तरह की अन्य गतिविधियों में लगे हुए हैं?",
+    "hint": ""
+  },
+  {
+    "quesId": "Q20230417211234025655",
+    "Q_Id": "AG_3",
+    "Domain": "Agriculture",
+    "Elicitation Method": "Narration",
+    "sentence": "अपने समाज में उगाई जाने वाली कम से कम 5 सब्जियों के नाम बताइए?",
+    "hint": ""
+  },
+  {
+    "quesId": "Q20230417211234026414",
+    "Q_Id": "AG_4",
+    "Domain": "Agriculture",
+    "Elicitation Method": "Narration",
+    "sentence": "ये सब्जियां किन महीनों / मौसमों में उगाई जाती हैं?",
+    "hint": ""
+  },
+  {
+    "quesId": "Q20230417211234027473",
+    "Q_Id": "AG_5",
+    "Domain": "Agriculture",
+    "Elicitation Method": "Narration",
+    "sentence": "इन सब्जियों को उगाने की प्रक्रिया क्या है?",
+    "hint": ""
+  }
+]
