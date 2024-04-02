@@ -454,16 +454,16 @@ def get_glottolog_info(langs_collection, dirpath, iso_info):
 def get_models_of_language(languages, lang_name, task_name='asr'):
     all_models = []
     model_info = languages.find_one({'$or': [{'codeISO6393': lang_name},
-                                             {'part2bISO639': lang_name},
-                                             {'part2tISO639': lang_name},
-                                             {'part1ISO639': lang_name},
-                                             {'languageNameISO639': lang_name},
-                                             {'glottologName': lang_name}]},
-                                    {'models.'+task_name: 1,
-                                     'codeISO6393': 1,
-                                     'languageNameISO639': 1,
-                                     '_id': 0})
-    logger.debug('Lang name, %s, models %s', lang_name, model_info)
+                                            {'part2bISO639': lang_name}, 
+                                            {'part2tISO639': lang_name},
+                                            {'part1ISO639': lang_name},
+                                            {'languageNameISO639': lang_name},
+                                            {'glottologName': lang_name}]},
+                                            {'models.'+task_name: 1,
+                                            'codeISO6393': 1,
+                                            'languageNameISO639': 1,
+                                            '_id': 0})
+    # logger.debug ('Lang name, %s, models %s', lang_name, model_info)
     if not model_info is None:
         all_model_details = model_info.get('models', {})
         task_model_details = all_model_details.get(task_name, [])

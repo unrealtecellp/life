@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block title %}
+    LiFE Models Playground
+{% endblock title %}
+
+{% block styles %}
+{{super()}}
+  <link href="{{url_for('.static', filename='lifemodelsplayground.css')}}" rel="stylesheet" />
+  <link href="{{url_for('static', filename='loader.css')}}" rel="stylesheet" />
+{% endblock %}
+
+
+{% block app_content %}
+  <h2>LiFE - Models Playground</h2>
+  <br/>
+  <hr/>
+  <h3>HarmPot: Measuring Harm Potential of Social Media Content in India</h3>
+  <br>
+  <form id="modelplaygroundformid" name="modelplaygroundform" action="/lifemodels/models_playground" method="POST" enctype="multipart/form-data">
+    <div class="input-group col-md-6 modelSource" id="modelplaygroundselectdivid">
+        <label for="myModelPlaygroundListSelect2">Model: </label><br />
+        <select class="form-control" id="myModelPlaygroundListSelect2" name="modelId" multiple="multiple" required style="width: 100%;"> 
+            
+        </select>
+    </div>
+    <br>
+    <br>
+    <div class="input-group col-md-6" id="modelPlaygroundDataForm"></div>
+    <br>
+    <button type="button" id="modelplaygroundformsubmitbtn" class="btn btn btn-primary" onclick="getPrediction(this)">Submit</button>
+  </form>
+  <div id="loader" style="display:none;"></div>
+  <hr>
+
+  <div id="dataAnalysisCharts" style="display:none;">
+    <div class="row" id="dataAnalysisChartsControl"></div>
+    <br>
+    <div id="main" style="width: 600px;height:400px;"></div>
+  </div>
+
+<div class="footer">
+  <p>
+    Developed By:
+    <a href="https://csdronline.org/" target="_blank">
+    <img src="./static/img/new-main-CSDR-3.png" alt="The Council for Strategic and Defense Research (CSDR)" width="150" height="50">
+    </a>
+    &nbsp;
+    <a href="https://www.unreal-tece.co.in/home" target="_blank">
+    <img src="./static/img/logo_unreal_tece.png" alt="UnReaL-TecE LLP" width="50" height="50">
+    </a>
+</p>
+</div>
+    
+{% endblock %}
+
+{% block scripts %}
+{{super()}}
+<script src="{{url_for('.static', filename='lifemodelsplayground.js')}}"></script>
+<script type="text/javascript">modelsList({{ models | tojson | safe }});</script>
+<script src="{{url_for('.static', filename='modelsplaygroundcharts.js')}}"></script>
+{# <script type="text/javascript">createChart({{ data_info | tojson | safe }});</script> #}
+{% endblock %}

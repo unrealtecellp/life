@@ -740,8 +740,9 @@ def deleteques():
 def quesbrowse():
     try:
         new_data = {}
-        projects, userprojects, questionnaires = getdbcollections.getdbcollections(mongo,
+        projects, projectsform, userprojects, questionnaires = getdbcollections.getdbcollections(mongo,
                                                                                    'projects',
+                                                                                   'projectsform',
                                                                                    'userprojects',
                                                                                    'questionnaires')
         current_username = getcurrentusername.getcurrentusername()
@@ -755,6 +756,12 @@ def quesbrowse():
 
         project_shared_with = projectDetails.get_shared_with_users(
             projects, activeprojectname)
+        quesprojectform = getactiveprojectform.getactiveprojectform(projectsform,
+                                                                    projectowner,
+                                                                    activeprojectname)
+        # logger.debug(quesprojectform)
+        text_prompt_key = list(quesprojectform['Prompt Type'][1].keys())[0]
+        # logger.debug(text_prompt_key)
         # project_shared_with.append("latest")
         # speakerids = projects.find_one({"projectname": activeprojectname},
         #                                {"_id": 0, "speakerIds." + current_username: 1})
@@ -778,7 +785,9 @@ def quesbrowse():
         ques_data_list = []
         # if (active_speaker_id != ''):
         total_records, ques_data_list = ques_details.get_n_ques(questionnaires,
-                                                                    activeprojectname)
+                                                                    activeprojectname,
+                                                                    text_prompt_key)
+        # logger.debug(ques_data_list)
         # else:
         #     ques_data_list = []
         # get ques file src
@@ -789,7 +798,7 @@ def quesbrowse():
         new_data['shareInfo'] = shareinfo
         # new_data['speakerIds'] = speakerids
         new_data['quesData'] = new_ques_data_list
-        new_data['quesDataFields'] = ['quesId', 'Q_Id']
+        new_data['quesDataFields'] = ['quesId', 'Q_Id', 'prompt_text']
         new_data['totalRecords'] = total_records
         # new_data['questionnairesBy'] = project_shared_with
     except:
@@ -804,19 +813,22 @@ def quesbrowse():
 @lifeques.route('/updatequesbrowsetable', methods=['GET', 'POST'])
 @login_required
 def updatequesbrowsetable():
-    ques_data_fields = ['quesId', 'Q_Id']
+    ques_data_fields = ['quesId', 'Q_Id', 'prompt_text']
     ques_data_list = []
     try:
         # data through ajax
         ques_browse_info = json.loads(request.args.get('a'))
         # logger.debug('ques_browse_info: %s', ques_browse_info)
-        projects, userprojects, questionnaires = getdbcollections.getdbcollections(mongo,
+        projects, projectsform, userprojects, questionnaires = getdbcollections.getdbcollections(mongo,
                                                                                    'projects',
+                                                                                   'projectsform',
                                                                                    'userprojects',
                                                                                    'questionnaires')
         current_username = getcurrentusername.getcurrentusername()
         activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
                                                                       userprojects)
+        projectowner = getprojectowner.getprojectowner(projects,
+                                                       activeprojectname)
         # logger.debug(ques_browse_info['activeSpeakerId'])
         # active_speaker_id = ques_browse_info['activeSpeakerId']
         ques_file_count = ques_browse_info['quesFilesCount']
@@ -829,8 +841,15 @@ def updatequesbrowsetable():
         #                                                            active_speaker_id,
         #                                                            ques_browse_action=ques_browse_action)
         # if (active_speaker_id != ''):
+
+        quesprojectform = getactiveprojectform.getactiveprojectform(projectsform,
+                                                                    projectowner,
+                                                                    activeprojectname)
+        # logger.debug(quesprojectform)
+        text_prompt_key = list(quesprojectform['Prompt Type'][1].keys())[0]
         total_records, ques_data_list = ques_details.get_n_ques(questionnaires,
                                                                     activeprojectname,
+                                                                    text_prompt_key,
                                                                     # active_speaker_id,
                                                                     # speaker_ques_ids,
                                                                     start_from=0,
@@ -928,19 +947,22 @@ def quesbrowseaction():
 @lifeques.route('/quesbrowsechangepage', methods=['GET', 'POST'])
 @login_required
 def quesbrowsechangepage():
-    ques_data_fields = ['quesId', 'Q_Id']
+    ques_data_fields = ['quesId', 'Q_Id', 'prompt_text']
     ques_data_list = []
     try:
         # data through ajax
         ques_browse_info = json.loads(request.args.get('a'))
         # logger.debug('ques_browse_info: %s', pformat(ques_browse_info))
-        projects, userprojects, questionnaires = getdbcollections.getdbcollections(mongo,
+        projects, projectsform, userprojects, questionnaires = getdbcollections.getdbcollections(mongo,
                                                                                    'projects',
+                                                                                   'projectsform',
                                                                                    'userprojects',
                                                                                    'questionnaires')
         current_username = getcurrentusername.getcurrentusername()
         activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
                                                                       userprojects)
+        projectowner = getprojectowner.getprojectowner(projects,
+                                                       activeprojectname)
         # logger.debug(crawler_browse_info['activeSourceId'])
         # active_speaker_id = ques_browse_info['activeSpeakerId']
         # speaker_ques_ids = ques_details.get_speaker_ques_ids_new(projects,
@@ -957,8 +979,15 @@ def quesbrowsechangepage():
         total_records = 0
         ques_data_list = []
         # if (active_speaker_id != ''):
+
+        quesprojectform = getactiveprojectform.getactiveprojectform(projectsform,
+                                                                    projectowner,
+                                                                    activeprojectname)
+        # logger.debug(quesprojectform)
+        text_prompt_key = list(quesprojectform['Prompt Type'][1].keys())[0]
         total_records, ques_data_list = ques_details.get_n_ques(questionnaires,
                                                                     activeprojectname,
+                                                                    text_prompt_key,
                                                                     # active_speaker_id,
                                                                     # speaker_ques_ids,
                                                                     start_from=start_from,

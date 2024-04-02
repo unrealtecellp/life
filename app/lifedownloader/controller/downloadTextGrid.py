@@ -382,7 +382,7 @@ def downloadTextGrid(transcriptions,
                         # xmin, xmax, tiers = get_boundaries_tiers(
                         #     activeprojectname, current_projectformelements, text_grid, offset=boundary_offset)
                         xmin, xmax, tiers = get_boundaries_tiers(
-                            activeprojectname, current_projectformelements, text_grid, xmax=[], xmin=[], tiers={})
+                            activeprojectname, current_projectformelements, text_grid, xmax=[], xmin=[], tiers={}, xmin=[], xmax=[], tiers={})
                         logger.debug('Tiers %s %s', tiers, len(tiers))
                         logger.debug('Xmin %s %s', xmin, len(xmin))
                         logger.debug('Xmax %s %s', xmax, len(xmax))

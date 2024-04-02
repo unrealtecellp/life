@@ -14,6 +14,7 @@ import isodate
 from werkzeug.datastructures import FileStorage
 from pytube import YouTube
 from pprint import pformat
+import subprocess
 from app.controller import (
     life_logging
 
@@ -510,6 +511,8 @@ def getVideoData(mongo, projects_collection,
                     logger.debug('Downloading audio of video: %s', vlink)
                     audio_stream = downloadYoutubeAudio(
                         vlink)
+                    logger.debug('audio_stream: %s', audio_stream)
+                    logger.debug('audio_stream: %s', type(audio_stream))
                     if audio_stream != '':
                         write_data = True
                 else:
@@ -635,15 +638,45 @@ def write_mongodb_audio(mongo,
                         audio_stream):
     new_audio_file = {}
 
-    string_file_name = audio_stream.title
-    file_name = string_file_name[:15]+'_'+speakerId+'_audio.mp4a'
+    logger.debug('audio_stream.title: %s',
+                 audio_stream.title)
+    logger.debug('filesize_mb: %s',
+                 audio_stream.filesize_mb)
 
-    file_content = io.BytesIO()
-    audio_stream.stream_to_buffer(file_content)
-    # logger.debug ("File content", file_content)
+
+    string_file_name = audio_stream.title
+    # logger.debug('string_file_name: %s', string_file_name)
+    # file_name = string_file_name[:15]+'_'+speakerId+'_audio.mp4'
+    download_file_name = string_file_name[:15]+'_'+speakerId+'_audio.mp4'
+    download_file_name = download_file_name.replace(' ', '_')
+    # logger.debug('download_file_name: %s', download_file_name)
+    file_name = download_file_name.replace('.mp4', '.wav')
+    # logger.debug('file_name: %s', file_name)
+    audio_stream_file_path = audio_stream.download(filename=download_file_name,
+                                                   skip_existing=False)
+    # logger.debug('audio_stream: %s', type(audio_stream))
+    # logger.debug('audio_stream_file_path: %s', audio_stream_file_path)
+    wav_audio_stream_folder_path = '/'.join(audio_stream_file_path.split('/')[1:-1])
+    wav_audio_stream_file_path = os.path.join(wav_audio_stream_folder_path, file_name)
+    # logger.debug('wav_audio_stream_file_path: %s', wav_audio_stream_file_path)
+    convert_to_wav_command = ['ffmpeg', '-y', '-i', download_file_name, file_name]
+    subprocess.run(convert_to_wav_command)
+
+
+    # file_content = io.BytesIO()
+    # audio_stream.stream_to_buffer(file_content)
+    # logger.debug ("File content: %s", file_content)
+
+    with open('/'+wav_audio_stream_file_path, 'rb') as f:
+        file_content = io.BytesIO(f.read())
+
     # logger.debug ("Upload type", fileType)
     new_audio_file['audiofile'] = FileStorage(
-        file_content, filename=file_name)
+        file_content, filename=file_name, content_type='audio/x-wav')
+    logger.debug('audio_stream: %s', type(audio_stream))
+    logger.debug(new_audio_file)
+    os.remove(download_file_name)
+    os.remove(file_name)
     file_state, transcription_doc_id, fs_file_id = audiodetails.saveoneaudiofile(mongo,
                                                                                  projects,
                                                                                  userprojects,
@@ -656,10 +689,24 @@ def write_mongodb_audio(mongo,
                                                                                  run_vad=False,
                                                                                  run_asr=False,
                                                                                  get_audio_json=False)
+    
+    audio_doc_id = transcription_doc_id[0].inserted_id
+    # logger.debug("audio_doc_id: %s", audio_doc_id)
     updated_filename = crawling.find_one(
-        {'projectname': activeprojectname,
-            'username': current_username, 'speakerId': speakerId, 'dataType': "audio"},
-        {'audioFilename': 1, '_id': 0})['audioFilename']
+        {
+            '_id': audio_doc_id,
+            'projectname': activeprojectname,
+            # 'username': current_username,
+            'speakerId': speakerId,
+            'dataType': "audio"
+        },
+        {
+            'audioFilename': 1,
+            '_id': 0
+        }
+    )['audioFilename']
+    # logger.debug('transcription_doc_id: %s, fs_file_id: %s, updated_filename: %s, file_state: %s',
+    #              transcription_doc_id, fs_file_id, updated_filename, file_state)
     return transcription_doc_id, fs_file_id, updated_filename, file_state
 
 
@@ -744,6 +791,16 @@ def write_crawled_data(mongo, co3h,
     if 'mongodb' in save_format:
         if 'audio' in download_items:
             logger.debug('Writing audio of video: %s to mongodb', vlink)
+            # new_audio_file = {}
+            # file_content = io.BytesIO()
+            # audio_stream.stream_to_buffer(file_content)
+            # file_name = audio_stream.title
+            # if len(file_name) > 10:
+            #     file_name = file_name[:10]
+            #     file_name = file_name.replace(' ', '_')
+
+            # new_audio_file['audiofile'] = FileStorage(
+            #                 file_content, filename=file_name)
             audio_doc_id, fs_audio_id, audio_filename, file_state = write_mongodb_audio(mongo,
                                                                                         projects_collection,
                                                                                         userprojects_collection,
@@ -753,7 +810,7 @@ def write_crawled_data(mongo, co3h,
                                                                                         current_username,
                                                                                         vlink,
                                                                                         audio_stream)
-            audio_doc_id = audio_doc_id.inserted_id
+            audio_doc_id = audio_doc_id[0].inserted_id
 
         if 'video' in download_items:
             logger.debug('Writing video of video: %s to mongodb', vlink)
@@ -921,6 +978,7 @@ def run_youtube_crawler(mongo, projects_collection,
     global data_links_info
 
     ytids = []
+    crawled_video_ids = []
 
     if ('channels' in data_links):
         data_links_info = data_links['channels']
@@ -1075,6 +1133,10 @@ def run_youtube_crawler(mongo, projects_collection,
                             logger.debug(
                                 'Expected complete: %s', totalPages*50)
                             logger.debug('pToken: %s', pToken)
+        crawled_video_ids.append(ytid)
+        # logger.debug("crawled_video_ids: %s", crawled_video_ids)
+
+    return crawled_video_ids
 
 
 # Get link to top n videos for the given search query

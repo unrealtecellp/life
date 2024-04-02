@@ -153,6 +153,7 @@ function crawlDataForm() {
         '<div class="form-group">'+
         '<label for="idprojectname">Project Name</label>'+
         '<input type="text" class="form-control" id="idprojectname" placeholder="Project Name" name="projectname" style="width: 55%" required>'+
+        '<span id="projectnameexist"  style="display: none; color: red;">The Project Name already exist.</span>'+
         '</div>'+
 
         '<div class="form-group">'+

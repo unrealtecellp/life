@@ -39,3 +39,4 @@ app/lifedata/download
 R-J.JSON
 app/lifedata/transcription/audiowaveform
 recovery
+app/lifemodels/model_prediction_download

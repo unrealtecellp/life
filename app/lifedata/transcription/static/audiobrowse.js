@@ -128,6 +128,7 @@ function createAudioBrowseTable(
     downloadChecked = "false",
     shareInfo = undefined,
     ) {
+    // console.log(audioDataFields);
     // console.log(audioData);
     // console.log(shareChecked);
     // console.log(downloadChecked);
@@ -492,7 +493,7 @@ function updateAudioSortingSubCategoriesDropdown() {
         type : 'GET',
         url : '/lifedata/transcription/updateaudiosortingsubcategories'
       }).done(function(data){
-        // console.log(data);
+        console.log(data);
         audioSortingSubCategories = data.audioSortingSubCategories;
         selectedAudioSortingSubCategories = data.selectedAudioSortingSubCategories;
         // console.log(audioSortingSubCategories, selectedAudioSortingSubCategories);

@@ -42,15 +42,20 @@ def save_new_transcription_form(projectsform_collection,
                     script = new_transcription_form['Interlinear Gloss Script'][i]
                     lang_script = value[i]+'-'+script
                     interlinear_gloss_dict[lang_script] = script
-            elif key == 'Audio Tagging':
-                tagsets_dict["Audio Tagging"] = value
-            elif key == 'Boundary Tagging':
-                tagsets_dict["Boundary Tagging"] = value
-        
-        
-        saved_form['Translation'] = ["textarea", translation_dict]
-        saved_form['Interlinear Gloss'] = ["interlineargloss", interlinear_gloss_dict]
-        saved_form['Tagsets'] = ["tagsets", tagsets_dict]
+            elif key == 'Audio Annotation':
+                tagsets_dict["Audio Annotation"] = value
+            elif key == 'Boundary Annotation':
+                tagsets_dict["Boundary Annotation"] = value
+        logger.debug("%s, %s, %s",
+                     len(translation_dict),
+                     len(interlinear_gloss_dict),
+                     len(tagsets_dict))
+        if (len(translation_dict) != 0):
+            saved_form['Translation'] = ["textarea", translation_dict]
+        if (len(interlinear_gloss_dict) != 0):
+            saved_form['Interlinear Gloss'] = ["interlineargloss", interlinear_gloss_dict]
+        if (len(tagsets_dict) != 0):
+            saved_form['Tagsets'] = ["tagsets", tagsets_dict]
 
         logger.debug("saved form: %s", pformat(saved_form))
         projectsform_collection.insert_one(saved_form)
@@ -74,8 +79,8 @@ def save_new_transcription_form(projectsform_collection,
 #     'transcriptionsboundarytagsetuploadselect': ['textAnno_tags_1'],
 #     'transcriptionstagsetuploadcheckbox': ['on'],
 #     'transcriptionstagsetuploadselect': ['textAnno_tags'],
-#     "Audio Tagging": "",
-#     "Boundary Tagging": ""
+#     "Audio Annotation": "",
+#     "Boundary Annotation": ""
 #     }
 
 # save_new_transcription_form("",
