@@ -71,6 +71,15 @@ Manage Project
     {# {% if shareinfo['sharemode']|int >= 1 %} #}
     {% if 'downloadchecked' in shareinfo and shareinfo['downloadchecked'] == 'true' %}
     <div>
+      <button type="button" class="btn btn-lg btn-danger"
+        onclick="window.location.href='{{ url_for('syncspeakermetadata') }}';">Sync Speaker Details</button>
+    </div>
+    {% endif %}
+    
+<br>
+    {# {% if shareinfo['sharemode']|int >= 1 %} #}
+    {% if 'downloadchecked' in shareinfo and shareinfo['downloadchecked'] == 'true' %}
+    <div>
       <button type="button" class="btn btn-lg btn-warning"
         onclick="window.location.href='{{ url_for('downloadproject') }}';">Download Project</button>
     </div>
