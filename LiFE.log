@@ -2622,3 +2622,11 @@ Traceback (most recent call last):
   File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/werkzeug/http.py", line 860, in quote_etag
     if '"' in etag:
 TypeError: argument of type 'NoneType' is not iterable
+[2024-04-03 10:57:50,802] - logger: life - level: INFO - function: generate_languages_database - line: 101
+language Database found!
+[2024-04-03 10:57:50,803] - logger: life - level: INFO - function: generate_models_database - line: 52
+Models Database found!
+[2024-04-03 10:57:53,498] - logger: life - level: INFO - function: generate_languages_database - line: 101
+language Database found!
+[2024-04-03 10:57:53,499] - logger: life - level: INFO - function: generate_models_database - line: 52
+Models Database found!

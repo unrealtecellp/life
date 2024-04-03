@@ -72,8 +72,8 @@ Manage Project
     {% if 'downloadchecked' in shareinfo and shareinfo['downloadchecked'] == 'true' %}
     <div>
       <button type="button" class="btn btn-lg btn-danger"
-        onclick="window.location.href='{{ url_for('syncspeakermetadata') }}';">Sync Speaker Details</button>
-    </div>
+        onclick="window.location.href='{{ url_for('syncspeakermetadata') }}';showMessage();">Sync Speaker Details</button>
+      </div>
     {% endif %}
     
 <br>
@@ -99,5 +99,11 @@ Manage Project
 {{super()}}
 <script src="{{url_for('.static', filename='speaker_select2_dropdown.js')}}"></script>
 <script src="{{url_for('.static', filename='fetchaccesscodelist.js')}}"></script>
+
+<script>
+  function showMessage() {
+      alert("Speaker detail synced");
+  }
+</script>
 
 {% endblock %}
