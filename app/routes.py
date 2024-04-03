@@ -5498,32 +5498,32 @@ def syncspeakermetadata():
     allspeakerdetails, alldatalengths, allkeys = speakerDetails.getspeakerdetails(
         activeprojectname, speakermeta)
 
-    find_task = accesscodedetails.find_one({ "projectname": activeprojectname},{"task":1,"_id": 0})
+    # find_task = accesscodedetails.find({ "projectname": activeprojectname},{"task":1,"_id": 0})
     # print(find_task)
-    if find_task['task'] == "SPEECH_DATA_COLLECTION":
-        find_accesscodedetails = accesscodedetails.find({
-                                        "projectname": activeprojectname, "task": "SPEECH_DATA_COLLECTION"},
-                                        {"lifespeakerid": 1,
-                                        "karyaaccesscode": 1,
-                                        "karyaspeakerid": 1,
-                                        "current.workerMetadata.name": 1, 
-                                        "current.workerMetadata.agegroup": 1,
-                                        "current.workerMetadata.gender": 1,
-                                        "current.workerMetadata.educationlevel": 1,
-                                        "current.workerMetadata.educationmediumupto12": 1,
-                                        "current.workerMetadata.educationmediumafter12": 1,
-                                        "current.workerMetadata.speakerspeaklanguage": 1,
-                                        "current.workerMetadata.recordingplace": 1,
-                                        "current.workerMetadata.typeofrecordingplace": 1,
-                                        "current.workerMetadata.activeAccessCode": 1,
-                                        "_id": 0})
+    # if find_task['task'] == "SPEECH_DATA_COLLECTION":
+    find_accesscodedetails = accesscodedetails.find({
+                                    "projectname": activeprojectname},
+                                    {"lifespeakerid": 1,
+                                    "karyaaccesscode": 1,
+                                    "karyaspeakerid": 1,
+                                    "current.workerMetadata.name": 1, 
+                                    "current.workerMetadata.agegroup": 1,
+                                    "current.workerMetadata.gender": 1,
+                                    "current.workerMetadata.educationlevel": 1,
+                                    "current.workerMetadata.educationmediumupto12": 1,
+                                    "current.workerMetadata.educationmediumafter12": 1,
+                                    "current.workerMetadata.speakerspeaklanguage": 1,
+                                    "current.workerMetadata.recordingplace": 1,
+                                    "current.workerMetadata.typeofrecordingplace": 1,
+                                    "current.workerMetadata.activeAccessCode": 1,
+                                    "_id": 0})
+    
+    total_documents = find_accesscodedetails.count()
+    print("Total number of documents found from accesscodedetails:", total_documents)
 
-        # Uncomment the line below for debugging
-        # print("data : \n", [print(j) for j in find_accesscodedetails])  
-
-        metadata_schema = 'speed'
-        audio_source = 'field'
-        upload_type = 'single'
+    metadata_schema = 'speed'
+    audio_source = 'field'
+    upload_type = 'single'
     
     for document in find_accesscodedetails:
         try:
@@ -5545,6 +5545,7 @@ def syncspeakermetadata():
 
             # Check if the metadata already exists in speakermeta
             existing_metadata = speakermeta.find_one({
+                "projectname": activeprojectname,
                 "current.sourceMetadata.lifespeakerid": new_metadata["lifespeakerid"],
                 "current.sourceMetadata.karyaaccesscode":  new_metadata["karyaaccesscode"],
                 "current.sourceMetadata.karyaspeakerid": new_metadata["karyaspeakerid"]
@@ -5564,58 +5565,14 @@ def syncspeakermetadata():
                     new_metadata,
                     upload_type
                 )
-                print("creating meta data")
+                # print("creating meta data")
 
-            else:
-                print("Metadata already exists:", existing_metadata)
+            # else:
+            #     print("Metadata already exists:", existing_metadata)
         except KeyError as e:
             print(f"Error accessing key: {e}")
 
 
-
-
-    if request.method ==  "Get":
-
-        ##to do : first metadata from accesscodedetails and make a condition if the task in accesscodedetails 
-        ## is "SPEECH_DATA_COLLECTION" then find all meta data else name and agegroup only and put the metadata 
-        ## in speakerdetails         #metadata save to speakerdetails 
-
-        find_task = accesscodedetails.find_one({ "projectname": activeprojectname},{"task":1})
-        if find_task == "SPEECH_DATA_COLLECTION":
-            find_accesscodedetails = accesscodedetails.find_one({
-                                            "projectname": activeprojectname, "task": "SPEECH_DATA_COLLECTION"},
-                                            {"lifespeakerid":1,
-                                            "karyaaccesscode": 1,
-                                            "karyaspeakerid": 1,
-                                            "current.workerMetadata.name":1, 
-                                            "current.workerMetadata.agegroup": 1,
-                                            "current.workerMetadata.gender":1,
-                                            "current.workerMetadata.educationlevel":1,
-                                            "current.workerMetadata.educationmediumupto12":1,
-                                            "current.workerMetadata.educationmediumafter12":1,
-                                            "current.workerMetadata.speakerspeaklanguage":1,
-                                            "current.workerMetadata.recordingplace":1,
-                                            "current.workerMetadata.typeofrecordingplace":1,
-                                            "current.workerMetadata.activeAccessCode":1,
-                                            "_id": 0})
-
-            print("data : \n", find_accesscodedetails)
-            
-            # current_dt = str(datetime.now()).replace('.', ':')
-            # metadata_schema = 'speed'
-            # audio_source = 'field'
-            # upload_type = 'single'
-        else:
-            find_accesscodedetails = accesscodedetails.find_one({
-                                            "projectname": activeprojectname, "task": "SPEECH_DATA_COLLECTION"},
-                                            {"lifespeakerid":1,
-                                            "karyaaccesscode": 1,
-                                            "karyaspeakerid": 1,
-                                            "current.workerMetadata.name":1, 
-                                            "current.workerMetadata.agegroup": 1,
-                                            "_id": 0})
-            
-            print("else")
 
     return render_template('manageProject.html',        shareinfo=shareinfo,
         usertype=usertype)
