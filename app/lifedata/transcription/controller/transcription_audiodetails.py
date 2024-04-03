@@ -58,22 +58,22 @@ allowed_file_formats = ['mp3', 'wav']
 
 
 selected_audio_sorting_subcategory_self_map = {
-        "agegroup": "ageGroup",
-        "gender": "Gender",
-        "educationlevel": "educationLevel",
-        "educationmediumupto12": "educationMediumUpto12-list",
-        "educationmediumafter12": "educationMediumAfter12-list",
-        "speakerspeaklanguage": "Speaker Speak Language"
-    }
+    "agegroup": "ageGroup",
+    "gender": "Gender",
+    "educationlevel": "educationLevel",
+    "educationmediumupto12": "educationMediumUpto12-list",
+    "educationmediumafter12": "educationMediumAfter12-list",
+    "speakerspeaklanguage": "Speaker Speak Language"
+}
 
 selected_audio_sorting_subcategory_new = {
-        "ageGroup": "Age Group",
-        "gender": "Gender",
-        "educationLevel": "Education Level",
-        "educationMediumUpto12-list": "Education Medium Upto 12",
-        "educationMediumAfter12-list": "Education Medium After 12",
-        "speakerspeaklanguage": "Speaker Speak Language"
-    }
+    "ageGroup": "Age Group",
+    "gender": "Gender",
+    "educationLevel": "Education Level",
+    "educationMediumUpto12-list": "Education Medium Upto 12",
+    "educationMediumAfter12-list": "Education Medium After 12",
+    "speakerspeaklanguage": "Speaker Speak Language"
+}
 
 # TODO: This should be saved in a separate document in MongoDB that will bind
 # specific keys in database to specific models
@@ -2559,6 +2559,9 @@ def get_audio_transcriptions(mongo, model_params, model_name, audio_data=[], mod
         elif model_type == 'hfapi':
             transcriptions[transcription_type]['transcription'] = predictFromAPI.predictFromHFModel(
                 model_inputs=audio_data, model_url=model_name, hf_token=hf_token, model_params=model_params, script_name=current_lang_scripts)
+        elif model_type == 'bhashini':
+            transcriptions[transcription_type]['transcription'] = predictFromAPI.predictFromBhashiniModel(
+                model_inputs=audio_data, model_url=model_name, script_name=current_lang_scripts)
         transcribed = 0
 
     return transcriptions, transcribed, model_name
@@ -2730,23 +2733,31 @@ def get_slices_and_text_grids(mongo,
         # audio_duration, audio_file = get_audio_duration_from_file(audio_path)
         logger.info('Running ASR on file %s', audio_path)
         audio_file = AudioSegment.from_file(audio_path)
-        # if create_new_boundaries:
-        #     boundaries, __, vad_model_name, vad_start, vad_end, vad_model_params = generate_boundaries(vad_model,
-        #                                                                                                max_pause_boundary,
-        #                                                                                                audio_path
-        #                                                                                                )
-        #     model_details.update([('vad_model_name', vad_model_name), ('vad_model_params',
-        #                                                                vad_model_params), ('vad_start', vad_start), ('vad_end', vad_end)])
-        #     audio_chunk_boundaries = [
-        #         {'start': boundaries[0], 'end': boundaries[-1]}]
-        #     audio_chunk_boundary_lists = [boundaries]
 
-        #     blank_text_grid = get_blank_text_grid()
-        #     all_text_grids = []
-        #     for audio_chunk_boundary_list in audio_chunk_boundary_lists:
-        #         current_text_grid = generate_text_grid(
-        #             mongo, blank_text_grid, audio_chunk_boundary_list, transcriptions, transcription_type, max_pause_boundary, min_boundary_size)
-        #         all_text_grids.append(current_text_grid)
+        create_vad = False
+        if len(asr_model) > 0:
+            inference_source = asr_model['model_params']['model_api']
+            if inference_source == 'hfinference' and create_new_boundaries:
+                create_vad = True
+                create_new_boundaries = False
+
+        if create_vad:
+            boundaries, __, vad_model_name, vad_start, vad_end, vad_model_params = generate_boundaries(vad_model,
+                                                                                                       max_pause_boundary,
+                                                                                                       audio_path
+                                                                                                       )
+            model_details.update([('vad_model_name', vad_model_name), ('vad_model_params',
+                                                                       vad_model_params), ('vad_start', vad_start), ('vad_end', vad_end)])
+            audio_chunk_boundaries = [
+                {'start': boundaries[0], 'end': boundaries[-1]}]
+            audio_chunk_boundary_lists = [boundaries]
+
+            blank_text_grid = get_blank_text_grid()
+            all_text_grids = []
+            for audio_chunk_boundary_list in audio_chunk_boundary_lists:
+                current_text_grid = generate_text_grid(
+                    mongo, blank_text_grid, audio_chunk_boundary_list, transcriptions, transcription_type, max_pause_boundary, min_boundary_size)
+                all_text_grids.append(current_text_grid)
         # audio_file = AudioSegment.from_file(audio_path)
 
         # for i, current_boundary in enumerate(boundaries):
@@ -2760,7 +2771,10 @@ def get_slices_and_text_grids(mongo,
         # else:
         # audio_file = AudioSegment.from_file(audio_path)
         logger.info('Running ASR on existing boundaries')
-        current_text_grid = all_text_grids[0][transcription_type]
+        if len(all_text_grids) > 0:
+            current_text_grid = all_text_grids[0][transcription_type]
+        else:
+            current_text_grid = {}
         logger.debug('Full Text Grid %s \nTotal text grids %s',
                      all_text_grids, len(all_text_grids))
         logger.debug('Current Text Grid %s', current_text_grid)
@@ -3151,7 +3165,7 @@ def get_audio_sorting_subcategories(speakerdetails_collection,
                     if (key in list(selected_audio_sorting_subcategory_self_map.values())):
                         selected_audio_sorting_subcategory = selected_audio_sorting_subcategory_new
                     if (key in selected_audio_sorting_subcategory or
-                        key in list(selected_audio_sorting_subcategory_self_map.values())):
+                            key in list(selected_audio_sorting_subcategory_self_map.values())):
                         logger.debug(key)
                         logger.debug(selected_audio_sorting_subcategory)
                         selected_audio_sorting_subcategory_value = selected_audio_sorting_subcategory[
