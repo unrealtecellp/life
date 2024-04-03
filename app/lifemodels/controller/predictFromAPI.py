@@ -9,6 +9,8 @@ from app.lifedata.transcription.controller.transcription_audiodetails import gen
 
 from sentencex import segment
 
+import base64
+
 logger = life_logging.get_logger()
 
 
@@ -110,3 +112,57 @@ def get_sentence_chunks(all_sentences, chunks):
             current_sentence_chunks[0]['timestamp'][0], current_sentence_chunks[-1]['timestamp'][1])
         new_chunks.append(chunk_dict)
         return new_chunks
+
+
+def transcribe_data(audio_data):
+    end_url = "https://dhruva-api.bhashini.gov.in/services/inference/pipeline"
+    api_key = "A76bWGt9rowZFVQfsJmmgJDnriqa1CT14ECLdBjiGXHc93tP9rX72KfVmdwIAsDZ"
+    header = {"Authorization": api_key}
+
+    payload = {
+        "pipelineTasks": [
+            {
+                "taskType": "asr",
+                "config": {
+                    "language": {
+                            "sourceLanguage": "hi"
+                    },
+                    "serviceId": "ai4bharat/conformer-hi-gpu--t4",
+                    "postProcessors": ["itn", "punctuation"]
+                    # "audioFormat": "wav",
+                    # "samplingRate": 16000
+                }
+            }
+        ],
+        "inputData": {
+            # "input": [
+            #     {
+            #         "source": null
+            #     }
+            # ],
+            "audio": [
+                {
+                    "audioContent": audio_data
+                }
+            ]
+        }
+    }
+    transcript = requests.post(url=end_url, headers=header, json=payload)
+    print(transcript)
+    return transcript.json()
+
+
+def predictFromBhashiniModel(model_inputs, model_url, script_name=''):
+    all_outputs = {}
+    for input_id, model_input in model_inputs.items():
+        model_input_str = base64.b64encode(model_input).decode('utf-8')
+        print('Input', model_input_str)
+        transcript = transcribe_data(model_input_str)
+        output = transcript["pipelineResponse"][0]["output"][0]["source"]
+        logger.info('Bhashini response %s', transcript)
+        all_outputs[input_id] = {script_name: output}
+
+    logger.info('ASR Output for file %s \tusing Bhashini',
+                all_outputs)
+
+    return all_outputs

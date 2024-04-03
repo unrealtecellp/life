@@ -70,14 +70,14 @@ langScriptJSONFilePath = os.path.join(jsonfilesdir, 'langScript.json')
 def home():
     try:
         projects, userprojects, projectsform, sentences, transcriptions, speakerdetails, questionnaires, tagsets_collection = getdbcollections.getdbcollections(mongo,
-                                                                                                                                            'projects',
-                                                                                                                                            'userprojects',
-                                                                                                                                            'projectsform',
-                                                                                                                                            'sentences',
-                                                                                                                                            'transcriptions',
-                                                                                                                                            'speakerdetails',
-                                                                                                                                            'questionnaires',
-                                                                                                                                            'tagsets')
+                                                                                                                                                                'projects',
+                                                                                                                                                                'userprojects',
+                                                                                                                                                                'projectsform',
+                                                                                                                                                                'sentences',
+                                                                                                                                                                'transcriptions',
+                                                                                                                                                                'speakerdetails',
+                                                                                                                                                                'questionnaires',
+                                                                                                                                                                'tagsets')
         current_username = getcurrentusername.getcurrentusername()
         currentuserprojectsname = getcurrentuserprojects.getcurrentuserprojects(current_username,
                                                                                 userprojects)
@@ -106,7 +106,8 @@ def home():
         activeprojectform = getactiveprojectform.getactiveprojectform(projectsform,
                                                                       projectowner,
                                                                       activeprojectname)
-        logger.debug('trancription active project form: %s', pformat(activeprojectform))
+        logger.debug('trancription active project form: %s',
+                     pformat(activeprojectform))
         all_ques_ids = ''
         derived_from_project_type, derived_from_project_name = getprojecttype.getderivedfromprojectdetails(projects,
                                                                                                            activeprojectname)
@@ -253,11 +254,15 @@ def home():
                     for annotation_type, tagset_ids in annotation_types.items():
                         if (len(tagset_ids) != 0):
                             tagset_id = tagset_ids[0]
-                            tagset_name = tagset_details.get_tagset_name(tagsets_collection, tagset_id)
+                            tagset_name = tagset_details.get_tagset_name(
+                                tagsets_collection, tagset_id)
                             if (len(tagset_name) != 0):
-                                activeprojectform[annotation_type] = tagset_details.get_full_tagset_with_metadata(tagsets_collection, tagset_name)
-                            else: continue
-                        else: continue
+                                activeprojectform[annotation_type] = tagset_details.get_full_tagset_with_metadata(
+                                    tagsets_collection, tagset_name)
+                            else:
+                                continue
+                        else:
+                            continue
 
                 logger.debug("activeprojectform: %s", activeprojectform)
 
@@ -443,7 +448,8 @@ def updateaudiosortingsubcategories():
                                                                                                       selected_audio_sorting_category
                                                                                                       )
             selected_audio_sorting_sub_categories = ''
-            logger.debug("audio_sorting_sub_categories: %s", audio_sorting_sub_categories)
+            logger.debug("audio_sorting_sub_categories: %s",
+                         audio_sorting_sub_categories)
             if (derived_from_project_type != '' and
                     derived_from_project_name != ''):
                 if (derived_from_project_type == 'questionnaires'):
@@ -1276,12 +1282,19 @@ def maketranscription():
             }
         }
         '''
-        hf_token = modelManager.get_hf_tokens(
-            lifeappconfigs, current_username)
+
+        if 'bhashini_' in model_name:
+            hf_token = ''
+            model_name = model_name.replace('bhashini_', '')
+            model_type = 'bhashini'
+        else:
+            hf_token = modelManager.get_hf_tokens(
+                lifeappconfigs, current_username)
+            model_type = 'hfapi'
 
         asr_model = {
             'model_name': model_name,
-            'model_type': "hfapi",
+            'model_type': model_type,
             'model_params': {
                 'model_path': model_name,
                 'model_api': transcription_source,
