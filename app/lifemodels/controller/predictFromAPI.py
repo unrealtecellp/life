@@ -34,7 +34,9 @@ def predictFromHFModel(model_inputs, model_url, hf_token, model_params={}, task=
         for input_id, model_input in model_inputs.items():
             if task == 'automatic-speech-recognition':
                 output = client.automatic_speech_recognition(
-                    audio=model_input, model=model_url,)
+                    audio=model_input, model=model_url)
+                logger.info('Ouptut from inference client %s',
+                            output)
             else:
                 if isinstance(model_input, dict):
                     response = client.post(
@@ -42,8 +44,12 @@ def predictFromHFModel(model_inputs, model_url, hf_token, model_params={}, task=
                 else:
                     response = client.post(
                         json={"inputs": model_input, "parameters": model_params}, model=model_url, task=task)
+                logger.info('Response from inference client %s',
+                            response)
                 output = json.loads(response.decode())
-                all_outputs[input_id] = {script_name: output}
+                logger.info('Ouptut from inference client %s',
+                            output)
+            all_outputs[input_id] = {script_name: output}
     else:
         timestamp_level = model_params['boundary_level']
         # sentence_delim = model_params['sentence_delimiter']
