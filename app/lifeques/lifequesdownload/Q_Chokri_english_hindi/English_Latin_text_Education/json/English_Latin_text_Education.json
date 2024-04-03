@@ -1,0 +1,42 @@
+[
+  {
+    "quesId": "Q20230602135611579663",
+    "Q_Id": "ED-01",
+    "Domain": "Education",
+    "Elicitation Method": "Narration",
+    "sentence": "How do your community view people who attend school and who does not?",
+    "hint": ""
+  },
+  {
+    "quesId": "Q20230602135611581743",
+    "Q_Id": "ED-02",
+    "Domain": "Education",
+    "Elicitation Method": "Narration",
+    "sentence": "Can you tell us something about how formal education brought changes into your community?",
+    "hint": ""
+  },
+  {
+    "quesId": "Q20230602135611582961",
+    "Q_Id": "ED-03",
+    "Domain": "Education",
+    "Elicitation Method": "Narration",
+    "sentence": "Can you tell us about the changes you witnessed in the educational institutions in your area as you grew up?",
+    "hint": ""
+  },
+  {
+    "quesId": "Q20230602135611584347",
+    "Q_Id": "ED-04",
+    "Domain": "Education",
+    "Elicitation Method": "Narration",
+    "sentence": "What are the state of schools and colleges when you were young and how are they now? ",
+    "hint": ""
+  },
+  {
+    "quesId": "Q20230602135611585545",
+    "Q_Id": "ED-05",
+    "Domain": "Education",
+    "Elicitation Method": "Narration",
+    "sentence": "Can you tell us something about the formal/indigenous education system of your state/community?",
+    "hint": ""
+  }
+]

@@ -1,0 +1,122 @@
+[
+  {
+    "quesId": "Q20230417211234018598",
+    "Q_Id": "ED-01",
+    "Domain": "Education",
+    "Elicitation Method": "Narration",
+    "sentence": "How do your community view people who attend school and who does not?",
+    "hint": "A20230417212340902852_281474976757899.wav"
+  },
+  {
+    "quesId": "Q20230417211234019516",
+    "Q_Id": "ED-02",
+    "Domain": "Education",
+    "Elicitation Method": "Narration",
+    "sentence": "Can you tell us something about how formal education brought changes into your community?",
+    "hint": "A20230417212341309580_281474976757900.wav"
+  },
+  {
+    "quesId": "Q20230417211234020125",
+    "Q_Id": "ED-03",
+    "Domain": "Education",
+    "Elicitation Method": "Narration",
+    "sentence": "Can you tell us about the changes you witnessed in the educational institutions in your area as you grew up?",
+    "hint": "A20230417212342003851_281474976757901.wav"
+  },
+  {
+    "quesId": "Q20230417211234020779",
+    "Q_Id": "ED-04",
+    "Domain": "Education",
+    "Elicitation Method": "Narration",
+    "sentence": "What are the state of schools and colleges when you were young and how are they now? ",
+    "hint": "A20230417212342425493_281474976757902.wav"
+  },
+  {
+    "quesId": "Q20230417211234022170",
+    "Q_Id": "ED-05",
+    "Domain": "Education",
+    "Elicitation Method": "Narration",
+    "sentence": "Can you tell us something about the formal/indigenous education system of your state/community?",
+    "hint": "A20230417212342769315_281474976757903.wav"
+  },
+  {
+    "quesId": "Q20230417211234023903",
+    "Q_Id": "AG_1",
+    "Domain": "Agriculture",
+    "Elicitation Method": "Narration",
+    "sentence": "What kinds of crops are grown by the people of your community?",
+    "hint": "A20230417212343081890_281474976757904.wav"
+  },
+  {
+    "quesId": "Q20230417211234025000",
+    "Q_Id": "AG_2",
+    "Domain": "Agriculture",
+    "Elicitation Method": "Narration",
+    "sentence": "What are the people who grow crops called? Do they only grow crops or are they engaged in other activities as well? What kind of other activities are they engaged in?",
+    "hint": "A20230417212343477976_281474976757905.wav"
+  },
+  {
+    "quesId": "Q20230417211234025655",
+    "Q_Id": "AG_3",
+    "Domain": "Agriculture",
+    "Elicitation Method": "Narration",
+    "sentence": "Tell the names of at least 5 vegetables that are grown in your community",
+    "hint": "A20230417212344474666_281474976757906.wav"
+  },
+  {
+    "quesId": "Q20230417211234026414",
+    "Q_Id": "AG_4",
+    "Domain": "Agriculture",
+    "Elicitation Method": "Narration",
+    "sentence": "In which months / seasons are these vegetables grown?",
+    "hint": "A20230417212344780144_281474976757907.wav"
+  },
+  {
+    "quesId": "Q20230417211234027473",
+    "Q_Id": "AG_5",
+    "Domain": "Agriculture",
+    "Elicitation Method": "Narration",
+    "sentence": "What is the process of growing these vegetables?",
+    "hint": "A20230417212345095143_281474976757908.wav"
+  },
+  {
+    "quesId": "Q20230417211234029096",
+    "Q_Id": "ST_1",
+    "Domain": "Science-Technology",
+    "Elicitation Method": "Narration",
+    "sentence": "How will linguistics help in developing a corpora from actual written and spoken text varieties?",
+    "hint": "A20230417212345434997_281474976757909.wav"
+  },
+  {
+    "quesId": "Q20230417211234031434",
+    "Q_Id": "ST_2",
+    "Domain": "Science-Technology",
+    "Elicitation Method": "Narration",
+    "sentence": "How is  language corpora developed in the areas of language technology?",
+    "hint": "A20230417212345803876_281474976757910.wav"
+  },
+  {
+    "quesId": "Q20230417211234031953",
+    "Q_Id": "ST_3",
+    "Domain": "Science-Technology",
+    "Elicitation Method": "Narration",
+    "sentence": "Why is their a need to develop corpora for various type of language to address the need of linguistic at large?",
+    "hint": "A20230417212346139772_281474976757911.wav"
+  },
+  {
+    "quesId": "Q20230417211234032432",
+    "Q_Id": "ST_4",
+    "Domain": "Science-Technology",
+    "Elicitation Method": "Narration",
+    "sentence": "In what ways speech technology serves as a means for developing speech databases?",
+    "hint": "A20230417212346487831_281474976757912.wav"
+  },
+  {
+    "quesId": "Q20230417211234032981",
+    "Q_Id": "ST_5",
+    "Domain": "Science-Technology",
+    "Elicitation Method": "Narration",
+    "sentence": "What comprises contextual speech database?",
+    "hint": "A20230417212346789572_281474976757913.wav"
+  }
+]

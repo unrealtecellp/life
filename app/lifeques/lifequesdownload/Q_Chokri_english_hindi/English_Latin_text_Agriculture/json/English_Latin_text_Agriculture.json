@@ -1,0 +1,42 @@
+[
+  {
+    "quesId": "Q20230602135611586737",
+    "Q_Id": "AG_1",
+    "Domain": "Agriculture",
+    "Elicitation Method": "Narration",
+    "sentence": "What kinds of crops are grown by the people of your community?",
+    "hint": ""
+  },
+  {
+    "quesId": "Q20230602135611588474",
+    "Q_Id": "AG_2",
+    "Domain": "Agriculture",
+    "Elicitation Method": "Narration",
+    "sentence": "What are the people who grow crops called? Do they only grow crops or are they engaged in other activities as well? What kind of other activities are they engaged in?",
+    "hint": ""
+  },
+  {
+    "quesId": "Q20230602135611589813",
+    "Q_Id": "AG_3",
+    "Domain": "Agriculture",
+    "Elicitation Method": "Narration",
+    "sentence": "Tell the names of at least 5 vegetables that are grown in your community",
+    "hint": ""
+  },
+  {
+    "quesId": "Q20230602135611591231",
+    "Q_Id": "AG_4",
+    "Domain": "Agriculture",
+    "Elicitation Method": "Narration",
+    "sentence": "In which months / seasons are these vegetables grown?",
+    "hint": ""
+  },
+  {
+    "quesId": "Q20230602135611592474",
+    "Q_Id": "AG_5",
+    "Domain": "Agriculture",
+    "Elicitation Method": "Narration",
+    "sentence": "What is the process of growing these vegetables?",
+    "hint": ""
+  }
+]

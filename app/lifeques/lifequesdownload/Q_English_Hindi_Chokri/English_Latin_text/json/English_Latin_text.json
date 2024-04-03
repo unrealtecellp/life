@@ -1,0 +1,122 @@
+[
+  {
+    "quesId": "Q20230602140352242606",
+    "Q_Id": "ED-01",
+    "Domain": "Education",
+    "Elicitation Method": "Narration",
+    "sentence": "How do your community view people who attend school and who does not?",
+    "hint": ""
+  },
+  {
+    "quesId": "Q20230602140352244919",
+    "Q_Id": "ED-02",
+    "Domain": "Education",
+    "Elicitation Method": "Narration",
+    "sentence": "Can you tell us something about how formal education brought changes into your community?",
+    "hint": ""
+  },
+  {
+    "quesId": "Q20230602140352249996",
+    "Q_Id": "ED-03",
+    "Domain": "Education",
+    "Elicitation Method": "Narration",
+    "sentence": "Can you tell us about the changes you witnessed in the educational institutions in your area as you grew up?",
+    "hint": ""
+  },
+  {
+    "quesId": "Q20230602140352252175",
+    "Q_Id": "ED-04",
+    "Domain": "Education",
+    "Elicitation Method": "Narration",
+    "sentence": "What are the state of schools and colleges when you were young and how are they now? ",
+    "hint": ""
+  },
+  {
+    "quesId": "Q20230602140352254124",
+    "Q_Id": "ED-05",
+    "Domain": "Education",
+    "Elicitation Method": "Narration",
+    "sentence": "Can you tell us something about the formal/indigenous education system of your state/community?",
+    "hint": ""
+  },
+  {
+    "quesId": "Q20230602140352256132",
+    "Q_Id": "AG_1",
+    "Domain": "Agriculture",
+    "Elicitation Method": "Narration",
+    "sentence": "What kinds of crops are grown by the people of your community?",
+    "hint": ""
+  },
+  {
+    "quesId": "Q20230602140352258121",
+    "Q_Id": "AG_2",
+    "Domain": "Agriculture",
+    "Elicitation Method": "Narration",
+    "sentence": "What are the people who grow crops called? Do they only grow crops or are they engaged in other activities as well? What kind of other activities are they engaged in?",
+    "hint": ""
+  },
+  {
+    "quesId": "Q20230602140352259885",
+    "Q_Id": "AG_3",
+    "Domain": "Agriculture",
+    "Elicitation Method": "Narration",
+    "sentence": "Tell the names of at least 5 vegetables that are grown in your community",
+    "hint": ""
+  },
+  {
+    "quesId": "Q20230602140352261527",
+    "Q_Id": "AG_4",
+    "Domain": "Agriculture",
+    "Elicitation Method": "Narration",
+    "sentence": "In which months / seasons are these vegetables grown?",
+    "hint": ""
+  },
+  {
+    "quesId": "Q20230602140352264783",
+    "Q_Id": "AG_5",
+    "Domain": "Agriculture",
+    "Elicitation Method": "Narration",
+    "sentence": "What is the process of growing these vegetables?",
+    "hint": ""
+  },
+  {
+    "quesId": "Q20230602140352266386",
+    "Q_Id": "ST_1",
+    "Domain": "Science-Technology",
+    "Elicitation Method": "Narration",
+    "sentence": "How will linguistics help in developing a corpora from actual written and spoken text varieties?",
+    "hint": ""
+  },
+  {
+    "quesId": "Q20230602140352267953",
+    "Q_Id": "ST_2",
+    "Domain": "Science-Technology",
+    "Elicitation Method": "Narration",
+    "sentence": "How is  language corpora developed in the areas of language technology?",
+    "hint": ""
+  },
+  {
+    "quesId": "Q20230602140352269463",
+    "Q_Id": "ST_3",
+    "Domain": "Science-Technology",
+    "Elicitation Method": "Narration",
+    "sentence": "Why is their a need to develop corpora for various type of language to address the need of linguistic at large?",
+    "hint": ""
+  },
+  {
+    "quesId": "Q20230602140352270810",
+    "Q_Id": "ST_4",
+    "Domain": "Science-Technology",
+    "Elicitation Method": "Narration",
+    "sentence": "In what ways speech technology serves as a means for developing speech databases?",
+    "hint": ""
+  },
+  {
+    "quesId": "Q20230602140352272516",
+    "Q_Id": "ST_5",
+    "Domain": "Science-Technology",
+    "Elicitation Method": "Narration",
+    "sentence": "What comprises contextual speech database?",
+    "hint": ""
+  }
+]

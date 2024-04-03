@@ -1,0 +1,34 @@
+{
+  "English_Latin_text": {
+    "json": 15,
+    "audio": "NO AUDIO"
+  },
+  "English_Latin_text_Agriculture": {
+    "json": 5,
+    "audio": "NO AUDIO"
+  },
+  "English_Latin_text_Education": {
+    "json": 5,
+    "audio": "NO AUDIO"
+  },
+  "English_Latin_text_Science-Technology": {
+    "json": 5,
+    "audio": "NO AUDIO"
+  },
+  "Hindi_Devanagari_text": {
+    "json": 15,
+    "audio": "NO AUDIO"
+  },
+  "Hindi_Devanagari_text_Agriculture": {
+    "json": 5,
+    "audio": "NO AUDIO"
+  },
+  "Hindi_Devanagari_text_Education": {
+    "json": 5,
+    "audio": "NO AUDIO"
+  },
+  "Hindi_Devanagari_text_Science-Technology": {
+    "json": 5,
+    "audio": "NO AUDIO"
+  }
+}
