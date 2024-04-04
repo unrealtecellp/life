@@ -2639,3 +2639,173 @@ language Database found!
 [2024-04-03 19:46:51,464] - logger: life - level: INFO - function: generate_models_database - line: 52
 Models Database found!
 
+[2024-04-04 12:15:22,622] - logger: life - level: DEBUG - function: write_speaker_metadata_details - line: 357
+Metadata schema speed
+[2024-04-04 12:15:22,622] - logger: life - level: DEBUG - function: write_speaker_metadata_details - line: 374
+Source ID neeravmathur000_20240404121522622524
+[2024-04-04 12:15:22,622] - logger: life - level: DEBUG - function: write_speaker_metadata - line: 265
+Metadata schema speed
+[2024-04-04 12:15:22,622] - logger: life - level: DEBUG - function: write_speaker_metadata - line: 285
+Data to inser {'username': 'life_admin', 'projectname': 'D_Agriculture_chokri_18_sep_2023_6:30pm_Q_Test_karya_English_Hindi_Questionnaire_18_sep_2023_6:27pm', 'lifesourceid': 'neeravmathur000_20240404121522622524', 'createdBy': 'life_admin', 'audioSource': 'field', 'audioSubSource': 'speed', 'metadataSchema': 'speed', 'uploadType': 'single', 'additionalInfo': {}, 'current': {'updatedBy': 'life_admin', 'sourceMetadata': {'name': 'Neerav Mathur', 'agegroup': '18-30', 'gender': 'Male', 'educationlevel': 'Graduate', 'educationmediumupto12': ['Meetei'], 'educationmediumafter12': ['Meetei'], 'speakerspeaklanguage': ['Chokri'], 'recordingplace': ' Kharagpur', 'typeofrecordingplace': 'Village', 'lifespeakerid': 'neeravmathur1830_16784394', 'karyaaccesscode': '7623690020672221', 'karyaspeakerid': '16784394'}, 'current_date': '2024-04-04 12:15:22:622822'}, 'uploadedAt': '2024-04-04 12:15:22:622822', 'isActive': 1}
+[2024-04-04 12:15:22,624] - logger: life - level: DEBUG - function: write_speaker_metadata_details - line: 357
+Metadata schema speed
+[2024-04-04 12:15:22,624] - logger: life - level: DEBUG - function: write_speaker_metadata_details - line: 374
+Source ID yogeshdawer000_20240404121522624220
+[2024-04-04 12:15:22,624] - logger: life - level: DEBUG - function: write_speaker_metadata - line: 265
+Metadata schema speed
+[2024-04-04 12:15:22,624] - logger: life - level: DEBUG - function: write_speaker_metadata - line: 285
+Data to inser {'username': 'life_admin', 'projectname': 'D_Agriculture_chokri_18_sep_2023_6:30pm_Q_Test_karya_English_Hindi_Questionnaire_18_sep_2023_6:27pm', 'lifesourceid': 'yogeshdawer000_20240404121522624220', 'createdBy': 'life_admin', 'audioSource': 'field', 'audioSubSource': 'speed', 'metadataSchema': 'speed', 'uploadType': 'single', 'additionalInfo': {}, 'current': {'updatedBy': 'life_admin', 'sourceMetadata': {'name': 'Yogesh Dawer', 'agegroup': '30-45', 'gender': 'Male', 'educationlevel': 'Graduate', 'educationmediumupto12': ['Chokri'], 'educationmediumafter12': ['Meetei'], 'speakerspeaklanguage': ['Meetei'], 'recordingplace': ' Kharagpur', 'typeofrecordingplace': 'Town', 'lifespeakerid': 'yogeshdawer3045_16784395', 'karyaaccesscode': '3174864381633245', 'karyaspeakerid': '16784395'}, 'current_date': '2024-04-04 12:15:22:624314'}, 'uploadedAt': '2024-04-04 12:15:22:624314', 'isActive': 1}
+[2024-04-04 12:15:22,625] - logger: life - level: DEBUG - function: write_speaker_metadata_details - line: 357
+Metadata schema speed
+[2024-04-04 12:15:22,625] - logger: life - level: DEBUG - function: write_speaker_metadata_details - line: 374
+Source ID shyamratan000_20240404121522625347
+[2024-04-04 12:15:22,625] - logger: life - level: DEBUG - function: write_speaker_metadata - line: 265
+Metadata schema speed
+[2024-04-04 12:15:22,625] - logger: life - level: DEBUG - function: write_speaker_metadata - line: 285
+Data to inser {'username': 'life_admin', 'projectname': 'D_Agriculture_chokri_18_sep_2023_6:30pm_Q_Test_karya_English_Hindi_Questionnaire_18_sep_2023_6:27pm', 'lifesourceid': 'shyamratan000_20240404121522625347', 'createdBy': 'life_admin', 'audioSource': 'field', 'audioSubSource': 'speed', 'metadataSchema': 'speed', 'uploadType': 'single', 'additionalInfo': {}, 'current': {'updatedBy': 'life_admin', 'sourceMetadata': {'name': 'Shyam Ratan ', 'agegroup': '30-45', 'gender': 'Male', 'educationlevel': 'Upto 12ᵗʰ', 'educationmediumupto12': ['Meetei'], 'educationmediumafter12': ['Meetei'], 'speakerspeaklanguage': ['Meetei'], 'recordingplace': ' cv', 'typeofrecordingplace': 'Village', 'lifespeakerid': 'shyamratan3045_16784396', 'karyaaccesscode': '0278414965768925', 'karyaspeakerid': '16784396'}, 'current_date': '2024-04-04 12:15:22:625426'}, 'uploadedAt': '2024-04-04 12:15:22:625426', 'isActive': 1}
+[2024-04-04 12:15:22,627] - logger: life - level: DEBUG - function: write_speaker_metadata_details - line: 357
+Metadata schema speed
+[2024-04-04 12:15:22,627] - logger: life - level: DEBUG - function: write_speaker_metadata_details - line: 374
+Source ID siddharth000_20240404121522627730
+[2024-04-04 12:15:22,628] - logger: life - level: DEBUG - function: write_speaker_metadata - line: 265
+Metadata schema speed
+[2024-04-04 12:15:22,628] - logger: life - level: DEBUG - function: write_speaker_metadata - line: 285
+Data to inser {'username': 'life_admin', 'projectname': 'D_Agriculture_chokri_18_sep_2023_6:30pm_Q_Test_karya_English_Hindi_Questionnaire_18_sep_2023_6:27pm', 'lifesourceid': 'siddharth000_20240404121522627730', 'createdBy': 'life_admin', 'audioSource': 'field', 'audioSubSource': 'speed', 'metadataSchema': 'speed', 'uploadType': 'single', 'additionalInfo': {}, 'current': {'updatedBy': 'life_admin', 'sourceMetadata': {'name': 'Siddharth', 'agegroup': '18-30', 'gender': '', 'educationlevel': '', 'educationmediumupto12': [], 'educationmediumafter12': [], 'speakerspeaklanguage': [], 'recordingplace': ' ', 'typeofrecordingplace': '', 'lifespeakerid': 'siddharth1830_16784397', 'karyaaccesscode': '8820547379868381', 'karyaspeakerid': '16784397'}, 'current_date': '2024-04-04 12:15:22:628044'}, 'uploadedAt': '2024-04-04 12:15:22:628044', 'isActive': 1}
+[2024-04-04 12:15:22,629] - logger: life - level: DEBUG - function: write_speaker_metadata_details - line: 357
+Metadata schema speed
+[2024-04-04 12:15:22,630] - logger: life - level: DEBUG - function: write_speaker_metadata_details - line: 374
+Source ID ritesh000_20240404121522630048
+[2024-04-04 12:15:22,630] - logger: life - level: DEBUG - function: write_speaker_metadata - line: 265
+Metadata schema speed
+[2024-04-04 12:15:22,630] - logger: life - level: DEBUG - function: write_speaker_metadata - line: 285
+Data to inser {'username': 'life_admin', 'projectname': 'D_Agriculture_chokri_18_sep_2023_6:30pm_Q_Test_karya_English_Hindi_Questionnaire_18_sep_2023_6:27pm', 'lifesourceid': 'ritesh000_20240404121522630048', 'createdBy': 'life_admin', 'audioSource': 'field', 'audioSubSource': 'speed', 'metadataSchema': 'speed', 'uploadType': 'single', 'additionalInfo': {}, 'current': {'updatedBy': 'life_admin', 'sourceMetadata': {'name': 'Ritesh', 'agegroup': '18-30', 'gender': '', 'educationlevel': '', 'educationmediumupto12': [], 'educationmediumafter12': [], 'speakerspeaklanguage': [], 'recordingplace': ' ', 'typeofrecordingplace': '', 'lifespeakerid': 'ritesh1830_16784398', 'karyaaccesscode': '2853828472783581', 'karyaspeakerid': '16784398'}, 'current_date': '2024-04-04 12:15:22:630137'}, 'uploadedAt': '2024-04-04 12:15:22:630137', 'isActive': 1}
+[2024-04-04 12:15:22,631] - logger: life - level: DEBUG - function: write_speaker_metadata_details - line: 357
+Metadata schema speed
+[2024-04-04 12:15:22,631] - logger: life - level: DEBUG - function: write_speaker_metadata_details - line: 374
+Source ID undefined000_20240404121522631669
+[2024-04-04 12:15:22,631] - logger: life - level: DEBUG - function: write_speaker_metadata - line: 265
+Metadata schema speed
+[2024-04-04 12:15:22,631] - logger: life - level: DEBUG - function: write_speaker_metadata - line: 285
+Data to inser {'username': 'life_admin', 'projectname': 'D_Agriculture_chokri_18_sep_2023_6:30pm_Q_Test_karya_English_Hindi_Questionnaire_18_sep_2023_6:27pm', 'lifesourceid': 'undefined000_20240404121522631669', 'createdBy': 'life_admin', 'audioSource': 'field', 'audioSubSource': 'speed', 'metadataSchema': 'speed', 'uploadType': 'single', 'additionalInfo': {}, 'current': {'updatedBy': 'life_admin', 'sourceMetadata': {'name': '', 'agegroup': '', 'gender': '', 'educationlevel': '', 'educationmediumupto12': '', 'educationmediumafter12': '', 'speakerspeaklanguage': '', 'recordingplace': '', 'typeofrecordingplace': '', 'lifespeakerid': '', 'karyaaccesscode': '1368395899757277', 'karyaspeakerid': '16784710'}, 'current_date': '2024-04-04 12:15:22:631773'}, 'uploadedAt': '2024-04-04 12:15:22:631773', 'isActive': 1}
+[2024-04-04 12:15:22,632] - logger: life - level: DEBUG - function: write_speaker_metadata_details - line: 357
+Metadata schema speed
+[2024-04-04 12:15:22,633] - logger: life - level: DEBUG - function: write_speaker_metadata_details - line: 374
+Source ID undefined000_20240404121522633053
+[2024-04-04 12:15:22,633] - logger: life - level: DEBUG - function: write_speaker_metadata - line: 265
+Metadata schema speed
+[2024-04-04 12:15:22,633] - logger: life - level: DEBUG - function: write_speaker_metadata - line: 285
+Data to inser {'username': 'life_admin', 'projectname': 'D_Agriculture_chokri_18_sep_2023_6:30pm_Q_Test_karya_English_Hindi_Questionnaire_18_sep_2023_6:27pm', 'lifesourceid': 'undefined000_20240404121522633053', 'createdBy': 'life_admin', 'audioSource': 'field', 'audioSubSource': 'speed', 'metadataSchema': 'speed', 'uploadType': 'single', 'additionalInfo': {}, 'current': {'updatedBy': 'life_admin', 'sourceMetadata': {'name': '', 'agegroup': '', 'gender': '', 'educationlevel': '', 'educationmediumupto12': '', 'educationmediumafter12': '', 'speakerspeaklanguage': '', 'recordingplace': '', 'typeofrecordingplace': '', 'lifespeakerid': '', 'karyaaccesscode': '0278414965768925', 'karyaspeakerid': '16784396'}, 'current_date': '2024-04-04 12:15:22:633173'}, 'uploadedAt': '2024-04-04 12:15:22:633173', 'isActive': 1}
+[2024-04-04 12:15:22,634] - logger: life - level: DEBUG - function: write_speaker_metadata_details - line: 357
+Metadata schema speed
+[2024-04-04 12:15:22,634] - logger: life - level: DEBUG - function: write_speaker_metadata_details - line: 374
+Source ID ramu000_20240404121522634599
+[2024-04-04 12:15:22,634] - logger: life - level: DEBUG - function: write_speaker_metadata - line: 265
+Metadata schema speed
+[2024-04-04 12:15:22,634] - logger: life - level: DEBUG - function: write_speaker_metadata - line: 285
+Data to inser {'username': 'life_admin', 'projectname': 'D_Agriculture_chokri_18_sep_2023_6:30pm_Q_Test_karya_English_Hindi_Questionnaire_18_sep_2023_6:27pm', 'lifesourceid': 'ramu000_20240404121522634599', 'createdBy': 'life_admin', 'audioSource': 'field', 'audioSubSource': 'speed', 'metadataSchema': 'speed', 'uploadType': 'single', 'additionalInfo': {}, 'current': {'updatedBy': 'life_admin', 'sourceMetadata': {'name': 'ramu', 'agegroup': '18-30', 'gender': 'Female', 'educationlevel': 'Upto 12ᵗʰ', 'educationmediumupto12': ['Bodo'], 'educationmediumafter12': ['Meetei'], 'speakerspeaklanguage': ['Chokri'], 'recordingplace': ' kmkm', 'typeofrecordingplace': 'Village', 'lifespeakerid': 'ramu1830_16779729', 'karyaaccesscode': '6739098775487197', 'karyaspeakerid': '16779729'}, 'current_date': '2024-04-04 12:15:22:634739'}, 'uploadedAt': '2024-04-04 12:15:22:634739', 'isActive': 1}
+[2024-04-04 12:15:22,636] - logger: life - level: DEBUG - function: write_speaker_metadata_details - line: 357
+Metadata schema speed
+[2024-04-04 12:15:22,636] - logger: life - level: DEBUG - function: write_speaker_metadata_details - line: 374
+Source ID ramu000_20240404121522636699
+[2024-04-04 12:15:22,636] - logger: life - level: DEBUG - function: write_speaker_metadata - line: 265
+Metadata schema speed
+[2024-04-04 12:15:22,636] - logger: life - level: DEBUG - function: write_speaker_metadata - line: 285
+Data to inser {'username': 'life_admin', 'projectname': 'D_Agriculture_chokri_18_sep_2023_6:30pm_Q_Test_karya_English_Hindi_Questionnaire_18_sep_2023_6:27pm', 'lifesourceid': 'ramu000_20240404121522636699', 'createdBy': 'life_admin', 'audioSource': 'field', 'audioSubSource': 'speed', 'metadataSchema': 'speed', 'uploadType': 'single', 'additionalInfo': {}, 'current': {'updatedBy': 'life_admin', 'sourceMetadata': {'name': 'Ramu', 'agegroup': '18-30', 'gender': 'Female', 'educationlevel': 'No Schooling', 'educationmediumupto12': [], 'educationmediumafter12': [], 'speakerspeaklanguage': [], 'recordingplace': ' Rome', 'typeofrecordingplace': 'Village', 'lifespeakerid': 'ramu1830_16779730', 'karyaaccesscode': '3716430456935133', 'karyaspeakerid': '16779730'}, 'current_date': '2024-04-04 12:15:22:636837'}, 'uploadedAt': '2024-04-04 12:15:22:636837', 'isActive': 1}
+[2024-04-04 12:15:22,639] - logger: life - level: DEBUG - function: write_speaker_metadata_details - line: 357
+Metadata schema speed
+[2024-04-04 12:15:22,639] - logger: life - level: DEBUG - function: write_speaker_metadata_details - line: 374
+Source ID gamu000_20240404121522639697
+[2024-04-04 12:15:22,640] - logger: life - level: DEBUG - function: write_speaker_metadata - line: 265
+Metadata schema speed
+[2024-04-04 12:15:22,640] - logger: life - level: DEBUG - function: write_speaker_metadata - line: 285
+Data to inser {'username': 'life_admin', 'projectname': 'D_Agriculture_chokri_18_sep_2023_6:30pm_Q_Test_karya_English_Hindi_Questionnaire_18_sep_2023_6:27pm', 'lifesourceid': 'gamu000_20240404121522639697', 'createdBy': 'life_admin', 'audioSource': 'field', 'audioSubSource': 'speed', 'metadataSchema': 'speed', 'uploadType': 'single', 'additionalInfo': {}, 'current': {'updatedBy': 'life_admin', 'sourceMetadata': {'name': 'Gamu', 'agegroup': '18-30', 'gender': 'Male', 'educationlevel': '', 'educationmediumupto12': [], 'educationmediumafter12': [], 'speakerspeaklanguage': [], 'recordingplace': ' ', 'typeofrecordingplace': 'City', 'lifespeakerid': 'gamu1830_16780331', 'karyaaccesscode': '2158640156263133', 'karyaspeakerid': '16780331'}, 'current_date': '2024-04-04 12:15:22:639995'}, 'uploadedAt': '2024-04-04 12:15:22:639995', 'isActive': 1}
+[2024-04-04 12:15:22,641] - logger: life - level: DEBUG - function: write_speaker_metadata_details - line: 357
+Metadata schema speed
+[2024-04-04 12:15:22,641] - logger: life - level: DEBUG - function: write_speaker_metadata_details - line: 374
+Source ID gargi000_20240404121522641876
+[2024-04-04 12:15:22,642] - logger: life - level: DEBUG - function: write_speaker_metadata - line: 265
+Metadata schema speed
+[2024-04-04 12:15:22,642] - logger: life - level: DEBUG - function: write_speaker_metadata - line: 285
+Data to inser {'username': 'life_admin', 'projectname': 'D_Agriculture_chokri_18_sep_2023_6:30pm_Q_Test_karya_English_Hindi_Questionnaire_18_sep_2023_6:27pm', 'lifesourceid': 'gargi000_20240404121522641876', 'createdBy': 'life_admin', 'audioSource': 'field', 'audioSubSource': 'speed', 'metadataSchema': 'speed', 'uploadType': 'single', 'additionalInfo': {}, 'current': {'updatedBy': 'life_admin', 'sourceMetadata': {'name': 'Gargi', 'agegroup': '30-45', 'gender': 'Male', 'educationlevel': '', 'educationmediumupto12': [], 'educationmediumafter12': [], 'speakerspeaklanguage': [], 'recordingplace': ' ', 'typeofrecordingplace': '', 'lifespeakerid': 'gargi3045_16780333', 'karyaaccesscode': '4769387116770013', 'karyaspeakerid': '16780333'}, 'current_date': '2024-04-04 12:15:22:642002'}, 'uploadedAt': '2024-04-04 12:15:22:642002', 'isActive': 1}
+[2024-04-04 12:15:22,643] - logger: life - level: DEBUG - function: write_speaker_metadata_details - line: 357
+Metadata schema speed
+[2024-04-04 12:15:22,644] - logger: life - level: DEBUG - function: write_speaker_metadata_details - line: 374
+Source ID gargi000_20240404121522644073
+[2024-04-04 12:15:22,644] - logger: life - level: DEBUG - function: write_speaker_metadata - line: 265
+Metadata schema speed
+[2024-04-04 12:15:22,644] - logger: life - level: DEBUG - function: write_speaker_metadata - line: 285
+Data to inser {'username': 'life_admin', 'projectname': 'D_Agriculture_chokri_18_sep_2023_6:30pm_Q_Test_karya_English_Hindi_Questionnaire_18_sep_2023_6:27pm', 'lifesourceid': 'gargi000_20240404121522644073', 'createdBy': 'life_admin', 'audioSource': 'field', 'audioSubSource': 'speed', 'metadataSchema': 'speed', 'uploadType': 'single', 'additionalInfo': {}, 'current': {'updatedBy': 'life_admin', 'sourceMetadata': {'name': 'Gargi', 'agegroup': '30-45', 'gender': '', 'educationlevel': '', 'educationmediumupto12': [], 'educationmediumafter12': [], 'speakerspeaklanguage': [], 'recordingplace': ' ', 'typeofrecordingplace': '', 'lifespeakerid': 'gargi3045_16779732', 'karyaaccesscode': '4321577209111261', 'karyaspeakerid': '16779732'}, 'current_date': '2024-04-04 12:15:22:644153'}, 'uploadedAt': '2024-04-04 12:15:22:644153', 'isActive': 1}
+[2024-04-04 12:15:22,645] - logger: life - level: DEBUG - function: write_speaker_metadata_details - line: 357
+Metadata schema speed
+[2024-04-04 12:15:22,645] - logger: life - level: DEBUG - function: write_speaker_metadata_details - line: 374
+Source ID gargitest3000_20240404121522645549
+[2024-04-04 12:15:22,645] - logger: life - level: DEBUG - function: write_speaker_metadata - line: 265
+Metadata schema speed
+[2024-04-04 12:15:22,645] - logger: life - level: DEBUG - function: write_speaker_metadata - line: 285
+Data to inser {'username': 'life_admin', 'projectname': 'D_Agriculture_chokri_18_sep_2023_6:30pm_Q_Test_karya_English_Hindi_Questionnaire_18_sep_2023_6:27pm', 'lifesourceid': 'gargitest3000_20240404121522645549', 'createdBy': 'life_admin', 'audioSource': 'field', 'audioSubSource': 'speed', 'metadataSchema': 'speed', 'uploadType': 'single', 'additionalInfo': {}, 'current': {'updatedBy': 'life_admin', 'sourceMetadata': {'name': 'Gargi Test3', 'agegroup': '45-60', 'gender': 'Male', 'educationlevel': 'Post-Graduate', 'educationmediumupto12': ['Kokborok', 'Nyishi'], 'educationmediumafter12': ['Kokborok', 'Nyishi'], 'speakerspeaklanguage': ['Kokborok', 'Nyishi'], 'recordingplace': 'Delhi', 'typeofrecordingplace': 'Village', 'lifespeakerid': 'gargitest34560_16779733', 'karyaaccesscode': '2001505941140189', 'karyaspeakerid': '16779733'}, 'current_date': '2024-04-04 12:15:22:645673'}, 'uploadedAt': '2024-04-04 12:15:22:645673', 'isActive': 1}
+[2024-04-04 12:15:22,648] - logger: life - level: DEBUG - function: write_speaker_metadata_details - line: 357
+Metadata schema speed
+[2024-04-04 12:15:22,648] - logger: life - level: DEBUG - function: write_speaker_metadata_details - line: 374
+Source ID yogi000_20240404121522648203
+[2024-04-04 12:15:22,648] - logger: life - level: DEBUG - function: write_speaker_metadata - line: 265
+Metadata schema speed
+[2024-04-04 12:15:22,648] - logger: life - level: DEBUG - function: write_speaker_metadata - line: 285
+Data to inser {'username': 'life_admin', 'projectname': 'D_Agriculture_chokri_18_sep_2023_6:30pm_Q_Test_karya_English_Hindi_Questionnaire_18_sep_2023_6:27pm', 'lifesourceid': 'yogi000_20240404121522648203', 'createdBy': 'life_admin', 'audioSource': 'field', 'audioSubSource': 'speed', 'metadataSchema': 'speed', 'uploadType': 'single', 'additionalInfo': {}, 'current': {'updatedBy': 'life_admin', 'sourceMetadata': {'name': 'Yogi', 'agegroup': '30-45', 'gender': 'Male', 'educationlevel': 'Above PG', 'educationmediumupto12': ['Kokborok'], 'educationmediumafter12': ['Chokri'], 'speakerspeaklanguage': ['Kokborok'], 'recordingplace': ' Rome', 'typeofrecordingplace': 'Village', 'lifespeakerid': 'yogi3045_16779734', 'karyaaccesscode': '2888721847005917', 'karyaspeakerid': '16779734'}, 'current_date': '2024-04-04 12:15:22:648333'}, 'uploadedAt': '2024-04-04 12:15:22:648333', 'isActive': 1}
+[2024-04-04 12:15:22,650] - logger: life - level: DEBUG - function: write_speaker_metadata_details - line: 357
+Metadata schema speed
+[2024-04-04 12:15:22,650] - logger: life - level: DEBUG - function: write_speaker_metadata_details - line: 374
+Source ID anjali000_20240404121522650418
+[2024-04-04 12:15:22,650] - logger: life - level: DEBUG - function: write_speaker_metadata - line: 265
+Metadata schema speed
+[2024-04-04 12:15:22,650] - logger: life - level: DEBUG - function: write_speaker_metadata - line: 285
+Data to inser {'username': 'life_admin', 'projectname': 'D_Agriculture_chokri_18_sep_2023_6:30pm_Q_Test_karya_English_Hindi_Questionnaire_18_sep_2023_6:27pm', 'lifesourceid': 'anjali000_20240404121522650418', 'createdBy': 'life_admin', 'audioSource': 'field', 'audioSubSource': 'speed', 'metadataSchema': 'speed', 'uploadType': 'single', 'additionalInfo': {}, 'current': {'updatedBy': 'life_admin', 'sourceMetadata': {'name': 'Anjali', 'agegroup': '18-30', 'gender': 'Female', 'educationlevel': '', 'educationmediumupto12': [], 'educationmediumafter12': [], 'speakerspeaklanguage': [], 'recordingplace': ' ', 'typeofrecordingplace': '', 'lifespeakerid': 'anjali1830_16779736', 'karyaaccesscode': '0462441270338269', 'karyaspeakerid': '16779736'}, 'current_date': '2024-04-04 12:15:22:650554'}, 'uploadedAt': '2024-04-04 12:15:22:650554', 'isActive': 1}
+[2024-04-04 12:15:22,652] - logger: life - level: DEBUG - function: write_speaker_metadata_details - line: 357
+Metadata schema speed
+[2024-04-04 12:15:22,652] - logger: life - level: DEBUG - function: write_speaker_metadata_details - line: 374
+Source ID rama000_20240404121522652504
+[2024-04-04 12:15:22,652] - logger: life - level: DEBUG - function: write_speaker_metadata - line: 265
+Metadata schema speed
+[2024-04-04 12:15:22,652] - logger: life - level: DEBUG - function: write_speaker_metadata - line: 285
+Data to inser {'username': 'life_admin', 'projectname': 'D_Agriculture_chokri_18_sep_2023_6:30pm_Q_Test_karya_English_Hindi_Questionnaire_18_sep_2023_6:27pm', 'lifesourceid': 'rama000_20240404121522652504', 'createdBy': 'life_admin', 'audioSource': 'field', 'audioSubSource': 'speed', 'metadataSchema': 'speed', 'uploadType': 'single', 'additionalInfo': {}, 'current': {'updatedBy': 'life_admin', 'sourceMetadata': {'name': 'RAma', 'agegroup': '18-30', 'gender': 'Non-Binary', 'educationlevel': 'Graduate', 'educationmediumupto12': ['Kokborok'], 'educationmediumafter12': ['Kokborok'], 'speakerspeaklanguage': ['Kokborok'], 'recordingplace': ' Rome', 'typeofrecordingplace': 'City', 'lifespeakerid': 'rama1830_16779729', 'karyaaccesscode': '6739098775487198', 'karyaspeakerid': '16779729'}, 'current_date': '2024-04-04 12:15:22:652749'}, 'uploadedAt': '2024-04-04 12:15:22:652749', 'isActive': 1}
+[2024-04-04 12:15:22,655] - logger: life - level: DEBUG - function: write_speaker_metadata_details - line: 357
+Metadata schema speed
+[2024-04-04 12:15:22,655] - logger: life - level: DEBUG - function: write_speaker_metadata_details - line: 374
+Source ID undefined000_20240404121522655345
+[2024-04-04 12:15:22,655] - logger: life - level: DEBUG - function: write_speaker_metadata - line: 265
+Metadata schema speed
+[2024-04-04 12:15:22,655] - logger: life - level: DEBUG - function: write_speaker_metadata - line: 285
+Data to inser {'username': 'life_admin', 'projectname': 'D_Agriculture_chokri_18_sep_2023_6:30pm_Q_Test_karya_English_Hindi_Questionnaire_18_sep_2023_6:27pm', 'lifesourceid': 'undefined000_20240404121522655345', 'createdBy': 'life_admin', 'audioSource': 'field', 'audioSubSource': 'speed', 'metadataSchema': 'speed', 'uploadType': 'single', 'additionalInfo': {}, 'current': {'updatedBy': 'life_admin', 'sourceMetadata': {'name': '', 'agegroup': '', 'gender': '', 'educationlevel': '', 'educationmediumupto12': '', 'educationmediumafter12': '', 'speakerspeaklanguage': '', 'recordingplace': '', 'typeofrecordingplace': '', 'lifespeakerid': '', 'karyaaccesscode': '7623690020672121', 'karyaspeakerid': '167843934'}, 'current_date': '2024-04-04 12:15:22:655479'}, 'uploadedAt': '2024-04-04 12:15:22:655479', 'isActive': 1}
+[2024-04-04 12:15:22,657] - logger: life - level: DEBUG - function: write_speaker_metadata_details - line: 357
+Metadata schema speed
+[2024-04-04 12:15:22,657] - logger: life - level: DEBUG - function: write_speaker_metadata_details - line: 374
+Source ID kang000_20240404121522657281
+[2024-04-04 12:15:22,657] - logger: life - level: DEBUG - function: write_speaker_metadata - line: 265
+Metadata schema speed
+[2024-04-04 12:15:22,657] - logger: life - level: DEBUG - function: write_speaker_metadata - line: 285
+Data to inser {'username': 'life_admin', 'projectname': 'D_Agriculture_chokri_18_sep_2023_6:30pm_Q_Test_karya_English_Hindi_Questionnaire_18_sep_2023_6:27pm', 'lifesourceid': 'kang000_20240404121522657281', 'createdBy': 'life_admin', 'audioSource': 'field', 'audioSubSource': 'speed', 'metadataSchema': 'speed', 'uploadType': 'single', 'additionalInfo': {}, 'current': {'updatedBy': 'life_admin', 'sourceMetadata': {'name': 'Kang', 'agegroup': '18-30', 'gender': '', 'educationlevel': '', 'educationmediumupto12': [], 'educationmediumafter12': [], 'speakerspeaklanguage': [], 'recordingplace': ' ', 'typeofrecordingplace': '', 'lifespeakerid': 'kang1830_1678439700', 'karyaaccesscode': '882054737986838100', 'karyaspeakerid': '1678439700'}, 'current_date': '2024-04-04 12:15:22:657428'}, 'uploadedAt': '2024-04-04 12:15:22:657428', 'isActive': 1}
+[2024-04-04 12:15:22,658] - logger: life - level: DEBUG - function: write_speaker_metadata_details - line: 357
+Metadata schema speed
+[2024-04-04 12:15:22,658] - logger: life - level: DEBUG - function: write_speaker_metadata_details - line: 374
+Source ID undefined000_20240404121522658942
+[2024-04-04 12:15:22,659] - logger: life - level: DEBUG - function: write_speaker_metadata - line: 265
+Metadata schema speed
+[2024-04-04 12:15:22,659] - logger: life - level: DEBUG - function: write_speaker_metadata - line: 285
+Data to inser {'username': 'life_admin', 'projectname': 'D_Agriculture_chokri_18_sep_2023_6:30pm_Q_Test_karya_English_Hindi_Questionnaire_18_sep_2023_6:27pm', 'lifesourceid': 'undefined000_20240404121522658942', 'createdBy': 'life_admin', 'audioSource': 'field', 'audioSubSource': 'speed', 'metadataSchema': 'speed', 'uploadType': 'single', 'additionalInfo': {}, 'current': {'updatedBy': 'life_admin', 'sourceMetadata': {'name': '', 'agegroup': '', 'gender': '', 'educationlevel': '', 'educationmediumupto12': '', 'educationmediumafter12': '', 'speakerspeaklanguage': '', 'recordingplace': '', 'typeofrecordingplace': '', 'lifespeakerid': '', 'karyaaccesscode': '6331036', 'karyaspeakerid': ''}, 'current_date': '2024-04-04 12:15:22:659057'}, 'uploadedAt': '2024-04-04 12:15:22:659057', 'isActive': 1}
+[2024-04-04 12:15:32,137] - logger: life - level: DEBUG - function: updateaudiosortingsubcategories - line: 644
+selected_audio_sorting_category: sourcemetainfo
+[2024-04-04 12:20:02,953] - logger: life - level: DEBUG - function: write_speaker_metadata_details - line: 357
+Metadata schema speed
+[2024-04-04 12:20:02,954] - logger: life - level: DEBUG - function: write_speaker_metadata_details - line: 374
+Source ID kang000_20240404122002954265
+[2024-04-04 12:20:02,955] - logger: life - level: DEBUG - function: write_speaker_metadata - line: 265
+Metadata schema speed
+[2024-04-04 12:20:02,955] - logger: life - level: DEBUG - function: write_speaker_metadata - line: 285
+Data to inser {'username': 'life_admin', 'projectname': 'D_Agriculture_chokri_18_sep_2023_6:30pm_Q_Test_karya_English_Hindi_Questionnaire_18_sep_2023_6:27pm', 'lifesourceid': 'kang000_20240404122002954265', 'createdBy': 'life_admin', 'audioSource': 'field', 'audioSubSource': 'speed', 'metadataSchema': 'speed', 'uploadType': 'single', 'additionalInfo': {}, 'current': {'updatedBy': 'life_admin', 'sourceMetadata': {'name': 'Kang', 'agegroup': '18-30', 'gender': '', 'educationlevel': '', 'educationmediumupto12': [], 'educationmediumafter12': [], 'speakerspeaklanguage': [], 'recordingplace': ' ', 'typeofrecordingplace': '', 'lifespeakerid': 'kang1830_1678439700', 'karyaaccesscode': '882054737986838100', 'karyaspeakerid': '1678439700'}, 'current_date': '2024-04-04 12:20:02:955090'}, 'uploadedAt': '2024-04-04 12:20:02:955090', 'isActive': 1}
+[2024-04-04 12:25:19,166] - logger: life - level: DEBUG - function: write_speaker_metadata_details - line: 357
+Metadata schema speed
+[2024-04-04 12:25:19,167] - logger: life - level: DEBUG - function: write_speaker_metadata_details - line: 374
+Source ID undefined000_20240404122519167070
+[2024-04-04 12:25:19,167] - logger: life - level: DEBUG - function: write_speaker_metadata - line: 265
+Metadata schema speed
+[2024-04-04 12:25:19,167] - logger: life - level: DEBUG - function: write_speaker_metadata - line: 285
+Data to inser {'username': 'life_admin', 'projectname': 'D_Agriculture_chokri_18_sep_2023_6:30pm_Q_Test_karya_English_Hindi_Questionnaire_18_sep_2023_6:27pm', 'lifesourceid': 'undefined000_20240404122519167070', 'createdBy': 'life_admin', 'audioSource': 'field', 'audioSubSource': 'speed', 'metadataSchema': 'speed', 'uploadType': 'single', 'additionalInfo': {}, 'current': {'updatedBy': 'life_admin', 'sourceMetadata': {'name': '', 'agegroup': '', 'gender': '', 'educationlevel': '', 'educationmediumupto12': '', 'educationmediumafter12': '', 'speakerspeaklanguage': '', 'recordingplace': '', 'typeofrecordingplace': '', 'lifespeakerid': '', 'karyaaccesscode': '6331036', 'karyaspeakerid': ''}, 'current_date': '2024-04-04 12:25:19:167707'}, 'uploadedAt': '2024-04-04 12:25:19:167707', 'isActive': 1}
