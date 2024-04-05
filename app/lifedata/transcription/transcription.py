@@ -1049,7 +1049,7 @@ def uploadaudiofiles():
                                                   boundary_threshold=boundary_threshold,
                                                   slice_threshold=slice_threshold,
                                                   # max size of each slice (in seconds), if large audio is to be automatically divided into multiple parts
-                                                  slice_size=slice_size,
+                                                  max_slice_size=slice_size,
                                                   data_type="audio",
                                                   new_audio_details={},
                                                   prompt=prompt,
@@ -1259,6 +1259,16 @@ def maketranscription():
         else:
             min_boundary_size = 2.0
 
+        if 'get-ipa' in data:
+            get_ipa = True
+        else:
+            get_ipa = False
+
+        if 'get-roman' in data:
+            get_roman = True
+        else:
+            get_roman = False
+
         '''
         ASR Model and VAD Model Dict Formats
 
@@ -1283,7 +1293,7 @@ def maketranscription():
         }
         '''
 
-        if 'bhashini_' in model_name:
+        if 'bhashini' in transcription_source:
             hf_token = ''
             model_name = model_name.replace('bhashini_', '')
             model_type = 'bhashini'
@@ -1299,7 +1309,9 @@ def maketranscription():
                 'model_path': model_name,
                 'model_api': transcription_source,
                 'boundary_level': boundary_level,
-                'language_code': audio_lang_code
+                'language_code': audio_lang_code,
+                'get_ipa': get_ipa,
+                'get_roman': get_roman
             },
             'target': script_name
         }
