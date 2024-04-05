@@ -5498,127 +5498,109 @@ def syncspeakermetadata():
     allspeakerdetails, alldatalengths, allkeys = speakerDetails.getspeakerdetails(
         activeprojectname, speakermeta)
 
-    find_task = accesscodedetails.find_one({ "projectname": activeprojectname},{"task":1,"_id": 0})
+    # find_task = accesscodedetails.find({ "projectname": activeprojectname},{"task":1,"_id": 0})
     # print(find_task)
-    if find_task['task'] == "SPEECH_DATA_COLLECTION":
-        find_accesscodedetails = accesscodedetails.find({
-                                        "projectname": activeprojectname, "task": "SPEECH_DATA_COLLECTION"},
-                                        {"lifespeakerid": 1,
-                                        "karyaaccesscode": 1,
-                                        "karyaspeakerid": 1,
-                                        "current.workerMetadata.name": 1, 
-                                        "current.workerMetadata.agegroup": 1,
-                                        "current.workerMetadata.gender": 1,
-                                        "current.workerMetadata.educationlevel": 1,
-                                        "current.workerMetadata.educationmediumupto12": 1,
-                                        "current.workerMetadata.educationmediumafter12": 1,
-                                        "current.workerMetadata.speakerspeaklanguage": 1,
-                                        "current.workerMetadata.recordingplace": 1,
-                                        "current.workerMetadata.typeofrecordingplace": 1,
-                                        "current.workerMetadata.activeAccessCode": 1,
-                                        "_id": 0})
+    # if find_task['task'] == "SPEECH_DATA_COLLECTION":
+    find_accesscodedetails = accesscodedetails.find({
+                                    "projectname": activeprojectname},
+                                    {"lifespeakerid": 1,
+                                    "karyaaccesscode": 1,
+                                    "karyaspeakerid": 1,
+                                    "current.workerMetadata.name": 1, 
+                                    "current.workerMetadata.agegroup": 1,
+                                    "current.workerMetadata.gender": 1,
+                                    "current.workerMetadata.educationlevel": 1,
+                                    "current.workerMetadata.educationmediumupto12": 1,
+                                    "current.workerMetadata.educationmediumafter12": 1,
+                                    "current.workerMetadata.speakerspeaklanguage": 1,
+                                    "current.workerMetadata.recordingplace": 1,
+                                    "current.workerMetadata.typeofrecordingplace": 1,
+                                    "current.workerMetadata.activeAccessCode": 1,
+                                    "_id": 0})
+    
+    total_documents = find_accesscodedetails.count()
+    print("Total number of documents found from accesscodedetails:", total_documents)
 
-        # Uncomment the line below for debugging
-        # print("data : \n", [print(j) for j in find_accesscodedetails])  
-
-        metadata_schema = 'speed'
-        audio_source = 'field'
-        upload_type = 'single'
+    metadata_schema = 'speed'
+    audio_source = 'field'
+    upload_type = 'single'
     
     for document in find_accesscodedetails:
         try:
             new_metadata = {
-                "name": document["current"]["workerMetadata"]["name"],
-                "agegroup": document["current"]["workerMetadata"]["agegroup"],
-                "gender": document["current"]["workerMetadata"]["gender"],
-                "educationlevel": document["current"]["workerMetadata"]["educationlevel"],
-                "educationmediumupto12": document["current"]["workerMetadata"]["educationmediumupto12"],
-                "educationmediumafter12": document["current"]["workerMetadata"]["educationmediumafter12"],
-                "speakerspeaklanguage": document["current"]["workerMetadata"]["speakerspeaklanguage"],
-                "recordingplace": document["current"]["workerMetadata"]["recordingplace"],
-                "typeofrecordingplace": document["current"]["workerMetadata"]["typeofrecordingplace"],
+                "name": document["current"]["workerMetadata"].get("name", ""),
+                "agegroup": document["current"]["workerMetadata"].get("agegroup", ""),
+                "gender": document["current"]["workerMetadata"].get("gender", ""),
+                "educationlevel": document["current"]["workerMetadata"].get("educationlevel", ""),
+                "educationmediumupto12": document["current"]["workerMetadata"].get("educationmediumupto12", []),
+                "educationmediumafter12": document["current"]["workerMetadata"].get("educationmediumafter12", []),
+                "speakerspeaklanguage": document["current"]["workerMetadata"].get("speakerspeaklanguage", []),
+                "recordingplace": document["current"]["workerMetadata"].get("recordingplace", ""),
+                "typeofrecordingplace": document["current"]["workerMetadata"].get("typeofrecordingplace", ""),
                 "lifespeakerid": document["lifespeakerid"],
-                "karyaaccesscode":  document["karyaaccesscode"],
+                "karyaaccesscode": document["karyaaccesscode"],
                 "karyaspeakerid": document["karyaspeakerid"]
             }
+            
+            # Additional conditions to replace None values
+            if new_metadata["name"] is None:
+                new_metadata["name"] = ""
+            if new_metadata["agegroup"] is None:
+                new_metadata["agegroup"] = ""
+            if new_metadata["gender"] is None:
+                new_metadata["gender"] = ""
+            if new_metadata["educationlevel"] is None:
+                new_metadata["educationlevel"] = ""
+            if new_metadata["recordingplace"] is None:
+                new_metadata["recordingplace"] = ""
+            if new_metadata["typeofrecordingplace"] is None:
+                new_metadata["typeofrecordingplace"] = ""
+            # For array fields
+            if new_metadata["educationmediumupto12"] is None:
+                new_metadata["educationmediumupto12"] = []
+            if new_metadata["educationmediumafter12"] is None:
+                new_metadata["educationmediumafter12"] = []
+            if new_metadata["speakerspeaklanguage"] is None:
+                new_metadata["speakerspeaklanguage"] = []
+                
+        except Exception as e:
+            # Handle exception
+            print("An error occurred:", e)
+
             # print(new_metadata["lifespeakerid"])
 
-            # Check if the metadata already exists in speakermeta
-            existing_metadata = speakermeta.find_one({
-                "current.sourceMetadata.lifespeakerid": new_metadata["lifespeakerid"],
-                "current.sourceMetadata.karyaaccesscode":  new_metadata["karyaaccesscode"],
-                "current.sourceMetadata.karyaspeakerid": new_metadata["karyaspeakerid"]
-            })
+        # Check if the metadata already exists in speakermeta
+        existing_metadata = speakermeta.find_one({
+            "projectname": activeprojectname,
+            "current.sourceMetadata.lifespeakerid": new_metadata["lifespeakerid"],
+            "current.sourceMetadata.karyaaccesscode":  new_metadata["karyaaccesscode"],
+            "current.sourceMetadata.karyaspeakerid": new_metadata["karyaspeakerid"]
+        })
 
-            # print(existing_metadata)
+        # print(existing_metadata)
 
-            if not existing_metadata:
-                #Metadata does not exist, so write it to the speakermeta collection
-                speakerDetails.write_speaker_metadata_details(
-                    speakermeta,
-                    current_username,
-                    activeprojectname,
-                    current_username,
-                    audio_source,
-                    metadata_schema,
-                    new_metadata,
-                    upload_type
-                )
-                print("creating meta data")
+        if not existing_metadata:
+            #Metadata does not exist, so write it to the speakermeta collection
+            not_existing_metadata = speakerDetails.write_speaker_metadata_details(
+                speakermeta,
+                current_username,
+                activeprojectname,
+                current_username,
+                audio_source,
+                metadata_schema,
+                new_metadata,
+                upload_type
+            )
+        
 
-            else:
-                print("Metadata already exists:", existing_metadata)
-        except KeyError as e:
-            print(f"Error accessing key: {e}")
+        # else:
+        #     print("Metadata already exists:", existing_metadata)
+        # except KeyError as e:
+        #     print(f"Error accessing key: {e}")
 
-
-
-
-    if request.method ==  "Get":
-
-        ##to do : first metadata from accesscodedetails and make a condition if the task in accesscodedetails 
-        ## is "SPEECH_DATA_COLLECTION" then find all meta data else name and agegroup only and put the metadata 
-        ## in speakerdetails         #metadata save to speakerdetails 
-
-        find_task = accesscodedetails.find_one({ "projectname": activeprojectname},{"task":1})
-        if find_task == "SPEECH_DATA_COLLECTION":
-            find_accesscodedetails = accesscodedetails.find_one({
-                                            "projectname": activeprojectname, "task": "SPEECH_DATA_COLLECTION"},
-                                            {"lifespeakerid":1,
-                                            "karyaaccesscode": 1,
-                                            "karyaspeakerid": 1,
-                                            "current.workerMetadata.name":1, 
-                                            "current.workerMetadata.agegroup": 1,
-                                            "current.workerMetadata.gender":1,
-                                            "current.workerMetadata.educationlevel":1,
-                                            "current.workerMetadata.educationmediumupto12":1,
-                                            "current.workerMetadata.educationmediumafter12":1,
-                                            "current.workerMetadata.speakerspeaklanguage":1,
-                                            "current.workerMetadata.recordingplace":1,
-                                            "current.workerMetadata.typeofrecordingplace":1,
-                                            "current.workerMetadata.activeAccessCode":1,
-                                            "_id": 0})
-
-            print("data : \n", find_accesscodedetails)
-            
-            # current_dt = str(datetime.now()).replace('.', ':')
-            # metadata_schema = 'speed'
-            # audio_source = 'field'
-            # upload_type = 'single'
-        else:
-            find_accesscodedetails = accesscodedetails.find_one({
-                                            "projectname": activeprojectname, "task": "SPEECH_DATA_COLLECTION"},
-                                            {"lifespeakerid":1,
-                                            "karyaaccesscode": 1,
-                                            "karyaspeakerid": 1,
-                                            "current.workerMetadata.name":1, 
-                                            "current.workerMetadata.agegroup": 1,
-                                            "_id": 0})
-            
-            print("else")
-
-    return render_template('manageProject.html',        shareinfo=shareinfo,
-        usertype=usertype)
+    return render_template('manageProject.html', 
+                           shareinfo=shareinfo,
+                           usertype=usertype)
 
 
 # Manage Speaker Metadata
