@@ -162,10 +162,13 @@ def predictFromBhashiniModel(model_inputs, model_url, script_name=''):
     all_outputs = {}
     for input_id, model_input in model_inputs.items():
         model_input_str = base64.b64encode(model_input).decode('utf-8')
-        print('Input', model_input_str)
-        transcript = transcribe_data(model_input_str)
-        output = transcript["pipelineResponse"][0]["output"][0]["source"]
-        logger.info('Bhashini response %s', transcript)
+        print('Input for', input_id)
+        try:
+            transcript = transcribe_data(model_input_str)
+            logger.info('Bhashini response %s', transcript)
+            output = transcript["pipelineResponse"][0]["output"][0]["source"]
+        except:
+            output = ""
         all_outputs[input_id] = {script_name: output}
 
     logger.info('ASR Output for file %s \tusing Bhashini',

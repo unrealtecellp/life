@@ -388,6 +388,10 @@ def saveoneaudiofile(mongo,
     audiowaveform_file.stream.seek(0)
     # full_audio_file_array = np.array(full_audio_file.get_array_of_samples())
 
+    # Convert file to wav - takes care of files of other format as well
+    audiowaveform_file = io.BytesIO()
+    full_audio_file.export(audiowaveform_file, format='wav')
+
     if slice_offset_value > audio_duration:
         slice_offset_value = audio_duration
 
@@ -2153,6 +2157,15 @@ def get_boundary_id_from_number(number, length):
     return str(number).replace('.', '').zfill(length)
 
 
+def insert_data_into_text_grid(text_grid, boundary_id, transcription_type, update_data={}, update_field='transcription'):
+    data_to_update = update_data[transcription_type][update_field][boundary_id]
+    update_field = text_grid[transcription_type][boundary_id][update_field]
+    for script_name, script_data in data_to_update.items():
+        if script_name in update_field:
+            text_grid[transcription_type][boundary_id][update_field][script_name] = script_data
+    return text_grid
+
+
 def update_existing_text_grid(text_grid, transcription_type, update_data={}, update_field='transcription'):
     # transcription_scripts = get_current_transcription_langscripts(mongo)
     # translation_langscripts = get_current_translation_langscripts(mongo)
@@ -2163,11 +2176,13 @@ def update_existing_text_grid(text_grid, transcription_type, update_data={}, upd
     for boundary_id, boundary_elements in text_grid_boundaries.items():
         # all_fields=text_grid[boundary_id]
         # if update_field in update_data:
-        data_to_update = update_data[transcription_type][update_field][boundary_id]
+        text_grid = insert_data_into_text_grid(
+            text_grid, boundary_id, transcription_type, update_data, update_field)
+
         # logger.debug('Data to update %s', data_to_update)
         # logger.debug(
         #     'Original Data %s', text_grid[transcription_type][boundary_id][update_field])
-        text_grid[transcription_type][boundary_id][update_field] = data_to_update
+
     logger.debug('Updated TG %s', text_grid)
     return text_grid
 
@@ -2202,7 +2217,10 @@ def update_blank_text_grid(mongo, text_grid, transcription_type, update_data={},
         text_grid = generate_new_boundary(mongo, text_grid, start_boundary, end_boundary,
                                           transcription_type, boundary_id)
 
-        text_grid[transcription_type][boundary_id][update_field] = data_to_update
+        text_grid = insert_data_into_text_grid(
+            text_grid, boundary_id, transcription_type, update_data, update_field)
+
+        # text_grid[transcription_type][boundary_id][update_field] = data_to_update
 
     # data_to_update = update_data[transcription_type]
 
@@ -2965,6 +2983,7 @@ def save_audio_in_mongo_and_localFs(mongo,
 def get_audio_id_filename(audiofile, audio_filename="no_filename"):
     if audiofile['audiofile'].filename != '':
         audio_filename = audiofile['audiofile'].filename
+        audio_filename = audio_filename[:audio_filename.rindex('.')] + '.wav'
     audio_id = 'A'+re.sub(r'[-: \.]', '', str(datetime.now()))
     # audio_filename = audio_id+
 

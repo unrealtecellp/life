@@ -28,13 +28,20 @@ $('#myASRModalButton').on('click', function (e) {
         document.getElementById("asraudiodurationid").value = audioDuration
 
         asrmodels = [{
+          "text": "Bhashini (ULCA)",
+          "id": "bhashini"
+          },{
           "text": "HF Local",
           "id": "hfpipeline"
           },
         {
           "text": "HF Inference API",
           "id": "hfinference"
-        }
+          },
+        {
+          "text": "Others",
+          "id": "other"
+        },
         ];
 
         boundaryLevels = [{
@@ -76,7 +83,8 @@ $('#myASRModalButton').on('click', function (e) {
         allowClear: true
         });
         
-
+        var newOption = new Option('Hindi-Bhashini_ai4bharat/conformer-hi-gpu--t4', 'bhashini_ai4bharat/conformer-hi-gpu--t4', false, false);
+        $('#myASRModelListSelect2').append(newOption);
         for (entry of data.models) {
           $('#myASRModelListSelect2').select2({
             // tags: true,

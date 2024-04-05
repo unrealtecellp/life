@@ -632,6 +632,10 @@
               <label for="myASRScriptListSelect2">Target Script: </label><br />
               <select class="custom-select custom-select-sm" id="myASRScriptListSelect2" name="scriptName" style="width: 50%;">
             </select>
+            <input type="checkbox" id="get-ipaid" name="get-ipa" checked>
+            <label for="get-ipaid">IPA</label>
+            <input type="checkbox" id="get-romanid" name="get-roman" checked>
+            <label for="get-romanid">Roman</label>
             </div>
             <hr/>
             <div class="input-group col-md-8" id="overwrite-my-boundaries-divid">
@@ -640,10 +644,10 @@
               <select class="custom-select custom-select-sm" id="overwriteMyBoundariesid" name="overwrite-my-boundaries"
                 style="width: 50%;">
               </select>
-              <br/>
+              <!-- <br/>
               <i>
-                <font color="red">*It will force inference on Local server</font>
-              </i>
+                <font color="red">*Available only for HFLocal</font>
+              </i> -->
             </div>
             <!-- <div class="input-group col-md-8" id="sentence-delimiter-divid">
               <input type="checkbox" id="overwrite-my-boundariesid" name="overwrite-my-boundaries">
@@ -658,7 +662,7 @@
             </div> -->
             <hr>
             <div class="input-group col-md-4" id="overwrite-my-transcriptions-divid">
-              <input type="checkbox" id="overwrite-my-transcriptionsid" name="overwrite-my-transcriptions">
+              <input type="checkbox" id="overwrite-my-transcriptionsid" name="overwrite-my-transcriptions" checked>
               <label for="overwrite-my-transcriptionsid">Overwrite my Transcriptions</label>              
             </div>            
             <hr>            
