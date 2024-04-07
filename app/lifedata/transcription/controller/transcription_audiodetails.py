@@ -2281,11 +2281,24 @@ def update_text_grid(mongo, text_grid, new_boundaries, transcription_type, inclu
 
     return text_grid
 
-
 def generate_new_boundary(mongo, text_grid, start_boundary, end_boundary, transcription_type, boundary_id):
     text_grid[transcription_type][boundary_id] = {}
 
-    transcription_scripts = get_current_transcription_langscripts(mongo)
+    projects, userprojects = getdbcollections.getdbcollections(mongo,
+                                                               'projects',
+                                                               'userprojects')
+    current_username = getcurrentusername.getcurrentusername()
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                  userprojects)
+    project_type = getprojecttype.getprojecttype(projects, activeprojectname)
+
+    if (project_type == 'crawling'):
+        transcription_scripts = projects.find_one({"projectname": activeprojectname},
+                                                  {
+                                                   "_id": 0,
+                                                   "crawlerScript": 1})["crawlerScript"]
+    else:
+        transcription_scripts = get_current_transcription_langscripts(mongo)
     # transcription_scripts = list(transcriptions.keys())
     logger.debug('All transcription lang scripts %s', transcription_scripts)
 
@@ -2502,7 +2515,6 @@ def get_current_translation_langscripts(mongo):
     except Exception as error:
         logger.debug(error)
         return dict()
-
 
 def get_current_transcription_langscripts(mongo):
     try:

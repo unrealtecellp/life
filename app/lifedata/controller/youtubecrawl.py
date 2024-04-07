@@ -29,6 +29,10 @@ from app.controller import (
     videodetails
 )
 
+from app.lifedata.transcription.controller import (
+    transcription_audiodetails
+)
+
 logger = life_logging.get_logger()
 
 key = ""
@@ -645,10 +649,11 @@ def write_mongodb_audio(mongo,
 
 
     string_file_name = audio_stream.title
+    string_file_name = re.sub(r'[^A-Za-z0-9]+', '_', string_file_name)
     # logger.debug('string_file_name: %s', string_file_name)
     # file_name = string_file_name[:15]+'_'+speakerId+'_audio.mp4'
     download_file_name = string_file_name[:15]+'_'+speakerId+'_audio.mp4'
-    download_file_name = download_file_name.replace(' ', '_')
+    # download_file_name = download_file_name.replace(' ', '_')
     # logger.debug('download_file_name: %s', download_file_name)
     file_name = download_file_name.replace('.mp4', '.wav')
     # logger.debug('file_name: %s', file_name)
@@ -677,7 +682,20 @@ def write_mongodb_audio(mongo,
     logger.debug(new_audio_file)
     os.remove(download_file_name)
     os.remove(file_name)
-    file_state, transcription_doc_id, fs_file_id = audiodetails.saveoneaudiofile(mongo,
+    # file_state, transcription_doc_id, fs_file_id = audiodetails.saveoneaudiofile(mongo,
+    #                                                                              projects,
+    #                                                                              userprojects,
+    #                                                                              crawling,
+    #                                                                              projectowner,
+    #                                                                              activeprojectname,
+    #                                                                              current_username,
+    #                                                                              speakerId,
+    #                                                                              new_audio_file,
+    #                                                                              run_vad=False,
+    #                                                                              run_asr=False,
+    #                                                                              get_audio_json=False)
+    
+    file_state, transcription_doc_id, fs_file_id = transcription_audiodetails.saveoneaudiofile(mongo,
                                                                                  projects,
                                                                                  userprojects,
                                                                                  crawling,

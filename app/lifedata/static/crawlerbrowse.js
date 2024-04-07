@@ -148,7 +148,7 @@ function createCrawlerBrowseTable(crawlerDataFields,
         else if (browseActionSelectedOption === 'Revoke') {
             ele += '<td><button type="button" id="revokecrawler" class="btn btn-success revokedataclass">'+
                     '<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>'+
-                    ' Revoke Data'+
+                    // ' Revoke Data'+
                     '</button></td>';
 
         }
@@ -537,10 +537,19 @@ function checkData(ele) {
 
 function getSingleCrawlerBrowseAction(element) {
 
+    // console.log(element);
+
     var dataInfo = {}
+    let dataType = document.getElementById('datatypedropdown').value;
     var $row = $(element).closest("tr");    // Find the row
-    var dataId = $row.find("#dataId").text(); // Find the text
-    var data = $row.find("#Data").text(); // Find the text
+    if (dataType == 'text') {
+        var dataId = $row.find("#dataId").text(); // Find the text
+        var data = $row.find("#Data").text(); // Find the text
+    }
+    else if (dataType == 'audio') {
+        var dataId = $row.find("#audioId").text(); // Find the text
+        var data = $row.find("#audioFilename").text(); // Find the text
+    }
     dataInfo[dataId] = data
     // console.log(dataInfo);
 

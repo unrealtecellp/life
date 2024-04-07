@@ -685,7 +685,7 @@ function getSingleAudioBrowseAction(element) {
     var audioId = $row.find("#audioId").text(); // Find the text
     var audioFilename = $row.find("#audioFilename").text(); // Find the text
     audioInfo[audioId] = audioFilename
-    // console.log(audioInfo);
+    console.log(audioInfo);
 
     return audioInfo
 }

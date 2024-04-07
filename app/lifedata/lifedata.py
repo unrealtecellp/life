@@ -218,7 +218,7 @@ def newdataform():
                         new_transcription_form(project_name,
                                                 new_data_form,
                                                 new_data_form_files)
-                if (derive_from_project_type == 'crawling' and
+                elif (derive_from_project_type == 'crawling' and
                         project_type == 'annotation'):
                     data_collection, = getdbcollections.getdbcollections(
                         mongo, project_type)
@@ -230,6 +230,21 @@ def newdataform():
                                                                           projectname,
                                                                           current_username)
                     return redirect(url_for("lifedata.annotation"))
+                elif (derive_from_project_type == 'crawling' and
+                        project_type == 'transcriptions'):
+                    data_collection, = getdbcollections.getdbcollections(
+                        mongo, project_type)
+                    new_transcription_form(project_name,
+                                                new_data_form,
+                                                new_data_form_files)
+                    copydatafromparentproject.sync_transcription_project_from_crawling_project(projects,
+                                                                                                userprojects,
+                                                                                                crawling,
+                                                                                                data_collection,
+                                                                                                derive_from_project_name,
+                                                                                                projectname,
+                                                                                                current_username)
+                    return redirect(url_for("lifedata.transcription.home"))
             else:
                 if (project_type == 'annotation'):
                     annotation_collection, tagsets = getdbcollections.getdbcollections(mongo,
@@ -442,6 +457,12 @@ def getlanguagelist():
             languageslist.append({"id": lang_script, "text": lang_script})
             # if ('data' in lang_info):
             #     langscript.append(lang_script)
+    elif (project_type == "crawling"):
+        project_data = projects.find_one({"projectname": project_name})
+        langscripts = project_data["crawlerLanguage"]
+        languageslist = [{"id": "", "text": ""}]
+        for lang_script in langscripts:
+            languageslist.append({"id": lang_script, "text": lang_script})
 
     return jsonify(languageslist=languageslist)
 
@@ -573,7 +594,6 @@ def crawler():
                            projectName=activeprojectname,
                            shareinfo=shareinfo,
                            dataSubSource=data_sub_source)
-
 
 @lifedata.route('/youtubecrawler', methods=['GET', 'POST'])
 @login_required
@@ -1005,6 +1025,7 @@ def crawlerbrowseaction():
         browse_action = crawler_browse_info['browseActionSelectedOption']
         active_source_id = crawler_browse_info['activeSourceId']
         data_ids_list = list(data_info.keys())
+        data_type = crawler_browse_info['dataType']
 
         for crawler_id in data_ids_list:
             if (browse_action):
@@ -1018,14 +1039,16 @@ def crawlerbrowseaction():
                                                          crawling_collection,
                                                          activeprojectname,
                                                          active_source_id,
-                                                         crawler_id)
+                                                         crawler_id,
+                                                         data_type)
             else:
                 crawled_data_details.delete_one_data(projects_collection,
                                                      crawling_collection,
                                                      activeprojectname,
                                                      current_username,
                                                      active_source_id,
-                                                     crawler_id)
+                                                     crawler_id,
+                                                     data_type)
         if (browse_action):
             flash("Data revoked successfully")
         else:

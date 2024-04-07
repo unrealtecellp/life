@@ -9,7 +9,9 @@ from app.lifedata.controller import (
 from app.controller import (
     life_logging
 )
-
+from app.lifedata.transcription.controller import (
+    transcription_audiodetails
+)
 logger = life_logging.get_logger()
 
 
@@ -138,5 +140,58 @@ def copydatafromcrawlingproject(projects_collection,
                                                   current_username,
                                                   current_username,
                                                   source_Ids_list[0])
+    except:
+        logger.exception("")
+
+def sync_transcription_project_from_crawling_project(projects_collection,
+                                                        userprojects_collection,
+                                                        crawling,
+                                                        data_collection,
+                                                        derived_from_project_name,
+                                                        project_name,
+                                                        current_username):
+    try:
+        all_crawled_audio_data = crawling.find(
+            {"projectname": derived_from_project_name, "audiodeleteFLAG": 0}, {"_id": 0})
+        speaker_ids = {}
+        for i, crawled_data in enumerate(all_crawled_audio_data):
+            # logger.debug('crawled_data: %s -> %s', i, pformat(crawled_data))
+            audioId = crawled_data['audioId']
+            derived_from_project_details = {
+                "derivedfromprojectname": derived_from_project_name,
+                "audioId": audioId
+            }
+            audio_detail = crawled_data
+            audio_detail['username'] = current_username
+            audio_detail["projectname"] = project_name
+            lifesourceid = crawled_data['lifesourceid']
+            if (lifesourceid in speaker_ids):
+                speaker_ids[lifesourceid].append(audioId)
+            else:
+                speaker_ids[lifesourceid] = [audioId]
+            audio_detail['lastUpdatedBy'] = current_username
+            audio_detail['derivedfromprojectdetails'] = derived_from_project_details
+            # logger.debug('data_anno_detail: %s -> %s', i, pformat(data_anno_detail))
+            data_collection.insert_one(audio_detail)
+
+        # logger.debug("sourcedata_ids: %s", pformat(sourcedata_ids))
+        speaker_Ids_list = []
+        lastActiveId = {current_username: {}}
+        for key in speaker_ids.keys():
+            speaker_Ids_list.append(key)
+            lastActiveId[current_username][key] = {
+                "audioId": speaker_ids[key][0]}
+        # logger.debug("source_Ids_list: %s", pformat(source_Ids_list))
+        # logger.debug("lastActiveId: %s", pformat(lastActiveId))
+        projects_collection.update_one({"projectname": project_name},
+                                       {"$set": {
+                                           "lastActiveId."+current_username: lastActiveId[current_username],
+                                           "speakerIds."+current_username: speaker_Ids_list,
+                                           "speakersAudioIds": speaker_ids
+                                       }})
+        transcription_audiodetails.update_active_speaker_Id(userprojects_collection,
+                                                  project_name,
+                                                  current_username,
+                                                  speaker_Ids_list[0])
     except:
         logger.exception("")
