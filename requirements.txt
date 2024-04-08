@@ -152,3 +152,5 @@ huggingface_hub
 accelerate
 sentencex
 zipp==3.14.0
+phonemizer
+textgrid
