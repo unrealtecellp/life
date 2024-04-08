@@ -6,6 +6,7 @@ from transformers import pipeline
 
 from app.controller import life_logging
 from app.lifedata.transcription.controller.transcription_audiodetails import generate_boundary_id
+from app.lifemodels.controller.predictFromLocalModels import get_transliteration
 
 from sentencex import segment
 
@@ -18,13 +19,18 @@ def predictFromAPI(model_name, model_params):
     pass
 
 
-def predictFromHFModel(model_inputs, model_url, hf_token, model_params={}, task='automatic-speech-recognition', script_name=''):
+def predictFromHFModel(model_inputs, model_url, hf_token, model_params={}, task='automatic-speech-recognition', script_names=['IPA']):
     # hf_token = input_data['hf_token']
     # task = model_params['task']
     # prediction = globals(
     # )['predict_'+task](model_params)
     all_outputs = {}
     inference_source = model_params['model_api']
+    script_name = script_names[0]
+    if len(script_names) > 1:
+        other_scripts = script_names[1:]
+    else:
+        other_scripts = []
 
     if inference_source == 'hfinference':
         client = InferenceClient(token=hf_token)
@@ -50,6 +56,16 @@ def predictFromHFModel(model_inputs, model_url, hf_token, model_params={}, task=
                 logger.info('Ouptut from inference client %s',
                             output)
             all_outputs[input_id] = {script_name: output}
+
+            for other_script in other_scripts:
+                if other_script == 'IPA':
+                    source_script = lang_code
+                else:
+                    source_script = script_name
+                script_transcript = get_transliteration(
+                    output, source_script, other_script)
+                all_outputs[input_id][other_script] = script_transcript
+
     else:
         timestamp_level = model_params['boundary_level']
         # sentence_delim = model_params['sentence_delimiter']
@@ -98,8 +114,24 @@ def predictFromHFModel(model_inputs, model_url, hf_token, model_params={}, task=
                     boundary_id = generate_boundary_id(boundary)
                     all_outputs[boundary_id] = {script_name: text}
                     all_outputs[boundary_id]['boundary'] = boundary
+                    for other_script in other_scripts:
+                        if other_script == 'IPA':
+                            source_script = lang_code
+                        else:
+                            source_script = script_name
+                        script_transcript = get_transliteration(
+                            output, source_script, other_script)
+                        all_outputs[boundary_id][other_script] = script_transcript
             else:
                 all_outputs[input_id] = {script_name: output['text']}
+                for other_script in other_scripts:
+                    if other_script == 'IPA':
+                        source_script = lang_code
+                    else:
+                        source_script = script_name
+                    script_transcript = get_transliteration(
+                        output, source_script, other_script)
+                    all_outputs[input_id][other_script] = script_transcript
 
     logger.info('ASR Output for file %s \tusing model %s',
                 all_outputs, model_url)
@@ -158,20 +190,55 @@ def transcribe_data(audio_data):
     return transcript.json()
 
 
-def predictFromBhashiniModel(model_inputs, model_url, script_name=''):
+def predictFromBhashiniModel(model_inputs, model_url, model_params={}, script_names=['IPA'], max_retries=3):
+    status = 0
+    lang_code = model_params['language_code']
     all_outputs = {}
-    for input_id, model_input in model_inputs.items():
-        model_input_str = base64.b64encode(model_input).decode('utf-8')
-        print('Input for', input_id)
-        try:
-            transcript = transcribe_data(model_input_str)
-            logger.info('Bhashini response %s', transcript)
-            output = transcript["pipelineResponse"][0]["output"][0]["source"]
-        except:
-            output = ""
-        all_outputs[input_id] = {script_name: output}
+    script_name = script_names[0]
+    if len(script_names) > 1:
+        other_scripts = script_names[1:]
+    else:
+        other_scripts = []
 
-    logger.info('ASR Output for file %s \tusing Bhashini',
-                all_outputs)
+    completed_count = 0
+    retry_count = 0
+    all_count = len(model_inputs)
+    completed_ids = []
 
-    return all_outputs
+    while completed_count < all_count and retry_count < max_retries:
+        retry_count += 1
+        for input_id, model_input in model_inputs.items():
+            if not input_id in completed_ids:
+                model_input_str = base64.b64encode(model_input).decode('utf-8')
+                print(retry_count, 'Input for', input_id)
+                logger.info('Retry: %s\t Input ID: %s', retry_count, input_id)
+                try:
+                    transcript = transcribe_data(model_input_str)
+                    logger.info('Bhashini response %s', transcript)
+                    output = transcript["pipelineResponse"][0]["output"][0]["source"]
+                    completed_count += 1
+                    completed_ids.append(input_id)
+                except:
+                    logger.exception('')
+                    output = ""
+
+                all_outputs[input_id] = {script_name: output}
+                if output != '':
+                    for other_script in other_scripts:
+                        if other_script == 'IPA':
+                            source_script = lang_code
+                        else:
+                            source_script = script_name
+                        script_transcript = get_transliteration(
+                            output, source_script, other_script)
+                        all_outputs[input_id][other_script] = script_transcript
+
+        logger.info('Retry count: %s\tTotal completed: %s\tTotal to be completed: %s',
+                    retry_count, completed_count, all_count)
+
+    if completed_count == all_count:
+        status = 1
+    logger.info('ASR Output for file %s \tusing Bhashini (retries count: %s)',
+                all_outputs, retry_count)
+
+    return all_outputs, status

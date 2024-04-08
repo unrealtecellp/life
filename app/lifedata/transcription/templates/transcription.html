@@ -536,8 +536,8 @@
             </div>
 
             <div class="input-group col-md-4" id="overwrite-my-boundaries-divid">
-              <input type="checkbox" id="overwrite-my-boundariesid" name="overwrite-my-boundaries">
-              <label for="uploadparameters-vadid">Overwrite my Boundaries</label>
+              <input type="checkbox" id="overwrite-my-boundariesid" name="overwrite-my-boundaries" checked>
+              <label for="overwrite-my-boundariesid">Overwrite my Boundaries</label>
             </div>
 
             <!-- <div class="input-group col-md-4" id="createaudiojson-divid">
@@ -628,14 +628,18 @@
               </select>             
             </div>
             <hr>
+            
             <div class="input-group col-md-12 targetScript" id="asrtargetdivid">
-              <label for="myASRScriptListSelect2">Target Script: </label><br />
-              <select class="custom-select custom-select-sm" id="myASRScriptListSelect2" name="scriptName" style="width: 50%;">
+              <label for="myASRScriptListSelect2">Target Script(s): </label><br />
+              <span id="ipaspanid" hidden="hidden"><input type="checkbox" id="get-ipaid" name="get-ipa" checked>
+              <label for="get-ipaid">IPA</label> &nbsp;&nbsp; |&nbsp;&nbsp;</span>
+
+              <span id="romanspanid" hidden="hidden"><input type="checkbox" id="get-romanid" name="get-roman" checked>
+              <label for="get-romanid">Roman</label> &nbsp;&nbsp; |&nbsp;&nbsp;</span>
+              <label for="myASRScriptListSelect2">Others</label>
+               <select class="custom-select custom-select-sm" id="myASRScriptListSelect2" name="scriptName" style="width: 50%;">
             </select>
-            <input type="checkbox" id="get-ipaid" name="get-ipa" checked>
-            <label for="get-ipaid">IPA</label>
-            <input type="checkbox" id="get-romanid" name="get-roman" checked>
-            <label for="get-romanid">Roman</label>
+            
             </div>
             <hr/>
             <div class="input-group col-md-8" id="overwrite-my-boundaries-divid">

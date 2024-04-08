@@ -109,8 +109,18 @@ $('#myASRModalButton').on('click', function (e) {
             // allowClear: true
           });
           // var newOption = new Option(entry, "Transcription_" + entry, false, false);
-          var newOption = new Option(entry, entry, false, false);
-          $('#myASRScriptListSelect2').append(newOption);
+          if ((entry != 'IPA') && (entry != 'Latin')) {
+            var newOption = new Option(entry, entry, false, false);
+            $('#myASRScriptListSelect2').append(newOption);
+          }
+          else {
+            if (entry == 'IPA') {
+              $('#ipaspanid').show();
+            }
+            if (entry == 'Latin') {
+              $('#romanspanid').show();
+            }
+          }
         }
         $('#myASRModelListSelect2').trigger('change');
         $('#myASRScriptListSelect2').trigger('change');
