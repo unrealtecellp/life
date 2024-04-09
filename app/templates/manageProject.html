@@ -70,10 +70,24 @@ Manage Project
     <br />
     {# {% if shareinfo['sharemode']|int >= 1 %} #}
     {% if 'downloadchecked' in shareinfo and shareinfo['downloadchecked'] == 'true' %}
+    <!-- Button to trigger modal -->
     <div>
-      <button type="button" class="btn btn-lg btn-danger"
-        onclick="window.location.href='{{ url_for('syncspeakermetadata') }}';showMessage();">Sync Speaker Details</button>
+      <button type="button" class="btn btn-lg btn-danger" onclick="syncSpeakerMetadata();">Sync Speaker Details</button>
+    </div>
+
+<!-- Modal -->
+<div class="modal fade" id="syncSpeakerModal" tabindex="-1" role="dialog" aria-labelledby="syncSpeakerModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+      <div class="modal-content">
+          <div class="modal-body">
+              <p>Speaker Details Synced</p>
+          </div>
+          <div class="modal-footer">
+              <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+          </div>
       </div>
+  </div>
+</div>
     {% endif %}
     
 <br>
@@ -101,9 +115,25 @@ Manage Project
 <script src="{{url_for('.static', filename='fetchaccesscodelist.js')}}"></script>
 
 <script>
-  function showMessage() {
-      alert("Speaker detail synced");
+  function syncSpeakerMetadata() {
+      // Make a request to the Flask route
+      fetch("{{ url_for('syncspeakermetadata') }}")
+          .then(response => {
+              if (response.ok) {
+                  // Display pop-up message if the request is successful
+                  $("#modal-message").text("Speaker Details Synced");
+                  $("#syncSpeakerModal").modal("show");
+              } else {
+                  // Handle errors if the request fails
+                  $("#modal-message").text("Failed to sync speaker details");
+                  $("#syncSpeakerModal").modal("show");
+              }
+          })
+          .catch(error => {
+              console.error('Error:', error);
+              $("#modal-message").text("Failed to sync speaker details");
+              $("#syncSpeakerModal").modal("show");
+          });
   }
 </script>
-
 {% endblock %}
