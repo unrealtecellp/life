@@ -79,6 +79,11 @@ If you would like to set up the app on your own server / system for testing and 
     sudo apt-get update
     sudo apt-get install audiowaveform
     ```
+8. Setup phonemizer
+   ```
+   sudo apt-get install festival espeak-ng mbrola
+   apt search mbrola (for installing mbrola voices to work with mbrola backend of phonemizer)
+   ```
 7. Run the application
     ```
     flask run -h 0.0.0.0

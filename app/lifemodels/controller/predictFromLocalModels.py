@@ -1,6 +1,13 @@
 import torch
+# from phonemizer.backend import EspeakBackend
+# from phonemizer.separator import Separator
+from app.lifemodels.controller.espeakIPA import to_ipa
+
+from app.controller import life_logging
+
 torch.set_num_threads(8)
 
+logger = life_logging.get_logger()
 
 def get_boundaries(model_name, model_params):
     # effective_func = getattr()
@@ -11,7 +18,22 @@ def get_boundaries(model_name, model_params):
 
 
 def get_transcription(model_name, **kwargs):
-    transcription = 'get_transcription_'+model_name(**kwargs)
+    transcription = globals()['get_transcription_'+model_name](**kwargs)
+    return transcription
+
+
+def get_transliteration(data, source_script, target_script, **kwargs):
+    if target_script == 'IPA':
+        transcription_words = to_ipa(data.split(' '), lang_code = source_script)
+        logger.info('Data %s, IPA Transcription %s', data, transcription_words)
+        transcription = ' '.join(transcription_words)
+    else:
+        all_functs = globals()
+        current_funct_name = 'get_transliteration_'+source_script + '_to_'+target_script
+        if current_funct_name in all_functs:
+            transcription = globals()[current_funct_name](data, **kwargs)
+        else:
+            transcription = ''
     return transcription
 
 # This gets the timestamps of the parts of the audio with voice activity; also
@@ -63,3 +85,6 @@ def get_transcription_wav2vec2(model_params):
     # values are the start and end position of boundary. The audio may be cropped using
     # this and individual boundaries may be autotranscribed
     return transcriptions
+
+
+# def get_transliteration_Devanagari_to_IPA(data, **kwargs):

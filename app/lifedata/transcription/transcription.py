@@ -264,7 +264,7 @@ def home():
                         else:
                             continue
 
-                logger.debug("activeprojectform: %s", activeprojectform)
+                # logger.debug("activeprojectform: %s", activeprojectform)
 
                 return render_template('transcription.html',
                                        projectName=activeprojectname,
@@ -1211,7 +1211,7 @@ def maketranscription():
         audio_duration = float(data['audioduration'][0]) * 60
         existing_audio_details = transcriptions.find_one(
             {'projectname': activeprojectname, 'audioFilename': audio_filename})
-        logger.debug("Existing audio data %s", existing_audio_details)
+        # logger.debug("Existing audio data %s", existing_audio_details)
 
         if 'modelId' in data:
             model_name = data['modelId'][0]
@@ -1219,9 +1219,9 @@ def maketranscription():
             model_name = ''
 
         if 'scriptName' in data:
-            script_name = data['scriptName'][0]
+            script_name = data['scriptName']
         else:
-            script_name = ''
+            script_name = []
 
         if 'boundaryPause' in data:
             boundary_threshold = float(data['boundaryPause'][0])
@@ -1259,15 +1259,11 @@ def maketranscription():
         else:
             min_boundary_size = 2.0
 
-        if 'get-ipa' in data:
-            get_ipa = True
-        else:
-            get_ipa = False
-
         if 'get-roman' in data:
-            get_roman = True
-        else:
-            get_roman = False
+            script_name.append('Latin')
+
+        if 'get-ipa' in data:
+            script_name.append('IPA')
 
         '''
         ASR Model and VAD Model Dict Formats
@@ -1309,9 +1305,7 @@ def maketranscription():
                 'model_path': model_name,
                 'model_api': transcription_source,
                 'boundary_level': boundary_level,
-                'language_code': audio_lang_code,
-                'get_ipa': get_ipa,
-                'get_roman': get_roman
+                'language_code': audio_lang_code
             },
             'target': script_name
         }
