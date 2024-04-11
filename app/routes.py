@@ -5600,6 +5600,51 @@ def syncspeakermetadata():
             "_id":0
                 })   
     
+    try:
+        for existing_lifesourceid in check_existing_lifesourceid:
+            if existing_lifesourceid["lifesourceid"] != existing_lifesourceid["current"]["sourceMetadata"]["lifespeakerid"]:
+                # Define filter criteria to check if old_lifesourceid is already present
+                filter_criteria_old_lifesourceid = {
+                    "projectname": activeprojectname,
+                    "current.sourceMetadata.lifespeakerid": existing_lifesourceid["current"]["sourceMetadata"]["lifespeakerid"],
+                    "old_lifesourceid": {"$exists": False}  # Check if old_lifesourceid does not exist
+                }
+
+                # Define filter criteria to update lifespeakerid to lifesourceid
+                filter_criteria_lifespeakerid_to_lifesourceid = {
+                    "projectname": activeprojectname,
+                    "current.sourceMetadata.lifespeakerid": existing_lifesourceid["current"]["sourceMetadata"]["lifespeakerid"]
+                }
+
+                # Define the data to be added
+                lifesource_to_old_lifesourceid = {"old_lifesourceid": existing_lifesourceid["lifesourceid"]}
+                lifespeakerid_to_lifesourceid = {"lifesourceid": existing_lifesourceid["current"]["sourceMetadata"]["lifespeakerid"]}
+                
+                # Update old_lifesourceid only if it does not exist in the document
+                try:
+                    # Update old_lifesourceid
+                    result = speakermeta.update_many(filter_criteria_old_lifesourceid, {"$set": lifesource_to_old_lifesourceid})
+                    
+                    # Update lifespeakerid to lifesourceid
+                    result = speakermeta.update_many(filter_criteria_lifespeakerid_to_lifesourceid, {"$set": lifespeakerid_to_lifesourceid})
+                    
+                except Exception as e:
+                    print("An error occurred:", e)
+
+                    # print("insteted speaker lifesourceid")
+
+                    # print(existing_lifesourceid["current"]["sourceMetadata"]["lifespeakerid"])
+                # else:
+                #     print("Metadata already exists:", existing_metadata)
+                # except KeyError as e:
+                #     print(f"Error accessing key: {e}")
+    except Exception as e:
+        print("An error occurred:", e)
+
+    return render_template('manageProject.html', 
+                           shareinfo=shareinfo,
+                           usertype=usertype)
+    '''
     for existing_lifesourceid in check_existing_lifesourceid:
         if existing_lifesourceid["lifesourceid"] != existing_lifesourceid["current"]["sourceMetadata"]["lifespeakerid"]:
             # Define filter criteria to check if old_lifesourceid is already present
@@ -5637,11 +5682,7 @@ def syncspeakermetadata():
         #     print("Metadata already exists:", existing_metadata)
         # except KeyError as e:
         #     print(f"Error accessing key: {e}")
-
-    return render_template('manageProject.html', 
-                           shareinfo=shareinfo,
-                           usertype=usertype)
-
+        '''
 
 # Manage Speaker Metadata
 @app.route('/managespeakermetadata', methods=['GET', 'POST'])
