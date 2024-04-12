@@ -2988,3 +2988,39 @@ Creates dummy user and project if the database has no collection
 language Database found!
 [2024-04-10 22:01:37,554] - logger: life - level: INFO - function: generate_models_database - line: 54
 Models Database found!
+[2024-04-12 10:15:41,144] - logger: life - level: DEBUG - function: dummyUserandProject - line: 5024
+Creates dummy user and project if the database has no collection
+[2024-04-12 10:15:41,346] - logger: life - level: INFO - function: generate_languages_database - line: 101
+language Database found!
+[2024-04-12 10:15:41,348] - logger: life - level: INFO - function: generate_models_database - line: 54
+Models Database found!
+[2024-04-12 10:15:43,424] - logger: life - level: DEBUG - function: dummyUserandProject - line: 5024
+Creates dummy user and project if the database has no collection
+[2024-04-12 10:15:43,546] - logger: life - level: INFO - function: generate_languages_database - line: 101
+language Database found!
+[2024-04-12 10:15:43,547] - logger: life - level: INFO - function: generate_models_database - line: 54
+Models Database found!
+[2024-04-12 10:15:59,633] - logger: life - level: DEBUG - function: dummyUserandProject - line: 5024
+Creates dummy user and project if the database has no collection
+[2024-04-12 10:15:59,750] - logger: life - level: INFO - function: generate_languages_database - line: 101
+language Database found!
+[2024-04-12 10:15:59,750] - logger: life - level: INFO - function: generate_models_database - line: 54
+Models Database found!
+[2024-04-12 10:16:16,163] - logger: life - level: DEBUG - function: dummyUserandProject - line: 5024
+Creates dummy user and project if the database has no collection
+[2024-04-12 10:16:16,285] - logger: life - level: INFO - function: generate_languages_database - line: 101
+language Database found!
+[2024-04-12 10:16:16,286] - logger: life - level: INFO - function: generate_models_database - line: 54
+Models Database found!
+[2024-04-12 10:27:14,614] - logger: life - level: DEBUG - function: dummyUserandProject - line: 5024
+Creates dummy user and project if the database has no collection
+[2024-04-12 10:27:14,729] - logger: life - level: INFO - function: generate_languages_database - line: 101
+language Database found!
+[2024-04-12 10:27:14,730] - logger: life - level: INFO - function: generate_models_database - line: 54
+Models Database found!
+[2024-04-12 10:27:23,790] - logger: life - level: DEBUG - function: dummyUserandProject - line: 5024
+Creates dummy user and project if the database has no collection
+[2024-04-12 10:27:23,916] - logger: life - level: INFO - function: generate_languages_database - line: 101
+language Database found!
+[2024-04-12 10:27:23,916] - logger: life - level: INFO - function: generate_models_database - line: 54
+Models Database found!

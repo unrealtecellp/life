@@ -68,8 +68,9 @@ Manage Project
     </div>
     {% endif %}
     <br />
-    {# {% if shareinfo['sharemode']|int >= 1 %} #}
-    {% if 'downloadchecked' in shareinfo and shareinfo['downloadchecked'] == 'true' %}
+
+
+    {% if  shareinfo['sharemode']|int >= 3 %}
     <!-- Button to trigger modal -->
     <div>
       <button type="button" class="btn btn-lg btn-danger" onclick="syncSpeakerMetadata();">Sync Speaker Details</button>
