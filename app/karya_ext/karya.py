@@ -19,6 +19,8 @@ from io import BytesIO
 import json
 from datetime import datetime
 from pprint import pprint, pformat
+import gridfs
+import base64
 # from pylatex.utils import bold, NoEscape
 
 from flask_login import current_user, login_user, logout_user, login_required
@@ -1441,6 +1443,7 @@ def update_speaker_ids():
 @login_required
 def karyaaudiobrowse():
     try:
+        fs = gridfs.GridFS(mongo.db)
         projects, userprojects, transcriptions, accesscodedetails, fs_files, fs_chunks = getdbcollections.getdbcollections(
             mongo, 'projects', 'userprojects', 'transcriptions', 'accesscodedetails', 'fs.files', 'fs.chunks')
         current_username = getcurrentusername.getcurrentusername()
@@ -1477,30 +1480,35 @@ def karyaaudiobrowse():
 
         for speaker_id, transcriptions_list in data.items():
             for transcription in transcriptions_list:
-                karya_fetched_audio_id = transcription["karyaInfo"]["karyaFetchedAudioId"]
-                if karya_fetched_audio_id in accesscodedetails.distinct("karyafetchedaudios"):
-                    access_code = accesscodedetails.find_one(
-                        {"karyafetchedaudios": karya_fetched_audio_id})["karyaaccesscode"]
-                    transcription["accesscode"] = access_code
-                    print("access_code : ", access_code)
-        print(100*"#", "\n", data)
+                if "karyaInfo" in transcription and "karyaSpeakerId" in transcription["karyaInfo"] and "karyaFetchedAudioId" in transcription["karyaInfo"] and "audioFilename" in transcription:
+                    karya_fetched_audio_id = transcription["karyaInfo"]["karyaFetchedAudioId"]
+                    audio_filename = transcription["audioFilename"]
+                    if karya_fetched_audio_id in accesscodedetails.distinct("karyafetchedaudios"):
+                        access_code = accesscodedetails.find_one({"karyafetchedaudios": karya_fetched_audio_id})["karyaaccesscode"]
+                        transcription["accesscode"] = access_code
+                        print("access_code : ", access_code)
 
-        #################################################################
-        ########################################################################      
-        print('speaker_id : ', speaker_id)
-        print(100*"#", "\n")
-        audio_filenames = [item['audioFilename'] for item in data[speaker_id]]
-        print(audio_filenames)
-        for audio_filename in audio_filenames:
-            files = fs_files.find({"filename": audio_filename}, {"_id": 1})
-            for file in files: 
-                print('files: ',file)
-                file_chunk = fs_chunks.find_one({"files_id": file['_id']}, {"_id": 0, "data":1} )
-        ########################################################################  
-        ########################################################################      
-    
+                    files = fs_files.find({"filename": audio_filename, "projectname": activeprojectname}, {"_id": 1, "filename": 1})
+                    for file in files:
+                        gridfs_file = fs.get(file['_id'])
+                        audio_data = gridfs_file.read()
+                        print("File Name:", audio_filename)
+                        print("File Data:", type(audio_data))
+                        # Append the audio data to the transcription entry in data
+                        
+                        # transcription["audio_data_in_bytes"] = audio_data
+                        
+                        # Encode audio data as base64 for embedding in HTML
 
+                        audio_data_base64 = base64.b64encode(audio_data).decode('utf-8')
+                        transcription["audio_data_in_bytes"] = audio_data_base64
+                        # transcription[audio_filename] = type(audio_data)
 
+            # Append modified transcription entry to data
+            data[speaker_id].append(transcription)
+            # print("data type : ", data)
+########################################################################  
+########################################################################      
 
     except Exception as e:
         logger.exception(e)

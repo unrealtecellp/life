@@ -3024,3 +3024,106 @@ Creates dummy user and project if the database has no collection
 language Database found!
 [2024-04-12 10:27:23,916] - logger: life - level: INFO - function: generate_models_database - line: 54
 Models Database found!
+[2024-04-14 11:11:37,819] - logger: life - level: ERROR - function: karyaaudiobrowse - line: 1514
+cannot encode object: <pymongo.cursor.Cursor object at 0x7fea1c08fdf0>, of type: <class 'pymongo.cursor.Cursor'>
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/karya_ext/karya.py", line 1503, in karyaaudiobrowse
+    gridfs_file = fs.find_one({"filename":files})
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/gridfs/__init__.py", line 308, in find_one
+    for f in self.find(filter, *args, session=session, **kwargs):
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/gridfs/grid_file.py", line 841, in next
+    next_file = super(GridOutCursor, self).next()
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/pymongo/cursor.py", line 1207, in next
+    if len(self.__data) or self._refresh():
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/pymongo/cursor.py", line 1124, in _refresh
+    self.__send_message(q)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/pymongo/cursor.py", line 999, in __send_message
+    response = client._run_operation_with_response(
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/pymongo/mongo_client.py", line 1368, in _run_operation_with_response
+    return self._retryable_read(
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/pymongo/mongo_client.py", line 1471, in _retryable_read
+    return func(session, server, sock_info, slave_ok)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/pymongo/mongo_client.py", line 1360, in _cmd
+    return server.run_operation_with_response(
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/pymongo/server.py", line 101, in run_operation_with_response
+    message = operation.get_message(
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/pymongo/message.py", line 343, in get_message
+    request_id, msg, size, _ = _op_msg(
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/pymongo/message.py", line 714, in _op_msg
+    return _op_msg_uncompressed(
+bson.errors.InvalidDocument: cannot encode object: <pymongo.cursor.Cursor object at 0x7fea1c08fdf0>, of type: <class 'pymongo.cursor.Cursor'>
+[2024-04-14 11:28:42,711] - logger: life - level: DEBUG - function: dummyUserandProject - line: 5024
+Creates dummy user and project if the database has no collection
+[2024-04-14 11:28:42,977] - logger: life - level: INFO - function: generate_languages_database - line: 101
+language Database found!
+[2024-04-14 11:28:42,978] - logger: life - level: INFO - function: generate_models_database - line: 54
+Models Database found!
+[2024-04-14 11:28:47,194] - logger: life - level: DEBUG - function: dummyUserandProject - line: 5024
+Creates dummy user and project if the database has no collection
+[2024-04-14 11:28:47,322] - logger: life - level: INFO - function: generate_languages_database - line: 101
+language Database found!
+[2024-04-14 11:28:47,323] - logger: life - level: INFO - function: generate_models_database - line: 54
+Models Database found!
+[2024-04-14 12:10:52,749] - logger: life - level: ERROR - function: karyaaudiobrowse - line: 1502
+string indices must be integers
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/karya_ext/karya.py", line 1493, in karyaaudiobrowse
+    karya_fetched_audio_id = transcription["karyaInfo"]["karyaFetchedAudioId"]
+TypeError: string indices must be integers
+[2024-04-14 12:13:50,937] - logger: life - level: ERROR - function: karyaaudiobrowse - line: 1502
+string indices must be integers
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/karya_ext/karya.py", line 1493, in karyaaudiobrowse
+    karya_fetched_audio_id = transcription["karyaInfo"]["karyaFetchedAudioId"]
+TypeError: string indices must be integers
+[2024-04-14 14:14:41,932] - logger: life - level: ERROR - function: karyaaudiobrowse - line: 1529
+[Errno 2] No such file or directory: '/path/to/your/directory/data.json'
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/karya_ext/karya.py", line 1523, in karyaaudiobrowse
+    save_data_as_json(data, filepath)
+  File "/home/kmi/lifetestapp/app/karya_ext/karya.py", line 1510, in save_data_as_json
+    with open(filepath, 'w') as file:
+FileNotFoundError: [Errno 2] No such file or directory: '/path/to/your/directory/data.json'
+[2024-04-14 14:15:28,061] - logger: life - level: ERROR - function: karyaaudiobrowse - line: 1529
+Object of type bytes is not JSON serializable
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/karya_ext/karya.py", line 1523, in karyaaudiobrowse
+    save_data_as_json(data, filepath)
+  File "/home/kmi/lifetestapp/app/karya_ext/karya.py", line 1511, in save_data_as_json
+    json.dump(data, file)
+  File "/usr/lib/python3.8/json/__init__.py", line 179, in dump
+    for chunk in iterable:
+  File "/usr/lib/python3.8/json/encoder.py", line 431, in _iterencode
+    yield from _iterencode_dict(o, _current_indent_level)
+  File "/usr/lib/python3.8/json/encoder.py", line 405, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib/python3.8/json/encoder.py", line 325, in _iterencode_list
+    yield from chunks
+  File "/usr/lib/python3.8/json/encoder.py", line 405, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib/python3.8/json/encoder.py", line 438, in _iterencode
+    o = _default(o)
+  File "/usr/lib/python3.8/json/encoder.py", line 179, in default
+    raise TypeError(f'Object of type {o.__class__.__name__} '
+TypeError: Object of type bytes is not JSON serializable
+[2024-04-14 14:52:57,077] - logger: life - level: ERROR - function: karyaaudiobrowse - line: 1515
+'karyaInfo'
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/karya_ext/karya.py", line 1486, in karyaaudiobrowse
+    karya_fetched_audio_id = transcription["karyaInfo"]["karyaFetchedAudioId"]
+KeyError: 'karyaInfo'
+[2024-04-14 21:02:21,624] - logger: life - level: DEBUG - function: dummyUserandProject - line: 5024
+Creates dummy user and project if the database has no collection
+[2024-04-14 21:02:21,896] - logger: life - level: INFO - function: generate_languages_database - line: 101
+language Database found!
+[2024-04-14 21:02:21,897] - logger: life - level: INFO - function: generate_models_database - line: 54
+Models Database found!
+[2024-04-14 21:02:27,159] - logger: life - level: DEBUG - function: dummyUserandProject - line: 5024
+Creates dummy user and project if the database has no collection
+[2024-04-14 21:02:27,281] - logger: life - level: INFO - function: generate_languages_database - line: 101
+language Database found!
+[2024-04-14 21:02:27,281] - logger: life - level: INFO - function: generate_models_database - line: 54
+Models Database found!
+[2024-04-14 23:00:54,348] - logger: life - level: DEBUG - function: uploadfile - line: 240
+derived_from_project_type: questionnaires
+derived_from_project_name: Q_Test_karya_English_Hindi_Questionnaire_18_sep_2023_6:27pm

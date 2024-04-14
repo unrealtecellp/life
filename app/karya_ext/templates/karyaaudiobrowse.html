@@ -7,7 +7,6 @@ Audio Browse
 {% block styles %}
 {{ super() }}
 <link href="{{url_for('.static', filename='karyaaudiobrowse.css')}}" rel="stylesheet" />
-
 {% endblock %}
 
 {% block app_content %}
@@ -73,17 +72,17 @@ Audio Browse
                     <td>{{ audioData.karyaInfo.karyaFetchedAudioId }}</td>
                     <td>{{ audioData.accesscode }}</td>
                     <td>
-                        <audio controls>
-                            <source src="{{ audioData.audioFilename }}" type="audio/wav">
-                            Your browser does not support the audio element.
+                        <audio controls onclick="playAudio(this)">
+                          <source src="data:audio/x-wav;base64,{{ audioData.audio_data_in_bytes }}" type="audio/wav">
+                          Your browser does not support the audio element.
                         </audio>
-                    </td>
+                      </td>
+                      
                     
                 </tr>
             {% endfor %}
         {% endfor %}
     </tbody>
-    
 </table>
 
 {% endblock %}
@@ -176,4 +175,5 @@ Audio Browse
         }
     }
 </script>
+
 {% endblock %}
