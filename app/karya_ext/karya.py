@@ -1573,8 +1573,8 @@ def karyadeleteaudiobrowse():
         # print("accesscodedetails_result_find : ","karya audio ids: ",accesscodedetails_result_find['karyafetchedaudios'],
         #                                         "accesscode: ",accesscodedetails_result_find['karyaaccesscode'])
 
-        print("accesscodedetails_result_find : ", "karya audio ids: ",
-              accesscodedetails_result_find['karyafetchedaudios'])
+        # print("accesscodedetails_result_find : ", "karya audio ids: ",
+        #       accesscodedetails_result_find['karyafetchedaudios'])
         # delete karya audio id
         accesscodedetails_result = accesscodedetails.update_one(
             {
