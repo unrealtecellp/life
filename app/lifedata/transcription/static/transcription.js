@@ -285,6 +285,7 @@ function createTranscriptionInterfaceForm(newData) {
     localStorage.setItem("regions", JSON.stringify(newData['transcriptionRegions']));
     localStorage.setItem("transcriptionDetails", JSON.stringify([newData['transcriptionDetails']]));
     localStorage.setItem("AudioFilePath", JSON.stringify(newData['AudioFilePath']));
+    let accessedOnTime = newData["accessedOnTime"];
     var activeAudioFilename = newData["AudioFilePath"].split('/')[2];
     if (activeAudioFilename === undefined) {
       activeAudioFilename = '';
@@ -293,6 +294,8 @@ function createTranscriptionInterfaceForm(newData) {
     $(".defaultfield").append(inpt);
     lastActiveId = newData["lastActiveId"]
     inpt = '<input type="hidden" id="lastActiveId" name="lastActiveId" value="'+lastActiveId+'">';
+    $('.defaultfield').append(inpt);
+    inpt = '<input type="hidden" id="accessedOnTime" name="accessedOnTime" value="' + accessedOnTime + '">';
     $('.defaultfield').append(inpt);
     inpt = ''
     let transcription_form = '';
@@ -802,6 +805,8 @@ $("#save").click(function() {
   var lastActiveId = document.getElementById("lastActiveId").value;
   transcriptionData['lastActiveId'] = lastActiveId;
   transcriptionData['transcriptionRegions'] = transcriptionRegions;
+  let accessedOnTime = document.getElementById("accessedOnTime").value;
+  transcriptionData['accessedOnTime'] = accessedOnTime;
   $.post( "/savetranscription", {
     a: JSON.stringify(transcriptionData )
   })

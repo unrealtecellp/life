@@ -1559,7 +1559,8 @@ def savetranscription(transcriptions,
                       current_username,
                       transcription_regions,
                       audio_id,
-                      activespeakerId):
+                      activespeakerId,
+                      accessedOnTime):
     """Module to work on the sentence details (transcription and all) through ajax.
 
     Args:
@@ -1573,55 +1574,62 @@ def savetranscription(transcriptions,
     #     "textdeleteFLAG": 0
     # }
     # text_grid = {}
-    sentence = {}
-    if transcription_regions is not None:
-        transcription_regions = json.loads(transcription_regions)
-        # plogger.debug(transcription_regions)
-        for transcription_boundary in transcription_regions:
-            transcription_boundary = transcription_boundary['data']
-            if 'sentence' in transcription_boundary:
-                for type, value in transcription_boundary['sentence'].items():
-                    # logger.debug(f"KEY: {type}\nVALUE: {value}")
-                    value["speakerId"] = activespeakerId
-                    value["sentenceId"] = audio_id
-                    sentence[type] = value
-            # plogger.debug(sentence)
-            #     logger.debug('transcription_boundary.keys() %s', transcription_boundary.keys())
-            #     sentence[transcription_boundary['boundaryID']] = {
-            #         "speakerId": activespeakerId,
-            #         "sentenceId": audio_id,
-            #         'start': transcription_boundary['start'],
-            #         'end': transcription_boundary['end'],
+    try:
+        sentence = {}
+        if transcription_regions is not None:
+            transcription_regions = json.loads(transcription_regions)
+            # plogger.debug(transcription_regions)
+            for transcription_boundary in transcription_regions:
+                transcription_boundary = transcription_boundary['data']
+                if 'sentence' in transcription_boundary:
+                    for type, value in transcription_boundary['sentence'].items():
+                        # logger.debug(f"KEY: {type}\nVALUE: {value}")
+                        value["speakerId"] = activespeakerId
+                        value["sentenceId"] = audio_id
+                        sentence[type] = value
+                # plogger.debug(sentence)
+                #     logger.debug('transcription_boundary.keys() %s', transcription_boundary.keys())
+                #     sentence[transcription_boundary['boundaryID']] = {
+                #         "speakerId": activespeakerId,
+                #         "sentenceId": audio_id,
+                #         'start': transcription_boundary['start'],
+                #         'end': transcription_boundary['end'],
 
-            #         "transcription": {},
-            #         "translation": {},
-            #         "morphemes": {},
-            #         "gloss": {},
-            #         "pos": {},
-            #         "tags": {}
-            #     }
-            # for transcription_data in transcription_regions:
-            #     for type in list(transcription_data['data'].keys()):
-            #         if type == 'sentence':
-            #             logger.debug(type)
+                #         "transcription": {},
+                #         "translation": {},
+                #         "morphemes": {},
+                #         "gloss": {},
+                #         "pos": {},
+                #         "tags": {}
+                #     }
+                # for transcription_data in transcription_regions:
+                #     for type in list(transcription_data['data'].keys()):
+                #         if type == 'sentence':
+                #             logger.debug(type)
 
-            # text_grid['sentence'] = sentence
-            # logger.debug(text_grid)
-            # transcription_details['textGrid'] = text_grid
-            # transcriptions.insert(transcription_details)
-            # logger.debug("'sentence' in transcription_boundary")
-            # logger.debug('371 %s', sentence)
-            # plogger.debug(sentence)
-    transcriptions.update_one({'projectname': activeprojectname, 'audioId': audio_id},
-                              {'$set':
-                               {
-                                   'textGrid.sentence': sentence,
-                                   'updatedBy': current_username,
-                                   'transcriptionFLAG': 1,
-                                   current_username+'.textGrid.sentence': sentence
-                               }
-                               })
-
+                # text_grid['sentence'] = sentence
+                # logger.debug(text_grid)
+                # transcription_details['textGrid'] = text_grid
+                # transcriptions.insert(transcription_details)
+                # logger.debug("'sentence' in transcription_boundary")
+                # logger.debug('371 %s', sentence)
+                # plogger.debug(sentence)
+        transcriptions.update_one({'projectname': activeprojectname, 'audioId': audio_id},
+                                {'$set':
+                                {
+                                    'textGrid.sentence': sentence,
+                                    'updatedBy': current_username,
+                                    'transcriptionFLAG': 1,
+                                    current_username+'.textGrid.sentence': sentence
+                                },
+                                '$push':
+                                {
+                                    'allAccess.'+current_username: accessedOnTime,
+                                    'allUpdate.'+current_username: datetime.now().strftime("%d/%m/%y %H:%M:%S")
+                                }
+                                })
+    except:
+        logger.exception("")
 
 def getaudioprogressreport(projects,
                            transcriptions,

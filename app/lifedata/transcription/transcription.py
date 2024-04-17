@@ -267,6 +267,7 @@ def home():
                 activeprojectform['scriptCode'] = scriptCode
                 langScript = readJSONFile.readJSONFile(langScriptJSONFilePath)
                 activeprojectform['langScript'] = langScript
+                activeprojectform['accessedOnTime'] = datetime.now().strftime("%d/%m/%y %H:%M:%S")
                 # print(audio_id)
 
                 if ('Tagsets' in activeprojectform):

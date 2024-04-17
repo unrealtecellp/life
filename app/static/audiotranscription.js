@@ -2101,8 +2101,9 @@ function preventOverlapBoundaries(region) {
 
 
 $('#myMakeBoundaryModalButton').on('click', function (e) {
-//   alert("Opened!")
+    // alert("Opened!")
     activeSpeaker = document.getElementById("speakeridsdropdown").value;
+    // console.log(document.getElementById("speakeridsdropdown"));
     filename = document.getElementById("audioFilename").textContent;
     audioDuration = document.getElementById("currentaudioduration").textContent;
     // alert(audioDuration) 

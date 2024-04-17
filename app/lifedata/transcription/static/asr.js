@@ -21,6 +21,7 @@ $('#myASRModalButton').on('click', function (e) {
         console.log('Success!');
         console.log(data)
         activeSpeaker = document.getElementById("speakeridsdropdown").value;
+        // console.log(document.getElementById("speakeridsdropdown"));
         filename = document.getElementById("audioFilename").textContent;
         audioDuration = document.getElementById("currentaudioduration").textContent;
         document.getElementById("asrspeakeriduploaddropdown").value = activeSpeaker;

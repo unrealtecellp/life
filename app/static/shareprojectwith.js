@@ -38,7 +38,17 @@ $(document).ready(function() {
       for (i=0; i<sharespeakerlist.length; i++) {
         sharespeakers.push(sharespeakerlist[i].id)
       }
-      // console.log(sharewithusers, sharespeakers, displayRadioValue())
+      if (sharespeakers.includes('*')) {
+        console.log(sharewithusers, sharespeakers, displayRadioValue());
+        sharespeakers = JSON.parse(localStorage.getItem('sharespeakerlist'))
+        // console.log(sharewithusers, sharespeakers, displayRadioValue());
+        const index = sharespeakers.indexOf('*');
+        console.log(index);
+        if (index > -1) { // only splice sharespeakers when item is found
+          sharespeakers.splice(index, 1); // 2nd parameter means remove one item only
+        }
+      }
+      // console.log(sharewithusers, sharespeakers, displayRadioValue());
       data['shareaction'] = shareaction;
       data['sharewithusers'] = sharewithusers;
       data['sharespeakers'] = sharespeakers;

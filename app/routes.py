@@ -496,6 +496,7 @@ def savetranscription():
         # logger.debug("transcription_data: %s", pformat(transcription_data))
         lastActiveId = transcription_data['lastActiveId']
         transcription_regions = transcription_data['transcriptionRegions']
+        accessedOnTime = transcription_data['accessedOnTime']
         # logger.debug("transcription_regions: %s", pformat(json.loads(transcription_regions)))
         # logger.debug(lastActiveId)
         # logger.debug(transcription_regions)
@@ -533,7 +534,8 @@ def savetranscription():
                                        current_username,
                                        transcription_regions,
                                        lastActiveId,
-                                       activespeakerid)
+                                       activespeakerid,
+                                       accessedOnTime)
         return jsonify(savedTranscription=1)
     except:
         logger.exception("")
@@ -3958,11 +3960,11 @@ def userslist():
     try:
         source_metadata = {}
         data = json.loads(request.args.get('a'))
-        logger.debug("data: %s, %s", data, type(data))
+        # logger.debug("data: %s, %s", data, type(data))
         share_action = data["shareAction"]
         selected_user = data["selectedUser"]
-        logger.debug("share_action: %s, selected_user: %s",
-                     share_action, selected_user)
+        # logger.debug("share_action: %s, selected_user: %s",
+        #              share_action, selected_user)
         project_name, share_with_users_list, sourceList, share_info, current_user_sharemode, selected_user_shareinfo = lifeshare.get_users_list(projects,
                                                                                                                                                 userprojects,
                                                                                                                                                 userlogin,
@@ -3979,6 +3981,7 @@ def userslist():
             source_metadata = sourceid_to_souremetadata.get_source_metadata(sourcedetails_collection,
                                                                                 sourceList,
                                                                                 activeprojectname)
+        sourceList.append('*')
     except:
         logger.exception("")
 
