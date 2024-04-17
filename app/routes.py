@@ -54,6 +54,12 @@ from app.models import UserLogin
 
 from app.languages.controller import languageManager as lman
 from app.lifemodels.controller import modelManager as mman
+from app.lifedata.transcription.controller import (
+    transcription_audiodetails,
+)
+from app.lifedata.controller import (
+    sourceid_to_souremetadata,
+)
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 scriptCodeJSONFilePath = os.path.join(basedir, 'static/json/scriptCode.json')
@@ -521,6 +527,7 @@ def savetranscription():
 
         scriptCode = readJSONFile.readJSONFile(scriptCodeJSONFilePath)
         audiodetails.savetranscription(transcriptions,
+                                       activeprojectname,
                                        activeprojectform,
                                        scriptCode,
                                        current_username,
@@ -3937,12 +3944,19 @@ def downloadjson():
 @app.route('/userslist', methods=['GET', 'POST'])
 def userslist():
 
-    userlogin, projects, userprojects = getdbcollections.getdbcollections(mongo,
+    userlogin, projects, userprojects, speakerdetails, sourcedetails = getdbcollections.getdbcollections(mongo,
                                                                           'userlogin',
                                                                           'projects',
-                                                                          'userprojects')
+                                                                          'userprojects',
+                                                                          'speakerdetails',
+                                                                          'sourcedetails')
     current_username = getcurrentusername.getcurrentusername()
+    activeprojectname = getactiveprojectname.getactiveprojectname(
+            current_username, userprojects)
+    project_type = getprojecttype.getprojecttype(projects,
+                                                    activeprojectname)
     try:
+        source_metadata = {}
         data = json.loads(request.args.get('a'))
         logger.debug("data: %s, %s", data, type(data))
         share_action = data["shareAction"]
@@ -3955,12 +3969,23 @@ def userslist():
                                                                                                                                                 current_username,
                                                                                                                                                 share_action=share_action,
                                                                                                                                                 selected_user=selected_user)
+        if (project_type == 'transcriptions'):
+            sourcedetails_collection = speakerdetails
+            source_metadata = transcription_audiodetails.get_speaker_metadata(sourcedetails_collection,
+                                                                                        sourceList,
+                                                                                        activeprojectname)
+        elif (project_type == 'crawling'):
+            sourcedetails_collection = sourcedetails
+            source_metadata = sourceid_to_souremetadata.get_source_metadata(sourcedetails_collection,
+                                                                                sourceList,
+                                                                                activeprojectname)
     except:
         logger.exception("")
 
     return jsonify(projectName=project_name,
                    usersList=sorted(share_with_users_list),
                    sourceList=sorted(sourceList),
+                   sourceMetadata=source_metadata,
                    shareInfo=share_info,
                    sharemode=current_user_sharemode,
                    selectedUserShareInfo=selected_user_shareinfo)
@@ -6595,7 +6620,7 @@ def browsefilesharedwithuserslist():
         logger.debug("file_speaker_ids: %s", file_speaker_ids)
         for audio_id in audio_ids_list:
             speakerid = audiodetails.get_audio_speakerid(
-                transcriptions, audio_id)
+                transcriptions, activeprojectname, audio_id)
             if (speakerid is not None and file_speaker_ids is not None):
                 for user, speaker_ids in file_speaker_ids.items():
                     if (speakerid in speaker_ids and
@@ -6641,7 +6666,7 @@ def browsesharewith():
         speaker_audioids = {}
         for audio_id in audio_ids_list:
             speakerid = audiodetails.get_audio_speakerid(
-                transcriptions, audio_id)
+                transcriptions, activeprojectname, audio_id)
             if (speakerid is not None):
                 if (speakerid in speaker_audioids):
                     speaker_audioids[speakerid].append(audio_id)

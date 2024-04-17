@@ -121,7 +121,7 @@ def newdataform():
         _type_: _description_
     """
     try:
-        projects, userprojects, projectsform, questionnaires, transcriptions, crawling = getdbcollections.getdbcollections(mongo,
+        projects, userprojects, projectsform, questionnaires, transcriptions, crawling_collection = getdbcollections.getdbcollections(mongo,
                                                                                                                            'projects',
                                                                                                                            'userprojects',
                                                                                                                            'projectsform',
@@ -224,7 +224,7 @@ def newdataform():
                         mongo, project_type)
                     copydatafromparentproject.copydatafromcrawlingproject(projects,
                                                                           userprojects,
-                                                                          crawling,
+                                                                          crawling_collection,
                                                                           data_collection,
                                                                           derive_from_project_name,
                                                                           projectname,
@@ -237,9 +237,10 @@ def newdataform():
                     new_transcription_form(project_name,
                                                 new_data_form,
                                                 new_data_form_files)
-                    copydatafromparentproject.sync_transcription_project_from_crawling_project(projects,
+                    copydatafromparentproject.sync_transcription_project_from_crawling_project(mongo,
+                                                                                               projects,
                                                                                                 userprojects,
-                                                                                                crawling,
+                                                                                                crawling_collection,
                                                                                                 data_collection,
                                                                                                 derive_from_project_name,
                                                                                                 projectname,

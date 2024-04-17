@@ -162,18 +162,18 @@ function createCrawlerBrowseTable(crawlerDataFields,
 function createCrawlerBrowse(newData) {
     // console.log(newData);
     let sourceIds = newData['sourceIds'];
-    let sourceMetadata = newData['sourceMetadata']
-    let currentUsername = newData['currentUsername']
-    let projectOwner = newData['projectOwner']
-    let totalRecords = newData['totalRecords']
-    let shareInfo = newData['shareInfo']
-    let shareMode = shareInfo['sharemode']
-    let activeSourceId = shareInfo['activesourceId']
+    let sourceMetadata = newData['sourceMetadata'];
+    let currentUsername = newData['currentUsername'];
+    let projectOwner = newData['projectOwner'];
+    let totalRecords = newData['totalRecords'];
+    let shareInfo = newData['shareInfo'];
+    let shareMode = shareInfo['sharemode'];
+    let activeSourceId = shareInfo['activesourceId'];
     // console.log(activeSourceId)
-    let crawlerDataFields = newData['crawlerDataFields']
-    let crawlerData = newData['crawlerData']
-    let dataTypes = newData['dataTypes']
-    let defaultDataType = newData['defaultDataType']
+    let crawlerDataFields = newData['crawlerDataFields'];
+    let crawlerData = newData['crawlerData'];
+    let dataTypes = newData['dataTypes'];
+    let defaultDataType = newData['defaultDataType'];
     crawlerCreateSelect2('sourceidsdropdown', sourceIds, activeSourceId, sourceMetadata, 'video_title');
     crawlerCreateSelect2('datatypedropdown', dataTypes, defaultDataType)
     crawlerCreateSelect2('sourcedatacountdropdown', [10, 20, 50], 10)

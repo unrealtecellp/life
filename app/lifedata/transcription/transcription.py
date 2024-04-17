@@ -33,6 +33,9 @@ from app.controller import (
     processHTMLForm,
     speakerDetails
 )
+from app.lifedata.controller import (
+    copydatafromparentproject,
+)
 from app.lifedata.transcription.controller import (
     transcription_audiodetails,
     save_transcription_prompt
@@ -106,8 +109,8 @@ def home():
         activeprojectform = getactiveprojectform.getactiveprojectform(projectsform,
                                                                       projectowner,
                                                                       activeprojectname)
-        logger.debug('trancription active project form: %s',
-                     pformat(activeprojectform))
+        # logger.debug('trancription active project form: %s',
+        #              pformat(activeprojectform))
         all_ques_ids = ''
         derived_from_project_type, derived_from_project_name = getprojecttype.getderivedfromprojectdetails(projects,
                                                                                                            activeprojectname)
@@ -192,31 +195,42 @@ def home():
                                                                               audio_id)
                 # logger.debug("transcription_by: %s", transcription_by)
                 transcription_details = transcription_audiodetails.getaudiofiletranscription(data_collection,
+                                                                                             activeprojectname,
                                                                                              audio_id,
                                                                                              transcription_by)
-
+                # logger.debug("transcription_details: %s", pformat(transcription_details))
                 audio_metadata = transcription_audiodetails.getaudiometadata(data_collection,
+                                                                             activeprojectname,
                                                                              audio_id)
                 # logger.debug('audio_metadata: %s', pformat(audio_metadata))
                 # pprint(audio_metadata)
                 activeprojectform['audioMetadata'] = audio_metadata['audioMetadata']
                 last_updated_by = transcription_audiodetails.lastupdatedby(data_collection,
+                                                                           activeprojectname,
                                                                            audio_id)
+                
                 activeprojectform['lastUpdatedBy'] = last_updated_by['updatedBy']
                 # file_path = transcription_audiodetails.getaudiofilefromfs(mongo,
                 #                                             basedir,
                 #                                             audio_id,
                 #                                             'audioId')
                 audio_filename = transcription_audiodetails.get_audio_filename(data_collection,
+                                                                               activeprojectname,
                                                                                audio_id)
                 file_path = url_for('retrieve', filename=audio_filename)
                 # logger.debug("audio_filename: %s, file_path: %s", audio_filename, file_path)
                 activeprojectform['lastActiveId'] = audio_id
                 activeprojectform['transcriptionDetails'] = transcription_details
-                # print(transcription_details)
+                # logger.debug('transcription_details: %s', pformat(transcription_details))
                 activeprojectform['AudioFilePath'] = file_path
+                # logger.debug('transcription_details: %s', pformat(transcription_details))
                 transcription_regions, gloss, pos, boundary_count = transcription_audiodetails.getaudiotranscriptiondetails(
-                    data_collection, audio_id, transcription_by, transcription_details)
+                    data_collection,
+                    activeprojectname,
+                    audio_id,
+                    transcription_by,
+                    transcription_details)
+                # logger.debug('transcription_details: %s', pformat(transcription_details))
                 activeprojectform['transcriptionRegions'] = transcription_regions
                 # print(transcription_regions)
                 activeprojectform['boundaryCount'] = boundary_count
@@ -239,10 +253,16 @@ def home():
                     transcriptions_by = transcription_audiodetails.get_audio_transcriptions_by(
                         projects, transcriptions, activeprojectname, audio_id)
                     # logger.debug("transcriptions_by: %s", transcriptions_by)
-
+                    speakerids.append('')
                 except:
-                    speakerids = ''
-                    added_speaker_ids = ''
+                    speakerids = []
+                    added_speaker_ids = []
+                speaker_metadata = transcription_audiodetails.get_speaker_metadata(speakerdetails,
+                                                                                    speakerids,
+                                                                                    activeprojectname)
+                activeprojectform['speakerIds'] = speakerids
+                activeprojectform['activespeakerId'] = activespeakerid
+                activeprojectform['sourceMetadata'] = speaker_metadata
                 scriptCode = readJSONFile.readJSONFile(scriptCodeJSONFilePath)
                 activeprojectform['scriptCode'] = scriptCode
                 langScript = readJSONFile.readJSONFile(langScriptJSONFilePath)
@@ -327,10 +347,11 @@ def retrieve(filename):
 def audiobrowse():
     try:
         new_data = {}
-        projects, userprojects, transcriptions = getdbcollections.getdbcollections(mongo,
+        projects, userprojects, transcriptions, speakerdetails_collection = getdbcollections.getdbcollections(mongo,
                                                                                    'projects',
                                                                                    'userprojects',
-                                                                                   'transcriptions')
+                                                                                   'transcriptions',
+                                                                                   'speakerdetails')
         current_username = getcurrentusername.getcurrentusername()
         activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
                                                                       userprojects)
@@ -355,6 +376,10 @@ def audiobrowse():
                                                                     activeprojectname,
                                                                     current_username)
         speakerids.append('')
+        speaker_metadata = transcription_audiodetails.get_speaker_metadata(speakerdetails_collection,
+                                                                            speakerids,
+                                                                            activeprojectname)
+        # logger.debug('speaker_metadata: %s', speaker_metadata)
         active_speaker_id = shareinfo['activespeakerId']
         speaker_audio_ids = transcription_audiodetails.get_speaker_audio_ids_new(projects,
                                                                                  activeprojectname,
@@ -377,6 +402,7 @@ def audiobrowse():
         new_data['projectOwner'] = projectowner
         new_data['shareInfo'] = shareinfo
         new_data['speakerIds'] = speakerids
+        new_data['sourceMetadata'] = speaker_metadata
         new_data['audioData'] = new_audio_data_list
         new_data['audioDataFields'] = [
             'audioId', 'audioFilename', 'Audio File']
@@ -397,6 +423,7 @@ def updateaudiosortingsubcategories():
     audio_sorting_sub_categories = {}
     audio_data_fields = ['audioId', 'audioFilename', 'Audio File']
     audio_data_list = []
+    speaker_metadata = {}
     try:
         projects, userprojects, speakerdetails_collection, transcriptions = getdbcollections.getdbcollections(mongo,
                                                                                                               'projects',
@@ -478,6 +505,10 @@ def updateaudiosortingsubcategories():
                                                                                          start_from=0,
                                                                                          number_of_audios=audio_file_count,
                                                                                          audio_delete_flag=audio_browse_action)
+            speaker_metadata = transcription_audiodetails.get_speaker_metadata(speakerdetails_collection,
+                                                                        speakerids,
+                                                                        activeprojectname)
+            # logger.debug('speaker_metadata: %s', speaker_metadata)
         new_audio_data_list = audio_data_list
     except:
         logger.exception("")
@@ -489,7 +520,8 @@ def updateaudiosortingsubcategories():
                    shareMode=share_mode,
                    totalRecords=total_records,
                    shareChecked=share_checked,
-                   downloadChecked=download_checked)
+                   downloadChecked=download_checked,
+                   sourceMetadata=speaker_metadata)
 
 
 @transcription.route('/filteraudiobrowsetable', methods=['GET', 'POST'])
@@ -1162,7 +1194,6 @@ def makeboundary():
                                                                      min_boundary_size=min_boundary_size,
                                                                      save_for_user=overwrite_user
                                                                      )
-
     return redirect(url_for('lifedata.transcription.home'))
 
 
@@ -1483,3 +1514,35 @@ def transcriptionprompttext():
         logger.exception("")
 
     return redirect(url_for("lifedata.transcription.home"))
+
+@transcription.route('/syncaudio', methods=['GET', 'POST'])
+@login_required
+def syncaudio():
+    try:
+        projects, userprojects, crawling, transcriptions = getdbcollections.getdbcollections(mongo,
+                                                                                                 'projects',
+                                                                                                 'userprojects',
+                                                                                                 'crawling',
+                                                                                                 'transcriptions'
+                                                                                                 )
+        current_username = getcurrentusername.getcurrentusername()
+        activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                      userprojects)
+        derive_from_project_type, derive_from_project_name = getprojecttype.getderivedfromprojectdetails(projects,
+                                                                                                           activeprojectname)
+        sync_audio_status = False
+        if (derive_from_project_name != ''):
+            if (derive_from_project_type == 'crawling'):
+                copydatafromparentproject.sync_transcription_project_from_crawling_project(mongo,
+                                                                                               projects,
+                                                                                                userprojects,
+                                                                                                crawling,
+                                                                                                transcriptions,
+                                                                                                derive_from_project_name,
+                                                                                                activeprojectname,
+                                                                                                current_username)
+                sync_audio_status = True
+    except:
+        logger.exception("")
+    
+    return jsonify(syncAudioStatus=sync_audio_status)

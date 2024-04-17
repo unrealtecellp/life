@@ -1,4 +1,27 @@
 // 7fcbad4950b4adad46de5a9ca28efedb3f8cfbb9
+
+function createSelect2(eleId, optionsList, selectedOption, moreInfo={}, optionKey='') {
+  let ele = '';
+  for (let i=0; i<optionsList.length; i++) {
+      optionValue = optionsList[i];
+      option = optionsList[i];
+      if (optionValue in moreInfo &&
+      optionKey in moreInfo[optionValue]) {
+          option = moreInfo[optionValue][optionKey]
+      }
+      if (optionValue === selectedOption) {
+          ele += '<option value="'+optionValue+'" selected>'+option+'</option>'
+      }
+      else {
+          ele += '<option value="'+optionValue+'">'+option+'</option>'
+      }
+  }
+  $('#'+eleId).html(ele);
+  $('#'+eleId).select2({
+      // data: optionsList
+      });
+}
+
 function createTextareaElement(key, elevalue, type, defaultdatavalue) {
     var qform = '';
     for (let i=0; i<elevalue.length; i++) {
@@ -279,6 +302,10 @@ function createTranscriptionInterfaceForm(newData) {
     let audio_language = newData['Audio Language'][1][0]
     let audio_script = newData['Transcription'][1][0]
     let audio_lang_script = audio_language+'-'+audio_script
+    let speakerIds = newData['speakerIds'];
+    let activeSpeakerId = newData['activespeakerId']
+    console.log(activeSpeakerId);
+    let sourceMetadata = newData['sourceMetadata']
     // let audio_lang_script = audio_language
     // console.log(audio_lang_script);
     for (let [key, value] of Object.entries(newData)) {
@@ -307,6 +334,7 @@ function createTranscriptionInterfaceForm(newData) {
         //     tagsets_form += createTagsetsForm();
         // }
     }
+    createSelect2('speakeridsdropdown', speakerIds, activeSpeakerId, sourceMetadata, 'video_title');
     if (lastActiveId != ''){
       createTranscriptionPrompt(audio_lang_script);
     }
@@ -1072,5 +1100,20 @@ function questionnaireDerived(allQuesIds) {
       });
   }
 }
+
+function runLoader() {
+  console.log('123213');
+  console.log(document.getElementById("loader"));
+  document.getElementById("loader").style.display = "block";
+}
+
+$("#syncaudio").click(function() {
+  runLoader();
+  $.post( "/lifedata/transcription/syncaudio", {})
+  .done(function( data ) {
+    console.log(data);
+    window.location.reload();
+  });
+});
 
 replaceZoomSlider();

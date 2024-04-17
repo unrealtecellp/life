@@ -1553,6 +1553,7 @@ def getaudiotranscriptiondetails(transcriptions, audio_id, transcription_by="", 
 
 
 def savetranscription(transcriptions,
+                      activeprojectname,
                       activeprojectform,
                       scriptCode,
                       current_username,
@@ -1611,7 +1612,7 @@ def savetranscription(transcriptions,
             # logger.debug("'sentence' in transcription_boundary")
             # logger.debug('371 %s', sentence)
             # plogger.debug(sentence)
-    transcriptions.update_one({'audioId': audio_id},
+    transcriptions.update_one({'projectname': activeprojectname, 'audioId': audio_id},
                               {'$set':
                                {
                                    'textGrid.sentence': sentence,

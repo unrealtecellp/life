@@ -1305,7 +1305,10 @@ def getactiveaudioid(projects,
     return last_active_audio_id
 
 
-def getaudiofiletranscription(data_collection, audio_id, transcription_by=""):
+def getaudiofiletranscription(data_collection,
+                              activeprojectname,
+                              audio_id,
+                              transcription_by=""):
     """get the transcription details of the audio file
 
     Args:
@@ -1315,10 +1318,13 @@ def getaudiofiletranscription(data_collection, audio_id, transcription_by=""):
     Returns:
         _type_: _description_
     """
+    # logger.debug("audio_id: %s", audio_id)
+    # logger.debug("activeprojectname: %s", activeprojectname)
     transcription_details = {}
     blank_text_grid = get_blank_text_grid()
 
-    transcription_data = data_collection.find_one({'audioId': audio_id})
+    transcription_data = data_collection.find_one({'projectname': activeprojectname, 'audioId': audio_id})
+    # logger.debug("transcription_data: %s", transcription_data)
     if transcription_data is not None:
         if (transcription_by == "") or (transcription_by == "latest"):
             transcription_details['data'] = transcription_data['textGrid']
@@ -1512,7 +1518,11 @@ def updatelatestaudioid(projects,
                         {'$set': {'lastActiveId.'+current_username+'.'+activespeakerId+'.audioId':  latest_audio_id}})
 
 
-def getaudiotranscriptiondetails(transcriptions, audio_id, transcription_by="", transcription_data={}):
+def getaudiotranscriptiondetails(transcriptions,
+                                 activeprojectname,
+                                 audio_id,
+                                 transcription_by="",
+                                 transcription_data={}):
     """_summary_
 
     Args:
@@ -1522,7 +1532,8 @@ def getaudiotranscriptiondetails(transcriptions, audio_id, transcription_by="", 
     Returns:
         _type_: _description_
     """
-    transcription_data = {}
+    # logger.debug('Transcription data %s', transcription_data)
+    # transcription_data = {}
     transcription_regions = []
     gloss = {}
     pos = {}
@@ -1533,7 +1544,10 @@ def getaudiotranscriptiondetails(transcriptions, audio_id, transcription_by="", 
             t_data = transcription_data['data']
         else:
             t_data = getaudiofiletranscription(
-                transcriptions, audio_id, transcription_by)
+                transcriptions,
+                activeprojectname,
+                audio_id,
+                transcription_by)
             if t_data is not None and 'data' in t_data:
                 t_data = t_data['data']
 
@@ -1593,7 +1607,7 @@ def getaudiotranscriptiondetails(transcriptions, audio_id, transcription_by="", 
     #         sentence[k] = v
     #     transcription_region['data']['sentence'] = sentence
             transcription_regions.append(transcription_region)
-        # plogger.debug(transcription_regions)
+        # logger.debug(transcription_regions)
     # logger.debug('303 %s %s', gloss, pos)
     except:
         logger.exception("")
@@ -1602,6 +1616,7 @@ def getaudiotranscriptiondetails(transcriptions, audio_id, transcription_by="", 
 
 
 def savetranscription(transcriptions,
+                      activeprojectname,
                       activeprojectform,
                       scriptCode,
                       current_username,
@@ -1660,7 +1675,7 @@ def savetranscription(transcriptions,
             # logger.debug("'sentence' in transcription_boundary")
             # logger.debug('371 %s', sentence)
             # plogger.debug(sentence)
-    transcriptions.update_one({'audioId': audio_id},
+    transcriptions.update_one({'projectname': activeprojectname, 'audioId': audio_id},
                               {'$set':
                                {
                                    'textGrid.sentence': sentence,
@@ -1859,7 +1874,9 @@ def addedspeakerids(speakerdetails,
     return added_speaker_ids
 
 
-def getaudiometadata(data_collection, audio_id):
+def getaudiometadata(data_collection,
+                     activeprojectname,
+                     audio_id):
     """get the audi metadata details of the audio file
 
     Args:
@@ -1871,7 +1888,7 @@ def getaudiometadata(data_collection, audio_id):
     """
     audio_metadata_details = dict({'audioMetadata': ''})
     audio_metadata = data_collection.find_one(
-        {'audioId': audio_id}, {'_id': 1, 'audioMetadata': 1})
+        {'projectname': activeprojectname, 'audioId': audio_id}, {'_id': 1, 'audioMetadata': 1})
     # logger.debug(audio_metadata)
     if audio_metadata is not None and 'audioMetadata' in audio_metadata:
         audio_metadata_details['audioMetadata'] = audio_metadata['audioMetadata']
@@ -1879,7 +1896,9 @@ def getaudiometadata(data_collection, audio_id):
     return audio_metadata_details
 
 
-def get_audio_filename(data_collection, audio_id):
+def get_audio_filename(data_collection,
+                       activeprojectname,
+                       audio_id):
     """get the audio filename of the audio file
 
     Args:
@@ -1890,7 +1909,7 @@ def get_audio_filename(data_collection, audio_id):
         _type_: _description_
     """
     audio_filename = data_collection.find_one(
-        {'audioId': audio_id}, {'_id': 1, 'audioFilename': 1})
+        {'projectname': activeprojectname, 'audioId': audio_id}, {'_id': 1, 'audioFilename': 1})
     # logger.debug(audio_filename)
     if audio_filename is not None and 'audioFilename' in audio_filename:
         return audio_filename['audioFilename']
@@ -1898,7 +1917,9 @@ def get_audio_filename(data_collection, audio_id):
         return ''
 
 
-def get_audio_speakerid(data_collection, audio_id):
+def get_audio_speakerid(data_collection,
+                        activeprojectname,
+                        audio_id):
     """get the audio speaker id of the audio file
 
     Args:
@@ -1909,7 +1930,7 @@ def get_audio_speakerid(data_collection, audio_id):
         _type_: _description_
     """
     audio_speakerid = data_collection.find_one(
-        {'audioId': audio_id}, {'_id': 1, 'lifesourceid': 1})
+        {'projectname':activeprojectname, 'audioId': audio_id}, {'_id': 1, 'lifesourceid': 1})
     # logger.debug(audio_filename)
     if audio_speakerid is not None and 'lifesourceid' in audio_speakerid:
         return audio_speakerid['lifesourceid']
@@ -1917,7 +1938,9 @@ def get_audio_speakerid(data_collection, audio_id):
         return None
 
 
-def lastupdatedby(transcriptions, audio_id):
+def lastupdatedby(transcriptions,
+                  activeprojectname,
+                  audio_id):
     """get the transcription last updated by
 
     Args:
@@ -1929,7 +1952,7 @@ def lastupdatedby(transcriptions, audio_id):
     """
     last_updated_by_details = dict({'updatedBy': ''})
     last_updated_by = transcriptions.find_one(
-        {'audioId': audio_id}, {'_id': 1, 'updatedBy': 1})
+        {'projectname': activeprojectname, 'audioId': audio_id}, {'_id': 1, 'updatedBy': 1})
     # logger.debug(last_updated_by)
     if last_updated_by is not None and 'updatedBy' in last_updated_by:
         last_updated_by_details['updatedBy'] = last_updated_by['updatedBy']
@@ -2617,6 +2640,7 @@ def get_audio_boundaries(model_params, model_name, model_type="local"):
         if model_type == 'local':
             boundaries, cleaned_file = predictFromLocalModels.get_boundaries(
                 model_name, model_params)
+    logger.debug(boundaries)
     return boundaries, cleaned_file, model_name
 
 
@@ -3223,7 +3247,7 @@ def get_audio_sorting_subcategories(speakerdetails_collection,
                 audio_sorting_subcategory = doc["current"]["sourceMetadata"]
                 # logger.debug("aggregate_output: %s", pformat(audio_sorting_subcategory))
                 for key, value in audio_sorting_subcategory.items():
-                    logger.debug('%s, %s', key, value)
+                    # logger.debug('%s, %s', key, value)
                     if (key in list(selected_audio_sorting_subcategory_self_map.values())):
                         selected_audio_sorting_subcategory = selected_audio_sorting_subcategory_new
                     if (key in selected_audio_sorting_subcategory or
@@ -3543,3 +3567,28 @@ def get_speaker_audio_ids_new(projects_collection,
         logger.exception("")
 
     return []
+
+
+def get_speaker_metadata(speakerdetails_collection,
+                            speakerids,
+                            activeprojectname):
+    speakers_metadata = {}
+    try:
+        # logger.debug('speakerids: %s', pformat(speakerids))
+        speaker_metadata_cursor = speakerdetails_collection.find({"projectname": activeprojectname,
+                                                                  "isActive": 1,
+                                                                  "audioSubSource": 'youtube'},
+                                                               {"_id": 0,
+                                                                "lifesourceid": 1,
+                                                                "current.sourceMetadata": 1})
+        # logger.debug(speaker_metadata_cursor)
+        for speaker_metadata in speaker_metadata_cursor:
+            # logger.debug(speaker_metadata)
+            lifesourceid = speaker_metadata['lifesourceid']
+            if (lifesourceid in speakerids):
+                speakers_metadata[lifesourceid] = speaker_metadata['current']['sourceMetadata']
+                # logger.debug('source_metadata: %s', pformat(source_metadata))
+    except:
+        logger.exception("")
+
+    return speakers_metadata

@@ -12,15 +12,20 @@ var audioSortingCategories = [
     // {"id": "speakerspeaklanguage", "text": "Source Language"}
 ]
 
-function createSelect2(eleId, optionsList, selectedOption) {
+function createSelect2(eleId, optionsList, selectedOption, moreInfo={}, optionKey='') {
     let ele = '';
     for (let i=0; i<optionsList.length; i++) {
+        optionValue = optionsList[i];
         option = optionsList[i];
-        if (option === selectedOption) {
-            ele += '<option value="'+option+'" selected>'+option+'</option>'
+        if (optionValue in moreInfo &&
+        optionKey in moreInfo[optionValue]) {
+            option = moreInfo[optionValue][optionKey]
+        }
+        if (optionValue === selectedOption) {
+            ele += '<option value="'+optionValue+'" selected>'+option+'</option>'
         }
         else {
-            ele += '<option value="'+option+'">'+option+'</option>'
+            ele += '<option value="'+optionValue+'">'+option+'</option>'
         }
     }
     $('#'+eleId).html(ele);
@@ -209,7 +214,7 @@ function createAudioBrowseTable(
                         ele += '<td id='+field+'>'+aData[field]+'</td>';
                         audioIdAdded.push(aData[field]);
                     }
-                    console.log(audioIdAdded);
+                    // console.log(audioIdAdded);
                 }
                 else {
                     ele += '<td id='+field+'>'+aData[field]+'</td>';
@@ -270,24 +275,25 @@ function createAudioBrowseTable(
 function createAudioBrowse(newData) {
     // console.log(newData);
     let speakerIds = newData['speakerIds'];
-    let currentUsername = newData['currentUsername']
-    let projectOwner = newData['projectOwner']
-    let projectName = newData['activeProjectName']
-    let totalRecords = newData['totalRecords']
-    let shareInfo = newData['shareInfo']
+    let sourceMetadata = newData['sourceMetadata'];
+    let currentUsername = newData['currentUsername'];
+    let projectOwner = newData['projectOwner'];
+    let projectName = newData['activeProjectName'];
+    let totalRecords = newData['totalRecords'];
+    let shareInfo = newData['shareInfo'];
     // console.log("Share info", shareInfo);
-    let shareMode = shareInfo['sharemode']
-    let shareChecked = shareInfo['sharechecked']
-    let downloadChecked = shareInfo['downloadchecked']
-    let activeSpeakerId = shareInfo['activespeakerId']
+    let shareMode = shareInfo['sharemode'];
+    let shareChecked = shareInfo['sharechecked'];
+    let downloadChecked = shareInfo['downloadchecked'];
+    let activeSpeakerId = shareInfo['activespeakerId'];
     // console.log(activeSpeakerId)
-    let audioDataFields = newData['audioDataFields']
-    let audioData = newData['audioData']
-    let transcriptionsBy = newData['transcriptionsBy']
+    let audioDataFields = newData['audioDataFields'];
+    let audioData = newData['audioData'];
+    let transcriptionsBy = newData['transcriptionsBy'];
     // console.log(transcriptionsBy);
     createSelect2FromObject('audiosortingcategoriesdropdown', audioSortingCategories, 'Source');
     // createSelect2('audiosortingsubcategoriesdropdown', speakerIds, activeSpeakerId);
-    createSelect2('speakeridsdropdown', speakerIds, activeSpeakerId);
+    createSelect2('speakeridsdropdown', speakerIds, activeSpeakerId, sourceMetadata, 'video_title');
     createSelect2('audiofilescountdropdown', [10, 20, 50], 10)
     // if (shareMode >= 4) {
     createBrowseActions(projectOwner, currentUsername, shareMode, shareChecked, downloadChecked);
@@ -507,11 +513,12 @@ function updateAudioSortingSubCategoriesDropdown() {
             audioFilteringEvent();
         }
         else if (selectedAudioSortingCategories === 'lifespeakerid') {
+            let sourceMetadata = data.sourceMetadata;
             $('#audiosortingsubcategoriesdropdown').select2('destroy');
             document.getElementById('audiosortingsubcategoriesdropdown').style.display = "none";
             document.getElementById('audiofilter').style.display = "none";
             document.getElementById('speakeridsdropdown').style.display = "block";
-            createSelect2('speakeridsdropdown', audioSortingSubCategories, selectedAudioSortingSubCategories);
+            createSelect2('speakeridsdropdown', audioSortingSubCategories, selectedAudioSortingSubCategories, sourceMetadata, 'video_title');
         }
         createAudioBrowseTable(data.audioDataFields,
             data.audioData,
