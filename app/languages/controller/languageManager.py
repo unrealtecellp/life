@@ -80,6 +80,7 @@ lang_list2 = [
     {"id": "Santali", "text": "Santali"},
     {"id": "Tamil", "text": "Tamil"},
     {"id": "Telugu", "text": "Telugu"},
+    {"id": "Toto", "text": "Toto"},
     {"id": "Sambalpuri", "text": "Sambalpuri"},
     {"id": "Nagamese", "text": "Nagamese"},
     {"id": "Sadri", "text": "Sadri"},

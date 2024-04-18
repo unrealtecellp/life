@@ -104,6 +104,10 @@ var fieldType = [{
         {
           "id": "Telugu", 
           "text": "Telugu"
+        },
+        {
+          "id": "Toto", 
+          "text": "Toto"
         }
   ]
   

@@ -25,7 +25,8 @@
     "Punjabi": "Gurumukhi",
     "Santali": "Ol-Chiki",
     "Tamil": "Tamil",
-    "Telugu": "Telugu"
+    "Telugu": "Telugu",
+    "Toto": "Toto"
 }
 
 {
@@ -41,5 +42,6 @@
     "Odia": "Orya",
     "Ol-Chiki": "Olck",
     "Tamil": "Taml",
-    "Telugu": "Telu"
+    "Telugu": "Telu",
+    "Toto": "Toto"
 }

@@ -112,6 +112,10 @@ var scripts =
       {
         "id": "Telugu", 
         "text": "Telugu"
+      },
+      {
+        "id": "Toto", 
+        "text": "Toto"
       }
 ]
 
