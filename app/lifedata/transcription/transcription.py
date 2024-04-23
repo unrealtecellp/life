@@ -141,11 +141,14 @@ def home():
                 activespeakerid = getuserprojectinfo.getuserprojectinfo(userprojects,
                                                                         current_username,
                                                                         activeprojectname)['activespeakerId']
+
+                # TODO: All audios where all the speakers are present together (currently returns all those where the active speaker is present as one of the speakers)
                 speaker_audio_ids = transcription_audiodetails.get_speaker_audio_ids_new(projects,
                                                                                          activeprojectname,
                                                                                          current_username,
                                                                                          activespeakerid)
                 # logger.debug("speaker_audio_ids: %s", pformat(speaker_audio_ids))
+
                 total_comments, annotated_comments, remaining_comments = getcommentstats.getcommentstats(projects,
                                                                                                          data_collection,
                                                                                                          activeprojectname,
@@ -155,6 +158,7 @@ def home():
                 commentstats = [total_comments,
                                 annotated_comments, remaining_comments]
                 # logger.debug("commentstats: %s", commentstats)
+                # TODO: Get active speaker ID of the first speaker - also do the same while storing
                 audio_id = transcription_audiodetails.getactiveaudioid(projects,
                                                                        activeprojectname,
                                                                        activespeakerid,
@@ -173,12 +177,14 @@ def home():
                                                                                          audio_id)
                     if (audio_delete_flag or
                             audio_id not in speaker_audio_ids):
+                        # TODO: This will need to be rewritten so that next audio is fetched for current combination
                         latest_audio_id = transcription_audiodetails.getnewaudioid(projects,
                                                                                    activeprojectname,
                                                                                    audio_id,
                                                                                    activespeakerid,
                                                                                    speaker_audio_ids,
                                                                                    'next')
+                        # TODO: Can we store it in such a way that storing combination becomes possible; or only for the first speaker?
                         transcription_audiodetails.updatelatestaudioid(projects,
                                                                        activeprojectname,
                                                                        latest_audio_id,
@@ -190,9 +196,7 @@ def home():
 
                 transcription_by = projectDetails.get_active_transcription_by(projects,
                                                                               activeprojectname,
-                                                                              current_username,
-                                                                              activespeakerid,
-                                                                              audio_id)
+                                                                              current_username)
                 # logger.debug("transcription_by: %s", transcription_by)
                 transcription_details = transcription_audiodetails.getaudiofiletranscription(data_collection,
                                                                                              activeprojectname,
@@ -202,13 +206,17 @@ def home():
                 audio_metadata = transcription_audiodetails.getaudiometadata(data_collection,
                                                                              activeprojectname,
                                                                              audio_id)
+                activeprojectform['audioMetadata'] = audio_metadata['audioMetadata']
+                audio_speaker_ids = transcription_audiodetails.getaudiospeakerids(data_collection,
+                                                                                  activeprojectname,
+                                                                                  audio_id)
                 # logger.debug('audio_metadata: %s', pformat(audio_metadata))
                 # pprint(audio_metadata)
-                activeprojectform['audioMetadata'] = audio_metadata['audioMetadata']
+                activeprojectform['audioSpeakerIds'] = audio_speaker_ids
                 last_updated_by = transcription_audiodetails.lastupdatedby(data_collection,
                                                                            activeprojectname,
                                                                            audio_id)
-                
+
                 activeprojectform['lastUpdatedBy'] = last_updated_by['updatedBy']
                 # file_path = transcription_audiodetails.getaudiofilefromfs(mongo,
                 #                                             basedir,
@@ -258,8 +266,8 @@ def home():
                     speakerids = []
                     added_speaker_ids = []
                 speaker_metadata = transcription_audiodetails.get_speaker_metadata(speakerdetails,
-                                                                                    speakerids,
-                                                                                    activeprojectname)
+                                                                                   speakerids,
+                                                                                   activeprojectname)
                 activeprojectform['speakerIds'] = speakerids
                 activeprojectform['activespeakerId'] = activespeakerid
                 activeprojectform['sourceMetadata'] = speaker_metadata
@@ -267,7 +275,8 @@ def home():
                 activeprojectform['scriptCode'] = scriptCode
                 langScript = readJSONFile.readJSONFile(langScriptJSONFilePath)
                 activeprojectform['langScript'] = langScript
-                activeprojectform['accessedOnTime'] = datetime.now().strftime("%d/%m/%y %H:%M:%S")
+                activeprojectform['accessedOnTime'] = datetime.now().strftime(
+                    "%d/%m/%y %H:%M:%S")
                 # print(audio_id)
 
                 if ('Tagsets' in activeprojectform):
@@ -296,6 +305,7 @@ def home():
                                        transcriptionsby=transcriptions_by,
                                        activetranscriptionby=transcription_by,
                                        activespeakerid=activespeakerid,
+                                       audiospeakerids=audio_speaker_ids,
                                        commentstats=commentstats,
                                        shareinfo=shareinfo,
                                        allQuesIds=all_ques_ids)
@@ -349,10 +359,10 @@ def audiobrowse():
     try:
         new_data = {}
         projects, userprojects, transcriptions, speakerdetails_collection = getdbcollections.getdbcollections(mongo,
-                                                                                   'projects',
-                                                                                   'userprojects',
-                                                                                   'transcriptions',
-                                                                                   'speakerdetails')
+                                                                                                              'projects',
+                                                                                                              'userprojects',
+                                                                                                              'transcriptions',
+                                                                                                              'speakerdetails')
         current_username = getcurrentusername.getcurrentusername()
         activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
                                                                       userprojects)
@@ -378,8 +388,8 @@ def audiobrowse():
                                                                     current_username)
         speakerids.append('')
         speaker_metadata = transcription_audiodetails.get_speaker_metadata(speakerdetails_collection,
-                                                                            speakerids,
-                                                                            activeprojectname)
+                                                                           speakerids,
+                                                                           activeprojectname)
         # logger.debug('speaker_metadata: %s', speaker_metadata)
         active_speaker_id = shareinfo['activespeakerId']
         speaker_audio_ids = transcription_audiodetails.get_speaker_audio_ids_new(projects,
@@ -507,8 +517,8 @@ def updateaudiosortingsubcategories():
                                                                                          number_of_audios=audio_file_count,
                                                                                          audio_delete_flag=audio_browse_action)
             speaker_metadata = transcription_audiodetails.get_speaker_metadata(speakerdetails_collection,
-                                                                        speakerids,
-                                                                        activeprojectname)
+                                                                               speakerids,
+                                                                               activeprojectname)
             # logger.debug('speaker_metadata: %s', speaker_metadata)
         new_audio_data_list = audio_data_list
     except:
@@ -1010,7 +1020,7 @@ def uploadaudiofiles():
             else:
                 logger.debug("not found prompt: %s", found_prompt)
         # return redirect(url_for('lifedata.transcription.home'))
-        speakerId = data['speakerId'][0]
+        speakerId = data['speakerId']
         new_audio_file = request.files.to_dict()
 
         if 'uploadparameters-vad' in data:
@@ -1516,34 +1526,35 @@ def transcriptionprompttext():
 
     return redirect(url_for("lifedata.transcription.home"))
 
+
 @transcription.route('/syncaudio', methods=['GET', 'POST'])
 @login_required
 def syncaudio():
     try:
         projects, userprojects, crawling, transcriptions = getdbcollections.getdbcollections(mongo,
-                                                                                                 'projects',
-                                                                                                 'userprojects',
-                                                                                                 'crawling',
-                                                                                                 'transcriptions'
-                                                                                                 )
+                                                                                             'projects',
+                                                                                             'userprojects',
+                                                                                             'crawling',
+                                                                                             'transcriptions'
+                                                                                             )
         current_username = getcurrentusername.getcurrentusername()
         activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
                                                                       userprojects)
         derive_from_project_type, derive_from_project_name = getprojecttype.getderivedfromprojectdetails(projects,
-                                                                                                           activeprojectname)
+                                                                                                         activeprojectname)
         sync_audio_status = False
         if (derive_from_project_name != ''):
             if (derive_from_project_type == 'crawling'):
                 copydatafromparentproject.sync_transcription_project_from_crawling_project(mongo,
-                                                                                               projects,
-                                                                                                userprojects,
-                                                                                                crawling,
-                                                                                                transcriptions,
-                                                                                                derive_from_project_name,
-                                                                                                activeprojectname,
-                                                                                                current_username)
+                                                                                           projects,
+                                                                                           userprojects,
+                                                                                           crawling,
+                                                                                           transcriptions,
+                                                                                           derive_from_project_name,
+                                                                                           activeprojectname,
+                                                                                           current_username)
                 sync_audio_status = True
     except:
         logger.exception("")
-    
+
     return jsonify(syncAudioStatus=sync_audio_status)

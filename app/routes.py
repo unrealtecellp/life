@@ -497,7 +497,8 @@ def savetranscription():
         lastActiveId = transcription_data['lastActiveId']
         transcription_regions = transcription_data['transcriptionRegions']
         accessedOnTime = transcription_data['accessedOnTime']
-        # logger.debug("transcription_regions: %s", pformat(json.loads(transcription_regions)))
+        # logger.info("transcription_regions: %s", pformat(
+        # json.loads(transcription_regions)))
         # logger.debug(lastActiveId)
         # logger.debug(transcription_regions)
         speaker_audio_ids = audiodetails.get_speaker_audio_ids_new(projects,
@@ -1143,7 +1144,8 @@ def predictPOSNaiveBayes():
             with open('trainedModels/naiveBayesPOSModel.pkl', 'rb') as f:
                 clf = pickle.load(f)
             # loading pickled vectorizer
-            vectorizer = joblib.load("trainedModels/naiveBayesPOSVectorizer.pkl")
+            vectorizer = joblib.load(
+                "trainedModels/naiveBayesPOSVectorizer.pkl")
             x_test = vectorizer.transform(wordList)
             predictedpos = list(clf.predict(x_test))
             predictedPOS = []
@@ -1749,7 +1751,7 @@ def lifeuploader(fileFormat, uploadedFileContent, field_map={}, headword_mapped=
                         for variant_part in entry_part:
                             variant_part_tag = variant_part.tag
                             logger.debug('variant_part_tag', variant_part_tag,
-                                  variant_part.attrib, variant_part.find('text'))
+                                         variant_part.attrib, variant_part.find('text'))
                             # life_key_sense = field_map[variant_part_tag]
 
                             if variant_part_tag == 'form':
@@ -1917,7 +1919,8 @@ def lifeuploader(fileFormat, uploadedFileContent, field_map={}, headword_mapped=
 
         # if len(field_map) == 0:
         lift_life_field_map = get_lift_map()
-        logger.debug(f"{'-'*80}\nIN lift_to_df (root, field_map, lex_fields) function: get_lift_map():\n{lift_life_field_map}")
+        logger.debug(
+            f"{'-'*80}\nIN lift_to_df (root, field_map, lex_fields) function: get_lift_map():\n{lift_life_field_map}")
 
         # tree = ET.parse(file_stream)
         # root = tree.getroot()
@@ -1988,7 +1991,7 @@ def lifeuploader(fileFormat, uploadedFileContent, field_map={}, headword_mapped=
                         for full_sense in all_sense:
                             sense_num += 1
                             logger.debug('Sense number', sense_num,
-                                  full_sense)
+                                         full_sense)
 
                             for lift_tag, life_key in life_key_maps.items():
                                 # for sense in full_sense:
@@ -1997,13 +2000,14 @@ def lifeuploader(fileFormat, uploadedFileContent, field_map={}, headword_mapped=
                                     gram_info_tag = full_sense.find(
                                         'grammatical-info')
                                     logger.debug('Grammar tag', gram_info_tag,
-                                          gram_info_tag.tag)
+                                                 gram_info_tag.tag)
                                     # life_key = lift_life_field_map[lift_tag]
 
                                     if not gram_info_tag is None:
                                         try:
                                             gram_info = gram_info_tag.attrib['value']
-                                            logger.debug('Gram info', gram_info)
+                                            logger.debug(
+                                                'Gram info', gram_info)
                                         except Exception as e:
                                             logger.debug(
                                                 'Exception in grammatical info', e)
@@ -2064,7 +2068,8 @@ def lifeuploader(fileFormat, uploadedFileContent, field_map={}, headword_mapped=
                         for variant in all_variants:
                             variant_num += 1
                             # create_df_columns(data, 'Variant', variant_num)
-                            logger.debug('Variant number', variant_num, variant)
+                            logger.debug('Variant number',
+                                         variant_num, variant)
                             # logger.debug('DF columns', data.columns)
 
                             # logger.debug(sense.tag)
@@ -3947,16 +3952,16 @@ def downloadjson():
 def userslist():
 
     userlogin, projects, userprojects, speakerdetails, sourcedetails = getdbcollections.getdbcollections(mongo,
-                                                                          'userlogin',
-                                                                          'projects',
-                                                                          'userprojects',
-                                                                          'speakerdetails',
-                                                                          'sourcedetails')
+                                                                                                         'userlogin',
+                                                                                                         'projects',
+                                                                                                         'userprojects',
+                                                                                                         'speakerdetails',
+                                                                                                         'sourcedetails')
     current_username = getcurrentusername.getcurrentusername()
     activeprojectname = getactiveprojectname.getactiveprojectname(
-            current_username, userprojects)
+        current_username, userprojects)
     project_type = getprojecttype.getprojecttype(projects,
-                                                    activeprojectname)
+                                                 activeprojectname)
     try:
         source_metadata = {}
         data = json.loads(request.args.get('a'))
@@ -3974,13 +3979,13 @@ def userslist():
         if (project_type == 'transcriptions'):
             sourcedetails_collection = speakerdetails
             source_metadata = transcription_audiodetails.get_speaker_metadata(sourcedetails_collection,
-                                                                                        sourceList,
-                                                                                        activeprojectname)
+                                                                              sourceList,
+                                                                              activeprojectname)
         elif (project_type == 'crawling'):
             sourcedetails_collection = sourcedetails
             source_metadata = sourceid_to_souremetadata.get_source_metadata(sourcedetails_collection,
-                                                                                sourceList,
-                                                                                activeprojectname)
+                                                                            sourceList,
+                                                                            activeprojectname)
         sourceList.append('*')
     except:
         logger.exception("")
@@ -4001,19 +4006,20 @@ def userslist():
 def shareprojectwith():
     try:
         projects, userprojects, userlogin, lifeappconfigs = getdbcollections.getdbcollections(mongo,
-                                                                                            'projects',
-                                                                                            'userprojects',
-                                                                                            'userlogin',
-                                                                                            'lifeappconfigs')
+                                                                                              'projects',
+                                                                                              'userprojects',
+                                                                                              'userlogin',
+                                                                                              'lifeappconfigs')
         current_username = getcurrentusername.getcurrentusername()
         activeprojectname = getactiveprojectname.getactiveprojectname(
             current_username, userprojects)
         # logger.debug('2758: activeprojectname', activeprojectname)
 
-        projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
+        projectowner = getprojectowner.getprojectowner(
+            projects, activeprojectname)
         project_type = getprojecttype.getprojecttype(projects,
-                                                    activeprojectname)
-        sourceIdsKeyName='speakerIds'
+                                                     activeprojectname)
+        sourceIdsKeyName = 'speakerIds'
         if (project_type == 'crawling'):
             sourceIdsKeyName = 'sourceIds'
 
@@ -4038,7 +4044,8 @@ def shareprojectwith():
 
         if (len(users) != 0):
             # Sender email details
-            sender_email_details = emailController.getSenderDetails(lifeappconfigs)
+            sender_email_details = emailController.getSenderDetails(
+                lifeappconfigs)
 
             # Get Base URL
             current_url = request.base_url
@@ -4085,12 +4092,12 @@ def shareprojectwith():
                 if activeprojectname in usershareprojectsname:
                     if (sharemode == -1):
                         removed_user = removeallaccess.removeallaccess(projects,
-                                                                    userprojects,
-                                                                    activeprojectname,
-                                                                    current_username,
-                                                                    user,
-                                                                    speakers,
-                                                                    sourceIdsKeyName)
+                                                                       userprojects,
+                                                                       activeprojectname,
+                                                                       current_username,
+                                                                       user,
+                                                                       speakers,
+                                                                       sourceIdsKeyName)
                         return removed_user
 
                     tomesharedby = usershareprojectsname[activeprojectname]['tomesharedby']
@@ -4229,14 +4236,15 @@ def shareprojectwith():
                         )
                 elif ('sourceIds' in projectdetails):
                     if (len(speakers) != 0):
-                        logger.debug("FOUND sourceIds source[-1]: %s", speakers[-1])
+                        logger.debug(
+                            "FOUND sourceIds source[-1]: %s", speakers[-1])
                         userprojectinfo = ''
                         for key, value in projectinfo.items():
                             if len(value) != 0:
                                 if activeprojectname in value:
                                     logger.debug('key: %s, activeprojectname: %s',
-                                                key,
-                                                activeprojectname)
+                                                 key,
+                                                 activeprojectname)
                                     userprojectinfo = key+'.'+activeprojectname+".activesourceId"
                         userprojects.update_one(
                             {
@@ -4304,10 +4312,12 @@ def shareprojectwith():
 
                 # update "isharedwith" of the current user and the projectowner
                 for key, value in projectinfo.items():
-                    logger.debug('update "isharedwith" of the current user and the projectowner 1')
+                    logger.debug(
+                        'update "isharedwith" of the current user and the projectowner 1')
                     if (len(value) != 0 and
                             activeprojectname in value):
-                        logger.debug('update "isharedwith" of the current user and the projectowner 2')
+                        logger.debug(
+                            'update "isharedwith" of the current user and the projectowner 2')
                         userprojects.update_one(
                             {
                                 "username": current_username
@@ -5049,7 +5059,8 @@ def register():
 
 def dummyUserandProject():
     """ Creates dummy user and project if the database has no collection """
-    logger.debug("Creates dummy user and project if the database has no collection")
+    logger.debug(
+        "Creates dummy user and project if the database has no collection")
     # collection of users and their projectlist and active project
     userprojects = mongo.db.userprojects
     projects = mongo.db.projects
@@ -5507,12 +5518,14 @@ def addnewspeakerdetails():
 
 
 ''' Sync speaker details of accesscodedetails in speakerdetails'''
+
+
 @app.route('/syncspeakermetadata', methods=['GET', 'POST'])
 @login_required
 def syncspeakermetadata():
     accesscodedetails, userprojects, userlogin, speakermeta = getdbcollections.getdbcollections(
         mongo, 'accesscodedetails', 'userprojects', 'userlogin', 'speakerdetails')
-    
+
     current_username = getcurrentusername.getcurrentusername()
     logger.debug('USERNAME: ', current_username)
     usertype = userdetails.get_user_type(
@@ -5530,29 +5543,29 @@ def syncspeakermetadata():
     # print(find_task)
     # if find_task['task'] == "SPEECH_DATA_COLLECTION":
     find_accesscodedetails = accesscodedetails.find({
-                                    "projectname": activeprojectname},
-                                    {"lifespeakerid": 1,
-                                    "karyaaccesscode": 1,
-                                    "karyaspeakerid": 1,
-                                    "current.workerMetadata.name": 1, 
-                                    "current.workerMetadata.agegroup": 1,
-                                    "current.workerMetadata.gender": 1,
-                                    "current.workerMetadata.educationlevel": 1,
-                                    "current.workerMetadata.educationmediumupto12": 1,
-                                    "current.workerMetadata.educationmediumafter12": 1,
-                                    "current.workerMetadata.speakerspeaklanguage": 1,
-                                    "current.workerMetadata.recordingplace": 1,
-                                    "current.workerMetadata.typeofrecordingplace": 1,
-                                    "current.workerMetadata.activeAccessCode": 1,
-                                    "_id": 0})
-    
+        "projectname": activeprojectname},
+        {"lifespeakerid": 1,
+         "karyaaccesscode": 1,
+         "karyaspeakerid": 1,
+         "current.workerMetadata.name": 1,
+         "current.workerMetadata.agegroup": 1,
+         "current.workerMetadata.gender": 1,
+         "current.workerMetadata.educationlevel": 1,
+         "current.workerMetadata.educationmediumupto12": 1,
+         "current.workerMetadata.educationmediumafter12": 1,
+         "current.workerMetadata.speakerspeaklanguage": 1,
+         "current.workerMetadata.recordingplace": 1,
+         "current.workerMetadata.typeofrecordingplace": 1,
+         "current.workerMetadata.activeAccessCode": 1,
+         "_id": 0})
+
     total_documents = find_accesscodedetails.count()
     print("Total number of documents found from accesscodedetails:", total_documents)
 
     metadata_schema = 'speed'
     audio_source = 'field'
     upload_type = 'single'
-    
+
     for document in find_accesscodedetails:
         try:
             new_metadata = {
@@ -5569,7 +5582,7 @@ def syncspeakermetadata():
                 "karyaaccesscode": document["karyaaccesscode"],
                 "karyaspeakerid": document["karyaspeakerid"]
             }
-            
+
             # Additional conditions to replace None values
             if new_metadata["name"] is None:
                 new_metadata["name"] = ""
@@ -5590,7 +5603,7 @@ def syncspeakermetadata():
                 new_metadata["educationmediumafter12"] = []
             if new_metadata["speakerspeaklanguage"] is None:
                 new_metadata["speakerspeaklanguage"] = []
-                
+
         except Exception as e:
             # Handle exception
             print("An error occurred:", e)
@@ -5608,7 +5621,7 @@ def syncspeakermetadata():
         # print(existing_metadata)
 
         if not existing_metadata:
-            #Metadata does not exist, so write it to the speakermeta collection
+            # Metadata does not exist, so write it to the speakermeta collection
             not_existing_metadata = speakerDetails.write_speaker_metadata_details(
                 speakermeta,
                 current_username,
@@ -5619,22 +5632,23 @@ def syncspeakermetadata():
                 new_metadata,
                 upload_type
             )
-    check_existing_lifesourceid =  speakermeta.find({
-            "projectname": activeprojectname},
-            {"lifesourceid": 1,
-            "current.sourceMetadata.lifespeakerid": 1,
-            "current.sourceMetadata.karyaaccesscode":  1,
-            "current.sourceMetadata.karyaspeakerid": 1,
-            "_id":0
-                })   
-    
+    check_existing_lifesourceid = speakermeta.find({
+        "projectname": activeprojectname},
+        {"lifesourceid": 1,
+         "current.sourceMetadata.lifespeakerid": 1,
+         "current.sourceMetadata.karyaaccesscode":  1,
+         "current.sourceMetadata.karyaspeakerid": 1,
+            "_id": 0
+         })
+
     for existing_lifesourceid in check_existing_lifesourceid:
         if existing_lifesourceid["lifesourceid"] != existing_lifesourceid["current"]["sourceMetadata"]["lifespeakerid"]:
             # Define filter criteria to check if old_lifesourceid is already present
             filter_criteria_old_lifesourceid = {
                 "projectname": activeprojectname,
                 "current.sourceMetadata.lifespeakerid": existing_lifesourceid["current"]["sourceMetadata"]["lifespeakerid"],
-                "old_lifesourceid": {"$exists": False}  # Check if old_lifesourceid does not exist
+                # Check if old_lifesourceid does not exist
+                "old_lifesourceid": {"$exists": False}
             }
 
             # Define filter criteria to update lifespeakerid to lifesourceid
@@ -5644,17 +5658,21 @@ def syncspeakermetadata():
             }
 
             # Define the data to be added
-            lifesource_to_old_lifesourceid = {"old_lifesourceid": existing_lifesourceid["lifesourceid"]}
-            lifespeakerid_to_lifesourceid = {"lifesourceid": existing_lifesourceid["current"]["sourceMetadata"]["lifespeakerid"]}
-            
+            lifesource_to_old_lifesourceid = {
+                "old_lifesourceid": existing_lifesourceid["lifesourceid"]}
+            lifespeakerid_to_lifesourceid = {
+                "lifesourceid": existing_lifesourceid["current"]["sourceMetadata"]["lifespeakerid"]}
+
             # Update old_lifesourceid only if it does not exist in the document
             try:
                 # Update old_lifesourceid
-                result = speakermeta.update_many(filter_criteria_old_lifesourceid, {"$set": lifesource_to_old_lifesourceid})
-                
+                result = speakermeta.update_many(filter_criteria_old_lifesourceid, {
+                                                 "$set": lifesource_to_old_lifesourceid})
+
                 # Update lifespeakerid to lifesourceid
-                result = speakermeta.update_many(filter_criteria_lifespeakerid_to_lifesourceid, {"$set": lifespeakerid_to_lifesourceid})
-                
+                result = speakermeta.update_many(filter_criteria_lifespeakerid_to_lifesourceid, {
+                                                 "$set": lifespeakerid_to_lifesourceid})
+
             except Exception as e:
                 print("An error occurred:", e)
 
@@ -5666,7 +5684,7 @@ def syncspeakermetadata():
         # except KeyError as e:
         #     print(f"Error accessing key: {e}")
 
-    return render_template('manageProject.html', 
+    return render_template('manageProject.html',
                            shareinfo=shareinfo,
                            usertype=usertype)
 
@@ -6058,7 +6076,9 @@ def changespeakerid():
 
     # data through ajax
     speakerId = str(request.args.get('a'))
-    # logger.debug(speakerId)
+    # logger.info("Speaker IDs %s", speakerId)
+    # if len(speakerId) == 1:
+    #     speakerId = speakerId[0]
     projectinfo = userprojects.find_one({'username': current_user.username},
                                         {'_id': 0, 'myproject': 1, 'projectsharedwithme': 1})
 
@@ -6743,24 +6763,24 @@ def get_jsonfile_data():
 def checkprojectnameexist():
     try:
         projects_collection, = getdbcollections.getdbcollections(mongo,
-                                                        'projects')
+                                                                 'projects')
         # data through ajax
         projectname = str(request.args.get('a'))
         logger.debug("projectname: %s", pformat(projectname))
         projectname_exist = projects_collection.find_one(
-                                                            {
-                                                                "$or": [
-                                                                        { 'projectname' : projectname },
-                                                                        { 'projectname' : 'D_'+projectname },
-                                                                        { 'projectname' : 'Q_'+projectname }
-                                                                    ]
-                                                            },
-                                                            { '_id': 0, 'projectname': 1 }
-                                                            )
+            {
+                "$or": [
+                    {'projectname': projectname},
+                    {'projectname': 'D_'+projectname},
+                    {'projectname': 'Q_'+projectname}
+                ]
+            },
+            {'_id': 0, 'projectname': 1}
+        )
         if (projectname_exist):
             logger.debug('projectname_exist: %s', projectname_exist)
             return jsonify(status=True)
     except:
         logger.exception("")
-    
+
     return jsonify(status=False)

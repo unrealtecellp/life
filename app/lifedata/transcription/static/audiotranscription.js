@@ -842,8 +842,10 @@ function updateSentenceDetailsOnSaveBoundary(boundaryID, sentence, region, form)
     // console.log(boundaryID);
     // console.log(sentence);
     // console.log(region);
-    // console.log("Form in update", form);
+    console.log("Form in update", form);
     // console.log("Form in update", Object.keys(form));
+    console.log("Sentence Spaker IDs", form["sentSpeakerId"])
+    console.log("Sentence Spaker IDs value", form["sentSpeakerId"].values, $("#sentspeakeriddropdown").val())
     // console.log("Comment", form["comment-box"].textContent)
     // console.log("Comment Val", form["comment-box"].value)
     // console.log(document.forms.edit.elements);
@@ -861,12 +863,26 @@ function updateSentenceDetailsOnSaveBoundary(boundaryID, sentence, region, form)
         }
     }
 
+
+    // if ()
+
+
     for (let [key, value] of Object.entries(sentence[boundaryID])) {
         // console.log(key, value);
         // if (key === 'comment') {
         //     eleName = 'comment-box'
         //     sentence[boundaryID][key] = form[eleName].value
         // }
+        sentenceSpeakerIds = $("#sentspeakeriddropdown").val();
+        if (!sentenceSpeakerIds) {
+            sentenceSpeakerIds = "";
+        }
+        else if (sentenceSpeakerIds.length == 1) {
+            sentenceSpeakerIds = sentenceSpeakerIds[0];
+        }
+        console.log("Setting sentence speaker ID", boundaryID, sentenceSpeakerIds);
+        sentence[boundaryID]["speakerId"] = sentenceSpeakerIds; 
+
         if (key === 'transcription') {
             for (let [k, v] of Object.entries(sentence[boundaryID][key])) {
                 // console.log(k, v)
@@ -1398,6 +1414,17 @@ function collapseInterlineargloss() {
     });
 }
 
+function getAllSpeakerIdsOfAudio() {
+    let sentenceSpeakerIds = $("#speakeridsdropdown").val();
+    if (!sentenceSpeakerIds) {
+        sentenceSpeakerIds = "";
+    }
+    else if (sentenceSpeakerIds.length == 1) {
+        sentenceSpeakerIds = sentenceSpeakerIds[0];
+    }
+    return sentenceSpeakerIds
+}
+
 function createSentenceForm(formElement, boundaryID) {
     // var activeSentenceMorphemicBreak = '<input type="checkbox" id="activeSentenceMorphemicBreak" name="activeSentenceMorphemicBreak" value="false" onclick="">'+
     //                                     '<label for="activeSentenceMorphemicBreak">&nbsp; Add Interlinear Gloss</label><br></br>'
@@ -1414,7 +1441,13 @@ function createSentenceForm(formElement, boundaryID) {
         // console.log('first', key, value)
         if (key === 'transcription') {
             let transcriptionScriptList = activeprojectform['Transcription'][1];
-            // console.log(transcriptionScriptList);
+
+            // let currentAudioAllSpeakerids = $("#speakeridsdropdown").val();
+            let currentAudioAllSpeakerids = activeprojectform['audioSpeakerIds'];
+            let currentBoundarySpeakerids = formElement['speakerId'];
+            // let currentBoundarySpeakerids = ;
+                
+            // console.log("All speaker IDs", currentAudioAllSpeakerids);
             var transcriptionScript = formElement[key];
             // if (Object.keys(transcriptionScript).length > 0) {
             // add fieldset
@@ -1440,6 +1473,31 @@ function createSentenceForm(formElement, boundaryID) {
             // console.log(transcriptionScript)
             // console.log('second', 'Object.keys(transcriptionScript)[0]', Object.keys(transcriptionScript)[0]);
             // firstTranscriptionScript = Object.keys(transcriptionScript)[0]
+            sentSpeakerIdEle = '<label for="sentspeakeriddropdown">Speaker ID: </label>'
+            sentSpeakerIdEle += '<select class="custom-select custom-select-sm" id="sentspeakeriddropdown"'
+                + 'name = "sentSpeakerId" multiple = "multiple" style = "width:100%" required onchange="autoSavetranscription(event,this)"> "';
+            
+            
+            for (let i = 0; i < currentAudioAllSpeakerids.length; i++) {
+                optionValue = currentAudioAllSpeakerids[i];
+                if (currentBoundarySpeakerids.includes(optionValue) || currentAudioAllSpeakerids.length == 1) {
+                    console.log("Option value", optionValue);
+                    if (optionValue != "") {
+                        sentSpeakerIdEle += '<option value="' + optionValue + '" selected>' + optionValue + '</option>';
+                    }
+                }
+                else {
+                    if (optionValue != "") {
+                        sentSpeakerIdEle += '<option value="' + optionValue + '">' + optionValue + '</option>';
+                    }
+                }
+            }
+            
+            sentSpeakerIdEle += '</select><br/><br/>'
+            
+            
+            inpt += sentSpeakerIdEle
+
             let firstTranscriptionScript = transcriptionScriptList[0];
             for (let t=0; t<transcriptionScriptList.length; t++) {
             // for (let [transcriptionkey, transcriptionvalue] of Object.entries(transcriptionScript)) {
@@ -1557,6 +1615,9 @@ function createSentenceForm(formElement, boundaryID) {
             // document.getElementById("transcription2").value = "-";
             // $('.transcription1').append(inpt);
             $('#transcription2').append(inpt);
+            $('#sentspeakeriddropdown').select2({
+                // data: optionsList
+            });
             // console.log(document.getElementById("transcription2").innerHTML)
             // console.log(activeprojectform['Interlinear Gloss'][1]);
             if ('Interlinear Gloss' in activeprojectform &&

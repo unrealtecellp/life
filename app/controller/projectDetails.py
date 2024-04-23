@@ -32,8 +32,8 @@ def get_shared_with_users(projects,
 def get_active_transcription_by(projects,
                                 activeprojectname,
                                 current_username,
-                                activespeakerid,
-                                lastActiveAudioId
+                                activespeakerid='',
+                                lastActiveAudioId=''
                                 ):
     # Preference set for each Audio file separately
     # transcription_by_key = 'lastActiveUserTranscription.' + \
@@ -60,16 +60,18 @@ def get_active_transcription_by(projects,
     # logger.debug('project_type: %s', project_type)
     return transcription_by
 
+
 def get_audio_language_scripts(projectform,
-                                 activeprojectname):
-    
+                               activeprojectname):
+
     audio_info = projectform.find_one({"projectname": activeprojectname},
-    {"_id": 0, "Audio Language": 1, "Transcription": 1})
+                                      {"_id": 0, "Audio Language": 1, "Transcription": 1})
     if not audio_info is None:
         audio_lang = audio_info.get("Audio Language")[1][0]
         scripts = audio_info.get("Transcription")[1]
     audio_info = {"language": audio_lang, "scripts": scripts}
     return audio_info
+
 
 def save_active_transcription_by(projects,
                                  activeprojectname,
@@ -79,5 +81,3 @@ def save_active_transcription_by(projects,
 
     projects.update_one({"projectname": activeprojectname},
                         {'$set': {updateactiveuser: lastActiveUser}})
-
-

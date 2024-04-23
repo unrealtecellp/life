@@ -801,7 +801,7 @@ function editMorphemicBreakSentence(transcriptionvalue, transcriptionkey) {
 $("#save").click(function() {
   var transcriptionData = Object();
   var transcriptionRegions = localStorage.regions;
-  // console.log(JSON.parse(transcriptionRegions));
+  console.log(JSON.parse(transcriptionRegions));
   var lastActiveId = document.getElementById("lastActiveId").value;
   transcriptionData['lastActiveId'] = lastActiveId;
   transcriptionData['transcriptionRegions'] = transcriptionRegions;
