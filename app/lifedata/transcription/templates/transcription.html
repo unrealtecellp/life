@@ -127,7 +127,7 @@
     <div class="row">
       <div class="col-md-6">
         <label for="speakeridsdropdown">Audio Source: </label>
-        <select id="speakeridsdropdown" style="width: 50%;"></select>
+        <select id="speakeridsdropdown" style="width: 100%;"></select>
         <!-- {% if speakerids is defined %}
           <label for="speakeridsdropdown">Audio Source: </label>
           <select class="custom-select custom-select-sm" id="speakeridsdropdown" style="width: 50%;">
@@ -140,11 +140,13 @@
           </select>
         {% endif %} -->
       </div>
-      {% if ('sharelatestchecked' not in shareinfo) or ('sharelatestchecked' in shareinfo and shareinfo['sharelatestchecked'] == 'true') %}
+      {% if ('sharelatestchecked' not in shareinfo) or ('sharelatestchecked' in shareinfo and shareinfo['sharelatestchecked']
+      == 'true') %}
       <div class="col-md-6">
         {% if transcriptionsby is defined %}
         <label for="transcriptionsbydropdown">Transcription Source: </label>
-        <select class="custom-select custom-select-sm" id="transcriptionbydropdown" style="width: 50%;" onchange="loadUserTranscription()">
+        <select class="custom-select custom-select-sm" id="transcriptionbydropdown" style="width: 100%;"
+          onchange="loadUserTranscription()">
           <option selected disabled>{{ activetranscriptionby }}</option>
           {% for d in transcriptionsby %}
           {% if d != activetranscriptionby %}
@@ -164,6 +166,7 @@
           <button type="button" id="uNAnnotated" class="btn btn-light" onclick="unAnnotated()">All Filename</button>
         </span>
       </div>
+      
     </div>
     <hr>
     <div class="row">
@@ -344,9 +347,9 @@
               <div id="questionnairederived"></div>
               <h4>Select File:</h4>
               <div class="input-group col-md-12 upload" id="speakeriduploaddropdown-divid">
-              <label for="speakeriduploaddropdown">Audio Files for Source: </label>
-              <select class="custom-select custom-select-sm" id="speakeriduploaddropdown" name="speakerId"
-                style="width:30%" required>
+              <label for="speakeriduploaddropdown">Audio Source: </label>
+              <select class="custom-select custom-select-sm" id="speakeriduploaddropdown" name="speakerId" multiple="multiple"
+                style="width:80%" required>
                 <!-- <option selected disabled></option> -->
                 {% for d in addedspeakerids %}
                 <option value="{{ d }}">{{ d }}</option>

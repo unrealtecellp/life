@@ -922,40 +922,59 @@ def add_waveform_json(audio_details_dict,
 def update_active_speaker_Id(userprojects,
                              activeprojectname,
                              current_username,
-                             speakerId
+                             speakerIds
                              ):
+    logger.info('Speaker IDs %s', speakerIds)
+    if type(speakerIds) == str:
+        speakerIds = [speakerIds]
     # update active speaker ID in userprojects collection
     projectinfo = userprojects.find_one({'username': current_username},
                                         {'_id': 0, 'myproject': 1, 'projectsharedwithme': 1})
 
-    # logger.debug(projectinfo)
+    logger.info(projectinfo)
+    logger.info(activeprojectname)
     userprojectinfo = ''
-    for type, value in projectinfo.items():
+    for key, value in projectinfo.items():
         if len(value) != 0:
+            logger.info(activeprojectname in value)
             if activeprojectname in value:
-                userprojectinfo = type+'.'+activeprojectname+".activespeakerId"
+                userprojectinfo = key+'.'+activeprojectname+".activespeakerId"
+    logger.info(userprojectinfo)
     userprojects.update_one({"username": current_username},
                             {"$set": {
-                                userprojectinfo: speakerId
+                                userprojectinfo: speakerIds[0]
                             }})
 
 
 def update_speakerid_audioid(projects,
                              activeprojectname,
                              current_username,
-                             speakerId,
+                             all_speakerId,
                              last_active_id,
                              speaker_id_key_name,
                              speakerIds,
                              speaker_audioid_key_name,
                              speaker_audio_ids
                              ):
+    if type(all_speakerId) == str:
+        all_speakerId = [all_speakerId]
+
+    all_updates = {speaker_id_key_name: speakerIds,
+                   speaker_audioid_key_name: speaker_audio_ids}
+
+    for current_sid in all_speakerId:
+        key = 'lastActiveId.'+current_username+'.'+current_sid+'.audioId'
+        all_updates[key] = last_active_id
+
+    # projects.update_one({'projectname': activeprojectname},
+    #                     {'$set': {
+    #                         'lastActiveId.'+current_username+'.'+speakerId+'.audioId':  last_active_id,
+    #                         speaker_id_key_name: speakerIds,
+    #                         speaker_audioid_key_name: speaker_audio_ids
+    #                     }})
+
     projects.update_one({'projectname': activeprojectname},
-                        {'$set': {
-                            'lastActiveId.'+current_username+'.'+speakerId+'.audioId':  last_active_id,
-                            speaker_id_key_name: speakerIds,
-                            speaker_audioid_key_name: speaker_audio_ids
-                        }})
+                        {'$set': all_updates})
 
 
 def is_store_in_mongo(split_into_smaller_chunks):
@@ -1048,6 +1067,9 @@ def get_speaker_ids(projects,
                     speakerId,
                     project_type):
     # save audio file details and speaker ID in projects collection
+    if type(speakerId) == str:
+        speakerId = [speakerId]
+
     speaker_id_key_name = get_speaker_id_key_name(project_type)
 
     speakerIds = projects.find_one({'projectname': activeprojectname},
@@ -1057,13 +1079,14 @@ def get_speaker_ids(projects,
         speakerIds = speakerIds[speaker_id_key_name]
         if current_username in speakerIds:
             speakerIdskeylist = speakerIds[current_username]
-            speakerIdskeylist.append(speakerId)
+            speakerIdskeylist.extend(speakerId)
             speakerIds[current_username] = list(set(speakerIdskeylist))
         else:
-            speakerIds[current_username] = [speakerId]
+
+            speakerIds[current_username] = speakerId
     else:
         speakerIds = {
-            current_username: [speakerId]
+            current_username: speakerId
         }
 
     return speaker_id_key_name, speakerIds
@@ -1072,28 +1095,34 @@ def get_speaker_ids(projects,
 def get_speaker_audio_ids(projects,
                           activeprojectname,
                           all_audio_ids,
-                          speakerId,
+                          speakerIds,
                           project_type):
+    if type(speakerIds) == str:
+        speakerIds = [speakerIds]
+
     speaker_audioid_key_name = get_audiospeaker_id_key_name(project_type)
     speaker_audio_ids = projects.find_one({'projectname': activeprojectname},
                                           {'_id': 0, speaker_audioid_key_name: 1})
-    # logger.debug(len(speaker_audio_ids))
-    # logger.debug(speaker_audio_ids)
-    if len(speaker_audio_ids) != 0:
-        speaker_audio_ids = speaker_audio_ids[speaker_audioid_key_name]
-        # logger.debug('speaker_audio_ids %s', speaker_audio_ids)
-        if speakerId in speaker_audio_ids:
-            speaker_audio_idskeylist = speaker_audio_ids[speakerId]
-            speaker_audio_idskeylist.extend(all_audio_ids)
-            speaker_audio_ids[speakerId] = speaker_audio_idskeylist
+    speaker_audio_ids = speaker_audio_ids[speaker_audioid_key_name]
+    # logger.info(len(speaker_audio_ids))
+    # logger.info(speaker_audio_ids)
+    for speakerId in speakerIds:
+        if len(speaker_audio_ids) != 0:
+            # logger.info(speaker_audio_ids.keys())
+            # logger.info(speaker_audioid_key_name in speaker_audio_ids)
+            # logger.debug('speaker_audio_ids %s', speaker_audio_ids)
+            if speakerId in speaker_audio_ids:
+                speaker_audio_idskeylist = speaker_audio_ids[speakerId]
+                speaker_audio_idskeylist.extend(all_audio_ids)
+                speaker_audio_ids[speakerId] = speaker_audio_idskeylist
+            else:
+                # logger.debug('speakerId %s', speakerId)
+                speaker_audio_ids[speakerId] = all_audio_ids
+            # plogger.debug(speaker_audio_ids)
         else:
-            # logger.debug('speakerId %s', speakerId)
-            speaker_audio_ids[speakerId] = all_audio_ids
-        # plogger.debug(speaker_audio_ids)
-    else:
-        speaker_audio_ids = {
-            speakerId: all_audio_ids
-        }
+            speaker_audio_ids = {
+                speakerId: all_audio_ids
+            }
 
     return speaker_audioid_key_name, speaker_audio_ids
 
@@ -1323,7 +1352,8 @@ def getaudiofiletranscription(data_collection,
     transcription_details = {}
     blank_text_grid = get_blank_text_grid()
 
-    transcription_data = data_collection.find_one({'projectname': activeprojectname, 'audioId': audio_id})
+    transcription_data = data_collection.find_one(
+        {'projectname': activeprojectname, 'audioId': audio_id})
     # logger.debug("transcription_data: %s", transcription_data)
     if transcription_data is not None:
         if (transcription_by == "") or (transcription_by == "latest"):
@@ -1874,6 +1904,32 @@ def addedspeakerids(speakerdetails,
     return added_speaker_ids
 
 
+def getaudiospeakerids(data_collection,
+                       activeprojectname,
+                       audio_id):
+    """get the audio speaker ids of the audio file
+
+    Args:
+        data_collection (_type_): _description_
+        file_id (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """
+    all_speaker_ids = []
+    audio_speakers = data_collection.find_one(
+        {'projectname': activeprojectname, 'audioId': audio_id}, {'_id': 1, 'speakerId': 1})
+    # logger.debug(audio_metadata)
+    if audio_speakers is not None and 'speakerId' in audio_speakers:
+        speaker_ids = audio_speakers['speakerId']
+        if type(speaker_ids) == str:
+            all_speaker_ids.append(speaker_ids)
+        else:
+            all_speaker_ids.extend(speaker_ids)
+
+    return all_speaker_ids
+
+
 def getaudiometadata(data_collection,
                      activeprojectname,
                      audio_id):
@@ -1930,7 +1986,7 @@ def get_audio_speakerid(data_collection,
         _type_: _description_
     """
     audio_speakerid = data_collection.find_one(
-        {'projectname':activeprojectname, 'audioId': audio_id}, {'_id': 1, 'lifesourceid': 1})
+        {'projectname': activeprojectname, 'audioId': audio_id}, {'_id': 1, 'lifesourceid': 1})
     # logger.debug(audio_filename)
     if audio_speakerid is not None and 'lifesourceid' in audio_speakerid:
         return audio_speakerid['lifesourceid']
@@ -2308,6 +2364,7 @@ def update_text_grid(mongo, text_grid, new_boundaries, transcription_type, inclu
 
     return text_grid
 
+
 def generate_new_boundary(mongo, text_grid, start_boundary, end_boundary, transcription_type, boundary_id):
     text_grid[transcription_type][boundary_id] = {}
 
@@ -2322,8 +2379,8 @@ def generate_new_boundary(mongo, text_grid, start_boundary, end_boundary, transc
     if (project_type == 'crawling'):
         transcription_scripts = projects.find_one({"projectname": activeprojectname},
                                                   {
-                                                   "_id": 0,
-                                                   "crawlerScript": 1})["crawlerScript"]
+            "_id": 0,
+            "crawlerScript": 1})["crawlerScript"]
     else:
         transcription_scripts = get_current_transcription_langscripts(mongo)
     # transcription_scripts = list(transcriptions.keys())
@@ -2542,6 +2599,7 @@ def get_current_translation_langscripts(mongo):
     except Exception as error:
         logger.debug(error)
         return dict()
+
 
 def get_current_transcription_langscripts(mongo):
     try:
@@ -3570,17 +3628,17 @@ def get_speaker_audio_ids_new(projects_collection,
 
 
 def get_speaker_metadata(speakerdetails_collection,
-                            speakerids,
-                            activeprojectname):
+                         speakerids,
+                         activeprojectname):
     speakers_metadata = {}
     try:
         # logger.debug('speakerids: %s', pformat(speakerids))
         speaker_metadata_cursor = speakerdetails_collection.find({"projectname": activeprojectname,
                                                                   "isActive": 1,
                                                                   "audioSubSource": 'youtube'},
-                                                               {"_id": 0,
-                                                                "lifesourceid": 1,
-                                                                "current.sourceMetadata": 1})
+                                                                 {"_id": 0,
+                                                                  "lifesourceid": 1,
+                                                                  "current.sourceMetadata": 1})
         # logger.debug(speaker_metadata_cursor)
         for speaker_metadata in speaker_metadata_cursor:
             # logger.debug(speaker_metadata)

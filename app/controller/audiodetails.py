@@ -1582,11 +1582,11 @@ def savetranscription(transcriptions,
             for transcription_boundary in transcription_regions:
                 transcription_boundary = transcription_boundary['data']
                 if 'sentence' in transcription_boundary:
-                    for type, value in transcription_boundary['sentence'].items():
+                    for boundary_id, value in transcription_boundary['sentence'].items():
                         # logger.debug(f"KEY: {type}\nVALUE: {value}")
-                        value["speakerId"] = activespeakerId
-                        value["sentenceId"] = audio_id
-                        sentence[type] = value
+                        # value["speakerId"] = activespeakerId
+                        value["sentenceId"] = audio_id+'_'+boundary_id
+                        sentence[boundary_id] = value
                 # plogger.debug(sentence)
                 #     logger.debug('transcription_boundary.keys() %s', transcription_boundary.keys())
                 #     sentence[transcription_boundary['boundaryID']] = {
