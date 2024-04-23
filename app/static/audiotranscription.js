@@ -1134,7 +1134,8 @@ function createSentenceForm(formElement, boundaryID) {
                 //     'value="' + transcriptionvalue + '" onkeyup="autoSavetranscription(this)" required><br>';
                 inpt += '<textarea class="form-control transcription-box" id="Transcription_' + transcriptionkey + '"' +
                     'placeholder="Transcription ' + transcriptionkey + '" name="transcription_' + transcriptionkey + '"' +
-                    'value="' + transcriptionvalue + '" onkeyup="autoSavetranscription(event,this)" required>' + transcriptionvalue + '</textarea><br>';
+                    // 'value="' + transcriptionvalue + '" onkeyup="autoSavetranscription(event,this)" required>' + transcriptionvalue + '</textarea><br>';
+                    'value="' + transcriptionvalue + '" oninput="autoSavetranscription(event,this)" required>' + transcriptionvalue + '</textarea><br>';
                 // '</div></div>';
                 if (transcriptionkey === firstTranscriptionScript) {
                     // activeprojectform = JSON.parse(localStorage.activeprojectform)
@@ -1293,7 +1294,8 @@ function createSentenceForm(formElement, boundaryID) {
         inpt += '<label for="comment-box-id">Comments:</label>'
         inpt += '<textarea class="form-control comment-box" id="comment-box-id" ' +
             'placeholder="Comments" name="comment-box"' +
-            'value="' + commentVal + '" onkeyup="autoSavetranscription(event,this)" required>' + commentVal + '</textarea><br>';
+            // 'value="' + commentVal + '" onkeyup="autoSavetranscription(event,this)" required>' + commentVal + '</textarea><br>';
+            'value="' + commentVal + '" oninput="autoSavetranscription(event,this)" required>' + commentVal + '</textarea><br>';
         document.getElementById("transcription-comments").innerHTML = "";
         $('#transcription-comments').append(inpt);
         inpt = '';

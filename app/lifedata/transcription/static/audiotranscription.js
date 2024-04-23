@@ -1460,9 +1460,12 @@ function createSentenceForm(formElement, boundaryID) {
                 // inpt += '<input type="text" class="form-control transcription-box" id="Transcription_' + transcriptionkey + '"' +
                 //     'placeholder="Transcription ' + transcriptionkey + '" name="transcription_' + transcriptionkey + '"' +
                 //     'value="' + transcriptionvalue + '" onkeyup="autoSavetranscription(this)" required><br>';
+                // inpt += '<textarea class="form-control transcription-box" id="Transcription_' + transcriptionkey + '"' +
+                //     'placeholder="Transcription ' + transcriptionkey + '" name="transcription_' + transcriptionkey + '"' +
+                //     'value="' + transcriptionvalue + '" onkeyup="autoSavetranscription(event,this)" required>' + transcriptionvalue + '</textarea><br>';
                 inpt += '<textarea class="form-control transcription-box" id="Transcription_' + transcriptionkey + '"' +
                     'placeholder="Transcription ' + transcriptionkey + '" name="transcription_' + transcriptionkey + '"' +
-                    'value="' + transcriptionvalue + '" onkeyup="autoSavetranscription(event,this)" required>' + transcriptionvalue + '</textarea><br>';
+                    'value="' + transcriptionvalue + '" oninput="autoSavetranscription(event,this)" required>' + transcriptionvalue + '</textarea><br>';
                 // '</div></div>';
                 // add fieldset
                 // inpt += '</div>';
@@ -1580,7 +1583,8 @@ function createSentenceForm(formElement, boundaryID) {
                     
                 inpt += '<textarea class="form-control translation-box" id="Translation_' + translationkey + '"' +
                         'placeholder="Translation ' + translang[translangcount] + '" name="translation_' + translationkey + '"' +
-                        'value="' + translationvalue + '" onkeyup="autoSavetranscription(event,this)" required>' + translationvalue + '</textarea><br>';
+                        // 'value="' + translationvalue + '" onkeyup="autoSavetranscription(event,this)" required>' + translationvalue + '</textarea><br>';
+                        'value="' + translationvalue + '" oninput="autoSavetranscription(event,this)" required>' + translationvalue + '</textarea><br>';
                 // inpt += '<input type="text" class="form-control" id="Translation_' + translationkey + '"' +
                 //         'placeholder="Translation ' + translang[translangcount] + '" name="translation_' + translationkey + '"' +
                 //         'value="' + translationvalue + '">' +
@@ -1649,7 +1653,8 @@ function createSentenceForm(formElement, boundaryID) {
         inpt += '<label for="comment-box-id">Comments:</label>'
         inpt += '<textarea class="form-control comment-box" id="comment-box-id" ' +
             'placeholder="Comments" name="comment-box"' +
-            'value="' + commentVal + '" onkeyup="autoSavetranscription(event,this)" required>' + commentVal + '</textarea><br>';
+            // 'value="' + commentVal + '" onkeyup="autoSavetranscription(event,this)" required>' + commentVal + '</textarea><br>';
+            'value="' + commentVal + '" oninput="autoSavetranscription(event,this)" required>' + commentVal + '</textarea><br>';
         document.getElementById("transcription-comments").innerHTML = "";
         $('#transcription-comments').append(inpt);
         inpt = '';
@@ -1830,7 +1835,8 @@ function morphemeEditableFields(morphemicSplitSentence, name, morphemePOS, gloss
                 'id="morphemeField' + name + (i + 1) + '" readonly style="float:none;width: 200px;">' +
                 '<span class="input-group-btn" style="width:50px;"></span>' +
                 '<input type="text" class="form-control" name="morph_gloss_' + name + '_' + (i + 1) + '"' +
-                ' id="morphemicgloss' + name + (i + 1) + '" value="' + morphemicgloss + '" onkeyup="autoSavetranscription(event,this)" style="float:none;width: 200px;"/>' +
+                // ' id="morphemicgloss' + name + (i + 1) + '" value="' + morphemicgloss + '" onkeyup="autoSavetranscription(event,this)" style="float:none;width: 200px;"/>' +
+                ' id="morphemicgloss' + name + (i + 1) + '" value="' + morphemicgloss + '" oninput="autoSavetranscription(event,this)" style="float:none;width: 200px;"/>' +
                 '<span class="input-group-btn" style="width:50px;"></span>' +
                 '<select class="lextype' + name + (i + 1) + '" name="morph_lextype_' + name + '_' + (i + 1) + '"' +
                 ' style="width: 200px" onchange="autoSavetranscription(event,this)">';
@@ -2236,7 +2242,8 @@ function autoSavetranscriptionSubPart () {
 
 function autoSavetranscription(e, transcriptionField, update=true, from='') {
     // console.log(wavesurfer, wavesurfer.regions);
-    console.log(transcriptionField, transcriptionField.id, transcriptionField.value);
+    // console.log(e.keyCode);
+    // console.log(transcriptionField, transcriptionField.id, transcriptionField.value);
     // console.log(transcriptionField);
     if (e.keyCode == 13) {
         current_val = transcriptionField.value;
@@ -2250,7 +2257,7 @@ function autoSavetranscription(e, transcriptionField, update=true, from='') {
         // console.log("Replace enter");
     }
 
-    console.log(from);
+    // console.log(from);
 
     // showNote();
     if (update) {
