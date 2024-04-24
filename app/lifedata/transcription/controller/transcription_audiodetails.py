@@ -653,7 +653,8 @@ def saveoneaudiofile(mongo,
                              speaker_id_key_name,
                              speakerIds,
                              speaker_audioid_key_name,
-                             speaker_audio_ids)
+                             speaker_audio_ids,
+                             existing_speaker_ids=[])
 
     # Update active speaker ID in user projects
     update_active_speaker_Id(userprojects,
@@ -919,6 +920,136 @@ def add_waveform_json(audio_details_dict,
     audio_details_dict['audioMetadata']['audiowaveform'] = audiowaveform_json
 
 
+def get_audio_speaker_ids(transcriptions,
+                          activeprojectname,
+                          audio_id):
+    speaker_ids = []
+    current_speaker_ids = transcriptions.find_one(
+        {'projectname': activeprojectname, 'audioId': audio_id}, {'_id': 1, 'speakerId': 1})
+    if not current_speaker_ids is None and 'speakerId' in current_speaker_ids:
+        all_speaker_ids = current_speaker_ids['speakerId']
+        if type(all_speaker_ids) == str:
+            speaker_ids.append(all_speaker_ids)
+        else:
+            speaker_ids.extend(all_speaker_ids)
+
+    return speaker_ids
+
+
+def update_transcriptions_collection(transcriptions,
+                                     activeprojectname,
+                                     audioId,
+                                     key_to_update,
+                                     new_value):
+    transcriptions.update_one({'projectname': activeprojectname, 'audioId': audioId},
+                              {"$set": {
+                                  key_to_update: new_value
+                              }})
+
+
+def update_speaker_audio_ids(speaker_audio_ids,
+                             existing_speaker_ids,
+                             new_speaker_ids,
+                             audio_id):
+    ids_to_remove = {}
+    ids_to_add = {}
+    for existing_speaker_id in existing_speaker_ids:
+        if not existing_speaker_id in new_speaker_ids:
+            if existing_speaker_id in speaker_audio_ids:
+                try:
+                    ids_to_remove[existing_speaker_id] = audio_id
+                    existing_ids_all = speaker_audio_ids[existing_speaker_id]
+                    existing_ids_remaining = [
+                        i for i in existing_ids_all if i != audio_id]
+                    speaker_audio_ids[existing_speaker_id] = existing_ids_remaining
+
+                except:
+                    logger.exception('')
+
+    for new_speaker_id in new_speaker_ids:
+        if not new_speaker_id in existing_speaker_ids:
+            if new_speaker_id in speaker_audio_ids:
+                existing_ids_all = speaker_audio_ids[new_speaker_id]
+                if not audio_id in existing_ids_all:
+                    ids_to_add[new_speaker_id] = audio_id
+                    existing_ids_all.append(audio_id)
+                    speaker_audio_ids[new_speaker_id] = existing_ids_all
+            else:
+                ids_to_add[new_speaker_id] = audio_id
+                speaker_audio_ids[new_speaker_id] = [audio_id]
+
+    logger.info('IDs removed %s', ids_to_remove)
+    logger.info('IDs added %s', ids_to_add)
+    # for current_audio_id in speaker_audio_ids:
+    # if audio_id in speaker_audio_ids:
+    #     speaker_audio_ids[audio_id].extend(ids_to_add)
+    #     for id_to_remove in ids_to_remove:
+    #         try:
+    #             speaker_audio_ids[audio_id].remove(id_to_remove)
+    #         except:
+    #             logger.exception('')
+
+
+def update_audio_speaker_ids(projects,
+                             userprojects,
+                             transcriptions,
+                             activeprojectname,
+                             current_username,
+                             speakerId,
+                             all_audio_ids):
+
+    last_active_id = all_audio_ids[0]
+    project_type = getprojecttype.getprojecttype(projects, activeprojectname)
+
+    existing_speaker_ids = get_audio_speaker_ids(transcriptions,
+                                                 activeprojectname,
+                                                 last_active_id)
+
+    # logger.info('Existing speaker IDs for audio %s', existing_speaker_ids)
+
+    if set(existing_speaker_ids) != set(speakerId):
+        speaker_id_key_name, speakerIds = get_speaker_ids(projects,
+                                                          activeprojectname,
+                                                          current_username,
+                                                          speakerId,
+                                                          project_type)
+
+        speaker_audioid_key_name, speaker_audio_ids = get_speaker_audio_ids(projects,
+                                                                            activeprojectname,
+                                                                            all_audio_ids,
+                                                                            speakerId,
+                                                                            project_type)
+
+        update_speaker_audio_ids(speaker_audio_ids,
+                                 existing_speaker_ids,
+                                 speakerId,
+                                 last_active_id)
+
+        # logger.info('Modified audio IDs of speakers %s', speaker_audio_ids)
+        update_speakerid_audioid(projects,
+                                 activeprojectname,
+                                 current_username,
+                                 speakerId,
+                                 last_active_id,
+                                 speaker_id_key_name,
+                                 speakerIds,
+                                 speaker_audioid_key_name,
+                                 speaker_audio_ids,
+                                 existing_speaker_ids)
+
+        update_active_speaker_Id(userprojects,
+                                 activeprojectname,
+                                 current_username,
+                                 speakerId
+                                 )
+
+        update_transcriptions_collection(transcriptions,
+                                         activeprojectname,
+                                         last_active_id,
+                                         "speakerId",
+                                         speakerId)
+
+
 def update_active_speaker_Id(userprojects,
                              activeprojectname,
                              current_username,
@@ -954,7 +1085,8 @@ def update_speakerid_audioid(projects,
                              speaker_id_key_name,
                              speakerIds,
                              speaker_audioid_key_name,
-                             speaker_audio_ids
+                             speaker_audio_ids,
+                             existing_speaker_ids=[]
                              ):
     if type(all_speakerId) == str:
         all_speakerId = [all_speakerId]
@@ -1933,7 +2065,7 @@ def getaudiospeakerids(data_collection,
 def getaudiometadata(data_collection,
                      activeprojectname,
                      audio_id):
-    """get the audi metadata details of the audio file
+    """get the audio metadata details of the audio file
 
     Args:
         data_collection (_type_): _description_
