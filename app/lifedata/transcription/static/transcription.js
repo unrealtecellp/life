@@ -2,6 +2,7 @@
 
 function createSelect2(eleId, optionsList, selectedOption, moreInfo={}, optionKey='') {
   let ele = '';
+  console.log('selectedOption', selectedOption);
   for (let i=0; i<optionsList.length; i++) {
       optionValue = optionsList[i];
       option = optionsList[i];
@@ -9,11 +10,18 @@ function createSelect2(eleId, optionsList, selectedOption, moreInfo={}, optionKe
       optionKey in moreInfo[optionValue]) {
           option = moreInfo[optionValue][optionKey]
       }
-      if (optionValue === selectedOption) {
-          ele += '<option value="'+optionValue+'" selected>'+option+'</option>'
+    console.log('selectedOption', selectedOption, optionValue, selectedOption.includes(optionValue));
+    // if (selectedOption.includes(optionValue)) { optionValue === selectedOption ||
+    if (optionValue != "") {
+      if (selectedOption.includes(optionValue)) {
+        ele += '<option value="' + optionValue + '" selected>' + option + '</option>'
       }
       else {
-          ele += '<option value="'+optionValue+'">'+option+'</option>'
+        ele += '<option value="' + optionValue + '">' + option + '</option>'
+      }
+    }
+    else {
+        ele += '<option value="' + optionValue + '">' + option + '</option>'
       }
   }
   $('#'+eleId).html(ele);
@@ -306,7 +314,8 @@ function createTranscriptionInterfaceForm(newData) {
     let audio_script = newData['Transcription'][1][0]
     let audio_lang_script = audio_language+'-'+audio_script
     let speakerIds = newData['speakerIds'];
-    let activeSpeakerId = newData['activespeakerId']
+  let activeSpeakerId = newData['activespeakerId']
+  let currentAudioSpeakerIds = newData['audioSpeakerIds']
     console.log(activeSpeakerId);
     let sourceMetadata = newData['sourceMetadata']
     // let audio_lang_script = audio_language
@@ -337,7 +346,8 @@ function createTranscriptionInterfaceForm(newData) {
         //     tagsets_form += createTagsetsForm();
         // }
     }
-    createSelect2('speakeridsdropdown', speakerIds, activeSpeakerId, sourceMetadata, 'video_title');
+  createSelect2('speakeridsdropdown', speakerIds, activeSpeakerId, sourceMetadata, 'video_title');
+  createSelect2('speakeridsettingsdropdown', speakerIds, currentAudioSpeakerIds, {}, 'video_title');
     if (lastActiveId != ''){
       createTranscriptionPrompt(audio_lang_script);
     }
@@ -1001,7 +1011,15 @@ $('#usernamesdropdown').select2({
   // allowClear: true
   });
 
+
 $('#speakeridsdropdown').select2({
+  // tags: true,
+  placeholder: 'select speaker',
+  // data: posCategories
+  // allowClear: true
+});
+
+$('#speakeridsettingsdropdown').select2({
   // tags: true,
   placeholder: 'select speaker',
   // data: posCategories

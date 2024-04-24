@@ -2568,3 +2568,14 @@ $('#myMakeBoundaryModalButton').on('click', function (e) {
     $('#myMakeBoundaryModal').show.bs.modal;
 
 })
+
+$('#editAudioSettingsButton').on('click', function (e) {
+//   alert("Opened!")
+    filename = document.getElementById("audioFilename").textContent;
+    
+    document.getElementById("settingsaudiofileid").value = filename
+    
+    // document.getElementById("speakeriduploaddropdown-divid").innerHTML = activeSpeaker;
+    // $('#editAudioSettingsModal').show.bs.modal;
+
+})

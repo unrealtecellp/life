@@ -1427,6 +1427,35 @@ def addnewspeakerdetails():
     return redirect(url_for('lifedata.transcription.home'))
 
 
+@transcription.route('/updateaudiosettings', methods=['GET', 'POST'])
+@login_required
+def updateaudiosettings():
+    projects, userprojects, transcriptions = getdbcollections.getdbcollections(mongo,
+                                                                               'projects',
+                                                                               'userprojects',
+                                                                               'transcriptions')
+    current_username = getcurrentusername.getcurrentusername()
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                  userprojects)
+    # projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
+    if request.method == 'POST':
+        form_data = request.form
+        audio_filename = form_data.get('settingsaudiofile')
+        audio_id = [audio_filename[:audio_filename.find('_')]]
+        speaker_ids = form_data.getlist('speakerIdEdit')
+        # logger.info('Submitted info %s', form_data)
+        # logger.info('Data %s %s', speaker_ids, audio_id)
+
+        transcription_audiodetails.update_audio_speaker_ids(projects,
+                                                            userprojects,
+                                                            transcriptions,
+                                                            activeprojectname,
+                                                            current_username,
+                                                            speaker_ids,
+                                                            audio_id)
+    return redirect(url_for('lifedata.transcription.home'))
+
+
 @transcription.route('/transcriptionpromptfile', methods=['GET', 'POST'])
 @login_required
 def transcriptionpromptfile():
