@@ -2625,3 +2625,65 @@ $('#editAudioSettingsButton').on('click', function (e) {
     // $('#editAudioSettingsModal').show.bs.modal;
 
 })
+
+function getScriptToGlossDropdownSelected() {
+    return $('#scripttoglossdropdown').select2('data')[0].id;
+}
+
+function transcriptionToGloss(ele, boundaryID) {
+    // console.log($('#scripttoglossdropdown').select2('data'));
+    // console.log($('#scripttoglossdropdown').select2('data')[0].id);
+    let scripttoglossdropdownselected = getScriptToGlossDropdownSelected();
+    document.getElementById("interlinearglosstab").onclick = function() {transcriptionToGloss({value: scripttoglossdropdownselected}, boundaryID)};
+    // console.log('transcriptionToGloss()', ele.value, boundaryID);
+    let sentencemorphemicbreakupdatedvalue = '';
+    let localStorageRegions = JSON.parse(localStorage.regions);
+    let scriptName = ele.value;
+    for (let p=0; p<localStorageRegions.length; p++) {
+        // console.log(p);
+        if (localStorageRegions[p]['boundaryID'] === boundaryID) {
+            let sentence_morphemic_break = localStorageRegions[p]['data']['sentence'][boundaryID]['sentencemorphemicbreak'][scriptName];
+            // console.log(sentence_morphemic_break);
+            sentencemorphemicbreakupdatedvalue = sentence_morphemic_break;
+            if (sentence_morphemic_break == '') {
+                let transcription_in_script = localStorageRegions[p]['data']['sentence'][boundaryID]['transcription'][scriptName];
+                // console.log(transcription_in_script);
+                sentencemorphemicbreakupdatedvalue = transcription_in_script;
+                break;
+            }
+            else {
+                break;
+            }
+        }
+    }
+    // console.log(sentencemorphemicbreakupdatedvalue);
+    let inpt = '<input type="hidden" class="form-control" id="text"' + ' name="text" value="' + sentencemorphemicbreakupdatedvalue + '">' +
+                '<textarea class="col form-control transcription-box textcontent"'+
+                ' id="sentenceMorphemicBreak_'+scriptName+'"'+
+                ' name="morphsentenceMorphemicBreak_' + scriptName + '"'+
+                ' oninput="autoSavetranscription(event,this,true,\'sentenceMorphemicBreak_\')"'+
+                ' ondblclick=spanAnnotation(event)>' + sentencemorphemicbreakupdatedvalue + '</textarea>';
+    $('.textcontentouter').html(inpt);
+    autoSavetranscriptionSubPart();
+}
+
+function spanAnnotation(event) {
+    // console.log(event);
+    eve = event.target;
+    // console.log('span');
+    // console.log(event, event.target, event.bubbles);
+    // event.stopPropagation();
+    event.bubbles = false;
+    // console.log('eleId', eleId);
+    const spanStart = eve.selectionStart;
+    const spanEnd = eve.selectionEnd;
+    // const selection = eve.textContent.substring(
+    //     spanStart,
+    //     spanEnd
+    //   );
+    const selection = eve.value.substring(
+        spanStart,
+        spanEnd
+      );
+    //   console.log(selection);
+}
