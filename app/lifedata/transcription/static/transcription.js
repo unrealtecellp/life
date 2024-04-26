@@ -563,7 +563,8 @@ function morphemeFields(morphemicSplitSentence, name, morphemePOS, updateInterli
                           'id="morphemeField' + name + (i+1) +'" readonly  style="float:none;width: 200px;"/>'+
                           '<span class="input-group-btn" style="width:50px;"></span>'+
                           '<input type="text" class="form-control" name="morph_gloss_' + name + '_' +  (i+1) +'" value="' + morphemicgloss + '"'+
-                          ' id="morphemicgloss' + name + (i+1) +'" onkeyup="autoSavetranscription(event,this)" style="float:none;width: 200px;"/>'+
+                          // ' id="morphemicgloss' + name + (i+1) +'" onkeyup="autoSavetranscription(event,this)" style="float:none;width: 200px;"/>'+
+                          ' id="morphemicgloss' + name + (i+1) +'" oninput="autoSavetranscription(event,this)" style="float:none;width: 200px;"/>'+
                           '<span class="input-group-btn" style="width:50px;"></span>'+
                           '<select class="lextype' + name + (i+1) +'" name="morph_lextype_' + name + '_' +  (i+1) +'"  onchange="autoSavetranscription(event,this)" style="width: 200px">'+
                           '<option value="'+morphemiclextype+'" selected>'+morphemiclextype+'</option></select>'+
@@ -595,7 +596,8 @@ function morphemeFields(morphemicSplitSentence, name, morphemePOS, updateInterli
                           'id="morphemeField' + name + (i+1) +'" readonly  style="float:none;width: 200px;"/>'+
                           '<span class="input-group-btn" style="width:50px;"></span>'+
                           '<input type="text" class="form-control" name="morph_gloss_' + name + '_' +  (i+1) +'"'+
-                          ' id="morphemicgloss' + name + (i+1) +'" onkeyup="autoSavetranscription(event,this)" style="float:none;width: 200px;"/>'+
+                          // ' id="morphemicgloss' + name + (i+1) +'" onkeyup="autoSavetranscription(event,this)" style="float:none;width: 200px;"/>'+
+                          ' id="morphemicgloss' + name + (i+1) +'" oninput="autoSavetranscription(event,this)" style="float:none;width: 200px;"/>'+
                           '<span class="input-group-btn" style="width:50px;"></span>'+
                           '<select class="lextype' + name + (i+1) +'" name="morph_lextype_' + name + '_' +  (i+1) +'" onchange="autoSavetranscription(event,this)" style="width: 200px"></select>'+
                           '<span class="input-group-btn" style="width:50px;"></span>'+

@@ -783,6 +783,7 @@ function infoForUpdateInterlinearGloss(sentence_diff, scriptName) {
 }
 
 function mapTranscriptionInterlinearGloss(e, sentencemorphemicbreakEle) {
+    // console.log(sentencemorphemicbreakEle);
     // console.log(sentencemorphemicbreakEle.id);
     // map transcription and interlinear gloss
     try {
@@ -801,7 +802,7 @@ function mapTranscriptionInterlinearGloss(e, sentencemorphemicbreakEle) {
             let scriptName = scriptNameArray[scriptNameArray.length-1];
             // console.log(scriptName);
             let {updateWithInterlinearGloss, sentenceMorphemicBreakSentence} = infoForUpdateInterlinearGloss(sentDiff, scriptName);
-            console.log(updateWithInterlinearGloss, sentenceMorphemicBreakSentence);
+            // console.log(updateWithInterlinearGloss, sentenceMorphemicBreakSentence);
             // console.log(sentencemorphemicbreakEle, transcriptionEle);
             // console.log(sentencemorphemicbreakEle.value)
             // console.log(sentencemorphemicbreakEle.value.trim().replace(/[#-]/g, ''))
@@ -842,10 +843,10 @@ function updateSentenceDetailsOnSaveBoundary(boundaryID, sentence, region, form)
     // console.log(boundaryID);
     // console.log(sentence);
     // console.log(region);
-    console.log("Form in update", form);
+    // console.log("Form in update", form);
     // console.log("Form in update", Object.keys(form));
-    console.log("Sentence Spaker IDs", form["sentSpeakerId"])
-    console.log("Sentence Spaker IDs value", form["sentSpeakerId"].values, $("#sentspeakeriddropdown").val())
+    // console.log("Sentence Spaker IDs", form["sentSpeakerId"])
+    // console.log("Sentence Spaker IDs value", form["sentSpeakerId"].values, $("#sentspeakeriddropdown").val())
     // console.log("Comment", form["comment-box"].textContent)
     // console.log("Comment Val", form["comment-box"].value)
     // console.log(document.forms.edit.elements);
@@ -880,7 +881,7 @@ function updateSentenceDetailsOnSaveBoundary(boundaryID, sentence, region, form)
         else if (sentenceSpeakerIds.length == 1) {
             sentenceSpeakerIds = sentenceSpeakerIds[0];
         }
-        console.log("Setting sentence speaker ID", boundaryID, sentenceSpeakerIds);
+        // console.log("Setting sentence speaker ID", boundaryID, sentenceSpeakerIds);
         sentence[boundaryID]["speakerId"] = sentenceSpeakerIds; 
 
         if (key === 'transcription') {
@@ -1462,6 +1463,7 @@ function createSentenceForm(formElement, boundaryID) {
             //         '</button></legend>';
             // // inpt += '</fieldset>';
             let glossInpt = '';
+            glossInpt += '<select id="scripttoglossdropdown"  onchange="transcriptionToGloss(this, \''+boundaryID+'\')" style="width: 40%; display: block;"></select>'
             // add fieldset
             // glossInpt += '<fieldset class="form-group border">'+
             //             '<legend class="col-form-label">'+
@@ -1482,7 +1484,7 @@ function createSentenceForm(formElement, boundaryID) {
             for (let i = 0; i < currentAudioAllSpeakerids.length; i++) {
                 optionValue = currentAudioAllSpeakerids[i];
                 if (currentBoundarySpeakerids.includes(optionValue) || currentAudioAllSpeakerids.length == 1) {
-                    console.log("Option value", optionValue);
+                    // console.log("Option value", optionValue);
                     if (optionValue != "") {
                         sentSpeakerIdEle += '<option value="' + optionValue + '" selected>' + optionValue + '</option>';
                     }
@@ -1518,9 +1520,12 @@ function createSentenceForm(formElement, boundaryID) {
                 // inpt += '<input type="text" class="form-control transcription-box" id="Transcription_' + transcriptionkey + '"' +
                 //     'placeholder="Transcription ' + transcriptionkey + '" name="transcription_' + transcriptionkey + '"' +
                 //     'value="' + transcriptionvalue + '" onkeyup="autoSavetranscription(this)" required><br>';
+                // inpt += '<textarea class="form-control transcription-box" id="Transcription_' + transcriptionkey + '"' +
+                //     'placeholder="Transcription ' + transcriptionkey + '" name="transcription_' + transcriptionkey + '"' +
+                //     'value="' + transcriptionvalue + '" onkeyup="autoSavetranscription(event,this)" required>' + transcriptionvalue + '</textarea><br>';
                 inpt += '<textarea class="form-control transcription-box" id="Transcription_' + transcriptionkey + '"' +
                     'placeholder="Transcription ' + transcriptionkey + '" name="transcription_' + transcriptionkey + '"' +
-                    'value="' + transcriptionvalue + '" onkeyup="autoSavetranscription(event,this)" required>' + transcriptionvalue + '</textarea><br>';
+                    'value="' + transcriptionvalue + '" oninput="autoSavetranscription(event,this)" required>' + transcriptionvalue + '</textarea><br>';
                 // '</div></div>';
                 // add fieldset
                 // inpt += '</div>';
@@ -1529,40 +1534,26 @@ function createSentenceForm(formElement, boundaryID) {
 
                 if (transcriptionkey === firstTranscriptionScript) {
                     // console.log("transcriptionkey === firstTranscriptionScript");
-                    glossInpt += '<div id="morphemicDetail_' + transcriptionkey + '" style="display: block;">' +
-                                    '<p><strong>Give Morphemic Break</strong></p>' +
-                                    '<p><strong>**(use "#" for word boundary(if there are affixes in the word) and "-" for morphemic break)</strong></p>' +
-                                    '<div class="form-group"><div class="input-group">';
+                    glossInpt += '<div id="morphemicDetail_' + transcriptionkey + '" style="display: block;">';
+                    // glossInpt += '<p><strong>Give Morphemic Break</strong></p>' +
+                    //                 '<p><strong>**(use "#" for word boundary(if there are affixes in the word) and "-" for morphemic break)</strong></p>';
+                    glossInpt += '<div class="form-group"><div class="input-group">';
                     glossInpt += ' <input type="text" id="activeBoundaryID" name="activeBoundaryID" value="'+ boundaryID +'" hidden>';
-
-                    // glossInpt += '<input type="text" class="form-control" name="morphsentenceMorphemicBreak_' + transcriptionkey + '"' +
-                    //                 'placeholder="e.g. I have re-#write#-en the paper#-s"' +
-                    //                 'id="sentenceMorphemicBreak_' + transcriptionkey + '" value="' + sentencemorphemicbreakvalue + '">';
-                    // console.log("transcriptionkey === firstTranscriptionScript");
-                    // activeprojectform = JSON.parse(localStorage.activeprojectform)
                     if ('glossDetails' in activeprojectform &&
                         boundaryID in activeprojectform['glossDetails']) {
                             // console.log("'glossDetails' in activeprojectform");
                             glossdetails = activeprojectform['glossDetails'][boundaryID]
                             posdetails = activeprojectform['posDetails'][boundaryID]
-                            // console.log(glossdetails)
-                            // console.log(posdetails)
-
+                            // commented on 2024_04_22_10_27_15_954079
                             // glossInpt += '<textarea class="form-control transcription-box" id="sentenceMorphemicBreak_' + transcriptionkey + '"' +
                             //         'placeholder="e.g. I have re-#write#-en the paper#-s" name="morphsentenceMorphemicBreak_' + transcriptionkey + '"' +
-                            //         'value="' + sentencemorphemicbreakvalue + '" onkeyup="autoSavetranscription(event,this, false)" '+
-                            //         'onfocus="autoSavetranscription(event,this)" required readonly>' + sentencemorphemicbreakvalue + '</textarea><br>';
-                            // without onkeyup event
-
-                            glossInpt += '<textarea class="form-control transcription-box" id="sentenceMorphemicBreak_' + transcriptionkey + '"' +
-                                    'placeholder="e.g. I have re-#write#-en the paper#-s" name="morphsentenceMorphemicBreak_' + transcriptionkey + '"' +
-                                    'value="' + sentencemorphemicbreakvalue + '" '+
-                                    'onfocus="autoSavetranscription(event,this,true,\'sentenceMorphemicBreak_\')" required readonly>' + sentencemorphemicbreakvalue + '</textarea><br>';
-                            glossInpt += '<div class="input-group-btn" id="editsentmorpbreak">' +
-                                '<button class="btn btn-warning" type="button" id="editSentenceField"' +
-                                'onclick="editMorphemicBreakSentence(\'' + transcriptionvalue + '\', \'' + transcriptionkey + '\');">' +
-                                '<span class="glyphicon glyphicon-edit" aria-hidden="true"></span>' +
-                                '</button></div>';
+                            //         'value="' + sentencemorphemicbreakvalue + '" '+
+                            //         'onfocus="autoSavetranscription(event,this,true,\'sentenceMorphemicBreak_\')" required readonly>' + sentencemorphemicbreakvalue + '</textarea><br>';
+                            // glossInpt += '<div class="input-group-btn" id="editsentmorpbreak">' +
+                            //     '<button class="btn btn-warning" type="button" id="editSentenceField"' +
+                            //     'onclick="editMorphemicBreakSentence(\'' + transcriptionvalue + '\', \'' + transcriptionkey + '\');">' +
+                            //     '<span class="glyphicon glyphicon-edit" aria-hidden="true"></span>' +
+                            //     '</button></div>';
                             createEditableGlossForm(transcriptionvalue,
                                 transcriptionkey,
                                 sentencemorphemicbreakvalue,
@@ -1571,42 +1562,34 @@ function createSentenceForm(formElement, boundaryID) {
                                 boundaryID)
                     }
                     else {
-                        // console.log("'glossDetails' NOT in activeprojectform")
-
+                        // without onkeyup event
+                        // commented on 2024_04_22_10_27_15_954079
                         // glossInpt += '<textarea class="form-control transcription-box" id="sentenceMorphemicBreak_' + transcriptionkey + '"' +
                         //             'placeholder="e.g. I have re-#write#-en the paper#-s" name="morphsentenceMorphemicBreak_' + transcriptionkey + '"' +
-                        //             'value="' + sentencemorphemicbreakvalue + '" onkeyup="autoSavetranscription(event,this, false)" '+
-                        //             'onfocus="autoSavetranscription(event,this)" required>' + sentencemorphemicbreakvalue + '</textarea><br>';
-                        // without onkeyup event
-                        glossInpt += '<textarea class="form-control transcription-box" id="sentenceMorphemicBreak_' + transcriptionkey + '"' +
-                                    'placeholder="e.g. I have re-#write#-en the paper#-s" name="morphsentenceMorphemicBreak_' + transcriptionkey + '"' +
-                                    'value="' + sentencemorphemicbreakvalue + '" '+
-                                    'onfocus="autoSavetranscription(event,this,true,\'sentenceMorphemicBreak_\')" required>' + sentencemorphemicbreakvalue + '</textarea><br>';
-                        glossInpt += '<div class="input-group-btn"  id="editsentmorpbreak">' +
-                            '<button class="btn btn-success" type="button" id="checkSentenceField"' +
-                            'onclick="getSentence(\'' + transcriptionvalue + '\', \'' + transcriptionkey + '\');">' +
-                            '<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>' +
-                            '</button></div>';
+                        //             'value="' + sentencemorphemicbreakvalue + '" '+
+                        //             'onfocus="autoSavetranscription(event,this,true,\'sentenceMorphemicBreak_\')" required>' + sentencemorphemicbreakvalue + '</textarea><br>';
+                        // glossInpt += '<div class="input-group-btn"  id="editsentmorpbreak">' +
+                        //     '<button class="btn btn-success" type="button" id="checkSentenceField"' +
+                        //     'onclick="getSentence(\'' + transcriptionvalue + '\', \'' + transcriptionkey + '\');">' +
+                        //     '<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>' +
+                        //     '</button></div>';
+                            // updating interlinearglossing interface
+                        let sentencemorphemicbreakupdatedvalue = sentencemorphemicbreakvalue;
+                        if (sentencemorphemicbreakupdatedvalue === '') {
+                            sentencemorphemicbreakupdatedvalue = transcriptionvalue;
+                        }
+                        glossInpt += '<div class="form-group textcontentouter">' +
+                                        // '<label class="col" for="text">Text:</label><br>' +
+                                        '<input type="hidden" class="form-control" id="text"' + ' name="text" value="' + sentencemorphemicbreakupdatedvalue + '">' +
+                                        '<textarea class="col form-control transcription-box textcontent"'+
+                                        ' id="sentenceMorphemicBreak_'+transcriptionkey+'"'+
+                                        ' name="morphsentenceMorphemicBreak_' + transcriptionkey + '"'+
+                                        ' oninput="autoSavetranscription(event,this,true,\'sentenceMorphemicBreak_\')"'+
+                                        ' ondblclick=spanAnnotation(event)>' + sentencemorphemicbreakupdatedvalue + '</textarea>' +
+                                        '</div>';
                     }
                     glossInpt += '</div></div></div>';
                 }
-                // else {
-                    // console.log("transcriptionkey !== firstTranscriptionScript");
-                //     glossInpt += '<div id="morphemicDetail_' + transcriptionkey + '" style="display: block;">' +
-                //         '<p><strong>Give Morphemic Break</strong></p>' +
-                //         '<p><strong>**(use "#" for word boundary(if there are affixes in the word) and "-" for morphemic break)</strong></p>' +
-                //         '<div class="form-group"><div class="input-group">' +
-                //         '<input type="text" class="form-control" name="morphsentenceMorphemicBreak_' + transcriptionkey + '"' +
-                //         'placeholder="e.g. I have re-#write#-en the paper#-s"' +
-                //         'id="sentenceMorphemicBreak_' + transcriptionkey + '" value="' + sentencemorphemicbreakvalue + '">';
-                //     glossInpt += '<div class="input-group-btn">' +
-                //         '<button class="btn btn-success" type="button" id="checkSentenceField"' +
-                //         'onclick="getSentence(\'' + transcriptionvalue + '\', \'' + transcriptionkey + '\');" disabled>' +
-                //         '<span class="glyphicon glyphicon-unchecked" aria-hidden="true"></span>' +
-                //         '</button></div>';
-                // }
-                // add fieldset
-                // glossInpt += '</div>';
             }
             // add fieldset
             // inpt += '</fieldset>';
@@ -1627,13 +1610,19 @@ function createSentenceForm(formElement, boundaryID) {
             }
             document.getElementById("interlineargloss2").innerHTML = "";
             $('#interlineargloss2').append(glossInpt);
+            $('#scripttoglossdropdown').select2({
+                        placeholder: 'Transcription Script',
+                        data: transcriptionScriptList,
+                    });
             inpt = '';
             glossInpt = '';
+            let scripttoglossdropdownselected = getScriptToGlossDropdownSelected();
+            document.getElementById("interlinearglosstab").onclick = function() {transcriptionToGloss({value: scripttoglossdropdownselected}, boundaryID)};
         }
         else if ('Translation' in activeprojectform &&
         key === 'translation') {
             translationLang = formElement[key];
-            console.log(translationLang);
+            // console.log(translationLang);
             if (Object.keys(translationLang).length > 0) {
                 inpt += '<p id="translationsubtitle" class="text-center text-info" style="display: none;">&nbsp;</p>';
                 translationSubtitle();
@@ -1667,7 +1656,8 @@ function createSentenceForm(formElement, boundaryID) {
                     
                 inpt += '<textarea class="form-control translation-box" id="Translation_' + translationkey + '"' +
                         'placeholder="Translation ' + translang[translangcount] + '" name="translation_' + translationkey + '"' +
-                        'value="' + translationvalue + '" onkeyup="autoSavetranscription(event,this)" required>' + translationvalue + '</textarea><br>';
+                        // 'value="' + translationvalue + '" onkeyup="autoSavetranscription(event,this)" required>' + translationvalue + '</textarea><br>';
+                        'value="' + translationvalue + '" oninput="autoSavetranscription(event,this)" required>' + translationvalue + '</textarea><br>';
                 // inpt += '<input type="text" class="form-control" id="Translation_' + translationkey + '"' +
                 //         'placeholder="Translation ' + translang[translangcount] + '" name="translation_' + translationkey + '"' +
                 //         'value="' + translationvalue + '">' +
@@ -1736,7 +1726,8 @@ function createSentenceForm(formElement, boundaryID) {
         inpt += '<label for="comment-box-id">Comments:</label>'
         inpt += '<textarea class="form-control comment-box" id="comment-box-id" ' +
             'placeholder="Comments" name="comment-box"' +
-            'value="' + commentVal + '" onkeyup="autoSavetranscription(event,this)" required>' + commentVal + '</textarea><br>';
+            // 'value="' + commentVal + '" onkeyup="autoSavetranscription(event,this)" required>' + commentVal + '</textarea><br>';
+            'value="' + commentVal + '" oninput="autoSavetranscription(event,this)" required>' + commentVal + '</textarea><br>';
         document.getElementById("transcription-comments").innerHTML = "";
         $('#transcription-comments').append(inpt);
         inpt = '';
@@ -1917,7 +1908,8 @@ function morphemeEditableFields(morphemicSplitSentence, name, morphemePOS, gloss
                 'id="morphemeField' + name + (i + 1) + '" readonly style="float:none;width: 200px;">' +
                 '<span class="input-group-btn" style="width:50px;"></span>' +
                 '<input type="text" class="form-control" name="morph_gloss_' + name + '_' + (i + 1) + '"' +
-                ' id="morphemicgloss' + name + (i + 1) + '" value="' + morphemicgloss + '" onkeyup="autoSavetranscription(event,this)" style="float:none;width: 200px;"/>' +
+                // ' id="morphemicgloss' + name + (i + 1) + '" value="' + morphemicgloss + '" onkeyup="autoSavetranscription(event,this)" style="float:none;width: 200px;"/>' +
+                ' id="morphemicgloss' + name + (i + 1) + '" value="' + morphemicgloss + '" oninput="autoSavetranscription(event,this)" style="float:none;width: 200px;"/>' +
                 '<span class="input-group-btn" style="width:50px;"></span>' +
                 '<select class="lextype' + name + (i + 1) + '" name="morph_lextype_' + name + '_' + (i + 1) + '"' +
                 ' style="width: 200px" onchange="autoSavetranscription(event,this)">';
@@ -2323,8 +2315,13 @@ function autoSavetranscriptionSubPart () {
 
 function autoSavetranscription(e, transcriptionField, update=true, from='') {
     // console.log(wavesurfer, wavesurfer.regions);
-    console.log(transcriptionField, transcriptionField.id, transcriptionField.value);
-    // console.log(transcriptionField);
+    // console.log(e.keyCode);
+    // console.log(transcriptionField, transcriptionField.id, transcriptionField.value);
+    // console.log(e, transcriptionField);
+    // console.log(e, transcriptionField, update, from);
+    let sentenceMorphemicBreakSymbols = ['-']
+    let data = e.data;
+    // console.log(data);
     if (e.keyCode == 13) {
         current_val = transcriptionField.value;
         keyChar = String.fromCharCode(e.keyCode);
@@ -2337,17 +2334,66 @@ function autoSavetranscription(e, transcriptionField, update=true, from='') {
         // console.log("Replace enter");
     }
 
-    console.log(from);
+    // console.log(from);
 
     // showNote();
     if (update) {
         if (transcriptionField.id.includes('sentenceMorphemicBreak_')) {
             // console.log(update);
-            mapTranscriptionInterlinearGloss(e, transcriptionField);
+            // mapTranscriptionInterlinearGloss(e, transcriptionField);
         }
     }
     if (from === 'sentenceMorphemicBreak_') {
-        return;
+        let clickedIndex = e.target.selectionEnd;
+        // console.log(clickedIndex);
+        if (data === null) {
+            // console.log('Deletion!')
+            current_value = transcriptionField.value;
+            let last_value = transcriptionField.value;
+            let activeBoundaryID = document.getElementById('activeBoundaryID').value;
+            let localStorageRegions = JSON.parse(localStorage.regions);
+            let scriptName = getScriptToGlossDropdownSelected();
+            for (let p=0; p<localStorageRegions.length; p++) {
+                console.log(p);
+                if (localStorageRegions[p]['boundaryID'] === boundaryID) {
+                    last_value = localStorageRegions[p]['data']['sentence'][activeBoundaryID]['sentencemorphemicbreak'][scriptName];
+                    break;
+                }
+            }
+            // console.log(last_value);
+            // console.log(last_value[clickedIndex]);
+            // console.log(current_value);
+            if (sentenceMorphemicBreakSymbols.includes(last_value[clickedIndex])) {
+                autoSavetranscriptionSubPart();
+                return;
+            }
+        }
+        if (!sentenceMorphemicBreakSymbols.includes(data)) {
+            let activeBoundaryID = document.getElementById('activeBoundaryID').value;
+            let scripttoglossdropdownselected = getScriptToGlossDropdownSelected();
+            transcriptionToGloss({value: scripttoglossdropdownselected}, activeBoundaryID)
+            document.getElementById(transcriptionField.id).focus();
+            document.getElementById(transcriptionField.id).selectionEnd = clickedIndex;
+            alert("Only '-' is allow!");
+            return;
+        }
+        else if (sentenceMorphemicBreakSymbols.includes(data)) {
+            // console.log(transcriptionField.value);
+            // console.log(transcriptionField.value.slice(0, clickedIndex-1)+transcriptionField.value.slice(clickedIndex));
+            current_value = transcriptionField.value;
+            last_value = transcriptionField.value.slice(0, clickedIndex-1)+transcriptionField.value.slice(clickedIndex);
+            if (sentenceMorphemicBreakSymbols.includes(last_value[clickedIndex-1]) ||
+                    sentenceMorphemicBreakSymbols.includes(last_value[clickedIndex-2]) ||
+                    sentenceMorphemicBreakSymbols.includes(last_value[clickedIndex])) {
+                let activeBoundaryID = document.getElementById('activeBoundaryID').value;
+                let scripttoglossdropdownselected = getScriptToGlossDropdownSelected();
+                transcriptionToGloss({value: scripttoglossdropdownselected}, activeBoundaryID)
+                document.getElementById(transcriptionField.id).focus();
+                document.getElementById(transcriptionField.id).selectionEnd = clickedIndex;
+                alert("Only one '-' is allow!");
+                return;
+            }
+        }
     }
 
     // activeTranscriptionFieldId = transcriptionField.id;
@@ -2580,3 +2626,65 @@ $('#editAudioSettingsButton').on('click', function (e) {
     // $('#editAudioSettingsModal').show.bs.modal;
 
 })
+
+function getScriptToGlossDropdownSelected() {
+    return $('#scripttoglossdropdown').select2('data')[0].id;
+}
+
+function transcriptionToGloss(ele, boundaryID) {
+    // console.log($('#scripttoglossdropdown').select2('data'));
+    // console.log($('#scripttoglossdropdown').select2('data')[0].id);
+    let scripttoglossdropdownselected = getScriptToGlossDropdownSelected();
+    document.getElementById("interlinearglosstab").onclick = function() {transcriptionToGloss({value: scripttoglossdropdownselected}, boundaryID)};
+    // console.log('transcriptionToGloss()', ele.value, boundaryID);
+    let sentencemorphemicbreakupdatedvalue = '';
+    let localStorageRegions = JSON.parse(localStorage.regions);
+    let scriptName = ele.value;
+    for (let p=0; p<localStorageRegions.length; p++) {
+        // console.log(p);
+        if (localStorageRegions[p]['boundaryID'] === boundaryID) {
+            let sentence_morphemic_break = localStorageRegions[p]['data']['sentence'][boundaryID]['sentencemorphemicbreak'][scriptName];
+            // console.log(sentence_morphemic_break);
+            sentencemorphemicbreakupdatedvalue = sentence_morphemic_break;
+            if (sentence_morphemic_break == '') {
+                let transcription_in_script = localStorageRegions[p]['data']['sentence'][boundaryID]['transcription'][scriptName];
+                // console.log(transcription_in_script);
+                sentencemorphemicbreakupdatedvalue = transcription_in_script;
+                break;
+            }
+            else {
+                break;
+            }
+        }
+    }
+    // console.log(sentencemorphemicbreakupdatedvalue);
+    let inpt = '<input type="hidden" class="form-control" id="text"' + ' name="text" value="' + sentencemorphemicbreakupdatedvalue + '">' +
+                '<textarea class="col form-control transcription-box textcontent"'+
+                ' id="sentenceMorphemicBreak_'+scriptName+'"'+
+                ' name="morphsentenceMorphemicBreak_' + scriptName + '"'+
+                ' oninput="autoSavetranscription(event,this,true,\'sentenceMorphemicBreak_\')"'+
+                ' ondblclick=spanAnnotation(event)>' + sentencemorphemicbreakupdatedvalue + '</textarea>';
+    $('.textcontentouter').html(inpt);
+    autoSavetranscriptionSubPart();
+}
+
+function spanAnnotation(event) {
+    // console.log(event);
+    eve = event.target;
+    // console.log('span');
+    // console.log(event, event.target, event.bubbles);
+    // event.stopPropagation();
+    event.bubbles = false;
+    // console.log('eleId', eleId);
+    const spanStart = eve.selectionStart;
+    const spanEnd = eve.selectionEnd;
+    // const selection = eve.textContent.substring(
+    //     spanStart,
+    //     spanEnd
+    //   );
+    const selection = eve.value.substring(
+        spanStart,
+        spanEnd
+      );
+    //   console.log(selection);
+}
