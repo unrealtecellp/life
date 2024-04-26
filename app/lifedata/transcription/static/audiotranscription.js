@@ -904,11 +904,17 @@ function updateSentenceDetailsOnSaveBoundary(boundaryID, sentence, region, form)
             for (let [k, v] of Object.entries(sentence[boundaryID][key])) {
                 // console.log(k, v)
                 eleName = 'morphsentenceMorphemicBreak_' + k;
+                // console.log(sentence[boundaryID][key][k]);
                 try {
                     sentence[boundaryID][key][k] = form[eleName].value;
                 }
                 catch {
-                    sentence[boundaryID][key][k] = "";
+                    if (sentence[boundaryID][key][k] !== '') {
+                        continue
+                    }
+                    else {
+                        sentence[boundaryID][key][k] = "";
+                    }
                 }
             }
         }
@@ -1462,7 +1468,8 @@ function createSentenceForm(formElement, boundaryID) {
             //         '</button></legend>';
             // // inpt += '</fieldset>';
             let glossInpt = '';
-            glossInpt += '<select id="scripttoglossdropdown"  onchange="transcriptionToGloss(this, \''+boundaryID+'\')" style="width: 40%; display: block;"></select>'
+            glossInpt += '<select id="scripttoglossdropdown" onchange="transcriptionToGloss(this, \''+boundaryID+'\')" style="width: 100%; display: block;"></select>'
+            glossInpt += '<div id="idmodal"></div>';
             // add fieldset
             // glossInpt += '<fieldset class="form-group border">'+
             //             '<legend class="col-form-label">'+
@@ -1533,10 +1540,10 @@ function createSentenceForm(formElement, boundaryID) {
 
                 if (transcriptionkey === firstTranscriptionScript) {
                     // console.log("transcriptionkey === firstTranscriptionScript");
-                    glossInpt += '<div id="morphemicDetail_' + transcriptionkey + '" style="display: block;">';
+                    // glossInpt += '<div id="morphemicDetail_' + transcriptionkey + '" style="display: block;">';
                     // glossInpt += '<p><strong>Give Morphemic Break</strong></p>' +
                     //                 '<p><strong>**(use "#" for word boundary(if there are affixes in the word) and "-" for morphemic break)</strong></p>';
-                    glossInpt += '<div class="form-group"><div class="input-group">';
+                    // glossInpt += '<div class="form-group"><div class="input-group">';
                     glossInpt += ' <input type="text" id="activeBoundaryID" name="activeBoundaryID" value="'+ boundaryID +'" hidden>';
                     if ('glossDetails' in activeprojectform &&
                         boundaryID in activeprojectform['glossDetails']) {
@@ -1577,17 +1584,22 @@ function createSentenceForm(formElement, boundaryID) {
                         if (sentencemorphemicbreakupdatedvalue === '') {
                             sentencemorphemicbreakupdatedvalue = transcriptionvalue;
                         }
-                        glossInpt += '<div class="form-group textcontentouter">' +
+                        glossInpt += '<div class="row">';
+                        glossInpt += '<br><div class="col-md-6 form-group textcontentouter">' +
                                         // '<label class="col" for="text">Text:</label><br>' +
                                         '<input type="hidden" class="form-control" id="text"' + ' name="text" value="' + sentencemorphemicbreakupdatedvalue + '">' +
-                                        '<textarea class="col form-control transcription-box textcontent"'+
+                                        '<textarea class="col form-control textcontent"'+
                                         ' id="sentenceMorphemicBreak_'+transcriptionkey+'"'+
                                         ' name="morphsentenceMorphemicBreak_' + transcriptionkey + '"'+
                                         ' oninput="autoSavetranscription(event,this,true,\'sentenceMorphemicBreak_\')"'+
-                                        ' ondblclick=spanAnnotation(event)>' + sentencemorphemicbreakupdatedvalue + '</textarea>' +
+                                        ' ondblclick=tokenAnnotation(event)>' + sentencemorphemicbreakupdatedvalue + '</textarea>' +
+                                        '</div>';
+                        glossInpt += '<div class="col-md-6 form-group glosstable">' +
+                                        // '<span>123</span>'+
                                         '</div>';
                     }
-                    glossInpt += '</div></div></div>';
+                    // glossInpt += '</div></div></div>';
+                    glossInpt += '</div>';
                 }
             }
             // add fieldset
@@ -2381,9 +2393,9 @@ function autoSavetranscription(e, transcriptionField, update=true, from='') {
             // console.log(transcriptionField.value.slice(0, clickedIndex-1)+transcriptionField.value.slice(clickedIndex));
             current_value = transcriptionField.value;
             last_value = transcriptionField.value.slice(0, clickedIndex-1)+transcriptionField.value.slice(clickedIndex);
-            if (sentenceMorphemicBreakSymbols.includes(last_value[clickedIndex-1]) ||
-                    sentenceMorphemicBreakSymbols.includes(last_value[clickedIndex-2]) ||
-                    sentenceMorphemicBreakSymbols.includes(last_value[clickedIndex])) {
+            // console.log(current_value, last_value);
+            if (sentenceMorphemicBreakSymbols.includes(current_value[clickedIndex-2]) ||
+                    sentenceMorphemicBreakSymbols.includes(current_value[clickedIndex])) {
                 let activeBoundaryID = document.getElementById('activeBoundaryID').value;
                 let scripttoglossdropdownselected = getScriptToGlossDropdownSelected();
                 transcriptionToGloss({value: scripttoglossdropdownselected}, activeBoundaryID)
@@ -2642,6 +2654,7 @@ function transcriptionToGloss(ele, boundaryID) {
     for (let p=0; p<localStorageRegions.length; p++) {
         // console.log(p);
         if (localStorageRegions[p]['boundaryID'] === boundaryID) {
+            // console.log(p, boundaryID, scriptName);
             let sentence_morphemic_break = localStorageRegions[p]['data']['sentence'][boundaryID]['sentencemorphemicbreak'][scriptName];
             // console.log(sentence_morphemic_break);
             sentencemorphemicbreakupdatedvalue = sentence_morphemic_break;
@@ -2662,28 +2675,188 @@ function transcriptionToGloss(ele, boundaryID) {
                 ' id="sentenceMorphemicBreak_'+scriptName+'"'+
                 ' name="morphsentenceMorphemicBreak_' + scriptName + '"'+
                 ' oninput="autoSavetranscription(event,this,true,\'sentenceMorphemicBreak_\')"'+
-                ' ondblclick=spanAnnotation(event)>' + sentencemorphemicbreakupdatedvalue + '</textarea>';
+                ' ondblclick=tokenAnnotation(event)>' + sentencemorphemicbreakupdatedvalue + '</textarea>';
     $('.textcontentouter').html(inpt);
-    autoSavetranscriptionSubPart();
+    // autoSavetranscriptionSubPart();
 }
 
-function spanAnnotation(event) {
-    // console.log(event);
+
+function morphemeFieldsSelect2() {
+    let jsonFileNames = {
+      morphemicGloss: "select2_morphemic_gloss.json",
+    //   morphType: "select2_morpheme_type.json",
+    //   posCategories: "select2_pos_categories.json"
+    }
+    var morphemicGloss = "";
+    // var morphType = "";
+    // var posCategories = "";
+    $.ajax({
+      url: '/get_jsonfile_data',
+      type: 'GET',
+      data: {'data': JSON.stringify(jsonFileNames)},
+      contentType: "application/json; charset=utf-8", 
+      success: function(response){
+        morphemicGloss = response.jsonData.morphemicGloss;
+        // morphType = response.jsonData.morphType;
+        // posCategories = response.jsonData.posCategories;
+        // console.log(morphemicGloss);
+        // console.log('.morphemicgloss'+ name +(i+1))
+        // for(let i = 0; i < morphemicSplitSentence.length; i++) {
+        $('#tokenannotationtagset').select2({
+            tags: true,
+            placeholder: 'Gloss',
+            data: morphemicGloss,
+            allowClear: true
+        });
+        
+        //   $('.lextype'+ name +(i+1)).select2({
+        //     tags: true,
+        //     placeholder: 'Morph Type',
+        //     data: morphType
+        //     // allowClear: true
+        //   });
+          
+        //   $('.pos'+ name +(i+1)).select2({
+        //     tags: true,
+        //     placeholder: 'POS',
+        //     data: posCategories
+        //     // allowClear: true
+        //   });
+        // }
+        // autoSavetranscriptionSubPart();
+      }
+    });
+  }
+
+function textSpanId(spanStart, spanEnd) {
+    let maxSpanLength = 7;
+    // console.log(spanStart, spanEnd);
+    spanStart = String(spanStart);
+    spanEnd = String(spanEnd);
+    let spanStartLength = spanStart.length;
+    let spanEndLength = spanEnd.length;
+    // console.log(spanStartLength, spanEndLength);
+    while(spanStartLength != maxSpanLength) {
+        spanStart = '0'+spanStart;
+        spanStartLength = spanStart.length;
+    }
+    while(spanEndLength != maxSpanLength) {
+        spanEnd = '0'+spanEnd;
+        spanEndLength = spanEnd.length;
+    }
+    // console.log(spanStartLength, spanEndLength);
+    spanId = spanStart+spanEnd;
+
+    return spanId;
+}
+
+function leftModalForm(selection, spanStart, spanEnd, eleId) {
+    // console.log(selection, spanStart, spanEnd, eleId);
+    let leftModalData = '';
+    let lastActiveId = document.getElementById("lastActiveId").id;
+    let spanId = textSpanId(spanStart, spanEnd);
+    // console.log(eleValue, selection, spanStart, spanEnd, eleId);
+    leftModalData += '<input type="hidden" id="lastActiveId" name="lastActiveId" value="' + lastActiveId + '">';
+    leftModalData += '<input type="hidden" id="modalHeader"' + ' name="modalheader" value="' + eleId + '">';
+    // leftModalData += '<label for="spanStart">Span Start</label>'+
+    leftModalData += '<input type="hidden" class="form-control" id="spanStart" name="startindex" value='+spanStart+' readonly>';
+    // leftModalData += '<br>';
+    // leftModalData += '<label for="spanEnd">Span End</label>'+
+    leftModalData += '<input type="hidden" class="form-control" id="spanEnd" name="endindex" value='+spanEnd+' readonly>';
+    // leftModalData += '<br>';
+    // leftModalData += '<p class="form-group" id="' + spanId + '"><strong>Text Span ID: ' + spanId + '</strong></p>';
+    // leftModalData += '<label for="spanId">Text Span ID</label>'+
+    leftModalData += '<input type="hidden" class="form-control" id="spanId" name="spanId" value='+spanId+' readonly>';
+    // leftModalData += '<br>';
+                    // '<div class="form-group textcontentouter">' +
+    // leftModalData += '<label class="col" for="spantextcontent">Text:</label><br>'+
+    //                 // '<svg viewBox="0 0 240 80" xmlns="http://www.w3.org/2000/svg">'+
+    //                 // '<textarea class="modaltextcontent" id="spantextcontent" name="textspan" onselect=spanAnnotation(this,"'+eleId+'") readonly>' + selection + '</textarea>';
+    //                 '<textarea class="modaltextcontent" id="spantextcontent" name="textspan" readonly>' + selection + '</textarea>';
+
+    leftModalData += '<select id="tokenannotationtagset" multiple="multiple" style="width: 100%; display: block;"></select>';
+    
+    // console.log(leftModalData);
+    $('#modalleft').html(leftModalData);
+    morphemeFieldsSelect2();
+}
+
+function tokenAnnotationModal() {
+    let tokenAnnotationData = '';
+    // tokenAnnotationData += '<form name="savetextannospan" id="idsavetextannospanform" class="form-horizontal" action="/easyAnno/savetextAnnoSpan" method="POST"  enctype="multipart/form-data">';
+    tokenAnnotationData += '<div class="col-sm-12"  id="modalleft">';
+    tokenAnnotationData += '</div>' // left col div
+
+    // tokenAnnotationData += '<div class="col-md-4"  id="modalmiddle">';
+    // tokenAnnotationData += '';
+    // tokenAnnotationData += '</div>' // right col div
+
+    // tokenAnnotationData+= '<div class="col-sm-2" id="modalright">';
+    // tokenAnnotationData += '<button type="button" class="btn btn-danger" data-dismiss="modal" id="'+key+'deleteSpan" onclick="deleteSpanModal(this.id)">'+
+    //                         '<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>'+
+    //                         '</button>';
+    // tokenAnnotationData += '<button type="button"  id="modalrightsavebtn" class="btn btn btn-primary"  data-dismiss="modal" onclick="spanSave(this)">'+
+    //                         '<span class="glyphicon glyphicon-floppy-open" aria-hidden="true"></span>'+
+    //                         '</button>';
+    // tokenAnnotationData += '</div>'; //right div close
+
+    // tokenAnnotationData += '</form>';
+
+    return tokenAnnotationData;
+}
+
+function addModalElement(key) {
+    let modalEle = ''
+    modalEle += '<div class="modal fade" id="'+key+'Modal" tabindex="-1" role="dialog" aria-labelledby="'+key+'ModalLabel">'+
+                '<div class="modal-dialog">'+
+                '<div class="modal-content">'+
+                    // '<div class="row modal-header">'+
+                    // '<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>'+
+                    
+                    // // '<h4 class="modal-title" id="'+key+'ModalLabel">'+key+'</h4>'+
+                    // '</div>'+
+                    '<div class="modal-body" style="width: 100%;text-align: center">'+
+                        '<button type="button" class="btn btn-sm btn-danger pull-left" data-dismiss="modal" id="'+key+'deleteSpan" onclick="deleteSpanModal(this.id)">'+
+                            '<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>'+
+                            '</button>'+
+                        '<button type="button"  id="modalrightsavebtn" class="btn btn-sm btn-primary pull-left"  data-dismiss="modal" onclick="spanSave(this)">'+
+                            '<span class="glyphicon glyphicon-floppy-open" aria-hidden="true"></span>'+
+                            '</button>'+
+                        '<span style="font-size: 20px;">'+key+'</span>'+
+                        '<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>'+
+                        '<div class="row" id="'+key+'_modal_data">'+
+                        '</div>'+
+                    '</div>'+
+                    // '<div class="modal-footer">'+
+                    // // '<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>'+
+                    // '<button type="button" class="btn btn-sm btn-danger pull-left" data-dismiss="modal" id="'+key+'deleteSpan" onclick="deleteSpanModal(this.id)">'+
+                    //         '<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>'+
+                    //         '</button>'+
+                    // '<button type="button"  id="modalrightsavebtn" class="btn btn-sm btn-primary"  data-dismiss="modal" onclick="spanSave(this)">'+
+                    //         '<span class="glyphicon glyphicon-floppy-open" aria-hidden="true"></span>'+
+                    //         '</button>'+
+                    // '</div>'+
+                '</div>'+
+                '</div>'+
+            '</div>';
+
+    return modalEle;
+}
+
+function tokenAnnotation(event) {
     eve = event.target;
-    // console.log('span');
-    // console.log(event, event.target, event.bubbles);
-    // event.stopPropagation();
     event.bubbles = false;
-    // console.log('eleId', eleId);
     const spanStart = eve.selectionStart;
     const spanEnd = eve.selectionEnd;
-    // const selection = eve.textContent.substring(
-    //     spanStart,
-    //     spanEnd
-    //   );
     const selection = eve.value.substring(
         spanStart,
         spanEnd
-      );
-    //   console.log(selection);
+    );
+    // console.log(selection);
+    let createModal = addModalElement(selection);
+    $('#idmodal').html(createModal);
+    let modalData = tokenAnnotationModal();
+    $('#'+selection+'_modal_data').html(modalData);
+    leftModalForm(selection, spanStart, spanEnd, selection)
+    $('#'+selection+'Modal').modal('toggle');
 }
