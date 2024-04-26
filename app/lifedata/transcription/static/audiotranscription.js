@@ -1088,6 +1088,7 @@ function updateSentenceDetails(boundaryID, sentence, region) {
         sentence[boundaryID] = {
             'start': region.start,
             'end': region.end,
+            "speakerId": "",
             'transcription': transcription,
             'translation': translation,
             'sentencemorphemicbreak': sentencemorphemicbreak,
