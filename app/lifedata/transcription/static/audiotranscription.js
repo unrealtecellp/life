@@ -836,6 +836,43 @@ function morphemeDetails(actualTranscription, morphemicBreakTranscription) {
     return morphemeData
 }
 
+function processTokenGloss(tokenGlossInfo, sentencewithmorphemicbreak) {
+    // console.log('processTokenGloss()');
+    let token = document.getElementById('tokenModalHeader').value;
+    let tokenStart = document.getElementById('tokenStart').value;
+    let tokenEnd = document.getElementById('tokenEnd').value;
+    let tokenId = document.getElementById('tokenId').value;
+    let tokenGloss = '';
+    for (let i=0; i<tokenGlossInfo.length; i++) {
+        if (i === 0) {
+            tokenGloss = tokenGlossInfo[i].id;
+        }
+        else {
+            tokenGloss += '.'+tokenGlossInfo[i].id;
+        }
+    }
+    console.log(tokenGlossInfo,
+                    token,
+                    tokenStart,
+                    tokenEnd,
+                    tokenId
+                );
+    // let glossedSentenceWithMorphemicBreak = sentencewithmorphemicbreak.slice(0, tokenEnd)+'**'+tokenGloss+'**'+sentencewithmorphemicbreak.slice(tokenEnd)
+    let glossedSentenceWithMorphemicBreak = {};
+    glossedSentenceWithMorphemicBreak = {
+        token: token,
+        tokenStart: tokenStart,
+        tokenEnd: tokenEnd,
+        tokenGloss: tokenGloss,
+    }
+    console.log(glossedSentenceWithMorphemicBreak);
+
+    return {
+        tokenId: tokenId,
+        glossedSentenceWithMorphemicBreak: glossedSentenceWithMorphemicBreak
+    }
+}
+
 function updateSentenceDetailsOnSaveBoundary(boundaryID, sentence, region, form) {
 
     let activeprojectform = JSON.parse(localStorage.getItem('activeprojectform'));
@@ -907,9 +944,31 @@ function updateSentenceDetailsOnSaveBoundary(boundaryID, sentence, region, form)
                 // console.log(sentence[boundaryID][key][k]);
                 try {
                     sentence[boundaryID][key][k] = form[eleName].value;
+                    let tokenGlossInfo = $('#tokenannotationtagset').select2('data');
+                    // console.log(tokenGlossInfo);
+                    if (tokenGlossInfo) {
+                        let glossedSentenceWithMorphemicBreakInfo = processTokenGloss(tokenGlossInfo, form[eleName].value);
+                        sentence[boundaryID]['gloss'][k][glossedSentenceWithMorphemicBreakInfo.tokenId] = glossedSentenceWithMorphemicBreakInfo.glossedSentenceWithMorphemicBreak
+                        // let glossedSentenceWithMorphemicBreakOld = form[eleName].value;
+                        // if ('glossedSentenceWithMorphemicBreak' in sentence[boundaryID] &&
+                        //     k in sentence[boundaryID]['glossedSentenceWithMorphemicBreak']) {
+                        //         glossedSentenceWithMorphemicBreakOld = sentence[boundaryID]['glossedSentenceWithMorphemicBreak'][k]
+                        // }
+                        // let glossedSentenceWithMorphemicBreak = processTokenGloss(tokenGlossInfo, glossedSentenceWithMorphemicBreakOld);
+                        // console.log(glossedSentenceWithMorphemicBreak);
+                        // if ('glossedSentenceWithMorphemicBreak' in sentence[boundaryID]) {
+                        //     sentence[boundaryID]['glossedSentenceWithMorphemicBreak'][k] = glossedSentenceWithMorphemicBreak;
+
+                        // }
+                        // else {
+                        //     sentence[boundaryID]['glossedSentenceWithMorphemicBreak'] = {};
+                        //     sentence[boundaryID]['glossedSentenceWithMorphemicBreak'][k] = glossedSentenceWithMorphemicBreak;
+                        // }
+                        
+                    }
                 }
                 catch {
-                    if (sentence[boundaryID][key][k] !== '') {
+                    if (sentence[boundaryID][key][k] !== "") {
                         continue
                     }
                     else {
@@ -2754,20 +2813,20 @@ function textSpanId(spanStart, spanEnd) {
 function leftModalForm(selection, spanStart, spanEnd, eleId) {
     // console.log(selection, spanStart, spanEnd, eleId);
     let leftModalData = '';
-    let lastActiveId = document.getElementById("lastActiveId").id;
+    // let lastActiveId = document.getElementById("lastActiveId").value;
     let spanId = textSpanId(spanStart, spanEnd);
     // console.log(eleValue, selection, spanStart, spanEnd, eleId);
-    leftModalData += '<input type="hidden" id="lastActiveId" name="lastActiveId" value="' + lastActiveId + '">';
-    leftModalData += '<input type="hidden" id="modalHeader"' + ' name="modalheader" value="' + eleId + '">';
+    // leftModalData += '<input type="hidden" id="lastActiveId" name="lastActiveId" value="' + lastActiveId + '">';
+    leftModalData += '<input type="hidden" id="tokenModalHeader"' + ' name="tokenModalHeader" value="' + eleId + '">';
     // leftModalData += '<label for="spanStart">Span Start</label>'+
-    leftModalData += '<input type="hidden" class="form-control" id="spanStart" name="startindex" value='+spanStart+' readonly>';
+    leftModalData += '<input type="hidden" class="form-control" id="tokenStart" name="tokenstartindex" value='+spanStart+' readonly>';
     // leftModalData += '<br>';
     // leftModalData += '<label for="spanEnd">Span End</label>'+
-    leftModalData += '<input type="hidden" class="form-control" id="spanEnd" name="endindex" value='+spanEnd+' readonly>';
+    leftModalData += '<input type="hidden" class="form-control" id="tokenEnd" name="tokenendindex" value='+spanEnd+' readonly>';
     // leftModalData += '<br>';
     // leftModalData += '<p class="form-group" id="' + spanId + '"><strong>Text Span ID: ' + spanId + '</strong></p>';
     // leftModalData += '<label for="spanId">Text Span ID</label>'+
-    leftModalData += '<input type="hidden" class="form-control" id="spanId" name="spanId" value='+spanId+' readonly>';
+    leftModalData += '<input type="hidden" class="form-control" id="tokenId" name="tokenId" value='+spanId+' readonly>';
     // leftModalData += '<br>';
                     // '<div class="form-group textcontentouter">' +
     // leftModalData += '<label class="col" for="spantextcontent">Text:</label><br>'+
@@ -2820,7 +2879,7 @@ function addModalElement(key) {
                         '<button type="button" class="btn btn-sm btn-danger pull-left" data-dismiss="modal" id="'+key+'deleteSpan" onclick="deleteSpanModal(this.id)">'+
                             '<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>'+
                             '</button>'+
-                        '<button type="button"  id="modalrightsavebtn" class="btn btn-sm btn-primary pull-left"  data-dismiss="modal" onclick="spanSave(this)">'+
+                        '<button type="button"  id="modalrightsavebtn" class="btn btn-sm btn-primary pull-left"  data-dismiss="modal" onclick="autoSavetranscriptionSubPart()">'+
                             '<span class="glyphicon glyphicon-floppy-open" aria-hidden="true"></span>'+
                             '</button>'+
                         '<span style="font-size: 20px;">'+key+'</span>'+
@@ -2846,6 +2905,7 @@ function addModalElement(key) {
 
 function tokenAnnotation(event) {
     eve = event.target;
+    // console.log(event, eve);
     event.bubbles = false;
     const spanStart = eve.selectionStart;
     const spanEnd = eve.selectionEnd;
@@ -2860,4 +2920,33 @@ function tokenAnnotation(event) {
     $('#'+selection+'_modal_data').html(modalData);
     leftModalForm(selection, spanStart, spanEnd, selection)
     $('#'+selection+'Modal').modal('toggle');
+    $('#'+selection+'Modal').on('hidden.bs.modal', function() {
+        // $('#tokenannotationtagset').select2('destroy');
+        // $('#tokenannotationtagset').val('');
+        // $('#tokenannotationtagset').trigger('change');
+        $('#idmodal').html('');
+    });
+    
+    let tokenGlossArray = [];
+    let localStorageRegions = JSON.parse(localStorage.regions);
+    let scriptName = eve.id.split('_')[1];
+    let boundaryID = document.getElementById('activeBoundaryID').value;
+    let tokenId = textSpanId(spanStart, spanEnd);
+    // console.log(scriptName);
+    for (let p=0; p<localStorageRegions.length; p++) {
+        if (localStorageRegions[p]['boundaryID'] === boundaryID) {
+            try {
+                tokenGloss = localStorageRegions[p]['data']['sentence'][boundaryID]['gloss'][scriptName][tokenId]['tokenGloss'];
+                console.log(tokenGloss);
+                let tokenGlossArray = tokenGloss.split('.');
+                console.log(tokenGlossArray);
+            }
+            catch {
+                continue
+            }
+        }
+    }
+
+    $('#tokenannotationtagset').val(tokenGlossArray);
+    $('#tokenannotationtagset').trigger('change');
 }
