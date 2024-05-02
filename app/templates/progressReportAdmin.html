@@ -1,0 +1,75 @@
+{% extends "links.html" %}
+
+{% block title %}
+Progress Report Admin
+{% endblock title %}
+
+{% block styles %}
+{{super()}}
+<link href="{{url_for('.static', filename='home_insert.css')}}" rel="stylesheet" />
+<!-- Include DataTables CSS -->
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.css">
+{% endblock %}
+
+{% block app_content %}
+{% if activeprojectname is defined %}
+<h4>
+  Project Name: {{ activeprojectname }}
+</h4>
+<br>
+{% endif %}
+
+<table id="audioTable" class="display">
+    <br>
+    <thead>
+        <tr>
+            <th>Created by</th>
+            <th>Speaker ID</th>
+            <th>Assigned to</th>
+            <th>Time and date</th>
+            <th>Duration</th>
+            <th>Total no. of files</th>
+            <th>Completed files</th>
+            <th>Remaining files</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for progress_report in progress_reports %}
+        <tr>
+            <td>{{ progress_report['Created by'] }}</td>
+            <td>{{ progress_report['Speaker ID'] }}</td>
+            <td>{{ ', '.join(progress_report['Assigned to']) }}</td>
+            <!-- <td>{{ progress_report['Assigned to'] }}</td> -->
+            <td>{{ progress_report['Time and date'] }}</td>
+            <td>{{ progress_report['Duration'] }}</td>
+            <td>{{ progress_report['Total no. of files'] }}</td>
+            <td>{{ progress_report['Completed files'] }}</td>
+            <td>{{ progress_report['Remaining files'] }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
+
+{% block scripts %}
+{{super()}}
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<!-- Include DataTables JS -->
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.js"></script>
+<script>
+    $(document).ready( function () {
+        $('#audioTable').DataTable({
+            "paging": true, // Enable pagination
+            "lengthChange": true, // Enable page length change dropdown
+            "pageLength": 10, // Default page length
+            "lengthMenu": [1,5,10, 20, 30], // Page length dropdown options
+            "language": {
+                "lengthMenu": 'Show Entries: _MENU_' // Customize the text for the length menu
+            }
+        });
+        
+        // Remove line break from the length menu button
+        $(".dataTables_length label").css("white-space", "nowrap");
+    });
+</script>
+{% endblock %}

@@ -486,6 +486,29 @@
     {% endif %}
   {% endfor %}
 
+
+<!-- 
+  <button id="get-progress-btn">Get Progress Report</button>
+    <div id="progress-container">
+        <p id="total-comments"></p>
+        <p id="annotated-comments"></p>
+        <p id="remaining-comments"></p>
+    </div> -->
+    <div>
+      <button id="viewProgress">View Progress</button>
+      <br>
+      <br>
+      <div id="progressContainer" style="display:none;">
+          <label for="displayType">Progress Report Type:</label>
+          <select id="displayType">
+              <option value="Numbers">Progress Report</option>
+              <option value="Percentage">Progress Report Percentage</option>
+          </select>
+          <canvas id="progressChart" width="300" height="100"></canvas>
+          <canvas id="percentageProgressChart" width="300" height="100"></canvas>
+      </div>
+
+  </div>
 {% endblock %}
 
 {% block scripts %}
@@ -503,4 +526,151 @@
   <script src="{{url_for('.static', filename='audiotranscription.js')}}"></script>
   <script src="{{url_for('.static', filename='downloader/transcriptiondownload.js')}}"></script>
   <script type="text/javascript">generateDownloadForm({{ shareinfo | tojson | safe }}, {{ transcriptionsby | tojson | safe}}, {{ activetranscriptionby | tojson | safe}}, {{ projectName | tojson | safe}});</script>
-{% endblock %}
+<!-- 
+  <script>
+    $(document).ready(function(){
+        $("#get-progress-btn").click(function(){
+            $.ajax({
+                url: "/progressreportchart",
+                type: "GET",
+                success: function(response){
+                    // Assuming progressreport is a list [total_comments, annotated_comments, remaining_comments]
+                    var progress = response.progressreport;
+                    $("#total-comments").text("Total Comments: " + progress[0]);
+                    $("#annotated-comments").text("Annotated Comments: " + progress[1]);
+                    $("#remaining-comments").text("Remaining Comments: " + progress[2]);
+                },
+                error: function(xhr, status, error){
+                    console.error("An error occurred while fetching progress report:", error);
+                    // You can handle error display here
+                }
+            });
+        });
+    });
+</script> -->
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+$(document).ready(function(){
+    var normalChart = null;
+    var percentageChart = null;
+
+    // Function to update normal chart
+    function updateNormalChart(normalData) {
+        var ctx = $('#progressChart')[0].getContext('2d');
+        if (normalChart) {
+            normalChart.destroy(); // Destroy previous chart if exists
+        }
+        normalChart = new Chart(ctx, {
+            type: 'bar', // Set chart type to bar
+            data: {
+                labels: ['Total Files', 'Completed Files', 'Remaining Files'],
+                datasets: [{
+                    label: 'Progress Report',
+                    data: normalData,
+                    backgroundColor: [
+                        'rgb(54, 162, 235, 0.2)', // Darker blue
+                        'rgb(255, 99, 132, 0.2)', // Darker red
+                        'rgb(255, 206, 86, 0.2)', // Darker yellow
+                    ],
+                    borderColor: [
+                        'rgba(54, 162, 235, 1)', // Darker blue
+                        'rgba(255, 99, 132, 1)', // Darker red
+                        'rgba(255, 206, 86, 1)', // Darker yellow
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+
+    // Function to update percentage chart
+    function updatePercentageChart(annotatedPercentage, remainingPercentage) {
+        var ctx = $('#percentageProgressChart')[0].getContext('2d');
+        if (percentageChart) {
+            percentageChart.destroy(); // Destroy previous chart if exists
+        }
+        percentageChart = new Chart(ctx, {
+            type: 'bar', // Set chart type to bar
+            data: {
+                labels: ['Completed Files', 'Remaining Files'],
+                datasets: [{
+                    label: 'Percentage of Files',
+                    data: [annotatedPercentage, remainingPercentage],
+                    backgroundColor: [
+                        'rgb(54, 162, 235, 0.2)', // Darker blue
+                        'rgb(255, 206, 86, 0.2)', // Darker yellow
+                    ],
+                    borderColor: [
+                        'rgba(54, 162, 235, 1)', // Darker blue
+                        'rgba(255, 206, 86, 1)', // Darker yellow
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100 // Ensure the scale goes up to 100
+                    }
+                }
+            }
+        });
+    }
+
+    // Function to fetch progress report data
+    function fetchProgressReport(displayType) {
+        $.ajax({
+            url: "/progressreportchart",
+            type: "GET",
+            data: { displayType: displayType },
+            success: function(response){
+                var progress = response.progressreport;
+                if (displayType === 'Numbers') {
+                    $('#progressChart').show();
+                    $('#percentageProgressChart').hide();
+                    updateNormalChart(progress.normal);
+                } else if (displayType === 'Percentage') {
+                    $('#progressChart').hide();
+                    $('#percentageProgressChart').show();
+                    updatePercentageChart(progress.percentage_annotated, progress.percentage_remaining);
+                }
+            },
+            error: function(xhr, status, error){
+                console.error("An error occurred while fetching progress report:", error);
+                // You can handle error display here
+            }
+        });
+    }
+
+    // Handle button click event to toggle progress container
+    $('#viewProgress').click(function() {
+        $('#progressContainer').toggle();
+        if ($('#progressContainer').is(':visible')) {
+            var displayType = $('#displayType').val();
+            fetchProgressReport(displayType);
+        }
+    });
+
+    // Handle dropdown change event
+    $('#displayType').change(function() {
+        var displayType = $(this).val();
+        fetchProgressReport(displayType);
+    });
+
+    // Fetch progress report data initially
+    fetchProgressReport('Numbers');
+});
+
+</script>
+  {% endblock %}

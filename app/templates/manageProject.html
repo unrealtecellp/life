@@ -103,6 +103,13 @@ Manage Project
     <hr>
   </div>
 
+  {% if  shareinfo['sharemode']|int >= 3 %}
+  <div>
+   <input class="btn btn-lg btn-success" type="button" value="Progress Report"
+     onclick="window.location.href='{{url_for('progressReportAdmin')}}'; window">
+ </div>
+ {% endif %}
+ 
 </div>
 </div>
 

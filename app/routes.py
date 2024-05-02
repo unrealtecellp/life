@@ -34,6 +34,14 @@ from sklearn.naive_bayes import MultinomialNB
 from werkzeug.security import generate_password_hash
 from werkzeug.urls import url_parse
 
+
+import logging
+
+# Configure logging
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
+
+
 from app import app, mongo
 from app.controller import (audiodetails, createdummylexemeentry,
                             emailController, getactiveprojectform,
@@ -42,7 +50,7 @@ from app.controller import (audiodetails, createdummylexemeentry,
                             getdbcollections, getprojectowner, getprojecttype,
                             getuserprojectinfo, langscriptutils,
                             lexicondetails, speakerDetails, projectDetails,
-                            lifeshare)
+                            lifeshare,getprojectnamesharedwith)
 from app.controller import latex_generator as lg
 from app.controller import (manageAppConfig, questionnairedetails,
                             readJSONFile, removeallaccess, savenewlexeme,
@@ -346,11 +354,13 @@ def enternewsentences():
                                                                                                      'audio')
             commentstats = [total_comments,
                             annotated_comments, remaining_comments]
+            print(commentstats)
             # logger.debug("commentstats: %s", commentstats)
             audio_id = audiodetails.getactiveaudioid(projects,
                                                      activeprojectname,
                                                      activespeakerid,
                                                      current_username)
+            print(audio_id)
             # logger.debug("audio_id: %s", audio_id)
             if (audio_id != ''):
                 audio_delete_flag = audiodetails.get_audio_delete_flag(transcriptions,
@@ -460,6 +470,82 @@ def enternewsentences():
                            projectName=activeprojectname,
                            newData=activeprojectform,
                            data=currentuserprojectsname)
+
+
+# progressreport only view by admin
+@app.route('/progressReportAdmin', methods=['GET'])
+@login_required
+def progressReportAdmin():
+    project_types = ['recordings', 'validation', 'transcriptions']
+    projects, userprojects, projectsform, sentences, transcriptions, speakerdetails = getdbcollections.getdbcollections(
+        mongo,
+        'projects',
+        'userprojects',
+        'projectsform',
+        'sentences',
+        'transcriptions',
+        'speakerdetails'
+    )
+    current_username = getcurrentusername.getcurrentusername()
+    currentuserprojectsname = getcurrentuserprojects.getcurrentuserprojects(current_username, userprojects)
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_username, userprojects)
+    shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects, current_username, activeprojectname)
+
+    if activeprojectname == '':
+        flash(f"Select a project from 'Change Active Project' to work on!")
+        return redirect(url_for('home'))
+
+    speakerids_list = audiodetails.combine_speaker_ids(projects, activeprojectname, current_username)
+    print("progress admin", speakerids_list)
+
+    progress_reports = []
+
+    for speaker_id in speakerids_list:
+        project_type = getprojecttype.getprojecttype(projects, activeprojectname)
+        data_collection, = getdbcollections.getdbcollections(mongo, project_type)
+
+        projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
+        activeprojectform = getactiveprojectform.getactiveprojectform(projectsform, projectowner, activeprojectname)
+
+        project_sharedwith = getprojectnamesharedwith.getprojectnamesharedwith(projects, activeprojectname)
+        print("project_sharedwith : ", project_sharedwith)
+        
+        if activeprojectform is not None:
+            try:
+                activespeakerid = getuserprojectinfo.getuserprojectinfo(userprojects, current_username,
+                                                                        activeprojectname)['activespeakerId']
+                print("activespeakerid : ", activespeakerid)
+                speaker_audio_ids = audiodetails.get_speaker_audio_ids_new(projects, activeprojectname,
+                                                                            current_username, speaker_id)
+                print("speaker_audio_ids: ", speaker_audio_ids)
+                total_comments, annotated_comments, remaining_comments = getcommentstats.getcommentstats(
+                    projects,
+                    data_collection,
+                    activeprojectname,
+                    speaker_id,
+                    speaker_audio_ids,
+                    'audio'
+                )
+                progress_report = {
+                    'Created by': projectowner,
+                    'Speaker ID': speaker_id,
+                    'Assigned to': project_sharedwith,
+                    'Time and date': "",
+                    'Duration': "",
+                    'Total no. of files': total_comments,
+                    'Completed files': annotated_comments,
+                    'Remaining files': remaining_comments
+                }
+                progress_reports.append(progress_report)
+                print(progress_report)
+            except Exception as e:
+                logger.error("An error occurred: %s", e)
+                return jsonify(error="An error occurred while processing the progress report"), 500
+
+    # Render a template with the progress report data
+    return render_template('progressReportAdmin.html', progress_reports=progress_reports,
+                           activeprojectname=activeprojectname, shareinfo=shareinfo)
+
 
 
 @app.route('/savetranscription', methods=['GET', 'POST'])
@@ -6154,6 +6240,81 @@ def progressreport():
     # logger.debug(progressreport)
 
     return jsonify(progressreport=progressreport)
+
+
+
+
+# Update progressreport route
+@app.route('/progressreportchart', methods=['GET'])
+@login_required
+def progressreportchart():
+    project_types = ['recordings', 'validation', 'transcriptions']
+    projects, userprojects, projectsform, sentences, transcriptions, speakerdetails = getdbcollections.getdbcollections(mongo,
+                                                                                                                        'projects',
+                                                                                                                        'userprojects',
+                                                                                                                        'projectsform',
+                                                                                                                        'sentences',
+                                                                                                                        'transcriptions',
+                                                                                                                        'speakerdetails')
+    current_username = getcurrentusername.getcurrentusername()
+    currentuserprojectsname = getcurrentuserprojects.getcurrentuserprojects(current_username,
+                                                                            userprojects)
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                  userprojects)
+    shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
+                                                      current_username,
+                                                      activeprojectname)
+    # logger.debug(shareinfo)
+
+    if activeprojectname == '':
+        flash(f"select a project from 'Change Active Project' to work on!")
+        return redirect(url_for('home'))
+
+    project_type = getprojecttype.getprojecttype(projects, activeprojectname)
+    data_collection, = getdbcollections.getdbcollections(mongo, project_type)
+    # logger.debug("data_collection: %s", data_collection)
+    
+    # if method is not 'POST'
+    projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
+    activeprojectform = getactiveprojectform.getactiveprojectform(projectsform,
+                                                                projectowner,
+                                                                activeprojectname)
+    if activeprojectform is not None:
+        try:
+            # , audio_file_path, transcription_details
+            # activespeakerid = getactivespeakerid.getactivespeakerid(userprojects, current_username)
+            activespeakerid = getuserprojectinfo.getuserprojectinfo(userprojects,
+                                                                    current_username,
+                                                                    activeprojectname)['activespeakerId']
+            speaker_audio_ids = audiodetails.get_speaker_audio_ids_new(projects,
+                                                                    activeprojectname,
+                                                                    current_username,
+                                                                    activespeakerid)
+            # logger.debug("speaker_audio_ids: %s", pformat(speaker_audio_ids))
+            total_comments, annotated_comments, remaining_comments = getcommentstats.getcommentstats(projects,
+                                                                                                    data_collection,
+                                                                                                    activeprojectname,
+                                                                                                    activespeakerid,
+                                                                                                    speaker_audio_ids,
+                                                                                                    'audio')
+            # Calculate normal data
+            normal_data = [total_comments, annotated_comments, remaining_comments]
+
+            # Calculate percentages
+            total = sum([annotated_comments, remaining_comments])
+            annotated_percentage = (annotated_comments / total) * 100
+            remaining_percentage = (remaining_comments / total) * 100
+
+            return jsonify(progressreport={
+                'normal': normal_data,
+                'percentage_annotated': annotated_percentage,
+                'percentage_remaining': remaining_percentage
+            })
+
+        except Exception as e:
+            logger.error("An error occurred: %s", e)
+            return jsonify(error="An error occurred while processing the progress report"), 500 
+
 
 
 # get progress report
