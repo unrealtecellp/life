@@ -24,6 +24,7 @@ from app.controller import (
     userdetails,
     getcurrentuserprojects,
     getactiveprojectname,
+    getactiveprojectform,
     getprojecttype,
     life_logging,
     projectDetails
@@ -33,6 +34,10 @@ from app.lifemodels.controller import (
     predictFromLocalModels,
     huggingFaceUtils,
     modelManager
+)
+
+from app.languages.controller import (
+    languageManager
 )
 
 import subprocess
@@ -1784,7 +1789,8 @@ def savetranscription(transcriptions,
                       current_username,
                       transcription_regions,
                       audio_id,
-                      activespeakerId):
+                      activespeakerId,
+                      accessedOnTime):
     """Module to work on the sentence details (transcription and all) through ajax.
 
     Args:
@@ -1798,54 +1804,176 @@ def savetranscription(transcriptions,
     #     "textdeleteFLAG": 0
     # }
     # text_grid = {}
-    sentence = {}
-    if transcription_regions is not None:
-        transcription_regions = json.loads(transcription_regions)
-        # plogger.debug(transcription_regions)
-        for transcription_boundary in transcription_regions:
-            transcription_boundary = transcription_boundary['data']
-            if 'sentence' in transcription_boundary:
-                for type, value in transcription_boundary['sentence'].items():
-                    # logger.debug(f"KEY: {type}\nVALUE: {value}")
-                    value["speakerId"] = activespeakerId
-                    value["sentenceId"] = audio_id
-                    sentence[type] = value
-            # plogger.debug(sentence)
-            #     logger.debug('transcription_boundary.keys() %s', transcription_boundary.keys())
-            #     sentence[transcription_boundary['boundaryID']] = {
-            #         "speakerId": activespeakerId,
-            #         "sentenceId": audio_id,
-            #         'start': transcription_boundary['start'],
-            #         'end': transcription_boundary['end'],
+    try:
+        sentence = {}
+        if transcription_regions is not None:
+            transcription_regions = json.loads(transcription_regions)
+            # plogger.debug(transcription_regions)
+            for transcription_boundary in transcription_regions:
+                transcription_boundary = transcription_boundary['data']
+                if 'sentence' in transcription_boundary:
+                    for boundary_id, value in transcription_boundary['sentence'].items():
+                        # logger.debug(f"KEY: {type}\nVALUE: {value}")
+                        # value["speakerId"] = activespeakerId
+                        value["sentenceId"] = audio_id+'_'+boundary_id
+                        sentence[boundary_id] = value
+                # plogger.debug(sentence)
+                #     logger.debug('transcription_boundary.keys() %s', transcription_boundary.keys())
+                #     sentence[transcription_boundary['boundaryID']] = {
+                #         "speakerId": activespeakerId,
+                #         "sentenceId": audio_id,
+                #         'start': transcription_boundary['start'],
+                #         'end': transcription_boundary['end'],
 
-            #         "transcription": {},
-            #         "translation": {},
-            #         "morphemes": {},
-            #         "gloss": {},
-            #         "pos": {},
-            #         "tags": {}
-            #     }
-            # for transcription_data in transcription_regions:
-            #     for type in list(transcription_data['data'].keys()):
-            #         if type == 'sentence':
-            #             logger.debug(type)
+                #         "transcription": {},
+                #         "translation": {},
+                #         "morphemes": {},
+                #         "gloss": {},
+                #         "pos": {},
+                #         "tags": {}
+                #     }
+                # for transcription_data in transcription_regions:
+                #     for type in list(transcription_data['data'].keys()):
+                #         if type == 'sentence':
+                #             logger.debug(type)
 
-            # text_grid['sentence'] = sentence
-            # logger.debug(text_grid)
-            # transcription_details['textGrid'] = text_grid
-            # transcriptions.insert(transcription_details)
-            # logger.debug("'sentence' in transcription_boundary")
-            # logger.debug('371 %s', sentence)
-            # plogger.debug(sentence)
-    transcriptions.update_one({'projectname': activeprojectname, 'audioId': audio_id},
-                              {'$set':
-                               {
-                                   'textGrid.sentence': sentence,
-                                   'updatedBy': current_username,
-                                   'transcriptionFLAG': 1,
-                                   current_username+'.textGrid.sentence': sentence
-                               }
-                               })
+                # text_grid['sentence'] = sentence
+                # logger.debug(text_grid)
+                # transcription_details['textGrid'] = text_grid
+                # transcriptions.insert(transcription_details)
+                # logger.debug("'sentence' in transcription_boundary")
+                # logger.debug('371 %s', sentence)
+                # plogger.debug(sentence)
+        transcriptions.update_one({'projectname': activeprojectname, 'audioId': audio_id},
+                                  {'$set':
+                                   {
+                                       'textGrid.sentence': sentence,
+                                       'updatedBy': current_username,
+                                       'transcriptionFLAG': 1,
+                                       current_username+'.textGrid.sentence': sentence
+                                   },
+                                   '$push':
+                                   {
+                                       'allAccess.'+current_username: accessedOnTime,
+                                       'allUpdate.'+current_username: datetime.now().strftime("%d/%m/%y %H:%M:%S")
+                                   }
+                                   })
+    except:
+        logger.exception("")
+
+
+def synctranscription(transcriptions,
+                      activeprojectname,
+                      activeprojectform,
+                      source_script,
+                      target_scripts,
+                      audio_lang,
+                      current_username,
+                      transcription_regions,
+                      audio_id,
+                      accessedOnTime,
+                      overwrite=False):
+    """Module to work on the sentence details (transcription and all) through ajax.
+
+    Args:
+        transcription_details (_type_): _description_
+    """
+    # logger.debug("audio_id: %s", audio_id)
+    # plogger.debug(activeprojectform)
+    # plogger.debug(scriptCode)
+    # transcription_details = {
+    #     'updatedBy' : current_username,
+    #     "textdeleteFLAG": 0
+    # }
+    # text_grid = {}
+    try:
+        sentence = {}
+        if transcription_regions is not None:
+            transcription_regions = json.loads(transcription_regions)
+            # plogger.debug(transcription_regions)
+            for transcription_boundary in transcription_regions:
+                transcription_boundary = transcription_boundary['data']
+                if 'sentence' in transcription_boundary:
+                    for boundary_id, value in transcription_boundary['sentence'].items():
+                        # logger.debug(f"KEY: {type}\nVALUE: {value}")
+                        # value["speakerId"] = activespeakerId
+                        value["sentenceId"] = audio_id+'_'+boundary_id
+                        sentence[boundary_id] = value
+                        if 'transcription' in value:
+                            source_val = value['transcription'][source_script].strip(
+                            )
+
+                            all_scripts = list(value['transcription'].keys())
+                            other_transscripts = {}
+                            for cur_script in all_scripts:
+                                if not cur_script in target_scripts:
+                                    other_transscripts[cur_script] = value['transcription'][cur_script].strip(
+                                    )
+
+                            for target_script in target_scripts:
+                                if source_script != target_script:
+                                    existing_transcript = value['transcription'][target_script].strip(
+                                    )
+
+                                    if overwrite:
+                                        cur_transcript = predictFromLocalModels.get_transliteration(
+                                            source_val, source_script, target_script, audio_lang, other_transcripts=other_transscripts)
+                                        if cur_transcript.strip() == '':
+                                            cur_transcript = existing_transcript
+                                    else:
+                                        if existing_transcript == '':
+                                            cur_transcript = predictFromLocalModels.get_transliteration(
+                                                source_val, source_script, target_script, audio_lang, other_transcripts=other_transscripts)
+                                            if cur_transcript.strip() == '':
+                                                cur_transcript = existing_transcript    
+                                        else:
+                                            cur_transcript = existing_transcript
+
+                                    value['transcription'][target_script] = cur_transcript
+
+                                # plogger.debug(sentence)
+                                #     logger.debug('transcription_boundary.keys() %s', transcription_boundary.keys())
+                                #     sentence[transcription_boundary['boundaryID']] = {
+                                #         "speakerId": activespeakerId,
+                                #         "sentenceId": audio_id,
+                                #         'start': transcription_boundary['start'],
+                                #         'end': transcription_boundary['end'],
+
+                                #         "transcription": {},
+                                #         "translation": {},
+                                #         "morphemes": {},
+                                #         "gloss": {},
+                                #         "pos": {},
+                                #         "tags": {}
+                                #     }
+                                # for transcription_data in transcription_regions:
+                                #     for type in list(transcription_data['data'].keys()):
+                                #         if type == 'sentence':
+                                #             logger.debug(type)
+
+                                # text_grid['sentence'] = sentence
+                                # logger.debug(text_grid)
+                                # transcription_details['textGrid'] = text_grid
+                                # transcriptions.insert(transcription_details)
+                                # logger.debug("'sentence' in transcription_boundary")
+                                # logger.debug('371 %s', sentence)
+                                # plogger.debug(sentence)
+        transcriptions.update_one({'projectname': activeprojectname, 'audioId': audio_id},
+                                  {'$set':
+                                   {
+                                       'textGrid.sentence': sentence,
+                                       'updatedBy': current_username,
+                                       'transcriptionFLAG': 1,
+                                       current_username+'.textGrid.sentence': sentence
+                                   },
+                                   '$push':
+                                   {
+                                       'allAccess.'+current_username: accessedOnTime,
+                                       'allUpdate.'+current_username: datetime.now().strftime("%d/%m/%y %H:%M:%S")
+                                   }
+                                   })
+    except:
+        logger.exception("")
 
 
 def getaudioprogressreport(projects,
@@ -2705,29 +2833,30 @@ def get_current_translation_langscripts(mongo):
 
     try:
         translation = current_project_scripts['Translation'][1]
-        translations_langs = []
-        translation_scripts = []
-        for lang_script, script in translation.items():
-            translations_langs.append(lang_script.split('-')[0])
-            translation_scripts.append(script)
+        # translations_langs = []
+        # translation_scripts = []
+        # for lang_script, script in translation.items():
+        #     translations_langs.append(lang_script.split('-')[0])
+        #     translation_scripts.append(script)
 
-        scriptCodeJSONFilePath = os.path.join(
-            basedir_parent, 'static/json/scriptCode.json')
-        langScriptJSONFilePath = os.path.join(
-            basedir_parent, 'static/json/langScript.json')
+        # scriptCodeJSONFilePath = os.path.join(
+        #     basedir_parent, 'static/json/scriptCode.json')
+        # langScriptJSONFilePath = os.path.join(
+        #     basedir_parent, 'static/json/langScript.json')
 
-        scriptCode = readJSONFile.readJSONFile(scriptCodeJSONFilePath)
-        langScript = readJSONFile.readJSONFile(langScriptJSONFilePath)
+        # scriptCode = readJSONFile.readJSONFile(scriptCodeJSONFilePath)
+        # langScript = readJSONFile.readJSONFile(langScriptJSONFilePath)
 
-        all_lang_scripts = {}
-        for current_lang, current_script in zip(translations_langs, translation_scripts):
-            logger.debug("current_lang: %s\ncurrent_script: %s",
-                         current_lang, current_script)
-            current_script_code = scriptCode[current_script]
-            current_language_code = current_lang[:3].lower()
-            langscript_code = current_language_code + '-' + current_script_code
-            all_lang_scripts[langscript_code] = langscript_code
-        return all_lang_scripts
+        # all_lang_scripts = {}
+        # for current_lang, current_script in zip(translations_langs, translation_scripts):
+        #     logger.debug("current_lang: %s\ncurrent_script: %s",
+        #                  current_lang, current_script)
+        #     current_script_code = scriptCode[current_script]
+        #     current_language_code = current_lang[:3].lower()
+        #     langscript_code = current_language_code + '-' + current_script_code
+        #     all_lang_scripts[langscript_code] = langscript_code
+        # return all_lang_scripts
+        return translation
     except Exception as error:
         logger.debug(error)
         return dict()

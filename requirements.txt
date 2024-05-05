@@ -154,3 +154,5 @@ sentencex
 zipp==3.14.0
 phonemizer
 textgrid
+pyannote.audio
+numpy==1.21

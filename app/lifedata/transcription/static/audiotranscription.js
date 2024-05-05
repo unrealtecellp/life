@@ -438,6 +438,11 @@ function editAnnotation(region) {
     // sentence = updateSentenceDetails(rid, sentence, region)
     // console.log(sentence)
     // createSentenceForm(sentence[rid])
+    allKeymanEle = document.getElementsByClassName("keyman-attached");
+    console.log("All keyman classes", allKeymanEle);
+    for (let ele of allKeymanEle) {
+        keyman.attachToControl(ele);
+    }
 
     transcriptionFormDisplay(form, 'edit');
     // form.style.opacity = 1;
@@ -1062,7 +1067,7 @@ function updateSentenceDetails(boundaryID, sentence, region) {
         // console.log(translationlang);
         for (i = 0; i < scripts.length; i++) {
             script = scripts[i]
-            script_code = scriptCode[scripts[i]]
+            // script_code = scriptCode[scripts[i]]
             // console.log(lang_code)
             // console.log(scripts[i], script_code)
             // transcription[script_code] = ''
@@ -1077,11 +1082,13 @@ function updateSentenceDetails(boundaryID, sentence, region) {
         if (translationlangscripts !== undefined) {
             translationlangscripts = Object.keys(translationlangscripts)
             for (i = 0; i < translationlangscripts.length; i++) {
-                tscript = translationlangscripts[i].split('-')[1];
-                tlang = translationlangscripts[i].split('-')[0];
-                tscript_code = scriptCode[tscript]
-                lang_code = tlang.slice(0, 3).toLowerCase() + '-' + tscript_code
-                translation[lang_code] = ''
+                tscript = translationlangscripts[i];
+                // tscript = translationlangscripts[i].split('-')[1];
+                // tlang = translationlangscripts[i].split('-')[0];
+                // tscript_code = scriptCode[tscript]
+                // lang_code = tlang.slice(0, 3).toLowerCase() + '-' + tscript_code
+                // translation[lang_code] = ''
+                translation[tscript] = '';
             }
         }
         pos = {}
@@ -1477,8 +1484,8 @@ function createSentenceForm(formElement, boundaryID) {
             // console.log('second', 'Object.keys(transcriptionScript)[0]', Object.keys(transcriptionScript)[0]);
             // firstTranscriptionScript = Object.keys(transcriptionScript)[0]
             sentSpeakerIdEle = '<label for="sentspeakeriddropdown">Speaker ID: </label>'
-            sentSpeakerIdEle += '<select class="custom-select custom-select-sm" id="sentspeakeriddropdown"'
-                + 'name = "sentSpeakerId" multiple = "multiple" style = "width:100%" required onchange="autoSavetranscription(event,this)"> "';
+            sentSpeakerIdEle += '<select class="custom-select custom-select-sm keyman-attached" id="sentspeakeriddropdown"'
+                + 'name = "sentSpeakerId" multiple = "multiple" style = "width:100%" required onclick="updateKeyboard(this)" onchange="autoSavetranscription(event,this)"> "';
             
             
             for (let i = 0; i < currentAudioAllSpeakerids.length; i++) {
@@ -1523,9 +1530,11 @@ function createSentenceForm(formElement, boundaryID) {
                 // inpt += '<textarea class="form-control transcription-box" id="Transcription_' + transcriptionkey + '"' +
                 //     'placeholder="Transcription ' + transcriptionkey + '" name="transcription_' + transcriptionkey + '"' +
                 //     'value="' + transcriptionvalue + '" onkeyup="autoSavetranscription(event,this)" required>' + transcriptionvalue + '</textarea><br>';
-                inpt += '<textarea class="form-control transcription-box" id="Transcription_' + transcriptionkey + '"' +
+                inpt += '<textarea class="form-control transcription-box keyman-attached" id="Transcription_' + transcriptionkey + '"' +
                     'placeholder="Transcription ' + transcriptionkey + '" name="transcription_' + transcriptionkey + '"' +
-                    'value="' + transcriptionvalue + '" oninput="autoSavetranscription(event,this)" required>' + transcriptionvalue + '</textarea><br>';
+                    'value="' + transcriptionvalue +
+                    '" onclick="updateKeyboard(this)"'+
+                    ' oninput="autoSavetranscription(event,this)" required>' + transcriptionvalue + '</textarea><br>';
                 // '</div></div>';
                 // add fieldset
                 // inpt += '</div>';
@@ -1580,10 +1589,11 @@ function createSentenceForm(formElement, boundaryID) {
                         }
                         glossInpt += '<div class="form-group textcontentouter">' +
                                         // '<label class="col" for="text">Text:</label><br>' +
-                                        '<input type="hidden" class="form-control" id="text"' + ' name="text" value="' + sentencemorphemicbreakupdatedvalue + '">' +
+                                        '<input type="hidden" class="form-control keyman-attached" id="text"' + ' name="text" value="' + sentencemorphemicbreakupdatedvalue + '">' +
                                         '<textarea class="col form-control transcription-box textcontent"'+
                                         ' id="sentenceMorphemicBreak_'+transcriptionkey+'"'+
                                         ' name="morphsentenceMorphemicBreak_' + transcriptionkey + '"'+
+                                        ' onclick="updateKeyboard(this)"'+
                                         ' oninput="autoSavetranscription(event,this,true,\'sentenceMorphemicBreak_\')"'+
                                         ' ondblclick=spanAnnotation(event)>' + sentencemorphemicbreakupdatedvalue + '</textarea>' +
                                         '</div>';
@@ -1654,10 +1664,12 @@ function createSentenceForm(formElement, boundaryID) {
                     // inpt += '<div class="form-group translation collapse in">';
                     inpt += '<label for="Translation_' + translationkey + '">Translation in ' + translang[translangcount] + '</label>';
                     
-                inpt += '<textarea class="form-control translation-box" id="Translation_' + translationkey + '"' +
+                inpt += '<textarea class="form-control translation-box keyman-attached" id="Translation_' + translationkey + '"' +
                         'placeholder="Translation ' + translang[translangcount] + '" name="translation_' + translationkey + '"' +
                         // 'value="' + translationvalue + '" onkeyup="autoSavetranscription(event,this)" required>' + translationvalue + '</textarea><br>';
-                        'value="' + translationvalue + '" oninput="autoSavetranscription(event,this)" required>' + translationvalue + '</textarea><br>';
+                    'value="' + translationvalue +
+                    '" onclick="updateKeyboard(this)"'+
+                    ' oninput="autoSavetranscription(event,this)" required>' + translationvalue + '</textarea><br>';
                 // inpt += '<input type="text" class="form-control" id="Translation_' + translationkey + '"' +
                 //         'placeholder="Translation ' + translang[translangcount] + '" name="translation_' + translationkey + '"' +
                 //         'value="' + translationvalue + '">' +
@@ -1724,10 +1736,10 @@ function createSentenceForm(formElement, boundaryID) {
         // console.log(formElement)
         inpt += '<div class="form-group">';
         inpt += '<label for="comment-box-id">Comments:</label>'
-        inpt += '<textarea class="form-control comment-box" id="comment-box-id" ' +
+        inpt += '<textarea class="form-control comment-box keyman-attached" id="comment-box-id" ' +
             'placeholder="Comments" name="comment-box"' +
             // 'value="' + commentVal + '" onkeyup="autoSavetranscription(event,this)" required>' + commentVal + '</textarea><br>';
-            'value="' + commentVal + '" oninput="autoSavetranscription(event,this)" required>' + commentVal + '</textarea><br>';
+            'value="' + commentVal + '" onclick="updateKeyboard(this)" oninput="autoSavetranscription(event,this)" required>' + commentVal + '</textarea><br>';
         document.getElementById("transcription-comments").innerHTML = "";
         $('#transcription-comments').append(inpt);
         inpt = '';

@@ -13,6 +13,7 @@ from flask import (
     send_file
 )
 from app.controller import (
+    audiodetails,
     getactiveprojectname,
     getcurrentusername,
     getcurrentuserprojects,
@@ -1071,6 +1072,23 @@ def uploadaudiofiles():
             }
         }
         '''
+        vad_model_name = data['vadAlgorithm'][0]
+        # vad_model_name = 'vadsilero'
+        if 'vadsilero' in vad_model_name:
+            vad_model_type = 'local'
+            vad_model_path = 'snakers4/silero-vad'
+
+            vad_model_params = {
+                "model_path": vad_model_path
+            }
+
+            vad_model = {
+                'model_name': vad_model_name,
+                'model_type': vad_model_type,
+                'model_params': vad_model_params
+            }
+        else:
+            vad_model = {}
 
         transcription_audiodetails.saveaudiofiles(mongo,
                                                   projects,
@@ -1086,7 +1104,7 @@ def uploadaudiofiles():
                                                   run_asr=run_asr,
                                                   split_into_smaller_chunks=split_into_smaller_chunks,
                                                   get_audio_json=get_audio_json,
-                                                  vad_model={},
+                                                  vad_model=vad_model,
                                                   asr_model={},
                                                   transcription_type='sentence',
                                                   boundary_threshold=boundary_threshold,
@@ -1184,6 +1202,24 @@ def makeboundary():
         }
         '''
 
+        vad_model_name = data['vadAlgorithm-boundary'][0]
+        # vad_model_name = 'vadsilero'
+        if 'vadsilero' in vad_model_name:
+            vad_model_type = 'local'
+            vad_model_path = 'snakers4/silero-vad'
+
+            vad_model_params = {
+                "model_path": vad_model_path
+            }
+
+            vad_model = {
+                'model_name': vad_model_name,
+                'model_type': vad_model_type,
+                'model_params': vad_model_params
+            }
+        else:
+            vad_model = {}
+
         transcription_audiodetails.save_boundaries_of_one_audio_file(mongo,
                                                                      projects,
                                                                      userprojects,
@@ -1198,7 +1234,7 @@ def makeboundary():
                                                                      run_asr=run_asr,
                                                                      split_into_smaller_chunks=split_into_smaller_chunks,
                                                                      get_audio_json=get_audio_json,
-                                                                     vad_model={},
+                                                                     vad_model=vad_model,
                                                                      asr_model={},
                                                                      transcription_type='sentence',
                                                                      boundary_threshold=boundary_threshold,
@@ -1587,3 +1623,21 @@ def syncaudio():
         logger.exception("")
 
     return jsonify(syncAudioStatus=sync_audio_status)
+
+
+@transcription.route('/getScriptsList', methods=['GET', 'POST'])
+@login_required
+def getScriptsList():
+    try:
+        userprojects, projectsform = getdbcollections.getdbcollections(
+            mongo, 'userprojects', 'projectsform')
+        current_username = getcurrentusername.getcurrentusername()
+        logger.debug('USERNAME: %s', current_username)
+        activeprojectname = getactiveprojectname.getactiveprojectname(
+            current_username, userprojects)
+        language_scripts = projectDetails.get_audio_language_scripts(
+            projectsform, activeprojectname)
+        logger.info('Language scripts: %s', language_scripts)
+        return jsonify({'scripts': language_scripts['scripts']})
+    except:
+        logger.exception("")

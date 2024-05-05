@@ -1615,21 +1615,22 @@ def savetranscription(transcriptions,
                 # logger.debug('371 %s', sentence)
                 # plogger.debug(sentence)
         transcriptions.update_one({'projectname': activeprojectname, 'audioId': audio_id},
-                                {'$set':
-                                {
-                                    'textGrid.sentence': sentence,
-                                    'updatedBy': current_username,
-                                    'transcriptionFLAG': 1,
-                                    current_username+'.textGrid.sentence': sentence
-                                },
-                                '$push':
-                                {
-                                    'allAccess.'+current_username: accessedOnTime,
-                                    'allUpdate.'+current_username: datetime.now().strftime("%d/%m/%y %H:%M:%S")
-                                }
-                                })
+                                  {'$set':
+                                   {
+                                       'textGrid.sentence': sentence,
+                                       'updatedBy': current_username,
+                                       'transcriptionFLAG': 1,
+                                       current_username+'.textGrid.sentence': sentence
+                                   },
+                                   '$push':
+                                   {
+                                       'allAccess.'+current_username: accessedOnTime,
+                                       'allUpdate.'+current_username: datetime.now().strftime("%d/%m/%y %H:%M:%S")
+                                   }
+                                   })
     except:
         logger.exception("")
+
 
 def getaudioprogressreport(projects,
                            transcriptions,
@@ -2390,15 +2391,15 @@ def get_current_transcription_langscripts(mongo):
                                                         '_id': 0,
                                                         'Audio Language': 1,
                                                         'Transcription': 1
-                                                    })
-    
+    })
+
     # logger.debug("current_project_scripts: %s", pformat(current_project_scripts))
     if (project_type == 'crawling'):
         project_language = projects.find_one({'projectname': activeprojectname},
                                              {
                                                  '_id': 0,
                                                  'crawlerLanguage': 1
-                                             })['crawlerLanguage']
+        })['crawlerLanguage']
     elif ('Audio Language' in current_project_scripts):
         project_language = current_project_scripts['Audio Language'][1]
     else:
@@ -2407,10 +2408,10 @@ def get_current_transcription_langscripts(mongo):
 
     if (project_type == 'crawling'):
         project_scripts = projects.find_one({'projectname': activeprojectname},
-                                             {
-                                                 '_id': 0,
-                                                 'crawlerScript': 1
-                                             })['crawlerScript']
+                                            {
+            '_id': 0,
+            'crawlerScript': 1
+        })['crawlerScript']
     elif ('Transcription' in current_project_scripts):
         project_scripts = current_project_scripts['Transcription'][1]
     else:
@@ -2533,29 +2534,30 @@ def get_slices_and_text_grids(mongo,
             if max_pause_boundary < min_silence_duration:
                 min_silence_duration = int(max_pause_boundary)
 
-        if 'textGrid_boundary' in all_model_names:
-            vad_model_params = {
-                "audio_file": audio_path,
-                "SAMPLING_RATE": 16000,
-                "remove_pauses": False,
-                "USE_ONNX": False,
-                "minimum_speech_duration": min_speech_duration,
-                "minimum_silence_duration": min_silence_duration
-            }
-            logger.debug('Vad Model %s', vad_model)
-            if len(vad_model) > 0:
-                vad_model_name = vad_model['model_name']
-                add_vad_model_params = vad_model['model_params']
-                vad_model_type = vad_model['model_type']
-                vad_model_params.update(add_vad_model_params)
+        # if 'textGrid_boundary' in all_model_names:
+        vad_model_params = {
+            "audio_file": audio_path,
+            "SAMPLING_RATE": 16000,
+            "remove_pauses": False,
+            "USE_ONNX": False,
+            "minimum_speech_duration": min_speech_duration,
+            "minimum_silence_duration": min_silence_duration
+        }
+        logger.debug('Vad Model %s', vad_model)
+        if len(vad_model) > 0:
+            vad_model_name = vad_model['model_name']
+            add_vad_model_params = vad_model['model_params']
+            vad_model_type = vad_model['model_type']
+            vad_model_params.update(add_vad_model_params)
+            # vad_model_params["audio_file"] = audio_path
 
-            vad_start = datetime.now()
-            boundaries, cleaned_file, vad_model_name = get_audio_boundaries(
-                vad_model_params, vad_model_name, vad_model_type)
-            vad_end = datetime.now()
+        vad_start = datetime.now()
+        boundaries, cleaned_file, vad_model_name = get_audio_boundaries(
+            vad_model_params, vad_model_name, vad_model_type)
+        vad_end = datetime.now()
 
-            model_details.update([('vad_model_name', vad_model_name), ('vad_model_params',
-                                 vad_model_params), ('vad_start', vad_start), ('vad_end', vad_end)])
+        model_details.update([('vad_model_name', vad_model_name), ('vad_model_params',
+                                                                   vad_model_params), ('vad_start', vad_start), ('vad_end', vad_end)])
 
         if run_asr and 'transcription' in all_model_names:
             asr_model_name = ''

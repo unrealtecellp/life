@@ -1,3 +1,5 @@
+import torch
+import torchaudio
 import requests
 import json
 import numpy as np
@@ -9,6 +11,8 @@ from app.lifedata.transcription.controller.transcription_audiodetails import gen
 from app.lifemodels.controller.predictFromLocalModels import get_transliteration
 
 from sentencex import segment
+
+from pyannote.audio import Pipeline
 
 import base64
 
@@ -230,7 +234,7 @@ def predictFromBhashiniModel(model_inputs, model_url, model_params={}, script_na
                         else:
                             source_script = script_name
                         script_transcript = get_transliteration(
-                            output, source_script, other_script)
+                            output, source_script, other_script, lang_code)
                         all_outputs[input_id][other_script] = script_transcript
 
         logger.info('Retry count: %s\tTotal completed: %s\tTotal to be completed: %s',
@@ -242,3 +246,34 @@ def predictFromBhashiniModel(model_inputs, model_url, model_params={}, script_na
                 all_outputs, retry_count)
 
     return all_outputs, status
+
+
+def get_boundaries_pyannote(audio, hf_token, num_speakers=1):
+    pipeline = Pipeline.from_pretrained(
+        "pyannote/speaker-diarization-3.1",
+        use_auth_token=hf_token)
+
+    # send pipeline to GPU (when available)
+    # pipeline.to(torch.device("cuda"))
+
+    # apply pretrained pipeline
+    waveform, sample_rate = torchaudio.load(audio)
+    diarization = pipeline(
+        {"waveform": waveform, "sample_rate": sample_rate}, num_speakers=num_speakers)
+
+    # diarization = pipeline(audio)
+
+    # print the result
+    speech_timestamps = []
+    for turn, _, speaker in diarization.itertracks(yield_label=True):
+        print(f"start={turn.start:.1f}s stop={turn.end:.1f}s speaker_{speaker}")
+        info_dict = {'start': turn.start, 'end': turn.end, 'speaker': speaker}
+        speech_timestamps.append(info_dict)
+
+    return speech_timestamps, audio
+
+
+if __name__ == '__main__':
+    hf_token = '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'
+    audio_path = '/home/ritesh/Downloads/cambridge_ud/SS_Eng_240424.WAV'
+    get_boundaries_pyannote(audio_path, hf_token)

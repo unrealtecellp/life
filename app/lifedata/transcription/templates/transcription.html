@@ -14,6 +14,8 @@
   <link href="{{url_for('.static', filename='sidepanel.css')}}" rel="stylesheet" />
   <link href="{{url_for('.static', filename='addnewspeaker.css')}}" rel="stylesheet" />
   <link href="{{url_for('static', filename='loader.css')}}" rel="stylesheet" />
+  <script src='https://s.keyman.com/kmw/engine/16.0.147/keymanweb.js'></script>
+  <script src='https://s.keyman.com/kmw/engine/16.0.147/kmwuitoggle.js'></script>
 {% endblock %}
 
 {% block app_content %}
@@ -184,10 +186,10 @@
   <!-- <p id="regioninfo" class="text-danger">&nbsp;</p> -->
   <br>
   <div class="row">
-    <div class="col-sm-3" id="sliderdivid">
-      <input id="slider" data-action="zoom" type="range" min="0" max="100" value="0" style="width: 50%">
+    <div class="col-sm-2" id="sliderdivid">
+      <!-- <input id="slider" data-action="zoom" type="range" min="0" max="5000" value="0" style="width: 90%"> -->
     </div>
-    <div class=" col-sm-3">
+    <div class=" col-sm-4">
       AUDIO:
       <button class="btn btn-danger" type="button" id="stopAudio" title="Stop Audio">
         <span class="audiostop glyphicon glyphicon-stop" aria-hidden="true"></span>
@@ -203,6 +205,15 @@
         data-target="#editAudioSettingsModal" title="Edit Settings">
         <!-- <span class="glyphicon glyphicon-user" aria-hidden="true"></span> -->
         <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+      </button>
+      <button type="button" id="syncTranscriptsAllModalButton" class="btn btn-success" data-toggle="modal" data-target="#syncTranscriptsAllModal" title="Sync Transcription">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-repeat"
+          viewBox="0 0 16 16">
+          <path
+            d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41m-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9" />
+          <path fill-rule="evenodd"
+            d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5 5 0 0 0 8 3M3.1 9a5.002 5.002 0 0 0 8.757 2.182.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9z" />
+        </svg>
       </button>
     </div>
     <div class=" col-sm-6 pull-right">
@@ -428,9 +439,21 @@
               <input type="checkbox" id="uploadparameters-vadid" name="uploadparameters-vad">
               <label for="uploadparameters-vadid">Make Boundaries</label><br/>
               </div>  
-
+              <div class="input-group col-md-8" id="vad-algorithms-divid">
+                
+              
+              </div>
               <div class="input-group col-md-8" id="uploadparameters-boundarypause-divid" style="display: none;" aria-disabled="true">              
-              <label title="It defines the minimum value of pause at which a new boundary is made"
+              <!-- <label title="Select a VAD Algorithm" for="vad-algorithms-divid">VAD Model</label> -->
+              <label for="vadalgorithmdropdown">VAD Algorithm: </label>
+              <select class="custom-select custom-select-sm" id="vadalgorithmdropdown" name="vadAlgorithm"
+                style="width:80%">
+                <!-- <option selected disabled></option> -->
+                <option value="vadsilero" selected>Silero VAD</option>
+                <option value="pyanote">Pyannote</option>
+              </select>              
+              
+                <label title="It defines the minimum value of pause at which a new boundary is made"
                 for="uploadparameters-boundarypauseid`">Boundary Pause Threshold (between 0.00001-10.0 seconds) </label><br /> Suggested Values: <i>For sentence: 0.3; For words: 0.01; For phones: 0.001</i><br/>
               
               <input type="number" name="boundaryPause" id="uploadparameters-boundarypauseid" min="0.00001" max="10.0" step="0.00001"
@@ -580,7 +603,12 @@
               <input class="col-md-6" type="text" id="makeboundaryaudiodurationid" name="audioduration" readonly>
             </div>
             <hr>
-  
+            <label for="vadalgorithmdropdown">VAD Algorithm: </label>
+            <select class="custom-select custom-select-sm" id="vadalgorithmboundarydropdown" name="vadAlgorithm-boundary" style="width:80%">
+              <!-- <option selected disabled></option> -->
+              <option value="vadsilero" selected>Silero VAD</option>
+              <option value="pyanote">Pyannote</option>
+            </select>
             <div class="input-group col-md-8" id="uploadparameters-boundarypause-divid" style="display: block;"
               aria-disabled="true">
               <label title="It defines the minimum value of pause at which a new boundary is made"
@@ -750,6 +778,52 @@
     </div>
   </div>
 
+  
+
+  <!-- Sync all Transcription Modal -->
+  <div class="modal fade" id="syncTranscriptsAllModal" tabindex="-1" role="dialog" aria-labelledby="syncTranscriptsAllModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+              aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="syncTranscriptsAllModalLabel">Project Name: {{ projectName }}</h4>
+        </div>
+        <div class="modal-body">
+          <form name="synctranscription" action="/lifedata/transcription/synctranscription" method="POST"
+            enctype="multipart/form-data">
+            <!-- <div class="col upload"> -->
+            <!-- <strong>Audio Files from Source: </strong> -->
+            <h4>Sync Transcription for this file </h4>
+            <!-- <i>
+                <font color="red">It will overwrite any boundaries creeated earlier</font>
+              </i> -->
+            <div class="input-group col-md-12 upload" id="allformelementsdiv">
+              <label for="syncTranscriptScriptsSource">Source Script: </label><br />              
+              <select class="custom-select custom-select-sm" id="syncTranscriptScriptsSource" name="allSyncSourceScript"
+                style="width: 50%;" required>
+              </select>
+              <br /><br />
+                <label for="syncTranscriptScriptsTargets">Target Script(s): </label><br />                                
+                <select class="custom-select custom-select-sm" id="syncTranscriptScriptsTargets" multiple="multiple" name="allSyncTargetScripts" style="width: 50%;" required>
+                </select><br>
+                <input type="checkbox" id="overwrite-existing-transcriptionsid" name="overwrite-existing-transcriptions">
+                <label for="overwrite-existing-transcriptionsid">Overwrite Existing Transcriptions</label>
+              </div>
+              <hr>
+              <div class="input-group" id="dosyncall-divid">
+                <input class="btn btn-primary syncallbtn" id="syncallbtnid" type="button" value="Sync">
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+                
+
 {% endblock %}
 
 {% block scripts %}
@@ -770,4 +844,6 @@
   <script src="{{url_for('.static', filename='asr.js')}}"></script>
   <script src="{{url_for('static', filename='downloader/transcriptiondownload.js')}}"></script>
   <script type="text/javascript">generateDownloadForm({{ shareinfo | tojson | safe }}, {{ transcriptionsby | tojson | safe}}, {{ activetranscriptionby | tojson | safe}}, {{ projectName | tojson | safe}});</script>
+  <script src="{{url_for('.static', filename='keyboards.js')}}"></script>
+  <script type="text/javascript">createKeyboards({{ newData | tojson | safe }});</script>
 {% endblock %}

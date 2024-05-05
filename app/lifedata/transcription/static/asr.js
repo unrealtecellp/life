@@ -9,7 +9,7 @@ $('#myASRModalButton').on('click', function (e) {
   model_list = document.getElementById('myASRModelListSelect2')
   console.log('All options', model_list, model_list.length)
   if (model_list.length == 0) {
-    
+
     $.ajax({
       url: '/lifemodels/getModelList',
       type: 'POST',
@@ -31,14 +31,14 @@ $('#myASRModalButton').on('click', function (e) {
         asrmodels = [{
           "text": "Bhashini (ULCA)",
           "id": "bhashini"
-          },{
+        }, {
           "text": "HF Local",
           "id": "hfpipeline"
-          },
+        },
         {
           "text": "HF Inference API",
           "id": "hfinference"
-          },
+        },
         {
           "text": "Others",
           "id": "other"
@@ -60,30 +60,30 @@ $('#myASRModalButton').on('click', function (e) {
         {
           "text": "Word Segment (only for Whisper)",
           "id": "wordseg"
-        },  
+        },
         {
           "text": "Character (not for whisper)",
           "id": "character"
         }
         ];
-        
+
         // console.log('Models list', asrmodels)
         $('#transcribeUsingSelect2Id').select2({
-            // tags: true,
-        placeholder: 'Select Transcription Source',
-        dropdownParent: $("#myASRModal"),
-        data: asrmodels
-        // allowClear: true
+          // tags: true,
+          placeholder: 'Select Transcription Source',
+          dropdownParent: $("#myASRModal"),
+          data: asrmodels
+          // allowClear: true
         });
-        
+
         $('#overwriteMyBoundariesid').select2({
-            // tags: true,
-        placeholder: 'Select Boundary Level',
-        dropdownParent: $("#myASRModal"),
-        data: boundaryLevels,
-        allowClear: true
+          // tags: true,
+          placeholder: 'Select Boundary Level',
+          dropdownParent: $("#myASRModal"),
+          data: boundaryLevels,
+          allowClear: true
         });
-        
+
         var newOption = new Option('Hindi-Bhashini_ai4bharat/conformer-hi-gpu--t4', 'bhashini_ai4bharat/conformer-hi-gpu--t4', false, false);
         $('#myASRModelListSelect2').append(newOption);
         for (entry of data.models) {
@@ -141,6 +141,61 @@ $('#myASRModalButton').on('click', function (e) {
 
 });
 
+$('#syncTranscriptsAllModalButton').on('click', function (e) {
+  // console.log("Opened!")
+  script_list = document.getElementById('syncTranscriptScriptsSource')
+  // console.log('All options', script_list, script_list.length)
+  if (script_list.length == 0) {
+
+    $.ajax({
+      url: '/lifedata/transcription/getScriptsList',
+      type: 'POST',
+      // data: formData,
+      contentType: false,
+      cache: false,
+      processData: false,
+      success: function (data) {
+        // console.log('Success!');
+        // console.log(data)
+        $('#syncTranscriptScriptsSource').select2({
+          // tags: true,
+          placeholder: 'Select preset value or enter a custom value',
+          dropdownParent: $("#syncTranscriptsAllModal")
+          // data: posCategories
+          // allowClear: true
+        });
+        $('#syncTranscriptScriptsTargets').select2({
+          // tags: true,
+          placeholder: 'Select preset value or enter a custom value',
+          dropdownParent: $("#syncTranscriptsAllModal")
+          // data: posCategories
+          // allowClear: true
+        });
+        for (entry of data.scripts) {
+
+          if ((entry == 'IPA') || (entry == 'Latin')) {
+            var newOption = new Option(entry, entry, false, false);
+            var newOption2 = new Option(entry, entry, true, true);
+          }
+          else {
+            var newOption = new Option(entry, entry, true, true);
+            var newOption2 = new Option(entry, entry, false, false);
+          }
+          $('#syncTranscriptScriptsSource').append(newOption);
+
+          // var newOption2 = new Option(entry, entry, false, false);
+          $('#syncTranscriptScriptsTargets').append(newOption2);
+        }
+
+        $('#syncTranscriptScriptsSource').trigger('change');
+        $('#syncTranscriptScriptsTargets').trigger('change');
+        // $('#syncTranscriptsAllModal').show.bs.modal;
+
+      }
+    })
+  }
+});
+
 $('#transcribebtnid').on('click', function (e) {
   // alert("Clicked!");
   let fname = document.getElementById("asraudiofileid").value
@@ -149,5 +204,5 @@ $('#transcribebtnid').on('click', function (e) {
   let elem_name = document.getElementById("myASRScriptListSelect2").value
   document.getElementById(elem_name).innerHTML = 'Transcription of audio';
   console.log(fname, duration, model_name, elem_name);
-  $('#myASRModal').hide .bs.modal;
+  $('#myASRModal').hide.bs.modal;
 });
