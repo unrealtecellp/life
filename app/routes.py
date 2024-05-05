@@ -472,11 +472,12 @@ def enternewsentences():
 @login_required
 def savetranscription():
     try:
-        projects, userprojects, projectsform, transcriptions = getdbcollections.getdbcollections(mongo,
-                                                                                                 'projects',
-                                                                                                 'userprojects',
-                                                                                                 'projectsform',
-                                                                                                 'transcriptions')
+        projects, userprojects, projectsform, transcriptions, languages = getdbcollections.getdbcollections(mongo,
+                                                                                                            'projects',
+                                                                                                            'userprojects',
+                                                                                                            'projectsform',
+                                                                                                            'transcriptions',
+                                                                                                            'languages')
         current_username = getcurrentusername.getcurrentusername()
         activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
                                                                       userprojects)
@@ -528,15 +529,38 @@ def savetranscription():
             return jsonify(savedTranscription=0)
 
         scriptCode = readJSONFile.readJSONFile(scriptCodeJSONFilePath)
-        audiodetails.savetranscription(transcriptions,
-                                       activeprojectname,
-                                       activeprojectform,
-                                       scriptCode,
-                                       current_username,
-                                       transcription_regions,
-                                       lastActiveId,
-                                       activespeakerid,
-                                       accessedOnTime)
+        action = transcription_data['action']
+
+        if action == 'save':
+            audiodetails.savetranscription(transcriptions,
+                                           activeprojectname,
+                                           activeprojectform,
+                                           scriptCode,
+                                           current_username,
+                                           transcription_regions,
+                                           lastActiveId,
+                                           activespeakerid,
+                                           accessedOnTime)
+        elif action == 'sync':
+            source_script = transcription_data['sourceScript']
+            target_scripts = transcription_data['targetScripts']
+            overwrite = transcription_data['overwrite']
+            audio_lang = getactiveprojectform.getaudiolanguage(
+                projectsform, projectowner, activeprojectname)
+            audio_lang_code = lman.get_bcp_language_code(
+                languages, audio_lang)
+            transcription_audiodetails.synctranscription(transcriptions,
+                                                         activeprojectname,
+                                                         activeprojectform,
+                                                         source_script,
+                                                         target_scripts,
+                                                         audio_lang_code,
+                                                         current_username,
+                                                         transcription_regions,
+                                                         lastActiveId,
+                                                         accessedOnTime,
+                                                         overwrite)
+
         return jsonify(savedTranscription=1)
     except:
         logger.exception("")

@@ -711,9 +711,11 @@ def get_original_audio_filename(cur_entry, audio_filename, merge_all_slices=Fals
 
 
 def get_textgrid_df(tgt_text_grid):
-    csv_textgrid = tgt.io.export_to_table(tgt_text_grid)
+    csv_textgrid = tgt.io.export_to_table(tgt_text_grid, separator='#;;#')
     csv_textgridIO = StringIO(csv_textgrid)
-    textgrid_pd = pd.read_csv(csv_textgridIO)
+    # logger.info(csv_textgrid)
+    textgrid_pd = pd.read_csv(
+        csv_textgridIO, delimiter='#;;#', error_bad_lines=False)
     return textgrid_pd
 
 
