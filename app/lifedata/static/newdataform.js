@@ -4,112 +4,147 @@ $(document).ready(function() {
   // console.log(document.getElementById("newdataform"))
 });
 
-var languages = [
-  {"id": "", "text": ""},
-  {"id": "Assamese", "text": "Assamese"},
-  {"id": "Angika", "text": "Angika"},
-  {"id": "Awadhi", "text": "Awadhi"},
-  {"id": "Bajjika", "text": "Bajjika"},
-  {"id": "Bangla", "text": "Bangla"},
-  {"id": "Bhojpuri", "text": "Bhojpuri"},
-  {"id": "Bodo", "text": "Bodo"},
-  {"id": "Braj", "text": "Braj"},
-  {"id": "Bundeli", "text": "Bundeli"},
-  {"id": "Chhattisgarhi", "text": "Chhattisgarhi"},
-  {"id": "Chokri", "text": "Chokri"},
-  {"id": "Dogri", "text": "Dogri"},
-  {"id": "English", "text": "English"},
-  {"id": "Gujarati", "text": "Gujarati"},
-  {"id": "Haryanvi", "text": "Haryanvi"},
-  {"id": "Hindi", "text": "Hindi"},
-  {"id": "Kashmiri", "text": "Kashmiri"},
-  {"id": "Kannada", "text": "Kannada"},
-  {"id": "Khortha", "text": "Khortha"},
-  {"id": "Konkani", "text": "Konkani"},
-  {"id": "KokBorok", "text": "Kok Borok"},
-  {"id": "Magahi", "text": "Magahi"},
-  {"id": "Maithili", "text": "Maithili"},
-  {"id": "Malayalam", "text": "Malayalam"},
-  {"id": "Marathi", "text": "Marathi"},
-  {"id": "Meitei", "text": "Meitei"},
-  {"id": "Nagamese", "text": "Nagamese"},
-  {"id": "Nepali", "text": "Nepali"},
-  {"id": "Nyishi", "text": "Nyishi"},
-  {"id": "Odia", "text": "Odia"},
-  {"id": "Punjabi", "text": "Punjabi"},
-  {"id": "Sadri", "text": "Sadri"},
-  {"id": "Sanskrit", "text": "Sanskrit"},
-  {"id": "Santali", "text": "Santali"},
-  {"id": "Sambalpuri", "text": "Sambalpuri"},
-  {"id": "Tamil", "text": "Tamil"},
-  {"id": "Telugu", "text": "Telugu"},
-  {"id": "Toto", "text": "Toto"},
-  {"id": "Urdu", "text": "Urdu"}
-]
-
-var scripts = 
-[    
-      {
-        "id": "",
-        "text": ""
-      },
-      {
-        "id": "Bengali", 
-        "text": "Bengali"
-      },
-      {
-        "id": "Devanagari", 
-        "text": "Devanagari"
-      },
-      {
-        "id": "Gujarati", 
-        "text": "Gujarati"
-      },
-      {
-        "id": "Gurumukhi", 
-        "text": "Gurumukhi"
-      },
-      {
-        "id": "IPA", 
-        "text": "IPA"
-      },
-      {
-        "id": "Kannada", 
-        "text": "Kannada"
-      },
-      {
-        "id": "Latin", 
-        "text": "Latin"
-      },
-      {
-        "id": "Malayalam", 
-        "text": "Malayalam"
-      },
-      {
-        "id": "Mayek", 
-        "text": "Mayek"
-      },
-      {
-        "id": "Odia", 
-        "text": "Odia"
-      },
-      {
-        "id": "OlChiki", 
-        "text": "Ol Chiki"
-      },
-      {
-        "id": "Tamil", 
-        "text": "Tamil"
-      },
-      {
-        "id": "Telugu", 
-        "text": "Telugu"
-      },
-      {
-        "id": "Toto", 
-        "text": "Toto"
+function languageScriptFieldsSelect2(langIdName,
+                                      scriptIdName,
+                                      id,
+                                      langTags=false,
+                                      scriptTags=false,
+                                      langData=true) {
+  let jsonFileNames = {
+    languages: "select2_languages.json",
+    scripts: "select2_scripts.json",
+  }
+  var languages = [];
+  var scripts = "";
+  $.ajax({
+    url: '/get_jsonfile_data',
+    type: 'GET',
+    data: {'data': JSON.stringify(jsonFileNames)},
+    contentType: "application/json; charset=utf-8",
+    success: function(response){
+      if (langData) {
+        languages = response.jsonData.languages;
       }
-]
+      scripts = response.jsonData.scripts;
+      $('#'+langIdName+id).select2({
+        tags: langTags,
+        placeholder: langIdName,
+        data: languages,
+        // allowClear: true
+      });
+    
+      $('#'+scriptIdName+id).select2({
+        tags: scriptTags,
+        placeholder: scriptIdName,
+        data: scripts
+        // allowClear: true
+      });
+    }
+  });
+}
+
+// var languages = [
+//   {"id": "", "text": ""},
+//   {"id": "Assamese", "text": "Assamese"},
+//   {"id": "Angika", "text": "Angika"},
+//   {"id": "Awadhi", "text": "Awadhi"},
+//   {"id": "Bajjika", "text": "Bajjika"},
+//   {"id": "Bangla", "text": "Bangla"},
+//   {"id": "Bhojpuri", "text": "Bhojpuri"},
+//   {"id": "Bodo", "text": "Bodo"},
+//   {"id": "Braj", "text": "Braj"},
+//   {"id": "Bundeli", "text": "Bundeli"},
+//   {"id": "Chhattisgarhi", "text": "Chhattisgarhi"},
+//   {"id": "Chokri", "text": "Chokri"},
+//   {"id": "Dogri", "text": "Dogri"},
+//   {"id": "English", "text": "English"},
+//   {"id": "Gujarati", "text": "Gujarati"},
+//   {"id": "Haryanvi", "text": "Haryanvi"},
+//   {"id": "Hindi", "text": "Hindi"},
+//   {"id": "Kashmiri", "text": "Kashmiri"},
+//   {"id": "Kannada", "text": "Kannada"},
+//   {"id": "Khortha", "text": "Khortha"},
+//   {"id": "Konkani", "text": "Konkani"},
+//   {"id": "KokBorok", "text": "Kok Borok"},
+//   {"id": "Magahi", "text": "Magahi"},
+//   {"id": "Maithili", "text": "Maithili"},
+//   {"id": "Malayalam", "text": "Malayalam"},
+//   {"id": "Marathi", "text": "Marathi"},
+//   {"id": "Meitei", "text": "Meitei"},
+//   {"id": "Nagamese", "text": "Nagamese"},
+//   {"id": "Nepali", "text": "Nepali"},
+//   {"id": "Nyishi", "text": "Nyishi"},
+//   {"id": "Odia", "text": "Odia"},
+//   {"id": "Punjabi", "text": "Punjabi"},
+//   {"id": "Sadri", "text": "Sadri"},
+//   {"id": "Sanskrit", "text": "Sanskrit"},
+//   {"id": "Santali", "text": "Santali"},
+//   {"id": "Sambalpuri", "text": "Sambalpuri"},
+//   {"id": "Tamil", "text": "Tamil"},
+//   {"id": "Telugu", "text": "Telugu"},
+//   {"id": "Toto", "text": "Toto"},
+//   {"id": "Urdu", "text": "Urdu"}
+// ]
+
+// var scripts = 
+// [    
+//       {
+//         "id": "Bengali", 
+//         "text": "Bengali"
+//       },
+//       {
+//         "id": "Devanagari", 
+//         "text": "Devanagari"
+//       },
+//       {
+//         "id": "Gujarati", 
+//         "text": "Gujarati"
+//       },
+//       {
+//         "id": "Gurumukhi", 
+//         "text": "Gurumukhi"
+//       },
+//       {
+//         "id": "IPA", 
+//         "text": "IPA"
+//       },
+//       {
+//         "id": "Kannada", 
+//         "text": "Kannada"
+//       },
+//       {
+//         "id": "Latin", 
+//         "text": "Latin"
+//       },
+//       {
+//         "id": "Malayalam", 
+//         "text": "Malayalam"
+//       },
+//       {
+//         "id": "Mayek", 
+//         "text": "Mayek"
+//       },
+//       {
+//         "id": "Odia", 
+//         "text": "Odia"
+//       },
+//       {
+//         "id": "OlChiki", 
+//         "text": "Ol Chiki"
+//       },
+//       {
+//         "id": "Tamil", 
+//         "text": "Tamil"
+//       },
+//       {
+//         "id": "Telugu", 
+//         "text": "Telugu"
+//       },
+//       {
+//         "id": "Toto", 
+//         "text": "Toto"
+//       }
+// ]
 
 var dataProjectType = [
   {"id": "", "text": ""},
@@ -158,6 +193,51 @@ $("select").on("select2:select", function (evt) {
   $(this).trigger("change");
 });
 
+var additionalTranscriptionField = 0;
+
+$("#addAdditionalTranscriptionField").click(function() {
+    additionalTranscriptionField++;
+
+    var drow = '<div class="row removeadditionaltranscriptionfield' + additionalTranscriptionField + '">';
+
+    var fItems = '<div class="col-md-3"><div class="form-group">'+
+                '<select id="additionaltranscriptionname' + additionalTranscriptionField + '" class="form-control" name="Additional Transcription Name" required>';
+    // fItems += '<option value="">Additional Transcription Name</option>';
+
+    // for (var i = 0; i < languages.length; i++) {
+    //     fItems += '<option value="' + languages[i].text + '">' + languages[i].id + '</option>';
+    // }
+    fItems += '</select></div></div>';
+
+    fItems += '<div class="col-md-3"><div class="form-group">'+
+                '<div class="input-group">'+
+                '<select id="additionaltranscriptionscript' + additionalTranscriptionField + '" class="form-control" name="Additional Transcription Script" required>';
+    // fItems += '<option value="">Transcription Script</option>';
+
+    // for (var i = 0; i < scripts.length; i++) {
+    //     fItems += '<option value="' + scripts[i].text + '">' + scripts[i].id + '</option>';
+    // }
+    fItems += '</select>';
+
+    fItems += '<div class="input-group-btn">'+
+                '<button class="btn btn-sm btn-danger" type="button" onclick="removeAdditionalTranscriptionFields('+ additionalTranscriptionField +');">'+
+                '<span class="glyphicon glyphicon-minus" aria-hidden="true"></span></button></div></div></div></div>';
+
+    drow += fItems;
+    drow += '</div>'
+    $(".additionaltranscription").append(drow);
+    languageScriptFieldsSelect2("additionaltranscriptionname",
+                                  "additionaltranscriptionscript",
+                                  additionalTranscriptionField,
+                                  true,
+                                  false,
+                                  false);
+});
+
+function removeAdditionalTranscriptionFields(rid) {
+    $(".removeadditionaltranscriptionfield"+rid).remove();
+}
+
 var translationField = 0;
 
 $("#addTranslationLanguageField").click(function(){
@@ -166,31 +246,34 @@ $("#addTranslationLanguageField").click(function(){
     var drow = '<div class="row removetranslationfield' + translationField + '">';
 
     var fItems = '<div class="col-md-3"><div class="form-group">'+
-                '<select class="form-control" name="Translation Language" required>';
-    fItems += '<option value="">Translation Language</option>';
+                '<select id="translationlanguage' + translationField + '" class="form-control" name="Translation Language" required>';
+    // fItems += '<option value="">Translation Language</option>';
 
-    for (var i = 0; i < languages.length; i++) {
-        fItems += '<option value="' + languages[i].text + '">' + languages[i].id + '</option>';
-    }
+    // for (var i = 0; i < languages.length; i++) {
+    //     fItems += '<option value="' + languages[i].text + '">' + languages[i].id + '</option>';
+    // }
     fItems += '</select></div></div>';
 
     fItems += '<div class="col-md-3"><div class="form-group">'+
                 '<div class="input-group">'+
-                '<select class="form-control" name="Translation Script" required>';
-    fItems += '<option value="">Translation Script</option>';
+                '<select id="translationscript' + translationField + '" class="form-control" name="Translation Script" required>';
+    // fItems += '<option value="">Translation Script</option>';
 
-    for (var i = 0; i < scripts.length; i++) {
-        fItems += '<option value="' + scripts[i].text + '">' + scripts[i].id + '</option>';
-    }
+    // for (var i = 0; i < scripts.length; i++) {
+    //     fItems += '<option value="' + scripts[i].text + '">' + scripts[i].id + '</option>';
+    // }
     fItems += '</select>';
 
     fItems += '<div class="input-group-btn">'+
-                '<button class="btn btn-danger" type="button" onclick="removeTranslationFields('+ translationField +');">'+
+                '<button class="btn btn-sm btn-danger" type="button" onclick="removeTranslationFields('+ translationField +');">'+
                 '<span class="glyphicon glyphicon-minus" aria-hidden="true"></span></button></div></div></div></div>';
 
     drow += fItems;
     drow += '</div>'
     $(".translationlanguage").append(drow);
+    languageScriptFieldsSelect2("translationlanguage",
+                                  "translationscript",
+                                  translationField);
 });
 
 
@@ -658,3 +741,11 @@ $(document).on('keyup', '#idprojectname', function (e) {
   //     }
   // });
 });
+
+$(".interlinearGlossFormat").click(function(event){
+  // console.log('123');
+  // console.log(event);
+  console.log(event.target.id);
+  $('#interlinearGlossFormatModal').modal('toggle');
+});
+

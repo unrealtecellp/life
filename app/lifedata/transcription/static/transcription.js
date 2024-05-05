@@ -288,64 +288,66 @@ function createTranscriptionPrompt(audio_lang_script) {
 }
 
 function createTranscriptionInterfaceForm(newData) {
-    // console.log(newData);
-    localStorage.setItem("activeprojectform", JSON.stringify(newData));
-    localStorage.setItem("regions", JSON.stringify(newData['transcriptionRegions']));
-    localStorage.setItem("transcriptionDetails", JSON.stringify([newData['transcriptionDetails']]));
-    localStorage.setItem("AudioFilePath", JSON.stringify(newData['AudioFilePath']));
-    let accessedOnTime = newData["accessedOnTime"];
-    var activeAudioFilename = newData["AudioFilePath"].split('/')[2];
-    if (activeAudioFilename === undefined) {
-      activeAudioFilename = '';
-    }
-    var inpt = '<span>Audio Filename: </span><span id="audioFilename">'+ activeAudioFilename +'</span>';
-    $(".defaultfield").append(inpt);
-    lastActiveId = newData["lastActiveId"]
-    inpt = '<input type="hidden" id="lastActiveId" name="lastActiveId" value="'+lastActiveId+'">';
-    $('.defaultfield').append(inpt);
-    inpt = '<input type="hidden" id="accessedOnTime" name="accessedOnTime" value="' + accessedOnTime + '">';
-    $('.defaultfield').append(inpt);
-    inpt = ''
-    let transcription_form = '';
-    let translation_form = '';
-    let interlineargloss_form = '';
-    let tagsets_form = '';
-    let audio_language = newData['Audio Language'][1][0]
-    let audio_script = newData['Transcription'][1][0]
-    let audio_lang_script = audio_language+'-'+audio_script
-    let speakerIds = newData['speakerIds'];
+  // console.log(newData);
+  localStorage.setItem("activeprojectform", JSON.stringify(newData));
+  localStorage.setItem("regions", JSON.stringify(newData['transcriptionRegions']));
+  localStorage.setItem("transcriptionDetails", JSON.stringify([newData['transcriptionDetails']]));
+  localStorage.setItem("AudioFilePath", JSON.stringify(newData['AudioFilePath']));
+  let accessedOnTime = newData["accessedOnTime"];
+  var activeAudioFilename = newData["AudioFilePath"].split('/')[2];
+  if (activeAudioFilename === undefined) {
+    activeAudioFilename = '';
+  }
+  var inpt = '<span>Audio Filename: </span><span id="audioFilename">'+ activeAudioFilename +'</span>';
+  $(".defaultfield").append(inpt);
+  lastActiveId = newData["lastActiveId"]
+  inpt = '<input type="hidden" id="lastActiveId" name="lastActiveId" value="'+lastActiveId+'">';
+  $('.defaultfield').append(inpt);
+  inpt = '<input type="hidden" id="accessedOnTime" name="accessedOnTime" value="' + accessedOnTime + '">';
+  $('.defaultfield').append(inpt);
+  inpt = ''
+  let transcription_form = '';
+  let translation_form = '';
+  let interlineargloss_form = '';
+  let tagsets_form = '';
+  let audio_language = newData['Audio Language'][1][0]
+  let audio_script = newData['Transcription'][1][0]
+  let audio_lang_script = audio_language+'-'+audio_script
+  let speakerIds = newData['speakerIds'];
+  // console.log(speakerIds);
   let activeSpeakerId = newData['activespeakerId']
   let currentAudioSpeakerIds = newData['audioSpeakerIds']
-    // console.log(activeSpeakerId);
-    let sourceMetadata = newData['sourceMetadata']
-    // let audio_lang_script = audio_language
-    // console.log(audio_lang_script);
-    for (let [key, value] of Object.entries(newData)) {
-        // console.log(key, value);
-        eletype = value[0];
-        elevalue = value[1];
-        if (eletype === 'text') {
-            if (key === 'Audio Language') {
-                inpt += '<strong>Audio Language: </strong><strong id="'+key+'">'+elevalue+'</strong>';
-                    $('.lexemelang').append(inpt);
-                    inpt = '';
-            }
-        }
-        // else if (eletype === 'textarea') {
-        //     if (key === 'Transcription') {
-        //         transcription_form += createTranscriptionForm(key, elevalue, eletype, defaultdatavalue);
-        //     }
-        //     if (key === 'Translation') {
-        //         translation_form += createTranslationForm();
-        //     }
-        // }
-        // else if (eletype === 'interlineargloss') {
-        //     interlineargloss_form += createInterlinearglossForm();
-        // }
-        // else if (eletype === 'tagsets') {
-        //     tagsets_form += createTagsetsForm();
-        // }
-    }
+  // console.log(activeSpeakerId);
+  let sourceMetadata = newData['sourceMetadata']
+  // console.log(sourceMetadata);
+  // let audio_lang_script = audio_language
+  // console.log(audio_lang_script);
+  for (let [key, value] of Object.entries(newData)) {
+      // console.log(key, value);
+      eletype = value[0];
+      elevalue = value[1];
+      if (eletype === 'text') {
+          if (key === 'Audio Language') {
+              inpt += '<strong>Audio Language: </strong><strong id="'+key+'">'+elevalue+'</strong>';
+                  $('.lexemelang').append(inpt);
+                  inpt = '';
+          }
+      }
+      // else if (eletype === 'textarea') {
+      //     if (key === 'Transcription') {
+      //         transcription_form += createTranscriptionForm(key, elevalue, eletype, defaultdatavalue);
+      //     }
+      //     if (key === 'Translation') {
+      //         translation_form += createTranslationForm();
+      //     }
+      // }
+      // else if (eletype === 'interlineargloss') {
+      //     interlineargloss_form += createInterlinearglossForm();
+      // }
+      // else if (eletype === 'tagsets') {
+      //     tagsets_form += createTagsetsForm();
+      // }
+  }
   createSelect2('speakeridsdropdown', speakerIds, activeSpeakerId, sourceMetadata, 'video_title');
   createSelect2('speakeridsettingsdropdown', speakerIds, currentAudioSpeakerIds, {}, 'video_title');
     if (lastActiveId != ''){

@@ -1644,8 +1644,8 @@ function createSentenceForm(formElement, boundaryID) {
                         if (sentencemorphemicbreakupdatedvalue === '') {
                             sentencemorphemicbreakupdatedvalue = transcriptionvalue;
                         }
-                        glossInpt += '<div class="row">';
-                        glossInpt += '<br><div class="col-md-6 form-group textcontentouter">' +
+                        // glossInpt += '<div class="row">';
+                        glossInpt += '<br><div class="form-group textcontentouter">' +
                                         // '<label class="col" for="text">Text:</label><br>' +
                                         '<input type="hidden" class="form-control" id="text"' + ' name="text" value="' + sentencemorphemicbreakupdatedvalue + '">' +
                                         '<textarea class="col form-control textcontent"'+
@@ -1654,12 +1654,12 @@ function createSentenceForm(formElement, boundaryID) {
                                         ' oninput="autoSavetranscription(event,this,true,\'sentenceMorphemicBreak_\')"'+
                                         ' ondblclick=tokenAnnotation(event)>' + sentencemorphemicbreakupdatedvalue + '</textarea>' +
                                         '</div>';
-                        glossInpt += '<div class="col-md-6 form-group glosstable">' +
-                                        // '<span>123</span>'+
+                        glossInpt += '<div class="form-group glosstable">' +
+                                        '<span>123</span>'+
                                         '</div>';
                     }
                     // glossInpt += '</div></div></div>';
-                    glossInpt += '</div>';
+                    // glossInpt += '</div>';
                 }
             }
             // add fieldset
@@ -2918,7 +2918,7 @@ function tokenAnnotation(event) {
     $('#idmodal').html(createModal);
     let modalData = tokenAnnotationModal();
     $('#'+selection+'_modal_data').html(modalData);
-    leftModalForm(selection, spanStart, spanEnd, selection)
+    leftModalForm(selection, spanStart, spanEnd, selection);
     $('#'+selection+'Modal').modal('toggle');
     $('#'+selection+'Modal').on('hidden.bs.modal', function() {
         // $('#tokenannotationtagset').select2('destroy');
@@ -2937,16 +2937,27 @@ function tokenAnnotation(event) {
         if (localStorageRegions[p]['boundaryID'] === boundaryID) {
             try {
                 tokenGloss = localStorageRegions[p]['data']['sentence'][boundaryID]['gloss'][scriptName][tokenId]['tokenGloss'];
-                console.log(tokenGloss);
-                let tokenGlossArray = tokenGloss.split('.');
-                console.log(tokenGlossArray);
+                // console.log(tokenGloss);
+                if (tokenGloss !== '') {
+                    let tokenGlossArray = tokenGloss.split('.');
+                    // console.log(tokenGlossArray);
+                    // $('#tokenannotationtagset').val(tokenGlossArray);
+                    // $('#tokenannotationtagset').trigger('change');
+                    // console.log(tokenGlossArray,tokenGlossArray.length);
+                    let selectedGlossInfo = ''
+                    for (let p=0; p<tokenGlossArray.length; p++) {
+                        console.log(selectedGlossInfo);
+                        let optionValue = tokenGlossArray[p];
+                        selectedGlossInfo += '<option value="' + optionValue + '" selected>' + optionValue + '</option>';
+                    }
+                    $('#tokenannotationtagset').append(selectedGlossInfo);
+                    // console.log(selectedGlossInfo);
+                }
+                break;
             }
             catch {
                 continue
             }
         }
     }
-
-    $('#tokenannotationtagset').val(tokenGlossArray);
-    $('#tokenannotationtagset').trigger('change');
 }
