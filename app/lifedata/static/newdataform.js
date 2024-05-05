@@ -4,42 +4,51 @@ $(document).ready(function() {
   // console.log(document.getElementById("newdataform"))
 });
 
+var languages = [];
+var scripts = [];
+var conllu = [];
+
+var jsonFileNames = {
+  languages: "select2_languages.json",
+  scripts: "select2_scripts.json",
+  conllu: "select2_conllu_2.json",
+}
+$.ajax({
+  url: '/get_jsonfile_data',
+  type: 'GET',
+  data: {'data': JSON.stringify(jsonFileNames)},
+  contentType: "application/json; charset=utf-8",
+  success: function(response){
+    languages = response.jsonData.languages;
+    scripts = response.jsonData.scripts;
+    conllu = response.jsonData.conllu;
+    eventSelect2();
+  }
+});
+
 function languageScriptFieldsSelect2(langIdName,
                                       scriptIdName,
                                       id,
                                       langTags=false,
                                       scriptTags=false,
                                       langData=true) {
-  let jsonFileNames = {
-    languages: "select2_languages.json",
-    scripts: "select2_scripts.json",
+  let tempLanguages = [];
+  if (langData) {
+    tempLanguages = languages;
   }
-  var languages = [];
-  var scripts = "";
-  $.ajax({
-    url: '/get_jsonfile_data',
-    type: 'GET',
-    data: {'data': JSON.stringify(jsonFileNames)},
-    contentType: "application/json; charset=utf-8",
-    success: function(response){
-      if (langData) {
-        languages = response.jsonData.languages;
-      }
-      scripts = response.jsonData.scripts;
-      $('#'+langIdName+id).select2({
-        tags: langTags,
-        placeholder: langIdName,
-        data: languages,
-        // allowClear: true
-      });
-    
-      $('#'+scriptIdName+id).select2({
-        tags: scriptTags,
-        placeholder: scriptIdName,
-        data: scripts
-        // allowClear: true
-      });
-    }
+  let tempScripts = scripts;
+  $('#'+langIdName+id).select2({
+    tags: langTags,
+    placeholder: langIdName,
+    data: tempLanguages,
+    // allowClear: true
+  });
+
+  $('#'+scriptIdName+id).select2({
+    tags: scriptTags,
+    placeholder: scriptIdName,
+    data: tempScripts
+    // allowClear: true
   });
 }
 
@@ -155,43 +164,48 @@ var dataProjectType = [
   // {"id": "crawling", "text": "Crawling"},
 ];
 
-$('.dataprojecttype').select2({
-  // tags: true,
-  placeholder: 'select the type of data project',
-  data: dataProjectType
-});
+function eventSelect2 () {
+  $('.dataprojecttype').select2({
+    // tags: true,
+    placeholder: 'select the type of data project',
+    data: dataProjectType
+  });
 
-$('.datasentencelanguageclass').select2({
-  tags: true,
-  placeholder: 'Audio Language',
-  data: languages,
-  allowClear: true
-});
-
-$('.recordingssentencelanguageclass').select2({
-  tags: true,
-  placeholder: 'Audio Language',
-  data: languages,
-  allowClear: true
-});
-
-$('.datatranscriptionscriptclass').select2({
-  // tags: true,
-  placeholder: 'Transcription Scripts',
-  data: scripts,
-  allowClear: true,
-  // sorter: false
-});
+  $('.datasentencelanguageclass').select2({
+    tags: true,
+    placeholder: 'Audio Language',
+    data: languages,
+    // allowClear: true
+  });
   
-// partial solution to the select2 multiselect
-$("select").on("select2:select", function (evt) {
-  var element = evt.params.data.element;
-  // console.log(element);
-  var $element = $(element);
-  $element.detach();
-  $(this).append($element);
-  $(this).trigger("change");
-});
+  $('.recordingssentencelanguageclass').select2({
+    tags: true,
+    placeholder: 'Audio Language',
+    data: languages,
+    // allowClear: true
+  });
+  
+  $('.datatranscriptionscriptclass').select2({
+    // tags: true,
+    placeholder: 'Transcription Scripts',
+    data: scripts,
+    allowClear: true,
+    // sorter: false
+  });
+  select2Multiselect();
+}
+
+function select2Multiselect() {
+  // partial solution to the select2 multiselect
+  $("select").on("select2:select", function (evt) {
+    var element = evt.params.data.element;
+    // console.log(element);
+    var $element = $(element);
+    $element.detach();
+    $(this).append($element);
+    $(this).trigger("change");
+  });
+}
 
 var additionalTranscriptionField = 0;
 
@@ -746,6 +760,21 @@ $(".interlinearGlossFormat").click(function(event){
   // console.log('123');
   // console.log(event);
   console.log(event.target.id);
-  $('#interlinearGlossFormatModal').modal('toggle');
+  let formatType = event.target.id;
+  // $('#interlinearGlossFormatModal').modal('toggle');
+  let inpt = '';
+  inpt += '<select id="custominterlinearglossfield" name="Customize Gloss" multiple="multiple" style="width: 55%"></select>';
+  $("#idcustominterlinearglossfield").html(inpt);
+  $('#custominterlinearglossfield').select2({
+    tags: true,
+    placeholder: 'Customize Gloss Info',
+    data: conllu,
+    allowClear: true
+  });
+  if (formatType === 'ud') {
+    $('#custominterlinearglossfield').val(conllu);
+    $('#custominterlinearglossfield').trigger('change');
+  }
+  select2Multiselect();
 });
 

@@ -6745,17 +6745,20 @@ def browsesharewith():
 @app.route('/get_jsonfile_data', methods=['GET', 'POST'])
 @login_required
 def get_jsonfile_data():
-    # data through ajax
-    data = json.loads(request.args.get('data'))
-    # logger.debug('JSON Files name: %s', pformat(data))
     json_data = {}
-    for var, filename in data.items():
-        # logger.debug('JSON File name: %s', filename)
-        JSONFilePath = os.path.join(basedir, 'jsonfiles', filename)
-        json_data[var] = readJSONFile.readJSONFile(JSONFilePath)
-    # logger.debug('json_data: %s', pformat(json_data))
+    try:
+        # data through ajax
+        data = json.loads(request.args.get('data'))
+        # logger.debug('JSON Files name: %s', pformat(data))
+        for var, filename in data.items():
+            # logger.debug('JSON File name: %s', filename)
+            JSONFilePath = os.path.join(basedir, 'jsonfiles', filename)
+            json_data[var] = readJSONFile.readJSONFile(JSONFilePath)
+        # logger.debug('json_data: %s', pformat(json_data))
 
-    return jsonify(jsonData=json_data)
+        return jsonify(jsonData=json_data)
+    except:
+        logger.exception("")
 
 
 @app.route('/checkprojectnameexist', methods=['GET', 'POST'])

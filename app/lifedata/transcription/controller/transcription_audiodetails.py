@@ -1229,32 +1229,36 @@ def get_speaker_audio_ids(projects,
                           all_audio_ids,
                           speakerIds,
                           project_type):
-    if type(speakerIds) == str:
-        speakerIds = [speakerIds]
+    try:
+        speaker_audio_ids = []
+        if type(speakerIds) == str:
+            speakerIds = [speakerIds]
 
-    speaker_audioid_key_name = get_audiospeaker_id_key_name(project_type)
-    speaker_audio_ids = projects.find_one({'projectname': activeprojectname},
-                                          {'_id': 0, speaker_audioid_key_name: 1})
-    speaker_audio_ids = speaker_audio_ids[speaker_audioid_key_name]
-    # logger.info(len(speaker_audio_ids))
-    # logger.info(speaker_audio_ids)
-    for speakerId in speakerIds:
-        if len(speaker_audio_ids) != 0:
-            # logger.info(speaker_audio_ids.keys())
-            # logger.info(speaker_audioid_key_name in speaker_audio_ids)
-            # logger.debug('speaker_audio_ids %s', speaker_audio_ids)
-            if speakerId in speaker_audio_ids:
-                speaker_audio_idskeylist = speaker_audio_ids[speakerId]
-                speaker_audio_idskeylist.extend(all_audio_ids)
-                speaker_audio_ids[speakerId] = speaker_audio_idskeylist
+        speaker_audioid_key_name = get_audiospeaker_id_key_name(project_type)
+        speaker_audio_ids = projects.find_one({'projectname': activeprojectname},
+                                            {'_id': 0, speaker_audioid_key_name: 1})
+        speaker_audio_ids = speaker_audio_ids[speaker_audioid_key_name]
+        # logger.info(len(speaker_audio_ids))
+        # logger.info(speaker_audio_ids)
+        for speakerId in speakerIds:
+            if len(speaker_audio_ids) != 0:
+                # logger.info(speaker_audio_ids.keys())
+                # logger.info(speaker_audioid_key_name in speaker_audio_ids)
+                # logger.debug('speaker_audio_ids %s', speaker_audio_ids)
+                if speakerId in speaker_audio_ids:
+                    speaker_audio_idskeylist = speaker_audio_ids[speakerId]
+                    speaker_audio_idskeylist.extend(all_audio_ids)
+                    speaker_audio_ids[speakerId] = speaker_audio_idskeylist
+                else:
+                    # logger.debug('speakerId %s', speakerId)
+                    speaker_audio_ids[speakerId] = all_audio_ids
+                # plogger.debug(speaker_audio_ids)
             else:
-                # logger.debug('speakerId %s', speakerId)
-                speaker_audio_ids[speakerId] = all_audio_ids
-            # plogger.debug(speaker_audio_ids)
-        else:
-            speaker_audio_ids = {
-                speakerId: all_audio_ids
-            }
+                speaker_audio_ids = {
+                    speakerId: all_audio_ids
+                }
+    except:
+        logger.exception("")
 
     return speaker_audioid_key_name, speaker_audio_ids
 

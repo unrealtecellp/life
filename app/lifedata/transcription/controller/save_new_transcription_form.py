@@ -18,6 +18,7 @@ def save_new_transcription_form(projectsform_collection,
         interlinear_gloss_dict = {}
         translation_dict = {}
         tagsets_dict = {}
+        additional_transcription_dict = {}
 
         saved_form['username'] = current_username
         saved_form['projectname'] = projectname
@@ -42,6 +43,16 @@ def save_new_transcription_form(projectsform_collection,
                     script = new_transcription_form['Interlinear Gloss Script'][i]
                     lang_script = value[i]+'-'+script
                     interlinear_gloss_dict[lang_script] = script
+            elif key == 'Interlinear Gloss Format':
+                interlinear_gloss_dict['Interlinear Gloss Format'] = value
+            elif key == 'Customize Gloss':
+                interlinear_gloss_dict['Customize Gloss'] = value
+            elif key == 'Additional Transcription Name':
+                additional_transcription_scripts = new_transcription_form['Additional Transcription Script']
+                for i, additional_transcription_name in enumerate(value):
+                    additional_transcription_script = additional_transcription_scripts[i]
+                    additional_transcription_key = additional_transcription_name+'-'+additional_transcription_script
+                    additional_transcription_dict[additional_transcription_key] = additional_transcription_script
             elif key == 'Audio Annotation':
                 tagsets_dict["Audio Annotation"] = value
             elif key == 'Boundary Annotation':
@@ -56,6 +67,9 @@ def save_new_transcription_form(projectsform_collection,
             saved_form['Interlinear Gloss'] = ["interlineargloss", interlinear_gloss_dict]
         if (len(tagsets_dict) != 0):
             saved_form['Tagsets'] = ["tagsets", tagsets_dict]
+        if (len(additional_transcription_dict) != 0):
+            saved_form['Additional Transcription'] = ["additionaltranscription", additional_transcription_dict]
+            saved_form['Transcription'][1].extend(list(additional_transcription_dict.keys()))
 
         logger.debug("saved form: %s", pformat(saved_form))
         projectsform_collection.insert_one(saved_form)
