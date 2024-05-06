@@ -609,6 +609,7 @@ def audiobrowse():
         if (active_speaker_id != ''):
             total_records, audio_data_list = audiodetails.get_n_audios(transcriptions,
                                                                        activeprojectname,
+                                                                       current_username,
                                                                        active_speaker_id,
                                                                        speaker_audio_ids)
         else:
@@ -632,7 +633,7 @@ def audiobrowse():
         new_data['speakerIds'] = speakerids
         new_data['audioData'] = new_audio_data_list
         new_data['audioDataFields'] = [
-            'audioId', 'audioFilename', 'Audio File']
+            'audioId', 'audioFilename', 'Transcribed', 'Audio File']
         new_data['totalRecords'] = total_records
         new_data['transcriptionsBy'] = project_shared_with
     except:

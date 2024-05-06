@@ -60,9 +60,12 @@
       <button class="btn btn-warning" id="save" data-toggle="tooltip" title="Save Transcriptions">
         <span class="saveaudio glyphicon glyphicon-floppy-open" aria-hidden="true"></span>
       </button>
+      <button class="btn btn-danger" id="toggleComplete" data-toggle="tooltip" title="Toggle Complete">
+        <span class="togglecompleteclass glyphicon glyphicon-ok" aria-hidden="true"></span>
+      </button>
       <!-- &nbsp;&nbsp; -->
     </div>
-    <div class="col-sm-2">
+    <div class="col-sm-2 pull-right">
       <!-- <button class="btn btn-success" id="markcomplete" data-toggle="tooltip" title="Mark Complete">
         <span class="markcompleteaudio glyphicon glyphicon-ok" aria-hidden="true"></span>
       </button>
@@ -74,6 +77,7 @@
       </span>
       
     </div>
+    
     <span class="pull-right" style="font-size:30px; position:absolute; right:10px;cursor:pointer" onclick="openNav()"><i class="glyphicon glyphicon-menu-hamburger"></i></span>
     <div id="sidepanel"></div>
     <!-- <div class="col-sm-7 pull-right">
@@ -99,6 +103,7 @@
       {% endif %}
     </div> -->
   </div>
+  <hr>
   <div class="row" id="audiometadata" style="display: none;">
     <br>
     <hr>
@@ -185,12 +190,9 @@
   <div id="wave-spectrogram" style="display: none;"></div>
   <!-- <p id="regioninfo" class="text-danger">&nbsp;</p> -->
   <br>
-  <div class="row">
-    <div class="col-sm-2" id="sliderdivid">
-      <!-- <input id="slider" data-action="zoom" type="range" min="0" max="5000" value="0" style="width: 90%"> -->
-    </div>
-    <div class=" col-sm-4">
-      AUDIO:
+  <div class="row">    
+    <div class=" col-sm-5">
+      AUDIO:<br>
       <button class="btn btn-danger" type="button" id="stopAudio" title="Stop Audio">
         <span class="audiostop glyphicon glyphicon-stop" aria-hidden="true"></span>
       </button>
@@ -216,8 +218,8 @@
         </svg>
       </button>
     </div>
-    <div class=" col-sm-6 pull-right">
-      BOUNDARIES:
+    <div class=" col-sm-5">
+      BOUNDARIES:<br>
       <button type="button" class="btn btn-danger" data-action="delete-region-all" title="Delete all boundaries">
         <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
       </button>
@@ -238,6 +240,10 @@
       <!-- <button class="btn btn-info" type="button" id="drawBoundary">
         Draw Boundaries
       </button> -->
+    </div>
+    <div class="col-sm-2 pull-right" id="sliderdivid">
+
+      <!-- <input id="slider" data-action="zoom" type="range" min="0" max="5000" value="0" style="width: 90%"> -->
     </div>
   </div>
   <div id="loader" style="display:none;"></div>

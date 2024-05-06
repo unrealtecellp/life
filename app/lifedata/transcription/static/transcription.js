@@ -321,6 +321,18 @@ function createTranscriptionInterfaceForm(newData) {
   let sourceMetadata = newData['sourceMetadata']
   // let audio_lang_script = audio_language
   // console.log(audio_lang_script);
+  let allData = newData['transcriptionDetails']['data'];
+  if ("audioCompleteFLAG" in allData) {
+    let completedFlag = allData["audioCompleteFLAG"];
+    if (completedFlag) {
+      $('#toggleComplete').removeClass("btn-danger");
+      $('#toggleComplete').addClass("btn-success");
+    }
+    else {
+      $('#toggleComplete').removeClass("btn-success");
+      $('#toggleComplete').addClass("btn-danger");
+    }
+  }
   for (let [key, value] of Object.entries(newData)) {
     // console.log(key, value);
     eletype = value[0];
@@ -838,6 +850,41 @@ $("#save").click(function () {
     });
 });
 
+$("#toggleComplete").click(function () {
+  var transcriptionData = Object();
+
+  var lastActiveId = document.getElementById("lastActiveId").value;
+  transcriptionData['lastActiveId'] = lastActiveId;
+
+  let accessedOnTime = document.getElementById("accessedOnTime").value;
+  transcriptionData['accessedOnTime'] = accessedOnTime;
+
+  console.log('Data sent', transcriptionData)
+  $.post("/lifedata/transcription/toggleComplete", {
+    a: JSON.stringify(transcriptionData)
+  })
+    .done(function (data) {
+      let completed = data.status
+      console.log('Status returned', completed);
+      if (completed == -1) {
+        alert("Unable to update status as audio seem to be deleted or revoked access by one of the shared user. Showing you the next audio in the list.")
+        window.location.reload();
+      }
+      else {
+        // alert("Status updated successfully.")
+        if (completed) {
+          $('#toggleComplete').removeClass("btn-danger");
+          $('#toggleComplete').addClass("btn-success");
+        }
+        else {
+          $('#toggleComplete').removeClass("btn-success");
+          $('#toggleComplete').addClass("btn-danger");
+        }
+      }
+      // window.location.reload();
+    });
+});
+
 $("#syncallbtnid").click(function () {
   let sourceScript = $("#syncTranscriptScriptsSource").val();
   let targetScripts = $("#syncTranscriptScriptsTargets").val();
@@ -919,6 +966,8 @@ function myFunction(newData) {
       inpt = '';
     }
   }
+
+
 }
 
 function mapArrays(array_1, array_2) {
@@ -1153,7 +1202,7 @@ $('#uploadparameters-vadid').change(function () {
 })
 
 function replaceZoomSlider() {
-  let slider = '<input id="slider" data-action="zoom" type="range" min="20" max="1500" value="0" style="width: 90%">';
+  let slider = '<br><input id="slider" data-action="zoom" type="range" min="20" max="1500" value="0" style="width: 90%">';
   $("#sliderdivid").html(slider);
 }
 

@@ -1241,7 +1241,7 @@ def get_speaker_audio_ids(projects,
 
         speaker_audioid_key_name = get_audiospeaker_id_key_name(project_type)
         speaker_audio_ids = projects.find_one({'projectname': activeprojectname},
-                                            {'_id': 0, speaker_audioid_key_name: 1})
+                                              {'_id': 0, speaker_audioid_key_name: 1})
         speaker_audio_ids = speaker_audio_ids[speaker_audioid_key_name]
         # logger.info(len(speaker_audio_ids))
         # logger.info(speaker_audio_ids)
@@ -1929,7 +1929,7 @@ def synctranscription(transcriptions,
                                             cur_transcript = predictFromLocalModels.get_transliteration(
                                                 source_val, source_script, target_script, audio_lang, other_transcripts=other_transscripts)
                                             if cur_transcript.strip() == '':
-                                                cur_transcript = existing_transcript    
+                                                cur_transcript = existing_transcript
                                         else:
                                             cur_transcript = existing_transcript
 
@@ -1976,6 +1976,112 @@ def synctranscription(transcriptions,
                                        'allUpdate.'+current_username: datetime.now().strftime("%d/%m/%y %H:%M:%S")
                                    }
                                    })
+    except:
+        logger.exception("")
+
+
+def toggle_transcription_complete_status(transcriptions,
+                                         activeprojectname,
+                                         current_username,
+                                         audio_id,
+                                         accessedOnTime
+                                         ):
+    """Module to toggle the complete status through ajax.
+
+    Args:
+        transcription_details (_type_): _description_
+    """
+
+    try:
+        # logger.info('Audio ID %s', audio_id)
+        # logger.info('Active project %s', activeprojectname)
+        existing_status = transcriptions.find_one(
+            {'projectname': activeprojectname, 'audioId': audio_id},
+            {current_username +
+             '.audioCompleteFLAG': 1, "_id": 0})
+
+        if not existing_status or existing_status == None:
+            # logger.info('Not found')
+            status = 1
+        else:
+            status = not existing_status[current_username].get(
+                'audioCompleteFLAG', 0)
+        transcriptions.update_one({'projectname': activeprojectname, 'audioId': audio_id},
+                                  {'$set':
+                                   {
+                                       current_username+'.audioCompleteFLAG': status
+
+                                   },
+                                   '$push':
+                                   {
+                                       'allAccess.'+current_username: accessedOnTime,
+                                       'allUpdate.'+current_username: datetime.now().strftime("%d/%m/%y %H:%M:%S")
+                                   }
+                                   })
+        # status = complete_status[current_username]['textGrid']['audioCompleteFLAG']
+        # logger.info('Update status %s', update_status)
+        logger.info('Updated Status %s', status)
+        return status
+    #
+        # projection={current_username +
+        #             '.textGrid.audioCompleteFLAG': 1, "_id": 0},
+        # return_document=ReturnDocument.AFTER
+    except:
+        logger.exception("")
+
+
+def get_transcription_complete_status(transcriptions,
+                                      activeprojectname,
+                                      current_username,
+                                      audio_id
+                                      ):
+    """Module to toggle the complete status through ajax.
+
+    Args:
+        transcription_details (_type_): _description_
+    """
+
+    try:
+        existing_status = transcriptions.find_one(
+            {'projectname': activeprojectname, 'audioId': audio_id},
+            {current_username +
+             '.audioCompleteFLAG': 1, "_id": 0})
+
+        if not existing_status or existing_status == None:
+            # logger.info('Not found')
+            status = 0
+        else:
+            status = existing_status[current_username].get(
+                'audioCompleteFLAG', 0)
+
+        return status
+    except:
+        logger.exception("")
+
+
+def get_transcription_start_status(transcriptions,
+                                   activeprojectname,
+                                   audio_id
+                                   ):
+    """Module to toggle the complete status through ajax.
+
+    Args:
+        transcription_details (_type_): _description_
+    """
+
+    try:
+        existing_status = transcriptions.find_one(
+            {'projectname': activeprojectname, 'audioId': audio_id},
+            {'transcriptionFLAG': 1, "_id": 0})
+
+        if not existing_status or existing_status == None:
+            # logger.info('Not found')
+            status = 0
+        else:
+            status = existing_status.get(
+                'transcriptionFLAG', 0)
+
+        return status
     except:
         logger.exception("")
 
@@ -3485,6 +3591,7 @@ def revoke_deleted_audio(projects_collection,
 
 def get_n_audios(data_collection,
                  activeprojectname,
+                 current_username,
                  active_speaker_id,
                  speaker_audio_ids,
                  start_from=0,
@@ -3509,17 +3616,24 @@ def get_n_audios(data_collection,
             "$project": {
                 "_id": 0,
                 "audioId": 1,
-                "audioFilename": 1
+                "audioFilename": 1,
+                current_username + '.audioCompleteFLAG': 1
             }
         }
     ])
     # logger.debug("aggregate_output: %s", aggregate_output)
     aggregate_output_list = []
+
     for doc in aggregate_output:
         # logger.debug("aggregate_output: %s", pformat(doc))
         if (doc['audioId'] in speaker_audio_ids):
             doc['Audio File'] = ''
+            if current_username in doc:
+                doc['Transcribed'] = doc.pop(current_username, {}).get(
+                    'audioCompleteFLAG', False)
+
             aggregate_output_list.append(doc)
+
     # logger.debug('aggregate_output_list: %s', pformat(aggregate_output_list))
     total_records = len(aggregate_output_list)
     # logger.debug('total_records AUDIO: %s', total_records)
