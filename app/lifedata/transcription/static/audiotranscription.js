@@ -1589,7 +1589,8 @@ function createSentenceForm(formElement, boundaryID) {
                 // console.log("formElement['sentencemorphemicbreak']", sentencemorphemicbreakvalue)
                 // add fieldset
                 // inpt += '<div class="form-group transcription collapse in">';
-                inpt += '<label for="Transcription_' + transcriptionkey + '">Transcription in ' + transcriptionkey + '</label>'
+                // inpt += '<label for="Transcription_' + transcriptionkey + '">Transcription in ' + transcriptionkey + '</label>'
+                inpt += '<label for="Transcription_' + transcriptionkey + '">' + transcriptionkey + '</label>';
                 // inpt += '<input type="text" class="form-control transcription-box" id="Transcription_' + transcriptionkey + '"' +
                 //     'placeholder="Transcription ' + transcriptionkey + '" name="transcription_' + transcriptionkey + '"' +
                 //     'value="' + transcriptionvalue + '" onkeyup="autoSavetranscription(this)" required><br>';
@@ -1653,23 +1654,23 @@ function createSentenceForm(formElement, boundaryID) {
                         if (sentencemorphemicbreakupdatedvalue === '') {
                             sentencemorphemicbreakupdatedvalue = transcriptionvalue;
                         }
-                        // glossInpt += '<div class="row">';
-                        glossInpt += '<br><div class="col-md-6 form-group textcontentouter">' +
-                            // '<label class="col" for="text">Text:</label><br>' +
-                            '<input type="hidden" class="form-control keyman-attached" id="text"' + ' name="text" value="' + sentencemorphemicbreakupdatedvalue + '">' +
-                            '<textarea class="col form-control textcontent"' +
-                            ' id="sentenceMorphemicBreak_' + transcriptionkey + '"' +
-                            ' name="morphsentenceMorphemicBreak_' + transcriptionkey + '"' +
-                            ' onclick="updateKeyboard(this)"' +
-                            ' oninput="autoSavetranscription(event,this,true,\'sentenceMorphemicBreak_\')"' +
-                            ' ondblclick=tokenAnnotation(event)>' + sentencemorphemicbreakupdatedvalue + '</textarea>' +
-                            '</div>';
-                        glossInpt += '<div class="col-md-6 form-group glosstable">' +
-                            // '<span>123</span>'+
+                        glossInpt += '<div class="row">';
+                        // glossInpt += '<br><div class="col-md-6 form-group textcontentouter">' +
+                        //     // '<label class="col" for="text">Text:</label><br>' +
+                        //     '<input type="hidden" class="form-control keyman-attached" id="text"' + ' name="text" value="' + sentencemorphemicbreakupdatedvalue + '">' +
+                        //     '<textarea class="col form-control textcontent"' +
+                        //     ' id="sentenceMorphemicBreak_' + transcriptionkey + '"' +
+                        //     ' name="morphsentenceMorphemicBreak_' + transcriptionkey + '"' +
+                        //     ' onclick="updateKeyboard(this)"' +
+                        //     ' oninput="autoSavetranscription(event,this,true,\'sentenceMorphemicBreak_\')"' +
+                        //     ' ondblclick=tokenAnnotation(event)>' + sentencemorphemicbreakupdatedvalue + '</textarea>' +
+                        //     '</div>';
+                        glossInpt += '<div class="col-md-12 form-group glosstable">' +
+                            '<span>123</span>'+
                             '</div>';
                     }
                     // glossInpt += '</div></div></div>';
-                    // glossInpt += '</div>';
+                    glossInpt += '</div>';
                 }
             }
             // add fieldset
@@ -1733,7 +1734,8 @@ function createSentenceForm(formElement, boundaryID) {
                     translationkey = translationkey.split('-')[1]
                     // add fieldset
                     // inpt += '<div class="form-group translation collapse in">';
-                    inpt += '<label for="Translation_' + translationkey + '">Translation in ' + translang[translangcount] + '</label>';
+                    // inpt += '<label for="Translation_' + translationkey + '">Translation in ' + translang[translangcount] + '</label>';
+                    inpt += '<label for="Translation_' + translationkey + '">' + translang[translangcount] + '</label>';
 
                     inpt += '<textarea class="form-control translation-box keyman-attached" id="Translation_' + translationkey + '"' +
                         'placeholder="Translation ' + translang[translangcount] + '" name="translation_' + translationkey + '"' +

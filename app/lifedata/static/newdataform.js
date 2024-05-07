@@ -39,14 +39,14 @@ function languageScriptFieldsSelect2(langIdName,
   let tempScripts = scripts;
   $('#'+langIdName+id).select2({
     tags: langTags,
-    placeholder: langIdName,
+    placeholder: 'Tier Name',
     data: tempLanguages,
     // allowClear: true
   });
 
   $('#'+scriptIdName+id).select2({
     tags: scriptTags,
-    placeholder: scriptIdName,
+    // placeholder: scriptIdName,
     data: tempScripts
     // allowClear: true
   });

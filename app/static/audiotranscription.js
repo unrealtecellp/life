@@ -1128,7 +1128,8 @@ function createSentenceForm(formElement, boundaryID) {
                 sentencemorphemicbreakvalue = formElement['sentencemorphemicbreak'][transcriptionkey]
                 // console.log("formElement['sentencemorphemicbreak']", sentencemorphemicbreakvalue)
                 inpt += '<div class="form-group">';
-                inpt += '<label for="Transcription_' + transcriptionkey + '">Transcription in ' + transcriptionkey + '</label>'
+                // inpt += '<label for="Transcription_' + transcriptionkey + '">Transcription in ' + transcriptionkey + '</label>'
+                inpt += '<label for="Transcription_' + transcriptionkey + '">' + transcriptionkey + '</label>';
                 // inpt += '<input type="text" class="form-control transcription-box" id="Transcription_' + transcriptionkey + '"' +
                 //     'placeholder="Transcription ' + transcriptionkey + '" name="transcription_' + transcriptionkey + '"' +
                 //     'value="' + transcriptionvalue + '" onkeyup="autoSavetranscription(this)" required><br>';
@@ -1223,7 +1224,8 @@ function createSentenceForm(formElement, boundaryID) {
                     // console.log(translationkey, translationvalue);
                     translationkey = translationkey.split('-')[1]
                     inpt += '<div class="form-group">' +
-                        '<label for="Translation_' + translationkey + '">Translation in ' + translang[translangcount] + '</label>' +
+                        // '<label for="Translation_' + translationkey + '">Translation in ' + translang[translangcount] + '</label>' +
+                        '<label for="Translation_' + translationkey + '">' + translang[translangcount] + '</label>' +
                         '<input type="text" class="form-control" id="Translation_' + translationkey + '"' +
                         'placeholder="Translation ' + translationkey + '" name="translation_' + translationkey + '"' +
                         'value="' + translationvalue + '">' +
