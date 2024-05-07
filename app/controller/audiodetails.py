@@ -2825,6 +2825,7 @@ def revoke_deleted_audio(projects_collection,
 
 def get_n_audios(data_collection,
                  activeprojectname,
+                 current_username,
                  active_speaker_id,
                  speaker_audio_ids,
                  start_from=0,
@@ -2849,7 +2850,8 @@ def get_n_audios(data_collection,
             "$project": {
                 "_id": 0,
                 "audioId": 1,
-                "audioFilename": 1
+                "audioFilename": 1,
+                current_username + '.audioCompleteFLAG': 1
             }
         }
     ])
