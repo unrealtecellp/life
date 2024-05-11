@@ -439,7 +439,7 @@ function editAnnotation(region) {
     // console.log(sentence)
     // createSentenceForm(sentence[rid])
     allKeymanEle = document.getElementsByClassName("keyman-attached");
-    console.log("All keyman classes", allKeymanEle);
+    // console.log("All keyman classes", allKeymanEle);
     for (let ele of allKeymanEle) {
         keyman.attachToControl(ele);
     }
@@ -1654,7 +1654,7 @@ function createSentenceForm(formElement, boundaryID) {
                         if (sentencemorphemicbreakupdatedvalue === '') {
                             sentencemorphemicbreakupdatedvalue = transcriptionvalue;
                         }
-                        glossInpt += '<div class="row">';
+                        // glossInpt += '<div class="row">';
                         // glossInpt += '<br><div class="col-md-6 form-group textcontentouter">' +
                         //     // '<label class="col" for="text">Text:</label><br>' +
                         //     '<input type="hidden" class="form-control keyman-attached" id="text"' + ' name="text" value="' + sentencemorphemicbreakupdatedvalue + '">' +
@@ -1665,12 +1665,27 @@ function createSentenceForm(formElement, boundaryID) {
                         //     ' oninput="autoSavetranscription(event,this,true,\'sentenceMorphemicBreak_\')"' +
                         //     ' ondblclick=tokenAnnotation(event)>' + sentencemorphemicbreakupdatedvalue + '</textarea>' +
                         //     '</div>';
-                        glossInpt += '<div class="col-md-12 form-group glosstable">' +
-                            '<span>123</span>'+
-                            '</div>';
+                        // glossInpt += '<div class="col-md-12 form-group glosstable">' +
+                        //     '<span>123</span>'+
+                        //     '</div>';
+                        let interlinearGlossFormat = "";
+                        let customizeGloss = [];
+                        if ("Interlinear Gloss" in activeprojectform) {
+                            if ("Interlinear Gloss Format" in activeprojectform["Interlinear Gloss"][1]) {
+                                interlinearGlossFormat = activeprojectform["Interlinear Gloss"][1]["Interlinear Gloss Format"][0];
+                            }
+                            if ("Customize Gloss" in activeprojectform["Interlinear Gloss"][1]) {
+                                customizeGloss = activeprojectform["Interlinear Gloss"][1]["Customize Gloss"];
+                            }
+                        }
+                        glossInpt += '<br><div id="interlinearglosscontainer" class="container">';
+                        glossInpt += createGlossingTable(sentencemorphemicbreakupdatedvalue,
+                                                            interlinearGlossFormat,
+                                                            customizeGloss);
+                        glossInpt += '</div>';
                     }
                     // glossInpt += '</div></div></div>';
-                    glossInpt += '</div>';
+                    // glossInpt += '</div>';
                 }
             }
             // add fieldset
@@ -2744,13 +2759,32 @@ function transcriptionToGloss(ele, boundaryID) {
         }
     }
     // console.log(sentencemorphemicbreakupdatedvalue);
-    let inpt = '<input type="hidden" class="form-control" id="text"' + ' name="text" value="' + sentencemorphemicbreakupdatedvalue + '">' +
-        '<textarea class="col form-control transcription-box textcontent"' +
-        ' id="sentenceMorphemicBreak_' + scriptName + '"' +
-        ' name="morphsentenceMorphemicBreak_' + scriptName + '"' +
-        ' oninput="autoSavetranscription(event,this,true,\'sentenceMorphemicBreak_\')"' +
-        ' ondblclick=tokenAnnotation(event)>' + sentencemorphemicbreakupdatedvalue + '</textarea>';
-    $('.textcontentouter').html(inpt);
+    let inpt = '';
+    // inpt += '<input type="hidden" class="form-control" id="text"' + ' name="text" value="' + sentencemorphemicbreakupdatedvalue + '">' +
+    //     '<textarea class="col form-control transcription-box textcontent"' +
+    //     ' id="sentenceMorphemicBreak_' + scriptName + '"' +
+    //     ' name="morphsentenceMorphemicBreak_' + scriptName + '"' +
+    //     ' oninput="autoSavetranscription(event,this,true,\'sentenceMorphemicBreak_\')"' +
+    //     ' ondblclick=tokenAnnotation(event)>' + sentencemorphemicbreakupdatedvalue + '</textarea>';
+    let activeprojectform = JSON.parse(localStorage.activeprojectform);
+    let interlinearGlossFormat = "";
+    let customizeGloss = [];
+    // console.log("Interlinear Gloss" in activeprojectform);
+    // console.log("Interlinear Gloss Format" in activeprojectform["Interlinear Gloss"]);
+    // console.log("Customize Gloss" in activeprojectform["Interlinear Gloss"]);
+    if ("Interlinear Gloss" in activeprojectform) {
+        if ("Interlinear Gloss Format" in activeprojectform["Interlinear Gloss"][1]) {
+            interlinearGlossFormat = activeprojectform["Interlinear Gloss"][1]["Interlinear Gloss Format"][0];
+        }
+        if ("Customize Gloss" in activeprojectform["Interlinear Gloss"][1]) {
+            customizeGloss = activeprojectform["Interlinear Gloss"][1]["Customize Gloss"];
+        }
+    }
+    inpt += createGlossingTable(sentencemorphemicbreakupdatedvalue,
+                                    interlinearGlossFormat,
+                                    customizeGloss);
+    // $('.textcontentouter').html(inpt);
+    $('#interlinearglosscontainer').html(inpt);
     // autoSavetranscriptionSubPart();
 }
 
@@ -2820,6 +2854,8 @@ function textSpanId(spanStart, spanEnd) {
     }
     // console.log(spanStartLength, spanEndLength);
     spanId = spanStart + spanEnd;
+
+    // console.log(spanId);
 
     return spanId;
 }
@@ -2974,4 +3010,140 @@ function tokenAnnotation(event) {
             }
         }
     }
+}
+
+function createGlossingTable(sentencemorphemicbreakupdatedvalue,
+                                interlinearGlossFormat,
+                                customizeGloss) {
+    // console.log(sentencemorphemicbreakupdatedvalue,
+    //     interlinearGlossFormat,
+    //     customizeGloss);
+    let tokenIdObject = generateTokenId(sentencemorphemicbreakupdatedvalue);
+    let inpt = '';
+    let jsonFileNames = {};
+
+    inpt += sentencemorphemicbreakupdatedvalue;
+    let colCount = 6;
+    let eachColLength = Math.floor(12/colCount);
+    let sentencemorphemicbreakupdatedvalueArray = Object.keys(tokenIdObject);
+    let sentencemorphemicbreakupdatedvalueArrayLength = sentencemorphemicbreakupdatedvalueArray.length;
+    // console.log(eachColLength);
+    // console.log(sentencemorphemicbreakupdatedvalueArrayLength);
+    // console.log(Math.ceil(sentencemorphemicbreakupdatedvalueArrayLength/colCount));
+    let rowCount = Math.ceil(sentencemorphemicbreakupdatedvalueArrayLength/colCount);
+    let i=0;
+    let j=1;
+    for (i=1; i<=rowCount; i++) {
+        inpt += '<hr><div class="row" style="overflow-wrap:break-word;">';
+        for (j=j; j<=colCount*i; j++) {
+            // console.log(j);
+            if (j<=sentencemorphemicbreakupdatedvalueArrayLength) {
+                let tokenId = sentencemorphemicbreakupdatedvalueArray[j-1];
+                // let word = sentencemorphemicbreakupdatedvalueArray[j-1];
+                let word = tokenIdObject[tokenId];
+                // console.log(word);
+                // console.log(j);
+                inpt += '<div class="col-sm-'+eachColLength+'">';
+                inpt += j+' <span id="'+tokenId+'_word" class="'+tokenId+'_word_class" contenteditable="true" oninput="morphemicBreak(event,this)">'+word+'</span><br>'+
+                            '<input type="hidden" id="'+tokenId+'_word_input" class="'+tokenId+'_word_class" value="'+i+j+word+'">';
+                if (interlinearGlossFormat.includes('Leipzig')) {
+                    inpt += '<select id="'+tokenId+'_gloss" class="leibzig_glossing" multiple="multiple" style="width: 100%;"></select><br><br>';
+                    jsonFileNames['leibzig_glossing'] = 'select2_leibzig_glossing.json';
+                }
+                for (let p=0; p<customizeGloss.length; p++) {
+                    let field = customizeGloss[p].toLowerCase();
+                    console.log(field);
+                    inpt += '<select id="'+tokenId+'_'+field+'" class="'+field+'"'+
+                            ' oninput="autoSavetranscription(event,this,true,\'sentenceMorphemicBreak_\')"' +
+                            ' multiple="multiple" style="width: 100%;"></select><br><br>';
+                    jsonFileNames[field] = 'select2_'+field+'.json';
+                }
+                inpt += '</div>'; // column div
+            }
+        }
+        // j = j-1;
+        inpt += '</div>'; //row div
+        getSelect2Data(jsonFileNames);
+    }
+
+    return inpt;
+}
+
+function morphemicBreak(e, wordDiv) {
+    // console.log(e, wordDiv);
+    let morphemicBreakSymbols = ['-'];
+    let data = e.data;
+    let actualWordEle = document.getElementById(e.target.id+'_input');
+    // console.log(actualWordEle);
+    if (morphemicBreakSymbols.includes(data)) {
+        // console.log('Allowed');
+        actualWordEle.value = e.target.textContent;
+    }
+    else {
+        // console.log('Not Allowed');
+        document.getElementById(e.target.id).textContent = actualWordEle.value;
+    }
+}
+
+function generateTokenId(sentencemorphemicbreakupdatedvalue) {
+    // console.log(sentencemorphemicbreakupdatedvalue.trim().length);
+    let sentencemorphemicbreakupdatedvalueArray = sentencemorphemicbreakupdatedvalue.trim().split(" ");
+    // console.log(sentencemorphemicbreakupdatedvalueArray);
+    let tokenStart = 0;
+    let tokenEnd = 0;
+    let maxTokenLength = 7;
+    let tokenId = '';
+    let subSentenceLength = 0;
+    let tokenIdObject = {};
+    for (let i=0; i<sentencemorphemicbreakupdatedvalueArray.length; i++) {
+        let token = sentencemorphemicbreakupdatedvalueArray[i];
+        tokenStart = tokenStart;
+        tokenEnd = tokenStart+token.length-1;
+        // console.log(token, tokenStart, tokenEnd);
+        let tokenStartLength = String(tokenStart).length;
+        let tokenEndLength = String(tokenEnd).length;
+        while (tokenStartLength != maxTokenLength) {
+            tokenStart = '0' + tokenStart;
+            tokenStartLength = tokenStart.length;
+        }
+        while (tokenEndLength != maxTokenLength) {
+            tokenEnd = '0' + tokenEnd;
+            tokenEndLength = tokenEnd.length;
+        }
+        tokenId = tokenStart + tokenEnd;
+        // console.log(tokenId);
+        tokenIdObject[tokenId] = token;
+        subSentenceLength += token.length+1;
+        tokenStart = subSentenceLength;
+    }
+    // console.log(tokenIdObject);
+
+    return tokenIdObject;
+}
+
+function getSelect2Data(jsonFileNames) {
+    console.log(jsonFileNames);
+    $.ajax({
+        url: '/get_jsonfile_data',
+        type: 'GET',
+        data: {'data': JSON.stringify(jsonFileNames)},
+        contentType: "application/json; charset=utf-8",
+        success: function(response){
+            // console.log(response);
+            let jsonFileNamesKeysList = Object.keys(jsonFileNames);
+            // console.log(jsonFileNamesKeysList);
+            for (let i=0; i<jsonFileNamesKeysList.length; i++) {
+                let select2ClassName = jsonFileNamesKeysList[i];
+                // console.log(select2ClassName);
+                let data = response.jsonData[select2ClassName];
+                // console.log(data);
+                $('.'+select2ClassName).select2({
+                    // tags: true,
+                    placeholder: select2ClassName,
+                    data: data,
+                    // allowClear: true
+                });
+            }
+        }
+    });
 }

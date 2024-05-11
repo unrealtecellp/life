@@ -7,6 +7,7 @@ $(document).ready(function() {
 var languages = [];
 var scripts = [];
 var conllu = [];
+var additionalOptions = ['Languages'];
 
 var jsonFileNames = {
   languages: "select2_languages.json",
@@ -22,6 +23,7 @@ $.ajax({
     languages = response.jsonData.languages;
     scripts = response.jsonData.scripts;
     conllu = response.jsonData.conllu;
+    conllu.push(...additionalOptions)
     eventSelect2();
   }
 });
@@ -766,7 +768,7 @@ $(".interlinearGlossFormat").click(function(event){
   inpt += '<select id="custominterlinearglossfield" name="Customize Gloss" multiple="multiple" style="width: 55%"></select>';
   $("#idcustominterlinearglossfield").html(inpt);
   $('#custominterlinearglossfield').select2({
-    tags: true,
+    // tags: true,
     placeholder: 'Customize Gloss Info',
     data: conllu,
     allowClear: true

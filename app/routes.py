@@ -6778,7 +6778,10 @@ def get_jsonfile_data():
         for var, filename in data.items():
             # logger.debug('JSON File name: %s', filename)
             JSONFilePath = os.path.join(basedir, 'jsonfiles', filename)
-            json_data[var] = readJSONFile.readJSONFile(JSONFilePath)
+            if (os.path.exists(JSONFilePath)):
+                json_data[var] = readJSONFile.readJSONFile(JSONFilePath)
+            else:
+                json_data[var] = []
         # logger.debug('json_data: %s', pformat(json_data))
 
         return jsonify(jsonData=json_data)
