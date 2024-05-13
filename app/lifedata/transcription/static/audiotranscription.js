@@ -41,6 +41,9 @@ document.addEventListener('DOMContentLoaded', function () {
         // minimap: true,
         minPxPerSec: 10,
         backend: 'MediaElement',
+        mediaControls: true,
+        barWidth: 1,
+        barGap: 3,
         // partialRender: true,
         plugins: [
             WaveSurfer.regions.create(),
