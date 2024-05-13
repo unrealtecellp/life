@@ -1060,7 +1060,7 @@ $('#uploadparameters-vadid').change(function () {
 })
 
 function replaceZoomSlider() {
-  let slider = '<input id="slider" data-action="zoom" type="range" min="20" max="100" value="0" style="width: 50%">';
+  let slider = '<input id="slider" data-action="zoom" type="range" min="20" max="1500" value="0" style="width: 90%">';
   $("#sliderdivid").html(slider);
 }
 
