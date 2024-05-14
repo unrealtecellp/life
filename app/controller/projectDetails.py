@@ -1,8 +1,25 @@
 """Module to get the details of the project."""
 from app.controller import (
-    life_logging
+    life_logging,
+    getuserprojectinfo,
+    getprojectowner,
+    getactiveprojectform
 )
 logger = life_logging.get_logger()
+
+
+def get_public_projects_name(projects):
+    public_projects = []
+
+    try:
+        all_public_projects = projects.find({"isPublic": 1, "projectdeleteFLAG": 0},
+                                            {"_id": 0,
+                                             "projectname": 1})
+        if all_public_projects != None:
+            for pub_proj in all_public_projects:
+                public_projects.append(pub_proj["projectname"])
+    except:
+        logger.exception("")
 
 
 def get_shared_with_users(projects,
@@ -81,3 +98,97 @@ def save_active_transcription_by(projects,
 
     projects.update_one({"projectname": activeprojectname},
                         {'$set': {updateactiveuser: lastActiveUser}})
+
+
+def get_one_project_details(projects,
+                            activeprojectname):
+    projectdetails = projects.find_one({"projectname": activeprojectname},
+                                       {"_id": 0,
+                                        "projectOwner": 1,
+                                        "sharedwith": 1,
+                                        "projectdeleteFLAG": 1,
+                                        "isPublic": 1,
+                                        "projectType": 1,
+                                        "aboutproject": 1,
+                                        "derivedFromProject": 1,
+                                        "projectDerivatives": 1
+                                        })
+    # print(projectowner)
+    if (projectdetails == None):
+        projectdetails = {
+            "projectOwner": "",
+            "sharedwith": [],
+            "projectdeleteFLAG": 0,
+            "isPublic": 0,
+            "projectType": "",
+            "aboutproject": "",
+            "derivedFromProject": "",
+            "projectDerivatives": []
+        }
+
+    return projectdetails
+
+
+def get_one_public_project_details(projects,
+                                   activeprojectname):
+    projectdetails = projects.find_one({"projectname": activeprojectname, "projectdeleteFLAG": 0},
+                                       {"_id": 0,
+                                        "projectOwner": 1,
+                                        "projectType": 1,
+                                        "aboutproject": 1,
+                                        "sharedwith": 1
+                                        })
+    # print(projectowner)
+    if (projectdetails == None):
+        projectdetails = {
+            "projectOwner": "",
+            "projectType": "",
+            "aboutproject": "",
+            "sharedwith": []
+        }
+
+    return projectdetails
+
+
+def get_n_projects_info(projects,
+                        userprojects,
+                        projectsform,
+                        current_username,
+                        currentuserprojectsname,
+                        n=-1
+                        ):
+
+    all_project_info = {}
+    for currentproject in currentuserprojectsname:
+        shareinfo = getuserprojectinfo.getuserprojectinfo(
+            userprojects, current_username, currentproject)
+        all_project_info[currentproject]['shareinfo'] = shareinfo
+
+        projectdetails = get_one_project_details(
+            projects, currentproject)
+        all_project_info[currentproject]['details'] = projectdetails
+
+        projectowner = projectdetails['projectOwner']
+        projectform = getactiveprojectform.getactiveprojectform(
+            projectsform, projectowner, currentproject)
+        all_project_info[currentproject]['form'] = projectform
+
+    return all_project_info
+
+
+def get_n_public_projects_info(projects,
+                               projectsform):
+    public_projects = get_public_projects_name(projects)
+    all_project_info = {}
+
+    for currentproject in public_projects:
+        projectdetails = get_one_project_details(
+            projects, currentproject)
+        all_project_info[currentproject]['details'] = projectdetails
+
+        projectowner = projectdetails['projectOwner']
+        projectform = getactiveprojectform.getactiveprojectform(
+            projectsform, projectowner, currentproject)
+        all_project_info[currentproject]['form'] = projectform
+
+    return all_project_info

@@ -7,22 +7,22 @@ capture in createKeyboards and add specific keyboard. Similarly add that in upda
 correct keyboard
 */
 scriptCode = {
-        "Bengali": "Beng",
-        "Devanagari": "Deva",
-        "Gujarati": "Gujr",
-        "Gurumukhi": "Guru",
-        "IPA": "IPA",
-        "Kannada": "Knda",
-        "Latin": "Latn",
-        "Malayalam": "Mlym",
-        "Mayek": "Mtei",
-        "Odia": "Orya",
-        "Ol_Chiki": "Olck",
-        "Tamil": "Taml",
-        "Telugu": "Telu",
-        "Toto": "Toto"
+    "Bengali": "Beng",
+    "Devanagari": "Deva",
+    "Gujarati": "Gujr",
+    "Gurumukhi": "Guru",
+    "IPA": "IPA",
+    "Kannada": "Knda",
+    "Latin": "Latn",
+    "Malayalam": "Mlym",
+    "Mayek": "Mtei",
+    "Odia": "Orya",
+    "Ol_Chiki": "Olck",
+    "Tamil": "Taml",
+    "Telugu": "Telu",
+    "Toto": "Toto"
 }
-    
+
 function createKeyboards(newData) {
     let itransScripts = ['bengali', 'gujarati', 'gurmukhi', 'odia']
     let audioLanguage = newData['Audio Language'][1][0]
@@ -33,56 +33,68 @@ function createKeyboards(newData) {
     let currentTranslationScripts = Object.values(currentTranslation);
     currentScripts.push(currentTranslationScripts);
     // console.log("Translation scripts", currentTranslationScripts);
-    
+
     let addedScripts = [];
-  
-//   console.log("Final scripts", scripts);
 
-    (function (kmw) {
-    // Keyboards are attached in "editAnnotation" function of "audiotranscriptions.js" after the sentence form is created on click
-     kmw.init({ attachType: 'manual' }).then(function () {
-       //  kmw.addKeyboards(scripts);
-        //  kmw.addKeyboards('@en');basic_kbdinen
-                 
+    //   console.log("Final scripts", scripts);
+    if (navigator.onLine) {
 
-        for (let i=0; i < currentScripts.length; i++) {
-            let currentScript = currentScripts[i];
+        (function (kmw) {
+            // Keyboards are attached in "editAnnotation" function of "audiotranscriptions.js" after the sentence form is created on click
+            kmw.init({ attachType: 'manual' }).then(function () {
+                //  kmw.addKeyboards(scripts);
+                //  kmw.addKeyboards('@en');basic_kbdinen
 
-            if (currentScript.includes('IPA')) {
-                kmw.addKeyboards('sil_ipa', '@und-fonipa');
-                addedScripts.push(currentScript);
-            }         
-            else if (currentScript.includes('Devanagari')) {
-                kmw.addKeyboards('itrans_devanagari_hindi');
-                addedScripts.push(currentScript);
-            }
-            else if (itransScripts.includes(currentScript)) {
-                kmw.addKeyboards('itrans_' + currentScript);
-                addedScripts.push(currentScript);
-            }
-            else if (currentScript == 'Mayek') {
-                kmw.addKeyboards('meitei_legacy');
-                addedScripts.push(currentScript);
-            }
-        }
-        //  audioLanguage = 'Meitei';
-         if (currentScripts.length != addedScripts.length) {
-            kmw.addKeyboardsForLanguage(audioLanguage);     
-         }
+                try {
+                    for (let i = 0; i < currentScripts.length; i++) {
+                        let currentScript = currentScripts[i];
+                        console.log('Adding', currentScript);
 
-         kmw.addKeyboards('basic_kbdinen');
-         if (currentScripts.includes('Latin')) {
-             addedScripts.push('Latin');
-         }
+                        if (currentScript.includes('IPA')) {
+                            kmw.addKeyboards('sil_ipa', '@und-fonipa');
+                            addedScripts.push(currentScript);
+                        }
+                        else if (currentScript.includes('Devanagari')) {
+                            kmw.addKeyboards('itrans_devanagari_hindi');
+                            addedScripts.push(currentScript);
+                        }
+                        else if (itransScripts.includes(currentScript)) {
+                            kmw.addKeyboards('itrans_' + currentScript);
+                            addedScripts.push(currentScript);
+                        }
+                        else if (currentScript == 'Mayek') {
+                            kmw.addKeyboards('meitei_legacy');
+                            addedScripts.push(currentScript);
+                        }
+                    }
+                    //  audioLanguage = 'Meitei';
+                    console.log('Adding', audioLanguage);
+                    if (currentScripts.length != addedScripts.length) {
+                        kmw.addKeyboardsForLanguage(audioLanguage);
+                    }
 
-         
-        //  kmw.setActiveKeyboard('basic_kbddv', 'en');
-        //  kmw.addKeyboards('meitei_legacy');
-       
-        // kmw.addKeyboards('@en'); // Loads default English keyboard from Keyman Cloud (CDN)
-        // kmw.addKeyboards('@th'); // Loads default Thai keyboard from Keyman Cloud (CDN)
-      }); 
-    })(keyman);
+                    console.log('Adding Latin');
+                    kmw.addKeyboards('basic_kbdinen');
+                    if (currentScripts.includes('Latin')) {
+                        addedScripts.push('Latin');
+                    }
+                }
+                catch (err) {
+                    document.getElementById("keymanStatus").innerHTML = err.message;
+                }
+
+
+                //  kmw.setActiveKeyboard('basic_kbddv', 'en');
+                //  kmw.addKeyboards('meitei_legacy');
+
+                // kmw.addKeyboards('@en'); // Loads default English keyboard from Keyman Cloud (CDN)
+                // kmw.addKeyboards('@th'); // Loads default Thai keyboard from Keyman Cloud (CDN)
+            });
+        })(keyman);
+    }
+    else {
+        alert('offline!');
+    }
 }
 
 function updateKeyboard(e) {
@@ -99,7 +111,7 @@ function updateKeyboard(e) {
         keyman.setActiveKeyboard('sil_ipa');
         // kmw.addKeyboards('@en', 'sil_ipa', '@und-fonipa');
         // addedScripts.push(currentScript);
-    }         
+    }
     else if (currentScript.includes('Devanagari')) {
         keyman.setActiveKeyboard('itrans_devanagari_hindi');
         // addedScripts.push(currentScript);
