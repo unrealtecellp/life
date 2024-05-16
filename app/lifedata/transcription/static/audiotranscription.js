@@ -847,7 +847,7 @@ function morphemeDetails(actualTranscription, morphemicBreakTranscription) {
 function processTokenGloss(glossTokenId,
                             interlinearGlossFormat,
                             customizeGloss) {
-    // console.log('processTokenGloss');
+    console.log('processTokenGloss');
     let glossedSentenceWithMorphemicBreakInfo = {};
     let glossedSentenceWithTokenIdInfo = {};
     for (let i=0; i<glossTokenId.length; i++) {
@@ -869,12 +869,19 @@ function processTokenGloss(glossTokenId,
                 else {
                     gloss += '.'+selectedGlossInfo[a].id;
                 }
-              }
+            }
+            // console.log(gloss);
             glossedSentenceWithTokenIdInfo[tokenId]['gloss'] = gloss;
         }
         for (let p=0; p<customizeGloss.length; p++) {
             let field = customizeGloss[p].toLowerCase();
+            // console.log(field);
+            if (field === 'id' ||
+                field === 'form') {
+                continue;
+            }
             let fieldValue = document.getElementById(tokenId+'_'+field).value;
+            // console.log(field, fieldValue);
             glossedSentenceWithTokenIdInfo[tokenId][field] = fieldValue;
         }
     }
@@ -1564,9 +1571,9 @@ function createSentenceForm(formElement, boundaryID) {
             //         '</button></legend>';
             // // inpt += '</fieldset>';
             let glossInpt = '';
-            glossInpt += '<select id="scripttoglossdropdown" oninput="transcriptionToGloss(this, \'' + boundaryID + '\')" style="width: 80%; display: block;"></select>';
+            glossInpt += '<select id="scripttoglossdropdown" oninput="transcriptionToGloss()" style="width: 80%; display: block;"></select>';
             glossInpt += '&nbsp;&nbsp;&nbsp; &nbsp;';
-            glossInpt += '<select id="tokencolcount" oninput="transcriptionToGloss(this, \'' + boundaryID + '\')" style="width: 15%; display: block;"></select>';
+            glossInpt += '<select id="tokencolcount" oninput="transcriptionToGloss()" style="width: 15%; display: block;"></select>';
             glossInpt += '<div id="idmodal"></div>';
             // add fieldset
             // glossInpt += '<fieldset class="form-group border">'+
@@ -1750,10 +1757,11 @@ function createSentenceForm(formElement, boundaryID) {
             });
             $('#tokencolcount').val(6);
             $('#tokencolcount').trigger('change');
+            transcriptionToGloss();
             inpt = '';
             glossInpt = '';
             let scripttoglossdropdownselected = getScriptToGlossDropdownSelected();
-            document.getElementById("interlinearglosstab").onclick = function () { transcriptionToGloss({ value: scripttoglossdropdownselected }, boundaryID) };
+            document.getElementById("interlinearglosstab").onclick = function () { transcriptionToGloss() };
         }
         else if ('Translation' in activeprojectform &&
             key === 'translation') {
@@ -2510,7 +2518,7 @@ function autoSavetranscription(e, transcriptionField, update = true, from = '') 
         if (!sentenceMorphemicBreakSymbols.includes(data)) {
             let activeBoundaryID = document.getElementById('activeBoundaryID').value;
             let scripttoglossdropdownselected = getScriptToGlossDropdownSelected();
-            transcriptionToGloss({ value: scripttoglossdropdownselected }, activeBoundaryID)
+            transcriptionToGloss();
             document.getElementById(transcriptionField.id).focus();
             document.getElementById(transcriptionField.id).selectionEnd = clickedIndex;
             alert("Only '-' is allow!");
@@ -2526,7 +2534,7 @@ function autoSavetranscription(e, transcriptionField, update = true, from = '') 
                 sentenceMorphemicBreakSymbols.includes(current_value[clickedIndex])) {
                 let activeBoundaryID = document.getElementById('activeBoundaryID').value;
                 let scripttoglossdropdownselected = getScriptToGlossDropdownSelected();
-                transcriptionToGloss({ value: scripttoglossdropdownselected }, activeBoundaryID)
+                transcriptionToGloss();
                 document.getElementById(transcriptionField.id).focus();
                 document.getElementById(transcriptionField.id).selectionEnd = clickedIndex;
                 alert("Only one '-' is allow!");
@@ -2770,10 +2778,11 @@ function getScriptToGlossDropdownSelected() {
     return $('#scripttoglossdropdown').select2('data')[0].id;
 }
 
-function transcriptionToGloss(ele, boundaryID) {
+function transcriptionToGloss() {
     // console.log($('#scripttoglossdropdown').select2('data'));
     // console.log($('#scripttoglossdropdown').select2('data')[0].id);
     let activeprojectform = JSON.parse(localStorage.activeprojectform);
+    let boundaryID = document.getElementById('activeBoundaryID').value;
     let additioanlTranscription = [];
     if ('Additional Transcription' in activeprojectform) {
         additioanlTranscription = Object.keys(activeprojectform['Additional Transcription'][1]);
@@ -2808,8 +2817,7 @@ function transcriptionToGloss(ele, boundaryID) {
     }
     let scripttoglossdropdownselected = getScriptToGlossDropdownSelected();
     // console.log(scripttoglossdropdownselected);
-    document.getElementById("interlinearglosstab").onclick = function () { transcriptionToGloss({ value: scripttoglossdropdownselected }, boundaryID) };
-    // console.log('transcriptionToGloss()', ele.value, boundaryID);
+    document.getElementById("interlinearglosstab").onclick = function () { transcriptionToGloss() };
     let sentencemorphemicbreakupdatedvalue = '';
     let localStorageRegions = JSON.parse(localStorage.regions);
     // let scriptName = ele.value;
@@ -2850,11 +2858,13 @@ function transcriptionToGloss(ele, boundaryID) {
         interlinearGlossFormat = interlinearglossforminfo.interlinearGlossFormat;
         customizeGloss = interlinearglossforminfo.customizeGloss;
     }
-    inpt += createGlossingTable(sentencemorphemicbreakupdatedvalue,
+    returnInfo = createGlossingTable(sentencemorphemicbreakupdatedvalue,
                                 interlinearGlossFormat,
                                 customizeGloss);
+    inpt += returnInfo.inpt;
     // $('.textcontentouter').html(inpt);
     $('#interlinearglosscontainer').html(inpt);
+    getSelect2Data(getSelect2DataLocal(returnInfo.jsonFileNames));
     // autoSavetranscriptionSubPart();
 }
 
@@ -3101,9 +3111,9 @@ function tokenAnnotation(event) {
 function createGlossingTable(sentencemorphemicbreakupdatedvalue,
                                 interlinearGlossFormat,
                                 customizeGloss) {
-    console.log(sentencemorphemicbreakupdatedvalue,
-        interlinearGlossFormat,
-        customizeGloss);
+    // console.log(sentencemorphemicbreakupdatedvalue,
+    //     interlinearGlossFormat,
+    //     customizeGloss);
     let tokenIdObject = generateTokenId(sentencemorphemicbreakupdatedvalue);
     let inpt = '';
     let jsonFileNames = {};
@@ -3116,8 +3126,14 @@ function createGlossingTable(sentencemorphemicbreakupdatedvalue,
     let eachColLength = Math.floor(12/colCount);
     let sentencemorphemicbreakupdatedvalueArray = sentencemorphemicbreakupdatedvalue.trim().split(" ");
     let sentencemorphemicbreakupdatedvalueArrayLength = sentencemorphemicbreakupdatedvalueArray.length;
+    let headArray = [];
+    for (let m=0; m<=sentencemorphemicbreakupdatedvalueArrayLength; m++) {
+        headArray.push(m);
+    }
+    // console.log(headArray);
+    localStorage.setItem('head', JSON.stringify(headArray));
     // console.log(eachColLength);
-    console.log(sentencemorphemicbreakupdatedvalueArrayLength);
+    // console.log(sentencemorphemicbreakupdatedvalueArrayLength);
     // console.log(Math.ceil(sentencemorphemicbreakupdatedvalueArrayLength/colCount));
     let rowCount = Math.ceil(sentencemorphemicbreakupdatedvalueArrayLength/colCount);
     let i=0;
@@ -3143,6 +3159,10 @@ function createGlossingTable(sentencemorphemicbreakupdatedvalue,
                     // inpt += '<div id="'+tokenId+'_word" class="'+tokenId+'_word_class" contenteditable="true" oninput="morphemicBreak(event,this)">'+word+'</div><br>';
                     // inpt += '<input type="hidden" id="'+tokenId+'_word_input" class="'+tokenId+'_word_class" value="'+word+'">';
                     if (interlinearGlossFormat.includes('Leipzig')) {
+                        if (customizeGloss.includes('ID') ||
+                            customizeGloss.includes('HEAD')) {
+                            inpt += j;
+                        }
                         inpt += '<input type="text" id="'+tokenId+'_word_input" class="'+tokenId+'_word_class form-control" value="'+word+'" oninput="morphemicBreak(event,this)" style="border: none;"><br>';
                         inpt += '<select id="'+tokenId+'_gloss" class="leibzig_glossing"'+
                                 ' oninput="autoSavetranscription(event,this)"' +
@@ -3150,8 +3170,12 @@ function createGlossingTable(sentencemorphemicbreakupdatedvalue,
                         tempJsonFileNames['leibzig_glossing'] = 'select2_leibzig_glossing.json';
                         if (tokenId in glossTokenIdInfo &&
                             'gloss' in glossTokenIdInfo[tokenId]) {
-                            let tokenGlossArray = glossTokenIdInfo[tokenId]['gloss'].split('.');
-                            inpt += fillGlossedTokenInfo(tempJsonFileNames, tokenGlossArray);
+                            let tokenGlossArray = glossTokenIdInfo[tokenId]['gloss'];
+                            // console.log(tokenGlossArray);
+                            if (!(tokenGlossArray === '')) {
+                                tokenGlossArray = glossTokenIdInfo[tokenId]['gloss'].split('.');
+                                inpt += fillGlossedTokenInfo(tempJsonFileNames, tokenGlossArray);
+                            }
                         }
                         tempJsonFileNames = {}
                         inpt += '</select>';
@@ -3161,29 +3185,91 @@ function createGlossingTable(sentencemorphemicbreakupdatedvalue,
                     for (let p=0; p<customizeGloss.length; p++) {
                         let field = customizeGloss[p].toLowerCase();
                         // console.log(field);
-                        inpt += '<select id="'+tokenId+'_'+field+'" class="'+field+'"'+
-                                ' oninput="autoSavetranscription(event,this)"' +
-                                ' multiple="multiple" style="width: 100%;">';
-                        tempJsonFileNames[field] = 'select2_'+field+'.json';
+                        let tokenGlossVal = '';
                         if (tokenId in glossTokenIdInfo &&
                             field in glossTokenIdInfo[tokenId]) {
-                            let tokenGlossArray = [glossTokenIdInfo[tokenId][field]];
-                            inpt += fillGlossedTokenInfo(tempJsonFileNames, tokenGlossArray);
+                            tokenGlossVal = glossTokenIdInfo[tokenId][field];
                         }
-                        tempJsonFileNames = {}
-                        inpt += '</select><br><br>';
-                        jsonFileNames[field] = 'select2_'+field+'.json';
+                        // console.log(tokenGlossVal);
+                        if (field === 'id' ||
+                            field === 'form') {
+                            continue;
+                        }
+                        else if (field === 'lemma') {
+                            // console.log(tokenGlossVal);
+                            inpt += '<input type="text" id="'+tokenId+'_'+field+'"'+
+                                    ' class="'+field+' form-control" value="'+tokenGlossVal+'"'+
+                                    ' oninput="autoSavetranscription(event,this)"' +
+                                    ' placeholder="'+field+'"><br>';
+                        }
+                        else if (field === 'head') {
+                            inpt += '<select id="'+tokenId+'_'+field+'" class="'+field+'"'+
+                                    ' oninput="autoSavetranscription(event,this)"' +
+                                    ' multiple="multiple" style="width: 100%;">';
+                                    tempJsonFileNames[field] = 'select2_'+field+'.json';
+                                    if (!(tokenGlossVal === '')) {
+                                        inpt += fillGlossedTokenInfo(tempJsonFileNames, [tokenGlossVal]);
+                                    }
+                                    tempJsonFileNames = {}
+                                    inpt += '</select><br><br>';
+                                    jsonFileNames[field] = 'select2_'+field+'.json';
+                        }
+                        else {
+                            inpt += '<select id="'+tokenId+'_'+field+'" class="'+field+'"'+
+                                    ' oninput="autoSavetranscription(event,this)"' +
+                                    ' multiple="multiple" style="width: 100%;">';
+                            tempJsonFileNames[field] = 'select2_'+field+'.json';
+                            if (!(tokenGlossVal === '')) {
+                                inpt += fillGlossedTokenInfo(tempJsonFileNames, [tokenGlossVal]);
+                            }
+                            tempJsonFileNames = {}
+                            inpt += '</select><br><br>';
+                            jsonFileNames[field] = 'select2_'+field+'.json';
+                        }
                     }
                     inpt += '</div>'; // column div
                 }
             }
             // j = j-1;
             inpt += '</div>'; //row div
-            getSelect2Data(jsonFileNames);
         }
+        // getSelect2Data(getSelect2DataLocal(jsonFileNames));
     }
 
-    return inpt;
+    return {
+        inpt: inpt,
+        jsonFileNames: jsonFileNames
+    }
+}
+
+function getSelect2DataLocal(jsonFileNames) {
+    // console.log(jsonFileNames);
+    let jsonFileNamesKeysList = Object.keys(jsonFileNames);
+    // console.log(jsonFileNamesKeysList);
+    for (let i=0; i<jsonFileNamesKeysList.length; i++) {
+        let select2ClassName = jsonFileNamesKeysList[i];
+        if (select2ClassName === 'languages') {
+            data = getInfoFromprojectForm('Audio Language')[1];
+        }
+        // console.log(select2ClassName);
+        try {
+            let data = JSON.parse(localStorage[select2ClassName]);
+            // console.log(select2ClassName, data);
+            // console.log(typeof data);
+            $('.'+select2ClassName).select2({
+                // tags: true,
+                placeholder: select2ClassName,
+                data: data,
+                // allowClear: true
+            });
+            delete jsonFileNames[select2ClassName];
+        }
+        catch {
+            continue;
+        }
+    }
+    // console.log(jsonFileNames);
+    return jsonFileNames;
 }
 
 function morphemicBreak(e, ele) {
@@ -3240,7 +3326,7 @@ function generateTokenId(sentencemorphemicbreakupdatedvalue) {
         // console.log(p);
         if (localStorageRegions[p]['boundaryID'] === activeBoundaryID &&
             'glossTokenIdInfo' in localStorageRegions[p]['data']['sentence'][boundaryID]) {
-            console.log(localStorageRegions[p]['data']['sentence'][boundaryID])
+            // console.log(localStorageRegions[p]['data']['sentence'][boundaryID])
             tokenIdObject = localStorageRegions[p]['data']['sentence'][boundaryID]['glossTokenIdInfo']
 
             return Object.keys(tokenIdObject);
@@ -3284,29 +3370,36 @@ function generateTokenId(sentencemorphemicbreakupdatedvalue) {
 
 function getSelect2Data(jsonFileNames) {
     // console.log(jsonFileNames);
-    $.ajax({
-        url: '/get_jsonfile_data',
-        type: 'GET',
-        data: {'data': JSON.stringify(jsonFileNames)},
-        contentType: "application/json; charset=utf-8",
-        success: function(response){
-            // console.log(response);
-            let jsonFileNamesKeysList = Object.keys(jsonFileNames);
-            // console.log(jsonFileNamesKeysList);
-            for (let i=0; i<jsonFileNamesKeysList.length; i++) {
-                let select2ClassName = jsonFileNamesKeysList[i];
-                // console.log(select2ClassName);
-                let data = response.jsonData[select2ClassName];
-                // console.log(data);
-                $('.'+select2ClassName).select2({
-                    // tags: true,
-                    placeholder: select2ClassName,
-                    data: data,
-                    // allowClear: true
-                });
+    let jsonFileNamesKeysList = Object.keys(jsonFileNames);
+    if (jsonFileNamesKeysList.length !== 0) {
+        $.ajax({
+            url: '/get_jsonfile_data',
+            type: 'GET',
+            data: {'data': JSON.stringify(jsonFileNames)},
+            contentType: "application/json; charset=utf-8",
+            success: function(response){
+                // console.log(response);
+                // console.log(jsonFileNamesKeysList);
+                for (let i=0; i<jsonFileNamesKeysList.length; i++) {
+                    let select2ClassName = jsonFileNamesKeysList[i];
+                    // console.log(select2ClassName);
+                    let data = response.jsonData[select2ClassName];
+                    if (select2ClassName === 'languages') {
+                        data = getInfoFromprojectForm('Audio Language')[1];
+                    }
+                    // console.log(data);
+                    $('.'+select2ClassName).select2({
+                        // tags: true,
+                        placeholder: select2ClassName,
+                        data: data,
+                        // allowClear: true
+                    });
+                    // console.log(data);
+                    localStorage.setItem(select2ClassName, JSON.stringify(data));
+                }
             }
-        }
-    });
+        });
+    }
 }
 
 function getGlossTokenIdInfo() {
@@ -3328,53 +3421,93 @@ function getGlossTokenIdInfo() {
 }
 
 function mapSelect2IdText(jsonFileNames, id) {
-    console.log(jsonFileNames, id);
+    // console.log(jsonFileNames, id);
     var text = ''
-    $.ajax({
-        url: '/get_jsonfile_data',
-        type: 'GET',
-        data: {'data': JSON.stringify(jsonFileNames)},
-        contentType: "application/json; charset=utf-8",
-        async: false,
-        success: function(response){
-            // console.log(response);
-            let jsonFileNamesKeysList = Object.keys(jsonFileNames);
-            // console.log(jsonFileNamesKeysList);
-            for (let i=0; i<jsonFileNamesKeysList.length; i++) {
-                let select2ClassName = jsonFileNamesKeysList[i];
-                console.log(select2ClassName);
-                let data = response.jsonData[select2ClassName];
-                // console.log(data);
-                for (let p=0; p<data.length; p++) {
-                    let tempId = data[p]['id'];
-                    let tempText = data[p]['text'];
-                    // console.log(tempId, tempText);
-                    if (tempId === id) {
-                        text = tempText;
-                        // console.log(text);
-                        // return text;
-                        break;
+    let jsonFileNamesKeysList = Object.keys(jsonFileNames);
+    for (let i=0; i<jsonFileNamesKeysList.length; i++) {
+        let select2ClassName = jsonFileNamesKeysList[i];
+        // console.log(select2ClassName);
+        try {
+            let data = JSON.parse(localStorage[select2ClassName]);
+            // console.log(select2ClassName, data);
+            // console.log(typeof data);
+            for (let p=0; p<data.length; p++) {
+                let tempId = data[p]['id'];
+                let tempText = data[p]['text'];
+                // console.log(tempId, tempText);
+                if (tempId === id) {
+                    text = tempText;
+                    // console.log(text);
+                    // return text;
+                    break;
+                }
+            }
+            delete jsonFileNames[select2ClassName];
+        }
+        catch {
+            continue;
+        }
+    }
+    if (Object.keys(jsonFileNames).length !== 0) {
+        $.ajax({
+            url: '/get_jsonfile_data',
+            type: 'GET',
+            data: {'data': JSON.stringify(jsonFileNames)},
+            contentType: "application/json; charset=utf-8",
+            async: false,
+            success: function(response){
+                // console.log(response);
+                // console.log(jsonFileNamesKeysList);
+                for (let i=0; i<jsonFileNamesKeysList.length; i++) {
+                    let select2ClassName = jsonFileNamesKeysList[i];
+                    // console.log(select2ClassName);
+                    let data = response.jsonData[select2ClassName];
+                    // console.log(data);
+                    for (let p=0; p<data.length; p++) {
+                        let tempId = data[p]['id'];
+                        let tempText = data[p]['text'];
+                        // console.log(tempId, tempText);
+                        if (tempId === id) {
+                            text = tempText;
+                            // console.log(text);
+                            // return text;
+                            break;
+                        }
                     }
                 }
             }
-        }
-    });
+        });
+    }
     // console.log(id, text);
 
     return text;
 }
 
 function fillGlossedTokenInfo(tempJsonFileNames, tokenGlossArray) {
+    // console.log(tokenGlossArray);
     let selectedGlossInfo = ''
     for (let p=0; p<tokenGlossArray.length; p++) {
         // console.log(selectedGlossInfo);
         let optionValue = tokenGlossArray[p];
         // console.log(optionValue);
         if (optionValue) {
-            let optionText = mapSelect2IdText(tempJsonFileNames, optionValue)
+            let optionText = optionValue;
+            if ('languages' in tempJsonFileNames) {
+                optionText = optionValue
+            }
+            else {
+                optionText = mapSelect2IdText(tempJsonFileNames, optionValue);
+            }
             selectedGlossInfo += '<option value="' + optionValue + '" selected>' + optionText + '</option>';
         }
     }
 
     return selectedGlossInfo;
+}
+
+function getInfoFromprojectForm(keyName) {
+    let activeprojectform = JSON.parse(localStorage.activeprojectform);
+    let keyValue = activeprojectform[keyName];
+
+    return keyValue;
 }

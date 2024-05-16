@@ -2736,64 +2736,67 @@ def update_text_grid(mongo, text_grid, new_boundaries, transcription_type, inclu
 
 
 def generate_new_boundary(mongo, text_grid, start_boundary, end_boundary, transcription_type, boundary_id):
-    text_grid[transcription_type][boundary_id] = {}
+    try:
+        text_grid[transcription_type][boundary_id] = {}
 
-    projects, userprojects = getdbcollections.getdbcollections(mongo,
-                                                               'projects',
-                                                               'userprojects')
-    current_username = getcurrentusername.getcurrentusername()
-    activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
-                                                                  userprojects)
-    project_type = getprojecttype.getprojecttype(projects, activeprojectname)
+        projects, userprojects = getdbcollections.getdbcollections(mongo,
+                                                                'projects',
+                                                                'userprojects')
+        current_username = getcurrentusername.getcurrentusername()
+        activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                    userprojects)
+        project_type = getprojecttype.getprojecttype(projects, activeprojectname)
 
-    if (project_type == 'crawling'):
-        transcription_scripts = projects.find_one({"projectname": activeprojectname},
-                                                  {
-            "_id": 0,
-            "crawlerScript": 1})["crawlerScript"]
-    else:
-        transcription_scripts = get_current_transcription_langscripts(mongo)
-    # transcription_scripts = list(transcriptions.keys())
-    logger.debug('All transcription lang scripts %s', transcription_scripts)
+        if (project_type == 'crawling'):
+            transcription_scripts = projects.find_one({"projectname": activeprojectname},
+                                                    {
+                "_id": 0,
+                "crawlerScript": 1})["crawlerScript"]
+        else:
+            transcription_scripts = get_current_transcription_langscripts(mongo)
+        # transcription_scripts = list(transcriptions.keys())
+        logger.debug('All transcription lang scripts %s', transcription_scripts)
 
-    translation_langscripts = get_current_translation_langscripts(mongo)
-    logger.debug('All translation lang scripts %s', translation_langscripts)
+        translation_langscripts = get_current_translation_langscripts(mongo)
+        logger.debug('All translation lang scripts %s', translation_langscripts)
 
-    text_grid[transcription_type][boundary_id]['start'] = start_boundary
-    text_grid[transcription_type][boundary_id]['end'] = end_boundary
-    text_grid[transcription_type][boundary_id]['speakerId'] = ""
-    text_grid[transcription_type][boundary_id]['sentenceId'] = ""
-    text_grid[transcription_type][boundary_id]['transcription'] = {}
-    text_grid[transcription_type][boundary_id]['translation'] = {}
-    text_grid[transcription_type][boundary_id]['sentencemorphemicbreak'] = {}
-    text_grid[transcription_type][boundary_id]['morphemes'] = {}
-    text_grid[transcription_type][boundary_id]['gloss'] = {}
-    text_grid[transcription_type][boundary_id]['pos'] = {}
-
-    if transcription_type == 'sentence':
-        text_grid[transcription_type][boundary_id]['tags'] = ""
-
-    # for langscript_code, script_name in transcription_scripts.items():
-    #     logger.debug("langscript_code: %s\nscript_name: %s",
-    #                  langscript_code, script_name)
-    for script_name in transcription_scripts:
-        logger.debug("Transcription script name %s", script_name)
-        # if include_transcription and script_name in transcriptions:
-        #     # text_grid[transcription_type][boundary_id]['transcription'][script_name] = transcriptions[script_name][i]
-        #     text_grid[transcription_type][boundary_id]['transcription'][script_name] = transcriptions[
-        #         transcription_type]['transcription'][boundary_id][script_name]
-
-        # else:
-        text_grid[transcription_type][boundary_id]['transcription'][script_name] = ""
-
-        text_grid[transcription_type][boundary_id]['sentencemorphemicbreak'][script_name] = ""
-        text_grid[transcription_type][boundary_id]['morphemes'][script_name] = ""
-        text_grid[transcription_type][boundary_id]['gloss'][script_name] = ""
-    if (len(translation_langscripts) != 0):
-        for langscript_code, script_name in translation_langscripts.items():
-            text_grid[transcription_type][boundary_id]['translation'][langscript_code] = ""
-    else:
+        text_grid[transcription_type][boundary_id]['start'] = start_boundary
+        text_grid[transcription_type][boundary_id]['end'] = end_boundary
+        text_grid[transcription_type][boundary_id]['speakerId'] = ""
+        text_grid[transcription_type][boundary_id]['sentenceId'] = ""
+        text_grid[transcription_type][boundary_id]['transcription'] = {}
         text_grid[transcription_type][boundary_id]['translation'] = {}
+        text_grid[transcription_type][boundary_id]['sentencemorphemicbreak'] = {}
+        text_grid[transcription_type][boundary_id]['morphemes'] = {}
+        text_grid[transcription_type][boundary_id]['gloss'] = {}
+        text_grid[transcription_type][boundary_id]['pos'] = {}
+
+        if transcription_type == 'sentence':
+            text_grid[transcription_type][boundary_id]['tags'] = ""
+
+        # for langscript_code, script_name in transcription_scripts.items():
+        #     logger.debug("langscript_code: %s\nscript_name: %s",
+        #                  langscript_code, script_name)
+        for script_name in transcription_scripts:
+            logger.debug("Transcription script name %s", script_name)
+            # if include_transcription and script_name in transcriptions:
+            #     # text_grid[transcription_type][boundary_id]['transcription'][script_name] = transcriptions[script_name][i]
+            #     text_grid[transcription_type][boundary_id]['transcription'][script_name] = transcriptions[
+            #         transcription_type]['transcription'][boundary_id][script_name]
+
+            # else:
+            text_grid[transcription_type][boundary_id]['transcription'][script_name] = ""
+
+            text_grid[transcription_type][boundary_id]['sentencemorphemicbreak'][script_name] = ""
+            text_grid[transcription_type][boundary_id]['morphemes'][script_name] = ""
+            text_grid[transcription_type][boundary_id]['gloss'][script_name] = ""
+        if (len(translation_langscripts) != 0):
+            for langscript_code, script_name in translation_langscripts.items():
+                text_grid[transcription_type][boundary_id]['translation'][langscript_code] = ""
+        else:
+            text_grid[transcription_type][boundary_id]['translation'] = {}
+    except:
+        logger.exception("")
 
     return text_grid
 
@@ -2801,17 +2804,20 @@ def generate_new_boundary(mongo, text_grid, start_boundary, end_boundary, transc
 def generate_text_grid_without_transcriptions(
         mongo, text_grid, boundaries, transcription_type, max_pause, min_boundary_size=2.0, offset_value=0.0):
 
-    new_boundaries = get_new_boundaries(
-        boundaries, max_pause)
+    try:
+        new_boundaries = get_new_boundaries(
+            boundaries, max_pause)
 
-    logger.debug('New boundaries before merge %s', new_boundaries)
+        logger.debug('New boundaries before merge %s', new_boundaries)
 
-    new_boundaries, new_transcriptions = merge_smaller_boundaries(
-        new_boundaries, min_boundary_size=min_boundary_size)
-    logger.debug('New boundaries after merge %s', new_boundaries)
+        new_boundaries, new_transcriptions = merge_smaller_boundaries(
+            new_boundaries, min_boundary_size=min_boundary_size)
+        logger.debug('New boundaries after merge %s', new_boundaries)
 
-    text_grid = update_text_grid(
-        mongo, text_grid, new_boundaries, transcription_type, boundary_offset_value=offset_value)
+        text_grid = update_text_grid(
+            mongo, text_grid, new_boundaries, transcription_type, boundary_offset_value=offset_value)
+    except:
+        logger.exception("")
 
     return text_grid
 
@@ -2819,14 +2825,17 @@ def generate_text_grid_without_transcriptions(
 def generate_text_grid_with_transcriptions(
         mongo, text_grid, boundaries, transcriptions, transcription_type, max_pause, min_boundary_size=2.0,  offset_value=0.0):
 
-    new_boundaries, new_transcriptions = get_new_boundaries(
-        boundaries, max_pause, include_transcription=True, transcriptions=transcriptions, )
+    try:
+        new_boundaries, new_transcriptions = get_new_boundaries(
+            boundaries, max_pause, include_transcription=True, transcriptions=transcriptions, )
 
-    new_boundaries, new_transcriptions = merge_smaller_boundaries(
-        new_boundaries, True, new_transcriptions, min_boundary_size)
+        new_boundaries, new_transcriptions = merge_smaller_boundaries(
+            new_boundaries, True, new_transcriptions, min_boundary_size)
 
-    text_grid = update_text_grid(
-        mongo, text_grid, new_boundaries, transcription_type, include_transcription=True, transcriptions=new_transcriptions, boundary_offset_value=offset_value)
+        text_grid = update_text_grid(
+            mongo, text_grid, new_boundaries, transcription_type, include_transcription=True, transcriptions=new_transcriptions, boundary_offset_value=offset_value)
+    except:
+        logger.exception("")
 
     return text_grid
 
