@@ -16,26 +16,42 @@ def getspeakerdetails(activeprojectname, speakermeta):
 
     # TODO: Create this table dynamically based on keys being included
     all_keys = {
-        'FIELD': [
+        'SPEED': [
             'Speaker ID',
             'Name',
             'Age Group',
             'Gender',
             'Created By',
-            'Last Updated By'
+            'Updated By'
+        ],
+        'LDCIL': [
+            'Speaker ID',
+            'Name',
+            'Age Group',
+            'Gender',
+            'Created By',
+            'Updated By'
+        ],
+        'MULTILILA': [
+            'Speaker ID',
+            'Name',
+            'Age Group',
+            'Gender',
+            'Created By',
+            'Updated By'
         ],
         'YOUTUBE': [
             'Source ID',
             'Channel Name',
             'Channel URL',
             'Created By',
-            'Last Updated By'
+            'Updated By'
         ]
     }
 
     all_audio_sources = speakermeta.find(
         {'projectname': activeprojectname, 'isActive': 1},
-        {'audioSource': 1, '_id': 0}
+        {'audioSource': 1, 'audioSubSource': 1, 'metadataSchema': 1, '_id': 0}
     )
 
     for current_audio_source in all_audio_sources:
@@ -50,9 +66,9 @@ def getspeakerdetails(activeprojectname, speakermeta):
 
             elif 'field' in current_source:
                 allsubsources.append(current_source)
-                metadata = get_field_speaker_details(
+                allspeakerdetails = get_field_speaker_details(
                     activeprojectname, speakermeta)
-                allspeakerdetails[current_source.upper()] = metadata
+                # allspeakerdetails[current_schema.upper()] = metadata
 
     for source in allspeakerdetails:
         all_lengths[source] = len(allspeakerdetails[source])
@@ -61,7 +77,7 @@ def getspeakerdetails(activeprojectname, speakermeta):
 
 
 def get_field_speaker_details(activeprojectname, speakermeta):
-    data_table = []
+    data_table = {}
     # fieldspeakerdetails = speakermeta.find(
     #     {"isActive": 1, "projectname": activeprojectname,
     #      'audioSource': 'field'}, {
@@ -86,13 +102,20 @@ def get_field_speaker_details(activeprojectname, speakermeta):
             "_id": 0})
 
     for data in fieldspeakerdetails:
-        meta_schema = data.get("metadataScheme", "")
+        meta_schema = data.get("metadataScheme", "").upper()
         # Mapping for old schema to new schema
         if meta_schema == "":
             new_meta = map_old_spped_to_new(
                 data["current"]["sourceMetadata"])
             data["current"]["sourceMetadata"] = new_meta
-        data_table.append(data)
+            meta_schema = "SPEED"
+        # data_table.append(data)
+        # Grouped by schema
+        # TODO: use aggregation to do this grouping in Mongo query itself
+        if meta_schema in data_table:
+            data_table[meta_schema].append(data)
+        else:
+            data_table[meta_schema] = [data]
 
     return data_table
 
