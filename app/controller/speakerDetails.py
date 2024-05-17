@@ -102,10 +102,10 @@ def get_field_speaker_details(activeprojectname, speakermeta):
             "_id": 0})
 
     for data in fieldspeakerdetails:
-        meta_schema = data.get("metadataScheme", "").upper()
+        meta_schema = data.get("metadataSchema", "").upper()
         # Mapping for old schema to new schema
         if meta_schema == "":
-            new_meta = map_old_spped_to_new(
+            new_meta = map_old_speed_to_new(
                 data["current"]["sourceMetadata"])
             data["current"]["sourceMetadata"] = new_meta
             meta_schema = "SPEED"
@@ -163,7 +163,7 @@ def get_youtube_details(activeprojectname, speakermeta):
         meta_schema = data.get("metadataScheme", "")
         # Mapping for old schema to new schema
         if meta_schema == "":
-            new_meta = map_old_spped_to_new(
+            new_meta = map_old_speed_to_new(
                 data["current"]["sourceMetadata"])
             data["current"]["sourceMetadata"] = new_meta
         data_table.append(data)
@@ -182,7 +182,7 @@ def getonespeakerdetails(activeprojectname, lifesourceid, speakermeta):
     source = speakerdetails["audioSource"]
     # Mapping for old schema to new schema
     if meta_schema == "":
-        new_speaker_meta = map_old_spped_to_new(
+        new_speaker_meta = map_old_speed_to_new(
             speakerdetails["current"]["sourceMetadata"])
         speakerdetails["current"]["sourceMetadata"] = new_speaker_meta
         if source == "internet":
@@ -200,7 +200,7 @@ def map_columnname_to_mongo_key(columname):
     return new_col_name
 
 
-def map_old_spped_to_new(old_metadata):
+def map_old_speed_to_new(old_metadata):
     new_metadata = {}
     old_to_new_map = {
         "name": "name",
