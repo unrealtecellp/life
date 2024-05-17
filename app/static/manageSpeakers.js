@@ -8,12 +8,12 @@ function camelCase(str) {
 
 function generateMetadataTable(speakerData, tableHeaders, count) {
     let ele = '';
-    let metadataFields = [];
-    // console.log(speakerData);
-    // console.log(tableHeaders);
+    console.log(speakerData);
+    console.log(tableHeaders);
     for (let [dataSource, metadata] of Object.entries(speakerData)) {
-        ele += '<div class="row">';
-        ele += '<div class="col">';
+        let metadataFields = [];
+        // ele += '<div class="row">';
+        // ele += '<div class="col">';
         ele += '<b><h4>' + dataSource + ' RECORDS</h4></b>';
         ele += '<p id="totalrecords"><strong>Total Records:</strong>&nbsp;' + metadata.length + '</p>';
         ele += '<input id="myInput" type="text" placeholder="Search">' +
@@ -39,6 +39,8 @@ function generateMetadataTable(speakerData, tableHeaders, count) {
         ele += '</tr ></thead >';
 
         ele += '<tbody id="myTableBody">';
+        console.log("Data source", dataSource);
+        console.log("Metadata", metadata);
         // console.log('Metadata Fields', metadataFields);
         for (const metadataEntry of metadata) {
             // console.log('Metadata entry', metadataEntry);
@@ -71,6 +73,7 @@ function generateMetadataTable(speakerData, tableHeaders, count) {
                 '</button>' +
                 '</td>';
         }
+        ele += '</tbody></table>';
     }
 
     $('#idMetaTable').html(ele);
