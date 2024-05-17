@@ -1,4 +1,5 @@
 [
+    {"id": "_", "text": "_"},
     {"id": "ADJ", "text": "adjective"},
     {"id": "ADP", "text": "adposition"},
     {"id": "ADV", "text": "adverb"},
