@@ -74,112 +74,8 @@
     </div>
 
     
-
-    {% for data_source in speaker_data %}
-    <div class="row">
-        <div class="col">
-            <b>
-                <h4>{{data_source}} RECORDS</h4>
-            </b>
-            <p id="totalrecords"><strong>Total Records:</strong>&nbsp;{{ count[data_source] }}</p>
-            <input id="myInput" type="text" placeholder="Search">
-            <table class="table table-striped " id="table" data-toolbar="#toolbar" data-search="true"
-                data-show-refresh="true" data-show-toggle="true" data-show-fullscreen="true" data-show-columns="true"
-                data-show-columns-toggle-all="true" data-detail-view="true" data-show-export="true"
-                data-click-to-select="true" data-detail-formatter="detailFormatter" data-minimum-count-columns="2"
-                data-show-pagination-switch="true" data-pagination="true" data-id-field="id"
-                data-page-list="[10, 25, 50, 100, all]" data-show-footer="true" data-side-pagination="server">
-                <thead>
-                    <tr>
-                        <!-- <th onclick="sortTable(0)">id</th> -->
-                        <th><input type="checkbox" id="headcheckbox" onchange="checkAllLexeme(this)" name="chk[]"
-                                checked />&nbsp;</th>
-                        {% for header in table_headers[data_source] %}
-                        <th onclick="sortTable(2)">{{header}}</th>
-                        {% endfor %}
-                        <th>View</th>
-
-                    </tr>
-                </thead>
-                <tbody id="myTableBody">
-
-                    {% for item in speaker_data[data_source] %}
-
-                    <tr>
-                        <td>
-                            <input type="checkbox" id="lexemecheckbox" onchange="checkLexeme(this)" name="name1"
-                                checked />
-                        </td>
-
-                        <td>
-                            {{item['lifesourceid']}}
-                        </td>
-
-                        {% if data_source == "FIELD" %}
-                        <td>
-                            {{item['current']['sourceMetadata']['name']}}
-                        </td>
-
-                        <td>
-                            {{item['current']['sourceMetadata']['ageGroup']}}
-                        </td>
-                        <td>
-                            {{item['current']['sourceMetadata']['gender']}}
-                        </td>
-
-                        <td>
-                            {{item['createdBy']}}
-                        </td>
-
-                        <td>
-                            {{item['current']['updatedBy']}}
-                        </td>
-
-                        <td>
-                            <button type="button" class="btn btn-primary metadataview" id="{{item['lifesourceid']}}"
-                                data-toggle="modal" data-target="#metadatadetailsmodal">
-                                View
-                            </button>
-                        </td>
-
-                        {% elif data_source == "YOUTUBE" %}
-                        <td>
-                            {{item['current']['sourceMetadata']['youtubeChannelName']}}
-                        </td>
-
-                        <td>
-                            <a href="{{item['current']['sourceMetadata']['youtubeChannelUrl']}}"
-                                target="_blank">{{item['current']['sourceMetadata']['youtubeChannelUrl']}}</a>
-                        </td>
-
-                        <td>
-                            {{item['createdBy']}}
-                        </td>
-
-                        <td>
-                            {{item['current']['updatedBy']}}
-                        </td>
-
-                        <td>
-                            <button type="button" class="btn btn-primary metadataview" id="{{item['lifesourceid']}}"
-                                data-toggle="modal" data-target="#metadatadetailsmodal">
-                                View
-                            </button>
-                        </td>
-                        {% endif %}
-
-
-
-                    </tr>
-                    {% endfor %}
-
-
-                </tbody>
-            </table>
-        </div>
+    <div class="panel-body classMetaTable" id="idMetaTable">
     </div>
-    {% endfor %}
-
 
     <!-- Add new Speaker Modal -->
     <div class="modal fade modal-dialog-scrollable" id="addNewSpeakerModal" tabindex="-1" role="dialog"
@@ -219,7 +115,9 @@
     <script src="{{url_for('.static', filename='speaker_select2_dropdown.js')}}"></script>
     <script src="{{url_for('.static', filename='search.js')}}"></script>
     <script src="{{url_for('.static', filename='sorttable.js')}}"></script>
-    <!-- <script src="{{url_for('.static', filename='managespeakers.js')}}"></script> -->
+    <script src="{{url_for('.static', filename='manageSpeakers.js')}}"></script>
+    <script
+        type="text/javascript">generateMetadataTable({{ speakerData | tojson | safe }}, {{ tableHeaders | tojson | safe}}, {{ count | tojson | safe}});</script>
 
 
     {% endblock %}

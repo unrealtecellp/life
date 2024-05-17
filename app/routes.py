@@ -5667,12 +5667,12 @@ def managespeakermetadata():
 
     return render_template(
         'manageSpeakers.html',
-        speaker_data=allspeakerdetails,
+        speakerData=allspeakerdetails,
         activeprojectname=activeprojectname,
         shareinfo=shareinfo,
         usertype=usertype,
         count=alldatalengths,
-        table_headers=allkeys
+        tableHeaders=allkeys
     )
 
 
