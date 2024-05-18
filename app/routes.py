@@ -5732,7 +5732,7 @@ def editsourcemetadata():
         form_data = request.form
         lifesourceid = form_data.get('lifespeakerid')
 
-        logger.info("All form %s", form_data)
+        logger.debug("All form %s", form_data)
         metadata_data = processHTMLForm.get_metadata_data(
             form_data
         )
@@ -5744,7 +5744,7 @@ def editsourcemetadata():
                 "current_date": current_dt,
             }
         }
-        logger.info("Update Data %s", update_data)
+        # logger.info("Update Data %s", update_data)
         updatestatus = speakerDetails.updateonespeakerdetails(
             activeprojectname, lifesourceid, update_data, speakerdetails)
 

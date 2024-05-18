@@ -39,9 +39,9 @@ function generateMetadataTable(speakerData, tableHeaders, count) {
         ele += '</tr ></thead >';
 
         ele += '<tbody id="myTableBody">';
-        console.log("Data source", dataSource);
-        console.log("Metadata", metadata);
-        console.log('Metadata Fields', metadataFields);
+        // console.log("Data source", dataSource);
+        // console.log("Metadata", metadata);
+        // console.log('Metadata Fields', metadataFields);
         for (const metadataEntry of metadata) {
             // console.log('Metadata entry', metadataEntry);
             let metadataEntryValues = metadataEntry["current"]["sourceMetadata"];
@@ -78,6 +78,6 @@ function generateMetadataTable(speakerData, tableHeaders, count) {
 
     $('#idMetaTable').html(ele);
     $.getScript("static/addnewspeaker.js", function () {
-        console.log("Script loaded");
+        // console.log("Script loaded");
     })
 }

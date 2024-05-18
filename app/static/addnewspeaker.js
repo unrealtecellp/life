@@ -762,13 +762,12 @@ function ldcilMetadataForm(form_vals = {}) {
 
 
 function multililaMetadataForm(form_vals = {}) {
-    console.log("Form values", form_vals);
+    // console.log("Form values", form_vals);
 
-
-    mappingsSchoolType = { "Government": "G", "Private": "P" };
-    mappingsSchoolCity = { "Delhi": "1", "Hyderabad": "2", "Patna": "3", "Guwahati": "4" };
-    mappingsSchoolMedium = { "Only English": "1", "Telugu+English": "2", "Hindi+English": "3", "Assamese+English": "4" };
-    mappingsSchoolSite = { "Slum": "1", "Non-slum": "2", "Remote Rural": "3", "Non-remote Rural": "4" };
+    // mappingsSchoolType = { "Government": "G", "Private": "P" };
+    // mappingsSchoolCity = { "Delhi": "1", "Hyderabad": "2", "Patna": "3", "Guwahati": "4" };
+    // mappingsSchoolMedium = { "Only English": "1", "Telugu+English": "2", "Hindi+English": "3", "Assamese+English": "4" };
+    // mappingsSchoolSite = { "Slum": "1", "Non-slum": "2", "Remote Rural": "3", "Non-remote Rural": "4" };
     var metadataForm = "";
 
 
