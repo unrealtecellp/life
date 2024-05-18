@@ -36,7 +36,7 @@ def get_metadata_data(form_data, form_files=None, upload_type='single', exclude_
         for field_name in form_data:
             if field_name not in exclude_fields:
                 field_data = form_data.getlist(field_name)
-                logger.debug('Field name %s', field_name)
+                logger.info('Field name %s', field_name)
                 if (not field_name.endswith('-list')) and (len(field_data) == 1):
                     field_data = field_data[0]
                 metadata_data[field_name] = field_data

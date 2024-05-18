@@ -519,7 +519,7 @@ function speakerDetailForm(curId, submitRoute = "/addnewspeakerdetails", include
 // }
 
 function youtubeMetadataForm(form_vals = {}) {
-    metadataForm = '<h4>YouTube Metadata</h4>';
+    let metadataForm = '<h4>YouTube Metadata</h4>';
     metadataForm += '<div class="form-group">' +
         '<label class="col-form-label">Youtube Channel Name</label><br>' +
         '<input type="text" class="form-control" id="idytchannelname" name="youtubeChannelName" placeholder="--Youtube Channel Name--" style="width:55%;" value="';
@@ -544,7 +544,7 @@ function speedMetadataForm(form_vals = {}) {
 
     console.log("Form values", form_vals);
 
-    metadataForm = '<h4>Speaker Metadata</h4>';
+    let metadataForm = '<h4>Speaker Metadata</h4>';
 
     //Name
     metadataForm += '<div class="form-group">' +
@@ -658,7 +658,7 @@ function speedMetadataForm(form_vals = {}) {
 function ldcilMetadataForm(form_vals = {}) {
     // console.log("Form values", form_vals);
 
-    metadataForm = '<h4>Speaker Metadata</h4>';
+    let metadataForm = '<h4>Speaker Metadata</h4>';
 
     //Language
     metadataForm += '<div class="form-group">' +
@@ -762,32 +762,48 @@ function ldcilMetadataForm(form_vals = {}) {
 
 
 function multililaMetadataForm(form_vals = {}) {
-    // console.log("Form values", form_vals);
-    mappingsSchoolType = {};
-    mappingsSchoolCity = {};
-    mappingsSchoolState = {};
-    mappingsSchoolSite = {};
+    console.log("Form values", form_vals);
+
+
+    mappingsSchoolType = { "Government": "G", "Private": "P" };
+    mappingsSchoolCity = { "Delhi": "1", "Hyderabad": "2", "Patna": "3", "Guwahati": "4" };
+    mappingsSchoolMedium = { "Only English": "1", "Telugu+English": "2", "Hindi+English": "3", "Assamese+English": "4" };
+    mappingsSchoolSite = { "Slum": "1", "Non-slum": "2", "Remote Rural": "3", "Non-remote Rural": "4" };
     var metadataForm = "";
 
+
     // School ID
-    if (form_vals["schoolId"]) {
-        metadataForm += '<h4>IDs</h4>';
-        metadataForm += '<div class="form-group">' +
-            '<label for="schoolid">School ID: </label> <br>' +
-            '<input type="text" class="form-control classschoolid" id="idschoolid" name="schoolId" style="width:55%" value="' + form_vals["schoolId"] + '" readonly';
-    }
+    if (form_vals["schoolId"] || form_vals["researcherId"]) {
+        // metadataForm += '<h4>IDs</h4>';
+        metadataForm += '<div class="form-group col-md-12">';
 
-    // Learner ID
-    if (form_vals["learnerId"]) {
-        metadataForm += '<div class="form-group">' +
-            '<label for="learnerid">Learner ID: </label> <br>' +
-            '<input type="text" class="form-control classlearnerid" id="idlearnerid" name="learnerId" style="width:55%" value="' + form_vals["learnerId"] + '" readonly';
-    }
+        if (form_vals["schoolId"]) {
+            metadataForm += '<label class="bg-info col-md-6">School ID: ' + form_vals["schoolId"] + '</label>';
+            metadataForm += '<input type="hidden" class="form-control classschoolid" id="idschoolid" name="schoolId" value="' + form_vals["schoolId"] + '">';
+        }
 
-    if (form_vals["researcherId"]) {
-        metadataForm += '<div class="form-group">' +
-            '<label for="researcherid">Researcher ID: </label> <br>' +
-            '<input type="text" class="form-control classresearcherid" id="idresearcherid" name="researcherId" style="width:55%" value="' + form_vals["researcherId"] + '" readonly';
+        // Learner ID
+        if (form_vals["learnerId"]) {
+            metadataForm += '<label class="bg-info col-md-6">Learner ID: ' + form_vals["learnerId"] + '</label>';
+            metadataForm += '<input type="hidden" class="form-control classlearnerid" id="idlearnerid" name="learnerId" value="' + form_vals["learnerId"] + '">';
+        }
+
+        // Teacher ID
+        if (form_vals["teacherId"]) {
+            metadataForm += '<label class="bg-info col-md-6">Teacher ID: ' + form_vals["teacherId"] + '</label>';
+            metadataForm += '<input type="hidden" class="form-control classteacherid" id="idteacherid" name="teacherId" value="' + form_vals["teacherId"] + '">';
+        }
+
+        // RA ID
+        if (form_vals["researcherId"]) {
+            metadataForm += '<label class="bg-info col-md-12">RA ID: ' + form_vals["researcherId"] + '</label>';
+            metadataForm += '<input type="hidden" class="form-control classresearcherid" id="idresearcherid" name="researcherId" value="' + form_vals["researcherId"] + '">';
+        }
+
+        if (form_vals["participantId"]) {
+            metadataForm += '<input type="hidden" class="form-control classparticipantid" id="idparticipantid" name="participantId" value="' + form_vals["participantId"] + '">';
+        }
+        metadataForm += '</div><hr>';
     }
 
     metadataForm += '<h4>Speaker Metadata</h4>';
@@ -797,8 +813,18 @@ function multililaMetadataForm(form_vals = {}) {
         '<label for="idparticipantRole">Participant Role: </label> <br>' +
         '<select class="classparticipantRole" id="idparticipantRole" name="participantRole" style="width:55%">';
     if (form_vals["participantRole"]) {
+        let participantRoleVal = form_vals["participantRole"];
+        let currentparticipantRoleEntry = multililaParticipants.filter(function (item) {
+            return item.id === participantRoleVal;
+        });
+        if (currentparticipantRoleEntry && currentparticipantRoleEntry.length >= 1) {
+            var currentparticipantRoleText = currentparticipantRoleEntry[0]["text"];
+        }
+        else {
+            var currentparticipantRoleText = participantRoleVal;
+        }
 
-        metadataForm += '<option value="' + form_vals["participantRole"] + '" selected="selected">' + form_vals["participantRole"] + '</option>';
+        metadataForm += '<option value="' + participantRoleVal + '" selected="selected">' + currentparticipantRoleText + '</option>';
     }
     metadataForm += '</select><br>' +
         '</div>';
@@ -816,7 +842,7 @@ function multililaMetadataForm(form_vals = {}) {
     //Age Group
     metadataForm += '<div class="form-group">' +
         '<label for="idagegroup">Age: </label><br>' +
-        '<select class="classagegroup" id="idagegroup" name="ageGroup" style="width:55%">';
+        '<select class="classmultililaagegroup" id="idagegroup" name="ageGroup" style="width:55%">';
     if (form_vals["ageGroup"]) {
         metadataForm += '<option value="' + form_vals["ageGroup"] + '" selected="selected">' + form_vals["ageGroup"] + '</option>';
     }
@@ -840,6 +866,27 @@ function multililaMetadataForm(form_vals = {}) {
     if (form_vals["classSection"]) {
 
         metadataForm += '<option value="' + form_vals["classSection"] + '">' + form_vals["classSection"] + '</option>';
+    }
+    metadataForm += '</select><br>' +
+        '</div>';
+
+    //Subject Area
+    metadataForm += '<div class="form-group">' +
+        '<label for="idsubjectarea">Subject Area: </label> <br>' +
+        '<select class="classsubjectarea" id="idsubjectarea" name="subjectArea" style="width:55%" >';
+    if (form_vals["subjectArea"]) {
+        let subjectAreaVal = form_vals["subjectArea"];
+        let currentsubjectAreaEntry = multililaSubjects.filter(function (item) {
+            return item.id === subjectAreaVal;
+        });
+        if (currentsubjectAreaEntry && currentsubjectAreaEntry.length >= 1) {
+            var currentsubjectAreaText = currentsubjectAreaEntry[0]["text"];
+        }
+        else {
+            var currentsubjectAreaText = subjectAreaVal;
+        }
+
+        metadataForm += '<option value="' + subjectAreaVal + '">' + currentsubjectAreaText + '</option>';
     }
     metadataForm += '</select><br>' +
         '</div>';
@@ -892,7 +939,7 @@ function multililaMetadataForm(form_vals = {}) {
         metadataForm += '<option value="' + form_vals["placeOfBirth"] + '">' + form_vals["placeOfBirth"] + '</option>';
     }
     metadataForm += '</select><br>' +
-        '</div>';
+        '</div><hr>';
 
     //Parents Profile Start (only for Learners)
     metadataForm += '<div class="form-group parentsprofilediv" id="idparentsprofilediv">';
@@ -919,7 +966,7 @@ function multililaMetadataForm(form_vals = {}) {
     }
     metadataForm += '">' +
         '</div>';
-    metadataForm += '</div>';
+    metadataForm += '</div><hr>';
     //Parents Profile End
 
     //School Profile Start (not for RAs)
@@ -930,15 +977,24 @@ function multililaMetadataForm(form_vals = {}) {
     //Medium of Education
     metadataForm += '<div class="form-group">' +
         '<label for="idmediumofeducation">Medium Of Education: </label><br>' +
-        '<select class="classmediumofeducation" id="idmediumofeducation" name="mediumOfEducation-list" multiple="multiple" style="width:55%">';
+        '<select class="classmultililamediumofeducation" id="idmediumofeducation" name="mediumOfEducation-list" multiple="multiple" style="width:55%">';
     if (form_vals["mediumOfEducation-list"]) {
         edMed = form_vals["mediumOfEducation-list"]
         if (typeof edMed === 'string' || edMed instanceof String) {
             edMed = [edMed]
         }
         for (i = 0; i < edMed.length; i++) {
-            current_medium = edMed[i]
-            metadataForm += '<option value="' + current_medium + '" selected="selected">' + current_medium + '</option>';
+            let currentMedium = edMed[i]
+            let currentMediumEntry = multililaMedium.filter(function (item) {
+                return item.id === currentMedium;
+            });
+            if (currentMediumEntry && currentMediumEntry.length >= 1) {
+                var currentMediumText = currentMediumEntry[0]["text"];
+            }
+            else {
+                var currentMediumText = currentMedium;
+            }
+            metadataForm += '<option value="' + currentMedium + '" selected="selected">' + currentMediumText + '</option>';
         }
     }
     metadataForm += '</select><br>' +
@@ -971,8 +1027,18 @@ function multililaMetadataForm(form_vals = {}) {
         '<label for="idschooltype">School Type: </label> <br>' +
         '<select class="classschooltype" id="idschooltype" name="schoolType" style="width:55%" >';
     if (form_vals["schoolType"]) {
+        schoolTypeVal = form_vals["schoolType"];
+        let currentStypeEntry = multililaSchoolTypes.filter(function (item) {
+            return item.id === schoolTypeVal;
+        });
+        if (currentStypeEntry && currentStypeEntry.length >= 1) {
+            var currentSTypeText = currentStypeEntry[0]["text"];
+        }
+        else {
+            var currentSTypeText = schoolTypeVal;
+        }
 
-        metadataForm += '<option value="' + form_vals["schoolType"] + '">' + form_vals["schoolType"] + '</option>';
+        metadataForm += '<option value="' + form_vals["schoolType"] + '">' + currentSTypeText + '</option>';
     }
     metadataForm += '</select><br>' +
         '</div>';
@@ -982,8 +1048,18 @@ function multililaMetadataForm(form_vals = {}) {
         '<label for="idsitetype">Site Type: </label> <br>' +
         '<select class="classsitetype" id="idsitetype" name="siteType" style="width:55%" >';
     if (form_vals["siteType"]) {
+        let siteTypeVal = form_vals["siteType"];
+        let currentSitetypeEntry = multililaSiteTypes.filter(function (item) {
+            return item.id === siteTypeVal;
+        });
+        if (currentSitetypeEntry && currentSitetypeEntry.length >= 1) {
+            var currentSiteTypeText = currentSitetypeEntry[0]["text"];
+        }
+        else {
+            var currentSiteTypeText = siteTypeVal;
+        }
 
-        metadataForm += '<option value="' + form_vals["siteType"] + '">' + form_vals["siteType"] + '</option>';
+        metadataForm += '<option value="' + siteTypeVal + '">' + currentSiteTypeText + '</option>';
     }
     metadataForm += '</select><br>' +
         '</div>';
@@ -993,8 +1069,18 @@ function multililaMetadataForm(form_vals = {}) {
         '<label for="idcity">City: </label> <br>' +
         '<select class="classcity" id="idcity" name="city" style="width:55%" >';
     if (form_vals["city"]) {
+        let cityVal = form_vals["city"];
+        let currentcityEntry = multililaCities.filter(function (item) {
+            return item.id === cityVal;
+        });
+        if (currentcityEntry && currentcityEntry.length >= 1) {
+            var currentcityText = currentcityEntry[0]["text"];
+        }
+        else {
+            var currentcityText = cityVal;
+        }
 
-        metadataForm += '<option value="' + form_vals["city"] + '">' + form_vals["city"] + '</option>';
+        metadataForm += '<option value="' + cityVal + '">' + currentcityText + '</option>';
     }
     metadataForm += '</select><br>' +
         '</div>';
@@ -1008,9 +1094,9 @@ function multililaMetadataForm(form_vals = {}) {
         metadataForm += '<option value="' + form_vals["state"] + '">' + form_vals["state"] + '</option>';
     }
     metadataForm += '</select><br>' +
-        '</div>';
+        '</div><hr>';
 
-    metadataForm += '</div>';
+    // metadataForm += '</div>';
     //School Profile End
 
     return metadataForm
@@ -1134,14 +1220,14 @@ function addNewSpeakerSelect2() {
     $('.classparticipantrole').select2({
         // tags: true,
         placeholder: '--Participant Role:--',
-        // data: TypeOfCity,
+        data: multililaParticipants,
         // allowClear: true,
         // console.log( "ready!" )
     });
     $('.classclasssection').select2({
         // tags: true,
         placeholder: '--Class and Section:--',
-        // data: TypeOfCity,
+        data: multililaClasses,
         // allowClear: true,
         // console.log( "ready!" )
     });
@@ -1183,42 +1269,64 @@ function addNewSpeakerSelect2() {
     $('.classschoolname').select2({
         tags: true,
         placeholder: '--Name of School:--',
-        // data: EducationMedium,
+        data: multililaSchools,
         // allowClear: true,
         // console.log( "ready!" )
     });
     $('.classschoolserialnumber').select2({
         tags: true,
         placeholder: '--School Serial Number:--',
-        // data: EducationMedium,
+        data: multililaSchoolNumbers,
         // allowClear: true,
         // console.log( "ready!" )
     });
     $('.classschooltype').select2({
         tags: true,
         placeholder: '--School Type:--',
-        // data: EducationMedium,
+        data: multililaSchoolTypes,
         // allowClear: true,
         // console.log( "ready!" )
     });
     $('.classsitetype').select2({
         tags: true,
         placeholder: '--Site:--',
-        // data: EducationMedium,
+        data: multililaSiteTypes,
         // allowClear: true,
         // console.log( "ready!" )
     });
     $('.classcity').select2({
         tags: true,
         placeholder: '--City:--',
-        // data: EducationMedium,
+        data: multililaCities,
         // allowClear: true,
         // console.log( "ready!" )
     });
     $('.classstate').select2({
         tags: true,
         placeholder: '--State:--',
-        // data: EducationMedium,
+        data: states,
+        // allowClear: true,
+        // console.log( "ready!" )
+    });
+    $('.classsubjectarea').select2({
+        tags: true,
+        placeholder: '--Subject Area:--',
+        data: multililaSubjects,
+        // allowClear: true,
+        // console.log( "ready!" )
+    });
+
+    $('.classmultililaagegroup').select2({
+        tags: true,
+        placeholder: '--Age Group--',
+        data: multililaAgeGroup,
+        // allowClear: true
+    });
+
+    $('.classmultililamediumofeducation').select2({
+        tags: true,
+        placeholder: '--Medium of Education:--',
+        data: multililaMedium,
         // allowClear: true,
         // console.log( "ready!" )
     });

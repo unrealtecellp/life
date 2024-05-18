@@ -33,10 +33,11 @@ def getspeakerdetails(activeprojectname, speakermeta):
             'Updated By'
         ],
         'MULTILILA': [
-            'Speaker ID',
-            'Name',
+            'Participant Id',
+            'Participant Role',
             'Age Group',
             'Gender',
+            'Class Section',
             'Created By',
             'Updated By'
         ],
@@ -235,6 +236,65 @@ def updateonespeakerdetails(activeprojectname, lifesourceid, all_details, speake
     return status.raw_result
 
 
+def update_bulk_multilila_data(metadata_data):
+    logger.info("Updating bulk data %s", metadata_data)
+    update_vals = {}
+
+    multilila_medium = {
+        "Only English": "1",
+        "Telugu+English": "2",
+        "Hindi+English": "3",
+        "Assamese+English": "4"
+    }
+    site_types = {
+        "Slum": "1",
+        "Non-slum": "2",
+        "Remote Rural": "3",
+        "Non-remote Rural": "4"
+    }
+    cities = {
+        "Delhi": "1",
+        "Hyderabad": "2",
+        "Patna": "3",
+        "Guwahati": "4"
+    }
+
+    participant_type = metadata_data.get('participantRole', '')
+    participant_type = map_columnname_to_mongo_key(participant_type)
+    update_vals['participantRole'] = participant_type
+
+    medium = metadata_data.get('mediumOfEducation-list', [''])
+    new_medium = []
+    for i, current_medium in enumerate(medium):
+        current_medium = current_medium.strip()
+        if len(current_medium) > 0:
+            new_medium.append(multilila_medium.get(
+                current_medium.strip(), current_medium.strip()))
+    if len(new_medium) > 0:
+        update_vals['mediumOfEducation-list'] = new_medium
+
+    subject = metadata_data.get('subjectArea', '')
+    if len(subject) > 0:
+        update_vals['subjectArea'] = subject[0]
+
+    school_type = metadata_data.get('schoolType', '')
+    if len(school_type) > 0:
+        update_vals['schoolType'] = school_type[0]
+
+    site_type = metadata_data.get('siteType', '')
+    if len(site_type) > 0 and site_type in site_types:
+        update_vals['siteType'] = site_types.get(site_type, site_type)
+
+    city = metadata_data.get('city', '')
+    if len(city) > 0 and city in cities:
+        update_vals['city'] = cities.get(city, city)
+
+    logger.info("Updated Values %s\nOriginal Val %s",
+                update_vals, metadata_data)
+
+    insert_ids_into_multilila_data(metadata_data, data=update_vals)
+
+
 def generate_speaker_id(name, age='000'):
     name = name.replace(" ", "").replace(".", "").lower()
     age = age.replace("-", "")
@@ -242,31 +302,111 @@ def generate_speaker_id(name, age='000'):
         name = 'undefined'
     if age == '':
         age = '000'
+    elif age == '-1':
+        age = ''
     new_speaker_id = name+age+'_'+re.sub(r'[-: \.]', '', str(datetime.now()))
 
     return new_speaker_id
 
 
+def insert_ids_into_multilila_data(metadata_data, **kwargs):
+    for data_type, vals in kwargs.items():
+        for field, field_val in vals.items():
+            metadata_data[field] = field_val
+    # metadata_data['learnerId'] = learner_id
+    # metadata_data['teacherId'] = teacher_id
+    # metadata_data['researcherId'] = ra_id
+
+
+def get_speed_source_id(metadata_data):
+    name = metadata_data.get('name', "")
+    age = metadata_data.get('ageGroup', "")
+    source_id = generate_speaker_id(name, age)
+    return source_id
+
+
+def get_ldcil_source_id(metadata_data):
+    age_map = {'16To20': '1', '21To50': '2', 'Above50': '3'}
+    name = metadata_data.get('name', "")
+    age = metadata_data.get('ageGroup', "")
+    age = age_map.get(age, "4")
+    language = metadata_data.get('language', "")
+    language = language[0:2]
+    gender = metadata_data.get('gender', "")
+    gender = gender[0]
+    first_arg = language+gender+age
+    source_id = generate_speaker_id(first_arg, name).upper()
+    return source_id
+
+
+def get_multilila_ids_and_source_id(metadata_schema, metadata_data):
+    additional_vals = {}
+
+    learner_id = ''
+    teacher_id = ''
+    ra_id = ''
+
+    participant_type = metadata_data.get('participantRole', '')
+    # participant_type = map_columnname_to_mongo_key(participant_type)
+    # logger.info('Participant Type %s', participant_type)
+
+    school_sno = str(metadata_data.get('schoolSerialNumber', '0'))
+    school_type = str(metadata_data.get('schoolType', '0'))
+    site_type = str(metadata_data.get('siteType', '0'))
+    city = str(metadata_data.get('city', '0'))
+
+    school_id = city+site_type+school_type+school_sno
+    additional_vals['schoolId'] = school_id
+
+    if participant_type == 'learner':
+        class_section = metadata_data.get('classSection', '0')
+        gender = metadata_data.get('gender', 'N')
+        name = metadata_data.get('name', '')
+        initials = ''.join([x[0].upper() for x in name.split(' ')])
+        learner_id = school_id+class_section+gender[0]+initials
+        participant_id = learner_id
+        source_id = generate_speaker_id('L'+learner_id, '-1')
+    elif participant_type == 'teacher':
+        gender = metadata_data.get('gender', 'N')
+        subject = metadata_data.get('subjectArea', 'N')
+        teacher_id = school_id+subject[0]+gender[0]
+        participant_id = teacher_id
+        source_id = generate_speaker_id('T'+teacher_id, '-1')
+    elif participant_type == 'researchAssistant':
+        name = metadata_data.get('name', '')
+        ra_id = ''.join(name.split(' '))
+        participant_id = ra_id
+        source_id = generate_speaker_id('R'+ra_id, '-1')
+    else:
+        source_id = generate_speaker_id(metadata_schema+'speaker')
+        participant_id = source_id
+
+    additional_vals['learnerId'] = learner_id
+    additional_vals['researcherId'] = ra_id
+    additional_vals['teacherId'] = teacher_id
+    additional_vals['participantId'] = participant_id
+    insert_ids_into_multilila_data(metadata_data, data=additional_vals)
+
+    return source_id
+
+
+def get_youtube_source_id(metadata_data):
+    cname = metadata_data.get('youtubeChannelName', "")
+    source_id = generate_speaker_id(cname)
+    return source_id
+
+
 def get_source_id(audio_source, metadata_schema, metadata_data):
     source_id = ''
     if 'speed' in metadata_schema:
-        name = metadata_data.get('name', "")
-        age = metadata_data.get('ageGroup', "")
-        source_id = generate_speaker_id(name, age)
+        source_id = get_speed_source_id(metadata_data)
     elif 'ldcil' in metadata_schema:
-        age_map = {'16To20': '1', '21To50': '2', 'Above50': '3'}
-        name = metadata_data.get('name', "")
-        age = metadata_data.get('ageGroup', "")
-        age = age_map.get(age, "4")
-        language = metadata_data.get('language', "")
-        language = language[0:2]
-        gender = metadata_data.get('gender', "")
-        gender = gender[0]
-        first_arg = language+gender+age
-        source_id = generate_speaker_id(first_arg, name).upper()
+        source_id = get_ldcil_source_id(metadata_data)
+    elif 'multilila' in metadata_schema:
+        source_id = get_multilila_ids_and_source_id(
+            metadata_schema, metadata_data)
     elif 'youtube' in metadata_schema:
-        cname = metadata_data.get('youtubeChannelName', "")
-        source_id = generate_speaker_id(cname)
+        source_id = get_youtube_source_id(metadata_data)
     else:
         source_id = generate_speaker_id(metadata_schema+'speaker')
 
@@ -317,11 +457,12 @@ def write_bulk_speaker_metadata(speakerdetails,
                                 metadata_schema,
                                 metadata_file,
                                 additional_info):
-    excel_data = pd.read_excel(metadata_file, engine="openpyxl")
+    excel_data = pd.read_excel(metadata_file, engine="openpyxl", dtype=str)
     data_columns = excel_data.columns
     data_columns = [map_columnname_to_mongo_key(col) for col in data_columns]
     excel_data.columns = data_columns
-    excel_data.fillna('', inplace=True)
+    excel_data = excel_data.dropna(how="all", axis=1)
+    excel_data = excel_data.fillna('')
 
     for data_column in data_columns:
         if data_column.endswith('-list'):
@@ -352,8 +493,11 @@ def write_bulk_speaker_metadata(speakerdetails,
         #                                audio_subsource,
         #                                current_record,
         #                                upload_type)
+        if metadata_schema == 'multilila':
+            update_bulk_multilila_data(current_record)
         source_id = get_source_id(
             audio_source, metadata_schema, current_record)
+
         upload_type = 'bulk'
         write_speaker_metadata(speakerdetails,
                                projectowner,

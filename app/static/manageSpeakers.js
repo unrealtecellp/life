@@ -41,7 +41,7 @@ function generateMetadataTable(speakerData, tableHeaders, count) {
         ele += '<tbody id="myTableBody">';
         console.log("Data source", dataSource);
         console.log("Metadata", metadata);
-        // console.log('Metadata Fields', metadataFields);
+        console.log('Metadata Fields', metadataFields);
         for (const metadataEntry of metadata) {
             // console.log('Metadata entry', metadataEntry);
             let metadataEntryValues = metadataEntry["current"]["sourceMetadata"];
