@@ -22,6 +22,7 @@ from app.controller import (
     readJSONFile,
     savenewproject,
     updateuserprojects,
+    projectDetails,
     life_logging,
     readzip
 )
@@ -1761,3 +1762,19 @@ def downloadannotationfile():
         logger.exception("")
 
     return send_file(zip_file_path, as_attachment=True)
+
+
+@lifedata.route('/datasetexplorer', methods=['GET', 'POST'])
+def datasetexplorer():
+    projects, projectsform = getdbcollections.getdbcollections(
+        mongo, 'projects', 'projectsform')
+    # activeprojectname = getactiveprojectname.getactiveprojectname(
+    #     current_username, userprojects)
+    all_public_project_info = projectDetails.get_n_public_projects_info(projects,
+                                                                        projectsform
+                                                                        )
+
+    return render_template(
+        'datasetExplorer.html',
+        allprojectinfo=all_public_project_info
+    )

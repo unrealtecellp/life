@@ -2,9 +2,10 @@
 
 from flask import flash
 
+
 def getprojectsnamebytype(projects,
-                            projects_list,
-                            project_type_list):
+                          projects_list,
+                          project_type_list):
     """
     INPUT:
 
@@ -12,9 +13,10 @@ def getprojectsnamebytype(projects,
     """
 
     try:
-        projects  = projects.find({}, {"_id": 0, "projectname": 1, "projectType": 1})
+        projects = projects.find(
+            {}, {"_id": 0, "projectname": 1, "projectType": 1})
         project_name = ''
-        project_type  = ''
+        project_type = ''
         for project in projects:
             # print(project)
             if ('projectname' in project):
@@ -22,7 +24,7 @@ def getprojectsnamebytype(projects,
             if ('projectType' in project):
                 project_type = project['projectType']
             if (project_name in projects_list):
-                if not (project_type in project_type_list):
+                if (len(project_type_list) > 0) and (not (project_type in project_type_list)):
                     projects_list.remove(project_name)
                 else:
                     continue

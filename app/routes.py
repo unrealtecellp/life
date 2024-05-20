@@ -241,6 +241,34 @@ def manageproject():
         usertype=usertype
     )
 
+
+@app.route('/manageprojects', methods=['GET', 'POST'])
+@login_required
+def manageprojects():
+    userprojects, userlogin, projects, projectsform = getdbcollections.getdbcollections(
+        mongo, 'userprojects', 'userlogin', 'projects', 'projectsform')
+    current_username = getcurrentusername.getcurrentusername()
+    # logger.debug('USERNAME: ', current_username)
+    usertype = userdetails.get_user_type(
+        userlogin, current_username)
+    currentuserprojectsname = getcurrentuserprojects.getcurrentuserprojects(
+        current_username, userprojects)
+    # activeprojectname = getactiveprojectname.getactiveprojectname(
+    #     current_username, userprojects)
+    all_project_info = projectDetails.get_n_projects_info(projects,
+                                                          userprojects,
+                                                          projectsform,
+                                                          current_username,
+                                                          currentuserprojectsname,
+                                                          )
+
+    return render_template(
+        'manageProjects.html',
+        projectnames=currentuserprojectsname,
+        allprojectinfo=all_project_info,
+        usertype=usertype
+    )
+
 # new project route
 # create lexeme entry form for the new project
 
@@ -6380,6 +6408,109 @@ def emailsetup():
 @app.route('/hfmodelsetup', methods=['GET', 'POST'])
 @login_required
 def hfmodelsetup():
+    userlogin, lifeappconfigs = getdbcollections.getdbcollections(
+        mongo, 'userlogin', 'lifeappconfigs')
+    current_username = getcurrentusername.getcurrentusername()
+    logger.debug('USERNAME: ', current_username)
+    usertype = userdetails.get_user_type(
+        userlogin, current_username)
+    logger.debug('USERTYPE: ', usertype)
+    # logger.debug(ADMIN_USER, SUB_ADMINS)
+    # manageAppConfig.generateDummyAppConfig()
+    hfmodelconfig = {}
+    labelmap = []
+    hfmodelconfigglobal = {}
+    hfmodelconfiguser = {}
+
+    featured_authors_default = ['ai4bharat', 'Harveenchadha', 'facebook', 'meta-llama',
+                                'google', 'microsoft', 'allenai', 'Intel', 'openai', 'openchat', 'writer', 'amazon',
+                                'assemblyai', 'EleutherAI', 'tiiuae', 'bigscience', 'Salesforce', 'lmsys', 'mosaicml', 'databricks',
+                                'stabilityai', 'Open-Orca', 'mistralai', 'HuggingFaceH4', 'distil-whisper', 'sarvamai']
+
+    if request.method == 'POST':
+        authors_list = request.form.getlist('nameglobal++authorsList')
+        task_type = request.form.get('nameglobal++taskType')
+        if 'SUPER-ADMIN' in usertype:
+            hfmodelconfigglobal = {
+                'globals': {
+                    task_type: {
+                        'authorsList': authors_list
+                    }
+                }
+            }
+            hfmodelconfig.update(hfmodelconfigglobal)
+
+        api_tokens = request.form.getlist('nameuser++apiTokens')
+        hfmodelconfiguser = {
+            'usersData': {
+                current_username: {
+                    'apiTokens': api_tokens,
+                    'globals': {
+                        task_type: {
+                            'authorsList': authors_list
+                        }
+                    }
+                }
+            }
+        }
+        hfmodelconfig.update(hfmodelconfiguser)
+
+        logger.debug("Final config sent %s", hfmodelconfig)
+
+        labelmap = manageAppConfig.updateHuggingFaceModelConfig(
+            lifeappconfigs, hfmodelconfig)
+    else:
+        hfmodelconfig, labelmap = manageAppConfig.getHuggingFaceModelConfig(
+            lifeappconfigs, current_username, usertype)
+
+    if 'SUPER-ADMIN' in usertype:
+        global_config = hfmodelconfig['globals']
+    else:
+        global_config = hfmodelconfig['usersData'].get(
+            current_username, {'globals': {}})
+
+    # TODO: Write a function to get the list of authors given a task - this will be used
+    # for calling it via AJAX and getting Author List when a specific task is selected
+    # on the manage page. At present only ASR is being implemented and supported
+    # hfmodelconfigval = global_config.get(
+    #     'automatic-speech-recognition', {'authorsList': featured_authors_default})
+    # logger.debug('Model config %s %s', hfmodelconfigval,
+    #              len(hfmodelconfigval['authorsList']))
+    # if len(hfmodelconfigval['authorsList']) > 0:
+    #     hfmodelconfigglobal['automatic-speech-recognition'] = hfmodelconfigval['authorsList']
+    # else:
+    #     hfmodelconfigglobal['automatic-speech-recognition'] = featured_authors_default
+
+    logger.debug('Model config Global %s', hfmodelconfigglobal)
+
+    for task_type, author_list in global_config.items():
+        # if task_type == current_username:
+        author_list = author_list.get(
+            'authorsList', featured_authors_default)
+        if len(author_list) == 0:
+            author_list = featured_authors_default
+        hfmodelconfigglobal[task_type] = author_list
+
+    logger.debug('Model config Global %s', hfmodelconfigglobal)
+    # hfmodelconfigglobal['taskType'] = 'automatic-speech-recognition'
+    hfmodelconfiguser = hfmodelconfig['usersData'].get(
+        current_username, {'apiTokens': []})['apiTokens']
+
+    logger.debug('Model config Global %s', hfmodelconfigglobal)
+    logger.debug('Model config user %s', hfmodelconfiguser)
+
+    return render_template(
+        'hfmodelsetup.html',
+        hfmodelconfiguser=hfmodelconfiguser,
+        hfmodelconfigadmin=hfmodelconfigglobal,
+        labelmap=labelmap,
+        usertype=usertype
+    )
+
+
+@app.route('/bhashinimodelsetup', methods=['GET', 'POST'])
+@login_required
+def bhashinimodelsetup():
     userlogin, lifeappconfigs = getdbcollections.getdbcollections(
         mongo, 'userlogin', 'lifeappconfigs')
     current_username = getcurrentusername.getcurrentusername()

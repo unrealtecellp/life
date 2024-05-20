@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}
+Dataset Explorer
+{% endblock title %}
+
+{% block styles %}
+{{super()}}
+<link href="{{url_for('.static', filename='dataexplorer.css')}}" rel="stylesheet">
+{% endblock %}
+
+{% block app_content %}
+
+<h4>
+    LiFE Dataset Explorer
+</h4>
+
+<br>
+<div class="row">
+    <div class="col col-md-8">
+        <!-- <label for="speakeridsdropdown">Source:</label> -->
+        <select id="datasetsortingcategoriesdropdown" style="width: 30%;"></select>
+        <select id="datasetsortingsubcategoriesdropdown" multiple="multiple" style="width: 40%; display: none;"></select>
+        <button type="button" class="btn btn-primary" id="datasetfilter" style="display: none;">
+            <span class="glyphicon glyphicon-filter" aria-hidden="true"></span>
+        </button>
+        <!-- <label for="speakeridsdropdown">Source:</label> -->
+        <select id="datasetnamesdropdown" style="width: 40%; display: block;"></select>
+        <select id="datasetcountdropdown" style="width: 10%;"></select>
+        <label for="datasetcountdropdown">:Files</label>
+    </div>
+    <div class="col col-md-4 pull-right" id="browsedatasetdropdowns">
+    </div>
+    <!-- <div class="col col-md-3">
+        <input id="myInput" type="text" placeholder="Search">
+    </div> -->
+</div>
+<br>
+<div id="datasetbrowse"></div>
+<div class="text-center" id="datasetbrowsepagination"></div>
+
+{% endblock %}
+
+{% block scripts %}
+{{super()}}
+<script src="{{url_for('.static', filename='datasetbrowsefilter.js')}}"></script>
+<script src="{{url_for('.static', filename='datasetbrowse.js')}}"></script>
+<script type="text/javascript">createDatasetBrowse({{ allprojectinfo | tojson | safe }});</script>
+<script src="{{url_for('.static', filename='search.js')}}"></script>
+<script src="{{url_for('.static', filename='sorttable.js')}}"></script>
+{% endblock %}
