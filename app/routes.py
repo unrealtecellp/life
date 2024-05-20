@@ -5826,7 +5826,7 @@ def editsourcemetadata():
                 "current_date": current_dt,
             }
         }
-        logger.debug("Update Data %s", update_data)
+        # logger.info("Update Data %s", update_data)
         updatestatus = speakerDetails.updateonespeakerdetails(
             activeprojectname, lifesourceid, update_data, speakerdetails)
 

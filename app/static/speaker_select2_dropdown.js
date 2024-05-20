@@ -325,6 +325,148 @@ var transcriptionBy = [
   { "id": "mytranscription", "text": "My Transcriptions" }
 ]
 
+// Value mapped to Camel Case (in speakerDetails.py - update_bulk_multilila_data() for bulk upload)
+var multililaParticipants = [
+  { "id": "", "text": "" },
+  { "id": "learner", "text": "Learner" },
+  { "id": "teacher", "text": "Teacher" },
+  { "id": "researchAssistant", "text": "Research Assistant" }
+]
+
+// If edited, also map values in speakerDetails.py - update_bulk_multilila_data() for bulk upload
+var multililaMedium = [
+  { "id": "", "text": "" },
+  { "id": "1", "text": "Only English" },
+  { "id": "2", "text": "Telugu+English" },
+  { "id": "3", "text": "Hindi+English" },
+  { "id": "4", "text": "Assamese+English" }
+]
+
+var multililaClasses = [
+  { "id": "", "text": "" },
+  { "id": "4E", "text": "4E" },
+  { "id": "5E", "text": "4E" }
+]
+
+var multililaSchools = [
+  { "id": "", "text": "" },
+  { "id": "Govt.Primary School Shankar Bhagath Pathashala", "text": "Govt.Primary School Shankar Bhagath Pathashala" },
+  { "id": "Govt.Primary School Chikkadpally", "text": "Govt.Primary School Chikkadpally" },
+  { "id": "Govt.Primary School Jama - e - Osmania", "text": "Govt.Primary School Jama - e - Osmania" },
+  { "id": "MPPS Yapral", "text": "MPPS Yapral" },
+  { "id": "MPPS Neredmet", "text": "MPPS Neredmet" },
+  { "id": "MPPS Vajpayee", "text": "MPPS Vajpayee" },
+  { "id": "MPUPS  Old Safilguda", "text": "MPUPS  Old Safilguda" },
+  { "id": "MPPS  RK Puram", "text": "MPPS  RK Puram" },
+  { "id": "MPPS Saptagiri Colony", "text": "MPPS Saptagiri Colony" },
+  { "id": "MPPS  Sri Sai Nagar", "text": "MPPS  Sri Sai Nagar" },
+  { "id": "Jyothi Bala Mandir High School", "text": "Jyothi Bala Mandir High School" },
+  { "id": "Model High School", "text": "Model High School" },
+  { "id": "Vedic Vidyalayam High School", "text": "Vedic Vidyalayam High School" }
+]
+
+var multililaSchoolNumbers = [
+  { "id": "", "text": "" },
+  { "id": "1", "text": "1" },
+  { "id": "2", "text": "2" },
+  { "id": "3", "text": "3" },
+  { "id": "4", "text": "4" },
+  { "id": "5", "text": "5" },
+  { "id": "6", "text": "6" },
+  { "id": "7", "text": "7" },
+  { "id": "8", "text": "8" },
+  { "id": "9", "text": "9" },
+  { "id": "10", "text": "10" },
+  { "id": "11", "text": "11" },
+  { "id": "12", "text": "12" },
+  { "id": "13", "text": "13" }
+]
+
+// Value mapped to First letter (in speakerDetails.py - update_bulk_multilila_data() for bulk upload)
+var multililaSchoolTypes = [
+  { "id": "", "text": "" },
+  { "id": "G", "text": "Government" },
+  { "id": "P", "text": "Private" }
+]
+
+// If edited, also map values in speakerDetails.py - update_bulk_multilila_data() for bulk upload
+var multililaSiteTypes = [
+  { "id": "", "text": "" },
+  { "id": "1", "text": "Slum" },
+  { "id": "2", "text": "Non-slum" },
+  { "id": "3", "text": "Remote Rural" },
+  { "id": "4", "text": "Non-remote Rural" }
+]
+
+// If edited, also map values in speakerDetails.py - update_bulk_multilila_data() for bulk upload
+var multililaCities = [
+  { "id": "", "text": "" },
+  { "id": "1", "text": "Delhi" },
+  { "id": "2", "text": "Hyderabad" },
+  { "id": "3", "text": "Patna" },
+  { "id": "4", "text": "Guwahati" }
+]
+
+// Value mapped to First letter (in speakerDetails.py - update_bulk_multilila_data() for bulk upload)
+var multililaSubjects = [
+  { "id": "", "text": "" },
+  { "id": "L", "text": "Language" },
+  { "id": "M", "text": "Maths" },
+]
+
+var multililaAgeGroup = [
+  { "id": "", "text": "" },
+  { "id": "6", "text": "6" },
+  { "id": "7", "text": "7" },
+  { "id": "8", "text": "8" },
+  { "id": "9", "text": "9" },
+  { "id": "9-18", "text": "9-18" },
+  { "id": "18-30", "text": "18-30" },
+  { "id": "30-45", "text": "30-45" },
+  { "id": "45-60", "text": "45-60" },
+  { "id": "60+", "text": "60+" }
+]
+
+var states = [
+  { "id": "", "text": "" },
+  { "id": "Andhra Pradesh", "text": "Andhra Pradesh" },
+  { "id": "Arunachal Pradesh", "text": "Arunachal Pradesh" },
+  { "id": "Assam", "text": "Assam" },
+  { "id": "Bihar", "text": "Bihar" },
+  { "id": "Chhattisgarh", "text": "Chhattisgarh" },
+  { "id": "Delhi", "text": "Delhi" },
+  { "id": "Goa", "text": "Goa" },
+  { "id": "Gujarat", "text": "Gujarat" },
+  { "id": "Haryana", "text": "Haryana" },
+  { "id": "Himachal Pradesh", "text": "Himachal Pradesh" },
+  { "id": "Jharkhand", "text": "Jharkhand" },
+  { "id": "Karnataka", "text": "Karnataka" },
+  { "id": "Kerala", "text": "Kerala" },
+  { "id": "Maharashtra", "text": "Maharashtra" },
+  { "id": "Madhya Pradesh", "text": "Madhya Pradesh" },
+  { "id": "Manipur", "text": "Manipur" },
+  { "id": "Meghalaya", "text": "Meghalaya" },
+  { "id": "Mizoram", "text": "Mizoram" },
+  { "id": "Nagaland", "text": "Nagaland" },
+  { "id": "Odisha", "text": "Odisha" },
+  { "id": "Punjab", "text": "Punjab" },
+  { "id": "Rajasthan", "text": "Rajasthan" },
+  { "id": "Sikkim", "text": "Sikkim" },
+  { "id": "Tamil Nadu", "text": "Tamil Nadu" },
+  { "id": "Tripura", "text": "Tripura" },
+  { "id": "Telangana", "text": "Telangana" },
+  { "id": "Uttar Pradesh", "text": "Uttar Pradesh" },
+  { "id": "Uttarakhand", "text": "Uttarakhand" },
+  { "id": "West Bengal", "text": "West Bengal" },
+  { "id": "Andaman & Nicobar", "text": "Andaman & Nicobar" },
+  { "id": "Chandigarh", "text": "Chandigarh" },
+  { "id": "Dadra & Nagar Haveli", "text": "Dadra & Nagar Haveli" },
+  { "id": "Daman & Diu", "text": "Daman & Diu" },
+  { "id": "Jammu & Kashmir", "text": "Jammu & Kashmir" },
+  { "id": "Lakshadweep", "text": "Lakshadweep" },
+  { "id": "Ladakh", "text": "Ladakh" },
+  { "id": "Puducherry", "text": "Puducherry" }
+]
 // var QuestionnaireDomain = [
 //   {"id": "", "text": ""},
 //   {"id": "General", "text": "General"},
