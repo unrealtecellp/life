@@ -5766,12 +5766,12 @@ def managespeakermetadata():
 
     return render_template(
         'manageSpeakers.html',
-        speaker_data=allspeakerdetails,
+        speakerData=allspeakerdetails,
         activeprojectname=activeprojectname,
         shareinfo=shareinfo,
         usertype=usertype,
         count=alldatalengths,
-        table_headers=allkeys
+        tableHeaders=allkeys
     )
 
 
@@ -5826,7 +5826,7 @@ def editsourcemetadata():
                 "current_date": current_dt,
             }
         }
-        logger.debug("Update Data %s", update_data)
+        # logger.info("Update Data %s", update_data)
         updatestatus = speakerDetails.updateonespeakerdetails(
             activeprojectname, lifesourceid, update_data, speakerdetails)
 
