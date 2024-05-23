@@ -7,6 +7,9 @@ from app.controller import life_logging
 import pandas as pd
 import os
 
+import stanza
+from stanza import DownloadMethod
+
 torch.set_num_threads(8)
 
 logger = life_logging.get_logger()
@@ -19,6 +22,11 @@ logger = life_logging.get_logger()
 translit_res_path = os.path.join(
     basedir_parent, 'static/translit_resources')
 print('Translit res path', translit_res_path)
+
+stanza_pipelines = {
+    'hi': stanza.Pipeline(
+        'hi', download_method=DownloadMethod.REUSE_RESOURCES)
+}
 
 
 def get_boundaries(model_name, model_params):
@@ -285,3 +293,21 @@ def get_transliteration_Devanagari_to_Latin(data, lang_code, **kwargs):
                 current_word.strip(), current_transcript.strip(), ipa_character_map, lang_code))
     transcription = ' '.join(rom_words)
     return transcription
+
+
+def get_gloss_stanza(data, lang_code, **kwargs):
+    nlp = stanza_pipelines.get(lang_code, '')
+    all_outputs = {}
+    # in_docs = [stanza.Document([], text=d) for d in data]
+
+    if nlp != '':
+        input_ids = data.keys()
+        model_input_strs = list(data.values())
+        results = nlp.bulk_process(model_input_strs)
+
+        for input_id, result in zip(input_ids, results):
+            logger.info('Input for %s', input_id)
+            output = result.to_dict()[0]
+            all_outputs[input_id] = output
+
+    return all_outputs

@@ -24,7 +24,8 @@ from app.controller import (
     updateuserprojects,
     projectDetails,
     life_logging,
-    readzip
+    readzip,
+    getactiveprojectform
 )
 from app.lifedata.controller import (
     annotationdetails,
@@ -35,7 +36,9 @@ from app.lifedata.controller import (
     create_validation_type_project,
     get_validation_data,
     youtubecrawl,
-    sourceid_to_souremetadata
+    sourceid_to_souremetadata,
+    translation_utils,
+    gloss_utils
 )
 
 from app.lifetagsets.controller import (
@@ -47,6 +50,9 @@ from app.lifedata.transcription.controller import (
     save_new_transcription_form
 )
 
+from app.lifemodels.controller import modelManager
+from app.languages.controller import languageManager
+
 from flask_login import login_required
 import os
 from pprint import pformat
@@ -56,6 +62,8 @@ from datetime import datetime
 from zipfile import ZipFile
 import glob
 import pandas as pd
+
+from isocodes import script_names as sn
 
 lifedata = Blueprint('lifedata', __name__,
                      template_folder='templates', static_folder='static')
@@ -123,12 +131,12 @@ def newdataform():
     """
     try:
         projects, userprojects, projectsform, questionnaires, transcriptions, crawling_collection = getdbcollections.getdbcollections(mongo,
-                                                                                                                           'projects',
-                                                                                                                           'userprojects',
-                                                                                                                           'projectsform',
-                                                                                                                           'questionnaires',
-                                                                                                                           'transcriptions',
-                                                                                                                           'crawling')
+                                                                                                                                      'projects',
+                                                                                                                                      'userprojects',
+                                                                                                                                      'projectsform',
+                                                                                                                                      'questionnaires',
+                                                                                                                                      'transcriptions',
+                                                                                                                                      'crawling')
         current_username = getcurrentusername.getcurrentusername()
 
         include_speakerIds = ['transcriptions', 'recordings']
@@ -175,8 +183,8 @@ def newdataform():
 
                 validation_zip_file = new_data_form_files["tagsetZipFile"]
                 tagset_project_ids = saveTagset.save_tagset(tagsets,
-                                                             validation_zip_file,
-                                                             project_name)
+                                                            validation_zip_file,
+                                                            project_name)
                 # logger.debug(tagset_project_ids)
                 projects.update_one({"projectname": project_name},
                                     {"$set": {
@@ -217,8 +225,8 @@ def newdataform():
                                                                       current_username)
                     if (project_type == 'transcriptions'):
                         new_transcription_form(project_name,
-                                                new_data_form,
-                                                new_data_form_files)
+                                               new_data_form,
+                                               new_data_form_files)
                 elif (derive_from_project_type == 'crawling' and
                         project_type == 'annotation'):
                     data_collection, = getdbcollections.getdbcollections(
@@ -236,16 +244,16 @@ def newdataform():
                     data_collection, = getdbcollections.getdbcollections(
                         mongo, project_type)
                     new_transcription_form(project_name,
-                                                new_data_form,
-                                                new_data_form_files)
+                                           new_data_form,
+                                           new_data_form_files)
                     copydatafromparentproject.sync_transcription_project_from_crawling_project(mongo,
                                                                                                projects,
-                                                                                                userprojects,
-                                                                                                crawling_collection,
-                                                                                                data_collection,
-                                                                                                derive_from_project_name,
-                                                                                                projectname,
-                                                                                                current_username)
+                                                                                               userprojects,
+                                                                                               crawling_collection,
+                                                                                               data_collection,
+                                                                                               derive_from_project_name,
+                                                                                               projectname,
+                                                                                               current_username)
                     return redirect(url_for("lifedata.transcription.home"))
             else:
                 if (project_type == 'annotation'):
@@ -256,8 +264,8 @@ def newdataform():
                     if 'annotationtagsetZipFile' in new_data_form_files:
                         annotation_zip_file = new_data_form_files["annotationtagsetZipFile"]
                         tagset_project_ids = saveTagset.save_tagset(tagsets,
-                                                                     annotation_zip_file,
-                                                                     project_name)
+                                                                    annotation_zip_file,
+                                                                    project_name)
                     else:
                         tagset_name = new_data_form['tagsetname'][0]
                         tagset_project_ids = tagset_details.get_tagset_id(tagsets,
@@ -284,8 +292,8 @@ def newdataform():
                     return redirect(url_for("lifedata.annotation"))
                 elif (project_type == 'transcriptions'):
                     new_transcription_form(project_name,
-                                            new_data_form,
-                                            new_data_form_files)
+                                           new_data_form,
+                                           new_data_form_files)
 
             return redirect(url_for("lifedata.transcription.home"))
         return render_template("lifedatahome.html")
@@ -294,20 +302,21 @@ def newdataform():
         flash("Some error occured!!!")
         return render_template("lifedatahome.html")
 
+
 def new_transcription_form(project_name,
                            new_data_form,
                            new_data_form_files):
     projects, projectsform, transcriptions_collection, tagsets = getdbcollections.getdbcollections(mongo,
-                                                                                        'projects',
-                                                                                        'projectsform',
-                                                                                        'transcriptions',
-                                                                                        'tagsets')
+                                                                                                   'projects',
+                                                                                                   'projectsform',
+                                                                                                   'transcriptions',
+                                                                                                   'tagsets')
     current_username = getcurrentusername.getcurrentusername()
     final_tagset_project_ids = []
     tagset_project_ids = {}
     # logger.debug("project_type: %s", project_type)
     if ("transcriptionstagsetuploadcheckbox" in new_data_form and
-        new_data_form["transcriptionstagsetuploadcheckbox"][0] == "on"):
+            new_data_form["transcriptionstagsetuploadcheckbox"][0] == "on"):
         if 'transcriptionstagsetZipFile' in new_data_form_files:
             transcriptions_zip_file = new_data_form_files["transcriptionstagsetZipFile"]
             # logger.debug("transcriptions_zip_file: %s\n%s\n%s\n%s\n%s",
@@ -316,28 +325,29 @@ def new_transcription_form(project_name,
             #              transcriptions_zip_file.filename,
             #              len(transcriptions_zip_file.filename),
             #              transcriptions_zip_file.headers)
-            transcriptions_zip_filename = transcriptions_zip_file.filename.split('.')[0]
+            transcriptions_zip_filename = transcriptions_zip_file.filename.split('.')[
+                0]
             # logger.debug("transcriptions_zip_file: %s\n%s",
             #              transcriptions_zip_filename,
             #              len(transcriptions_zip_filename))
             if (len(transcriptions_zip_filename) != 0):
                 tagset_project_ids["Audio Annotation"] = saveTagset.save_tagset(tagsets,
-                                                                transcriptions_zip_file,
-                                                                project_name)
+                                                                                transcriptions_zip_file,
+                                                                                project_name)
             else:
                 tagset_name = new_data_form['transcriptionstagsetuploadselect'][0]
                 tagset_project_ids["Audio Annotation"] = tagset_details.get_tagset_id(tagsets,
-                                                                tagset_name)
+                                                                                      tagset_name)
         else:
             tagset_name = new_data_form['transcriptionstagsetuploadselect'][0]
             tagset_project_ids["Audio Annotation"] = tagset_details.get_tagset_id(tagsets,
-                                                            tagset_name)
+                                                                                  tagset_name)
         logger.debug("tagset_project_ids: %s,\nType: %s",
-                        tagset_project_ids,
-                        type(tagset_project_ids))
+                     tagset_project_ids,
+                     type(tagset_project_ids))
         final_tagset_project_ids.extend(tagset_project_ids["Audio Annotation"])
     if ("transcriptionsboundarytagsetuploadcheckbox" in new_data_form and
-        new_data_form["transcriptionsboundarytagsetuploadcheckbox"][0] == "on"):
+            new_data_form["transcriptionsboundarytagsetuploadcheckbox"][0] == "on"):
         if 'transcriptionsboundarytagsetZipFile' in new_data_form_files:
             transcriptions_zip_file = new_data_form_files["transcriptionsboundarytagsetZipFile"]
             # logger.debug("transcriptions_zip_file: %s\n%s\n%s\n%s\n%s",
@@ -346,29 +356,31 @@ def new_transcription_form(project_name,
             #              transcriptions_zip_file.filename,
             #              len(transcriptions_zip_file.filename),
             #              transcriptions_zip_file.headers)
-            transcriptions_zip_filename = transcriptions_zip_file.filename.split('.')[0]
+            transcriptions_zip_filename = transcriptions_zip_file.filename.split('.')[
+                0]
             # logger.debug("transcriptions_zip_file: %s\n%s",
             #              transcriptions_zip_filename,
             #              len(transcriptions_zip_filename))
             if (len(transcriptions_zip_filename) != 0):
                 tagset_project_ids["Boundary Annotation"] = saveTagset.save_tagset(tagsets,
-                                                                transcriptions_zip_file,
-                                                                project_name)
+                                                                                   transcriptions_zip_file,
+                                                                                   project_name)
             else:
                 tagset_name = new_data_form['transcriptionsboundarytagsetuploadselect'][0]
                 tagset_project_ids["Boundary Annotation"] = tagset_details.get_tagset_id(tagsets,
-                                                                tagset_name)
+                                                                                         tagset_name)
         else:
             tagset_name = new_data_form['transcriptionsboundarytagsetuploadselect'][0]
             tagset_project_ids["Boundary Annotation"] = tagset_details.get_tagset_id(tagsets,
-                                                            tagset_name)
+                                                                                     tagset_name)
         logger.debug("tagset_project_ids: %s,\nType: %s",
-                    tagset_project_ids,
-                    type(tagset_project_ids))
-        final_tagset_project_ids.extend(tagset_project_ids["Boundary Annotation"])
+                     tagset_project_ids,
+                     type(tagset_project_ids))
+        final_tagset_project_ids.extend(
+            tagset_project_ids["Boundary Annotation"])
     logger.debug("final tagset_project_ids: %s,\nType: %s",
-                    final_tagset_project_ids,
-                    type(final_tagset_project_ids))
+                 final_tagset_project_ids,
+                 type(final_tagset_project_ids))
     projects.update_one({"projectname": project_name},
                         {"$set": {
                             "tagsetId": final_tagset_project_ids
@@ -376,9 +388,9 @@ def new_transcription_form(project_name,
     if (len(tagset_project_ids) != 0):
         new_data_form.update(tagset_project_ids)
     saved_new_transcription_form, save_status = save_new_transcription_form.save_new_transcription_form(projectsform,
-                                                                                                            project_name,
-                                                                                                            new_data_form,
-                                                                                                            current_username)
+                                                                                                        project_name,
+                                                                                                        new_data_form,
+                                                                                                        current_username)
     return redirect(url_for("lifedata.transcription.home"))
 
 
@@ -582,8 +594,8 @@ def crawler():
             activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
                                                                           userprojects)
             shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
-                                                          current_username,
-                                                          activeprojectname)
+                                                              current_username,
+                                                              activeprojectname)
             data_sub_source = data_project_info.get_data_sub_source(projects,
                                                                     activeprojectname)
             if (shareinfo["sharemode"] == 0):
@@ -596,6 +608,7 @@ def crawler():
                            projectName=activeprojectname,
                            shareinfo=shareinfo,
                            dataSubSource=data_sub_source)
+
 
 @lifedata.route('/youtubecrawler', methods=['GET', 'POST'])
 @login_required
@@ -667,34 +680,35 @@ def youtubecrawler():
 
             logger.debug("Current active project name %s", activeprojectname)
             crawled_video_ids = youtubecrawl.run_youtube_crawler(mongo, projects_collection,
-                                             userprojects_collection,
-                                             sourcedetails_collection,
-                                             crawling_collection,
-                                             project_owner,
-                                             current_username,
-                                             activeprojectname,
-                                             api_key,
-                                             data_links,
-                                             download_items=youtube_data_type)
+                                                                 userprojects_collection,
+                                                                 sourcedetails_collection,
+                                                                 crawling_collection,
+                                                                 project_owner,
+                                                                 current_username,
+                                                                 activeprojectname,
+                                                                 api_key,
+                                                                 data_links,
+                                                                 download_items=youtube_data_type)
             # logger.debug('to_crawl_video_ids: %s, crawled_video_ids: %s',
             #              to_crawl_video_ids,
             #              crawled_video_ids)
-            crawl_video_ids_diff = list(set(to_crawl_video_ids)-set(crawled_video_ids))
+            crawl_video_ids_diff = list(
+                set(to_crawl_video_ids)-set(crawled_video_ids))
             # logger.debug("crawl_video_ids_diff: %s", crawl_video_ids_diff)
             projects_collection.update_one(
-                                {
-                                    'projectname': activeprojectname
-                                },
-                                {
-                                    '$addToSet':
-                                    {
-                                        'sourceIds.'+current_username: 
-                                            {
-                                                '$each': crawl_video_ids_diff
-                                            }
-                                    }
-                                }
-                            )
+                {
+                    'projectname': activeprojectname
+                },
+                {
+                    '$addToSet':
+                    {
+                        'sourceIds.'+current_username:
+                        {
+                            '$each': crawl_video_ids_diff
+                        }
+                    }
+                }
+            )
             flash("Crawling Complete.")
             return redirect(url_for("lifedata.crawler"))
     except:
@@ -729,6 +743,7 @@ def retrieve(filename):
 
     return x
 
+
 @lifedata.route('/crawleraudiobrowseactionplay', methods=['GET', 'POST'])
 @login_required
 def crawleraudiobrowseactionplay():
@@ -736,10 +751,10 @@ def crawleraudiobrowseactionplay():
     audio_data_list = []
     try:
         projects, userprojects, crawling, sourcedetails_collection = getdbcollections.getdbcollections(mongo,
-                                                                                   'projects',
-                                                                                   'userprojects',
-                                                                                   'crawling',
-                                                                                   'sourcedetails')
+                                                                                                       'projects',
+                                                                                                       'userprojects',
+                                                                                                       'crawling',
+                                                                                                       'sourcedetails')
         current_username = getcurrentusername.getcurrentusername()
         activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
                                                                       userprojects)
@@ -774,8 +789,8 @@ def crawleraudiobrowseactionplay():
             total_records = 0
             if (active_source_id != ''):
                 source_data_types = sourceid_to_souremetadata.get_data_types(sourcedetails_collection,
-                                                                         active_source_id,
-                                                                         activeprojectname)
+                                                                             active_source_id,
+                                                                             activeprojectname)
 
                 # logger.debug("Source Data Types %s", source_data_types)
 
@@ -790,12 +805,12 @@ def crawleraudiobrowseactionplay():
 
                 logger.debug("Default Data Type %s", default_data_type)
                 total_records, audio_data_list = crawled_data_details.get_n_crawled_data(crawling,
-                                                                                       activeprojectname,
-                                                                                       active_source_id,
-                                                                                       data_type=default_data_type,
-                                                                                       start_from=start_from,
-                                                                                       number_of_crawled_data=number_of_crawled_data,
-                                                                                       crawled_data_delete_flag=crawled_data_browse_action)
+                                                                                         activeprojectname,
+                                                                                         active_source_id,
+                                                                                         data_type=default_data_type,
+                                                                                         start_from=start_from,
+                                                                                         number_of_crawled_data=number_of_crawled_data,
+                                                                                         crawled_data_delete_flag=crawled_data_browse_action)
             else:
                 audio_data_list = []
 
@@ -828,6 +843,7 @@ def crawleraudiobrowseactionplay():
     except:
         logger.exception("")
         return jsonify(audioSource='')
+
 
 @lifedata.route('/crawlerbrowse', methods=['GET', 'POST'])
 @login_required
@@ -1133,7 +1149,6 @@ def crawlerbrowsechangepage():
         else:
             crawled_data_list = []
         # logger.debug('crawled_data_list: %s', pformat(crawled_data_list))
-        
 
         if data_type == 'audio':
             # audio_filename = crawled_data_list['audioFilename']
@@ -1778,3 +1793,297 @@ def datasetexplorer():
         'datasetExplorer.html',
         allprojectinfo=all_public_project_info
     )
+
+
+@lifedata.route('/maketranslation', methods=['GET', 'POST'])
+@login_required
+def maketranslation():
+    projects, userprojects, transcriptions, lifeappconfigs, projectsform, languages = getdbcollections.getdbcollections(mongo,
+                                                                                                                        'projects',
+                                                                                                                        'userprojects',
+                                                                                                                        'transcriptions',
+                                                                                                                        'lifeappconfigs',
+                                                                                                                        'projectsform',
+                                                                                                                        'languages')
+    current_username = getcurrentusername.getcurrentusername()
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                  userprojects)
+    projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
+    audio_language = getactiveprojectform.getaudiolanguage(
+        projectsform, projectowner, activeprojectname)
+    audio_lang_code = languageManager.get_bcp_language_code(
+        languages, audio_language)
+
+    if request.method == 'POST':
+        data = dict(request.form.lists())
+        logger.debug("Form data %s", data)
+
+        translation_source = data['translateUsingSelect2'][0]
+
+        if translation_source == 'hfinference':
+            if not 'hfinferenceagree' in data:
+                # flash('')
+                flash(
+                    'We do not have sufficient permission to send the data to HF Inference Server.', category='error')
+                return redirect(url_for('lifedata.transcription.home'))
+
+        speakerId = data['translationSpeakerId'][0]
+        # new_audio_file = request.files.to_dict()
+        audio_filename = data['translationfile'][0]
+
+        existing_audio_details = transcriptions.find_one(
+            {'projectname': activeprojectname, 'audioFilename': audio_filename})
+        # logger.debug("Existing audio data %s", existing_audio_details)
+
+        if 'modelId' in data:
+            model_name = data['modelId'][0]
+        else:
+            model_name = ''
+
+        if 'sourceScriptName' in data:
+            source_script_name = data['sourceScriptName'][0]
+            source_script_code = sn.get(
+                name=source_script_name).get("alpha_4", source_script_name)
+        else:
+            source_script_name = ''
+
+        if 'targetLanguageName' in data:
+            output_language_name = data['targetLanguageName'][0]
+            lang_scripts = output_language_name.split('-')
+            output_lang = lang_scripts[0]
+            output_script = lang_scripts[1]
+            output_lang_code = languageManager.get_bcp_language_code(
+                languages, output_lang)
+            # output_script_code = sn.get(
+            #     name=output_script).get("alpha_4", output_script)
+            if output_script == "Latin":
+                output_script_code = "Latn"
+            else:
+                output_script_code = sn.get(
+                    name=output_script).get("alpha_4", output_script)
+        else:
+            output_language_name = ''
+
+        if 'overwrite-my-translations' in data:
+            save_for_user = True
+        else:
+            save_for_user = False
+
+        '''
+        Translation Model
+
+        translation_model = {
+            'model_name': "name_1",
+            'model_type': "local", (or "api")
+            'model_params': {
+                'model_path': "path_1",
+                'model_api': 'api_endpoint'
+            },
+            'target': 'hin-Deva'
+        }
+
+        '''
+        access_time = data['accessedOnTime'][0]
+
+        if 'bhashini' in translation_source:
+            hf_token = ''
+            model_name = model_name.replace('bhashini_', '')
+            model_type = 'bhashini'
+        else:
+            hf_token = modelManager.get_hf_tokens(
+                lifeappconfigs, current_username)
+            model_type = 'hfapi'
+
+        translation_model = {
+            'model_name': model_name,
+            'model_type': model_type,
+            'model_params': {
+                'model_path': model_name,
+                'model_api': translation_source,
+                'output_language': output_language_name,
+                'source_language': audio_lang_code,
+                'source_script': source_script_name,
+                'source_script_code': source_script_code,
+                'target_language': output_lang_code,
+                'target_script': output_script_code
+            },
+            'target': output_language_name
+        }
+
+        logger.debug('Translation model vals %s', translation_model)
+        logger.debug('Access time %s', access_time)
+
+        translation_utils.save_translation_of_one_audio_file(transcriptions,
+                                                             activeprojectname,
+                                                             current_username,
+                                                             audio_filename,
+                                                             translation_model,
+                                                             transcription_type='sentence',
+                                                             save_for_user=save_for_user,
+                                                             hf_token=hf_token,
+                                                             audio_details=existing_audio_details,
+                                                             accessedOnTime=access_time
+                                                             )
+
+    return redirect(url_for('lifedata.transcription.home'))
+
+
+@lifedata.route('/makegloss', methods=['GET', 'POST'])
+@login_required
+def makegloss():
+    projects, userprojects, transcriptions, lifeappconfigs, projectsform, languages = getdbcollections.getdbcollections(mongo,
+                                                                                                                        'projects',
+                                                                                                                        'userprojects',
+                                                                                                                        'transcriptions',
+                                                                                                                        'lifeappconfigs',
+                                                                                                                        'projectsform',
+                                                                                                                        'languages')
+    current_username = getcurrentusername.getcurrentusername()
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                  userprojects)
+    projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
+    audio_language = getactiveprojectform.getaudiolanguage(
+        projectsform, projectowner, activeprojectname)
+    audio_lang_code = languageManager.get_bcp_language_code(
+        languages, audio_language)
+
+    if request.method == 'POST':
+        data = dict(request.form.lists())
+        logger.debug("Form data %s", data)
+
+        translation_source = data['translateUsingSelect2'][0]
+
+        if translation_source == 'hfinference':
+            if not 'hfinferenceagree' in data:
+                # flash('')
+                flash(
+                    'We do not have sufficient permission to send the data to HF Inference Server.', category='error')
+                return redirect(url_for('lifedata.transcription.home'))
+
+        speakerId = data['glossingSpeakerId'][0]
+        # new_audio_file = request.files.to_dict()
+        audio_filename = data['glossingfile'][0]
+
+        existing_audio_details = transcriptions.find_one(
+            {'projectname': activeprojectname, 'audioFilename': audio_filename})
+        # logger.debug("Existing audio data %s", existing_audio_details)
+
+        if 'glossModelId' in data:
+            gloss_model_name = data['glossModelId'][0]
+        else:
+            gloss_model_name = ''
+
+        if 'translationModelId' in data:
+            translation_model_name = data['translationModelId'][0]
+        else:
+            translation_model_name = ''
+
+        if 'sourceScriptName' in data:
+            source_script_name = data['sourceScriptName'][0]
+            source_script_code = sn.get(
+                name=source_script_name).get("alpha_4", source_script_name)
+        else:
+            source_script_name = ''
+
+        if 'targetLanguageName' in data:
+            output_language_name = data['targetLanguageName'][0]
+            lang_scripts = output_language_name.split('-')
+            output_lang = lang_scripts[0]
+            output_script = lang_scripts[1]
+            output_lang_code = languageManager.get_bcp_language_code(
+                languages, output_lang)
+            # output_script_code = sn.get(
+            #     name=output_script).get("alpha_4", output_script)
+            if output_script == "Latin":
+                output_script_code = "Latn"
+            else:
+                output_script_code = sn.get(
+                    name=output_script).get("alpha_4", output_script)
+        else:
+            output_language_name = ''
+
+        if 'overwrite-my-gloss' in data:
+            save_for_user = True
+        else:
+            save_for_user = False
+
+        if 'overwrite-my-freetranslation' in data:
+            free_translation = True
+        else:
+            free_translation = False
+
+        '''
+        Translation Model
+
+        translation_model = {
+            'model_name': "name_1",
+            'model_type': "local", (or "api")
+            'model_params': {
+                'model_path': "path_1",
+                'model_api': 'api_endpoint'
+            },
+            'target': 'hin-Deva'
+        }
+
+        '''
+        access_time = data['accessedOnTime'][0]
+
+        if 'bhashini' in translation_source:
+            hf_token = ''
+            translation_model_name = translation_model_name.replace(
+                'bhashini_', '')
+            model_type = 'bhashini'
+        else:
+            hf_token = modelManager.get_hf_tokens(
+                lifeappconfigs, current_username)
+            model_type = 'hfapi'
+
+        translation_model = {
+            'model_name': translation_model_name,
+            'model_type': model_type,
+            'model_params': {
+                'model_path': translation_model_name,
+                'model_api': translation_source,
+                'output_language': output_language_name,
+                'source_language': audio_lang_code,
+                'source_script': source_script_name,
+                'source_script_code': source_script_code,
+                'target_language': output_lang_code,
+                'target_script': output_script_code
+            },
+            'target': output_language_name
+        }
+
+        gloss_model = {
+            'model_name': gloss_model_name,
+            'model_type': "local",
+            'model_params': {
+                'model_path': gloss_model_name,
+                'source_language': audio_lang_code,
+                'source_script': source_script_name,
+                'source_script_code': source_script_code,
+                'target_language': output_lang_code,
+                'target_script': output_script_code
+            },
+            'target': output_language_name
+        }
+
+        logger.debug('Translation model vals %s', translation_model)
+        logger.debug('Gloss model vals %s', gloss_model)
+        logger.debug('Access time %s', access_time)
+
+        gloss_utils.save_gloss_of_one_audio_file(transcriptions,
+                                                 activeprojectname,
+                                                 current_username,
+                                                 audio_filename,
+                                                 translation_model,
+                                                 gloss_model,
+                                                 transcription_type='sentence',
+                                                 save_for_user=save_for_user,
+                                                 hf_token=hf_token,
+                                                 audio_details=existing_audio_details,
+                                                 accessedOnTime=access_time,
+                                                 get_free_translation=free_translation
+                                                 )
+
+    return redirect(url_for('lifedata.transcription.home'))

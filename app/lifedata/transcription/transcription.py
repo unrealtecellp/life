@@ -1189,6 +1189,9 @@ def makeboundary():
         else:
             min_boundary_size = 2.0
 
+        accessed_time = data['accessedOnTime']
+        logger.info('Accessed time %s', accessed_time)
+
         '''
         ASR Model and VAD Model Dict Formats
 
@@ -1250,7 +1253,8 @@ def makeboundary():
                                                                      transcription_type='sentence',
                                                                      boundary_threshold=boundary_threshold,
                                                                      min_boundary_size=min_boundary_size,
-                                                                     save_for_user=overwrite_user
+                                                                     save_for_user=overwrite_user,
+                                                                     accessed_time=accessed_time
                                                                      )
     return redirect(url_for('lifedata.transcription.home'))
 
@@ -1377,6 +1381,7 @@ def maketranscription():
             }
         }
         '''
+        accessed_time = data['accessedOnTime'][0]
 
         if 'bhashini' in transcription_source:
             hf_token = ''
@@ -1420,7 +1425,8 @@ def maketranscription():
                                                                      save_for_user=save_for_user,
                                                                      hf_token=hf_token,
                                                                      audio_details=existing_audio_details,
-                                                                     create_boundaries=create_boundaries
+                                                                     create_boundaries=create_boundaries,
+                                                                     accessed_time=accessed_time
                                                                      )
 
     return redirect(url_for('lifedata.transcription.home'))

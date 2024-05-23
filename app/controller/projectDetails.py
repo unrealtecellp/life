@@ -90,6 +90,17 @@ def get_audio_language_scripts(projectform,
     return audio_info
 
 
+def get_translation_languages(projectform,
+                              activeprojectname):
+    trans_langs = []
+    translation_info = projectform.find_one({"projectname": activeprojectname},
+                                            {"_id": 0, "Translation": 1})
+    if not translation_info is None:
+        trans_langs = translation_info.get("Translation")[1]
+
+    return trans_langs
+
+
 def save_active_transcription_by(projects,
                                  activeprojectname,
                                  current_username,
