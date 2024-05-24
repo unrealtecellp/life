@@ -365,6 +365,11 @@ function createTranscriptionInterfaceForm(newData) {
     createTranscriptionPrompt(audio_lang_script);
   }
 
+  $('#syncTranscriptAccessedOnTime').val(accessedOnTime);
+  $('#translationAccessedOnTime').val(accessedOnTime);
+  $('#glossingAccessedOnTime').val(accessedOnTime);
+  $('#transcriptionAccessedOnTime').val(accessedOnTime);
+  $('#boundaryAccessedOnTime').val(accessedOnTime);
 }
 
 //  transcription old
@@ -1173,6 +1178,12 @@ $('#boundarypausedropdown').select2({
   // allowClear: true
 });
 
+$('#taskTypeSelect2Id').select2({
+  tags: true,
+  placeholder: 'Select task',
+  data: automationTaskTypes
+  // allowClear: true
+});
 
 $("#audiofile").change(function () {
   let zipFileElement = document.getElementById('audiofile');
@@ -1200,6 +1211,8 @@ $('#uploadparameters-vadid').change(function () {
     $("#uploadparameters-boundarypause-divid :input").prop("disabled", true);
   }
 })
+
+
 
 function replaceZoomSlider() {
   let slider = '<br><input id="slider" data-action="zoom" type="range" min="20" max="1500" value="0" style="width: 90%">';

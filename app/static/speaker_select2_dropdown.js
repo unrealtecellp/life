@@ -148,7 +148,7 @@ var scripts =
       "text": "Telugu"
     },
     {
-      "id": "Toto", 
+      "id": "Toto",
       "text": "Toto"
     }
   ];
@@ -324,6 +324,60 @@ var transcriptionBy = [
   { "id": "latest", "text": "Latest" },
   { "id": "mytranscription", "text": "My Transcriptions" }
 ]
+
+var automationTaskTypes = [
+  { "id": "", "text": "" },
+  { "id": "Transcription", "text": "Transcription" },
+  { "id": "Translation", "text": "Translation" },
+  { "id": "Gloss", "text": "Gloss" }
+]
+
+var glossingModels = [
+  { "id": "stanza", "text": "Stanza Model" }
+]
+
+var freeTranslationLanguages = [
+  { "id": "English-Latin", "text": "English-Latin" }
+]
+
+var asrmodels = [{
+  "text": "Bhashini (ULCA)",
+  "id": "bhashini"
+}, {
+  "text": "HF Local",
+  "id": "hfpipeline"
+},
+{
+  "text": "HF Inference API",
+  "id": "hfinference"
+},
+{
+  "text": "Others",
+  "id": "other"
+},
+];
+
+var boundaryLevels = [{
+  "text": "",
+  "id": ""
+},
+{
+  "text": "Sentence",
+  "id": "sentence"
+},
+{
+  "text": "Word",
+  "id": "word"
+},
+{
+  "text": "Word Segment (only for Whisper)",
+  "id": "wordseg"
+},
+{
+  "text": "Character (not for whisper)",
+  "id": "character"
+}
+];
 
 // Value mapped to Camel Case (in speakerDetails.py - update_bulk_multilila_data() for bulk upload)
 var multililaParticipants = [

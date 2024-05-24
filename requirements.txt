@@ -156,3 +156,5 @@ phonemizer
 textgrid
 pyannote.audio
 numpy==1.21
+pycountry
+isocodes

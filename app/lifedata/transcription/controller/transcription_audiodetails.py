@@ -707,6 +707,7 @@ def save_boundaries_of_one_audio_file(mongo,
                                       hf_token='',
                                       audio_details={},
                                       create_boundaries=False,
+                                      accessed_time='',
                                       ** kwargs):
 
     audio_details_dict = {}
@@ -777,8 +778,15 @@ def save_boundaries_of_one_audio_file(mongo,
                           audio_json_parent_dir,
                           audio_filename)
 
-    transcription_doc_id = transcriptions.update_one({"projectname": activeprojectname, "audioId": audio_id},
-                                                     {"$set": audio_details_dict})
+    transcription_doc_id = save_text_grid_into_transcription(transcriptions,
+                                                             activeprojectname,
+                                                             current_username,
+                                                             audio_id,
+                                                             audio_details_dict,
+                                                             accessed_time)
+
+    # transcription_doc_id = transcriptions.update_one({"projectname": activeprojectname, "audioId": audio_id},
+    #  {"$set": audio_details_dict})
 
     return transcription_doc_id
 
@@ -863,6 +871,12 @@ def add_audio_doc_details(audio_details_dict,
                           audio_json_parent_dir,
                           updated_audio_filename)
 
+    audio_details_dict['createdby'] = current_username
+    audio_details_dict['createdat'] = datetime.now().strftime(
+        "%d/%m/%y %H:%M:%S")
+    audio_details_dict['allAccess'] = {}
+    audio_details_dict['allUpdate'] = {}
+
 
 def add_audio_metadata(audio_details_dict,
                        audio_duration,
@@ -899,6 +913,7 @@ def add_text_grid(audio_details_dict,
                   model_name,
                   model_metadata,
                   save_for_user=True):
+
     audio_details_dict["textGrid"] = text_grid
     logger.debug('Model name %s', model_name)
 
@@ -1809,6 +1824,7 @@ def savetranscription(transcriptions,
     # }
     # text_grid = {}
     try:
+        text_grid = {}
         sentence = {}
         if transcription_regions is not None:
             transcription_regions = json.loads(transcription_regions)
@@ -1848,22 +1864,62 @@ def savetranscription(transcriptions,
                 # logger.debug("'sentence' in transcription_boundary")
                 # logger.debug('371 %s', sentence)
                 # plogger.debug(sentence)
-        transcriptions.update_one({'projectname': activeprojectname, 'audioId': audio_id},
-                                  {'$set':
-                                   {
-                                       'textGrid.sentence': sentence,
-                                       'updatedBy': current_username,
-                                       'transcriptionFLAG': 1,
-                                       current_username+'.textGrid.sentence': sentence
-                                   },
-                                   '$push':
-                                   {
-                                       'allAccess.'+current_username: accessedOnTime,
-                                       'allUpdate.'+current_username: datetime.now().strftime("%d/%m/%y %H:%M:%S")
-                                   }
-                                   })
+
+        text_grid['sentence'] = sentence
+
+        save_manual_transcription(transcriptions,
+                                  activeprojectname,
+                                  current_username,
+                                  audio_id,
+                                  text_grid,
+                                  accessedOnTime,
+                                  True)
+
     except:
         logger.exception("")
+
+
+def save_manual_transcription(transcriptions,
+                              activeprojectname,
+                              current_username,
+                              audio_id,
+                              text_grid,
+                              accessedOnTime,
+                              overwrite):
+    audio_details_dict = {}
+    add_text_grid(audio_details_dict,
+                  current_username,
+                  text_grid,
+                  '',
+                  '',
+                  save_for_user=overwrite)
+    audio_details_dict['updatedBy'] = current_username
+    audio_details_dict['transcriptionFLAG'] = 1
+
+    save_text_grid_into_transcription(transcriptions,
+                                      activeprojectname,
+                                      current_username,
+                                      audio_id,
+                                      audio_details_dict,
+                                      accessedOnTime)
+
+
+def save_text_grid_into_transcription(transcriptions,
+                                      activeprojectname,
+                                      current_username,
+                                      audio_id,
+                                      audio_details_dict,
+                                      accessedOnTime):
+    updated_doc_id = transcriptions.update_one({'projectname': activeprojectname, 'audioId': audio_id},
+                                               {'$set': audio_details_dict,
+                                                '$push':
+                                                {
+                                                    'allAccess.'+current_username: accessedOnTime,
+                                                    'allUpdate.'+current_username: datetime.now().strftime("%d/%m/%y %H:%M:%S")
+                                                }
+                                                })
+
+    return updated_doc_id
 
 
 def synctranscription(transcriptions,
@@ -1891,6 +1947,8 @@ def synctranscription(transcriptions,
     # }
     # text_grid = {}
     try:
+        audio_details_dict = {}
+        text_grid = {}
         sentence = {}
         if transcription_regions is not None:
             transcription_regions = json.loads(transcription_regions)
@@ -1962,20 +2020,30 @@ def synctranscription(transcriptions,
                                 # logger.debug("'sentence' in transcription_boundary")
                                 # logger.debug('371 %s', sentence)
                                 # plogger.debug(sentence)
-        transcriptions.update_one({'projectname': activeprojectname, 'audioId': audio_id},
-                                  {'$set':
-                                   {
-                                       'textGrid.sentence': sentence,
-                                       'updatedBy': current_username,
-                                       'transcriptionFLAG': 1,
-                                       current_username+'.textGrid.sentence': sentence
-                                   },
-                                   '$push':
-                                   {
-                                       'allAccess.'+current_username: accessedOnTime,
-                                       'allUpdate.'+current_username: datetime.now().strftime("%d/%m/%y %H:%M:%S")
-                                   }
-                                   })
+        text_grid['sentence'] = sentence
+
+        save_manual_transcription(transcriptions,
+                                  activeprojectname,
+                                  current_username,
+                                  audio_id,
+                                  text_grid,
+                                  accessedOnTime,
+                                  overwrite)
+
+        # transcriptions.update_one({'projectname': activeprojectname, 'audioId': audio_id},
+        #                           {'$set':
+        #                            {
+        #                                'textGrid.sentence': sentence,
+        #                                'updatedBy': current_username,
+        #                                'transcriptionFLAG': 1,
+        #                                current_username+'.textGrid.sentence': sentence
+        #                            },
+        #                            '$push':
+        #                            {
+        #                                'allAccess.'+current_username: accessedOnTime,
+        #                                'allUpdate.'+current_username: datetime.now().strftime("%d/%m/%y %H:%M:%S")
+        #                            }
+        #                            })
     except:
         logger.exception("")
 
@@ -2612,10 +2680,16 @@ def insert_data_into_text_grid(text_grid, boundary_id, transcription_type, updat
     data_to_update = update_data[transcription_type][update_field][boundary_id]
     field_to_update = text_grid[transcription_type][boundary_id][update_field]
     logger.debug('Text grid %s', text_grid)
+    # logger.debug('Field to update %s %s', field_to_update,
+    #              'eng-Latn' in field_to_update)
     for script_name, script_data in data_to_update.items():
         logger.debug('Script name %s Script Data %s', script_name, script_data)
+        # logger.debug('Update Field %s %s Script Name %s %s',
+        #              update_field, update_field == 'translation', script_name, script_name == 'English-Latin')
         if script_name in field_to_update:
             text_grid[transcription_type][boundary_id][update_field][script_name] = script_data
+        elif (update_field == 'translation') and (script_name == 'English-Latin') and ('eng-Latn' in field_to_update):
+            text_grid[transcription_type][boundary_id][update_field]['eng-Latn'] = script_data
     return text_grid
 
 
@@ -2626,11 +2700,12 @@ def update_existing_text_grid(text_grid, transcription_type, update_data={}, upd
     logger.debug('Update Data %s', update_data)
     logger.debug('Transcription type %s', transcription_type)
     text_grid_boundaries = text_grid[transcription_type]
-    for boundary_id, boundary_elements in text_grid_boundaries.items():
-        # all_fields=text_grid[boundary_id]
-        # if update_field in update_data:
-        text_grid = insert_data_into_text_grid(
-            text_grid, boundary_id, transcription_type, update_data, update_field)
+    if len(update_data) > 0:
+        for boundary_id, boundary_elements in text_grid_boundaries.items():
+            # all_fields=text_grid[boundary_id]
+            # if update_field in update_data:
+            text_grid = insert_data_into_text_grid(
+                text_grid, boundary_id, transcription_type, update_data, update_field)
 
         # logger.debug('Data to update %s', data_to_update)
         # logger.debug(
@@ -2740,25 +2815,29 @@ def generate_new_boundary(mongo, text_grid, start_boundary, end_boundary, transc
         text_grid[transcription_type][boundary_id] = {}
 
         projects, userprojects = getdbcollections.getdbcollections(mongo,
-                                                                'projects',
-                                                                'userprojects')
+                                                                   'projects',
+                                                                   'userprojects')
         current_username = getcurrentusername.getcurrentusername()
         activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
-                                                                    userprojects)
-        project_type = getprojecttype.getprojecttype(projects, activeprojectname)
+                                                                      userprojects)
+        project_type = getprojecttype.getprojecttype(
+            projects, activeprojectname)
 
         if (project_type == 'crawling'):
             transcription_scripts = projects.find_one({"projectname": activeprojectname},
-                                                    {
+                                                      {
                 "_id": 0,
                 "crawlerScript": 1})["crawlerScript"]
         else:
-            transcription_scripts = get_current_transcription_langscripts(mongo)
+            transcription_scripts = get_current_transcription_langscripts(
+                mongo)
         # transcription_scripts = list(transcriptions.keys())
-        logger.debug('All transcription lang scripts %s', transcription_scripts)
+        logger.debug('All transcription lang scripts %s',
+                     transcription_scripts)
 
         translation_langscripts = get_current_translation_langscripts(mongo)
-        logger.debug('All translation lang scripts %s', translation_langscripts)
+        logger.debug('All translation lang scripts %s',
+                     translation_langscripts)
 
         text_grid[transcription_type][boundary_id]['start'] = start_boundary
         text_grid[transcription_type][boundary_id]['end'] = end_boundary
@@ -3055,7 +3134,7 @@ def get_audio_transcriptions(mongo, model_params, model_name, audio_data=[], mod
             transcriptions[transcription_type]['transcription'] = predictFromAPI.predictFromHFModel(
                 model_inputs=audio_data, model_url=model_name, hf_token=hf_token, model_params=model_params, script_names=current_lang_scripts)
         elif model_type == 'bhashini':
-            transcriptions[transcription_type]['transcription'], transcribed = predictFromAPI.predictFromBhashiniModel(
+            transcriptions[transcription_type]['transcription'], transcribed = predictFromAPI.transcribe_using_bhashini(
                 model_inputs=audio_data, model_url=model_name, model_params=model_params, script_names=current_lang_scripts)
         # transcribed = 1
 
