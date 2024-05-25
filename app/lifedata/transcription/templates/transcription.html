@@ -985,14 +985,15 @@
 
 {% block scripts %}
 {{super()}}
-    <script src="{{url_for('static', filename='speaker_select2_dropdown.js')}}"></script>
-  <script src="{{url_for('.static', filename='sidepanel.js')}}"></script>
+    
+<script src="{{url_for('static', filename='speaker_select2_dropdown.js')}}"></script>
+<script src="{{url_for('.static', filename='sidepanel.js')}}"></script>
   <script type="text/javascript">createSidePanel({{ shareinfo | tojson | safe }});</script>
   <script src="{{url_for('.static', filename='transcription.js')}}"></script>
   <script type="text/javascript">createTranscriptionInterfaceForm({{ newData | tojson | safe }});</script>
   <script type="text/javascript">questionnaireDerived({{ allQuesIds | tojson | safe }});</script>
   <script src="{{url_for('.static', filename='changeactivespeaker.js')}}"></script>
-  <script src="{{url_for('.static', filename='progressreport.js')}}"></script>
+  <script src="{{url_for('.static', filename='progressreport.js')}}"></script>  
   <script src="{{url_for('static', filename='addnewspeaker.js')}}"></script>  
   <script src="{{url_for('.static', filename='search.js')}}"></script>
   <script src="{{url_for('.static', filename='sorttable.js')}}"></script>
