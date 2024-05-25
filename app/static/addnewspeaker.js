@@ -808,6 +808,7 @@ function multililaMetadataForm(form_vals = {}) {
     metadataForm += '<h4>Speaker Metadata</h4>';
 
     //Participant Role
+    // console.log("Multilila participants", multililaParticipants);
     metadataForm += '<div class="form-group">' +
         '<label for="idparticipantRole">Participant Role: </label> <br>' +
         '<select class="classparticipantRole" id="idparticipantRole" name="participantRole" style="width:55%">';
@@ -1216,7 +1217,8 @@ function addNewSpeakerSelect2() {
         // allowClear: true,
         // console.log( "ready!" )
     });
-    $('.classparticipantrole').select2({
+    // console.log("Multilila participants near select2", multililaParticipants);
+    $('.classparticipantRole').select2({
         // tags: true,
         placeholder: '--Participant Role:--',
         data: multililaParticipants,

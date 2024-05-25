@@ -355,7 +355,7 @@ var asrmodels = [{
   "text": "Others",
   "id": "other"
 },
-];
+]
 
 var boundaryLevels = [{
   "text": "",
@@ -377,7 +377,7 @@ var boundaryLevels = [{
   "text": "Character (not for whisper)",
   "id": "character"
 }
-];
+]
 
 // Value mapped to Camel Case (in speakerDetails.py - update_bulk_multilila_data() for bulk upload)
 var multililaParticipants = [
@@ -390,7 +390,7 @@ var multililaParticipants = [
 // If edited, also map values in speakerDetails.py - update_bulk_multilila_data() for bulk upload
 var multililaMedium = [
   { "id": "", "text": "" },
-  { "id": "1", "text": "Only English" },
+  { "id": "1", "text": "Only English4" },
   { "id": "2", "text": "Telugu+English" },
   { "id": "3", "text": "Hindi+English" },
   { "id": "4", "text": "Assamese+English" }
