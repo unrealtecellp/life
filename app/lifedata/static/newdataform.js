@@ -33,7 +33,8 @@ function languageScriptFieldsSelect2(langIdName,
                                       id,
                                       langTags=false,
                                       scriptTags=false,
-                                      langData=true) {
+                                      langData=true,
+                                      allowClear=false) {
   let tempLanguages = [];
   if (langData) {
     tempLanguages = languages;
@@ -43,14 +44,14 @@ function languageScriptFieldsSelect2(langIdName,
     tags: langTags,
     placeholder: 'Tier Name',
     data: tempLanguages,
-    // allowClear: true
+    allowClear: allowClear
   });
 
   $('#'+scriptIdName+id).select2({
     tags: scriptTags,
     // placeholder: scriptIdName,
-    data: tempScripts
-    // allowClear: true
+    data: tempScripts,
+    allowClear: allowClear
   });
 }
 
@@ -247,7 +248,8 @@ $("#addAdditionalTranscriptionField").click(function() {
                                   additionalTranscriptionField,
                                   true,
                                   false,
-                                  false);
+                                  false,
+                                  true);
 });
 
 function removeAdditionalTranscriptionFields(rid) {

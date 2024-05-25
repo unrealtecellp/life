@@ -909,6 +909,8 @@ function processTokenGloss(glossTokenId,
         let token = document.getElementById(tokenId+'_word_input').value;
         glossedSentenceWithMorphemicBreakInfo[tokenId] = token;
         if (interlinearGlossFormat.includes('Leipzig')) {
+            let tokenTranslation = document.getElementById(tokenId+'_word_translation').value;
+            // console.log(tokenTranslation);
             // let gloss = document.getElementById(tokenId+'_gloss').value;
             // let gloss = $('#'+tokenId+'_gloss').val();
             let gloss = addDeleteGlossSelect2('gloss',
@@ -919,6 +921,12 @@ function processTokenGloss(glossTokenId,
             // if (gloss !== '') {
             //     console.log(gloss);
             // }
+            if (tokenTranslation !== '') {
+                gloss = tokenTranslation+'.'+gloss;
+            }
+            else {
+                gloss = '_'+'.'+gloss;
+            }
             glossedSentenceWithTokenIdInfo[tokenId]['gloss'] = gloss;
         }
         for (let p=0; p<customizeGloss.length; p++) {
@@ -3184,6 +3192,7 @@ function createGlossingTable(sentencemorphemicbreakupdatedvalue,
     // console.log(sentencemorphemicbreakupdatedvalue,
     //     interlinearGlossFormat,
     //     customizeGloss);
+    let colorPallet = ['bg-success', 'bg-warning', 'bg-danger', 'bg-info']
     let tokenIdObject = generateTokenId(sentencemorphemicbreakupdatedvalue);
     // console.log(tokenIdObject);
     let inpt = '';
@@ -3227,9 +3236,9 @@ function createGlossingTable(sentencemorphemicbreakupdatedvalue,
                     let word = sentencemorphemicbreakupdatedvalueArray[j-1];
                     // console.log(word);
                     // console.log(j);
-                    inpt += '<div class="col-sm-'+eachColLength+'">';
+                    inpt += '<div class="col-sm-'+eachColLength+' '+colorPallet[j%colorPallet.length]+'">';
                     if (!interlinearGlossFormat.includes('Leipzig')) {
-                        inpt += j;
+                        inpt += '<center>'+j+'</center>';
                         inpt += '<input type="text" id="'+tokenId+'_word_input" class="'+tokenId+'_word_class form-control" value="'+word+'" readonly style="border: none;"><br>';
                     }
                     // inpt += '<div id="'+tokenId+'_word" class="'+tokenId+'_word_class" contenteditable="true" oninput="morphemicBreak(event,this)">'+word+'</div><br>';
@@ -3237,23 +3246,34 @@ function createGlossingTable(sentencemorphemicbreakupdatedvalue,
                     if (interlinearGlossFormat.includes('Leipzig')) {
                         if (customizeGloss.includes('ID') ||
                             customizeGloss.includes('HEAD')) {
-                            inpt += j;
+                            // inpt += j;
+                            inpt += '<center>'+j+'</center>';
                         }
-                        inpt += '<input type="text" id="'+tokenId+'_word_input" class="'+tokenId+'_word_class form-control" value="'+word+'" oninput="morphemicBreak(event,this)" style="border: none;"><br>';
-                        inpt += '<select id="'+tokenId+'_gloss" class="leipzig_glossing"'+
-                                ' oninput="autoSavetranscription(event,this)"' +
-                                ' multiple="multiple" style="width: 100%;">';
                         tempJsonFileNames['leipzig_glossing'] = 'select2_leipzig_glossing.json';
+                        let tokenGlossArray = '';
+                        let wordTranslationVal = '_';
+                        let inptOption = '';
                         if (tokenId in glossTokenIdInfo &&
                             'gloss' in glossTokenIdInfo[tokenId]) {
-                            let tokenGlossArray = glossTokenIdInfo[tokenId]['gloss'];
+                            tokenGlossArray = glossTokenIdInfo[tokenId]['gloss'];
                             // console.log(tokenGlossArray);
                             if (!(tokenGlossArray === '')) {
                                 tokenGlossArray = glossTokenIdInfo[tokenId]['gloss'].split('.');
-                                inpt += fillGlossedTokenInfo(tempJsonFileNames, tokenGlossArray);
+                                wordTranslationVal = tokenGlossArray[0];
+                                // console.log(tokenGlossArray[0], tokenGlossArray.slice(1,));
+                                inptOption = fillGlossedTokenInfo(tempJsonFileNames, tokenGlossArray.slice(1,));
                             }
                         }
                         tempJsonFileNames = {}
+                        inpt += '<input type="text" id="'+tokenId+'_word_input" class="'+tokenId+'_word_class form-control" value="'+word+'" oninput="morphemicBreak(event,this)" style="border: none;"><br>';
+                        inpt += '<input type="text" id="'+tokenId+'_word_translation"'+
+                                'class="'+tokenId+'_word_translation_class form-control"'+
+                                'value="'+wordTranslationVal+'"'+
+                                'oninput="autoSavetranscription(event,this)"><br>';
+                        inpt += '<select id="'+tokenId+'_gloss" class="leipzig_glossing"'+
+                                ' oninput="autoSavetranscription(event,this)"' +
+                                ' multiple="multiple" style="width: 100%;">';
+                        inpt += inptOption;
                         inpt += '</select>';
                         inpt += '<br><br>';
                         jsonFileNames['leipzig_glossing'] = 'select2_leipzig_glossing.json';
@@ -3261,6 +3281,8 @@ function createGlossingTable(sentencemorphemicbreakupdatedvalue,
                     for (let p=0; p<customizeGloss.length; p++) {
                         let field = customizeGloss[p].toLowerCase();
                         // console.log(field);
+                        // let fieldBgColor = colorPallet[p%colorPallet.length];
+                        // console.log(fieldBgColor);
                         let tokenGlossVal = '';
                         if (tokenId in glossTokenIdInfo &&
                             field in glossTokenIdInfo[tokenId]) {
@@ -3322,6 +3344,7 @@ function createGlossingTable(sentencemorphemicbreakupdatedvalue,
                 }
             }
             // j = j-1;
+            // inpt += '<div class="clearfix visible-sm-block"></div>';
             inpt += '</div>'; //row div
         }
         // getSelect2Data(getSelect2DataLocal(jsonFileNames));
@@ -3544,7 +3567,7 @@ function getGlossTokenIdInfo() {
 
 function mapSelect2IdText(jsonFileNames, id) {
     // console.log(jsonFileNames, id);
-    var text = ''
+    var text = id;
     let jsonFileNamesKeysList = Object.keys(jsonFileNames);
     for (let i=0; i<jsonFileNamesKeysList.length; i++) {
         let select2ClassName = jsonFileNamesKeysList[i];
@@ -3624,6 +3647,7 @@ function fillGlossedTokenInfo(tempJsonFileNames, tokenGlossArray) {
             else {
                 let temp = JSON.parse(JSON.stringify(tempJsonFileNames));
                 // console.log(temp === tempJsonFileNames);
+                // console.log(temp, optionValue);
                 optionText = mapSelect2IdText(temp, optionValue);
             }
             selectedGlossInfo += '<option value="' + optionValue + '" selected>' + optionText + '</option>';

@@ -7,6 +7,24 @@ from pprint import pformat
 
 logger = life_logging.get_logger()
 
+def headDeprelDependency(customize_gloss_list):
+    if ('HEAD' in customize_gloss_list):
+        index = customize_gloss_list.index('HEAD')
+        if ('DEPREL' not in customize_gloss_list):
+            customize_gloss_list.insert(index+1, 'DEPREL')
+        if ('ID' not in customize_gloss_list):
+            customize_gloss_list.insert(0, 'ID')
+    if ('DEPREL' in customize_gloss_list):
+        index = customize_gloss_list.index('DEPREL')
+        if ('HEAD' not in customize_gloss_list):
+            customize_gloss_list.insert(index, 'HEAD')
+        if ('ID' not in customize_gloss_list):
+            customize_gloss_list.insert(0, 'ID')
+
+    # print(customize_gloss_list)
+
+    return customize_gloss_list
+
 def save_new_transcription_form(projectsform_collection,
                                 projectname,
                                 new_transcription_form,
@@ -46,6 +64,7 @@ def save_new_transcription_form(projectsform_collection,
             elif key == 'Interlinear Gloss Format':
                 interlinear_gloss_dict['Interlinear Gloss Format'] = value
             elif key == 'Customize Gloss':
+                value = headDeprelDependency(value)
                 interlinear_gloss_dict['Customize Gloss'] = value
             elif key == 'Additional Transcription Name':
                 additional_transcription_scripts = new_transcription_form['Additional Transcription Script']
