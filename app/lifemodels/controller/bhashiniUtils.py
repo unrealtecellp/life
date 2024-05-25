@@ -196,7 +196,8 @@ def transcribe_data(audio_data, model, api_key, end_url, lang_name='hi'):
                                 "sourceLanguage": lang_name
                         },
                         "serviceId": model,
-                        "postProcessors": ["itn", "punctuation"]
+                        # "postProcessors": ["itn", "punctuation"]
+                        "postProcessors": ["itn"]
                         # "audioFormat": "wav",
                         # "samplingRate": 16000
                     }

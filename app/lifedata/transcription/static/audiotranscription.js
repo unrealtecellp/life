@@ -898,70 +898,80 @@ function processTokenGloss(glossTokenId,
                             glossTokenIdInfo) {
     // console.log('processTokenGloss');
     // console.log(glossTokenIdInfo);
-    let glossedSentenceWithMorphemicBreakInfo = {};
-    let glossedSentenceWithTokenIdInfo = {};
-    for (let i=0; i<glossTokenId.length; i++) {
-        let tokenId = glossTokenId[i];
-        // console.log(tokenId);
-        // glossedSentenceWithMorphemicBreakInfo[tokenId] = {};
-        glossedSentenceWithTokenIdInfo[tokenId] = {};
-        // console.log(document.getElementById(tokenId+'_word_input').value);
-        let token = document.getElementById(tokenId+'_word_input').value;
-        glossedSentenceWithMorphemicBreakInfo[tokenId] = token;
-        if (interlinearGlossFormat.includes('Leipzig')) {
-            let tokenTranslation = document.getElementById(tokenId+'_word_translation').value;
-            // console.log(tokenTranslation);
-            // let gloss = document.getElementById(tokenId+'_gloss').value;
-            // let gloss = $('#'+tokenId+'_gloss').val();
-            let gloss = addDeleteGlossSelect2('gloss',
-                                                glossTokenIdInfo,
-                                                tokenId,
-                                                '.'
-                                            );
-            // if (gloss !== '') {
-            //     console.log(gloss);
-            // }
-            if (tokenTranslation !== '') {
-                gloss = tokenTranslation+'.'+gloss;
-            }
-            else {
-                gloss = '_'+'.'+gloss;
-            }
-            glossedSentenceWithTokenIdInfo[tokenId]['gloss'] = gloss;
-        }
-        for (let p=0; p<customizeGloss.length; p++) {
-            let field = customizeGloss[p].toLowerCase();
-            let fieldValue = '';
-            // console.log(field);
-            if (field === 'id' ||
-                field === 'form') {
-                continue;
-            }
-            else if (field === 'feats') {
-                fieldValue = addDeleteGlossSelect2(field,
+    try {
+        let glossedSentenceWithMorphemicBreakInfo = {};
+        let glossedSentenceWithTokenIdInfo = {};
+        for (let i=0; i<glossTokenId.length; i++) {
+            let tokenId = glossTokenId[i];
+            // console.log(tokenId);
+            // glossedSentenceWithMorphemicBreakInfo[tokenId] = {};
+            glossedSentenceWithTokenIdInfo[tokenId] = {};
+            // console.log(document.getElementById(tokenId+'_word_input').value);
+            let token = document.getElementById(tokenId+'_word_input').value;
+            glossedSentenceWithMorphemicBreakInfo[tokenId] = token;
+            if (interlinearGlossFormat.includes('Leipzig')) {
+                let tokenTranslation = document.getElementById(tokenId+'_word_translation').value;
+                // console.log(tokenTranslation);
+                // let gloss = document.getElementById(tokenId+'_gloss').value;
+                // let gloss = $('#'+tokenId+'_gloss').val();
+                let gloss = addDeleteGlossSelect2('gloss',
                                                     glossTokenIdInfo,
                                                     tokenId,
-                                                    '|'
+                                                    '.'
                                                 );
-                // if (fieldValue !== '') {
-                //     console.log(fieldValue);
+                // if (gloss !== '') {
+                //     console.log(gloss);
                 // }
+                if (tokenTranslation !== '') {
+                    gloss = tokenTranslation+'.'+gloss;
+                }
+                else {
+                    gloss = '_'+'.'+gloss;
+                }
+                glossedSentenceWithTokenIdInfo[tokenId]['gloss'] = gloss;
             }
-            else {
-                fieldValue = document.getElementById(tokenId+'_'+field).value;
+            for (let p=0; p<customizeGloss.length; p++) {
+                let field = customizeGloss[p].toLowerCase();
+                let fieldValue = '';
+                // console.log(field);
+                if (field === 'id' ||
+                    field === 'form') {
+                    continue;
+                }
+                else if (field === 'feats') {
+                    fieldValue = addDeleteGlossSelect2(field,
+                                                        glossTokenIdInfo,
+                                                        tokenId,
+                                                        '|'
+                                                    );
+                    // if (fieldValue !== '') {
+                    //     console.log(fieldValue);
+                    // }
+                }
+                else {
+                    fieldValue = document.getElementById(tokenId+'_'+field).value;
+                }
+                // console.log(field, fieldValue);
+                glossedSentenceWithTokenIdInfo[tokenId][field] = fieldValue;
+                // console.log(glossedSentenceWithTokenIdInfo);
             }
-            // console.log(field, fieldValue);
-            glossedSentenceWithTokenIdInfo[tokenId][field] = fieldValue;
+            // console.log(glossedSentenceWithTokenIdInfo);
+        }
+        // console.log(glossedSentenceWithTokenIdInfo);
+        // console.log(glossedSentenceWithMorphemicBreakInfo);
+        // console.log(glossedSentenceWithTokenIdInfo);
+
+        return {
+            glossedSentenceWithMorphemicBreakInfo: glossedSentenceWithMorphemicBreakInfo,
+            glossedSentenceWithTokenIdInfo: glossedSentenceWithTokenIdInfo
         }
     }
-
-    // console.log(glossedSentenceWithMorphemicBreakInfo);
-    // console.log(glossedSentenceWithTokenIdInfo);
-
-    return {
-        glossedSentenceWithMorphemicBreakInfo: glossedSentenceWithMorphemicBreakInfo,
-        glossedSentenceWithTokenIdInfo: glossedSentenceWithTokenIdInfo
+    catch(error) {
+        console.error(error);
+        // console.log(glossedSentenceWithTokenIdInfo);
+        console.log('error');
     }
+    // console.log(glossedSentenceWithTokenIdInfo);
 }
 
 function updateSentenceDetailsOnSaveBoundary(boundaryID, sentence, region, form) {
@@ -1052,6 +1062,7 @@ function updateSentenceDetailsOnSaveBoundary(boundaryID, sentence, region, form)
                                                                                             interlinearGlossFormat,
                                                                                             customizeGloss,
                                                                                             sentence[boundaryID]['glossTokenIdInfo']);
+                            // console.log(glossedSentenceWithMorphemicBreakInfo);
                             sentence[boundaryID]['gloss'][k] = glossedSentenceWithMorphemicBreakInfo.glossedSentenceWithMorphemicBreakInfo;
                             sentence[boundaryID]['glossTokenIdInfo'] = glossedSentenceWithMorphemicBreakInfo.glossedSentenceWithTokenIdInfo;
                         }
@@ -1825,7 +1836,7 @@ function createSentenceForm(formElement, boundaryID) {
             });
             $('#tokencolcount').select2({
                 placeholder: 'Transcription Script',
-                data: [1, 2, 4, 6],
+                data: [1, 2, 3, 4, 5, 6],
             });
             $('#tokencolcount').val(6);
             $('#tokencolcount').trigger('change');
@@ -3306,6 +3317,7 @@ function createGlossingTable(sentencemorphemicbreakupdatedvalue,
                                     ' multiple="multiple" style="width: 100%;">';
                                     tempJsonFileNames[field] = 'select2_'+field+'.json';
                                     if (!(tokenGlossVal === '')) {
+                                        // console.log(tokenGlossVal);
                                         inpt += fillGlossedTokenInfo(tempJsonFileNames, [tokenGlossVal]);
                                     }
                                     tempJsonFileNames = {}
@@ -3320,7 +3332,7 @@ function createGlossingTable(sentencemorphemicbreakupdatedvalue,
                                     // console.log(tokenGlossVal);
                                     if (!(tokenGlossVal === '')) {
                                         tokenGlossVal = tokenGlossVal.split('|');
-                                        console.log(tokenGlossVal);
+                                        // console.log(tokenGlossVal);
                                         inpt += fillGlossedTokenInfo(tempJsonFileNames, tokenGlossVal);
                                     }
                                     tempJsonFileNames = {}
@@ -3636,13 +3648,14 @@ function fillGlossedTokenInfo(tempJsonFileNames, tokenGlossArray) {
         // console.log(tempJsonFileNames);
         // console.log(selectedGlossInfo);
         let optionValue = tokenGlossArray[p];
-        // console.log(optionValue);
-        if (optionValue) {
+        // console.log(optionValue, typeof optionValue);
+        if (String(optionValue)) {
             let optionText = optionValue;
             if ('languages' in tempJsonFileNames ||
                 'head' in tempJsonFileNames
             ) {
                 optionText = optionValue
+                // console.log(optionValue, typeof optionValue, optionText, typeof optionText);
             }
             else {
                 let temp = JSON.parse(JSON.stringify(tempJsonFileNames));

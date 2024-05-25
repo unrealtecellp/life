@@ -143,9 +143,9 @@ def generate_gloss_token_id(start, end, max_len=14):
     return boundary_id
 
 
-def conll_to_leipzig_gloss(feats, upos='', trans_output=''):
+def conll_to_leipzig_gloss(feats, upos='', trans_output='_'):
     if feats == '':
-        if trans_output == '':
+        if trans_output == '_':
             output = upos
         else:
             output = trans_output.lower()
@@ -199,7 +199,7 @@ def update_existing_text_grid_with_gloss(current_text_grid,
         sent_token_entry = {source_script_name: {}}
         for token_gloss in sent_gloss:
             new_token_gloss = {}
-            trans_output = ''
+            trans_output = '_'
             text = token_gloss['text']
             upos = token_gloss['upos']
             start_index = str(token_gloss['start_char'])
@@ -217,14 +217,18 @@ def update_existing_text_grid_with_gloss(current_text_grid,
                             [('gloss_translation_model_name', model)])
                     except:
                         logger.exception('')
-                        trans_output = ""
+                        trans_output = "_"
             else:
-                trans_output = ""
-
+                trans_output = "_"
+            
+            if (trans_output == ''):
+                trans_output = '_'
             feats = token_gloss.get('feats', '')
 
             leipzig_gloss_feats = conll_to_leipzig_gloss(
                 feats, upos, trans_output)
+            
+            logger.debug(leipzig_gloss_feats)
 
             new_token_gloss.update({"gloss": leipzig_gloss_feats})
             new_token_gloss.update(token_gloss)
