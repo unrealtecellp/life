@@ -13,6 +13,9 @@
   <link href="{{url_for('.static', filename='transcriptionannotation.css')}}" rel="stylesheet" />
   <link href="{{url_for('.static', filename='sidepanel.css')}}" rel="stylesheet" />
   <link href="{{url_for('.static', filename='addnewspeaker.css')}}" rel="stylesheet" />
+  <link href="{{url_for('static', filename='loader.css')}}" rel="stylesheet" />
+  <script src='https://s.keyman.com/kmw/engine/16.0.147/keymanweb.js'></script>
+  <script src='https://s.keyman.com/kmw/engine/16.0.147/kmwuitoggle.js'></script>
 {% endblock %}
 
 {% block app_content %}
@@ -36,6 +39,12 @@
             <path d="M10 8a2 2 0 1 1-4 0V3a2 2 0 1 1 4 0zM8 0a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V3a3 3 0 0 0-3-3"/>
           </svg>
         </button>
+        <button type="button" id="syncaudio" class="btn btn-success" data-toggle="tooltip" title="Sync Audio">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-repeat" viewBox="0 0 16 16">
+            <path d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41m-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9"/>
+            <path fill-rule="evenodd" d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5 5 0 0 0 8 3M3.1 9a5.002 5.002 0 0 0 8.757 2.182.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9z"/>
+          </svg>
+        </button>
       {% endif %}
       <!-- &nbsp;&nbsp; -->
     </div>
@@ -51,9 +60,12 @@
       <button class="btn btn-warning" id="save" data-toggle="tooltip" title="Save Transcriptions">
         <span class="saveaudio glyphicon glyphicon-floppy-open" aria-hidden="true"></span>
       </button>
+      <button class="btn btn-danger" id="toggleComplete" data-toggle="tooltip" title="Toggle Complete">
+        <span class="togglecompleteclass glyphicon glyphicon-ok" aria-hidden="true"></span>
+      </button>
       <!-- &nbsp;&nbsp; -->
     </div>
-    <div class="col-sm-2">
+    <div class="col-sm-2 pull-right">
       <!-- <button class="btn btn-success" id="markcomplete" data-toggle="tooltip" title="Mark Complete">
         <span class="markcompleteaudio glyphicon glyphicon-ok" aria-hidden="true"></span>
       </button>
@@ -65,6 +77,7 @@
       </span>
       
     </div>
+    
     <span class="pull-right" style="font-size:30px; position:absolute; right:10px;cursor:pointer" onclick="openNav()"><i class="glyphicon glyphicon-menu-hamburger"></i></span>
     <div id="sidepanel"></div>
     <!-- <div class="col-sm-7 pull-right">
@@ -90,6 +103,7 @@
       {% endif %}
     </div> -->
   </div>
+  <hr>
   <div class="row" id="audiometadata" style="display: none;">
     <br>
     <hr>
@@ -119,7 +133,9 @@
     <hr>
     <div class="row">
       <div class="col-md-6">
-        {% if speakerids is defined %}
+        <label for="speakeridsdropdown">Audio Source: </label>
+        <select id="speakeridsdropdown" style="width: 100%;"></select>
+        <!-- {% if speakerids is defined %}
           <label for="speakeridsdropdown">Audio Source: </label>
           <select class="custom-select custom-select-sm" id="speakeridsdropdown" style="width: 50%;">
             <option selected disabled>{{ activespeakerid }}</option>
@@ -129,13 +145,15 @@
               {% endif %}
             {% endfor %}
           </select>
-        {% endif %}
+        {% endif %} -->
       </div>
-      {% if ('sharelatestchecked' not in shareinfo) or ('sharelatestchecked' in shareinfo and shareinfo['sharelatestchecked'] == 'true') %}
+      {% if ('sharelatestchecked' not in shareinfo) or ('sharelatestchecked' in shareinfo and shareinfo['sharelatestchecked']
+      == 'true') %}
       <div class="col-md-6">
         {% if transcriptionsby is defined %}
         <label for="transcriptionsbydropdown">Transcription Source: </label>
-        <select class="custom-select custom-select-sm" id="transcriptionbydropdown" style="width: 50%;" onchange="loadUserTranscription()">
+        <select class="custom-select custom-select-sm" id="transcriptionbydropdown" style="width: 100%;"
+          onchange="loadUserTranscription()">
           <option selected disabled>{{ activetranscriptionby }}</option>
           {% for d in transcriptionsby %}
           {% if d != activetranscriptionby %}
@@ -155,6 +173,7 @@
           <button type="button" id="uNAnnotated" class="btn btn-light" onclick="unAnnotated()">All Filename</button>
         </span>
       </div>
+      
     </div>
     <hr>
     <div class="row">
@@ -171,25 +190,36 @@
   <div id="wave-spectrogram" style="display: none;"></div>
   <!-- <p id="regioninfo" class="text-danger">&nbsp;</p> -->
   <br>
-  <div class="row">
-    <div class="col-sm-3" id="sliderdivid">
-      <input id="slider" data-action="zoom" type="range" min="0" max="100" value="0" style="width: 50%">
-    </div>
-    <div class=" col-sm-3">
-      AUDIO:
+  <div class="row">    
+    <div class=" col-sm-5">
+      AUDIO:<br>
       <button class="btn btn-danger" type="button" id="stopAudio" title="Stop Audio">
         <span class="audiostop glyphicon glyphicon-stop" aria-hidden="true"></span>
       </button>
       <button class="btn btn-primary" type="button" id="playPauseAudio" title="Play/Pause Audio">
         <span class="audioplaypause glyphicon glyphicon-play" aria-hidden="true"></span>
       </button>
-      <button type="button" id="myASRModalButton" class="btn btn-dark maketranscription" data-toggle="modal"
-        data-target="#myASRModal" title="Transcribe Audio">
+      <button type="button" id="myAutomationButton" class="btn btn-dark automation" data-toggle="modal"
+        data-target="#myAutomationModal" title="Use Automation">
         <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
       </button>
+      <button type="button" id="editAudioSettingsButton" class="btn btn-dark btn-info editaudiosettings" data-toggle="modal"
+        data-target="#editAudioSettingsModal" title="Edit Settings">
+        <!-- <span class="glyphicon glyphicon-user" aria-hidden="true"></span> -->
+        <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+      </button>
+      <button type="button" id="syncTranscriptsAllModalButton" class="btn btn-success" data-toggle="modal" data-target="#syncTranscriptsAllModal" title="Sync Transcription">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-repeat"
+          viewBox="0 0 16 16">
+          <path
+            d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41m-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9" />
+          <path fill-rule="evenodd"
+            d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5 5 0 0 0 8 3M3.1 9a5.002 5.002 0 0 0 8.757 2.182.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9z" />
+        </svg>
+      </button>
     </div>
-    <div class=" col-sm-6 pull-right">
-      BOUNDARIES:
+    <div class=" col-sm-5">
+      BOUNDARIES:<br>
       <button type="button" class="btn btn-danger" data-action="delete-region-all" title="Delete all boundaries">
         <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
       </button>
@@ -211,7 +241,12 @@
         Draw Boundaries
       </button> -->
     </div>
+    <div class="col-sm-2 pull-right" id="sliderdivid">
+
+      <!-- <input id="slider" data-action="zoom" type="range" min="0" max="5000" value="0" style="width: 90%"> -->
+    </div>
   </div>
+  <div id="loader" style="display:none;"></div>
   <p id="regioninfo" class="text-danger">&nbsp;</p>
   <br>
   <div class="tabsfield1" id="tabsfield2"></div>
@@ -226,12 +261,12 @@
     <!-- <div class="row"> -->
       <!-- <div class="form-group col-sm-6"> -->
         <!-- <label for="start">Boundary Start Time</label> -->
-        <input type="hidden" class="form-control" id="start" name="start" readonly required/>
+    <input type="hidden" class="form-control" id="start" name="start" readonly required/>
       <!-- </div> -->
 
       <!-- <div class="form-group col-sm-6"> -->
         <!-- <label for="end">Boundary End Time</label> -->
-        <input type="hidden" class="form-control" id="end" name="end" readonly required />
+    <input type="hidden" class="form-control" id="end" name="end" readonly required />
       <!-- </div> -->
     <!-- </div> -->
     <hr>
@@ -318,6 +353,50 @@
     </div>
   </div>
 
+  <!-- Update Audio Settings -->
+  <div class="modal fade" id="editAudioSettingsModal" tabindex="-1" role="dialog" aria-labelledby="editAudioSettingsModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+              aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="myUploadAudioModalLabel">Project Name: {{ projectName }}</h4>
+        </div>
+        <div class="modal-body">
+          <form name="newaudioupload" action="/lifedata/transcription/updateaudiosettings" method="POST"
+            enctype="multipart/form-data">
+            <!-- <div class="col upload"> -->
+            <!-- <strong>Audio Files from Source: </strong> -->
+            <div class="input-group col-md-12" id="settingsaudiofilename-divid">
+              <label for="settingsaudiofileid">Filename: </label><br />
+              <input class="col-md-6" type="text" id="settingsaudiofileid" name="settingsaudiofile" readonly>
+            </div>
+            <hr>
+            <div class="input-group col-md-12 upload" id="speakeridsettings-divid">              
+              <label for="speakeridsettingsdropdown">Edit Audio Sources: </label>
+              <select class="custom-select custom-select-sm" id="speakeridsettingsdropdown" name="speakerIdEdit"
+                multiple="multiple" style="width:80%" required>
+                <!-- <option selected disabled></option> -->
+                <!-- {% for d in speakerids %}
+                {{ d }}                
+                <option value="{{ d }}" selected>{{ d }}</option>
+                {% endfor %} -->
+              </select>              
+            </div>
+            <hr />
+            
+            <div class="input-group" id="audioupload-divid">
+              <input class="btn btn-primary uploadbtn" type="submit" value="Submit">
+            </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+          </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Upload Audio Modal -->
   <div class="modal fade" id="myUploadAudioModal" tabindex="-1" role="dialog" aria-labelledby="myUploadAudioModalLabel">
     <div class="modal-dialog modal-lg" role="document">
@@ -334,9 +413,9 @@
               <div id="questionnairederived"></div>
               <h4>Select File:</h4>
               <div class="input-group col-md-12 upload" id="speakeriduploaddropdown-divid">
-              <label for="speakeriduploaddropdown">Audio Files for Source: </label>
-              <select class="custom-select custom-select-sm" id="speakeriduploaddropdown" name="speakerId"
-                style="width:30%" required>
+              <label for="speakeriduploaddropdown">Audio Source: </label>
+              <select class="custom-select custom-select-sm" id="speakeriduploaddropdown" name="speakerId" multiple="multiple"
+                style="width:80%" required>
                 <!-- <option selected disabled></option> -->
                 {% for d in addedspeakerids %}
                 <option value="{{ d }}">{{ d }}</option>
@@ -366,9 +445,21 @@
               <input type="checkbox" id="uploadparameters-vadid" name="uploadparameters-vad">
               <label for="uploadparameters-vadid">Make Boundaries</label><br/>
               </div>  
-
+              <div class="input-group col-md-8" id="vad-algorithms-divid">
+                
+              
+              </div>
               <div class="input-group col-md-8" id="uploadparameters-boundarypause-divid" style="display: none;" aria-disabled="true">              
-              <label title="It defines the minimum value of pause at which a new boundary is made"
+              <!-- <label title="Select a VAD Algorithm" for="vad-algorithms-divid">VAD Model</label> -->
+              <label for="vadalgorithmdropdown">VAD Algorithm: </label>
+              <select class="custom-select custom-select-sm" id="vadalgorithmdropdown" name="vadAlgorithm"
+                style="width:80%">
+                <!-- <option selected disabled></option> -->
+                <option value="vadsilero" selected>Silero VAD</option>
+                <option value="pyanote">Pyannote</option>
+              </select>              
+              
+                <label title="It defines the minimum value of pause at which a new boundary is made"
                 for="uploadparameters-boundarypauseid`">Boundary Pause Threshold (between 0.00001-10.0 seconds) </label><br /> Suggested Values: <i>For sentence: 0.3; For words: 0.01; For phones: 0.001</i><br/>
               
               <input type="number" name="boundaryPause" id="uploadparameters-boundarypauseid" min="0.00001" max="10.0" step="0.00001"
@@ -496,6 +587,7 @@
             <!-- <strong>Audio Files from Source: </strong> -->
             <h4>Make Boundaries for this file </h4>
             <i><font color="red">It will overwrite any boundaries made earlier using this model</font></i>
+            <input type="hidden" id="boundaryAccessedOnTime" name="accessedOnTime" value="">
             <div class="input-group col-md-12 upload" id="  ">
               <label for="makeboundaryspeakeriduploaddropdown">Source: </label><br />
               <input class="col-md-6" type="text" id="makeboundaryspeakeriduploaddropdown" name="speakerId" value="" readonly>
@@ -518,7 +610,12 @@
               <input class="col-md-6" type="text" id="makeboundaryaudiodurationid" name="audioduration" readonly>
             </div>
             <hr>
-  
+            <label for="vadalgorithmdropdown">VAD Algorithm: </label>
+            <select class="custom-select custom-select-sm" id="vadalgorithmboundarydropdown" name="vadAlgorithm-boundary" style="width:80%">
+              <!-- <option selected disabled></option> -->
+              <option value="vadsilero" selected>Silero VAD</option>
+              <option value="pyanote">Pyannote</option>
+            </select>
             <div class="input-group col-md-8" id="uploadparameters-boundarypause-divid" style="display: block;"
               aria-disabled="true">
               <label title="It defines the minimum value of pause at which a new boundary is made"
@@ -535,9 +632,12 @@
                 placeholder="Value between 0.5 to 10.0" value="2.0"><br/>
             </div>
 
-            <div class="input-group col-md-4" id="overwrite-my-boundaries-divid">
+            <div class="input-group col-md-8" id="overwrite-my-boundaries-divid">
+              <input type="checkbox" id="do-diarisationid" name="do-diarisation" checked>
+              <label for="do-diarisationid">Infer Speakers</label>
               <input type="checkbox" id="overwrite-my-boundariesid" name="overwrite-my-boundaries" checked>
               <label for="overwrite-my-boundariesid">Overwrite my Boundaries</label>
+              
             </div>
 
             <!-- <div class="input-group col-md-4" id="createaudiojson-divid">
@@ -559,16 +659,171 @@
     </div>
   </div>
 
-  <!-- ASR Modal -->
-  <div class="modal fade" id="myASRModal" tabindex="-1" role="dialog" aria-labelledby="myASRModalLabel">
+  <!-- Automation Modal -->
+  <div class="modal fade" id="myAutomationModal" tabindex="-1" role="dialog" aria-labelledby="myAutomationModalLabel">
     <div class="modal-dialog modal-lg" role="document">
       <div class="modal-content">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
               aria-hidden="true">&times;</span></button>
-          <h4 class="modal-title" id="myASRModalLabel">Project Name: {{ projectName }}</h4>
+          <h4 class="modal-title" id="myAutomationModalLabel">Project Name: {{ projectName }}</h4>
         </div>
-        <div class="modal-body">
+        <div class="modal-body">          
+          <div class="input-group col-md-12" id="taskTypeSelect2-divid">
+            <label for="taskTypeSelect2Id">Select Task: </label><br />
+            <select class="custom-select custom-select-sm" id="taskTypeSelect2Id" name="taskTypeSelect2"
+              style="width: 50%;">
+            </select>            
+          </div>
+
+          <div class="gloss-body" id="autoGloss-divid" style="display: none;">
+            <form name="makegloss" action="/lifedata/makegloss" method="POST" enctype="multipart/form-data">
+              <!-- <div class="col upload"> -->
+              <!-- <strong>Audio Files from Source: </strong> -->
+              <input type="hidden" id="glossingAccessedOnTime" name="accessedOnTime" value="">
+              <div class="input-group col-md-12 upload" id="  ">
+                <label for="glossingspeakeriduploaddropdown">Data Source: </label><br />
+                <input class="col-md-6" type="text" id="glossingspeakeriduploaddropdown" name="glossingSpeakerId" value=""
+                  readonly>
+          
+              </div>
+              <div class="input-group col-md-12" id="glossingaudiofilename-divid">
+                <label for="glossingaudiofileid">Filename: </label><br />
+                <input class="col-md-6" type="text" id="glossingaudiofileid" name="glossingfile" readonly>
+              </div>
+              
+              <hr />
+              <h4>Interlinear Glossing Settings </h4>
+              <div class="input-group col-md-12 modelSource" id="glossingselectdivid">
+                <label for="myglossingModelListSelect2">Glossing Model: </label><br />
+                <select class="custom-select custom-select-sm" id="myglossingModelListSelect2" name="glossModelId" style="width: 50%;">
+                </select>
+              </div>
+
+              <hr />              
+              <h4>Free Translation Settings </h4>
+              <div class="input-group col-md-12" id="freetranslateUsingSelect2-divid">
+                <label for="freetranslateUsingSelect2Id">Translate Using: </label><br />
+                <select class="custom-select custom-select-sm" id="freetranslateUsingSelect2Id" name="translateUsingSelect2"
+                  style="width: 50%;">
+                </select>
+                <br>
+                *<i>
+                  <font color="red"> HF Inference API sends the data to HuggingFace server for inference.
+                  </font>
+                </i>
+              </div>
+              <div class="input-group col-md-12" id="hfinferenceagree-divid">
+                <input type="checkbox" id="hfinferenceagreeid" name="hfinferenceagree">
+                <label for="hfinferenceagreeid"> I agree to HuggingFace Privacy Policy for using HF Inference API.
+                </label>
+                <br>
+              </div>
+              <div class="input-group col-md-12 modelSource" id="freetranslationselectdivid">
+                <label for="mytranslationModelListSelect2">Model: </label><br />
+                <select class="custom-select custom-select-sm" id="myfreetranslationModelListSelect2" name="translationModelId"
+                  style="width: 50%;">
+                </select>
+              </div>
+              <hr>
+              <div class="input-group col-md-12 sourceScript" id="freetranslationsourcedivid">
+                <label for="mytranslationSourceScriptListSelect2">Source Script: </label><br />
+                <select class="custom-select custom-select-sm" id="myfreetranslationSourceScriptListSelect2" name="sourceScriptName"
+                  style="width: 50%;">
+                </select>
+              </div>
+              <hr>
+              <div class="input-group col-md-12 targetLanguage" id="freetranslationtargetlanguagedivid">
+                <label for="mytranslationTargetLanguageListSelect2">Target Language(s): </label><br />
+                <select class="custom-select custom-select-sm" id="myfreetranslationTargetLanguageListSelect2"
+                  name="targetLanguageName" style="width: 50%;">
+                </select>
+              </div>
+              <hr>
+              <div class="input-group col-md-8" id="overwrite-my-gloss-divid">
+                <input type="checkbox" id="overwrite-my-freetranslationid" name="overwrite-my-freetranslation">
+                <label for="overwrite-my-freetranslationid">Replace Existing Translation</label> &nbsp;&nbsp;&nbsp;
+                <input type="checkbox" id="overwrite-my-glossid" name="overwrite-my-gloss" checked>
+                <label for="overwrite-my-glossid">Overwrite my Gloss</label>
+              </div>
+              <hr>
+              <div class="input-group" id="dogloss-divid">
+                <input class="btn btn-primary glossbtn" id="glossbtnid" type="submit" value="Gloss">
+              </div>
+              <!-- </div> -->
+            </form>
+          </div>
+
+          <div class="transcription-body" id="autoTranslation-divid" style="display: none;">
+            <form name="maketranscription" action="/lifedata/maketranslation" method="POST"
+              enctype="multipart/form-data">
+              <!-- <div class="col upload"> -->
+              <!-- <strong>Audio Files from Source: </strong> -->
+              <h4>Translate the Text </h4>
+              <input type="hidden" id="translationAccessedOnTime" name="accessedOnTime" value="">
+              <div class="input-group col-md-12 upload" id="  ">
+                <label for="translationspeakeriduploaddropdown">Data Source: </label><br />
+                <input class="col-md-6" type="text" id="translationspeakeriduploaddropdown" name="translationSpeakerId" value=""
+                  readonly>
+              
+              </div>
+              <div class="input-group col-md-12" id="translationaudiofilename-divid">
+                <label for="audiofile">Filename: </label><br />
+                <input class="col-md-6" type="text" id="translationaudiofileid" name="translationfile" readonly>
+              </div>
+              <hr>
+              <div class="input-group col-md-12" id="translateUsingSelect2-divid">
+                <label for="translateUsingSelect2Id">Translate Using: </label><br />
+                <select class="custom-select custom-select-sm" id="translateUsingSelect2Id" name="translateUsingSelect2"
+                  style="width: 50%;">
+                </select>
+                <br>
+                *<i>
+                  <font color="red"> HF Inference API sends the data to HuggingFace server for inference.
+                  </font>
+                </i>
+              </div>
+              <div class="input-group col-md-12" id="hfinferenceagree-divid">
+                <input type="checkbox" id="hfinferenceagreeid" name="hfinferenceagree">
+                <label for="hfinferenceagreeid"> I agree to HuggingFace Privacy Policy for using HF Inference API.
+                </label>
+                <br>
+              </div>
+              <hr />
+              
+              <div class="input-group col-md-12 modelSource" id="translationselectdivid">
+                <label for="mytranslationModelListSelect2">Model: </label><br />
+                <select class="custom-select custom-select-sm" id="mytranslationModelListSelect2" name="modelId" style="width: 50%;">              
+                </select>
+              </div>
+              <hr>
+              <div class="input-group col-md-12 sourceScript" id="translationsourcedivid">
+                <label for="mytranslationSourceScriptListSelect2">Source Script: </label><br />
+                <select class="custom-select custom-select-sm" id="mytranslationSourceScriptListSelect2" name="sourceScriptName"
+                  style="width: 50%;">
+                </select>
+              </div>
+              <hr>
+              <div class="input-group col-md-12 targetLanguage" id="translationtargetlanguagedivid">
+                <label for="mytranslationTargetLanguageListSelect2">Target Language(s): </label><br />
+                <select class="custom-select custom-select-sm" id="mytranslationTargetLanguageListSelect2" name="targetLanguageName"
+                  style="width: 50%;">
+                </select>
+              </div>
+              <hr>
+              <div class="input-group col-md-8" id="overwrite-my-translations-divid">
+                <input type="checkbox" id="overwrite-my-translationsid" name="overwrite-my-translations" checked>
+                <label for="overwrite-my-translationsid">Overwrite my Translations</label>
+              </div>
+              <hr>
+              <div class="input-group" id="dotranslation-divid">
+                <input class="btn btn-primary translationbtn" id="translatebtnid" type="submit" value="Translate">
+              </div>
+              <!-- </div> -->
+              </form>
+            </div>
+
+          <div class="transcription-body" id="autoTranscription-divid" style="display: none;">
           <form name="maketranscription" action="/lifedata/transcription/maketranscription" method="POST"
             enctype="multipart/form-data">
             <!-- <div class="col upload"> -->
@@ -577,16 +832,11 @@
             <!-- <i>
               <font color="red">It will overwrite any boundaries creeated earlier</font>
             </i> -->
+            <input type="hidden" id="transcriptionAccessedOnTime" name="accessedOnTime" value="">
             <div class="input-group col-md-12 upload" id="  ">
               <label for="asrspeakeriduploaddropdown">Source: </label><br />
               <input class="col-md-6" type="text" id="asrspeakeriduploaddropdown" name="asrSpeakerId" value="" readonly>
-              <!-- <select class="custom-select custom-select-sm" id="speakeriduploaddropdown" name="speakerId" -->
-              <!-- style="width:30%" readonly> -->
-              <!-- <option selected disabled></option> -->
-              <!-- {% for d in addedspeakerids %}
-                            <option value="{{ d }}">{{ d }}</option>
-                            {% endfor %}
-                          </select> -->
+             
             </div>
             <div class="input-group col-md-12" id="asraudiofilename-divid">
               <label for="audiofile">Filename: </label><br />
@@ -665,7 +915,9 @@
               </i>
             </div> -->
             <hr>
-            <div class="input-group col-md-4" id="overwrite-my-transcriptions-divid">
+            <div class="input-group col-md-8" id="overwrite-my-transcriptions-divid">
+              <input type="checkbox" id="do-diarisationid" name="do-diarisation" checked>
+              <label for="do-diarisationid">Infer Speakers</label>
               <input type="checkbox" id="overwrite-my-transcriptionsid" name="overwrite-my-transcriptions" checked>
               <label for="overwrite-my-transcriptionsid">Overwrite my Transcriptions</label>              
             </div>            
@@ -675,6 +927,7 @@
             </div>
             <!-- </div> -->
           </form>
+          </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
@@ -683,24 +936,72 @@
     </div>
   </div>
 
+  
+
+  <!-- Sync all Transcription Modal -->
+  <div class="modal fade" id="syncTranscriptsAllModal" tabindex="-1" role="dialog" aria-labelledby="syncTranscriptsAllModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+              aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="syncTranscriptsAllModalLabel">Project Name: {{ projectName }}</h4>
+        </div>
+        <div class="modal-body">
+          <form name="synctranscription" action="/lifedata/transcription/synctranscription" method="POST"
+            enctype="multipart/form-data">
+            <!-- <div class="col upload"> -->
+            <!-- <strong>Audio Files from Source: </strong> -->
+            <h4>Sync Transcription for this file </h4>
+            <!-- <i>
+                <font color="red">It will overwrite any boundaries creeated earlier</font>
+              </i> -->
+              <input type="hidden" id="syncTranscriptAccessedOnTime" name="accessedOnTime" value="">
+            <div class="input-group col-md-12 upload" id="allformelementsdiv">
+              <label for="syncTranscriptScriptsSource">Source Script: </label><br />              
+              <select class="custom-select custom-select-sm" id="syncTranscriptScriptsSource" name="allSyncSourceScript"
+                style="width: 50%;" required>
+              </select>
+              <br /><br />
+                <label for="syncTranscriptScriptsTargets">Target Script(s): </label><br />                                
+                <select class="custom-select custom-select-sm" id="syncTranscriptScriptsTargets" multiple="multiple" name="allSyncTargetScripts" style="width: 50%;" required>
+                </select><br>
+                <input type="checkbox" id="overwrite-existing-transcriptionsid" name="overwrite-existing-transcriptions">
+                <label for="overwrite-existing-transcriptionsid">Overwrite Existing Transcriptions</label>
+              </div>
+              <hr>
+              <div class="input-group" id="dosyncall-divid">
+                <input class="btn btn-primary syncallbtn" id="syncallbtnid" type="button" value="Sync">
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
 {% endblock %}
 
 {% block scripts %}
 {{super()}}
-  <script src="{{url_for('.static', filename='sidepanel.js')}}"></script>
+    
+<script src="{{url_for('static', filename='speaker_select2_dropdown.js')}}"></script>
+<script src="{{url_for('.static', filename='sidepanel.js')}}"></script>
   <script type="text/javascript">createSidePanel({{ shareinfo | tojson | safe }});</script>
   <script src="{{url_for('.static', filename='transcription.js')}}"></script>
   <script type="text/javascript">createTranscriptionInterfaceForm({{ newData | tojson | safe }});</script>
   <script type="text/javascript">questionnaireDerived({{ allQuesIds | tojson | safe }});</script>
   <script src="{{url_for('.static', filename='changeactivespeaker.js')}}"></script>
-  <script src="{{url_for('.static', filename='progressreport.js')}}"></script>
-  <script src="{{url_for('static', filename='speaker_select2_dropdown.js')}}"></script>
+  <script src="{{url_for('.static', filename='progressreport.js')}}"></script>  
   <script src="{{url_for('static', filename='addnewspeaker.js')}}"></script>  
   <script src="{{url_for('.static', filename='search.js')}}"></script>
   <script src="{{url_for('.static', filename='sorttable.js')}}"></script>
   <script src="{{url_for('.static', filename='audiotranscription.js')}}"></script>
   <script src="{{url_for('.static', filename='transcriptionannotation.js')}}"></script>
-  <script src="{{url_for('.static', filename='asr.js')}}"></script>
+  <script src="{{url_for('.static', filename='automation.js')}}"></script>
   <script src="{{url_for('static', filename='downloader/transcriptiondownload.js')}}"></script>
   <script type="text/javascript">generateDownloadForm({{ shareinfo | tojson | safe }}, {{ transcriptionsby | tojson | safe}}, {{ activetranscriptionby | tojson | safe}}, {{ projectName | tojson | safe}});</script>
+  <script src="{{url_for('.static', filename='keyboards.js')}}"></script>
+  <script type="text/javascript">createKeyboards({{ newData | tojson | safe }});</script>
 {% endblock %}

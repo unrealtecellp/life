@@ -91,18 +91,33 @@ function createShareLatestChecked() {
   $('#shareLatest').append(shareLatest);
 }
 
-function createShareSourcesList(sourceList) {
-  // console.log(sourceList);
+function createShareSourcesList(optionsList, selectedOption='', moreInfo={}, optionKey='') {
+  // console.log(optionsList);
   let speakersToShare = '';
   let sharespeakerlist = [];
   // for (let [key, value] of Object.entries(sourceList)){
   //   console.log(key, value);
-  for (let i=0; i<sourceList.length; i++) {
-    let value = sourceList[i];
-    speakersToShare += '<option value="'+value+'">'+value+'</option>';
-    sharespeakerlist.push(value)
+  // for (let i=0; i<sourceList.length; i++) {
+  //   let value = sourceList[i];
+  //   speakersToShare += '<option value="'+value+'">'+value+'</option>';
+  //   sharespeakerlist.push(value)
 
-  };
+  // };
+  for (let i=0; i<optionsList.length; i++) {
+    optionValue = optionsList[i];
+    option = optionsList[i];
+    if (optionValue in moreInfo &&
+    optionKey in moreInfo[optionValue]) {
+        option = moreInfo[optionValue][optionKey]
+    }
+    if (optionValue === selectedOption) {
+        speakersToShare += '<option value="'+optionValue+'" selected>'+option+'</option>'
+    }
+    else {
+        speakersToShare += '<option value="'+optionValue+'">'+option+'</option>'
+    }
+    sharespeakerlist.push(optionValue);
+  }
   localStorage.setItem("sharespeakerlist", JSON.stringify(sharespeakerlist));
   $('#shareSpeakerSelect').append(speakersToShare);
   $('#shareSpeakerSelect').select2({
@@ -196,6 +211,8 @@ function buildShareInterface(shareAction='share', selectedUser='') {
     let projetName = data.projectName;
     let usersList = data.usersList;
     let sourceList = data.sourceList;
+    let sourceMetadata = data.sourceMetadata;
+    // console.log(sourceMetadata);
     let shareInfo = data.shareInfo;
     let sharemodecount = data.sharemode;
     let sharelatestchecked = shareInfo["sharelatestchecked"];
@@ -226,7 +243,7 @@ function buildShareInterface(shareAction='share', selectedUser='') {
         createShareLatestChecked();
       }
       document.getElementById("shareSpeakerSelect").style.display = "block";
-      createShareSourcesList(sourceList);
+      createShareSourcesList(sourceList, '', sourceMetadata, 'video_title');
       createShareAccessControl(sharemodecount, sharemodecount);
       createShareAdvanceAccessControl(shareInfo, shareInfo);
     }
@@ -243,7 +260,7 @@ function buildShareInterface(shareAction='share', selectedUser='') {
           }
         }
         document.getElementById("shareSpeakerSelect").style.display = "block";
-        createShareSourcesList(sourceList);
+        createShareSourcesList(sourceList, '', sourceMetadata, 'video_title');
         createShareAccessControl(sharemodecount, selectedUsersharemodecount, checked=true);
         createShareAdvanceAccessControl(shareInfo, selectedUserShareInfo, shareAction);
       }
@@ -255,7 +272,7 @@ function buildShareInterface(shareAction='share', selectedUser='') {
       createShareUsersList(isSharedWithUsersList,  multiple=false, selectedUser, allowClear=false);
       if (selectedUser !== '') {
         document.getElementById("shareSpeakerSelect").style.display = "block";
-        createShareSourcesList(sourceList);
+        createShareSourcesList(sourceList, '', sourceMetadata, 'video_title');
       }
     }
   });

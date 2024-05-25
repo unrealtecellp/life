@@ -1,0 +1,757 @@
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Add/ Update User Details </title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
+    <script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css" />
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.1/bootstrap3-editable/css/bootstrap-editable.css"
+        rel="stylesheet">
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.1/bootstrap3-editable/js/bootstrap-editable.js"></script>
+
+    <style>
+        .divtextuserdetails {
+            border: ridge 1px;
+            padding: 5px;
+            width: 20em;
+            min-height: 1em;
+            overflow: auto;
+        }
+    </style>
+
+</head>
+{% extends "manageUsersLinks.html" %}
+
+{% block styles %}
+{{super()}}
+{% endblock %}
+
+{% block app_content %}
+{% import 'bootstrap/wtf.html' as wtf %}
+<!-- <button type="button" class="btn btn-lg btn-info" onclick="window.location.href='{{ url_for('karya_bp.home_insert') }}';">Karya Extension</button> -->
+<!-- <br>
+<br> -->
+
+<!-- 
+<div> -->
+
+<!-- <div class="btn-group" role="group">
+      <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        Download
+        <span class="caret"></span>
+      </button>
+      <ul class="dropdown-menu">
+          <li class="json"><a href="#">JSON</a></li>
+          <li class="csv"><a href="#">CSV</a></li>
+      </ul>
+  </div> -->
+<br>
+
+
+<script>
+
+</script>
+
+<!-- Add/Edit Speaker button -->
+<!-- Modal -->
+
+<div class="modal fade" id="userdetailsmodal" tabindex="-1" role="dialog" aria-labelledby="userdetailsmodalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="userdetailsmodalLabel">User Details</h4>
+            </div>
+            <div class="modal-body">
+                <!-- <div id="userdisplay" class="form-group" style="display: none;"> -->
+                {% for item in userprofilelist %}
+                <label for="display++{{item}}">{{item}}: </label><br>
+
+                <!-- <textarea id="display++{{item}}" style="width:55%" readonly></textarea><br /> -->
+                <div id="display++{{item}}" class="divtextuserdetails"></div><br />
+                {% endfor %}
+                <!-- </div> -->
+                <div class="modal-footer">
+                    <button type="button" id="closebutton" class="btn btn-danger" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <button type="button" id="newuserbutton" class="btn btn-primary addnewuser" data-toggle="modal"
+            data-target="#exampleModal">
+            Add New User
+        </button>
+    </div>
+</div>
+
+<div class="panel-group" id="accordion">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">
+                <!-- All users: {{allusers}} -->
+                <a data-toggle="collapse" data-parent="#accordion" href="#newrequests">
+                    New User Requests
+                </a>
+            </h3>
+        </div>
+        <!-- <h3> New User Requests </h3> -->
+        <div id="newrequests" class="panel-collapse collapse">
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col">
+                        <input id="myInput" type="text" placeholder="Search">
+                        <table class="table table-striped " id="myTable">
+                            <thead>
+                                <tr>
+                                    <th onclick="sortTable(1)">Username</th>
+                                    <!-- <th onclick="sortTable(2)">Name</th> -->
+                                    <th onclick="sortTable(3)">Position</th>
+                                    <th onclick="sortTable(4)">Organisation</th>
+                                    <th onclick="sortTable(5)">Type</th>
+                                    <th onclick="sortTable(6)">Country</th>
+                                    <th onclick="sortTable(7)">City</th>
+                                    <th onclick="sortTable(8)">Languages</th>
+                                    <th onclick="sortTable(9)">Storage</th>
+                                    <th>Review</th>
+                                    <th>Action 1</th>
+                                    <th>Action 2</th>
+
+                                </tr>
+                            </thead>
+                            <tbody id="myTableBody">
+                                {% if 'ADMIN' in usertype %}
+                                {% for item in allusers %}
+                                {% if 'isActive' in item and item['isActive']|int==0%}
+                                {% if 'userdeleteFLAG' in item and item['userdeleteFLAG']|int == 0 %}
+
+                                <tr>
+                                    <td>
+                                        <b>{{item['username']}}</b>
+                                    </td>
+
+                                    <!-- <td>
+                        {% if 'userProfile' in item %}
+                        {{item['userProfile']['username']}}
+                        {%else%}
+                        <b>NA</b>
+                        {%endif%}
+                    </td> -->
+                                    <td>
+                                        {% if 'userProfile' in item %}
+                                        {{item['userProfile']['position']}}
+                                        {%else%}
+                                        <b>NA</b>
+                                        {%endif%}
+                                    </td>
+                                    <td>
+                                        {% if 'userProfile' in item %}
+                                        {{item['userProfile']['organisation_name']}}
+                                        {%else%}
+                                        <b>NA</b>
+                                        {%endif%}
+                                    </td>
+                                    <td>
+                                        {% if 'userProfile' in item %}
+                                        {{item['userProfile']['organisation_type']}}
+                                        {%else%}
+                                        <b>NA</b>
+                                        {%endif%}
+                                    </td>
+                                    <td>
+                                        {% if 'userProfile' in item %}
+                                        {{item['userProfile']['country']}}
+                                        {%else%}
+                                        <b>NA</b>
+                                        {%endif%}
+                                    </td>
+                                    <td>
+                                        {% if 'userProfile' in item %}
+                                        {{item['userProfile']['city']}}
+                                        {%else%}
+                                        <b>NA</b>
+                                        {%endif%}
+                                    </td>
+                                    <td>
+                                        {% if 'userProfile' in item %}
+                                        {{item['userProfile']['languages']}}
+                                        {%else%}
+                                        <b>NA</b>
+                                        {%endif%}
+                                    </td>
+                                    <td>
+                                        {% if 'userProfile' in item %}
+                                        {{item['userProfile']['storage_requirement']}}
+                                        {%else%}
+                                        <b>NA</b>
+                                        {%endif%}
+                                    </td>
+
+                                    <td>
+                                        <button type="button" class="btn btn-primary userview"
+                                            id="view++{{item['username']}}" data-toggle="modal"
+                                            data-target="#userdetailsmodal">
+                                            View Details
+                                        </button>
+                                    </td>
+                                    <td>
+                                        <div class="form-group">
+                                            <label for="iduserRole"> Role: </label> <br>
+                                            <select class="userRole" id="iduserRole++{{item['username']}}"
+                                                name="userRole" style="width:100%">
+                                                <option value="USER">USER</option>
+
+                                                {% if usertype == "SUPER-ADMIN"%}
+                                                <option value="ADMIN">ADMIN</option>
+                                                {% endif %}
+                                            </select>
+                                        </div>
+                                        <button type="button" class="btn btn-success useractions"
+                                            id="approve++{{item['username']}}" data-toggle="modal"
+                                            data-target="#exampleModal">
+                                            Approve
+                                        </button>
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-danger useractions"
+                                            id="reject++{{item['username']}}" data-toggle="modal"
+                                            data-target="#exampleModal">
+                                            Reject
+                                        </button>
+                                    </td>
+                                </tr>
+                                {% endif %}
+                                {% endif %}
+                                {% endfor %}
+                                {% endif %}
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <hr>
+
+
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">
+                <a href="#activeusers" data-parent="#accordion" data-toggle="collapse">
+                    Active Users
+                </a>
+            </h3>
+        </div>
+        <!-- <h3> New User Requests </h3> -->
+        <div id="activeusers" class="panel-collapse collapse">
+            <!-- <h3> Active Users </h3> -->
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col">
+                        <input id="myInput" type="text" placeholder="Search">
+                        <table class="table table-striped " id="myTable">
+                            <thead>
+                                <tr>
+
+                                    <th onclick="sortTable(1)">Username</th>
+                                    <!-- <th onclick="sortTable(2)">Name</th> -->
+                                    <th onclick="sortTable(3)">Position</th>
+                                    <th onclick="sortTable(4)">Organisation</th>
+                                    <th onclick="sortTable(5)">Type</th>
+                                    <th onclick="sortTable(6)">Country</th>
+                                    <th onclick="sortTable(7)">City</th>
+                                    <th onclick="sortTable(8)">Languages</th>
+                                    <th onclick="sortTable(9)">Storage</th>
+                                    <th>Review</th>
+                                    <th>Action 1</th>
+                                    <th>Action 2</th>
+
+                                </tr>
+                            </thead>
+                            <tbody id="myTableBody">
+                                {% if 'ADMIN' in usertype %}
+                                {% for item in allusers %}
+                                {% if 'isActive' in item and item['isActive']|int==1%}
+                                {% if 'userdeleteFLAG' in item and item['userdeleteFLAG']|int==0 %}
+                                {% if 'isSuperAdmin' in item and item['isSuperAdmin']|int==0%}
+                                {% if 'isAdmin' in item and item['isAdmin']|int==0 %}
+
+                                <tr>
+                                    <td>
+                                        <b>{{item['username']}}</b>
+                                    </td>
+                                    <td>
+                                        {% if 'userProfile' in item %}
+                                        {{item['userProfile']['position']}}
+                                        {%else%}
+                                        <b>NA</b>
+                                        {%endif%}
+                                    </td>
+                                    <td>
+                                        {% if 'userProfile' in item %}
+                                        {{item['userProfile']['organisation_name']}}
+                                        {%else%}
+                                        <b>NA</b>
+                                        {%endif%}
+                                    </td>
+                                    <td>
+                                        {% if 'userProfile' in item %}
+                                        {{item['userProfile']['organisation_type']}}
+                                        {%else%}
+                                        <b>NA</b>
+                                        {%endif%}
+                                    </td>
+                                    <td>
+                                        {% if 'userProfile' in item %}
+                                        {{item['userProfile']['country']}}
+                                        {%else%}
+                                        <b>NA</b>
+                                        {%endif%}
+                                    </td>
+                                    <td>
+                                        {% if 'userProfile' in item %}
+                                        {{item['userProfile']['city']}}
+                                        {%else%}
+                                        <b>NA</b>
+                                        {%endif%}
+                                    </td>
+                                    <td>
+                                        {% if 'userProfile' in item %}
+                                        {{item['userProfile']['languages']}}
+                                        {%else%}
+                                        <b>NA</b>
+                                        {%endif%}
+                                    </td>
+                                    <td>
+                                        {% if 'userProfile' in item %}
+                                        {{item['userProfile']['storage_requirement']}}
+                                        {%else%}
+                                        <b>NA</b>
+                                        {%endif%}
+                                    </td>
+
+                                    <td>
+                                        <button type="button" class="btn btn-primary userview"
+                                            id="view++{{item['username']}}" data-toggle="modal"
+                                            data-target="#userdetailsmodal">
+                                            View Details
+                                        </button>
+                                    </td>
+                                    <td>
+                                        <div class="form-group">
+                                            <label for="iduserRole"> Role: </label> <br>
+                                            <select class="userRole" id="iduserRole++{{item['username']}}"
+                                                name="userRole" style="width:100%">
+                                                {% if item['isAdmin']|int==1 %}
+                                                {% if usertype == "SUPER-ADMIN" %}
+                                                <option value="ADMIN" selected>ADMIN </option>
+                                                <option value="USER">USER</option>
+                                                {% endif %}
+                                                {% else %}
+                                                <option value="USER" selected>USER</option>
+                                                {% if usertype == "SUPER-ADMIN"%}
+                                                <option value="ADMIN">ADMIN</option>
+                                                {% endif %}
+
+                                                {% endif %}
+                                            </select>
+                                        </div>
+                                        <button type="button" class="btn btn-success useractions"
+                                            id="approve++{{item['username']}}" data-toggle="modal"
+                                            data-target="#exampleModal">
+                                            Update
+                                        </button>
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-danger useractions"
+                                            id="deactivate++{{item['username']}}" data-toggle="modal"
+                                            data-target="#exampleModal">
+                                            Deactivate
+                                        </button>
+                                    </td>
+                                </tr>
+                                {% elif 'isAdmin' in item and item['isAdmin']|int==1 %}
+                                {% if usertype=='SUPER-ADMIN'%}
+                                <tr>
+                                    <td>
+                                        <b>{{item['username']}}</b>
+                                    </td>
+                                    <td>
+                                        {% if 'userProfile' in item %}
+                                        {{item['userProfile']['position']}}
+                                        {%else%}
+                                        <b>NA</b>
+                                        {%endif%}
+                                    </td>
+                                    <td>
+                                        {% if 'userProfile' in item %}
+                                        {{item['userProfile']['organisation_name']}}
+                                        {%else%}
+                                        <b>NA</b>
+                                        {%endif%}
+                                    </td>
+                                    <td>
+                                        {% if 'userProfile' in item %}
+                                        {{item['userProfile']['organisation_type']}}
+                                        {%else%}
+                                        <b>NA</b>
+                                        {%endif%}
+                                    </td>
+                                    <td>
+                                        {% if 'userProfile' in item %}
+                                        {{item['userProfile']['country']}}
+                                        {%else%}
+                                        <b>NA</b>
+                                        {%endif%}
+                                    </td>
+                                    <td>
+                                        {% if 'userProfile' in item %}
+                                        {{item['userProfile']['city']}}
+                                        {%else%}
+                                        <b>NA</b>
+                                        {%endif%}
+                                    </td>
+                                    <td>
+                                        {% if 'userProfile' in item %}
+                                        {{item['userProfile']['languages']}}
+                                        {%else%}
+                                        <b>NA</b>
+                                        {%endif%}
+                                    </td>
+                                    <td>
+                                        {% if 'userProfile' in item %}
+                                        {{item['userProfile']['storage_requirement']}}
+                                        {%else%}
+                                        <b>NA</b>
+                                        {%endif%}
+                                    </td>
+
+                                    <td>
+                                        <button type="button" class="btn btn-primary userview"
+                                            id="view++{{item['username']}}" data-toggle="modal"
+                                            data-target="#userdetailsmodal">
+                                            View Details
+                                        </button>
+                                    </td>
+                                    <td>
+                                        <div class="form-group">
+                                            <label for="iduserRole"> Role: </label> <br>
+                                            <select class="userRole" id="iduserRole++{{item['username']}}"
+                                                name="userRole" style="width:100%">
+                                                {% if item['isAdmin']|int==1 %}
+                                                {% if usertype == "SUPER-ADMIN" %}
+                                                <option value="ADMIN" selected>ADMIN </option>
+                                                <option value="USER">USER</option>
+                                                {% endif %}
+                                                {% else %}
+                                                <option value="USER" selected>USER</option>
+                                                {% if usertype == "SUPER-ADMIN"%}
+                                                <option value="ADMIN">ADMIN</option>
+                                                {% endif %}
+
+                                                {% endif %}
+                                            </select>
+                                        </div>
+                                        <button type="button" class="btn btn-success useractions"
+                                            id="approve++{{item['username']}}" data-toggle="modal"
+                                            data-target="#exampleModal">
+                                            Update
+                                        </button>
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-danger useractions"
+                                            id="deactivate++{{item['username']}}" data-toggle="modal"
+                                            data-target="#exampleModal">
+                                            Deactivate
+                                        </button>
+                                    </td>
+                                </tr>
+                                {% endif %}
+                                {% endif %}
+                                {% endif %}
+                                {% endif %}
+                                {% endif %}
+                                {% endfor %}
+                                {% endif %}
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <hr>
+
+
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">
+                <a href="#deactiveusers" data-parent="#accordion" data-toggle="collapse">
+                    Deactivated Users
+                </a>
+            </h3>
+        </div>
+        <!-- <h3> New User Requests </h3> -->
+        <div id="deactiveusers" class="panel-collapse collapse" class="collapse">
+            <!-- <h3> Deactivated Users </h3> -->
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col">
+                        <input id="myInput" type="text" placeholder="Search">
+                        <table class="table table-striped " id="myTable">
+                            <thead>
+                                <tr>
+
+                                    <th onclick="sortTable(1)">Username</th>
+                                    <!-- <th onclick="sortTable(2)">Name</th> -->
+                                    <th onclick="sortTable(3)">Position</th>
+                                    <th onclick="sortTable(4)">Organisation</th>
+                                    <th onclick="sortTable(5)">Type</th>
+                                    <th onclick="sortTable(6)">Country</th>
+                                    <th onclick="sortTable(7)">City</th>
+                                    <th onclick="sortTable(8)">Languages</th>
+                                    <th onclick="sortTable(9)">Storage</th>
+                                    <th>Review</th>
+                                    <th>Action 1</th>
+                                    <th>Action 2</th>
+
+                                </tr>
+                            </thead>
+                            <tbody id="myTableBody">
+                                {% if 'ADMIN' in usertype %}
+                                {% for item in allusers %}
+                                {% if 'isActive' in item and item['isActive']|int==2%}
+                                {% if 'userdeleteFLAG' in item and item['userdeleteFLAG']|int==0 %}
+                                {% if 'isSuperAdmin' in item and item['isSuperAdmin']|int==0%}
+                                {% if 'isAdmin' in item and item['isAdmin']|int==0 %}
+                                <tr>
+                                    <td>
+                                        <b>{{item['username']}}</b>
+                                    </td>
+                                    <td>
+                                        {% if 'userProfile' in item %}
+                                        {{item['userProfile']['position']}}
+                                        {%else%}
+                                        <b>NA</b>
+                                        {%endif%}
+                                    </td>
+                                    <td>
+                                        {% if 'userProfile' in item %}
+                                        {{item['userProfile']['organisation_name']}}
+                                        {%else%}
+                                        <b>NA</b>
+                                        {%endif%}
+                                    </td>
+                                    <td>
+                                        {% if 'userProfile' in item %}
+                                        {{item['userProfile']['organisation_type']}}
+                                        {%else%}
+                                        <b>NA</b>
+                                        {%endif%}
+                                    </td>
+                                    <td>
+                                        {% if 'userProfile' in item %}
+                                        {{item['userProfile']['country']}}
+                                        {%else%}
+                                        <b>NA</b>
+                                        {%endif%}
+                                    </td>
+                                    <td>
+                                        {% if 'userProfile' in item %}
+                                        {{item['userProfile']['city']}}
+                                        {%else%}
+                                        <b>NA</b>
+                                        {%endif%}
+                                    </td>
+                                    <td>
+                                        {% if 'userProfile' in item %}
+                                        {{item['userProfile']['languages']}}
+                                        {%else%}
+                                        <b>NA</b>
+                                        {%endif%}
+                                    </td>
+                                    <td>
+                                        {% if 'userProfile' in item %}
+                                        {{item['userProfile']['storage_requirement']}}
+                                        {%else%}
+                                        <b>NA</b>
+                                        {%endif%}
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-primary userview"
+                                            id=" view++{{item['username']}}" data-toggle="modal"
+                                            data-target="#userdetailsmodal">
+                                            View Details
+                                        </button>
+                                    </td>
+                                    <td>
+                                        <div class="form-group">
+                                            <label for="iduserRole"> Role: </label> <br>
+                                            <select class="userRole" id="iduserRole++{{item['username']}}"
+                                                name="userRole" style="width:100%">
+                                                {% if item['isAdmin']|int==1 %}
+                                                {% if usertype == "SUPER-ADMIN" %}
+                                                <option value="ADMIN" selected>ADMIN </option>
+                                                <option value="USER">USER</option>
+                                                {% endif %}
+                                                {% else %}
+                                                <option value="USER" selected>USER</option>
+                                                {% if usertype == "SUPER-ADMIN"%}
+                                                <option value="ADMIN">ADMIN</option>
+                                                {% endif %}
+
+                                                {% endif %}
+                                            </select>
+                                        </div>
+                                        <button type="button" class="btn btn-success useractions"
+                                            id="approve++{{item['username']}}" data-toggle="modal"
+                                            data-target="#exampleModal">
+                                            Activate
+                                        </button>
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-danger useractions"
+                                            id="delete++{{item['username']}}" data-toggle="modal"
+                                            data-target="#exampleModal">
+                                            Delete
+                                        </button>
+                                    </td>
+                                </tr>
+                                {% elif 'isAdmin' in item and item['isAdmin']|int==1 %}
+                                {% if usertype=='SUPER-ADMIN'%}
+                                <tr>
+                                    <td>
+                                        <b>{{item['username']}}</b>
+                                    </td>
+                                    <td>
+                                        {% if 'userProfile' in item %}
+                                        {{item['userProfile']['position']}}
+                                        {%else%}
+                                        <b>NA</b>
+                                        {%endif%}
+                                    </td>
+                                    <td>
+                                        {% if 'userProfile' in item %}
+                                        {{item['userProfile']['organisation_name']}}
+                                        {%else%}
+                                        <b>NA</b>
+                                        {%endif%}
+                                    </td>
+                                    <td>
+                                        {% if 'userProfile' in item %}
+                                        {{item['userProfile']['organisation_type']}}
+                                        {%else%}
+                                        <b>NA</b>
+                                        {%endif%}
+                                    </td>
+                                    <td>
+                                        {% if 'userProfile' in item %}
+                                        {{item['userProfile']['country']}}
+                                        {%else%}
+                                        <b>NA</b>
+                                        {%endif%}
+                                    </td>
+                                    <td>
+                                        {% if 'userProfile' in item %}
+                                        {{item['userProfile']['city']}}
+                                        {%else%}
+                                        <b>NA</b>
+                                        {%endif%}
+                                    </td>
+                                    <td>
+                                        {% if 'userProfile' in item %}
+                                        {{item['userProfile']['languages']}}
+                                        {%else%}
+                                        <b>NA</b>
+                                        {%endif%}
+                                    </td>
+                                    <td>
+                                        {% if 'userProfile' in item %}
+                                        {{item['userProfile']['storage_requirement']}}
+                                        {%else%}
+                                        <b>NA</b>
+                                        {%endif%}
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-primary userview"
+                                            id=" view++{{item['username']}}" data-toggle="modal"
+                                            data-target="#userdetailsmodal">
+                                            View Details
+                                        </button>
+                                    </td>
+                                    <td>
+                                        <div class="form-group">
+                                            <label for="iduserRole"> Role: </label> <br>
+                                            <select class="userRole" id="iduserRole++{{item['username']}}"
+                                                name="userRole" style="width:100%">
+                                                {% if item['isAdmin']|int==1 %}
+                                                {% if usertype == "SUPER-ADMIN" %}
+                                                <option value="ADMIN" selected>ADMIN </option>
+                                                <option value="USER">USER</option>
+                                                {% endif %}
+                                                {% else %}
+                                                <option value="USER" selected>USER</option>
+                                                {% if usertype == "SUPER-ADMIN"%}
+                                                <option value="ADMIN">ADMIN</option>
+                                                {% endif %}
+
+                                                {% endif %}
+                                            </select>
+                                        </div>
+                                        <button type="button" class="btn btn-success useractions"
+                                            id="approve++{{item['username']}}" data-toggle="modal"
+                                            data-target="#exampleModal">
+                                            Activate
+                                        </button>
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-danger useractions"
+                                            id="delete++{{item['username']}}" data-toggle="modal"
+                                            data-target="#exampleModal">
+                                            Delete
+                                        </button>
+                                    </td>
+                                </tr>
+                                {% endif %}
+                                {% endif %}
+                                {% endif %}
+                                {% endif %}
+                                {% endif %}
+                                {% endfor %}
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<hr>
+
+{% endblock %}
+{% block scripts %}
+{{super()}}
+<script src="{{url_for('.static', filename='search.js')}}"></script>
+<script src="{{url_for('.static', filename='sorttable.js')}}"></script>
+<script src="{{url_for('.static', filename='manageUsers.js')}}"></script>
+
+{% endblock %}
+
+</html>

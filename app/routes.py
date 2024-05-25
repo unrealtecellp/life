@@ -54,6 +54,12 @@ from app.models import UserLogin
 
 from app.languages.controller import languageManager as lman
 from app.lifemodels.controller import modelManager as mman
+from app.lifedata.transcription.controller import (
+    transcription_audiodetails,
+)
+from app.lifedata.controller import (
+    sourceid_to_souremetadata,
+)
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 scriptCodeJSONFilePath = os.path.join(basedir, 'static/json/scriptCode.json')
@@ -232,6 +238,34 @@ def manageproject():
         data=currentuserprojectsname,
         activeprojectname=activeprojectname,
         shareinfo=shareinfo,
+        usertype=usertype
+    )
+
+
+@app.route('/manageprojects', methods=['GET', 'POST'])
+@login_required
+def manageprojects():
+    userprojects, userlogin, projects, projectsform = getdbcollections.getdbcollections(
+        mongo, 'userprojects', 'userlogin', 'projects', 'projectsform')
+    current_username = getcurrentusername.getcurrentusername()
+    # logger.debug('USERNAME: ', current_username)
+    usertype = userdetails.get_user_type(
+        userlogin, current_username)
+    currentuserprojectsname = getcurrentuserprojects.getcurrentuserprojects(
+        current_username, userprojects)
+    # activeprojectname = getactiveprojectname.getactiveprojectname(
+    #     current_username, userprojects)
+    all_project_info = projectDetails.get_n_projects_info(projects,
+                                                          userprojects,
+                                                          projectsform,
+                                                          current_username,
+                                                          currentuserprojectsname,
+                                                          )
+
+    return render_template(
+        'manageProjects.html',
+        projectnames=currentuserprojectsname,
+        allprojectinfo=all_project_info,
         usertype=usertype
     )
 
@@ -466,11 +500,12 @@ def enternewsentences():
 @login_required
 def savetranscription():
     try:
-        projects, userprojects, projectsform, transcriptions = getdbcollections.getdbcollections(mongo,
-                                                                                                 'projects',
-                                                                                                 'userprojects',
-                                                                                                 'projectsform',
-                                                                                                 'transcriptions')
+        projects, userprojects, projectsform, transcriptions, languages = getdbcollections.getdbcollections(mongo,
+                                                                                                            'projects',
+                                                                                                            'userprojects',
+                                                                                                            'projectsform',
+                                                                                                            'transcriptions',
+                                                                                                            'languages')
         current_username = getcurrentusername.getcurrentusername()
         activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
                                                                       userprojects)
@@ -490,7 +525,9 @@ def savetranscription():
         # logger.debug("transcription_data: %s", pformat(transcription_data))
         lastActiveId = transcription_data['lastActiveId']
         transcription_regions = transcription_data['transcriptionRegions']
-        # logger.debug("transcription_regions: %s", pformat(json.loads(transcription_regions)))
+        accessedOnTime = transcription_data['accessedOnTime']
+        # logger.info("transcription_regions: %s", pformat(
+        # json.loads(transcription_regions)))
         # logger.debug(lastActiveId)
         # logger.debug(transcription_regions)
         speaker_audio_ids = audiodetails.get_speaker_audio_ids_new(projects,
@@ -520,13 +557,38 @@ def savetranscription():
             return jsonify(savedTranscription=0)
 
         scriptCode = readJSONFile.readJSONFile(scriptCodeJSONFilePath)
-        audiodetails.savetranscription(transcriptions,
-                                       activeprojectform,
-                                       scriptCode,
-                                       current_username,
-                                       transcription_regions,
-                                       lastActiveId,
-                                       activespeakerid)
+        action = transcription_data['action']
+
+        if action == 'save':
+            audiodetails.savetranscription(transcriptions,
+                                           activeprojectname,
+                                           activeprojectform,
+                                           scriptCode,
+                                           current_username,
+                                           transcription_regions,
+                                           lastActiveId,
+                                           activespeakerid,
+                                           accessedOnTime)
+        elif action == 'sync':
+            source_script = transcription_data['sourceScript']
+            target_scripts = transcription_data['targetScripts']
+            overwrite = transcription_data['overwrite']
+            audio_lang = getactiveprojectform.getaudiolanguage(
+                projectsform, projectowner, activeprojectname)
+            audio_lang_code = lman.get_bcp_language_code(
+                languages, audio_lang)
+            transcription_audiodetails.synctranscription(transcriptions,
+                                                         activeprojectname,
+                                                         activeprojectform,
+                                                         source_script,
+                                                         target_scripts,
+                                                         audio_lang_code,
+                                                         current_username,
+                                                         transcription_regions,
+                                                         lastActiveId,
+                                                         accessedOnTime,
+                                                         overwrite)
+
         return jsonify(savedTranscription=1)
     except:
         logger.exception("")
@@ -575,6 +637,7 @@ def audiobrowse():
         if (active_speaker_id != ''):
             total_records, audio_data_list = audiodetails.get_n_audios(transcriptions,
                                                                        activeprojectname,
+                                                                       current_username,
                                                                        active_speaker_id,
                                                                        speaker_audio_ids)
         else:
@@ -598,7 +661,7 @@ def audiobrowse():
         new_data['speakerIds'] = speakerids
         new_data['audioData'] = new_audio_data_list
         new_data['audioDataFields'] = [
-            'audioId', 'audioFilename', 'Audio File']
+            'audioId', 'audioFilename', 'Transcribed', 'Audio File']
         new_data['totalRecords'] = total_records
         new_data['transcriptionsBy'] = project_shared_with
     except:
@@ -3941,30 +4004,49 @@ def downloadjson():
 @app.route('/userslist', methods=['GET', 'POST'])
 def userslist():
 
-    userlogin, projects, userprojects = getdbcollections.getdbcollections(mongo,
-                                                                          'userlogin',
-                                                                          'projects',
-                                                                          'userprojects')
+    userlogin, projects, userprojects, speakerdetails, sourcedetails = getdbcollections.getdbcollections(mongo,
+                                                                                                         'userlogin',
+                                                                                                         'projects',
+                                                                                                         'userprojects',
+                                                                                                         'speakerdetails',
+                                                                                                         'sourcedetails')
     current_username = getcurrentusername.getcurrentusername()
+    activeprojectname = getactiveprojectname.getactiveprojectname(
+        current_username, userprojects)
+    project_type = getprojecttype.getprojecttype(projects,
+                                                 activeprojectname)
     try:
+        source_metadata = {}
         data = json.loads(request.args.get('a'))
-        logger.debug("data: %s, %s", data, type(data))
+        # logger.debug("data: %s, %s", data, type(data))
         share_action = data["shareAction"]
         selected_user = data["selectedUser"]
-        logger.debug("share_action: %s, selected_user: %s",
-                     share_action, selected_user)
+        # logger.debug("share_action: %s, selected_user: %s",
+        #              share_action, selected_user)
         project_name, share_with_users_list, sourceList, share_info, current_user_sharemode, selected_user_shareinfo = lifeshare.get_users_list(projects,
                                                                                                                                                 userprojects,
                                                                                                                                                 userlogin,
                                                                                                                                                 current_username,
                                                                                                                                                 share_action=share_action,
                                                                                                                                                 selected_user=selected_user)
+        if (project_type == 'transcriptions'):
+            sourcedetails_collection = speakerdetails
+            source_metadata = transcription_audiodetails.get_speaker_metadata(sourcedetails_collection,
+                                                                              sourceList,
+                                                                              activeprojectname)
+        elif (project_type == 'crawling'):
+            sourcedetails_collection = sourcedetails
+            source_metadata = sourceid_to_souremetadata.get_source_metadata(sourcedetails_collection,
+                                                                            sourceList,
+                                                                            activeprojectname)
+        sourceList.append('*')
     except:
         logger.exception("")
 
     return jsonify(projectName=project_name,
                    usersList=sorted(share_with_users_list),
                    sourceList=sorted(sourceList),
+                   sourceMetadata=source_metadata,
                    shareInfo=share_info,
                    sharemode=current_user_sharemode,
                    selectedUserShareInfo=selected_user_shareinfo)
@@ -6047,7 +6129,9 @@ def changespeakerid():
 
     # data through ajax
     speakerId = str(request.args.get('a'))
-    # logger.debug(speakerId)
+    # logger.info("Speaker IDs %s", speakerId)
+    # if len(speakerId) == 1:
+    #     speakerId = speakerId[0]
     projectinfo = userprojects.find_one({'username': current_user.username},
                                         {'_id': 0, 'myproject': 1, 'projectsharedwithme': 1})
 
@@ -6424,6 +6508,109 @@ def hfmodelsetup():
     )
 
 
+@app.route('/bhashinimodelsetup', methods=['GET', 'POST'])
+@login_required
+def bhashinimodelsetup():
+    userlogin, lifeappconfigs = getdbcollections.getdbcollections(
+        mongo, 'userlogin', 'lifeappconfigs')
+    current_username = getcurrentusername.getcurrentusername()
+    logger.debug('USERNAME: ', current_username)
+    usertype = userdetails.get_user_type(
+        userlogin, current_username)
+    logger.debug('USERTYPE: ', usertype)
+    # logger.debug(ADMIN_USER, SUB_ADMINS)
+    # manageAppConfig.generateDummyAppConfig()
+    hfmodelconfig = {}
+    labelmap = []
+    hfmodelconfigglobal = {}
+    hfmodelconfiguser = {}
+
+    featured_authors_default = ['ai4bharat', 'Harveenchadha', 'facebook', 'meta-llama',
+                                'google', 'microsoft', 'allenai', 'Intel', 'openai', 'openchat', 'writer', 'amazon',
+                                'assemblyai', 'EleutherAI', 'tiiuae', 'bigscience', 'Salesforce', 'lmsys', 'mosaicml', 'databricks',
+                                'stabilityai', 'Open-Orca', 'mistralai', 'HuggingFaceH4', 'distil-whisper', 'sarvamai']
+
+    if request.method == 'POST':
+        authors_list = request.form.getlist('nameglobal++authorsList')
+        task_type = request.form.get('nameglobal++taskType')
+        if 'SUPER-ADMIN' in usertype:
+            hfmodelconfigglobal = {
+                'globals': {
+                    task_type: {
+                        'authorsList': authors_list
+                    }
+                }
+            }
+            hfmodelconfig.update(hfmodelconfigglobal)
+
+        api_tokens = request.form.getlist('nameuser++apiTokens')
+        hfmodelconfiguser = {
+            'usersData': {
+                current_username: {
+                    'apiTokens': api_tokens,
+                    'globals': {
+                        task_type: {
+                            'authorsList': authors_list
+                        }
+                    }
+                }
+            }
+        }
+        hfmodelconfig.update(hfmodelconfiguser)
+
+        logger.debug("Final config sent %s", hfmodelconfig)
+
+        labelmap = manageAppConfig.updateHuggingFaceModelConfig(
+            lifeappconfigs, hfmodelconfig)
+    else:
+        hfmodelconfig, labelmap = manageAppConfig.getHuggingFaceModelConfig(
+            lifeappconfigs, current_username, usertype)
+
+    if 'SUPER-ADMIN' in usertype:
+        global_config = hfmodelconfig['globals']
+    else:
+        global_config = hfmodelconfig['usersData'].get(
+            current_username, {'globals': {}})
+
+    # TODO: Write a function to get the list of authors given a task - this will be used
+    # for calling it via AJAX and getting Author List when a specific task is selected
+    # on the manage page. At present only ASR is being implemented and supported
+    # hfmodelconfigval = global_config.get(
+    #     'automatic-speech-recognition', {'authorsList': featured_authors_default})
+    # logger.debug('Model config %s %s', hfmodelconfigval,
+    #              len(hfmodelconfigval['authorsList']))
+    # if len(hfmodelconfigval['authorsList']) > 0:
+    #     hfmodelconfigglobal['automatic-speech-recognition'] = hfmodelconfigval['authorsList']
+    # else:
+    #     hfmodelconfigglobal['automatic-speech-recognition'] = featured_authors_default
+
+    logger.debug('Model config Global %s', hfmodelconfigglobal)
+
+    for task_type, author_list in global_config.items():
+        # if task_type == current_username:
+        author_list = author_list.get(
+            'authorsList', featured_authors_default)
+        if len(author_list) == 0:
+            author_list = featured_authors_default
+        hfmodelconfigglobal[task_type] = author_list
+
+    logger.debug('Model config Global %s', hfmodelconfigglobal)
+    # hfmodelconfigglobal['taskType'] = 'automatic-speech-recognition'
+    hfmodelconfiguser = hfmodelconfig['usersData'].get(
+        current_username, {'apiTokens': []})['apiTokens']
+
+    logger.debug('Model config Global %s', hfmodelconfigglobal)
+    logger.debug('Model config user %s', hfmodelconfiguser)
+
+    return render_template(
+        'hfmodelsetup.html',
+        hfmodelconfiguser=hfmodelconfiguser,
+        hfmodelconfigadmin=hfmodelconfigglobal,
+        labelmap=labelmap,
+        usertype=usertype
+    )
+
+
 @app.route('/languagesetup', methods=['GET', 'POST'])
 @login_required
 def languagesetup():
@@ -6612,7 +6799,7 @@ def browsefilesharedwithuserslist():
         logger.debug("file_speaker_ids: %s", file_speaker_ids)
         for audio_id in audio_ids_list:
             speakerid = audiodetails.get_audio_speakerid(
-                transcriptions, audio_id)
+                transcriptions, activeprojectname, audio_id)
             if (speakerid is not None and file_speaker_ids is not None):
                 for user, speaker_ids in file_speaker_ids.items():
                     if (speakerid in speaker_ids and
@@ -6658,7 +6845,7 @@ def browsesharewith():
         speaker_audioids = {}
         for audio_id in audio_ids_list:
             speakerid = audiodetails.get_audio_speakerid(
-                transcriptions, audio_id)
+                transcriptions, activeprojectname, audio_id)
             if (speakerid is not None):
                 if (speakerid in speaker_audioids):
                     speaker_audioids[speakerid].append(audio_id)
@@ -6714,17 +6901,23 @@ def browsesharewith():
 @app.route('/get_jsonfile_data', methods=['GET', 'POST'])
 @login_required
 def get_jsonfile_data():
-    # data through ajax
-    data = json.loads(request.args.get('data'))
-    # logger.debug('JSON Files name: %s', pformat(data))
     json_data = {}
-    for var, filename in data.items():
-        # logger.debug('JSON File name: %s', filename)
-        JSONFilePath = os.path.join(basedir, 'jsonfiles', filename)
-        json_data[var] = readJSONFile.readJSONFile(JSONFilePath)
-    # logger.debug('json_data: %s', pformat(json_data))
+    try:
+        # data through ajax
+        data = json.loads(request.args.get('data'))
+        # logger.debug('JSON Files name: %s', pformat(data))
+        for var, filename in data.items():
+            # logger.debug('JSON File name: %s', filename)
+            JSONFilePath = os.path.join(basedir, 'jsonfiles', filename)
+            if (os.path.exists(JSONFilePath)):
+                json_data[var] = readJSONFile.readJSONFile(JSONFilePath)
+            else:
+                json_data[var] = []
+        # logger.debug('json_data: %s', pformat(json_data))
 
-    return jsonify(jsonData=json_data)
+        return jsonify(jsonData=json_data)
+    except:
+        logger.exception("")
 
 
 @app.route('/checkprojectnameexist', methods=['GET', 'POST'])

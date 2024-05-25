@@ -1,3 +1,5 @@
+import torch
+import torchaudio
 import requests
 import json
 import numpy as np
@@ -7,10 +9,23 @@ from transformers import pipeline
 from app.controller import life_logging
 from app.lifedata.transcription.controller.transcription_audiodetails import generate_boundary_id
 from app.lifemodels.controller.predictFromLocalModels import get_transliteration
+from app.lifemodels.controller.bhashiniUtils import (
+    transcribe_data,
+    translate_data,
+    get_translation_model,
+    get_transcription_model
+)
+
 
 from sentencex import segment
 
+from pyannote.audio import Pipeline
+
 import base64
+
+# from pycountry import scripts
+
+from isocodes import script_names as sn
 
 logger = life_logging.get_logger()
 
@@ -152,49 +167,13 @@ def get_sentence_chunks(all_sentences, chunks):
         return new_chunks
 
 
-def transcribe_data(audio_data):
-    end_url = "https://dhruva-api.bhashini.gov.in/services/inference/pipeline"
-    api_key = "A76bWGt9rowZFVQfsJmmgJDnriqa1CT14ECLdBjiGXHc93tP9rX72KfVmdwIAsDZ"
-    header = {"Authorization": api_key}
-
-    payload = {
-        "pipelineTasks": [
-            {
-                "taskType": "asr",
-                "config": {
-                    "language": {
-                            "sourceLanguage": "hi"
-                    },
-                    "serviceId": "ai4bharat/conformer-hi-gpu--t4",
-                    "postProcessors": ["itn", "punctuation"]
-                    # "audioFormat": "wav",
-                    # "samplingRate": 16000
-                }
-            }
-        ],
-        "inputData": {
-            # "input": [
-            #     {
-            #         "source": null
-            #     }
-            # ],
-            "audio": [
-                {
-                    "audioContent": audio_data
-                }
-            ]
-        }
-    }
-    transcript = requests.post(url=end_url, headers=header, json=payload)
-    print(transcript)
-    return transcript.json()
-
-
-def predictFromBhashiniModel(model_inputs, model_url, model_params={}, script_names=['IPA'], max_retries=3):
+def transcribe_using_bhashini(model_inputs, model_url, model_params={}, script_names=['IPA'], max_retries=3):
     status = 0
     lang_code = model_params['language_code']
     all_outputs = {}
     script_name = script_names[0]
+    script_code = sn.get(
+        name=script_name).get("alpha_4", script_name)
     if len(script_names) > 1:
         other_scripts = script_names[1:]
     else:
@@ -205,40 +184,136 @@ def predictFromBhashiniModel(model_inputs, model_url, model_params={}, script_na
     all_count = len(model_inputs)
     completed_ids = []
 
-    while completed_count < all_count and retry_count < max_retries:
-        retry_count += 1
-        for input_id, model_input in model_inputs.items():
-            if not input_id in completed_ids:
-                model_input_str = base64.b64encode(model_input).decode('utf-8')
-                print(retry_count, 'Input for', input_id)
-                logger.info('Retry: %s\t Input ID: %s', retry_count, input_id)
-                try:
-                    transcript = transcribe_data(model_input_str)
-                    logger.info('Bhashini response %s', transcript)
-                    output = transcript["pipelineResponse"][0]["output"][0]["source"]
-                    completed_count += 1
-                    completed_ids.append(input_id)
-                except:
-                    logger.exception('')
-                    output = ""
+    model, api_key, end_url, target_script = get_transcription_model(lang_code)
 
-                all_outputs[input_id] = {script_name: output}
-                if output != '':
-                    for other_script in other_scripts:
-                        if other_script == 'IPA':
-                            source_script = lang_code
-                        else:
-                            source_script = script_name
-                        script_transcript = get_transliteration(
-                            output, source_script, other_script)
-                        all_outputs[input_id][other_script] = script_transcript
+    if model != '' and target_script == script_code:
+        while completed_count < all_count and retry_count < max_retries:
+            retry_count += 1
+            for input_id, model_input in model_inputs.items():
+                if not input_id in completed_ids:
+                    model_input_str = base64.b64encode(
+                        model_input).decode('utf-8')
+                    logger.info('%s Input for %s', retry_count, input_id)
+                    print('%s Input for %s', retry_count, input_id)
+                    logger.info('Retry: %s\t Input ID: %s',
+                                retry_count, input_id)
+                    try:
+                        transcript = transcribe_data(
+                            model_input_str, model, api_key, end_url, lang_code)
+                        logger.info('Bhashini response %s', transcript)
+                        output = transcript["pipelineResponse"][0]["output"][0]["source"]
+                        completed_count += 1
+                        completed_ids.append(input_id)
+                    except:
+                        logger.exception('')
+                        output = ""
 
-        logger.info('Retry count: %s\tTotal completed: %s\tTotal to be completed: %s',
-                    retry_count, completed_count, all_count)
+                    all_outputs[input_id] = {script_name: output}
+                    if output != '':
+                        for other_script in other_scripts:
+                            if other_script == 'IPA':
+                                source_script = lang_code
+                            else:
+                                source_script = script_name
+                            script_transcript = get_transliteration(
+                                output, source_script, other_script, lang_code)
+                            all_outputs[input_id][other_script] = script_transcript
 
-    if completed_count == all_count:
-        status = 1
-    logger.info('ASR Output for file %s \tusing Bhashini (retries count: %s)',
-                all_outputs, retry_count)
+            logger.info('Retry count: %s\tTotal completed: %s\tTotal to be completed: %s',
+                        retry_count, completed_count, all_count)
+
+        if completed_count == all_count:
+            status = 1
+        logger.info('ASR Output for file %s \tusing Bhashini (retries count: %s)',
+                    all_outputs, retry_count)
+    else:
+        logger.info('Language: %s\t or Script: %s (supported: %s)\tnot supported in Bhashini',
+                    lang_code, script_code, target_script)
 
     return all_outputs, status
+
+
+def translate_using_bhashini(model_inputs, model_params={}, max_retries=3):
+    status = 0
+
+    target_lang_script = model_params['output_language']
+    source_lang_code = model_params['source_language']
+    source_script_code = model_params['source_script_code']
+    target_lang_code = model_params['target_language']
+    target_script_code = model_params['target_script']
+
+    all_outputs = {}
+    model, api_key, end_url, source_script, target_script = get_translation_model(
+        source_lang_code, target_lang_code)
+
+    completed_count = 0
+    retry_count = 0
+    all_count = len(model_inputs)
+    completed_ids = []
+
+    if model != '' and target_script_code == target_script and source_script_code == source_script:
+        while completed_count < all_count and retry_count < max_retries:
+            retry_count += 1
+            for input_id, model_input_str in model_inputs.items():
+                if not input_id in completed_ids:
+                    logger.info('%s Input for %s', retry_count, input_id)
+                    print('%s Input for %s', retry_count, input_id)
+
+                    logger.info('Retry: %s\t Input ID: %s',
+                                retry_count, input_id)
+                    try:
+                        result = translate_data(
+                            model_input_str, model, api_key, end_url, source_lang_code, target_lang_code)
+                        logger.info('Bhashini response %s', result)
+                        output = result["pipelineResponse"][0]["output"][0]["target"]
+                        completed_count += 1
+                        completed_ids.append(input_id)
+                    except:
+                        logger.exception('')
+                        output = ""
+
+                    all_outputs[input_id] = {target_lang_script: output}
+
+            logger.info('Retry count: %s\tTotal completed: %s\tTotal to be completed: %s',
+                        retry_count, completed_count, all_count)
+
+        if completed_count == all_count:
+            status = 1
+        logger.info('ASR Output for file %s \tusing Bhashini (retries count: %s)',
+                    all_outputs, retry_count)
+    else:
+        logger.info('Language: %s->%s\t or Script: %s->%s\tnot supported in Bhashini',
+                    source_lang_code, target_lang_code, source_script_code, target_script_code)
+
+    return all_outputs, status
+
+
+def get_boundaries_pyannote(audio, hf_token, num_speakers=1):
+    pipeline = Pipeline.from_pretrained(
+        "pyannote/speaker-diarization-3.1",
+        use_auth_token=hf_token)
+
+    # send pipeline to GPU (when available)
+    # pipeline.to(torch.device("cuda"))
+
+    # apply pretrained pipeline
+    waveform, sample_rate = torchaudio.load(audio)
+    diarization = pipeline(
+        {"waveform": waveform, "sample_rate": sample_rate}, num_speakers=num_speakers)
+
+    # diarization = pipeline(audio)
+
+    # print the result
+    speech_timestamps = []
+    for turn, _, speaker in diarization.itertracks(yield_label=True):
+        print(f"start={turn.start:.1f}s stop={turn.end:.1f}s speaker_{speaker}")
+        info_dict = {'start': turn.start, 'end': turn.end, 'speaker': speaker}
+        speech_timestamps.append(info_dict)
+
+    return speech_timestamps, audio
+
+
+if __name__ == '__main__':
+    hf_token = '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'
+    audio_path = '/home/ritesh/Downloads/cambridge_ud/SS_Eng_240424.WAV'
+    get_boundaries_pyannote(audio_path, hf_token)
