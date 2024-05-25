@@ -382,8 +382,10 @@ def downloadTextGrid(transcriptions,
                         # xmin, xmax, tiers = get_boundaries_tiers(
                         #     activeprojectname, current_projectformelements, text_grid, offset=boundary_offset)
                         xmin, xmax, tiers = get_boundaries_tiers(
-                            activeprojectname, current_projectformelements, text_grid, xmin=[], xmax=[], tiers={})
-                        logger.debug('Tiers %s', tiers)
+                            activeprojectname, current_projectformelements, text_grid, xmax=[], xmin=[], tiers={})
+                        logger.debug('Tiers %s %s', tiers, len(tiers))
+                        logger.debug('Xmin %s %s', xmin, len(xmin))
+                        logger.debug('Xmax %s %s', xmax, len(xmax))
 
                         if audio_duration == 0.0 or download_audio:
                             overall_xmax = get_audio_with_duration(
@@ -709,9 +711,11 @@ def get_original_audio_filename(cur_entry, audio_filename, merge_all_slices=Fals
 
 
 def get_textgrid_df(tgt_text_grid):
-    csv_textgrid = tgt.io.export_to_table(tgt_text_grid)
+    csv_textgrid = tgt.io.export_to_table(tgt_text_grid, separator='#;;#')
     csv_textgridIO = StringIO(csv_textgrid)
-    textgrid_pd = pd.read_csv(csv_textgridIO)
+    # logger.info(csv_textgrid)
+    textgrid_pd = pd.read_csv(
+        csv_textgridIO, delimiter='#;;#', error_bad_lines=False)
     return textgrid_pd
 
 
@@ -781,7 +785,7 @@ def get_boundaries_tiers(activeprojectname, projectelements, text_grid, offset=0
     # xmin = []
     # xmax = []
     # tiers = {}
-
+    logger.debug('Xmin %s Xmax %s', len(xmin), len(xmax))
     for i, tier in enumerate(text_grid):
         # print ('Tier', tier)
         # logger.debug('Tier %s', tier)
@@ -897,6 +901,7 @@ def get_boundaries_tiers(activeprojectname, projectelements, text_grid, offset=0
                     #     current_xmin = 0.0
                     #     xmin.append(current_xmin+offset)
                 else:
+                    logger.debug('Adding in else')
                     current_xmin -= slice_overlap
                     xmin.append(current_xmin+offset)
 
@@ -905,8 +910,8 @@ def get_boundaries_tiers(activeprojectname, projectelements, text_grid, offset=0
 
                     add_bundary = True
 
-                logger.debug('Added Xmin value %s', xmin[-1])
-                logger.debug('Added Xmax value %s', xmax[-1])
+                logger.debug('Added Xmin value %s %s', xmin[-1], len(xmin))
+                logger.debug('Added Xmax value %s %s', xmax[-1], len(xmax))
 
                 # if (len(xmin) - len(xmax)) == 1:
                 # current_xmax = boundary_element['end']

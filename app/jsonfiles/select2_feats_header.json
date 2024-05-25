@@ -1,0 +1,664 @@
+[
+    {
+        "text": "Abbr",
+        "children": 
+            [
+                {"id": "Yes", "text": "Yes"}
+        ]
+    },
+    {
+        "text": "AdpType",
+        "children": 
+            [
+                {"id": "Prep", "text": "Prep"},
+                {"id": "Post", "text": "Post"},
+                {"id": "Circ", "text": "Circ"},
+                {"id": "Voc", "text": "Voc"}
+        ]
+    },
+    {
+        "text": "AdvType",
+        "children": 
+            [
+                {"id": "Man", "text": "Man"},
+                {"id": "Loc", "text": "Loc"},
+                {"id": "Tim", "text": "Tim"},
+                {"id": "Deg", "text": "Deg"},
+                {"id": "Cau", "text": "Cau"},
+                {"id": "Mod", "text": "Mod"}
+        ]
+    },
+    {
+        "text": "Animacy",
+        "children": 
+            [
+                {"id": "Anim", "text": "Anim"},
+                {"id": "Inan", "text": "Inan"},
+                {"id": "Hum", "text": "Hum"},
+                {"id": "Nhum", "text": "Nhum"}
+        ]
+    },
+    {
+        "text": "Aspect",
+        "children": 
+            [
+                {"id": "Imp", "text": "Imp"},
+                {"id": "Perf", "text": "Perf"},
+                {"id": "Prosp", "text": "Prosp"},
+                {"id": "Prog", "text": "Prog"},
+                {"id": "Hab", "text": "Hab"},
+                {"id": "Iter", "text": "Iter"}
+        ]
+    },
+    {
+        "text": "Case",
+        "children": 
+            [
+                {"id": "Nom", "text": "Nom"},
+                {"id": "Acc", "text": "Acc"},
+                {"id": "Abs", "text": "Abs"},
+                {"id": "Erg", "text": "Erg"},
+                {"id": "Dat", "text": "Dat"},
+                {"id": "Gen", "text": "Gen"},
+                {"id": "Voc", "text": "Voc"},
+                {"id": "Ins", "text": "Ins"},
+                {"id": "Par", "text": "Par"},
+                {"id": "Dis", "text": "Dis"},
+                {"id": "Ess", "text": "Ess"},
+                {"id": "Tra", "text": "Tra"},
+                {"id": "Com", "text": "Com"},
+                {"id": "Abe", "text": "Abe"},
+                {"id": "Cau", "text": "Cau"},
+                {"id": "Ben", "text": "Ben"},
+                {"id": "Cns", "text": "Cns"},
+                {"id": "Cmp", "text": "Cmp"},
+                {"id": "Equ", "text": "Equ"},
+                {"id": "Loc", "text": "Loc"},
+                {"id": "Lat", "text": "Lat"},
+                {"id": "Ter", "text": "Ter"},
+                {"id": "Ine", "text": "Ine"},
+                {"id": "Ill", "text": "Ill"},
+                {"id": "Ela", "text": "Ela"},
+                {"id": "Add", "text": "Add"},
+                {"id": "Ade", "text": "Ade"},
+                {"id": "All", "text": "All"},
+                {"id": "Abl", "text": "Abl"},
+                {"id": "Sup", "text": "Sup"},
+                {"id": "Spl", "text": "Spl"},
+                {"id": "Del", "text": "Del"},
+                {"id": "Sub", "text": "Sub"},
+                {"id": "Sbl", "text": "Sbl"},
+                {"id": "Sbe", "text": "Sbe"},
+                {"id": "Per", "text": "Per"},
+                {"id": "Tem", "text": "Tem"}
+        ]
+    },
+    {
+        "text": "Clusivity",
+        "children": 
+            [
+                {"id": "In", "text": "In"},
+                {"id": "Ex", "text": "Ex"}
+        ]
+    },
+    {
+        "text": "Clusivity[obj]",
+        "children": 
+            [
+                {"id": "In", "text": "In"},
+                {"id": "Ex", "text": "Ex"}
+        ]
+    },
+    {
+        "text": "Clusivity[psor]",
+        "children": 
+            [
+                {"id": "In", "text": "In"},
+                {"id": "Ex", "text": "Ex"}
+        ]
+    },
+    {
+        "text": "Clusivity[subj]",
+        "children": 
+            [
+                {"id": "In", "text": "In"},
+                {"id": "Ex", "text": "Ex"}
+        ]
+    },
+    {
+        "text": "ConjType",
+        "children": 
+            [
+                {"id": "Comp", "text": "Comp"},
+                {"id": "Oper", "text": "Oper"},
+                {"id": "Pred", "text": "Pred"}
+        ]
+    },
+    {
+        "text": "Definite",
+        "children": 
+            [
+                {"id": "Ind", "text": "Ind"},
+                {"id": "Def", "text": "Def"},
+                {"id": "Cons", "text": "Cons"},
+                {"id": "Com", "text": "Com"}
+        ]
+    },
+    {
+        "text": "Degree",
+        "children": 
+            [
+                {"id": "Pos", "text": "Pos"},
+                {"id": "Equ", "text": "Equ"},
+                {"id": "Cmp", "text": "Cmp"},
+                {"id": "Sup", "text": "Sup"},
+                {"id": "Abs", "text": "Abs"},
+                {"id": "Dim", "text": "Dim"},
+                {"id": "Aug", "text": "Aug"}
+        ]
+    },
+    {
+        "text": "Deixis",
+        "children": 
+            [
+                {"id": "Prox", "text": "Prox"},
+                {"id": "Med", "text": "Med"},
+                {"id": "Remt", "text": "Remt"},
+                {"id": "Nvis", "text": "Nvis"},
+                {"id": "Abv", "text": "Abv"},
+                {"id": "Even", "text": "Even"},
+                {"id": "Bel", "text": "Bel"}
+        ]
+    },
+    {
+        "text": "DeixisRef",
+        "children": 
+            [
+                {"id": "1", "text": "1"},
+                {"id": "2", "text": "2"}
+        ]
+    },
+    {
+        "text": "Echo",
+        "children": 
+            [
+                {"id": "Rdp", "text": "Rdp"},
+                {"id": "Ech", "text": "Ech"}
+        ]
+    },
+    {
+        "text": "Evident",
+        "children": 
+            [
+                {"id": "Fh", "text": "Fh"},
+                {"id": "Nfh", "text": "Nfh"}
+        ]
+    },
+    {
+        "text": "Foreign",
+        "children": 
+            [
+                 {"id": "Yes", "text": "Yes"} 
+        ]
+    },
+    {
+        "text": "Gender",
+        "children": 
+            [
+                {"id": "Masc", "text": "Masc"},
+                {"id": "Fem", "text": "Fem"},
+                {"id": "Neut", "text": "Neut"},
+                {"id": "Com", "text": "Com"}
+        ]
+    },
+    {            
+        "text": "Gender[dat]",
+        "children": 
+            [
+                {"id": "Masc", "text": "Masc"},
+                {"id": "Fem", "text": "Fem"}
+        ]
+    },
+    {            
+        "text": "Gender[erg]",
+        "children": 
+            [
+                {"id": "Masc", "text": "Masc"},
+                {"id": "Fem", "text": "Fem"}
+        ]
+    },
+    {            
+        "text": "Gender[obj]",
+        "children": 
+            [
+                {"id": "Masc", "text": "Masc"},
+                {"id": "Fem", "text": "Fem"}
+        ]
+    },
+    {            
+        "text": "Gender[psor]",
+        "children": 
+            [
+                {"id": "Masc", "text": "Masc"},
+                {"id": "Fem", "text": "Fem"},
+                {"id": "Neut", "text": "Neut"}
+        ]
+    },
+    {            
+        "text": "Gender[subj]",
+        "children": 
+            [
+                {"id": "Masc", "text": "Masc"},
+                {"id": "Fem", "text": "Fem"}
+        ]
+    },
+    {
+        "text": "Hyph",
+        "children": 
+            [
+                {"id": "Yes", "text": "Yes"}
+        ]
+    },
+    {
+        "text": "Mood",
+        "children": 
+            [
+                {"id": "Imp", "text": "Imp"},
+                {"id": "Cnd", "text": "Cnd"},
+                {"id": "Pot", "text": "Pot"},
+                {"id": "Sub", "text": "Sub"},
+                {"id": "Jus", "text": "Jus"},
+                {"id": "Prp", "text": "Prp"},
+                {"id": "Qot", "text": "Qot"},
+                {"id": "Opt", "text": "Opt"},
+                {"id": "Des", "text": "Des"},
+                {"id": "Nec", "text": "Nec"},
+                {"id": "Int", "text": "Int"},
+                {"id": "Irr", "text": "Irr"},
+                {"id": "Adm", "text": "Adm"}
+        ]
+    },
+    {
+        "text": "NameType",
+        "children": 
+            [
+                {"id": "Geo", "text": "Geo"},
+                {"id": "Prs", "text": "Prs"},
+                {"id": "Giv", "text": "Giv"},
+                {"id": "Pat", "text": "Pat"},
+                {"id": "Sur", "text": "Sur"},
+                {"id": "Nat", "text": "Nat"},
+                {"id": "Com", "text": "Com"},
+                {"id": "Pro", "text": "Pro"},
+                {"id": "Oth", "text": "Oth"}
+        ]
+    },
+    {
+        "text": "NounType",
+        "children": 
+            [
+                {"id": "Yes", "text": "Yes"}
+        ]
+    },
+    {
+        "text": "NumForm",
+        "children": 
+            [
+                {"id": "Word", "text": "Word"},
+                {"id": "Digit", "text": "Digit"},
+                {"id": "Combi", "text": "Combi"},
+                {"id": "Roman", "text": "Roman"}
+        ]
+    },
+    {
+        "text": "NumType",
+        "children": 
+            [
+                {"id": "Card", "text": "Card"},
+                {"id": "Ord", "text": "Ord"},
+                {"id": "Mult", "text": "Mult"},
+                {"id": "Frac", "text": "Frac"},
+                {"id": "Sets", "text": "Sets"},
+                {"id": "Dist", "text": "Dist"},
+                {"id": "Range", "text": "Range"}
+        ]
+    },
+    {
+        "text": "Number",
+        "children": 
+            [
+                {"id": "Sing", "text": "Sing"},
+                {"id": "Plur", "text": "Plur"},
+                {"id": "Dual", "text": "Dual"},
+                {"id": "Tri", "text": "Tri"},
+                {"id": "Pauc", "text": "Pauc"},
+                {"id": "Grpa", "text": "Grpa"},
+                {"id": "Grpl", "text": "Grpl"},
+                {"id": "Inv", "text": "Inv"},
+                {"id": "Coll", "text": "Coll"}
+        ]
+    },
+    {            
+        "text": "Number[abs]",
+        "children": 
+            [
+                {"id": "Sing", "text": "Sing"},
+                {"id": "Plur", "text": "Plur"}
+        ]
+    },
+    {         
+        "text": "Number[dat]",
+        "children": 
+            [
+                {"id": "Sing", "text": "Sing"},
+                {"id": "Plur", "text": "Plur"}
+        ]
+    },
+    {            
+        "text": "Number[erg]",
+        "children": 
+            [
+                {"id": "Sing", "text": "Sing"},
+                {"id": "Plur", "text": "Plur"}
+        ]
+    },
+    {            
+        "text": "Number[obj]",
+        "children": 
+            [
+                {"id": "Sing", "text": "Sing"},
+                {"id": "Dual", "text": "Dual"},
+                {"id": "Plur", "text": "Plur"}
+        ]
+    },
+    {            
+        "text": "Number[psed]",
+        "children": 
+            [
+                {"id": "Sing", "text": "Sing"},
+                {"id": "Plur", "text": "Plur"}
+        ]
+    },
+    {
+        "text": "Number[psor]",
+        "children": 
+            [
+                {"id": "Sing", "text": "Sing"},
+                {"id": "Dual", "text": "Dual"},
+                {"id": "Plur", "text": "Plur"}
+        ]
+    },
+    {
+        "text": "Number[subj]",
+        "children": 
+            [
+                {"id": "Sing", "text": "Sing"},
+                {"id": "Plur", "text": "Plur"}
+        ]
+    },
+    {
+        "text": "PartType",
+        "children": 
+            [
+                {"id": "Mod", "text": "Mod"},
+                {"id": "Emp", "text": "Emp"},
+                {"id": "Inf", "text": "Inf"},
+                {"id": "Int", "text": "Int"},
+                {"id": "Neg", "text": "Neg"},
+                {"id": "Vbp", "text": "Vbp"}
+        ]
+    },
+    {
+        "text": "Person",
+        "children": 
+            [
+                {"id": "0", "text": "0"},
+                {"id": "1", "text": "1"},
+                {"id": "2", "text": "2"},
+                {"id": "3", "text": "3"},
+                {"id": "4", "text": "4"}
+        ]
+    },
+    {
+        "text": "Person[abs]",
+        "children": 
+            [
+                {"id": "1", "text": "1"},
+                {"id": "2", "text": "2"},
+                {"id": "3", "text": "3"}
+        ]
+    },
+    {
+        "text": "Person[dat]",
+        "children": 
+            [
+                {"id": "1", "text": "1"},
+                {"id": "2", "text": "2"},
+                {"id": "3", "text": "3"}
+        ]
+    },
+    {
+        "text": "Person[erg]",
+        "children": 
+            [
+                {"id": "1", "text": "1"},
+                {"id": "2", "text": "2"},
+                {"id": "3", "text": "3"}
+        ]
+    },
+    {
+        "text": "Person[obj]",
+        "children": 
+            [
+                {"id": "1", "text": "1"},
+                {"id": "2", "text": "2"},
+                {"id": "3", "text": "3"}
+        ]
+    },
+    {
+        "text": "Person[psor]",
+        "children": 
+            [
+                {"id": "1", "text": "1"},
+                {"id": "2", "text": "2"},
+                {"id": "3", "text": "3"}
+        ]
+    },
+    {
+        "text": "Person[subj]",
+        "children": 
+            [
+                {"id": "1", "text": "1"},
+                {"id": "2", "text": "2"},
+                {"id": "3", "text": "3"}
+        ]
+    },
+    {
+        "text": "Polarity",
+        "children": 
+            [
+                {"id": "Pos", "text": "Pos"},
+                {"id": "Neg", "text": "Neg"}
+        ]
+    },
+    {
+        "text": "Polite",
+        "children": 
+            [
+                {"id": "Infm", "text": "Infm"},
+                {"id": "Form", "text": "Form"},
+                {"id": "Elev", "text": "Elev"},
+                {"id": "Humb", "text": "Humb"}
+        ]
+    },
+    {
+        "text": "Polite[abs]",
+        "children": 
+            [
+                {"id": "Infm", "text": "Infm"},
+                {"id": "Form", "text": "Form"}
+        ]
+    },
+    {
+        "text": "Polite[dat]",
+        "children": 
+            [
+                {"id": "Infm", "text": "Infm"},
+                {"id": "Form", "text": "Form"}
+        ]
+    },
+    {
+        "text": "Polite[erg]",
+        "children": 
+            [
+                {"id": "Infm", "text": "Infm"},
+                {"id": "Form", "text": "Form"}
+        ]
+    },
+    {
+        "text": "Poss",
+        "children": 
+            [
+                {"id": "Yes", "text": "Yes"}
+        ]
+    },
+    {
+        "text": "PrepCase",
+        "children": 
+            [
+                {"id": "Npr", "text": "Npr"},
+                {"id": "Pre", "text": "Pre"}
+        ]
+    },
+    {
+        "text": "PronType",
+        "children": 
+            [
+                {"id": "Prs", "text": "Prs"},
+                {"id": "Rcp", "text": "Rcp"},
+                {"id": "Art", "text": "Art"},
+                {"id": "Int", "text": "Int"},
+                {"id": "Rel", "text": "Rel"},
+                {"id": "Exc", "text": "Exc"},
+                {"id": "Dem", "text": "Dem"},
+                {"id": "Emp", "text": "Emp"},
+                {"id": "Tot", "text": "Tot"},
+                {"id": "Neg", "text": "Neg"},
+                {"id": "Ind", "text": "Ind"}
+        ]
+    },
+    {
+        "text": "PunctSide",
+        "children": 
+            [
+                {"id": "Ini", "text": "Ini"},
+                {"id": "Fin", "text": "Fin"}
+        ]
+    },
+    {
+        "text": "PunctType",
+        "children": 
+            [
+                {"id": "Peri", "text": "Peri"},
+                {"id": "Elip", "text": "Elip"},
+                {"id": "Qest", "text": "Qest"},
+                {"id": "Excl", "text": "Excl"},
+                {"id": "Quot", "text": "Quot"},
+                {"id": "Brck", "text": "Brck"},
+                {"id": "Comm", "text": "Comm"},
+                {"id": "Colo", "text": "Colo"},
+                {"id": "Semi", "text": "Semi"},
+                {"id": "Dash", "text": "Dash"},
+                {"id": "Slsh", "text": "Slsh"}
+        ]
+    },
+    {
+        "text": "Reflex",
+        "children": 
+            [
+                {"id": "Yes", "text": "Yes"}
+        ]
+    },
+    {
+        "text": "Style",
+        "children": 
+            [
+                {"id": "Arch", "text": "Arch"},
+                {"id": "Rare", "text": "Rare"},
+                {"id": "Form", "text": "Form"},
+                {"id": "Coll", "text": "Coll"},
+                {"id": "Vrnc", "text": "Vrnc"},
+                {"id": "Slng", "text": "Slng"},
+                {"id": "Expr", "text": "Expr"},
+                {"id": "Vulg", "text": "Vulg"}
+        ]
+    },
+    {
+        "text": "Subcat",
+        "children": 
+            [
+                {"id": "Intr", "text": "Intr"},
+                {"id": "Indir", "text": "Indir"},
+                {"id": "Tran", "text": "Tran"},
+                {"id": "Ditr", "text": "Ditr"}
+        ]
+    },
+    {
+        "text": "Tense",
+        "children": 
+            [
+                {"id": "Past", "text": "Past"},
+                {"id": "Pres", "text": "Pres"},
+                {"id": "Fut", "text": "Fut"},
+                {"id": "Imp", "text": "Imp"},
+                {"id": "Pqp", "text": "Pqp"}
+        ]
+    },
+    {
+        "text": "Typo",
+        "children": 
+            [
+                {"id": "Yes", "text": "Yes"}
+            ]
+    },
+    {
+        "text": "VerbForm",
+        "children": 
+            [
+                {"id": "Fin", "text": "Fin"},
+                {"id": "Inf", "text": "Inf"},
+                {"id": "Sup", "text": "Sup"},
+                {"id": "Part", "text": "Part"},
+                {"id": "Conv", "text": "Conv"},
+                {"id": "Gdv", "text": "Gdv"},
+                {"id": "Ger", "text": "Ger"},
+                {"id": "Vnoun", "text": "Vnoun"}
+        ]
+    },
+    {
+        "text": "VerbType",
+        "children": 
+            [
+                {"id": "Cop", "text": "Cop"},
+                {"id": "Mod", "text": "Mod"},
+                {"id": "Light", "text": "Light"},
+                {"id": "Quasi", "text": "Quasi"}
+        ]
+    },
+    {
+        "text": "Voice",
+        "children": 
+            [
+                {"id": "Act", "text": "Act"},
+                {"id": "Mid", "text": "Mid"},
+                {"id": "Rcp", "text": "Rcp"},
+                {"id": "Pass", "text": "Pass"},
+                {"id": "Antip", "text": "Antip"},
+                {"id": "Lfoc", "text": "Lfoc"},
+                {"id": "Bfoc", "text": "Bfoc"},
+                {"id": "Dir", "text": "Dir"},
+                {"id": "Inv", "text": "Inv"},
+                {"id": "Cau", "text": "Cau"}
+            ]
+    }
+]

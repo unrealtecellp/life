@@ -1,0 +1,12 @@
+[
+    {"id": "ID", "text": "ID"},
+    {"id": "FORM", "text": "FORM"},
+    {"id": "LEMMA", "text": "LEMMA"},
+    {"id": "UPOS", "text": "UPOS"},
+    {"id": "XPOS", "text": "XPOS"},
+    {"id": "FEATS", "text": "FEATS"},
+    {"id": "HEAD", "text": "HEAD"},
+    {"id": "DEPREL", "text": "DEPREL"},
+    {"id": "DEPS", "text": "DEPS"},
+    {"id": "MISC", "text": "MISC"}
+]

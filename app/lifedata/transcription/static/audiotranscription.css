@@ -1,4 +1,3 @@
-/* f521c16dfe1f2e476683328ede4f774ed2a59a17 */
 .transcription-box {
     height: fit-content;
     min-height: 20px;
@@ -7,4 +6,14 @@
 .translation-box {
     height: fit-content;
     min-height: 20px;
+}
+
+.textcontent {
+    background-color:#DCDCDC;
+    padding: 4%;
+    font-size: large;
+    height: 100%;
+    resize: none;
+    outline: none;
+    width: 100%;
 }

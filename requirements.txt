@@ -147,4 +147,14 @@ XlsxWriter==3.0.8
 xmltodict==0.13.0
 xxhash==3.4.1
 yarl==1.9.4
+transformers
+huggingface_hub
+accelerate
+sentencex
 zipp==3.14.0
+phonemizer
+textgrid
+pyannote.audio
+numpy==1.21
+pycountry
+isocodes

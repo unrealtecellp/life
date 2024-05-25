@@ -68,7 +68,8 @@ def saveprompttext(mongo,
         # print(text_boundary_data)
         # content[lang_name] = value
         # prompt['content'][lang_name]['text'] = text_boundary_data
-        transcription_doc_id = transcriptions.update_one({'audioId': last_active_transcription_id},
+        transcription_doc_id = transcriptions.update_one({'projectname': activeprojectname,
+                                                          'audioId': last_active_transcription_id},
                                                             {"$set": { 
                                                                 "prompt.content."+prompt_lang+"."+prompt_type.lower(): text_boundary_data,
                                                                 # "prompt.content."+prompt_lang+"."+prompt_type.lower()+".otherInfo": prompt_text_details

@@ -15,40 +15,50 @@ Home
 <div>
     <h2>LiFE ADMIN CONSOLE</h2>
 </div>
-
-{% if "ADMIN" in usertype %}
-<div>
-    <button type="button" id="manageusers" class="btn btn-lg btn-danger"
-        onclick="window.location.href='{{ url_for('manageusers') }}';">Manage Users</button>
-</div>
-{% endif %}
-<br>
 <hr>
-
 {% if "SUPER-ADMIN" in usertype %}
+<div>
+    <h3>APP SETTINGS</h3>
+</div>
+
 <div>
     <button type="button" id="emailsetup" class="btn btn-lg btn-success"
         onclick="window.location.href='{{ url_for('emailsetup') }}';">Email Setup</button>
-</div>
-<br>
-<hr>
-<div>
-    <button type="button" id="emailsetup" class="btn btn-lg btn-info"
+
+    <button type="button" id="managelanguages" class="btn btn-lg btn-info"
         onclick="window.location.href='{{ url_for('languagesetup') }}';">Manage Languages</button>
 </div>
-
-{%endif%}
-<br>
 <hr>
+{%endif%}
+
+{% if "ADMIN" in usertype %}
+<div>
+    <h3>ADMIN SETTINGS</h3>
+</div>
+
+<div>
+    <button type="button" id="manageusers" class="btn btn-lg btn-warning"
+        onclick="window.location.href='{{ url_for('manageusers') }}';">Manage Users</button>
+
+    <button type="button" id="manageprojects" class="btn btn-lg btn-danger"
+        onclick="window.location.href='{{ url_for('manageprojects') }}';">Manage Projects</button>
+</div>
+<hr>
+{% endif %}
+
+<div>
+    <h3>USER SETTINGS</h3>
+</div>
+
 <div>
     <button type="button" id="managetagset" class="btn btn-lg btn-primary"
         onclick="window.location.href='{{ url_for('lifetagsets.managetagset') }}';">Manage Tagsets</button>
-</div>
-<br>
-<hr>
-<div>
+
     <button type="button" id="hfmodelsetup" class="btn btn-lg btn-info"
         onclick="window.location.href='{{ url_for('hfmodelsetup') }}';">HuggingFace Model Setup</button>
+
+    <button type="button" id="bhashinimodelsetup" class="btn btn-lg btn-warning"
+        onclick="window.location.href='{{ url_for('bhashinimodelsetup') }}';">BHASHINI Model Setup</button>
 </div>
 
 

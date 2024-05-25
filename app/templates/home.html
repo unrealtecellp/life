@@ -20,7 +20,7 @@ Home
 <!-- <h3>ADMIN CONSOLE</h3> -->
 <div class="pull-right">
   <button type="button" id="manageusers" class="btn btn-lg btn-danger pull-right"
-    onclick="window.location.href='{{ url_for('manageapp') }}';">Manage App</button>
+    onclick="window.location.href='{{ url_for('manageapp') }}';">Settings</button>
 </div>
 
 {% endif %}
@@ -44,8 +44,10 @@ Home
     <button type="button" id="models" class="btn btn-lg btn-warning"
       onclick="window.location.href='{{ url_for('lifemodels.home') }}';">Models</button>
 
-    <button type="button" id="karya" class="btn btn-lg btn-info pull-right"
-      onclick="window.location.href='{{ url_for('karya_bp.home_insert') }}';">Karya Extension</button>
+    <button type="button" id="karya" class="btn btn-lg btn-success pull-right"
+      onclick="window.location.href='{{ url_for('karya_bp.home_insert') }}';">LaLTeN-GLowS</button>
+      <button type="button" id="karya" class="btn btn-lg btn-success pull-right"
+        onclick="window.location.href='{{ url_for('karya_bp.home_insert') }}';">Karya Setup</button>
     <button type="button" class="btn btn-lg btn-primary pull-right"
       onclick="window.location.href='{{ url_for('easyAnno.home') }}';" style="margin-right: 4px;">easyAnno</button>
 

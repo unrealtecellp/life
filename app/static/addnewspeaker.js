@@ -27,31 +27,31 @@ $(document).on("hidden.bs.modal", "#addNewSpeakerModal", function () {
 $('.metadataview').click(function () {
     var lifespeakerid = $(this).attr("id");
     console.log('Speaker ID', lifespeakerid)
-    
+
     $.getJSON("/getonespeakermetadata", {
         lifespeakerid: String(lifespeakerid)
     }, function (data) {
-        console.log("Received data", data)
-        console.log("End Received data")
+        // console.log("Received data", data)
+        // console.log("End Received data")
 
         metadata = data.onespeakerdetails.current.sourceMetadata
         lifespeakerid = data.onespeakerdetails.lifesourceid
         datasource = data.onespeakerdetails.metadataSchema
 
         // accesscode = data.speakerdetails.accesscode
-        console.log("Metadata", metadata)
+        // console.log("Metadata", metadata)
         console.log("Data source", datasource)
         $('#lifespeakerid').attr('value', lifespeakerid)
 
         form_html = window[datasource + "MetadataForm"](metadata);
-        console.log("Form", form_html)
+        // console.log("Form", form_html)
         $('#idmetadataformdisplaydiv').html(form_html);
         $('#idmetadataformdisplaydiv').show();
         $('#idmetadataformdisplaydiv').attr('required', '');
         $('#idmetadataformdisplaydiv').attr('data-error', 'This field is required.')
 
         $('#idmetadataformdisplaydiv').find('input, select').attr('disabled', true);
-        
+
         addNewSpeakerFormEvents();
         addNewSpeakerSelect2();
     });
@@ -136,7 +136,7 @@ $('.speakerview').click(function () {
                 // $('#idviewmediumpre').val(current_medium).trigger('change');
                 let new_option = new Option(current_medium, current_medium, false, true);
                 $('#idviewmediumpre').append(new_option);
-            }            
+            }
         }
         $('#idviewmediumpre').val(mediumupto12);
         $('#idviewmediumpre').trigger('change');
@@ -156,7 +156,7 @@ $('.speakerview').click(function () {
                 // $('#idviewmediumpre').val(current_medium).trigger('change');
                 let new_option = new Option(current_medium, current_medium, false, true);
                 $('#idviewmediumpost').append(new_option);
-            }            
+            }
         }
         $('#idviewmediumpost').val(mediumafter12);
         $('#idviewmediumpost').trigger('change');
@@ -171,11 +171,11 @@ $('.speakerview').click(function () {
         for (i = 0; i < speakerotherlangs.length; i++) {
             current_language = speakerotherlangs[i]
             // if (!all_medium.includes(current_medium)) {
-            if (!   $('#idviewotherlangs').find("option[value='" + current_language + "']").length) {
+            if (!$('#idviewotherlangs').find("option[value='" + current_language + "']").length) {
                 // $('#idviewmediumpre').val(current_medium).trigger('change');
                 let new_option = new Option(current_language, current_language, false, true);
                 $('#idviewotherlangs').append(new_option);
-            }            
+            }
         }
         $('#idviewotherlangs').val(speakerotherlangs);
         $('#idviewotherlangs').trigger('change');
@@ -253,7 +253,7 @@ $('#editbutton').click(function () {
     // $('#idage').attr('hidden', false);
     // document.getElementById('idviewname').readonly = true;
     // document.getElementById('idviewage').readonly = true;
-    
+
     // $('#idviewname').attr('readonly', true);
     // $('#idviewage').attr('readonly', true);
 
@@ -322,7 +322,7 @@ $('.assignaccesscode').click(function () {
 
 
 
-function speakerDetailForm(curId, submitRoute="/addnewspeakerdetails", includeFieldMetadata=true, includeInternetMetadata=true) {
+function speakerDetailForm(curId, submitRoute = "/addnewspeakerdetails", includeFieldMetadata = true, includeInternetMetadata = true) {
     console.log('Current ID', curId)
 
     var speakerMetadata = ['Name', 'Age', 'Gender', 'Occupation']
@@ -337,32 +337,32 @@ function speakerDetailForm(curId, submitRoute="/addnewspeakerdetails", includeFi
     // }
     let sourceinpt = ''
     let subsourceinpt = ''
-    sourceinpt += '<form action="'+submitRoute+'" method="POST" enctype="multipart/form-data">';
+    sourceinpt += '<form action="' + submitRoute + '" method="POST" enctype="multipart/form-data">';
     sourceinpt += '<input type="hidden" value="' +
         curId +
         '"name = "sourcecallpage" id="sourcecallpageid">';
-    
+
     sourceinpt += '<div id="formdisplayinitial" style="display: block;">';
-    
+
     sourceinpt += '<div class="form-group">' +
         '<input type="radio" name="metadataentrytype" value="single" id="entrytypesingleid" class="metadatauploadtypeclass">' +
         '<label for="entrytypesingleid" name="metadatauploadtypesingle" class="btn btn-lg btn-inline-block btn-info metadatauploadtypesingle" style="width:35%">Single Entry</label> &nbsp;&nbsp;&nbsp;&nbsp;' +
         '<input type="radio" name="metadataentrytype" value="bulk" id="entrytypebulkid" class="metadatauploadtypeclass">' +
         '<label for="entrytypebulkid" name="metadatauploadtypebulk" class="btn btn-lg btn-inline-block btn-info metadatauploadtypebulk pull-right" style="width:35%">Bulk Entry</label>' +
-        '</div>';  
-    
-    
+        '</div>';
+
+
     sourceinpt += '<div id="formdisplaybulk" style="display: none;" class="col-xs-12">';
     sourceinpt += '<h4> Bulk Metadata Entry</h4>';
-    
+
     sourceinpt += '<div  class="col-xs-12">' +
         '<a target="_blank" href="https://drive.google.com/drive/folders/1TxyW6D5mlqQVaFrJaLGXiYgtBCODjALs">' +
         '<button type="button" class="btn btn-warning pull-right">' +
         'Metadata Form <span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span>' +
         '</button > ' +
         '</a><br /><br/>' +
-        '</div>';          
-    
+        '</div>';
+
     sourceinpt += '<div id="idbulkmetadatamainformdiv" class="col-xs-12 classmetadatamainformdiv" >';
     // sourceinpt += '<input type="hidden" name="uploadtype" value="bulk">'
     sourceinpt += '<div class="form-group">' +
@@ -370,12 +370,12 @@ function speakerDetailForm(curId, submitRoute="/addnewspeakerdetails", includeFi
         '<select class="audiosourceclassbulk" id="idaudiosourcebulk" name="audiosource" style="width:55%" >' +
         '</select><br>' +
         '</div>';
-    
+
     subsourceinpt += '<div id="idfieldmetadataschemabulkdiv" style="display: none;">';
     if (includeFieldMetadata) {
         subsourceinpt += '<div class="form-group">' +
             '<label for="idfieldmetadataschemabulk">Metadata Schema </label> <br>' +
-            '<select class="fieldmetadataschemaclassbulk" id="idfieldmetadataschemabulk" name="fieldMetadataSchema" style="width:55%" required>' +
+            '<select class="fieldmetadataschemaclassbulk" id="idfieldmetadataschemabulk" name="fieldMetadataSchema" style="width:55%">' +
             '</select><br>';
         subsourceinpt += '</div>';
     }
@@ -385,12 +385,12 @@ function speakerDetailForm(curId, submitRoute="/addnewspeakerdetails", includeFi
             '</div>';
     }
     subsourceinpt += '</div>';
-    
+
     subsourceinpt += '<div id="idaudiointernetsourcebulkdiv" style="display: none;">';
     if (includeInternetMetadata) {
         subsourceinpt += '<div class="form-group">' +
             '<label for="idaudiosubsourcebulk">Audio Internet Source </label> <br>' +
-            '<select class="classaudiointernetsourcebulk" id="idaudiointernetsourcebulk" name="audioInternetSource" style="width:55%" required>' +
+            '<select class="classaudiointernetsourcebulk" id="idaudiointernetsourcebulk" name="audioInternetSource" style="width:55%">' +
             '</select><br>';
         subsourceinpt += '</div>';
     }
@@ -400,8 +400,8 @@ function speakerDetailForm(curId, submitRoute="/addnewspeakerdetails", includeFi
             '</div>';
     }
     subsourceinpt += '</div>';
-    
-         
+
+
     sourceinpt += subsourceinpt;
     sourceinpt += '<div class="form-group">' +
         '<label for="metadata-upload-button">Select Metadata Form:</label> <br/>' +
@@ -412,9 +412,9 @@ function speakerDetailForm(curId, submitRoute="/addnewspeakerdetails", includeFi
     sourceinpt += '</div>';
     sourceinpt += '</div>';
 
-    
+
     sourceinpt += '<div id="formdisplaysingle" style="display: none;">'
-        // '<form role="form" method="post" action="/addnewspeakerdetails">';
+    // '<form role="form" method="post" action="/addnewspeakerdetails">';
     // sourceinpt += '<input type="hidden" name="uploadtype" value="single">'
     sourceinpt += '<h4> Single Metadata Entry</h4>';
 
@@ -424,8 +424,8 @@ function speakerDetailForm(curId, submitRoute="/addnewspeakerdetails", includeFi
         '<select class="audiosourceclass" id="idaudiosource" name="audiosource" style="width:55%" >' +
         '</select><br>' +
         '</div>';
-    
-    subsourceinpt = '<div id="idfieldmetadataschemadiv" style="display: none;">';    
+
+    subsourceinpt = '<div id="idfieldmetadataschemadiv" style="display: none;">';
     if (includeFieldMetadata) {
         subsourceinpt += '<div class="form-group">' +
             '<label for="idfieldmetadataschema">Metadata Schema </label> <br>' +
@@ -439,37 +439,37 @@ function speakerDetailForm(curId, submitRoute="/addnewspeakerdetails", includeFi
             '</div>';
     }
     subsourceinpt += '</div>';
-    
-    
-        subsourceinpt += '<div id="idspeakerdetailsdiv" style="display: none;"></div>';
-        // subsourceinpt += '</div>';
-    
-    
-        // '<form role="form" method="post" action="/addnewspeakerdetails">'+
-
-        // '<button class="pull-right btn-danger" type="button" id ="editbutton">Edit</button><br/>'+
-
-        // '<input type ="hidden" id = "accesscode" name = "accode" value = {{accode}}>'+
 
 
-        // '<div id="accodeformheader" style="display: block;">'+
-        // '<h4>Access Code Metadata</h4>'+
-        // '<div class="form-group">'+
-        // '<label for="idaccesscodefor">Access Code For:</label><br>'+
-        // '<select class="accesscodefor" id="idaccesscodefor" name="accesscodefor" style="width:55%" required></select><br>'+
-        // '</div>'+
+    subsourceinpt += '<div id="idspeakerdetailsdiv" style="display: none;"></div>';
+    // subsourceinpt += '</div>';
 
-        // '<div class="form-group">'+
-        // '<label for="idtask">Task :</label><br>'+
-        // '<select class="task" id="idtask" name="task"  style="width:55%" required></select><br>'+
-        // '</div>'+
 
-        // '<div id="uploadaccode" style="display: block;"></div> '+
-        // '<hr>'+
-        // '</div>'+
-    
+    // '<form role="form" method="post" action="/addnewspeakerdetails">'+
+
+    // '<button class="pull-right btn-danger" type="button" id ="editbutton">Edit</button><br/>'+
+
+    // '<input type ="hidden" id = "accesscode" name = "accode" value = {{accode}}>'+
+
+
+    // '<div id="accodeformheader" style="display: block;">'+
+    // '<h4>Access Code Metadata</h4>'+
+    // '<div class="form-group">'+
+    // '<label for="idaccesscodefor">Access Code For:</label><br>'+
+    // '<select class="accesscodefor" id="idaccesscodefor" name="accesscodefor" style="width:55%" required></select><br>'+
+    // '</div>'+
+
+    // '<div class="form-group">'+
+    // '<label for="idtask">Task :</label><br>'+
+    // '<select class="task" id="idtask" name="task"  style="width:55%" required></select><br>'+
+    // '</div>'+
+
+    // '<div id="uploadaccode" style="display: block;"></div> '+
+    // '<hr>'+
+    // '</div>'+
+
     // subsourceinpt += ; // div of idfieldmetadataschemadiv
-    
+
     subsourceinpt += '<div id="idinternetsourcediv" style="display: none;">';
     if (includeInternetMetadata) {
         subsourceinpt += '<div class="form-group">' +
@@ -483,28 +483,28 @@ function speakerDetailForm(curId, submitRoute="/addnewspeakerdetails", includeFi
     else {
         subsourceinpt += '<div class="alert alert-danger alert-dismissible" role="alert">' +
             'No schema available for internet source!' +
-            '<button type="button" class="close" data-dismiss="alert" aria-label="Close">'+
+            '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +
             '<span aria-hidden="true">&times;</span>' +
             '</div>';
     }
     subsourceinpt += '</div>';
-    
-    subsourceinpt +=   '<button type="button" id="closebutton" class="btn btn-warning" data-dismiss="modal">Cancel</button>' +
+
+    subsourceinpt += '<button type="button" id="closebutton" class="btn btn-warning" data-dismiss="modal">Cancel</button>' +
         '<input type="submit" class="btn btn-primary clasmetadatasubmitbutton" id="idmetadatasubmitbutton" value="Save Metadata" disabled> <br><br>';
-    
+
     subsourceinpt += '</div>';
     subsourceinpt += '</div>';
 
     sourceinpt += subsourceinpt;
-    
+
     sourceinpt += '</div>';
     sourceinpt += '</div>';
     sourceinpt += '</form>';
     // speakerinpt += sourceinpt;
 
-    
+
     $("#addnewspeakerform").append(sourceinpt);
-        
+
     addNewSpeakerFormEvents();
     addNewSpeakerSelect2();
 }
@@ -519,7 +519,7 @@ function speakerDetailForm(curId, submitRoute="/addnewspeakerdetails", includeFi
 // }
 
 function youtubeMetadataForm(form_vals = {}) {
-    metadataForm = '<h4>YouTube Metadata</h4>';
+    let metadataForm = '<h4>YouTube Metadata</h4>';
     metadataForm += '<div class="form-group">' +
         '<label class="col-form-label">Youtube Channel Name</label><br>' +
         '<input type="text" class="form-control" id="idytchannelname" name="youtubeChannelName" placeholder="--Youtube Channel Name--" style="width:55%;" value="';
@@ -528,7 +528,7 @@ function youtubeMetadataForm(form_vals = {}) {
     }
     metadataForm += '">' +
         '</div>';
-        
+
     metadataForm += '<div class="form-group">' +
         '<label class="col-form-label">Youtube Channel URL</label><br>' +
         '<input type="url" class="form-control" id="idytchannelurl" name="youtubeChannelUrl" placeholder="--Youtube Channel URL--" style="width:55%;" value="';
@@ -543,13 +543,13 @@ function youtubeMetadataForm(form_vals = {}) {
 function speedMetadataForm(form_vals = {}) {
 
     console.log("Form values", form_vals);
-    
-    metadataForm = '<h4>Speaker Metadata</h4>';
+
+    let metadataForm = '<h4>Speaker Metadata</h4>';
 
     //Name
     metadataForm += '<div class="form-group">' +
         '<label for="idname" class="col-form-label">Name:</label>' +
-        '<input type="text" class="form-control classname" id="idname" name="name" placeholder="--Speaker Name--" style="width:55%" value="';    
+        '<input type="text" class="form-control classname" id="idname" name="name" placeholder="--Speaker Name--" style="width:55%" value="';
     if (form_vals["name"]) {
         metadataForm += form_vals["name"];
     }
@@ -559,7 +559,7 @@ function speedMetadataForm(form_vals = {}) {
     //Age Group
     metadataForm += '<div class="form-group">' +
         '<label for="idagegroup">Age Group: </label><br>' +
-        '<select class="classagegroup" id="idagegroup" name="ageGroup" style="width:55%">';    
+        '<select class="classagegroup" id="idagegroup" name="ageGroup" style="width:55%">';
     if (form_vals["ageGroup"]) {
         metadataForm += '<option value="' + form_vals["ageGroup"] + '" selected="selected">' + form_vals["ageGroup"] + '</option>';
     }
@@ -581,7 +581,7 @@ function speedMetadataForm(form_vals = {}) {
         '<label for="ideducationlevel">Educational Level: </label> <br>' +
         '<select class="classeducationlevel" id="ideducationlevel" name="educationLevel" style="width:55%" >';
     if (form_vals["educationLevel"]) {
-        
+
         metadataForm += '<option value="' + form_vals["educationLevel"] + '">' + form_vals["educationLevel"] + '</option>';
     }
     metadataForm += '</select><br>' +
@@ -604,7 +604,7 @@ function speedMetadataForm(form_vals = {}) {
     metadataForm += '</select><br>' +
         '</div>';
 
-    
+
     //Medium of Education (after 12th)
     metadataForm += '<div class="form-group">' +
         '<label for="ideducationmediumafter12">Medium Of Education (After 12ᵗʰ): </label><br>' +
@@ -625,7 +625,7 @@ function speedMetadataForm(form_vals = {}) {
     if (form_vals["otherLanguages-list"]) {
         for (i = 0; i < form_vals["otherLanguages-list"].length; i++) {
             current_language = form_vals["otherLanguages-list"][i]
-            metadataForm += '<option value="' + current_language + '" selected="selected"> '+ current_language +'</option>';
+            metadataForm += '<option value="' + current_language + '" selected="selected"> ' + current_language + '</option>';
         }
     }
     metadataForm += '</select><br>' +
@@ -643,8 +643,8 @@ function speedMetadataForm(form_vals = {}) {
 
     //Type of Place
     metadataForm += '<div class="form-group">' +
-            '<label for="idptypeofplace">Type Of Place: </label> <br>' +
-            '<select class="classtypeofplace" id="idptypeofplace" name="typeOfPlace"  style="width:55%" >';
+        '<label for="idptypeofplace">Type Of Place: </label> <br>' +
+        '<select class="classtypeofplace" id="idptypeofplace" name="typeOfPlace"  style="width:55%" >';
     if (form_vals["typeOfPlace"]) {
         metadataForm += '<option value="' + form_vals["typeOfPlace"] + '" selected="selected">' + form_vals["typeOfPlace"] + '</option>';
     }
@@ -655,17 +655,17 @@ function speedMetadataForm(form_vals = {}) {
     return metadataForm
 }
 
-function ldcilMetadataForm(form_vals={}) {
+function ldcilMetadataForm(form_vals = {}) {
     // console.log("Form values", form_vals);
-    
-    metadataForm = '<h4>Speaker Metadata</h4>';
+
+    let metadataForm = '<h4>Speaker Metadata</h4>';
 
     //Language
     metadataForm += '<div class="form-group">' +
         '<label for="idlanguage">Language: </label> <br>' +
         '<select class="classlanguage" id="idlanguage" name="language" style="width:55%">';
     if (form_vals["language"]) {
-        
+
         metadataForm += '<option value="' + form_vals["language"] + '" selected="selected">' + form_vals["language"] + '</option>';
     }
     metadataForm += '</select><br>' +
@@ -674,7 +674,7 @@ function ldcilMetadataForm(form_vals={}) {
     //Name
     metadataForm += '<div class="form-group">' +
         '<label for="idname" class="col-form-label">Name/Speaker ID:</label>' +
-        '<input type="text" class="form-control classname" id="idname" name="name" placeholder="--Speaker Name--" style="width:55%" value="';    
+        '<input type="text" class="form-control classname" id="idname" name="name" placeholder="--Speaker Name--" style="width:55%" value="';
     if (form_vals["name"]) {
         metadataForm += form_vals["name"];
     }
@@ -684,7 +684,7 @@ function ldcilMetadataForm(form_vals={}) {
     //Age Group
     metadataForm += '<div class="form-group">' +
         '<label for="idagegroup">Age Group: </label><br>' +
-        '<select class="classldcilagegroup" id="idagegroup" name="ageGroup" style="width:55%">';    
+        '<select class="classldcilagegroup" id="idagegroup" name="ageGroup" style="width:55%">';
     if (form_vals["ageGroup"]) {
         metadataForm += '<option value="' + form_vals["ageGroup"] + '" selected="selected">' + form_vals["ageGroup"] + '</option>';
     }
@@ -706,30 +706,30 @@ function ldcilMetadataForm(form_vals={}) {
         '<label for="ideducationlevel">Education: </label> <br>' +
         '<select class="classldcileducationlevel" id="ideducationlevel" name="educationLevel" style="width:55%" >';
     if (form_vals["educationLevel"]) {
-        
+
         metadataForm += '<option value="' + form_vals["educationLevel"] + '">' + form_vals["educationLevel"] + '</option>';
     }
     metadataForm += '</select><br>' +
         '</div>';
-    
+
     //Place of Elementary Education
     metadataForm += '<div class="form-group">' +
         '<label for="idplaceOfElementaryEducation">Place of Elementary Education: </label> <br>' +
         '<input type="text" class="form-control classplaceOfElementaryEducation" id="idplaceOfElementaryEducation" name="placeOfElementaryEducation" style="width:55%" value="';
     if (form_vals["placeOfElementaryEducation"]) {
-        
+
         metadataForm += form_vals["placeOfElementaryEducation"];
     }
     metadataForm += '">' +
         '</div>';
-    
-    
+
+
     //State
     metadataForm += '<div class="form-group">' +
         '<label for="idstate">State: </label> <br>' +
         '<input type="text" class="form-control classstate" id="idstate" name="state" style="width:55%" value="';
-   if (form_vals["state"]) {
-        
+    if (form_vals["state"]) {
+
         metadataForm += form_vals["state"];
     }
     metadataForm += '">' +
@@ -740,7 +740,7 @@ function ldcilMetadataForm(form_vals={}) {
         '<label for="iddistrict">District: </label> <br>' +
         '<input type="text" class="form-control classdistrict" id="iddistrict" name="district" style="width:55%" value="';
     if (form_vals["district"]) {
-        
+
         metadataForm += form_vals["district"];
     }
     metadataForm += '">' +
@@ -756,7 +756,349 @@ function ldcilMetadataForm(form_vals={}) {
     metadataForm += '"> ' +
         '</div>';
 
-    
+
+    return metadataForm
+}
+
+
+function multililaMetadataForm(form_vals = {}) {
+    // console.log("Form values", form_vals);
+
+    // mappingsSchoolType = { "Government": "G", "Private": "P" };
+    // mappingsSchoolCity = { "Delhi": "1", "Hyderabad": "2", "Patna": "3", "Guwahati": "4" };
+    // mappingsSchoolMedium = { "Only English": "1", "Telugu+English": "2", "Hindi+English": "3", "Assamese+English": "4" };
+    // mappingsSchoolSite = { "Slum": "1", "Non-slum": "2", "Remote Rural": "3", "Non-remote Rural": "4" };
+    var metadataForm = "";
+
+
+    // School ID
+    if (form_vals["schoolId"] || form_vals["researcherId"]) {
+        // metadataForm += '<h4>IDs</h4>';
+        metadataForm += '<div class="form-group col-md-12">';
+
+        if (form_vals["schoolId"]) {
+            metadataForm += '<label class="bg-info col-md-6">School ID: ' + form_vals["schoolId"] + '</label>';
+            metadataForm += '<input type="hidden" class="form-control classschoolid" id="idschoolid" name="schoolId" value="' + form_vals["schoolId"] + '">';
+        }
+
+        // Learner ID
+        if (form_vals["learnerId"]) {
+            metadataForm += '<label class="bg-info col-md-6">Learner ID: ' + form_vals["learnerId"] + '</label>';
+            metadataForm += '<input type="hidden" class="form-control classlearnerid" id="idlearnerid" name="learnerId" value="' + form_vals["learnerId"] + '">';
+        }
+
+        // Teacher ID
+        if (form_vals["teacherId"]) {
+            metadataForm += '<label class="bg-info col-md-6">Teacher ID: ' + form_vals["teacherId"] + '</label>';
+            metadataForm += '<input type="hidden" class="form-control classteacherid" id="idteacherid" name="teacherId" value="' + form_vals["teacherId"] + '">';
+        }
+
+        // RA ID
+        if (form_vals["researcherId"]) {
+            metadataForm += '<label class="bg-info col-md-12">RA ID: ' + form_vals["researcherId"] + '</label>';
+            metadataForm += '<input type="hidden" class="form-control classresearcherid" id="idresearcherid" name="researcherId" value="' + form_vals["researcherId"] + '">';
+        }
+
+        if (form_vals["participantId"]) {
+            metadataForm += '<input type="hidden" class="form-control classparticipantid" id="idparticipantid" name="participantId" value="' + form_vals["participantId"] + '">';
+        }
+        metadataForm += '</div><hr>';
+    }
+
+    metadataForm += '<h4>Speaker Metadata</h4>';
+
+    //Participant Role
+    // console.log("Multilila participants", multililaParticipants);
+    metadataForm += '<div class="form-group">' +
+        '<label for="idparticipantRole">Participant Role: </label> <br>' +
+        '<select class="classparticipantRole" id="idparticipantRole" name="participantRole" style="width:55%">';
+    if (form_vals["participantRole"]) {
+        let participantRoleVal = form_vals["participantRole"];
+        let currentparticipantRoleEntry = multililaParticipants.filter(function (item) {
+            return item.id === participantRoleVal;
+        });
+        if (currentparticipantRoleEntry && currentparticipantRoleEntry.length >= 1) {
+            var currentparticipantRoleText = currentparticipantRoleEntry[0]["text"];
+        }
+        else {
+            var currentparticipantRoleText = participantRoleVal;
+        }
+
+        metadataForm += '<option value="' + participantRoleVal + '" selected="selected">' + currentparticipantRoleText + '</option>';
+    }
+    metadataForm += '</select><br>' +
+        '</div>';
+
+    //Name
+    metadataForm += '<div class="form-group">' +
+        '<label for="idname" class="col-form-label">Name:</label>' +
+        '<input type="text" class="form-control classname" id="idname" name="name" placeholder="--Speaker Name--" style="width:55%" value="';
+    if (form_vals["name"]) {
+        metadataForm += form_vals["name"];
+    }
+    metadataForm += '">' +
+        '</div>';
+
+    //Age Group
+    metadataForm += '<div class="form-group">' +
+        '<label for="idagegroup">Age: </label><br>' +
+        '<select class="classmultililaagegroup" id="idagegroup" name="ageGroup" style="width:55%">';
+    if (form_vals["ageGroup"]) {
+        metadataForm += '<option value="' + form_vals["ageGroup"] + '" selected="selected">' + form_vals["ageGroup"] + '</option>';
+    }
+    metadataForm += '</select><br>' +
+        '</div>';
+
+    //Gender
+    metadataForm += '<div class="form-group">' +
+        '<label for="idgender">Gender: </label><br>' +
+        '<select class="classgender" id="idgender" name="gender" style="width:55%" >';
+    if (form_vals["gender"]) {
+        metadataForm += '<option value="' + form_vals["gender"] + '" selected="selected">' + form_vals["gender"] + '</option>';
+    }
+    metadataForm += '</select><br>' +
+        '</div>';
+
+    //Class Section
+    metadataForm += '<div class="form-group">' +
+        '<label for="idclasssection">Class and Section: </label> <br>' +
+        '<select class="classclasssection" id="idclasssection" name="classSection" style="width:55%" >';
+    if (form_vals["classSection"]) {
+
+        metadataForm += '<option value="' + form_vals["classSection"] + '">' + form_vals["classSection"] + '</option>';
+    }
+    metadataForm += '</select><br>' +
+        '</div>';
+
+    //Subject Area
+    metadataForm += '<div class="form-group">' +
+        '<label for="idsubjectarea">Subject Area: </label> <br>' +
+        '<select class="classsubjectarea" id="idsubjectarea" name="subjectArea" style="width:55%" >';
+    if (form_vals["subjectArea"]) {
+        let subjectAreaVal = form_vals["subjectArea"];
+        let currentsubjectAreaEntry = multililaSubjects.filter(function (item) {
+            return item.id === subjectAreaVal;
+        });
+        if (currentsubjectAreaEntry && currentsubjectAreaEntry.length >= 1) {
+            var currentsubjectAreaText = currentsubjectAreaEntry[0]["text"];
+        }
+        else {
+            var currentsubjectAreaText = subjectAreaVal;
+        }
+
+        metadataForm += '<option value="' + subjectAreaVal + '">' + currentsubjectAreaText + '</option>';
+    }
+    metadataForm += '</select><br>' +
+        '</div>';
+
+    //School Languages
+    metadataForm += '<div class="form-group">' +
+        '<label for="idschoollanguages">School Languages: </label><br>' +
+        '<select class="classschoollanguages" id="idschoollanguages" name="schoolLanguages-list" multiple="multiple" style="width:55%" >';
+    if (form_vals["schoolLanguages-list"]) {
+        for (i = 0; i < form_vals["schoolLanguages-list"].length; i++) {
+            current_language = form_vals["schoolLanguages-list"][i]
+            metadataForm += '<option value="' + current_language + '" selected="selected"> ' + current_language + '</option>';
+        }
+    }
+    metadataForm += '</select><br>' +
+        '</div>';
+
+    //Home Languages
+    metadataForm += '<div class="form-group">' +
+        '<label for="idhomelanguages">Home Languages: </label><br>' +
+        '<select class="classhomelanguages" id="idhomelanguages" name="homeLanguages-list" multiple="multiple" style="width:55%" >';
+    if (form_vals["homeLanguages-list"]) {
+        for (i = 0; i < form_vals["homeLanguages-list"].length; i++) {
+            current_language = form_vals["homeLanguages-list"][i]
+            metadataForm += '<option value="' + current_language + '" selected="selected"> ' + current_language + '</option>';
+        }
+    }
+    metadataForm += '</select><br>' +
+        '</div>';
+
+    //Other Languages
+    metadataForm += '<div class="form-group">' +
+        '<label for="idotherlanguages">Other Languages: </label><br>' +
+        '<select class="classotherlanguages" id="idotherlanguages" name="otherLanguages-list" multiple="multiple" style="width:55%" >';
+    if (form_vals["otherLanguages-list"]) {
+        for (i = 0; i < form_vals["otherLanguages-list"].length; i++) {
+            current_language = form_vals["otherLanguages-list"][i]
+            metadataForm += '<option value="' + current_language + '" selected="selected"> ' + current_language + '</option>';
+        }
+    }
+    metadataForm += '</select><br>' +
+        '</div>';
+
+    //Place of Birth
+    metadataForm += '<div class="form-group">' +
+        '<label for="idplaceOfBirth">Place of Birth: </label> <br>' +
+        '<select class="classplaceofbirth" id="idplaceofbirth" name="placeOfBirth" style="width:55%" >';
+    if (form_vals["placeOfBirth"]) {
+
+        metadataForm += '<option value="' + form_vals["placeOfBirth"] + '">' + form_vals["placeOfBirth"] + '</option>';
+    }
+    metadataForm += '</select><br>' +
+        '</div><hr>';
+
+    //Parents Profile Start (only for Learners)
+    metadataForm += '<div class="form-group parentsprofilediv" id="idparentsprofilediv">';
+    metadataForm += '<h4>Parents Metadata</h4>';
+
+    //Parents Educational Level
+    metadataForm += '<div class="form-group">' +
+        '<label for="idparentseducationlevel">Parents Education Level: </label> <br>' +
+        '<select class="classparentseducationlevel" id="idparentseducationlevel" name="parentsEducationLevel" style="width:55%" >';
+    if (form_vals["parentsEducationLevel"]) {
+
+        metadataForm += '<option value="' + form_vals["parentsEducationLevel"] + '">' + form_vals["parentsEducationLevel"] + '</option>';
+    }
+    metadataForm += '</select><br>' +
+        '</div>';
+
+    //Parents Work
+    metadataForm += '<div class="form-group">' +
+        '<label for="idparentswork">Parents Work: </label> <br>' +
+        '<input type="text" class="form-control classparentswork" id="idparentswork" name="parentsWork" style="width:55%" value="';
+    if (form_vals["parentsWork"]) {
+
+        metadataForm += form_vals["parentsWork"];
+    }
+    metadataForm += '">' +
+        '</div>';
+    metadataForm += '</div><hr>';
+    //Parents Profile End
+
+    //School Profile Start (not for RAs)
+    metadataForm += '<div class="form-group schoolprofilediv" id="idschoolprofilediv">';
+
+    metadataForm += '<h4>School Metadata</h4>';
+
+    //Medium of Education
+    metadataForm += '<div class="form-group">' +
+        '<label for="idmediumofeducation">Medium Of Education: </label><br>' +
+        '<select class="classmultililamediumofeducation" id="idmediumofeducation" name="mediumOfEducation-list" multiple="multiple" style="width:55%">';
+    if (form_vals["mediumOfEducation-list"]) {
+        edMed = form_vals["mediumOfEducation-list"]
+        if (typeof edMed === 'string' || edMed instanceof String) {
+            edMed = [edMed]
+        }
+        for (i = 0; i < edMed.length; i++) {
+            let currentMedium = edMed[i]
+            let currentMediumEntry = multililaMedium.filter(function (item) {
+                return item.id === currentMedium;
+            });
+            if (currentMediumEntry && currentMediumEntry.length >= 1) {
+                var currentMediumText = currentMediumEntry[0]["text"];
+            }
+            else {
+                var currentMediumText = currentMedium;
+            }
+            metadataForm += '<option value="' + currentMedium + '" selected="selected">' + currentMediumText + '</option>';
+        }
+    }
+    metadataForm += '</select><br>' +
+        '</div>';
+
+    //School Name
+    metadataForm += '<div class="form-group">' +
+        '<label for="idschoolname">School Name: </label> <br>' +
+        '<select class="classschoolname" id="idschoolname" name="schoolName" style="width:55%" >';
+    if (form_vals["schoolName"]) {
+
+        metadataForm += '<option value="' + form_vals["schoolName"] + '">' + form_vals["schoolName"] + '</option>';
+    }
+    metadataForm += '</select><br>' +
+        '</div>';
+
+    //School Number
+    metadataForm += '<div class="form-group">' +
+        '<label for="idschoolserialnumber">School Serial Number: </label> <br>' +
+        '<select class="classschoolserialnumber" id="idschoolserialnumber" name="schoolSerialNumber" style="width:55%" >';
+    if (form_vals["schoolSerialNumber"]) {
+
+        metadataForm += '<option value="' + form_vals["schoolSerialNumber"] + '">' + form_vals["schoolSerialNumber"] + '</option>';
+    }
+    metadataForm += '</select><br>' +
+        '</div>';
+
+    //School Type
+    metadataForm += '<div class="form-group">' +
+        '<label for="idschooltype">School Type: </label> <br>' +
+        '<select class="classschooltype" id="idschooltype" name="schoolType" style="width:55%" >';
+    if (form_vals["schoolType"]) {
+        schoolTypeVal = form_vals["schoolType"];
+        let currentStypeEntry = multililaSchoolTypes.filter(function (item) {
+            return item.id === schoolTypeVal;
+        });
+        if (currentStypeEntry && currentStypeEntry.length >= 1) {
+            var currentSTypeText = currentStypeEntry[0]["text"];
+        }
+        else {
+            var currentSTypeText = schoolTypeVal;
+        }
+
+        metadataForm += '<option value="' + form_vals["schoolType"] + '">' + currentSTypeText + '</option>';
+    }
+    metadataForm += '</select><br>' +
+        '</div>';
+
+    //Site Type
+    metadataForm += '<div class="form-group">' +
+        '<label for="idsitetype">Site Type: </label> <br>' +
+        '<select class="classsitetype" id="idsitetype" name="siteType" style="width:55%" >';
+    if (form_vals["siteType"]) {
+        let siteTypeVal = form_vals["siteType"];
+        let currentSitetypeEntry = multililaSiteTypes.filter(function (item) {
+            return item.id === siteTypeVal;
+        });
+        if (currentSitetypeEntry && currentSitetypeEntry.length >= 1) {
+            var currentSiteTypeText = currentSitetypeEntry[0]["text"];
+        }
+        else {
+            var currentSiteTypeText = siteTypeVal;
+        }
+
+        metadataForm += '<option value="' + siteTypeVal + '">' + currentSiteTypeText + '</option>';
+    }
+    metadataForm += '</select><br>' +
+        '</div>';
+
+    //City
+    metadataForm += '<div class="form-group">' +
+        '<label for="idcity">City: </label> <br>' +
+        '<select class="classcity" id="idcity" name="city" style="width:55%" >';
+    if (form_vals["city"]) {
+        let cityVal = form_vals["city"];
+        let currentcityEntry = multililaCities.filter(function (item) {
+            return item.id === cityVal;
+        });
+        if (currentcityEntry && currentcityEntry.length >= 1) {
+            var currentcityText = currentcityEntry[0]["text"];
+        }
+        else {
+            var currentcityText = cityVal;
+        }
+
+        metadataForm += '<option value="' + cityVal + '">' + currentcityText + '</option>';
+    }
+    metadataForm += '</select><br>' +
+        '</div>';
+
+    //State
+    metadataForm += '<div class="form-group">' +
+        '<label for="idstate">State: </label> <br>' +
+        '<select class="classstate" id="idstate" name="state" style="width:55%" >';
+    if (form_vals["state"]) {
+
+        metadataForm += '<option value="' + form_vals["state"] + '">' + form_vals["state"] + '</option>';
+    }
+    metadataForm += '</select><br>' +
+        '</div><hr>';
+
+    // metadataForm += '</div>';
+    //School Profile End
+
     return metadataForm
 }
 
@@ -875,6 +1217,120 @@ function addNewSpeakerSelect2() {
         // allowClear: true,
         // console.log( "ready!" )
     });
+    // console.log("Multilila participants near select2", multililaParticipants);
+    $('.classparticipantRole').select2({
+        // tags: true,
+        placeholder: '--Participant Role:--',
+        data: multililaParticipants,
+        // allowClear: true,
+        // console.log( "ready!" )
+    });
+    $('.classclasssection').select2({
+        // tags: true,
+        placeholder: '--Class and Section:--',
+        data: multililaClasses,
+        // allowClear: true,
+        // console.log( "ready!" )
+    });
+    $('.classschoollanguages').select2({
+        tags: true,
+        placeholder: '--School Languages:--',
+        data: OtherLanguagesSpeakerCouldSpeak,
+        // allowClear: true,
+        // console.log( "ready!" )
+    });
+    $('.classhomelanguages').select2({
+        tags: true,
+        placeholder: '--Home Languages:--',
+        data: OtherLanguagesSpeakerCouldSpeak,
+        // allowClear: true,
+        // console.log( "ready!" )
+    });
+    $('.classplaceofbirth').select2({
+        tags: true,
+        placeholder: '--Birth Place:--',
+        // data: EducationMedium,
+        // allowClear: true,
+        // console.log( "ready!" )
+    });
+    $('.classmediumofeducation').select2({
+        tags: true,
+        placeholder: '--Medium of Education:--',
+        data: EducationMedium,
+        // allowClear: true,
+        // console.log( "ready!" )
+    });
+    $('.classparentseducationlevel').select2({
+        // tags: true,
+        placeholder: '--Parents Education Level:--',
+        data: EducationLevel,
+        // allowClear: true,
+        // console.log( "ready!" )
+    });
+    $('.classschoolname').select2({
+        tags: true,
+        placeholder: '--Name of School:--',
+        data: multililaSchools,
+        // allowClear: true,
+        // console.log( "ready!" )
+    });
+    $('.classschoolserialnumber').select2({
+        tags: true,
+        placeholder: '--School Serial Number:--',
+        data: multililaSchoolNumbers,
+        // allowClear: true,
+        // console.log( "ready!" )
+    });
+    $('.classschooltype').select2({
+        tags: true,
+        placeholder: '--School Type:--',
+        data: multililaSchoolTypes,
+        // allowClear: true,
+        // console.log( "ready!" )
+    });
+    $('.classsitetype').select2({
+        tags: true,
+        placeholder: '--Site:--',
+        data: multililaSiteTypes,
+        // allowClear: true,
+        // console.log( "ready!" )
+    });
+    $('.classcity').select2({
+        tags: true,
+        placeholder: '--City:--',
+        data: multililaCities,
+        // allowClear: true,
+        // console.log( "ready!" )
+    });
+    $('.classstate').select2({
+        tags: true,
+        placeholder: '--State:--',
+        data: states,
+        // allowClear: true,
+        // console.log( "ready!" )
+    });
+    $('.classsubjectarea').select2({
+        tags: true,
+        placeholder: '--Subject Area:--',
+        data: multililaSubjects,
+        // allowClear: true,
+        // console.log( "ready!" )
+    });
+
+    $('.classmultililaagegroup').select2({
+        tags: true,
+        placeholder: '--Age Group--',
+        data: multililaAgeGroup,
+        // allowClear: true
+    });
+
+    $('.classmultililamediumofeducation').select2({
+        tags: true,
+        placeholder: '--Medium of Education:--',
+        data: multililaMedium,
+        // allowClear: true,
+        // console.log( "ready!" )
+    });
 }
 
 function addNewSpeakerFormEvents() {
@@ -889,26 +1345,26 @@ function addNewSpeakerFormEvents() {
             // $('#idinternetsourcediv').html("");
             // field_element = document.getElementById("idfieldmetadataschemadiv");
             // if (field_element) {
-                $('#idinternetsourcediv').hide();
-                $('#idinternetsourcediv').removeAttr('required');
-                $('#idinternetsourcediv').removeAttr('data-error');
-                $('#idaudiointernetsource').val("");
-                $('#idinternetsourcedetailsdiv').html("");
-                // $('#idspeakerdetailsdiv').show();
-                $('#idfieldmetadataschemadiv').show();
-                $('#idfieldmetadataschemadiv').attr('required', '');
-                $('#idfieldmetadataschemadiv').attr('data-error', 'This field is required.')
+            $('#idinternetsourcediv').hide();
+            $('#idinternetsource').removeAttr('required');
+            $('#idinternetsource').removeAttr('data-error');
+            $('#idaudiointernetsource').val("");
+            $('#idinternetsourcedetailsdiv').html("");
+            // $('#idspeakerdetailsdiv').show();
+            $('#idfieldmetadataschemadiv').show();
+            $('#idfieldmetadataschema').attr('required', '');
+            $('#idfieldmetadataschema').attr('data-error', 'This field is required.')
             // }
-            
+
 
         }
         else if (sourceVal === "internet") {
             // $('#idfieldmetadataschemadiv').html("");
             $('#idfieldmetadataschemadiv').hide();
-            $('#idfieldmetadataschemadiv').removeAttr('required', '');
-            $('#idfieldmetadataschemadiv').removeAttr('data-error', 'This field is required.')
+            $('#idfieldmetadataschema').removeAttr('required');
+            $('#idfieldmetadataschema').removeAttr('data-error')
             $('#idfieldmetadataschema').val("");
-            $('#idspeakerdetailsdiv').html ("");
+            $('#idspeakerdetailsdiv').html("");
             // $('#idspeakerdetailsdiv').hide();
             // $('#idspeakerdetailsdiv').removeAttr('required');
             // $('#idspeakerdetailsdiv').removeAttr('data-error');
@@ -916,8 +1372,8 @@ function addNewSpeakerFormEvents() {
             // console.log(form_html); 
             // $('#idinternetsourcediv').html(form_html);
             $('#idinternetsourcediv').show();
-            $('#idinternetsourcediv').attr('required', '');
-            $('#idinternetsourcediv').attr('data-error', 'This field is required.')
+            $('#idinternetsource').attr('required', '');
+            $('#idinternetsource').attr('data-error', 'This field is required.')
 
         }
         else {
@@ -926,13 +1382,13 @@ function addNewSpeakerFormEvents() {
             // $('#idspeakerdetailsdiv').removeAttr('data-error');
             // $('#idfieldmetadataschemadiv').html("");
             $('#idfieldmetadataschemadiv').hide();
-            $('#idfieldmetadataschemadiv').removeAttr('required', '');
-            $('#idfieldmetadataschemadiv').removeAttr('data-error', 'This field is required.')
+            $('#idfieldmetadataschema').removeAttr('required');
+            $('#idfieldmetadataschema').removeAttr('data-error')
             $('#idfieldmetadataschema').val("");
             // $('#idinternetsourcediv').html("");
             $('#idinternetsourcediv').hide();
-            $('#idinternetsourcediv').removeAttr('required');
-            $('#idinternetsourcediv').removeAttr('data-error');
+            $('#idinternetsource').removeAttr('required');
+            $('#idinternetsource').removeAttr('data-error');
             $('#idaudiointernetsource').val("");
         }
         $('#idmetadatasubmitbutton').prop("disabled", true);
@@ -947,31 +1403,33 @@ function addNewSpeakerFormEvents() {
         // console.log("Current task value", sourceVal);
         $('#idmetadatauploadbutton').prop("disabled", true);
         if (sourceVal === "field") {
+            console.log("Source bulk field");
             $('#idaudiointernetsourcebulkdiv').hide();
-            $('#idaudiointernetsourcebulkdiv').removeAttr('required');
-            $('#idaudiointernetsourcebulkdiv').removeAttr('data-error');
+            $('#idaudiointernetsourcebulk').removeAttr('required');
+            $('#idaudiointernetsourcebulk').removeAttr('data-error');
             $('#idfieldmetadataschemabulk').val("");
+
             // $('#idspeakerdetailsdiv').show();
             $('#idfieldmetadataschemabulkdiv').show();
-            $('#idfieldmetadataschemabulkdiv').attr('required', '');
-            $('#idfieldmetadataschemabulkdiv').attr('data-error', 'This field is required.')
-            
+            $('#idfieldmetadataschemabulk').attr('required', '');
+            $('#idfieldmetadataschemabulk').attr('data-error', 'This field is required.')
+
             field_element = document.getElementById("idfieldmetadataschemabulk");
-             
+
 
         }
         else if (sourceVal === "internet") {
             $('#idfieldmetadataschemabulkdiv').hide();
-            $('#idfieldmetadataschemabulkdiv').removeAttr('required', '');
-            $('#idfieldmetadataschemabulkdiv').removeAttr('data-error', 'This field is required.')
+            $('#idfieldmetadataschemabulk').removeAttr('required');
+            $('#idfieldmetadataschemabulk').removeAttr('data-error')
             $('#idaudiointernetsourcebulk').val("");
             // $('#idspeakerdetailsdiv').hide();
             // $('#idspeakerdetailsdiv').removeAttr('required');
             // $('#idspeakerdetailsdiv').removeAttr('data-error');
             $('#idaudiointernetsourcebulkdiv').show();
-            $('#idaudiointernetsourcebulkdiv').attr('required', '');
-            $('#idaudiointernetsourcebulkdiv').attr('data-error', 'This field is required.')
-            
+            $('#idaudiointernetsourcebulk').attr('required', '');
+            $('#idaudiointernetsourcebulk').attr('data-error', 'This field is required.')
+
             field_element = document.getElementById("idaudiointernetsourcebulk");
 
         }
@@ -980,11 +1438,11 @@ function addNewSpeakerFormEvents() {
             // $('#idspeakerdetailsdiv').removeAttr('required');
             // $('#idspeakerdetailsdiv').removeAttr('data-error');
             $('#idfieldmetadataschemabulkdiv').hide();
-            $('#idfieldmetadataschemabulkdiv').removeAttr('required', '');
-            $('#idfieldmetadataschemabulkdiv').removeAttr('data-error', 'This field is required.')
+            $('#idfieldmetadataschemabulk').removeAttr('required');
+            $('#idfieldmetadataschemabulk').removeAttr('data-error')
             $('#idaudiointernetsourcebulkdiv').hide();
-            $('#idaudiointernetsourcebulkdiv').removeAttr('required');
-            $('#idaudiointernetsourcebulkdiv').removeAttr('data-error');
+            $('#idaudiointernetsourcebulk').removeAttr('required');
+            $('#idaudiointernetsourcebulk').removeAttr('data-error');
         }
         $('#idmetadatasubmitbutton').prop("disabled", true);
         if (field_element) {
@@ -1002,8 +1460,8 @@ function addNewSpeakerFormEvents() {
         $('#idspeakerdetailsdiv').html("");
         $('#idinternetsourcedetailsdiv').html(form_html);
         $('#idinternetsourcedetailsdiv').show();
-        $('#idinternetsourcedetailsdiv').attr('required', '');
-        $('#idinternetsourcedetailsdiv').attr('data-error', 'This field is required.')
+        $('#idinternetsourcedetails').attr('required', '');
+        $('#idinternetsourcedetails').attr('data-error', 'This field is required.')
         $('#idmetadatasubmitbutton').prop("disabled", false);
 
         // if (subSourceVal === "youtube") {
@@ -1039,11 +1497,11 @@ function addNewSpeakerFormEvents() {
         var schemaVal = $(this).val();
         // console.log("Current schema value", schemaVal);
         // form_val = {'name': 'Ritesh', 'ageGroup': '18-31', 'educationMediumAfter12-list': ['Hindi', 'English', 'Konkani', 'Toto', 'Mahisu']}
-        $('#idspeakerdetailsdiv').show();   
+        $('#idspeakerdetailsdiv').show();
         // $('#idspeakerdetailsdiv').innerHTML = "";  
         $('#idinternetsourcedetailsdiv').html("");
         form_html = window[schemaVal + "MetadataForm"]();
-        
+
         // if (schemaVal === "speed") {
         //     // $('#idsubsourcediv').hide();
         //     // $('#idsubsourcediv').removeAttr('required');
@@ -1058,9 +1516,9 @@ function addNewSpeakerFormEvents() {
         // else {
         //     form_html = "";
         // }
-        $('#idspeakerdetailsdiv').html (form_html);
-        $('#idspeakerdetailsdiv').attr('required', '');
-        $('#idspeakerdetailsdiv').attr('data-error', 'This field is required.')
+        $('#idspeakerdetailsdiv').html(form_html);
+        $('#idspeakerdetails').attr('required', '');
+        $('#idspeakerdetails').attr('data-error', 'This field is required.')
         $('#idmetadatasubmitbutton').prop("disabled", false);
         addNewSpeakerFormEvents();
         addNewSpeakerSelect2();
@@ -1098,10 +1556,10 @@ function addNewSpeakerFormEvents() {
         // }
     });
 
-    $(".metadatauploadtypeclass").change(function() {
+    $(".metadatauploadtypeclass").change(function () {
         // remove the background color from all labels.
         // alert("Changed!")
-        
+
         selected_val = $("input[name='metadataentrytype']:checked").val();
         // alert("Value"+ selected_val);
         if (selected_val === "single") {
@@ -1134,14 +1592,14 @@ function addNewSpeakerFormEvents() {
             // $('.alert').alert('close');
             $('#formdisplaysingle').hide();
             $("#formdisplaysingle :input").prop("disabled", true);
-            
+
         }
 
         $('#idmetadatasubmitbutton').prop("disabled", true);
         $('#idmetadatauploadbutton').prop("disabled", true);
 
         // $("label").removeClass("btn-info");
-            
+
 
         // // add the background only to the parent-label of the clicked button.
         // $(this).parent().addClass("btn-success");

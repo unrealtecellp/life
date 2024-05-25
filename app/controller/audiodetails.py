@@ -1553,12 +1553,14 @@ def getaudiotranscriptiondetails(transcriptions, audio_id, transcription_by="", 
 
 
 def savetranscription(transcriptions,
+                      activeprojectname,
                       activeprojectform,
                       scriptCode,
                       current_username,
                       transcription_regions,
                       audio_id,
-                      activespeakerId):
+                      activespeakerId,
+                      accessedOnTime):
     """Module to work on the sentence details (transcription and all) through ajax.
 
     Args:
@@ -1572,54 +1574,62 @@ def savetranscription(transcriptions,
     #     "textdeleteFLAG": 0
     # }
     # text_grid = {}
-    sentence = {}
-    if transcription_regions is not None:
-        transcription_regions = json.loads(transcription_regions)
-        # plogger.debug(transcription_regions)
-        for transcription_boundary in transcription_regions:
-            transcription_boundary = transcription_boundary['data']
-            if 'sentence' in transcription_boundary:
-                for type, value in transcription_boundary['sentence'].items():
-                    # logger.debug(f"KEY: {type}\nVALUE: {value}")
-                    value["speakerId"] = activespeakerId
-                    value["sentenceId"] = audio_id
-                    sentence[type] = value
-            # plogger.debug(sentence)
-            #     logger.debug('transcription_boundary.keys() %s', transcription_boundary.keys())
-            #     sentence[transcription_boundary['boundaryID']] = {
-            #         "speakerId": activespeakerId,
-            #         "sentenceId": audio_id,
-            #         'start': transcription_boundary['start'],
-            #         'end': transcription_boundary['end'],
+    try:
+        sentence = {}
+        if transcription_regions is not None:
+            transcription_regions = json.loads(transcription_regions)
+            # plogger.debug(transcription_regions)
+            for transcription_boundary in transcription_regions:
+                transcription_boundary = transcription_boundary['data']
+                if 'sentence' in transcription_boundary:
+                    for boundary_id, value in transcription_boundary['sentence'].items():
+                        # logger.debug(f"KEY: {type}\nVALUE: {value}")
+                        # value["speakerId"] = activespeakerId
+                        value["sentenceId"] = audio_id+'_'+boundary_id
+                        sentence[boundary_id] = value
+                # plogger.debug(sentence)
+                #     logger.debug('transcription_boundary.keys() %s', transcription_boundary.keys())
+                #     sentence[transcription_boundary['boundaryID']] = {
+                #         "speakerId": activespeakerId,
+                #         "sentenceId": audio_id,
+                #         'start': transcription_boundary['start'],
+                #         'end': transcription_boundary['end'],
 
-            #         "transcription": {},
-            #         "translation": {},
-            #         "morphemes": {},
-            #         "gloss": {},
-            #         "pos": {},
-            #         "tags": {}
-            #     }
-            # for transcription_data in transcription_regions:
-            #     for type in list(transcription_data['data'].keys()):
-            #         if type == 'sentence':
-            #             logger.debug(type)
+                #         "transcription": {},
+                #         "translation": {},
+                #         "morphemes": {},
+                #         "gloss": {},
+                #         "pos": {},
+                #         "tags": {}
+                #     }
+                # for transcription_data in transcription_regions:
+                #     for type in list(transcription_data['data'].keys()):
+                #         if type == 'sentence':
+                #             logger.debug(type)
 
-            # text_grid['sentence'] = sentence
-            # logger.debug(text_grid)
-            # transcription_details['textGrid'] = text_grid
-            # transcriptions.insert(transcription_details)
-            # logger.debug("'sentence' in transcription_boundary")
-            # logger.debug('371 %s', sentence)
-            # plogger.debug(sentence)
-    transcriptions.update_one({'audioId': audio_id},
-                              {'$set':
-                               {
-                                   'textGrid.sentence': sentence,
-                                   'updatedBy': current_username,
-                                   'transcriptionFLAG': 1,
-                                   current_username+'.textGrid.sentence': sentence
-                               }
-                               })
+                # text_grid['sentence'] = sentence
+                # logger.debug(text_grid)
+                # transcription_details['textGrid'] = text_grid
+                # transcriptions.insert(transcription_details)
+                # logger.debug("'sentence' in transcription_boundary")
+                # logger.debug('371 %s', sentence)
+                # plogger.debug(sentence)
+        transcriptions.update_one({'projectname': activeprojectname, 'audioId': audio_id},
+                                  {'$set':
+                                   {
+                                       'textGrid.sentence': sentence,
+                                       'updatedBy': current_username,
+                                       'transcriptionFLAG': 1,
+                                       current_username+'.textGrid.sentence': sentence
+                                   },
+                                   '$push':
+                                   {
+                                       'allAccess.'+current_username: accessedOnTime,
+                                       'allUpdate.'+current_username: datetime.now().strftime("%d/%m/%y %H:%M:%S")
+                                   }
+                                   })
+    except:
+        logger.exception("")
 
 
 def getaudioprogressreport(projects,
@@ -2381,15 +2391,15 @@ def get_current_transcription_langscripts(mongo):
                                                         '_id': 0,
                                                         'Audio Language': 1,
                                                         'Transcription': 1
-                                                    })
-    
+    })
+
     # logger.debug("current_project_scripts: %s", pformat(current_project_scripts))
     if (project_type == 'crawling'):
         project_language = projects.find_one({'projectname': activeprojectname},
                                              {
                                                  '_id': 0,
                                                  'crawlerLanguage': 1
-                                             })['crawlerLanguage']
+        })['crawlerLanguage']
     elif ('Audio Language' in current_project_scripts):
         project_language = current_project_scripts['Audio Language'][1]
     else:
@@ -2398,10 +2408,10 @@ def get_current_transcription_langscripts(mongo):
 
     if (project_type == 'crawling'):
         project_scripts = projects.find_one({'projectname': activeprojectname},
-                                             {
-                                                 '_id': 0,
-                                                 'crawlerScript': 1
-                                             })['crawlerScript']
+                                            {
+            '_id': 0,
+            'crawlerScript': 1
+        })['crawlerScript']
     elif ('Transcription' in current_project_scripts):
         project_scripts = current_project_scripts['Transcription'][1]
     else:
@@ -2524,29 +2534,30 @@ def get_slices_and_text_grids(mongo,
             if max_pause_boundary < min_silence_duration:
                 min_silence_duration = int(max_pause_boundary)
 
-        if 'textGrid_boundary' in all_model_names:
-            vad_model_params = {
-                "audio_file": audio_path,
-                "SAMPLING_RATE": 16000,
-                "remove_pauses": False,
-                "USE_ONNX": False,
-                "minimum_speech_duration": min_speech_duration,
-                "minimum_silence_duration": min_silence_duration
-            }
-            logger.debug('Vad Model %s', vad_model)
-            if len(vad_model) > 0:
-                vad_model_name = vad_model['model_name']
-                add_vad_model_params = vad_model['model_params']
-                vad_model_type = vad_model['model_type']
-                vad_model_params.update(add_vad_model_params)
+        # if 'textGrid_boundary' in all_model_names:
+        vad_model_params = {
+            "audio_file": audio_path,
+            "SAMPLING_RATE": 16000,
+            "remove_pauses": False,
+            "USE_ONNX": False,
+            "minimum_speech_duration": min_speech_duration,
+            "minimum_silence_duration": min_silence_duration
+        }
+        logger.debug('Vad Model %s', vad_model)
+        if len(vad_model) > 0:
+            vad_model_name = vad_model['model_name']
+            add_vad_model_params = vad_model['model_params']
+            vad_model_type = vad_model['model_type']
+            vad_model_params.update(add_vad_model_params)
+            # vad_model_params["audio_file"] = audio_path
 
-            vad_start = datetime.now()
-            boundaries, cleaned_file, vad_model_name = get_audio_boundaries(
-                vad_model_params, vad_model_name, vad_model_type)
-            vad_end = datetime.now()
+        vad_start = datetime.now()
+        boundaries, cleaned_file, vad_model_name = get_audio_boundaries(
+            vad_model_params, vad_model_name, vad_model_type)
+        vad_end = datetime.now()
 
-            model_details.update([('vad_model_name', vad_model_name), ('vad_model_params',
-                                 vad_model_params), ('vad_start', vad_start), ('vad_end', vad_end)])
+        model_details.update([('vad_model_name', vad_model_name), ('vad_model_params',
+                                                                   vad_model_params), ('vad_start', vad_start), ('vad_end', vad_end)])
 
         if run_asr and 'transcription' in all_model_names:
             asr_model_name = ''
@@ -2814,6 +2825,7 @@ def revoke_deleted_audio(projects_collection,
 
 def get_n_audios(data_collection,
                  activeprojectname,
+                 current_username,
                  active_speaker_id,
                  speaker_audio_ids,
                  start_from=0,
@@ -2838,7 +2850,8 @@ def get_n_audios(data_collection,
             "$project": {
                 "_id": 0,
                 "audioId": 1,
-                "audioFilename": 1
+                "audioFilename": 1,
+                current_username + '.audioCompleteFLAG': 1
             }
         }
     ])

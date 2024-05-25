@@ -23,7 +23,7 @@ $(document).ready(function() {
       });
 
       $(".shareprojectwith").click(function() {
-        console.log("shareprojectwith")
+        // console.log("shareprojectwith")
         $('#myShareProjectModal').modal('toggle');
       });
   });
