@@ -915,6 +915,7 @@ function processTokenGloss(glossTokenId,
             glossedSentenceWithTokenIdInfo[tokenId] = {};
             // console.log(document.getElementById(tokenId+'_word_input').value);
             let token = document.getElementById(tokenId+'_word_input').value;
+            // console.log(token);
             glossedSentenceWithMorphemicBreakInfo[tokenId] = token;
             if (interlinearGlossFormat.includes('Leipzig')) {
                 let tokenTranslation = document.getElementById(tokenId+'_word_translation').value;
@@ -3417,7 +3418,7 @@ function getSelect2DataLocal(jsonFileNames) {
             continue;
         }
     }
-    // console.log(jsonFileNames);
+    console.log(jsonFileNames);
     return jsonFileNames;
 }
 
@@ -3480,9 +3481,15 @@ function generateTokenId(sentencemorphemicbreakupdatedvalue) {
             // console.log(localStorageRegions[p]['data']['sentence'][boundaryID])
             tokenIdObject = localStorageRegions[p]['data']['sentence'][boundaryID]['glossTokenIdInfo']
 
-            localStorage.setItem("glossTokenId", JSON.stringify(Object.keys(tokenIdObject)));
-
-            return Object.keys(tokenIdObject);
+            if (Object.keys(tokenIdObject).length === 0) {
+                // console.log('1')
+                break;
+            }
+            else {
+                // console.log('2')
+                localStorage.setItem("glossTokenId", JSON.stringify(Object.keys(tokenIdObject)));
+                return Object.keys(tokenIdObject);
+            }
         }
     }
     // console.log(sentencemorphemicbreakupdatedvalue);
@@ -3521,6 +3528,8 @@ function generateTokenId(sentencemorphemicbreakupdatedvalue) {
     }
     // console.log(tokenIdObject);
     localStorage.setItem("glossTokenId", JSON.stringify(Object.keys(tokenIdObject)));
+
+    // console.log(Object.keys(tokenIdObject));
 
     return Object.keys(tokenIdObject);
 }

@@ -946,6 +946,8 @@ $("#syncallbtnid").click(function () {
         window.location.reload();
       });
   }
+  $('#syncTranscriptsAllModal').modal('toggle');
+  runLoader();
 
 });
 
