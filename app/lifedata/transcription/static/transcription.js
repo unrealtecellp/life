@@ -315,6 +315,7 @@ function createTranscriptionInterfaceForm(newData) {
   let audio_script = newData['Transcription'][1][0]
   let audio_lang_script = audio_language + '-' + audio_script
   let speakerIds = newData['speakerIds'];
+  let addedSpeakerIds = newData['addedSpeakerIds'];
   let activeSpeakerId = newData['activespeakerId']
   let currentAudioSpeakerIds = newData['audioSpeakerIds']
   // console.log(activeSpeakerId);
@@ -360,7 +361,7 @@ function createTranscriptionInterfaceForm(newData) {
     // }
   }
   createSelect2('speakeridsdropdown', speakerIds, activeSpeakerId, sourceMetadata, 'video_title');
-  createSelect2('speakeridsettingsdropdown', speakerIds, currentAudioSpeakerIds, {}, 'video_title');
+  createSelect2('speakeridsettingsdropdown', addedSpeakerIds, currentAudioSpeakerIds, {}, 'video_title');
   if (lastActiveId != '') {
     createTranscriptionPrompt(audio_lang_script);
   }
