@@ -298,16 +298,26 @@ def get_transliteration_Devanagari_to_Latin(data, lang_code, **kwargs):
 def get_gloss_stanza(data, lang_code, **kwargs):
     nlp = stanza_pipelines.get(lang_code, '')
     all_outputs = {}
-    # in_docs = [stanza.Document([], text=d) for d in data]
+    try:
+        # in_docs = [stanza.Document([], text=d) for d in data]
 
-    if nlp != '':
-        input_ids = data.keys()
-        model_input_strs = list(data.values())
-        results = nlp.bulk_process(model_input_strs)
+        if nlp != '':
+            input_ids = data.keys()
+            model_input_strs = list(data.values())
+            results = nlp.bulk_process(model_input_strs)
 
-        for input_id, result in zip(input_ids, results):
-            logger.info('Input for %s', input_id)
-            output = result.to_dict()[0]
-            all_outputs[input_id] = output
+            for input_id, result in zip(input_ids, results):
+                logger.info('Input for %s', input_id)
+                # logger.info('result %s', result)
+                # logger.info('result.to_dict() %s', result.to_dict())
+                output = result.to_dict()
+                # logger.info('output %s', output)
+                if (len(output) > 0):
+                    output = output[0]
+                else:
+                    output = {}
+                all_outputs[input_id] = output
+    except:
+        logger.exception("")
 
     return all_outputs

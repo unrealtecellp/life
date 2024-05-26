@@ -850,9 +850,16 @@ function addDeleteGlossSelect2(field,
     let fieldValue = '';
     let oldFieldValueArray = [];
     let selectedFieldValueInfo = [];
-    if (glossTokenIdInfo){
+    if (glossTokenIdInfo &&
+        tokenId in glossTokenIdInfo &&
+        field in glossTokenIdInfo[tokenId]){
         fieldValue = glossTokenIdInfo[tokenId][field];
     }
+    // console.log(fieldValue);
+    // console.log(field);
+    // console.log(glossTokenIdInfo)
+    // console.log(tokenId)
+    // console.log(concatSymbol)
     if (fieldValue !== '') {
         oldFieldValueArray = fieldValue.split(concatSymbol);
     }
@@ -1625,11 +1632,11 @@ function createSentenceForm(formElement, boundaryID) {
     // $(".sentencefield").html(activeSentenceMorphemicBreak);
     // console.log('createSentenceForm(formElement)', formElement, boundaryID);
     inpt = '';
-    console.log('formElement', formElement);
+    // console.log('formElement', formElement);
     let activeprojectform = JSON.parse(localStorage.activeprojectform);
     let activeTag = getActiveTag();
     createNavTabs(activeprojectform, activeTag);
-    console.log("activeprojectform", activeprojectform);
+    // console.log("activeprojectform", activeprojectform);
     for (let [key, value] of Object.entries(formElement)) {
         // console.log('first', key, value)
         if (key === 'transcription') {

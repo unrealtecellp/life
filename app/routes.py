@@ -5565,9 +5565,9 @@ def addnewspeakerdetails():
         else:
             flash(
                 'New source details added. Now you can upload the data for this source.')
-            return redirect(url_for('enternewsentences'))
+            return redirect(url_for('lifedata.transcription.home'))
 
-    return redirect(url_for('enternewsentences'))
+    return redirect(url_for('lifedata.transcription.home'))
 
 
 ''' Sync speaker details of accesscodedetails in speakerdetails'''

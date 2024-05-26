@@ -187,57 +187,59 @@ def update_existing_text_grid_with_gloss(current_text_grid,
                                          source_lang_code="",
                                          source_script_code="",
                                          source_script_name=""):
-
-    logger.debug('Existing textgrid before gloss %s', current_text_grid)
-    if translate_tokens:
-        target_lang_code = 'en'
-        target_script_code = 'Latn'
-        model, api_key, end_url, source_script, target_script = get_translation_model(
-            source_lang_code, target_lang_code)
-    for sent_id, sent_gloss in glossed_data.items():
-        sent_gloss_entry = {}
-        sent_token_entry = {source_script_name: {}}
-        for token_gloss in sent_gloss:
-            new_token_gloss = {}
-            trans_output = '_'
-            text = token_gloss['text']
-            upos = token_gloss['upos']
-            start_index = str(token_gloss['start_char'])
-            end_index = str(token_gloss['end_char'])
-            token_id = generate_gloss_token_id(start_index, end_index)
-
-            if translate_tokens and upos in translate_token_categs:
-                if model != '' and target_script_code == target_script and source_script_code == source_script:
-                    try:
-                        transl = translate_data(
-                            text, model, api_key, end_url, source_lang_code, target_lang_code)
-                        trans_output = transl["pipelineResponse"][0]["output"][0]["target"]
-                        logger.debug('Input %s, Output %s', text, trans_output)
-                        model_details.update(
-                            [('gloss_translation_model_name', model)])
-                    except:
-                        logger.exception('')
-                        trans_output = "_"
-            else:
-                trans_output = "_"
-            
-            if (trans_output == ''):
+    try:
+        logger.debug('Existing textgrid before gloss %s', current_text_grid)
+        if translate_tokens:
+            target_lang_code = 'en'
+            target_script_code = 'Latn'
+            model, api_key, end_url, source_script, target_script = get_translation_model(
+                source_lang_code, target_lang_code)
+        for sent_id, sent_gloss in glossed_data.items():
+            sent_gloss_entry = {}
+            sent_token_entry = {source_script_name: {}}
+            for token_gloss in sent_gloss:
+                new_token_gloss = {}
                 trans_output = '_'
-            feats = token_gloss.get('feats', '')
+                text = token_gloss['text']
+                upos = token_gloss['upos']
+                start_index = str(token_gloss['start_char'])
+                end_index = str(token_gloss['end_char'])
+                token_id = generate_gloss_token_id(start_index, end_index)
 
-            leipzig_gloss_feats = conll_to_leipzig_gloss(
-                feats, upos, trans_output)
-            
-            logger.debug(leipzig_gloss_feats)
+                if translate_tokens and upos in translate_token_categs:
+                    if model != '' and target_script_code == target_script and source_script_code == source_script:
+                        try:
+                            transl = translate_data(
+                                text, model, api_key, end_url, source_lang_code, target_lang_code)
+                            trans_output = transl["pipelineResponse"][0]["output"][0]["target"]
+                            logger.debug('Input %s, Output %s', text, trans_output)
+                            model_details.update(
+                                [('gloss_translation_model_name', model)])
+                        except:
+                            logger.exception('')
+                            trans_output = "_"
+                else:
+                    trans_output = "_"
+                
+                if (trans_output == ''):
+                    trans_output = '_'
+                feats = token_gloss.get('feats', '')
 
-            new_token_gloss.update({"gloss": leipzig_gloss_feats})
-            new_token_gloss.update(token_gloss)
+                leipzig_gloss_feats = conll_to_leipzig_gloss(
+                    feats, upos, trans_output)
+                
+                logger.debug(leipzig_gloss_feats)
 
-            sent_gloss_entry[token_id] = new_token_gloss
-            sent_token_entry[source_script_name].update({token_id: text})
+                new_token_gloss.update({"gloss": leipzig_gloss_feats})
+                new_token_gloss.update(token_gloss)
 
-        current_text_grid[transcription_type][sent_id]['gloss'] = sent_token_entry
-        current_text_grid[transcription_type][sent_id]['glossTokenIdInfo'] = sent_gloss_entry
+                sent_gloss_entry[token_id] = new_token_gloss
+                sent_token_entry[source_script_name].update({token_id: text})
+
+            current_text_grid[transcription_type][sent_id]['gloss'] = sent_token_entry
+            current_text_grid[transcription_type][sent_id]['glossTokenIdInfo'] = sent_gloss_entry
+    except:
+        logger.exception("")
 
     logger.debug('Final text grid after gloss %s', current_text_grid)
     return current_text_grid

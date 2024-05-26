@@ -1265,8 +1265,8 @@ function questionnaireDerived(allQuesIds) {
 }
 
 function runLoader() {
-  console.log('123213');
-  console.log(document.getElementById("loader"));
+  // console.log('123213');
+  // console.log(document.getElementById("loader"));
   document.getElementById("loader").style.display = "block";
 }
 
@@ -1277,6 +1277,31 @@ $("#syncaudio").click(function () {
       console.log(data);
       window.location.reload();
     });
+});
+
+$("#uploadaudiofilebtn").click(function () {
+  $('#myUploadAudioModal').modal('toggle');
+  runLoader();
+});
+
+$("#makeboundaries").click(function () {
+  $('#myMakeBoundaryModal').modal('toggle');
+  runLoader();
+});
+
+$("#transcribebtnid").click(function () {
+  $('#myAutomationModal').modal('toggle');
+  runLoader();
+});
+
+$("#translatebtnid").click(function () {
+  $('#myAutomationModal').modal('toggle');
+  runLoader();
+});
+
+$("#glossbtnid").click(function () {
+  $('#myAutomationModal').modal('toggle');
+  runLoader();
 });
 
 replaceZoomSlider();
