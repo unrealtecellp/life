@@ -2959,6 +2959,7 @@ function transcriptionToGloss() {
     // $('.textcontentouter').html(inpt);
     $('#interlinearglosscontainer').html(inpt);
     // if (sentencemorphemicbreakupdatedvalue !== '') {
+    // console.log(returnInfo.jsonFileNames);
     getSelect2Data(getSelect2DataLocal(returnInfo.jsonFileNames));
     select2Multiselect();
     // autoSavetranscriptionSubPart();
@@ -3418,7 +3419,7 @@ function getSelect2DataLocal(jsonFileNames) {
             continue;
         }
     }
-    console.log(jsonFileNames);
+    // console.log(jsonFileNames);
     return jsonFileNames;
 }
 
@@ -3637,6 +3638,7 @@ function mapSelect2IdText(jsonFileNames, id) {
                     // console.log(select2ClassName);
                     let data = response.jsonData[select2ClassName];
                     // console.log(data);
+                    localStorage.setItem(select2ClassName, JSON.stringify(data));
                     for (let p=0; p<data.length; p++) {
                         let tempId = data[p]['id'];
                         let tempText = data[p]['text'];
