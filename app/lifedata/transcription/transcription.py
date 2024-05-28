@@ -270,6 +270,7 @@ def home():
                                                                                    speakerids,
                                                                                    activeprojectname)
                 activeprojectform['speakerIds'] = speakerids
+                activeprojectform['addedSpeakerIds'] = added_speaker_ids
                 activeprojectform['activespeakerId'] = activespeakerid
                 activeprojectform['sourceMetadata'] = speaker_metadata
                 scriptCode = readJSONFile.readJSONFile(scriptCodeJSONFilePath)
@@ -295,7 +296,7 @@ def home():
                         else:
                             continue
 
-                # logger.debug("activeprojectform: %s", activeprojectform)
+                # logger.debug("activeprojectform: %s", pformat(activeprojectform))
 
                 return render_template('transcription.html',
                                        projectName=activeprojectname,
