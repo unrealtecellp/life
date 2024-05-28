@@ -844,13 +844,13 @@ function morphemeDetails(actualTranscription, morphemicBreakTranscription) {
 }
 
 function addDeleteGlossSelect2(field,
-                                glossTokenIdInfo,
-                                tokenId,
-                                concatSymbol) {
+    glossTokenIdInfo,
+    tokenId,
+    concatSymbol) {
     let fieldValue = '';
     let oldFieldValueArray = [];
     let selectedFieldValueInfo = [];
-    if (glossTokenIdInfo){
+    if (glossTokenIdInfo) {
         fieldValue = glossTokenIdInfo[tokenId][field];
     }
     if (fieldValue !== '') {
@@ -858,17 +858,17 @@ function addDeleteGlossSelect2(field,
     }
     // console.log(fieldValue, oldFieldValueArray);
     try {
-        selectedFieldValueInfo = $('#'+tokenId+'_'+field).select2('data');
+        selectedFieldValueInfo = $('#' + tokenId + '_' + field).select2('data');
     }
-    catch {}
+    catch { }
     // console.log(selectedFieldValueInfo);
     let tempFieldValue = '';
     let incomingFieldValueArray = []
-    for (a=0; a<selectedFieldValueInfo.length; a++) {
+    for (a = 0; a < selectedFieldValueInfo.length; a++) {
         // console.log(fieldValue);
         tempFieldValue = selectedFieldValueInfo[a].id;
         incomingFieldValueArray.push(tempFieldValue);
-        if (oldFieldValueArray.includes(tempFieldValue)){
+        if (oldFieldValueArray.includes(tempFieldValue)) {
             continue
         }
         else {
@@ -876,16 +876,16 @@ function addDeleteGlossSelect2(field,
                 fieldValue = tempFieldValue;
             }
             else {
-                fieldValue += concatSymbol+tempFieldValue;
+                fieldValue += concatSymbol + tempFieldValue;
             }
         }
     }
-    for (a=0; a<oldFieldValueArray.length; a++) {
+    for (a = 0; a < oldFieldValueArray.length; a++) {
         if (incomingFieldValueArray.includes(oldFieldValueArray[a])) {
             continue
         }
         else {
-            fieldValue = fieldValue.replace(concatSymbol+oldFieldValueArray[a], '').replace(oldFieldValueArray[a]+concatSymbol, '').replace(oldFieldValueArray[a], '');
+            fieldValue = fieldValue.replace(concatSymbol + oldFieldValueArray[a], '').replace(oldFieldValueArray[a] + concatSymbol, '').replace(oldFieldValueArray[a], '');
         }
     }
 
@@ -893,44 +893,44 @@ function addDeleteGlossSelect2(field,
 }
 
 function processTokenGloss(glossTokenId,
-                            interlinearGlossFormat,
-                            customizeGloss,
-                            glossTokenIdInfo) {
+    interlinearGlossFormat,
+    customizeGloss,
+    glossTokenIdInfo) {
     // console.log('processTokenGloss');
     // console.log(glossTokenIdInfo);
     try {
         let glossedSentenceWithMorphemicBreakInfo = {};
         let glossedSentenceWithTokenIdInfo = {};
-        for (let i=0; i<glossTokenId.length; i++) {
+        for (let i = 0; i < glossTokenId.length; i++) {
             let tokenId = glossTokenId[i];
             // console.log(tokenId);
             // glossedSentenceWithMorphemicBreakInfo[tokenId] = {};
             glossedSentenceWithTokenIdInfo[tokenId] = {};
             // console.log(document.getElementById(tokenId+'_word_input').value);
-            let token = document.getElementById(tokenId+'_word_input').value;
+            let token = document.getElementById(tokenId + '_word_input').value;
             glossedSentenceWithMorphemicBreakInfo[tokenId] = token;
             if (interlinearGlossFormat.includes('Leipzig')) {
-                let tokenTranslation = document.getElementById(tokenId+'_word_translation').value;
+                let tokenTranslation = document.getElementById(tokenId + '_word_translation').value;
                 // console.log(tokenTranslation);
                 // let gloss = document.getElementById(tokenId+'_gloss').value;
                 // let gloss = $('#'+tokenId+'_gloss').val();
                 let gloss = addDeleteGlossSelect2('gloss',
-                                                    glossTokenIdInfo,
-                                                    tokenId,
-                                                    '.'
-                                                );
+                    glossTokenIdInfo,
+                    tokenId,
+                    '.'
+                );
                 // if (gloss !== '') {
                 //     console.log(gloss);
                 // }
                 if (tokenTranslation !== '') {
-                    gloss = tokenTranslation+'.'+gloss;
+                    gloss = tokenTranslation + '.' + gloss;
                 }
                 else {
-                    gloss = '_'+'.'+gloss;
+                    gloss = '_' + '.' + gloss;
                 }
                 glossedSentenceWithTokenIdInfo[tokenId]['gloss'] = gloss;
             }
-            for (let p=0; p<customizeGloss.length; p++) {
+            for (let p = 0; p < customizeGloss.length; p++) {
                 let field = customizeGloss[p].toLowerCase();
                 let fieldValue = '';
                 // console.log(field);
@@ -940,16 +940,16 @@ function processTokenGloss(glossTokenId,
                 }
                 else if (field === 'feats') {
                     fieldValue = addDeleteGlossSelect2(field,
-                                                        glossTokenIdInfo,
-                                                        tokenId,
-                                                        '|'
-                                                    );
+                        glossTokenIdInfo,
+                        tokenId,
+                        '|'
+                    );
                     // if (fieldValue !== '') {
                     //     console.log(fieldValue);
                     // }
                 }
                 else {
-                    fieldValue = document.getElementById(tokenId+'_'+field).value;
+                    fieldValue = document.getElementById(tokenId + '_' + field).value;
                 }
                 // console.log(field, fieldValue);
                 glossedSentenceWithTokenIdInfo[tokenId][field] = fieldValue;
@@ -966,7 +966,7 @@ function processTokenGloss(glossTokenId,
             glossedSentenceWithTokenIdInfo: glossedSentenceWithTokenIdInfo
         }
     }
-    catch(error) {
+    catch (error) {
         console.error(error);
         // console.log(glossedSentenceWithTokenIdInfo);
         console.log('error');
@@ -1059,9 +1059,9 @@ function updateSentenceDetailsOnSaveBoundary(boundaryID, sentence, region, form)
                         // )
                         if (glossTokenId.length !== 0) {
                             let glossedSentenceWithMorphemicBreakInfo = processTokenGloss(glossTokenId,
-                                                                                            interlinearGlossFormat,
-                                                                                            customizeGloss,
-                                                                                            sentence[boundaryID]['glossTokenIdInfo']);
+                                interlinearGlossFormat,
+                                customizeGloss,
+                                sentence[boundaryID]['glossTokenIdInfo']);
                             // console.log(glossedSentenceWithMorphemicBreakInfo);
                             sentence[boundaryID]['gloss'][k] = glossedSentenceWithMorphemicBreakInfo.glossedSentenceWithMorphemicBreakInfo;
                             sentence[boundaryID]['glossTokenIdInfo'] = glossedSentenceWithMorphemicBreakInfo.glossedSentenceWithTokenIdInfo;
@@ -1625,11 +1625,11 @@ function createSentenceForm(formElement, boundaryID) {
     // $(".sentencefield").html(activeSentenceMorphemicBreak);
     // console.log('createSentenceForm(formElement)', formElement, boundaryID);
     inpt = '';
-    console.log('formElement', formElement);
+    // console.log('formElement', formElement);
     let activeprojectform = JSON.parse(localStorage.activeprojectform);
     let activeTag = getActiveTag();
     createNavTabs(activeprojectform, activeTag);
-    console.log("activeprojectform", activeprojectform);
+    // console.log("activeprojectform", activeprojectform);
     for (let [key, value] of Object.entries(formElement)) {
         // console.log('first', key, value)
         if (key === 'transcription') {
@@ -2875,27 +2875,27 @@ function transcriptionToGloss() {
     let transcriptionScriptDifference = transcriptionScriptList.filter(x => !additioanlTranscription.includes(x));
     // console.log(transcriptionScriptDifference);
     let transcriptionWordCountMismatch = {};
-    for (let i=0; i<transcriptionScriptDifference.length; i++) {
-        for (let j=i+1; j<transcriptionScriptDifference.length; j++) {
+    for (let i = 0; i < transcriptionScriptDifference.length; i++) {
+        for (let j = i + 1; j < transcriptionScriptDifference.length; j++) {
             // console.log(transcriptionScriptDifference[i], transcriptionScriptDifference[j])
             // console.log(document.getElementById('Transcription_'+transcriptionScriptDifference[i]).value)
             // console.log(document.getElementById('Transcription_'+transcriptionScriptDifference[j]).value)
             let iTranscriptionScript = transcriptionScriptDifference[i];
             let jTranscriptionScript = transcriptionScriptDifference[j];
-            let iTranscription = document.getElementById('Transcription_'+iTranscriptionScript).value.trim().replace(/  +/g, ' ');
-            let jTranscription = document.getElementById('Transcription_'+jTranscriptionScript).value.trim().replace(/  +/g, ' ');
+            let iTranscription = document.getElementById('Transcription_' + iTranscriptionScript).value.trim().replace(/  +/g, ' ');
+            let jTranscription = document.getElementById('Transcription_' + jTranscriptionScript).value.trim().replace(/  +/g, ' ');
             if (iTranscription !== '' && jTranscription !== '') {
                 let iTranscriptionArray = iTranscription.split(" ");
                 let jTranscriptionArray = jTranscription.split(" ");
                 if (iTranscriptionArray.length !== jTranscriptionArray.length) {
-                    transcriptionWordCountMismatch[iTranscriptionScript+'-'+jTranscriptionScript] = iTranscriptionArray.length+'-'+jTranscriptionArray.length
+                    transcriptionWordCountMismatch[iTranscriptionScript + '-' + jTranscriptionScript] = iTranscriptionArray.length + '-' + jTranscriptionArray.length
                 }
             }
         }
     }
     // console.log(transcriptionWordCountMismatch);
     if (Object.keys(transcriptionWordCountMismatch).length) {
-        alert('Number of words mismatch: \n'+JSON.stringify(transcriptionWordCountMismatch))
+        alert('Number of words mismatch: \n' + JSON.stringify(transcriptionWordCountMismatch))
         return;
     }
     let scripttoglossdropdownselected = getScriptToGlossDropdownSelected();
@@ -2943,8 +2943,8 @@ function transcriptionToGloss() {
     }
     // if (sentencemorphemicbreakupdatedvalue !== '') {
     returnInfo = createGlossingTable(sentencemorphemicbreakupdatedvalue,
-                                interlinearGlossFormat,
-                                customizeGloss);
+        interlinearGlossFormat,
+        customizeGloss);
     // console.log(returnInfo);
     inpt += returnInfo.inpt;
     // }
@@ -3180,7 +3180,7 @@ function tokenAnnotation(event) {
                     // $('#tokenannotationtagset').trigger('change');
                     // console.log(tokenGlossArray,tokenGlossArray.length);
                     let selectedGlossInfo = ''
-                    for (let p=0; p<tokenGlossArray.length; p++) {
+                    for (let p = 0; p < tokenGlossArray.length; p++) {
                         console.log(selectedGlossInfo);
                         let optionValue = tokenGlossArray[p];
                         selectedGlossInfo += '<option value="' + optionValue + '" selected>' + optionValue + '</option>';
@@ -3198,8 +3198,8 @@ function tokenAnnotation(event) {
 }
 
 function createGlossingTable(sentencemorphemicbreakupdatedvalue,
-                                interlinearGlossFormat,
-                                customizeGloss) {
+    interlinearGlossFormat,
+    customizeGloss) {
     // console.log(sentencemorphemicbreakupdatedvalue,
     //     interlinearGlossFormat,
     //     customizeGloss);
@@ -3214,16 +3214,16 @@ function createGlossingTable(sentencemorphemicbreakupdatedvalue,
     // inpt += sentencemorphemicbreakupdatedvalue;
     let sentencemorphemicbreakupdatedvalueArray = sentencemorphemicbreakupdatedvalue.trim().split(" ");
     let sentencemorphemicbreakupdatedvalueArrayLength = sentencemorphemicbreakupdatedvalueArray.length;
-    inpt += '<p class="text-center text-info" style="display: block;">'+sentencemorphemicbreakupdatedvalue+'</p>';
+    inpt += '<p class="text-center text-info" style="display: block;">' + sentencemorphemicbreakupdatedvalue + '</p>';
     let colCount = $('#tokencolcount').select2('data')[0].id;
     if (sentencemorphemicbreakupdatedvalueArrayLength < colCount) {
         colCount = sentencemorphemicbreakupdatedvalueArrayLength;
         $('#tokencolcount').val(colCount);
         $('#tokencolcount').trigger("change");
     }
-    let eachColLength = Math.floor(12/colCount);
+    let eachColLength = Math.floor(12 / colCount);
     let headArray = [];
-    for (let m=0; m<=sentencemorphemicbreakupdatedvalueArrayLength; m++) {
+    for (let m = 0; m <= sentencemorphemicbreakupdatedvalueArrayLength; m++) {
         headArray.push(m);
     }
     // console.log(headArray);
@@ -3231,26 +3231,26 @@ function createGlossingTable(sentencemorphemicbreakupdatedvalue,
     // console.log(eachColLength);
     // console.log(sentencemorphemicbreakupdatedvalueArrayLength);
     // console.log(Math.ceil(sentencemorphemicbreakupdatedvalueArrayLength/colCount));
-    let rowCount = Math.ceil(sentencemorphemicbreakupdatedvalueArrayLength/colCount);
-    let i=0;
-    let j=1;
+    let rowCount = Math.ceil(sentencemorphemicbreakupdatedvalueArrayLength / colCount);
+    let i = 0;
+    let j = 1;
     let glossTokenIdInfo = getGlossTokenIdInfo();
     // console.log(glossTokenIdInfo)
     if (sentencemorphemicbreakupdatedvalue !== '') {
-        for (i=1; i<=rowCount; i++) {
+        for (i = 1; i <= rowCount; i++) {
             inpt += '<hr><div class="row" style="overflow-wrap:break-word;">';
-            for (j=j; j<=colCount*i; j++) {
+            for (j = j; j <= colCount * i; j++) {
                 // console.log(j);
-                if (j<=sentencemorphemicbreakupdatedvalueArrayLength) {
-                    let tokenId = tokenIdObject[j-1];
+                if (j <= sentencemorphemicbreakupdatedvalueArrayLength) {
+                    let tokenId = tokenIdObject[j - 1];
                     // let word = sentencemorphemicbreakupdatedvalueArray[j-1];
-                    let word = sentencemorphemicbreakupdatedvalueArray[j-1];
+                    let word = sentencemorphemicbreakupdatedvalueArray[j - 1];
                     // console.log(word);
                     // console.log(j);
-                    inpt += '<div class="col-sm-'+eachColLength+' '+colorPallet[j%colorPallet.length]+'">';
+                    inpt += '<div class="col-sm-' + eachColLength + ' ' + colorPallet[j % colorPallet.length] + '">';
                     if (!interlinearGlossFormat.includes('Leipzig')) {
-                        inpt += '<center>'+j+'</center>';
-                        inpt += '<input type="text" id="'+tokenId+'_word_input" class="'+tokenId+'_word_class form-control" value="'+word+'" readonly style="border: none;"><br>';
+                        inpt += '<center>' + j + '</center>';
+                        inpt += '<input type="text" id="' + tokenId + '_word_input" class="' + tokenId + '_word_class form-control" value="' + word + '" readonly style="border: none;"><br>';
                     }
                     // inpt += '<div id="'+tokenId+'_word" class="'+tokenId+'_word_class" contenteditable="true" oninput="morphemicBreak(event,this)">'+word+'</div><br>';
                     // inpt += '<input type="hidden" id="'+tokenId+'_word_input" class="'+tokenId+'_word_class" value="'+word+'">';
@@ -3258,7 +3258,7 @@ function createGlossingTable(sentencemorphemicbreakupdatedvalue,
                         if (customizeGloss.includes('ID') ||
                             customizeGloss.includes('HEAD')) {
                             // inpt += j;
-                            inpt += '<center>'+j+'</center>';
+                            inpt += '<center>' + j + '</center>';
                         }
                         tempJsonFileNames['leipzig_glossing'] = 'select2_leipzig_glossing.json';
                         let tokenGlossArray = '';
@@ -3276,20 +3276,20 @@ function createGlossingTable(sentencemorphemicbreakupdatedvalue,
                             }
                         }
                         tempJsonFileNames = {}
-                        inpt += '<input type="text" id="'+tokenId+'_word_input" class="'+tokenId+'_word_class form-control" value="'+word+'" oninput="morphemicBreak(event,this)" style="border: none;"><br>';
-                        inpt += '<input type="text" id="'+tokenId+'_word_translation"'+
-                                'class="'+tokenId+'_word_translation_class form-control"'+
-                                'value="'+wordTranslationVal+'"'+
-                                'oninput="autoSavetranscription(event,this)"><br>';
-                        inpt += '<select id="'+tokenId+'_gloss" class="leipzig_glossing"'+
-                                ' oninput="autoSavetranscription(event,this)"' +
-                                ' multiple="multiple" style="width: 100%;">';
+                        inpt += '<input type="text" id="' + tokenId + '_word_input" class="' + tokenId + '_word_class form-control" value="' + word + '" oninput="morphemicBreak(event,this)" style="border: none;"><br>';
+                        inpt += '<input type="text" id="' + tokenId + '_word_translation"' +
+                            'class="' + tokenId + '_word_translation_class form-control"' +
+                            'value="' + wordTranslationVal + '"' +
+                            'oninput="autoSavetranscription(event,this)"><br>';
+                        inpt += '<select id="' + tokenId + '_gloss" class="leipzig_glossing"' +
+                            ' oninput="autoSavetranscription(event,this)"' +
+                            ' multiple="multiple" style="width: 100%;">';
                         inpt += inptOption;
                         inpt += '</select>';
                         inpt += '<br><br>';
                         jsonFileNames['leipzig_glossing'] = 'select2_leipzig_glossing.json';
                     }
-                    for (let p=0; p<customizeGloss.length; p++) {
+                    for (let p = 0; p < customizeGloss.length; p++) {
                         let field = customizeGloss[p].toLowerCase();
                         // console.log(field);
                         // let fieldBgColor = colorPallet[p%colorPallet.length];
@@ -3306,50 +3306,50 @@ function createGlossingTable(sentencemorphemicbreakupdatedvalue,
                         }
                         else if (field === 'lemma') {
                             // console.log(tokenGlossVal);
-                            inpt += '<input type="text" id="'+tokenId+'_'+field+'"'+
-                                    ' class="'+field+' form-control" value="'+tokenGlossVal+'"'+
-                                    ' oninput="autoSavetranscription(event,this)"' +
-                                    ' placeholder="'+field+'"><br>';
+                            inpt += '<input type="text" id="' + tokenId + '_' + field + '"' +
+                                ' class="' + field + ' form-control" value="' + tokenGlossVal + '"' +
+                                ' oninput="autoSavetranscription(event,this)"' +
+                                ' placeholder="' + field + '"><br>';
                         }
                         else if (field === 'head') {
-                            inpt += '<select id="'+tokenId+'_'+field+'" class="'+field+'"'+
-                                    ' oninput="autoSavetranscription(event,this)"' +
-                                    ' multiple="multiple" style="width: 100%;">';
-                                    tempJsonFileNames[field] = 'select2_'+field+'.json';
-                                    if (!(tokenGlossVal === '')) {
-                                        // console.log(tokenGlossVal);
-                                        inpt += fillGlossedTokenInfo(tempJsonFileNames, [tokenGlossVal]);
-                                    }
-                                    tempJsonFileNames = {}
-                                    inpt += '</select><br><br>';
-                                    jsonFileNames[field] = 'select2_'+field+'.json';
+                            inpt += '<select id="' + tokenId + '_' + field + '" class="' + field + '"' +
+                                ' oninput="autoSavetranscription(event,this)"' +
+                                ' multiple="multiple" style="width: 100%;">';
+                            tempJsonFileNames[field] = 'select2_' + field + '.json';
+                            if (!(tokenGlossVal === '')) {
+                                // console.log(tokenGlossVal);
+                                inpt += fillGlossedTokenInfo(tempJsonFileNames, [tokenGlossVal]);
+                            }
+                            tempJsonFileNames = {}
+                            inpt += '</select><br><br>';
+                            jsonFileNames[field] = 'select2_' + field + '.json';
                         }
                         else if (field === 'feats') {
-                            inpt += '<select id="'+tokenId+'_'+field+'" class="'+field+'"'+
-                                    ' oninput="autoSavetranscription(event,this)"' +
-                                    ' multiple="multiple" style="width: 100%;">';
-                                    tempJsonFileNames[field] = 'select2_'+field+'.json';
-                                    // console.log(tokenGlossVal);
-                                    if (!(tokenGlossVal === '')) {
-                                        tokenGlossVal = tokenGlossVal.split('|');
-                                        // console.log(tokenGlossVal);
-                                        inpt += fillGlossedTokenInfo(tempJsonFileNames, tokenGlossVal);
-                                    }
-                                    tempJsonFileNames = {}
-                                    inpt += '</select><br><br>';
-                                    jsonFileNames[field] = 'select2_'+field+'.json';
+                            inpt += '<select id="' + tokenId + '_' + field + '" class="' + field + '"' +
+                                ' oninput="autoSavetranscription(event,this)"' +
+                                ' multiple="multiple" style="width: 100%;">';
+                            tempJsonFileNames[field] = 'select2_' + field + '.json';
+                            // console.log(tokenGlossVal);
+                            if (!(tokenGlossVal === '')) {
+                                tokenGlossVal = tokenGlossVal.split('|');
+                                // console.log(tokenGlossVal);
+                                inpt += fillGlossedTokenInfo(tempJsonFileNames, tokenGlossVal);
+                            }
+                            tempJsonFileNames = {}
+                            inpt += '</select><br><br>';
+                            jsonFileNames[field] = 'select2_' + field + '.json';
                         }
                         else {
-                            inpt += '<select id="'+tokenId+'_'+field+'" class="'+field+'"'+
-                                    ' oninput="autoSavetranscription(event,this)"' +
-                                    ' multiple="multiple" style="width: 100%;">';
-                            tempJsonFileNames[field] = 'select2_'+field+'.json';
+                            inpt += '<select id="' + tokenId + '_' + field + '" class="' + field + '"' +
+                                ' oninput="autoSavetranscription(event,this)"' +
+                                ' multiple="multiple" style="width: 100%;">';
+                            tempJsonFileNames[field] = 'select2_' + field + '.json';
                             if (!(tokenGlossVal === '')) {
                                 inpt += fillGlossedTokenInfo(tempJsonFileNames, [tokenGlossVal]);
                             }
                             tempJsonFileNames = {}
                             inpt += '</select><br><br>';
-                            jsonFileNames[field] = 'select2_'+field+'.json';
+                            jsonFileNames[field] = 'select2_' + field + '.json';
                         }
                     }
                     inpt += '</div>'; // column div
@@ -3371,20 +3371,20 @@ function createGlossingTable(sentencemorphemicbreakupdatedvalue,
 function select2Multiselect() {
     // partial solution to the select2 multiselect
     $("select").on("select2:select", function (evt) {
-      var element = evt.params.data.element;
-      // console.log(element);
-      var $element = $(element);
-      $element.detach();
-      $(this).append($element);
-      $(this).trigger("change");
+        var element = evt.params.data.element;
+        // console.log(element);
+        var $element = $(element);
+        $element.detach();
+        $(this).append($element);
+        $(this).trigger("change");
     });
-  }
+}
 
 function getSelect2DataLocal(jsonFileNames) {
     // console.log(jsonFileNames);
     let jsonFileNamesKeysList = Object.keys(jsonFileNames);
     // console.log(jsonFileNamesKeysList);
-    for (let i=0; i<jsonFileNamesKeysList.length; i++) {
+    for (let i = 0; i < jsonFileNamesKeysList.length; i++) {
         let tags = false;
         let select2ClassName = jsonFileNamesKeysList[i];
         if (select2ClassName.includes('leipzig')) {
@@ -3398,7 +3398,7 @@ function getSelect2DataLocal(jsonFileNames) {
             let data = JSON.parse(localStorage[select2ClassName]);
             // console.log(select2ClassName, data);
             // console.log(typeof data);
-            $('.'+select2ClassName).select2({
+            $('.' + select2ClassName).select2({
                 tags: tags,
                 placeholder: select2ClassName,
                 data: data,
@@ -3444,9 +3444,9 @@ function morphemicBreak(e, ele) {
     else if (morphemicBreakSymbols.includes(data)) {
         // console.log('Allowed');
         if (morphemicBreakSymbols.includes(currentWord[selectionEnd - 2]) ||
-                morphemicBreakSymbols.includes(currentWord[selectionEnd])) {
+            morphemicBreakSymbols.includes(currentWord[selectionEnd])) {
             updatedWord = oldWord;
-                }
+        }
         else {
             updatedWord = currentWord;
         }
@@ -3490,10 +3490,10 @@ function generateTokenId(sentencemorphemicbreakupdatedvalue) {
     let maxTokenLength = 7;
     let tokenId = '';
     let subSentenceLength = 0;
-    for (let i=0; i<sentencemorphemicbreakupdatedvalueArray.length; i++) {
+    for (let i = 0; i < sentencemorphemicbreakupdatedvalueArray.length; i++) {
         let token = sentencemorphemicbreakupdatedvalueArray[i];
         tokenStart = tokenStart;
-        tokenEnd = tokenStart+token.length-1;
+        tokenEnd = tokenStart + token.length - 1;
         // console.log(token, tokenStart, tokenEnd);
         let tokenStartLength = String(tokenStart).length;
         let tokenEndLength = String(tokenEnd).length;
@@ -3509,7 +3509,7 @@ function generateTokenId(sentencemorphemicbreakupdatedvalue) {
         // console.log(tokenId);
         // tokenIdObject[tokenId] = token;
         tokenIdObject[tokenId] = {};
-        subSentenceLength += token.length+1;
+        subSentenceLength += token.length + 1;
         tokenStart = subSentenceLength;
     }
     // console.log(tokenIdObject);
@@ -3525,13 +3525,13 @@ function getSelect2Data(jsonFileNames) {
         $.ajax({
             url: '/get_jsonfile_data',
             type: 'GET',
-            data: {'data': JSON.stringify(jsonFileNames)},
+            data: { 'data': JSON.stringify(jsonFileNames) },
             async: false,
             contentType: "application/json; charset=utf-8",
-            success: function(response){
+            success: function (response) {
                 // console.log(response);
                 // console.log(jsonFileNamesKeysList);
-                for (let i=0; i<jsonFileNamesKeysList.length; i++) {
+                for (let i = 0; i < jsonFileNamesKeysList.length; i++) {
                     let tags = false;
                     let select2ClassName = jsonFileNamesKeysList[i];
                     if (select2ClassName.includes('leipzig')) {
@@ -3544,7 +3544,7 @@ function getSelect2Data(jsonFileNames) {
                     }
                     // console.log(data);
                     // console.log(tags);
-                    $('.'+select2ClassName).select2({
+                    $('.' + select2ClassName).select2({
                         tags: tags,
                         placeholder: select2ClassName,
                         data: data,
@@ -3581,14 +3581,14 @@ function mapSelect2IdText(jsonFileNames, id) {
     // console.log(jsonFileNames, id);
     var text = id;
     let jsonFileNamesKeysList = Object.keys(jsonFileNames);
-    for (let i=0; i<jsonFileNamesKeysList.length; i++) {
+    for (let i = 0; i < jsonFileNamesKeysList.length; i++) {
         let select2ClassName = jsonFileNamesKeysList[i];
         // console.log(select2ClassName);
         try {
             let data = JSON.parse(localStorage[select2ClassName]);
             // console.log(select2ClassName, data);
             // console.log(typeof data);
-            for (let p=0; p<data.length; p++) {
+            for (let p = 0; p < data.length; p++) {
                 let tempId = data[p]['id'];
                 let tempText = data[p]['text'];
                 // console.log(tempId, tempText);
@@ -3610,18 +3610,18 @@ function mapSelect2IdText(jsonFileNames, id) {
         $.ajax({
             url: '/get_jsonfile_data',
             type: 'GET',
-            data: {'data': JSON.stringify(jsonFileNames)},
+            data: { 'data': JSON.stringify(jsonFileNames) },
             contentType: "application/json; charset=utf-8",
             async: false,
-            success: function(response){
+            success: function (response) {
                 // console.log(response);
                 // console.log(jsonFileNamesKeysList);
-                for (let i=0; i<jsonFileNamesKeysList.length; i++) {
+                for (let i = 0; i < jsonFileNamesKeysList.length; i++) {
                     let select2ClassName = jsonFileNamesKeysList[i];
                     // console.log(select2ClassName);
                     let data = response.jsonData[select2ClassName];
                     // console.log(data);
-                    for (let p=0; p<data.length; p++) {
+                    for (let p = 0; p < data.length; p++) {
                         let tempId = data[p]['id'];
                         let tempText = data[p]['text'];
                         // console.log(tempId, tempText);
@@ -3644,7 +3644,7 @@ function mapSelect2IdText(jsonFileNames, id) {
 function fillGlossedTokenInfo(tempJsonFileNames, tokenGlossArray) {
     // console.log(tokenGlossArray);
     let selectedGlossInfo = ''
-    for (let p=0; p<tokenGlossArray.length; p++) {
+    for (let p = 0; p < tokenGlossArray.length; p++) {
         // console.log(tempJsonFileNames);
         // console.log(selectedGlossInfo);
         let optionValue = tokenGlossArray[p];
