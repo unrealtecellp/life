@@ -2060,6 +2060,7 @@ def makegloss():
             'model_params': {
                 'model_path': gloss_model_name,
                 'source_language': audio_lang_code,
+                'source_language_name': audio_language,
                 'source_script': source_script_name,
                 'source_script_code': source_script_code,
                 'target_language': output_lang_code,

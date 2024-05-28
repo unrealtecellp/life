@@ -45,8 +45,10 @@ def get_transcription(model_name, **kwargs):
 def get_transliteration(data, source_script, target_script, lang_code, **kwargs):
     if target_script == 'IPA':
         transcription_words = to_ipa(data.split(' '), lang_code=lang_code)
+        transcription_words = [transcription_word.strip(
+            '#') for transcription_word in transcription_words]
         logger.info('Data %s, IPA Transcription %s', data, transcription_words)
-        transcription = ''.join(transcription_words)
+        transcription = ' '.join(transcription_words)
     else:
         all_functs = globals()
         current_funct_name = 'get_transliteration_'+source_script + '_to_'+target_script
@@ -282,6 +284,7 @@ def get_transliteration_Devanagari_to_Latin(data, lang_code, **kwargs):
     # ipa_words = to_ipa(all_words, phone_separator=' ', word_separator='\t',
     #                    lang_code=lang_code)
     ipa_words = to_ipa(all_words, lang_code=lang_code)
+    ipa_words = [ipa_word.strip('#') for ipa_word in ipa_words]
     ipa_character_map = load_ipa_to_char_mapping()
 
     rom_words = []

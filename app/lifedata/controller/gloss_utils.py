@@ -99,6 +99,7 @@ def get_gloss_of_audio_transcription(gloss_model,
             source_script = gloss_params['source_script']
             source_script_code = gloss_params['source_script_code']
             source_lang_code = gloss_params['source_language']
+            source_lang_name = gloss_params['source_language_name']
 
             if get_free_translation:
                 text_grids, model_details, input_data = translation_utils.get_translation_of_audio_transcription(translation_model,
@@ -125,6 +126,7 @@ def get_gloss_of_audio_transcription(gloss_model,
                                                      transcription_type,
                                                      model_details,
                                                      glossed_data=gloss,
+                                                     source_lang_name=source_lang_name,
                                                      source_lang_code=source_lang_code,
                                                      source_script_code=source_script_code,
                                                      source_script_name=source_script))
@@ -184,6 +186,7 @@ def update_existing_text_grid_with_gloss(current_text_grid,
                                          translate_tokens=True,
                                          translate_token_categs=[
                                              'NOUN', 'VERB', 'ADJ', 'ADV', 'INTJ'],
+                                         source_lang_name="",
                                          source_lang_code="",
                                          source_script_code="",
                                          source_script_name=""):
@@ -212,7 +215,8 @@ def update_existing_text_grid_with_gloss(current_text_grid,
                             transl = translate_data(
                                 text, model, api_key, end_url, source_lang_code, target_lang_code)
                             trans_output = transl["pipelineResponse"][0]["output"][0]["target"]
-                            logger.debug('Input %s, Output %s', text, trans_output)
+                            logger.debug('Input %s, Output %s',
+                                         text, trans_output)
                             model_details.update(
                                 [('gloss_translation_model_name', model)])
                         except:
@@ -220,18 +224,19 @@ def update_existing_text_grid_with_gloss(current_text_grid,
                             trans_output = "_"
                 else:
                     trans_output = "_"
-                
+
                 if (trans_output == ''):
                     trans_output = '_'
                 feats = token_gloss.get('feats', '')
 
                 leipzig_gloss_feats = conll_to_leipzig_gloss(
                     feats, upos, trans_output)
-                
+
                 logger.debug(leipzig_gloss_feats)
 
                 new_token_gloss.update({"gloss": leipzig_gloss_feats})
                 new_token_gloss.update(token_gloss)
+                new_token_gloss['language'] = source_lang_name
 
                 sent_gloss_entry[token_id] = new_token_gloss
                 sent_token_entry[source_script_name].update({token_id: text})
