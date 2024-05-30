@@ -3392,7 +3392,11 @@ function createGlossingTable(sentencemorphemicbreakupdatedvalue,
                             // console.log(1);
                             continue;
                         }
-                        inpt += '<strong>'+field+':</strong><div class="row '+ field+i+' '+colorPallet[p % colorPallet.length] + '">';
+                        let fieldName = field;
+                        if (field === 'leipzig') {
+                            fieldName = 'glossing';
+                        }
+                        inpt += '<strong>'+fieldName+':</strong><div class="row '+ field+i+' '+colorPallet[p % colorPallet.length] + '">';
                         for (j = j; j <= colCount * i; j++) {
                             // console.log('j: ', j, 'colCount', colCount);
                             let colLen = eachColLength;
