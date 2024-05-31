@@ -21,7 +21,7 @@ logger = life_logging.get_logger()
 # logger.debug('Basedir parent', basedir_parent)
 translit_res_path = os.path.join(
     basedir_parent, 'static/translit_resources')
-print('Translit res path', translit_res_path)
+# print('Translit res path', translit_res_path)
 
 stanza_pipelines = {
     'hi': stanza.Pipeline(

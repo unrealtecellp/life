@@ -22,7 +22,19 @@ from app.lifemodels.controller.bhashiniUtils import (
 
 from datetime import datetime
 
+import pandas as pd
+import os
+
 logger = life_logging.get_logger()
+
+basedir = os.path.abspath(os.path.dirname(__file__))
+basedir_parent = '/'.join(basedir.split('/')[:-2])
+
+map_path = os.path.join(
+    basedir_parent, 'jsonfiles/leipzig_ud_map.json')
+
+print('Path', map_path)
+ud_leipzig_map = pd.read_json(map_path, dtype=str)
 
 
 def save_gloss_of_one_audio_file(transcriptions,
@@ -146,33 +158,62 @@ def generate_gloss_token_id(start, end, max_len=14):
 
 
 def conll_to_leipzig_gloss(feats, upos='', trans_output='_'):
-    if feats == '':
-        if trans_output == '_':
-            output = upos
-        else:
-            output = trans_output.lower()
+    if len(feats) == 0 and trans_output == '_':
+        # if trans_output == '_':
+        #     output = upos
+        # else:
+        # output = trans_output.lower()
+        output = trans_output+'.'+upos
     else:
         output = trans_output.lower()
-        all_feats = feats.split('|')
-        feat_dict = {}
-        for feat in all_feats:
-            feat_val_name = feat.split('=')
-            feat_name = feat_val_name[0]
-            feat_val = feat_val_name[1]
-            feat_dict[feat_name] = feat_val
 
-        person_feat = feat_dict.pop('Person', '')
-        if person_feat != '':
-            output = output+'.'+person_feat.upper()
-        number_feat = feat_dict.pop('Number', '')
-        if number_feat != '':
-            output = output+'.'+number_feat.upper()
-        gender_feat = feat_dict.pop('Gender', '')
-        if gender_feat != '':
-            output = output+'.'+gender_feat.upper()
+        if len(feats) > 0:
+            all_feats = feats.split('|')
+            feat_dict = {}
+            for feat in all_feats:
+                feat_val_name = feat.split('=')
+                feat_name = feat_val_name[0]
+                feat_val = feat_val_name[1]
+                feat_dict[feat_name] = (feat, feat_val)
 
-        for feat_name, feat_val in feat_dict.items():
-            output = output + '.' + feat_val.upper()
+            person_feat = feat_dict.pop('Person', '')
+            if person_feat != '':
+                person_feat_leipzig = ud_leipzig_map[ud_leipzig_map['udFeats']
+                                                     == person_feat[0]]['leipzig'].values
+                if len(person_feat_leipzig) >= 1:
+                    output = output+'.'+person_feat_leipzig[0]
+                else:
+                    output = output+'.'+person_feat[1]
+
+            number_feat = feat_dict.pop('Number', '')
+            if number_feat != '':
+                number_feat_leipzig = ud_leipzig_map[ud_leipzig_map['udFeats']
+                                                     == number_feat[0]]['leipzig'].values
+                if len(number_feat_leipzig) >= 1:
+                    output = output+'.'+number_feat_leipzig[0]
+                else:
+                    output = output+'.'+number_feat[1]
+                # output = output+'.'+number_feat.upper()
+
+            gender_feat = feat_dict.pop('Gender', '')
+            if gender_feat != '':
+                gender_feat_leipzig = ud_leipzig_map[ud_leipzig_map['udFeats']
+                                                     == gender_feat[0]]['leipzig'].values
+                if len(gender_feat_leipzig) >= 1:
+                    output = output+'.'+gender_feat_leipzig[0]
+                else:
+                    output = output+'.'+gender_feat[1]
+
+                # output = output+'.'+gender_feat.upper()
+
+            for feat_name, feat_val in feat_dict.items():
+                feat_leipzig = ud_leipzig_map[ud_leipzig_map['udFeats']
+                                              == feat_val[0]]['leipzig'].values
+                if len(feat_leipzig) >= 1:
+                    output = output+'.'+feat_leipzig[0]
+                else:
+                    output = output+'.'+feat_val[1]
+                # output = output + '.' + feat_val.upper()
 
         output = output.strip('.').strip()
 
@@ -205,18 +246,20 @@ def update_existing_text_grid_with_gloss(current_text_grid,
                 trans_output = '_'
                 text = token_gloss['text']
                 upos = token_gloss['upos']
+                lemma = token_gloss['lemma']
                 start_index = str(token_gloss['start_char'])
                 end_index = str(token_gloss['end_char'])
                 token_id = generate_gloss_token_id(start_index, end_index)
 
-                if translate_tokens and upos in translate_token_categs:
+                # if translate_tokens and upos in translate_token_categs:
+                if translate_tokens:
                     if model != '' and target_script_code == target_script and source_script_code == source_script:
                         try:
                             transl = translate_data(
-                                text, model, api_key, end_url, source_lang_code, target_lang_code)
+                                lemma, model, api_key, end_url, source_lang_code, target_lang_code)
                             trans_output = transl["pipelineResponse"][0]["output"][0]["target"]
                             logger.debug('Input %s, Output %s',
-                                         text, trans_output)
+                                         lemma, trans_output)
                             model_details.update(
                                 [('gloss_translation_model_name', model)])
                         except:
@@ -236,7 +279,7 @@ def update_existing_text_grid_with_gloss(current_text_grid,
 
                 new_token_gloss.update({"gloss": leipzig_gloss_feats})
                 new_token_gloss.update(token_gloss)
-                new_token_gloss['language'] = source_lang_name
+                new_token_gloss['languages'] = source_lang_name
 
                 sent_gloss_entry[token_id] = new_token_gloss
                 sent_token_entry[source_script_name].update({token_id: text})
