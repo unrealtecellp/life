@@ -23,6 +23,13 @@ function createSidePanel(shareinfo) {
                         // 'data-target="#myProgressReportModal">'+
                         // 'Progress Report'+
                         // '</button></a>';
+    if (shareinfo['sharemode'] >= 10) {
+        sidePanelElement += '<a><button type="button" id="transcriptionreportid" class="btn btn-primary transcriptionreport"'+
+                            'onclick="getTranscriptionReport(this)">'+
+                            'Transcription Report'+
+                            '</button></a>';
+
+    }
     if ('downloadchecked' in shareinfo &&
         shareinfo['downloadchecked'] == 'true') {
         sidePanelElement += '<a><button type="button" id="downloadtranscription" class="btn btn-primary" data-toggle="modal"'+
@@ -56,4 +63,22 @@ function createSidePanel(shareinfo) {
     //                     '</div>';
 
     $("#sidepanel").html(sidePanelElement);
+}
+
+function getTranscriptionReport(ele) {
+    $.post( "/lifedata/transcription/transcriptionreport", {
+        // a: JSON.stringify(data_info )
+      })
+      .done(function( data ) {
+        console.log(data);
+        let totalAudioDurationProject = new Date(data.totalAudioDurationProject * 1000).toISOString().substring(11, 19);
+        let totalAudioDurationTranscribed = new Date(data.totalAudioDurationTranscribed * 1000).toISOString().substring(11, 19);
+        let totalAudioDurationTranscribedBoundary = new Date(data.totalAudioDurationTranscribedBoundary * 1000).toISOString().substring(11, 19);
+
+        alert('Audio Duration Project: '+totalAudioDurationProject+
+            '\n\nAudio Duration Transcribed: '+totalAudioDurationTranscribed+
+            '\n\nAudio Duration Transcribed(Boundary): '+totalAudioDurationTranscribedBoundary)
+
+        // window.location.href = window.location.href.replace("models_playground", "file_download/"+data.fileName);
+      });
 }
