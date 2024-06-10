@@ -72,11 +72,13 @@ function getTranscriptionReport(ele) {
       .done(function( data ) {
         console.log(data);
         let totalAudioDurationProject = new Date(data.totalAudioDurationProject * 1000).toISOString().substring(11, 19);
+        let docCountProject = data.docCountProject;
         let totalAudioDurationTranscribed = new Date(data.totalAudioDurationTranscribed * 1000).toISOString().substring(11, 19);
+        let docCountTranscribed = data.docCountTranscribed;
         let totalAudioDurationTranscribedBoundary = new Date(data.totalAudioDurationTranscribedBoundary * 1000).toISOString().substring(11, 19);
 
-        alert('Audio Duration Project: '+totalAudioDurationProject+
-            '\n\nAudio Duration Transcribed: '+totalAudioDurationTranscribed+
+        alert('Audio Duration Project: '+totalAudioDurationProject+', Doc Count Project: '+docCountProject+
+            '\n\nAudio Duration Transcribed: '+totalAudioDurationTranscribed+', Doc Count Transcribed: '+docCountTranscribed+
             '\n\nAudio Duration Transcribed(Boundary): '+totalAudioDurationTranscribedBoundary)
 
         // window.location.href = window.location.href.replace("models_playground", "file_download/"+data.fileName);
