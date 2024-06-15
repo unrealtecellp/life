@@ -12,6 +12,10 @@ from xml.etree import ElementTree as ET
 from xml.etree.ElementTree import ElementTree
 from zipfile import ZipFile
 
+
+from pymongo import MongoClient
+from config import Config
+
 import gridfs
 import joblib
 import pandas as pd
@@ -471,7 +475,7 @@ def enternewsentences():
                            newData=activeprojectform,
                            data=currentuserprojectsname)
 
-
+'''
 # progressreport only view by admin
 @app.route('/progressReportAdmin', methods=['GET'])
 @login_required
@@ -498,11 +502,24 @@ def progressReportAdmin():
     speakerids_list = audiodetails.combine_speaker_ids(projects, activeprojectname, current_username)
     print("progress admin", speakerids_list)
 
+
     progress_reports = []
+    all_projects = []
 
     for speaker_id in speakerids_list:
         project_type = getprojecttype.getprojecttype(projects, activeprojectname)
         data_collection, = getdbcollections.getdbcollections(mongo, project_type)
+
+        # Retrieve all documents and iterate over the cursor
+        cursor = projects.find({}, {"projectname": 1, "_id": 0})
+        for doc in cursor:
+            project_name = doc.get("projectname")
+
+            # Check if the project name is not already in the list
+            if project_name not in all_projects:
+                all_projects.append(project_name)
+
+
 
         projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
         activeprojectform = getactiveprojectform.getactiveprojectform(projectsform, projectowner, activeprojectname)
@@ -537,14 +554,222 @@ def progressReportAdmin():
                     'Remaining files': remaining_comments
                 }
                 progress_reports.append(progress_report)
-                print(progress_report)
+                # print("progress_report : ", progress_report)
+                print("all_projects : ", all_projects)
             except Exception as e:
                 logger.error("An error occurred: %s", e)
                 return jsonify(error="An error occurred while processing the progress report"), 500
 
     # Render a template with the progress report data
     return render_template('progressReportAdmin.html', progress_reports=progress_reports,
-                           activeprojectname=activeprojectname, shareinfo=shareinfo)
+                           activeprojectname=activeprojectname, shareinfo=shareinfo, all_projects = all_projects)
+
+
+'''
+
+
+# @app.route('/progressReportAdmin', methods=['GET'])
+# @login_required
+# def progressReportAdmin():
+#     project_types = ['recordings', 'validation', 'transcriptions']
+#     projects, userprojects, projectsform, sentences, transcriptions, speakerdetails = getdbcollections.getdbcollections(
+#         mongo,
+#         'projects',
+#         'userprojects',
+#         'projectsform',
+#         'sentences',
+#         'transcriptions',
+#         'speakerdetails'
+#     )
+#     current_username = getcurrentusername.getcurrentusername()
+#     currentuserprojectsname = getcurrentuserprojects.getcurrentuserprojects(current_username, userprojects)
+#     activeprojectname = getactiveprojectname.getactiveprojectname(current_username, userprojects)
+#     shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects, current_username, activeprojectname)
+
+#     if activeprojectname == '':
+#         flash(f"Select a project from 'Change Active Project' to work on!")
+#         return redirect(url_for('home'))
+
+#     speakerids_list = audiodetails.combine_speaker_ids(projects, activeprojectname, current_username)
+#     print("progress admin", speakerids_list)
+
+#     progress_reports = []
+#     all_projects = []
+
+#     for speaker_id in speakerids_list:
+#         project_type = getprojecttype.getprojecttype(projects, activeprojectname)
+#         data_collection, = getdbcollections.getdbcollections(mongo, project_type)
+
+#         cursor = projects.find({}, {"projectname": 1, "_id": 0})
+#         for doc in cursor:
+#             project_name = doc.get("projectname")
+#             if project_name not in all_projects:
+#                 all_projects.append(project_name)
+
+#         projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
+#         activeprojectform = getactiveprojectform.getactiveprojectform(projectsform, projectowner, activeprojectname)
+
+#         project_sharedwith = getprojectnamesharedwith.getprojectnamesharedwith(projects, activeprojectname)
+#         print("project_sharedwith : ", project_sharedwith)
+        
+#         if activeprojectform is not None:
+#             try:
+#                 activespeakerid = getuserprojectinfo.getuserprojectinfo(userprojects, current_username,
+#                                                                         activeprojectname)['activespeakerId']
+#                 print("activespeakerid : ", activespeakerid)
+#                 speaker_audio_ids = audiodetails.get_speaker_audio_ids_new(projects, activeprojectname,
+#                                                                             current_username, speaker_id)
+#                 print("speaker_audio_ids: ", speaker_audio_ids)
+#                 total_comments, annotated_comments, remaining_comments = getcommentstats.getcommentstats(
+#                     projects,
+#                     data_collection,
+#                     activeprojectname,
+#                     speaker_id,
+#                     speaker_audio_ids,
+#                     'audio'
+#                 )
+#                 progress_report = {
+#                     'Created by': projectowner,
+#                     'Speaker ID': speaker_id,
+#                     'Assigned to': project_sharedwith,
+#                     'Time and date': "",
+#                     'Duration': "",
+#                     'Total no. of files': total_comments,
+#                     'Completed files': annotated_comments,
+#                     'Remaining files': remaining_comments
+#                 }
+#                 progress_reports.append(progress_report)
+#                 print("all_projects : ", all_projects)
+#             except Exception as e:
+#                 logger.error("An error occurred: %s", e)
+#                 return jsonify(error="An error occurred while processing the progress report"), 500
+
+#     # Ensure speakerids_list and all_projects are not None
+#     speakerids_list = speakerids_list or []
+#     all_projects = all_projects or []
+
+#     return render_template('progressReportAdmin.html', progress_reports=progress_reports,
+#                            activeprojectname=activeprojectname, shareinfo=shareinfo,
+#                            speakerids_list=speakerids_list, all_projects=all_projects)
+
+
+
+# MongoDB URI from Config class
+mongo_uri = Config.MONGO_URI
+
+import math
+
+
+@app.route('/progressReportAdmin', methods=['GET'])
+@login_required
+def progressReportAdmin():
+    def convert_size(size_bytes):
+        if size_bytes == 0:
+            return "0", "B"
+        size_name = ("B", "KB", "MB", "GB", "TB")
+        i = int(math.floor(math.log(size_bytes, 1024)))
+        p = math.pow(1024, i)
+        s = round(size_bytes / p, 2)
+        return f"{s}", size_name[i]
+
+    try:
+        # Connect to MongoDB
+        client = MongoClient(mongo_uri)
+        db = client.get_database()
+
+        # Retrieve database statistics using MongoDB's dbStats command
+        db_stats = db.command('dbStats')
+
+        # Extract and convert sizes to human-readable format
+        data_size_value, data_size_unit = convert_size(db_stats['dataSize'])
+        storage_size_value, storage_size_unit = convert_size(db_stats['storageSize'])
+        index_size_value, index_size_unit = convert_size(db_stats['indexSize'])
+
+        # Extract the total number of objects (documents) in the database
+        num_objects = db_stats['objects']
+
+        print("database details - \n", db_stats, data_size_value, data_size_unit, storage_size_value, storage_size_unit, index_size_value, index_size_unit, num_objects, "\n \n")
+
+        # Your existing logic for fetching other data goes here
+        project_types = ['recordings', 'validation', 'transcriptions']
+        projects, userprojects, projectsform, sentences, transcriptions, speakerdetails = getdbcollections.getdbcollections(
+            mongo,
+            'projects',
+            'userprojects',
+            'projectsform',
+            'sentences',
+            'transcriptions',
+            'speakerdetails'
+        )
+        current_username = getcurrentusername.getcurrentusername()
+        currentuserprojectsname = getcurrentuserprojects.getcurrentuserprojects(current_username, userprojects)
+        activeprojectname = getactiveprojectname.getactiveprojectname(current_username, userprojects)
+        shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects, current_username, activeprojectname)
+
+        if activeprojectname == '':
+            flash(f"Select a project from 'Change Active Project' to work on!")
+            return redirect(url_for('home'))
+
+        speakerids_list = audiodetails.combine_speaker_ids(projects, activeprojectname, current_username)
+
+        progress_reports = []
+        all_projects = []
+
+        for speaker_id in speakerids_list:
+            project_type = getprojecttype.getprojecttype(projects, activeprojectname)
+            data_collection, = getdbcollections.getdbcollections(mongo, project_type)
+
+            cursor = projects.find({}, {"projectname": 1, "_id": 0})
+            for doc in cursor:
+                project_name = doc.get("projectname")
+                if project_name not in all_projects:
+                    all_projects.append(project_name)
+
+            projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
+            activeprojectform = getactiveprojectform.getactiveprojectform(projectsform, projectowner, activeprojectname)
+
+            project_sharedwith = getprojectnamesharedwith.getprojectnamesharedwith(projects, activeprojectname)
+
+            if activeprojectform is not None:
+                try:
+                    activespeakerid = getuserprojectinfo.getuserprojectinfo(userprojects, current_username,
+                                                                            activeprojectname)['activespeakerId']
+                    speaker_audio_ids = audiodetails.get_speaker_audio_ids_new(projects, activeprojectname,
+                                                                                current_username, speaker_id)
+                    total_comments, annotated_comments, remaining_comments = getcommentstats.getcommentstats(
+                        projects,
+                        data_collection,
+                        activeprojectname,
+                        speaker_id,
+                        speaker_audio_ids,
+                        'audio'
+                    )
+                    progress_report = {
+                        'Created by': projectowner,
+                        'Speaker ID': speaker_id,
+                        'Assigned to': project_sharedwith,
+                        'Time and date': "",
+                        'Duration': "",
+                        'Total no. of files': total_comments,
+                        'Completed files': annotated_comments,
+                        'Remaining files': remaining_comments
+                    }
+                    progress_reports.append(progress_report)
+                except Exception as e:
+                    logger.error("An error occurred: %s", e)
+                    return jsonify(error="An error occurred while processing the progress report"), 500
+
+        return render_template('progressReportAdmin.html', progress_reports=progress_reports,
+                               activeprojectname=activeprojectname, shareinfo=shareinfo,
+                               speakerids_list=speakerids_list, all_projects=all_projects,
+                               data_size_value=data_size_value, data_size_unit=data_size_unit,
+                               storage_size_value=storage_size_value, storage_size_unit=storage_size_unit,
+                               index_size_value=index_size_value, index_size_unit=index_size_unit,
+                               num_objects=num_objects)
+
+    except Exception as e:
+        logger.error("An error occurred while connecting to MongoDB: %s", e)
+        return jsonify(error="An error occurred while connecting to the database"), 500
 
 
 
