@@ -61,7 +61,7 @@ Manage Project
     <br>
 
     <br><br>
-    {% if shareinfo['sharemode']|int >= 2 %}
+    {% if shareinfo['sharemode']|int >= 3 %}
     <div>
       <input class="btn btn-lg btn-success" type="button" value="Manage Speaker Metadata"
         onclick="window.location.href='{{url_for('managespeakermetadata')}}'; window">

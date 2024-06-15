@@ -1,8 +1,25 @@
 """Module to get the details of the project."""
 from app.controller import (
-    life_logging
+    life_logging,
+    getuserprojectinfo,
+    getprojectowner,
+    getactiveprojectform
 )
 logger = life_logging.get_logger()
+
+
+def get_public_projects_name(projects):
+    public_projects = []
+
+    try:
+        all_public_projects = projects.find({"isPublic": 1, "projectdeleteFLAG": 0},
+                                            {"_id": 0,
+                                             "projectname": 1})
+        if all_public_projects != None:
+            for pub_proj in all_public_projects:
+                public_projects.append(pub_proj["projectname"])
+    except:
+        logger.exception("")
 
 
 def get_shared_with_users(projects,
@@ -32,8 +49,8 @@ def get_shared_with_users(projects,
 def get_active_transcription_by(projects,
                                 activeprojectname,
                                 current_username,
-                                activespeakerid,
-                                lastActiveAudioId
+                                activespeakerid='',
+                                lastActiveAudioId=''
                                 ):
     # Preference set for each Audio file separately
     # transcription_by_key = 'lastActiveUserTranscription.' + \
@@ -60,16 +77,29 @@ def get_active_transcription_by(projects,
     # logger.debug('project_type: %s', project_type)
     return transcription_by
 
+
 def get_audio_language_scripts(projectform,
-                                 activeprojectname):
-    
+                               activeprojectname):
+
     audio_info = projectform.find_one({"projectname": activeprojectname},
-    {"_id": 0, "Audio Language": 1, "Transcription": 1})
+                                      {"_id": 0, "Audio Language": 1, "Transcription": 1})
     if not audio_info is None:
         audio_lang = audio_info.get("Audio Language")[1][0]
         scripts = audio_info.get("Transcription")[1]
     audio_info = {"language": audio_lang, "scripts": scripts}
     return audio_info
+
+
+def get_translation_languages(projectform,
+                              activeprojectname):
+    trans_langs = []
+    translation_info = projectform.find_one({"projectname": activeprojectname},
+                                            {"_id": 0, "Translation": 1})
+    if not translation_info is None:
+        trans_langs = translation_info.get("Translation")[1]
+
+    return trans_langs
+
 
 def save_active_transcription_by(projects,
                                  activeprojectname,
@@ -81,3 +111,95 @@ def save_active_transcription_by(projects,
                         {'$set': {updateactiveuser: lastActiveUser}})
 
 
+def get_one_project_details(projects,
+                            activeprojectname):
+    projectdetails = projects.find_one({"projectname": activeprojectname},
+                                       {"_id": 0,
+                                        "projectOwner": 1,
+                                        "sharedwith": 1,
+                                        "projectdeleteFLAG": 1,
+                                        "isPublic": 1,
+                                        "projectType": 1,
+                                        "aboutproject": 1,
+                                        "derivedFromProject": 1,
+                                        "projectDerivatives": 1
+                                        })
+    # print(projectowner)
+    if (projectdetails == None):
+        projectdetails = {
+            "projectOwner": "",
+            "sharedwith": [],
+            "projectdeleteFLAG": 0,
+            "isPublic": 0,
+            "projectType": "",
+            "aboutproject": "",
+            "derivedFromProject": "",
+            "projectDerivatives": []
+        }
+
+    return projectdetails
+
+
+def get_one_public_project_details(projects,
+                                   activeprojectname):
+    projectdetails = projects.find_one({"projectname": activeprojectname, "projectdeleteFLAG": 0},
+                                       {"_id": 0,
+                                        "projectOwner": 1,
+                                        "projectType": 1,
+                                        "aboutproject": 1,
+                                        "sharedwith": 1
+                                        })
+    # print(projectowner)
+    if (projectdetails == None):
+        projectdetails = {
+            "projectOwner": "",
+            "projectType": "",
+            "aboutproject": "",
+            "sharedwith": []
+        }
+
+    return projectdetails
+
+
+def get_n_projects_info(projects,
+                        userprojects,
+                        projectsform,
+                        current_username,
+                        currentuserprojectsname,
+                        n=-1
+                        ):
+
+    all_project_info = {}
+    for currentproject in currentuserprojectsname:
+        shareinfo = getuserprojectinfo.getuserprojectinfo(
+            userprojects, current_username, currentproject)
+        all_project_info[currentproject]['shareinfo'] = shareinfo
+
+        projectdetails = get_one_project_details(
+            projects, currentproject)
+        all_project_info[currentproject]['details'] = projectdetails
+
+        projectowner = projectdetails['projectOwner']
+        projectform = getactiveprojectform.getactiveprojectform(
+            projectsform, projectowner, currentproject)
+        all_project_info[currentproject]['form'] = projectform
+
+    return all_project_info
+
+
+def get_n_public_projects_info(projects,
+                               projectsform):
+    public_projects = get_public_projects_name(projects)
+    all_project_info = {}
+
+    for currentproject in public_projects:
+        projectdetails = get_one_project_details(
+            projects, currentproject)
+        all_project_info[currentproject]['details'] = projectdetails
+
+        projectowner = projectdetails['projectOwner']
+        projectform = getactiveprojectform.getactiveprojectform(
+            projectsform, projectowner, currentproject)
+        all_project_info[currentproject]['form'] = projectform
+
+    return all_project_info

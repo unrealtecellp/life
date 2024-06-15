@@ -15186,7 +15186,8 @@ scriptCode = {
 	"Odia": "Orya",
 	"Ol_Chiki": "Olck",
 	"Tamil": "Taml",
-	"Telugu": "Telu"
+	"Telugu": "Telu",
+	"Toto": "Toto"
 }
 
 var senseCount = 0;

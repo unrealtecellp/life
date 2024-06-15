@@ -1,0 +1,20 @@
+[
+    {"id": "_", "text": "_"},
+    {"id": "ADJ", "text": "adjective"},
+    {"id": "ADP", "text": "adposition"},
+    {"id": "ADV", "text": "adverb"},
+    {"id": "AUX", "text": "auxiliary"},
+    {"id": "CCONJ", "text": "coordinating conjunction"},
+    {"id": "DET", "text": "determiner"},
+    {"id": "INTJ", "text": "interjection"},
+    {"id": "NOUN", "text": "noun"},
+    {"id": "NUM", "text": "numeral"},
+    {"id": "PART", "text": "particle"},
+    {"id": "PRON", "text": "pronoun"},
+    {"id": "PROPN", "text": "proper noun"},
+    {"id": "PUNCT", "text": "punctuation"},
+    {"id": "SCONJ", "text": "subordinating conjunction"},
+    {"id": "SYM", "text": "symbol"},
+    {"id": "VERB", "text": "verb"},
+    {"id": "X", "text": "other"}
+]

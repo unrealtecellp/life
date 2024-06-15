@@ -41,265 +41,270 @@ var dictionaryFields = [{
 ];
 
 var fieldType = [{
-"name": "text",
-"value": "text"
+  "name": "text",
+  "value": "text"
 },
 {
-"name": "textarea",
-"value": "textarea"
+  "name": "textarea",
+  "value": "textarea"
 },
 {
-"name": "multimedia",
-"value": "multimedia"
+  "name": "multimedia",
+  "value": "multimedia"
 }
 ];
 
 var languages = [
-  {"id": "", "text": ""},
-  {"id": "Assamese", "text": "Assamese"},
-  {"id": "Angika", "text": "Angika"},
-  {"id": "Awadhi", "text": "Awadhi"},
-  {"id": "Bajjika", "text": "Bajjika"},
-  {"id": "Bangla", "text": "Bangla"},
-  {"id": "Bhojpuri", "text": "Bhojpuri"},
-  {"id": "Bodo", "text": "Bodo"},
-  {"id": "Braj", "text": "Braj"},
-  {"id": "Bundeli", "text": "Bundeli"},
-  {"id": "Chhattisgarhi", "text": "Chhattisgarhi"},
-  {"id": "Chokri", "text": "Chokri"},
-  {"id": "Dogri", "text": "Dogri"},
-  {"id": "English", "text": "English"},
-  {"id": "Gujarati", "text": "Gujarati"},
-  {"id": "Haryanvi", "text": "Haryanvi"},
-  {"id": "Hindi", "text": "Hindi"},
-  {"id": "Kashmiri", "text": "Kashmiri"},
-  {"id": "Kannada", "text": "Kannada"},
-  {"id": "Khortha", "text": "Khortha"},
-  {"id": "Konkani", "text": "Konkani"},
-  {"id": "KokBorok", "text": "Kok Borok"},
-  {"id": "Magahi", "text": "Magahi"},
-  {"id": "Maithili", "text": "Maithili"},
-  {"id": "Malayalam", "text": "Malayalam"},
-  {"id": "Marathi", "text": "Marathi"},
-  {"id": "Meitei", "text": "Meitei"},
-  {"id": "Nagamese", "text": "Nagamese"},
-  {"id": "Nepali", "text": "Nepali"},
-  {"id": "Nyishi", "text": "Nyishi"},
-  {"id": "Odia", "text": "Odia"},
-  {"id": "Punjabi", "text": "Punjabi"},
-  {"id": "Sadri", "text": "Sadri"},
-  {"id": "Sanskrit", "text": "Sanskrit"},
-  {"id": "Santali", "text": "Santali"},
-  {"id": "Sambalpuri", "text": "Sambalpuri"},
-  {"id": "Tamil", "text": "Tamil"},
-  {"id": "Telugu", "text": "Telugu"},
-  {"id": "Toto", "text": "Toto"},
-  {"id": "Urdu", "text": "Urdu"}
+  { "id": "", "text": "" },
+  { "id": "Assamese", "text": "Assamese" },
+  { "id": "Angika", "text": "Angika" },
+  { "id": "Awadhi", "text": "Awadhi" },
+  { "id": "Bajjika", "text": "Bajjika" },
+  { "id": "Bangla", "text": "Bangla" },
+  { "id": "Bhojpuri", "text": "Bhojpuri" },
+  { "id": "Bodo", "text": "Bodo" },
+  { "id": "Braj", "text": "Braj" },
+  { "id": "Bundeli", "text": "Bundeli" },
+  { "id": "Chhattisgarhi", "text": "Chhattisgarhi" },
+  { "id": "Chokri", "text": "Chokri" },
+  { "id": "Dogri", "text": "Dogri" },
+  { "id": "English", "text": "English" },
+  { "id": "Gujarati", "text": "Gujarati" },
+  { "id": "Haryanvi", "text": "Haryanvi" },
+  { "id": "Hindi", "text": "Hindi" },
+  { "id": "Kashmiri", "text": "Kashmiri" },
+  { "id": "Kannada", "text": "Kannada" },
+  { "id": "Khortha", "text": "Khortha" },
+  { "id": "Konkani", "text": "Konkani" },
+  { "id": "KokBorok", "text": "Kok Borok" },
+  { "id": "Magahi", "text": "Magahi" },
+  { "id": "Maithili", "text": "Maithili" },
+  { "id": "Malayalam", "text": "Malayalam" },
+  { "id": "Marathi", "text": "Marathi" },
+  { "id": "Meitei", "text": "Meitei" },
+  { "id": "Nagamese", "text": "Nagamese" },
+  { "id": "Nepali", "text": "Nepali" },
+  { "id": "Nyishi", "text": "Nyishi" },
+  { "id": "Odia", "text": "Odia" },
+  { "id": "Punjabi", "text": "Punjabi" },
+  { "id": "Sadri", "text": "Sadri" },
+  { "id": "Sanskrit", "text": "Sanskrit" },
+  { "id": "Santali", "text": "Santali" },
+  { "id": "Sambalpuri", "text": "Sambalpuri" },
+  { "id": "Tamil", "text": "Tamil" },
+  { "id": "Telugu", "text": "Telugu" },
+  { "id": "Toto", "text": "Toto" },
+  { "id": "Urdu", "text": "Urdu" }
 ]
 
-var scripts = 
-[
+var scripts =
+  [
     {
-      "id": "Bengali", 
+      "id": "Bengali",
       "text": "Bengali"
     },
     {
-      "id": "Devanagari", 
+      "id": "Devanagari",
       "text": "Devanagari"
     },
     {
-      "id": "Gujarati", 
+      "id": "Gujarati",
       "text": "Gujarati"
     },
     {
-      "id": "Gurumukhi", 
+      "id": "Gurumukhi",
       "text": "Gurumukhi"
     },
     {
-      "id": "IPA", 
+      "id": "IPA",
       "text": "IPA"
     },
     {
-      "id": "Kannada", 
+      "id": "Kannada",
       "text": "Kannada"
     },
     {
-      "id": "Malayalam", 
+      "id": "Malayalam",
       "text": "Malayalam"
     },
     {
-      "id": "Meitei_Mayek", 
+      "id": "Meitei_Mayek",
       "text": "Meitei Mayek"
     },
     {
-      "id": "Odia", 
+      "id": "Odia",
       "text": "Odia"
     },
     {
-      "id": "Ol_Chiki", 
+      "id": "Ol_Chiki",
       "text": "Ol Chiki"
     },
     {
-      "id": "Tamil", 
+      "id": "Tamil",
       "text": "Tamil"
     },
     {
-      "id": "Telugu", 
+      "id": "Telugu",
       "text": "Telugu"
+    },
+    {
+      "id": "Toto",
+      "text": "Toto"
     }
-];
-
-var OtherLanguagesSpeakerCouldSpeak = 
-[
-  {"id": "", "text": ""},
-  {"id": "Assamese", "text": "Assamese"},
-  {"id": "Angika", "text": "Angika"},
-  {"id": "Awadhi", "text": "Awadhi"},
-  {"id": "Bajjika", "text": "Bajjika"},
-  {"id": "Bangla", "text": "Bangla"},
-  {"id": "Bhojpuri", "text": "Bhojpuri"},
-  {"id": "Bodo", "text": "Bodo"},
-  {"id": "Braj", "text": "Braj"},
-  {"id": "Bundeli", "text": "Bundeli"},
-  {"id": "Chhattisgarhi", "text": "Chhattisgarhi"},
-  {"id": "Chokri", "text": "Chokri"},
-  {"id": "Dogri", "text": "Dogri"},
-  {"id": "English", "text": "English"},
-  {"id": "Gujarati", "text": "Gujarati"},
-  {"id": "Haryanvi", "text": "Haryanvi"},
-  {"id": "Hindi", "text": "Hindi"},
-  {"id": "Kashmiri", "text": "Kashmiri"},
-  {"id": "Kannada", "text": "Kannada"},
-  {"id": "Khortha", "text": "Khortha"},
-  {"id": "Konkani", "text": "Konkani"},
-  {"id": "KokBorok", "text": "Kok Borok"},
-  {"id": "Magahi", "text": "Magahi"},
-  {"id": "Maithili", "text": "Maithili"},
-  {"id": "Malayalam", "text": "Malayalam"},
-  {"id": "Marathi", "text": "Marathi"},
-  {"id": "Meitei", "text": "Meitei"},
-  {"id": "Nagamese", "text": "Nagamese"},
-  {"id": "Nepali", "text": "Nepali"},
-  {"id": "Nyishi", "text": "Nyishi"},
-  {"id": "Odia", "text": "Odia"},
-  {"id": "Punjabi", "text": "Punjabi"},
-  {"id": "Sadri", "text": "Sadri"},
-  {"id": "Sanskrit", "text": "Sanskrit"},
-  {"id": "Santali", "text": "Santali"},
-  {"id": "Sambalpuri", "text": "Sambalpuri"},
-  {"id": "Tamil", "text": "Tamil"},
-  {"id": "Telugu", "text": "Telugu"},
-  {"id": "Toto", "text": "Toto"},
-  {"id": "Urdu", "text": "Urdu"}
-]
-
-var EducationMedium = 
-[
-  {"id": "", "text": ""},
-  {"id": "Assamese", "text": "Assamese"},
-  {"id": "Angika", "text": "Angika"},
-  {"id": "Awadhi", "text": "Awadhi"},
-  {"id": "Bajjika", "text": "Bajjika"},
-  {"id": "Bangla", "text": "Bangla"},
-  {"id": "Bhojpuri", "text": "Bhojpuri"},
-  {"id": "Bodo", "text": "Bodo"},
-  {"id": "Braj", "text": "Braj"},
-  {"id": "Bundeli", "text": "Bundeli"},
-  {"id": "Chhattisgarhi", "text": "Chhattisgarhi"},
-  {"id": "Chokri", "text": "Chokri"},
-  {"id": "Dogri", "text": "Dogri"},
-  {"id": "English", "text": "English"},
-  {"id": "Gujarati", "text": "Gujarati"},
-  {"id": "Haryanvi", "text": "Haryanvi"},
-  {"id": "Hindi", "text": "Hindi"},
-  {"id": "Kashmiri", "text": "Kashmiri"},
-  {"id": "Kannada", "text": "Kannada"},
-  {"id": "Khortha", "text": "Khortha"},
-  {"id": "Konkani", "text": "Konkani"},
-  {"id": "KokBorok", "text": "Kok Borok"},
-  {"id": "Magahi", "text": "Magahi"},
-  {"id": "Maithili", "text": "Maithili"},
-  {"id": "Malayalam", "text": "Malayalam"},
-  {"id": "Marathi", "text": "Marathi"},
-  {"id": "Meitei", "text": "Meitei"},
-  {"id": "Nagamese", "text": "Nagamese"},
-  {"id": "Nepali", "text": "Nepali"},
-  {"id": "Nyishi", "text": "Nyishi"},
-  {"id": "Odia", "text": "Odia"},
-  {"id": "Punjabi", "text": "Punjabi"},
-  {"id": "Sadri", "text": "Sadri"},
-  {"id": "Sanskrit", "text": "Sanskrit"},
-  {"id": "Santali", "text": "Santali"},
-  {"id": "Sambalpuri", "text": "Sambalpuri"},
-  {"id": "Tamil", "text": "Tamil"},
-  {"id": "Telugu", "text": "Telugu"},
-  {"id": "Toto", "text": "Toto"},
-  {"id": "Urdu", "text": "Urdu"}
-]
-
-var LdcilEducationLevel = 
-[
-  {"id": "", "text": ""},
-  {"id": "School", "text": "School"},
-  {"id": "Bachelor", "text": "Bachelor"},
-  {"id": "Master", "text": "Master"}
   ];
 
-var EducationLevel = 
-[
-  {"id": "", "text": ""},
-  {"id": "No Schooling", "text": "No Schooling"},
-  {"id": "Upto 12th", "text": "Upto 12ᵗʰ"},
-  {"id": "Graduate", "text": "Graduate"},
-  {"id": "Post-Graduate", "text": "Post-Graduate"},
-  {"id": "Above PG", "text": "Above PG"},
+var OtherLanguagesSpeakerCouldSpeak =
+  [
+    { "id": "", "text": "" },
+    { "id": "Assamese", "text": "Assamese" },
+    { "id": "Angika", "text": "Angika" },
+    { "id": "Awadhi", "text": "Awadhi" },
+    { "id": "Bajjika", "text": "Bajjika" },
+    { "id": "Bangla", "text": "Bangla" },
+    { "id": "Bhojpuri", "text": "Bhojpuri" },
+    { "id": "Bodo", "text": "Bodo" },
+    { "id": "Braj", "text": "Braj" },
+    { "id": "Bundeli", "text": "Bundeli" },
+    { "id": "Chhattisgarhi", "text": "Chhattisgarhi" },
+    { "id": "Chokri", "text": "Chokri" },
+    { "id": "Dogri", "text": "Dogri" },
+    { "id": "English", "text": "English" },
+    { "id": "Gujarati", "text": "Gujarati" },
+    { "id": "Haryanvi", "text": "Haryanvi" },
+    { "id": "Hindi", "text": "Hindi" },
+    { "id": "Kashmiri", "text": "Kashmiri" },
+    { "id": "Kannada", "text": "Kannada" },
+    { "id": "Khortha", "text": "Khortha" },
+    { "id": "Konkani", "text": "Konkani" },
+    { "id": "KokBorok", "text": "Kok Borok" },
+    { "id": "Magahi", "text": "Magahi" },
+    { "id": "Maithili", "text": "Maithili" },
+    { "id": "Malayalam", "text": "Malayalam" },
+    { "id": "Marathi", "text": "Marathi" },
+    { "id": "Meitei", "text": "Meitei" },
+    { "id": "Nagamese", "text": "Nagamese" },
+    { "id": "Nepali", "text": "Nepali" },
+    { "id": "Nyishi", "text": "Nyishi" },
+    { "id": "Odia", "text": "Odia" },
+    { "id": "Punjabi", "text": "Punjabi" },
+    { "id": "Sadri", "text": "Sadri" },
+    { "id": "Sanskrit", "text": "Sanskrit" },
+    { "id": "Santali", "text": "Santali" },
+    { "id": "Sambalpuri", "text": "Sambalpuri" },
+    { "id": "Tamil", "text": "Tamil" },
+    { "id": "Telugu", "text": "Telugu" },
+    { "id": "Toto", "text": "Toto" },
+    { "id": "Urdu", "text": "Urdu" }
+  ]
+
+var EducationMedium =
+  [
+    { "id": "", "text": "" },
+    { "id": "Assamese", "text": "Assamese" },
+    { "id": "Angika", "text": "Angika" },
+    { "id": "Awadhi", "text": "Awadhi" },
+    { "id": "Bajjika", "text": "Bajjika" },
+    { "id": "Bangla", "text": "Bangla" },
+    { "id": "Bhojpuri", "text": "Bhojpuri" },
+    { "id": "Bodo", "text": "Bodo" },
+    { "id": "Braj", "text": "Braj" },
+    { "id": "Bundeli", "text": "Bundeli" },
+    { "id": "Chhattisgarhi", "text": "Chhattisgarhi" },
+    { "id": "Chokri", "text": "Chokri" },
+    { "id": "Dogri", "text": "Dogri" },
+    { "id": "English", "text": "English" },
+    { "id": "Gujarati", "text": "Gujarati" },
+    { "id": "Haryanvi", "text": "Haryanvi" },
+    { "id": "Hindi", "text": "Hindi" },
+    { "id": "Kashmiri", "text": "Kashmiri" },
+    { "id": "Kannada", "text": "Kannada" },
+    { "id": "Khortha", "text": "Khortha" },
+    { "id": "Konkani", "text": "Konkani" },
+    { "id": "KokBorok", "text": "Kok Borok" },
+    { "id": "Magahi", "text": "Magahi" },
+    { "id": "Maithili", "text": "Maithili" },
+    { "id": "Malayalam", "text": "Malayalam" },
+    { "id": "Marathi", "text": "Marathi" },
+    { "id": "Meitei", "text": "Meitei" },
+    { "id": "Nagamese", "text": "Nagamese" },
+    { "id": "Nepali", "text": "Nepali" },
+    { "id": "Nyishi", "text": "Nyishi" },
+    { "id": "Odia", "text": "Odia" },
+    { "id": "Punjabi", "text": "Punjabi" },
+    { "id": "Sadri", "text": "Sadri" },
+    { "id": "Sanskrit", "text": "Sanskrit" },
+    { "id": "Santali", "text": "Santali" },
+    { "id": "Sambalpuri", "text": "Sambalpuri" },
+    { "id": "Tamil", "text": "Tamil" },
+    { "id": "Telugu", "text": "Telugu" },
+    { "id": "Toto", "text": "Toto" },
+    { "id": "Urdu", "text": "Urdu" }
+  ]
+
+var LdcilEducationLevel =
+  [
+    { "id": "", "text": "" },
+    { "id": "School", "text": "School" },
+    { "id": "Bachelor", "text": "Bachelor" },
+    { "id": "Master", "text": "Master" }
   ];
 
-var gender = 
-[
-  {"id": "", "text": ""},
-  {"id": "Female", "text": "Female"},
-  {"id": "Male", "text": "Male"},
-  {"id": "Non-Binary", "text": "Non-Binary"}
-];
+var EducationLevel =
+  [
+    { "id": "", "text": "" },
+    { "id": "No Schooling", "text": "No Schooling" },
+    { "id": "Upto 12th", "text": "Upto 12ᵗʰ" },
+    { "id": "Graduate", "text": "Graduate" },
+    { "id": "Post-Graduate", "text": "Post-Graduate" },
+    { "id": "Above PG", "text": "Above PG" },
+  ];
+
+var gender =
+  [
+    { "id": "", "text": "" },
+    { "id": "Female", "text": "Female" },
+    { "id": "Male", "text": "Male" },
+    { "id": "Non-Binary", "text": "Non-Binary" }
+  ];
 
 var AgeGroup = [
-  {"id": "", "text": ""},
-  {"id": "18-30", "text": "18-30"},
-  {"id": "30-45", "text": "30-45"},
-  {"id": "45-60", "text": "45-60"},
-  {"id": "60+", "text": "60+"}
+  { "id": "", "text": "" },
+  { "id": "18-30", "text": "18-30" },
+  { "id": "30-45", "text": "30-45" },
+  { "id": "45-60", "text": "45-60" },
+  { "id": "60+", "text": "60+" }
 ];
 
 var LdcilAgeGroup = [
-  {"id": "", "text": ""},
-  {"id": "16To20", "text": "16To20"},
-  {"id": "21To50", "text": "21To50"},
-  {"id": "Above50", "text": "Above50"}
+  { "id": "", "text": "" },
+  { "id": "16To20", "text": "16To20" },
+  { "id": "21To50", "text": "21To50" },
+  { "id": "Above50", "text": "Above50" }
 ];
 
 var TypeOfCity = [
-  {"id": "", "text": ""},
-  {"id": "Town", "text": "Town"},
-  {"id": "Village", "text": "Village"},
-  {"id": "City", "text": "City"}
+  { "id": "", "text": "" },
+  { "id": "Town", "text": "Town" },
+  { "id": "Village", "text": "Village" },
+  { "id": "City", "text": "City" }
 ];
 
 var audioSource = [
-  {"id": "", "text": ""},
+  { "id": "", "text": "" },
   { "id": "field", "text": "Field" },
-  {"id": "internet", "text": "Internet"}
+  { "id": "internet", "text": "Internet" }
 ];
 
 var metadataSchema = [
-  {"id": "", "text": ""},
+  { "id": "", "text": "" },
   { "id": "speed", "text": "SpeeD-IL" },
-  {"id": "ldcil", "text": "LDC-IL "}
+  { "id": "multilila", "text": "MultiLiLa" },
+  { "id": "ldcil", "text": "LDC-IL" }
 ];
 
 var audioInterntSources = [
-  {"id": "", "text": ""},
-  {"id": "youtube", "text": "Youtube"},
+  { "id": "", "text": "" },
+  { "id": "youtube", "text": "Youtube" },
   // {"id": "facebook", "text": "Facebook"}
 ];
 
@@ -315,11 +320,207 @@ var downloadFormats = [
 ]
 
 var transcriptionBy = [
-  {"id": "", "text": ""},
+  { "id": "", "text": "" },
   { "id": "latest", "text": "Latest" },
   { "id": "mytranscription", "text": "My Transcriptions" }
 ]
 
+var automationTaskTypes = [
+  { "id": "", "text": "" },
+  { "id": "Transcription", "text": "Transcription" },
+  { "id": "Translation", "text": "Translation" },
+  { "id": "Gloss", "text": "Gloss" }
+]
+
+var glossingModels = [
+  { "id": "stanza", "text": "Stanza Model" }
+]
+
+var freeTranslationLanguages = [
+  { "id": "English-Latin", "text": "English-Latin" }
+]
+
+var asrmodels = [{
+  "text": "Bhashini (ULCA)",
+  "id": "bhashini"
+}, {
+  "text": "HF Local",
+  "id": "hfpipeline"
+},
+{
+  "text": "HF Inference API",
+  "id": "hfinference"
+},
+{
+  "text": "Others",
+  "id": "other"
+},
+]
+
+var boundaryLevels = [{
+  "text": "",
+  "id": ""
+},
+{
+  "text": "Sentence",
+  "id": "sentence"
+},
+{
+  "text": "Word",
+  "id": "word"
+},
+{
+  "text": "Word Segment (only for Whisper)",
+  "id": "wordseg"
+},
+{
+  "text": "Character (not for whisper)",
+  "id": "character"
+}
+]
+
+// Value mapped to Camel Case (in speakerDetails.py - update_bulk_multilila_data() for bulk upload)
+var multililaParticipants = [
+  { "id": "", "text": "" },
+  { "id": "learner", "text": "Learner" },
+  { "id": "teacher", "text": "Teacher" },
+  { "id": "researchAssistant", "text": "Research Assistant" }
+]
+
+// If edited, also map values in speakerDetails.py - update_bulk_multilila_data() for bulk upload
+var multililaMedium = [
+  { "id": "", "text": "" },
+  { "id": "1", "text": "Only English4" },
+  { "id": "2", "text": "Telugu+English" },
+  { "id": "3", "text": "Hindi+English" },
+  { "id": "4", "text": "Assamese+English" }
+]
+
+var multililaClasses = [
+  { "id": "", "text": "" },
+  { "id": "4E", "text": "4E" },
+  { "id": "5E", "text": "4E" }
+]
+
+var multililaSchools = [
+  { "id": "", "text": "" },
+  { "id": "Govt.Primary School Shankar Bhagath Pathashala", "text": "Govt.Primary School Shankar Bhagath Pathashala" },
+  { "id": "Govt.Primary School Chikkadpally", "text": "Govt.Primary School Chikkadpally" },
+  { "id": "Govt.Primary School Jama - e - Osmania", "text": "Govt.Primary School Jama - e - Osmania" },
+  { "id": "MPPS Yapral", "text": "MPPS Yapral" },
+  { "id": "MPPS Neredmet", "text": "MPPS Neredmet" },
+  { "id": "MPPS Vajpayee", "text": "MPPS Vajpayee" },
+  { "id": "MPUPS  Old Safilguda", "text": "MPUPS  Old Safilguda" },
+  { "id": "MPPS  RK Puram", "text": "MPPS  RK Puram" },
+  { "id": "MPPS Saptagiri Colony", "text": "MPPS Saptagiri Colony" },
+  { "id": "MPPS  Sri Sai Nagar", "text": "MPPS  Sri Sai Nagar" },
+  { "id": "Jyothi Bala Mandir High School", "text": "Jyothi Bala Mandir High School" },
+  { "id": "Model High School", "text": "Model High School" },
+  { "id": "Vedic Vidyalayam High School", "text": "Vedic Vidyalayam High School" }
+]
+
+var multililaSchoolNumbers = [
+  { "id": "", "text": "" },
+  { "id": "1", "text": "1" },
+  { "id": "2", "text": "2" },
+  { "id": "3", "text": "3" },
+  { "id": "4", "text": "4" },
+  { "id": "5", "text": "5" },
+  { "id": "6", "text": "6" },
+  { "id": "7", "text": "7" },
+  { "id": "8", "text": "8" },
+  { "id": "9", "text": "9" },
+  { "id": "10", "text": "10" },
+  { "id": "11", "text": "11" },
+  { "id": "12", "text": "12" },
+  { "id": "13", "text": "13" }
+]
+
+// Value mapped to First letter (in speakerDetails.py - update_bulk_multilila_data() for bulk upload)
+var multililaSchoolTypes = [
+  { "id": "", "text": "" },
+  { "id": "G", "text": "Government" },
+  { "id": "P", "text": "Private" }
+]
+
+// If edited, also map values in speakerDetails.py - update_bulk_multilila_data() for bulk upload
+var multililaSiteTypes = [
+  { "id": "", "text": "" },
+  { "id": "1", "text": "Slum" },
+  { "id": "2", "text": "Non-slum" },
+  { "id": "3", "text": "Remote Rural" },
+  { "id": "4", "text": "Non-remote Rural" }
+]
+
+// If edited, also map values in speakerDetails.py - update_bulk_multilila_data() for bulk upload
+var multililaCities = [
+  { "id": "", "text": "" },
+  { "id": "1", "text": "Delhi" },
+  { "id": "2", "text": "Hyderabad" },
+  { "id": "3", "text": "Patna" },
+  { "id": "4", "text": "Guwahati" }
+]
+
+// Value mapped to First letter (in speakerDetails.py - update_bulk_multilila_data() for bulk upload)
+var multililaSubjects = [
+  { "id": "", "text": "" },
+  { "id": "L", "text": "Language" },
+  { "id": "M", "text": "Maths" },
+]
+
+var multililaAgeGroup = [
+  { "id": "", "text": "" },
+  { "id": "6", "text": "6" },
+  { "id": "7", "text": "7" },
+  { "id": "8", "text": "8" },
+  { "id": "9", "text": "9" },
+  { "id": "9-18", "text": "9-18" },
+  { "id": "18-30", "text": "18-30" },
+  { "id": "30-45", "text": "30-45" },
+  { "id": "45-60", "text": "45-60" },
+  { "id": "60+", "text": "60+" }
+]
+
+var states = [
+  { "id": "", "text": "" },
+  { "id": "Andhra Pradesh", "text": "Andhra Pradesh" },
+  { "id": "Arunachal Pradesh", "text": "Arunachal Pradesh" },
+  { "id": "Assam", "text": "Assam" },
+  { "id": "Bihar", "text": "Bihar" },
+  { "id": "Chhattisgarh", "text": "Chhattisgarh" },
+  { "id": "Delhi", "text": "Delhi" },
+  { "id": "Goa", "text": "Goa" },
+  { "id": "Gujarat", "text": "Gujarat" },
+  { "id": "Haryana", "text": "Haryana" },
+  { "id": "Himachal Pradesh", "text": "Himachal Pradesh" },
+  { "id": "Jharkhand", "text": "Jharkhand" },
+  { "id": "Karnataka", "text": "Karnataka" },
+  { "id": "Kerala", "text": "Kerala" },
+  { "id": "Maharashtra", "text": "Maharashtra" },
+  { "id": "Madhya Pradesh", "text": "Madhya Pradesh" },
+  { "id": "Manipur", "text": "Manipur" },
+  { "id": "Meghalaya", "text": "Meghalaya" },
+  { "id": "Mizoram", "text": "Mizoram" },
+  { "id": "Nagaland", "text": "Nagaland" },
+  { "id": "Odisha", "text": "Odisha" },
+  { "id": "Punjab", "text": "Punjab" },
+  { "id": "Rajasthan", "text": "Rajasthan" },
+  { "id": "Sikkim", "text": "Sikkim" },
+  { "id": "Tamil Nadu", "text": "Tamil Nadu" },
+  { "id": "Tripura", "text": "Tripura" },
+  { "id": "Telangana", "text": "Telangana" },
+  { "id": "Uttar Pradesh", "text": "Uttar Pradesh" },
+  { "id": "Uttarakhand", "text": "Uttarakhand" },
+  { "id": "West Bengal", "text": "West Bengal" },
+  { "id": "Andaman & Nicobar", "text": "Andaman & Nicobar" },
+  { "id": "Chandigarh", "text": "Chandigarh" },
+  { "id": "Dadra & Nagar Haveli", "text": "Dadra & Nagar Haveli" },
+  { "id": "Daman & Diu", "text": "Daman & Diu" },
+  { "id": "Jammu & Kashmir", "text": "Jammu & Kashmir" },
+  { "id": "Lakshadweep", "text": "Lakshadweep" },
+  { "id": "Ladakh", "text": "Ladakh" },
+  { "id": "Puducherry", "text": "Puducherry" }
+]
 // var QuestionnaireDomain = [
 //   {"id": "", "text": ""},
 //   {"id": "General", "text": "General"},
@@ -374,8 +575,8 @@ var transcriptionBy = [
 //         accesscodefor.push({"id": "1", "text": "Syncing Karya Recording with LiFE"})
 //       }
 //       console.log(accesscodefor)
-      
-      
+
+
 //       $('.typeofcity').select2({
 //         // tags: true,
 //         placeholder: '--Type Of City:--',
@@ -397,7 +598,7 @@ var transcriptionBy = [
 //         allowClear: true,
 //         // console.log( "ready!" )
 //       });
-      
+
 //       $('.target').select2({
 //         tags: true,
 //         placeholder: '-- Target --',
@@ -524,162 +725,162 @@ var transcriptionBy = [
 
 var glossField = 0;
 
-$("#addGlossField").click(function(){
-glossField++;
+$("#addGlossField").click(function () {
+  glossField++;
 
-var drow = '<div class="row removeglossfield' + glossField + '">';
+  var drow = '<div class="row removeglossfield' + glossField + '">';
 
-var fItems = '<div class="col-md-3"><div class="form-group">'+
-            // '<select class="form-control" name="Gloss Language' + glossField + '" required>';
-            '<select class="form-control" name="Gloss Language" required>';
-fItems += '<option value="">Translation/Gloss Language</option>';
+  var fItems = '<div class="col-md-3"><div class="form-group">' +
+    // '<select class="form-control" name="Gloss Language' + glossField + '" required>';
+    '<select class="form-control" name="Gloss Language" required>';
+  fItems += '<option value="">Translation/Gloss Language</option>';
 
-for (var i = 0; i < languages.length; i++) {
-  fItems += '<option value="' + languages[i].text + '">' + languages[i].id + '</option>';
-}
-fItems += '</select></div></div>';
+  for (var i = 0; i < languages.length; i++) {
+    fItems += '<option value="' + languages[i].text + '">' + languages[i].id + '</option>';
+  }
+  fItems += '</select></div></div>';
 
-fItems += '<div class="col-md-3"><div class="form-group">'+
-            '<div class="input-group">'+
-            // '<select class="form-control" name="glossScriptField' + glossField + '" required>';
-            '<select class="form-control" name="Gloss Script" required>';
-fItems += '<option value="">Translation/Gloss Script</option>';
+  fItems += '<div class="col-md-3"><div class="form-group">' +
+    '<div class="input-group">' +
+    // '<select class="form-control" name="glossScriptField' + glossField + '" required>';
+    '<select class="form-control" name="Gloss Script" required>';
+  fItems += '<option value="">Translation/Gloss Script</option>';
 
-for (var i = 0; i < scripts.length; i++) {
-  fItems += '<option value="' + scripts[i].text + '">' + scripts[i].id + '</option>';
-}
-fItems += '</select>';
+  for (var i = 0; i < scripts.length; i++) {
+    fItems += '<option value="' + scripts[i].text + '">' + scripts[i].id + '</option>';
+  }
+  fItems += '</select>';
 
-fItems += '<div class="input-group-btn">'+
-          '<button class="btn btn-danger" type="button" onclick="removeGlossFields('+ glossField +');">'+
-          '<span class="glyphicon glyphicon-minus" aria-hidden="true"></span></button></div></div></div></div>';
+  fItems += '<div class="input-group-btn">' +
+    '<button class="btn btn-danger" type="button" onclick="removeGlossFields(' + glossField + ');">' +
+    '<span class="glyphicon glyphicon-minus" aria-hidden="true"></span></button></div></div></div></div>';
 
-drow += fItems;
-drow += '</div>'
-$(".Sensefield").append(drow);
+  drow += fItems;
+  drow += '</div>'
+  $(".Sensefield").append(drow);
 });
 
 
 // remove a interlineargloss element
 function removeGlossFields(rid) {
-$(".removeglossfield"+rid).remove();
+  $(".removeglossfield" + rid).remove();
 }
 
 var interlinearGlossField = 0;
 
-$("#addInterlinearGlossField").click(function(){
-interlinearGlossField++;
+$("#addInterlinearGlossField").click(function () {
+  interlinearGlossField++;
 
-var drow = '<div class="row removeinterlinearglossfield' + interlinearGlossField + '">';
+  var drow = '<div class="row removeinterlinearglossfield' + interlinearGlossField + '">';
 
-var fItems = '<div class="col-md-3"><div class="form-group">'+
-            // '<select class="form-control" name="interlinearGlossLangField' + interlinearGlossField + '" required>';
-            '<select class="form-control" name="Interlinear Gloss Language" required>';
-fItems += '<option value="">Interlinear Gloss Language</option>';
+  var fItems = '<div class="col-md-3"><div class="form-group">' +
+    // '<select class="form-control" name="interlinearGlossLangField' + interlinearGlossField + '" required>';
+    '<select class="form-control" name="Interlinear Gloss Language" required>';
+  fItems += '<option value="">Interlinear Gloss Language</option>';
 
-for (var i = 0; i < languages.length; i++) {
-  fItems += '<option value="' + languages[i].text + '">' + languages[i].id + '</option>';
-}
-fItems += '</select></div></div>';
+  for (var i = 0; i < languages.length; i++) {
+    fItems += '<option value="' + languages[i].text + '">' + languages[i].id + '</option>';
+  }
+  fItems += '</select></div></div>';
 
-fItems += '<div class="col-md-3"><div class="form-group">'+
-            '<div class="input-group">'+
-            // '<select class="form-control" name="interlinearGlossScriptField' + interlinearGlossField + '" required>';
-            '<select class="form-control" name="Interlinear Gloss Script" required>';
-fItems += '<option value="">Interlinear Gloss Script</option>';
+  fItems += '<div class="col-md-3"><div class="form-group">' +
+    '<div class="input-group">' +
+    // '<select class="form-control" name="interlinearGlossScriptField' + interlinearGlossField + '" required>';
+    '<select class="form-control" name="Interlinear Gloss Script" required>';
+  fItems += '<option value="">Interlinear Gloss Script</option>';
 
-for (var i = 0; i < scripts.length; i++) {
-  fItems += '<option value="' + scripts[i].text + '">' + scripts[i].id + '</option>';
-}
-fItems += '</select>';
+  for (var i = 0; i < scripts.length; i++) {
+    fItems += '<option value="' + scripts[i].text + '">' + scripts[i].id + '</option>';
+  }
+  fItems += '</select>';
 
-fItems += '<div class="input-group-btn">'+
-          '<button class="btn btn-danger" type="button" onclick="removeInterlinearGlossFields('+ interlinearGlossField +');">'+
-          '<span class="glyphicon glyphicon-minus" aria-hidden="true"></span></button></div></div></div></div>';
+  fItems += '<div class="input-group-btn">' +
+    '<button class="btn btn-danger" type="button" onclick="removeInterlinearGlossFields(' + interlinearGlossField + ');">' +
+    '<span class="glyphicon glyphicon-minus" aria-hidden="true"></span></button></div></div></div></div>';
 
-drow += fItems;
-drow += '</div>'
-$(".interlinearglossfield").append(drow);
+  drow += fItems;
+  drow += '</div>'
+  $(".interlinearglossfield").append(drow);
 });
 
 
 // remove a interlineargloss element
 function removeInterlinearGlossFields(rid) {
-$(".removeinterlinearglossfield"+rid).remove();
+  $(".removeinterlinearglossfield" + rid).remove();
 }
 
 // add new custom element
 // var customField = 1;
 var customField = 0;
 
-$("#addCustomField").click(function(){
-customField++;
+$("#addCustomField").click(function () {
+  customField++;
 
-var drow = '<div class="row removecustomfield' + customField + '">';
+  var drow = '<div class="row removecustomfield' + customField + '">';
 
-var dItems = '<div class="col-md-3"><div class="form-group">'+
-            '<input type="text" class="form-control"'+
-            ' name="customField' + customField + '" placeholder="Custom Field" required></div></div>';
+  var dItems = '<div class="col-md-3"><div class="form-group">' +
+    '<input type="text" class="form-control"' +
+    ' name="customField' + customField + '" placeholder="Custom Field" required></div></div>';
 
-var fItems = '<div class="col-md-3"><div class="form-group">'+
-            '<div class="input-group">'+
-            '<select class="form-control" name="fieldType' + customField + '" required>';
-fItems += '<option value="">Field Type</option>';
+  var fItems = '<div class="col-md-3"><div class="form-group">' +
+    '<div class="input-group">' +
+    '<select class="form-control" name="fieldType' + customField + '" required>';
+  fItems += '<option value="">Field Type</option>';
 
-for (var i = 0; i < fieldType.length; i++) {
-  fItems += '<option value="' + fieldType[i].value + '">' + fieldType[i].name + '</option>';
-}
+  for (var i = 0; i < fieldType.length; i++) {
+    fItems += '<option value="' + fieldType[i].value + '">' + fieldType[i].name + '</option>';
+  }
 
-fItems += '</select><div class="input-group-btn">'+
-          '<button class="btn btn-danger" type="button" onclick="removeCustomFields('+ customField +');">'+
-          '<span class="glyphicon glyphicon-minus" aria-hidden="true"></span></button></div></div></div></div>';
+  fItems += '</select><div class="input-group-btn">' +
+    '<button class="btn btn-danger" type="button" onclick="removeCustomFields(' + customField + ');">' +
+    '<span class="glyphicon glyphicon-minus" aria-hidden="true"></span></button></div></div></div></div>';
 
-//ddrow += '</div>';
+  //ddrow += '</div>';
 
-drow += dItems + fItems;
-drow += '</div>'
-$(".customfield").append(drow);
+  drow += dItems + fItems;
+  drow += '</div>'
+  $(".customfield").append(drow);
 });
 
 // remove a custom element
 function removeCustomFields(rid) {
-$(".removecustomfield"+rid).remove();
+  $(".removecustomfield" + rid).remove();
 }
 
 // default dictionary fields
 function projectForm() {
-var checkFieldValue = '';
-var formFields = '<div class="row">';
-for (var i = 0; i < dictionaryFields.length; i++) {
-  if (dictionaryFields[i].name === 'Pronunciation') {
-    checkFieldValue = 'text';
+  var checkFieldValue = '';
+  var formFields = '<div class="row">';
+  for (var i = 0; i < dictionaryFields.length; i++) {
+    if (dictionaryFields[i].name === 'Pronunciation') {
+      checkFieldValue = 'text';
+    }
+    else if (dictionaryFields[i].name.includes('Upload')) {
+      checkFieldValue = 'multimedia';
+    }
+    else {
+      checkFieldValue = 'textarea';
+    }
+    if (dictionaryFields[i].name === 'Pronunciation') {
+      formFields += '<div class="col-md-3"><div class="form-check">' +
+        '<input class="form-check-input" type="checkbox" id="' + dictionaryFields[i].name + '"' +
+        'value="' + checkFieldValue + '" name="' + dictionaryFields[i].name + '" checked required>' +
+        // '<label style="color: gray" class="form-check-label" for="' + dictionaryFields[i].name + ' ">'+dictionaryFields[i].name + 
+        '<label class="form-check-label" for="' + dictionaryFields[i].name + ' ">' + dictionaryFields[i].name +
+        '</label>' +
+        '</div></div>';
+    }
+    else {
+      formFields += '<div class="col-md-3"><div class="form-check">' +
+        '<input class="form-check-input" type="checkbox" id="' + dictionaryFields[i].name + '"' +
+        'value="' + checkFieldValue + '" name="' + dictionaryFields[i].name + '">' +
+        // '<label style="color: gray" class="form-check-label" for="' + dictionaryFields[i].name + ' ">'+dictionaryFields[i].name + 
+        '<label class="form-check-label" for="' + dictionaryFields[i].name + ' ">' + dictionaryFields[i].name +
+        '</label></div></div>';
+    }
   }
-  else if (dictionaryFields[i].name.includes('Upload')) {
-    checkFieldValue = 'multimedia';
-  }
-  else {
-    checkFieldValue = 'textarea';
-  }
-  if (dictionaryFields[i].name === 'Pronunciation') {
-    formFields += '<div class="col-md-3"><div class="form-check">'+
-                  '<input class="form-check-input" type="checkbox" id="' + dictionaryFields[i].name + '"'+ 
-                  'value="' + checkFieldValue + '" name="' + dictionaryFields[i].name + '" checked required>'+
-                  // '<label style="color: gray" class="form-check-label" for="' + dictionaryFields[i].name + ' ">'+dictionaryFields[i].name + 
-                  '<label class="form-check-label" for="' + dictionaryFields[i].name + ' ">'+dictionaryFields[i].name + 
-                  '</label>'+
-                  '</div></div>';
-  }
-  else {
-    formFields += '<div class="col-md-3"><div class="form-check">'+
-                  '<input class="form-check-input" type="checkbox" id="' + dictionaryFields[i].name + '"'+ 
-                  'value="' + checkFieldValue + '" name="' + dictionaryFields[i].name + '">'+
-                  // '<label style="color: gray" class="form-check-label" for="' + dictionaryFields[i].name + ' ">'+dictionaryFields[i].name + 
-                  '<label class="form-check-label" for="' + dictionaryFields[i].name + ' ">'+dictionaryFields[i].name + 
-                  '</label></div></div>';
-  }
-}
-formFields += '</div>'
-$(".defaultfield").append(formFields);
+  formFields += '</div>'
+  $(".defaultfield").append(formFields);
 }
 
 // projectForm();

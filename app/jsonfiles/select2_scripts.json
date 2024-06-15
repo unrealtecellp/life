@@ -1,0 +1,58 @@
+[    
+      {
+        "id": "Bengali", 
+        "text": "Bengali"
+      },
+      {
+        "id": "Devanagari", 
+        "text": "Devanagari"
+      },
+      {
+        "id": "Gujarati", 
+        "text": "Gujarati"
+      },
+      {
+        "id": "Gurumukhi", 
+        "text": "Gurumukhi"
+      },
+      {
+        "id": "IPA", 
+        "text": "IPA"
+      },
+      {
+        "id": "Kannada", 
+        "text": "Kannada"
+      },
+      {
+        "id": "Latin", 
+        "text": "Latin"
+      },
+      {
+        "id": "Malayalam", 
+        "text": "Malayalam"
+      },
+      {
+        "id": "Mayek", 
+        "text": "Mayek"
+      },
+      {
+        "id": "Odia", 
+        "text": "Odia"
+      },
+      {
+        "id": "OlChiki", 
+        "text": "Ol Chiki"
+      },
+      {
+        "id": "Tamil", 
+        "text": "Tamil"
+      },
+      {
+        "id": "Telugu", 
+        "text": "Telugu"
+      },
+      {
+        "id": "Toto", 
+        "text": "Toto"
+      }
+]

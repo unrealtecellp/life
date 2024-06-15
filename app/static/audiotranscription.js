@@ -1128,13 +1128,15 @@ function createSentenceForm(formElement, boundaryID) {
                 sentencemorphemicbreakvalue = formElement['sentencemorphemicbreak'][transcriptionkey]
                 // console.log("formElement['sentencemorphemicbreak']", sentencemorphemicbreakvalue)
                 inpt += '<div class="form-group">';
-                inpt += '<label for="Transcription_' + transcriptionkey + '">Transcription in ' + transcriptionkey + '</label>'
+                // inpt += '<label for="Transcription_' + transcriptionkey + '">Transcription in ' + transcriptionkey + '</label>'
+                inpt += '<label for="Transcription_' + transcriptionkey + '">' + transcriptionkey + '</label>';
                 // inpt += '<input type="text" class="form-control transcription-box" id="Transcription_' + transcriptionkey + '"' +
                 //     'placeholder="Transcription ' + transcriptionkey + '" name="transcription_' + transcriptionkey + '"' +
                 //     'value="' + transcriptionvalue + '" onkeyup="autoSavetranscription(this)" required><br>';
                 inpt += '<textarea class="form-control transcription-box" id="Transcription_' + transcriptionkey + '"' +
                     'placeholder="Transcription ' + transcriptionkey + '" name="transcription_' + transcriptionkey + '"' +
-                    'value="' + transcriptionvalue + '" onkeyup="autoSavetranscription(event,this)" required>' + transcriptionvalue + '</textarea><br>';
+                    // 'value="' + transcriptionvalue + '" onkeyup="autoSavetranscription(event,this)" required>' + transcriptionvalue + '</textarea><br>';
+                    'value="' + transcriptionvalue + '" oninput="autoSavetranscription(event,this)" required>' + transcriptionvalue + '</textarea><br>';
                 // '</div></div>';
                 if (transcriptionkey === firstTranscriptionScript) {
                     // activeprojectform = JSON.parse(localStorage.activeprojectform)
@@ -1222,7 +1224,8 @@ function createSentenceForm(formElement, boundaryID) {
                     // console.log(translationkey, translationvalue);
                     translationkey = translationkey.split('-')[1]
                     inpt += '<div class="form-group">' +
-                        '<label for="Translation_' + translationkey + '">Translation in ' + translang[translangcount] + '</label>' +
+                        // '<label for="Translation_' + translationkey + '">Translation in ' + translang[translangcount] + '</label>' +
+                        '<label for="Translation_' + translationkey + '">' + translang[translangcount] + '</label>' +
                         '<input type="text" class="form-control" id="Translation_' + translationkey + '"' +
                         'placeholder="Translation ' + translationkey + '" name="translation_' + translationkey + '"' +
                         'value="' + translationvalue + '">' +
@@ -1293,7 +1296,8 @@ function createSentenceForm(formElement, boundaryID) {
         inpt += '<label for="comment-box-id">Comments:</label>'
         inpt += '<textarea class="form-control comment-box" id="comment-box-id" ' +
             'placeholder="Comments" name="comment-box"' +
-            'value="' + commentVal + '" onkeyup="autoSavetranscription(event,this)" required>' + commentVal + '</textarea><br>';
+            // 'value="' + commentVal + '" onkeyup="autoSavetranscription(event,this)" required>' + commentVal + '</textarea><br>';
+            'value="' + commentVal + '" oninput="autoSavetranscription(event,this)" required>' + commentVal + '</textarea><br>';
         document.getElementById("transcription-comments").innerHTML = "";
         $('#transcription-comments').append(inpt);
         inpt = '';
@@ -2101,8 +2105,9 @@ function preventOverlapBoundaries(region) {
 
 
 $('#myMakeBoundaryModalButton').on('click', function (e) {
-//   alert("Opened!")
+    // alert("Opened!")
     activeSpeaker = document.getElementById("speakeridsdropdown").value;
+    // console.log(document.getElementById("speakeridsdropdown"));
     filename = document.getElementById("audioFilename").textContent;
     audioDuration = document.getElementById("currentaudioduration").textContent;
     // alert(audioDuration) 

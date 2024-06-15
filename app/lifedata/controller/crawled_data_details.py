@@ -6,35 +6,46 @@ from app.controller import (
 
 logger = life_logging.get_logger()
 
-
 def delete_one_data(projects_collection,
                     data_collection,
                     project_name,
                     current_username,
                     active_source_id,
-                    data_id):
+                    data_id,
+                    data_type):
     try:
         logger.debug("project_name: %s, data_id: %s", project_name, data_id)
-        crawled_data_doc_id = data_collection.find_one_and_update({
-            "projectname": project_name,
-            "dataId": data_id
-        },
-            {"$set": {"datadeleteFLAG": 1}},
-            projection={'_id': True},
-            return_document=ReturnDocument.AFTER)['_id']
-        logger.debug('DELETED crawled_data_doc_id: %s, %s',
-                     crawled_data_doc_id, type(crawled_data_doc_id))
-
-        projects_collection.update_one({"projectname": project_name},
+        if (data_type == 'text'):
+            crawled_data_doc_id = data_collection.find_one_and_update({
+                "projectname": project_name,
+                "dataId": data_id
+            },
+                {"$set": {"datadeleteFLAG": 1}},
+                projection={'_id': True},
+                return_document=ReturnDocument.AFTER)['_id']
+            projects_collection.update_one({"projectname": project_name},
                                        {"$pull": {"sourcedataIds."+active_source_id: data_id},
                                         "$addToSet": {"sourcedataIdsDeleted."+active_source_id: data_id}
                                         })
+        elif (data_type == 'audio'):
+            crawled_data_doc_id = data_collection.find_one_and_update({
+                "projectname": project_name,
+                "audioId": data_id
+            },
+                {"$set": {"audiodeleteFLAG": 1}},
+                projection={'_id': True},
+                return_document=ReturnDocument.AFTER)['_id']
+            projects_collection.update_one({"projectname": project_name},
+                                       {"$pull": {"sourceAudioIds."+active_source_id: data_id},
+                                        "$addToSet": {"sourceAudioIdsDeleted."+active_source_id: data_id}
+                                        })
+        logger.debug('DELETED crawled_data_doc_id: %s, %s',
+                     crawled_data_doc_id, type(crawled_data_doc_id))
     except:
         logger.exception("")
         crawled_data_doc_id = False
 
     return crawled_data_doc_id
-
 
 def get_data_delete_flag(data_collection,
                          project_name,
@@ -49,28 +60,40 @@ def get_data_delete_flag(data_collection,
 
     return data_delete_flag
 
-
 def revoke_deleted_data(projects_collection,
                         data_collection,
                         project_name,
                         active_source_id,
-                        data_id):
+                        data_id,
+                        data_type):
     try:
         logger.debug("project_name: %s, data_id: %s", project_name, data_id)
-        crawled_data_doc_id = data_collection.find_one_and_update({
-            "projectname": project_name,
-            "dataId": data_id
-        },
-            {"$set": {"datadeleteFLAG": 0}},
-            projection={'_id': True},
-            return_document=ReturnDocument.AFTER)['_id']
-        logger.debug('REVOKED crawled_data_doc_id: %s, %s',
-                     crawled_data_doc_id, type(crawled_data_doc_id))
-
-        projects_collection.update_one({"projectname": project_name},
+        if (data_type == 'text'):
+            crawled_data_doc_id = data_collection.find_one_and_update({
+                "projectname": project_name,
+                "dataId": data_id
+            },
+                {"$set": {"datadeleteFLAG": 0}},
+                projection={'_id': True},
+                return_document=ReturnDocument.AFTER)['_id']
+            projects_collection.update_one({"projectname": project_name},
                                        {"$pull": {"sourcedataIdsDeleted."+active_source_id: data_id},
                                         "$addToSet": {"sourcedataIds."+active_source_id: data_id}
                                         })
+        elif (data_type == 'audio'):
+            crawled_data_doc_id = data_collection.find_one_and_update({
+                "projectname": project_name,
+                "audioId": data_id
+            },
+                {"$set": {"audiodeleteFLAG": 0}},
+                projection={'_id': True},
+                return_document=ReturnDocument.AFTER)['_id']
+            projects_collection.update_one({"projectname": project_name},
+                                       {"$pull": {"sourceAudioIdsDeleted."+active_source_id: data_id},
+                                        "$addToSet": {"sourceAudioIds."+active_source_id: data_id}
+                                        })
+        logger.debug('REVOKED crawled_data_doc_id: %s, %s',
+                     crawled_data_doc_id, type(crawled_data_doc_id))
     except:
         logger.exception("")
         crawled_data_doc_id = False

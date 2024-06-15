@@ -12,7 +12,8 @@ def get_script_code(scriptname):
         "Odia": "Orya",
         "Ol_Chiki": "Olck",
         "Tamil": "Taml",
-        "Telugu": "Telu"
+        "Telugu": "Telu",
+        "Toto": "Toto"
     }
 
     return scriptCode[scriptname]
@@ -46,7 +47,8 @@ def get_script_name(langname):
         "Punjabi": "Gurumukhi",
         "Santali": "Ol_Chiki",
         "Tamil": "Tamil",
-        "Telugu": "Telugu"
+        "Telugu": "Telugu",
+        "Toto": "Toto"
     }
 
     return langScript[langname]
