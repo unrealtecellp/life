@@ -51,7 +51,7 @@ from app.controller import (audiodetails, createdummylexemeentry,
                             emailController, getactiveprojectform,
                             getactiveprojectname, getcommentstats,
                             getcurrentusername, getcurrentuserprojects,
-                            getdbcollections, getprojectowner, getprojecttype,
+                            getdbcollections, getdbcollectionslist, getprojectowner, getprojecttype,
                             getuserprojectinfo, langscriptutils,
                             lexicondetails, speakerDetails, projectDetails,
                             lifeshare,getprojectnamesharedwith)
@@ -694,22 +694,42 @@ mongo_uri = Config.MONGO_URI
 import math
 
 
+def convert_size(size_bytes):
+    if size_bytes == 0:
+        return "0", "B"
+    size_name = ("B", "KB", "MB", "GB", "TB")
+    i = int(math.floor(math.log(size_bytes, 1024)))
+    p = math.pow(1024, i)
+    s = round(size_bytes / p, 2)
+    return f"{s}", size_name[i]
+
 @app.route('/progressReportAdmin', methods=['GET'])
 @login_required
 def progressReportAdmin():
-    def convert_size(size_bytes):
-        if size_bytes == 0:
-            return "0", "B"
-        size_name = ("B", "KB", "MB", "GB", "TB")
-        i = int(math.floor(math.log(size_bytes, 1024)))
-        p = math.pow(1024, i)
-        s = round(size_bytes / p, 2)
-        return f"{s}", size_name[i]
-
     try:
+        # Use the getdbcollectionslist function to get all collection instances from 'lifedb'
+        collections = getdbcollectionslist.getdbcollectionslist(mongo)
+        
+        # Prepare a response dictionary for collection stats
+        response = {}
+        
+        # Get stats for each collection
+        for collection in collections:
+            stats = mongo.cx['lifedb'].command("collstats", collection.name)
+            storage_size_value, storage_size_unit = convert_size(stats['storageSize'])
+            avg_doc_size_value, avg_doc_size_unit = convert_size(stats['avgObjSize'])
+            total_index_size_value, total_index_size_unit = convert_size(stats['totalIndexSize'])
+            response[collection.name] = {
+                "Storage Size": f"{storage_size_value} {storage_size_unit}",
+                "Documents": stats['count'],
+                "Avg. Document Size": f"{avg_doc_size_value} {avg_doc_size_unit}",
+                "Indexes": stats['nindexes'],
+                "Total Index Size": f"{total_index_size_value} {total_index_size_unit}"
+            }
+
         # Connect to MongoDB
-        client = MongoClient(mongo_uri)
-        db = client.get_database()
+        client = MongoClient(app.config["MONGO_URI"])
+        db = client['lifedb']
 
         # Retrieve database statistics using MongoDB's dbStats command
         db_stats = db.command('dbStats')
@@ -722,7 +742,18 @@ def progressReportAdmin():
         # Extract the total number of objects (documents) in the database
         num_objects = db_stats['objects']
 
-        print("database details - \n", db_stats, data_size_value, data_size_unit, storage_size_value, storage_size_unit, index_size_value, index_size_unit, num_objects, "\n \n")
+        # Calculate the total allocated storage size (if available)
+        allocated_storage_size = db_stats.get('fsUsedSize', None)  # Only available if using WiredTiger storage engine
+        total_allocated_size_value, total_allocated_size_unit = convert_size(allocated_storage_size) if allocated_storage_size else ("N/A", "")
+
+        # Calculate the remaining space
+        if allocated_storage_size:
+            used_storage_size = db_stats['storageSize']
+            remaining_space = allocated_storage_size - used_storage_size
+            remaining_space_value, remaining_space_unit = convert_size(remaining_space)
+        else:
+            remaining_space_value, remaining_space_unit = ("N/A", "")
+
 
         # Your existing logic for fetching other data goes here
         project_types = ['recordings', 'validation', 'transcriptions']
@@ -799,12 +830,15 @@ def progressReportAdmin():
                                data_size_value=data_size_value, data_size_unit=data_size_unit,
                                storage_size_value=storage_size_value, storage_size_unit=storage_size_unit,
                                index_size_value=index_size_value, index_size_unit=index_size_unit,
-                               num_objects=num_objects)
+                               num_objects=num_objects, collection_stats=response,
+                               total_allocated_size_value=total_allocated_size_value,
+                               total_allocated_size_unit=total_allocated_size_unit,
+                               remaining_space_value=remaining_space_value,
+                               remaining_space_unit=remaining_space_unit)
 
     except Exception as e:
         logger.error("An error occurred while connecting to MongoDB: %s", e)
         return jsonify(error="An error occurred while connecting to the database"), 500
-
 
 
 @app.route('/savetranscription', methods=['GET', 'POST'])
@@ -5883,7 +5917,6 @@ def addnewspeakerdetails():
 
 ''' Sync speaker details of accesscodedetails in speakerdetails'''
 
-
 @app.route('/syncspeakermetadata', methods=['GET', 'POST'])
 @login_required
 def syncspeakermetadata():
@@ -5903,9 +5936,6 @@ def syncspeakermetadata():
     allspeakerdetails, alldatalengths, allkeys = speakerDetails.getspeakerdetails(
         activeprojectname, speakermeta)
 
-    # find_task = accesscodedetails.find({ "projectname": activeprojectname},{"task":1,"_id": 0})
-    # print(find_task)
-    # if find_task['task'] == "SPEECH_DATA_COLLECTION":
     find_accesscodedetails = accesscodedetails.find({
         "projectname": activeprojectname},
         {"lifespeakerid": 1,
@@ -5971,8 +6001,7 @@ def syncspeakermetadata():
         except Exception as e:
             # Handle exception
             print("An error occurred:", e)
-
-            # print(new_metadata["lifespeakerid"])
+            continue  # Skip to the next document
 
         # Check if the metadata already exists in speakermeta
         existing_metadata = speakermeta.find_one({
@@ -5981,8 +6010,6 @@ def syncspeakermetadata():
             "current.sourceMetadata.karyaaccesscode":  new_metadata["karyaaccesscode"],
             "current.sourceMetadata.karyaspeakerid": new_metadata["karyaspeakerid"]
         })
-
-        # print(existing_metadata)
 
         if not existing_metadata:
             # Metadata does not exist, so write it to the speakermeta collection
@@ -5996,6 +6023,7 @@ def syncspeakermetadata():
                 new_metadata,
                 upload_type
             )
+
     check_existing_lifesourceid = speakermeta.find({
         "projectname": activeprojectname},
         {"lifesourceid": 1,
@@ -6015,11 +6043,11 @@ def syncspeakermetadata():
                 "old_lifesourceid": {"$exists": False}
             }
 
-                # Define filter criteria to update lifespeakerid to lifesourceid
-                filter_criteria_lifespeakerid_to_lifesourceid = {
-                    "projectname": activeprojectname,
-                    "current.sourceMetadata.lifespeakerid": existing_lifesourceid["current"]["sourceMetadata"]["lifespeakerid"]
-                }
+            # Define filter criteria to update lifespeakerid to lifesourceid
+            filter_criteria_lifespeakerid_to_lifesourceid = {
+                "projectname": activeprojectname,
+                "current.sourceMetadata.lifespeakerid": existing_lifesourceid["current"]["sourceMetadata"]["lifespeakerid"]
+            }
 
             # Define the data to be added
             lifesource_to_old_lifesourceid = {
@@ -6040,19 +6068,10 @@ def syncspeakermetadata():
             except Exception as e:
                 print("An error occurred:", e)
 
-                    # print("insteted speaker lifesourceid")
-
-                    # print(existing_lifesourceid["current"]["sourceMetadata"]["lifespeakerid"])
-                # else:
-                #     print("Metadata already exists:", existing_metadata)
-                # except KeyError as e:
-                #     print(f"Error accessing key: {e}")
-    except Exception as e:
-        print("An error occurred:", e)
-
     return render_template('manageProject.html',
                            shareinfo=shareinfo,
                            usertype=usertype)
+
     '''
     for existing_lifesourceid in check_existing_lifesourceid:
         if existing_lifesourceid["lifesourceid"] != existing_lifesourceid["current"]["sourceMetadata"]["lifespeakerid"]:

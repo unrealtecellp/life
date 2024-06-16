@@ -8,63 +8,84 @@ Progress Report Admin
 {{ super() }}
 
 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css" rel="stylesheet">
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.css">
 
-
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.css">
 
 <style>
+
     /* Additional styles specific to this page */
     .metric-card {
         margin-bottom: 20px;
+        border: 1px solid #ddd; /* Add a border */
+        border-radius: 8px; /* Rounded corners */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add shadow for depth */
+        transition: box-shadow 0.3s ease-in-out; /* Smooth shadow transition */
+    }
+
+    .metric-card:hover {
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Shadow effect on hover */
+    }
+
+    .metric-card .card-body {
+        padding: 20px; /* Padding inside the card */
+    }
+
+    .metric-card .card-title {
+        font-size: 18px; /* Title font size */
+        margin-bottom: 10px; /* Space below the title */
+    }
+
+    .metric-card .card-text {
+        font-size: 16px; /* Text font size */
+        color: #555; /* Text color */
+    }
+
+
+
+    /* Sidebar styles */
+    .side-nav-container {
+        background-color: rgb(218, 239, 247);
+        color: rgb(17, 13, 240);
+        padding: 20px;
+        height: 50vh;
+        position: fixed;
+        left: 10;
+        width: 250px; /* Adjust sidebar width here */
+        z-index: 1; /* Ensure sidebar is above main content */
+        overflow-y: auto; /* Enable scrolling if content exceeds sidebar height */
+    }
+
+    .side-nav-container a {
+        color: purple;
+        text-decoration: none;
+        display: block;
+        padding: 10px 0;
+    }
+
+    .side-nav-container a:hover {
+        text-decoration: underline;
+    }
+
+    .main-content {
+        margin-left: 250px; /* Adjust based on sidebar width */
+        padding: 20px;
+    }
+
+    /* Ensure responsive behavior */
+    @media (max-width: 768px) {
+        .side-nav-container {
+            width: 100%; /* Sidebar takes full width on smaller screens */
+            margin-bottom: 10px; /* Add margin below sidebar */
+        }
+
+        .main-content {
+            margin-left: 0; /* No margin on the left for main content */
+        }
     }
 </style>
 
-<style>
-    /* home_insert.css */
 
-    #audioTable {
-        width: 100%;
-        margin-top: 20px; /* Adjust as needed */
-        /* Add more specific styles as required */
-    }
 
-    #dropdownSection {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        margin-top: 20px;
-    }
-
-    #dropdownSection h1 {
-        margin: 0;
-        font-size: 1.5em;
-    }
-
-    #dropdownSection select {
-        padding: 10px;
-        font-size: 1em;
-        width: 100%;
-        max-width: 400px;
-        margin-bottom: 10px;
-    }
-
-    #secondaryDropdown {
-        padding: 10px;
-        font-size: 1em;
-        width: 100%;
-        max-width: 400px;
-    }
-
-    .hidden {
-        display: none;
-    }
-
-    /* Add more specific styles as required */
-
-</style>
 
 {% endblock %}
 
@@ -72,7 +93,7 @@ Progress Report Admin
 
 <div class="container-fluid">
     <div class="row">
-        <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+        <nav class="side-nav-container col-md-3 col-lg-2">
             <div class="position-sticky pt-3">
                 <ul class="nav flex-column">
                     <!-- <li class="nav-item">
@@ -127,19 +148,9 @@ Progress Report Admin
             </div>
         </nav>
 
-        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+         <main class="main-content col-md-9 ms-sm-auto col-lg-10 px-md-4">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                 <h1 class="h2">Dashboard</h1>
-                <!-- <div class="btn-toolbar mb-2 mb-md-0">
-                    <div class="btn-group me-2">
-                        <button type="button" class="btn btn-sm btn-outline-secondary">Share</button>
-                        <button type="button" class="btn btn-sm btn-outline-secondary">Export</button>
-                    </div>
-                    <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle">
-                        <span data-feather="calendar"></span>
-                        This week
-                    </button>
-                </div> -->
             </div>
 
             {% if activeprojectname is defined %}
@@ -201,11 +212,11 @@ Progress Report Admin
                 <div id="cumulativeResults" class="hidden">
                     <h2>Cumulative Results</h2>
                     <ul>
-                        <li>Total number of projects (by project type): <!-- Value here --></li>
-                        <li>Total space taken: <!-- Value here --></li>
+                        <li>Total number of projects (by project type): {{ all_projects | length }} Projects</li>
+                        <li>Total space taken: {{ storage_size_value }} {{ storage_size_unit }}</li>
                         <li>Avg space per project: <!-- Value here --></li>
                         <li>Avg number of documents per project: <!-- Value here --></li>
-                        <li>Total Remaining Space (as per allocation): <!-- Value here --></li>
+                        <li>Total Remaining Space (as per allocation): {{ remaining_space_value }} {{ remaining_space_unit }}</li>
                         
                     </ul>
 
@@ -260,10 +271,41 @@ Progress Report Admin
                                 </div>
                             </div>
                         </div>
-                    </div>
-                                        <!-- End Cards section -->
+                    
+                                        
+                            <!-- Remaining Space -->
+        <div class="col-md-6">
+            <div class="card metric-card">
+                <div class="card-body">
+                    <h5 class="card-title">Remaining Space</h5>
+                    <p class="card-text">{{ remaining_space_value }} {{ remaining_space_unit }}</p>
                 </div>
-            
+            </div>
+        </div>
+    </div>
+
+
+                    
+                    <!-- Collection Statistics Cards -->
+    <div class="row">
+        {% for collection_name, stats in collection_stats.items() %}
+        <div class="col-md-6">
+            <div class="card metric-card">
+                <div class="card-body">
+                    <h5 class="card-title">{{ collection_name }}</h5>
+                    <p class="card-text">Storage Size: {{ stats["Storage Size"] }}</p>
+                    <p class="card-text">Documents: {{ stats["Documents"] }}</p>
+                    <p class="card-text">Avg. Document Size: {{ stats["Avg. Document Size"] }}</p>
+                    <p class="card-text">Indexes: {{ stats["Indexes"] }}</p>
+                    <p class="card-text">Total Index Size: {{ stats["Total Index Size"] }}</p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+                    <!-- End Cards section -->
+                </div>
 
                 <!--Individual Project Results Section -->
                 <div id="individualProjectResults" class="hidden">

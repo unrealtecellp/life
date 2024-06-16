@@ -1,4 +1,5 @@
-def getdbcollections(mongo, *args):
+# getdbcollection.py
+def getdbcollectionslist(mongo, *args):
     '''
     INPUT:
         mongo: instance of PyMongo
@@ -8,12 +9,15 @@ def getdbcollections(mongo, *args):
         dbcollections: tuple of collections instance
     '''
 
-    if not args:
-        # If no collection names are provided, get all collection names
-        args = mongo.db.list_collection_names()
-        
-    dbcollections = []
-    for collection_name in args:
-        dbcollections.append(mongo.db[collection_name])
+    # Select the 'lifedb' database
+    db = mongo.cx['lifedb']
 
-    return tuple(dbcollections)
+    if not args:
+        # If no collection names are provided, get all collection names from 'lifedb'
+        args = db.list_collection_names()
+        
+    dbcollectionslist = []
+    for collection_name in args:
+        dbcollectionslist.append(db[collection_name])
+
+    return tuple(dbcollectionslist)
