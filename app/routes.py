@@ -703,17 +703,69 @@ def convert_size(size_bytes):
     s = round(size_bytes / p, 2)
     return f"{s}", size_name[i]
 
+
+from pymongo import MongoClient
+from collections import defaultdict
+
+def get_collection_stats(db_name, collection_name):
+    # Connect to MongoDB (default connection)
+    client = MongoClient()
+    db = client[db_name]
+    collection = db[collection_name]
+
+    # Initialize dictionaries to collect unique keys and their values
+    speaker_ids = defaultdict(set)
+    speakers_audio_ids = defaultdict(list)
+
+    # Iterate over all documents to collect the required data
+    project_stats = []
+    for doc in collection.find():
+        # Initialize project data dictionary
+        project_data = {
+            "projectname": doc.get("projectname"),
+            "projectOwner": doc.get("projectOwner"),
+            "sharedwith": doc.get("sharedwith"),
+            "projectDerivatives": doc.get("projectDerivatives"),
+            "aboutproject": doc.get("aboutproject"),
+            "projectType": doc.get("projectType"),
+            "speakerIds": {},
+            "speakersAudioIds": {},
+            "totalAudioIds": 0,
+            "speakersAudioIdsKeys": []
+        }
+
+        # Collect unique keys under speakerIds and their values
+        if "speakerIds" in doc:
+            for key, value in doc["speakerIds"].items():
+                speaker_ids[key].update(value)
+                project_data["speakerIds"][key] = value
+
+        # Collect unique keys under speakersAudioIds and the count of their respective lists
+        if "speakersAudioIds" in doc:
+            total_audio_ids = 0
+            for key, value in doc["speakersAudioIds"].items():
+                speakers_audio_ids[key] = len(value)
+                project_data["speakersAudioIds"][key] = value
+                total_audio_ids += len(value)
+                project_data["speakersAudioIdsKeys"].append(key)
+            project_data["totalAudioIds"] = total_audio_ids
+
+        # Add project data to the list
+        project_stats.append(project_data)
+
+    return project_stats, speaker_ids, speakers_audio_ids
+
 @app.route('/progressReportAdmin', methods=['GET'])
 @login_required
 def progressReportAdmin():
     try:
-        # Use the getdbcollectionslist function to get all collection instances from 'lifedb'
+        # Connect to MongoDB and get collection stats
+        client = MongoClient(app.config["MONGO_URI"])
+        project_stats, speaker_ids, speakers_audio_ids = get_collection_stats('lifedb', 'projects')
+        
+        # Prepare additional data for the template
         collections = getdbcollectionslist.getdbcollectionslist(mongo)
-        
-        # Prepare a response dictionary for collection stats
         response = {}
-        
-        # Get stats for each collection
         for collection in collections:
             stats = mongo.cx['lifedb'].command("collstats", collection.name)
             storage_size_value, storage_size_unit = convert_size(stats['storageSize'])
@@ -727,26 +779,14 @@ def progressReportAdmin():
                 "Total Index Size": f"{total_index_size_value} {total_index_size_unit}"
             }
 
-        # Connect to MongoDB
-        client = MongoClient(app.config["MONGO_URI"])
         db = client['lifedb']
-
-        # Retrieve database statistics using MongoDB's dbStats command
         db_stats = db.command('dbStats')
-
-        # Extract and convert sizes to human-readable format
         data_size_value, data_size_unit = convert_size(db_stats['dataSize'])
         storage_size_value, storage_size_unit = convert_size(db_stats['storageSize'])
         index_size_value, index_size_unit = convert_size(db_stats['indexSize'])
-
-        # Extract the total number of objects (documents) in the database
         num_objects = db_stats['objects']
-
-        # Calculate the total allocated storage size (if available)
-        allocated_storage_size = db_stats.get('fsUsedSize', None)  # Only available if using WiredTiger storage engine
+        allocated_storage_size = db_stats.get('fsUsedSize', None)
         total_allocated_size_value, total_allocated_size_unit = convert_size(allocated_storage_size) if allocated_storage_size else ("N/A", "")
-
-        # Calculate the remaining space
         if allocated_storage_size:
             used_storage_size = db_stats['storageSize']
             remaining_space = allocated_storage_size - used_storage_size
@@ -754,8 +794,7 @@ def progressReportAdmin():
         else:
             remaining_space_value, remaining_space_unit = ("N/A", "")
 
-
-        # Your existing logic for fetching other data goes here
+        # Existing logic for fetching other data
         project_types = ['recordings', 'validation', 'transcriptions']
         projects, userprojects, projectsform, sentences, transcriptions, speakerdetails = getdbcollections.getdbcollections(
             mongo,
@@ -834,7 +873,8 @@ def progressReportAdmin():
                                total_allocated_size_value=total_allocated_size_value,
                                total_allocated_size_unit=total_allocated_size_unit,
                                remaining_space_value=remaining_space_value,
-                               remaining_space_unit=remaining_space_unit)
+                               remaining_space_unit=remaining_space_unit,
+                               project_stats=project_stats)
 
     except Exception as e:
         logger.error("An error occurred while connecting to MongoDB: %s", e)

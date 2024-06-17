@@ -12,6 +12,61 @@ Progress Report Admin
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.css">
 
 <style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f8f9fa;
+        padding-top: 20px;
+    }
+    .container {
+        width: 80%;
+        margin: 0 auto;
+    }
+    h2 {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+        background-color: #fff;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    table th, table td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+    table th {
+        background-color: #f2f2f2;
+        font-weight: bold;
+    }
+    table tr:hover {
+        background-color: #f9f9f9;
+    }
+    .modal-dialog {
+        max-width: 1000px; /* Increase the max-width to fit wider content */
+    }
+    .modal-content {
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .modal-body {
+        overflow-y: auto;
+    }
+    .modal-title {
+        font-weight: bold;
+    }
+    .close {
+        font-size: 1.5rem;
+        color: #aaa;
+    }
+    .close:hover {
+        color: #333;
+        text-decoration: none;
+    }
+</style>
+
+<style>
 
     /* Additional styles specific to this page */
     .metric-card {
@@ -161,35 +216,58 @@ Progress Report Admin
             <br>
             {% endif %}
 
-            <table id="audioTable" class="display hidden">
-                <br>
-                <thead>
-                    <tr>
-                        <th>Created by</th>
-                        <th>Speaker ID</th>
-                        <th>Assigned to</th>
-                        <th>Time and date</th>
-                        <th>Duration</th>
-                        <th>Total no. of files</th>
-                        <th>Completed files</th>
-                        <th>Remaining files</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for progress_report in progress_reports %}
-                    <tr>
-                        <td>{{ progress_report['Created by'] }}</td>
-                        <td>{{ progress_report['Speaker ID'] }}</td>
-                        <td>{{ ', '.join(progress_report['Assigned to']) }}</td>
-                        <td>{{ progress_report['Time and date'] }}</td>
-                        <td>{{ progress_report['Duration'] }}</td>
-                        <td>{{ progress_report['Total no. of files'] }}</td>
-                        <td>{{ progress_report['Completed files'] }}</td>
-                        <td>{{ progress_report['Remaining files'] }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+              <!-- Table for Project List -->
+    <table id="audioTable" class="display hidden">
+        <thead>
+            <tr>
+                <th>Project Name</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for project in project_stats %}
+            <tr>
+                <td>{{ project.projectname }}</td>
+                
+                <td><button type="button" class="btn btn-primary" data-toggle="modal" data-target="#projectModal{{ loop.index }}">View Details</button></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Modals for Project Details -->
+    {% for project in project_stats %}
+    <div class="modal fade" id="projectModal{{ loop.index }}" tabindex="-1" role="dialog" aria-labelledby="projectModalLabel{{ loop.index }}" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="projectModalLabel{{ loop.index }}">{{ project.projectname }}</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <table class="table table-bordered">
+                        <tbody>
+                            <tr><th>Project Owner</th><td>{{ project.projectOwner }}</td></tr>
+                            <tr><th>Shared With</th><td>{{ project.sharedwith }}</td></tr>
+                            <tr><th>Project Derivatives</th><td>{{ project.projectDerivatives }}</td></tr>
+                            <tr><th>About Project</th><td>{{ project.aboutproject }}</td></tr>
+                            <tr><th>Project Type</th><td>{{ project.projectType }}</td></tr>
+                            <tr><th>Speaker IDs</th><td>{{ project.speakerIds }}</td></tr>
+                            <tr><th>Speakers Audio IDs</th><td>{{ project.speakersAudioIds }}</td></tr>
+                            <tr><th>Total Audio IDs</th><td>{{ project.totalAudioIds }}</td></tr>
+                            <tr><th>Speakers Audio IDs Keys</th><td>{{ project.speakersAudioIdsKeys }}</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
 
             <div id="secondaryDropdown">
                 <!-- Buttons for 'All projects of a user' -->
@@ -212,11 +290,11 @@ Progress Report Admin
                 <div id="cumulativeResults" class="hidden">
                     <h2>Cumulative Results</h2>
                     <ul>
-                        <li>Total number of projects (by project type): {{ all_projects | length }} Projects</li>
-                        <li>Total space taken: {{ storage_size_value }} {{ storage_size_unit }}</li>
+                        <li>Total number of projects (by project type): <!-- Value here --></li>
+                        <li>Total space taken: <!-- Value here --></li>
                         <li>Avg space per project: <!-- Value here --></li>
                         <li>Avg number of documents per project: <!-- Value here --></li>
-                        <li>Total Remaining Space (as per allocation): {{ remaining_space_value }} {{ remaining_space_unit }}</li>
+                        <li>Total Remaining Space (as per allocation): <!-- Value here --></li>
                         
                     </ul>
 
@@ -477,6 +555,17 @@ Progress Report Admin
 
 {% block scripts %}
 {{ super() }}
+
+
+
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://code.highcharts.com/highcharts.js"></script>
