@@ -11,6 +11,7 @@ Progress Report Admin
 
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.css">
 
+
 <style>
     body {
         font-family: Arial, sans-serif;
@@ -137,6 +138,8 @@ Progress Report Admin
             margin-left: 0; /* No margin on the left for main content */
         }
     }
+
+
 </style>
 
 
@@ -159,7 +162,7 @@ Progress Report Admin
                     </li> -->
 
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="#" onclick="showDashboard()">
+                        <a class="nav-link" href="#" onclick="showDashboard()">
                             <span data-feather="home"></span>
                             Dashboard
                         </a>
@@ -205,57 +208,77 @@ Progress Report Admin
             {% endif %}
 
               <!-- Table for Project List -->
-    <table id="audioTable" class="display hidden">
-        <thead>
-            <tr>
-                <th>Project Name</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for project in project_stats %}
-            <tr>
-                <td>{{ project.projectname }}</td>
-                
-                <td><button type="button" class="btn btn-primary" data-toggle="modal" data-target="#projectModal{{ loop.index }}">View Details</button></td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+                <table id="audioTable" class="hidden">
+                    <thead>
+                        <tr>
+                            <th>Project Name</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for project in project_stats %}
+                        <tr>
+                            <td>{{ project.projectname }}</td>
+                            
+                            <td><button type="button" class="btn btn-primary" data-toggle="modal" data-target="#projectModal{{ loop.index }}">View Details</button></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
 
-    <!-- Modals for Project Details -->
-    {% for project in project_stats %}
-    <div class="modal fade" id="projectModal{{ loop.index }}" tabindex="-1" role="dialog" aria-labelledby="projectModalLabel{{ loop.index }}" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="projectModalLabel{{ loop.index }}">{{ project.projectname }}</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <table class="table table-bordered">
-                        <tbody>
-                            <tr><th>Project Owner</th><td>{{ project.projectOwner }}</td></tr>
-                            <tr><th>Shared With</th><td>{{ project.sharedwith }}</td></tr>
-                            <tr><th>Project Derivatives</th><td>{{ project.projectDerivatives }}</td></tr>
-                            <tr><th>About Project</th><td>{{ project.aboutproject }}</td></tr>
-                            <tr><th>Project Type</th><td>{{ project.projectType }}</td></tr>
-                            <tr><th>Speaker IDs</th><td>{{ project.speakerIds }}</td></tr>
-                            <tr><th>Speakers Audio IDs</th><td>{{ project.speakersAudioIds }}</td></tr>
-                            <tr><th>Total Audio IDs</th><td>{{ project.totalAudioIds }}</td></tr>
-                            <tr><th>Speakers Audio IDs Keys</th><td>{{ project.speakersAudioIdsKeys }}</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    {% endfor %}
+                    <!-- Individual Project Results Section -->
+                    <div id="individualProjectResults" class="hidden">
+                        <table id="projectTable" class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Project Name</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for project in project_stats %}
+                                <tr data-toggle="modal" data-target="#projectModal{{ loop.index }}">
+                                    <td>{{ project.projectname }}</td>
+                                    <td><button type="button" class="btn btn-info view-details-btn" data-toggle="modal" data-target="#projectModal{{ loop.index }}">View Details</button></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Modals for Project Details -->
+                    {% for project in project_stats %}
+                    <div class="modal fade" id="projectModal{{ loop.index }}" tabindex="-1" role="dialog" aria-labelledby="projectModalLabel{{ loop.index }}" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="projectModalLabel{{ loop.index }}">{{ project.projectname }}</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <table class="table table-bordered">
+                                        <tbody>
+                                            <tr><th>Project Owner</th><td>{{ project.projectOwner }}</td></tr>
+                                            <tr><th>Shared With</th><td>{{ project.sharedwith }}</td></tr>
+                                            <tr><th>Project Derivatives</th><td>{{ project.projectDerivatives }}</td></tr>
+                                            <tr><th>About Project</th><td>{{ project.aboutproject }}</td></tr>
+                                            <tr><th>Project Type</th><td>{{ project.projectType }}</td></tr>
+                                            <tr><th>Speaker IDs</th><td>{{ project.speakerIds }}</td></tr>
+                                            <tr><th>Speakers Audio IDs</th><td>{{ project.speakersAudioIds }}</td></tr>
+                                            <tr><th>Total Audio IDs</th><td>{{ project.totalAudioIds }}</td></tr>
+                                            <tr><th>Speakers Audio IDs Keys</th><td>{{ project.speakersAudioIdsKeys }}</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
 
             <div id="secondaryDropdown">
                 <!-- Buttons for 'All projects of a user' -->
@@ -340,73 +363,91 @@ Progress Report Admin
                     
                                         
                             <!-- Remaining Space -->
-        <div class="col-md-6">
-            <div class="card metric-card">
-                <div class="card-body">
-                    <h5 class="card-title">Remaining Space</h5>
-                    <p class="card-text">{{ remaining_space_value }} {{ remaining_space_unit }}</p>
-                </div>
-            </div>
-        </div>
-    </div>
+                        <div class="col-md-6">
+                            <div class="card metric-card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Remaining Space</h5>
+                                    <p class="card-text">{{ remaining_space_value }} {{ remaining_space_unit }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
 
-                    
-                    <!-- Collection Statistics Cards -->
-    <div class="row">
-        {% for collection_name, stats in collection_stats.items() %}
-        <div class="col-md-6">
-            <div class="card metric-card">
-                <div class="card-body">
-                    <h5 class="card-title">{{ collection_name }}</h5>
-                    <p class="card-text">Storage Size: {{ stats["Storage Size"] }}</p>
-                    <p class="card-text">Documents: {{ stats["Documents"] }}</p>
-                    <p class="card-text">Avg. Document Size: {{ stats["Avg. Document Size"] }}</p>
-                    <p class="card-text">Indexes: {{ stats["Indexes"] }}</p>
-                    <p class="card-text">Total Index Size: {{ stats["Total Index Size"] }}</p>
-                </div>
-            </div>
-        </div>
-        {% endfor %}
-    </div>
+                                    
+                                    <!-- Collection Statistics Cards -->
+                    <div class="row">
+                        {% for collection_name, stats in collection_stats.items() %}
+                        <div class="col-md-6">
+                            <div class="card metric-card">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ collection_name }}</h5>
+                                    <p class="card-text">Storage Size: {{ stats["Storage Size"] }}</p>
+                                    <p class="card-text">Documents: {{ stats["Documents"] }}</p>
+                                    <p class="card-text">Avg. Document Size: {{ stats["Avg. Document Size"] }}</p>
+                                    <p class="card-text">Indexes: {{ stats["Indexes"] }}</p>
+                                    <p class="card-text">Total Index Size: {{ stats["Total Index Size"] }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                <!-- End Cards section -->
+                    </div>
 
-                    <!-- End Cards section -->
-                </div>
+               <!-- Individual Project Results Section -->
+                    <div id="individualProjectResults" class="hidden">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Project Name</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for project in project_stats %}
+                                <tr data-toggle="modal" data-target="#projectModal{{ loop.index }}">
+                                    <td>{{ project.projectname }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
 
-                <!--Individual Project Results Section -->
-                <div id="individualProjectResults" class="hidden">
-                    <h2>Individual Project Results</h2>
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>Name of the project</th>
-                                <th>Project type</th>
-                                <th>Total number of MongoDB documents</th>
-                                <th>Total space taken</th>
-                                <th>Total space per entry</th>
-                                <th>Owner</th>
-                                <th>Access Mode</th>
-                                <th>Project Shared By</th>
-                                <th>Project Shared with and access mode</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for progress_report in progress_reports %}
-                            <tr>
-                                <td>{{ progress_report['Speaker ID'] }}</td>
-                                <td>{{ progress_report['Time and date'] }}</td>
-                                <td>{{ progress_report['Duration'] }}</td>
-                                <td>{{ progress_report['Total no. of files'] }}</td>
-                                <td>{{ progress_report['Completed files'] }}</td>
-                                <td>{{ progress_report['Created by'] }}</td>
-                                <td>{{ progress_report['Remaining files'] }}</td>
-                                <td></td>
-                                <td>{{ ', '.join(progress_report['Assigned to']) }}</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
+                    <!-- Modals for Project Details -->
+                    {% for project in project_stats %}
+                    <div class="modal fade" id="projectModal{{ loop.index }}" tabindex="-1" role="dialog" aria-labelledby="projectModalLabel{{ loop.index }}" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="projectModalLabel{{ loop.index }}">{{ project.projectname }}</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <table class="table table-bordered">
+                                        <tbody>
+                                            <tr><th>Project Owner</th><td>{{ project.projectOwner }}</td></tr>
+                                            <tr><th>Shared With</th><td>{{ project.sharedwith }}</td></tr>
+                                            <tr><th>Project Derivatives</th><td>{{ project.projectDerivatives }}</td></tr>
+                                            <tr><th>About Project</th><td>{{ project.aboutproject }}</td></tr>
+                                            <tr><th>Project Type</th><td>{{ project.projectType }}</td></tr>
+                                            <tr><th>Speaker IDs</th><td>{{ project.speakerIds }}</td></tr>
+                                            <tr><th>Speakers Audio IDs</th><td>{{ project.speakersAudioIds }}</td></tr>
+                                            <tr><th>Total Audio IDs</th><td>{{ project.totalAudioIds }}</td></tr>
+                                            <tr><th>Speakers Audio IDs Keys</th><td>{{ project.speakersAudioIdsKeys }}</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+
+
 
                 <!-- File-wise Results Section -->
                 <div id="fileWiseResults" class="hidden">
@@ -552,6 +593,7 @@ Progress Report Admin
 <script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.js"></script>
 
 
 
@@ -564,94 +606,11 @@ Progress Report Admin
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.js"></script>
 
 <script>
-$(document).ready(function() {
-    $('#audioTable').DataTable();
-});
-
-// Function to toggle the visibility of elements and hide the audioTable
-function toggleVisibility(elementId) {
-    var element = document.getElementById(elementId);
-    if (element.classList.contains('hidden')) {
-        element.classList.remove('hidden');
-    } else {
-        element.classList.add('hidden');
-    }
-}
-
-// Function to toggle the buttons for 'All projects of a user'
-function showAllProjects() {
-    toggleVisibility('allProjectsButtons');
-    document.getElementById('specificProjectButtons').classList.add('hidden');
-    document.getElementById('cumulativeResults').classList.add('hidden');
-    document.getElementById('individualProjectResults').classList.add('hidden');
-    document.getElementById('fileWiseResults').classList.add('hidden');
-    document.getElementById('userWiseResults').classList.add('hidden');
-    document.getElementById('audioTable').classList.add('hidden');
-}
-
-// Function to toggle the buttons for 'Any specific project of the user'
-function showSpecificProject() {
-    toggleVisibility('specificProjectButtons');
-    document.getElementById('allProjectsButtons').classList.add('hidden');
-    document.getElementById('cumulativeResults').classList.add('hidden');
-    document.getElementById('individualProjectResults').classList.add('hidden');
-    document.getElementById('fileWiseResults').classList.add('hidden');
-    document.getElementById('userWiseResults').classList.add('hidden');
-    document.getElementById('audioTable').classList.add('hidden');
-}
-
-// Function to toggle the Dashboard and hide other sections
-function showDashboard() {
-    toggleVisibility('audioTable');
-    document.getElementById('allProjectsButtons').classList.add('hidden');
-    document.getElementById('specificProjectButtons').classList.add('hidden');
-    document.getElementById('cumulativeResults').classList.add('hidden');
-    document.getElementById('individualProjectResults').classList.add('hidden');
-    document.getElementById('fileWiseResults').classList.add('hidden');
-    document.getElementById('userWiseResults').classList.add('hidden');
-}
-
-// Function to show the Cumulative Results section
-function showCumulativeResults() {
-    toggleVisibility('cumulativeResults');
-    document.getElementById('individualProjectResults').classList.add('hidden');
-}
-
-// Function to show the Individual Project Results section
-function showIndividualProjectResults() {
-    toggleVisibility('individualProjectResults');
-    document.getElementById('cumulativeResults').classList.add('hidden');
-}
-
-// Function to show the File-wise Results section
-function showFileWiseResults() {
-    toggleVisibility('fileWiseResults');
-    document.getElementById('userWiseResults').classList.add('hidden');
-}
-
-// Function to show the User-wise Results section
-function showUserWiseResults() {
-    toggleVisibility('userWiseResults');
-    document.getElementById('fileWiseResults').classList.add('hidden');
-}
-
-// Function to show user details (placeholder)
-function showUserDetails(username) {
-    alert('Showing details for user: ' + username);
-}
-
-// Function to show file details (placeholder)
-function showFileDetails(fileId) {
-    alert('Showing details for file: ' + fileId);
-}
-</script>
-
-
-<script>
     $(document).ready(function() {
         $('#audioTable').DataTable();
     });
-
+    
+    // Function to toggle the visibility of elements and hide the audioTable
     function toggleVisibility(elementId) {
         var element = document.getElementById(elementId);
         if (element.classList.contains('hidden')) {
@@ -660,7 +619,8 @@ function showFileDetails(fileId) {
             element.classList.add('hidden');
         }
     }
-
+    
+    // Function to toggle the buttons for 'All projects of a user'
     function showAllProjects() {
         toggleVisibility('allProjectsButtons');
         document.getElementById('specificProjectButtons').classList.add('hidden');
@@ -670,7 +630,8 @@ function showFileDetails(fileId) {
         document.getElementById('userWiseResults').classList.add('hidden');
         document.getElementById('audioTable').classList.add('hidden');
     }
-
+    
+    // Function to toggle the buttons for 'Any specific project of the user'
     function showSpecificProject() {
         toggleVisibility('specificProjectButtons');
         document.getElementById('allProjectsButtons').classList.add('hidden');
@@ -680,7 +641,8 @@ function showFileDetails(fileId) {
         document.getElementById('userWiseResults').classList.add('hidden');
         document.getElementById('audioTable').classList.add('hidden');
     }
-
+    
+    // Function to toggle the Dashboard and hide other sections
     function showDashboard() {
         toggleVisibility('audioTable');
         document.getElementById('allProjectsButtons').classList.add('hidden');
@@ -690,122 +652,48 @@ function showFileDetails(fileId) {
         document.getElementById('fileWiseResults').classList.add('hidden');
         document.getElementById('userWiseResults').classList.add('hidden');
     }
+    
 
+    // Function to show the Cumulative Results section
     function showCumulativeResults() {
         toggleVisibility('cumulativeResults');
         document.getElementById('individualProjectResults').classList.add('hidden');
     }
-
+    
+    // Function to show the Individual Project Results section
     function showIndividualProjectResults() {
         toggleVisibility('individualProjectResults');
         document.getElementById('cumulativeResults').classList.add('hidden');
     }
-
+    
+    // Function to show the File-wise Results section
     function showFileWiseResults() {
         toggleVisibility('fileWiseResults');
         document.getElementById('userWiseResults').classList.add('hidden');
     }
-
+    
+    // Function to show the User-wise Results section
     function showUserWiseResults() {
         toggleVisibility('userWiseResults');
         document.getElementById('fileWiseResults').classList.add('hidden');
     }
-
+    
+    // Function to show user details (placeholder)
     function showUserDetails(username) {
         alert('Showing details for user: ' + username);
     }
-
+    
+    // Function to show file details (placeholder)
     function showFileDetails(fileId) {
         alert('Showing details for file: ' + fileId);
     }
-
-    // Highcharts bullet charts setup
-    $(document).ready(function() {
-        function createBulletChart(container, title, value, target) {
-            Highcharts.chart(container, {
-                chart: {
-                    type: 'bullet',
-                    inverted: true,
-                    marginLeft: 135,
-                    height: 100
-                },
-                title: {
-                    text: title
-                },
-                legend: {
-                    enabled: false
-                },
-                yAxis: {
-                    gridLineWidth: 0
-                },
-                plotOptions: {
-                    series: {
-                        pointPadding: 0.25,
-                        borderWidth: 0,
-                        color: '#000',
-                        targetOptions: {
-                            width: '200%'
-                        }
-                    }
-                },
-                series: [{
-                    data: [{
-                        y: value,
-                        target: target
-                    }]
-                }],
-                tooltip: {
-                    pointFormat: '<b>{point.y}</b> (target: <b>{point.target}</b>)'
-                }
-            });
-        }
-
-        createBulletChart('totalProjectsBullet', 'Total Projects', {{ all_projects | length }}, 100);
-        createBulletChart('dataSizeBullet', 'Data Size', {{ data_size }}, 1000);
-        createBulletChart('storageSizeBullet', 'Storage Size', {{ storage_size | default(0) }}, 500);
-        createBulletChart('indexSizeBullet', 'Index Size', {{ num_objects | default(0) }}, 200);
-
-        // Example bullet chart function
-        function createBulletChart(container, title, value, target) {
-            Highcharts.chart(container, {
-                chart: {
-                    type: 'bullet',
-                    inverted: true,
-                    marginLeft: 135,
-                    height: 100
-                },
-                title: {
-                    text: title
-                },
-                legend: {
-                    enabled: false
-                },
-                yAxis: {
-                    gridLineWidth: 0
-                },
-                plotOptions: {
-                    series: {
-                        pointPadding: 0.25,
-                        borderWidth: 0,
-                        color: '#000',
-                        targetOptions: {
-                            width: '200%'
-                        }
-                    }
-                },
-                series: [{
-                    data: [{
-                        y: value,
-                        target: target
-                    }]
-                }],
-                tooltip: {
-                    pointFormat: '<b>{point.y}</b> (target: <b>{point.target}</b>)'
-                }
-            });
-        }
-    });
-</script>
-
-
+    </script>
+    
+    <script>
+        $(document).ready(function() {
+            // Initialize DataTables for projectTable
+            $('#projectTable').DataTable();
+        });
+    </script>
+    
 {% endblock %}
