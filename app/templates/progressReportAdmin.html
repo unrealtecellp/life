@@ -100,7 +100,7 @@ Progress Report Admin
     /* Sidebar styles */
     .side-nav-container {
         background-color: rgb(218, 239, 247);
-        color: rgb(17, 13, 240);
+        color: rgb(2, 1, 59);
         padding: 20px;
         height: 50vh;
         position: fixed;
@@ -111,7 +111,7 @@ Progress Report Admin
     }
 
     .side-nav-container a {
-        color: purple;
+        color: rgb(78, 9, 78);
         text-decoration: none;
         display: block;
         padding: 10px 0;
@@ -278,11 +278,11 @@ Progress Report Admin
                 <div id="cumulativeResults" class="hidden">
                     <h2>Cumulative Results</h2>
                     <ul>
-                        <li>Total number of projects (by project type): <!-- Value here --></li>
-                        <li>Total space taken: <!-- Value here --></li>
+                        <li>Total number of projects (by project type): {{ all_projects | length }}</li>
+                        <li>Total space taken: {{ data_size_value }} {{ data_size_unit }}</li>
                         <li>Avg space per project: <!-- Value here --></li>
                         <li>Avg number of documents per project: <!-- Value here --></li>
-                        <li>Total Remaining Space (as per allocation): <!-- Value here --></li>
+                        <li>Total Remaining Space (as per allocation): {{ remaining_space_value }} {{ remaining_space_unit }}</li>
                         
                     </ul>
 
