@@ -39,7 +39,8 @@ from app.lifedata.controller import (
 )
 from app.lifedata.transcription.controller import (
     transcription_audiodetails,
-    save_transcription_prompt
+    save_transcription_prompt,
+    transcription_report
 )
 
 from app.lifetagsets.controller import (
@@ -270,6 +271,7 @@ def home():
                                                                                    speakerids,
                                                                                    activeprojectname)
                 activeprojectform['speakerIds'] = speakerids
+                activeprojectform['addedSpeakerIds'] = added_speaker_ids
                 activeprojectform['activespeakerId'] = activespeakerid
                 activeprojectform['sourceMetadata'] = speaker_metadata
                 scriptCode = readJSONFile.readJSONFile(scriptCodeJSONFilePath)
@@ -295,7 +297,7 @@ def home():
                         else:
                             continue
 
-                # logger.debug("activeprojectform: %s", activeprojectform)
+                # logger.debug("activeprojectform: %s", pformat(activeprojectform))
 
                 return render_template('transcription.html',
                                        projectName=activeprojectname,
@@ -1726,3 +1728,24 @@ def toggleComplete():
         return jsonify({'status': complete_status})
     except:
         logger.exception("")
+
+@transcription.route('/transcriptionreport', methods=['GET', 'POST'])
+@login_required
+def transcriptionreport():
+    userprojects, transcriptions_collection = getdbcollections.getdbcollections(mongo,
+                                                                                'userprojects',
+                                                                                'transcriptions')
+    current_username = getcurrentusername.getcurrentusername()
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                  userprojects)
+    
+    audio_duration_project = transcription_report.total_audio_duration_project(transcriptions_collection,
+                                                                                activeprojectname)
+    audio_duration_transcribed = transcription_report.total_audio_duration_transcribed(transcriptions_collection,
+                                                                                         activeprojectname)
+    audio_duration_transcribed_boundary = transcription_report.total_audio_duration_boundary(transcriptions_collection,
+                                                                                                activeprojectname)
+
+    return jsonify(totalAudioDurationProject=audio_duration_project,
+                   totalAudioDurationTranscribed=audio_duration_transcribed,
+                   totalAudioDurationTranscribedBoundary = audio_duration_transcribed_boundary)

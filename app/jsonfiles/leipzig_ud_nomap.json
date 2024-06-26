@@ -1,0 +1,26 @@
+[
+    {"id": "A", "text": "agent-like"},
+    {"id": "AGR", "text": "agreement"},
+    {"id": "APPL", "text": "applicative"},
+    {"id": "CLF", "text": "classifier"},
+    {"id": "COMP", "text": "complementizer"},
+    {"id": "COMPL", "text": "completive"},
+    {"id": "DECL", "text": "declarative"},
+    {"id": "DUR", "text": "durative"},
+    {"id": "FOC", "text": "focus"},
+    {"id": "IPFV", "text": "imperfective"},
+    {"id": "N-", "text": "non-"},
+    {"id": "NMLZ", "text": "nominalizer/nominalization"},
+    {"id": "OBJ", "text": "object"},
+    {"id": "OBL", "text": "oblique"},
+    {"id": "P", "text": "patient-like"},
+    {"id": "PFV", "text": "perfective"},
+    {"id": "PRED", "text": "predicative"},
+    {"id": "PROH", "text": "prohibitive"}
+    {"id": "Q", "text": "question"},
+    {"id": "REL", "text": "relative"},
+    {"id": "RES", "text": "resultative"},
+    {"id": "S", "text": "single"},
+    {"id": "SBJ", "text": "subject"},
+    {"id": "TOP", "text": "topic"}
+]
