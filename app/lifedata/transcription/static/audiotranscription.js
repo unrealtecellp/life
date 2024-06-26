@@ -843,74 +843,259 @@ function morphemeDetails(actualTranscription, morphemicBreakTranscription) {
     return morphemeData
 }
 
-function addDeleteGlossSelect2(field,
+function getFieldValueGloss(field,
     glossTokenIdInfo,
-    tokenId,
-    concatSymbol) {
-    let fieldValue = '';
-    let oldFieldValueArray = [];
-    let selectedFieldValueInfo = [];
+    tokenId) {
+    var fieldValueGloss = '';
     if (glossTokenIdInfo &&
         tokenId in glossTokenIdInfo &&
         field in glossTokenIdInfo[tokenId]) {
-        fieldValue = glossTokenIdInfo[tokenId][field];
+        fieldValueGloss = glossTokenIdInfo[tokenId][field];
     }
+    return fieldValueGloss
+}
+
+
+function addDeleteGlossSelect2(fieldId,
+    fieldValue,
+    morphId,
+    concatSymbol) {
+    // let fieldValue = '';
+    // console.log("Add delete");
+    let oldFieldValueArray = [];
+    let selectedFieldValueInfo = [];
+    // if (glossTokenIdInfo &&
+    //     tokenId in glossTokenIdInfo &&
+    //     field in glossTokenIdInfo[tokenId]) {
+    //     fieldValue = glossTokenIdInfo[tokenId][field];
+    // }
     // console.log(fieldValue);
-    // console.log(field);
+    // console.log('Field', field);
     // console.log(glossTokenIdInfo)
-    // console.log(tokenId)
+    // console.log('Token ID', tokenId);
     // console.log(concatSymbol)
     if (fieldValue !== '') {
         oldFieldValueArray = fieldValue.split(concatSymbol);
     }
     // console.log(fieldValue, oldFieldValueArray);
     try {
-        selectedFieldValueInfo = $('#' + tokenId + '_' + field).select2('data');
+        // selectedFieldValueInfo = $('#' + tokenId + '_' + field).select2('data');
+        // console.log('Field ID', fieldId);
+        // selectedFieldValueInfo = $('#' + fieldId).select2('data');
+        // console.log("Field ID", fieldId);
+        selectedFieldValueInfo = $('#' + fieldId).val();
+        // console.log('Field ID Value', fieldId);
+        if (!selectedFieldValueInfo) {
+            selectedFieldValueInfo = [""];
+        }
     }
     catch { }
-    // console.log(selectedFieldValueInfo);
-    let tempFieldValue = '';
-    let incomingFieldValueArray = []
-    for (a = 0; a < selectedFieldValueInfo.length; a++) {
-        // console.log(fieldValue);
-        tempFieldValue = selectedFieldValueInfo[a].id;
-        incomingFieldValueArray.push(tempFieldValue);
-        if (oldFieldValueArray.includes(tempFieldValue)) {
-            continue
-        }
-        else {
-            if (fieldValue === '') {
-                fieldValue = tempFieldValue;
-            }
-            else {
-                fieldValue += concatSymbol + tempFieldValue;
+    // console.log('Field Value', fieldValue);
+    // console.log('Old Values', oldFieldValueArray);
+    // console.log('New Values', selectedFieldValueInfo);
+
+    let newValues = [];
+    // Value deleted
+    if (oldFieldValueArray.length > selectedFieldValueInfo.length) {
+        // console.log("Deleted");
+        let b = 0;
+        for (a = 0; a < oldFieldValueArray.length; a++) {
+            let oldVal = oldFieldValueArray[a];
+            let newVal = selectedFieldValueInfo[b];
+            if (oldVal === newVal) {
+                newValues.push(oldVal);
+                b += 1;
             }
         }
     }
-    for (a = 0; a < oldFieldValueArray.length; a++) {
-        if (incomingFieldValueArray.includes(oldFieldValueArray[a])) {
-            continue
-        }
-        else {
-            fieldValue = fieldValue.replace(concatSymbol + oldFieldValueArray[a], '').replace(oldFieldValueArray[a] + concatSymbol, '').replace(oldFieldValueArray[a], '');
+    //Value added
+    else {
+        // console.log("Added");
+        let b = 0;
+        for (a = 0; a < selectedFieldValueInfo.length; a++) {
+            let newVal = selectedFieldValueInfo[a];
+            let oldVal = oldFieldValueArray[b];
+            newValues.push(newVal);
+
+            if (oldVal === newVal) {
+                b += 1;
+            }
         }
     }
 
-    return fieldValue;
+    // console.log('New Values', newValues);
+    let finalValues = newValues.join(concatSymbol);
+    // console.log('Final Values', finalValues);
+    // let tempFieldValue = '';
+    // let incomingFieldValueArray = []
+    // for (a = 0; a < selectedFieldValueInfo.length; a++) {
+    //     // console.log(fieldValue);
+    //     tempFieldValue = selectedFieldValueInfo[a].id;
+    //     incomingFieldValueArray.push(tempFieldValue);
+    //     if (oldFieldValueArray.includes(tempFieldValue)) {
+    //         continue
+    //     }
+    //     else {
+    //         if (fieldValue === '') {
+    //             fieldValue = tempFieldValue;
+    //         }
+    //         else {
+    //             fieldValue += concatSymbol + tempFieldValue;
+    //         }
+    //     }
+    // }
+    // for (a = 0; a < oldFieldValueArray.length; a++) {
+    //     if (incomingFieldValueArray.includes(oldFieldValueArray[a])) {
+    //         continue
+    //     }
+    //     else {
+    //         fieldValue = fieldValue.replace(concatSymbol + oldFieldValueArray[a], '').replace(oldFieldValueArray[a] + concatSymbol, '').replace(oldFieldValueArray[a], '');
+    //     }
+    // }
+    // console.log('Final field value', fieldValue);
+    // return fieldValue;
+    return finalValues
+}
+
+function mergeAllExistingGlosses(existingGloss) {
+    let mergedGloss = [];
+    let existingGlossParts = existingGloss.split(morphemicBreakRegex);
+    for (i = 0; i < existingGlossParts.length; i += 2) {
+        let currentGloss = existingGlossParts[i];
+        let currentDelim = existingGlossParts[i + 1];
+        if (currentDelim && currentDelim === wordBoundary) {
+            if (!mergedGloss.includes(currentGloss)) {
+                mergedGloss.unshift(currentGloss);
+            }
+        }
+        else if (!mergedGloss.includes(currentGloss)) {
+            mergedGloss.push(currentGloss);
+        }
+    }
+    mergedGloss = mergedGloss.join('.');
+    return mergedGloss;
+}
+
+function deleteMorphemicBreak(existingMorphemesArray, newMorphemesArray, existingGlossArray) {
+    let newGlosses = '';
+    // console.log('Deleting Existing Gloss Array', existingGlossArray);
+    // console.log('Existing Morphemes Array', existingMorphemesArray, existingMorphemesArray.length);
+    // console.log('New Morphemes Array', newMorphemesArray, newMorphemesArray.length);
+    for (let k = 0; k < existingMorphemesArray.length; k += 2) {
+        let existingMorph = existingMorphemesArray[k];
+        let existingGloss = existingGlossArray[k];
+        // let existingGlossCategs = existingGloss.split('.');
+        // console.log(k, 'Existing morph', existingMorph, 'Existing Gloss', existingGloss)
+
+        if (newMorphemesArray.includes(existingMorph)) {
+            let existingDelim = existingMorphemesArray[k + 1];
+            if (existingDelim) {
+                newGlosses += existingGloss + existingDelim;
+            }
+            else {
+                newGlosses += existingGloss;
+            }
+            // console.log('   eted', newGlosses);
+        }
+        else {
+            let newMorph = newMorphemesArray[k];
+            // console.log('To be deleted', newMorph);
+            if (newMorph && newMorph.startsWith(existingMorph)) {
+                let nextExistingGloss = existingGlossArray[k + 2];
+                // console.log('Next existing gloss to be merged', nextExistingGloss);
+                let delim = newMorphemesArray[k + 1];
+                if (nextExistingGloss) {
+                    if (existingGloss !== nextExistingGloss) {
+                        if (delim) {
+                            newGlosses += existingGloss + '.' + nextExistingGloss + delim;
+                        }
+                        else {
+                            newGlosses += existingGloss + '.' + nextExistingGloss;
+                        }
+                    }
+                    else {
+                        if (delim) {
+                            newGlosses += existingGloss + delim;
+                        }
+                        else {
+                            newGlosses += existingGloss;
+                        }
+
+                    }
+                }
+            }
+        }
+    }
+    // console.log('Deleted', newGlosses);
+    return newGlosses
+}
+
+function addMorphemicBreak(existingMorphemesArray, newMorphemesArray, existingGlossArray) {
+    let newGlosses = '';
+    // console.log('Existing morphemes Array', existingMorphemesArray);
+    for (let l = 0; l < existingMorphemesArray.length; l += 2) {
+        // console.log("starting at", l);
+        let existingMorph = existingMorphemesArray[l];
+        let existingGloss = existingGlossArray[l];
+        let existingDelim = existingMorphemesArray[l + 1];
+        // console.log('Existing morph', existingMorph, l);
+        // console.log('New Glosses', newGlosses);
+        if (!existingDelim) {
+            existingDelim = '';
+        }
+
+        if (newMorphemesArray.includes(existingMorph)) {
+            newGlosses += existingGloss + existingDelim;
+        }
+        else {
+            let newMorph = newMorphemesArray[l];
+            let newDelim = newMorphemesArray[l + 1];
+
+            if (existingMorph.startsWith(newMorph)) {
+                newGlosses += existingGloss + newDelim + existingGloss + existingDelim;
+            }
+        }
+    }
+    return newGlosses
+}
+
+function editMorphemicBreak(existingMorphemesArray, newMorphemesArray, existingGlossArray) {
+    let newGlosses = '';
+    if (existingMorphemesArray.length > newMorphemesArray.length) {
+        newGlosses = deleteMorphemicBreak(existingMorphemesArray, newMorphemesArray, existingGlossArray);
+
+    }
+    else if (existingMorphemesArray.length < newMorphemesArray.length) {
+        newGlosses = addMorphemicBreak(existingMorphemesArray, newMorphemesArray, existingGlossArray);
+    }
+    return newGlosses
+}
+
+
+function processMorphemicBreakChanges(existingGloss, existingGlossArray, existingMorphemesArray, newMorphemesArray) {
+    let gloss = existingGloss;
+    if (newMorphemesArray.length <= 1) {
+        gloss = mergeAllExistingGlosses(existingGloss);
+    }
+    else {
+        gloss = editMorphemicBreak(existingMorphemesArray, newMorphemesArray, existingGlossArray);
+    }
+    return gloss;
 }
 
 function processTokenGloss(glossTokenId,
     interlinearGlossFormat,
     customizeGloss,
-    glossTokenIdInfo) {
+    glossTokenIdInfo,
+    existingMorphemes) {
     // console.log('processTokenGloss');
-    // console.log(glossTokenIdInfo);
+    // console.log('Gloss token ID info', glossTokenIdInfo);
     try {
         let glossedSentenceWithMorphemicBreakInfo = {};
         let glossedSentenceWithTokenIdInfo = {};
         for (let i = 0; i < glossTokenId.length; i++) {
             let tokenId = glossTokenId[i];
-            // console.log(tokenId);
+            // console.log('Processing', tokenId);
             // glossedSentenceWithMorphemicBreakInfo[tokenId] = {};
             glossedSentenceWithTokenIdInfo[tokenId] = {};
             // console.log(document.getElementById(tokenId+'_word_input').value);
@@ -918,25 +1103,102 @@ function processTokenGloss(glossTokenId,
             // console.log(token);
             glossedSentenceWithMorphemicBreakInfo[tokenId] = token;
             if (interlinearGlossFormat.includes('Leipzig')) {
-                let tokenTranslation = document.getElementById(tokenId + '_word_translation').value;
-                // console.log(tokenTranslation);
-                // let gloss = document.getElementById(tokenId+'_gloss').value;
-                // let gloss = $('#'+tokenId+'_gloss').val();
-                let gloss = addDeleteGlossSelect2('gloss',
+                let field = 'gloss';
+                let tokenMorphemesArray = token.split(morphemicBreakRegex);
+                let fieldValueGloss = getFieldValueGloss(field,
                     glossTokenIdInfo,
-                    tokenId,
-                    '.'
-                );
-                // if (gloss !== '') {
-                //     console.log(gloss);
-                // }
-                if (tokenTranslation !== '') {
-                    gloss = tokenTranslation + '.' + gloss;
+                    tokenId);
+                let existingGlossArray = fieldValueGloss.split(morphemicBreakRegex);
+
+                // console.log("Token morphemes array", tokenMorphemesArray, tokenMorphemesArray.length);
+                // console.log("Existing Gloss array", existingGlossArray, existingGlossArray.length);
+                if (tokenMorphemesArray.length === existingGlossArray.length) {
+                    if (tokenMorphemesArray.length <= 1) {
+                        let tokenTranslation = document.getElementById(tokenId + '_word_translation').value;
+                        // console.log("Single Value processing", tokenId, tokenTranslation);
+                        let fieldId = tokenId + tokenMorphIdSep + '0_' + field;
+                        let existingGloss = fieldValueGloss.replace(tokenTranslation, '');
+                        if (existingGloss.startsWith('.')) {
+                            existingGloss = existingGloss.substring(1, existingGloss.length);
+                        }
+                        // console.log("Leipzig Add delete");
+                        let gloss = addDeleteGlossSelect2(fieldId,
+                            existingGloss,
+                            tokenId,
+                            '.'
+                        );
+                        if (tokenTranslation !== '') {
+                            if (gloss === "") {
+                                gloss = tokenTranslation
+                            }
+                            else {
+                                gloss = tokenTranslation + '.' + gloss;
+                            }
+                        }
+                        else {
+                            gloss = '_' + '.' + gloss;
+                        }
+                        glossedSentenceWithTokenIdInfo[tokenId]['gloss'] = gloss;
+                    }
+                    else {
+                        let morphId = 0;
+                        let gloss = '';
+                        for (let k = 0; k < tokenMorphemesArray.length; k += 2) {
+                            let delim = tokenMorphemesArray[k + 1];
+                            if (delim === wordBoundary) {
+                                let glossVal = document.getElementById(tokenId + '_word_translation').value;
+                                gloss = gloss + glossVal + delim;
+                            }
+                            else {
+                                let field = 'gloss';
+                                let fieldId = tokenId + tokenMorphIdSep + morphId + '_' + field;
+                                // let fieldValueGloss = getFieldValueGloss(field,
+                                //     glossTokenIdInfo,
+                                //     tokenId);                            
+                                let existingGloss = existingGlossArray[k];
+                                if (!existingGloss) {
+                                    existingGloss = existingGlossArray[0];
+                                    fieldId = tokenId + tokenMorphIdSep + '0_' + field;
+                                }
+                                // console.log('Existing Gloss', existingGloss, existingGlossArray, existingGlossArray.length);
+                                let glossVal = addDeleteGlossSelect2(fieldId,
+                                    existingGloss,
+                                    tokenId,
+                                    '.'
+                                );
+                                // console.log('New Gloss Value', glossVal);
+                                if (delim) {
+                                    gloss = gloss + glossVal + delim;
+                                }
+                                else {
+                                    gloss = gloss + glossVal;
+                                }
+                                // console.log(k, 'Token ID', tokenId, 'Current Gloss', gloss);
+                            }
+
+                            morphId += 1;
+                        }
+                        glossedSentenceWithTokenIdInfo[tokenId]['gloss'] = gloss;
+                        // console.log('Token ID', tokenId, 'Final Gloss', gloss);
+                    }
                 }
                 else {
-                    gloss = '_' + '.' + gloss;
+                    // console.log('Existing Morphemes', existingMorphemes, tokenId);
+                    let currentExistingMorpheme = existingMorphemes[tokenId];
+                    let existingMorphemesArray = currentExistingMorpheme.split(morphemicBreakRegex);
+                    // console.log('Existing Morphemes Array', existingMorphemesArray, tokenId);
+                    // console.log('New morphemes Array', tokenMorphemesArray);
+                    // console.log('Existing morphemes', currentExistingMorpheme, 'New morphemes', token);
+                    if (currentExistingMorpheme === token) {
+                        gloss = fieldValueGloss;
+                    }
+                    else {
+                        gloss = processMorphemicBreakChanges(fieldValueGloss, existingGlossArray, existingMorphemesArray, tokenMorphemesArray);
+                    }
+                    // console.log('Gloss', gloss);
+
+                    glossedSentenceWithTokenIdInfo[tokenId]['gloss'] = gloss;
                 }
-                glossedSentenceWithTokenIdInfo[tokenId]['gloss'] = gloss;
             }
             for (let p = 0; p < customizeGloss.length; p++) {
                 let field = customizeGloss[p].toLowerCase();
@@ -947,8 +1209,14 @@ function processTokenGloss(glossTokenId,
                     continue;
                 }
                 else if (field === 'feats') {
-                    fieldValue = addDeleteGlossSelect2(field,
+                    let fieldValueFeats = getFieldValueGloss(field,
                         glossTokenIdInfo,
+                        tokenId);
+                    // console.log('Field value feats', fieldValueFeats);
+                    let fieldId = tokenId + '_' + field;
+                    // console.log('Add delete feats');
+                    fieldValue = addDeleteGlossSelect2(fieldId,
+                        fieldValueFeats,
                         tokenId,
                         '|'
                     );
@@ -1066,10 +1334,12 @@ function updateSentenceDetailsOnSaveBoundary(boundaryID, sentence, region, form)
                         //     customizeGloss
                         // )
                         if (glossTokenId.length !== 0) {
+                            // console.log("Calling process");
                             let glossedSentenceWithMorphemicBreakInfo = processTokenGloss(glossTokenId,
                                 interlinearGlossFormat,
                                 customizeGloss,
-                                sentence[boundaryID]['glossTokenIdInfo']);
+                                sentence[boundaryID]['glossTokenIdInfo'],
+                                sentence[boundaryID]['gloss'][k]);
                             // console.log(glossedSentenceWithMorphemicBreakInfo);
                             sentence[boundaryID]['gloss'][k] = glossedSentenceWithMorphemicBreakInfo.glossedSentenceWithMorphemicBreakInfo;
                             sentence[boundaryID]['glossTokenIdInfo'] = glossedSentenceWithMorphemicBreakInfo.glossedSentenceWithTokenIdInfo;
@@ -2555,98 +2825,121 @@ function mapLeipzigToUd(transcriptionFieldId, lepizigGlossVals) {
     let jsonFileNames = {
         leipzigUdMap: "leipzig_ud_map.json"
     }
+    // console.log("Mapping Leipzig to UD");
     var morphemicGloss = "";
     // var morphType = "";
     // var posCategories = "";
-    $.ajax({
-        url: '/get_jsonfile_data',
-        type: 'GET',
-        data: { 'data': JSON.stringify(jsonFileNames) },
-        contentType: "application/json; charset=utf-8",
-        success: function (response) {
-            leipzigUdMap = response.jsonData.leipzigUdMap;
-            // console.log('Map', leipzigUdMap);
-            // console.log('Leipzig gloss vals', lepizigGlossVals);
-            let featElementId = transcriptionFieldId.replace('_gloss', '_feats');
-            let uposElementId = transcriptionFieldId.replace('_gloss', '_upos');
-            let udFeatElement = document.getElementById(featElementId);
-            let uposElement = document.getElementById(uposElementId);
-            let udFeatVals = $(udFeatElement).val();
-            let udPosVals = $(uposElement).val();
-            // $('#' + featElementId).select2("val", "");
-            // $('#' + featElementId).trigger('change');
-            // console.log('Existing POS Vals Beginning', udPosVals);
-            let newFeatVals = [];
-            let newPosVals = [];
-            newPosVals.push(...udPosVals);
-            // console.log('New POS Vals Beginning', newPosVals);
 
-            for (leipzigItem of lepizigGlossVals) {
-                let mapEntry = leipzigUdMap.filter(function (item) {
-                    return item.leipzig === leipzigItem;
-                });
+    let leipzigUdMap = JSON.parse(localStorage.getItem('leipzig_ud_map'));
+    // console.log('Map status', leipzigUdMap);
 
-                // console.log('Leipzig Value', leipzigItem);
-                // console.log('Entry', mapEntry);
-                // console.log('Existing UPOS Vals', udPosVals);
-                // console.log('Existing UD Feats Vals', udFeatVals);
-                if (mapEntry.length > 0) {
-                    mapEntry = mapEntry[0];
-                    if ('upos' in mapEntry) {
-                        let uposVal = mapEntry['upos'];
-                        // console.log('Mapped UD POS Val', uposVal);
-                        // console.log('Add', uposVal, 'to UPOS');
-                        newPosVals.push(uposVal);
-                        // if (!udPosVals.includes(uposVal)) {
-
-                        //     $('#' + uposElementId).val(uposVal);
-                        // }
-                    }
-                    else if ('udFeats' in mapEntry) {
-                        let udFeatVal = mapEntry['udFeats'];
-                        // console.log('Mapped UD Feats Val', udFeatVal);
-                        // console.log('Add', udFeatVal, 'to UD Feats');
-                        newFeatVals.push(udFeatVal);
-                        // if (!udFeatVals.includes(udFeatVal)) {
-
-                        //     // $('#' + featElementId).select2("val", udFeatVal);
-                        //     // $('#' + featElementId).select2("data", [{ id: udFeatVal, text: udFeatVal, 'selected': true }]);
-                        //     $('#' + featElementId).val(udFeatVal);
-                        // }
-                    }
-                }
-                else {
-                    if (!morphemicBreakSymbols.includes(leipzigItem)) {
-                        let udOption = leipzigItem + '=' + leipzigItem;
-                        if (!$('#' + featElementId).find("option[value='" + udOption + "']").length) {
-                            // if (!udFeatVals.includes(udOption)) {
-                            console.log('Adding option', udOption);
-                            let newOption = new Option(udOption, udOption, false, true);
-                            $('#' + featElementId).append(newOption);
-                        }
-                        newFeatVals.push(udOption);
-                    }
-                }
-                console.log('UPOS Vals after Update', newPosVals);
-                console.log('Feat Vals after Update', newFeatVals);
+    if (!leipzigUdMap) {
+        $.ajax({
+            url: '/get_jsonfile_data',
+            type: 'GET',
+            async: false,
+            data: { 'data': JSON.stringify(jsonFileNames) },
+            contentType: "application/json; charset=utf-8",
+            success: function (response) {
+                leipzigUdMap = response.jsonData.leipzigUdMap;
+                localStorage.setItem("leipzig_ud_map", JSON.stringify(leipzigUdMap));
             }
+        });
+    }
+    // console.log('Map', leipzigUdMap);
+    // console.log('Leipzig gloss vals in mapping', lepizigGlossVals);
+    let tokenId = transcriptionFieldId.split(tokenMorphIdSep)[0];
+    let featElementId = tokenId + '_feats';
+    let uposElementId = tokenId + '_upos';
+    // let featElementId = transcriptionFieldId.replace('_gloss', '_feats');
+    // let uposElementId = transcriptionFieldId.replace('_gloss', '_upos');
+    let udFeatElement = document.getElementById(featElementId);
+    let uposElement = document.getElementById(uposElementId);
+    let udFeatVals = $(udFeatElement).val();
+    let udPosVals = $(uposElement).val();
+    // $('#' + featElementId).select2("val", "");
+    // $('#' + featElementId).trigger('change');
+    // console.log('Existing POS Vals Beginning', udPosVals);
+    let newFeatVals = [];
+    let newPosVals = [];
+    newPosVals.push(...udPosVals);
+    // console.log('New POS Vals Beginning', newPosVals);
 
-            if (newPosVals.length > 0) {
-                $('#' + uposElementId).val(newPosVals).trigger('change');
+    if (lepizigGlossVals) {
+        for (leipzigItem of lepizigGlossVals) {
+            let mapEntry = leipzigUdMap.filter(function (item) {
+                return item.leipzig === leipzigItem;
+            });
+
+            // console.log('Leipzig Value', leipzigItem);
+            // console.log('Entry', mapEntry);
+            // console.log('Existing UPOS Vals', udPosVals);
+            // console.log('Existing UD Feats Vals', udFeatVals);
+            if (mapEntry.length > 0) {
+                mapEntry = mapEntry[0];
+                if ('upos' in mapEntry) {
+                    let uposVal = mapEntry['upos'];
+                    // console.log('Mapped UD POS Val', uposVal);
+                    // console.log('Add', uposVal, 'to UPOS');
+                    newPosVals.push(uposVal);
+                    // if (!udPosVals.includes(uposVal)) {
+
+                    //     $('#' + uposElementId).val(uposVal);
+                    // }
+                }
+                else if ('udFeats' in mapEntry) {
+                    let udFeatVal = mapEntry['udFeats'];
+                    // console.log('Mapped UD Feats Val', udFeatVal);
+                    // console.log('Add', udFeatVal, 'to UD Feats');
+                    newFeatVals.push(udFeatVal);
+                    // if (!udFeatVals.includes(udFeatVal)) {
+
+                    //     // $('#' + featElementId).select2("val", udFeatVal);
+                    //     // $('#' + featElementId).select2("data", [{ id: udFeatVal, text: udFeatVal, 'selected': true }]);
+                    //     $('#' + featElementId).val(udFeatVal);
+                    // }
+                }
             }
-            $('#' + featElementId).val(newFeatVals).trigger('change');
+            else {
+                if (!morphemicBreakSymbols.includes(leipzigItem)) {
+                    let udOption = leipzigItem + '=' + leipzigItem;
+                    if (!$('#' + featElementId).find("option[value='" + udOption + "']").length) {
+                        // if (!udFeatVals.includes(udOption)) {
+                        // console.log('Adding option', udOption);
+                        let newOption = new Option(udOption, udOption, false, true);
+                        $('#' + featElementId).append(newOption);
+                    }
+                    newFeatVals.push(udOption);
+                }
+            }
+            // console.log('UPOS Vals after Update', newPosVals);
+            // console.log('Feat Vals after Update', newFeatVals);
         }
-    })
+    }
+
+    if (newPosVals.length > 0) {
+        $('#' + uposElementId).val(newPosVals).trigger('change');
+    }
+    $('#' + featElementId).val(newFeatVals).trigger('change');
 }
+
 
 function autoSavetranscription(e, transcriptionField, recurse = true, update = true, from = '') {
     // console.log(wavesurfer, wavesurfer.regions);
     // console.log(e.keyCode);
     // console.log(transcriptionField, transcriptionField.id, transcriptionField.value);
     // console.log(e, transcriptionField);
-    console.log(e, transcriptionField, update, from);
-    let sentenceMorphemicBreakSymbols = ['-', '~', '=']
-    let data = e.data;
+    let fieldId = transcriptionField.id;
+    // let fieldClasses = transcriptionField.className;
+    // console.log('Inputs for autosave', e, transcriptionField, update, from);
+    // console.log('Recurse for UD feats and POS', recurse);
+    // console.log('Element Class', fieldId);
+    // console.log('Element ID', fieldClasses);
+    // console.log('From', from);
+    // let sentenceMorphemicBreakSymbols = ['-', '~', '=']
+    // let data = e.data;
+
+
 
     // console.log(data);
     if (e.keyCode == 13) {
@@ -2664,87 +2957,109 @@ function autoSavetranscription(e, transcriptionField, recurse = true, update = t
     // console.log('From', from);
 
     // showNote();
-    if (update) {
-        if (transcriptionField.id.includes('sentenceMorphemicBreak_')) {
-            // console.log(update);
-            // mapTranscriptionInterlinearGloss(e, transcriptionField);
-        }
-    }
-    if (from === 'sentenceMorphemicBreak_') {
-        let clickedIndex = e.target.selectionEnd;
-        // console.log(clickedIndex);
-        if (data === null) {
-            // console.log('Deletion!')
-            current_value = transcriptionField.value;
-            let last_value = transcriptionField.value;
-            let activeBoundaryID = document.getElementById('activeBoundaryID').value;
-            let localStorageRegions = JSON.parse(localStorage.regions);
-            let scriptName = getScriptToGlossDropdownSelected();
-            for (let p = 0; p < localStorageRegions.length; p++) {
-                console.log(p);
-                if (localStorageRegions[p]['boundaryID'] === boundaryID) {
-                    last_value = localStorageRegions[p]['data']['sentence'][activeBoundaryID]['sentencemorphemicbreak'][scriptName];
-                    break;
-                }
-            }
-            // console.log(last_value);
-            // console.log(last_value[clickedIndex]);
-            // console.log(current_value);
-            if (sentenceMorphemicBreakSymbols.includes(last_value[clickedIndex])) {
-                autoSavetranscriptionSubPart();
-                return;
-            }
-        }
-        if (!sentenceMorphemicBreakSymbols.includes(data)) {
-            let activeBoundaryID = document.getElementById('activeBoundaryID').value;
-            let scripttoglossdropdownselected = getScriptToGlossDropdownSelected();
-            transcriptionToGloss();
-            document.getElementById(transcriptionField.id).focus();
-            document.getElementById(transcriptionField.id).selectionEnd = clickedIndex;
-            alert("Only '-', '=' and '~' are allowed!");
-            return;
-        }
-        else if (sentenceMorphemicBreakSymbols.includes(data)) {
-            // console.log(transcriptionField.value);
-            // console.log(transcriptionField.value.slice(0, clickedIndex-1)+transcriptionField.value.slice(clickedIndex));
-            current_value = transcriptionField.value;
-            last_value = transcriptionField.value.slice(0, clickedIndex - 1) + transcriptionField.value.slice(clickedIndex);
-            // console.log(current_value, last_value);
-            if (sentenceMorphemicBreakSymbols.includes(current_value[clickedIndex - 2]) ||
-                sentenceMorphemicBreakSymbols.includes(current_value[clickedIndex])) {
-                let activeBoundaryID = document.getElementById('activeBoundaryID').value;
-                let scripttoglossdropdownselected = getScriptToGlossDropdownSelected();
-                transcriptionToGloss();
-                document.getElementById(transcriptionField.id).focus();
-                document.getElementById(transcriptionField.id).selectionEnd = clickedIndex;
-                alert("Only '-', '=' and '~' are allowed!");
-                return;
-            }
-        }
-    }
+    // if (update) {
+    //     if (transcriptionField.id.includes('sentenceMorphemicBreak_')) {
+    //         // console.log(update);
+    //         // mapTranscriptionInterlinearGloss(e, transcriptionField);
+    //     }
+    // }
+
+
+    // Commented Later
+    // if (from === 'sentenceMorphemicBreak_') {
+    //     let clickedIndex = e.target.selectionEnd;
+    //     // console.log(clickedIndex);
+    //     if (data === null) {
+    //         // console.log('Deletion!')
+    //         current_value = transcriptionField.value;
+    //         let last_value = transcriptionField.value;
+    //         let activeBoundaryID = document.getElementById('activeBoundaryID').value;
+    //         let localStorageRegions = JSON.parse(localStorage.regions);
+    //         let scriptName = getScriptToGlossDropdownSelected();
+    //         for (let p = 0; p < localStorageRegions.length; p++) {
+    //             console.log(p);
+    //             if (localStorageRegions[p]['boundaryID'] === boundaryID) {
+    //                 last_value = localStorageRegions[p]['data']['sentence'][activeBoundaryID]['sentencemorphemicbreak'][scriptName];
+    //                 break;
+    //             }
+    //         }
+    //         // console.log(last_value);
+    //         // console.log(last_value[clickedIndex]);
+    //         // console.log(current_value);
+    //         if (sentenceMorphemicBreakSymbols.includes(last_value[clickedIndex])) {
+    //             autoSavetranscriptionSubPart();
+    //             return;
+    //         }
+    //     }
+    //     if (!sentenceMorphemicBreakSymbols.includes(data)) {
+    //         let activeBoundaryID = document.getElementById('activeBoundaryID').value;
+    //         let scripttoglossdropdownselected = getScriptToGlossDropdownSelected();
+    //         transcriptionToGloss();
+    //         document.getElementById(transcriptionField.id).focus();
+    //         document.getElementById(transcriptionField.id).selectionEnd = clickedIndex;
+    //         alert("Only '-', '=' and '~' are allowed!");
+    //         return;
+    //     }
+    //     else if (sentenceMorphemicBreakSymbols.includes(data)) {
+    //         // console.log(transcriptionField.value);
+    //         // console.log(transcriptionField.value.slice(0, clickedIndex-1)+transcriptionField.value.slice(clickedIndex));
+    //         current_value = transcriptionField.value;
+    //         last_value = transcriptionField.value.slice(0, clickedIndex - 1) + transcriptionField.value.slice(clickedIndex);
+    //         // console.log(current_value, last_value);
+    //         if (sentenceMorphemicBreakSymbols.includes(current_value[clickedIndex - 2]) ||
+    //             sentenceMorphemicBreakSymbols.includes(current_value[clickedIndex])) {
+    //             let activeBoundaryID = document.getElementById('activeBoundaryID').value;
+    //             let scripttoglossdropdownselected = getScriptToGlossDropdownSelected();
+    //             transcriptionToGloss();
+    //             document.getElementById(transcriptionField.id).focus();
+    //             document.getElementById(transcriptionField.id).selectionEnd = clickedIndex;
+    //             alert("Only '-', '=' and '~' are allowed!");
+    //             return;
+    //         }
+    //     }
+    // }
 
     // activeTranscriptionFieldId = transcriptionField.id;
     // transciptionLang = activeTranscriptionFieldId.split('_')[1];
-    // activeTranscriptionFieldValue = transcriptionField.value.trim();
-    autoSavetranscriptionSubPart();
+    // activeTranscriptionFieldValue = transcriptionField.value.trim();    
 
-    if (recurse) {
-        let transcriptionFieldId = transcriptionField.id;
-        if (transcriptionFieldId.includes('_gloss')) {
-            let featElementId = transcriptionFieldId.replace('_gloss', '_feats');
-            let uposElementId = transcriptionFieldId.replace('_gloss', '_upos');
-            let udFeatElement = document.getElementById(featElementId);
-            let uposElement = document.getElementById(uposElementId);
-
-            console.log('Gloss changed');
-            let lepizigGlossVals = $(transcriptionField).val();
-            console.log('New vals', lepizigGlossVals);
-            mapLeipzigToUd(transcriptionFieldId, lepizigGlossVals);
-            autoSavetranscription(e, udFeatElement, false);
-            autoSavetranscription(e, uposElement, false);
-            // mapTranscriptionInterlinearGloss(e, transcriptionField);
+    if (fieldId.includes('_gloss')) {
+        // let transcriptionFieldId = transcriptionField.id;
+        // if (transcriptionFieldId.includes('_gloss')) {
+        // let featElementId = transcriptionFieldId.replace('_gloss', '_feats');
+        //     let uposElementId = transcriptionFieldId.replace('_gloss', '_upos');
+        //     let udFeatElement = document.getElementById(featElementId);
+        //     let uposElement = document.getElementById(uposElementId);
+        let tokenId = fieldId.split(tokenMorphIdSep)[0];
+        let wordInput = tokenId + '_word_input';
+        let allMorphs = wordInput.split(morphemicBreakRegex);
+        let lepizigGlossVals = [];
+        let morphCount = 0;
+        for (k = 0; k < allMorphs.length; k += 2) {
+            let currentFieldId = tokenId + tokenMorphIdSep + morphCount + '_gloss';
+            let currentlepizigGlossVals = $('#' + currentFieldId).val();
+            if (!currentlepizigGlossVals) {
+                currentlepizigGlossVals = [""];
+            }
+            lepizigGlossVals.push(...currentlepizigGlossVals);
+            morphCount++;
         }
+        // let featElementId = tokenId + '_feats';
+        // console.log('Gloss changed', tokenId, fieldId);
+
+        // console.log('New vals', lepizigGlossVals);
+        mapLeipzigToUd(fieldId, lepizigGlossVals);
+        // autoSavetranscription(e, udFeatElement, false);
+        // autoSavetranscription(e, uposElement, false);
+
+        // let newFeats = $('#' + featElementId).val();
+        // console.log('New Features', newFeats, featElementId);
+
+        // mapTranscriptionInterlinearGloss(e, transcriptionField);
+        // }
     }
+
+    autoSavetranscriptionSubPart();
     // startTime = document.getElementById('start').value
     // endTime = document.getElementById('end').value
     // console.log(startTime, endTime);
@@ -3016,27 +3331,76 @@ function transcriptionToGloss() {
     let scripttoglossdropdownselected = getScriptToGlossDropdownSelected();
     // console.log(scripttoglossdropdownselected);
     document.getElementById("interlinearglosstab").onclick = function () { transcriptionToGloss() };
-    let sentencemorphemicbreakupdatedvalue = '';
+    let sentenceMorphemicBreakUpdatedValue = '';
     let localStorageRegions = JSON.parse(localStorage.regions);
     // let scriptName = ele.value;
     let scriptName = scripttoglossdropdownselected;
+    // console.log('Script name', scriptName);
     for (let p = 0; p < localStorageRegions.length; p++) {
-        // console.log(p);
+        // console.log(localStorageRegions[p]);
         if (localStorageRegions[p]['boundaryID'] === boundaryID) {
             // console.log(p, boundaryID, scriptName);
-            let sentence_morphemic_break = localStorageRegions[p]['data']['sentence'][boundaryID]['sentencemorphemicbreak'][scriptName];
-            // console.log(sentence_morphemic_break);
-            sentencemorphemicbreakupdatedvalue = sentence_morphemic_break;
-            if (sentence_morphemic_break == '') {
-                let transcription_in_script = localStorageRegions[p]['data']['sentence'][boundaryID]['transcription'][scriptName];
+            // console.log(localStorageRegions[p]);
+            // console.log(localStorageRegions[p]['data']);
+            let allGlosses = localStorageRegions[p]['data']['sentence'][boundaryID]['gloss'][scriptName];
+            var allGlossesIPA = localStorageRegions[p]['data']['sentence'][boundaryID]['gloss']['IPA'];
+            // let allGlossScripts = Object.keys(allGlosses);
+            // if (!allGlossScripts.includes(scriptName)) {
+            //     scriptName = allGlossScripts[0];
+            // }
+            // allGlosses = allGlosses[scriptName];
+            // console.log('Script name', scriptName);
+            // console.log('All glosses', allGlosses);
+            // let sentenceMorphemicBreak = localStorageRegions[p]['data']['sentence'][boundaryID]['sentencemorphemicbreak'][scriptName];
+            // console.log(sentence_morphemic_break);            
+            let transcriptionInScript = localStorageRegions[p]['data']['sentence'][boundaryID]['transcription'][scriptName];
+
+            // if (sentenceMorphemicBreak == '') {
+            if (!allGlosses) {
+                sentenceMorphemicBreakUpdatedValue = transcriptionInScript;
+                break;
+            }
+            else if (allGlosses && allGlosses.length == 0) {
                 // console.log(transcription_in_script);
-                sentencemorphemicbreakupdatedvalue = transcription_in_script;
+                sentenceMorphemicBreakUpdatedValue = transcriptionInScript;
                 break;
             }
             else {
+                // console.log('All glosses', allGlosses);
+                let sentenceMorphemicBreak = "";
+                let sentenceWithoutMorphemicBreak = "";
+
+                if (allGlosses) {
+                    // console.log('No gloss');
+                    sentenceMorphemicBreak = Object.values(allGlosses).join(" ");
+                    sentenceWithoutMorphemicBreak = sentenceMorphemicBreak.replace(morphemicBreakReplacerRegex, '');
+                }
+
+                if (transcriptionInScript === sentenceWithoutMorphemicBreak) {
+                    // console.log('Differences equal', diffs);
+                    sentenceMorphemicBreakUpdatedValue = sentenceMorphemicBreak;
+                }
+                else {
+                    // console.log('Transcription updated');
+                    let dmp = new diff_match_patch();
+                    var a = dmp.diff_linesToChars_(sentenceWithoutMorphemicBreak, transcriptionInScript);
+                    var lineText1 = a.chars1;
+                    var lineText2 = a.chars2;
+                    var lineArray = a.lineArray;
+                    var diffs = dmp.diff_main(lineText1, lineText2, false);
+                    dmp.diff_charsToLines_(diffs, lineArray);
+                    // return diffs;
+                    // let diff = dmp.diff_main(sentenceWithoutMorphemicBreak, transcriptionInScript);                    
+                    dmp.diff_cleanupSemantic(diffs);
+                    // console.log("Differences", diffs);
+
+                    allGlosses = updateTokenId(diffs, scriptName);
+                    sentenceMorphemicBreakUpdatedValue = Object.values(allGlosses).join(" ");
+                }
                 break;
             }
         }
+
     }
     // console.log(sentencemorphemicbreakupdatedvalue);
     let inpt = '';
@@ -3057,9 +3421,10 @@ function transcriptionToGloss() {
         customizeGloss = interlinearglossforminfo.customizeGloss;
     }
     // if (sentencemorphemicbreakupdatedvalue !== '') {
-    returnInfo = createGlossingTable(sentencemorphemicbreakupdatedvalue,
+    returnInfo = createGlossingTable(sentenceMorphemicBreakUpdatedValue,
         interlinearGlossFormat,
-        customizeGloss);
+        customizeGloss,
+        allGlossesIPA);
     // console.log(returnInfo);
     inpt += returnInfo.inpt;
     // }
@@ -3069,6 +3434,10 @@ function transcriptionToGloss() {
     // console.log(returnInfo.jsonFileNames);
     getSelect2Data(getSelect2DataLocal(returnInfo.jsonFileNames));
     select2Multiselect();
+
+    if (scriptName !== 'IPA') {
+        $('.leipzig_glossing').select2({ disabled: 'readonly' });
+    }
     // autoSavetranscriptionSubPart();
     // }
 }
@@ -3313,19 +3682,191 @@ function tokenAnnotation(event) {
     }
 }
 
+function createLeipzigGlossingMorphemes(morphId, tokenId, morpheme, options, colLen, padding) {
+    let inpt = '';
+
+    inpt += '<div class="row leipzigGlossRows" style="padding-top: ' + padding + ';">';
+    inpt += '<div class="col-sm-' + colLen + '" style="padding-top: ' + padding + ';">';
+
+    inpt += '<input type="text" id="' + tokenId + tokenMorphIdSep + morphId + '_morpheme"' +
+        'class="' + tokenId + tokenMorphIdSep + morphId + '_morpheme_class form-control"' +
+        'value="' + morpheme + '" readonly>';
+
+    let morphemeId = tokenId + tokenMorphIdSep + morphId + '_gloss';
+
+    if (morpheme.endsWith('#')) {
+        morphemeId = tokenId + '_word_translation';
+    }
+
+    inpt += '<select id="' + morphemeId + '" class="leipzig_glossing"' +
+        ' oninput="autoSavetranscription(event,this)"' +
+        ' multiple="multiple" style="width: 100%;">';
+    inpt += options;
+    inpt += '</select>';
+    inpt += '<br>';
+    inpt += '</div></div>';
+
+    return inpt
+
+}
+
+function createWordLeipzigGlossingColumn(word,
+    tokenId,
+    glossTokenIdInfo,
+    tempJsonFileNames
+) {
+    let tokenGlossArray = '';
+    let wordTranslationVal = '_';
+    let inptOption = '';
+    let inpt = '';
+    let padding = '20px';
+
+    let morphColLen = 12;
+    // console.log('Word', word);
+
+    let tokenMorphemesArray = word.split(morphemicBreakRegex);
+    // console.log('All morphemes', tokenMorphemesArray, tokenMorphemesArray.length);
+
+    if (tokenMorphemesArray.length <= 1) {
+        if (tokenId in glossTokenIdInfo &&
+            'gloss' in glossTokenIdInfo[tokenId]) {
+            tokenGlossArray = glossTokenIdInfo[tokenId]['gloss'];
+            // console.log(tokenGlossArray);
+            if (!(tokenGlossArray === '')) {
+                tokenGlossArray = glossTokenIdInfo[tokenId]['gloss'].split('.');
+                wordTranslationVal = tokenGlossArray[0];
+                // console.log(tokenGlossArray[0], tokenGlossArray.slice(1,));
+                inptOption = fillGlossedTokenInfo(tempJsonFileNames, tokenGlossArray.slice(1,));
+            }
+        }
+        // tempJsonFileNames = {}
+        // inpt += '<input type="text" id="' + tokenId + '_word_input" class="' + tokenId + '_word_class form-control" value="' + word + '" oninput="morphemicBreak(event,this)" style="border: none;"><br>';
+
+        inpt += '<div class="row leipzigGlossRows" style="padding-top: 20px;">';
+        inpt += '<div class="col-sm-' + morphColLen + '" style="padding-top: 20px; ">';
+
+        // inpt += '<input type="text" id="' + tokenId + '.0_gloss"' +
+        //     'class="' + tokenId + '.0_gloss_class form-control"' +
+        //     'value="' + wordTranslationVal + '"' +
+        //     'oninput="autoSavetranscription(event,this)"><br>';
+        inpt += '<div class="row"><div class="col-sm-12">';
+        inpt += '<select id="' + tokenId + '_word_translation" class="leipzig_glossing"' +
+            ' oninput="autoSavetranscription(event,this)"' +
+            ' style="width: 100%;">';
+        inpt += '<option value="' + wordTranslationVal + '" selected>' + wordTranslationVal + '</option>';
+        inpt += '</select>';
+        inpt += '<br>';
+        inpt += '</div></div>';
+
+        inpt += '<div class="row"><div class="col-sm-12">';
+        inpt += '<select id="' + tokenId + tokenMorphIdSep + '0_gloss" class="leipzig_glossing"' +
+            ' oninput="autoSavetranscription(event,this)"' +
+            ' multiple="multiple" style="width: 100%;">';
+        inpt += inptOption;
+        inpt += '</select>';
+        inpt += '</div></div>';
+        inpt += '<br><br>';
+        inpt += '</div></div>';
+    }
+    else {
+        // console.log('Input', inpt);
+        if (tokenId in glossTokenIdInfo &&
+            'gloss' in glossTokenIdInfo[tokenId]) {
+            tokenGlossArray = glossTokenIdInfo[tokenId]['gloss'];
+            // console.log('Full gloss', tokenGlossArray);
+            if (!(tokenGlossArray === '')) {
+                tokenGlossArray = glossTokenIdInfo[tokenId]['gloss'].split(morphemicBreakRegex);
+                // console.log('All token gloss arrays', tokenGlossArray, tokenGlossArray.length);
+                // console.log(tokenGlossArray[0], tokenGlossArray.slice(1,));
+                let effectiveLength = Math.max(tokenMorphemesArray.length, tokenGlossArray.length);
+                // console.log("Effective length", effectiveLength);
+                let morphId = 0;
+                for (let k = 0; k < effectiveLength; k += 2) {
+                    // console.log(k);
+                    // console.log('Input', inpt);
+                    if ((k - 1) < tokenMorphemesArray.length) {
+                        var currentMorpheme = tokenMorphemesArray[k];
+                        let delim = tokenMorphemesArray[k + 1];
+                        // console.log("Current morph and delim", k, currentMorpheme, delim);
+                        if (delim) {
+                            currentMorpheme += delim;
+                        }
+                    }
+                    else {
+                        var currentMorpheme = '';
+                    }
+                    if (k < tokenGlossArray.length) {
+                        var currentTokenGlossArray = tokenGlossArray[k].split('.');
+                    }
+                    else {
+                        var currentTokenGlossArray = [];
+                    }
+                    // console.log('Current token gloss arrays', currentTokenGlossArray);
+                    inptOption = fillGlossedTokenInfo(tempJsonFileNames, currentTokenGlossArray);
+
+                    if (k > 0) {
+                        padding = '2px';
+                    }
+                    // console.log('Current Morpheme', currentMorpheme);
+                    // console.log('Options', inptOption);
+                    inpt += createLeipzigGlossingMorphemes(morphId, tokenId, currentMorpheme, inptOption, morphColLen, padding);
+
+                    morphId += 1;
+                }
+            }
+        }
+    }
+    // console.log('final inpt', inpt);
+    return inpt
+}
+
+function createFlatLeipzigColumn(tokenId, glossTokenIdInfo, ipaGlosses) {
+    let tokenGlossArray = "";
+    let inpt = "";
+
+    if (tokenId in glossTokenIdInfo &&
+        'gloss' in glossTokenIdInfo[tokenId]) {
+        tokenGlossArray = glossTokenIdInfo[tokenId]['gloss'];
+        // console.log('Full gloss', tokenGlossArray);
+        if (!(tokenGlossArray === '')) {
+            tokenGlossArray = glossTokenIdInfo[tokenId]['gloss'];
+        }
+    }
+    inpt += '<div class="row flatLeipzigGloss" style="padding-top: 20px;">';
+    inpt += '<div class="col-sm-12" style="padding-top: 20px; ">';
+    inpt += '<textarea id="' + tokenId + '_flatinput_ipa"' +
+        'class="' + tokenId + '_flatinput_ipa form-control"' +
+        'value="' + ipaGlosses[tokenId] + '" readonly style="height: auto;">' + ipaGlosses[tokenId] + '</textarea><br>';
+    inpt += '<textarea type="text" id="' + tokenId + '_flatinput_gloss"' +
+        'class="' + tokenId + '_flatinput_gloss form-control"' +
+        'value="' + tokenGlossArray + '" readonly style="height: auto;">' + tokenGlossArray + '</textarea>';
+    inpt += '</div></div>';
+
+    // console.log('Input', inpt);
+
+    return inpt
+}
+
 function createGlossingTable(sentencemorphemicbreakupdatedvalue,
     interlinearGlossFormat,
-    customizeGloss) {
+    customizeGloss,
+    ipaGlosses) {
     // console.log(sentencemorphemicbreakupdatedvalue,
     //     interlinearGlossFormat,
     //     customizeGloss);
     // let colorPallet = ['bg-success', 'bg-warning', 'bg-danger', 'bg-info']
     let colorPallet = ['bg-danger', 'bg-info']
     let tokenIdObject = generateTokenId(sentencemorphemicbreakupdatedvalue);
-    // console.log(tokenIdObject);
+    // console.log(sentencemorphemicbreakupdatedvalue);
     let inpt = '';
     let jsonFileNames = {};
     let tempJsonFileNames = {};
+    let scriptName = getScriptToGlossDropdownSelected();
+    let wordReadonly = "readonly";
+    console.log("Script name", scriptName);
+    if (scriptName === "IPA") {
+        wordReadonly = "";
+    }
     // interlinearGlossFormat = 'ud';
 
     // inpt += sentencemorphemicbreakupdatedvalue;
@@ -3519,8 +4060,11 @@ function createGlossingTable(sentencemorphemicbreakupdatedvalue,
                     //     colLen = eachColLength - 1;
                     // }
                     if (j <= sentencemorphemicbreakupdatedvalueArrayLength) {
-                        let tokenId = tokenIdObject[j - 1];
-                        inpt += '<div class="col-sm-' + colLen + '" style="padding-top: 20px; ">';
+                        let tokenId = tokenIdObject[j - 1].trim();
+                        let colId = tokenId + '_' + fieldName + "_column";
+                        // console.log('Col ID', colId);
+                        inpt += '<div class="col-sm-' + colLen + '" id="' + colId + '">';
+                        // console.log('Input', inpt);
                         // let fieldBgColor = colorPallet[p%colorPallet.length];
                         // console.log(fieldBgColor);
                         let tokenGlossVal = '';
@@ -3539,8 +4083,9 @@ function createGlossingTable(sentencemorphemicbreakupdatedvalue,
                             else {
                                 inpt += '<input type="text" id="' + tokenId + '_word_input"' +
                                     'class="' + tokenId + '_word_class form-control"' +
-                                    'value="' + word + '"' +
-                                    'oninput="morphemicBreak(event,this)" style="border: none;"><br>';
+                                    'value="' + word + '" ' +
+                                    wordReadonly +
+                                    ' oninput="morphemicBreak(event,this)" style="border: none;"><br>';
                             }
                         }
                         // inpt += '<div id="'+tokenId+'_word" class="'+tokenId+'_word_class" contenteditable="true" oninput="morphemicBreak(event,this)">'+word+'</div><br>';
@@ -3552,32 +4097,15 @@ function createGlossingTable(sentencemorphemicbreakupdatedvalue,
                             //     inpt += '<center>' + j + '</center>';
                             // }
                             tempJsonFileNames['leipzig_glossing'] = 'select2_leipzig_glossing.json';
-                            let tokenGlossArray = '';
-                            let wordTranslationVal = '_';
-                            let inptOption = '';
-                            if (tokenId in glossTokenIdInfo &&
-                                'gloss' in glossTokenIdInfo[tokenId]) {
-                                tokenGlossArray = glossTokenIdInfo[tokenId]['gloss'];
-                                // console.log(tokenGlossArray);
-                                if (!(tokenGlossArray === '')) {
-                                    tokenGlossArray = glossTokenIdInfo[tokenId]['gloss'].split('.');
-                                    wordTranslationVal = tokenGlossArray[0];
-                                    // console.log(tokenGlossArray[0], tokenGlossArray.slice(1,));
-                                    inptOption = fillGlossedTokenInfo(tempJsonFileNames, tokenGlossArray.slice(1,));
-                                }
+
+                            if (scriptName === 'IPA') {
+                                inpt += createWordLeipzigGlossingColumn(word, tokenId, glossTokenIdInfo, tempJsonFileNames);
                             }
-                            tempJsonFileNames = {}
-                            // inpt += '<input type="text" id="' + tokenId + '_word_input" class="' + tokenId + '_word_class form-control" value="' + word + '" oninput="morphemicBreak(event,this)" style="border: none;"><br>';
-                            inpt += '<input type="text" id="' + tokenId + '_word_translation"' +
-                                'class="' + tokenId + '_word_translation_class form-control"' +
-                                'value="' + wordTranslationVal + '"' +
-                                'oninput="autoSavetranscription(event,this)"><br>';
-                            inpt += '<select id="' + tokenId + '_gloss" class="leipzig_glossing"' +
-                                ' oninput="autoSavetranscription(event,this)"' +
-                                ' multiple="multiple" style="width: 100%;">';
-                            inpt += inptOption;
-                            inpt += '</select>';
-                            inpt += '<br><br>';
+                            else {
+                                inpt += createFlatLeipzigColumn(tokenId, glossTokenIdInfo, ipaGlosses);
+                            }
+
+                            tempJsonFileNames = {};
                             jsonFileNames['leipzig_glossing'] = 'select2_leipzig_glossing.json';
                         }
                         else if (field === 'lemma') {
@@ -3711,11 +4239,19 @@ function morphemicBreak(e, ele) {
     // See globalVars.js in main static for this variable
     // let morphemicBreakSymbols = ['-'];
     let data = e.data;
-    console.log(morphemicBreakSymbols);
+    // console.log(morphemicBreakSymbols);
     let oldWord = e.target.defaultValue;
     let currentWord = e.target.value;
     let selectionEnd = e.target.selectionEnd;
     let updatedWord = '';
+    let fieldName = "glossing_column";
+    let tokenId = ele.id.split('_')[0];
+    let fieldId = tokenId + '_' + fieldName;
+    let tempJsonFileNames = {};
+    tempJsonFileNames['leipzig_glossing'] = 'select2_leipzig_glossing.json';
+    // console.log('Selection end', selectionEnd);
+    // console.log('Old word length', oldWord.length);
+
     // console.log(selectionEnd);
     // console.log(oldWord,
     //     currentWord);
@@ -3738,6 +4274,10 @@ function morphemicBreak(e, ele) {
             morphemicBreakSymbols.includes(currentWord[selectionEnd])) {
             updatedWord = oldWord;
         }
+        else if (selectionEnd > oldWord.length ||
+            selectionEnd === 1) {
+            updatedWord = oldWord;
+        }
         else {
             updatedWord = currentWord;
         }
@@ -3748,8 +4288,121 @@ function morphemicBreak(e, ele) {
     // console.log(eleById, eleById.value, updatedWord);
     eleById.value = updatedWord;
     eleById.setAttribute("value", updatedWord);
-    autoSavetranscriptionSubPart();
+    // console.log('Updated word', updatedWord);
+
+    if (updatedWord === currentWord) {
+        autoSavetranscriptionSubPart();
+
+        let glossTokenIdInfo = getGlossTokenIdInfo();
+        let inpt = createWordLeipzigGlossingColumn(updatedWord, tokenId, glossTokenIdInfo, tempJsonFileNames);
+        // $('#' + fieldId).html("");
+        $('#' + fieldId).html(inpt);
+
+        data = JSON.parse(localStorage.getItem('leipzig_glossing'));
+        if (data) {
+            $('.leipzig_glossing').select2({
+                tags: true,
+                placeholder: 'leipzig_glossing',
+                data: data,
+                // allowClear: true
+            });
+        }
+        else {
+            getSelect2Data(getSelect2DataLocal(tempJsonFileNames));
+        }
+        select2Multiselect();
+    }
+
 }
+
+function updateTokenId(differences, scriptName) {
+    let localStorageRegions = JSON.parse(localStorage.regions);
+    let activeBoundaryID = document.getElementById('activeBoundaryID').value;
+    let existingTokenIdInfo = {};
+    let existingGloss = {};
+    let currentBoundaryIndex = 0;
+
+    for (let p = 0; p < localStorageRegions.length; p++) {
+        if (localStorageRegions[p]['data']['sentence'][boundaryID] &&
+            localStorageRegions[p]['boundaryID'] === activeBoundaryID &&
+            'glossTokenIdInfo' in localStorageRegions[p]['data']['sentence'][boundaryID]) {
+
+            existingTokenIdInfo = localStorageRegions[p]['data']['sentence'][boundaryID]['glossTokenIdInfo'];
+
+            existingGloss = localStorageRegions[p]['data']['sentence'][boundaryID]['gloss'][scriptName];
+            console.log('Existing token ID info', existingTokenIdInfo);
+
+            currentBoundaryIndex = p;
+            console.log('Current Boundary Index', currentBoundaryIndex);
+            break;
+        }
+    }
+
+    let tokenStart = 0;
+    let tokenEnd = 0;
+    let maxTokenLength = 7;
+    let tokenId = '';
+    let subSentenceLength = 0;
+    console.log('Existing token ID info', existingTokenIdInfo);
+    let tokenIds = Object.keys(existingTokenIdInfo);
+
+    let existingTokenIndex = 0;
+    let newTokenIdInfo = {};
+    let newGloss = {};
+
+    for (let entry of differences) {
+        let status = entry[0];
+        let existingTokens = entry[1].split(" ");
+        for (let token of existingTokens) {
+            let existingTokenValue = {};
+            let existingGlossValue = token;
+            if (status === 0) {
+                let existingTokenId = tokenIds[existingTokenIndex];
+                existingTokenValue = existingTokenIdInfo[existingTokenId];
+                existingGlossValue = existingGloss[existingTokenId];
+                existingTokenIndex += 1;
+            }
+            else if (status === -1) {
+                existingTokenIndex += 1;
+                continue;
+            }
+            tokenStart = tokenStart;
+            tokenEnd = tokenStart + token.length - 1;
+
+            let tokenStartLength = String(tokenStart).length;
+            let tokenEndLength = String(tokenEnd).length;
+            while (tokenStartLength != maxTokenLength) {
+                tokenStart = '0' + tokenStart;
+                tokenStartLength = tokenStart.length;
+            }
+            while (tokenEndLength != maxTokenLength) {
+                tokenEnd = '0' + tokenEnd;
+                tokenEndLength = tokenEnd.length;
+            }
+            tokenId = tokenStart + tokenEnd;
+
+            newTokenIdInfo[tokenId] = existingTokenValue;
+            newGloss[tokenId] = existingGlossValue;
+
+            subSentenceLength += token.length + 1;
+            tokenStart = subSentenceLength;
+
+        }
+    }
+    localStorage.setItem("glossTokenId", JSON.stringify(Object.keys(newTokenIdInfo)));
+
+    console.log('Current Boundary Index', currentBoundaryIndex);
+    console.log(localStorageRegions[currentBoundaryIndex]);
+    localStorageRegions[currentBoundaryIndex]['data']['sentence'][activeBoundaryID]['glossTokenIdInfo'] = newTokenIdInfo;
+    localStorageRegions[currentBoundaryIndex]['data']['sentence'][activeBoundaryID]['gloss'][scriptName] = newGloss;
+
+    localStorage.setItem("regions", JSON.stringify(Object.keys(localStorageRegions)));
+
+    // console.log(Object.keys(tokenIdObject));
+
+    return newGloss;
+}
+
 
 function generateTokenId(sentencemorphemicbreakupdatedvalue) {
     let tokenIdObject = {};
@@ -3830,11 +4483,14 @@ function getSelect2Data(jsonFileNames) {
             success: function (response) {
                 // console.log(response);
                 // console.log(jsonFileNamesKeysList);
+
+
                 for (let i = 0; i < jsonFileNamesKeysList.length; i++) {
                     let tags = false;
                     let select2ClassName = jsonFileNamesKeysList[i];
                     if (select2ClassName.includes('leipzig')) {
                         tags = true;
+
                     }
                     // console.log(select2ClassName);
                     let data = response.jsonData[select2ClassName];
@@ -3842,11 +4498,12 @@ function getSelect2Data(jsonFileNames) {
                         data = getInfoFromprojectForm('Audio Language')[1];
                     }
                     // console.log(data);
-                    // console.log(tags);
+                    // console.log('Disabled', disabled, scriptName);
                     $('.' + select2ClassName).select2({
                         tags: tags,
                         placeholder: select2ClassName,
                         data: data,
+                        disabled: disabled
                         // allowClear: true
                     });
                     // console.log(data);
