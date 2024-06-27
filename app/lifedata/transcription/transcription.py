@@ -1739,13 +1739,17 @@ def transcriptionreport():
     activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
                                                                   userprojects)
     
-    audio_duration_project = transcription_report.total_audio_duration_project(transcriptions_collection,
-                                                                                activeprojectname)
-    audio_duration_transcribed = transcription_report.total_audio_duration_transcribed(transcriptions_collection,
-                                                                                         activeprojectname)
+    audio_duration_project, doc_count_project = transcription_report.total_audio_duration_project(mongo,
+                                                                                                    transcriptions_collection,
+                                                                                                    activeprojectname)
+    audio_duration_transcribed, doc_count_transcribed = transcription_report.total_audio_duration_transcribed(mongo,
+                                                                                                                transcriptions_collection,
+                                                                                                                activeprojectname)
     audio_duration_transcribed_boundary = transcription_report.total_audio_duration_boundary(transcriptions_collection,
                                                                                                 activeprojectname)
 
     return jsonify(totalAudioDurationProject=audio_duration_project,
+                   docCountProject=doc_count_project,
                    totalAudioDurationTranscribed=audio_duration_transcribed,
+                   docCountTranscribed=doc_count_transcribed,
                    totalAudioDurationTranscribedBoundary = audio_duration_transcribed_boundary)
