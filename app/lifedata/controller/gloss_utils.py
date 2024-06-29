@@ -25,6 +25,9 @@ from datetime import datetime
 import pandas as pd
 import os
 
+import stanza
+from stanza import DownloadMethod
+
 logger = life_logging.get_logger()
 
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -35,6 +38,11 @@ map_path = os.path.join(
 
 print('Path', map_path)
 ud_leipzig_map = pd.read_json(map_path, dtype=str)
+
+stanza_pipeline_token = {
+    'hi': stanza.Pipeline(
+        'hi', processors='tokenize', tokenize_no_ssplit=True, download_method=DownloadMethod.REUSE_RESOURCES)
+}
 
 
 def save_gloss_of_one_audio_file(transcriptions,
@@ -137,6 +145,7 @@ def get_gloss_of_audio_transcription(gloss_model,
                 update_existing_text_grid_with_gloss(temp_text_grid,
                                                      transcription_type,
                                                      model_details,
+                                                     input_data,
                                                      glossed_data=gloss,
                                                      source_lang_name=source_lang_name,
                                                      source_lang_code=source_lang_code,
@@ -220,11 +229,28 @@ def conll_to_leipzig_gloss(feats, upos='', trans_output='_'):
     return output
 
 
+def make_stanza_gloss(text, tid, start_index, end_index, lemma="", upos="", xpos="", feats="", head="", deprel=""):
+    new_token_gloss = {
+        'id': tid,
+        'text': text,
+        'lemma': lemma,
+        'upos': upos,
+        'xpos': xpos,
+        'feats': feats,
+        'head': head,
+        'deprel': deprel,
+        'start_char': start_index,
+        'end_char': end_index,
+    }
+    return new_token_gloss
+
+
 def update_existing_text_grid_with_gloss(current_text_grid,
                                          transcription_type,
                                          model_details,
+                                         input_data,
                                          glossed_data={},
-                                         translate_tokens=True,
+                                         translate_tokens=False,
                                          translate_token_categs=[
                                              'NOUN', 'VERB', 'ADJ', 'ADV', 'INTJ'],
                                          source_lang_name="",
@@ -241,10 +267,35 @@ def update_existing_text_grid_with_gloss(current_text_grid,
         for sent_id, sent_gloss in glossed_data.items():
             sent_gloss_entry = {}
             sent_token_entry = {source_script_name: {}}
-            for token_gloss in sent_gloss:
+            logger.info('Glossed Data: %s\n%s', sent_id, sent_gloss)
+            original_sentence = input_data[sent_id]
+            logger.info('Original sentence: %s\n%s',
+                        sent_id, original_sentence)
+            nlp = stanza_pipeline_token.get(source_lang_code, '')
+            tokens = nlp(original_sentence)
+            tokens = tokens.to_dict()
+            if len(tokens) > 0:
+                tokens = tokens[0]
+            logger.info('Stanza tokens %s\n%s', tokens, len(tokens))
+            # logger.info('My tokens %s\n%s', original_sentence.split(),
+            #             len(original_sentence.split()))
+
+            for i, token in enumerate(tokens):
                 new_token_gloss = {}
                 trans_output = '_'
-                text = token_gloss['text']
+
+                if i < len(sent_gloss):
+                    token_gloss = sent_gloss[i]
+                    text = token_gloss['text']
+                else:
+                    # current_token = token[i]
+                    tid = token['id']
+                    text = token['text']
+                    start_index = str(token['start_char'])
+                    end_index = str(token['end_char'])
+                    token_gloss = make_stanza_gloss(
+                        text, tid, start_index, end_index)
+
                 upos = token_gloss['upos']
                 lemma = token_gloss['lemma']
                 start_index = str(token_gloss['start_char'])

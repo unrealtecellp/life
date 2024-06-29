@@ -1100,7 +1100,7 @@ function processTokenGloss(glossTokenId,
             glossedSentenceWithTokenIdInfo[tokenId] = {};
             // console.log(document.getElementById(tokenId+'_word_input').value);
             let token = document.getElementById(tokenId + '_word_input').value;
-            // console.log(token);
+            console.log(token);
             glossedSentenceWithMorphemicBreakInfo[tokenId] = token;
             if (interlinearGlossFormat.includes('Leipzig')) {
                 let field = 'gloss';
@@ -1110,8 +1110,8 @@ function processTokenGloss(glossTokenId,
                     tokenId);
                 let existingGlossArray = fieldValueGloss.split(morphemicBreakRegex);
 
-                // console.log("Token morphemes array", tokenMorphemesArray, tokenMorphemesArray.length);
-                // console.log("Existing Gloss array", existingGlossArray, existingGlossArray.length);
+                console.log("Token morphemes array", tokenMorphemesArray, tokenMorphemesArray.length);
+                console.log("Existing Gloss array", existingGlossArray, existingGlossArray.length);
                 if (tokenMorphemesArray.length === existingGlossArray.length) {
                     if (tokenMorphemesArray.length <= 1) {
                         let tokenTranslation = document.getElementById(tokenId + '_word_translation').value;
@@ -1183,8 +1183,13 @@ function processTokenGloss(glossTokenId,
                     }
                 }
                 else {
-                    // console.log('Existing Morphemes', existingMorphemes, tokenId);
-                    let currentExistingMorpheme = existingMorphemes[tokenId];
+                    console.log('Existing Morphemes', existingMorphemes, tokenId);
+
+                    let currentExistingMorpheme = '';
+                    if (existingMorphemes) {
+                        currentExistingMorpheme = existingMorphemes[tokenId];
+                    }
+
                     let existingMorphemesArray = currentExistingMorpheme.split(morphemicBreakRegex);
                     // console.log('Existing Morphemes Array', existingMorphemesArray, tokenId);
                     // console.log('New morphemes Array', tokenMorphemesArray);
@@ -3325,9 +3330,17 @@ function transcriptionToGloss() {
     }
     // console.log(transcriptionWordCountMismatch);
     if (Object.keys(transcriptionWordCountMismatch).length) {
-        alert('Number of words mismatch: \n' + JSON.stringify(transcriptionWordCountMismatch))
+        alert('Number of words mismatch: \n' + JSON.stringify(transcriptionWordCountMismatch));
         return;
     }
+    let ipaTranscription = document.getElementById('Transcription_IPA').value.trim();
+    let ipaTranscriptionCleaned = ipaTranscription.replace(morphemicBreakReplacerRegex, '');
+    if (ipaTranscription !== ipaTranscriptionCleaned) {
+        alert('IPA transcription cannot have characters reserved for morphemic break: \n' + morphemicBreakSymbols.join(', '));
+        return;
+    }
+
+
     let scripttoglossdropdownselected = getScriptToGlossDropdownSelected();
     // console.log(scripttoglossdropdownselected);
     document.getElementById("interlinearglosstab").onclick = function () { transcriptionToGloss() };
@@ -3342,18 +3355,24 @@ function transcriptionToGloss() {
             // console.log(p, boundaryID, scriptName);
             // console.log(localStorageRegions[p]);
             // console.log(localStorageRegions[p]['data']);
-            let allGlosses = localStorageRegions[p]['data']['sentence'][boundaryID]['gloss'][scriptName];
-            var allGlossesIPA = localStorageRegions[p]['data']['sentence'][boundaryID]['gloss']['IPA'];
+            let glossEntry = localStorageRegions[p]['data']['sentence'][boundaryID]['gloss'];
+            let allGlosses = glossEntry[scriptName];
+            var allGlossesIPA = glossEntry['IPA'];
+            let allGlossScripts = Object.keys(glossEntry);
             // let allGlossScripts = Object.keys(allGlosses);
+
             // if (!allGlossScripts.includes(scriptName)) {
             //     scriptName = allGlossScripts[0];
             // }
             // allGlosses = allGlosses[scriptName];
-            // console.log('Script name', scriptName);
-            // console.log('All glosses', allGlosses);
+            console.log('Script name', scriptName);
+            console.log('All glosses', allGlosses);
             // let sentenceMorphemicBreak = localStorageRegions[p]['data']['sentence'][boundaryID]['sentencemorphemicbreak'][scriptName];
             // console.log(sentence_morphemic_break);            
-            let transcriptionInScript = localStorageRegions[p]['data']['sentence'][boundaryID]['transcription'][scriptName];
+            let allTranscriptions = localStorageRegions[p]['data']['sentence'][boundaryID]['transcription'];
+            let transcriptionInScript = allTranscriptions[scriptName];
+
+            let cleanedTranscriptionInScript = transcriptionInScript.replace(morphemicBreakReplacerRegex, '');
 
             // if (sentenceMorphemicBreak == '') {
             if (!allGlosses) {
@@ -3381,9 +3400,12 @@ function transcriptionToGloss() {
                     sentenceMorphemicBreakUpdatedValue = sentenceMorphemicBreak;
                 }
                 else {
-                    // console.log('Transcription updated');
+                    console.log('Transcription updated');
+                    console.log('Current transcription', sentenceWithoutMorphemicBreak);
+                    console.log('Updated transcription', transcriptionInScript);
+
                     let dmp = new diff_match_patch();
-                    var a = dmp.diff_linesToChars_(sentenceWithoutMorphemicBreak, transcriptionInScript);
+                    var a = dmp.diff_linesToChars_(sentenceWithoutMorphemicBreak, cleanedTranscriptionInScript);
                     var lineText1 = a.chars1;
                     var lineText2 = a.chars2;
                     var lineArray = a.lineArray;
@@ -3392,10 +3414,10 @@ function transcriptionToGloss() {
                     // return diffs;
                     // let diff = dmp.diff_main(sentenceWithoutMorphemicBreak, transcriptionInScript);                    
                     dmp.diff_cleanupSemantic(diffs);
-                    // console.log("Differences", diffs);
+                    console.log("Differences", diffs);
 
-                    allGlosses = updateTokenId(diffs, scriptName);
-                    sentenceMorphemicBreakUpdatedValue = Object.values(allGlosses).join(" ");
+                    allGlosses = updateTokenId(diffs, scriptName, allGlossScripts, allTranscriptions);
+                    sentenceMorphemicBreakUpdatedValue = Object.values(allGlosses[scriptName]).join(" ");
                 }
                 break;
             }
@@ -4315,12 +4337,34 @@ function morphemicBreak(e, ele) {
 
 }
 
-function updateTokenId(differences, scriptName) {
+function updateTokenId(differences, scriptName, allGlossScripts, allTranscriptions) {
+    console.log("Updating token ID");
     let localStorageRegions = JSON.parse(localStorage.regions);
     let activeBoundaryID = document.getElementById('activeBoundaryID').value;
     let existingTokenIdInfo = {};
     let existingGloss = {};
     let currentBoundaryIndex = 0;
+    let allExistingGlosses = {};
+    let allExistingTranscriptions = {};
+    let allUpdatedTranscriptions = {};
+
+    let tokenStart = 0;
+    let tokenEnd = 0;
+    let maxTokenLength = 7;
+    let tokenId = '';
+    let subSentenceLength = 0;
+
+    let existingTokenIndex = 0;
+    let newTokenIdInfo = {};
+    let newGloss = {};
+    let updatedTokenIndex = 0;
+
+    for (let scriptName in allTranscriptions) {
+        if (allGlossScripts.includes(scriptName)) {
+            allUpdatedTranscriptions[scriptName] = allTranscriptions[scriptName].split(" ");
+            newGloss[scriptName] = {};
+        }
+    }
 
     for (let p = 0; p < localStorageRegions.length; p++) {
         if (localStorageRegions[p]['data']['sentence'][boundaryID] &&
@@ -4328,9 +4372,19 @@ function updateTokenId(differences, scriptName) {
             'glossTokenIdInfo' in localStorageRegions[p]['data']['sentence'][boundaryID]) {
 
             existingTokenIdInfo = localStorageRegions[p]['data']['sentence'][boundaryID]['glossTokenIdInfo'];
-
-            existingGloss = localStorageRegions[p]['data']['sentence'][boundaryID]['gloss'][scriptName];
             console.log('Existing token ID info', existingTokenIdInfo);
+
+            allExistingGlosses = localStorageRegions[p]['data']['sentence'][boundaryID]['gloss'];
+
+            for (let currentScript of allGlossScripts) {
+                if (currentScript == scriptName) {
+                    existingGloss = allExistingGlosses[scriptName];
+                }
+                else {
+                    let currentScriptGloss = allExistingGlosses[currentScript];
+                    allExistingTranscriptions[currentScript] = Object.values(currentScriptGloss);
+                }
+            }
 
             currentBoundaryIndex = p;
             console.log('Current Boundary Index', currentBoundaryIndex);
@@ -4338,26 +4392,19 @@ function updateTokenId(differences, scriptName) {
         }
     }
 
-    let tokenStart = 0;
-    let tokenEnd = 0;
-    let maxTokenLength = 7;
-    let tokenId = '';
-    let subSentenceLength = 0;
     console.log('Existing token ID info', existingTokenIdInfo);
     let tokenIds = Object.keys(existingTokenIdInfo);
 
-    let existingTokenIndex = 0;
-    let newTokenIdInfo = {};
-    let newGloss = {};
-
     for (let entry of differences) {
         let status = entry[0];
-        let existingTokens = entry[1].split(" ");
+        let existingTokens = entry[1].trim().split(" ");
         for (let token of existingTokens) {
             let existingTokenValue = {};
             let existingGlossValue = token;
+            let existingTokenId = '';
+
             if (status === 0) {
-                let existingTokenId = tokenIds[existingTokenIndex];
+                existingTokenId = tokenIds[existingTokenIndex];
                 existingTokenValue = existingTokenIdInfo[existingTokenId];
                 existingGlossValue = existingGloss[existingTokenId];
                 existingTokenIndex += 1;
@@ -4382,21 +4429,36 @@ function updateTokenId(differences, scriptName) {
             tokenId = tokenStart + tokenEnd;
 
             newTokenIdInfo[tokenId] = existingTokenValue;
-            newGloss[tokenId] = existingGlossValue;
+            // newGloss[tokenId] = existingGlossValue;
+
+            for (let currentScript of allGlossScripts) {
+                if (currentScript == scriptName) {
+                    newGloss[scriptName][tokenId] = existingGlossValue;
+                }
+                else {
+                    // console.log('Script', currentScript);
+                    let currentScriptGloss = allUpdatedTranscriptions[currentScript][updatedTokenIndex];
+                    newGloss[currentScript][tokenId] = currentScriptGloss;
+                }
+            }
 
             subSentenceLength += token.length + 1;
             tokenStart = subSentenceLength;
 
+            updatedTokenIndex++;
         }
     }
     localStorage.setItem("glossTokenId", JSON.stringify(Object.keys(newTokenIdInfo)));
 
-    console.log('Current Boundary Index', currentBoundaryIndex);
+    // console.log('Current Boundary Index', currentBoundaryIndex);
     console.log(localStorageRegions[currentBoundaryIndex]);
+    // console.log('Active Boundary ID', activeBoundaryID);
+    console.log('New gloss', newGloss);
     localStorageRegions[currentBoundaryIndex]['data']['sentence'][activeBoundaryID]['glossTokenIdInfo'] = newTokenIdInfo;
-    localStorageRegions[currentBoundaryIndex]['data']['sentence'][activeBoundaryID]['gloss'][scriptName] = newGloss;
+    localStorageRegions[currentBoundaryIndex]['data']['sentence'][activeBoundaryID]['gloss'] = newGloss;
 
-    localStorage.setItem("regions", JSON.stringify(Object.keys(localStorageRegions)));
+    // console.log('Setting regions', localStorageRegions);
+    localStorage.setItem("regions", JSON.stringify(localStorageRegions));
 
     // console.log(Object.keys(tokenIdObject));
 
