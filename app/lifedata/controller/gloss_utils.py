@@ -250,7 +250,7 @@ def update_existing_text_grid_with_gloss(current_text_grid,
                                          model_details,
                                          input_data,
                                          glossed_data={},
-                                         translate_tokens=False,
+                                         translate_tokens=True,
                                          translate_token_categs=[
                                              'NOUN', 'VERB', 'ADJ', 'ADV', 'INTJ'],
                                          source_lang_name="",
