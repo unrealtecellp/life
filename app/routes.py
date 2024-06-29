@@ -6946,3 +6946,32 @@ def checkprojectnameexist():
         logger.exception("")
 
     return jsonify(status=False)
+
+@app.route('/lexemelist', methods=['GET', 'POST'])
+@login_required
+def lexemelist():
+    try:
+        userprojects, lexemes = getdbcollections.getdbcollections(mongo,
+                                                                    'userprojects',
+                                                                    'lexemes')
+        current_username = getcurrentusername.getcurrentusername()
+        activeprojectname = getactiveprojectname.getactiveprojectname(
+            current_username, userprojects)
+        search_key = request.args.get('search')
+        if (search_key is not None):
+            logger.debug("search_key: %s", search_key)
+            lexemes.createIndex( { "headword": "text" } )
+            aggregate_output = lexemes.aggregate(
+                [
+                    { "$match": { "$text": { "$search": search_key } } },
+                    # { $group: { _id: null, views: { $sum: "$views" } } }
+                ]
+                )
+            logger.debug("aggregate_output: %s", aggregate_output)
+            aggregate_output_list = []
+            for doc in aggregate_output:
+                logger.debug("aggregate_output: %s", pformat(doc))
+    except:
+        logger.exception("")
+
+    return 'OK'
