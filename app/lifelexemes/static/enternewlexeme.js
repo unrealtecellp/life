@@ -7955,7 +7955,7 @@ $(".customfield").ready(function(){
     });   
   });
 
-$('.js-example-data-ajax').select2({
+$('.showlexemelist').select2({
 	ajax: {
 		url: '/lexemelist',
 		data: function (params) {
@@ -7967,6 +7967,12 @@ $('.js-example-data-ajax').select2({
 		
 			// Query parameters will be ?search=[term]&type=public
 			return query;
-		}
+		},
+		processResults: function (data) {
+			console.log(data, data.lexemeList);
+			return {
+			  results: data.lexemeList
+			};
+		  },
 	}
 });

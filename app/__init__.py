@@ -40,6 +40,9 @@ app.register_blueprint(ltset, url_prefix='/ltset')
 from app.languages.languagesroutes import langs
 app.register_blueprint(langs, url_prefix='/langs')
 
+from app.lifelexemes.lifelexemeroutes import lifelexemes
+app.register_blueprint(lifelexemes, url_prefix='/lifelexemes')
+
 from app import routes, models, forms
 
 

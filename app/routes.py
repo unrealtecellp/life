@@ -1341,69 +1341,10 @@ def dictionaryview():
                            data=currentuserprojectsname,
                            shareinfo=shareinfo)
 
-
-# enter new lexeme route
-# display form for new lexeme entry for current project
-@app.route('/enternewlexeme', methods=['GET', 'POST'])
-@login_required
-def enternewlexeme():
-    projects, userprojects, projectsform = getdbcollections.getdbcollections(mongo,
-                                                                             'projects',
-                                                                             'userprojects',
-                                                                             'projectsform')
-    currentuserprojectsname = getcurrentuserprojects.getcurrentuserprojects(current_user.username,
-                                                                            userprojects)
-    activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username,
-                                                                  userprojects)
-
-    # new project form containing dictionary fields and its type
-    # if request.method == 'POST':
-    #     project_form_data = dict(request.form.lists())
-    #     project_name = project_form_data['projectname'][0]
-    #     project_name = savenewproject.savenewproject(projects,
-    #                                                     project_name,
-    #                                                     current_user.username)
-    #     if project_name == '':
-    #         flash(f'Project Name : {project_name} already exist!')
-    #         return redirect(url_for('newproject'))
-    #     else:
-    #         logger.debug(project_name)
-    #         updateuserprojects.updateuserprojects(userprojects,
-    #                                                 project_name,
-    #                                                 current_user.username)
-    #         savenewprojectform.savenewprojectform(projectsform,
-    #                                                 project_name,
-    #                                                 project_form_data,
-    #                                                 current_user.username)
-
-    # activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username,
-    #                     userprojects)
-
-    # project_form = projectsform.find_one_or_404({'projectname' : activeprojectname,
-    #                                 'username' : current_user.username},
-    #                                 { "_id" : 0 })
-    # if project_form is not None:
-    #     return render_template('enternewlexeme.html',
-    #                             newData=project_form,
-    #                             data=currentuserprojectsname)
-    # return render_template('enternewlexeme.html')
-    # if method is not 'POST'
-    projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
-    project_form = projectsform.find_one_or_404({'projectname': activeprojectname,
-                                                 'username': projectowner},
-                                                {"_id": 0})
-    if project_form is not None:
-        return render_template('enternewlexeme.html',
-                               newData=project_form,
-                               data=currentuserprojectsname)
-    return render_template('enternewlexeme.html')
-
 # defining file_format and uploaded_file_content globally
 # to solve the problem of accessing the variable later by some functions
 # file_format = ''
 # uploaded_file_content = ''
-
-
 def enterlexemefromuploadedfile(alllexemedf):
     projects, userprojects, lexemes, projectsform = getdbcollections.getdbcollections(mongo,
                                                                                       'projects',
@@ -6957,21 +6898,36 @@ def lexemelist():
         current_username = getcurrentusername.getcurrentusername()
         activeprojectname = getactiveprojectname.getactiveprojectname(
             current_username, userprojects)
+        lexeme_list = []
         search_key = request.args.get('search')
-        if (search_key is not None):
+        if (search_key is not None and
+            search_key != ''):
             logger.debug("search_key: %s", search_key)
-            lexemes.createIndex( { "headword": "text" } )
-            aggregate_output = lexemes.aggregate(
-                [
-                    { "$match": { "$text": { "$search": search_key } } },
-                    # { $group: { _id: null, views: { $sum: "$views" } } }
-                ]
-                )
-            logger.debug("aggregate_output: %s", aggregate_output)
-            aggregate_output_list = []
-            for doc in aggregate_output:
-                logger.debug("aggregate_output: %s", pformat(doc))
+            lexeme_list_cursor = lexemes.find({"projectname": activeprojectname,
+                                               "headword": {'$regex':search_key}},
+                                               {"_id": 0,
+                                                "headword": 1})
+            logger.debug(lexeme_list_cursor)
+            for i, lexeme in enumerate(lexeme_list_cursor):
+                logger.debug(i)
+                logger.debug(pformat(lexeme))
+                headword = lexeme['headword']
+                lexeme_list.append({"id": headword, "text": headword})
+            # lexemes.create_index( [("headword", "text")] )
+            # aggregate_output = lexemes.aggregate(
+            #     [
+            #         { "$match": { "projectname": activeprojectname,
+            #                      "$text": { "$search": search_key } 
+            #                     } 
+            #         },
+            #         # { $group: { _id: null, views: { $sum: "$views" } } }
+            #     ]
+            #     )
+            # logger.debug("aggregate_output: %s", aggregate_output)
+            # aggregate_output_list = []
+            # for doc in aggregate_output:
+            #     logger.debug("aggregate_output: %s", pformat(doc))
     except:
         logger.exception("")
 
-    return 'OK'
+    return jsonify(lexemeList=lexeme_list)
