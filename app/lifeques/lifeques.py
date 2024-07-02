@@ -297,7 +297,8 @@ def questionnaire():
                 for lang, lang_info in ques_data_prompt_content.items():
                     # print(lang, lang_info)
                     for prompt_type, prompt_type_info in lang_info.items():
-                        # print(prompt_type, prompt_type_info)
+                        # logger.debug('prompt_type: %s, prompt_type_info: %s',
+                        #              prompt_type, prompt_type_info)
                         if (prompt_type != 'text'):
                             fileId = prompt_type_info['fileId']
                             if (fileId != ''):
@@ -338,6 +339,8 @@ def questionnaire():
         # logger.debug('questats: %s', questats)
     except:
         logger.exception("")
+
+    logger.debug(quesprojectform)
     
     return render_template('questionnaire.html',
                             projectName=activeprojectname,
@@ -585,40 +588,43 @@ def loadunannotext():
 @lifeques.route('/quespromptfile', methods=['GET', 'POST'])
 @login_required
 def quespromptfile():
-    projects, userprojects, projectsform, questionnaires = getdbcollections.getdbcollections(mongo,
-                                                                                            'projects',
-                                                                                            'userprojects',
-                                                                                            'projectsform',
-                                                                                            'questionnaires'
-                                                                                            )
-    current_username = getcurrentusername.getcurrentusername()
-    activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
-                                                                    userprojects)
-    projectowner = getprojectowner.getprojectowner(projects,
-                                                    activeprojectname)
-    
-    # ques_audio_file = request.files
-    # print(ques_audio_file)
-    last_active_ques_id = getactivequestionnaireid.getactivequestionnaireid(projects,
-                                                                            activeprojectname,
-                                                                            current_username)
-    
-    if request.method == "POST":
-        prompt_file = request.files.to_dict()
-        # print('line no. 494', prompt_file, type(prompt_file))
-        prompt_type = list(prompt_file.keys())[0].split('_')[1]
-        # print(prompt_type)
-    # ques_audio_file['Transcription Audio'] = ques_audio_file['Prompt Type Audio']
-    savequespromptfile.savequespromptfile(mongo,
-                                            projects,
-                                            userprojects,
-                                            projectsform,
-                                            questionnaires,
-                                            projectowner,
-                                            activeprojectname,
-                                            current_username,
-                                            last_active_ques_id,
-                                            prompt_file)
+    try:
+        projects, userprojects, projectsform, questionnaires = getdbcollections.getdbcollections(mongo,
+                                                                                                'projects',
+                                                                                                'userprojects',
+                                                                                                'projectsform',
+                                                                                                'questionnaires'
+                                                                                                )
+        current_username = getcurrentusername.getcurrentusername()
+        activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                        userprojects)
+        projectowner = getprojectowner.getprojectowner(projects,
+                                                        activeprojectname)
+        
+        # ques_audio_file = request.files
+        # print(ques_audio_file)
+        last_active_ques_id = getactivequestionnaireid.getactivequestionnaireid(projects,
+                                                                                activeprojectname,
+                                                                                current_username)
+        
+        if request.method == "POST":
+            prompt_file = request.files.to_dict()
+            # logger.debug('prompt_file: %s, type(prompt_file): %s', prompt_file, type(prompt_file))
+            prompt_type = list(prompt_file.keys())[0].split('_')[1]
+            # print(prompt_type)
+        # ques_audio_file['Transcription Audio'] = ques_audio_file['Prompt Type Audio']
+        savequespromptfile.savequespromptfile(mongo,
+                                                projects,
+                                                userprojects,
+                                                projectsform,
+                                                questionnaires,
+                                                projectowner,
+                                                activeprojectname,
+                                                current_username,
+                                                last_active_ques_id,
+                                                prompt_file)
+    except:
+        logger.exception("")
 
     return redirect(url_for("lifeques.questionnaire"))
 
