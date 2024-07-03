@@ -116,6 +116,6 @@ def get_input_data_for_translation(current_text_grid, source_script):
     input_data = {}
     for boundary_id, boundary_content in current_text_grid.items():
         source_data = boundary_content['transcription'][source_script]
-        input_data[boundary_id] = source_data
+        input_data[boundary_id] = source_data.replace('#', ' ')
 
     return input_data

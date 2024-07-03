@@ -50,12 +50,12 @@ function createKeyboards(newData) {
             'langid': 'or',
             'kbdid': 'itrans_odia'
         },
-        'Mayek': {
-            'fname': 'meitei_legacy-0.1.js',
-            'version': '0.1',
-            'langid': 'or',
-            'kbdid': 'meitei_legacy'
-        },
+        // 'Mayek': {
+        //     'fname': 'meitei_legacy-0.1.js',
+        //     'version': '0.1',
+        //     'langid': 'or',
+        //     'kbdid': 'meitei_legacy'
+        // },
         'toto': {
             'fname': 'txo_toto-1.0.1.js',
             'version': '1.0.1',
@@ -79,6 +79,9 @@ function createKeyboards(newData) {
 
     // console.log("Audio scripts", newData['Transcription'][1], newData['Transcription']);
     let currentScripts = newData['Transcription'][1];
+    console.log(currentScripts);
+    currentScripts = currentScripts.filter(value => value !== 'Mayek');
+    console.log(currentScripts);
     let currentTranslation = newData['Translation'][1];
     let currentTranslationScripts = Object.values(currentTranslation);
     currentScripts.push(currentTranslationScripts);

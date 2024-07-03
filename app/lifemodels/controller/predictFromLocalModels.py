@@ -28,6 +28,11 @@ stanza_pipelines = {
         'hi', download_method=DownloadMethod.REUSE_RESOURCES)
 }
 
+stanza_pipeline_token = {
+    'hi': stanza.Pipeline(
+        'hi', processors='tokenize', tokenize_no_ssplit=True, download_method=DownloadMethod.REUSE_RESOURCES)
+}
+
 
 def get_boundaries(model_name, model_params):
     # effective_func = getattr()

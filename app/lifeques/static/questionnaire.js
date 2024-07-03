@@ -393,7 +393,7 @@ function createquesform(quesprojectform) {
         testtype = eletype
         testvalue = elevalue
         // console.log(questionaireprojectform[key], testtype, testvalue);
-        // console.log(quesprojectform[key], testtype, testvalue);
+        // console.log(testvalue);
         for (let [testpromptTypeKey, testpromptTypeValue] of Object.entries(testvalue)) {
           transcriptionBoundaryForm = '';
           var promptquesdatavalue = Object();
@@ -517,7 +517,7 @@ function createquesform(quesprojectform) {
 
 function testwaveFormFunction(key, promptTypeKey, promptTypeValue, quesdatavalue, filePath, langScript) {
   // console.log(key, promptTypeKey, promptTypeValue, quesdatavalue, filePath, langScript);
-  // console.log(quesdatavalue['fileId']);
+  // console.log(key);
   
   let transcriptionBoundaryForm = '';
   let quesTranscription = ''
@@ -526,12 +526,23 @@ function testwaveFormFunction(key, promptTypeKey, promptTypeValue, quesdatavalue
     // console.log('waveformmmm', promptTypeKey, promptTypeValue, quesdatavalue)
     var uploadFormId = 'ques'+key+' '+promptTypeKey
     uploadFormId = uploadFormId.replace(new RegExp(' ', 'g'), '_');
+
+    let recordAudioBtnId = key+' '+promptTypeKey
+    recordAudioBtnId = recordAudioBtnId.replace(new RegExp(' ', 'g'), '_');
+
     // quesTranscription += '<form action="{{ url_for(\'lifeques.quespromptfile\') }}" method="POST" enctype="multipart/form-data">';
     quesTranscription +=  '<div id="'+uploadFormId+'">';
     quesTranscription += createInputElement(key, [promptTypeKey], 'file', quesdatavalue);
     
     // quesTranscription += '<input class="btn btn-primary pull-right" id="'+uploadFormId+'submit" type="submit" formaction="{{ url_for(\'lifeques.quespromptfile\') }}" value="Upload">';
-    quesTranscription += '<input class="btn btn-primary pull-right" id="'+uploadFormId+'submit" type="button" value="Upload" onclick="uploadPromptFile(this);">';
+    quesTranscription += '<button type="button" id="'+recordAudioBtnId+'" class="btn btn-dark pull-right recordeaudio" data-toggle="modal" data-target="#myRecordingModal">'+
+                            '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-mic" viewBox="0 0 16 16">'+
+                              '<path d="M3.5 6.5A.5.5 0 0 1 4 7v1a4 4 0 0 0 8 0V7a.5.5 0 0 1 1 0v1a5 5 0 0 1-4.5 4.975V15h3a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1h3v-2.025A5 5 0 0 1 3 8V7a.5.5 0 0 1 .5-.5"/>'+
+                              '<path d="M10 8a2 2 0 1 1-4 0V3a2 2 0 1 1 4 0zM8 0a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V3a3 3 0 0 0-3-3"/>'+
+                            '</svg>'+
+                          '</button>';
+    quesTranscription += '<input class="btn btn-primary pull-right" id="'+uploadFormId+'submit" type="button"'+
+                          ' value="Upload" onclick="uploadPromptFile(this);">';
     quesTranscription += '</div>';
     // quesTranscription += '</form>';
     quesTranscription += '<br>';
@@ -598,6 +609,7 @@ function testwaveFormFunction(key, promptTypeKey, promptTypeValue, quesdatavalue
 
 function testpromptFileFunction(key, promptTypeKey, promptTypeValue, quesdatavalue, filePath) {
   // console.log(key, promptTypeKey, promptTypeValue, quesdatavalue);
+  // console.log(key);
   // console.log(quesdatavalue['fileId']);
   let transcriptionBoundaryForm = '';
   let quesTranscription = '';
@@ -607,12 +619,24 @@ function testpromptFileFunction(key, promptTypeKey, promptTypeValue, quesdataval
     // console.log('waveformmmm', promptTypeKey, promptTypeValue, quesdatavalue)
     var uploadFormId = 'ques'+key+' '+promptTypeKey
     uploadFormId = uploadFormId.replace(new RegExp(' ', 'g'), '_');
+
+    let recordAudioBtnId = key+' '+promptTypeKey
+    recordAudioBtnId = recordAudioBtnId.replace(new RegExp(' ', 'g'), '_');
     
     // quesTranscription += '<form action="{{ url_for(\'lifeques.quespromptfile\') }}" method="POST" enctype="multipart/form-data">';
     quesTranscription += '<div id="'+uploadFormId+'">';
     quesTranscription += createInputElement(key, [promptTypeKey], 'file', quesdatavalue);
     // quesTranscription += '<input class="btn btn-primary pull-right" id="'+uploadFormId+'submit" type="submit" formaction="{{ url_for(\'lifeques.quespromptfile\') }}" value="Upload">';
-    quesTranscription += '<input class="btn btn-primary pull-right" id="'+uploadFormId+'submit" type="button" value="Upload" onclick="uploadPromptFile(this);">';
+    if (key.includes('Audio')){
+      quesTranscription += '<button type="button" id="'+recordAudioBtnId+'" class="btn btn-dark pull-right recordeaudio" data-toggle="modal" data-target="#myRecordingModal">'+
+                              '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-mic" viewBox="0 0 16 16">'+
+                                '<path d="M3.5 6.5A.5.5 0 0 1 4 7v1a4 4 0 0 0 8 0V7a.5.5 0 0 1 1 0v1a5 5 0 0 1-4.5 4.975V15h3a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1h3v-2.025A5 5 0 0 1 3 8V7a.5.5 0 0 1 .5-.5"/>'+
+                                '<path d="M10 8a2 2 0 1 1-4 0V3a2 2 0 1 1 4 0zM8 0a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V3a3 3 0 0 0-3-3"/>'+
+                              '</svg>'+
+                            '</button>';
+    }
+    quesTranscription += '<input class="btn btn-primary pull-right" id="'+uploadFormId+'submit" type="button"'+
+                          ' value="Upload" onclick="uploadPromptFile(this);">';
     quesTranscription += '</div>';
     // quesTranscription += '</form>';
     quesTranscription += '<br>';
