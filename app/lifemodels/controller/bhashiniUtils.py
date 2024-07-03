@@ -126,7 +126,7 @@ def get_translation_model(source_lang='hi', target_lang='en'):
                 source_script = language['sourceScriptCode']
                 target_script = language['targetScriptCode']
                 return model_id, api_key, end_url, source_script, target_script
-    return '', '', ''
+    return '', '', '', '', ''
 
 
 def get_transcription_model(source_lang='hi'):
@@ -141,7 +141,7 @@ def get_transcription_model(source_lang='hi'):
             end_url = all_results['pipelineInferenceAPIEndPoint']['callbackUrl']
             target_script = language['sourceScriptCode']
             return model_id, api_key, end_url, target_script
-    return '', '', ''
+    return '', '', '', ''
 
 
 def translate_data(data, model, api_key, end_url, source_lang='hi', target_lang='en'):

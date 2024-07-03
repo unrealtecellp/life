@@ -1973,6 +1973,11 @@ def makegloss():
         else:
             gloss_model_name = ''
 
+        if 'glossModelLang' in data:
+            gloss_lang_code = data['glossModelLang'][0]
+        else:
+            gloss_lang_code = 'en'
+
         if 'translationModelId' in data:
             translation_model_name = data['translationModelId'][0]
         else:
@@ -2059,6 +2064,7 @@ def makegloss():
             'model_type': "local",
             'model_params': {
                 'model_path': gloss_model_name,
+                'glossing_language': gloss_lang_code,
                 'source_language': audio_lang_code,
                 'source_language_name': audio_language,
                 'source_script': source_script_name,

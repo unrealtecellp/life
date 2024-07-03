@@ -25,8 +25,13 @@ translit_res_path = os.path.join(
 
 stanza_pipelines = {
     'hi': stanza.Pipeline(
-        'hi', download_method=DownloadMethod.REUSE_RESOURCES)
+        'hi', download_method=DownloadMethod.REUSE_RESOURCES),
+    'en': stanza.Pipeline(
+        'en', download_method=DownloadMethod.REUSE_RESOURCES),
+    'en': stanza.Pipeline(
+        'en', processors='tokenize', tokenize_no_ssplit=True, download_method=DownloadMethod.REUSE_RESOURCES)
 }
+
 
 stanza_pipeline_token = {
     'hi': stanza.Pipeline(

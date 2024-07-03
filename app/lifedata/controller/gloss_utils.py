@@ -41,7 +41,9 @@ ud_leipzig_map = pd.read_json(map_path, dtype=str)
 
 stanza_pipeline_token = {
     'hi': stanza.Pipeline(
-        'hi', processors='tokenize', tokenize_no_ssplit=True, download_method=DownloadMethod.REUSE_RESOURCES)
+        'hi', processors='tokenize', tokenize_no_ssplit=True, download_method=DownloadMethod.REUSE_RESOURCES),
+    'en': stanza.Pipeline(
+        'en', processors='tokenize', tokenize_no_ssplit=True, download_method=DownloadMethod.REUSE_RESOURCES)
 }
 
 
@@ -106,6 +108,11 @@ def get_gloss_of_audio_transcription(gloss_model,
                                      translation_model={},
                                      transcription_type='sentence'):
 
+    lang_script_map = {
+        'hi': 'Devanagari',
+        'en': 'Latin'
+    }
+
     logger.debug('Existing Text Grid %s', existing_text_grids)
     model_details = {}
     final_text_grids = []
@@ -120,6 +127,7 @@ def get_gloss_of_audio_transcription(gloss_model,
             source_script_code = gloss_params['source_script_code']
             source_lang_code = gloss_params['source_language']
             source_lang_name = gloss_params['source_language_name']
+            gloss_lang_code = gloss_params['gloss_lang_code']
 
             if get_free_translation:
                 text_grids, model_details, input_data = translation_utils.get_translation_of_audio_transcription(translation_model,
@@ -136,7 +144,7 @@ def get_gloss_of_audio_transcription(gloss_model,
 
             gloss_start = datetime.now()
             gloss = predictFromLocalModels.get_gloss_stanza(
-                input_data, source_lang_code)
+                input_data, gloss_lang_code)
             gloss_end = datetime.now()
             model_details.update([('gloss_model_name', gloss_model_name), ('gloss_model_params',
                                                                            gloss_params), ('gloss_start', gloss_start), ('gloss_end', gloss_end)])
@@ -303,7 +311,7 @@ def update_existing_text_grid_with_gloss(current_text_grid,
                 token_id = generate_gloss_token_id(start_index, end_index)
 
                 # if translate_tokens and upos in translate_token_categs:
-                if translate_tokens:
+                if translate_tokens and source_lang_code != target_lang_code:
                     if model != '' and target_script_code == target_script and source_script_code == source_script:
                         try:
                             transl = translate_data(

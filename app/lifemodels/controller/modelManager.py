@@ -8,7 +8,11 @@ from app import mongo
 
 
 from app.lifemodels.controller import huggingFaceUtils as hfu
+from app.lifemodels.controller import (
+    bhashiniUtils
+)
 from app.languages.controller import languageManager as lmn
+
 from datetime import datetime
 import re
 
@@ -104,18 +108,35 @@ def get_model_list(models, languages, featured_authors=[], lang_name='Hindi', ta
 
     model_list = []
     for lang_code, models in models_of_lang.items():
-        lang_name = lang_names.get(lang_code, '')
+        current_lang_name = lang_names.get(lang_code, '')
         for model_id in models:
             current_model_list = {}
             if model_id in model_id_map:
                 model_info = model_id_map[model_id]
                 model_name = model_info['modelId']
-                display_model_name = lang_name+'-'+model_name
+                display_model_name = current_lang_name+'-'+model_name
                 current_model_list['text'] = display_model_name
                 current_model_list['id'] = model_name
                 # current_model_list[display_model_name] = model_name
                 model_list.append(current_model_list)
+
     # logger.debug('Model List %s', len(model_list))
+    bcp_code = lmn.get_bcp_language_code(languages, lang_name)
+    # lang_name = lang_names.get(lang_code, '')
+
+    if task == 'automatic-speech-recognition':
+        logger.info('ASR BHASHINI BCP Code: %s, Name: %s',
+                    bcp_code, lang_name)
+        current_model_list = {}
+        model_name, _, _, _ = bhashiniUtils.get_transcription_model(
+            source_lang=bcp_code)
+        display_model_name = 'Bhashini_' + lang_name + '-' + model_name
+        model_name = 'bhashini_'+model_name
+        current_model_list['text'] = display_model_name
+        current_model_list['id'] = model_name
+        logger.info('ASR BHASHINI Model: %s',
+                    current_model_list)
+        model_list.insert(0, current_model_list)
 
     return model_list
 

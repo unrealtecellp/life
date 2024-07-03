@@ -336,6 +336,11 @@ var glossingModels = [
   { "id": "stanza", "text": "Stanza Model" }
 ]
 
+var glossingLangs = [
+  { "id": "hi", "text": "Hindi" },
+  { "id": "en", "text": "English" }
+]
+
 var freeTranslationLanguages = [
   { "id": "English-Latin", "text": "English-Latin" }
 ]
