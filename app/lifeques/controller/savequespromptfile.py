@@ -43,9 +43,9 @@ def savequespromptfile(mongo,
 
     prompt_type_info = list(new_file.keys())[0]
     prompt_type = prompt_type_info.split('_')[1]
-    # prompt_lang = prompt_type_info.split('_')[2:]
-    # prompt_lang = ' '.join(prompt_lang).strip()
-    prompt_lang = prompt_type_info.split('_')[-1]
+    prompt_lang = prompt_type_info.split('_')[2:]
+    prompt_lang = ' '.join(prompt_lang).strip()
+    # prompt_lang = prompt_type_info.split('_')[-1]
     # logger.debug('prompt_type_info: %s, prompt_type: %s, prompt_lang: %s',
     #              prompt_type_info, prompt_type, prompt_lang)
     if new_file[prompt_type_info].filename != '':
