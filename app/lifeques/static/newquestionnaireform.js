@@ -69,7 +69,8 @@ var languages = [
   {"id": "Chiru", "text": "Chiru"},
   {"id": "Bangru", "text": "Bangru"},
   {"id": "Ahirwati", "text": "Ahirwati"},
-  {"id": "Sumi", "text": "Sumi"}
+  {"id": "Sumi", "text": "Sumi"},
+  {"id": "Sylheti", "text": "Sylheti"}
 ]
 
 var scripts = 
