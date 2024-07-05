@@ -9,36 +9,36 @@
 //   "Target": ["multiselect", ["case", "classifier", "adposition"]]
 // }
 var questionaireprojectform = {
-  "_id":{"$oid":"6370f76bbf61c0a50d2a6ef9"},
-  "username":"alice",
-  "projectname":"Q_Derived_test_108",
-  "Prompt Type":[
-      "prompt",
-      {
-          "English":{
-              "Audio":["waveform",""],
-              "Multimedia":["file",""],
-              "Image":["file",""],
-              "Text":["text",""]
-          },
-          "Hindi":{
-            "Audio":["waveform",""],
-            "Multimedia":["file",""],
-            "Image":["file",""],
-            "Text":["text",""]
-          }
+  "_id": { "$oid": "6370f76bbf61c0a50d2a6ef9" },
+  "username": "alice",
+  "projectname": "Q_Derived_test_108",
+  "Prompt Type": [
+    "prompt",
+    {
+      "English": {
+        "Audio": ["waveform", ""],
+        "Multimedia": ["file", ""],
+        "Image": ["file", ""],
+        "Text": ["text", ""]
+      },
+      "Hindi": {
+        "Audio": ["waveform", ""],
+        "Multimedia": ["file", ""],
+        "Image": ["file", ""],
+        "Text": ["text", ""]
       }
+    }
   ],
-  "Language_Script":[
-      "",
-      {
-        "English":"Latin",
-        "Hindi": "Devanagari"
-      }
+  "Language_Script": [
+    "",
+    {
+      "English": "Latin",
+      "Hindi": "Devanagari"
+    }
   ],
-  "Target":["multiselect",["on"]],
-  "Elicitation Method":["select",["Translation","Narration","Role-Play"]],
-  "Domain":["multiselect",["General","Education","Agriculture","Science-Technology"]]
+  "Target": ["multiselect", ["on"]],
+  "Elicitation Method": ["select", ["Translation", "Narration", "Role-Play"]],
+  "Domain": ["multiselect", ["General", "Education", "Agriculture", "Science-Technology"]]
 }
 
 var testquesdata = {
@@ -48,158 +48,158 @@ var testquesdata = {
   "Q_Id": "",
   "lastUpdatedBy": "",
   "prompt": {
-      "domain": [],
-      "elicitation method": "",
-      "target": [],
-      "content": {
-          "English": {
-              "text": {
-                  "txtboundaryspan": {
-                      "startindex": "",
-                      "endindex": "",
-                      "textspan": {
-                          "Latin": "This is english sentence."
-                      }
-                  }
-              },
-              "audio": {
-                  "fileId": "",
-                  "filename": "",
-                  "instructions": "",
-                  "textgrid": {
-                      "sentence": {
-                          "audioboundarydur": {
-                              "startindex": "",
-                              "endindex": "",
-                              "transcription": {
-                                  "script": ""
-                              }
-                          }
-                      }
-                  }
-              },
-              "image": {
-                  "fileId": "",
-                  "filename": "",
-                  "instructions": "",
-                  "imagetext": {
-                      "txtboundaryspan": {
-                          "startindex": "",
-                          "endindex": "",
-                          "textspan": {
-                              "script": ""
-                          }   
-                      }
-                  }
-              },
-              "multimedia": {
-                  "fileId": "",
-                  "filename": "",
-                  "instructions": "",
-                  "textgrid": {
-                      "sentence": {
-                          "audioboundarydur": {
-                              "startindex": "",
-                              "endindex": "",
-                              "transcription": {
-                                  "script": ""
-                              }
-                          }
-                      }
-                  }
-              }
-          },
-          "Hindi": {
-            "text": {
-                "txtboundaryspan": {
-                    "startindex": "",
-                    "endindex": "",
-                    "textspan": {
-                        "Devanagari": "ye hindi sentence hai."
-                    }
-                }
-            },
-            "audio": {
-                "fileId": "",
-                "filename": "",
-                "instructions": "",
-                "textgrid": {
-                    "sentence": {
-                        "audioboundarydur": {
-                            "startindex": "",
-                            "endindex": "",
-                            "transcription": {
-                                "script": ""
-                            }
-                        }
-                    }
-                }
-            },
-            "image": {
-                "fileId": "",
-                "filename": "",
-                "instructions": "",
-                "imagetext": {
-                    "txtboundaryspan": {
-                        "startindex": "",
-                        "endindex": "",
-                        "textspan": {
-                            "script": ""
-                        }   
-                    }
-                }
-            },
-            "multimedia": {
-                "fileId": "",
-                "filename": "",
-                "instructions": "",
-                "textgrid": {
-                    "sentence": {
-                        "audioboundarydur": {
-                            "startindex": "",
-                            "endindex": "",
-                            "transcription": {
-                                "script": ""
-                            }
-                        }
-                    }
-                }
+    "domain": [],
+    "elicitation method": "",
+    "target": [],
+    "content": {
+      "English": {
+        "text": {
+          "txtboundaryspan": {
+            "startindex": "",
+            "endindex": "",
+            "textspan": {
+              "Latin": "This is english sentence."
             }
+          }
+        },
+        "audio": {
+          "fileId": "",
+          "filename": "",
+          "instructions": "",
+          "textgrid": {
+            "sentence": {
+              "audioboundarydur": {
+                "startindex": "",
+                "endindex": "",
+                "transcription": {
+                  "script": ""
+                }
+              }
+            }
+          }
+        },
+        "image": {
+          "fileId": "",
+          "filename": "",
+          "instructions": "",
+          "imagetext": {
+            "txtboundaryspan": {
+              "startindex": "",
+              "endindex": "",
+              "textspan": {
+                "script": ""
+              }
+            }
+          }
+        },
+        "multimedia": {
+          "fileId": "",
+          "filename": "",
+          "instructions": "",
+          "textgrid": {
+            "sentence": {
+              "audioboundarydur": {
+                "startindex": "",
+                "endindex": "",
+                "transcription": {
+                  "script": ""
+                }
+              }
+            }
+          }
         }
-
+      },
+      "Hindi": {
+        "text": {
+          "txtboundaryspan": {
+            "startindex": "",
+            "endindex": "",
+            "textspan": {
+              "Devanagari": "ye hindi sentence hai."
+            }
+          }
+        },
+        "audio": {
+          "fileId": "",
+          "filename": "",
+          "instructions": "",
+          "textgrid": {
+            "sentence": {
+              "audioboundarydur": {
+                "startindex": "",
+                "endindex": "",
+                "transcription": {
+                  "script": ""
+                }
+              }
+            }
+          }
+        },
+        "image": {
+          "fileId": "",
+          "filename": "",
+          "instructions": "",
+          "imagetext": {
+            "txtboundaryspan": {
+              "startindex": "",
+              "endindex": "",
+              "textspan": {
+                "script": ""
+              }
+            }
+          }
+        },
+        "multimedia": {
+          "fileId": "",
+          "filename": "",
+          "instructions": "",
+          "textgrid": {
+            "sentence": {
+              "audioboundarydur": {
+                "startindex": "",
+                "endindex": "",
+                "transcription": {
+                  "script": ""
+                }
+              }
+            }
+          }
+        }
       }
+
+    }
   },
   "current_username": {
-      "prompt": {
-          "bhojpuri": "",
-          "awadhi": ""
-      }   
+    "prompt": {
+      "bhojpuri": "",
+      "awadhi": ""
+    }
   }
 }
 
 var targets = [
-  {"id": "Simple and Complex", "text": "Simple and Complex"},
-  {"id": "Case", "text": "Case"},
-  {"id": "Classifiers", "text": "Classifiers"},
-  {"id": "Reflexives and Reciprocals", "text": "Reflexives and Reciprocals"},
-  {"id": "Interrogatives", "text": "Interrogatives"},
-  {"id": "Tag Questions", "text": "Tag Questions"},
-  {"id": "Tense Aspect Mood", "text": "Tense Aspect Mood"},
-  {"id": "Intransitive", "text": "Intransitive"},
-  {"id": "Transitive", "text": "Transitive"},
-  {"id": "Ditransitive", "text": "Ditransitive"},
-  {"id": "Additional", "text": "Additional"},
-  {"id": "ECV, Converbs, Serial Verbs", "text": "ECV, Converbs, Serial Verbs"},
-  {"id": "Negatives and Prohibitives", "text": "Negatives and Prohibitives"},
-  {"id": "Causatives and Passives", "text": "Causatives and Passives"},
-  {"id": "Reduplication, echo forms and binomials", "text": "Reduplication, echo forms and binomials"},
-  {"id": "Comparatives and Superlatives", "text": "Comparatives and Superlatives"},
-  {"id": "Sentences with Adverbs", "text": "Sentences with Adverbs"},
-  {"id": "Quantifiers and Intensifiers", "text": "Quantifiers and Intensifiers"},
-  {"id": "Scrambling", "text": "Scrambling"},
-  {"id": "Modifiers", "text": "Modifiers"},
-  {"id": "Agreement", "text": "Agreement"},
-  {"id": "Miscellaneous", "text": "Miscellaneous"}
+  { "id": "Simple and Complex", "text": "Simple and Complex" },
+  { "id": "Case", "text": "Case" },
+  { "id": "Classifiers", "text": "Classifiers" },
+  { "id": "Reflexives and Reciprocals", "text": "Reflexives and Reciprocals" },
+  { "id": "Interrogatives", "text": "Interrogatives" },
+  { "id": "Tag Questions", "text": "Tag Questions" },
+  { "id": "Tense Aspect Mood", "text": "Tense Aspect Mood" },
+  { "id": "Intransitive", "text": "Intransitive" },
+  { "id": "Transitive", "text": "Transitive" },
+  { "id": "Ditransitive", "text": "Ditransitive" },
+  { "id": "Additional", "text": "Additional" },
+  { "id": "ECV, Converbs, Serial Verbs", "text": "ECV, Converbs, Serial Verbs" },
+  { "id": "Negatives and Prohibitives", "text": "Negatives and Prohibitives" },
+  { "id": "Causatives and Passives", "text": "Causatives and Passives" },
+  { "id": "Reduplication, echo forms and binomials", "text": "Reduplication, echo forms and binomials" },
+  { "id": "Comparatives and Superlatives", "text": "Comparatives and Superlatives" },
+  { "id": "Sentences with Adverbs", "text": "Sentences with Adverbs" },
+  { "id": "Quantifiers and Intensifiers", "text": "Quantifiers and Intensifiers" },
+  { "id": "Scrambling", "text": "Scrambling" },
+  { "id": "Modifiers", "text": "Modifiers" },
+  { "id": "Agreement", "text": "Agreement" },
+  { "id": "Miscellaneous", "text": "Miscellaneous" }
 ]
 
 var audioWaveform = 0
@@ -207,7 +207,7 @@ var audioWaveform = 0
 function createInputElement(key, elevalue, type, quesdatavalue) {
   // console.log(key, elevalue, type, quesdatavalue);
   var qform = '';
-  for (let i=0; i<elevalue.length; i++) {
+  for (let i = 0; i < elevalue.length; i++) {
     // console.log(elevalue[i], quesdatavalue);
     if (elevalue[i] === '') {
       eval = key
@@ -228,12 +228,12 @@ function createInputElement(key, elevalue, type, quesdatavalue) {
       val = quesdatavalue;
     }
     // console.log(val);
-    qform += '<div class="form-group">'+
-              '<label for="'+ keyid +'">'+ eval +'</label>'+
-              '<input type="'+type+'" class="form-control" id="'+ keyid +'"'+ 
-              'placeholder="'+ eval +'" name="'+ eval +'" value="'+ val +'" required>'+
-              // 'placeholder="'+ eval +'" name="'+ eval +'" value="'+ val +'">'+
-              '</div>';
+    qform += '<div class="form-group">' +
+      '<label for="' + keyid + '">' + eval + '</label>' +
+      '<input type="' + type + '" class="form-control" id="' + keyid + '"' +
+      'placeholder="' + eval + '" name="' + eval + '" value="' + val + '" required>' +
+      // 'placeholder="'+ eval +'" name="'+ eval +'" value="'+ val +'">'+
+      '</div>';
   }
 
   return qform;
@@ -241,14 +241,14 @@ function createInputElement(key, elevalue, type, quesdatavalue) {
 
 function createTextareaElement(key, elevalue, type, quesdatavalue) {
   var qform = '';
-  for (let i=0; i<elevalue.length; i++) {
+  for (let i = 0; i < elevalue.length; i++) {
     eval = key + ' ' + elevalue[i]
     var keyid = eval.replace(new RegExp(' ', 'g'), '_');
-    qform += '<div class="form-group">'+
-              '<label for="'+ keyid +'">'+ eval +'</label><br>'+
-              '<textarea id="'+ keyid +'" name="'+ eval +'" rows="4" cols="50">'+
-              '</textarea>'+
-              '</div>';
+    qform += '<div class="form-group">' +
+      '<label for="' + keyid + '">' + eval + '</label><br>' +
+      '<textarea id="' + keyid + '" name="' + eval + '" rows="4" cols="50">' +
+      '</textarea>' +
+      '</div>';
   }
 
   return qform;
@@ -258,35 +258,35 @@ function createSelectElement(key, elevalue, type, quesdatavalue) {
   // console.log(quesdatavalue)
   var qform = '';
   var keyid = key.replace(new RegExp(' ', 'g'), '_');
-  qform += '<div class="form-group">'+
-            '<label for="'+keyid+'">'+key+'</label>';
+  qform += '<div class="form-group">' +
+    '<label for="' + keyid + '">' + key + '</label>';
   if (type === 'multiple') {
-    qform += '<select class="quesselect" id="'+keyid+'" name="'+key+'" multiple="'+type+'" style="width: 100%" required>';
+    qform += '<select class="quesselect" id="' + keyid + '" name="' + key + '" multiple="' + type + '" style="width: 100%" required>';
     // qform += '<select class="quesselect" id="'+keyid+'" name="'+key+'" multiple="'+type+'" style="width: 100%">';
   }
   else {
-    qform += '<select class="quesselect" id="'+keyid+'" name="'+key+'" style="width: 100%" required>';
+    qform += '<select class="quesselect" id="' + keyid + '" name="' + key + '" style="width: 100%" required>';
     // qform += '<select class="quesselect" id="'+keyid+'" name="'+key+'" style="width: 100%">';
   }
-  
-  for (let i=0; i<elevalue.length; i++) {
+
+  for (let i = 0; i < elevalue.length; i++) {
     eval = elevalue[i]
     // console.log(eval, quesdatavalue, quesdatavalue.includes(eval))
     if (type === 'multiple') {
       if (quesdatavalue.includes(eval)) {
-        qform += '<option value="'+eval+'" selected>'+eval+'</option>';  
+        qform += '<option value="' + eval + '" selected>' + eval + '</option>';
       }
       else {
-        qform += '<option value="'+eval+'">'+eval+'</option>';
+        qform += '<option value="' + eval + '">' + eval + '</option>';
       }
     }
     else {
       if (quesdatavalue.includes(eval)) {
         // console.log(eval, quesdatavalue)
-        qform += '<option value="'+eval+'" selected>'+eval+'</option>';  
+        qform += '<option value="' + eval + '" selected>' + eval + '</option>';
       }
       else {
-        qform += '<option value="'+eval+'">'+eval+'</option>';
+        qform += '<option value="' + eval + '">' + eval + '</option>';
       }
     }
   }
@@ -300,7 +300,7 @@ function createquesform(quesprojectform) {
   // quesprojectform = questionaireprojectform;
   localStorage.setItem("quesactiveprojectform", JSON.stringify(quesprojectform));
   if (!('quesdata' in quesprojectform) ||
-      !(quesprojectform['quesdata'])) {
+    !(quesprojectform['quesdata'])) {
     // creatNewQues(quesprojectform)
     console.log('creatNewQues(quesprojectform)');
   }
@@ -345,7 +345,7 @@ function createquesform(quesprojectform) {
 
     for (let [key, value] of Object.entries(quesprojectform)) {
       // console.log(key, value, value[0], typeof value, quesdata['prompt'][key]);
-      
+
       if (key === 'Instruction') {
         continue;
       }
@@ -362,7 +362,7 @@ function createquesform(quesprojectform) {
         else {
           quesform += createInputElement(key, elevalue, eletype, quesdatavalue)
         }
-        
+
       }
       else if (eletype === 'textarea') {
         quesform += createTextareaElement(key, elevalue, eletype, quesdatavalue)
@@ -380,10 +380,10 @@ function createquesform(quesprojectform) {
         else {
           quesform += createSelectElement(key, elevalue, 'multiple', quesdatavalue)
         }
-        
+
       }
       else if (eletype === 'prompt') {
-        
+
         // test field start
 
         var testquesform = ''
@@ -396,16 +396,17 @@ function createquesform(quesprojectform) {
         // console.log(testvalue);
         for (let [testpromptTypeKey, testpromptTypeValue] of Object.entries(testvalue)) {
           transcriptionBoundaryForm = '';
+          // testpromptTypeKey = testpromptTypeKey.replace(new RegExp(' ', 'g'), '');
           var promptquesdatavalue = Object();
-          testquesform += '<div class="form-group ' + testpromptTypeKey +'">';
-          testquesform += '<fieldset class="form-group border">'+
-                      '<legend class="col-form-label">'+
-                      'Prompt'+' '+ testpromptTypeKey +
-                      '<button class="btn btn-default pull-right" type="button" data-toggle="collapse"'+
-                      'data-target=".prompt' + testpromptTypeKey +'" aria-expanded="false" aria-controls="' + testpromptTypeKey +'" '+
-                      'onclick="collapsePrompt(\''+testpromptTypeKey+'\')">'+
-                      '<span class="glyphicon glyphicon-chevron-up promp'+testpromptTypeKey+'" aria-hidden="true"></span>'+
-                      '</button></legend>';
+          testquesform += '<div class="form-group ' + testpromptTypeKey + '">';
+          testquesform += '<fieldset class="form-group border">' +
+            '<legend class="col-form-label">' +
+            'Prompt' + ' ' + testpromptTypeKey +
+            '<button class="btn btn-default pull-right" type="button" data-toggle="collapse"' +
+            'data-target=".prompt' + testpromptTypeKey + '" aria-expanded="false" aria-controls="' + testpromptTypeKey + '" ' +
+            'onclick="collapsePrompt(\'' + testpromptTypeKey + '\')">' +
+            '<span class="glyphicon glyphicon-chevron-up promp' + testpromptTypeKey + '" aria-hidden="true"></span>' +
+            '</button></legend>';
           // console.log(testpromptTypeKey, testpromptTypeValue);
           // console.log(key, elevalue, eletype, quesdatavalue);
           langData = testquesdata['prompt']['content'][testpromptTypeKey]
@@ -415,13 +416,13 @@ function createquesform(quesprojectform) {
           // console.log(langText, langTextBoundary, langScript);
           promptquesdatavalue[testpromptTypeKey] = langText[langTextBoundary]['textspan'][langScript]
           // console.log(key, elevalue, eletype, quesdatavalue, promptquesdatavalue);
-          testquesform += '<div class="form-group prompt'+testpromptTypeKey+' collapse in">';
+          testquesform += '<div class="form-group prompt' + testpromptTypeKey + ' collapse in">';
           testquesform += createInputElement('Language', [testpromptTypeKey], 'text', promptquesdatavalue)
           for (let [testpromptTypeValueKey, testpromptTypeValueInfo] of Object.entries(testpromptTypeValue)) {
             // console.log(testpromptTypeValueKey, testpromptTypeValueInfo);
             transcriptionBoundaryForm = '';
             temp_testpromptTypeValueKey = testpromptTypeValueKey;
-            update_key = key.replace('Type', '')+testpromptTypeValueKey;
+            update_key = key.replace('Type', '') + testpromptTypeValueKey;
             if (testpromptTypeValueKey === 'Text') continue;
             testpromptTypeValueKey = testpromptTypeValueKey.toLowerCase();
             quesdatavalue = langData[testpromptTypeValueKey]
@@ -431,8 +432,8 @@ function createquesform(quesprojectform) {
             let filePath = quesprojectform[filePathKey]
             // console.log(filePath);
             if (testpromptTypeValueInfo[0] === 'waveform' &&
-                testpromptTypeValueKey === 'audio' &&
-                !audioWaveform) {
+              testpromptTypeValueKey === 'audio' &&
+              !audioWaveform) {
               substr = createInputElement('Language', [testpromptTypeKey], 'text', promptquesdatavalue)
               // console.log(substr);
               testquesform = testquesform.replace(substr, '');
@@ -445,8 +446,8 @@ function createquesform(quesprojectform) {
               }
             }
             else if (testpromptTypeValueInfo[0] === 'file' ||
-                      testpromptTypeValueKey === 'multimedia' ||
-                      audioWaveform) {
+              testpromptTypeValueKey === 'multimedia' ||
+              audioWaveform) {
               transcriptionBoundaryForm = testpromptFileFunction(update_key, testpromptTypeKey, testpromptTypeValue, quesdatavalue, filePath)
               if (transcriptionBoundaryForm === undefined) {
                 transcriptionBoundaryForm = '';
@@ -454,13 +455,13 @@ function createquesform(quesprojectform) {
             }
             testquesform += transcriptionBoundaryForm;
             if (testpromptTypeValueInfo[1] === 'text') {
-              let instructionVal = testquesdata['prompt']['content'][testpromptTypeKey][testpromptTypeValueKey][testpromptTypeValueKey+'Instruction']
+              let instructionVal = testquesdata['prompt']['content'][testpromptTypeKey][testpromptTypeValueKey][testpromptTypeValueKey + 'Instruction']
               // console.log('Instruction', [testpromptTypeKey], 'text', instructionVal);
               if (instructionVal === undefined) {
                 instructionVal = ''
               }
               // console.log(instructionVal);
-              let instructionForm = createInputElement(temp_testpromptTypeValueKey+' Instruction', [testpromptTypeKey], 'text', instructionVal)
+              let instructionForm = createInputElement(temp_testpromptTypeValueKey + ' Instruction', [testpromptTypeKey], 'text', instructionVal)
               testquesform += instructionForm
             }
           }
@@ -473,8 +474,8 @@ function createquesform(quesprojectform) {
         quesform += testquesform
 
         // test field end
+      }
     }
-  }
     // quesform += '<input class="btn btn-lg btn-primary" type="submit" value="Submit">';
     // quesform += '<div id="quesformControlBelow">'+
     //                 '<button class="btn btn-info btn-lg" type="button" id="previous" onclick="previousQues()">'+
@@ -492,12 +493,12 @@ function createquesform(quesprojectform) {
     //                   '<span class="glyphicon glyphicon-floppy-save" aria-hidden="true"></span>'+
     //                 '</button>'+
     //             '</div>';
-    
+
     // qform += quesformControlAbove + '<br>' + transcriptionBoundaryForm + '<hr>' + quesform;
     qform += transcriptionBoundaryForm + '<hr>' + quesform;
     qform += '</form>'
     // quesform += '</div>';
-    
+
     $('#quesform').html(qform);
 
     $('.quesselect').select2({
@@ -518,31 +519,31 @@ function createquesform(quesprojectform) {
 function testwaveFormFunction(key, promptTypeKey, promptTypeValue, quesdatavalue, filePath, langScript) {
   // console.log(key, promptTypeKey, promptTypeValue, quesdatavalue, filePath, langScript);
   // console.log(key);
-  
+
   let transcriptionBoundaryForm = '';
   let quesTranscription = ''
   if (quesdatavalue['fileId'] === '' ||
     quesdatavalue['fileId'] === undefined) {
     // console.log('waveformmmm', promptTypeKey, promptTypeValue, quesdatavalue)
-    var uploadFormId = 'ques'+key+' '+promptTypeKey
+    var uploadFormId = 'ques' + key + ' ' + promptTypeKey
     uploadFormId = uploadFormId.replace(new RegExp(' ', 'g'), '_');
 
-    let recordAudioBtnId = key+' '+promptTypeKey
+    let recordAudioBtnId = key + ' ' + promptTypeKey
     recordAudioBtnId = recordAudioBtnId.replace(new RegExp(' ', 'g'), '_');
 
     // quesTranscription += '<form action="{{ url_for(\'lifeques.quespromptfile\') }}" method="POST" enctype="multipart/form-data">';
-    quesTranscription +=  '<div id="'+uploadFormId+'">';
+    quesTranscription += '<div id="' + uploadFormId + '">';
     quesTranscription += createInputElement(key, [promptTypeKey], 'file', quesdatavalue);
-    
+
     // quesTranscription += '<input class="btn btn-primary pull-right" id="'+uploadFormId+'submit" type="submit" formaction="{{ url_for(\'lifeques.quespromptfile\') }}" value="Upload">';
-    quesTranscription += '<button type="button" id="'+recordAudioBtnId+'" class="btn btn-dark pull-right recordeaudio" data-toggle="modal" data-target="#myRecordingModal">'+
-                            '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-mic" viewBox="0 0 16 16">'+
-                              '<path d="M3.5 6.5A.5.5 0 0 1 4 7v1a4 4 0 0 0 8 0V7a.5.5 0 0 1 1 0v1a5 5 0 0 1-4.5 4.975V15h3a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1h3v-2.025A5 5 0 0 1 3 8V7a.5.5 0 0 1 .5-.5"/>'+
-                              '<path d="M10 8a2 2 0 1 1-4 0V3a2 2 0 1 1 4 0zM8 0a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V3a3 3 0 0 0-3-3"/>'+
-                            '</svg>'+
-                          '</button>';
-    quesTranscription += '<input class="btn btn-primary pull-right" id="'+uploadFormId+'submit" type="button"'+
-                          ' value="Upload" onclick="uploadPromptFile(this);">';
+    quesTranscription += '<button type="button" id="' + recordAudioBtnId + '" class="btn btn-dark pull-right recordeaudio" data-toggle="modal" data-target="#myRecordingModal">' +
+      '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-mic" viewBox="0 0 16 16">' +
+      '<path d="M3.5 6.5A.5.5 0 0 1 4 7v1a4 4 0 0 0 8 0V7a.5.5 0 0 1 1 0v1a5 5 0 0 1-4.5 4.975V15h3a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1h3v-2.025A5 5 0 0 1 3 8V7a.5.5 0 0 1 .5-.5"/>' +
+      '<path d="M10 8a2 2 0 1 1-4 0V3a2 2 0 1 1 4 0zM8 0a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V3a3 3 0 0 0-3-3"/>' +
+      '</svg>' +
+      '</button>';
+    quesTranscription += '<input class="btn btn-primary pull-right" id="' + uploadFormId + 'submit" type="button"' +
+      ' value="Upload" onclick="uploadPromptFile(this);">';
     quesTranscription += '</div>';
     // quesTranscription += '</form>';
     quesTranscription += '<br>';
@@ -564,45 +565,45 @@ function testwaveFormFunction(key, promptTypeKey, promptTypeValue, quesdatavalue
     // x.style.display = "none";
     // var x = document.getElementById("questranscriptionwaveform");
     // x.style.display = "block";
-    quesTranscription += createInputElement(key+' Transcription', [lang], 'text', val);
+    quesTranscription += createInputElement(key + ' Transcription', [lang], 'text', val);
 
-    let waveform = '<div id="wave-timeline"></div>'+
-                    '<div id="waveform"></div>'+
-                    '<div id="wave-spectrogram" style="display: none;"></div>'+
-                    '<br>';
+    let waveform = '<div id="wave-timeline"></div>' +
+      '<div id="waveform"></div>' +
+      '<div id="wave-spectrogram" style="display: none;"></div>' +
+      '<br>';
 
-    let waveformController = '<hr>'+
-                              '<div class="col-sm-3">'+
-                                '<input id="slider" data-action="zoom" type="range" min="0" max="5000" value="0" style="width: 50%">'+
-                              '</div>'+
-                              // '<i class="glyphicon glyphicon-zoom-in"></i>'+
-                              
-                              '<div class="pull-right">'+
-                                // '<button type="button" id="deleteboundary" class="btn btn-danger btn-block" data-action="delete-region" disabled>Delete Boundary</button>'+
-                                '<button type="button" id="deleteboundary" class="btn btn-warning btn-block" data-toggle="tooltip" title="Delete Boundary" data-action="delete-region" disabled>'+
-                                  '<span class="glyphicon glyphicon-minus" aria-hidden="true"></span>'+
-                                '</button>'+
-                                // '<br>'+
-                                // '<button class="btn btn-danger" type="button" id="stopAudio" data-action="stop-audio">STOP'+
-                                //   '<span class="audiostop glyphicon glyphicon-stop" aria-hidden="true"></span>'+
-                                // '</button>'+
-                                // '<button class="btn btn-primary" type="button" id="playPauseAudio">PLAY/PAUSE'+
-                                //   '<span class="audioplaypause glyphicon glyphicon-play" aria-hidden="true"></span>'+
-                                // '</button>'+
-                              '</div><br><br><hr>';
+    let waveformController = '<hr>' +
+      '<div class="col-sm-3">' +
+      '<input id="slider" data-action="zoom" type="range" min="0" max="5000" value="0" style="width: 50%">' +
+      '</div>' +
+      // '<i class="glyphicon glyphicon-zoom-in"></i>'+
+
+      '<div class="pull-right">' +
+      // '<button type="button" id="deleteboundary" class="btn btn-danger btn-block" data-action="delete-region" disabled>Delete Boundary</button>'+
+      '<button type="button" id="deleteboundary" class="btn btn-warning btn-block" data-toggle="tooltip" title="Delete Boundary" data-action="delete-region" disabled>' +
+      '<span class="glyphicon glyphicon-minus" aria-hidden="true"></span>' +
+      '</button>' +
+      // '<br>'+
+      // '<button class="btn btn-danger" type="button" id="stopAudio" data-action="stop-audio">STOP'+
+      //   '<span class="audiostop glyphicon glyphicon-stop" aria-hidden="true"></span>'+
+      // '</button>'+
+      // '<button class="btn btn-primary" type="button" id="playPauseAudio">PLAY/PAUSE'+
+      //   '<span class="audioplaypause glyphicon glyphicon-play" aria-hidden="true"></span>'+
+      // '</button>'+
+      '</div><br><br><hr>';
 
     transcriptionBoundaryForm += waveform + waveformController;
-    
-    transcriptionBoundaryForm += '<div class="form-group">'+
-                                  // '<label for="start">Boundary Start Time</label>'+
-                                  '<input type="hidden" class="form-control" id="start" name="start" value="'+start+'" required/>'+
-                                  '</div>'+
-                                  '<div class="form-group">'+
-                                  // '<label for="end">Boundary End Time</label>'+
-                                  '<input type="hidden" class="form-control" id="end" name="end" value="'+end+'" required/>'+
-                                  '</div>';
+
+    transcriptionBoundaryForm += '<div class="form-group">' +
+      // '<label for="start">Boundary Start Time</label>'+
+      '<input type="hidden" class="form-control" id="start" name="start" value="' + start + '" required/>' +
+      '</div>' +
+      '<div class="form-group">' +
+      // '<label for="end">Boundary End Time</label>'+
+      '<input type="hidden" class="form-control" id="end" name="end" value="' + end + '" required/>' +
+      '</div>';
     transcriptionBoundaryForm += quesTranscription;
-    
+
     return transcriptionBoundaryForm;
   }
 }
@@ -615,28 +616,28 @@ function testpromptFileFunction(key, promptTypeKey, promptTypeValue, quesdataval
   let quesTranscription = '';
   // console.log(quesdatavalue['fileId'])
   if (quesdatavalue['fileId'] === '' ||
-      quesdatavalue['fileId'] === undefined) {
+    quesdatavalue['fileId'] === undefined) {
     // console.log('waveformmmm', promptTypeKey, promptTypeValue, quesdatavalue)
-    var uploadFormId = 'ques'+key+' '+promptTypeKey
+    var uploadFormId = 'ques' + key + ' ' + promptTypeKey
     uploadFormId = uploadFormId.replace(new RegExp(' ', 'g'), '_');
 
-    let recordAudioBtnId = key+' '+promptTypeKey
+    let recordAudioBtnId = key + ' ' + promptTypeKey
     recordAudioBtnId = recordAudioBtnId.replace(new RegExp(' ', 'g'), '_');
-    
+
     // quesTranscription += '<form action="{{ url_for(\'lifeques.quespromptfile\') }}" method="POST" enctype="multipart/form-data">';
-    quesTranscription += '<div id="'+uploadFormId+'">';
+    quesTranscription += '<div id="' + uploadFormId + '">';
     quesTranscription += createInputElement(key, [promptTypeKey], 'file', quesdatavalue);
     // quesTranscription += '<input class="btn btn-primary pull-right" id="'+uploadFormId+'submit" type="submit" formaction="{{ url_for(\'lifeques.quespromptfile\') }}" value="Upload">';
-    if (key.includes('Audio')){
-      quesTranscription += '<button type="button" id="'+recordAudioBtnId+'" class="btn btn-dark pull-right recordeaudio" data-toggle="modal" data-target="#myRecordingModal">'+
-                              '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-mic" viewBox="0 0 16 16">'+
-                                '<path d="M3.5 6.5A.5.5 0 0 1 4 7v1a4 4 0 0 0 8 0V7a.5.5 0 0 1 1 0v1a5 5 0 0 1-4.5 4.975V15h3a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1h3v-2.025A5 5 0 0 1 3 8V7a.5.5 0 0 1 .5-.5"/>'+
-                                '<path d="M10 8a2 2 0 1 1-4 0V3a2 2 0 1 1 4 0zM8 0a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V3a3 3 0 0 0-3-3"/>'+
-                              '</svg>'+
-                            '</button>';
+    if (key.includes('Audio')) {
+      quesTranscription += '<button type="button" id="' + recordAudioBtnId + '" class="btn btn-dark pull-right recordeaudio" data-toggle="modal" data-target="#myRecordingModal">' +
+        '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-mic" viewBox="0 0 16 16">' +
+        '<path d="M3.5 6.5A.5.5 0 0 1 4 7v1a4 4 0 0 0 8 0V7a.5.5 0 0 1 1 0v1a5 5 0 0 1-4.5 4.975V15h3a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1h3v-2.025A5 5 0 0 1 3 8V7a.5.5 0 0 1 .5-.5"/>' +
+        '<path d="M10 8a2 2 0 1 1-4 0V3a2 2 0 1 1 4 0zM8 0a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V3a3 3 0 0 0-3-3"/>' +
+        '</svg>' +
+        '</button>';
     }
-    quesTranscription += '<input class="btn btn-primary pull-right" id="'+uploadFormId+'submit" type="button"'+
-                          ' value="Upload" onclick="uploadPromptFile(this);">';
+    quesTranscription += '<input class="btn btn-primary pull-right" id="' + uploadFormId + 'submit" type="button"' +
+      ' value="Upload" onclick="uploadPromptFile(this);">';
     quesTranscription += '</div>';
     // quesTranscription += '</form>';
     quesTranscription += '<br>';
@@ -651,32 +652,32 @@ function testpromptFileFunction(key, promptTypeKey, promptTypeValue, quesdataval
     var fileId = fileCaption.replace(new RegExp(' ', 'g'), '');
     // console.log(fileId);
     if (fileId.includes('Audio')) {
-      transcriptionBoundaryForm += '<div class="form-group">'+
-                                    '<label for="'+fileId+'">'+fileCaption+'</label><br>'+
-                                    '<audio id="'+fileId+'" controls autoplay>'+
-                                    '<source src="'+filePath+'" type="audio/wav">'+
-                                    'Your browser does not support the audio element.'+
-                                    '</audio>'+
-                                    '</div>';
+      transcriptionBoundaryForm += '<div class="form-group">' +
+        '<label for="' + fileId + '">' + fileCaption + '</label><br>' +
+        '<audio id="' + fileId + '" controls autoplay>' +
+        '<source src="' + filePath + '" type="audio/wav">' +
+        'Your browser does not support the audio element.' +
+        '</audio>' +
+        '</div>';
     }
     else if (fileId.includes('Image')) {
-      transcriptionBoundaryForm += '<div class="form-group">'+
-                                    '<label for="'+fileId+'">'+fileCaption+'</label><br>'+
-                                    '<img src="'+filePath+'" alt="'+filePath+'" width="400" height="341" />'+
-                                    '</div>';
+      transcriptionBoundaryForm += '<div class="form-group">' +
+        '<label for="' + fileId + '">' + fileCaption + '</label><br>' +
+        '<img src="' + filePath + '" alt="' + filePath + '" width="400" height="341" />' +
+        '</div>';
     }
     else if (fileId.includes('Multimedia')) {
-      transcriptionBoundaryForm += '<div class="form-group">'+
-                                    '<label for="'+fileId+'">'+fileCaption+'</label><br>'+
-                                    '<video width="400" height="341" controls>'+
-                                    '<source src="'+filePath+'" type="video/mp4">'+
-                                    'Your browser does not support the video tag.'+
-                                    '</video> '+
-                                    '</div>';
+      transcriptionBoundaryForm += '<div class="form-group">' +
+        '<label for="' + fileId + '">' + fileCaption + '</label><br>' +
+        '<video width="400" height="341" controls>' +
+        '<source src="' + filePath + '" type="video/mp4">' +
+        'Your browser does not support the video tag.' +
+        '</video> ' +
+        '</div>';
     }
     transcriptionBoundaryForm += quesTranscription;
 
-  return transcriptionBoundaryForm;
+    return transcriptionBoundaryForm;
   }
 }
 
@@ -686,34 +687,34 @@ function quesIdDetails(Q_Id, quesId) {
   // $(".defaultfield").append(inpt);
   lastActiveId = quesId
   // console.log(lastActiveId)
-  inpt = '<input type="hidden" id="lastActiveId" name="lastActiveId" value="'+lastActiveId+'">';
+  inpt = '<input type="hidden" id="lastActiveId" name="lastActiveId" value="' + lastActiveId + '">';
   $('.defaultfield').append(inpt);
 }
 
 function previousQues() {
   var lastActiveId = document.getElementById("lastActiveId").value;
-    $.ajax({
-        url: '/lifeques/loadpreviousques',
-        type: 'GET',
-        data: {'data': JSON.stringify(lastActiveId)},
-        contentType: "application/json; charset=utf-8", 
-        success: function(response){
-          window.location.reload();
-        }
-    });
-    return false;
+  $.ajax({
+    url: '/lifeques/loadpreviousques',
+    type: 'GET',
+    data: { 'data': JSON.stringify(lastActiveId) },
+    contentType: "application/json; charset=utf-8",
+    success: function (response) {
+      window.location.reload();
+    }
+  });
+  return false;
 }
 
 function nextQues() {
   var lastActiveId = document.getElementById("lastActiveId").value;
   $.ajax({
-      url: '/lifeques/loadnextques',
-      type: 'GET',
-      data: {'data': JSON.stringify(lastActiveId)},
-      contentType: "application/json; charset=utf-8", 
-      success: function(response){
-        window.location.reload();
-      }
+    url: '/lifeques/loadnextques',
+    type: 'GET',
+    data: { 'data': JSON.stringify(lastActiveId) },
+    contentType: "application/json; charset=utf-8",
+    success: function (response) {
+      window.location.reload();
+    }
   });
   return false;
 }
@@ -722,38 +723,38 @@ function unAnnotated() {
   unanno = '';
   $('#uNAnnotated').remove();
   $.ajax({
-      url: '/lifeques/allunannotated',
-      type: 'GET',
-      data: {'data': JSON.stringify(unanno)},
-      contentType: "application/json; charset=utf-8", 
-      success: function(response){
-          allunanno = response.allunanno;
-          allanno = response.allanno;
-          // console.log(allanno)
-          var inpt = '';
-          inpt += '<select class="col-sm-3 allanno" id="allanno" onchange="loadAnnoQues()" style="width: 45%">'+
-                  '<option selected disabled>Completed</option>';
-                  for (i=0; i<allanno.length; i++) {
-                      inpt += '<option value="'+allanno[i]["quesId"]+'">'+allanno[i]["Q_Id"]+'</option>';
-                  }
-          // inpt += '</select>';
-          inpt += '</select>&nbsp; ';
-          inpt += '<select class="pr-4 col-sm-3" id="allunanno" onchange="loadUnAnnoQues()" style="width: 45%">'+
-                  '<option selected disabled>Not Completed</option>';
-                  for (i=0; i<allunanno.length; i++) {
-                      inpt += '<option value="'+allunanno[i]["quesId"]+'">'+allunanno[i]["Q_Id"]+'</option>';
-                  }
-          inpt += '</select>';
-          $('.commentIDs').append(inpt);
-          $('#allanno').select2({
-            // placeholder: 'select user'
-            });
-          $('#allunanno').select2({
-            // placeholder: 'select user'
-            });
+    url: '/lifeques/allunannotated',
+    type: 'GET',
+    data: { 'data': JSON.stringify(unanno) },
+    contentType: "application/json; charset=utf-8",
+    success: function (response) {
+      allunanno = response.allunanno;
+      allanno = response.allanno;
+      // console.log(allanno)
+      var inpt = '';
+      inpt += '<select class="col-sm-3 allanno" id="allanno" onchange="loadAnnoQues()" style="width: 45%">' +
+        '<option selected disabled>Completed</option>';
+      for (i = 0; i < allanno.length; i++) {
+        inpt += '<option value="' + allanno[i]["quesId"] + '">' + allanno[i]["Q_Id"] + '</option>';
       }
+      // inpt += '</select>';
+      inpt += '</select>&nbsp; ';
+      inpt += '<select class="pr-4 col-sm-3" id="allunanno" onchange="loadUnAnnoQues()" style="width: 45%">' +
+        '<option selected disabled>Not Completed</option>';
+      for (i = 0; i < allunanno.length; i++) {
+        inpt += '<option value="' + allunanno[i]["quesId"] + '">' + allunanno[i]["Q_Id"] + '</option>';
+      }
+      inpt += '</select>';
+      $('.commentIDs').append(inpt);
+      $('#allanno').select2({
+        // placeholder: 'select user'
+      });
+      $('#allunanno').select2({
+        // placeholder: 'select user'
+      });
+    }
   });
-  return false; 
+  return false;
 }
 
 function loadUnAnnoQues() {
@@ -761,13 +762,13 @@ function loadUnAnnoQues() {
   // console.log(newQuesId)
   // loadRandomAudio(newQuesId)
   $.ajax({
-      url: '/lifeques/loadunannoques',
-      type: 'GET',
-      data: {'data': JSON.stringify(newQuesId)},
-      contentType: "application/json; charset=utf-8", 
-      success: function(response){
-          window.location.reload();
-      }
+    url: '/lifeques/loadunannoques',
+    type: 'GET',
+    data: { 'data': JSON.stringify(newQuesId) },
+    contentType: "application/json; charset=utf-8",
+    success: function (response) {
+      window.location.reload();
+    }
   });
   return false;
 }
@@ -777,26 +778,26 @@ function loadAnnoQues() {
   // console.log(newQuesId)
   // loadRandomAudio(newQuesId)
   $.ajax({
-      url: '/lifeques/loadunannoques',
-      type: 'GET',
-      data: {'data': JSON.stringify(newQuesId)},
-      contentType: "application/json; charset=utf-8", 
-      success: function(response){
-          window.location.reload();
-      }
+    url: '/lifeques/loadunannoques',
+    type: 'GET',
+    data: { 'data': JSON.stringify(newQuesId) },
+    contentType: "application/json; charset=utf-8",
+    success: function (response) {
+      window.location.reload();
+    }
   });
   return false;
 }
 
 function collapsePrompt(eleClass) {
   // console.log(eleClass);
-  $(".prompt"+eleClass).ready(function(){
-    $(".prompt"+eleClass).on('shown.bs.collapse', function(){
-      $(".promp"+eleClass).addClass('glyphicon-chevron-up').removeClass('glyphicon-chevron-down');
-    });  
-    $(".prompt"+eleClass).on('hidden.bs.collapse', function() {
-      $(".promp"+eleClass).addClass('glyphicon-chevron-down').removeClass('glyphicon-chevron-up');
-    });   
+  $(".prompt" + eleClass).ready(function () {
+    $(".prompt" + eleClass).on('shown.bs.collapse', function () {
+      $(".promp" + eleClass).addClass('glyphicon-chevron-up').removeClass('glyphicon-chevron-down');
+    });
+    $(".prompt" + eleClass).on('hidden.bs.collapse', function () {
+      $(".promp" + eleClass).addClass('glyphicon-chevron-down').removeClass('glyphicon-chevron-up');
+    });
   });
 }
 
@@ -815,9 +816,9 @@ function uploadPromptFile(btn) {
     contentType: false,
     cache: false,
     processData: false,
-    success: function(data) {
-        // console.log('Success!');
-        window.location.reload();
+    success: function (data) {
+      // console.log('Success!');
+      window.location.reload();
     },
   });
   return false;
@@ -825,42 +826,42 @@ function uploadPromptFile(btn) {
 
 function openQuesMetaData() {
   let quesMetadataDisplay = document.getElementById('quesmetadata')
-  if(quesMetadataDisplay.style.display == 'none') {
-      quesMetadataDisplay.style.display = 'block'
+  if (quesMetadataDisplay.style.display == 'none') {
+    quesMetadataDisplay.style.display = 'block'
   }
-  else if(quesMetadataDisplay.style.display == 'block') {
-      quesMetadataDisplay.style.display = 'none'
+  else if (quesMetadataDisplay.style.display == 'block') {
+    quesMetadataDisplay.style.display = 'none'
   }
 }
 
-$("#save").click(function() {
+$("#save").click(function () {
   submit_form_ele = document.getElementById("idsavequesform");
   const formData = new FormData(submit_form_ele);
   var object = {};
-  formData.forEach(function(value, key){
-      // console.log('key: ', key, 'value: ', value);
-      if (key in object) {
-          object[key].push(value);
-      }
-      else {
-          object[key] = [value];
-      }
-  });
-  // console.log(object);
-  $.post( "/lifeques/savequestionnaire", {
-    a: JSON.stringify(object)
-  })
-  .done(function( data ) {
-    // console.log(data.savedQuestionnaire);
-    if (!data.savedQuestionnaire) {
-          alert("Unable to save the questionnaire as question seem to be deleted or revoked access by one of the shared users. Showing you the next question in the list.")
-          // window.location.reload();
+  formData.forEach(function (value, key) {
+    // console.log('key: ', key, 'value: ', value);
+    if (key in object) {
+      object[key].push(value);
     }
     else {
-      alert("Questionnaire saved successfully.")
+      object[key] = [value];
     }
-    window.location.reload();
   });
+  // console.log(object);
+  $.post("/lifeques/savequestionnaire", {
+    a: JSON.stringify(object)
+  })
+    .done(function (data) {
+      // console.log(data.savedQuestionnaire);
+      if (!data.savedQuestionnaire) {
+        alert("Unable to save the questionnaire as question seem to be deleted or revoked access by one of the shared users. Showing you the next question in the list.")
+        // window.location.reload();
+      }
+      else {
+        alert("Questionnaire saved successfully.")
+      }
+      window.location.reload();
+    });
   // $.post( "/savetranscription", {
   //   a: JSON.stringify(questionnaireData)
   // })
@@ -877,36 +878,36 @@ $("#save").click(function() {
   // });
 });
 
-$("#addnewques").click(function() {
-  $.get( "/lifeques/createnewques", {
+$("#addnewques").click(function () {
+  $.get("/lifeques/createnewques", {
     // a: JSON.stringify(object)
   })
-  .done(function( data ) {
-    // console.log(data.savedQuestionnaire);
-    if (!data.saveState) {
-          alert("Unable to add new question.")
-          // window.location.reload();
-    }
-    else {
-      alert("New question added successfully.")
-    }
-    window.location.reload();
-  });
+    .done(function (data) {
+      // console.log(data.savedQuestionnaire);
+      if (!data.saveState) {
+        alert("Unable to add new question.")
+        // window.location.reload();
+      }
+      else {
+        alert("New question added successfully.")
+      }
+      window.location.reload();
+    });
 });
 
-$("#deleteques").click(function() {
+$("#deleteques").click(function () {
   let deleteQuesFLAG = false;
   let lastActiveId = document.getElementById("lastActiveId").value;
   if (lastActiveId) {
     deleteQuesFLAG = confirm("Delete This Question!!!");
   }
-  if(deleteQuesFLAG) {
+  if (deleteQuesFLAG) {
     // console.log(deleteAudioFLAG, lastActiveId);
-    $.post( "/lifeques/deleteques", {
+    $.post("/lifeques/deleteques", {
       a: JSON.stringify(lastActiveId)
     })
-    .done(function( data ) {
-      window.location.reload();
-    });
+      .done(function (data) {
+        window.location.reload();
+      });
   }
 });

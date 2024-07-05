@@ -10,6 +10,7 @@ from app.controller import (
 
 logger = life_logging.get_logger()
 
+
 def create_new_ques(questionnaires,
                     projectname,
                     save_ques_form,
@@ -27,24 +28,24 @@ def create_new_ques(questionnaires,
     try:
         # pprint(save_ques_form);
         new_ques = {
-                "username": current_username,
-                "projectname": projectname,
-                "quesId": quesId,
-                "Q_Id": quesId,
-                "lastUpdatedBy": current_username,
-                "quesdeleteFLAG": 0,
-                "quessaveFLAG": 0,
-                "prompt": {}
-            }
+            "username": current_username,
+            "projectname": projectname,
+            "quesId": quesId,
+            "Q_Id": quesId,
+            "lastUpdatedBy": current_username,
+            "quesdeleteFLAG": 0,
+            "quessaveFLAG": 0,
+            "prompt": {}
+        }
 
         for key, value in save_ques_form.items():
             # print(key, value)
             if (key == 'Script' or
                 key == 'username' or
-                key == 'projectname'):
+                    key == 'projectname'):
                 continue
             elif (key == 'Domain' or
-                key == 'Target'):
+                  key == 'Target'):
                 new_ques['prompt'][key] = []
             elif key == 'Elicitation Method':
                 new_ques['prompt'][key] = ''
@@ -60,57 +61,57 @@ def create_new_ques(questionnaires,
                         # print(prompt_type_key, prompt_type_value, prompt_type_value[0], prompt_type_value[1])
                         if (prompt_type_key == 'Text'):
                             content[prompt_lang]['text'] = {
-                                                            "000000": {
-                                                                "startindex": "",
-                                                                "endindex": "",
-                                                                "textspan": {
-                                                                    prompt_lang_script: ""
-                                                                }
-                                                            }
-                                                        }
+                                "000000": {
+                                    "startindex": "",
+                                    "endindex": "",
+                                    "textspan": {
+                                        prompt_lang_script: ""
+                                    }
+                                }
+                            }
                         elif (prompt_type_key == 'Audio'):
-                            content[prompt_lang]['audio'] =  {
-                                                                "fileId": "",
-                                                                "filename": ""
-                                                            }
+                            content[prompt_lang]['audio'] = {
+                                "fileId": "",
+                                "filename": ""
+                            }
                             if (prompt_type_value[1] != '' and prompt_type_value[1] != 'text'):
                                 content[prompt_lang]['audio']['instructions'] = ''
                             if (prompt_type_value[0] == 'waveform'):
                                 content[prompt_lang]['audio']['textGrid'] = {
-                                                                                "sentence": {
-                                                                                    "000000": {
-                                                                                        "startindex": "",
-                                                                                        "endindex": "",
-                                                                                        "transcription": {
-                                                                                            prompt_lang_script: ""
-                                                                                        }
-                                                                                    }
-                                                                                }
-                                                                            }
+                                    "sentence": {
+                                        "000000": {
+                                            "startindex": "",
+                                            "endindex": "",
+                                            "transcription": {
+                                                prompt_lang_script: ""
+                                            }
+                                        }
+                                    }
+                                }
                         elif (prompt_type_key == 'Multimedia'):
-                            content[prompt_lang]['multimedia'] =  {
-                                                                    "fileId": "",
-                                                                    "filename": ""
-                                                                }
+                            content[prompt_lang]['multimedia'] = {
+                                "fileId": "",
+                                "filename": ""
+                            }
                             if (prompt_type_value[1] != '' and prompt_type_value[1] != 'text'):
                                 content[prompt_lang]['multimedia']['instructions'] = ''
                             if (prompt_type_value[0] == 'waveform'):
                                 content[prompt_lang]['multimedia']['textGrid'] = {
-                                                                                    "sentence": {
-                                                                                        "000000": {
-                                                                                            "startindex": "",
-                                                                                            "endindex": "",
-                                                                                            "transcription": {
-                                                                                                prompt_lang_script: ""
-                                                                                            }
-                                                                                        }
-                                                                                    }
-                                                                                }
+                                    "sentence": {
+                                        "000000": {
+                                            "startindex": "",
+                                            "endindex": "",
+                                            "transcription": {
+                                                prompt_lang_script: ""
+                                            }
+                                        }
+                                    }
+                                }
                         elif (prompt_type_key == 'Image'):
-                            content[prompt_lang]['image'] =  {
-                                                                    "fileId": "",
-                                                                    "filename": ""
-                                                                }
+                            content[prompt_lang]['image'] = {
+                                "fileId": "",
+                                "filename": ""
+                            }
                             if (prompt_type_value[1] != '' and prompt_type_value[1] != 'text'):
                                 content[prompt_lang]['image']['instructions'] = ''
                     # pprint(content)
@@ -124,7 +125,8 @@ def create_new_ques(questionnaires,
 
         questionnaire_id = questionnaires.insert_one(new_ques)
         save_state = True
-        logger.debug("questionnaire_id from create_new_ques(): %s", questionnaire_id)
+        logger.debug("questionnaire_id from create_new_ques(): %s",
+                     questionnaire_id)
         logger.debug("quesId: %s", quesId)
     except:
         logger.exception("")
