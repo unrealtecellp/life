@@ -4565,7 +4565,7 @@ function getSelect2Data(jsonFileNames) {
                         tags: tags,
                         placeholder: select2ClassName,
                         data: data,
-                        disabled: disabled
+                        // disabled: disabled
                         // allowClear: true
                     });
                     // console.log(data);
