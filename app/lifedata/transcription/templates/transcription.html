@@ -14,6 +14,7 @@
   <link href="{{url_for('.static', filename='sidepanel.css')}}" rel="stylesheet" />
   <link href="{{url_for('.static', filename='addnewspeaker.css')}}" rel="stylesheet" />
   <link href="{{url_for('static', filename='loader.css')}}" rel="stylesheet" />
+  <link href="https://unpkg.com/dropzone@6.0.0-beta.1/dist/dropzone.css" rel="stylesheet" type="text/css" />
   <script src='https://s.keyman.com/kmw/engine/16.0.147/keymanweb.js'></script>
   <script src='https://s.keyman.com/kmw/engine/16.0.147/kmwuitoggle.js'></script>
 {% endblock %}
@@ -407,24 +408,19 @@
           <h4 class="modal-title" id="myUploadAudioModalLabel">Project Name: {{ projectName }}</h4>
         </div>
         <div class="modal-body">
-          <form name="newaudioupload" action="/lifedata/transcription/uploadaudiofiles" method="POST" enctype="multipart/form-data">
+          <form id="newaudiouploadId" name="newaudioupload" action="/lifedata/transcription/uploadaudiofiles" method="POST" enctype="multipart/form-data">
             <!-- <div class="col upload"> -->
               <!-- <strong>Audio Files from Source: </strong> -->
-              <div id="questionnairederived"></div>
-              <h4>Select File:</h4>
-              <div class="input-group col-md-12 upload" id="speakeriduploaddropdown-divid">
-              <label for="speakeriduploaddropdown">Audio Source: </label>
-              <select class="custom-select custom-select-sm" id="speakeriduploaddropdown" name="speakerId" multiple="multiple"
-                style="width:80%" required>
-                <!-- <option selected disabled></option> -->
-                {% for d in addedspeakerids %}
-                <option value="{{ d }}">{{ d }}</option>
-                {% endfor %}
-              </select>
-              </div>
-              <div class="input-group col-md-6" id="audiobrowse-classid">
+              <ul class="nav nav-tabs" id="tabContent">
+                <li class="active"><a href="#basicUpload" data-toggle="tab">Upload</a></li>
+                <li><a href="#advSetup" data-toggle="tab">Advanced</a></li>                
+              </ul>
+
+            <div class="tab-content">
+              
+              <!-- <div class="input-group col-md-6" id="audiobrowse-classid">
                 <input type="file" id="audiofile" name="audiofile" required>
-              </div>
+              </div> -->
               <!-- <br/>
               <div class="input-group col-md-12" id="uploadparameters-optimise-divid">
                 <label>Optimise Uploaded Audio For: </label><br/>
@@ -436,6 +432,7 @@
               </div> -->
               
               <hr>
+              <div class="tab-pane" id="advSetup">
 
               <h4>Boundary Options:</h4>
               <i>Boundaries are anyway created if your file size is greater than the 'maximum file duration' specified below - in that case checking this option will give 
@@ -445,8 +442,7 @@
               <input type="checkbox" id="uploadparameters-vadid" name="uploadparameters-vad">
               <label for="uploadparameters-vadid">Make Boundaries</label><br/>
               </div>  
-              <div class="input-group col-md-8" id="vad-algorithms-divid">
-                
+              <div class="input-group col-md-8" id="vad-algorithms-divid">                
               
               </div>
               <div class="input-group col-md-8" id="uploadparameters-boundarypause-divid" style="display: none;" aria-disabled="true">              
@@ -460,10 +456,12 @@
               </select>              
               
                 <label title="It defines the minimum value of pause at which a new boundary is made"
-                for="uploadparameters-boundarypauseid`">Boundary Pause Threshold (between 0.00001-10.0 seconds) </label><br /> Suggested Values: <i>For sentence: 0.3; For words: 0.01; For phones: 0.001</i><br/>
+                for="uploadparameters-boundarypauseid`">Boundary Pause Threshold (between 0.00001-10.0 seconds) </label>
+                <!-- <br /> Suggested Values: <i>For sentence: 0.3; For words: 0.01; For phones: 0.001</i> -->
+                <br/>
               
               <input type="number" name="boundaryPause" id="uploadparameters-boundarypauseid" min="0.00001" max="10.0" step="0.00001"
-                  placeholder="Value between 0.00001 to 10.0" value="0.3" disabled>
+                  placeholder="Value between 0.00001 to 10.0" value="1.0" disabled>
               <br>
               <label title="It defines the minimum length of a boundary - smaller boundaries are merged to the next or previous boundaries"
                     for="uploadparameters-minboundarysizeid">Minimum Boundary Size (between 0.5-10.0 seconds) </label><br>
@@ -479,12 +477,12 @@
               <label title="It defines the maximum size of one audio file to be generated after splitting"
                 for="uploadparameters-splitpausedropdown">Maximum File Duration (between 60-150 seconds): </label><br/>
               <input type="number" name="maxFileSize" id="uploadparameters-maxfilesizeid" min="60" max="150"
-                placeholder="Value between 60 to 150" value="120"><br/><br/>            
+                placeholder="Value between 60 to 150" value="150"><br/><br/>            
               </div>
 <!-- sliceOffsetValue -->
               <div class="input-group col-md-8" id="uploadparameters-filesplitthreshold-divid">
               <label for="uploadparameters-filesplitthresholdid">File Split Pause Threshold (between 0.1-5.0 seconds):</label><br>
-              <input type="number" name="fileSplitThreshold" id="uploadparameters-filesplitthresholdid" min="0.1" max="5.0" step="0.1" value="0.9"
+              <input type="number" name="fileSplitThreshold" id="uploadparameters-filesplitthresholdid" min="0.1" max="5.0" step="0.1" value="5.0"
                 placeholder="Value between 0.1 to 5.0">
               </div>
 
@@ -494,11 +492,30 @@
                   step="0.01" value="0.1" placeholder="Value between 0.01 to 10.0">
               </div>
               <hr/>
+              </div>
 
-              <div class="input-group" id="audioupload-divid">
-              <input id="uploadaudiofilebtn" class="btn btn-primary uploadbtn" type="submit" value="Upload Audio File">
+              <div class="tab-pane active" id="basicUpload">
+              <div id="questionnairederived"></div>
+              <h4>Select File:</h4>
+              <div class="input-group col-md-12 upload" id="speakeriduploaddropdown-divid">
+                <label for="speakeriduploaddropdown">Audio Source: </label>
+                <select class="custom-select custom-select-sm" id="speakeriduploaddropdown" name="speakerId" multiple="multiple"
+                  style="width:80%" required>
+                  <!-- <option selected disabled></option> -->
+                  {% for d in addedspeakerids %}
+                  <option value="{{ d }}">{{ d }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="form-group">
+                <div class="dropzone dz-square" name="audiofile" id="audiofileid"></div>
+              </div>
+              <!-- <div class="input-group" id="audioupload-divid">
+              <button id="uploadaudiofilebtn" class="btn btn-primary uploadbtn" type="submit" value="Upload Audio File">Upload Audio</button>
+              </div> -->
               </div>
             <!-- </div> -->
+            </div>
           </form>
         </div>
         <div class="modal-footer">
@@ -986,6 +1003,7 @@
 {% block scripts %}
 {{super()}}
 
+
 <script src="{{url_for('static', filename='globalVars.js')}}"></script>
 <script src="{{url_for('static', filename='speaker_select2_dropdown.js')}}"></script>
 <script src="{{url_for('.static', filename='diff_match_patch_uncompressed.js')}}"></script>
@@ -1006,4 +1024,6 @@
   <script type="text/javascript">generateDownloadForm({{ shareinfo | tojson | safe }}, {{ transcriptionsby | tojson | safe}}, {{ activetranscriptionby | tojson | safe}}, {{ projectName | tojson | safe}});</script>
   <script src="{{url_for('.static', filename='keyboards.js')}}"></script>
   <script type="text/javascript">createKeyboards({{ newData | tojson | safe }});</script>
+  <script src="https://unpkg.com/dropzone@6.0.0-beta.1/dist/dropzone-min.js"></script>
+  <script src="{{url_for('.static', filename='uploadFile.js')}}"></script>
 {% endblock %}
