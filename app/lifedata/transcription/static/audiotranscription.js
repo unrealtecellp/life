@@ -4533,7 +4533,7 @@ function generateTokenId(sentencemorphemicbreakupdatedvalue) {
 }
 
 function getSelect2Data(jsonFileNames) {
-    // console.log(jsonFileNames);
+    console.log(jsonFileNames);
     let jsonFileNamesKeysList = Object.keys(jsonFileNames);
     if (jsonFileNamesKeysList.length !== 0) {
         $.ajax({
@@ -4560,7 +4560,7 @@ function getSelect2Data(jsonFileNames) {
                         data = getInfoFromprojectForm('Audio Language')[1];
                     }
                     // console.log(data);
-                    // console.log('Disabled', disabled, scriptName);
+                    console.log('Disabled', disabled, scriptName);
                     $('.' + select2ClassName).select2({
                         tags: tags,
                         placeholder: select2ClassName,
