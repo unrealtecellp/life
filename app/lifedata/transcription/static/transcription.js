@@ -1287,6 +1287,11 @@ $("#uploadaudiofilebtn").click(function () {
   runLoader();
 });
 
+$('#myUploadAudioModal').on('hidden.bs.modal', function() {
+  window.location.reload();
+});
+
+
 $("#makeboundaries").click(function () {
   $('#myMakeBoundaryModal').modal('toggle');
   runLoader();
