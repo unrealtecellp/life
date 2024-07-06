@@ -194,6 +194,7 @@ function createNavTabs(activeprojectform, activeTag = 'transcription2') {
 }
 
 function createTranscriptionPrompt(audio_lang_script) {
+  // console.log(audio_lang_script);
   let activeprojectform = JSON.parse(localStorage.activeprojectform);
   let prompt = activeprojectform['prompt']
   // console.log(prompt);
@@ -288,7 +289,7 @@ function createTranscriptionPrompt(audio_lang_script) {
 }
 
 function createTranscriptionInterfaceForm(newData) {
-  // console.log(newData);
+  console.log(newData);
   localStorage.setItem("activeprojectform", JSON.stringify(newData));
   localStorage.setItem("regions", JSON.stringify(newData['transcriptionRegions']));
   localStorage.setItem("transcriptionDetails", JSON.stringify([newData['transcriptionDetails']]));
@@ -312,7 +313,7 @@ function createTranscriptionInterfaceForm(newData) {
   let interlineargloss_form = '';
   let tagsets_form = '';
   let audio_language = newData['Audio Language'][1][0]
-  let audio_script = newData['Transcription'][1][0]
+  let audio_script = newData['Transcription'][1][1]
   let audio_lang_script = audio_language + '-' + audio_script
   let speakerIds = newData['speakerIds'];
   let addedSpeakerIds = newData['addedSpeakerIds'];

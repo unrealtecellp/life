@@ -270,6 +270,8 @@ def home():
                 speaker_metadata = transcription_audiodetails.get_speaker_metadata(speakerdetails,
                                                                                    speakerids,
                                                                                    activeprojectname)
+                # logger.debug('speakerids: %s, added_speaker_ids: %s, activespeakerid: %s',
+                #              speakerids, added_speaker_ids, activespeakerid)
                 activeprojectform['speakerIds'] = speakerids
                 activeprojectform['addedSpeakerIds'] = added_speaker_ids
                 activeprojectform['activespeakerId'] = activespeakerid
