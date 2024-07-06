@@ -93,7 +93,8 @@ def get_boundaries_vadsilero(model_params):
     # get speech timestamps from full audio file
     speech_timestamps = get_speech_timestamps(
         wav, model, return_seconds=True, sampling_rate=SAMPLING_RATE, min_speech_duration_ms=min_speech_duration, min_silence_duration_ms=min_silence_duration)
-
+    logger.info("Audio file %s", audio_file)
+    logger.info("Speech timestamps %s", speech_timestamps)
     # TODO: implement this to save audio without pauses in MongoDB
     if remove_pauses:
         # wav = save_audio('only_speech.wav',

@@ -35,7 +35,7 @@
             <path d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708z"/>
           </svg>
         </button>
-        {# {% if activespeakerid != '' %}
+        {% if activespeakerid != '' %}
           <button type="button" id="recordeaudio" class="btn btn-dark" data-toggle="modal" data-target="#myRecordingModal">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-mic" viewBox="0 0 16 16">
               <path d="M3.5 6.5A.5.5 0 0 1 4 7v1a4 4 0 0 0 8 0V7a.5.5 0 0 1 1 0v1a5 5 0 0 1-4.5 4.975V15h3a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1h3v-2.025A5 5 0 0 1 3 8V7a.5.5 0 0 1 .5-.5"/>
@@ -43,7 +43,7 @@
             </svg>
           </button>
         {% endif %} 
-        <button type="button" id="syncaudio" class="btn btn-success" data-toggle="tooltip" title="Sync Audio">
+        {# <button type="button" id="syncaudio" class="btn btn-success" data-toggle="tooltip" title="Sync Audio">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-repeat" viewBox="0 0 16 16">
             <path d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41m-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9"/>
             <path fill-rule="evenodd" d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5 5 0 0 0 8 3M3.1 9a5.002 5.002 0 0 0 8.757 2.182.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9z"/>
@@ -498,7 +498,7 @@
               </div>
 
               <div class="tab-pane active" id="basicUpload">
-              <div id="questionnairederived"></div>
+              <div id="questionnairederived" class="questionnairederivedclass"></div>
               <h4>Select File:</h4>
               <div class="input-group col-md-12 upload" id="speakeriduploaddropdown-divid">
                 <label for="speakeriduploaddropdown">Audio Source: </label>
@@ -1020,6 +1020,8 @@
 
                   <div class="wrapper">
 
+                    <div id="questionnairederivedrecording" class="questionnairederivedclass"></div>
+
                     <section class="main-controls">
                       <canvas class="visualizer" height="60px"></canvas>
                       <div id="recordingbuttons">
@@ -1060,6 +1062,7 @@
   <script src="{{url_for('.static', filename='transcription.js')}}"></script>
   <script type="text/javascript">createTranscriptionInterfaceForm({{ newData | tojson | safe }});</script>
   <script type="text/javascript">questionnaireDerived({{ allQuesIds | tojson | safe }});</script>
+  <script type="text/javascript">questionnaireDerivedRecording({{ allQuesIds | tojson | safe }});</script>
   <script src="{{url_for('.static', filename='changeactivespeaker.js')}}"></script>
   <script src="{{url_for('.static', filename='progressreport.js')}}"></script>  
   <script src="{{url_for('static', filename='addnewspeaker.js')}}"></script>  

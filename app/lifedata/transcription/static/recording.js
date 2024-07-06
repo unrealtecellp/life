@@ -115,7 +115,15 @@ if (navigator.mediaDevices.getUserMedia) {
         // if (recordingblob) {
         // var recording = new Blob([blob], { type: "audio/wav" });
         formData.append("audiofile", blob, "recording.wav");
+        $(":input[name]", $("#newaudiouploadId")).each(function () {
+          let eleName = this.name;
+          let eleVal = $(':input[name=' + eleName + ']', $("#newaudiouploadId")).val();
+          formData.append(eleName, eleVal);
+        });
         // }
+        // console.log(formData);
+        // console.log(document.getElementById("quesiddropdownrecording").value);
+        formData.set('quesId', document.getElementById("quesiddropdownrecording").value);
         console.log(formData);
         $.ajax({
             url: '/lifedata/transcription/uploadaudiofiles',

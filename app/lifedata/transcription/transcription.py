@@ -132,9 +132,20 @@ def home():
                                                 "quesdeleteFLAG": 0},
                                                {
                     "_id": 0,
-                    "Q_Id": 1
-                })["Q_Id"]
-                all_ques_ids[ques_id] = Q_Id
+                    "Q_Id": 1,
+                    "prompt.content": 1
+                })
+                logger.debug(Q_Id)
+                # all_ques_ids[ques_id] = Q_Id["Q_Id"]
+                lang_list = list(Q_Id['prompt']['content'].keys())
+                if ('English-Latin' in lang_list):
+                    get_text = Q_Id['prompt']['content']['English-Latin']['text']
+                    all_ques_ids[ques_id] = Q_Id['prompt']['content']['English-Latin']['text'][list(get_text.keys())[0]]['textspan']['Latin']
+                else:
+                    lang_script = lang_list[0]
+                    script = lang_script.split('-')[-1]
+                    get_text = Q_Id['prompt']['content'][lang_script]['text']
+                    all_ques_ids[ques_id] = Q_Id['prompt']['content'][lang_script]['text'][list(get_text.keys())[0]]['textspan'][script]
             # logger.debug("all_ques_ids: %s", pformat(all_ques_ids))
         if activeprojectform is not None:
             try:
@@ -1044,7 +1055,13 @@ def uploadaudiofiles():
         # logger.info("All Form data submitted %s\n%s\n%s",
         #             request.data, request.form, request.args)
         logger.info("request JSON %s", request.__dict__)
-        speakerId = data['speakerId']
+        # speakerId = data['speakerId']
+        if ('speakerId' in data):
+            speakerId = data['speakerId']
+        else:
+            speakerId = [getuserprojectinfo.getuserprojectinfo(userprojects,
+                                                            current_username,
+                                                            activeprojectname)['activespeakerId']]
 
         if 'uploadparameters-vad' in data:
             run_vad = True
