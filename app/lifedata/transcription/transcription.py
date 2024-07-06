@@ -1016,7 +1016,9 @@ def uploadaudiofiles():
         derivedfromprojectdetails = {}
 
         data = dict(request.form.lists())
-        logger.debug("Form data %s", data)
+        logger.info("All Form data %s", request.form)
+        # logger.info("All Form data submitted %s", request.form.formData)
+        logger.info("Form data %s", data)
         if ('quesId' in data):
             quesId = data['quesId'][0]
             logger.debug("quesId: %s", quesId)
@@ -1036,8 +1038,13 @@ def uploadaudiofiles():
             else:
                 logger.debug("not found prompt: %s", found_prompt)
         # return redirect(url_for('lifedata.transcription.home'))
-        speakerId = data['speakerId']
         new_audio_file = request.files.to_dict()
+        logger.info('New audio files %s', new_audio_file)
+        # logger.info("Request %s", request)
+        # logger.info("All Form data submitted %s\n%s\n%s",
+        #             request.data, request.form, request.args)
+        logger.info("request JSON %s", request.__dict__)
+        speakerId = data['speakerId']
 
         if 'uploadparameters-vad' in data:
             run_vad = True
@@ -1104,6 +1111,11 @@ def uploadaudiofiles():
             }
         else:
             vad_model = {}
+
+        logger.info('VAD Model %s', vad_model)
+
+        # if ('file' in new_audio_file):
+        #     new_audio_file = new_audio_file['file']
 
         transcription_audiodetails.saveaudiofiles(mongo,
                                                   projects,
@@ -1731,6 +1743,7 @@ def toggleComplete():
     except:
         logger.exception("")
 
+
 @transcription.route('/transcriptionreport', methods=['GET', 'POST'])
 @login_required
 def transcriptionreport():
@@ -1740,18 +1753,18 @@ def transcriptionreport():
     current_username = getcurrentusername.getcurrentusername()
     activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
                                                                   userprojects)
-    
+
     audio_duration_project, doc_count_project = transcription_report.total_audio_duration_project(mongo,
-                                                                                                    transcriptions_collection,
-                                                                                                    activeprojectname)
+                                                                                                  transcriptions_collection,
+                                                                                                  activeprojectname)
     audio_duration_transcribed, doc_count_transcribed = transcription_report.total_audio_duration_transcribed(mongo,
-                                                                                                                transcriptions_collection,
-                                                                                                                activeprojectname)
+                                                                                                              transcriptions_collection,
+                                                                                                              activeprojectname)
     audio_duration_transcribed_boundary = transcription_report.total_audio_duration_boundary(transcriptions_collection,
-                                                                                                activeprojectname)
+                                                                                             activeprojectname)
 
     return jsonify(totalAudioDurationProject=audio_duration_project,
                    docCountProject=doc_count_project,
                    totalAudioDurationTranscribed=audio_duration_transcribed,
                    docCountTranscribed=doc_count_transcribed,
-                   totalAudioDurationTranscribedBoundary = audio_duration_transcribed_boundary)
+                   totalAudioDurationTranscribedBoundary=audio_duration_transcribed_boundary)
