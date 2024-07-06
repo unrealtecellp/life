@@ -1,7 +1,10 @@
 import torch
+import torchaudio
+import math
 # from phonemizer.backend import EspeakBackend
 # from phonemizer.separator import Separator
 from app.lifemodels.controller.espeakIPA import to_ipa
+# from app.lifedata.transcription.controller.transcription_audiodetails import get_audio_duration_from_file
 
 from app.controller import life_logging
 import pandas as pd
@@ -95,7 +98,16 @@ def get_boundaries_vadsilero(model_params):
         wav, model, return_seconds=True, sampling_rate=SAMPLING_RATE, min_speech_duration_ms=min_speech_duration, min_silence_duration_ms=min_silence_duration)
     logger.info("Audio file %s", audio_file)
     logger.info("Speech timestamps %s", speech_timestamps)
-    # TODO: implement this to save audio without pauses in MongoDB
+
+    if len(speech_timestamps) == 0:
+        # audio_length, _ = get_audio_duration_from_file(audio_file)
+        metadata = torchaudio.info(audio_file)
+        audio_length = math.ceil(metadata.num_frames / metadata.sample_rate)
+        speech_timestamps.append({'start': 0.0, 'end': audio_length})
+        logger.info('VAD did not predict %s, %s',
+                    audio_length, speech_timestamps)
+
+        # TODO: implement this to save audio without pauses in MongoDB
     if remove_pauses:
         # wav = save_audio('only_speech.wav',
         #  collect_chunks(speech_timestamps, wav), sampling_rate=SAMPLING_RATE)

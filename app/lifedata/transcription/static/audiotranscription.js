@@ -2867,65 +2867,67 @@ function mapLeipzigToUd(transcriptionFieldId, lepizigGlossVals) {
     // console.log('Existing POS Vals Beginning', udPosVals);
     let newFeatVals = [];
     let newPosVals = [];
-    newPosVals.push(...udPosVals);
-    // console.log('New POS Vals Beginning', newPosVals);
+    if (udFeatElement && uposElement) {
+        newPosVals.push(...udPosVals);
+        // console.log('New POS Vals Beginning', newPosVals);
 
-    if (lepizigGlossVals) {
-        for (leipzigItem of lepizigGlossVals) {
-            let mapEntry = leipzigUdMap.filter(function (item) {
-                return item.leipzig === leipzigItem;
-            });
+        if (lepizigGlossVals) {
+            for (leipzigItem of lepizigGlossVals) {
+                let mapEntry = leipzigUdMap.filter(function (item) {
+                    return item.leipzig === leipzigItem;
+                });
 
-            // console.log('Leipzig Value', leipzigItem);
-            // console.log('Entry', mapEntry);
-            // console.log('Existing UPOS Vals', udPosVals);
-            // console.log('Existing UD Feats Vals', udFeatVals);
-            if (mapEntry.length > 0) {
-                mapEntry = mapEntry[0];
-                if ('upos' in mapEntry) {
-                    let uposVal = mapEntry['upos'];
-                    // console.log('Mapped UD POS Val', uposVal);
-                    // console.log('Add', uposVal, 'to UPOS');
-                    newPosVals.push(uposVal);
-                    // if (!udPosVals.includes(uposVal)) {
+                // console.log('Leipzig Value', leipzigItem);
+                // console.log('Entry', mapEntry);
+                // console.log('Existing UPOS Vals', udPosVals);
+                // console.log('Existing UD Feats Vals', udFeatVals);
+                if (mapEntry.length > 0) {
+                    mapEntry = mapEntry[0];
+                    if ('upos' in mapEntry) {
+                        let uposVal = mapEntry['upos'];
+                        // console.log('Mapped UD POS Val', uposVal);
+                        // console.log('Add', uposVal, 'to UPOS');
+                        newPosVals.push(uposVal);
+                        // if (!udPosVals.includes(uposVal)) {
 
-                    //     $('#' + uposElementId).val(uposVal);
-                    // }
-                }
-                else if ('udFeats' in mapEntry) {
-                    let udFeatVal = mapEntry['udFeats'];
-                    // console.log('Mapped UD Feats Val', udFeatVal);
-                    // console.log('Add', udFeatVal, 'to UD Feats');
-                    newFeatVals.push(udFeatVal);
-                    // if (!udFeatVals.includes(udFeatVal)) {
-
-                    //     // $('#' + featElementId).select2("val", udFeatVal);
-                    //     // $('#' + featElementId).select2("data", [{ id: udFeatVal, text: udFeatVal, 'selected': true }]);
-                    //     $('#' + featElementId).val(udFeatVal);
-                    // }
-                }
-            }
-            else {
-                if (!morphemicBreakSymbols.includes(leipzigItem)) {
-                    let udOption = leipzigItem + '=' + leipzigItem;
-                    if (!$('#' + featElementId).find("option[value='" + udOption + "']").length) {
-                        // if (!udFeatVals.includes(udOption)) {
-                        // console.log('Adding option', udOption);
-                        let newOption = new Option(udOption, udOption, false, true);
-                        $('#' + featElementId).append(newOption);
+                        //     $('#' + uposElementId).val(uposVal);
+                        // }
                     }
-                    newFeatVals.push(udOption);
-                }
-            }
-            // console.log('UPOS Vals after Update', newPosVals);
-            // console.log('Feat Vals after Update', newFeatVals);
-        }
-    }
+                    else if ('udFeats' in mapEntry) {
+                        let udFeatVal = mapEntry['udFeats'];
+                        // console.log('Mapped UD Feats Val', udFeatVal);
+                        // console.log('Add', udFeatVal, 'to UD Feats');
+                        newFeatVals.push(udFeatVal);
+                        // if (!udFeatVals.includes(udFeatVal)) {
 
-    if (newPosVals.length > 0) {
-        $('#' + uposElementId).val(newPosVals).trigger('change');
+                        //     // $('#' + featElementId).select2("val", udFeatVal);
+                        //     // $('#' + featElementId).select2("data", [{ id: udFeatVal, text: udFeatVal, 'selected': true }]);
+                        //     $('#' + featElementId).val(udFeatVal);
+                        // }
+                    }
+                }
+                else {
+                    if (!morphemicBreakSymbols.includes(leipzigItem)) {
+                        let udOption = leipzigItem + '=' + leipzigItem;
+                        if (!$('#' + featElementId).find("option[value='" + udOption + "']").length) {
+                            // if (!udFeatVals.includes(udOption)) {
+                            // console.log('Adding option', udOption);
+                            let newOption = new Option(udOption, udOption, false, true);
+                            $('#' + featElementId).append(newOption);
+                        }
+                        newFeatVals.push(udOption);
+                    }
+                }
+                // console.log('UPOS Vals after Update', newPosVals);
+                // console.log('Feat Vals after Update', newFeatVals);
+            }
+        }
+
+        if (newPosVals.length > 0) {
+            $('#' + uposElementId).val(newPosVals).trigger('change');
+        }
+        $('#' + featElementId).val(newFeatVals).trigger('change');
     }
-    $('#' + featElementId).val(newFeatVals).trigger('change');
 }
 
 
@@ -4560,7 +4562,7 @@ function getSelect2Data(jsonFileNames) {
                         data = getInfoFromprojectForm('Audio Language')[1];
                     }
                     // console.log(data);
-                    console.log('Disabled', disabled, scriptName);
+                    // console.log('Disabled', disabled, scriptName);
                     $('.' + select2ClassName).select2({
                         tags: tags,
                         placeholder: select2ClassName,
