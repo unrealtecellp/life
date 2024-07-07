@@ -1,3 +1,8 @@
+function runRecordLoader() {
+  // console.log('123213');
+  // console.log(document.getElementById("loader"));
+  document.getElementById("recordloader").style.display = "block";
+}
 $("#recordeaudio").click(function() {
 // Set up basic variables for app
 const record = document.querySelector(".record");
@@ -33,6 +38,7 @@ if (navigator.mediaDevices.getUserMedia) {
 
       stop.disabled = false;
       record.disabled = true;
+      runRecordLoader();
     };
 
     stop.onclick = function () {
@@ -44,18 +50,19 @@ if (navigator.mediaDevices.getUserMedia) {
 
       stop.disabled = true;
       record.disabled = false;
+      document.getElementById("recordloader").style.display = "none";
     };
 
     mediaRecorder.onstop = function (e) {
       console.log("Last data to read (after MediaRecorder.stop() called).");
 
-      const clipName = prompt(
-        "Enter a name for your sound clip?",
-        "My unnamed clip"
-      );
+      // const clipName = prompt(
+      //   "Enter a name for your sound clip?",
+      //   "My unnamed clip"
+      // );
 
       const clipContainer = document.createElement("article");
-      const clipLabel = document.createElement("p");
+      // const clipLabel = document.createElement("p");
       const audio = document.createElement("audio");
       const deleteButton = document.createElement("button");
       const saveButton = document.createElement("button");
@@ -73,14 +80,14 @@ if (navigator.mediaDevices.getUserMedia) {
       saveButton.classList.add("btn");
       saveButton.classList.add("btn-success");
 
-      if (clipName === null) {
-        clipLabel.textContent = "My unnamed clip";
-      } else {
-        clipLabel.textContent = clipName;
-      }
+      // if (clipName === null) {
+      //   clipLabel.textContent = "My unnamed clip";
+      // } else {
+      //   clipLabel.textContent = clipName;
+      // }
 
       clipContainer.appendChild(audio);
-      clipContainer.appendChild(clipLabel);
+      // clipContainer.appendChild(clipLabel);
       clipContainer.appendChild(deleteButton);
       clipContainer.appendChild(saveButton);
       soundClips.appendChild(clipContainer);
@@ -122,9 +129,10 @@ if (navigator.mediaDevices.getUserMedia) {
         });
         // }
         // console.log(formData);
-        // console.log(document.getElementById("quesiddropdownrecording").value);
-        formData.set('quesId', document.getElementById("quesiddropdownrecording").value);
-        console.log(formData);
+        if(document.getElementById("quesiddropdownrecording")){
+          formData.set('quesId', document.getElementById("quesiddropdownrecording").value);
+        }
+        // console.log(formData);
         $.ajax({
             url: '/lifedata/transcription/uploadaudiofiles',
             type: 'POST',
@@ -139,15 +147,15 @@ if (navigator.mediaDevices.getUserMedia) {
         });
       };
 
-      clipLabel.onclick = function () {
-        const existingName = clipLabel.textContent;
-        const newClipName = prompt("Enter a new name for your sound clip?");
-        if (newClipName === null) {
-          clipLabel.textContent = existingName;
-        } else {
-          clipLabel.textContent = newClipName;
-        }
-      };
+      // clipLabel.onclick = function () {
+      //   const existingName = clipLabel.textContent;
+      //   const newClipName = prompt("Enter a new name for your sound clip?");
+      //   if (newClipName === null) {
+      //     clipLabel.textContent = existingName;
+      //   } else {
+      //     clipLabel.textContent = newClipName;
+      //   }
+      // };
     };
 
     mediaRecorder.ondataavailable = function (e) {

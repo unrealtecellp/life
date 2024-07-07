@@ -318,7 +318,7 @@ function createTranscriptionInterfaceForm(newData) {
   ){
     lang_list = Object.keys(newData['prompt']['content']);
   }
-  console.log(lang_list);
+  // console.log(lang_list);
   let audio_lang_script = '';
   if (lang_list.includes('English-Latin')){
     audio_lang_script = 'English-Latin';
@@ -1276,14 +1276,15 @@ function questionnaireDerived(allQuesIds) {
       // tags: true,
       // placeholder: 'select user',
       // data: posCategories
-      // allowClear: true
+      // allowClear: true,
+      dropdownParent: $("#myUploadAudioModal"),
     });
   }
 }
 
 function questionnaireDerivedRecording(allQuesIds) {
   if (allQuesIds !== '') {
-    console.log(allQuesIds);
+    // console.log(allQuesIds);
     let quesIds = '';
     quesIds += '<h4>Prompt for Transcription:</h4>' +
       '<div class="input-group col-md-12" id="quesiddropdownrecording-divid">' +
@@ -1303,7 +1304,8 @@ function questionnaireDerivedRecording(allQuesIds) {
       // tags: true,
       // placeholder: 'select user',
       // data: posCategories
-      // allowClear: true
+      // allowClear: true,
+      dropdownParent: $("#myRecordingModal"),
     });
   }
 }

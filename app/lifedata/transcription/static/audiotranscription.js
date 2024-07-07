@@ -1901,6 +1901,34 @@ function getAllSpeakerIdsOfAudio() {
     return sentenceSpeakerIds
 }
 
+function translationElicitation(activeprojectform, translationLangScript) {
+    // console.log(translationLangScript);
+    let translationValue = '';
+    if ('prompt' in activeprojectform &&
+        'Elicitation Method' in activeprojectform['prompt'] &&
+        activeprojectform['prompt']['Elicitation Method'] === 'Translation'
+    ) {
+        // console.log(activeprojectform);
+        let lang_list = [];
+        if ('content' in activeprojectform['prompt']
+        ){
+            lang_list = Object.keys(activeprojectform['prompt']['content']);
+        }
+        // console.log(lang_list);
+        if (lang_list.includes(translationLangScript)){
+            let prompt_text_object = activeprojectform['prompt']['content'][translationLangScript]['text']
+            let prompt_text_boundary = Object.keys(prompt_text_object)[0]
+            let lang_script_array = translationLangScript.split('-');
+            let lang_script = lang_script_array[lang_script_array.length - 1]
+            // console.log(lang_script);
+            translationValue = prompt_text_object[prompt_text_boundary]['textspan'][lang_script]
+        }
+        // console.log(translationValue);
+    }
+
+    return translationValue;
+}
+
 function createSentenceForm(formElement, boundaryID) {
     // var activeSentenceMorphemicBreak = '<input type="checkbox" id="activeSentenceMorphemicBreak" name="activeSentenceMorphemicBreak" value="false" onclick="">'+
     //                                     '<label for="activeSentenceMorphemicBreak">&nbsp; Add Interlinear Gloss</label><br></br>'
@@ -2159,6 +2187,9 @@ function createSentenceForm(formElement, boundaryID) {
                 for (let [translationkey, translationvalue] of Object.entries(translationLang)) {
                     translangcount += 1
                     // console.log(translationkey, translationvalue);
+                    if (translationvalue === '') {
+                        translationvalue = translationElicitation(activeprojectform, translang[translangcount])
+                    }
                     translationkey = translationkey.split('-')[1]
                     // add fieldset
                     // inpt += '<div class="form-group translation collapse in">';
@@ -3367,8 +3398,8 @@ function transcriptionToGloss() {
             //     scriptName = allGlossScripts[0];
             // }
             // allGlosses = allGlosses[scriptName];
-            console.log('Script name', scriptName);
-            console.log('All glosses', allGlosses);
+            // console.log('Script name', scriptName);
+            // console.log('All glosses', allGlosses);
             // let sentenceMorphemicBreak = localStorageRegions[p]['data']['sentence'][boundaryID]['sentencemorphemicbreak'][scriptName];
             // console.log(sentence_morphemic_break);            
             let allTranscriptions = localStorageRegions[p]['data']['sentence'][boundaryID]['transcription'];
@@ -3887,7 +3918,7 @@ function createGlossingTable(sentencemorphemicbreakupdatedvalue,
     let tempJsonFileNames = {};
     let scriptName = getScriptToGlossDropdownSelected();
     let wordReadonly = "readonly";
-    console.log("Script name", scriptName);
+    // console.log("Script name", scriptName);
     if (scriptName === "IPA") {
         wordReadonly = "";
     }
@@ -4535,7 +4566,7 @@ function generateTokenId(sentencemorphemicbreakupdatedvalue) {
 }
 
 function getSelect2Data(jsonFileNames) {
-    console.log(jsonFileNames);
+    // console.log(jsonFileNames);
     let jsonFileNamesKeysList = Object.keys(jsonFileNames);
     if (jsonFileNamesKeysList.length !== 0) {
         $.ajax({
