@@ -312,7 +312,12 @@ function createTranscriptionInterfaceForm(newData) {
   let translation_form = '';
   let interlineargloss_form = '';
   let tagsets_form = '';
-  let lang_list = Object.keys(newData['prompt']['content']);
+  let lang_list = [];
+  if ('prompt' in newData &&
+    'content' in newData['prompt']
+  ){
+    lang_list = Object.keys(newData['prompt']['content']);
+  }
   console.log(lang_list);
   let audio_lang_script = '';
   if (lang_list.includes('English-Latin')){

@@ -40,7 +40,8 @@ from app.lifedata.controller import (
 from app.lifedata.transcription.controller import (
     transcription_audiodetails,
     save_transcription_prompt,
-    transcription_report
+    transcription_report,
+    update_owner_speakers
 )
 
 from app.lifetagsets.controller import (
@@ -135,7 +136,7 @@ def home():
                     "Q_Id": 1,
                     "prompt.content": 1
                 })
-                logger.debug(Q_Id)
+                # logger.debug(Q_Id)
                 # all_ques_ids[ques_id] = Q_Id["Q_Id"]
                 lang_list = list(Q_Id['prompt']['content'].keys())
                 if ('English-Latin' in lang_list):
@@ -281,6 +282,16 @@ def home():
                 speaker_metadata = transcription_audiodetails.get_speaker_metadata(speakerdetails,
                                                                                    speakerids,
                                                                                    activeprojectname)
+                # logger.debug('speakerids: %s, added_speaker_ids: %s, activespeakerid: %s',
+                #              speakerids, added_speaker_ids, activespeakerid)
+                if (current_username == projectowner):
+                    speaker_added = update_owner_speakers.update_owner_speakers(projects,
+                          activeprojectname,
+                          projectowner,
+                          speakerids,
+                          added_speaker_ids)
+                    if (speaker_added):
+                        speakerids = added_speaker_ids
                 # logger.debug('speakerids: %s, added_speaker_ids: %s, activespeakerid: %s',
                 #              speakerids, added_speaker_ids, activespeakerid)
                 activeprojectform['speakerIds'] = speakerids
