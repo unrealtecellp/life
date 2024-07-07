@@ -132,6 +132,16 @@ if (navigator.mediaDevices.getUserMedia) {
         if(document.getElementById("quesiddropdownrecording")){
           formData.set('quesId', document.getElementById("quesiddropdownrecording").value);
         }
+        if(document.getElementById("speakeriduploadrecordingdropdown")){
+          let recordingForSpeakersObject = $('#speakeriduploadrecordingdropdown').select2('data');
+          let recordingForSpeakersList = [];
+          // console.log(recordingForSpeakersObject);
+          for (i=0; i<recordingForSpeakersObject.length; i++) {
+            recordingForSpeakersList.push(recordingForSpeakersObject[i].id)
+          }
+          // console.log(recordingForSpeakersList);
+          formData.set('speakerId', recordingForSpeakersList);
+        }
         // console.log(formData);
         $.ajax({
             url: '/lifedata/transcription/uploadaudiofiles',

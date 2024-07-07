@@ -1175,6 +1175,13 @@ $('#speakeriduploaddropdown').select2({
   // allowClear: true
 });
 
+$('#speakeriduploadrecordingdropdown').select2({
+  // tags: true,
+  placeholder: 'select speaker',
+  // data: posCategories
+  // allowClear: true
+});
+
 $('#vadalgorithmdropdown').select2({
   // tags: true,
   placeholder: 'select algorithm',

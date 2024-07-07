@@ -1022,6 +1022,17 @@
 
                     <div id="questionnairederivedrecording" class="questionnairederivedclass"></div>
 
+                    <div class="input-group col-md-12 upload" id="speakeriduploadrecordingdropdown-divid">
+                      <label for="speakeriduploadrecordingdropdown">Audio Source: </label>
+                      <select class="custom-select custom-select-sm" id="speakeriduploadrecordingdropdown" name="speakerId" multiple="multiple"
+                        style="width:80%" required>
+                        <!-- <option selected disabled></option> -->
+                        {% for d in addedspeakerids %}
+                        <option value="{{ d }}">{{ d }}</option>
+                        {% endfor %}
+                      </select>
+                  </div>
+
                     <section class="main-controls">
                       <canvas class="visualizer" height="60px"></canvas>
                       <div id="recordingbuttons">
