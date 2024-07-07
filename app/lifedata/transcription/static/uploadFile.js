@@ -10,25 +10,12 @@ $("div#audiofileid").dropzone({
     paramName: "audiofile",
     init: function () {
         var myDropzone = this;
-        // this.element.querySelector("button[type=submit]").addEventListener
-        // $("#uploadaudiofilebtn").on
-        // console.log(this.element);
-        // document.querySelector("#uploadaudiofilebtn").addEventListener("click", function (e) {
-        //     // Make sure that the form isn't actually being sent.
-        //     console.log("Submitting Queue");
-        //     e.preventDefault();
-        //     e.stopPropagation();
-        //     myDropzone.processQueue();
-        // });
         myDropzone.on("sending", function (file, xhr, formData) {
-            // Will send the filesize along with the file as POST data.
             $(":input[name]", $("#newaudiouploadId")).each(function () {
                 let eleName = this.name;
-                let eleVal = $(':input[name=' + eleName + ']', $("form")).val();
+                let eleVal = $(':input[name=' + eleName + ']', $("#newaudiouploadId")).val();
                 formData.append(eleName, eleVal);
             });
-            formData.append("speakerIdout", $("speakerId").val());
-            formData.append("speakerId2", $("#speakeriduploaddropdown").val());
         });
     }
 

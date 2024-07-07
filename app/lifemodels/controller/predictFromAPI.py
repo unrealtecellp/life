@@ -184,7 +184,10 @@ def transcribe_using_bhashini(model_inputs, model_url, model_params={}, script_n
     all_count = len(model_inputs)
     completed_ids = []
 
-    model, api_key, end_url, target_script = get_transcription_model(lang_code)
+    model, api_key, end_url, target_script = get_transcription_model(
+        lang_code, model_url)
+
+    logger.info('Model URL %s, %s', model, model_url)
 
     if model != '' and target_script == script_code:
         while completed_count < all_count and retry_count < max_retries:
