@@ -134,13 +134,15 @@ if (navigator.mediaDevices.getUserMedia) {
         }
         if(document.getElementById("speakeriduploadrecordingdropdown")){
           let recordingForSpeakersObject = $('#speakeriduploadrecordingdropdown').select2('data');
-          let recordingForSpeakersList = [];
+          // let recordingForSpeakersList = [];
           // console.log(recordingForSpeakersObject);
+          formData.delete('speakerId');
           for (i=0; i<recordingForSpeakersObject.length; i++) {
-            recordingForSpeakersList.push(recordingForSpeakersObject[i].id)
+            // recordingForSpeakersList.push(recordingForSpeakersObject[i].id);
+            formData.append('speakerId', recordingForSpeakersObject[i].id);
           }
           // console.log(recordingForSpeakersList);
-          formData.set('speakerId', recordingForSpeakersList);
+          // formData.set('speakerId', recordingForSpeakersList);
         }
         // console.log(formData);
         $.ajax({

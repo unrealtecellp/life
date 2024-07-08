@@ -14,7 +14,15 @@ $("div#audiofileid").dropzone({
             $(":input[name]", $("#newaudiouploadId")).each(function () {
                 let eleName = this.name;
                 let eleVal = $(':input[name=' + eleName + ']', $("#newaudiouploadId")).val();
-                formData.append(eleName, eleVal);
+                // console.log(eleVal, Array.isArray(eleVal));
+                if (Array.isArray(eleVal)) {
+                    for (let currentEleVal of eleVal) {
+                        formData.append(eleName, currentEleVal);        
+                    }
+                }
+                else {
+                    formData.append(eleName, eleVal);
+                }
             });
         });
     }
