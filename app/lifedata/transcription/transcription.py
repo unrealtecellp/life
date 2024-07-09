@@ -60,6 +60,7 @@ from datetime import datetime
 from zipfile import ZipFile
 import glob
 import pandas as pd
+from tqdm import tqdm
 
 transcription = Blueprint('transcription', __name__,
                           template_folder='templates', static_folder='static')
@@ -121,24 +122,61 @@ def home():
         #              derived_from_project_type, derived_from_project_name)
         if (derived_from_project_type == 'questionnaires'):
             all_ques_ids = {'New': 'New'}
-            ques_ids = projects.find_one({"projectname": derived_from_project_name},
-                                         {
-                                             "_id": 0,
-                                             "questionnaireIds": 1
-            })["questionnaireIds"]
-            # all_ques_ids.extend(ques_ids)
-            for ques_id in ques_ids:
-                Q_Id = questionnaires.find_one({"projectname": derived_from_project_name,
-                                                "quesId": ques_id,
-                                                "quesdeleteFLAG": 0},
-                                               {
-                    "_id": 0,
-                    "Q_Id": 1,
-                    "prompt.content": 1
-                })
-                # logger.debug(Q_Id["Q_Id"][:5])
+            # ques_ids = projects.find_one({"projectname": derived_from_project_name},
+            #                              {
+            #                                  "_id": 0,
+            #                                  "questionnaireIds": 1
+            # })["questionnaireIds"]
+            # # all_ques_ids.extend(ques_ids)
+            # for ques_id in tqdm(ques_ids):
+            #     Q_Id = questionnaires.find_one({"projectname": derived_from_project_name,
+            #                                     "quesId": ques_id,
+            #                                     "quesdeleteFLAG": 0},
+            #                                    {
+            #         "_id": 0,
+            #         "Q_Id": 1,
+            #         "prompt.content": 1
+            #     })
+            #     # logger.debug(Q_Id["Q_Id"][:5])
+            #     q_id = Q_Id["Q_Id"][:5]
+            #     # all_ques_ids[ques_id] = Q_Id["Q_Id"]
+            #     lang_list = list(Q_Id['prompt']['content'].keys())
+            #     if ('English-Latin' in lang_list):
+            #         get_text = Q_Id['prompt']['content']['English-Latin']['text']
+            #         all_ques_ids[ques_id] = q_id+'_'+Q_Id['prompt']['content']['English-Latin']['text'][list(get_text.keys())[0]]['textspan']['Latin']
+            #     else:
+            #         lang_script = lang_list[0]
+            #         script = lang_script.split('-')[-1]
+            #         get_text = Q_Id['prompt']['content'][lang_script]['text']
+            #         all_ques_ids[ques_id] = q_id+'_'+Q_Id['prompt']['content'][lang_script]['text'][list(get_text.keys())[0]]['textspan'][script]
+            # logger.debug("all_ques_ids: %s", pformat(all_ques_ids))
+            # print('!!!!!!!!!!!!!!!!!!!!!!!!')
+            aggregate_output = questionnaires.aggregate([
+                {
+                    "$match": {
+                        "projectname": derived_from_project_name,
+                        "quesdeleteFLAG": 0
+                    }
+                },
+                {
+                    "$sort": {
+                        "Q_Id": 1
+                    }
+                },
+                {
+                    "$project": {
+                        "_id": 0,
+                        "Q_Id": 1,
+                        "quesId": 1,
+                        'prompt.content': 1
+                    }
+                }
+            ])
+            for doc in tqdm(aggregate_output):
+                logger.debug("aggregate_output: %s", pformat(doc))
+                Q_Id = doc
+                ques_id = doc['quesId']
                 q_id = Q_Id["Q_Id"][:5]
-                # all_ques_ids[ques_id] = Q_Id["Q_Id"]
                 lang_list = list(Q_Id['prompt']['content'].keys())
                 if ('English-Latin' in lang_list):
                     get_text = Q_Id['prompt']['content']['English-Latin']['text']
