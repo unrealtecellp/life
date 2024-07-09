@@ -50,9 +50,9 @@ def get_transcription(model_name, **kwargs):
     return transcription
 
 
-def get_transliteration(data, source_script, target_script, lang_code, **kwargs):
+def get_transliteration(data, source_script, target_script, lang_code, alternate_lcode='', **kwargs):
     if target_script == 'IPA':
-        transcription_words = to_ipa(data.split(' '), lang_code=lang_code)
+        transcription_words, source_script = to_ipa(data.split(' '), lang_code=lang_code, input_script=source_script, alternate_lcode=alternate_lcode)
         transcription_words = [transcription_word.strip(
             '#') for transcription_word in transcription_words]
         logger.info('Data %s, IPA Transcription %s', data, transcription_words)
@@ -301,7 +301,7 @@ def get_transliteration_Devanagari_to_Latin(data, lang_code, **kwargs):
     all_words = data.split(' ')
     # ipa_words = to_ipa(all_words, phone_separator=' ', word_separator='\t',
     #                    lang_code=lang_code)
-    ipa_words = to_ipa(all_words, lang_code=lang_code)
+    ipa_words, lang_code = to_ipa(all_words, lang_code=lang_code, input_script='Deva')
     ipa_words = [ipa_word.strip('#') for ipa_word in ipa_words]
     ipa_character_map = load_ipa_to_char_mapping()
 

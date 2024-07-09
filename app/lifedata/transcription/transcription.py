@@ -1468,6 +1468,10 @@ def maketranscription():
         '''
         accessed_time = data['accessedOnTime'][0]
 
+        logger.debug(model_name)
+        model_info = model_name.split('##')
+        model_name = model_info[1]
+        model_lang_code = model_info[0]
         if 'bhashini' in transcription_source:
             hf_token = ''
             model_name = model_name.replace('bhashini_', '')
@@ -1484,7 +1488,8 @@ def maketranscription():
                 'model_path': model_name,
                 'model_api': transcription_source,
                 'boundary_level': boundary_level,
-                'language_code': audio_lang_code
+                'language_code': audio_lang_code,
+                'model_language_code': model_lang_code
             },
             'target': script_name
         }

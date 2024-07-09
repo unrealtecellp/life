@@ -39,6 +39,8 @@ def predictFromHFModel(model_inputs, model_url, hf_token, model_params={}, task=
     # task = model_params['task']
     # prediction = globals(
     # )['predict_'+task](model_params)
+    model_lang_code = model_params['model_language_code']
+    lang_code = model_params['language_code']
     all_outputs = {}
     inference_source = model_params['model_api']
     script_name = script_names[0]
@@ -56,7 +58,7 @@ def predictFromHFModel(model_inputs, model_url, hf_token, model_params={}, task=
             if task == 'automatic-speech-recognition':
                 output = client.automatic_speech_recognition(
                     audio=model_input, model=model_url)
-                logger.info('Ouptut from inference client %s',
+                logger.info('Output from inference client %s',
                             output)
             else:
                 if isinstance(model_input, dict):
@@ -68,17 +70,18 @@ def predictFromHFModel(model_inputs, model_url, hf_token, model_params={}, task=
                 logger.info('Response from inference client %s',
                             response)
                 output = json.loads(response.decode())
-                logger.info('Ouptut from inference client %s',
+                logger.info('Output from inference client %s',
                             output)
             all_outputs[input_id] = {script_name: output}
 
             for other_script in other_scripts:
-                if other_script == 'IPA':
-                    source_script = lang_code
-                else:
-                    source_script = script_name
+                source_script = script_name
+                # if other_script == 'IPA':
+                #     source_script = lang_code
+                # else:
+                #     source_script = script_name
                 script_transcript = get_transliteration(
-                    output, source_script, other_script)
+                    output, source_script, other_script, lang_code, model_lang_code)
                 all_outputs[input_id][other_script] = script_transcript
 
     else:
@@ -130,22 +133,24 @@ def predictFromHFModel(model_inputs, model_url, hf_token, model_params={}, task=
                     all_outputs[boundary_id] = {script_name: text}
                     all_outputs[boundary_id]['boundary'] = boundary
                     for other_script in other_scripts:
-                        if other_script == 'IPA':
-                            source_script = lang_code
-                        else:
-                            source_script = script_name
+                        source_script = script_name
+                        # if other_script == 'IPA':
+                        #     source_script = lang_code
+                        # else:
+                        #     source_script = script_name
                         script_transcript = get_transliteration(
-                            output, source_script, other_script)
+                            output, source_script, other_script, lang_code, model_lang_code)
                         all_outputs[boundary_id][other_script] = script_transcript
             else:
                 all_outputs[input_id] = {script_name: output['text']}
                 for other_script in other_scripts:
-                    if other_script == 'IPA':
-                        source_script = lang_code
-                    else:
-                        source_script = script_name
+                    source_script = script_name
+                    # if other_script == 'IPA':
+                    #     source_script = lang_code
+                    # else:
+                    #     source_script = script_name
                     script_transcript = get_transliteration(
-                        output, source_script, other_script)
+                        output, source_script, other_script, lang_code, model_lang_code)
                     all_outputs[input_id][other_script] = script_transcript
 
     logger.info('ASR Output for file %s \tusing model %s',
@@ -170,6 +175,7 @@ def get_sentence_chunks(all_sentences, chunks):
 def transcribe_using_bhashini(model_inputs, model_url, model_params={}, script_names=['IPA'], max_retries=3):
     status = 0
     lang_code = model_params['language_code']
+    model_lang_code = model_params['model_language_code']
     all_outputs = {}
     script_name = script_names[0]
     script_code = sn.get(
@@ -185,7 +191,7 @@ def transcribe_using_bhashini(model_inputs, model_url, model_params={}, script_n
     completed_ids = []
 
     model, api_key, end_url, target_script = get_transcription_model(
-        lang_code, model_url)
+        model_lang_code, model_url)
 
     logger.info('Model URL %s, %s', model, model_url)
 
@@ -214,12 +220,13 @@ def transcribe_using_bhashini(model_inputs, model_url, model_params={}, script_n
                     all_outputs[input_id] = {script_name: output}
                     if output != '':
                         for other_script in other_scripts:
-                            if other_script == 'IPA':
-                                source_script = lang_code
-                            else:
-                                source_script = script_name
+                            source_script = script_name
+                            # if other_script == 'IPA':
+                            #     source_script = lang_code
+                            # else:
+                            #     source_script = script_name
                             script_transcript = get_transliteration(
-                                output, source_script, other_script, lang_code)
+                                output, source_script, other_script, lang_code, model_lang_code)
                             all_outputs[input_id][other_script] = script_transcript
 
             logger.info('Retry count: %s\tTotal completed: %s\tTotal to be completed: %s',
