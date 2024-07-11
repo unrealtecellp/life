@@ -6,7 +6,7 @@ from app.controller import life_logging
 logger = life_logging.get_logger()
 
 
-def to_ipa(lemmas, lang_code, phone_separator='', word_separator=' '):
+def to_ipa(lemmas, lang_code, phone_separator='', word_separator='#'):
     space = ''
     if EspeakBackend.is_supported_language(lang_code):
         logger.info('Language %s supported in espeak for IPA', lang_code)

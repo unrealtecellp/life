@@ -496,7 +496,7 @@
               <hr/>
 
               <div class="input-group" id="audioupload-divid">
-              <input class="btn btn-primary uploadbtn" type="submit" value="Upload Audio File">
+              <input id="uploadaudiofilebtn" class="btn btn-primary uploadbtn" type="submit" value="Upload Audio File">
               </div>
             <!-- </div> -->
           </form>
@@ -647,7 +647,7 @@
   
             <hr>
             <div class="input-group" id="audioupload-divid">
-              <input class="btn btn-primary uploadbtn" type="submit" value="Make Boundaries">
+              <input id="makeboundaries" class="btn btn-primary uploadbtn" type="submit" value="Make Boundaries">
             </div>
             <!-- </div> -->
           </form>
@@ -985,8 +985,10 @@
 
 {% block scripts %}
 {{super()}}
-    
+
+<script src="{{url_for('static', filename='globalVars.js')}}"></script>
 <script src="{{url_for('static', filename='speaker_select2_dropdown.js')}}"></script>
+<script src="{{url_for('.static', filename='diff_match_patch_uncompressed.js')}}"></script>
 <script src="{{url_for('.static', filename='sidepanel.js')}}"></script>
   <script type="text/javascript">createSidePanel({{ shareinfo | tojson | safe }});</script>
   <script src="{{url_for('.static', filename='transcription.js')}}"></script>

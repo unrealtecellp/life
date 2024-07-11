@@ -1,8 +1,11 @@
 import re
 from datetime import datetime
 from pprint import pprint
-
 from flask import flash
+from app.controller import (
+    life_logging
+)
+logger = life_logging.get_logger()
 
 
 def savequespromptfile(mongo,
@@ -40,7 +43,8 @@ def savequespromptfile(mongo,
     prompt_type_info = list(new_file.keys())[0]
     prompt_type = prompt_type_info.split('_')[1]
     prompt_lang = prompt_type_info.split('_')[-1]
-    # print(prompt_type_info, prompt_type, prompt_lang)
+    # logger.debug('prompt_type_info: %s, prompt_type: %s, prompt_lang: %s',
+    #              prompt_type_info, prompt_type, prompt_lang)
     if new_file[prompt_type_info].filename != '':
         filename = new_file[prompt_type_info].filename
         file_id = prompt_type[0]+re.sub(r'[-: \.]', '', str(datetime.now()))

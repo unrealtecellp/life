@@ -17,3 +17,22 @@
     outline: none;
     width: 100%;
 }
+
+.glossBody {
+    border: 1px solid #ccc;
+    border-radius: 15px;
+    padding: 1%;
+}
+
+.glossHeaderBorder {
+    border: 1px solid #ccc;
+    border-radius: 15px;
+    padding: 0.5%;
+}
+
+.outer {
+    background-color: #fcf9f9;
+    border: 0.5px solid #ccc;
+    border-radius: 25px;
+    padding: 1.5%;
+}

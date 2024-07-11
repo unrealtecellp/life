@@ -315,6 +315,7 @@ function createTranscriptionInterfaceForm(newData) {
   let audio_script = newData['Transcription'][1][0]
   let audio_lang_script = audio_language + '-' + audio_script
   let speakerIds = newData['speakerIds'];
+  let addedSpeakerIds = newData['addedSpeakerIds'];
   let activeSpeakerId = newData['activespeakerId']
   let currentAudioSpeakerIds = newData['audioSpeakerIds']
   // console.log(activeSpeakerId);
@@ -360,7 +361,7 @@ function createTranscriptionInterfaceForm(newData) {
     // }
   }
   createSelect2('speakeridsdropdown', speakerIds, activeSpeakerId, sourceMetadata, 'video_title');
-  createSelect2('speakeridsettingsdropdown', speakerIds, currentAudioSpeakerIds, {}, 'video_title');
+  createSelect2('speakeridsettingsdropdown', addedSpeakerIds, currentAudioSpeakerIds, {}, 'video_title');
   if (lastActiveId != '') {
     createTranscriptionPrompt(audio_lang_script);
   }
@@ -945,6 +946,8 @@ $("#syncallbtnid").click(function () {
         window.location.reload();
       });
   }
+  $('#syncTranscriptsAllModal').modal('toggle');
+  runLoader();
 
 });
 
@@ -1264,8 +1267,8 @@ function questionnaireDerived(allQuesIds) {
 }
 
 function runLoader() {
-  console.log('123213');
-  console.log(document.getElementById("loader"));
+  // console.log('123213');
+  // console.log(document.getElementById("loader"));
   document.getElementById("loader").style.display = "block";
 }
 
@@ -1276,6 +1279,31 @@ $("#syncaudio").click(function () {
       console.log(data);
       window.location.reload();
     });
+});
+
+$("#uploadaudiofilebtn").click(function () {
+  $('#myUploadAudioModal').modal('toggle');
+  runLoader();
+});
+
+$("#makeboundaries").click(function () {
+  $('#myMakeBoundaryModal').modal('toggle');
+  runLoader();
+});
+
+$("#transcribebtnid").click(function () {
+  $('#myAutomationModal').modal('toggle');
+  runLoader();
+});
+
+$("#translatebtnid").click(function () {
+  $('#myAutomationModal').modal('toggle');
+  runLoader();
+});
+
+$("#glossbtnid").click(function () {
+  $('#myAutomationModal').modal('toggle');
+  runLoader();
 });
 
 replaceZoomSlider();

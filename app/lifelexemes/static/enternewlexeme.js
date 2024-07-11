@@ -7954,3 +7954,25 @@ $(".customfield").ready(function(){
       $(".cf").addClass('glyphicon-chevron-down').removeClass('glyphicon-chevron-up');
     });   
   });
+
+$('.showlexemelist').select2({
+	ajax: {
+		url: '/lexemelist',
+		data: function (params) {
+			console.log(params);
+			var query = {
+				search: params.term,
+				type: 'public'
+			}
+		
+			// Query parameters will be ?search=[term]&type=public
+			return query;
+		},
+		processResults: function (data) {
+			console.log(data, data.lexemeList);
+			return {
+			  results: data.lexemeList
+			};
+		  },
+	}
+});

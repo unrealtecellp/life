@@ -21,11 +21,16 @@ logger = life_logging.get_logger()
 # logger.debug('Basedir parent', basedir_parent)
 translit_res_path = os.path.join(
     basedir_parent, 'static/translit_resources')
-print('Translit res path', translit_res_path)
+# print('Translit res path', translit_res_path)
 
 stanza_pipelines = {
     'hi': stanza.Pipeline(
         'hi', download_method=DownloadMethod.REUSE_RESOURCES)
+}
+
+stanza_pipeline_token = {
+    'hi': stanza.Pipeline(
+        'hi', processors='tokenize', tokenize_no_ssplit=True, download_method=DownloadMethod.REUSE_RESOURCES)
 }
 
 
@@ -45,8 +50,10 @@ def get_transcription(model_name, **kwargs):
 def get_transliteration(data, source_script, target_script, lang_code, **kwargs):
     if target_script == 'IPA':
         transcription_words = to_ipa(data.split(' '), lang_code=lang_code)
+        transcription_words = [transcription_word.strip(
+            '#') for transcription_word in transcription_words]
         logger.info('Data %s, IPA Transcription %s', data, transcription_words)
-        transcription = ''.join(transcription_words)
+        transcription = ' '.join(transcription_words)
     else:
         all_functs = globals()
         current_funct_name = 'get_transliteration_'+source_script + '_to_'+target_script
@@ -282,6 +289,7 @@ def get_transliteration_Devanagari_to_Latin(data, lang_code, **kwargs):
     # ipa_words = to_ipa(all_words, phone_separator=' ', word_separator='\t',
     #                    lang_code=lang_code)
     ipa_words = to_ipa(all_words, lang_code=lang_code)
+    ipa_words = [ipa_word.strip('#') for ipa_word in ipa_words]
     ipa_character_map = load_ipa_to_char_mapping()
 
     rom_words = []
@@ -298,16 +306,26 @@ def get_transliteration_Devanagari_to_Latin(data, lang_code, **kwargs):
 def get_gloss_stanza(data, lang_code, **kwargs):
     nlp = stanza_pipelines.get(lang_code, '')
     all_outputs = {}
-    # in_docs = [stanza.Document([], text=d) for d in data]
+    try:
+        # in_docs = [stanza.Document([], text=d) for d in data]
 
-    if nlp != '':
-        input_ids = data.keys()
-        model_input_strs = list(data.values())
-        results = nlp.bulk_process(model_input_strs)
+        if nlp != '':
+            input_ids = data.keys()
+            model_input_strs = list(data.values())
+            results = nlp.bulk_process(model_input_strs)
 
-        for input_id, result in zip(input_ids, results):
-            logger.info('Input for %s', input_id)
-            output = result.to_dict()[0]
-            all_outputs[input_id] = output
+            for input_id, result in zip(input_ids, results):
+                logger.info('Input for %s', input_id)
+                # logger.info('result %s', result)
+                # logger.info('result.to_dict() %s', result.to_dict())
+                output = result.to_dict()
+                # logger.info('output %s', output)
+                if (len(output) > 0):
+                    output = output[0]
+                else:
+                    output = {}
+                all_outputs[input_id] = output
+    except:
+        logger.exception("")
 
     return all_outputs

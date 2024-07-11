@@ -30,6 +30,7 @@ def get_hf_tokens(app_config, current_username):
 
 
 def get_featured_authors(app_config, current_username):
+    authors_list = []
     hf_config = app_config.find_one({'configtype': 'huggingfacemodel'}, {
                                     '_id': 0, 'configparams.usersData': 1, 'configparams.globals': 1})
     if not hf_config is None:
