@@ -1,13 +1,9 @@
-function runLoader() {
+function runRecordLoader() {
   // console.log('123213');
   // console.log(document.getElementById("loader"));
-  document.getElementById("loader").style.display = "block";
+  document.getElementById("recordloader").style.display = "block";
 }
-
-$(".recordeaudio").click(function(e) {
-  // console.log(e);
-  // console.log(e.target.id);
-  document.getElementById("audiopromptfor").innerHTML = e.target.id;
+$("#recordeaudio").click(function() {
 // Set up basic variables for app
 const record = document.querySelector(".record");
 const stop = document.querySelector(".stop");
@@ -42,7 +38,7 @@ if (navigator.mediaDevices.getUserMedia) {
 
       stop.disabled = false;
       record.disabled = true;
-      runLoader();
+      runRecordLoader();
     };
 
     stop.onclick = function () {
@@ -54,7 +50,7 @@ if (navigator.mediaDevices.getUserMedia) {
 
       stop.disabled = true;
       record.disabled = false;
-      document.getElementById("loader").style.display = "none";
+      document.getElementById("recordloader").style.display = "none";
     };
 
     mediaRecorder.onstop = function (e) {
@@ -125,12 +121,32 @@ if (navigator.mediaDevices.getUserMedia) {
 
         // if (recordingblob) {
         // var recording = new Blob([blob], { type: "audio/wav" });
-        let audioPromptFor = document.getElementById("audiopromptfor").innerHTML;
-        formData.append(audioPromptFor, blob, "recording.wav");
+        formData.append("audiofile", blob, "recording.wav");
+        $(":input[name]", $("#newaudiouploadId")).each(function () {
+          let eleName = this.name;
+          let eleVal = $(':input[name=' + eleName + ']', $("#newaudiouploadId")).val();
+          formData.append(eleName, eleVal);
+        });
         // }
-        console.log(formData);
+        // console.log(formData);
+        if(document.getElementById("quesiddropdownrecording")){
+          formData.set('quesId', document.getElementById("quesiddropdownrecording").value);
+        }
+        if(document.getElementById("speakeriduploadrecordingdropdown")){
+          let recordingForSpeakersObject = $('#speakeriduploadrecordingdropdown').select2('data');
+          // let recordingForSpeakersList = [];
+          // console.log(recordingForSpeakersObject);
+          formData.delete('speakerId');
+          for (i=0; i<recordingForSpeakersObject.length; i++) {
+            // recordingForSpeakersList.push(recordingForSpeakersObject[i].id);
+            formData.append('speakerId', recordingForSpeakersObject[i].id);
+          }
+          // console.log(recordingForSpeakersList);
+          // formData.set('speakerId', recordingForSpeakersList);
+        }
+        // console.log(formData);
         $.ajax({
-            url: '/lifeques/quespromptfile',
+            url: '/lifedata/transcription/uploadaudiofiles',
             type: 'POST',
             data: formData,
             contentType: false,

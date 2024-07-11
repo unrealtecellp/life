@@ -102,16 +102,19 @@ def getModelList():
         logger.debug('Request method: %s', request.method)
         activeprojectname = getactiveprojectname.getactiveprojectname(
             current_username, userprojects)
-        language_scripts = projectDetails.get_audio_language_scripts(
+        language_scripts = projectDetails.get_all_audio_language_scripts(
             projectsform, activeprojectname)
         logger.debug('Language Scripts: %s', language_scripts)
         featured_authors = modelManager.get_featured_authors(
             app_config, current_username)
         # models = modelManager.get_model_list(models, languages, featured_authors, language_scripts['language'])
         if request.method == 'POST':
-            models = modelManager.get_model_list(
-                models, languages, featured_authors, language_scripts['language'])
-        return jsonify({'models': models, 'scripts': language_scripts['scripts']})
+            all_langs = language_scripts['languages']
+            all_models = []
+            for current_lang in all_langs:
+                all_models.extend(modelManager.get_model_list(
+                    models, languages, featured_authors, current_lang))
+        return jsonify({'models': all_models, 'scripts': language_scripts['scripts']})
     except:
         logger.exception("")
 
@@ -130,16 +133,11 @@ def getTranslationModelList():
         logger.debug('Request method: %s', request.method)
         activeprojectname = getactiveprojectname.getactiveprojectname(
             current_username, userprojects)
-        projectowner = getprojectowner.getprojectowner(
-            projects, activeprojectname)
+        # projectowner = getprojectowner.getprojectowner(
+        #     projects, activeprojectname)
 
-        language_scripts = projectDetails.get_audio_language_scripts(
+        language_scripts = projectDetails.get_all_audio_language_scripts(
             projectsform, activeprojectname)
-
-        audio_language = getactiveprojectform.getaudiolanguage(
-            projectsform, projectowner, activeprojectname)
-        audio_lang_code = languageManager.get_bcp_language_code(
-            languages, audio_language)
 
         logger.debug('Language Scripts: %s', language_scripts)
         translation_languages = projectDetails.get_translation_languages(
@@ -153,20 +151,29 @@ def getTranslationModelList():
         model_list = []
         if request.method == 'POST':
             current_model_list = {}
-            for translation_language in translation_languages:
-                trans_lang = translation_language.split('-')[0]
-                trans_lang_code = languageManager.get_bcp_language_code(
-                    languages, trans_lang)
-                logger.debug('Source lang %s \tTarget Lang %s',
-                             audio_lang_code, trans_lang_code)
-                bhashini_model = bhashiniUtils.get_translation_model(
-                    audio_lang_code, trans_lang_code)[0]
-                logger.debug('Bhashini Model %s', bhashini_model)
-                if bhashini_model != '':
-                    display_model_name = 'bhashini_' + audio_language+'-'+bhashini_model
-                    current_model_list['text'] = display_model_name
-                    current_model_list['id'] = 'bhashini_' + bhashini_model
-                    model_list.append(current_model_list)
+            # added_models = []
+            # audio_language = getactiveprojectform.getaudiolanguage(
+            # projectsform, projectowner, activeprojectname)
+            audio_languages = language_scripts['languages']
+
+            for audio_language in audio_languages:
+                audio_lang_code = languageManager.get_bcp_language_code(
+                    languages, audio_language)
+                for translation_language in translation_languages:
+                    trans_lang = translation_language.split('-')[0]
+                    trans_lang_code = languageManager.get_bcp_language_code(
+                        languages, trans_lang)
+                    logger.debug('Source lang %s \tTarget Lang %s',
+                                 audio_lang_code, trans_lang_code)
+                    bhashini_model = bhashiniUtils.get_translation_model(
+                        audio_lang_code, trans_lang_code)[0]
+                    logger.debug('Bhashini Model %s', bhashini_model)
+                    if bhashini_model != '':
+                        display_model_name = 'bhashini_' + audio_language + \
+                            translation_language+'-'+bhashini_model
+                        current_model_list['text'] = display_model_name
+                        current_model_list['id'] = 'bhashini_' + bhashini_model
+                        model_list.append(current_model_list)
             # models = modelManager.get_model_list(
             #     models, languages, featured_authors, language_scripts['language'])
         return jsonify({'models': model_list, 'scripts': language_scripts['scripts'], 'targetLanguages': translation_languages})

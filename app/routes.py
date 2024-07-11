@@ -1828,7 +1828,7 @@ def dictionaryview():
                                     projectowner,
                                     current_username)
         flash('Successfully added new lexeme')
-        return redirect(url_for('enternewlexeme'))
+        return redirect(url_for('lifelexemes.enternewlexeme'))
     try:
         my_projects = len(userprojects.find_one(
             {'username': current_username})["myproject"])
@@ -1946,7 +1946,7 @@ def enterlexemefromuploadedfile(alllexemedf):
                     if (getlexemeId['projectname'] != activeprojectname):
                         flash(
                             f"lexemeId: {lexemeId} if from different project!!!")
-                        return redirect(url_for('enternewlexeme'))
+                        return redirect(url_for('lifelexemes.enternewlexeme'))
 
             uploadedFileLexeme['lexemeId'] = lexemeId
             # logger.debug(uploadedFileLexeme)
@@ -1990,7 +1990,7 @@ def enterlexemefromuploadedfile(alllexemedf):
             # logger.debug(f'{"="*80}')
 
     flash('Successfully added new lexemes')
-    return redirect(url_for('enternewlexeme'))
+    return redirect(url_for('lifelexemes.enternewlexeme'))
     # comment till here
 
 
@@ -2828,7 +2828,7 @@ def uploadlexemeexcelliftxml():
 
         if (not headword_mapped):
             flash("headword is missing from the file")
-            return redirect(url_for('enternewlexeme'))
+            return redirect(url_for('lifelexemes.enternewlexeme'))
 
         elif (not all_mapped and len(field_map) != 0):
             not_mapped_data = field_map
@@ -2840,7 +2840,7 @@ def uploadlexemeexcelliftxml():
             elif (file_format == 'xlsx'):
                 enterlexemefromuploadedfile(data)
 
-    return redirect(url_for('enternewlexeme'))
+    return redirect(url_for('lifelexemes.enternewlexeme'))
 
 # lexeme key mapping
 
@@ -2884,10 +2884,10 @@ def lexemekeymapping():
                 # logger.debug(file_format)
                 pass
                 # flash(f"File format is correct")
-                # return redirect(url_for('enternewlexeme'))
+                # return redirect(url_for('lifelexemes.enternewlexeme'))
             else:
                 flash("File should be in 'xlsx' or 'lift' format")
-                return redirect(url_for('enternewlexeme'))
+                return redirect(url_for('lifelexemes.enternewlexeme'))
         # logger.debug("File format is correct")
 
         # df = pd.read_excel(uploaded_file_content)
@@ -2921,7 +2921,7 @@ def lexemekeymapping():
         # all_mapped = False
         if (not headword_mapped):
             flash("headword is missing from the file")
-            return redirect(url_for('enternewlexeme'))
+            return redirect(url_for('lifelexemes.enternewlexeme'))
 
         elif (not all_mapped and len(field_map) != 0):
             # not_mapped_data = {
@@ -2939,7 +2939,7 @@ def lexemekeymapping():
             if (file_format == 'xlsx'):
                 enterlexemefromuploadedfile(df)
 
-    return redirect(url_for('enternewlexeme'))
+    return redirect(url_for('lifelexemes.enternewlexeme'))
 
 
 # download lexeme form in excel format

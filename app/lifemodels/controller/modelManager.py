@@ -29,7 +29,7 @@ def get_hf_tokens(app_config, current_username):
     return token
 
 
-def get_featured_authors(app_config, current_username):
+def get_featured_authors(app_config, current_username, task_name='automatic-speech-recognition'):
     authors_list = []
     hf_config = app_config.find_one({'configtype': 'huggingfacemodel'}, {
                                     '_id': 0, 'configparams.usersData': 1, 'configparams.globals': 1})
@@ -37,9 +37,9 @@ def get_featured_authors(app_config, current_username):
         param_data = hf_config['configparams']['usersData']
         user_data = param_data.get(current_username, {})
         if len(user_data) > 0:
-            authors_list = user_data['globals']['automatic-speech-recognition']['authorsList']
+            authors_list = user_data['globals'][task_name]['authorsList']
         else:
-            authors_list = hf_config['configparams']['globals']['automatic-speech-recognition']['authorsList']
+            authors_list = hf_config['configparams']['globals'][task_name]['authorsList']
 
     return authors_list
 
@@ -105,6 +105,8 @@ def get_model_list(models, languages, featured_authors=[], lang_name='Hindi', ta
     model_list = []
     for lang_code, models in models_of_lang.items():
         lang_name = lang_names.get(lang_code, '')
+        logger.debug(models)
+        logger.debug(model_id_map)
         for model_id in models:
             current_model_list = {}
             if model_id in model_id_map:
@@ -112,7 +114,8 @@ def get_model_list(models, languages, featured_authors=[], lang_name='Hindi', ta
                 model_name = model_info['modelId']
                 display_model_name = lang_name+'-'+model_name
                 current_model_list['text'] = display_model_name
-                current_model_list['id'] = model_name
+                logger.debug('lang_code: %s, model_name: %s', lang_code, model_name)
+                current_model_list['id'] = lang_code+'##'+model_name
                 # current_model_list[display_model_name] = model_name
                 model_list.append(current_model_list)
     # logger.debug('Model List %s', len(model_list))
