@@ -22,6 +22,11 @@ from pprint import pprint, pformat
 import gridfs
 import base64
 # from pylatex.utils import bold, NoEscape
+from app.controller import (manageAppConfig, questionnairedetails,
+                            readJSONFile, removeallaccess, savenewlexeme,
+                            savenewproject, savenewprojectform,
+                            savenewsentence, unannotatedfilename, updateuserprojects,
+                            userdetails, life_logging, processHTMLForm)
 
 from flask_login import current_user, login_user, logout_user, login_required
 from app.controller import (
@@ -608,6 +613,24 @@ def add():
     current_username = getcurrentusername.getcurrentusername()
     activeprojectname = getactiveprojectname.getactiveprojectname(
         current_username, userprojects)
+    
+    accesscodedetails, userprojects, userlogin, speakermeta, projects = getdbcollections.getdbcollections(
+	mongo, 'accesscodedetails', 'userprojects', 'userlogin', 'speakerdetails', 'projects')
+
+    
+    # current_username = getcurrentusername.getcurrentusername()
+    logger.debug('USERNAME: ', current_username)
+    usertype = userdetails.get_user_type(
+        userlogin, current_username)
+    currentuserprojectsname = getcurrentuserprojects.getcurrentuserprojects(
+        current_username, userprojects)
+    activeprojectname = getactiveprojectname.getactiveprojectname(
+        current_username, userprojects)
+    shareinfo = getuserprojectinfo.getuserprojectinfo(
+        userprojects, current_username, activeprojectname)
+    allspeakerdetails, alldatalengths, allkeys = speakerDetails.getspeakerdetails(
+        activeprojectname, speakermeta)
+    projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
 
     if request.method == 'POST':
         accesscode = request.form.get('accode')
@@ -781,6 +804,151 @@ def add():
                 por,
                 toc
             )
+
+
+        #sync life speakeid with lifesourceid and more meta data to speakerdetalis    
+        find_accesscodedetails = accesscodedetails.find({
+        "projectname": activeprojectname, 'isActive':1},
+                                            {"lifespeakerid": 1,
+                                            "karyaaccesscode": 1,
+                                            "karyaspeakerid": 1,
+                                            "current.workerMetadata.name": 1,
+                                            "current.workerMetadata.agegroup": 1,
+                                            "current.workerMetadata.gender": 1,
+                                            "current.workerMetadata.educationlevel": 1,
+                                            "current.workerMetadata.educationmediumupto12": 1,
+                                            "current.workerMetadata.educationmediumafter12": 1,
+                                            "current.workerMetadata.speakerspeaklanguage": 1,
+                                            "current.workerMetadata.recordingplace": 1,
+                                            "current.workerMetadata.typeofrecordingplace": 1,
+                                            "current.workerMetadata.activeAccessCode": 1,
+                                            "_id": 0})
+
+        total_documents = find_accesscodedetails.count()
+        print("Total number of documents found from accesscodedetails:", total_documents)
+
+        metadata_schema = 'speed'
+        audio_source = 'field'
+        upload_type = 'single'
+
+        for document in find_accesscodedetails:
+            try:
+                new_metadata = {
+                    "name": document["current"]["workerMetadata"].get("name", ""),
+                    "agegroup": document["current"]["workerMetadata"].get("agegroup", ""),
+                    "gender": document["current"]["workerMetadata"].get("gender", ""),
+                    "educationlevel": document["current"]["workerMetadata"].get("educationlevel", ""),
+                    "educationmediumupto12": document["current"]["workerMetadata"].get("educationmediumupto12", []),
+                    "educationmediumafter12": document["current"]["workerMetadata"].get("educationmediumafter12", []),
+                    "speakerspeaklanguage": document["current"]["workerMetadata"].get("speakerspeaklanguage", []),
+                    "recordingplace": document["current"]["workerMetadata"].get("recordingplace", ""),
+                    "typeofrecordingplace": document["current"]["workerMetadata"].get("typeofrecordingplace", ""),
+                    "lifespeakerid": document["lifespeakerid"],
+                    "karyaaccesscode": document["karyaaccesscode"],
+                    "karyaspeakerid": document["karyaspeakerid"]
+                }
+                # print('new_metadata : ', new_metadata)
+
+                # Additional conditions to replace None values
+                if new_metadata["name"] is None:
+                    new_metadata["name"] = ""
+                if new_metadata["agegroup"] is None:
+                    new_metadata["agegroup"] = ""
+                if new_metadata["gender"] is None:
+                    new_metadata["gender"] = ""
+                if new_metadata["educationlevel"] is None:
+                    new_metadata["educationlevel"] = ""
+                if new_metadata["recordingplace"] is None:
+                    new_metadata["recordingplace"] = ""
+                if new_metadata["typeofrecordingplace"] is None:
+                    new_metadata["typeofrecordingplace"] = ""
+                # For array fields
+                if new_metadata["educationmediumupto12"] is None:
+                    new_metadata["educationmediumupto12"] = []
+                if new_metadata["educationmediumafter12"] is None:
+                    new_metadata["educationmediumafter12"] = []
+                if new_metadata["speakerspeaklanguage"] is None:
+                    new_metadata["speakerspeaklanguage"] = []
+
+            except Exception as e:
+                # Handle exception
+                print("An error occurred:", e)
+                continue  # Skip to the next document
+
+            # Check if the metadata already exists in speakermeta (speakerdetails)
+            existing_metadata = speakermeta.find_one({
+                                            "projectname": activeprojectname,
+                                            "current.sourceMetadata.lifespeakerid": new_metadata["lifespeakerid"],
+                                            "current.sourceMetadata.karyaaccesscode":  new_metadata["karyaaccesscode"],
+                                            "current.sourceMetadata.karyaspeakerid": new_metadata["karyaspeakerid"]
+                                        })
+            print('existing_metadata :', existing_metadata)
+
+            if not existing_metadata:
+                # Metadata does not exist, so write it to the speakermeta collection
+                not_existing_metadata = speakerDetails.write_speaker_metadata_details(
+                                                                                    speakermeta,
+                                                                                    projectowner,
+                                                                                    activeprojectname,
+                                                                                    current_username,
+                                                                                    audio_source,
+                                                                                    metadata_schema,
+                                                                                    new_metadata,
+                                                                                    upload_type
+                                                                                )
+                # print('not existing_metadata')
+
+        check_existing_lifesourceid = speakermeta.find({
+                                                        "projectname": activeprojectname},
+                                                        {"lifesourceid": 1,
+                                                        "current.sourceMetadata.lifespeakerid": 1,
+                                                        "current.sourceMetadata.karyaaccesscode":  1,
+                                                        "current.sourceMetadata.karyaspeakerid": 1,
+                                                            "_id": 0
+                                                        })
+
+
+
+        for existing_lifesourceid in check_existing_lifesourceid:
+            if existing_lifesourceid["lifesourceid"] != existing_lifesourceid["current"]["sourceMetadata"]["lifespeakerid"]:
+                # Define filter criteria to check if old_lifesourceid is already present
+                filter_criteria_old_lifesourceid = {
+                    "projectname": activeprojectname,
+                    "current.sourceMetadata.lifespeakerid": existing_lifesourceid["current"]["sourceMetadata"]["lifespeakerid"],
+                    # Check if old_lifesourceid does not exist
+                    "old_lifesourceid": {"$exists": False}
+                }
+                # print('filter_criteria_old_lifesourceid :', filter_criteria_old_lifesourceid)
+
+                # Define filter criteria to update lifespeakerid to lifesourceid
+                filter_criteria_lifespeakerid_to_lifesourceid = {
+                    "projectname": activeprojectname,
+                    "current.sourceMetadata.lifespeakerid": existing_lifesourceid["current"]["sourceMetadata"]["lifespeakerid"]
+                }
+                # print('filter_criteria_lifespeakerid_to_lifesourceid :', filter_criteria_lifespeakerid_to_lifesourceid)
+                # Define the data to be added
+                lifesource_to_old_lifesourceid = {
+                    "old_lifesourceid": existing_lifesourceid["lifesourceid"]}
+                lifespeakerid_to_lifesourceid = {
+                    "lifesourceid": existing_lifesourceid["current"]["sourceMetadata"]["lifespeakerid"]}
+                
+                # print('lifesource_to_old_lifesourceid :', lifesource_to_old_lifesourceid , 'lifespeakerid_to_lifesourceid :',lifespeakerid_to_lifesourceid  )
+
+                # Update old_lifesourceid only if it does not exist in the document
+                try:
+                    # Update old_lifesourceid
+                    result = speakermeta.update_many(filter_criteria_old_lifesourceid, {
+                                                    "$set": lifesource_to_old_lifesourceid})
+
+                    # Update lifespeakerid to lifesourceid
+                    result = speakermeta.update_many(filter_criteria_lifespeakerid_to_lifesourceid, {
+                                                    "$set": lifespeakerid_to_lifesourceid})
+
+                except Exception as e:
+                    print("An error occurred:", e)
+
+
+
 
     return redirect(url_for('karya_bp.homespeaker'))
     # return render_template("homespeaker.html",
