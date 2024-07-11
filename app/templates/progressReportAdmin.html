@@ -67,6 +67,8 @@ Progress Report Admin
     }
 </style>
 
+
+
 <style>
 
     /* Additional styles specific to this page */
@@ -438,77 +440,22 @@ Progress Report Admin
                     <h2>File-wise Results</h2>
                     <button class="btn btn-primary">Graphical representation may be shown using data for each boundary and each speaker, wherever applicable</button>
                     <br><br>
-                    <table class="table table-striped">
+                    <select id="selectProjects" multiple>
+                        {% for project in project_names_file_wise %}
+                            <option value="{{ project }}">{{ project }}</option>
+                        {% endfor %}
+                    </select>
+                   <br><br><br> 
+                    <table>
                         <thead>
                             <tr>
+                                <!-- <th>Project</th> -->
                                 <th>All Speaker ID(s)</th>
-                                <th>Created by</th>
-                                <th>Shared with</th>
-                                <th>Time and date of assignment</th>
-                                <th>Total Duration of the file</th>
-                                <th>Number of boundaries/sentences</th>
-                                <th>Total Duration of boundaries</th>
-                                <th>Total Duration of unmarked portion</th>
-                                <th>Total Boundaries with all transcriptions</th>
-                                <th>Total Boundaries with no transcription</th>
-                                <th>Total Boundaries with partial transcription</th>
-                                <th>Scripts with transcriptions in all boundaries</th>
-                                <th>Scripts with no transcription in all boundaries</th>
-                                <th>Scripts with transcription in some boundaries</th>
-                                <th>Total number of words</th>
-                                <th>Total number of characters</th>
-                                <th>Number of speakers in the file</th>
-                                <th>Total Duration of each speaker</th>
-                                <th>Details per speaker</th>
-                                <th>Translation/Gloss/Annotation details</th>
-                                <th>Completed files</th>
-                                <th>Remaining files</th>
-                                <th>First update date and time</th>
-                                <th>Last update date and time</th>
-                                <th>Total time</th>
-                                <th>Total work time</th>
-                                <th>Avg work time per boundary</th>
-                                <th>Descriptive Statistics</th>
+                                <th>Files</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <!-- Populate this section dynamically -->
-                            {% for file in files %}
-                            <tr>
-                                <td>{{ file.speaker_ids }}</td>
-                                <td>{{ file.created_by }}</td>
-                                <td>
-                                    {% for user in file.shared_with %}
-                                    <a href="#" onclick="showUserDetails('{{ user.username }}')">{{ user.username }}</a>{% if not loop.last %}, {% endif %}
-                                    {% endfor %}
-                                </td>
-                                <td>{{ file.assignment_time }}</td>
-                                <td>{{ file.total_duration }}</td>
-                                <td>{{ file.boundaries_count }}</td>
-                                <td>{{ file.boundaries_duration }}</td>
-                                <td>{{ file.unmarked_duration }}</td>
-                                <td>{{ file.full_transcriptions }}</td>
-                                <td>{{ file.no_transcriptions }}</td>
-                                <td>{{ file.partial_transcriptions }}</td>
-                                <td>{{ file.full_transcription_scripts }}</td>
-                                <td>{{ file.no_transcription_scripts }}</td>
-                                <td>{{ file.partial_transcription_scripts }}</td>
-                                <td>{{ file.word_count }}</td>
-                                <td>{{ file.character_count }}</td>
-                                <td>{{ file.speaker_count }}</td>
-                                <td>{{ file.speaker_durations }}</td>
-                                <td>{{ file.speaker_details }}</td>
-                                <td>{{ file.translation_gloss_annotation_details }}</td>
-                                <td>{{ file.completed_files }}</td>
-                                <td>{{ file.remaining_files }}</td>
-                                <td>{{ file.first_update_time }}</td>
-                                <td>{{ file.last_update_time }}</td>
-                                <td>{{ file.total_time }}</td>
-                                <td>{{ file.total_work_time }}</td>
-                                <td>{{ file.avg_work_time_per_boundary }}</td>
-                                <td>{{ file.descriptive_statistics }}</td>
-                            </tr>
-                            {% endfor %}
+                        <tbody id="documentsTable">
+                            <!-- Table rows will be populated dynamically -->
                         </tbody>
                     </table>
                 </div>
@@ -651,11 +598,45 @@ Progress Report Admin
         document.getElementById('cumulativeResults').classList.add('hidden');
     }
     
-    // Function to show the File-wise Results section
-    function showFileWiseResults() {
-        toggleVisibility('fileWiseResults');
-        document.getElementById('userWiseResults').classList.add('hidden');
+// Function to toggle visibility of File-wise Results section
+function showFileWiseResults() {
+        $('#fileWiseResults').removeClass('hidden');
+        $('#userWiseResults').addClass('hidden');
+        
+        // Clear existing table
+        $('#documentsTable').empty();
+        
+        // Get selected projects
+        var selectedProjects = $('#selectProjects').val();
+        
+        // Populate the table for each selected project
+        selectedProjects.forEach(function(project) {
+            var projectData = {{ project_documents_file_wise|tojson }};
+            var speakersData = projectData[project];
+            
+            // Create table rows for each speaker
+            Object.keys(speakersData).forEach(function(speaker) {
+                var files = speakersData[speaker];
+                var newRow = '</td><td>' + speaker + '</td><td>' + files.join(', ') + '</td></tr>';
+                $('#documentsTable').append(newRow);
+            });
+        });
     }
+    
+    // Event listener for the project selection dropdown
+    $('#selectProjects').change(function() {
+        showFileWiseResults();
+    });
+    
+    // Initially hide userWiseResults
+    $('#userWiseResults').addClass('hidden');
+    
+    // Function to toggle visibility of elements by class
+    function toggleVisibility(id) {
+        $('#' + id).toggleClass('hidden');
+    }
+
+
     
     // Function to show the User-wise Results section
     function showUserWiseResults() {

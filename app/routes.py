@@ -755,6 +755,10 @@ def get_collection_stats(db_name, collection_name):
 
     return project_stats, speaker_ids, speakers_audio_ids
 
+
+
+
+
 @app.route('/progressReportAdmin', methods=['GET'])
 @login_required
 def progressReportAdmin():
@@ -813,6 +817,35 @@ def progressReportAdmin():
         if activeprojectname == '':
             flash(f"Select a project from 'Change Active Project' to work on!")
             return redirect(url_for('home'))
+        
+        speaker_audio_data = []  # Initialize a list to hold speaker_id and audio_id pairs
+
+        list_projectname = projects.find({}, {"projectname": 1, "_id": 0})
+
+        for project in list_projectname:
+            projectname = project["projectname"]
+            # print("Project Name: ", projectname)
+            
+            speakerids_list = audiodetails.combine_speaker_ids(projects, projectname, current_username)
+            # print("Speaker IDs List: ", speakerids_list)
+            
+            project_details = projects.find_one({"projectname": projectname}, {"speakersAudioIds": 1, "_id": 0})
+            
+            if project_details and 'speakersAudioIds' in project_details:
+                speakers_audio_ids = project_details['speakersAudioIds']
+                
+                for speakerid, audio_ids in speakers_audio_ids.items():
+                    if speakerid in speakerids_list:
+                        # print(f"Speaker ID: {speakerid}")
+                        for audio_id in audio_ids:
+                            # print(f"Audio ID: {audio_id}")
+                            # Collecting the speaker_id and audio_id
+                            speaker_audio_data.append({
+                                'speaker_id': speakerid,
+                                'audio_id': audio_id
+                            })
+
+        # print("speaker_audio_data : ",speaker_audio_data)
 
         speakerids_list = audiodetails.combine_speaker_ids(projects, activeprojectname, current_username)
 
@@ -859,22 +892,126 @@ def progressReportAdmin():
                         'Remaining files': remaining_comments
                     }
                     progress_reports.append(progress_report)
+                    # print("Hellow")
+
+
+                    file_names = []
+                    if current_username == projectowner:
+                        # Find the current user's projects
+                        find_current_user_projects = userprojects.find_one({'username': projectowner}, {'myproject': 1, '_id': 0})
+                        # Initialize an empty list to store project names
+                        project_names = []
+                        # Ensure find_current_user_projects is not None
+                        if find_current_user_projects and 'myproject' in find_current_user_projects:
+                            myproject = find_current_user_projects['myproject']
+                            
+                            # Iterate over the project keys and print project names
+                            for project_key in myproject:
+                                # print("Project names:", project_key)
+                                project_names.append(project_key)
+
+
+                                                # Initialize a list to hold the final results
+                        projects_data = []
+
+                        for project_name in project_names:
+                            find_current_user_documents = projects.find_one(
+                                {'projectOwner': projectowner, 'projectname': project_name},
+                                {'speakersAudioIds': 1, '_id': 0}
+                            )
+                            
+                            # Check if the document is found and has the key 'speakersAudioIds'
+                            if find_current_user_documents and 'speakersAudioIds' in find_current_user_documents:
+                                # Iterate through the speakersAudioIds dictionary
+                                for speaker_name, ids in find_current_user_documents['speakersAudioIds'].items():
+                                    # Create a new dictionary for each speaker and add it to the list
+                                    project_data = {
+                                        'project_name': project_name,
+                                        'speaker_name': speaker_name,
+                                        'ids': ids
+                                    }
+                                    projects_data.append(project_data)
+
+                        # Print or use the projects_data list as needed
+                        # for project in projects_data:
+                            # print(project)
+
+
+
+                        project_documents_file_wise = {}
+
+                        for project_name in project_names:
+                            find_current_user_documents = projects.find_one(
+                                {'projectOwner': projectowner, 'projectname': project_name},
+                                {'speakersAudioIds': 1, '_id': 0}
+                            )
+                            
+                            if find_current_user_documents:
+                                # Extract the speakersAudioIds from the document
+                                speakers_audio_ids = find_current_user_documents.get('speakersAudioIds', {})
+                                
+                                # Create the new dictionary entry
+                                project_documents_file_wise[project_name] = speakers_audio_ids
+
+
+
+                        project_names_file_wise = list(project_documents_file_wise.keys())
+
+                        # Now project_documents will have the structure you want
+                        # print(project_documents_file_wise)
+                        print(project_names_file_wise)
+
+
+
+                    
+                   
+
+        
+                        # print("you are the owner of the projects", project_names)
+
+                    # else: 
+                        # Find the current user's projects
+                        # find_current_user_projects = userprojects.find_one({'username': current_username}, {'myproject': 1, '_id': 0})
+                        # Initialize an empty list to store project names
+                        # project_names = []
+                        # Ensure find_current_user_projects is not None
+                        # if find_current_user_projects and 'myproject' in find_current_user_projects:
+                        #     myproject = find_current_user_projects['myproject']
+                            
+                            # Iterate over the project keys and print project names
+                            # for project_key in myproject:
+                            #     print("Project names:", project_key)
+                            #     print("the prject is shared by someone")
+                            
+                    else:
+                        print("No projects found for the current user.")
+
                 except Exception as e:
                     logger.error("An error occurred: %s", e)
                     return jsonify(error="An error occurred while processing the progress report"), 500
 
-        return render_template('progressReportAdmin.html', progress_reports=progress_reports,
-                               activeprojectname=activeprojectname, shareinfo=shareinfo,
-                               speakerids_list=speakerids_list, all_projects=all_projects,
-                               data_size_value=data_size_value, data_size_unit=data_size_unit,
-                               storage_size_value=storage_size_value, storage_size_unit=storage_size_unit,
-                               index_size_value=index_size_value, index_size_unit=index_size_unit,
-                               num_objects=num_objects, collection_stats=response,
+        return render_template('progressReportAdmin.html', 
+                               progress_reports=progress_reports,
+                               activeprojectname=activeprojectname, 
+                               shareinfo=shareinfo,
+                               speakerids_list=speakerids_list, 
+                               all_projects=all_projects,
+                               data_size_value=data_size_value, 
+                               data_size_unit=data_size_unit,
+                               storage_size_value=storage_size_value, 
+                               storage_size_unit=storage_size_unit,
+                               index_size_value=index_size_value, 
+                               index_size_unit=index_size_unit,
+                               num_objects=num_objects, 
+                               collection_stats=response,
                                total_allocated_size_value=total_allocated_size_value,
                                total_allocated_size_unit=total_allocated_size_unit,
                                remaining_space_value=remaining_space_value,
                                remaining_space_unit=remaining_space_unit,
-                               project_stats=project_stats)
+                               project_stats=project_stats,
+                               speaker_audio_data=speaker_audio_data, 
+                               project_names_file_wise= project_names_file_wise,
+                               project_documents_file_wise= project_documents_file_wise)  # Pass the collected data to the template
 
     except Exception as e:
         logger.error("An error occurred while connecting to MongoDB: %s", e)
