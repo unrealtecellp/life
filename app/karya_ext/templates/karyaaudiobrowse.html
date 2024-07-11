@@ -62,7 +62,7 @@ Audio Browse
                     <td>{{ audioData.karyaInfo.karyaFetchedAudioId }}</td>
                     <td>{{ audioData.accesscode }}</td>
                     <td>
-                        <audio controls onclick="playAudio(this)">
+                        <audio controls controlsList="nodownload" onclick="playAudio(this)">
                           <source src="data:audio/x-wav;base64,{{ audioData.audio_data_in_bytes }}" type="audio/wav">
                           Your browser does not support the audio element.
                         </audio>
