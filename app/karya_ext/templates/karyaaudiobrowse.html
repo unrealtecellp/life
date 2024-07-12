@@ -81,39 +81,49 @@ Audio Browse
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.js"></script>
 
 <script>
-    $(document).ready( function () {
+    $(document).ready(function () {
         $('#audioTable').DataTable({
-            "paging": true, // Enable pagination
-            "lengthChange": true, // Enable page length change dropdown
-            "pageLength": 10, // Default page length
-            "lengthMenu": [5,10, 20, 30], // Page length dropdown options
+            "paging": true,
+            "lengthChange": true,
+            "pageLength": 10,
+            "lengthMenu": [5, 10, 20, 30],
             "language": {
-                "lengthMenu": 'Show Entries: _MENU_' // Customize the text for the length menu
+                "lengthMenu": 'Show Entries: _MENU_'
             }
         });
-        
-        // Remove line break from the length menu button
+
         $(".dataTables_length label").css("white-space", "nowrap");
     });
 
     function updateTable() {
         var selectedSpeakerId = document.getElementById("speakerId").value;
-        var table = document.getElementById("audioTable");
-        var rows = table.getElementsByTagName("tr");
-
-        // Hide all rows except the header
-        for (var i = 1; i < rows.length; i++) {
-            rows[i].style.display = "none";
-        }
-
-        // Show rows that match the selected speaker ID
-        var speakerRows = table.getElementsByClassName(selectedSpeakerId);
-        for (var j = 0; j < speakerRows.length; j++) {
-            speakerRows[j].style.display = "";
-        }
+        var table = $('#audioTable').DataTable();
         
+        // Clear the table to re-add filtered data
+        table.clear();
+
+        // Add rows that match the selected speaker ID
+        {% for speakerId, audioList in data.items() %}
+            {% for audioData in audioList %}
+                if (selectedSpeakerId === "{{ speakerId }}") {
+                    table.row.add([
+                        `<input type="checkbox" id="checkbox_{{ audioData.audioId }}" name="selectedRows" value="{{ audioData.audioId }}">`,
+                        "{{ audioData.speakerId }}",
+                        "{{ audioData.audioId }}",
+                        "{{ audioData.audioFilename }}",
+                        "{{ audioData.karyaInfo.karyaFetchedAudioId }}",
+                        "{{ audioData.accesscode }}",
+                        `<audio controls controlsList="nodownload" onclick="playAudio(this)">
+                            <source src="data:audio/x-wav;base64,{{ audioData.audio_data_in_bytes }}" type="audio/wav">
+                            Your browser does not support the audio element.
+                        </audio>`
+                    ]).draw(false);
+                }
+            {% endfor %}
+        {% endfor %}
+
         // Show or hide the table based on the selected speaker ID
-        table.style.display = (selectedSpeakerId !== "") ? "table" : "none";
+        $('#audioTable').toggle(selectedSpeakerId !== "");
     }
 
     function deleteSelected() {
@@ -141,7 +151,6 @@ Audio Browse
 
         if (selectedData.length > 0) {
             if (confirm("Do you really want to delete the selected audio file(s)?")) {
-                // Send selectedData via AJAX
                 $.ajax({
                     url: "{{ url_for('karya_bp.karyadeleteaudiobrowse') }}",
                     type: 'POST',
@@ -149,12 +158,12 @@ Audio Browse
                     contentType: 'application/json',
                     success: function(response) {
                         console.log(response);
-                        alert("Delete successful."); // Display delete successful popup message
-                        location.reload(); // Reload the page after delete button is clicked
+                        alert("Delete successful.");
+                        location.reload();
                     },
                     error: function(xhr, status, error) {
                         console.error(xhr.responseText);
-                        alert("Delete failed."); // Display delete failed popup message
+                        alert("Delete failed.");
                     }
                 });
             }
@@ -174,4 +183,5 @@ Audio Browse
         }
     }
 </script>
+
 {% endblock %}

@@ -1640,28 +1640,34 @@ def karyaaudiobrowse():
                     "karyaInfo.karyaSpeakerId": 1
                 }
         ):
+            # print(transcriptions_data)
             if "karyaInfo" in transcriptions_data and "karyaSpeakerId" in transcriptions_data["karyaInfo"] and "karyaFetchedAudioId" in transcriptions_data["karyaInfo"]:
                 speaker_id = transcriptions_data["speakerId"]
                 if speaker_id not in data:
                     data[speaker_id] = []
                 data[speaker_id].append(transcriptions_data)
-
+        
+        # for key, value in data.items():
+        #     print("Key:", key)
+        #     print("Value:", value)
         for speaker_id, transcriptions_list in data.items():
             for transcription in transcriptions_list:
                 if "karyaInfo" in transcription and "karyaSpeakerId" in transcription["karyaInfo"] and "karyaFetchedAudioId" in transcription["karyaInfo"] and "audioFilename" in transcription:
                     karya_fetched_audio_id = transcription["karyaInfo"]["karyaFetchedAudioId"]
                     audio_filename = transcription["audioFilename"]
                     if karya_fetched_audio_id in accesscodedetails.distinct("karyafetchedaudios"):
-                        access_code = accesscodedetails.find_one({"karyafetchedaudios": karya_fetched_audio_id})["karyaaccesscode"]
+                        access_code = accesscodedetails.find_one({"karyafetchedaudios": karya_fetched_audio_id, "isActive":1})["karyaaccesscode"]
                         transcription["accesscode"] = access_code
-                        print("access_code : ", access_code)
+                        # print("access_code : ", access_code)
 
                     files = fs_files.find({"filename": audio_filename, "projectname": activeprojectname}, {"_id": 1, "filename": 1})
                     for file in files:
                         gridfs_file = fs.get(file['_id'])
                         audio_data = gridfs_file.read()
-                        print("File Name:", audio_filename)
-                        print("File Data:", type(audio_data))
+                        # print("File Name:", audio_filename)
+                        # print("File Data:", type(audio_data))
+
+                        
                         # Append the audio data to the transcription entry in data
                         
                         # transcription["audio_data_in_bytes"] = audio_data
@@ -1671,12 +1677,15 @@ def karyaaudiobrowse():
                         audio_data_base64 = base64.b64encode(audio_data).decode('utf-8')
                         transcription["audio_data_in_bytes"] = audio_data_base64
                         # transcription[audio_filename] = type(audio_data)
-
+        for key, value in data.items():
+            print("Key:", key)
+            # print("Value:", value)
             # Append modified transcription entry to data
-            data[speaker_id].append(transcription)
+            # data[speaker_id].append(transcription)
             # print("data type : ", data)
 ########################################################################  
-########################################################################      
+######################################################################## 
+        # print(data)
 
     except Exception as e:
         logger.exception(e)
