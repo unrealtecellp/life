@@ -79,10 +79,9 @@ Audio Browse
 {{ super() }}
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.js"></script>
-
 <script>
     $(document).ready(function () {
-        $('#audioTable').DataTable({
+        var table = $('#audioTable').DataTable({
             "paging": true,
             "lengthChange": true,
             "pageLength": 10,
@@ -93,95 +92,92 @@ Audio Browse
         });
 
         $(".dataTables_length label").css("white-space", "nowrap");
+
+        $('#speakerId').on('change', updateTable);
     });
 
     function updateTable() {
-        var selectedSpeakerId = document.getElementById("speakerId").value;
+        var selectedSpeakerId = $('#speakerId').val();
         var table = $('#audioTable').DataTable();
-        
+
         // Clear the table to re-add filtered data
         table.clear();
 
         // Add rows that match the selected speaker ID
-        {% for speakerId, audioList in data.items() %}
-            {% for audioData in audioList %}
+        if (selectedSpeakerId) {
+            var rowsToAdd = [];
+            {% for speakerId, audioList in data.items() %}
                 if (selectedSpeakerId === "{{ speakerId }}") {
-                    table.row.add([
-                        `<input type="checkbox" id="checkbox_{{ audioData.audioId }}" name="selectedRows" value="{{ audioData.audioId }}">`,
-                        "{{ audioData.speakerId }}",
-                        "{{ audioData.audioId }}",
-                        "{{ audioData.audioFilename }}",
-                        "{{ audioData.karyaInfo.karyaFetchedAudioId }}",
-                        "{{ audioData.accesscode }}",
-                        `<audio controls controlsList="nodownload" onclick="playAudio(this)">
-                            <source src="data:audio/x-wav;base64,{{ audioData.audio_data_in_bytes }}" type="audio/wav">
-                            Your browser does not support the audio element.
-                        </audio>`
-                    ]).draw(false);
+                    {% for audioData in audioList %}
+                        rowsToAdd.push([
+                            `<input type="checkbox" id="checkbox_{{ audioData.audioId }}" name="selectedRows" value="{{ audioData.audioId }}">`,
+                            "{{ audioData.speakerId }}",
+                            "{{ audioData.audioId }}",
+                            "{{ audioData.audioFilename }}",
+                            "{{ audioData.karyaInfo.karyaFetchedAudioId }}",
+                            "{{ audioData.accesscode }}",
+                            `<audio controls controlsList="nodownload" onclick="playAudio(this)">
+                                <source src="data:audio/x-wav;base64,{{ audioData.audio_data_in_bytes }}" type="audio/wav">
+                                Your browser does not support the audio element.
+                            </audio>`
+                        ]);
+                    {% endfor %}
                 }
             {% endfor %}
-        {% endfor %}
+
+            table.rows.add(rowsToAdd).draw();
+        }
 
         // Show or hide the table based on the selected speaker ID
-        $('#audioTable').toggle(selectedSpeakerId !== "");
+        $('#audioTable').toggle(!!selectedSpeakerId);
     }
 
     function deleteSelected() {
-        var selectedRows = document.getElementsByName("selectedRows");
         var selectedData = [];
+        var selectedRows = $('input[name="selectedRows"]:checked');
 
-        for (var i = 0; i < selectedRows.length; i++) {
-            if (selectedRows[i].checked) {
-                var audioId = selectedRows[i].value;
-                var checkboxId = "checkbox_" + audioId;
-                var speakerId = document.getElementById(checkboxId).closest("tr").querySelector("td:nth-child(2)").innerText;
-                var audioFilename = document.getElementById(checkboxId).closest("tr").querySelector("td:nth-child(4)").innerText;
-                var karyaFetchedAudioIds = document.getElementById(checkboxId).closest("tr").querySelector("td:nth-child(5)").innerText;
-                var karyaacode = document.getElementById(checkboxId).closest("tr").querySelector("td:nth-child(6)").innerText;
-                var data = {
-                    speakerId: speakerId,
-                    audioId: audioId,
-                    audioFilename: audioFilename,
-                    karyaFetchedAudioIds: karyaFetchedAudioIds,
-                    karyaacode: karyaacode
-                };
-                selectedData.push(data);
-            }
-        }
+        selectedRows.each(function () {
+            var $row = $(this).closest("tr");
+            var data = {
+                speakerId: $row.find("td:nth-child(2)").text(),
+                audioId: this.value,
+                audioFilename: $row.find("td:nth-child(4)").text(),
+                karyaFetchedAudioIds: $row.find("td:nth-child(5)").text(),
+                karyaacode: $row.find("td:nth-child(6)").text()
+            };
+            selectedData.push(data);
+        });
 
-        if (selectedData.length > 0) {
-            if (confirm("Do you really want to delete the selected audio file(s)?")) {
-                $.ajax({
-                    url: "{{ url_for('karya_bp.karyadeleteaudiobrowse') }}",
-                    type: 'POST',
-                    data: JSON.stringify(selectedData),
-                    contentType: 'application/json',
-                    success: function(response) {
-                        console.log(response);
-                        alert("Delete successful.");
-                        location.reload();
-                    },
-                    error: function(xhr, status, error) {
-                        console.error(xhr.responseText);
-                        alert("Delete failed.");
-                    }
-                });
-            }
-        } else {
+        if (selectedData.length > 0 && confirm("Do you really want to delete the selected audio file(s)?")) {
+            $.ajax({
+                url: "{{ url_for('karya_bp.karyadeleteaudiobrowse') }}",
+                type: 'POST',
+                data: JSON.stringify(selectedData),
+                contentType: 'application/json',
+                success: function(response) {
+                    console.log(response);
+                    alert("Delete successful.");
+                    location.reload();
+                },
+                error: function(xhr, status, error) {
+                    console.error(xhr.responseText);
+                    alert("Delete failed.");
+                }
+            });
+        } else if (selectedData.length === 0) {
             alert("No audio files selected.");
         }
     }
     
     function toggleSelectAll() {
-        var selectAllCheckbox = document.getElementById("selectAllCheckbox");
-        var selectedRows = document.getElementsByName("selectedRows");
-
-        for (var i = 0; i < selectedRows.length; i++) {
-            if (selectedRows[i].parentNode.parentNode.style.display !== "none") {
-                selectedRows[i].checked = selectAllCheckbox.checked;
+        var isChecked = $('#selectAllCheckbox').is(':checked');
+        $('input[name="selectedRows"]').each(function () {
+            if ($(this).closest('tr').is(':visible')) {
+                $(this).prop('checked', isChecked);
             }
-        }
+        });
     }
 </script>
+
 
 {% endblock %}
