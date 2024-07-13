@@ -1287,7 +1287,6 @@ def fetch_karya_audio():
         # r_j, hederr = karya_api_access.get_all_karya_assignments(
         #     verification_details, additional_task, project_type, access_code_task)
 
-        print("line 790")
 
         logger.debug("r_j: %s\nhederr: %s", r_j, hederr)
         #############################################################################################
@@ -1298,7 +1297,7 @@ def fetch_karya_audio():
         ################################ Get already fetched audio list and quesIDs   ########################################
         fetched_audio_list = karya_audio_management.get_fetched_audio_list(
             accesscodedetails, access_code, activeprojectname)
-        print("898", fetched_audio_list)
+        # print("898", fetched_audio_list)
         logger.debug("fetched_audio_list: %s", fetched_audio_list)
         exclude_ids = []
         if (project_type == 'questionnaires'):
