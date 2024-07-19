@@ -447,29 +447,26 @@ Progress Report Admin
     <button class="btn btn-primary">Graphical representation may be shown using data for each boundary and each speaker, wherever applicable</button>
     <br><br>
 
-    <!-- Project Selection Dropdown -->
     <select id="selectProjects">
         <option value="">--Select Project Name--</option>
         {% for project in project_documents_file_wise.keys() %}
         <option value="{{ project }}">{{ project }}</option>
         {% endfor %}
     </select>
-
+    
     <br><br>
 
-    <!-- Speaker Selection Dropdown -->
-    <select id="selectSpeakers">
-        <option value="">--Select Speaker ID--</option>
+    <select id="selectSpeakers" style="display:none;">
+        <!-- Speaker options will be populated dynamically -->
     </select>
-
-    <br><br>
-
+    
+    <br><br><br>
     <table id="documentsTable">
         <thead>
             <tr>
                 <th>Project Owner</th>
                 <th>Speaker ID</th>
-                <th>File Name</th>
+                <th>File</th>
                 <th>Action</th>
             </tr>
         </thead>
@@ -478,8 +475,6 @@ Progress Report Admin
         </tbody>
     </table>
 </div>
-
-
 
 
 
@@ -634,6 +629,7 @@ Progress Report Admin
 // Function to toggle visibility of File-wise Results section
 // Function to toggle visibility of File-wise Results section
 // Function to toggle visibility of File-wise Results section
+// Function to toggle visibility of File-wise Results section
 function showFileWiseResults() {
     $('#fileWiseResults').removeClass('hidden');
     $('#userWiseResults').addClass('hidden');
@@ -644,7 +640,10 @@ function showFileWiseResults() {
 
     // Get selected project
     var selectedProject = $('#selectProjects').val();
-    if (!selectedProject) return;
+    if (!selectedProject) {
+        $('#selectSpeakers').empty().hide(); // Hide and clear the speaker dropdown
+        return;
+    }
 
     // Retrieve project data
     var projectData = {{ project_documents_file_wise|tojson }};
@@ -652,32 +651,22 @@ function showFileWiseResults() {
     var speakersData = projectData[selectedProject]['speakersAudioIds'];
 
     // Populate the speaker dropdown
-    var speakerDropdown = $('#selectSpeakers');
-    speakerDropdown.empty();
-    speakerDropdown.append('<option value="">--Select Speaker ID--</option>');
+    var speakerOptions = '<option value="">--Select Speaker ID--</option>';
     Object.keys(speakersData).forEach(function(speaker) {
-        speakerDropdown.append('<option value="' + speaker + '">' + speaker + '</option>');
+        speakerOptions += '<option value="' + speaker + '">' + speaker + '</option>';
     });
+    $('#selectSpeakers').html(speakerOptions).show(); // Show the dropdown
 
-    // Event listener for the speaker selection dropdown
-    speakerDropdown.change(function() {
-        showSpeakerData();
-    });
+    // Event listener for the speaker dropdown
+    $('#selectSpeakers').change(function() {
+        var selectedSpeaker = $(this).val();
+        if (!selectedSpeaker) return;
 
-    // Function to show data based on selected speaker
-    function showSpeakerData() {
         // Clear existing table
         table.clear().draw();
 
-        // Get selected speaker
-        var selectedSpeaker = speakerDropdown.val();
-        if (!selectedSpeaker) return;
-
-        // Retrieve files for the selected speaker
+        // Get files for the selected speaker
         var files = speakersData[selectedSpeaker];
-        if (!files) return;
-
-        // Create table rows for each file
         files.forEach(function(file) {
             var newRow = [
                 projectOwner,
@@ -687,7 +676,7 @@ function showFileWiseResults() {
             ];
             table.row.add(newRow).draw();
         });
-    }
+    });
 }
 
 // Initialize DataTables
@@ -702,15 +691,15 @@ $(document).ready(function() {
         showFileWiseResults();
     });
 
-    // Initially hide userWiseResults
+    // Initially hide userWiseResults and speaker dropdown
     $('#userWiseResults').addClass('hidden');
+    $('#selectSpeakers').hide();
 });
 
 // Function to toggle visibility of elements by class
 function toggleVisibility(id) {
     $('#' + id).toggleClass('hidden');
 }
-
 
 
 
