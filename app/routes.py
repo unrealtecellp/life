@@ -970,7 +970,7 @@ def progressReportAdmin():
                         # Now project_documents will have the structure you want
                         # print(project_documents_file_wise)
                         # print(project_names_file_wise)
-                        print(project_documents_file_wise)
+                        # print(project_documents_file_wise)
 
                             
                     else:
