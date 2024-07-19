@@ -1100,7 +1100,7 @@ function processTokenGloss(glossTokenId,
             glossedSentenceWithTokenIdInfo[tokenId] = {};
             // console.log(document.getElementById(tokenId+'_word_input').value);
             let token = document.getElementById(tokenId + '_word_input').value;
-            console.log(token);
+            // console.log(token);
             glossedSentenceWithMorphemicBreakInfo[tokenId] = token;
             if (interlinearGlossFormat.includes('Leipzig')) {
                 let field = 'gloss';
@@ -1110,8 +1110,8 @@ function processTokenGloss(glossTokenId,
                     tokenId);
                 let existingGlossArray = fieldValueGloss.split(morphemicBreakRegex);
 
-                console.log("Token morphemes array", tokenMorphemesArray, tokenMorphemesArray.length);
-                console.log("Existing Gloss array", existingGlossArray, existingGlossArray.length);
+                // console.log("Token morphemes array", tokenMorphemesArray, tokenMorphemesArray.length);
+                // console.log("Existing Gloss array", existingGlossArray, existingGlossArray.length);
                 if (tokenMorphemesArray.length === existingGlossArray.length) {
                     if (tokenMorphemesArray.length <= 1) {
                         let tokenTranslation = document.getElementById(tokenId + '_word_translation').value;
@@ -1280,6 +1280,20 @@ function updateSentenceDetailsOnSaveBoundary(boundaryID, sentence, region, form)
         else {
             eleName = 'comment-box'
             sentence[boundaryID][key] = form[eleName].value
+        }
+    }
+
+    if ("anonymize" in form) {
+        // console.log('anonymize');
+        // console.log("Comment box found in form")
+        key = "anonymize";
+        if (key in sentence[boundaryID]) {
+            eleName = 'anonymize'
+            sentence[boundaryID][key] = form[eleName].checked;
+        }
+        else {
+            eleName = 'anonymize'
+            sentence[boundaryID][key] = form[eleName].checked;
         }
     }
 
@@ -1940,8 +1954,12 @@ function createSentenceForm(formElement, boundaryID) {
     let activeprojectform = JSON.parse(localStorage.activeprojectform);
     let activeTag = getActiveTag();
     createNavTabs(activeprojectform, activeTag);
+    let anonymize_checked = false;
     // console.log("activeprojectform", activeprojectform);
     for (let [key, value] of Object.entries(formElement)) {
+        if (key === 'anonymize') {
+            anonymize_checked = value;
+        }
         // console.log('first', key, value)
         if (key === 'transcription') {
             let transcriptionScriptList = activeprojectform['Transcription'][1];
@@ -1983,7 +2001,7 @@ function createSentenceForm(formElement, boundaryID) {
             // firstTranscriptionScript = Object.keys(transcriptionScript)[0]
             sentSpeakerIdEle = '<label for="sentspeakeriddropdown">Speaker ID: </label>'
             sentSpeakerIdEle += '<select class="custom-select custom-select-sm keyman-attached" id="sentspeakeriddropdown"'
-                + 'name = "sentSpeakerId" multiple = "multiple" style = "width:100%" required onclick="updateKeyboard(this)" onchange="autoSavetranscription(event,this)"> "';
+                + 'name = "sentSpeakerId" multiple = "multiple" style = "width:70%" required onclick="updateKeyboard(this)" onchange="autoSavetranscription(event,this)"> "';
 
 
             for (let i = 0; i < currentAudioAllSpeakerids.length; i++) {
@@ -2001,10 +2019,26 @@ function createSentenceForm(formElement, boundaryID) {
                 }
             }
 
-            sentSpeakerIdEle += '</select><br/><br/>'
+            sentSpeakerIdEle += '</select>';
+            let anonymize = '';
+            if (anonymize_checked) {
+                anonymize = '<label class="pull-right" for="anonymizecheckboxid_'+boundaryID+'">&nbsp;Anonymize</label>'+
+                            '<input class="pull-right" type="checkbox" id="anonymizecheckboxid_'+boundaryID+'" name="anonymize" onchange="autoSavetranscription(event,this)" checked>';
+                            
+            }
+            else {
+                anonymize = '<label class="pull-right" for="anonymizecheckboxid_'+boundaryID+'">&nbsp;Anonymize</label>'+
+                            '<input class="pull-right" type="checkbox" id="anonymizecheckboxid_'+boundaryID+'" name="anonymize" onchange="autoSavetranscription(event,this)">';
+                            
+            }
 
 
-            inpt += sentSpeakerIdEle
+
+            inpt += sentSpeakerIdEle;
+
+            inpt+= anonymize;
+
+            inpt += '<br/><br/>';
 
             let firstTranscriptionScript = transcriptionScriptList[0];
             for (let t = 0; t < transcriptionScriptList.length; t++) {
