@@ -18,8 +18,14 @@
 
   <button type="button" id="karya-setup" class="btn btn-lg btn-success" 
     onclick="window.location.href='{{ url_for('karya_bp.home_insert') }}';">
-    Karya Setup
+    Karya V1
   </button>
+
+
+  <button type="button" id="karya-setup" class="btn btn-lg btn-danger" 
+  onclick="window.location.href='{{ url_for('karya_bp.home_insert') }}';" disabled>
+  Karya V5-Demo
+</button>
 {% endblock %}
 
 {% block scripts %}
