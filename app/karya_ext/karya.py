@@ -217,6 +217,34 @@ def home_insert():
                            dropdown_list=dropdown_list)
 
 
+
+
+
+
+
+# Karya Setup
+@karya_bp.route('/karya_setupall', methods=['GET', 'POST'])
+@login_required
+def karya_setupall():
+    userprojects, userlogin = getdbcollections.getdbcollections(
+        mongo, 'userprojects', 'userlogin')
+    current_username = getcurrentusername.getcurrentusername()
+    usertype = userdetails.get_user_type(userlogin, current_username)
+    currentuserprojectsname = getcurrentuserprojects.getcurrentuserprojects(current_username, userprojects)
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_username, userprojects)
+    shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects, current_username, activeprojectname)
+    print(activeprojectname)
+    return render_template(
+        'karya_setupall.html',
+        data=currentuserprojectsname,
+        activeprojectname=activeprojectname,
+        shareinfo=shareinfo,
+        usertype=usertype
+    )
+
+
+
+
 ##############################################################################################################
 ##############################################################################################################
 ######################################   Upload Access-Code       ############################################

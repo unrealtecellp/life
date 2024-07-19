@@ -943,15 +943,25 @@ def progressReportAdmin():
                         for project_name in project_names:
                             find_current_user_documents = projects.find_one(
                                 {'projectOwner': projectowner, 'projectname': project_name},
-                                {'speakersAudioIds': 1, '_id': 0}
+                                {'speakersAudioIds': 1,'projectOwner':1, 'sharedwith':1,  '_id': 0}
                             )
                             
                             if find_current_user_documents:
                                 # Extract the speakersAudioIds from the document
                                 speakers_audio_ids = find_current_user_documents.get('speakersAudioIds', {})
+                                project_owner = find_current_user_documents.get('projectOwner', {})
+                                # print(speakers_audio_ids)
                                 
                                 # Create the new dictionary entry
-                                project_documents_file_wise[project_name] = speakers_audio_ids
+                                
+                                # project_documents_file_wise[project_name] = speakers_audio_ids
+                                # project_documents_file_wise[project_owner] = project_owner
+                                # Create the new dictionary entry with projectowner included
+                                project_documents_file_wise[project_name] = {
+                                                                'projectowner': projectowner,
+                                                                'speakersAudioIds': speakers_audio_ids
+                                                            }
+                                
 
 
 
@@ -959,29 +969,9 @@ def progressReportAdmin():
 
                         # Now project_documents will have the structure you want
                         # print(project_documents_file_wise)
-                        print(project_names_file_wise)
+                        # print(project_names_file_wise)
+                        print(project_documents_file_wise)
 
-
-
-                    
-                   
-
-        
-                        # print("you are the owner of the projects", project_names)
-
-                    # else: 
-                        # Find the current user's projects
-                        # find_current_user_projects = userprojects.find_one({'username': current_username}, {'myproject': 1, '_id': 0})
-                        # Initialize an empty list to store project names
-                        # project_names = []
-                        # Ensure find_current_user_projects is not None
-                        # if find_current_user_projects and 'myproject' in find_current_user_projects:
-                        #     myproject = find_current_user_projects['myproject']
-                            
-                            # Iterate over the project keys and print project names
-                            # for project_key in myproject:
-                            #     print("Project names:", project_key)
-                            #     print("the prject is shared by someone")
                             
                     else:
                         print("No projects found for the current user.")
