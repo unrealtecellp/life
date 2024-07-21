@@ -166,27 +166,27 @@ Progress Report Admin
                     <li class="nav-item">
                         <a class="nav-link" href="#" onclick="showDashboard()">
                             <span data-feather="home"></span>
-                            Dashboard
+                            <strong>Dashboard</strong>
                         </a>
                     </li>
 
                     
                     <li class="nav-item">
                         <a class="nav-link" href="#" onclick="showAllProjects()">
-                            <span data-feather="file"></span>
-                            All projects of a user
+                            <span class="font-weight-bold" data-feather="file"></span>
+                            <strong>All projects of a user</strong>
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#" onclick="showSpecificProject()">
                             <span data-feather="users"></span>
-                            Any specific project of the user
+                            <strong>Any specific project of the user</strong>
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#">
                             <span data-feather="bar-chart-2"></span>
-                            Reports
+                            <strong>Reports</strong>
                         </a>
                     </li>
                 </ul>
@@ -197,17 +197,17 @@ Progress Report Admin
         </nav>
 
          <main class="main-content col-md-9 ms-sm-auto col-lg-10 px-md-4">
-            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                <h1 class="h2">Dashboard</h1>
-            </div>
-
             {% if activeprojectname is defined %}
             <h4>
-                Project Name: {{ activeprojectname }}
-            </h4>
-            <br>
-            <br>
+                <strong>Project Name : {{ activeprojectname }}</strong>
+              </h4>
+
+            <!-- <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">Dashboard</h1>
+            </div> -->
             {% endif %}
+            <br>
+            <br>
 
               <!-- Table for Project List -->
                 <table id="audioTable" class="hidden">
@@ -306,16 +306,7 @@ Progress Report Admin
                     <button class="btn btn-primary" onclick="showIndividualProjectResults()">Individual Project Results</button>
                 </div>
 
-                <!-- Buttons for 'Any specific project of the user' -->
-                <div id="specificProjectButtons" class="hidden">
-                    <button class="btn btn-primary" onclick="showFileWiseResults()">File-wise</button>
-                    <button class="btn btn-primary" onclick="showUserWiseResults()">User-wise</button>
-                </div>
-
-                <br>
-                <br>
-                <br>
-
+               
                 <!-- Cumulative Results Section -->
                 <div id="cumulativeResults" class="hidden">
                     <h2>Cumulative Results</h2>
@@ -435,31 +426,27 @@ Progress Report Admin
 
 
 
+ <!-- Buttons for 'Any specific project of the user' -->
+<div id="specificProjectButtons" class="hidden">
+    <button class="btn btn-primary" onclick="showFileWiseResults()">File-wise</button>
+    <button class="btn btn-primary" onclick="showUserWiseResults()">User-wise</button>
+</div>
 
 
 
-        <!-- File-wise Results Section -->
-        <!-- File-wise Results Section -->
-        <!-- File-wise Results Section -->
 <!-- File-wise Results Section -->
 <div id="fileWiseResults" class="hidden">
     <h2>File-wise Results</h2>
-    <!-- <button class="btn btn-primary">Graphical representation may be shown using data for each boundary and each speaker, wherever applicable</button>
-    <br><br> -->
-
     <select id="selectProjects">
         <option value="">--Select Project Name--</option>
         {% for project in project_documents_file_wise.keys() %}
         <option value="{{ project }}">{{ project }}</option>
         {% endfor %}
     </select>
-    
     <br><br>
-
     <select id="selectSpeakers" style="display:none;">
         <!-- Speaker options will be populated dynamically -->
     </select>
-    
     <br><br><br>
     <table id="documentsTable">
         <thead>
@@ -476,58 +463,52 @@ Progress Report Admin
     </table>
 </div>
 
-
-
-                <!-- User-wise Results Section -->
-                <div id="userWiseResults" class="hidden">
-                    <h2>User-wise Results</h2>
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>Total no. of speakers shared</th>
-                                <th>Total no. of files shared</th>
-                                <th>List of files</th>
-                                <th>Total duration of all files shared</th>
-                                <th>Total files completed</th>
-                                <th>Total remaining files</th>
-                                <th>Total number of boundaries/sentences made by the user</th>
-                                <th>Points details</th>
-                                <th>Average work details</th>
-                                <th>Total work time</th>
-                                <th>Avg work time per day, per hour</th>
-                                <th>Rate of transcription</th>
-                                <th>Rate of translation, glossing, etc.</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- Populate this section dynamically -->
-                            {% for user in users %}
-                            <tr>
-                                <td>{{ user.total_speakers_shared }}</td>
-                                <td>{{ user.total_files_shared }}</td>
-                                <td>
-                                    {% for file in user.files %}
-                                    <a href="#" onclick="showFileDetails('{{ file.id }}')">{{ file.name }}</a>{% if not loop.last %}, {% endif %}
-                                    {% endfor %}
-                                </td>
-                                <td>{{ user.total_duration_files_shared }}</td>
-                                <td>{{ user.total_files_completed }}</td>
-                                <td>{{ user.total_remaining_files }}</td>
-                                <td>{{ user.total_boundaries_sentences }}</td>
-                                <td>{{ user.points_details }}</td>
-                                <td>{{ user.average_work_details }}</td>
-                                <td>{{ user.total_work_time }}</td>
-                                <td>{{ user.avg_work_time_per_day_hour }}</td>
-                                <td>{{ user.transcription_rate }}</td>
-                                <td>{{ user.translation_gloss_rate }}</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </main>
-    </div>
+<!-- User-wise Results Section -->
+<div id="userWiseResults" class="hidden">
+    <h2>User-wise Results</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Total no. of speakers shared</th>
+                <th>Total no. of files shared</th>
+                <th>List of files</th>
+                <th>Total duration of all files shared</th>
+                <th>Total files completed</th>
+                <th>Total remaining files</th>
+                <th>Total number of boundaries/sentences made by the user</th>
+                <th>Points details</th>
+                <th>Average work details</th>
+                <th>Total work time</th>
+                <th>Avg work time per day, per hour</th>
+                <th>Rate of transcription</th>
+                <th>Rate of translation, glossing, etc.</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Populate this section dynamically -->
+            {% for user in users %}
+            <tr>
+                <td>{{ user.total_speakers_shared }}</td>
+                <td>{{ user.total_files_shared }}</td>
+                <td>
+                    {% for file in user.files %}
+                    <a href="#" onclick="showFileDetails('{{ file.id }}')">{{ file.name }}</a>{% if not loop.last %}, {% endif %}
+                    {% endfor %}
+                </td>
+                <td>{{ user.total_duration_files_shared }}</td>
+                <td>{{ user.total_files_completed }}</td>
+                <td>{{ user.total_remaining_files }}</td>
+                <td>{{ user.total_boundaries_sentences }}</td>
+                <td>{{ user.points_details }}</td>
+                <td>{{ user.average_work_details }}</td>
+                <td>{{ user.total_work_time }}</td>
+                <td>{{ user.avg_work_time_per_day_hour }}</td>
+                <td>{{ user.transcription_rate }}</td>
+                <td>{{ user.translation_gloss_rate }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 </div>
 
 {% endblock %}
@@ -629,23 +610,59 @@ Progress Report Admin
 // Function to toggle visibility of File-wise Results section
 // Function to toggle visibility of File-wise Results section
 // Function to toggle visibility of File-wise Results section
-// Function to toggle visibility of File-wise Results section
-function showFileWiseResults() {
-    $('#fileWiseResults').removeClass('hidden');
-    $('#userWiseResults').addClass('hidden');
+$(document).ready(function() {
+    // Initialize DataTables
+    var table = $('#documentsTable').DataTable({
+        pageLength: 5,
+        lengthMenu: [5, 10, 30, 50]
+    });
 
-    // Clear existing table
+    // Initially hide userWiseResults and speaker dropdown
+    $('#userWiseResults').addClass('hidden');
+    $('#selectSpeakers').hide();
+
+    // Event listener for the project selection dropdown
+    $('#selectProjects').change(function() {
+        updateSpeakersDropdownAndTable();
+    });
+
+    // Ensure the default option is set initially
+    $('#selectProjects').val(""); // Set to default value
+});
+
+// Function to toggle visibility of elements by id
+function toggleVisibility(id) {
+    $('#' + id).toggleClass('hidden');
+}
+
+// Function to show/hide File-wise Results section
+function showFileWiseResults() {
+    var fileWiseResults = $('#fileWiseResults');
+
+    if (fileWiseResults.hasClass('hidden')) {
+        // Show fileWiseResults and hide userWiseResults
+        fileWiseResults.removeClass('hidden');
+        $('#userWiseResults').addClass('hidden');
+    } else {
+        // Hide fileWiseResults
+        fileWiseResults.addClass('hidden');
+        $('#selectSpeakers').hide(); // Hide the speaker dropdown
+    }
+}
+
+// Function to update the speakers dropdown and table based on selected project
+function updateSpeakersDropdownAndTable() {
     var table = $('#documentsTable').DataTable();
-    table.clear().draw();
 
     // Get selected project
     var selectedProject = $('#selectProjects').val();
     if (!selectedProject) {
         $('#selectSpeakers').empty().hide(); // Hide and clear the speaker dropdown
+        table.clear().draw(); // Clear the table if no project is selected
         return;
     }
 
-    // Retrieve project data
+    // Retrieve project data (assuming this is defined in your template)
     var projectData = {{ project_documents_file_wise|tojson }};
     var projectOwner = projectData[selectedProject]['projectowner'];
     var speakersData = projectData[selectedProject]['speakersAudioIds'];
@@ -657,8 +674,8 @@ function showFileWiseResults() {
     });
     $('#selectSpeakers').html(speakerOptions).show(); // Show the dropdown
 
-    // Event listener for the speaker dropdown
-    $('#selectSpeakers').change(function() {
+    // Handle speaker selection
+    $('#selectSpeakers').off('change').on('change', function() {
         var selectedSpeaker = $(this).val();
         if (!selectedSpeaker) return;
 
@@ -667,6 +684,8 @@ function showFileWiseResults() {
 
         // Get files for the selected speaker
         var files = speakersData[selectedSpeaker];
+        if (!files) return; // Exit if no files for the speaker
+
         files.forEach(function(file) {
             var newRow = [
                 projectOwner,
@@ -679,44 +698,25 @@ function showFileWiseResults() {
     });
 }
 
-// Initialize DataTables
-$(document).ready(function() {
-    $('#documentsTable').DataTable({
-        pageLength: 5,
-        lengthMenu: [5, 10, 30, 50]
-    });
-
-    // Event listener for the project selection dropdown
-    $('#selectProjects').change(function() {
-        showFileWiseResults();
-    });
-
-    // Initially hide userWiseResults and speaker dropdown
-    $('#userWiseResults').addClass('hidden');
-    $('#selectSpeakers').hide();
-});
-
-// Function to toggle visibility of elements by class
-function toggleVisibility(id) {
-    $('#' + id).toggleClass('hidden');
+// Function to show User-wise Results section
+function showUserWiseResults() {
+    // Show userWiseResults and hide fileWiseResults
+    $('#userWiseResults').removeClass('hidden');
+    $('#fileWiseResults').addClass('hidden');
 }
 
 
 
 
 
-
-
-
-
-
-
-
-
-
-
+    // Function to show the User-wise Results section
+    // function showUserWiseResults() {
+    //     toggleVisibility('userWiseResults');
+    //     document.getElementById('fileWiseResults').classList.add('hidden');
+    // }
     
-    
+
+
     // Function to show the User-wise Results section
     function showUserWiseResults() {
         toggleVisibility('userWiseResults');
