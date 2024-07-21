@@ -197,6 +197,7 @@ Progress Report Admin
         </nav>
 
          <main class="main-content col-md-9 ms-sm-auto col-lg-10 px-md-4">
+
             {% if activeprojectname is defined %}
             <h4>
                 <strong>Project Name : {{ activeprojectname }}</strong>
@@ -210,6 +211,8 @@ Progress Report Admin
             <br>
 
             <div id="projectContainer" class="hidden">
+                <h2><strong>Dashboard</strong></h2>
+                <br><br>
                 <!-- Table for Project List -->
                 <table id="audioTable" >
                     <thead>
@@ -312,7 +315,7 @@ Progress Report Admin
                
                 <!-- Cumulative Results Section -->
                 <div id="cumulativeResults" class="hidden">
-                    <h2>Cumulative Results</h2>
+                    <h2><strong>Cumulative Results</strong></h2>
                     <ul>
                         <li>Total number of projects (by project type): {{ all_projects | length }}</li>
                         <li>Total space taken: {{ data_size_value }} {{ data_size_unit }}</li>
@@ -439,7 +442,7 @@ Progress Report Admin
 
 <!-- File-wise Results Section -->
 <div id="fileWiseResults" class="hidden">
-    <h2>File-wise Results</h2>
+    <h2><strong>File-wise Results</strong></h2>
     <select id="selectProjects">
         <option value="">--Select Project Name--</option>
         {% for project in project_documents_file_wise.keys() %}
@@ -468,7 +471,7 @@ Progress Report Admin
 
 <!-- User-wise Results Section -->
 <div id="userWiseResults" class="hidden">
-    <h2>User-wise Results</h2>
+    <h2><strong>User-wise Results</strong></h2>
     <table class="table table-striped">
         <thead>
             <tr>
