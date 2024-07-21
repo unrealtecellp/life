@@ -845,23 +845,23 @@ def progressReportAdmin():
             project_type = getprojecttype.getprojecttype(projects, activeprojectname)
             data_collection, = getdbcollections.getdbcollections(mongo, project_type)
             projectname_cursor = projects.find({}, {"projectname": 1, "_id": 0})
-            print("projectname_cursor", projectname_cursor)
+            # print("projectname_cursor", projectname_cursor)
             for doc in projectname_cursor:
                 project_name = doc.get("projectname")
                 if project_name not in all_projects:
                     all_projects.append(project_name)
 
-            print("in progress_report :")
+            # print("in progress_report :")
             progress_reports = []
             project_documents_file_wise = {} 
             projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
-            print("projectowner : ", projectowner)
+            # print("projectowner : ", projectowner)
 
             activeprojectform = getactiveprojectform.getactiveprojectform(projectsform, projectowner, activeprojectname)
-            print("activeprojectform: ", activeprojectform)
+            # print("activeprojectform: ", activeprojectform)
             
             project_sharedwith = getprojectnamesharedwith.getprojectnamesharedwith(projects, activeprojectname)
-            print("project_sharedwith",project_sharedwith)
+            # print("project_sharedwith",project_sharedwith)
             if activeprojectform:
                 try:
                     activespeakerid = getuserprojectinfo.getuserprojectinfo(userprojects, current_username, activeprojectname)['activespeakerId']
@@ -870,7 +870,7 @@ def progressReportAdmin():
                         projects, data_collection, activeprojectname, speaker_id, speaker_audio_ids, 'audio'
                     )
 
-                    print("speaker_audio_ids:", speaker_audio_ids)
+                    # print("speaker_audio_ids:", speaker_audio_ids)
                     progress_report = {
                         'Created by': projectowner,
                         'Speaker ID': speaker_id,
@@ -882,7 +882,7 @@ def progressReportAdmin():
                         'Remaining files': remaining_comments
                     }
                     
-                    print("in progress_report :", progress_report)
+                    # print("in progress_report :", progress_report)
                     progress_reports.append(progress_report)
 
                 except Exception as e:
@@ -913,27 +913,27 @@ def progressReportAdmin():
             project_names_file_wise = list(project_documents_file_wise.keys())
 
             # Print all the data to the console
-            print("Progress Reports:", progress_reports)
-            print("Active Project Name:", activeprojectname)
-            print("Share Info:", shareinfo)
-            print("Speaker IDs List:", speakerids_list)
-            print("All Projects:", all_projects)
-            print("Data Size Value:", data_size_value)
-            print("Data Size Unit:", data_size_unit)
-            print("Storage Size Value:", storage_size_value)
-            print("Storage Size Unit:", storage_size_unit)
-            print("Index Size Value:", index_size_value)
-            print("Index Size Unit:", index_size_unit)
-            print("Number of Objects:", num_objects)
-            # print("Collection Stats:", response)
-            print("Total Allocated Size Value:", total_allocated_size_value)
-            print("Total Allocated Size Unit:", total_allocated_size_unit)
-            print("Remaining Space Value:", remaining_space_value)
-            print("Remaining Space Unit:", remaining_space_unit)
-            # print("Project Stats:", project_stats)
-            # print("Speaker Audio Data:", speaker_audio_data)
-            print("Project Names File Wise:", project_names_file_wise)
-            print("Project Documents File Wise:", project_documents_file_wise)
+            # print("Progress Reports:", progress_reports)
+            # print("Active Project Name:", activeprojectname)
+            # print("Share Info:", shareinfo)
+            # print("Speaker IDs List:", speakerids_list)
+            # print("All Projects:", all_projects)
+            # print("Data Size Value:", data_size_value)
+            # print("Data Size Unit:", data_size_unit)
+            # print("Storage Size Value:", storage_size_value)
+            # print("Storage Size Unit:", storage_size_unit)
+            # print("Index Size Value:", index_size_value)
+            # print("Index Size Unit:", index_size_unit)
+            # print("Number of Objects:", num_objects)
+            # # print("Collection Stats:", response)
+            # print("Total Allocated Size Value:", total_allocated_size_value)
+            # print("Total Allocated Size Unit:", total_allocated_size_unit)
+            # print("Remaining Space Value:", remaining_space_value)
+            # print("Remaining Space Unit:", remaining_space_unit)
+            # # print("Project Stats:", project_stats)
+            # # print("Speaker Audio Data:", speaker_audio_data)
+            # print("Project Names File Wise:", project_names_file_wise)
+            # print("Project Documents File Wise:", project_documents_file_wise)
 
             return render_template('progressReportAdmin.html',
                                 progress_reports=progress_reports,
@@ -958,11 +958,13 @@ def progressReportAdmin():
                                 project_names_file_wise=project_names_file_wise,
                                 project_documents_file_wise=project_documents_file_wise)  # Pass the collected data to the template
 
-    except Exception as e:
-        error_message = str(e)
-        error_traceback = traceback.format_exc()
-        logger.error(f"An error occurred: {error_message}\n{error_traceback}")
-        return jsonify(error=f"An error occurred while processing the request: {error_message}"), 500
+    # except Exception as e:
+    #     error_message = str(e)
+    #     error_traceback = traceback.format_exc()
+    #     logger.error(f"An error occurred: {error_message}\n{error_traceback}")
+    except:
+        logger.exception("")
+        # return jsonify(error=f"An error occurred while processing the request: {error_message}"), 500
 
 
 
