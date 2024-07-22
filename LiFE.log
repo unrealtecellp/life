@@ -105,3 +105,26 @@ Models Database found!
 language Database found!
 [2024-07-21 15:36:44,379] - logger: life - level: INFO - function: generate_models_database - line: 55
 Models Database found!
+[2024-07-22 00:43:30,813] - logger: life - level: ERROR - function: progressReportAdmin - line: 812
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 612, in progressReportAdmin
+    project_stats, speaker_ids, speakers_audio_ids = progressreportadmin.get_collection_stats('lifedb', 'projects')
+AttributeError: 'function' object has no attribute 'get_collection_stats'
+[2024-07-22 00:43:32,206] - logger: life - level: ERROR - function: progressReportAdmin - line: 812
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 612, in progressReportAdmin
+    project_stats, speaker_ids, speakers_audio_ids = progressreportadmin.get_collection_stats('lifedb', 'projects')
+AttributeError: 'function' object has no attribute 'get_collection_stats'
+[2024-07-22 00:43:32,796] - logger: life - level: ERROR - function: progressReportAdmin - line: 812
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 612, in progressReportAdmin
+    project_stats, speaker_ids, speakers_audio_ids = progressreportadmin.get_collection_stats('lifedb', 'projects')
+AttributeError: 'function' object has no attribute 'get_collection_stats'
+[2024-07-22 08:35:01,223] - logger: life - level: INFO - function: generate_languages_database - line: 102
+language Database found!
+[2024-07-22 08:35:01,225] - logger: life - level: INFO - function: generate_models_database - line: 55
+Models Database found!
+[2024-07-22 08:35:03,650] - logger: life - level: INFO - function: generate_languages_database - line: 102
+language Database found!
+[2024-07-22 08:35:03,651] - logger: life - level: INFO - function: generate_models_database - line: 55
+Models Database found!

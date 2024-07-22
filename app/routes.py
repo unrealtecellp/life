@@ -53,7 +53,7 @@ from app.controller import (audiodetails, createdummylexemeentry,
                             getcurrentusername, getcurrentuserprojects,
                             getdbcollections, getdbcollectionslist, getprojectowner, getprojecttype,
                             getuserprojectinfo, langscriptutils,
-                            lexicondetails, speakerDetails, projectDetails,
+                            lexicondetails, speakerDetails,progressreportadmin, projectDetails,
                             lifeshare,getprojectnamesharedwith)
 from app.controller import latex_generator as lg
 from app.controller import (manageAppConfig, questionnairedetails,
@@ -691,79 +691,13 @@ def progressReportAdmin():
 # MongoDB URI from Config class
 mongo_uri = Config.MONGO_URI
 
-import math
-
-
-def convert_size(size_bytes):
-    if size_bytes == 0:
-        return "0", "B"
-    size_name = ("B", "KB", "MB", "GB", "TB")
-    i = int(math.floor(math.log(size_bytes, 1024)))
-    p = math.pow(1024, i)
-    s = round(size_bytes / p, 2)
-    return f"{s}", size_name[i]
-
-
-from pymongo import MongoClient
-from collections import defaultdict
-
-def get_collection_stats(db_name, collection_name):
-    # Connect to MongoDB (default connection)
-    client = MongoClient()
-    db = client[db_name]
-    collection = db[collection_name]
-
-    # Initialize dictionaries to collect unique keys and their values
-    speaker_ids = defaultdict(set)
-    speakers_audio_ids = defaultdict(list)
-
-    # Iterate over all documents to collect the required data
-    project_stats = []
-    for doc in collection.find():
-        # Initialize project data dictionary
-        project_data = {
-            "projectname": doc.get("projectname"),
-            "projectOwner": doc.get("projectOwner"),
-            "sharedwith": doc.get("sharedwith"),
-            "projectDerivatives": doc.get("projectDerivatives"),
-            "aboutproject": doc.get("aboutproject"),
-            "projectType": doc.get("projectType"),
-            "speakerIds": {},
-            "speakersAudioIds": {},
-            "totalAudioIds": 0,
-            "speakersAudioIdsKeys": []
-        }
-
-        # Collect unique keys under speakerIds and their values
-        if "speakerIds" in doc:
-            for key, value in doc["speakerIds"].items():
-                speaker_ids[key].update(value)
-                project_data["speakerIds"][key] = value
-
-        # Collect unique keys under speakersAudioIds and the count of their respective lists
-        if "speakersAudioIds" in doc:
-            total_audio_ids = 0
-            for key, value in doc["speakersAudioIds"].items():
-                speakers_audio_ids[key] = len(value)
-                project_data["speakersAudioIds"][key] = value
-                total_audio_ids += len(value)
-                project_data["speakersAudioIdsKeys"].append(key)
-            project_data["totalAudioIds"] = total_audio_ids
-
-        # Add project data to the list
-        project_stats.append(project_data)
-
-    return project_stats, speaker_ids, speakers_audio_ids
-
-
-
 @app.route('/progressReportAdmin', methods=['GET'])
 @login_required
 def progressReportAdmin():
     try:
         # Connect to MongoDB and get collection stats
         client = MongoClient(app.config["MONGO_URI"])
-        project_stats, speaker_ids, speakers_audio_ids = get_collection_stats('lifedb', 'projects')
+        project_stats, speaker_ids, speakers_audio_ids = progressreportadmin.get_collection_stats('lifedb', 'projects')
 
         # Prepare additional data for the template
         collections = getdbcollectionslist.getdbcollectionslist(mongo)
@@ -771,25 +705,25 @@ def progressReportAdmin():
         for collection in collections:
             stats = mongo.cx['lifedb'].command("collstats", collection.name)
             response[collection.name] = {
-                "Storage Size": f"{convert_size(stats['storageSize'])}",
+                "Storage Size": f"{progressreportadmin.convert_size(stats['storageSize'])}",
                 "Documents": stats['count'],
-                "Avg. Document Size": f"{convert_size(stats['avgObjSize'])}",
+                "Avg. Document Size": f"{progressreportadmin.convert_size(stats['avgObjSize'])}",
                 "Indexes": stats['nindexes'],
-                "Total Index Size": f"{convert_size(stats['totalIndexSize'])}"
+                "Total Index Size": f"{progressreportadmin.convert_size(stats['totalIndexSize'])}"
             }
 
         db = client['lifedb']
         db_stats = db.command('dbStats')
-        data_size_value, data_size_unit = convert_size(db_stats['dataSize'])
-        storage_size_value, storage_size_unit = convert_size(db_stats['storageSize'])
-        index_size_value, index_size_unit = convert_size(db_stats['indexSize'])
+        data_size_value, data_size_unit = progressreportadmin.convert_size(db_stats['dataSize'])
+        storage_size_value, storage_size_unit = progressreportadmin.convert_size(db_stats['storageSize'])
+        index_size_value, index_size_unit = progressreportadmin.convert_size(db_stats['indexSize'])
         num_objects = db_stats['objects']
         allocated_storage_size = db_stats.get('fsUsedSize', None)
         total_allocated_size_value, total_allocated_size_unit = (
-            convert_size(allocated_storage_size) if allocated_storage_size else ("N/A", "")
+            progressreportadmin.convert_size(allocated_storage_size) if allocated_storage_size else ("N/A", "")
         )
         remaining_space_value, remaining_space_unit = (
-            convert_size(allocated_storage_size - db_stats['storageSize'])
+            progressreportadmin.convert_size(allocated_storage_size - db_stats['storageSize'])
             if allocated_storage_size else ("N/A", "")
         )
 
