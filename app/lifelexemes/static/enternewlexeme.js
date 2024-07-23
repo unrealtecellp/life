@@ -7982,15 +7982,15 @@ function showlexemeform(e, activeLexemeFiled) {
 	console.log(e, activeLexemeFiled);
 	let headword = [];
 	let lexemeId = activeLexemeFiled.value;
-	console.log(lexemeId);
+	// console.log(lexemeId);
 	headword.push(lexemeId);
 	let lexeme = '';
 	headword.push(lexeme);
-	console.log(headword);
+	// console.log(headword);
 	$.getJSON('/lifelexemes/lexemeedit', {
 			a:String(headword)
 	}, function(data) {
-		console.log(data);
+		// console.log(data);
 		localStorage.clear();
 		localStorage.setItem("newDataeditlexeme", JSON.stringify(data.newData));
 		localStorage.setItem("lexemeeditlexeme", JSON.stringify(data.result1));
@@ -7999,7 +7999,12 @@ function showlexemeform(e, activeLexemeFiled) {
 			window.location.href = window.location.href.replace("enternewlexeme", "editlexeme");
 		}
 		else {
-			window.location.reload()
+			let headwordElementId = data.newData['Lexeme Form Script'][0]
+			// console.log(headwordElementId);
+			let headwordElement = document.getElementById(headwordElementId);
+			// console.log(headwordElement);
+			headwordElement.value = headword[0];
+			// window.location.reload()
 		}
 		
 	});
