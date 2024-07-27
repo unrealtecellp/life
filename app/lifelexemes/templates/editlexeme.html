@@ -1,12 +1,12 @@
-{% extends "links.html" %}
+{% extends "lexemelinks.html" %}
 
 {% block title %}
-Edit Lexeme
+    Edit Lexeme
 {% endblock title %}
 
 {% block styles %}
 {{super()}}
-<link rel="stylesheet" href="{{url_for('.static', filename='editlexeme.css')}}">
+    <link rel="stylesheet" href="{{url_for('.static', filename='editlexeme.css')}}">
 {% endblock %}
 
 {% block app_content %}
@@ -18,7 +18,7 @@ Edit Lexeme
 
     </h4>
     <br>    
-    <form action="{{ url_for('lexemeupdate') }}" method="POST" enctype="multipart/form-data">
+    <form action="{{ url_for('lifelexemes.lexemeupdate') }}" method="POST" enctype="multipart/form-data">
         <div class="form-group projectname"></div>
         <div class="form-group lexemeId"></div>
         <div class="lexemelang"></div>

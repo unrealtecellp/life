@@ -64,7 +64,7 @@ function uploadaccesscodeform(uploadacesscodemetadata, projecttype) {
     $('.uploadaccodeselect').select2({
         placeholder: 'select',
         // data: usersList,
-        // allowClear: true
+        // allowClear: truew
     });
 
 }

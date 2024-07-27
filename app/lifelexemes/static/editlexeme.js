@@ -7411,19 +7411,60 @@ var morphTypes = [
 	}
 ]
 
+scriptCode = {
+	"Bengali": "Beng",
+	"Devanagari": "Deva",
+	"Gujarati": "Gujr",
+	"Gurumukhi": "Guru",
+	"IPA": "IPA",
+	"Kannada": "Knda",
+	"Latin": "Latn",
+	"Malayalam": "Mlym",
+	"Mayek": "Mtei",
+	"Odia": "Orya",
+	"Ol_Chiki": "Olck",
+	"Tamil": "Taml",
+	"Telugu": "Telu",
+	"Toto": "Toto"
+}
 
 var senseCount = 0;
 var variantCount = 0;
 var allomorphCount = 0;
 var glossLang;
 var count = '';
-function myFunction(newData) {
-  console.log(newData);
+// function myFunction(newData) {
+var newData = JSON.parse(localStorage.getItem("newDataeditlexeme"));
+var lexeme = JSON.parse(localStorage.getItem("lexemeeditlexeme"));
+var filen = JSON.parse(localStorage.getItem("fileneditlexeme"));
+// console.log(newData, lexeme, filen)
+// localStorage.clear();
+
+if(newData != null) {
+	editFunction(newData, lexeme, filen)
+}
+
+function editFunction(newData, lexeme, filen) {
+  // console.log(newData);
+//   console.log(newData, lexeme, filen)
   
   var inpt = '';
+	inpt += 'Project Name : '+newData["projectname"];
+//   $('h4').prepend(inpt);
+  	$('.editlexemeprojectnameheading').prepend(inpt);
 
+	inpt = ''
+	inpt += '<input type="hidden" class="form-control" placeholder="Project Name : "'+newData["projectname"]+' name="projectname" value="'+newData["projectname"]+'" readonly>';
+	$('.projectname').append(inpt);
+
+  inpt = ''
+	inpt += '<input type="hidden" class="form-control" placeholder="lexemeId" name="lexemeId" value="'+lexeme["lexemeId"]+'" readonly="">';
+	$('.lexemeId').append(inpt);
+	inpt = ''
   for (let [key, value] of Object.entries(newData)){
+	//   console.log(key);
 	if (key === 'Lexeme Language') {
+		// console.log(key, newData[key]);
 		inpt += '<div class="col"><div class="form-group">'+
                 '<label for="'+key+'">'+key+'</label>'+
                 '<input type="text" class="form-control" id="'+key+'" name="'+key+'" value="'+newData[key]+'" readonly>'+
@@ -7443,13 +7484,15 @@ function myFunction(newData) {
         inpt += '<div class="script collapse in"><div class="form-group">'+
                 '<label for="'+ lexemeScript[0] +'">'+ lexemeScript[0] +' (Head Word)</label>'+
                 '<input type="text" class="form-control" id="'+ lexemeScript[0] +'"'+ 
-                'placeholder="'+ lexemeScript[0] +'" name="Lexeme Form Script '+ lexemeScript[0] +'" required>'+
+                'placeholder="'+ lexemeScript[0] +'" name="Lexeme Form Script '+ lexemeScript[0] +'" '+
+				'value="'+ lexeme["Lexeme Form"][scriptCode[lexemeScript[0]]] +'"required>'+
                 '</div></div>';
         for (var i = 1; i < lexemeScript.length; i++) {
           inpt += '<div class="script collapse in"><div class="form-group">'+
                 '<label for="'+ lexemeScript[i] +'">'+ lexemeScript[i] +'</label>'+
                 '<input type="text" class="form-control" id="'+ lexemeScript[i] +'"'+ 
-                'placeholder="'+ lexemeScript[i] +'" name="Lexeme Form Script '+ lexemeScript[i] +'">'+
+                'placeholder="'+ lexemeScript[i] +'" name="Lexeme Form Script '+ lexemeScript[i] +'" '+
+				'value="'+ lexeme["Lexeme Form"][scriptCode[lexemeScript[i]]] +'">'+
                 '</div></div>';
         }      
         inpt += '</fieldset>';
@@ -7460,114 +7503,237 @@ function myFunction(newData) {
       glossLang = newData[key];
       // console.log(glossLang);
       if (senseCount === 0) {
-        senseCount += 1;
-        inpt += '<fieldset class="form-group border">'+
-                '<legend class="col-form-label">'+
-                '<button class="btn btn-success" type="button" id="addSense" onclick="addsense()">'+
-                '<span class="glyphicon glyphicon-plus" aria-hidden="true"></span> </button>'+
-                ' Sense'+' '+ senseCount +
-                '<button class="btn btn-default pull-right" type="button" data-toggle="collapse"'+
-                'data-target=".sense' + senseCount +'" aria-expanded="false" aria-controls="sense' + senseCount +'" '+
-                'onclick="collapseSense('+senseCount+')">'+
-                '<span class="glyphicon glyphicon-chevron-down s'+senseCount+'" aria-hidden="true"></span>'+
-                '</button></legend>';
+        // senseCount += 1;
+		maxSenseCount = Object.keys(lexeme['SenseNew']).length
+		for (let [skey, svalue] of Object.entries(lexeme['SenseNew'])) {
+			senseCount += 1;
+			if (senseCount < maxSenseCount) {
+				
+				inpt += '<fieldset class="form-group border">'+
+						'<legend class="col-form-label">'+
+						// '<button class="btn btn-success" type="button" id="addSense" onclick="addsense()">'+
+						// '<span class="glyphicon glyphicon-plus" aria-hidden="true"></span> </button>'+
+						' Sense'+' '+ senseCount +
+						'<button class="btn btn-default pull-right" type="button" data-toggle="collapse"'+
+						'data-target=".sense' + senseCount +'" aria-expanded="false" aria-controls="sense' + senseCount +'" '+
+						'onclick="collapseSense('+senseCount+')">'+
+						'<span class="glyphicon glyphicon-chevron-down s'+senseCount+'" aria-hidden="true"></span>'+
+						'</button></legend>';
 
-        for (var i = 0; i < glossLang.length; i++) {
-			if (glossLang[i] === 'English') {
+				for (var i = 0; i < glossLang.length; i++) {
 				inpt += '<div class="col-md-6 collapse sense' + senseCount +'"><div class="form-group">'+
-                  '<label for="Gloss '+ glossLang[i] +'">Gloss '+ glossLang[i] +'</label>'+
-                  '<input type="text" class="form-control" id="Gloss '+ glossLang[i] +'"'+ 
-                  'name="Gloss '+ glossLang[i] + ' Sense '+ senseCount+'" required>'+
-                  '</div></div>'+
-                  '<div class="col-md-6 collapse sense' + senseCount +'"><div class="form-group">'+
-                  '<label for="Definition '+ glossLang[i] +'">Definition '+ glossLang[i] +'</label>'+
-                  '<input type="text" class="form-control" id="Definition '+ glossLang[i] +'"'+ 
-                  'name="Definition '+ glossLang[i] + ' Sense '+ senseCount+'">'+
-                  '</div></div>';
+						'<label for="Gloss '+ glossLang[i] +'">Gloss '+ glossLang[i] +'</label>'+
+						'<input type="text" class="form-control" id="Gloss '+ glossLang[i] +'"'+ 
+						'name="Gloss '+ glossLang[i] + ' Sense '+ senseCount+'"'+
+						'value="'+ lexeme["SenseNew"]["Sense "+senseCount]["Gloss"][glossLang[i].substr(0, 3).toLowerCase()]+'">'+
+						'</div></div>'+
+						'<div class="col-md-6 collapse sense' + senseCount +'"><div class="form-group">'+
+						'<label for="Definition '+ glossLang[i] +'">Definition '+ glossLang[i] +'</label>'+
+						'<input type="text" class="form-control" id="Definition '+ glossLang[i] +'"'+ 
+						'name="Definition '+ glossLang[i] + ' Sense '+ senseCount+'"'+
+						'value="'+ lexeme["SenseNew"]["Sense "+senseCount]["Definition"][glossLang[i].substr(0, 3).toLowerCase()]+'">'+
+						'</div></div>';
+				}
+						
+				for (var i = 0; i < Sense.length; i++) {
+				if (Sense[i].name === 'Upload Picture') {
+					inpt += '<div class="col-md-4 collapse sense' + senseCount +'"><div class="form-group">'+
+						'<label for="'+ Sense[i].name +'">'+ Sense[i].name +'</label>'+
+						'<input type="file" class="form-control" id="'+ Sense[i].name +'" name="'+ Sense[i].name + ' Sense '+ senseCount+'">'+
+						'</div></div>';  
+				}
+				else if (Sense[i].name === 'Semantic Domain'
+							|| Sense[i].name === 'Lexical Relation'
+							|| Sense[i].name === 'Grammatical Category') {
+					inpt += '<div class="col-md-4 collapse sense' + senseCount +'"><div class="form-group">'+
+							'<label for="'+ Sense[i].name +'">'+ Sense[i].name +'</label>'+
+							'<select class="'+ Sense[i].name +'" name="'+ Sense[i].name + ' Sense '+ senseCount+'" style="width: 100%">'+
+							'<option value="'+lexeme["SenseNew"]["Sense "+senseCount][Sense[i].name]+'" selected>'+lexeme["SenseNew"]["Sense "+senseCount][Sense[i].name]+'</option>'+
+							'</select>'+
+							'</div></div>';
+				}
+				else {
+					inpt += '<div class="col-md-4 collapse sense' + senseCount +'"><div class="form-group">'+
+							'<label for="'+ Sense[i].name +'">'+ Sense[i].name +'</label>'+
+							'<input type="text" class="form-control" id="'+ Sense[i].name +'" name="'+ Sense[i].name + ' Sense '+ senseCount+'" '+
+							'value="'+ lexeme["SenseNew"]["Sense "+senseCount][Sense[i].name]+'">'+
+							'</div></div>';
+				}          
+				}         
+				inpt += '</fieldset>';
+				$('.sense').append(inpt);
+				inpt = '';
+				count = '<input type="hidden" id="senseCount" name="senseCount" value="'+ senseCount +'">';
+				$('.count').append(count);
 			}
 			else {
+				// console.log("last sense")
+				inpt += '<fieldset class="form-group border">'+
+						'<legend class="col-form-label">'+
+						'<button class="btn btn-success" type="button" id="addSense" onclick="addsense()">'+
+						'<span class="glyphicon glyphicon-plus" aria-hidden="true"></span> </button>'+
+						' Sense'+' '+ senseCount +
+						'<button class="btn btn-default pull-right" type="button" data-toggle="collapse"'+
+						'data-target=".sense' + senseCount +'" aria-expanded="false" aria-controls="sense' + senseCount +'" '+
+						'onclick="collapseSense('+senseCount+')">'+
+						'<span class="glyphicon glyphicon-chevron-down s'+senseCount+'" aria-hidden="true"></span>'+
+						'</button></legend>';
+
+				for (var i = 0; i < glossLang.length; i++) {
 				inpt += '<div class="col-md-6 collapse sense' + senseCount +'"><div class="form-group">'+
-                  '<label for="Gloss '+ glossLang[i] +'">Gloss '+ glossLang[i] +'</label>'+
-                  '<input type="text" class="form-control" id="Gloss '+ glossLang[i] +'"'+ 
-                  'name="Gloss '+ glossLang[i] + ' Sense '+ senseCount+'">'+
-                  '</div></div>'+
-                  '<div class="col-md-6 collapse sense' + senseCount +'"><div class="form-group">'+
-                  '<label for="Definition '+ glossLang[i] +'">Definition '+ glossLang[i] +'</label>'+
-                  '<input type="text" class="form-control" id="Definition '+ glossLang[i] +'"'+ 
-                  'name="Definition '+ glossLang[i] + ' Sense '+ senseCount+'">'+
-                  '</div></div>';
+						'<label for="Gloss '+ glossLang[i] +'">Gloss '+ glossLang[i] +'</label>'+
+						'<input type="text" class="form-control" id="Gloss '+ glossLang[i] +'"'+ 
+						'name="Gloss '+ glossLang[i] + ' Sense '+ senseCount+'"'+
+						'value="'+ lexeme["SenseNew"]["Sense "+senseCount]["Gloss"][glossLang[i].substr(0, 3).toLowerCase()]+'">'+
+						'</div></div>'+
+						'<div class="col-md-6 collapse sense' + senseCount +'"><div class="form-group">'+
+						'<label for="Definition '+ glossLang[i] +'">Definition '+ glossLang[i] +'</label>'+
+						'<input type="text" class="form-control" id="Definition '+ glossLang[i] +'"'+ 
+						'name="Definition '+ glossLang[i] + ' Sense '+ senseCount+'"'+
+						'value="'+ lexeme["SenseNew"]["Sense "+senseCount]["Definition"][glossLang[i].substr(0, 3).toLowerCase()]+'">'+
+						'</div></div>';
+				}
+						
+				for (var i = 0; i < Sense.length; i++) {
+				if (Sense[i].name === 'Upload Picture') {
+					inpt += '<div class="col-md-4 collapse sense' + senseCount +'"><div class="form-group">'+
+						'<label for="'+ Sense[i].name +'">'+ Sense[i].name +'</label>'+
+						'<input type="file" class="form-control" id="'+ Sense[i].name +'" name="'+ Sense[i].name + ' Sense '+ senseCount+'">'+
+						'</div></div>';  
+				}
+				else if (Sense[i].name === 'Semantic Domain'
+							|| Sense[i].name === 'Lexical Relation'
+							|| Sense[i].name === 'Grammatical Category') {
+					inpt += '<div class="col-md-4 collapse sense' + senseCount +'"><div class="form-group">'+
+							'<label for="'+ Sense[i].name +'">'+ Sense[i].name +'</label>'+
+							'<select class="'+ Sense[i].name +'" name="'+ Sense[i].name + ' Sense '+ senseCount+'" style="width: 100%">'+
+							'<option value="'+lexeme["SenseNew"]["Sense "+senseCount][Sense[i].name]+'" selected>'+lexeme["SenseNew"]["Sense "+senseCount][Sense[i].name]+'</option>'+
+							'</select>'+
+							'</div></div>';
+				}
+				else {
+					inpt += '<div class="col-md-4 collapse sense' + senseCount +'"><div class="form-group">'+
+							'<label for="'+ Sense[i].name +'">'+ Sense[i].name +'</label>'+
+							'<input type="text" class="form-control" id="'+ Sense[i].name +'" name="'+ Sense[i].name + ' Sense '+ senseCount+'" '+
+							'value="'+ lexeme["SenseNew"]["Sense "+senseCount][Sense[i].name]+'">'+
+							'</div></div>';
+				}          
+				}         
+				inpt += '</fieldset>';
+				$('.sense').append(inpt);
+				inpt = '';
+				count = '<input type="hidden" id="senseCount" name="senseCount" value="'+ senseCount +'">';
+				$('.count').append(count);
 			}
-          
-        }
-                
-        for (var i = 0; i < Sense.length; i++) {
-          if (Sense[i].name === 'Upload Picture') {
-            inpt += '<div class="col-md-4 collapse sense' + senseCount +'"><div class="form-group">'+
-                  '<label for="'+ Sense[i].name +'">'+ Sense[i].name +'</label>'+
-                  '<input type="file" class="form-control" id="'+ Sense[i].name +'" name="'+ Sense[i].name + ' Sense '+ senseCount+'">'+
-                  '</div></div>';  
-          }
-		  else if (Sense[i].name === 'Semantic Domain'
-					  || Sense[i].name === 'Lexical Relation'
-				) {
-            inpt += '<div class="col-md-4 collapse sense' + senseCount +'"><div class="form-group">'+
-                    '<label for="'+ Sense[i].name +'">'+ Sense[i].name +'</label>'+
-                    // '<select class="'+ Sense[i].name +'" name="'+ Sense[i].name + ' Sense '+ senseCount+'" multiple="multiple" style="width: 100%"></select>'+
-					'<select class="'+ Sense[i].name +'" name="'+ Sense[i].name + ' Sense '+ senseCount+'" style="width: 100%"></select>'+
-                    '</div></div>';
-          }
-		  else if (Sense[i].name === 'Grammatical Category') {
-            inpt += '<div class="col-md-4 collapse sense' + senseCount +'"><div class="form-group">'+
-                    '<label for="'+ Sense[i].name +'">'+ Sense[i].name +'</label>'+
-                    '<select class="'+ Sense[i].name +'" name="'+ Sense[i].name + ' Sense '+ senseCount+'" style="width: 100%" required></select>'+
-                    '</div></div>';
-          }
-          else {
-            inpt += '<div class="col-md-4 collapse sense' + senseCount +'"><div class="form-group">'+
-                    '<label for="'+ Sense[i].name +'">'+ Sense[i].name +'</label>'+
-                    '<input type="text" class="form-control" id="'+ Sense[i].name +'" name="'+ Sense[i].name + ' Sense '+ senseCount+'">'+
-                    '</div></div>';
-          }          
-        }         
-        inpt += '</fieldset>';
-        $('.sense').append(inpt);
-        inpt = '';
-        count = '<input type="hidden" id="senseCount" name="senseCount" value="'+ senseCount +'">';
-        $('.count').append(count);
-      }
+		}
+	}
       else { 
         addsense();
       }
     }
     else if (key === 'Variant') {
       if (variantCount === 0) {
-        variantCount += 1;
-        inpt += '<fieldset class="form-group border">'+
-                '<legend class="col-form-label">'+
-                '<button class="btn btn-success" type="button" id="addVariant" onclick="addvariant()">'+
-                '<span class="glyphicon glyphicon-plus" aria-hidden="true"></span> </button>'+
-                ' '+ key + ' ' + variantCount +'</legend>';
-            
-        for (var i = 0; i < Variant.length; i++) {
-          if (Variant[i].name === 'Variant Type') {
-            inpt += '<div class="col-md-4"><div class="form-group">'+
-                    '<label for="'+ Variant[i].name +'">'+ Variant[i].name +'</label>'+
-                    // '<select class="'+ Variant[i].name +'" name="'+ Variant[i].name + ' Variant '+ variantCount+'" multiple="multiple" style="width: 100%"></select>'+
-					'<select class="'+ Variant[i].name +'" name="'+ Variant[i].name + ' Variant '+ variantCount+'" style="width: 100%"></select>'+
-                    '</div></div>';
-          }
-          else {
-            inpt += '<div class="col-md-4"><div class="form-group">'+
-                  '<label for="'+ Variant[i].name +'">'+ Variant[i].name +'</label>'+
-                  '<input type="text" class="form-control" id="'+ Variant[i].name +'" name="'+ Variant[i].name + ' Variant '+ variantCount+'">'+
-                  '</div></div>';
-          }         
-        }                  
-        inpt += '</fieldset>';
-        $('.variant').append(inpt);
-        inpt = '';
-        count = '<input type="hidden" id="variantCount" name="variantCount" value="'+ variantCount +'">';
-        $('.count').append(count);
+        // variantCount += 1;
+		// console.log(!('Variant' in Object.keys(lexeme)));
+		if (!('Variant' in Object.keys(lexeme))) { 
+			variantCount += 1;
+			inpt += '<fieldset class="form-group border">'+
+					'<legend class="col-form-label">'+
+					'<button class="btn btn-success" type="button" id="addVariant" onclick="addvariant()">'+
+					'<span class="glyphicon glyphicon-plus" aria-hidden="true"></span> </button>'+
+					' '+ key + ' ' + variantCount +'</legend>';
+				
+			for (var i = 0; i < Variant.length; i++) {
+			if (Variant[i].name === 'Variant Type') {
+				inpt += '<div class="col-md-4"><div class="form-group">'+
+						'<label for="'+ Variant[i].name +'">'+ Variant[i].name +'</label>'+
+						// '<select class="'+ Variant[i].name +'" name="'+ Variant[i].name + ' Variant '+ variantCount+'" multiple="multiple" style="width: 100%"></select>'+
+						'<select class="'+ Variant[i].name +'" name="'+ Variant[i].name + ' Variant '+ variantCount+'" style="width: 100%"></select>'+
+						'</div></div>';
+			}
+			else {
+				inpt += '<div class="col-md-4"><div class="form-group">'+
+					'<label for="'+ Variant[i].name +'">'+ Variant[i].name +'</label>'+
+					'<input type="text" class="form-control" id="'+ Variant[i].name +'" name="'+ Variant[i].name + ' Variant '+ variantCount+'">'+
+					'</div></div>';
+			}         
+			}                  
+			inpt += '</fieldset>';
+			$('.variant').append(inpt);
+			inpt = '';
+			count = '<input type="hidden" id="variantCount" name="variantCount" value="'+ variantCount +'">';
+			$('.count').append(count);
+
+		}
+		else {
+			maxVariantCount = Object.keys(lexeme['Variant']).length
+			for (let [skey, svalue] of Object.entries(lexeme['Variant'])) {
+				variantCount += 1;
+				if (variantCount < maxVariantCount) {
+					inpt += '<fieldset class="form-group border">'+
+							'<legend class="col-form-label">'+
+							// '<button class="btn btn-success" type="button" id="addVariant" onclick="addvariant()">'+
+							// '<span class="glyphicon glyphicon-plus" aria-hidden="true"></span> </button>'+
+							' '+ key + ' ' + variantCount +'</legend>';
+						
+					for (var i = 0; i < Variant.length; i++) {
+						if (Variant[i].name === 'Variant Type') {
+							inpt += '<div class="col-md-4"><div class="form-group">'+
+									'<label for="'+ Variant[i].name +'">'+ Variant[i].name +'</label>'+
+									// '<select class="'+ Variant[i].name +'" name="'+ Variant[i].name + ' Variant '+ variantCount+'" multiple="multiple" style="width: 100%"></select>'+
+									'<select class="'+ Variant[i].name +'" name="'+ Variant[i].name + ' Variant '+ variantCount+'" style="width: 100%">'+
+									'<option value="'+lexeme["Variant"]["Variant "+variantCount][Variant[i].name]+'" selected>'+lexeme["Variant"]["Variant "+variantCount][Variant[i].name]+'</option>'+
+									'</select>'+
+									'</div></div>';
+						}
+						else {
+							inpt += '<div class="col-md-4"><div class="form-group">'+
+								'<label for="'+ Variant[i].name +'">'+ Variant[i].name +'</label>'+
+								'<input type="text" class="form-control" id="'+ Variant[i].name +'" name="'+ Variant[i].name + ' Variant '+ variantCount+'" '+
+								'value="'+ lexeme["Variant"]["Variant "+variantCount][Variant[i].name]+'">'+
+								'</div></div>';
+						}         
+					}                  
+					inpt += '</fieldset>';
+					$('.variant').append(inpt);
+					inpt = '';
+					count = '<input type="hidden" id="variantCount" name="variantCount" value="'+ variantCount +'">';
+					$('.count').append(count);
+				}
+				else {
+					inpt += '<fieldset class="form-group border">'+
+							'<legend class="col-form-label">'+
+							'<button class="btn btn-success" type="button" id="addVariant" onclick="addvariant()">'+
+							'<span class="glyphicon glyphicon-plus" aria-hidden="true"></span> </button>'+
+							' '+ key + ' ' + variantCount +'</legend>';
+						
+					for (var i = 0; i < Variant.length; i++) {
+						if (Variant[i].name === 'Variant Type') {
+							inpt += '<div class="col-md-4"><div class="form-group">'+
+									'<label for="'+ Variant[i].name +'">'+ Variant[i].name +'</label>'+
+									// '<select class="'+ Variant[i].name +'" name="'+ Variant[i].name + ' Variant '+ variantCount+'" multiple="multiple" style="width: 100%"></select>'+
+									'<select class="'+ Variant[i].name +'" name="'+ Variant[i].name + ' Variant '+ variantCount+'" style="width: 100%">'+
+									'<option value="'+lexeme["Variant"]["Variant "+variantCount][Variant[i].name]+'" selected>'+lexeme["Variant"]["Variant "+variantCount][Variant[i].name]+'</option>'+
+									'</select>'+
+									'</div></div>';
+						}
+						else {
+							inpt += '<div class="col-md-4"><div class="form-group">'+
+								'<label for="'+ Variant[i].name +'">'+ Variant[i].name +'</label>'+
+								'<input type="text" class="form-control" id="'+ Variant[i].name +'" name="'+ Variant[i].name + ' Variant '+ variantCount+'" '+
+								'value="'+ lexeme["Variant"]["Variant "+variantCount][Variant[i].name]+'">'+
+								'</div></div>';
+						}         
+					}                  
+					inpt += '</fieldset>';
+					$('.variant').append(inpt);
+					inpt = '';
+					count = '<input type="hidden" id="variantCount" name="variantCount" value="'+ variantCount +'">';
+					$('.count').append(count);
+
+				}
+			}
+		}
       }
       else { 
         addvariant();
@@ -7575,33 +7741,105 @@ function myFunction(newData) {
     }
     else if (key === 'Allomorph') {
       if (allomorphCount === 0) {
-        allomorphCount += 1;
-        inpt += '<fieldset class="form-group border">'+
-                '<legend class="col-form-label">'+
-                '<button class="btn btn-success" type="button" id="addAllomorph" onclick="addallomorph()">'+
-                '<span class="glyphicon glyphicon-plus" aria-hidden="true"></span> </button>'+
-                ' '+ key + ' ' + allomorphCount +'</legend>';
-            
-        for (var i = 0; i < Allomorph.length; i++) {
-          if (Allomorph[i].name === 'Morph Type') {
-            inpt += '<div class="col-md-4"><div class="form-group">'+
-                    '<label for="'+ Allomorph[i].name +'">'+ Allomorph[i].name +'</label>'+
-                    // '<select class="'+ Allomorph[i].name +'" name="'+ Allomorph[i].name + ' Allomorph '+ allomorphCount+'" multiple="multiple" style="width: 100%"></select>'+
-					'<select class="'+ Allomorph[i].name +'" name="'+ Allomorph[i].name + ' Allomorph '+ allomorphCount+'" style="width: 100%"></select>'+
-                    '</div></div>';
-          }
-          else {
-            inpt += '<div class="col-md-4"><div class="form-group">'+
-                    '<label for="'+ Allomorph[i].name +'">'+ Allomorph[i].name +'</label>'+
-                    '<input type="text" class="form-control" id="'+ Allomorph[i].name +'" name="'+ Allomorph[i].name + ' Allomorph ' + allomorphCount+'">'+
-                    '</div></div>';
-          }
-        }                  
-        inpt += '</fieldset>';
-        $('.allomorph').append(inpt);
-        inpt = '';
-        count = '<input type="hidden" id="allomorphCount" name="allomorphCount" value="'+ allomorphCount +'">';
-        $('.count').append(count);
+        // allomorphCount += 1;
+		if (!('Allomorph' in Object.keys(lexeme))) {
+			allomorphCount += 1;
+			inpt += '<fieldset class="form-group border">'+
+					'<legend class="col-form-label">'+
+					'<button class="btn btn-success" type="button" id="addAllomorph" onclick="addallomorph()">'+
+					'<span class="glyphicon glyphicon-plus" aria-hidden="true"></span> </button>'+
+					' '+ key + ' ' + allomorphCount +'</legend>';
+				
+			for (var i = 0; i < Allomorph.length; i++) {
+			if (Allomorph[i].name === 'Morph Type') {
+				inpt += '<div class="col-md-4"><div class="form-group">'+
+						'<label for="'+ Allomorph[i].name +'">'+ Allomorph[i].name +'</label>'+
+						// '<select class="'+ Allomorph[i].name +'" name="'+ Allomorph[i].name + ' Allomorph '+ allomorphCount+'" multiple="multiple" style="width: 100%"></select>'+
+						'<select class="'+ Allomorph[i].name +'" name="'+ Allomorph[i].name + ' Allomorph '+ allomorphCount+'" style="width: 100%"></select>'+
+						'</div></div>';
+			}
+			else {
+				inpt += '<div class="col-md-4"><div class="form-group">'+
+						'<label for="'+ Allomorph[i].name +'">'+ Allomorph[i].name +'</label>'+
+						'<input type="text" class="form-control" id="'+ Allomorph[i].name +'" name="'+ Allomorph[i].name + ' Allomorph ' + allomorphCount+'">'+
+						'</div></div>';
+			}
+			}                  
+			inpt += '</fieldset>';
+			$('.allomorph').append(inpt);
+			inpt = '';
+			count = '<input type="hidden" id="allomorphCount" name="allomorphCount" value="'+ allomorphCount +'">';
+			$('.count').append(count);
+
+		}
+		else {
+			maxAllomorphCount = Object.keys(lexeme['Allomorph']).length
+			for (let [skey, svalue] of Object.entries(lexeme['Allomorph'])) {
+				allomorphCount += 1;
+				if (allomorphCount < maxAllomorphCount) {
+					inpt += '<fieldset class="form-group border">'+
+							'<legend class="col-form-label">'+
+							// '<button class="btn btn-success" type="button" id="addAllomorph" onclick="addallomorph()">'+
+							// '<span class="glyphicon glyphicon-plus" aria-hidden="true"></span> </button>'+
+							' '+ key + ' ' + allomorphCount +'</legend>';
+						
+					for (var i = 0; i < Allomorph.length; i++) {
+						if (Allomorph[i].name === 'Morph Type') {
+							inpt += '<div class="col-md-4"><div class="form-group">'+
+									'<label for="'+ Allomorph[i].name +'">'+ Allomorph[i].name +'</label>'+
+									// '<select class="'+ Allomorph[i].name +'" name="'+ Allomorph[i].name + ' Allomorph '+ allomorphCount+'" multiple="multiple" style="width: 100%"></select>'+
+									'<select class="'+ Allomorph[i].name +'" name="'+ Allomorph[i].name + ' Allomorph '+ allomorphCount+'" style="width: 100%">'+
+									'<option value="'+lexeme["Allomorph"]["Allomorph "+allomorphCount][Allomorph[i].name]+'" selected>'+lexeme["Allomorph"]["Allomorph "+allomorphCount][Allomorph[i].name]+'</option>'+
+									'</select>'+
+									'</div></div>';
+						}
+						else {
+							inpt += '<div class="col-md-4"><div class="form-group">'+
+									'<label for="'+ Allomorph[i].name +'">'+ Allomorph[i].name +'</label>'+
+									'<input type="text" class="form-control" id="'+ Allomorph[i].name +'" name="'+ Allomorph[i].name + ' Allomorph ' + allomorphCount+'" '+
+									'value="'+lexeme["Allomorph"]["Allomorph "+allomorphCount][Allomorph[i].name]+'">'+
+									'</div></div>';
+						}
+					}                  
+					inpt += '</fieldset>';
+					$('.allomorph').append(inpt);
+					inpt = '';
+					count = '<input type="hidden" id="allomorphCount" name="allomorphCount" value="'+ allomorphCount +'">';
+					$('.count').append(count);
+				}
+				else {
+					inpt += '<fieldset class="form-group border">'+
+							'<legend class="col-form-label">'+
+							'<button class="btn btn-success" type="button" id="addAllomorph" onclick="addallomorph()">'+
+							'<span class="glyphicon glyphicon-plus" aria-hidden="true"></span> </button>'+
+							' '+ key + ' ' + allomorphCount +'</legend>';
+						
+					for (var i = 0; i < Allomorph.length; i++) {
+						if (Allomorph[i].name === 'Morph Type') {
+							inpt += '<div class="col-md-4"><div class="form-group">'+
+									'<label for="'+ Allomorph[i].name +'">'+ Allomorph[i].name +'</label>'+
+									// '<select class="'+ Allomorph[i].name +'" name="'+ Allomorph[i].name + ' Allomorph '+ allomorphCount+'" multiple="multiple" style="width: 100%"></select>'+
+									'<select class="'+ Allomorph[i].name +'" name="'+ Allomorph[i].name + ' Allomorph '+ allomorphCount+'" style="width: 100%">'+
+									'<option value="'+lexeme["Allomorph"]["Allomorph "+allomorphCount][Allomorph[i].name]+'" selected>'+lexeme["Allomorph"]["Allomorph "+allomorphCount][Allomorph[i].name]+'</option>'+
+									'</select>'+
+									'</div></div>';
+						}
+						else {
+							inpt += '<div class="col-md-4"><div class="form-group">'+
+									'<label for="'+ Allomorph[i].name +'">'+ Allomorph[i].name +'</label>'+
+									'<input type="text" class="form-control" id="'+ Allomorph[i].name +'" name="'+ Allomorph[i].name + ' Allomorph ' + allomorphCount+'" '+
+									'value="'+lexeme["Allomorph"]["Allomorph "+allomorphCount][Allomorph[i].name]+'">'+
+									'</div></div>';
+						}
+					}                  
+					inpt += '</fieldset>';
+					$('.allomorph').append(inpt);
+					inpt = '';
+					count = '<input type="hidden" id="allomorphCount" name="allomorphCount" value="'+ allomorphCount +'">';
+					$('.count').append(count);
+				}
+			}
+		}
       }
       else { 
         addallomorph();
@@ -7624,7 +7862,8 @@ function myFunction(newData) {
     else if (value === 'text'){
       inpt += '<div class="col"><div class="form-group">'+
                 '<label for="'+key+'">'+key+'</label>'+
-                '<input type="text" class="form-control" id="'+key+'" name="'+key+'" required>'+
+                '<input type="text" class="form-control" id="'+key+'" name="'+key+'" '+
+				'value="'+ lexeme["Pronunciation"]+'">'+
                 '</div></div>';         
       if (key === 'Pronunciation' || key === 'Upload Sound File' || key === 'Upload Movie File') {               
         $('.enternewlexeme1').append(inpt);
@@ -7635,27 +7874,39 @@ function myFunction(newData) {
         inpt = '';         
       }
     }
-    else if (value === 'textarea'){
-      inpt += '<div class="col"><div class="form-group">'+
-                '<label for="'+key+'">'+key+'</label>'+
-                '<textarea class="form-control" id="'+key+'" name="'+key+'"></textarea>'+
-                '</div></div>'; 
-      // if (senseCount === 0 || variantCount === 0 || allomorphCount === 0) {               
-      //   $('.enternewlexeme1').append(inpt);
-      //   inpt = '';         
-      // }
-      // else {
-      //   $('.enternewlexeme2').append(inpt);
-      //   inpt = '';         
-      // }
-      if (key === 'Pronunciation' || key === 'Upload Sound File' || key === 'Upload Movie File') {               
-        $('.enternewlexeme1').append(inpt);
-        inpt = '';         
-      }
-      else {
-        $('.enternewlexeme2').append(inpt);
-        inpt = '';         
-      }
+    else if (value === 'textarea') {
+		if (key === 'Additional Metadata Information') {
+			inpt += '<div class="col"><div class="form-group">'+
+						'<label for="'+key+'">'+key+'</label>'+
+						'<textarea class="form-control" id="'+key+'" name="'+key+'">'+lexeme["Additional Metadata Information"]+'</textarea>'+
+						'</div></div>';                
+				$('.enternewlexeme2').append(inpt);
+				inpt = '';         
+		}
+		else if (key === 'Any Additional Information') {
+			inpt += '<div class="col"><div class="form-group">'+
+						'<label for="'+key+'">'+key+'</label>'+
+						'<textarea class="form-control" id="'+key+'" name="'+key+'">'+lexeme["Any Additional Information"]+'</textarea>'+
+						'</div></div>';                
+				$('.enternewlexeme2').append(inpt);
+				inpt = '';         
+		}
+		else if (key === 'Encyclopedic Information') {
+			inpt += '<div class="col"><div class="form-group">'+
+						'<label for="'+key+'">'+key+'</label>'+
+						'<textarea class="form-control" id="'+key+'" name="'+key+'">'+lexeme["Encyclopedic Information"]+'</textarea>'+
+						'</div></div>';                
+				$('.enternewlexeme2').append(inpt);
+				inpt = '';         
+		}
+		else if (key === 'Source') {
+			inpt += '<div class="col"><div class="form-group">'+
+						'<label for="'+key+'">'+key+'</label>'+
+						'<textarea class="form-control" id="'+key+'" name="'+key+'">'+lexeme["Source"]+'</textarea>'+
+						'</div></div>';                
+				$('.enternewlexeme2').append(inpt);
+				inpt = '';         
+		} 
     }
     else if (key === 'Custom Fields') {
       inpt += '<fieldset class="form-group border">'+
@@ -7677,13 +7928,14 @@ function myFunction(newData) {
           else if (value === 'text'){
             inpt += '<div class="col collapse customfield"><div class="form-group">'+
                       '<label for="'+key+'">'+key+'</label>'+
-                      '<input type="text" class="form-control" id="'+key+'" name="Custom Field '+key+'">'+
+                      '<input type="text" class="form-control" id="'+key+'" name="Custom Field '+key+'" '+
+					  'value="'+ lexeme["Custom Fields"][key]+'">'+
                       '</div></div>';
           }
           else if (value === 'textarea'){
             inpt += '<div class="col collapse customfield"><div class="form-group">'+
                       '<label for="'+key+'">'+key+'</label>'+
-                      '<textarea class="form-control" id="'+key+'" name="Custom Field '+key+'"></textarea>'+
+                      '<textarea class="form-control" id="'+key+'" name="Custom Field '+key+'">'+ lexeme["Custom Fields"][key]+'</textarea>'+
                       '</div></div>'; 
           }
         }
@@ -7955,18 +8207,6 @@ $(".customfield").ready(function(){
     });   
   });
 
-$('.js-example-data-ajax').select2({
-	ajax: {
-		url: '/lexemelist',
-		data: function (params) {
-			console.log(params);
-			var query = {
-				search: params.term,
-				type: 'public'
-			}
-		
-			// Query parameters will be ?search=[term]&type=public
-			return query;
-		}
-	}
-});
+$(".lexemeupdatebutton").click(function() {
+	localStorage.clear();
+  });  

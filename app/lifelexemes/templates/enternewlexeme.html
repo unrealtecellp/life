@@ -1,0 +1,92 @@
+{% extends "lexemelinks.html" %}
+
+{% block title %}
+    Enter New Lexeme
+{% endblock title %}
+
+{% block styles %}
+{{super()}}
+    <link rel="stylesheet" href="{{url_for('.static', filename='enternewlexeme.css')}}">
+    <link href="{{url_for('.static', filename='sidepanel.css')}}" rel="stylesheet" />
+{% endblock %}
+
+{% block app_content %}
+    <div class="row">
+        <div class="col-sm-6">
+            <h4>Project Name : {{ newData['projectname'] }}</h4>
+        </div>
+        <div class="col-sm-6">
+            <span class="pull-right" style="font-size:30px; position:absolute; right:10px;cursor:pointer" onclick="openNav()">
+                <i class="glyphicon glyphicon-menu-hamburger"></i>
+            </span>
+            <div id="sidepanel"></div>
+        </div>
+    </div>
+    <br>
+    <div class="row">
+        <div class="col-sm-12">
+            <select class="showlexemelist" oninput="showlexemeform(event,this)" style="width: 100%"></select>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-12">
+            {% if newData is defined %}
+                <form action="{{ url_for('lifelexemes.dictionaryview') }}" method="POST" enctype="multipart/form-data">
+                    <div class="form-group">
+                        {# <input type="text" class="form-control" placeholder="Project Name : {{ newData[1]['projectname'] }}" name="projectname" value="{{ newData[1]['projectname'] }}" readonly><br>#}
+                        <input type="hidden" class="form-control" placeholder="Project Name : {{ newData['projectname'] }}" name="projectname" value="{{ newData['projectname'] }}" readonly>
+                        <br>
+                    </div>    
+                    <div class="lexemelang"></div>
+                    <div class="lexemeform"></div>
+                    <div class="enternewlexeme1"></div>
+                    <div class="sense"></div>
+                    <div class="variant"></div>
+                    <div class="allomorph"></div>
+                    <div class="enternewlexeme2"></div>
+                    <div class="customfields"></div>
+                    <div class="count"></div>
+                    <input class="btn btn-primary" id="submit" type="submit" value="Submit">
+                </form>
+            {% else %}
+                <input type="search" class="form-control" id="projectFormSearch" name="projectFormSearch" placeholder="Project Form Search">
+            {% endif %}
+        </div>
+
+    <!-- Upload Excel LiftXML  -->
+  <div class="modal fade" id="uploadExcelLiftXMLModal" tabindex="-1" role="dialog" aria-labelledby="uploadExcelLiftXMLModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+              aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="myUploadExcelLiftXMLModalLabel">Project Name: {{ projectName }}</h4>
+        </div>
+        <div class="modal-body">
+            <form action="{{ url_for('lexemekeymapping') }}" method="POST" enctype="multipart/form-data">
+                <input class="btn btn-primary pull-right" id="submit" type="submit" value="Upload">
+                <div class="form-group col-md-3 pull-right">
+                    <input type="file" class="form-control " id="Upload Excel LiftXML" name="Upload Excel LiftXML" required>
+                </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+          </div>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}
+
+
+{% block scripts %}
+{{super()}}
+    <script src="{{url_for('.static', filename='enternewlexeme.js')}}"></script>
+    {% if newData is defined %}
+        <script type="text/javascript">myFunction({{ newData | tojson | safe }});</script>
+    {% endif %}
+    <script src="{{url_for('.static', filename='sidepanel.js')}}"></script>
+    <script type="text/javascript">createSidePanel({{ shareinfo | tojson | safe }});</script>
+{% endblock %}

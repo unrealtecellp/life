@@ -1306,7 +1306,7 @@ def dictionaryview():
                                     projectowner,
                                     current_username)
         flash('Successfully added new lexeme')
-        return redirect(url_for('enternewlexeme'))
+        return redirect(url_for('lifelexemes.enternewlexeme'))
     try:
         my_projects = len(userprojects.find_one(
             {'username': current_username})["myproject"])
@@ -1341,69 +1341,10 @@ def dictionaryview():
                            data=currentuserprojectsname,
                            shareinfo=shareinfo)
 
-
-# enter new lexeme route
-# display form for new lexeme entry for current project
-@app.route('/enternewlexeme', methods=['GET', 'POST'])
-@login_required
-def enternewlexeme():
-    projects, userprojects, projectsform = getdbcollections.getdbcollections(mongo,
-                                                                             'projects',
-                                                                             'userprojects',
-                                                                             'projectsform')
-    currentuserprojectsname = getcurrentuserprojects.getcurrentuserprojects(current_user.username,
-                                                                            userprojects)
-    activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username,
-                                                                  userprojects)
-
-    # new project form containing dictionary fields and its type
-    # if request.method == 'POST':
-    #     project_form_data = dict(request.form.lists())
-    #     project_name = project_form_data['projectname'][0]
-    #     project_name = savenewproject.savenewproject(projects,
-    #                                                     project_name,
-    #                                                     current_user.username)
-    #     if project_name == '':
-    #         flash(f'Project Name : {project_name} already exist!')
-    #         return redirect(url_for('newproject'))
-    #     else:
-    #         logger.debug(project_name)
-    #         updateuserprojects.updateuserprojects(userprojects,
-    #                                                 project_name,
-    #                                                 current_user.username)
-    #         savenewprojectform.savenewprojectform(projectsform,
-    #                                                 project_name,
-    #                                                 project_form_data,
-    #                                                 current_user.username)
-
-    # activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username,
-    #                     userprojects)
-
-    # project_form = projectsform.find_one_or_404({'projectname' : activeprojectname,
-    #                                 'username' : current_user.username},
-    #                                 { "_id" : 0 })
-    # if project_form is not None:
-    #     return render_template('enternewlexeme.html',
-    #                             newData=project_form,
-    #                             data=currentuserprojectsname)
-    # return render_template('enternewlexeme.html')
-    # if method is not 'POST'
-    projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
-    project_form = projectsform.find_one_or_404({'projectname': activeprojectname,
-                                                 'username': projectowner},
-                                                {"_id": 0})
-    if project_form is not None:
-        return render_template('enternewlexeme.html',
-                               newData=project_form,
-                               data=currentuserprojectsname)
-    return render_template('enternewlexeme.html')
-
 # defining file_format and uploaded_file_content globally
 # to solve the problem of accessing the variable later by some functions
 # file_format = ''
 # uploaded_file_content = ''
-
-
 def enterlexemefromuploadedfile(alllexemedf):
     projects, userprojects, lexemes, projectsform = getdbcollections.getdbcollections(mongo,
                                                                                       'projects',
@@ -1483,7 +1424,7 @@ def enterlexemefromuploadedfile(alllexemedf):
                     if (getlexemeId['projectname'] != activeprojectname):
                         flash(
                             f"lexemeId: {lexemeId} if from different project!!!")
-                        return redirect(url_for('enternewlexeme'))
+                        return redirect(url_for('lifelexemes.enternewlexeme'))
 
             uploadedFileLexeme['lexemeId'] = lexemeId
             # logger.debug(uploadedFileLexeme)
@@ -1527,7 +1468,7 @@ def enterlexemefromuploadedfile(alllexemedf):
             # logger.debug(f'{"="*80}')
 
     flash('Successfully added new lexemes')
-    return redirect(url_for('enternewlexeme'))
+    return redirect(url_for('lifelexemes.enternewlexeme'))
     # comment till here
 
 
@@ -2365,7 +2306,7 @@ def uploadlexemeexcelliftxml():
 
         if (not headword_mapped):
             flash("headword is missing from the file")
-            return redirect(url_for('enternewlexeme'))
+            return redirect(url_for('lifelexemes.enternewlexeme'))
 
         elif (not all_mapped and len(field_map) != 0):
             not_mapped_data = field_map
@@ -2377,7 +2318,7 @@ def uploadlexemeexcelliftxml():
             elif (file_format == 'xlsx'):
                 enterlexemefromuploadedfile(data)
 
-    return redirect(url_for('enternewlexeme'))
+    return redirect(url_for('lifelexemes.enternewlexeme'))
 
 # lexeme key mapping
 
@@ -2421,10 +2362,10 @@ def lexemekeymapping():
                 # logger.debug(file_format)
                 pass
                 # flash(f"File format is correct")
-                # return redirect(url_for('enternewlexeme'))
+                # return redirect(url_for('lifelexemes.enternewlexeme'))
             else:
                 flash("File should be in 'xlsx' or 'lift' format")
-                return redirect(url_for('enternewlexeme'))
+                return redirect(url_for('lifelexemes.enternewlexeme'))
         # logger.debug("File format is correct")
 
         # df = pd.read_excel(uploaded_file_content)
@@ -2458,7 +2399,7 @@ def lexemekeymapping():
         # all_mapped = False
         if (not headword_mapped):
             flash("headword is missing from the file")
-            return redirect(url_for('enternewlexeme'))
+            return redirect(url_for('lifelexemes.enternewlexeme'))
 
         elif (not all_mapped and len(field_map) != 0):
             # not_mapped_data = {
@@ -2476,7 +2417,7 @@ def lexemekeymapping():
             if (file_format == 'xlsx'):
                 enterlexemefromuploadedfile(df)
 
-    return redirect(url_for('enternewlexeme'))
+    return redirect(url_for('lifelexemes.enternewlexeme'))
 
 
 # download lexeme form in excel format
@@ -6946,32 +6887,3 @@ def checkprojectnameexist():
         logger.exception("")
 
     return jsonify(status=False)
-
-@app.route('/lexemelist', methods=['GET', 'POST'])
-@login_required
-def lexemelist():
-    try:
-        userprojects, lexemes = getdbcollections.getdbcollections(mongo,
-                                                                    'userprojects',
-                                                                    'lexemes')
-        current_username = getcurrentusername.getcurrentusername()
-        activeprojectname = getactiveprojectname.getactiveprojectname(
-            current_username, userprojects)
-        search_key = request.args.get('search')
-        if (search_key is not None):
-            logger.debug("search_key: %s", search_key)
-            lexemes.createIndex( { "headword": "text" } )
-            aggregate_output = lexemes.aggregate(
-                [
-                    { "$match": { "$text": { "$search": search_key } } },
-                    # { $group: { _id: null, views: { $sum: "$views" } } }
-                ]
-                )
-            logger.debug("aggregate_output: %s", aggregate_output)
-            aggregate_output_list = []
-            for doc in aggregate_output:
-                logger.debug("aggregate_output: %s", pformat(doc))
-    except:
-        logger.exception("")
-
-    return 'OK'
