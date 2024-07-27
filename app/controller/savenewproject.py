@@ -33,6 +33,7 @@ def savenewproject(projects,
             project_details[key] = value
             if (key == 'projectType' and value in include_speakerIds):
                 project_details['speakerIds'] = {current_username: []}
+                project_details['speakersAudioIds'] = {}
             
         projects.insert_one(project_details)
         # print(project_details)
