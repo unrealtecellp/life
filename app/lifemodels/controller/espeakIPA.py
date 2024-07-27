@@ -6,22 +6,31 @@ from app.controller import life_logging
 logger = life_logging.get_logger()
 
 
-def to_ipa(lemmas, lang_code, phone_separator='', word_separator='#'):
+def to_ipa(lemmas, lang_code, input_script, alternate_lcode='', phone_separator='', word_separator='#'):
     space = ''
     if EspeakBackend.is_supported_language(lang_code):
-        logger.info('Language %s supported in espeak for IPA', lang_code)
+        logger.info('Language %s supported in espeak for IPA', lang_code)        
+        # space = phonemize(
+        #     lemmas, separator=separator, language_switch='keep-flags')
+    elif EspeakBackend.is_supported_language(alternate_lcode):
+        lang_code = alternate_lcode
+    elif input_script == 'Deva' or input_script == 'Devanagari' :
+        # print('')
+        lang_code = 'hi'
+        logger.info(
+            'Language %s not supported in espeak for IPA - defaulting to Hindi', lang_code)
+    else:
+        logger.info(
+        'Language %s not supported in espeak for IPA - skipping IPA generation', lang_code)
+    
+    if EspeakBackend.is_supported_language(lang_code):
         backend = EspeakBackend(lang_code)
         separator = Separator(phone=phone_separator, word=word_separator)
         # no_space = backend.phonemize(lemmas)
         space = backend.phonemize(
             lemmas, separator=separator)
-        # space = phonemize(
-        #     lemmas, separator=separator, language_switch='keep-flags')
-    else:
-        # print('')
-        logger.info(
-            'Language %s not supported in espeak for IPA - skipping IPA generation', lang_code)
-    return space
+    
+    return space, lang_code
     # return no_space, space
 
 

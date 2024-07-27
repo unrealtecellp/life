@@ -1100,7 +1100,7 @@ function processTokenGloss(glossTokenId,
             glossedSentenceWithTokenIdInfo[tokenId] = {};
             // console.log(document.getElementById(tokenId+'_word_input').value);
             let token = document.getElementById(tokenId + '_word_input').value;
-            console.log(token);
+            // console.log(token);
             glossedSentenceWithMorphemicBreakInfo[tokenId] = token;
             if (interlinearGlossFormat.includes('Leipzig')) {
                 let field = 'gloss';
@@ -1110,8 +1110,8 @@ function processTokenGloss(glossTokenId,
                     tokenId);
                 let existingGlossArray = fieldValueGloss.split(morphemicBreakRegex);
 
-                console.log("Token morphemes array", tokenMorphemesArray, tokenMorphemesArray.length);
-                console.log("Existing Gloss array", existingGlossArray, existingGlossArray.length);
+                // console.log("Token morphemes array", tokenMorphemesArray, tokenMorphemesArray.length);
+                // console.log("Existing Gloss array", existingGlossArray, existingGlossArray.length);
                 if (tokenMorphemesArray.length === existingGlossArray.length) {
                     if (tokenMorphemesArray.length <= 1) {
                         let tokenTranslation = document.getElementById(tokenId + '_word_translation').value;
@@ -1280,6 +1280,20 @@ function updateSentenceDetailsOnSaveBoundary(boundaryID, sentence, region, form)
         else {
             eleName = 'comment-box'
             sentence[boundaryID][key] = form[eleName].value
+        }
+    }
+
+    if ("anonymize" in form) {
+        // console.log('anonymize');
+        // console.log("Comment box found in form")
+        key = "anonymize";
+        if (key in sentence[boundaryID]) {
+            eleName = 'anonymize'
+            sentence[boundaryID][key] = form[eleName].checked;
+        }
+        else {
+            eleName = 'anonymize'
+            sentence[boundaryID][key] = form[eleName].checked;
         }
     }
 
@@ -1901,6 +1915,34 @@ function getAllSpeakerIdsOfAudio() {
     return sentenceSpeakerIds
 }
 
+function translationElicitation(activeprojectform, translationLangScript) {
+    // console.log(translationLangScript);
+    let translationValue = '';
+    if ('prompt' in activeprojectform &&
+        'Elicitation Method' in activeprojectform['prompt'] &&
+        activeprojectform['prompt']['Elicitation Method'] === 'Translation'
+    ) {
+        // console.log(activeprojectform);
+        let lang_list = [];
+        if ('content' in activeprojectform['prompt']
+        ){
+            lang_list = Object.keys(activeprojectform['prompt']['content']);
+        }
+        // console.log(lang_list);
+        if (lang_list.includes(translationLangScript)){
+            let prompt_text_object = activeprojectform['prompt']['content'][translationLangScript]['text']
+            let prompt_text_boundary = Object.keys(prompt_text_object)[0]
+            let lang_script_array = translationLangScript.split('-');
+            let lang_script = lang_script_array[lang_script_array.length - 1]
+            // console.log(lang_script);
+            translationValue = prompt_text_object[prompt_text_boundary]['textspan'][lang_script]
+        }
+        // console.log(translationValue);
+    }
+
+    return translationValue;
+}
+
 function createSentenceForm(formElement, boundaryID) {
     // var activeSentenceMorphemicBreak = '<input type="checkbox" id="activeSentenceMorphemicBreak" name="activeSentenceMorphemicBreak" value="false" onclick="">'+
     //                                     '<label for="activeSentenceMorphemicBreak">&nbsp; Add Interlinear Gloss</label><br></br>'
@@ -1912,8 +1954,12 @@ function createSentenceForm(formElement, boundaryID) {
     let activeprojectform = JSON.parse(localStorage.activeprojectform);
     let activeTag = getActiveTag();
     createNavTabs(activeprojectform, activeTag);
+    let anonymize_checked = false;
     // console.log("activeprojectform", activeprojectform);
     for (let [key, value] of Object.entries(formElement)) {
+        if (key === 'anonymize') {
+            anonymize_checked = value;
+        }
         // console.log('first', key, value)
         if (key === 'transcription') {
             let transcriptionScriptList = activeprojectform['Transcription'][1];
@@ -1955,7 +2001,7 @@ function createSentenceForm(formElement, boundaryID) {
             // firstTranscriptionScript = Object.keys(transcriptionScript)[0]
             sentSpeakerIdEle = '<label for="sentspeakeriddropdown">Speaker ID: </label>'
             sentSpeakerIdEle += '<select class="custom-select custom-select-sm keyman-attached" id="sentspeakeriddropdown"'
-                + 'name = "sentSpeakerId" multiple = "multiple" style = "width:100%" required onclick="updateKeyboard(this)" onchange="autoSavetranscription(event,this)"> "';
+                + 'name = "sentSpeakerId" multiple = "multiple" style = "width:70%" required onclick="updateKeyboard(this)" onchange="autoSavetranscription(event,this)"> "';
 
 
             for (let i = 0; i < currentAudioAllSpeakerids.length; i++) {
@@ -1973,10 +2019,26 @@ function createSentenceForm(formElement, boundaryID) {
                 }
             }
 
-            sentSpeakerIdEle += '</select><br/><br/>'
+            sentSpeakerIdEle += '</select>';
+            let anonymize = '';
+            if (anonymize_checked) {
+                anonymize = '<label class="pull-right" for="anonymizecheckboxid_'+boundaryID+'">&nbsp;Anonymize</label>'+
+                            '<input class="pull-right" type="checkbox" id="anonymizecheckboxid_'+boundaryID+'" name="anonymize" onchange="autoSavetranscription(event,this)" checked>';
+                            
+            }
+            else {
+                anonymize = '<label class="pull-right" for="anonymizecheckboxid_'+boundaryID+'">&nbsp;Anonymize</label>'+
+                            '<input class="pull-right" type="checkbox" id="anonymizecheckboxid_'+boundaryID+'" name="anonymize" onchange="autoSavetranscription(event,this)">';
+                            
+            }
 
 
-            inpt += sentSpeakerIdEle
+
+            inpt += sentSpeakerIdEle;
+
+            inpt+= anonymize;
+
+            inpt += '<br/><br/>';
 
             let firstTranscriptionScript = transcriptionScriptList[0];
             for (let t = 0; t < transcriptionScriptList.length; t++) {
@@ -2159,6 +2221,9 @@ function createSentenceForm(formElement, boundaryID) {
                 for (let [translationkey, translationvalue] of Object.entries(translationLang)) {
                     translangcount += 1
                     // console.log(translationkey, translationvalue);
+                    if (translationvalue === '') {
+                        translationvalue = translationElicitation(activeprojectform, translang[translangcount])
+                    }
                     translationkey = translationkey.split('-')[1]
                     // add fieldset
                     // inpt += '<div class="form-group translation collapse in">';
@@ -2867,65 +2932,67 @@ function mapLeipzigToUd(transcriptionFieldId, lepizigGlossVals) {
     // console.log('Existing POS Vals Beginning', udPosVals);
     let newFeatVals = [];
     let newPosVals = [];
-    newPosVals.push(...udPosVals);
-    // console.log('New POS Vals Beginning', newPosVals);
+    if (udFeatElement && uposElement) {
+        newPosVals.push(...udPosVals);
+        // console.log('New POS Vals Beginning', newPosVals);
 
-    if (lepizigGlossVals) {
-        for (leipzigItem of lepizigGlossVals) {
-            let mapEntry = leipzigUdMap.filter(function (item) {
-                return item.leipzig === leipzigItem;
-            });
+        if (lepizigGlossVals) {
+            for (leipzigItem of lepizigGlossVals) {
+                let mapEntry = leipzigUdMap.filter(function (item) {
+                    return item.leipzig === leipzigItem;
+                });
 
-            // console.log('Leipzig Value', leipzigItem);
-            // console.log('Entry', mapEntry);
-            // console.log('Existing UPOS Vals', udPosVals);
-            // console.log('Existing UD Feats Vals', udFeatVals);
-            if (mapEntry.length > 0) {
-                mapEntry = mapEntry[0];
-                if ('upos' in mapEntry) {
-                    let uposVal = mapEntry['upos'];
-                    // console.log('Mapped UD POS Val', uposVal);
-                    // console.log('Add', uposVal, 'to UPOS');
-                    newPosVals.push(uposVal);
-                    // if (!udPosVals.includes(uposVal)) {
+                // console.log('Leipzig Value', leipzigItem);
+                // console.log('Entry', mapEntry);
+                // console.log('Existing UPOS Vals', udPosVals);
+                // console.log('Existing UD Feats Vals', udFeatVals);
+                if (mapEntry.length > 0) {
+                    mapEntry = mapEntry[0];
+                    if ('upos' in mapEntry) {
+                        let uposVal = mapEntry['upos'];
+                        // console.log('Mapped UD POS Val', uposVal);
+                        // console.log('Add', uposVal, 'to UPOS');
+                        newPosVals.push(uposVal);
+                        // if (!udPosVals.includes(uposVal)) {
 
-                    //     $('#' + uposElementId).val(uposVal);
-                    // }
-                }
-                else if ('udFeats' in mapEntry) {
-                    let udFeatVal = mapEntry['udFeats'];
-                    // console.log('Mapped UD Feats Val', udFeatVal);
-                    // console.log('Add', udFeatVal, 'to UD Feats');
-                    newFeatVals.push(udFeatVal);
-                    // if (!udFeatVals.includes(udFeatVal)) {
-
-                    //     // $('#' + featElementId).select2("val", udFeatVal);
-                    //     // $('#' + featElementId).select2("data", [{ id: udFeatVal, text: udFeatVal, 'selected': true }]);
-                    //     $('#' + featElementId).val(udFeatVal);
-                    // }
-                }
-            }
-            else {
-                if (!morphemicBreakSymbols.includes(leipzigItem)) {
-                    let udOption = leipzigItem + '=' + leipzigItem;
-                    if (!$('#' + featElementId).find("option[value='" + udOption + "']").length) {
-                        // if (!udFeatVals.includes(udOption)) {
-                        // console.log('Adding option', udOption);
-                        let newOption = new Option(udOption, udOption, false, true);
-                        $('#' + featElementId).append(newOption);
+                        //     $('#' + uposElementId).val(uposVal);
+                        // }
                     }
-                    newFeatVals.push(udOption);
-                }
-            }
-            // console.log('UPOS Vals after Update', newPosVals);
-            // console.log('Feat Vals after Update', newFeatVals);
-        }
-    }
+                    else if ('udFeats' in mapEntry) {
+                        let udFeatVal = mapEntry['udFeats'];
+                        // console.log('Mapped UD Feats Val', udFeatVal);
+                        // console.log('Add', udFeatVal, 'to UD Feats');
+                        newFeatVals.push(udFeatVal);
+                        // if (!udFeatVals.includes(udFeatVal)) {
 
-    if (newPosVals.length > 0) {
-        $('#' + uposElementId).val(newPosVals).trigger('change');
+                        //     // $('#' + featElementId).select2("val", udFeatVal);
+                        //     // $('#' + featElementId).select2("data", [{ id: udFeatVal, text: udFeatVal, 'selected': true }]);
+                        //     $('#' + featElementId).val(udFeatVal);
+                        // }
+                    }
+                }
+                else {
+                    if (!morphemicBreakSymbols.includes(leipzigItem)) {
+                        let udOption = leipzigItem + '=' + leipzigItem;
+                        if (!$('#' + featElementId).find("option[value='" + udOption + "']").length) {
+                            // if (!udFeatVals.includes(udOption)) {
+                            // console.log('Adding option', udOption);
+                            let newOption = new Option(udOption, udOption, false, true);
+                            $('#' + featElementId).append(newOption);
+                        }
+                        newFeatVals.push(udOption);
+                    }
+                }
+                // console.log('UPOS Vals after Update', newPosVals);
+                // console.log('Feat Vals after Update', newFeatVals);
+            }
+        }
+
+        if (newPosVals.length > 0) {
+            $('#' + uposElementId).val(newPosVals).trigger('change');
+        }
+        $('#' + featElementId).val(newFeatVals).trigger('change');
     }
-    $('#' + featElementId).val(newFeatVals).trigger('change');
 }
 
 
@@ -3365,8 +3432,8 @@ function transcriptionToGloss() {
             //     scriptName = allGlossScripts[0];
             // }
             // allGlosses = allGlosses[scriptName];
-            console.log('Script name', scriptName);
-            console.log('All glosses', allGlosses);
+            // console.log('Script name', scriptName);
+            // console.log('All glosses', allGlosses);
             // let sentenceMorphemicBreak = localStorageRegions[p]['data']['sentence'][boundaryID]['sentencemorphemicbreak'][scriptName];
             // console.log(sentence_morphemic_break);            
             let allTranscriptions = localStorageRegions[p]['data']['sentence'][boundaryID]['transcription'];
@@ -3885,7 +3952,7 @@ function createGlossingTable(sentencemorphemicbreakupdatedvalue,
     let tempJsonFileNames = {};
     let scriptName = getScriptToGlossDropdownSelected();
     let wordReadonly = "readonly";
-    console.log("Script name", scriptName);
+    // console.log("Script name", scriptName);
     if (scriptName === "IPA") {
         wordReadonly = "";
     }
@@ -4565,7 +4632,7 @@ function getSelect2Data(jsonFileNames) {
                         tags: tags,
                         placeholder: select2ClassName,
                         data: data,
-                        disabled: disabled
+                        // disabled: disabled
                         // allowClear: true
                     });
                     // console.log(data);

@@ -4074,7 +4074,9 @@ def get_speaker_audio_ids_new(projects_collection,
                 'speakersAudioIds' in speaker_ids and
                     active_speaker_id in speaker_ids['speakersAudioIds']):
                 speaker_audio_ids = speaker_ids['speakersAudioIds'][active_speaker_id]
+        # logger.debug("speaker_audio_ids: %s", pformat(speaker_audio_ids))
         if (len(speaker_audio_ids) != 0):
+            # logger.debug("speaker_audio_ids: %s", pformat(speaker_audio_ids))
             return speaker_audio_ids
 
         file_speaker_ids = projects_collection.find_one({'projectname': activeprojectname},

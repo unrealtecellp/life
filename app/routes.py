@@ -1306,7 +1306,7 @@ def dictionaryview():
                                     projectowner,
                                     current_username)
         flash('Successfully added new lexeme')
-        return redirect(url_for('enternewlexeme'))
+        return redirect(url_for('lifelexemes.enternewlexeme'))
     try:
         my_projects = len(userprojects.find_one(
             {'username': current_username})["myproject"])
@@ -1424,7 +1424,7 @@ def enterlexemefromuploadedfile(alllexemedf):
                     if (getlexemeId['projectname'] != activeprojectname):
                         flash(
                             f"lexemeId: {lexemeId} if from different project!!!")
-                        return redirect(url_for('enternewlexeme'))
+                        return redirect(url_for('lifelexemes.enternewlexeme'))
 
             uploadedFileLexeme['lexemeId'] = lexemeId
             # logger.debug(uploadedFileLexeme)
@@ -1468,7 +1468,7 @@ def enterlexemefromuploadedfile(alllexemedf):
             # logger.debug(f'{"="*80}')
 
     flash('Successfully added new lexemes')
-    return redirect(url_for('enternewlexeme'))
+    return redirect(url_for('lifelexemes.enternewlexeme'))
     # comment till here
 
 
@@ -2306,7 +2306,7 @@ def uploadlexemeexcelliftxml():
 
         if (not headword_mapped):
             flash("headword is missing from the file")
-            return redirect(url_for('enternewlexeme'))
+            return redirect(url_for('lifelexemes.enternewlexeme'))
 
         elif (not all_mapped and len(field_map) != 0):
             not_mapped_data = field_map
@@ -2318,7 +2318,7 @@ def uploadlexemeexcelliftxml():
             elif (file_format == 'xlsx'):
                 enterlexemefromuploadedfile(data)
 
-    return redirect(url_for('enternewlexeme'))
+    return redirect(url_for('lifelexemes.enternewlexeme'))
 
 # lexeme key mapping
 
@@ -2362,10 +2362,10 @@ def lexemekeymapping():
                 # logger.debug(file_format)
                 pass
                 # flash(f"File format is correct")
-                # return redirect(url_for('enternewlexeme'))
+                # return redirect(url_for('lifelexemes.enternewlexeme'))
             else:
                 flash("File should be in 'xlsx' or 'lift' format")
-                return redirect(url_for('enternewlexeme'))
+                return redirect(url_for('lifelexemes.enternewlexeme'))
         # logger.debug("File format is correct")
 
         # df = pd.read_excel(uploaded_file_content)
@@ -2399,7 +2399,7 @@ def lexemekeymapping():
         # all_mapped = False
         if (not headword_mapped):
             flash("headword is missing from the file")
-            return redirect(url_for('enternewlexeme'))
+            return redirect(url_for('lifelexemes.enternewlexeme'))
 
         elif (not all_mapped and len(field_map) != 0):
             # not_mapped_data = {
@@ -2417,7 +2417,7 @@ def lexemekeymapping():
             if (file_format == 'xlsx'):
                 enterlexemefromuploadedfile(df)
 
-    return redirect(url_for('enternewlexeme'))
+    return redirect(url_for('lifelexemes.enternewlexeme'))
 
 
 # download lexeme form in excel format
@@ -6887,47 +6887,3 @@ def checkprojectnameexist():
         logger.exception("")
 
     return jsonify(status=False)
-
-@app.route('/lexemelist', methods=['GET', 'POST'])
-@login_required
-def lexemelist():
-    try:
-        userprojects, lexemes = getdbcollections.getdbcollections(mongo,
-                                                                    'userprojects',
-                                                                    'lexemes')
-        current_username = getcurrentusername.getcurrentusername()
-        activeprojectname = getactiveprojectname.getactiveprojectname(
-            current_username, userprojects)
-        lexeme_list = []
-        search_key = request.args.get('search')
-        if (search_key is not None and
-            search_key != ''):
-            logger.debug("search_key: %s", search_key)
-            lexeme_list_cursor = lexemes.find({"projectname": activeprojectname,
-                                               "headword": {'$regex':search_key}},
-                                               {"_id": 0,
-                                                "headword": 1})
-            logger.debug(lexeme_list_cursor)
-            for i, lexeme in enumerate(lexeme_list_cursor):
-                logger.debug(i)
-                logger.debug(pformat(lexeme))
-                headword = lexeme['headword']
-                lexeme_list.append({"id": headword, "text": headword})
-            # lexemes.create_index( [("headword", "text")] )
-            # aggregate_output = lexemes.aggregate(
-            #     [
-            #         { "$match": { "projectname": activeprojectname,
-            #                      "$text": { "$search": search_key } 
-            #                     } 
-            #         },
-            #         # { $group: { _id: null, views: { $sum: "$views" } } }
-            #     ]
-            #     )
-            # logger.debug("aggregate_output: %s", aggregate_output)
-            # aggregate_output_list = []
-            # for doc in aggregate_output:
-            #     logger.debug("aggregate_output: %s", pformat(doc))
-    except:
-        logger.exception("")
-
-    return jsonify(lexemeList=lexeme_list)

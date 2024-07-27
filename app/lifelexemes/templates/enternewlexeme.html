@@ -25,14 +25,14 @@
     <br>
     <div class="row">
         <div class="col-sm-12">
-            <select class="showlexemelist" oninput="autoSavetranscription(event,this)" style="width: 100%"></select>
+            <select class="showlexemelist" oninput="showlexemeform(event,this)" style="width: 100%"></select>
         </div>
     </div>
 
     <div class="row">
         <div class="col-sm-12">
             {% if newData is defined %}
-                <form action="{{ url_for('dictionaryview') }}" method="POST" enctype="multipart/form-data">
+                <form action="{{ url_for('lifelexemes.dictionaryview') }}" method="POST" enctype="multipart/form-data">
                     <div class="form-group">
                         {# <input type="text" class="form-control" placeholder="Project Name : {{ newData[1]['projectname'] }}" name="projectname" value="{{ newData[1]['projectname'] }}" readonly><br>#}
                         <input type="hidden" class="form-control" placeholder="Project Name : {{ newData['projectname'] }}" name="projectname" value="{{ newData['projectname'] }}" readonly>
