@@ -129,18 +129,27 @@ def get_translation_model(source_lang='hi', target_lang='en'):
     return '', '', '', '', ''
 
 
-def get_transcription_model(source_lang='hi'):
+def get_transcription_model(source_lang='hi', model_url=''):
     all_results = get_bhashini_asr_result()
     models = all_results['pipelineResponseConfig'][0]['config']
     for model in models:
         language = model['language']
         model_source_lang = language['sourceLanguage']
-        if model_source_lang == source_lang:
+        if model_url == '':
+            if model_source_lang == source_lang:
+                model_id = model['serviceId']
+                api_key = all_results['pipelineInferenceAPIEndPoint']['inferenceApiKey']['value']
+                end_url = all_results['pipelineInferenceAPIEndPoint']['callbackUrl']
+                target_script = language['sourceScriptCode']
+                return model_id, api_key, end_url, target_script
+        else:
             model_id = model['serviceId']
-            api_key = all_results['pipelineInferenceAPIEndPoint']['inferenceApiKey']['value']
-            end_url = all_results['pipelineInferenceAPIEndPoint']['callbackUrl']
-            target_script = language['sourceScriptCode']
-            return model_id, api_key, end_url, target_script
+            if model_id == model_url:
+                end_url = all_results['pipelineInferenceAPIEndPoint']['callbackUrl']
+                api_key = all_results['pipelineInferenceAPIEndPoint']['inferenceApiKey']['value']
+                target_script = language['sourceScriptCode']
+                return model_id, api_key, end_url, target_script
+
     return '', '', '', ''
 
 

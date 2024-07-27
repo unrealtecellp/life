@@ -52,7 +52,25 @@ var languages = [
   {"id": "Tamil", "text": "Tamil"},
   {"id": "Telugu", "text": "Telugu"},
   {"id": "Toto", "text": "Toto"},
-  {"id": "Urdu", "text": "Urdu"}
+  {"id": "Urdu", "text": "Urdu"},
+  {"id": "Azamgarhi", "text": "Azamgarhi"},
+  {"id": "Kannauji", "text": "Kannauji"},
+  {"id": "Marwari", "text": "Marwari"},
+  {"id": "TaiAiton", "text": "Tai Aiton"},
+  {"id": "Spiti", "text": "Spiti"},
+  {"id": "Karbi", "text": "Karbi"},
+  {"id": "Paite", "text": "Paite"},
+  {"id": "Chiru", "text": "Chiru"},
+  {"id": "Chothe", "text": "Chothe"},
+  {"id": "Purum", "text": "Purum"},
+  {"id": "Markodi", "text": "Markodi"},
+  {"id": "Byari", "text": "Byari"},
+  {"id": "Tanghkul", "text": "Tanghkul"},
+  {"id": "Chiru", "text": "Chiru"},
+  {"id": "Bangru", "text": "Bangru"},
+  {"id": "Ahirwati", "text": "Ahirwati"},
+  {"id": "Sumi", "text": "Sumi"},
+  {"id": "Sylheti", "text": "Sylheti"}
 ]
 
 var scripts = 
@@ -116,6 +134,10 @@ var scripts =
       {
         "id": "Toto", 
         "text": "Toto"
+      },
+      {
+        "id": "LikTai", 
+        "text": "Lik-Tai"
       }
 ]
 

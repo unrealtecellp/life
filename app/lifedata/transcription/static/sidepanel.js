@@ -65,18 +65,36 @@ function createSidePanel(shareinfo) {
     $("#sidepanel").html(sidePanelElement);
 }
 
+var toHHMMSS = (secs) => {
+    var sec_num = parseInt(secs, 10)
+    var hours   = Math.floor(sec_num / 3600)
+    var minutes = Math.floor(sec_num / 60) % 60
+    var seconds = sec_num % 60
+
+    return [hours,minutes,seconds]
+        .map(v => v < 10 ? "0" + v : v)
+        // .filter((v,i) => v !== "00" || i > 0)
+        .join(":")
+}
+
 function getTranscriptionReport(ele) {
     $.post( "/lifedata/transcription/transcriptionreport", {
         // a: JSON.stringify(data_info )
       })
       .done(function( data ) {
         console.log(data);
-        let totalAudioDurationProject = new Date(data.totalAudioDurationProject * 1000).toISOString().substring(11, 19);
-        let totalAudioDurationTranscribed = new Date(data.totalAudioDurationTranscribed * 1000).toISOString().substring(11, 19);
-        let totalAudioDurationTranscribedBoundary = new Date(data.totalAudioDurationTranscribedBoundary * 1000).toISOString().substring(11, 19);
+        console.log(toHHMMSS(data.totalAudioDurationProject));
+        // let totalAudioDurationProject = new Date(data.totalAudioDurationProject * 1000).toISOString().substring(11, 19);
+        let totalAudioDurationProject = toHHMMSS(data.totalAudioDurationProject);
+        let docCountProject = data.docCountProject;
+        // let totalAudioDurationTranscribed = new Date(data.totalAudioDurationTranscribed * 1000).toISOString().substring(11, 19);
+        let totalAudioDurationTranscribed = toHHMMSS(data.totalAudioDurationTranscribed);
+        let docCountTranscribed = data.docCountTranscribed;
+        // let totalAudioDurationTranscribedBoundary = new Date(data.totalAudioDurationTranscribedBoundary * 1000).toISOString().substring(11, 19);
+        let totalAudioDurationTranscribedBoundary = toHHMMSS(data.totalAudioDurationTranscribedBoundary);
 
-        alert('Audio Duration Project: '+totalAudioDurationProject+
-            '\n\nAudio Duration Transcribed: '+totalAudioDurationTranscribed+
+        alert('Audio Duration Project: '+totalAudioDurationProject+', Doc Count Project: '+docCountProject+
+            '\n\nAudio Duration Transcribed: '+totalAudioDurationTranscribed+', Doc Count Transcribed: '+docCountTranscribed+
             '\n\nAudio Duration Transcribed(Boundary): '+totalAudioDurationTranscribedBoundary)
 
         // window.location.href = window.location.href.replace("models_playground", "file_download/"+data.fileName);

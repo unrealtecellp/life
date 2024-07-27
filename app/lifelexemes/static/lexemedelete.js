@@ -7,7 +7,7 @@ $(document).ready(function() {
     headword.push($text)
     var $text = $row.find("#headword").text(); // Find the text
     headword.push($text)
-    $.getJSON('/lexemedelete', {
+    $.getJSON('/lifelexemes/lexemedelete', {
           a:String(headword)
     }, function(data) {
         // alert(data.msg);

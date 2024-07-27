@@ -125,7 +125,7 @@ $("#idhomevieweditbtn").click(function() {
             }
             else {
                 window.location.href = windowHref.slice(0, lastIndexOfPathname) +  
-                                        windowHref.slice(lastIndexOfPathname).replace(pathname, "/enternewlexeme");
+                                        windowHref.slice(lastIndexOfPathname).replace(pathname, "/lifelexemes/enternewlexeme");
             }
         }
     })
