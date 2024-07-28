@@ -40,4 +40,8 @@ R-J.JSON
 app/lifedata/transcription/audiowaveform
 recovery
 app/lifemodels/model_prediction_download
+<<<<<<< HEAD
 *.log
+=======
+profiler
+>>>>>>> c2ef571f29fa9dac861ec5bd56e490d6a6489af1

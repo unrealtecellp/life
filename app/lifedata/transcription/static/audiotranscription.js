@@ -2189,7 +2189,9 @@ function createSentenceForm(formElement, boundaryID) {
             inpt = '';
             glossInpt = '';
             let scripttoglossdropdownselected = getScriptToGlossDropdownSelected();
-            document.getElementById("interlinearglosstab").onclick = function () { transcriptionToGloss() };
+            if (document.getElementById("interlinearglosstab")) {
+                document.getElementById("interlinearglosstab").onclick = function () { transcriptionToGloss() };
+            }
         }
         else if ('Translation' in activeprojectform &&
             key === 'translation') {
@@ -3400,17 +3402,21 @@ function transcriptionToGloss() {
         alert('Number of words mismatch: \n' + JSON.stringify(transcriptionWordCountMismatch));
         return;
     }
-    let ipaTranscription = document.getElementById('Transcription_IPA').value.trim();
-    let ipaTranscriptionCleaned = ipaTranscription.replace(morphemicBreakReplacerRegex, '');
-    if (ipaTranscription !== ipaTranscriptionCleaned) {
-        alert('IPA transcription cannot have characters reserved for morphemic break: \n' + morphemicBreakSymbols.join(', '));
-        return;
+    if (document.getElementById('Transcription_IPA')) {
+        let ipaTranscription = document.getElementById('Transcription_IPA').value.trim();
+        let ipaTranscriptionCleaned = ipaTranscription.replace(morphemicBreakReplacerRegex, '');
+        if (ipaTranscription !== ipaTranscriptionCleaned) {
+            alert('IPA transcription cannot have characters reserved for morphemic break: \n' + morphemicBreakSymbols.join(', '));
+            return;
+        }
     }
 
 
     let scripttoglossdropdownselected = getScriptToGlossDropdownSelected();
     // console.log(scripttoglossdropdownselected);
-    document.getElementById("interlinearglosstab").onclick = function () { transcriptionToGloss() };
+    if (document.getElementById("interlinearglosstab")) {
+        document.getElementById("interlinearglosstab").onclick = function () { transcriptionToGloss() };
+    }
     let sentenceMorphemicBreakUpdatedValue = '';
     let localStorageRegions = JSON.parse(localStorage.regions);
     // let scriptName = ele.value;
@@ -4406,6 +4412,7 @@ function morphemicBreak(e, ele) {
 
 function updateTokenId(differences, scriptName, allGlossScripts, allTranscriptions) {
     console.log("Updating token ID");
+    console.log(differences, scriptName, allGlossScripts, allTranscriptions);
     let localStorageRegions = JSON.parse(localStorage.regions);
     let activeBoundaryID = document.getElementById('activeBoundaryID').value;
     let existingTokenIdInfo = {};
@@ -4457,6 +4464,12 @@ function updateTokenId(differences, scriptName, allGlossScripts, allTranscriptio
             console.log('Current Boundary Index', currentBoundaryIndex);
             break;
         }
+        else if (localStorageRegions[p]['data']['sentence'][boundaryID] &&
+                    localStorageRegions[p]['boundaryID'] === activeBoundaryID) {
+            currentBoundaryIndex = p;
+            console.log('Current Boundary Index', currentBoundaryIndex);
+            break;
+        }
     }
 
     console.log('Existing token ID info', existingTokenIdInfo);
@@ -4464,6 +4477,7 @@ function updateTokenId(differences, scriptName, allGlossScripts, allTranscriptio
 
     for (let entry of differences) {
         let status = entry[0];
+        // console.log(entry, status);
         let existingTokens = entry[1].trim().split(" ");
         for (let token of existingTokens) {
             let existingTokenValue = {};
@@ -4515,6 +4529,7 @@ function updateTokenId(differences, scriptName, allGlossScripts, allTranscriptio
             updatedTokenIndex++;
         }
     }
+    // console.log(newTokenIdInfo);
     localStorage.setItem("glossTokenId", JSON.stringify(Object.keys(newTokenIdInfo)));
 
     // console.log('Current Boundary Index', currentBoundaryIndex);

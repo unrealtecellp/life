@@ -11,7 +11,7 @@ function closeNav() {
 }
 
 function createSidePanel(shareinfo) {
-    console.log(shareinfo)
+    // console.log(shareinfo)
     var sidePanelElement = '';
 
     sidePanelElement += '<div id="mySidenav" class="sidenav">'+
@@ -33,7 +33,7 @@ function createSidePanel(shareinfo) {
     }
     sidePanelElement += '</div>';
 
-    console.log(sidePanelElement);
+    // console.log(sidePanelElement);
 
     $("#sidepanel").html(sidePanelElement);
 }

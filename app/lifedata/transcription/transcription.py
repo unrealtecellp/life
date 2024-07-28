@@ -173,7 +173,7 @@ def home():
                 }
             ])
             for doc in tqdm(aggregate_output):
-                logger.debug("aggregate_output: %s", pformat(doc))
+                # logger.debug("aggregate_output: %s", pformat(doc))
                 Q_Id = doc
                 ques_id = doc['quesId']
                 q_id = Q_Id["Q_Id"][:5]
