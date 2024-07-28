@@ -466,37 +466,65 @@ def deactive_update_table_data():
     print("languagescript :", languagescript)
 
     current_speakerdetails = accesscodedetails.find_one({"karyaaccesscode": accessCode, "projectname": activeprojectname, "isActive": 0},
-                                                        {"current.workerMetadata.name": 1, "current.workerMetadata.agegroup": 1, "_id": 0, })
+                                                        {"current.workerMetadata.name": 1, "current.workerMetadata.agegroup": 1, "_id": 1 })
 
     current_speakerdetails_name = current_speakerdetails['current']['workerMetadata']['name']
     current_speakerdetails_age = current_speakerdetails['current']['workerMetadata']['agegroup']
+    current_speakerdetails_id = current_speakerdetails["_id"]
     print("current_speakerdetails_name: ", current_speakerdetails_name)
     print("current_speakerdetails_age: ", current_speakerdetails_age)
 
-    update_data = {"current.updatedBy":  current_username,
-                   "karyaaccesscode": accessCode,
-                   "karyaspeakerid": speakerID,
-                   "fetchData": fetchData,
-                   "elicitationmethod": elicitation,
-                   "phase": phase,
-                   "domain": domain,
-                   "language": languagescript,
-                   "task": task
-                   }
+    
+
+    # update_data = {"current.updatedBy":  current_username,
+    #                "karyaaccesscode": accessCode,
+    #                "karyaspeakerid": speakerID,
+    #                "fetchData": int(fetchData),
+    #                "elicitationmethod": [elicitation],
+    #                "phase": phase,
+    #                "domain": [domain],
+    #                "language": languagescript,
+    #                "task": task
+    #                }
+
+
+
+
+
+    # Split the elicitation and domain strings into lists
+    elicitation_list = elicitation.split(',')
+    domain_list = domain.split(',')
+    languagescript_list = languagescript.split(',')
+    update_data = {
+        "current.updatedBy": current_username,
+        "karyaaccesscode": accessCode,
+        "karyaspeakerid": speakerID,
+        "fetchData": int(fetchData),
+        "elicitationmethod": elicitation_list,
+        "phase": phase,
+        "domain": domain_list,
+        "language": languagescript_list,
+        "task": task
+    }
+
 
     date_of_modified = str(datetime.now()).replace(".", ":")
 
+    # new_user_info
+    # accesscodedetails.update_one({"karyaaccesscode": accessCode, "projectname": activeprojectname, "isActive": 0}, {
+    #                              "$set": update_data}) 
+
     accesscodedetails.update_one({"karyaaccesscode": accessCode, "projectname": activeprojectname, "isActive": 0}, {
-                                 "$set": update_data})  # new_user_info
+                                "$set": update_data}) 
+
+
     print("if condtion working inactive access code")
 
     # Return a response indicating the success or failure of the update operation
-    return jsonify({'status': 'success', 'message': 'Table data updated successfully'})
+    return jsonify({'status': 'success', 'message': 'Deactivated Table data updated successfully'})
 
 
 '''updating active accesscode'''
-
-
 @karya_bp.route('/update_table_data', methods=['POST'])
 def update_table_data():
     accesscodedetails, userprojects = getdbcollections.getdbcollections(

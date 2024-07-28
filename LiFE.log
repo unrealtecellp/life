@@ -128,3 +128,164 @@ Models Database found!
 language Database found!
 [2024-07-22 08:35:03,651] - logger: life - level: INFO - function: generate_models_database - line: 55
 Models Database found!
+[2024-07-23 13:03:43,229] - logger: life - level: INFO - function: generate_languages_database - line: 102
+language Database found!
+[2024-07-23 13:03:43,230] - logger: life - level: INFO - function: generate_models_database - line: 55
+Models Database found!
+[2024-07-23 13:03:50,017] - logger: life - level: INFO - function: generate_languages_database - line: 102
+language Database found!
+[2024-07-23 13:03:50,017] - logger: life - level: INFO - function: generate_models_database - line: 55
+Models Database found!
+[2024-07-23 18:20:42,775] - logger: life - level: INFO - function: generate_languages_database - line: 102
+language Database found!
+[2024-07-23 18:20:42,776] - logger: life - level: INFO - function: generate_models_database - line: 55
+Models Database found!
+[2024-07-23 18:20:48,671] - logger: life - level: INFO - function: generate_languages_database - line: 102
+language Database found!
+[2024-07-23 18:20:48,671] - logger: life - level: INFO - function: generate_models_database - line: 55
+Models Database found!
+[2024-07-24 09:03:34,610] - logger: life - level: INFO - function: generate_languages_database - line: 102
+language Database found!
+[2024-07-24 09:03:34,612] - logger: life - level: INFO - function: generate_models_database - line: 55
+Models Database found!
+[2024-07-24 09:03:36,997] - logger: life - level: INFO - function: generate_languages_database - line: 102
+language Database found!
+[2024-07-24 09:03:36,998] - logger: life - level: INFO - function: generate_models_database - line: 55
+Models Database found!
+[2024-07-24 14:52:18,112] - logger: life - level: INFO - function: generate_languages_database - line: 102
+language Database found!
+[2024-07-24 14:52:18,113] - logger: life - level: INFO - function: generate_models_database - line: 55
+Models Database found!
+[2024-07-24 14:52:23,647] - logger: life - level: INFO - function: generate_languages_database - line: 102
+language Database found!
+[2024-07-24 14:52:23,648] - logger: life - level: INFO - function: generate_models_database - line: 55
+Models Database found!
+[2024-07-24 15:05:40,169] - logger: life - level: ERROR - function: progressReportAdmin - line: 903
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 799, in progressReportAdmin
+    for j in r:
+NameError: name 'r' is not defined
+[2024-07-26 17:42:57,192] - logger: life - level: INFO - function: generate_languages_database - line: 102
+language Database found!
+[2024-07-26 17:42:57,194] - logger: life - level: INFO - function: generate_models_database - line: 55
+Models Database found!
+[2024-07-26 17:43:02,025] - logger: life - level: INFO - function: generate_languages_database - line: 102
+language Database found!
+[2024-07-26 17:43:02,026] - logger: life - level: INFO - function: generate_models_database - line: 55
+Models Database found!
+[2024-07-27 12:22:52,566] - logger: life - level: INFO - function: generate_languages_database - line: 102
+language Database found!
+[2024-07-27 12:22:52,569] - logger: life - level: INFO - function: generate_models_database - line: 55
+Models Database found!
+[2024-07-27 12:22:57,358] - logger: life - level: INFO - function: generate_languages_database - line: 102
+language Database found!
+[2024-07-27 12:22:57,359] - logger: life - level: INFO - function: generate_models_database - line: 55
+Models Database found!
+[2024-07-27 12:28:25,047] - logger: life - level: INFO - function: generate_languages_database - line: 102
+language Database found!
+[2024-07-27 12:28:25,049] - logger: life - level: INFO - function: generate_models_database - line: 55
+Models Database found!
+[2024-07-27 12:41:04,878] - logger: life - level: INFO - function: generate_languages_database - line: 102
+language Database found!
+[2024-07-27 12:41:04,879] - logger: life - level: INFO - function: generate_models_database - line: 55
+Models Database found!
+[2024-07-27 16:18:45,868] - logger: life - level: ERROR - function: progressReportAdmin - line: 838
+An error occurred: name 'data_collection' is not defined
+[2024-07-27 16:18:48,696] - logger: life - level: ERROR - function: progressReportAdmin - line: 838
+An error occurred: name 'data_collection' is not defined
+[2024-07-27 18:24:44,316] - logger: life - level: ERROR - function: progressReportAdmin - line: 984
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 956, in progressReportAdmin
+    return render_template('progressReportAdmin.html',
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask/templating.py", line 146, in render_template
+    template = app.jinja_env.get_or_select_template(template_name_or_list)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/jinja2/environment.py", line 1081, in get_or_select_template
+    return self.get_template(template_name_or_list, parent, globals)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/jinja2/environment.py", line 1010, in get_template
+    return self._load_template(name, globals)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/jinja2/environment.py", line 969, in _load_template
+    template = self.loader.load(self, name, self.make_globals(globals))
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/jinja2/loaders.py", line 138, in load
+    code = environment.compile(source, name, filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/jinja2/environment.py", line 768, in compile
+    self.handle_exception(source=source_hint)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/jinja2/environment.py", line 936, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/home/kmi/lifetestapp/app/templates/progressReportAdmin.html", line 518, in template
+    <option value="{{ report.Speaker ID }}">{{ report.Speaker ID }}</option>
+jinja2.exceptions.TemplateSyntaxError: expected token 'end of print statement', got 'ID'
+[2024-07-27 18:24:45,949] - logger: life - level: ERROR - function: progressReportAdmin - line: 984
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 956, in progressReportAdmin
+    return render_template('progressReportAdmin.html',
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask/templating.py", line 146, in render_template
+    template = app.jinja_env.get_or_select_template(template_name_or_list)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/jinja2/environment.py", line 1081, in get_or_select_template
+    return self.get_template(template_name_or_list, parent, globals)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/jinja2/environment.py", line 1010, in get_template
+    return self._load_template(name, globals)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/jinja2/environment.py", line 969, in _load_template
+    template = self.loader.load(self, name, self.make_globals(globals))
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/jinja2/loaders.py", line 138, in load
+    code = environment.compile(source, name, filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/jinja2/environment.py", line 768, in compile
+    self.handle_exception(source=source_hint)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/jinja2/environment.py", line 936, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/home/kmi/lifetestapp/app/templates/progressReportAdmin.html", line 518, in template
+    <option value="{{ report.Speaker ID }}">{{ report.Speaker ID }}</option>
+jinja2.exceptions.TemplateSyntaxError: expected token 'end of print statement', got 'ID'
+[2024-07-27 18:24:47,728] - logger: life - level: ERROR - function: progressReportAdmin - line: 984
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 956, in progressReportAdmin
+    return render_template('progressReportAdmin.html',
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask/templating.py", line 146, in render_template
+    template = app.jinja_env.get_or_select_template(template_name_or_list)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/jinja2/environment.py", line 1081, in get_or_select_template
+    return self.get_template(template_name_or_list, parent, globals)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/jinja2/environment.py", line 1010, in get_template
+    return self._load_template(name, globals)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/jinja2/environment.py", line 969, in _load_template
+    template = self.loader.load(self, name, self.make_globals(globals))
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/jinja2/loaders.py", line 138, in load
+    code = environment.compile(source, name, filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/jinja2/environment.py", line 768, in compile
+    self.handle_exception(source=source_hint)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/jinja2/environment.py", line 936, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/home/kmi/lifetestapp/app/templates/progressReportAdmin.html", line 518, in template
+    <option value="{{ report.Speaker ID }}">{{ report.Speaker ID }}</option>
+jinja2.exceptions.TemplateSyntaxError: expected token 'end of print statement', got 'ID'
+[2024-07-27 23:03:31,662] - logger: life - level: INFO - function: generate_languages_database - line: 102
+language Database found!
+[2024-07-27 23:03:31,663] - logger: life - level: INFO - function: generate_models_database - line: 55
+Models Database found!
+[2024-07-27 23:19:13,571] - logger: life - level: ERROR - function: progressReportAdmin - line: 984
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 956, in progressReportAdmin
+    return render_template('progressReportAdmin.html',
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask/templating.py", line 146, in render_template
+    template = app.jinja_env.get_or_select_template(template_name_or_list)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/jinja2/environment.py", line 1081, in get_or_select_template
+    return self.get_template(template_name_or_list, parent, globals)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/jinja2/environment.py", line 1010, in get_template
+    return self._load_template(name, globals)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/jinja2/environment.py", line 969, in _load_template
+    template = self.loader.load(self, name, self.make_globals(globals))
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/jinja2/loaders.py", line 138, in load
+    code = environment.compile(source, name, filename)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/jinja2/environment.py", line 768, in compile
+    self.handle_exception(source=source_hint)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/jinja2/environment.py", line 936, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/home/kmi/lifetestapp/app/templates/progressReportAdmin.html", line 483, in template
+    <option value="{{ report.Speaker ID }}">{{ report.Speaker ID }}</option>
+jinja2.exceptions.TemplateSyntaxError: expected token 'end of print statement', got 'ID'
+[2024-07-28 23:06:12,507] - logger: life - level: INFO - function: generate_languages_database - line: 102
+language Database found!
+[2024-07-28 23:06:12,509] - logger: life - level: INFO - function: generate_models_database - line: 55
+Models Database found!
+[2024-07-28 23:06:23,297] - logger: life - level: INFO - function: generate_languages_database - line: 102
+language Database found!
+[2024-07-28 23:06:23,297] - logger: life - level: INFO - function: generate_models_database - line: 55
+Models Database found!

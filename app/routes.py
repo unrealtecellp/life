@@ -763,9 +763,9 @@ def progressReportAdmin():
                                 'audio_id': audio_id
                             })
             
-            all_projects = []
+            # all_projects = []
                           
-            speakerids_lists = audiodetails.combine_speaker_ids(projects, projectname, current_username)
+            # speakerids_lists = audiodetails.combine_speaker_ids(projects, projectname, current_username)
             # print("second speaker_id:",speakerids_lists)
            
 
@@ -775,53 +775,136 @@ def progressReportAdmin():
             # speakerids_lists = audiodetails.combine_speaker_ids(projects, projectname, current_username)
             # # print("second speaker_id:",speakerids_lists)
 
-        for speaker_id in speakerids_lists:
+        # for speaker_id in speakerids_lists:
+        #     project_type = getprojecttype.getprojecttype(projects, activeprojectname)
+        #     data_collection, = getdbcollections.getdbcollections(mongo, project_type)
+        #     projectname_cursor = projects.find({}, {"projectname": 1, "_id": 0})
+        #     # print("projectname_cursor", projectname_cursor)
+        #     for doc in projectname_cursor:
+        #         project_name = doc.get("projectname")
+        #         if project_name not in all_projects:
+        #             all_projects.append(project_name)
+
+            # # print("in progress_report :")
+            # progress_reports = []
+            # project_documents_file_wise = {} 
+            # projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
+            # # print("projectowner : ", projectowner)
+
+            # activeprojectform = getactiveprojectform.getactiveprojectform(projectsform, projectowner, activeprojectname)
+            # # print("activeprojectform: ", activeprojectform)
+            
+            # project_sharedwith = getprojectnamesharedwith.getprojectnamesharedwith(projects, activeprojectname)
+            # # print("project_sharedwith",project_sharedwith)
+            # if activeprojectform:
+            #     try:
+            #         activespeakerid = getuserprojectinfo.getuserprojectinfo(userprojects, current_username, activeprojectname)['activespeakerId']
+            #         speaker_audio_ids = audiodetails.get_speaker_audio_ids_new(projects, activeprojectname, current_username, speaker_id)
+            #         total_comments, annotated_comments, remaining_comments = getcommentstats.getcommentstats(
+            #             projects, data_collection, activeprojectname, speaker_id, speaker_audio_ids, 'audio'
+            #         )
+
+            #         # print("speaker_audio_ids:", speaker_audio_ids)
+            #         progress_report = {
+            #             'Created by': projectowner,
+            #             'Speaker ID': speaker_id,
+            #             'Assigned to': project_sharedwith,
+            #             'Time and date': "",
+            #             'Duration': "",
+            #             'Total no. of files': total_comments,
+            #             'Completed files': annotated_comments,
+            #             'Remaining files': remaining_comments
+            #         }
+                    
+            #         # print("in progress_report :", progress_report)
+            #         progress_reports.append(progress_report)
+
+            #     except Exception as e:
+            #         logger.error("An error occurred: %s", e)
+            #         return jsonify(error="An error occurred while processing the progress report"), 500
+
+            project_documents_file_wise = {} 
+
+            # Get database collections
+            projects, userprojects, projectsform, sentences, transcriptions, speakerdetails = getdbcollections.getdbcollections(
+                mongo,
+                'projects',
+                'userprojects',
+                'projectsform',
+                'sentences',
+                'transcriptions',
+                'speakerdetails'
+            )
+
+            # Get the current username and their active project
+            current_username = getcurrentusername.getcurrentusername()
+            currentuserprojectsname = getcurrentuserprojects.getcurrentuserprojects(current_username, userprojects)
+            activeprojectname = getactiveprojectname.getactiveprojectname(current_username, userprojects)
+
+            # If no active project is selected, redirect to home with a message
+            if not activeprojectname:
+                flash("Select a project from 'Change Active Project' to work on!")
+                return redirect(url_for('home'))
+
+            # Get shared project info
+            shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects, current_username, activeprojectname)
+
+            progress_reports = []
+            all_projects = []
+
+
+            # Get the owner of the active project
+            projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
+            projectsNames = projects.find({"projectOwner": projectowner}, {"projectname": 1, "_id": 0})
             project_type = getprojecttype.getprojecttype(projects, activeprojectname)
             data_collection, = getdbcollections.getdbcollections(mongo, project_type)
-            projectname_cursor = projects.find({}, {"projectname": 1, "_id": 0})
-            # print("projectname_cursor", projectname_cursor)
-            for doc in projectname_cursor:
-                project_name = doc.get("projectname")
+
+            # Collect all project names
+            for project in projectsNames:
+                project_name = project.get("projectname")
                 if project_name not in all_projects:
                     all_projects.append(project_name)
 
-            # print("in progress_report :")
-            progress_reports = []
-            project_documents_file_wise = {} 
-            projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
-            # print("projectowner : ", projectowner)
-
-            activeprojectform = getactiveprojectform.getactiveprojectform(projectsform, projectowner, activeprojectname)
-            # print("activeprojectform: ", activeprojectform)
-            
-            project_sharedwith = getprojectnamesharedwith.getprojectnamesharedwith(projects, activeprojectname)
-            # print("project_sharedwith",project_sharedwith)
-            if activeprojectform:
+            # Generate progress reports for each project
+            for projectname in all_projects:
                 try:
-                    activespeakerid = getuserprojectinfo.getuserprojectinfo(userprojects, current_username, activeprojectname)['activespeakerId']
-                    speaker_audio_ids = audiodetails.get_speaker_audio_ids_new(projects, activeprojectname, current_username, speaker_id)
-                    total_comments, annotated_comments, remaining_comments = getcommentstats.getcommentstats(
-                        projects, data_collection, activeprojectname, speaker_id, speaker_audio_ids, 'audio'
-                    )
+                    speakerids_list = audiodetails.combine_speaker_ids(projects, projectname, current_username)
+                    activeprojectform = getactiveprojectform.getactiveprojectform(projectsform, projectowner, projectname)
+                    project_sharedwith = getprojectnamesharedwith.getprojectnamesharedwith(projects, projectname)
 
-                    # print("speaker_audio_ids:", speaker_audio_ids)
-                    progress_report = {
-                        'Created by': projectowner,
-                        'Speaker ID': speaker_id,
-                        'Assigned to': project_sharedwith,
-                        'Time and date': "",
-                        'Duration': "",
-                        'Total no. of files': total_comments,
-                        'Completed files': annotated_comments,
-                        'Remaining files': remaining_comments
-                    }
-                    
-                    # print("in progress_report :", progress_report)
-                    progress_reports.append(progress_report)
+                    if activeprojectform is not None:
+                        activespeakerid = getuserprojectinfo.getuserprojectinfo(userprojects, current_username, projectname).get('activespeakerId')
+                        speaker_audio_ids = audiodetails.get_speaker_audio_ids_new(projects, projectname, current_username, activespeakerid)
+
+                        total_comments, annotated_comments, remaining_comments = getcommentstats.getcommentstats(
+                            projects,
+                            data_collection,
+                            projectname,
+                            activespeakerid,
+                            speaker_audio_ids,
+                            'audio'
+                        )
+
+                        progress_report = {
+                            'project Name': projectname,
+                            'Created by': projectowner,
+                            'Speaker ID': activespeakerid,
+                            'Assigned to': project_sharedwith,
+                            'Time and date': "", 
+                            'Duration': "",      
+                            'Total no. of files': total_comments,
+                            'Completed files': annotated_comments,
+                            'Remaining files': remaining_comments
+                        }
+                        progress_reports.append(progress_report)
 
                 except Exception as e:
                     logger.error("An error occurred: %s", e)
                     return jsonify(error="An error occurred while processing the progress report"), 500
+
+            # Print all projects (for debugging purposes)
+            # print("all_projects:", all_projects)
+            # print("progress_reports :",progress_reports)
 
             if current_username == projectowner:
                 find_current_user_projects = userprojects.find_one({'username': projectowner}, {'myproject': 1, '_id': 0})
@@ -847,7 +930,8 @@ def progressReportAdmin():
             project_names_file_wise = list(project_documents_file_wise.keys())
 
             # Print all the data to the console
-            # print("Progress Reports:", progress_reports)
+            print(250*"#")
+            print("Progress Reports:", progress_reports)
             # print("Active Project Name:", activeprojectname)
             # print("Share Info:", shareinfo)
             # print("Speaker IDs List:", speakerids_list)
