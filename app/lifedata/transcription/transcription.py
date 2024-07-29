@@ -191,9 +191,10 @@ def home():
             try:
                 # , audio_file_path, transcription_details
                 # activespeakerid = getactivespeakerid.getactivespeakerid(userprojects, current_username)
-                activespeakerid = getuserprojectinfo.getuserprojectinfo(userprojects,
-                                                                        current_username,
-                                                                        activeprojectname)['activespeakerId']
+                # activespeakerid = getuserprojectinfo.getuserprojectinfo(userprojects,
+                #                                                         current_username,
+                #                                                         activeprojectname)['activespeakerId']
+                activespeakerid = shareinfo['activespeakerId']
 
                 # TODO: All audios where all the speakers are present together (currently returns all those where the active speaker is present as one of the speakers)
                 speaker_audio_ids = transcription_audiodetails.get_speaker_audio_ids_new(projects,
