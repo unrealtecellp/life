@@ -289,7 +289,7 @@ function createTranscriptionPrompt(audio_lang_script) {
 }
 
 function createTranscriptionInterfaceForm(newData) {
-  console.log(newData);
+  // console.log(newData);
   localStorage.setItem("activeprojectform", JSON.stringify(newData));
   localStorage.setItem("regions", JSON.stringify(newData['transcriptionRegions']));
   localStorage.setItem("transcriptionDetails", JSON.stringify([newData['transcriptionDetails']]));

@@ -195,6 +195,7 @@ def home():
                 #                                                         current_username,
                 #                                                         activeprojectname)['activespeakerId']
                 activespeakerid = shareinfo['activespeakerId']
+                # logger.debug(activespeakerid)
 
                 # TODO: All audios where all the speakers are present together (currently returns all those where the active speaker is present as one of the speakers)
                 speaker_audio_ids = transcription_audiodetails.get_speaker_audio_ids_new(projects,
@@ -203,12 +204,18 @@ def home():
                                                                                          activespeakerid)
                 # logger.debug("speaker_audio_ids: %s", pformat(speaker_audio_ids))
 
-                total_comments, annotated_comments, remaining_comments = getcommentstats.getcommentstats(projects,
-                                                                                                         data_collection,
-                                                                                                         activeprojectname,
-                                                                                                         activespeakerid,
-                                                                                                         speaker_audio_ids,
-                                                                                                         'audio')
+                # total_comments, annotated_comments, remaining_comments = getcommentstats.getcommentstats(projects,
+                #                                                                                          data_collection,
+                #                                                                                          activeprojectname,
+                #                                                                                          activespeakerid,
+                #                                                                                          speaker_audio_ids,
+                #                                                                                          'audio')
+                total_comments, annotated_comments, remaining_comments = getcommentstats.getcommentstatsnew(projects,
+                                                                                                            data_collection,
+                                                                                                            activeprojectname,
+                                                                                                            activespeakerid,
+                                                                                                            'transcriptionFLAG',
+                                                                                                            'audio')
                 commentstats = [total_comments,
                                 annotated_comments, remaining_comments]
                 # logger.debug("commentstats: %s", commentstats)
