@@ -23,6 +23,13 @@ function createSidePanel(shareinfo) {
                         // 'data-target="#myProgressReportModal">'+
                         // 'Progress Report'+
                         // '</button></a>';
+    if (shareinfo['sharemode'] >= 10) {
+        sidePanelElement += '<a><button type="button" id="transcriptionreportid" class="btn btn-primary transcriptionreport"'+
+                            'onclick="getTranscriptionReport(this)">'+
+                            'Transcription Report'+
+                            '</button></a>';
+
+    }
     if ('downloadchecked' in shareinfo &&
         shareinfo['downloadchecked'] == 'true') {
         sidePanelElement += '<a><button type="button" id="downloadtranscription" class="btn btn-primary" data-toggle="modal"'+
@@ -56,4 +63,40 @@ function createSidePanel(shareinfo) {
     //                     '</div>';
 
     $("#sidepanel").html(sidePanelElement);
+}
+
+var toHHMMSS = (secs) => {
+    var sec_num = parseInt(secs, 10)
+    var hours   = Math.floor(sec_num / 3600)
+    var minutes = Math.floor(sec_num / 60) % 60
+    var seconds = sec_num % 60
+
+    return [hours,minutes,seconds]
+        .map(v => v < 10 ? "0" + v : v)
+        // .filter((v,i) => v !== "00" || i > 0)
+        .join(":")
+}
+
+function getTranscriptionReport(ele) {
+    $.post( "/lifedata/transcription/transcriptionreport", {
+        // a: JSON.stringify(data_info )
+      })
+      .done(function( data ) {
+        console.log(data);
+        console.log(toHHMMSS(data.totalAudioDurationProject));
+        // let totalAudioDurationProject = new Date(data.totalAudioDurationProject * 1000).toISOString().substring(11, 19);
+        let totalAudioDurationProject = toHHMMSS(data.totalAudioDurationProject);
+        let docCountProject = data.docCountProject;
+        // let totalAudioDurationTranscribed = new Date(data.totalAudioDurationTranscribed * 1000).toISOString().substring(11, 19);
+        let totalAudioDurationTranscribed = toHHMMSS(data.totalAudioDurationTranscribed);
+        let docCountTranscribed = data.docCountTranscribed;
+        // let totalAudioDurationTranscribedBoundary = new Date(data.totalAudioDurationTranscribedBoundary * 1000).toISOString().substring(11, 19);
+        let totalAudioDurationTranscribedBoundary = toHHMMSS(data.totalAudioDurationTranscribedBoundary);
+
+        alert('Audio Duration Project: '+totalAudioDurationProject+', Doc Count Project: '+docCountProject+
+            '\n\nAudio Duration Transcribed: '+totalAudioDurationTranscribed+', Doc Count Transcribed: '+docCountTranscribed+
+            '\n\nAudio Duration Transcribed(Boundary): '+totalAudioDurationTranscribedBoundary)
+
+        // window.location.href = window.location.href.replace("models_playground", "file_download/"+data.fileName);
+      });
 }

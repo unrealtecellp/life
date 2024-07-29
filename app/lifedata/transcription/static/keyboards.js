@@ -50,12 +50,12 @@ function createKeyboards(newData) {
             'langid': 'or',
             'kbdid': 'itrans_odia'
         },
-        'Mayek': {
-            'fname': 'meitei_legacy-0.1.js',
-            'version': '0.1',
-            'langid': 'or',
-            'kbdid': 'meitei_legacy'
-        },
+        // 'Mayek': {
+        //     'fname': 'meitei_legacy-0.1.js',
+        //     'version': '0.1',
+        //     'langid': 'or',
+        //     'kbdid': 'meitei_legacy'
+        // },
         'toto': {
             'fname': 'txo_toto-1.0.1.js',
             'version': '1.0.1',
@@ -79,9 +79,14 @@ function createKeyboards(newData) {
 
     // console.log("Audio scripts", newData['Transcription'][1], newData['Transcription']);
     let currentScripts = newData['Transcription'][1];
-    let currentTranslation = newData['Translation'][1];
-    let currentTranslationScripts = Object.values(currentTranslation);
-    currentScripts.push(currentTranslationScripts);
+    // console.log(currentScripts);
+    currentScripts = currentScripts.filter(value => value !== 'Mayek');
+    // console.log(currentScripts);
+    if ('Translation' in newData){
+        let currentTranslation = newData['Translation'][1];
+        let currentTranslationScripts = Object.values(currentTranslation);
+        currentScripts.push(currentTranslationScripts);
+    }
     // console.log("Translation scripts", currentTranslationScripts);
 
     // let addedScripts = [];
@@ -98,21 +103,25 @@ function createKeyboards(newData) {
             try {
                 for (let i = 0; i < currentScripts.length; i++) {
                     let currentScript = currentScripts[i];
-                    console.log('Adding', currentScript);
-                    
-                    if (supportedKeyboards.includes(currentKeyboard)) {
+                    // console.log('Adding', currentScript);
+
+                    if (currentScript in supportedKeyboards) {
+                        // console.log('Supported keyboard', currentScript);
                         var currentKbdParams = supportedKeyboards[currentScript]
                         var currentKeyboard = {
-                        name: currentScript,
-                        id: currentKbdParams['kbdid'],
-                        filename: 'static/keyboards/'+currentKbdParams['fname'],
-                        version: currentKbdParams['version'],
-                        language: [{
-                            name: audioLanguage,
-                            id: currentKbdParams['langid'],
-                            region: 'global'
-                        }]
+                            name: currentScript,
+                            id: currentKbdParams['kbdid'],
+                            filename: 'static/keyboards/' + currentKbdParams['fname'],
+                            version: currentKbdParams['version'],
+                            language: [{
+                                name: audioLanguage,
+                                id: currentKbdParams['langid'],
+                                region: 'global'
+                            }]
                         }
+
+                        kmw.addKeyboards(currentKeyboard);
+                        // console.log('All keyboards', keyman.getKeyboards());
                     }
 
                     // if (currentScript.includes('IPA')) {
@@ -164,39 +173,45 @@ function createKeyboards(newData) {
 }
 
 function updateKeyboard(e) {
-    console.log('Clicked textarea for transcription', e.id);
+    // console.log('Clicked textarea for transcription', e.id);
     let itransScripts = ['bengali', 'gujarati', 'gurmukhi', 'odia']
     // keyman.attachToControl(e);
     elId = e.id;
     currentScriptIndex = elId.lastIndexOf('_') + 1;
     currentScript = elId.substring(currentScriptIndex).trim();
 
-    console.log('Current script', currentScript);
+    // console.log('Current script', currentScript);
+    // console.log('All keyboard', keyman.getKeyboards());
+    // keyman.setActiveKeyboard(currentScript);
 
     if (currentScript.includes('IPA')) {
-        keyman.setActiveKeyboard('sil_ipa');
+        keyman.setActiveKeyboard('Keyboard_sil_ipa');
         // kmw.addKeyboards('@en', 'sil_ipa', '@und-fonipa');
         // addedScripts.push(currentScript);
     }
     else if (currentScript.includes('Devanagari')) {
-        keyman.setActiveKeyboard('itrans_devanagari_hindi');
+        keyman.setActiveKeyboard('Keyboard_itrans_devanagari_hindi');
         // addedScripts.push(currentScript);
     }
     else if (itransScripts.includes(currentScript)) {
-        keyman.setActiveKeyboard('itrans_' + currentScript);
+        keyman.setActiveKeyboard('Keyboard_itrans_' + currentScript);
         // addedScripts.push(currentScript);
     }
     else if (currentScript == 'Mayek') {
-        keyman.setActiveKeyboard('meitei_legacy');
+        keyman.setActiveKeyboard('Keyboard_meitei_legacy');
         // addedScripts.push(currentScript);
     }
-    else if (currentScript == 'Latin') {
-        keyman.setActiveKeyboard('basic_kbdinen');
+    else if (currentScript == 'toto') {
+        keyman.setActiveKeyboard('Keyboard_txo_toto');
         // addedScripts.push(currentScript);
     }
-    else {
-        keyman.setActiveKeyboard('basic_kbdinen');
-    }
+    // else if (currentScript == 'Latin') {
+    //     keyman.setActiveKeyboard('basic_kbdinen');
+    //     // addedScripts.push(currentScript);
+    // }
+    // else {
+    //     keyman.setActiveKeyboard('basic_kbdinen');
+    // }
     // keyman.setActiveKeyboard('sil_ipa');
 
 

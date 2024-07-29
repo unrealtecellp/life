@@ -3,9 +3,14 @@ from flask_bootstrap import Bootstrap
 from config import Config
 from flask_login import LoginManager
 from flask_pymongo import PyMongo
+from werkzeug.middleware.profiler import ProfilerMiddleware
+import os
 
 app = Flask(__name__)
 app.config.from_object(Config)
+if not os.path.exists('profiler'):
+    os.mkdir('profiler')
+app.wsgi_app = ProfilerMiddleware(app.wsgi_app, stream=None, profile_dir="./profiler")
 mongo = PyMongo(app)
 bootstrap = Bootstrap(app)
 login = LoginManager(app)
@@ -39,6 +44,9 @@ app.register_blueprint(ltset, url_prefix='/ltset')
 
 from app.languages.languagesroutes import langs
 app.register_blueprint(langs, url_prefix='/langs')
+
+from app.lifelexemes.lifelexemeroutes import lifelexemes
+app.register_blueprint(lifelexemes, url_prefix='/lifelexemes')
 
 from app import routes, models, forms
 

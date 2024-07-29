@@ -1,12 +1,12 @@
-{% extends "links.html" %}
+{% extends "lexemelinks.html" %}
 
 {% block title %}
-Dictionary View
+    Dictionary View
 {% endblock title %}
 
 {% block styles %}
 {{super()}}
-<link href="{{url_for('.static', filename='dictionaryview.css')}}" rel="stylesheet">
+    <link href="{{url_for('.static', filename='dictionaryview.css')}}" rel="stylesheet">
 {% endblock %}
 
 {% block app_content %}
@@ -32,27 +32,13 @@ Dictionary View
             <li class="markdown"><a href="#">MARKDOWN</a></li>
             <li class="latex"><a href="#">LATEX</a></li>
             <li class="html"><a href="#">HTML</a></li>
-            <!-- <li class="ods"><a href="#">ODS</a></li> -->
             <li class="rdfturtle"><a href="#">RDF/Turtle</a></li>
             <li class="rdfxml"><a href="#">RDF/XML</a></li>
             <li class="rdfntriples"><a href="#">RDF/N-Triples</a></li>
             <li class="rdfn3"><a href="#">RDF/N3</a></li>
-            <!-- <li><a href="{{url_for('download')}}">.docx</a></li>
-            <li><a href="{{url_for('download')}}">.odt</a></li>
-            <li><a href="{{url_for('download')}}">.pdf</a></li>
-            <li><a href="{{url_for('download')}}">.xlxs</a></li>
-            <li><a href="{{url_for('download')}}">.ods</a></li> -->
         </ul>
     </div>
     {% endif %}
-    <!-- <button type="button" class="btn btn-primary shareproject">Share Project</button> -->
-    <!-- Button trigger share project modal -->
-    <!-- <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myShareProjectModal">
-        Share Project
-    </button> -->
-    <!-- <a href="{{url_for('download')}}">
-        <button type="button" class="btn btn-danger deleteproject" disabled>Delete Project</button>
-    </a> -->
 </div>
 <br>
 
@@ -114,27 +100,6 @@ Dictionary View
     </div>
     <!-- <input type="button" value="Get Selected" onclick="GetSelected()" /> -->
 </div>
-
-<!-- Share Project Modal -->
-<!-- <div class="modal fade modal-dialog-scrollable" id="myShareProjectModal" role="dialog">
-    <div class="modal-dialog">
-
-        Modal Content
-        <div class="modal-content">
-            <div class="modal-header" style="padding:10px 50px;">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-            </div>
-            <div class="modal-body" style="padding:50px 60px; word-wrap: break-word;">
-                
-                <div id="share"></div>
-                
-            </div>
-        <div class="modal-footer">
-            <button id="refreshmodal" type="submit" class="btn btn-danger btn-default pull-left" data-dismiss="modal">Close</button>
-        </div>    
-        </div>
-    </div>
-</div> -->
   
  <!-- Share Project Modal -->
   <div class="modal fade" id="myShareProjectModal" tabindex="-1" role="dialog" aria-labelledby="myShareProjectModalLabel">
@@ -173,12 +138,7 @@ Dictionary View
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
             </div>
             <div class="modal-body" style="padding:50px 60px; word-wrap: break-word;">
-                
-                <!-- <div id="view"></div> -->
                 <h4 id="lexemeviewprojectname"> 
-                    <!-- <a href="#">
-                        <button type="button" class="btn btn-primary downloadlex">Download Lexeme</button>
-                    </a> -->
                 </h4>
                 <br> 
                    
@@ -200,28 +160,6 @@ Dictionary View
         </div>
     </div>
 </div>
-
-
-<!-- Edit Modal -->
-<!-- <div class="modal fade" id="myEditModal" role="dialog">
-    <div class="modal-dialog modal-lg"> -->
-
-        <!-- Modal Content -->
-        <!-- <div class="modal-content">
-            <div class="modal-header" style="padding:10px 50px;">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-            </div>
-            <div class="modal-body" style="padding:50px 60px; word-wrap: break-word;">
-                <form action="{{ url_for('lexemeedit') }}" method="POST" enctype="multipart/form-data">
-                    <div id="edit"></div>
-                </form>
-            </div>
-        <div class="modal-footer">
-            <button id="refreshmodal" type="submit" class="btn btn-danger btn-default pull-left" data-dismiss="modal">Close</button>
-        </div>    
-        </div>
-    </div>
-</div> -->
 {% endblock %}
 
 
@@ -230,12 +168,10 @@ Dictionary View
 {% block scripts %}
 {{super()}}
 <script src="{{url_for('.static', filename='dictionaryview.js')}}"></script>
-<script src="{{url_for('.static', filename='search.js')}}"></script>
-<script src="{{url_for('.static', filename='sorttable.js')}}"></script>
+<script src="{{url_for('static', filename='search.js')}}"></script>
+<script src="{{url_for('static', filename='sorttable.js')}}"></script>
 <script src="{{url_for('.static', filename='lexemeview.js')}}"></script>
 <script src="{{url_for('.static', filename='lexemeedit.js')}}"></script>
 <script src="{{url_for('.static', filename='editlexeme.js')}}"></script>
 <script src="{{url_for('.static', filename='lexemedelete.js')}}"></script>
-<script src="{{url_for('.static', filename='shareproject.js')}}"></script>
-<script src="{{url_for('.static', filename='shareprojectwith.js')}}"></script>
 {% endblock %}

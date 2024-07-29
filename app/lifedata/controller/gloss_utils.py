@@ -22,7 +22,27 @@ from app.lifemodels.controller.bhashiniUtils import (
 
 from datetime import datetime
 
+import pandas as pd
+import os
+
+import stanza
+from stanza import DownloadMethod
+
 logger = life_logging.get_logger()
+
+basedir = os.path.abspath(os.path.dirname(__file__))
+basedir_parent = '/'.join(basedir.split('/')[:-2])
+
+map_path = os.path.join(
+    basedir_parent, 'jsonfiles/leipzig_ud_map.json')
+
+print('Path', map_path)
+ud_leipzig_map = pd.read_json(map_path, dtype=str)
+
+stanza_pipeline_token = {
+    'hi': stanza.Pipeline(
+        'hi', processors='tokenize', tokenize_no_ssplit=True, download_method=DownloadMethod.REUSE_RESOURCES)
+}
 
 
 def save_gloss_of_one_audio_file(transcriptions,
@@ -99,6 +119,7 @@ def get_gloss_of_audio_transcription(gloss_model,
             source_script = gloss_params['source_script']
             source_script_code = gloss_params['source_script_code']
             source_lang_code = gloss_params['source_language']
+            source_lang_name = gloss_params['source_language_name']
 
             if get_free_translation:
                 text_grids, model_details, input_data = translation_utils.get_translation_of_audio_transcription(translation_model,
@@ -124,7 +145,9 @@ def get_gloss_of_audio_transcription(gloss_model,
                 update_existing_text_grid_with_gloss(temp_text_grid,
                                                      transcription_type,
                                                      model_details,
+                                                     input_data,
                                                      glossed_data=gloss,
+                                                     source_lang_name=source_lang_name,
                                                      source_lang_code=source_lang_code,
                                                      source_script_code=source_script_code,
                                                      source_script_name=source_script))
@@ -144,100 +167,178 @@ def generate_gloss_token_id(start, end, max_len=14):
 
 
 def conll_to_leipzig_gloss(feats, upos='', trans_output='_'):
-    if feats == '':
-        if trans_output == '_':
-            output = upos
-        else:
-            output = trans_output.lower()
+    if len(feats) == 0 and trans_output == '_':
+        # if trans_output == '_':
+        #     output = upos
+        # else:
+        # output = trans_output.lower()
+        output = trans_output+'.'+upos
     else:
         output = trans_output.lower()
-        all_feats = feats.split('|')
-        feat_dict = {}
-        for feat in all_feats:
-            feat_val_name = feat.split('=')
-            feat_name = feat_val_name[0]
-            feat_val = feat_val_name[1]
-            feat_dict[feat_name] = feat_val
 
-        person_feat = feat_dict.pop('Person', '')
-        if person_feat != '':
-            output = output+'.'+person_feat.upper()
-        number_feat = feat_dict.pop('Number', '')
-        if number_feat != '':
-            output = output+'.'+number_feat.upper()
-        gender_feat = feat_dict.pop('Gender', '')
-        if gender_feat != '':
-            output = output+'.'+gender_feat.upper()
+        if len(feats) > 0:
+            all_feats = feats.split('|')
+            feat_dict = {}
+            for feat in all_feats:
+                feat_val_name = feat.split('=')
+                feat_name = feat_val_name[0]
+                feat_val = feat_val_name[1]
+                feat_dict[feat_name] = (feat, feat_val)
 
-        for feat_name, feat_val in feat_dict.items():
-            output = output + '.' + feat_val.upper()
+            person_feat = feat_dict.pop('Person', '')
+            if person_feat != '':
+                person_feat_leipzig = ud_leipzig_map[ud_leipzig_map['udFeats']
+                                                     == person_feat[0]]['leipzig'].values
+                if len(person_feat_leipzig) >= 1:
+                    output = output+'.'+person_feat_leipzig[0]
+                else:
+                    output = output+'.'+person_feat[1]
+
+            number_feat = feat_dict.pop('Number', '')
+            if number_feat != '':
+                number_feat_leipzig = ud_leipzig_map[ud_leipzig_map['udFeats']
+                                                     == number_feat[0]]['leipzig'].values
+                if len(number_feat_leipzig) >= 1:
+                    output = output+'.'+number_feat_leipzig[0]
+                else:
+                    output = output+'.'+number_feat[1]
+                # output = output+'.'+number_feat.upper()
+
+            gender_feat = feat_dict.pop('Gender', '')
+            if gender_feat != '':
+                gender_feat_leipzig = ud_leipzig_map[ud_leipzig_map['udFeats']
+                                                     == gender_feat[0]]['leipzig'].values
+                if len(gender_feat_leipzig) >= 1:
+                    output = output+'.'+gender_feat_leipzig[0]
+                else:
+                    output = output+'.'+gender_feat[1]
+
+                # output = output+'.'+gender_feat.upper()
+
+            for feat_name, feat_val in feat_dict.items():
+                feat_leipzig = ud_leipzig_map[ud_leipzig_map['udFeats']
+                                              == feat_val[0]]['leipzig'].values
+                if len(feat_leipzig) >= 1:
+                    output = output+'.'+feat_leipzig[0]
+                else:
+                    output = output+'.'+feat_val[1]
+                # output = output + '.' + feat_val.upper()
 
         output = output.strip('.').strip()
 
     return output
 
 
+def make_stanza_gloss(text, tid, start_index, end_index, lemma="", upos="", xpos="", feats="", head="", deprel=""):
+    new_token_gloss = {
+        'id': tid,
+        'text': text,
+        'lemma': lemma,
+        'upos': upos,
+        'xpos': xpos,
+        'feats': feats,
+        'head': head,
+        'deprel': deprel,
+        'start_char': start_index,
+        'end_char': end_index,
+    }
+    return new_token_gloss
+
+
 def update_existing_text_grid_with_gloss(current_text_grid,
                                          transcription_type,
                                          model_details,
+                                         input_data,
                                          glossed_data={},
                                          translate_tokens=True,
                                          translate_token_categs=[
                                              'NOUN', 'VERB', 'ADJ', 'ADV', 'INTJ'],
+                                         source_lang_name="",
                                          source_lang_code="",
                                          source_script_code="",
                                          source_script_name=""):
+    try:
+        logger.debug('Existing textgrid before gloss %s', current_text_grid)
+        if translate_tokens:
+            target_lang_code = 'en'
+            target_script_code = 'Latn'
+            model, api_key, end_url, source_script, target_script = get_translation_model(
+                source_lang_code, target_lang_code)
+        for sent_id, sent_gloss in glossed_data.items():
+            sent_gloss_entry = {}
+            sent_token_entry = {source_script_name: {}}
+            logger.info('Glossed Data: %s\n%s', sent_id, sent_gloss)
+            original_sentence = input_data[sent_id]
+            logger.info('Original sentence: %s\n%s',
+                        sent_id, original_sentence)
+            nlp = stanza_pipeline_token.get(source_lang_code, '')
+            tokens = nlp(original_sentence)
+            tokens = tokens.to_dict()
+            if len(tokens) > 0:
+                tokens = tokens[0]
+            logger.info('Stanza tokens %s\n%s', tokens, len(tokens))
+            # logger.info('My tokens %s\n%s', original_sentence.split(),
+            #             len(original_sentence.split()))
 
-    logger.debug('Existing textgrid before gloss %s', current_text_grid)
-    if translate_tokens:
-        target_lang_code = 'en'
-        target_script_code = 'Latn'
-        model, api_key, end_url, source_script, target_script = get_translation_model(
-            source_lang_code, target_lang_code)
-    for sent_id, sent_gloss in glossed_data.items():
-        sent_gloss_entry = {}
-        sent_token_entry = {source_script_name: {}}
-        for token_gloss in sent_gloss:
-            new_token_gloss = {}
-            trans_output = '_'
-            text = token_gloss['text']
-            upos = token_gloss['upos']
-            start_index = str(token_gloss['start_char'])
-            end_index = str(token_gloss['end_char'])
-            token_id = generate_gloss_token_id(start_index, end_index)
-
-            if translate_tokens and upos in translate_token_categs:
-                if model != '' and target_script_code == target_script and source_script_code == source_script:
-                    try:
-                        transl = translate_data(
-                            text, model, api_key, end_url, source_lang_code, target_lang_code)
-                        trans_output = transl["pipelineResponse"][0]["output"][0]["target"]
-                        logger.debug('Input %s, Output %s', text, trans_output)
-                        model_details.update(
-                            [('gloss_translation_model_name', model)])
-                    except:
-                        logger.exception('')
-                        trans_output = "_"
-            else:
-                trans_output = "_"
-            
-            if (trans_output == ''):
+            for i, token in enumerate(tokens):
+                new_token_gloss = {}
                 trans_output = '_'
-            feats = token_gloss.get('feats', '')
 
-            leipzig_gloss_feats = conll_to_leipzig_gloss(
-                feats, upos, trans_output)
-            
-            logger.debug(leipzig_gloss_feats)
+                if i < len(sent_gloss):
+                    token_gloss = sent_gloss[i]
+                    text = token_gloss['text']
+                else:
+                    # current_token = token[i]
+                    tid = token['id']
+                    text = token['text']
+                    start_index = str(token['start_char'])
+                    end_index = str(token['end_char'])
+                    token_gloss = make_stanza_gloss(
+                        text, tid, start_index, end_index)
 
-            new_token_gloss.update({"gloss": leipzig_gloss_feats})
-            new_token_gloss.update(token_gloss)
+                upos = token_gloss['upos']
+                lemma = token_gloss['lemma']
+                start_index = str(token_gloss['start_char'])
+                end_index = str(token_gloss['end_char'])
+                token_id = generate_gloss_token_id(start_index, end_index)
 
-            sent_gloss_entry[token_id] = new_token_gloss
-            sent_token_entry[source_script_name].update({token_id: text})
+                # if translate_tokens and upos in translate_token_categs:
+                if translate_tokens:
+                    if model != '' and target_script_code == target_script and source_script_code == source_script:
+                        try:
+                            transl = translate_data(
+                                lemma, model, api_key, end_url, source_lang_code, target_lang_code)
+                            trans_output = transl["pipelineResponse"][0]["output"][0]["target"]
+                            logger.debug('Input %s, Output %s',
+                                         lemma, trans_output)
+                            model_details.update(
+                                [('gloss_translation_model_name', model)])
+                        except:
+                            logger.exception('')
+                            trans_output = "_"
+                else:
+                    trans_output = "_"
 
-        current_text_grid[transcription_type][sent_id]['gloss'] = sent_token_entry
-        current_text_grid[transcription_type][sent_id]['glossTokenIdInfo'] = sent_gloss_entry
+                if (trans_output == ''):
+                    trans_output = '_'
+                feats = token_gloss.get('feats', '')
+
+                leipzig_gloss_feats = conll_to_leipzig_gloss(
+                    feats, upos, trans_output)
+
+                logger.debug(leipzig_gloss_feats)
+
+                new_token_gloss.update({"gloss": leipzig_gloss_feats})
+                new_token_gloss.update(token_gloss)
+                new_token_gloss['languages'] = source_lang_name
+
+                sent_gloss_entry[token_id] = new_token_gloss
+                sent_token_entry[source_script_name].update({token_id: text})
+
+            current_text_grid[transcription_type][sent_id]['gloss'] = sent_token_entry
+            current_text_grid[transcription_type][sent_id]['glossTokenIdInfo'] = sent_gloss_entry
+    except:
+        logger.exception("")
 
     logger.debug('Final text grid after gloss %s', current_text_grid)
     return current_text_grid

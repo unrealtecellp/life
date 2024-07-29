@@ -1,7 +1,11 @@
-.fixedElement {
-    /* background-color: #c0c0c0; */
+/* .fixedElement {
+    background-color: #c0c0c0;
     position:fixed;
-    /* top:0; */
+    top:0;
     width:85%;
-    /* z-index:100; */
-}
+    z-index:100;
+} */
+
+button > * {
+    pointer-events: none;
+  }

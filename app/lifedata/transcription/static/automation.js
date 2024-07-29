@@ -53,7 +53,7 @@ function autoTranscription() {
           // data: posCategories
           // allowClear: true
         });
-        var newOption = new Option('Hindi-Bhashini_ai4bharat/conformer-hi-gpu--t4', 'bhashini_ai4bharat/conformer-hi-gpu--t4', false, false);
+        var newOption = new Option('Hindi-Bhashini_ai4bharat/conformer-hi-gpu--t4', 'hi##bhashini_ai4bharat/conformer-hi-gpu--t4', false, false);
         $('#myASRModelListSelect2').append(newOption);
         for (entry of data.models) {
 

@@ -39,7 +39,9 @@ from app.lifedata.controller import (
 )
 from app.lifedata.transcription.controller import (
     transcription_audiodetails,
-    save_transcription_prompt
+    save_transcription_prompt,
+    transcription_report,
+    update_owner_speakers
 )
 
 from app.lifetagsets.controller import (
@@ -58,6 +60,7 @@ from datetime import datetime
 from zipfile import ZipFile
 import glob
 import pandas as pd
+from tqdm import tqdm
 
 transcription = Blueprint('transcription', __name__,
                           template_folder='templates', static_folder='static')
@@ -119,21 +122,70 @@ def home():
         #              derived_from_project_type, derived_from_project_name)
         if (derived_from_project_type == 'questionnaires'):
             all_ques_ids = {'New': 'New'}
-            ques_ids = projects.find_one({"projectname": derived_from_project_name},
-                                         {
-                                             "_id": 0,
-                                             "questionnaireIds": 1
-            })["questionnaireIds"]
-            # all_ques_ids.extend(ques_ids)
-            for ques_id in ques_ids:
-                Q_Id = questionnaires.find_one({"projectname": derived_from_project_name,
-                                                "quesId": ques_id,
-                                                "quesdeleteFLAG": 0},
-                                               {
-                    "_id": 0,
-                    "Q_Id": 1
-                })["Q_Id"]
-                all_ques_ids[ques_id] = Q_Id
+            # ques_ids = projects.find_one({"projectname": derived_from_project_name},
+            #                              {
+            #                                  "_id": 0,
+            #                                  "questionnaireIds": 1
+            # })["questionnaireIds"]
+            # # all_ques_ids.extend(ques_ids)
+            # for ques_id in tqdm(ques_ids):
+            #     Q_Id = questionnaires.find_one({"projectname": derived_from_project_name,
+            #                                     "quesId": ques_id,
+            #                                     "quesdeleteFLAG": 0},
+            #                                    {
+            #         "_id": 0,
+            #         "Q_Id": 1,
+            #         "prompt.content": 1
+            #     })
+            #     # logger.debug(Q_Id["Q_Id"][:5])
+            #     q_id = Q_Id["Q_Id"][:5]
+            #     # all_ques_ids[ques_id] = Q_Id["Q_Id"]
+            #     lang_list = list(Q_Id['prompt']['content'].keys())
+            #     if ('English-Latin' in lang_list):
+            #         get_text = Q_Id['prompt']['content']['English-Latin']['text']
+            #         all_ques_ids[ques_id] = q_id+'_'+Q_Id['prompt']['content']['English-Latin']['text'][list(get_text.keys())[0]]['textspan']['Latin']
+            #     else:
+            #         lang_script = lang_list[0]
+            #         script = lang_script.split('-')[-1]
+            #         get_text = Q_Id['prompt']['content'][lang_script]['text']
+            #         all_ques_ids[ques_id] = q_id+'_'+Q_Id['prompt']['content'][lang_script]['text'][list(get_text.keys())[0]]['textspan'][script]
+            # logger.debug("all_ques_ids: %s", pformat(all_ques_ids))
+            # print('!!!!!!!!!!!!!!!!!!!!!!!!')
+            aggregate_output = questionnaires.aggregate([
+                {
+                    "$match": {
+                        "projectname": derived_from_project_name,
+                        "quesdeleteFLAG": 0
+                    }
+                },
+                {
+                    "$sort": {
+                        "Q_Id": 1
+                    }
+                },
+                {
+                    "$project": {
+                        "_id": 0,
+                        "Q_Id": 1,
+                        "quesId": 1,
+                        'prompt.content': 1
+                    }
+                }
+            ])
+            for doc in tqdm(aggregate_output):
+                # logger.debug("aggregate_output: %s", pformat(doc))
+                Q_Id = doc
+                ques_id = doc['quesId']
+                q_id = Q_Id["Q_Id"][:5]
+                lang_list = list(Q_Id['prompt']['content'].keys())
+                if ('English-Latin' in lang_list):
+                    get_text = Q_Id['prompt']['content']['English-Latin']['text']
+                    all_ques_ids[ques_id] = q_id+'_'+Q_Id['prompt']['content']['English-Latin']['text'][list(get_text.keys())[0]]['textspan']['Latin']
+                else:
+                    lang_script = lang_list[0]
+                    script = lang_script.split('-')[-1]
+                    get_text = Q_Id['prompt']['content'][lang_script]['text']
+                    all_ques_ids[ques_id] = q_id+'_'+Q_Id['prompt']['content'][lang_script]['text'][list(get_text.keys())[0]]['textspan'][script]
             # logger.debug("all_ques_ids: %s", pformat(all_ques_ids))
         if activeprojectform is not None:
             try:
@@ -262,14 +314,25 @@ def home():
                     transcriptions_by = transcription_audiodetails.get_audio_transcriptions_by(
                         projects, transcriptions, activeprojectname, audio_id)
                     # logger.debug("transcriptions_by: %s", transcriptions_by)
-                    speakerids.append('')
+                    # speakerids.append('')
                 except:
                     speakerids = []
                     added_speaker_ids = []
                 speaker_metadata = transcription_audiodetails.get_speaker_metadata(speakerdetails,
                                                                                    speakerids,
                                                                                    activeprojectname)
+                # logger.debug('speakerids: %s, added_speaker_ids: %s, activespeakerid: %s',
+                #              speakerids, added_speaker_ids, activespeakerid)
+                if (current_username == projectowner):
+                    speakerids = update_owner_speakers.update_owner_speakers(projects,
+                          activeprojectname,
+                          projectowner,
+                          speakerids,
+                          added_speaker_ids)
+                # logger.debug('speakerids: %s, added_speaker_ids: %s, activespeakerid: %s',
+                #              speakerids, added_speaker_ids, activespeakerid)
                 activeprojectform['speakerIds'] = speakerids
+                activeprojectform['addedSpeakerIds'] = added_speaker_ids
                 activeprojectform['activespeakerId'] = activespeakerid
                 activeprojectform['sourceMetadata'] = speaker_metadata
                 scriptCode = readJSONFile.readJSONFile(scriptCodeJSONFilePath)
@@ -295,7 +358,7 @@ def home():
                         else:
                             continue
 
-                # logger.debug("activeprojectform: %s", activeprojectform)
+                # logger.debug("activeprojectform: %s", pformat(activeprojectform))
 
                 return render_template('transcription.html',
                                        projectName=activeprojectname,
@@ -1012,7 +1075,9 @@ def uploadaudiofiles():
         derivedfromprojectdetails = {}
 
         data = dict(request.form.lists())
-        logger.debug("Form data %s", data)
+        logger.info("All Form data %s", request.form)
+        # logger.info("All Form data submitted %s", request.form.formData)
+        logger.info("Form data %s", data)
         if ('quesId' in data):
             quesId = data['quesId'][0]
             logger.debug("quesId: %s", quesId)
@@ -1032,8 +1097,23 @@ def uploadaudiofiles():
             else:
                 logger.debug("not found prompt: %s", found_prompt)
         # return redirect(url_for('lifedata.transcription.home'))
-        speakerId = data['speakerId']
         new_audio_file = request.files.to_dict()
+        logger.info('New audio files %s', new_audio_file)
+        # logger.info("Request %s", request)
+        # logger.info("All Form data submitted %s\n%s\n%s",
+        #             request.data, request.form, request.args)
+        logger.info("request JSON %s", request.__dict__)
+        # speakerId = data['speakerId']
+        if ('speakerId' in data):
+            speakerId = data['speakerId']
+            if ('null' in speakerId):
+                speakerId = [getuserprojectinfo.getuserprojectinfo(userprojects,
+                                                            current_username,
+                                                            activeprojectname)['activespeakerId']]
+        else:
+            speakerId = [getuserprojectinfo.getuserprojectinfo(userprojects,
+                                                            current_username,
+                                                            activeprojectname)['activespeakerId']]
 
         if 'uploadparameters-vad' in data:
             run_vad = True
@@ -1100,6 +1180,11 @@ def uploadaudiofiles():
             }
         else:
             vad_model = {}
+
+        logger.info('VAD Model %s', vad_model)
+
+        # if ('file' in new_audio_file):
+        #     new_audio_file = new_audio_file['file']
 
         transcription_audiodetails.saveaudiofiles(mongo,
                                                   projects,
@@ -1383,6 +1468,10 @@ def maketranscription():
         '''
         accessed_time = data['accessedOnTime'][0]
 
+        logger.debug(model_name)
+        model_info = model_name.split('##')
+        model_name = model_info[1]
+        model_lang_code = model_info[0]
         if 'bhashini' in transcription_source:
             hf_token = ''
             model_name = model_name.replace('bhashini_', '')
@@ -1399,7 +1488,8 @@ def maketranscription():
                 'model_path': model_name,
                 'model_api': transcription_source,
                 'boundary_level': boundary_level,
-                'language_code': audio_lang_code
+                'language_code': audio_lang_code,
+                'model_language_code': model_lang_code
             },
             'target': script_name
         }
@@ -1726,3 +1816,29 @@ def toggleComplete():
         return jsonify({'status': complete_status})
     except:
         logger.exception("")
+
+
+@transcription.route('/transcriptionreport', methods=['GET', 'POST'])
+@login_required
+def transcriptionreport():
+    userprojects, transcriptions_collection = getdbcollections.getdbcollections(mongo,
+                                                                                'userprojects',
+                                                                                'transcriptions')
+    current_username = getcurrentusername.getcurrentusername()
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                  userprojects)
+
+    audio_duration_project, doc_count_project = transcription_report.total_audio_duration_project(mongo,
+                                                                                                  transcriptions_collection,
+                                                                                                  activeprojectname)
+    audio_duration_transcribed, doc_count_transcribed = transcription_report.total_audio_duration_transcribed(mongo,
+                                                                                                              transcriptions_collection,
+                                                                                                              activeprojectname)
+    audio_duration_transcribed_boundary = transcription_report.total_audio_duration_boundary(transcriptions_collection,
+                                                                                             activeprojectname)
+
+    return jsonify(totalAudioDurationProject=audio_duration_project,
+                   docCountProject=doc_count_project,
+                   totalAudioDurationTranscribed=audio_duration_transcribed,
+                   docCountTranscribed=doc_count_transcribed,
+                   totalAudioDurationTranscribedBoundary=audio_duration_transcribed_boundary)

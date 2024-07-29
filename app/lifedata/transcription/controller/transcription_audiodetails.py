@@ -1255,8 +1255,10 @@ def get_speaker_audio_ids(projects,
             speakerIds = [speakerIds]
 
         speaker_audioid_key_name = get_audiospeaker_id_key_name(project_type)
+        # logger.debug(speaker_audioid_key_name)
         speaker_audio_ids = projects.find_one({'projectname': activeprojectname},
                                               {'_id': 0, speaker_audioid_key_name: 1})
+        # logger.debug(speaker_audio_ids)
         speaker_audio_ids = speaker_audio_ids[speaker_audioid_key_name]
         # logger.info(len(speaker_audio_ids))
         # logger.info(speaker_audio_ids)
@@ -1387,7 +1389,7 @@ def updateaudiofiles(mongo,
 
     speaker_audio_ids = projects.find_one({'projectname': activeprojectname},
                                           {'_id': 0, 'speakersAudioIds': 1})
-    # logger.debug("Length of speaker audio IDs %s", len(speaker_audio_ids))
+    logger.debug("Length of speaker audio IDs %s", len(speaker_audio_ids))
     # logger.debug("Speaker Audio IDs %s", speaker_audio_ids)
     if len(speaker_audio_ids) != 0:
         speaker_audio_ids = speaker_audio_ids['speakersAudioIds']
@@ -4074,7 +4076,9 @@ def get_speaker_audio_ids_new(projects_collection,
                 'speakersAudioIds' in speaker_ids and
                     active_speaker_id in speaker_ids['speakersAudioIds']):
                 speaker_audio_ids = speaker_ids['speakersAudioIds'][active_speaker_id]
+        # logger.debug("speaker_audio_ids: %s", pformat(speaker_audio_ids))
         if (len(speaker_audio_ids) != 0):
+            # logger.debug("speaker_audio_ids: %s", pformat(speaker_audio_ids))
             return speaker_audio_ids
 
         file_speaker_ids = projects_collection.find_one({'projectname': activeprojectname},
