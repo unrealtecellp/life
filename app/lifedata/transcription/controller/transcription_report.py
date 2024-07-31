@@ -18,7 +18,8 @@ def total_audio_duration_project(mongo,
             [
                 {
                     "$match": {
-                        "projectname": project_name
+                        "projectname": project_name,
+                        "speakerId": { "$ne": "" }
                     },
                 },
                 {
@@ -148,7 +149,9 @@ def missing_duration(mongo,
             [
                 {
                     "$match": {
-                        "projectname": project_name
+                        "projectname": project_name,
+                        "speakerId": { "$ne": "" }
+                        
                     },
                 },
                 {
@@ -170,8 +173,8 @@ def missing_duration(mongo,
                 mongo_filename = file.filename
                 audiofile = fs.get_last_version(filename=mongo_filename)
                 audio_duration, audio_file = transcription_audiodetails.get_audio_duration_from_file(audiofile)
-                # logger.debug(audio_duration)
-                # logger.debug(audio_file)
+                logger.debug(audio_duration)
+                logger.debug(audio_file)
                 total_duration += audio_duration
                 count += 1
         logger.debug("total_duration: %s", total_duration)
@@ -213,8 +216,8 @@ def missing_duration_transcribed(mongo,
                 mongo_filename = file.filename
                 audiofile = fs.get_last_version(filename=mongo_filename)
                 audio_duration, audio_file = transcription_audiodetails.get_audio_duration_from_file(audiofile)
-                # logger.debug(audio_duration)
-                # logger.debug(audio_file)
+                logger.debug(audio_duration)
+                logger.debug(audio_file)
                 total_duration += audio_duration
                 count += 1
         logger.debug("total_duration: %s", total_duration)

@@ -172,7 +172,7 @@ def home():
                     }
                 }
             ])
-            for doc in tqdm(aggregate_output):
+            for doc in aggregate_output:
                 # logger.debug("aggregate_output: %s", pformat(doc))
                 Q_Id = doc
                 ques_id = doc['quesId']
@@ -1783,8 +1783,8 @@ def toggleComplete():
         transcription_data = json.loads(request.form['a'])
         # transcription_data = json.loads(request.args.get('a'))
         transcription_data = dict(transcription_data)
-        logger.info("transcription_data receieved: %s",
-                    pformat(transcription_data))
+        # logger.info("transcription_data receieved: %s",
+        #             pformat(transcription_data))
         lastActiveId = transcription_data['lastActiveId']
         lastActiveId = transcription_data['lastActiveId']
         accessedOnTime = transcription_data['accessedOnTime']
