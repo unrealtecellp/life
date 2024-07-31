@@ -59,9 +59,10 @@ def total_audio_duration_project(mongo,
                                     )
         # logger.debug(f"currentSliceDuration_not_exist: {currentSliceDuration_not_exist}")
         currentSliceDuration_not_exist_list = []
-        for doc in currentSliceDuration_not_exist:
+        # for doc in currentSliceDuration_not_exist:
             # logger.debug(doc)
-            currentSliceDuration_not_exist_list.append(doc['audioId'])
+            # currentSliceDuration_not_exist_list.append(doc['audioId'])
+        currentSliceDuration_not_exist_list = [doc['audioId'] for doc in currentSliceDuration_not_exist]
         logger.debug(currentSliceDuration_not_exist_list)
         logger.debug(len(currentSliceDuration_not_exist_list))
         # if (total_duration == 0):
@@ -130,9 +131,10 @@ def total_audio_duration_transcribed(mongo,
                                     )
         # logger.debug(f"currentSliceDuration_not_exist: {currentSliceDuration_not_exist}")
         currentSliceDuration_not_exist_list = []
-        for doc in currentSliceDuration_not_exist:
-            # logger.debug(doc)
-            currentSliceDuration_not_exist_list.append(doc['audioId'])
+        # for doc in currentSliceDuration_not_exist:
+        #     # logger.debug(doc)
+        #     currentSliceDuration_not_exist_list.append(doc['audioId'])
+        currentSliceDuration_not_exist_list = [doc['audioId'] for doc in currentSliceDuration_not_exist]
         logger.debug(currentSliceDuration_not_exist_list)
         logger.debug(len(currentSliceDuration_not_exist_list))
         # if (total_duration == 0):
@@ -251,6 +253,12 @@ def missing_duration(mongo,
                 audio_duration, audio_file = transcription_audiodetails.get_audio_duration_from_file(audiofile)
                 logger.debug(audio_duration)
                 logger.debug(audio_file)
+                x = transcriptions_collection.update_one({"projectname": project_name,
+                                                            "audioId": audio_id},
+                                                        {'$set': {
+                                                            "audioMetadata.currentSliceDuration": audio_duration
+                                                        }})
+                logger.debug(x)
                 total_duration += audio_duration
                 count += 1
         logger.debug("total_duration: %s", total_duration)
