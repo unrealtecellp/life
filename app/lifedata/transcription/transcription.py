@@ -61,6 +61,7 @@ from zipfile import ZipFile
 import glob
 import pandas as pd
 from tqdm import tqdm
+import io
 
 transcription = Blueprint('transcription', __name__,
                           template_folder='templates', static_folder='static')
@@ -1826,6 +1827,14 @@ def toggleComplete():
         logger.exception("")
 
 
+def toHHMMSS(secs):
+    sec_num = secs
+    hours   = sec_num / 3600
+    minutes = (sec_num / 60) % 60
+    seconds = sec_num % 60
+
+    return "%02d:%02d:%02d" % (hours, minutes, seconds)
+
 @transcription.route('/transcriptionreport', methods=['GET', 'POST'])
 @login_required
 def transcriptionreport():
@@ -1849,8 +1858,31 @@ def transcriptionreport():
     logger.debug(f"audio_duration_transcribed: {audio_duration_transcribed}\ndoc_count_transcribed: {doc_count_transcribed}")
     logger.debug(f"audio_duration_transcribed_boundary: {audio_duration_transcribed_boundary}")
 
-    return jsonify(totalAudioDurationProject=audio_duration_project,
-                   docCountProject=doc_count_project,
-                   totalAudioDurationTranscribed=audio_duration_transcribed,
-                   docCountTranscribed=doc_count_transcribed,
-                   totalAudioDurationTranscribedBoundary=audio_duration_transcribed_boundary)
+    transcription_report_df = pd.DataFrame(columns=['Project Name',
+                                              'Audio Duration Project(HH:MM:SS)',
+                                              'File Count Project',
+                                              'Audio Duration Transcribed',
+                                              'File Count Transcribed',
+                                              'Audio Duration Transcribed(Boundary)'])
+
+    transcription_report_df['Project Name'] = [activeprojectname]
+    transcription_report_df['Audio Duration Project(HH:MM:SS)'] = [toHHMMSS(audio_duration_project)]
+    transcription_report_df['File Count Project'] = [doc_count_project]
+    transcription_report_df['Audio Duration Transcribed'] = [toHHMMSS(audio_duration_transcribed)]
+    transcription_report_df['File Count Transcribed'] = [doc_count_transcribed]
+    transcription_report_df['Audio Duration Transcribed(Boundary)'] = [toHHMMSS(audio_duration_transcribed_boundary)]
+    download_transcription_report_filename = activeprojectname+'_transcription_report.csv'
+    csv_buffer = io.BytesIO()
+    transcription_report_df.to_csv(csv_buffer, 
+                            index=False)
+    csv_buffer.seek(0)
+
+    return send_file(csv_buffer,
+                        mimetype='text/csv',
+                        download_name=download_transcription_report_filename,
+                        as_attachment=True)
+    # return jsonify(totalAudioDurationProject=audio_duration_project,
+    #                docCountProject=doc_count_project,
+    #                totalAudioDurationTranscribed=audio_duration_transcribed,
+    #                docCountTranscribed=doc_count_transcribed,
+    #                totalAudioDurationTranscribedBoundary=audio_duration_transcribed_boundary)
