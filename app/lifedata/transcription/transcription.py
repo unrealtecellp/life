@@ -1845,6 +1845,10 @@ def transcriptionreport():
     audio_duration_transcribed_boundary = transcription_report.total_audio_duration_boundary(transcriptions_collection,
                                                                                              activeprojectname)
 
+    logger.debug(f"audio_duration_project: {audio_duration_project}\ndoc_count_project: {doc_count_project}")
+    logger.debug(f"audio_duration_transcribed: {audio_duration_transcribed}\ndoc_count_transcribed: {doc_count_transcribed}")
+    logger.debug(f"audio_duration_transcribed_boundary: {audio_duration_transcribed_boundary}")
+
     return jsonify(totalAudioDurationProject=audio_duration_project,
                    docCountProject=doc_count_project,
                    totalAudioDurationTranscribed=audio_duration_transcribed,

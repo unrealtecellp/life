@@ -14,28 +14,28 @@ def total_audio_duration_project(mongo,
                                 project_name):
     total_duration = 0
     try:
-        aggregate_output = transcriptions_collection.aggregate(
-            [
-                {
-                    "$match": {
-                        "projectname": project_name,
-                        "speakerId": { "$ne": "" }
-                    },
-                },
-                {
-                    "$group": {
-                        "_id": "",
-                        "total_duration": { "$sum": "$audioMetadata.currentSliceDuration" },
-                        "count": { "$sum": 1 }
-                    }
-                }
-            ]
-        )
-        logger.debug("aggregate_output: %s", aggregate_output)
-        for doc in aggregate_output:
-            logger.debug("total_duration: %s", pformat(doc))
-            total_duration = doc['total_duration']
-            count = doc['count']
+        # aggregate_output = transcriptions_collection.aggregate(
+        #     [
+        #         {
+        #             "$match": {
+        #                 "projectname": project_name,
+        #                 "speakerId": { "$ne": "" }
+        #             },
+        #         },
+        #         {
+        #             "$group": {
+        #                 "_id": "",
+        #                 "total_duration": { "$sum": "$audioMetadata.currentSliceDuration" },
+        #                 "count": { "$sum": 1 }
+        #             }
+        #         }
+        #     ]
+        # )
+        # logger.debug("aggregate_output: %s", aggregate_output)
+        # for doc in aggregate_output:
+        #     logger.debug("total_duration: %s", pformat(doc))
+        #     total_duration = doc['total_duration']
+        #     count = doc['count']
         logger.debug("total_duration: %s", total_duration)
         if (total_duration == 0):
             total_duration, count = missing_duration(mongo,
@@ -51,28 +51,28 @@ def total_audio_duration_transcribed(mongo,
                                     project_name):
     total_duration = 0
     try:
-        aggregate_output = transcriptions_collection.aggregate(
-            [
-                {
-                    "$match": {
-                        "projectname": project_name,
-                        "transcriptionFLAG": 1
-                    },
-                },
-                {
-                    "$group": {
-                        "_id": "",
-                        "total_duration": { "$sum": "$audioMetadata.currentSliceDuration" },
-                        "count": { "$sum": 1 }
-                    }
-                }
-            ]
-        )
-        logger.debug("aggregate_output: %s", aggregate_output)
-        for doc in aggregate_output:
-            logger.debug("total_duration: %s", pformat(doc))
-            total_duration = doc['total_duration']
-            count = doc['count']
+        # aggregate_output = transcriptions_collection.aggregate(
+        #     [
+        #         {
+        #             "$match": {
+        #                 "projectname": project_name,
+        #                 "transcriptionFLAG": 1
+        #             },
+        #         },
+        #         {
+        #             "$group": {
+        #                 "_id": "",
+        #                 "total_duration": { "$sum": "$audioMetadata.currentSliceDuration" },
+        #                 "count": { "$sum": 1 }
+        #             }
+        #         }
+        #     ]
+        # )
+        # logger.debug("aggregate_output: %s", aggregate_output)
+        # for doc in aggregate_output:
+        #     logger.debug("total_duration: %s", pformat(doc))
+        #     total_duration = doc['total_duration']
+        #     count = doc['count']
         logger.debug("total_duration: %s", total_duration)
         if (total_duration == 0):
             total_duration, count = missing_duration_transcribed(mongo,
@@ -162,9 +162,9 @@ def missing_duration(mongo,
                 }
             ]
         )
-        logger.debug("aggregate_output: %s", aggregate_output)
+        # logger.debug("aggregate_output: %s", aggregate_output)
         for doc in aggregate_output:
-            logger.debug("total_duration: %s", pformat(doc))
+            logger.debug("total_duration: %s", total_duration)
             audio_id = doc['audioId']
             logger.debug(audio_id)
             fs = gridfs.GridFS(mongo.db)
@@ -205,9 +205,9 @@ def missing_duration_transcribed(mongo,
                 }
             ]
         )
-        logger.debug("aggregate_output: %s", aggregate_output)
+        # logger.debug("aggregate_output: %s", aggregate_output)
         for doc in aggregate_output:
-            logger.debug("total_duration: %s", pformat(doc))
+            logger.debug("total_duration: %s", total_duration)
             audio_id = doc['audioId']
             logger.debug(audio_id)
             fs = gridfs.GridFS(mongo.db)
