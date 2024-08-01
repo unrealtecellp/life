@@ -360,7 +360,7 @@ def questionnaire():
     except:
         logger.exception("")
 
-    logger.debug(quesprojectform)
+    # logger.debug(quesprojectform)
 
     return render_template('questionnaire.html',
                            projectName=activeprojectname,

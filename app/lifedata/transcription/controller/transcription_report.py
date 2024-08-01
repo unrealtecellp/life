@@ -35,10 +35,10 @@ def total_audio_duration_project(mongo,
         )
         # logger.debug("aggregate_output: %s", aggregate_output)
         for doc in aggregate_output:
-            logger.debug("doc: %s", pformat(doc))
+            # logger.debug("doc: %s", pformat(doc))
             total_duration = doc['total_duration']
             count = doc['count']
-        logger.debug("total_duration: %s", total_duration)
+        # logger.debug("total_duration: %s", total_duration)
         currentSliceDuration_not_exist = transcriptions_collection.aggregate(
                                         [
                                             {
@@ -63,8 +63,8 @@ def total_audio_duration_project(mongo,
             # logger.debug(doc)
             # currentSliceDuration_not_exist_list.append(doc['audioId'])
         currentSliceDuration_not_exist_list = [doc['audioId'] for doc in currentSliceDuration_not_exist]
-        logger.debug(currentSliceDuration_not_exist_list)
-        logger.debug(len(currentSliceDuration_not_exist_list))
+        # logger.debug(currentSliceDuration_not_exist_list)
+        # logger.debug(len(currentSliceDuration_not_exist_list))
         # if (total_duration == 0):
         if (len(currentSliceDuration_not_exist_list) != 0):
             count = count - len(currentSliceDuration_not_exist_list)
@@ -104,12 +104,12 @@ def total_audio_duration_transcribed(mongo,
                 }
             ]
         )
-        logger.debug("aggregate_output: %s", aggregate_output)
+        # logger.debug("aggregate_output: %s", aggregate_output)
         for doc in aggregate_output:
-            logger.debug("doc: %s", pformat(doc))
+            # logger.debug("doc: %s", pformat(doc))
             total_duration = doc['total_duration']
             count = doc['count']
-        logger.debug("total_duration: %s", total_duration)
+        # logger.debug("total_duration: %s", total_duration)
         currentSliceDuration_not_exist = transcriptions_collection.aggregate(
                                         [
                                             {
@@ -135,8 +135,8 @@ def total_audio_duration_transcribed(mongo,
         #     # logger.debug(doc)
         #     currentSliceDuration_not_exist_list.append(doc['audioId'])
         currentSliceDuration_not_exist_list = [doc['audioId'] for doc in currentSliceDuration_not_exist]
-        logger.debug(currentSliceDuration_not_exist_list)
-        logger.debug(len(currentSliceDuration_not_exist_list))
+        # logger.debug(currentSliceDuration_not_exist_list)
+        # logger.debug(len(currentSliceDuration_not_exist_list))
         # if (total_duration == 0):
         if (len(currentSliceDuration_not_exist_list) != 0):
             count = count - len(currentSliceDuration_not_exist_list)
@@ -173,17 +173,17 @@ def total_audio_duration_boundary(transcriptions_collection,
                 }
             ]
         )
-        logger.debug("total_duration: %s", total_duration)
+        # logger.debug("total_duration: %s", total_duration)
         # logger.debug("aggregate_output: %s", aggregate_output)
         for doc in aggregate_output:
             # logger.debug("textGrid: %s", pformat(doc['textGrid']['sentence']))
             for key, value in doc['textGrid']['sentence'].items():
                 total_duration += value['end'] - value['start']
-                logger.debug(value['end'])
-                logger.debug(value['start'])
-                logger.debug(f"{value['end'] - value['start']}")
-                logger.debug("total_duration: %s", total_duration)
-        logger.debug("total_duration: %s", total_duration)
+                # logger.debug(value['end'])
+                # logger.debug(value['start'])
+                # logger.debug(f"{value['end'] - value['start']}")
+                # logger.debug("total_duration: %s", total_duration)
+        # logger.debug("total_duration: %s", total_duration)
     except:
         logger.exception("")
     
@@ -208,9 +208,10 @@ def total_audio_duration_speaker(transcriptions_collection,
                 }
             ]
         )
-        logger.debug("aggregate_output: %s", aggregate_output)
+        # logger.debug("aggregate_output: %s", aggregate_output)
         for doc in aggregate_output:
-            logger.debug("total_duration: %s", pformat(doc))
+            pass
+            # logger.debug("total_duration: %s", pformat(doc))
     except:
         logger.exception("")
 
@@ -244,24 +245,24 @@ def missing_duration(mongo,
         # for doc in aggregate_output:
         #     logger.debug("total_duration: %s", total_duration)
         #     audio_id = doc['audioId']
-            logger.debug(audio_id)
+            # logger.debug(audio_id)
             fs = gridfs.GridFS(mongo.db)
             file = fs.find_one({'audioId': audio_id})
             if (file is not None):
                 mongo_filename = file.filename
                 audiofile = fs.get_last_version(filename=mongo_filename)
                 audio_duration, audio_file = transcription_audiodetails.get_audio_duration_from_file(audiofile)
-                logger.debug(audio_duration)
-                logger.debug(audio_file)
+                # logger.debug(audio_duration)
+                # logger.debug(audio_file)
                 x = transcriptions_collection.update_one({"projectname": project_name,
                                                             "audioId": audio_id},
                                                         {'$set': {
                                                             "audioMetadata.currentSliceDuration": audio_duration
                                                         }})
-                logger.debug(x)
+                # logger.debug(x)
                 total_duration += audio_duration
                 count += 1
-        logger.debug("total_duration: %s", total_duration)
+        # logger.debug("total_duration: %s", total_duration)
     except:
         logger.exception("")
     
@@ -296,18 +297,18 @@ def missing_duration_transcribed(mongo,
         # for doc in aggregate_output:
         #     logger.debug("total_duration: %s", total_duration)
             # audio_id = doc['audioId']
-            logger.debug(audio_id)
+            # logger.debug(audio_id)
             fs = gridfs.GridFS(mongo.db)
             file = fs.find_one({'audioId': audio_id})
             if (file is not None):
                 mongo_filename = file.filename
                 audiofile = fs.get_last_version(filename=mongo_filename)
                 audio_duration, audio_file = transcription_audiodetails.get_audio_duration_from_file(audiofile)
-                logger.debug(audio_duration)
-                logger.debug(audio_file)
+                # logger.debug(audio_duration)
+                # logger.debug(audio_file)
                 total_duration += audio_duration
                 count += 1
-        logger.debug("total_duration: %s", total_duration)
+        # logger.debug("total_duration: %s", total_duration)
     except:
         logger.exception("")
     
