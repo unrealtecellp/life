@@ -1,5 +1,28 @@
 var crawlerVideosChannelsId = 0;
 
+function getJsonfileData(fileName) {
+    let jsonFileNames = {
+        select2DataKey: "select2_"+fileName+".json"
+    }
+    var select2Data = JSON.parse(localStorage.getItem(fileName));
+    // console.log(select2Data);
+    if (!select2Data) {
+        $.ajax({
+            url: '/get_jsonfile_data',
+            type: 'GET',
+            async: false,
+            data: { 'data': JSON.stringify(jsonFileNames) },
+            contentType: "application/json; charset=utf-8",
+            success: function (response) {
+                select2Data = response.jsonData.select2DataKey;
+                // console.log(select2Data);
+                localStorage.setItem(fileName, JSON.stringify(select2Data));
+            }
+        });
+    }
+    return select2Data;
+}
+
 function youtubeCrawlerInterface() {
     let ele = '';
     ele += '<div id="formdisplay" style="display: block;">' +
@@ -154,7 +177,7 @@ function crawlerInterfaceEvents() {
         $(".videoschannelsid").append(drow);
         $('#idsearchkeywords' + crawlerVideosChannelsId).select2({
             placeholder: 'Search Keywords',
-            // data: languages,
+            data: getJsonfileData('questionnaire_domain'),
             tags: true,
             allowClear: true
         });
