@@ -930,8 +930,8 @@ def progressReportAdmin():
             project_names_file_wise = list(project_documents_file_wise.keys())
 
             # Print all the data to the console
-            print(250*"#")
-            print("Progress Reports:", progress_reports)
+            # print(250*"#")
+            # print("Progress Reports:", progress_reports)
             # print("Active Project Name:", activeprojectname)
             # print("Share Info:", shareinfo)
             # print("Speaker IDs List:", speakerids_list)

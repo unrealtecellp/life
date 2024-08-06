@@ -45,7 +45,6 @@ Progress Report Admin
     }
     </style>
 
-
 <style>
     body {
         font-family: Arial, sans-serif;
@@ -81,12 +80,16 @@ Progress Report Admin
     }
     .modal-dialog {
         max-width: 1000px; /* Increase the max-width to fit wider content */
+        width: 80%; /* Set a specific width for the modal */
+        height: 80%; /* Set a specific height for the modal */
     }
     .modal-content {
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        height: 100%; /* Ensure content takes full height of the modal */
     }
     .modal-body {
         overflow-y: auto;
+        height: calc(100% - 56px); /* Adjust for the height of the header and footer */
     }
     .modal-title {
         font-weight: bold;
@@ -100,6 +103,7 @@ Progress Report Admin
         text-decoration: none;
     }
 </style>
+
 
 
 
