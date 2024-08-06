@@ -11,6 +11,40 @@ Progress Report Admin
 
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.css">
 
+<style>/* Basic styles for the popup */
+    .popup {
+        display: none;
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+    }
+    
+    .popup-content {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: #fff;
+        padding: 20px;
+        border-radius: 5px;
+        width: 80%;
+        max-width: 500px;
+    }
+    
+    .popup-close {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        cursor: pointer;
+        font-size: 20px;
+        color: #da0707;
+    }
+    </style>
+
 
 <style>
     body {
@@ -495,27 +529,19 @@ Progress Report Admin
             <!-- Populate this section dynamically based on selected Speaker ID -->
         </tbody>
     </table>
-</div>
-
-<!-- Modal Structure -->
-<div class="modal fade" id="detailsModal" tabindex="-1" role="dialog" aria-labelledby="detailsModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="detailsModalLabel">Project Details</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <!-- Content will be injected here -->
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            </div>
+    <!-- Popup Structure -->
+<div class="popup" id="detailsPopup">
+    <div class="popup-content">
+        <span class="popup-close" onclick="hidePopup()">×</span>
+        <div id="popupBody">
+            <!-- Content will be injected here -->
         </div>
     </div>
 </div>
+
+</div>
+
+
 
 
 {% endblock %}
@@ -697,6 +723,7 @@ function updateSpeakersDropdownAndTable() {
 
 
 // Function to toggle visibility of User-wise Results section
+// Function to toggle visibility of User-wise Results section
 function showUserWiseResults() {
     var userWiseResults = $('#userWiseResults');
     
@@ -751,7 +778,7 @@ $(document).ready(function() {
     });
 });
 
-// Function to show project details in modal
+// Function to show project details in custom popup
 function showDetails(projectName) {
     var reports = {{ progress_reports | tojson }};
     var selectedReport = reports.find(report => report['project Name'] === projectName);
@@ -769,14 +796,24 @@ function showDetails(projectName) {
             <p><strong>Remaining files:</strong> ${selectedReport['Remaining files']}</p>
         `;
         
-        $('#detailsModal .modal-body').html(modalBody);
-        $('#detailsModal').modal('show');
+        $('#popupBody').html(modalBody);
+        showPopup();
     } else {
         console.error('No details found for project:', projectName);
     }
 }
 
-    </script>
+// Show popup
+function showPopup() {
+    document.getElementById('detailsPopup').style.display = 'block';
+}
+
+// Hide popup
+function hidePopup() {
+    document.getElementById('detailsPopup').style.display = 'none';
+}
+
+</script>
     
     <script>
         $(document).ready(function() {
