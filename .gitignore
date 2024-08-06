@@ -41,7 +41,12 @@ app/lifedata/transcription/audiowaveform
 recovery
 app/lifemodels/model_prediction_download
 <<<<<<< HEAD
+<<<<<<< HEAD
 *.log
 =======
 profiler
 >>>>>>> c2ef571f29fa9dac861ec5bd56e490d6a6489af1
+=======
+profiler
+app/lifeques/lifexlsxdf.tsv
+>>>>>>> 4cac11eee5e4a753e6f9e40ee6a5086fa2aa800c

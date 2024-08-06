@@ -61,6 +61,7 @@ from zipfile import ZipFile
 import glob
 import pandas as pd
 from tqdm import tqdm
+import io
 
 transcription = Blueprint('transcription', __name__,
                           template_folder='templates', static_folder='static')
@@ -172,7 +173,7 @@ def home():
                     }
                 }
             ])
-            for doc in tqdm(aggregate_output):
+            for doc in aggregate_output:
                 # logger.debug("aggregate_output: %s", pformat(doc))
                 Q_Id = doc
                 ques_id = doc['quesId']
@@ -191,9 +192,11 @@ def home():
             try:
                 # , audio_file_path, transcription_details
                 # activespeakerid = getactivespeakerid.getactivespeakerid(userprojects, current_username)
-                activespeakerid = getuserprojectinfo.getuserprojectinfo(userprojects,
-                                                                        current_username,
-                                                                        activeprojectname)['activespeakerId']
+                # activespeakerid = getuserprojectinfo.getuserprojectinfo(userprojects,
+                #                                                         current_username,
+                #                                                         activeprojectname)['activespeakerId']
+                activespeakerid = shareinfo['activespeakerId']
+                # logger.debug(activespeakerid)
 
                 # TODO: All audios where all the speakers are present together (currently returns all those where the active speaker is present as one of the speakers)
                 speaker_audio_ids = transcription_audiodetails.get_speaker_audio_ids_new(projects,
@@ -202,12 +205,18 @@ def home():
                                                                                          activespeakerid)
                 # logger.debug("speaker_audio_ids: %s", pformat(speaker_audio_ids))
 
-                total_comments, annotated_comments, remaining_comments = getcommentstats.getcommentstats(projects,
-                                                                                                         data_collection,
-                                                                                                         activeprojectname,
-                                                                                                         activespeakerid,
-                                                                                                         speaker_audio_ids,
-                                                                                                         'audio')
+                # total_comments, annotated_comments, remaining_comments = getcommentstats.getcommentstats(projects,
+                #                                                                                          data_collection,
+                #                                                                                          activeprojectname,
+                #                                                                                          activespeakerid,
+                #                                                                                          speaker_audio_ids,
+                #                                                                                          'audio')
+                total_comments, annotated_comments, remaining_comments = getcommentstats.getcommentstatsnew(projects,
+                                                                                                            data_collection,
+                                                                                                            activeprojectname,
+                                                                                                            activespeakerid,
+                                                                                                            'transcriptionFLAG',
+                                                                                                            'audio')
                 commentstats = [total_comments,
                                 annotated_comments, remaining_comments]
                 # logger.debug("commentstats: %s", commentstats)
@@ -552,8 +561,8 @@ def updateaudiosortingsubcategories():
                                                                                                       selected_audio_sorting_category
                                                                                                       )
             selected_audio_sorting_sub_categories = ''
-            logger.debug("audio_sorting_sub_categories: %s",
-                         audio_sorting_sub_categories)
+            # logger.debug("audio_sorting_sub_categories: %s",
+            #              audio_sorting_sub_categories)
             if (derived_from_project_type != '' and
                     derived_from_project_name != ''):
                 if (derived_from_project_type == 'questionnaires'):
@@ -627,7 +636,7 @@ def filteraudiobrowsetable():
         #     speakerids = []
         # data through ajax
         data = json.loads(request.args.get('a'))
-        logger.debug('audio_browse_info: %s', pformat(data))
+        # logger.debug('audio_browse_info: %s', pformat(data))
         audio_browse_info = data['audioBrowseInfo']
         audio_file_count = audio_browse_info['audioFilesCount']
         audio_browse_action = audio_browse_info['browseActionSelectedOption']
@@ -648,7 +657,7 @@ def filteraudiobrowsetable():
         filtered_speakers_list = transcription_audiodetails.filter_speakers(speakerdetails_collection,
                                                                             activeprojectname,
                                                                             filter_options=filter_options)
-        logger.debug("filtered_speakers_list: %s", filtered_speakers_list)
+        # logger.debug("filtered_speakers_list: %s", filtered_speakers_list)
         # logger.debug("filtered_speakers_list: %s", filtered_speakers_list)
         for speaker in filtered_speakers_list:
             speaker_audio_ids = transcription_audiodetails.get_speaker_audio_ids_new(projects,
@@ -755,7 +764,7 @@ def updateaudiobrowsetable():
     try:
         # data through ajax
         audio_browse_info = json.loads(request.args.get('a'))
-        logger.debug('audio_browse_info: %s', pformat(audio_browse_info))
+        # logger.debug('audio_browse_info: %s', pformat(audio_browse_info))
         projects, userprojects, transcriptions = getdbcollections.getdbcollections(mongo,
                                                                                    'projects',
                                                                                    'userprojects',
@@ -970,7 +979,7 @@ def audiobrowseactionshare():
         # browse_action = audio_browse_info['browseActionSelectedOption']
         active_source_id = audio_browse_info['activeSpeakerId']
         data_id = list(data_info.keys())[0]
-        logger.debug("data_id: %s", data_id)
+        # logger.debug("data_id: %s", data_id)
         return jsonify(commentInfo={})
     except:
         logger.exception("")
@@ -1080,20 +1089,20 @@ def uploadaudiofiles():
         logger.info("Form data %s", data)
         if ('quesId' in data):
             quesId = data['quesId'][0]
-            logger.debug("quesId: %s", quesId)
+            # logger.debug("quesId: %s", quesId)
             found_prompt = questionnaires.find_one({"quesId": quesId},
                                                    {"_id": 0, "prompt": 1})
             if (found_prompt):
                 prompt = found_prompt['prompt']
-                logger.debug("found prompt: %s", prompt)
+                # logger.debug("found prompt: %s", prompt)
                 derived_from_project_type, derived_from_project_name = getprojecttype.getderivedfromprojectdetails(projects,
                                                                                                                    activeprojectname)
                 derivedfromprojectdetails = {
                     "derivedfromprojectname": derived_from_project_name,
                     "quesId": quesId
                 }
-                logger.debug("derivedfromprojectdetails: %s",
-                             derivedfromprojectdetails)
+                # logger.debug("derivedfromprojectdetails: %s",
+                #              derivedfromprojectdetails)
             else:
                 logger.debug("not found prompt: %s", found_prompt)
         # return redirect(url_for('lifedata.transcription.home'))
@@ -1239,7 +1248,7 @@ def makeboundary():
         overwrite_user = False
 
         data = dict(request.form.lists())
-        logger.debug("Form data %s", data)
+        # logger.debug("Form data %s", data)
         speakerId = data['speakerId'][0]
         # new_audio_file = request.files.to_dict()
         audio_filename = data['audiofile'][0]
@@ -1247,7 +1256,7 @@ def makeboundary():
         audio_duration = float(data['audioduration'][0]) * 60
         existing_audio_details = transcriptions.find_one(
             {'projectname': activeprojectname, 'audioFilename': audio_filename})
-        logger.debug("Existing audio data %s", existing_audio_details)
+        # logger.debug("Existing audio data %s", existing_audio_details)
 
         if 'boundaryPause' in data:
             boundary_threshold = float(data['boundaryPause'][0])
@@ -1372,7 +1381,7 @@ def maketranscription():
         # overwrite_user = False
 
         data = dict(request.form.lists())
-        logger.debug("Form data %s", data)
+        # logger.debug("Form data %s", data)
         transcription_source = data['transcribeUsingSelect2'][0]
 
         if transcription_source == 'hfinference':
@@ -1468,7 +1477,7 @@ def maketranscription():
         '''
         accessed_time = data['accessedOnTime'][0]
 
-        logger.debug(model_name)
+        # logger.debug(model_name)
         model_info = model_name.split('##')
         model_name = model_info[1]
         model_lang_code = model_info[0]
@@ -1537,13 +1546,13 @@ def addnewspeakerdetails():
         form_data = request.form
         uploaded_files = request.files
 
-        logger.debug("All form %s", form_data)
+        # logger.debug("All form %s", form_data)
 
         metadata_schema, audio_source, call_source, upload_type, exclude_fields = processHTMLForm.get_metadata_header_details(
             form_data)
 
-        logger.debug("Metadata Schema %s", metadata_schema)
-        logger.debug("Call source %s", call_source)
+        # logger.debug("Metadata Schema %s", metadata_schema)
+        # logger.debug("Call source %s", call_source)
 
         metadata_data = processHTMLForm.get_metadata_data(form_data,
                                                           form_files=uploaded_files,
@@ -1630,7 +1639,7 @@ def transcriptionpromptfile():
 
         if request.method == "POST":
             prompt_file = request.files.to_dict()
-            logger.debug('prompt_file: %s', prompt_file)
+            # logger.debug('prompt_file: %s', prompt_file)
             prompt_type = list(prompt_file.keys())[0].split('_')[1]
             # print(prompt_type)
         save_transcription_prompt.savepromptfile(mongo,
@@ -1680,7 +1689,7 @@ def transcriptionprompttext():
 
         if request.method == "POST":
             prompt_text = request.form.to_dict()
-            logger.debug('prompt_text: %s', prompt_text)
+            # logger.debug('prompt_text: %s', prompt_text)
             prompt_type = list(prompt_text.keys())[0].split('_')[1]
             # print(prompt_type)
         save_transcription_prompt.saveprompttext(mongo,
@@ -1739,7 +1748,7 @@ def getScriptsList():
         userprojects, projectsform = getdbcollections.getdbcollections(
             mongo, 'userprojects', 'projectsform')
         current_username = getcurrentusername.getcurrentusername()
-        logger.debug('USERNAME: %s', current_username)
+        # logger.debug('USERNAME: %s', current_username)
         activeprojectname = getactiveprojectname.getactiveprojectname(
             current_username, userprojects)
         language_scripts = projectDetails.get_audio_language_scripts(
@@ -1775,8 +1784,8 @@ def toggleComplete():
         transcription_data = json.loads(request.form['a'])
         # transcription_data = json.loads(request.args.get('a'))
         transcription_data = dict(transcription_data)
-        logger.info("transcription_data receieved: %s",
-                    pformat(transcription_data))
+        # logger.info("transcription_data receieved: %s",
+        #             pformat(transcription_data))
         lastActiveId = transcription_data['lastActiveId']
         lastActiveId = transcription_data['lastActiveId']
         accessedOnTime = transcription_data['accessedOnTime']
@@ -1812,11 +1821,19 @@ def toggleComplete():
                                                                                           current_username,
                                                                                           lastActiveId,
                                                                                           accessedOnTime)
-        logger.debug('Status %s', complete_status)
+        # logger.debug('Status %s', complete_status)
         return jsonify({'status': complete_status})
     except:
         logger.exception("")
 
+
+def toHHMMSS(secs):
+    sec_num = secs
+    hours   = sec_num / 3600
+    minutes = (sec_num / 60) % 60
+    seconds = sec_num % 60
+
+    return "%02d:%02d:%02d" % (hours, minutes, seconds)
 
 @transcription.route('/transcriptionreport', methods=['GET', 'POST'])
 @login_required
@@ -1837,8 +1854,35 @@ def transcriptionreport():
     audio_duration_transcribed_boundary = transcription_report.total_audio_duration_boundary(transcriptions_collection,
                                                                                              activeprojectname)
 
-    return jsonify(totalAudioDurationProject=audio_duration_project,
-                   docCountProject=doc_count_project,
-                   totalAudioDurationTranscribed=audio_duration_transcribed,
-                   docCountTranscribed=doc_count_transcribed,
-                   totalAudioDurationTranscribedBoundary=audio_duration_transcribed_boundary)
+    # logger.debug(f"audio_duration_project: {audio_duration_project}\ndoc_count_project: {doc_count_project}")
+    # logger.debug(f"audio_duration_transcribed: {audio_duration_transcribed}\ndoc_count_transcribed: {doc_count_transcribed}")
+    # logger.debug(f"audio_duration_transcribed_boundary: {audio_duration_transcribed_boundary}")
+
+    transcription_report_df = pd.DataFrame(columns=['Project Name',
+                                              'Audio Duration Project(HH:MM:SS)',
+                                              'File Count Project',
+                                              'Audio Duration Transcribed',
+                                              'File Count Transcribed',
+                                              'Audio Duration Transcribed(Boundary)'])
+
+    transcription_report_df['Project Name'] = [activeprojectname]
+    transcription_report_df['Audio Duration Project(HH:MM:SS)'] = [toHHMMSS(audio_duration_project)]
+    transcription_report_df['File Count Project'] = [doc_count_project]
+    transcription_report_df['Audio Duration Transcribed'] = [toHHMMSS(audio_duration_transcribed)]
+    transcription_report_df['File Count Transcribed'] = [doc_count_transcribed]
+    transcription_report_df['Audio Duration Transcribed(Boundary)'] = [toHHMMSS(audio_duration_transcribed_boundary)]
+    download_transcription_report_filename = activeprojectname+'_transcription_report.csv'
+    csv_buffer = io.BytesIO()
+    transcription_report_df.to_csv(csv_buffer, 
+                            index=False)
+    csv_buffer.seek(0)
+
+    return send_file(csv_buffer,
+                        mimetype='text/csv',
+                        download_name=download_transcription_report_filename,
+                        as_attachment=True)
+    # return jsonify(totalAudioDurationProject=audio_duration_project,
+    #                docCountProject=doc_count_project,
+    #                totalAudioDurationTranscribed=audio_duration_transcribed,
+    #                docCountTranscribed=doc_count_transcribed,
+    #                totalAudioDurationTranscribedBoundary=audio_duration_transcribed_boundary)

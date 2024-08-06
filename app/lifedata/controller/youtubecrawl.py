@@ -12,7 +12,8 @@ import io
 import xmltodict
 import isodate
 from werkzeug.datastructures import FileStorage
-from pytube import YouTube
+# from pytube import YouTube
+from pytubefix import YouTube
 from pprint import pformat
 import subprocess
 from app.controller import (
