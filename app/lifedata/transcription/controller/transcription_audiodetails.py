@@ -1684,7 +1684,7 @@ def getnewaudioid(projects,
         latest_audio_id = audio_ids_list[audio_id_index]
     else:
         latest_audio_id = ''
-    logger.debug('latest_audio_id AUDIODETAILS: %s', latest_audio_id)
+    # logger.debug('latest_audio_id AUDIODETAILS: %s', latest_audio_id)
 
     return latest_audio_id
 

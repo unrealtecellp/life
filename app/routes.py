@@ -4084,6 +4084,7 @@ def shareprojectwith():
                 #     return f'This project: {activeprojectname} is not shared with this user: {user}'
 
                 if activeprojectname in usershareprojectsname:
+                    # logger.debug(usershareprojectsname[activeprojectname])
                     if (sharemode == -1):
                         removed_user = removeallaccess.removeallaccess(projects,
                                                                        userprojects,
@@ -4104,7 +4105,7 @@ def shareprojectwith():
                         'sharechecked': sharechecked,
                         'downloadchecked': downloadchecked,
                         'sharelatestchecked': sharelatestchecked,
-                        'activespeakerId': '',
+                        'activespeakerId': usershareprojectsname[activeprojectname]['activespeakerId'],
                         'activesourceId': ''
                     }
                 else:
@@ -4175,21 +4176,26 @@ def shareprojectwith():
                 if ('speakerIds' in projectdetails):
                     if (len(speakers) != 0):
                         userprojectinfo = ''
-                        for key, value in projectinfo.items():
-                            if len(value) != 0:
-                                if activeprojectname in value:
-                                    userprojectinfo = key+'.'+activeprojectname+".activespeakerId"
-                        userprojects.update_one(
-                            {
-                                "username": current_username
-                            },
-                            {
-                                "$set":
+                        # for key, value in projectinfo.items():
+                        #     if len(value) != 0:
+                        #         if activeprojectname in value:
+                                    # userprojectinfo = key+'.'+activeprojectname+".activespeakerId"
+                        userprojectinfo = 'projectsharedwithme.'+activeprojectname+".activespeakerId"
+                        # logger.debug(userprojectinfo)
+                        if (usershareprojectsname[activeprojectname]['activespeakerId'] == ''):
+                            userprojects.update_one(
                                 {
-                                    userprojectinfo: speakers[-1]
+                                    # "username": current_username
+                                    "username": user
+                                },
+                                {
+                                    "$set":
+                                    {
+                                        userprojectinfo: speakers[-1]
+                                    }
                                 }
-                            }
-                        )
+                            )
+                        # logger.debug(speakers[-1])
 
                         for speaker in speakers:
                             # logger.debug("speaker: %s", speaker)
@@ -6739,7 +6745,7 @@ def browsefilesharedwithuserslist():
         file_speaker_ids = file_speaker_ids["fileSpeakerIds"]
         logger.debug("file_speaker_ids: %s", file_speaker_ids)
         for audio_id in audio_ids_list:
-            speakerid = audiodetails.get_audio_speakerid(
+            speakerid = transcription_audiodetails.get_audio_speakerid(
                 transcriptions, activeprojectname, audio_id)
             if (speakerid is not None and file_speaker_ids is not None):
                 for user, speaker_ids in file_speaker_ids.items():
@@ -6768,7 +6774,7 @@ def browsesharewith():
         activeprojectname = getactiveprojectname.getactiveprojectname(
             current_username, userprojects)
 
-        # projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
+        projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
         # project_type = getprojecttype.getprojecttype(projects,
         #                                             activeprojectname)
 
@@ -6785,7 +6791,7 @@ def browsesharewith():
         # audio_ids_list = list(audio_info.keys())
         speaker_audioids = {}
         for audio_id in audio_ids_list:
-            speakerid = audiodetails.get_audio_speakerid(
+            speakerid = transcription_audiodetails.get_audio_speakerid(
                 transcriptions, activeprojectname, audio_id)
             if (speakerid is not None):
                 if (speakerid in speaker_audioids):
@@ -6833,6 +6839,39 @@ def browsesharewith():
                                         {"$pull": {
                                             "fileSpeakerIds."+user+"."+speaker: {"$in": audio_ids}
                                         }})
+            last_active_audio_id = projects.find_one({"projectname": activeprojectname},
+                                                     {'lastActiveId.'+user+'.'+speaker+'.audioId': 1})
+            # logger.debug(last_active_audio_id)
+            projects.update_one(
+                                {
+                                    'projectname': activeprojectname
+                                },
+                                {
+                                    '$set':
+                                    {
+                                        'lastActiveId.'+user+'.'+speaker+'.audioId': audio_ids[-1]
+                                    }
+                                }
+                            )
+            share_info = getuserprojectinfo.getuserprojectinfo(userprojects,
+                                                              user,
+                                                              activeprojectname)
+            if (share_info['activespeakerId'] == ''):
+                if (user == projectowner):
+                    userprojectinfo = 'myproject.'+activeprojectname+".activespeakerId"
+                else:
+                    userprojectinfo = 'projectsharedwithme.'+activeprojectname+".activespeakerId"
+                userprojects.update_one(
+                                {
+                                    "username": user
+                                },
+                                {
+                                    "$set":
+                                    {
+                                        userprojectinfo: list(speaker_audioids.keys())[-1]
+                                    }
+                                }
+                            )
     except:
         logger.exception("")
 

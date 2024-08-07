@@ -381,7 +381,8 @@ def home():
                                        audiospeakerids=audio_speaker_ids,
                                        commentstats=commentstats,
                                        shareinfo=shareinfo,
-                                       allQuesIds=all_ques_ids)
+                                       allQuesIds=all_ques_ids,
+                                       derivedFromProjectType=derived_from_project_type)
             except:
                 logger.exception("")
                 flash('Upload first audio file.')
@@ -391,7 +392,8 @@ def home():
                                projectName=activeprojectname,
                                newData=activeprojectform,
                                data=currentuserprojectsname,
-                               shareinfo=shareinfo)
+                               shareinfo=shareinfo,
+                               derivedFromProjectType=derived_from_project_type)
     except:
         logger.exception("")
 
