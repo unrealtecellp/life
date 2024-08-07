@@ -78,25 +78,27 @@ var toHHMMSS = (secs) => {
 }
 
 function getTranscriptionReport(ele) {
-    $.post( "/lifedata/transcription/transcriptionreport", {
-        // a: JSON.stringify(data_info )
-      })
-      .done(function( data ) {
-        console.log(data);
-        console.log(toHHMMSS(data.totalAudioDurationProject));
-        // let totalAudioDurationProject = new Date(data.totalAudioDurationProject * 1000).toISOString().substring(11, 19);
-        let totalAudioDurationProject = toHHMMSS(data.totalAudioDurationProject);
-        let docCountProject = data.docCountProject;
-        // let totalAudioDurationTranscribed = new Date(data.totalAudioDurationTranscribed * 1000).toISOString().substring(11, 19);
-        let totalAudioDurationTranscribed = toHHMMSS(data.totalAudioDurationTranscribed);
-        let docCountTranscribed = data.docCountTranscribed;
-        // let totalAudioDurationTranscribedBoundary = new Date(data.totalAudioDurationTranscribedBoundary * 1000).toISOString().substring(11, 19);
-        let totalAudioDurationTranscribedBoundary = toHHMMSS(data.totalAudioDurationTranscribedBoundary);
+    // runLoader();
+    window.location.href = "/lifedata/transcription/transcriptionreport";
+    // $.post( "/lifedata/transcription/transcriptionreport", {
+    //     // a: JSON.stringify(data_info )
+    //   })
+    //   .done(function( data ) {
+    //     console.log(data);
+    //     // console.log(toHHMMSS(data.totalAudioDurationProject));
+    //     // // let totalAudioDurationProject = new Date(data.totalAudioDurationProject * 1000).toISOString().substring(11, 19);
+    //     // let totalAudioDurationProject = toHHMMSS(data.totalAudioDurationProject);
+    //     // let docCountProject = data.docCountProject;
+    //     // // let totalAudioDurationTranscribed = new Date(data.totalAudioDurationTranscribed * 1000).toISOString().substring(11, 19);
+    //     // let totalAudioDurationTranscribed = toHHMMSS(data.totalAudioDurationTranscribed);
+    //     // let docCountTranscribed = data.docCountTranscribed;
+    //     // // let totalAudioDurationTranscribedBoundary = new Date(data.totalAudioDurationTranscribedBoundary * 1000).toISOString().substring(11, 19);
+    //     // let totalAudioDurationTranscribedBoundary = toHHMMSS(data.totalAudioDurationTranscribedBoundary);
 
-        alert('Audio Duration Project: '+totalAudioDurationProject+', Doc Count Project: '+docCountProject+
-            '\n\nAudio Duration Transcribed: '+totalAudioDurationTranscribed+', Doc Count Transcribed: '+docCountTranscribed+
-            '\n\nAudio Duration Transcribed(Boundary): '+totalAudioDurationTranscribedBoundary)
+    //     // alert('Audio Duration Project: '+totalAudioDurationProject+', Doc Count Project: '+docCountProject+
+    //     //     '\n\nAudio Duration Transcribed: '+totalAudioDurationTranscribed+', Doc Count Transcribed: '+docCountTranscribed+
+    //     //     '\n\nAudio Duration Transcribed(Boundary): '+totalAudioDurationTranscribedBoundary)
 
-        // window.location.href = window.location.href.replace("models_playground", "file_download/"+data.fileName);
-      });
+    //     // window.location.href = window.location.href.replace("models_playground", "file_download/"+data.fileName);
+    //   });
 }

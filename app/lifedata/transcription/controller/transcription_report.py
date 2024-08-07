@@ -13,12 +13,15 @@ def total_audio_duration_project(mongo,
                                 transcriptions_collection,
                                 project_name):
     total_duration = 0
+    count = 0
     try:
         aggregate_output = transcriptions_collection.aggregate(
             [
                 {
                     "$match": {
-                        "projectname": project_name
+                        "projectname": project_name,
+                        "speakerId": { "$ne": "" },
+                        "audiodeleteFLAG": 0
                     },
                 },
                 {
@@ -30,16 +33,47 @@ def total_audio_duration_project(mongo,
                 }
             ]
         )
-        logger.debug("aggregate_output: %s", aggregate_output)
+        # logger.debug("aggregate_output: %s", aggregate_output)
         for doc in aggregate_output:
-            logger.debug("total_duration: %s", pformat(doc))
+            # logger.debug("doc: %s", pformat(doc))
             total_duration = doc['total_duration']
             count = doc['count']
-        logger.debug("total_duration: %s", total_duration)
-        if (total_duration == 0):
+        # logger.debug("total_duration: %s", total_duration)
+        currentSliceDuration_not_exist = transcriptions_collection.aggregate(
+                                        [
+                                            {
+                                                "$match": {
+                                                    "projectname": project_name,
+                                                    "speakerId": { "$ne": "" },
+                                                    "audiodeleteFLAG": 0,
+                                                    "audioMetadata.currentSliceDuration": { "$exists": False }
+                                                },
+                                            },
+                                            {
+                                                "$project": {
+                                                    "_id": 0,
+                                                    "audioId": 1
+                                                }
+                                            }
+                                        ]
+                                    )
+        # logger.debug(f"currentSliceDuration_not_exist: {currentSliceDuration_not_exist}")
+        currentSliceDuration_not_exist_list = []
+        # for doc in currentSliceDuration_not_exist:
+            # logger.debug(doc)
+            # currentSliceDuration_not_exist_list.append(doc['audioId'])
+        currentSliceDuration_not_exist_list = [doc['audioId'] for doc in currentSliceDuration_not_exist]
+        # logger.debug(currentSliceDuration_not_exist_list)
+        # logger.debug(len(currentSliceDuration_not_exist_list))
+        # if (total_duration == 0):
+        if (len(currentSliceDuration_not_exist_list) != 0):
+            count = count - len(currentSliceDuration_not_exist_list)
             total_duration, count = missing_duration(mongo,
                                                 transcriptions_collection,
-                                                project_name)
+                                                project_name,
+                                                currentSliceDuration_not_exist_list,
+                                                total_duration,
+                                                count)
     except:
         logger.exception("")
 
@@ -49,13 +83,16 @@ def total_audio_duration_transcribed(mongo,
                                     transcriptions_collection,
                                     project_name):
     total_duration = 0
+    count = 0
     try:
         aggregate_output = transcriptions_collection.aggregate(
             [
                 {
                     "$match": {
                         "projectname": project_name,
-                        "transcriptionFLAG": 1
+                        "speakerId": { "$ne": "" },
+                        "transcriptionFLAG": 1,
+                        "audiodeleteFLAG": 0
                     },
                 },
                 {
@@ -67,16 +104,48 @@ def total_audio_duration_transcribed(mongo,
                 }
             ]
         )
-        logger.debug("aggregate_output: %s", aggregate_output)
+        # logger.debug("aggregate_output: %s", aggregate_output)
         for doc in aggregate_output:
-            logger.debug("total_duration: %s", pformat(doc))
+            # logger.debug("doc: %s", pformat(doc))
             total_duration = doc['total_duration']
             count = doc['count']
-        logger.debug("total_duration: %s", total_duration)
-        if (total_duration == 0):
+        # logger.debug("total_duration: %s", total_duration)
+        currentSliceDuration_not_exist = transcriptions_collection.aggregate(
+                                        [
+                                            {
+                                                "$match": {
+                                                    "projectname": project_name,
+                                                    "speakerId": { "$ne": "" },
+                                                    "transcriptionFLAG": 1,
+                                                    "audiodeleteFLAG": 0,
+                                                    "audioMetadata.currentSliceDuration": { "$exists": False }
+                                                },
+                                            },
+                                            {
+                                                "$project": {
+                                                    "_id": 0,
+                                                    "audioId": 1
+                                                }
+                                            }
+                                        ]
+                                    )
+        # logger.debug(f"currentSliceDuration_not_exist: {currentSliceDuration_not_exist}")
+        currentSliceDuration_not_exist_list = []
+        # for doc in currentSliceDuration_not_exist:
+        #     # logger.debug(doc)
+        #     currentSliceDuration_not_exist_list.append(doc['audioId'])
+        currentSliceDuration_not_exist_list = [doc['audioId'] for doc in currentSliceDuration_not_exist]
+        # logger.debug(currentSliceDuration_not_exist_list)
+        # logger.debug(len(currentSliceDuration_not_exist_list))
+        # if (total_duration == 0):
+        if (len(currentSliceDuration_not_exist_list) != 0):
+            count = count - len(currentSliceDuration_not_exist_list)
             total_duration, count = missing_duration_transcribed(mongo,
-                                                            transcriptions_collection,
-                                                            project_name)
+                                                                transcriptions_collection,
+                                                                project_name,
+                                                                currentSliceDuration_not_exist_list,
+                                                                total_duration,
+                                                                count)
     except:
         logger.exception("")
 
@@ -91,7 +160,9 @@ def total_audio_duration_boundary(transcriptions_collection,
                 {
                     "$match": {
                         "projectname": project_name,
-                        "transcriptionFLAG": 1
+                        "speakerId": { "$ne": "" },
+                        "transcriptionFLAG": 1,
+                        "audiodeleteFLAG": 0
                     },
                 },
                 {
@@ -102,12 +173,17 @@ def total_audio_duration_boundary(transcriptions_collection,
                 }
             ]
         )
-        logger.debug("aggregate_output: %s", aggregate_output)
+        # logger.debug("total_duration: %s", total_duration)
+        # logger.debug("aggregate_output: %s", aggregate_output)
         for doc in aggregate_output:
             # logger.debug("textGrid: %s", pformat(doc['textGrid']['sentence']))
             for key, value in doc['textGrid']['sentence'].items():
                 total_duration += value['end'] - value['start']
-        logger.debug("total_duration: %s", total_duration)
+                # logger.debug(value['end'])
+                # logger.debug(value['start'])
+                # logger.debug(f"{value['end'] - value['start']}")
+                # logger.debug("total_duration: %s", total_duration)
+        # logger.debug("total_duration: %s", total_duration)
     except:
         logger.exception("")
     
@@ -132,38 +208,44 @@ def total_audio_duration_speaker(transcriptions_collection,
                 }
             ]
         )
-        logger.debug("aggregate_output: %s", aggregate_output)
+        # logger.debug("aggregate_output: %s", aggregate_output)
         for doc in aggregate_output:
-            logger.debug("total_duration: %s", pformat(doc))
+            pass
+            # logger.debug("total_duration: %s", pformat(doc))
     except:
         logger.exception("")
 
 def missing_duration(mongo,
                      transcriptions_collection,
-                     project_name):
-    total_duration = 0
-    count = 0
+                     project_name,
+                     currentSliceDuration_not_exist_list,
+                     total_duration = 0,
+                     count = 0):
     try:
-        aggregate_output = transcriptions_collection.aggregate(
-            [
-                {
-                    "$match": {
-                        "projectname": project_name
-                    },
-                },
-                {
-                    "$project": {
-                        "_id": 0,
-                        "audioId": 1
-                    }
-                }
-            ]
-        )
-        logger.debug("aggregate_output: %s", aggregate_output)
-        for doc in aggregate_output:
-            logger.debug("total_duration: %s", pformat(doc))
-            audio_id = doc['audioId']
-            logger.debug(audio_id)
+        # aggregate_output = transcriptions_collection.aggregate(
+        #     [
+        #         {
+        #             "$match": {
+        #                 "projectname": project_name,
+        #                 "speakerId": { "$ne": "" },
+        #                 "audiodeleteFLAG": 0
+                        
+        #             },
+        #         },
+        #         {
+        #             "$project": {
+        #                 "_id": 0,
+        #                 "audioId": 1
+        #             }
+        #         }
+        #     ]
+        # )
+        # # logger.debug("aggregate_output: %s", aggregate_output)
+        for audio_id in currentSliceDuration_not_exist_list:
+        # for doc in aggregate_output:
+        #     logger.debug("total_duration: %s", total_duration)
+        #     audio_id = doc['audioId']
+            # logger.debug(audio_id)
             fs = gridfs.GridFS(mongo.db)
             file = fs.find_one({'audioId': audio_id})
             if (file is not None):
@@ -172,9 +254,15 @@ def missing_duration(mongo,
                 audio_duration, audio_file = transcription_audiodetails.get_audio_duration_from_file(audiofile)
                 # logger.debug(audio_duration)
                 # logger.debug(audio_file)
+                x = transcriptions_collection.update_one({"projectname": project_name,
+                                                            "audioId": audio_id},
+                                                        {'$set': {
+                                                            "audioMetadata.currentSliceDuration": audio_duration
+                                                        }})
+                # logger.debug(x)
                 total_duration += audio_duration
                 count += 1
-        logger.debug("total_duration: %s", total_duration)
+        # logger.debug("total_duration: %s", total_duration)
     except:
         logger.exception("")
     
@@ -182,31 +270,34 @@ def missing_duration(mongo,
 
 def missing_duration_transcribed(mongo,
                                     transcriptions_collection,
-                                    project_name):
-    total_duration = 0
-    count = 0
+                                    project_name,
+                                    currentSliceDuration_not_exist_list,
+                                    total_duration = 0,
+                                    count = 0):
     try:
-        aggregate_output = transcriptions_collection.aggregate(
-            [
-                {
-                    "$match": {
-                        "projectname": project_name,
-                        "transcriptionFLAG": 1
-                    },
-                },
-                {
-                    "$project": {
-                        "_id": 0,
-                        "audioId": 1
-                    }
-                }
-            ]
-        )
-        logger.debug("aggregate_output: %s", aggregate_output)
-        for doc in aggregate_output:
-            logger.debug("total_duration: %s", pformat(doc))
-            audio_id = doc['audioId']
-            logger.debug(audio_id)
+        # aggregate_output = transcriptions_collection.aggregate(
+        #     [
+        #         {
+        #             "$match": {
+        #                 "projectname": project_name,
+        #                 "transcriptionFLAG": 1,
+        #                 "audiodeleteFLAG": 0
+        #             },
+        #         },
+        #         {
+        #             "$project": {
+        #                 "_id": 0,
+        #                 "audioId": 1
+        #             }
+        #         }
+        #     ]
+        # )
+        # # logger.debug("aggregate_output: %s", aggregate_output)
+        for audio_id in currentSliceDuration_not_exist_list:
+        # for doc in aggregate_output:
+        #     logger.debug("total_duration: %s", total_duration)
+            # audio_id = doc['audioId']
+            # logger.debug(audio_id)
             fs = gridfs.GridFS(mongo.db)
             file = fs.find_one({'audioId': audio_id})
             if (file is not None):
@@ -217,7 +308,7 @@ def missing_duration_transcribed(mongo,
                 # logger.debug(audio_file)
                 total_duration += audio_duration
                 count += 1
-        logger.debug("total_duration: %s", total_duration)
+        # logger.debug("total_duration: %s", total_duration)
     except:
         logger.exception("")
     
