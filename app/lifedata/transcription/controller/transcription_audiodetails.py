@@ -1,6 +1,7 @@
 # 9d4fd99c7dfb7f00387d1df113ce1c428cb53909
 """Module to save the uploaded audio file(s) from 'enternewsenteces' route."""
 
+from app import mongo
 import librosa
 import pydub
 from pydub import AudioSegment
@@ -3688,50 +3689,85 @@ def get_n_audios(data_collection,
                  number_of_audios=10,
                  audio_delete_flag=0,
                  all_data=False):
-    # logger.debug("speaker_audio_ids: %s", pformat(speaker_audio_ids))
-    aggregate_output = data_collection.aggregate([
-        {
-            "$match": {
-                "projectname": activeprojectname,
-                "speakerId": active_speaker_id,
-                "audiodeleteFLAG": audio_delete_flag
-            }
-        },
-        {
-            "$sort": {
-                "audioId": 1
-            }
-        },
-        {
-            "$project": {
-                "_id": 0,
-                "audioId": 1,
-                "audioFilename": 1,
-                current_username + '.audioCompleteFLAG': 1
-            }
-        }
-    ])
-    # logger.debug("aggregate_output: %s", aggregate_output)
     aggregate_output_list = []
+    total_records = 0
+    try:
+        # logger.debug("speaker_audio_ids: %s", pformat(speaker_audio_ids))
+        aggregate_output = data_collection.aggregate([
+            {
+                "$match": {
+                    "projectname": activeprojectname,
+                    "speakerId": active_speaker_id,
+                    "audiodeleteFLAG": audio_delete_flag
+                }
+            },
+            {
+                "$sort": {
+                    "audioId": 1
+                }
+            },
+            {
+                "$project": {
+                    "_id": 0,
+                    "audioId": 1,
+                    "audioFilename": 1,
+                    current_username + '.audioCompleteFLAG': 1
+                }
+            }
+        ])
+        # logger.debug("aggregate_output: %s", aggregate_output)
 
-    for doc in aggregate_output:
-        # logger.debug("aggregate_output: %s", pformat(doc))
-        if (doc['audioId'] in speaker_audio_ids):
-            doc['Audio File'] = ''
-            if current_username in doc:
-                doc['Transcribed'] = doc.pop(current_username, {}).get(
-                    'audioCompleteFLAG', False)
+        for doc in aggregate_output:
+            # logger.debug("aggregate_output: %s", pformat(doc))
+            if (doc['audioId'] in speaker_audio_ids):
+                doc['Audio File'] = ''
+                doc['Shared With'] = audio_shared_with(activeprojectname,
+                                                    active_speaker_id,
+                                                    doc['audioId'])
+                if current_username in doc:
+                    doc['Transcribed'] = doc.pop(current_username, {}).get(
+                        'audioCompleteFLAG', False)
 
-            aggregate_output_list.append(doc)
+                aggregate_output_list.append(doc)
+                # logger.debug(len(aggregate_output_list))
 
-    # logger.debug('aggregate_output_list: %s', pformat(aggregate_output_list))
-    total_records = len(aggregate_output_list)
-    # logger.debug('total_records AUDIO: %s', total_records)
-    if (not all_data):
-        aggregate_output_list = aggregate_output_list[start_from:number_of_audios]
+        # logger.debug('aggregate_output_list: %s', pformat(aggregate_output_list))
+        total_records = len(aggregate_output_list)
+        # logger.debug('total_records AUDIO: %s', total_records)
+        if (not all_data):
+            aggregate_output_list = aggregate_output_list[start_from:number_of_audios]
+    except:
+        logger.exception("")
+
     return (total_records,
             aggregate_output_list)
 
+def audio_shared_with(activeprojectname,
+                      active_speaker_id,
+                      audio_id):
+    try:
+        # logger.debug(active_speaker_id)
+        shared_with_list = []
+        projects_collection, = getdbcollections.getdbcollections(mongo, 'projects')
+
+        shared_with_info = projects_collection.find_one({"projectname": activeprojectname},
+                                                        {"_id": 0,
+                                                        "speakerIds": 1,
+                                                        "fileSpeakerIds": 1})
+        # logger.debug(pformat(shared_with_info))
+        shared_with_list = [user for user, user_speaker_ids in shared_with_info['speakerIds'].items() if active_speaker_id in user_speaker_ids]
+        # logger.debug(shared_with_list)
+        for user, user_speaker_ids in shared_with_info['fileSpeakerIds'].items():
+            # logger.debug(user)
+            # logger.debug(user_speaker_ids)
+            if (active_speaker_id in user_speaker_ids and
+                audio_id in user_speaker_ids[active_speaker_id]):
+                shared_with_list.append(user)
+        shared_with_list = ', '.join(list(set(shared_with_list)))
+    except:
+        logger.exception("")
+    
+    return shared_with_list
 
 def get_audio_sorting_subcategories(speakerdetails_collection,
                                     activeprojectname,

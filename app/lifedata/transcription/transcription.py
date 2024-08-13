@@ -492,7 +492,7 @@ def audiobrowse():
         new_data['sourceMetadata'] = speaker_metadata
         new_data['audioData'] = new_audio_data_list
         new_data['audioDataFields'] = [
-            'audioId', 'audioFilename', 'Transcribed', 'Audio File']
+            'audioId', 'audioFilename', 'Transcribed', 'Shared With', 'Audio File']
         new_data['totalRecords'] = total_records
         new_data['transcriptionsBy'] = project_shared_with
     except:
@@ -509,7 +509,7 @@ def audiobrowse():
 def updateaudiosortingsubcategories():
     audio_sorting_sub_categories = {}
     audio_data_fields = ['audioId', 'audioFilename',
-                         'Transcribed', 'Audio File']
+                         'Transcribed', 'Shared With', 'Audio File']
     audio_data_list = []
     speaker_metadata = {}
     try:
@@ -617,7 +617,7 @@ def updateaudiosortingsubcategories():
 @login_required
 def filteraudiobrowsetable():
     audio_data_fields = ['audioId', 'audioFilename',
-                         'Transcribed', 'Audio File']
+                         'Transcribed', 'Shared With', 'Audio File']
     audio_data_list = []
     try:
         projects, userprojects, speakerdetails_collection, transcriptions = getdbcollections.getdbcollections(mongo,
@@ -761,7 +761,7 @@ def filteraudiobrowsetable():
 @login_required
 def updateaudiobrowsetable():
     audio_data_fields = ['audioId', 'audioFilename',
-                         'Transcribed', 'Audio File']
+                         'Transcribed', 'Shared With', 'Audio File']
     audio_data_list = []
     try:
         # data through ajax
@@ -887,7 +887,7 @@ def audiobrowseaction():
 @login_required
 def audiobrowseactionplay():
     audio_data_fields = ['audioId', 'audioFilename',
-                         'Transcribed', 'Audio File']
+                         'Transcribed', 'Shared With', 'Audio File']
     audio_data_list = []
     try:
         projects, userprojects, transcriptions = getdbcollections.getdbcollections(mongo,
@@ -992,7 +992,7 @@ def audiobrowseactionshare():
 @login_required
 def audiobrowsechangepage():
     audio_data_fields = ['audioId', 'audioFilename',
-                         'Transcribed', 'Audio File']
+                         'Transcribed', 'Shared With', 'Audio File']
     audio_data_list = []
     try:
         # data through ajax
