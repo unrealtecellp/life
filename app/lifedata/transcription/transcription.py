@@ -531,7 +531,7 @@ def updateaudiosortingsubcategories():
         #     speakerids = []
         # data through ajax
         data = json.loads(request.args.get('a'))
-        logger.debug('data: %s', pformat(data))
+        # logger.debug('data: %s', pformat(data))
         audio_browse_info = data['audioBrowseInfo']
         audio_file_count = audio_browse_info['audioFilesCount']
         # logger.debug('audio_browse_info: %s', pformat(audio_browse_info))
@@ -553,18 +553,22 @@ def updateaudiosortingsubcategories():
         share_mode = shareinfo['sharemode']
         share_checked = shareinfo['sharechecked']
         download_checked = shareinfo['downloadchecked']
+        selected_audio_sorting_sub_categories = ''
 
         derived_from_project_type, derived_from_project_name = getprojecttype.getderivedfromprojectdetails(projects,
                                                                                                            activeprojectname)
+        # logger.debug(derived_from_project_type)
+        # logger.debug(derived_from_project_name)
         if (selected_audio_sorting_category == 'sourcemetainfo'):
-            audio_sorting_sub_categories = transcription_audiodetails.get_audio_sorting_subcategories(speakerdetails_collection,
-                                                                                                      activeprojectname,
-                                                                                                      speakerids,
-                                                                                                      selected_audio_sorting_category
-                                                                                                      )
-            selected_audio_sorting_sub_categories = ''
-            # logger.debug("audio_sorting_sub_categories: %s",
-            #              audio_sorting_sub_categories)
+            # audio_sorting_sub_categories = transcription_audiodetails.get_audio_sorting_subcategories(speakerdetails_collection,
+            #                                                                                           activeprojectname,
+            #                                                                                           speakerids,
+            #                                                                                           selected_audio_sorting_category
+            #                                                                                           )
+            audio_sorting_sub_categories = transcription_audiodetails.get_audio_sorting_subcategories_new(speakerdetails_collection,
+                                                                                                            activeprojectname,
+                                                                                                            speakerids)
+            # logger.debug("audio_sorting_sub_categories: %s", audio_sorting_sub_categories)
             if (derived_from_project_type != '' and
                     derived_from_project_name != ''):
                 if (derived_from_project_type == 'questionnaires'):
@@ -573,8 +577,8 @@ def updateaudiosortingsubcategories():
                                                                                                                               speakerids,
                                                                                                                               audio_sorting_sub_categories
                                                                                                                               )
-                    # logger.debug("audio_sorting_sub_categories_derived: %s", audio_sorting_sub_categories_derived)
-            # logger.debug("audio_sorting_sub_categories: %s", audio_sorting_sub_categories)
+                    # logger.debug("audio_sorting_sub_categories_derived: %s", pformat(audio_sorting_sub_categories_derived))
+            # logger.debug("audio_sorting_sub_categories: %s", pformat(audio_sorting_sub_categories))
         elif (selected_audio_sorting_category == 'lifespeakerid'):
             audio_sorting_sub_categories = speakerids
             active_speaker_id = shareinfo['activespeakerId']

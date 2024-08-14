@@ -1,10 +1,7 @@
 __pycache__
 venv
-.flaskenv
 .vscode
-ubuntuPackages.sh
 LiFE.log
-logging.config
 linksnotparse.txt
 R-J.JSON
 profiler

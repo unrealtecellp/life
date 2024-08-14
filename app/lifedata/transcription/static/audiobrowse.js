@@ -53,21 +53,25 @@ function createSelect2FromObject(eleId, optionsObject, selectedOption) {
 }
 
 function createSelect2optgroup(eleId, optionsObject, selectedOption) {
+    // console.log(eleId, optionsObject, selectedOption);
     let ele = '';
     for (let [key, value] of Object.entries(optionsObject)) {
-        let optGroup = key;
-        let optGroupId = key.toLowerCase().replaceAll(' ', '');
-        ele += '<optgroup id="' + optGroupId + '" label="' + optGroup + '">';
-        for (let i = 0; i < value.length; i++) {
-            option = value[i];
-            if (option === selectedOption) {
-                ele += '<option value="' + option + '" selected>' + option + '</option>'
+        // console.log(value.length);
+        if (!(value.length === 0)) {
+            let optGroup = key;
+            let optGroupId = key.toLowerCase().replaceAll(' ', '');
+            ele += '<optgroup id="' + optGroupId + '" label="' + optGroup + '">';
+            for (let i = 0; i < value.length; i++) {
+                option = value[i];
+                if (option === selectedOption) {
+                    ele += '<option value="' + option + '" selected>' + option + '</option>'
+                }
+                else {
+                    ele += '<option value="' + option + '">' + option + '</option>'
+                }
             }
-            else {
-                ele += '<option value="' + option + '">' + option + '</option>'
-            }
+            ele += '</optgroup>';
         }
-        ele += '</optgroup>';
     }
     $('#' + eleId).html(ele);
     $('#' + eleId).select2({
@@ -160,6 +164,13 @@ function createAudioBrowseTable(
             ele += '<th onclick="sortTable(' + (i + 1) + ')" hidden>' + audioDataFields[i] + '</th>';
             continue;
         }
+        if (audioDataFields[i] == "Shared With") {
+            if (shareChecked === 'true'){
+                ele += '<th onclick="sortTable(' + (i + 1) + ')">' + audioDataFields[i] + '</th>';
+            }
+            continue;
+        }
+        // console.log(audioDataFields[i]);
         ele += '<th onclick="sortTable(' + (i + 1) + ')">' + audioDataFields[i] + '</th>';
     }
     ele += '<th>View</th>';
@@ -193,6 +204,12 @@ function createAudioBrowseTable(
                 // console.log(field);
                 if (field == "audioFilename") {
                     ele += '<td id=' + field + ' hidden>' + aData[field] + '</td>';
+                    continue;
+                }
+                else if (field == "Shared With") {
+                    if (shareChecked === 'true'){
+                        ele += '<td id=' + field + '>' + aData[field] + '</td>';
+                    }
                     continue;
                 }
                 else if (field == 'Audio File') {

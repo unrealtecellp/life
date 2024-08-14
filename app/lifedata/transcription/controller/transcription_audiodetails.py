@@ -3755,14 +3755,16 @@ def audio_shared_with(activeprojectname,
                                                         "speakerIds": 1,
                                                         "fileSpeakerIds": 1})
         # logger.debug(pformat(shared_with_info))
-        shared_with_list = [user for user, user_speaker_ids in shared_with_info['speakerIds'].items() if active_speaker_id in user_speaker_ids]
+        if ('speakerIds'):
+            shared_with_list = [user for user, user_speaker_ids in shared_with_info['speakerIds'].items() if active_speaker_id in user_speaker_ids]
         # logger.debug(shared_with_list)
-        for user, user_speaker_ids in shared_with_info['fileSpeakerIds'].items():
-            # logger.debug(user)
-            # logger.debug(user_speaker_ids)
-            if (active_speaker_id in user_speaker_ids and
-                audio_id in user_speaker_ids[active_speaker_id]):
-                shared_with_list.append(user)
+        if ('fileSpeakerIds' in shared_with_info):
+            for user, user_speaker_ids in shared_with_info['fileSpeakerIds'].items():
+                # logger.debug(user)
+                # logger.debug(user_speaker_ids)
+                if (active_speaker_id in user_speaker_ids and
+                    audio_id in user_speaker_ids[active_speaker_id]):
+                    shared_with_list.append(user)
         shared_with_list = ', '.join(list(set(shared_with_list)))
     except:
         logger.exception("")
@@ -3815,8 +3817,8 @@ def get_audio_sorting_subcategories(speakerdetails_collection,
                         selected_audio_sorting_subcategory = selected_audio_sorting_subcategory_new
                     if (key in selected_audio_sorting_subcategory or
                             key in list(selected_audio_sorting_subcategory_self_map.values())):
-                        logger.debug(key)
-                        logger.debug(selected_audio_sorting_subcategory)
+                        # logger.debug(key)
+                        # logger.debug(selected_audio_sorting_subcategory)
                         selected_audio_sorting_subcategory_value = selected_audio_sorting_subcategory[
                             key]
                         if (selected_audio_sorting_subcategory_value in aggregate_output_dict):
@@ -3840,6 +3842,99 @@ def get_audio_sorting_subcategories(speakerdetails_collection,
 
     return aggregate_output_dict
 
+def create_audio_sorting_subcategories_new(aggregate_output_dict,
+                                           key,
+                                           value):
+    exclude = ['updatedBy',
+                'current_date',
+                'accessed_at',
+                # 'audio_language',
+                'published_date',
+                'published_time',
+                'publisher',
+                'publisher_id',
+                # 'searchKeywords',
+                # 'sourceTags',
+                # 'total_comments',
+                # 'total_views',
+                'video_description',
+                'video_dislikes',
+                # 'video_duration',
+                'video_favourites',
+                'video_likes',
+                # 'video_link',
+                # 'video_tags',
+                # 'video_title',
+                'lifespeakerid',
+                'karyaaccesscode',
+                'karyaspeakerid',
+                ''
+                ]
+    if (key not in exclude):
+        if (key not in aggregate_output_dict):
+            aggregate_output_dict[key] = []
+        if (isinstance(value, str)):
+            if (len(value.strip()) != 0):
+                aggregate_output_dict[key].extend([value])
+                aggregate_output_dict[key] = list(set(aggregate_output_dict[key]))
+        elif (isinstance(value, list)):
+            value = [x for x in value if x != '']
+            aggregate_output_dict[key].extend(value)
+            aggregate_output_dict[key] = list(set(aggregate_output_dict[key]))
+    
+    return aggregate_output_dict
+
+def get_audio_sorting_subcategories_new(speakerdetails_collection,
+                                        activeprojectname,
+                                        speakerids):
+    # logger.debug("speakerids: %s", pformat(speakerids))
+    aggregate_output = speakerdetails_collection.aggregate([
+        {
+            "$match": {
+                "projectname": activeprojectname,
+                "isActive": 1
+            }
+        },
+        {
+            "$project": {
+                "_id": 0,
+                "current": 1,
+                "lifesourceid": 1
+            }
+        }
+    ])
+    # logger.debug("aggregate_output: %s", aggregate_output)
+    aggregate_output_dict = {}
+    for doc in aggregate_output:
+        # logger.debug("aggregate_output: %s", pformat(doc))
+        try:
+            speaker = doc["lifesourceid"]
+            if (speaker in speakerids and
+                speaker != ''):
+                # logger.debug("aggregate_output: %s", pformat(doc))
+                # logger.debug(speaker)
+                # audio_sorting_subcategory = doc["current"]["sourceMetadata"][selected_audio_sorting_category]
+                audio_sorting_subcategory = doc["current"]
+                # logger.debug("aggregate_output: %s", pformat(audio_sorting_subcategory))
+                for key, value in audio_sorting_subcategory.items():
+                    # logger.debug('%s, %s', key, value)
+                    if (isinstance(value, dict)):
+                        # logger.debug('%s, %s', key, value)
+                        for k, v in value.items():
+                            # logger.debug('%s, %s', k, v)
+                            aggregate_output_dict = create_audio_sorting_subcategories_new(aggregate_output_dict,
+                                                                                            k,
+                                                                                            v)
+                    else:
+                        aggregate_output_dict = create_audio_sorting_subcategories_new(aggregate_output_dict,
+                                                                                        key,
+                                                                                        value)
+                # logger.debug(pformat(aggregate_output_dict))
+        except:
+            logger.exception("")
+
+    # logger.debug(pformat(aggregate_output_dict))
+    return aggregate_output_dict
 
 def get_audio_sorting_subcategories_derived(transcriptions_collection,
                                             activeprojectname,
