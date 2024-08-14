@@ -321,3 +321,74 @@ Models Database found!
 language Database found!
 [2024-08-06 23:08:09,690] - logger: life - level: INFO - function: generate_models_database - line: 55
 Models Database found!
+[2024-08-08 18:34:42,887] - logger: life - level: INFO - function: generate_languages_database - line: 102
+language Database found!
+[2024-08-08 18:34:42,889] - logger: life - level: INFO - function: generate_models_database - line: 55
+Models Database found!
+[2024-08-08 18:34:45,641] - logger: life - level: INFO - function: generate_languages_database - line: 102
+language Database found!
+[2024-08-08 18:34:45,642] - logger: life - level: INFO - function: generate_models_database - line: 55
+Models Database found!
+[2024-08-09 08:50:58,747] - logger: life - level: INFO - function: generate_languages_database - line: 102
+language Database found!
+[2024-08-09 08:50:58,749] - logger: life - level: INFO - function: generate_models_database - line: 55
+Models Database found!
+[2024-08-09 08:51:01,859] - logger: life - level: INFO - function: generate_languages_database - line: 102
+language Database found!
+[2024-08-09 08:51:01,860] - logger: life - level: INFO - function: generate_models_database - line: 55
+Models Database found!
+[2024-08-10 10:35:37,106] - logger: life - level: INFO - function: generate_languages_database - line: 102
+language Database found!
+[2024-08-10 10:35:37,108] - logger: life - level: INFO - function: generate_models_database - line: 55
+Models Database found!
+[2024-08-10 10:35:40,055] - logger: life - level: INFO - function: generate_languages_database - line: 102
+language Database found!
+[2024-08-10 10:35:40,055] - logger: life - level: INFO - function: generate_models_database - line: 55
+Models Database found!
+[2024-08-11 20:33:05,749] - logger: life - level: INFO - function: generate_languages_database - line: 102
+language Database found!
+[2024-08-11 20:33:05,753] - logger: life - level: INFO - function: generate_models_database - line: 55
+Models Database found!
+[2024-08-11 20:33:06,646] - logger: life - level: INFO - function: generate_languages_database - line: 102
+language Database found!
+[2024-08-11 20:33:06,647] - logger: life - level: INFO - function: generate_models_database - line: 55
+Models Database found!
+[2024-08-13 13:50:21,795] - logger: life - level: INFO - function: generate_languages_database - line: 102
+language Database found!
+[2024-08-13 13:50:21,797] - logger: life - level: INFO - function: generate_models_database - line: 55
+Models Database found!
+[2024-08-13 13:50:24,857] - logger: life - level: INFO - function: generate_languages_database - line: 102
+language Database found!
+[2024-08-13 13:50:24,858] - logger: life - level: INFO - function: generate_models_database - line: 55
+Models Database found!
+[2024-08-13 14:54:22,482] - logger: life - level: ERROR - function: progressReportAdmin - line: 984
+Traceback (most recent call last):
+  File "/home/kmi/lifetestapp/app/routes.py", line 956, in progressReportAdmin
+    return render_template('progressReportAdmin.html',
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask/templating.py", line 147, in render_template
+    return _render(app, template, context)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask/templating.py", line 130, in _render
+    rv = template.render(context)
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/jinja2/environment.py", line 1301, in render
+    self.environment.handle_exception()
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/jinja2/environment.py", line 936, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/home/kmi/lifetestapp/app/templates/progressReportAdmin.html", line 1, in top-level template code
+    {% extends "links.html" %}
+  File "/home/kmi/lifetestapp/app/templates/links.html", line 1, in top-level template code
+    {% extends "base.html" %}
+  File "/home/kmi/lifetestapp/app/templates/base.html", line 1, in top-level template code
+    {% extends 'bootstrap/base.html' %}
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_bootstrap/templates/bootstrap/base.html", line 1, in top-level template code
+    {% block doc -%}
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_bootstrap/templates/bootstrap/base.html", line 4, in block 'doc'
+    {%- block html %}
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_bootstrap/templates/bootstrap/base.html", line 6, in block 'html'
+    {%- block head %}
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/flask_bootstrap/templates/bootstrap/base.html", line 13, in block 'head'
+    {%- block styles %}
+  File "/home/kmi/lifetestapp/app/templates/progressReportAdmin.html", line 23, in block 'styles'
+    #gantt_chart_{{ loop.index }} {
+  File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/jinja2/environment.py", line 485, in getattr
+    return getattr(obj, attribute)
+jinja2.exceptions.UndefinedError: 'loop' is undefined

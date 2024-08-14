@@ -428,6 +428,24 @@ Progress Report Admin
                     </div>
 
 
+                    
+                    <!-- Button to toggle the pie chart and total projects display -->
+                    <!-- <button class="btn btn-primary" onclick="showCumulativeResults()">Cumulative Results</button> -->
+                    <button class="btn btn-primary" id="toggleMetricsButton" onclick="toggleMetrics()">Show Project Metrics</button>
+
+                    <!-- Placeholder for displaying total projects -->
+                    <div id="totalProjectsDisplay" style="margin-top: 10px; display: none;"></div>
+
+                    <!-- Placeholder for the pie chart with a close button -->
+                    <div id="metrics_pie_chart_container" style="margin-top: 10px; display: none; width: 100%; height: 400px;"></div>
+
+                    <!-- Close button to hide the pie chart -->
+                    <button id="closeChartButton" onclick="hideMetrics()" style="display: none; margin-top: 10px;">Close</button>
+
+
+
+                    
+
                                     
                                     <!-- Collection Statistics Cards -->
                     <!-- <div class="row">
@@ -826,6 +844,84 @@ function hidePopup() {
         });
     </script>
 
+
+
+
+<script> type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script>
+    var chartVisible = false;
+
+    // Function to toggle the total number of projects and render the pie chart
+    function toggleMetrics() {
+        chartVisible = !chartVisible;
+
+        if (chartVisible) {
+            // Show the total number of projects
+            document.getElementById('totalProjectsDisplay').style.display = 'block';
+            document.getElementById('totalProjectsDisplay').innerHTML = '<h3>Total Projects: {{ all_projects | length }}</h3>';
+
+            // Show and render the pie chart
+            document.getElementById('metrics_pie_chart_container').style.display = 'block';
+            renderPieChart();
+
+            // Show the close button
+            document.getElementById('closeChartButton').style.display = 'inline-block';
+        } else {
+            // Hide the total number of projects and pie chart
+            hideMetrics();
+        }
+    }
+
+    // Function to hide the total projects and pie chart
+    function hideMetrics() {
+        chartVisible = false;
+        document.getElementById('totalProjectsDisplay').style.display = 'none';
+        document.getElementById('metrics_pie_chart_container').style.display = 'none';
+        document.getElementById('closeChartButton').style.display = 'none';
+    }
+
+    // Function to render the pie chart
+    function renderPieChart() {
+        // Convert remaining space from GB to MB
+        var remainingSpaceMB = {{ remaining_space_value }} * 1024;
+
+        Highcharts.chart('metrics_pie_chart_container', {
+            chart: {
+                type: 'pie'
+            },
+            title: {
+                text: 'Memory Usage'
+            },
+            series: [{
+                name: 'Memory Size',
+                colorByPoint: true,
+                data: [
+                    {
+                        name: 'Used Memory (Storage Size)',
+                        y: {{ storage_size_value }}
+                    },
+                    {
+                        name: 'Remaining Memory',
+                        y: remainingSpaceMB
+                    }
+                ]
+            }],
+            tooltip: {
+                pointFormat: '{series.name}: <b>{point.y:.1f} MB</b>'
+            },
+            plotOptions: {
+                pie: {
+                    allowPointSelect: true,
+                    cursor: 'pointer',
+                    dataLabels: {
+                        enabled: true,
+                        format: '<b>{point.name}</b>: {point.y:.1f} MB'
+                    }
+                }
+            }
+        });
+    }
+</script>
 
 
 
