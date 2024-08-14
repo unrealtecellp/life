@@ -551,16 +551,25 @@ Progress Report Admin
             <!-- Populate this section dynamically based on selected Speaker ID -->
         </tbody>
     </table>
-    <!-- Popup Structure -->
-<div class="popup" id="detailsPopup">
-    <div class="popup-content">
-        <span class="popup-close" onclick="hidePopup()">×</span>
-        <div id="popupBody">
-            <!-- Content will be injected here -->
-        </div>
-    </div>
+
+    <!-- Placeholder for the pie chart -->
+    <!-- Placeholder for the pie chart -->
+<div id="fileCompletionPieChart" style="display: none; width: 100%; height: 400px; margin-top: 20px;">
+    <button onclick="$('#fileCompletionPieChart').hide()">Close</button>
+    <!-- The pie chart will be rendered here -->
 </div>
 
+    
+    <!-- Popup Structure -->
+    <div class="popup" id="detailsPopup">
+        <div class="popup-content">
+            <span class="popup-close" onclick="hidePopup()">×</span>
+            <div id="popupBody">
+                <!-- Content will be injected here -->
+            </div>
+        </div>
+    </div>
+    
 </div>
 
 
@@ -746,13 +755,15 @@ function updateSpeakersDropdownAndTable() {
 
 // Function to toggle visibility of User-wise Results section
 // Function to toggle visibility of User-wise Results section
+// Function to toggle visibility of User-wise Results section
 function showUserWiseResults() {
     var userWiseResults = $('#userWiseResults');
-    
+    var fileWiseResults = $('#fileWiseResults');
+
     if (userWiseResults.hasClass('hidden')) {
         // Show userWiseResults and hide fileWiseResults
         userWiseResults.removeClass('hidden');
-        $('#fileWiseResults').addClass('hidden');
+        fileWiseResults.addClass('hidden');
     } else {
         // Hide userWiseResults
         userWiseResults.addClass('hidden');
@@ -760,32 +771,42 @@ function showUserWiseResults() {
 }
 
 // Initialize DataTables for userWiseResultsTable
-$(document).ready(function() {
-    // Initialize DataTables
-    $('#userWiseResultsTable').DataTable({
-        pageLength: 5,
-        lengthMenu: [5, 10, 30, 50]
-    });
-
+$(document).ready(function () {
     // Handle Speaker ID selection
-    $('#selectSpeakerID').on('change', function() {
+    $('#selectSpeakerID').on('change', function () {
         var selectedSpeakerID = $(this).val();
         var tableBody = $('#userWiseResultsTable tbody');
         tableBody.empty();
-        
+
         var reports = {{ progress_reports | tojson }};
-        
-        reports.forEach(function(report) {
+
+        reports.forEach(function (report) {
             if (report['Speaker ID'] === selectedSpeakerID) {
-                var newRow = `
-                    <tr>
-                        <td>${report['Created by']}</td>
-                        <td>${report['Total no. of files']}</td>
-                        <td>${report['Completed files']}</td>
-                        <td>${report['Remaining files']}</td>
-                        <td><button class="btn btn-primary view-details" data-project-name="${report['project Name']}">View</button></td>
-                    </tr>
-                `;
+                var newRow =
+                    '<tr>' +
+                    '<td>' +
+                    report['Created by'] +
+                    '</td>' +
+                    '<td>' +
+                    report['Total no. of files'] +
+                    '</td>' +
+                    '<td>' +
+                    report['Completed files'] +
+                    '</td>' +
+                    '<td>' +
+                    report['Remaining files'] +
+                    '</td>' +
+                    '<td>' +
+                    '<button class="btn btn-primary view-details" data-project-name="' +
+                    report['project Name'] +
+                    '">View</button>' +
+                    '<button class="btn btn-secondary view-pie-chart" data-completed="' +
+                    report['Completed files'] +
+                    '" data-remaining="' +
+                    report['Remaining files'] +
+                    '">View in Pie Chart</button>' +
+                    '</td>' +
+                    '</tr>';
                 tableBody.append(newRow);
             }
         });
@@ -794,30 +815,56 @@ $(document).ready(function() {
     });
 
     // Event delegation for dynamically added view buttons
-    $('#userWiseResultsTable').on('click', '.view-details', function() {
+    $('#userWiseResultsTable').on('click', '.view-details', function () {
         var projectName = $(this).data('project-name');
         showDetails(projectName);
+    });
+
+    // Event delegation for the "View in Pie Chart" button
+    $('#userWiseResultsTable').on('click', '.view-pie-chart', function () {
+        var completedFiles = $(this).data('completed');
+        var remainingFiles = $(this).data('remaining');
+        showPieChart(completedFiles, remainingFiles);
     });
 });
 
 // Function to show project details in custom popup
 function showDetails(projectName) {
     var reports = {{ progress_reports | tojson }};
-    var selectedReport = reports.find(report => report['project Name'] === projectName);
-    
+    var selectedReport = reports.find(
+        (report) => report['project Name'] === projectName
+    );
+
     if (selectedReport) {
-        var modalBody = `
-            <p><strong>Project Name:</strong> ${selectedReport['project Name']}</p>
-            <p><strong>Created by:</strong> ${selectedReport['Created by']}</p>
-            <p><strong>Speaker ID:</strong> ${selectedReport['Speaker ID']}</p>
-            <p><strong>Assigned to:</strong> ${selectedReport['Assigned to'].join(', ')}</p>
-            <p><strong>Time and date:</strong> ${selectedReport['Time and date'] || 'N/A'}</p>
-            <p><strong>Duration:</strong> ${selectedReport['Duration'] || 'N/A'}</p>
-            <p><strong>Total no. of files:</strong> ${selectedReport['Total no. of files']}</p>
-            <p><strong>Completed files:</strong> ${selectedReport['Completed files']}</p>
-            <p><strong>Remaining files:</strong> ${selectedReport['Remaining files']}</p>
-        `;
-        
+        var modalBody =
+            '<p><strong>Project Name:</strong> ' +
+            selectedReport['project Name'] +
+            '</p>' +
+            '<p><strong>Created by:</strong> ' +
+            selectedReport['Created by'] +
+            '</p>' +
+            '<p><strong>Speaker ID:</strong> ' +
+            selectedReport['Speaker ID'] +
+            '</p>' +
+            '<p><strong>Assigned to:</strong> ' +
+            selectedReport['Assigned to'].join(', ') +
+            '</p>' +
+            '<p><strong>Time and date:</strong> ' +
+            (selectedReport['Time and date'] || 'N/A') +
+            '</p>' +
+            '<p><strong>Duration:</strong> ' +
+            (selectedReport['Duration'] || 'N/A') +
+            '</p>' +
+            '<p><strong>Total no. of files:</strong> ' +
+            selectedReport['Total no. of files'] +
+            '</p>' +
+            '<p><strong>Completed files:</strong> ' +
+            selectedReport['Completed files'] +
+            '</p>' +
+            '<p><strong>Remaining files:</strong> ' +
+            selectedReport['Remaining files'] +
+            '</p>';
+
         $('#popupBody').html(modalBody);
         showPopup();
     } else {
@@ -834,7 +881,62 @@ function showPopup() {
 function hidePopup() {
     document.getElementById('detailsPopup').style.display = 'none';
 }
+// Function to show or hide the pie chart
+function togglePieChart(completedFiles, remainingFiles) {
+    var chartContainer = $('#fileCompletionPieChart');
+    
+    if (chartContainer.is(':visible')) {
+        // Hide the chart if it's currently visible
+        chartContainer.hide();
+    } else {
+        // Create or show the chart if it's currently hidden
+        Highcharts.chart('fileCompletionPieChart', {
+            chart: {
+                type: 'pie'
+            },
+            title: {
+                text: 'File Completion Status'
+            },
+            series: [{
+                name: 'Files',
+                colorByPoint: true,
+                data: [
+                    {
+                        name: 'Completed Files',
+                        y: completedFiles
+                    },
+                    {
+                        name: 'Remaining Files',
+                        y: remainingFiles
+                    }
+                ]
+            }],
+            tooltip: {
+                pointFormat: '{series.name}: <b>{point.y} files</b>'
+            },
+            plotOptions: {
+                pie: {
+                    allowPointSelect: true,
+                    cursor: 'pointer',
+                    dataLabels: {
+                        enabled: true,
+                        format: '<b>{point.name}</b>: {point.y} files'
+                    }
+                }
+            }
+        });
 
+        // Show the chart container
+        chartContainer.show();
+    }
+}
+
+// Event delegation for the "View in Pie Chart" button
+$('#userWiseResultsTable').on('click', '.view-pie-chart', function() {
+    var completedFiles = $(this).data('completed');
+    var remainingFiles = $(this).data('remaining');
+    togglePieChart(completedFiles, remainingFiles);
+});
 </script>
     
     <script>
