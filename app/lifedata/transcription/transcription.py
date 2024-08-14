@@ -531,7 +531,7 @@ def updateaudiosortingsubcategories():
         #     speakerids = []
         # data through ajax
         data = json.loads(request.args.get('a'))
-        # logger.debug('data: %s', pformat(data))
+        logger.debug('data: %s', pformat(data))
         audio_browse_info = data['audioBrowseInfo']
         audio_file_count = audio_browse_info['audioFilesCount']
         # logger.debug('audio_browse_info: %s', pformat(audio_browse_info))

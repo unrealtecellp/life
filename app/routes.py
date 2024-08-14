@@ -4020,12 +4020,12 @@ def shareprojectwith():
         # data through ajax
         data = request.args.get('data')
         data = eval(data)
-        logger.debug('Sharing Information: %s', pformat(data))
+        # logger.debug('Sharing Information: %s', pformat(data))
         shareaction = data['shareaction']
         users = data['sharewithusers']
         # logger.debug(type(users))
         speakers = data['sharespeakers']
-        logger.debug("speakers: %s", speakers)
+        # logger.debug("speakers: %s", speakers)
         sharemode = data['sharemode']
         # logger.debug(sharemode)
         if (sharemode == ''):
@@ -4136,7 +4136,7 @@ def shareprojectwith():
                     }
                 )
 
-                logger.debug('projectdetails: %s', projectdetails)
+                # logger.debug('projectdetails: %s', projectdetails)
 
                 # Give access only to user's own transcription if access to latest and other's transcriptions are not granted
                 if not sharelatestchecked:
@@ -4312,12 +4312,12 @@ def shareprojectwith():
 
                 # update "isharedwith" of the current user and the projectowner
                 for key, value in projectinfo.items():
-                    logger.debug(
-                        'update "isharedwith" of the current user and the projectowner 1')
+                    # logger.debug(
+                    #     'update "isharedwith" of the current user and the projectowner 1')
                     if (len(value) != 0 and
                             activeprojectname in value):
-                        logger.debug(
-                            'update "isharedwith" of the current user and the projectowner 2')
+                        # logger.debug(
+                        #     'update "isharedwith" of the current user and the projectowner 2')
                         userprojects.update_one(
                             {
                                 "username": current_username
@@ -6780,7 +6780,7 @@ def browsesharewith():
 
         # data through ajax
         data = json.loads(request.args.get('a'))
-        logger.debug('Sharing Information: %s', pformat(data))
+        # logger.debug('Sharing Information: %s', pformat(data))
         browse_share_selected_mode = data["browseShareSelectedMode"]
         users = data["users"]
         audio_info = data["audioInfo"]
@@ -6798,7 +6798,7 @@ def browsesharewith():
                     speaker_audioids[speakerid].append(audio_id)
                 else:
                     speaker_audioids[speakerid] = [audio_id]
-        logger.debug("speaker_audioids: %s", pformat(speaker_audioids))
+        # logger.debug("speaker_audioids: %s", pformat(speaker_audioids))
         speaker_ids = projects.find_one({'projectname': activeprojectname},
                                         {'_id': 0, 'speakerIds': 1})
         if (speaker_ids):
@@ -6818,8 +6818,8 @@ def browsesharewith():
                 else:
                     file_speaker_ids = projects.find_one({'projectname': activeprojectname},
                                                          {'_id': 0, 'fileSpeakerIds': 1})
-                    logger.debug("file_speaker_ids: %s",
-                                 pformat(file_speaker_ids))
+                    # logger.debug("file_speaker_ids: %s",
+                    #              pformat(file_speaker_ids))
                     if (file_speaker_ids):
                         file_speaker_ids = file_speaker_ids['fileSpeakerIds']
                         if (user in file_speaker_ids):

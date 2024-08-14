@@ -1,2 +1,0 @@
-FLASK_APP=project.py
-FLASK_DEBUG=0

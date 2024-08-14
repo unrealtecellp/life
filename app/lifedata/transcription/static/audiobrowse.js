@@ -133,8 +133,8 @@ function createAudioBrowseTable(
     downloadChecked = "false",
     shareInfo = undefined,
 ) {
-    console.log(audioDataFields);
-    console.log(audioData);
+    // console.log(audioDataFields);
+    // console.log(audioData);
     // console.log(audioData);
     // console.log(shareChecked);
     // console.log(downloadChecked);
