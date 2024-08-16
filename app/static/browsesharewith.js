@@ -32,8 +32,8 @@ $(document).ready(function() {
             // "audioBrowseInfo": audioBrowseInfo
           })
     }, function(data) {
-        // return false;
-        window.location.reload();
+        return false;
+        // window.location.reload();
     });
     return false;
   });

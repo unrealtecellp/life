@@ -6728,14 +6728,14 @@ def browsefilesharedwithuserslist():
         shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
                                                           current_username,
                                                           activeprojectname)
-
+        # logger.debug(pformat(shareinfo))
         # projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
         # project_type = getprojecttype.getprojecttype(projects,
         #                                             activeprojectname)
 
         # data through ajax
         data = json.loads(request.args.get('a'))
-        logger.debug('Sharing Information: %s', pformat(data))
+        # logger.debug('Sharing Information: %s', pformat(data))
         audio_info = data['audioInfo']
         audio_ids_list = audio_info
         # audio_ids_list = list(audio_info.keys())
@@ -6743,7 +6743,7 @@ def browsefilesharedwithuserslist():
                                              {"_id": 0,
                                               "fileSpeakerIds": 1})
         file_speaker_ids = file_speaker_ids["fileSpeakerIds"]
-        logger.debug("file_speaker_ids: %s", file_speaker_ids)
+        # logger.debug("file_speaker_ids: %s", file_speaker_ids)
         for audio_id in audio_ids_list:
             speakerid = transcription_audiodetails.get_audio_speakerid(
                 transcriptions, activeprojectname, audio_id)
@@ -6753,7 +6753,10 @@ def browsefilesharedwithuserslist():
                             audio_id in speaker_ids[speakerid] and
                             user in shareinfo["isharedwith"]):
                         browse_file_sharedwith_userslist.append(user)
-        browse_file_sharedwith_userslist.remove(current_username)
+        # logger.debug(browse_file_sharedwith_userslist)
+        if (current_username in browse_file_sharedwith_userslist):
+            browse_file_sharedwith_userslist.remove(current_username)
+        # logger.debug(browse_file_sharedwith_userslist)
         for user_name in shareinfo["tomesharedby"]:
             browse_file_sharedwith_userslist.remove(user_name)
     except:
@@ -6833,26 +6836,27 @@ def browsesharewith():
                                         {"$set": {
                                             "fileSpeakerIds."+user: speaker_audioids
                                         }})
+                # logger.debug(speaker)
+                projects.update_one(
+                                    {
+                                        'projectname': activeprojectname
+                                    },
+                                    {
+                                        '$set':
+                                        {
+                                            'lastActiveId.'+user+'.'+speaker+'.audioId': audio_ids[-1]
+                                        }
+                                    }
+                                )
             elif (browse_share_selected_mode == 'remove'):
                 for speaker, audio_ids in speaker_audioids.items():
                     projects.update_one({"projectname": activeprojectname},
                                         {"$pull": {
                                             "fileSpeakerIds."+user+"."+speaker: {"$in": audio_ids}
                                         }})
-            last_active_audio_id = projects.find_one({"projectname": activeprojectname},
-                                                     {'lastActiveId.'+user+'.'+speaker+'.audioId': 1})
+            # last_active_audio_id = projects.find_one({"projectname": activeprojectname},
+            #                                          {'lastActiveId.'+user+'.'+speaker+'.audioId': 1})
             # logger.debug(last_active_audio_id)
-            projects.update_one(
-                                {
-                                    'projectname': activeprojectname
-                                },
-                                {
-                                    '$set':
-                                    {
-                                        'lastActiveId.'+user+'.'+speaker+'.audioId': audio_ids[-1]
-                                    }
-                                }
-                            )
             share_info = getuserprojectinfo.getuserprojectinfo(userprojects,
                                                               user,
                                                               activeprojectname)

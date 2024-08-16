@@ -2427,10 +2427,16 @@ def get_audio_speakerid(data_collection,
         _type_: _description_
     """
     audio_speakerid = data_collection.find_one(
-        {'projectname': activeprojectname, 'audioId': audio_id}, {'_id': 1, 'lifesourceid': 1})
+        {'projectname': activeprojectname, 'audioId': audio_id},
+        {'_id': 1, 'lifesourceid': 1, 'speakerId': 1})
     # logger.debug(audio_filename)
-    if audio_speakerid is not None and 'lifesourceid' in audio_speakerid:
+    if (audio_speakerid is not None and
+        'lifesourceid' in audio_speakerid):
         return audio_speakerid['lifesourceid']
+    elif (audio_speakerid is not None and
+          'speakerId' in audio_speakerid and
+          audio_speakerid['speakerId'] != ''):
+        return audio_speakerid['speakerId']
     else:
         return None
 
@@ -4019,7 +4025,7 @@ def filter_speakers(speakerdetails_collection,
         "isActive": 1
     }
     for key, value in filter_options.items():
-        # logger.debug("key: %s", key)
+        # logger.debug("key: %s, value: %s", key, value)
         if (key in selected_audio_sorting_subcategory):
             # logger.debug("key: %s", key)
             key = selected_audio_sorting_subcategory_self_map[key]
@@ -4061,13 +4067,15 @@ def filter_speakers(speakerdetails_collection,
 
 def filter_speakers_derived(transcriptions_collection,
                             activeprojectname,
+                            current_username,
                             filter_options,
                             logical_operator="and"):
     '''Get the audioIds and filename based on prompt filter options.'''
     prompt_map = {
         'domain': 'Domain',
         'elicitationmethod': 'Elicitation Method',
-        'target': 'Target'
+        'target': 'Target',
+        'Q_Id': 'Q_Id'
     }
     speakers_match = {
         "projectname": activeprojectname,
@@ -4102,7 +4110,8 @@ def filter_speakers_derived(transcriptions_collection,
                     "speakerId": 1,
                     "audioId": 1,
                     "audioFilename": 1,
-                    # "prompt.Domain": 1
+                    # "prompt.Domain": 1,
+                    current_username + '.audioCompleteFLAG': 1
                 }
             }
         ])
@@ -4116,6 +4125,12 @@ def filter_speakers_derived(transcriptions_collection,
         if (speaker != ''):
             # logger.debug("prompt.Domain: %s", doc["prompt"]["Domain"])
             doc['Audio File'] = ''
+            doc['Shared With'] = audio_shared_with(activeprojectname,
+                                                    speaker,
+                                                    doc['audioId'])
+            if current_username in doc:
+                doc['Transcribed'] = doc.pop(current_username, {}).get(
+                    'audioCompleteFLAG', False)
             del doc["speakerId"]
             aggregate_output_list.append(doc)
     # logger.debug('aggregate_output_list: %s', pformat(aggregate_output_list))

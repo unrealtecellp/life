@@ -616,7 +616,6 @@ def updateaudiosortingsubcategories():
                    downloadChecked=download_checked,
                    sourceMetadata=speaker_metadata)
 
-
 @transcription.route('/filteraudiobrowsetable', methods=['GET', 'POST'])
 @login_required
 def filteraudiobrowsetable():
@@ -657,6 +656,7 @@ def filteraudiobrowsetable():
         speakerids = transcription_audiodetails.combine_speaker_ids(projects,
                                                                     activeprojectname,
                                                                     current_username)
+        # logger.debug(speakerids)
     #     # logger.debug(audio_browse_info['activeSpeakerId'])
     #     active_speaker_id = audio_browse_info['activeSpeakerId']
 
@@ -703,6 +703,7 @@ def filteraudiobrowsetable():
                 #                                                                                     filter_options=filter_options)
                 temp_total_records_derived, temp_audio_data_list_derived = transcription_audiodetails.filter_speakers_derived(transcriptions,
                                                                                                                               activeprojectname,
+                                                                                                                              current_username,
                                                                                                                               filter_options=filter_options)
                 # logger.debug("temp_audio_data_list_derived count: %s",
                 #             len(temp_audio_data_list_derived))
@@ -759,7 +760,6 @@ def filteraudiobrowsetable():
                    shareChecked=share_checked,
                    activePage=page_id,
                    downloadChecked=download_checked)
-
 
 @transcription.route('/updateaudiobrowsetable', methods=['GET', 'POST'])
 @login_required

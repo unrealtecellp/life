@@ -59,7 +59,8 @@ function createSelect2optgroup(eleId, optionsObject, selectedOption) {
         // console.log(value.length);
         if (!(value.length === 0)) {
             let optGroup = key;
-            let optGroupId = key.toLowerCase().replaceAll(' ', '');
+            // let optGroupId = key.toLowerCase().replaceAll(' ', '');
+            let optGroupId = key;
             ele += '<optgroup id="' + optGroupId + '" label="' + optGroup + '">';
             for (let i = 0; i < value.length; i++) {
                 option = value[i];
