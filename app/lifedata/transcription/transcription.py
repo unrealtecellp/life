@@ -649,6 +649,7 @@ def filteraudiobrowsetable():
         start_from = ((page_id*audio_file_count)-audio_file_count)
         number_of_audios = page_id*audio_file_count
         filter_options = data['selectedFilterOptions']
+        temp_audio_data_list_partial = []
         temp_audio_data_list = []
         temp_audio_data_list_derived = []
         total_records = 0
@@ -660,11 +661,11 @@ def filteraudiobrowsetable():
     #     # logger.debug(audio_browse_info['activeSpeakerId'])
     #     active_speaker_id = audio_browse_info['activeSpeakerId']
 
-        filtered_speakers_list = transcription_audiodetails.filter_speakers(speakerdetails_collection,
+        filtered_speakers_list, used_filter_options = transcription_audiodetails.filter_speakers(speakerdetails_collection,
                                                                             activeprojectname,
                                                                             filter_options=filter_options)
         # logger.debug("filtered_speakers_list: %s", filtered_speakers_list)
-        # logger.debug("filtered_speakers_list: %s", filtered_speakers_list)
+        # logger.debug(used_filter_options)
         for speaker in filtered_speakers_list:
             speaker_audio_ids = transcription_audiodetails.get_speaker_audio_ids_new(projects,
                                                                                      activeprojectname,
@@ -672,7 +673,7 @@ def filteraudiobrowsetable():
                                                                                      speaker,
                                                                                      audio_browse_action=audio_browse_action)
             if (speaker in speakerids):
-                temp_total_records, temp_audio_data_list = transcription_audiodetails.get_n_audios(transcriptions,
+                temp_total_records, temp_audio_data_list_partial = transcription_audiodetails.get_n_audios(transcriptions,
                                                                                                    activeprojectname,
                                                                                                    current_username,
                                                                                                    speaker,
@@ -681,6 +682,7 @@ def filteraudiobrowsetable():
                                                                                                    number_of_audios=audio_file_count,
                                                                                                    audio_delete_flag=audio_browse_action,
                                                                                                    all_data=True)
+                temp_audio_data_list.extend(temp_audio_data_list_partial)
                 # logger.debug("temp_audio_data_list count: %s",
                 #              len(temp_audio_data_list))
                 # logger.debug("temp_audio_data_list: %s",
@@ -704,7 +706,11 @@ def filteraudiobrowsetable():
                 temp_total_records_derived, temp_audio_data_list_derived = transcription_audiodetails.filter_speakers_derived(transcriptions,
                                                                                                                               activeprojectname,
                                                                                                                               current_username,
+                                                                                                                              filtered_speakers_list,
+                                                                                                                              used_filter_options,
                                                                                                                               filter_options=filter_options)
+                if (len(temp_audio_data_list_derived) != 0):
+                    temp_audio_data_list = []
                 # logger.debug("temp_audio_data_list_derived count: %s",
                 #             len(temp_audio_data_list_derived))
                 # logger.debug("temp_audio_data_list_derived: %s",
