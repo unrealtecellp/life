@@ -33,6 +33,7 @@ $(document).ready(function() {
           })
     }, function(data) {
         return false;
+        // window.location.reload();
     });
     return false;
   });

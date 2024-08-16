@@ -1,6 +1,7 @@
 # 9d4fd99c7dfb7f00387d1df113ce1c428cb53909
 """Module to save the uploaded audio file(s) from 'enternewsenteces' route."""
 
+from app import mongo
 import librosa
 import pydub
 from pydub import AudioSegment
@@ -1684,7 +1685,7 @@ def getnewaudioid(projects,
         latest_audio_id = audio_ids_list[audio_id_index]
     else:
         latest_audio_id = ''
-    logger.debug('latest_audio_id AUDIODETAILS: %s', latest_audio_id)
+    # logger.debug('latest_audio_id AUDIODETAILS: %s', latest_audio_id)
 
     return latest_audio_id
 
@@ -2426,10 +2427,16 @@ def get_audio_speakerid(data_collection,
         _type_: _description_
     """
     audio_speakerid = data_collection.find_one(
-        {'projectname': activeprojectname, 'audioId': audio_id}, {'_id': 1, 'lifesourceid': 1})
+        {'projectname': activeprojectname, 'audioId': audio_id},
+        {'_id': 1, 'lifesourceid': 1, 'speakerId': 1})
     # logger.debug(audio_filename)
-    if audio_speakerid is not None and 'lifesourceid' in audio_speakerid:
+    if (audio_speakerid is not None and
+        'lifesourceid' in audio_speakerid):
         return audio_speakerid['lifesourceid']
+    elif (audio_speakerid is not None and
+          'speakerId' in audio_speakerid and
+          audio_speakerid['speakerId'] != ''):
+        return audio_speakerid['speakerId']
     else:
         return None
 
@@ -3688,50 +3695,87 @@ def get_n_audios(data_collection,
                  number_of_audios=10,
                  audio_delete_flag=0,
                  all_data=False):
-    # logger.debug("speaker_audio_ids: %s", pformat(speaker_audio_ids))
-    aggregate_output = data_collection.aggregate([
-        {
-            "$match": {
-                "projectname": activeprojectname,
-                "speakerId": active_speaker_id,
-                "audiodeleteFLAG": audio_delete_flag
-            }
-        },
-        {
-            "$sort": {
-                "audioId": 1
-            }
-        },
-        {
-            "$project": {
-                "_id": 0,
-                "audioId": 1,
-                "audioFilename": 1,
-                current_username + '.audioCompleteFLAG': 1
-            }
-        }
-    ])
-    # logger.debug("aggregate_output: %s", aggregate_output)
     aggregate_output_list = []
+    total_records = 0
+    try:
+        # logger.debug("speaker_audio_ids: %s", pformat(speaker_audio_ids))
+        aggregate_output = data_collection.aggregate([
+            {
+                "$match": {
+                    "projectname": activeprojectname,
+                    "speakerId": active_speaker_id,
+                    "audiodeleteFLAG": audio_delete_flag
+                }
+            },
+            {
+                "$sort": {
+                    "audioId": 1
+                }
+            },
+            {
+                "$project": {
+                    "_id": 0,
+                    "audioId": 1,
+                    "audioFilename": 1,
+                    current_username + '.audioCompleteFLAG': 1
+                }
+            }
+        ])
+        # logger.debug("aggregate_output: %s", aggregate_output)
 
-    for doc in aggregate_output:
-        # logger.debug("aggregate_output: %s", pformat(doc))
-        if (doc['audioId'] in speaker_audio_ids):
-            doc['Audio File'] = ''
-            if current_username in doc:
-                doc['Transcribed'] = doc.pop(current_username, {}).get(
-                    'audioCompleteFLAG', False)
+        for doc in aggregate_output:
+            # logger.debug("aggregate_output: %s", pformat(doc))
+            if (doc['audioId'] in speaker_audio_ids):
+                doc['Audio File'] = ''
+                doc['Shared With'] = audio_shared_with(activeprojectname,
+                                                    active_speaker_id,
+                                                    doc['audioId'])
+                if current_username in doc:
+                    doc['Transcribed'] = doc.pop(current_username, {}).get(
+                        'audioCompleteFLAG', False)
 
-            aggregate_output_list.append(doc)
+                aggregate_output_list.append(doc)
+                # logger.debug(len(aggregate_output_list))
 
-    # logger.debug('aggregate_output_list: %s', pformat(aggregate_output_list))
-    total_records = len(aggregate_output_list)
-    # logger.debug('total_records AUDIO: %s', total_records)
-    if (not all_data):
-        aggregate_output_list = aggregate_output_list[start_from:number_of_audios]
+        # logger.debug('aggregate_output_list: %s', pformat(aggregate_output_list))
+        total_records = len(aggregate_output_list)
+        # logger.debug('total_records AUDIO: %s', total_records)
+        if (not all_data):
+            aggregate_output_list = aggregate_output_list[start_from:number_of_audios]
+    except:
+        logger.exception("")
+
     return (total_records,
             aggregate_output_list)
 
+def audio_shared_with(activeprojectname,
+                      active_speaker_id,
+                      audio_id):
+    try:
+        # logger.debug(active_speaker_id)
+        shared_with_list = []
+        projects_collection, = getdbcollections.getdbcollections(mongo, 'projects')
+
+        shared_with_info = projects_collection.find_one({"projectname": activeprojectname},
+                                                        {"_id": 0,
+                                                        "speakerIds": 1,
+                                                        "fileSpeakerIds": 1})
+        # logger.debug(pformat(shared_with_info))
+        if ('speakerIds'):
+            shared_with_list = [user for user, user_speaker_ids in shared_with_info['speakerIds'].items() if active_speaker_id in user_speaker_ids]
+        # logger.debug(shared_with_list)
+        if ('fileSpeakerIds' in shared_with_info):
+            for user, user_speaker_ids in shared_with_info['fileSpeakerIds'].items():
+                # logger.debug(user)
+                # logger.debug(user_speaker_ids)
+                if (active_speaker_id in user_speaker_ids and
+                    audio_id in user_speaker_ids[active_speaker_id]):
+                    shared_with_list.append(user)
+        shared_with_list = ', '.join(list(set(shared_with_list)))
+    except:
+        logger.exception("")
+    
+    return shared_with_list
 
 def get_audio_sorting_subcategories(speakerdetails_collection,
                                     activeprojectname,
@@ -3779,8 +3823,8 @@ def get_audio_sorting_subcategories(speakerdetails_collection,
                         selected_audio_sorting_subcategory = selected_audio_sorting_subcategory_new
                     if (key in selected_audio_sorting_subcategory or
                             key in list(selected_audio_sorting_subcategory_self_map.values())):
-                        logger.debug(key)
-                        logger.debug(selected_audio_sorting_subcategory)
+                        # logger.debug(key)
+                        # logger.debug(selected_audio_sorting_subcategory)
                         selected_audio_sorting_subcategory_value = selected_audio_sorting_subcategory[
                             key]
                         if (selected_audio_sorting_subcategory_value in aggregate_output_dict):
@@ -3804,6 +3848,99 @@ def get_audio_sorting_subcategories(speakerdetails_collection,
 
     return aggregate_output_dict
 
+def create_audio_sorting_subcategories_new(aggregate_output_dict,
+                                           key,
+                                           value):
+    exclude = ['updatedBy',
+                'current_date',
+                'accessed_at',
+                # 'audio_language',
+                'published_date',
+                'published_time',
+                'publisher',
+                'publisher_id',
+                # 'searchKeywords',
+                # 'sourceTags',
+                # 'total_comments',
+                # 'total_views',
+                'video_description',
+                'video_dislikes',
+                # 'video_duration',
+                'video_favourites',
+                'video_likes',
+                # 'video_link',
+                # 'video_tags',
+                # 'video_title',
+                'lifespeakerid',
+                'karyaaccesscode',
+                'karyaspeakerid',
+                ''
+                ]
+    if (key not in exclude):
+        if (key not in aggregate_output_dict):
+            aggregate_output_dict[key] = []
+        if (isinstance(value, str)):
+            if (len(value.strip()) != 0):
+                aggregate_output_dict[key].extend([value])
+                aggregate_output_dict[key] = list(set(aggregate_output_dict[key]))
+        elif (isinstance(value, list)):
+            value = [x for x in value if x != '']
+            aggregate_output_dict[key].extend(value)
+            aggregate_output_dict[key] = list(set(aggregate_output_dict[key]))
+    
+    return aggregate_output_dict
+
+def get_audio_sorting_subcategories_new(speakerdetails_collection,
+                                        activeprojectname,
+                                        speakerids):
+    # logger.debug("speakerids: %s", pformat(speakerids))
+    aggregate_output = speakerdetails_collection.aggregate([
+        {
+            "$match": {
+                "projectname": activeprojectname,
+                "isActive": 1
+            }
+        },
+        {
+            "$project": {
+                "_id": 0,
+                "current": 1,
+                "lifesourceid": 1
+            }
+        }
+    ])
+    # logger.debug("aggregate_output: %s", aggregate_output)
+    aggregate_output_dict = {}
+    for doc in aggregate_output:
+        # logger.debug("aggregate_output: %s", pformat(doc))
+        try:
+            speaker = doc["lifesourceid"]
+            if (speaker in speakerids and
+                speaker != ''):
+                # logger.debug("aggregate_output: %s", pformat(doc))
+                # logger.debug(speaker)
+                # audio_sorting_subcategory = doc["current"]["sourceMetadata"][selected_audio_sorting_category]
+                audio_sorting_subcategory = doc["current"]
+                # logger.debug("aggregate_output: %s", pformat(audio_sorting_subcategory))
+                for key, value in audio_sorting_subcategory.items():
+                    # logger.debug('%s, %s', key, value)
+                    if (isinstance(value, dict)):
+                        # logger.debug('%s, %s', key, value)
+                        for k, v in value.items():
+                            # logger.debug('%s, %s', k, v)
+                            aggregate_output_dict = create_audio_sorting_subcategories_new(aggregate_output_dict,
+                                                                                            k,
+                                                                                            v)
+                    else:
+                        aggregate_output_dict = create_audio_sorting_subcategories_new(aggregate_output_dict,
+                                                                                        key,
+                                                                                        value)
+                # logger.debug(pformat(aggregate_output_dict))
+        except:
+            logger.exception("")
+
+    # logger.debug(pformat(aggregate_output_dict))
+    return aggregate_output_dict
 
 def get_audio_sorting_subcategories_derived(transcriptions_collection,
                                             activeprojectname,
@@ -3870,35 +4007,94 @@ def get_audio_sorting_subcategories_derived(transcriptions_collection,
 
     return audio_sorting_sub_categories
 
+def filter_on_category_path(speakerdetails_collection,
+                            activeprojectname,
+                            filter_options):
+    aggregate_output = speakerdetails_collection.aggregate([
+        {
+            "$match": {
+                "projectname": activeprojectname,
+                "isActive": 1
+            }
+        },
+        {
+            "$project": {
+                "_id": 0,
+                "current": 1,
+                "lifesourceid": 1
+            }
+        }
+    ])
+    # logger.debug("aggregate_output: %s", aggregate_output)
+    aggregate_output_dict = {}
+    used_filter_options = []
+    for doc in aggregate_output:
+        # logger.debug("aggregate_output: %s", pformat(doc))
+        try:
+            speaker = doc["lifesourceid"]
+            if (speaker != ''):
+                audio_sorting_subcategory = doc["current"]
+                # logger.debug("aggregate_output: %s", pformat(audio_sorting_subcategory))
+                for key, value in audio_sorting_subcategory.items():
+                    # logger.debug('%s, %s', key, value)
+                    if (isinstance(value, dict)):
+                        # logger.debug('%s, %s', key, value)
+                        for k, v in value.items():
+                            # logger.debug('%s, %s', k, v)
+                            # if (k in filter_options):
+                            #     logger.debug(filter_options[k])
+                            if (k in filter_options and
+                                len(filter_options[k]) != 0 and
+                                'current.'+key+'.'+k not in aggregate_output_dict):
+                                aggregate_output_dict['current.'+key+'.'+k] = {"$in": filter_options[k]}
+                                used_filter_options.append(k)
+                    else:
+                        if (key in filter_options and
+                                len(filter_options[key]) != 0 and
+                                'current.'+key not in aggregate_output_dict):
+                            aggregate_output_dict['current.'+key] = {"$in": filter_options[key]}
+                            used_filter_options.append(key)
+                    # logger.debug(pformat(used_filter_options))
+        except:
+            logger.exception("")
+
+    # logger.debug(pformat(aggregate_output_dict))
+
+    return (aggregate_output_dict, used_filter_options)
 
 def filter_speakers(speakerdetails_collection,
                     activeprojectname,
                     filter_options,
                     logical_operator="and"):
-    selected_audio_sorting_subcategory = {
-        "agegroup": "Age Group",
-        "gender": "Gender",
-        "educationlevel": "Education Level",
-        "educationmediumupto12": "Education Medium Upto 12",
-        "educationmediumafter12": "Education Medium After 12",
-        "speakerspeaklanguage": "Speaker Speak Language"
-    }
+    filter_on_category_path_dict, used_filter_options = filter_on_category_path(speakerdetails_collection,
+                                                                                activeprojectname,
+                                                                                filter_options)
+    # selected_audio_sorting_subcategory = {
+    #     "agegroup": "Age Group",
+    #     "gender": "Gender",
+    #     "educationlevel": "Education Level",
+    #     "educationmediumupto12": "Education Medium Upto 12",
+    #     "educationmediumafter12": "Education Medium After 12",
+    #     "speakerspeaklanguage": "Speaker Speak Language"
+    # }
     speakers_match = {
         "projectname": activeprojectname,
         "isActive": 1
     }
-    for key, value in filter_options.items():
-        # logger.debug("key: %s", key)
-        if (key in selected_audio_sorting_subcategory):
-            # logger.debug("key: %s", key)
-            key = selected_audio_sorting_subcategory_self_map[key]
-            db_key = "current.sourceMetadata."+key
-            value_list_len = len(value)
-            if (value_list_len != 0):
-                if (value_list_len == 1):
-                    speakers_match[db_key] = value[0]
-                else:
-                    speakers_match[db_key] = {"$in": value}
+    speakers_match.update(filter_on_category_path_dict)
+    # logger.debug(speakers_match)
+    # for key, value in filter_options.items():
+    #     # logger.debug("key: %s, value: %s", key, value)
+    #     if (key in selected_audio_sorting_subcategory):
+    #         # logger.debug("key: %s", key)
+    #         key = selected_audio_sorting_subcategory_self_map[key]
+    #         db_key = "current.sourceMetadata."+key
+    #         value_list_len = len(value)
+    #         if (value_list_len != 0):
+    #             if (value_list_len == 1):
+    #                 speakers_match[db_key] = value[0]
+    #             else:
+    #                 speakers_match[db_key] = {"$in": value}
     # logger.debug("speakers_match: %s", speakers_match)
     aggregate_output = []
     aggregate_output_list = []
@@ -3925,32 +4121,35 @@ def filter_speakers(speakerdetails_collection,
         aggregate_output_list.append(doc["lifesourceid"])
     # logger.debug('aggregate_output_list: %s', pformat(aggregate_output_list))
 
-    return (list(set(aggregate_output_list)))
+    return (list(set(aggregate_output_list)), used_filter_options)
 
 
 def filter_speakers_derived(transcriptions_collection,
                             activeprojectname,
+                            current_username,
+                            filtered_speakers_list,
+                            used_filter_options,
                             filter_options,
                             logical_operator="and"):
     '''Get the audioIds and filename based on prompt filter options.'''
-    prompt_map = {
-        'domain': 'Domain',
-        'elicitationmethod': 'Elicitation Method',
-        'target': 'Target'
-    }
+    # prompt_map = {
+    #     'domain': 'Domain',
+    #     'elicitationmethod': 'Elicitation Method',
+    #     'target': 'Target',
+    #     'Q_Id': 'Q_Id'
+    # }
     speakers_match = {
         "projectname": activeprojectname,
         "audiodeleteFLAG": 0
     }
     for key, value in filter_options.items():
-        if (key in prompt_map):
-            db_key = "prompt."+prompt_map[key]
+        # if (key in prompt_map):
+        # db_key = "prompt."+prompt_map[key]
+        if (key not in used_filter_options):
+            db_key = "prompt."+key
             value_list_len = len(value)
             if (value_list_len != 0):
-                if (value_list_len == 1):
-                    speakers_match[db_key] = value[0]
-                else:
-                    speakers_match[db_key] = {"$in": value}
+                speakers_match[db_key] = {"$in": value}
     logger.debug("speakers_match: %s", speakers_match)
     aggregate_output = []
     aggregate_output_list = []
@@ -3971,7 +4170,8 @@ def filter_speakers_derived(transcriptions_collection,
                     "speakerId": 1,
                     "audioId": 1,
                     "audioFilename": 1,
-                    # "prompt.Domain": 1
+                    # "prompt.Domain": 1,
+                    current_username + '.audioCompleteFLAG': 1
                 }
             }
         ])
@@ -3983,8 +4183,17 @@ def filter_speakers_derived(transcriptions_collection,
         # if (doc['audioId'] in speaker_audio_ids):
         speaker = doc["speakerId"]
         if (speaker != ''):
+            if (len(filtered_speakers_list) != 0 and
+                speaker not in filtered_speakers_list):
+                continue
             # logger.debug("prompt.Domain: %s", doc["prompt"]["Domain"])
             doc['Audio File'] = ''
+            doc['Shared With'] = audio_shared_with(activeprojectname,
+                                                    speaker,
+                                                    doc['audioId'])
+            if current_username in doc:
+                doc['Transcribed'] = doc.pop(current_username, {}).get(
+                    'audioCompleteFLAG', False)
             del doc["speakerId"]
             aggregate_output_list.append(doc)
     # logger.debug('aggregate_output_list: %s', pformat(aggregate_output_list))

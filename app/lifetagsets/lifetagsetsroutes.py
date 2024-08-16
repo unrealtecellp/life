@@ -1,4 +1,4 @@
-"""Module containing the routes for the downloader part of the LiFe."""
+"""Module containing the routes for the downloader part of the LiFE."""
 
 from flask import Blueprint, render_template
 from flask import flash, redirect, render_template, url_for, request, json, jsonify, send_file
