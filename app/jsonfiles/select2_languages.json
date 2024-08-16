@@ -21,6 +21,7 @@
     {"id": "Gujarati", "text": "Gujarati"},
     {"id": "Haryanvi", "text": "Haryanvi"},
     {"id": "Hindi", "text": "Hindi"},
+    {"id": "Ho", "text": "Ho"},
     {"id": "Kannada", "text": "Kannada"},
     {"id": "Kannauji", "text": "Kannauji"},
     {"id": "Karbi", "text": "Karbi"},
@@ -40,6 +41,7 @@
     {"id": "Nyishi", "text": "Nyishi"},
     {"id": "Odia", "text": "Odia"},
     {"id": "Paite", "text": "Paite"},
+    {"id": "Pangal", "text": "Pangal"},
     {"id": "Purum", "text": "Purum"},
     {"id": "Punjabi", "text": "Punjabi"},
     {"id": "Sadri", "text": "Sadri"},
@@ -56,5 +58,4 @@
     {"id": "Telugu", "text": "Telugu"},
     {"id": "Toto", "text": "Toto"},
     {"id": "Urdu", "text": "Urdu"}
-    
 ]
