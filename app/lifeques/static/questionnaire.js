@@ -1,207 +1,3 @@
-// var questionaireprojectform = {
-//   "username": "alice",
-//   "projectname": "alice_project_1",
-//   "Language": ["text", ["English", "Hindi"]],
-//   "Script": ["", ["latin", "devanagari"]],
-//   "Prompt Audio": ["file", ["audio"]],
-//   "Domain": ["multiselect", ["General", "Agriculture", "Sports"]],
-//   "Elicitation Method": ["select", ["Translation", "Agriculture", "Sports"]],
-//   "Target": ["multiselect", ["case", "classifier", "adposition"]]
-// }
-var questionaireprojectform = {
-  "_id": { "$oid": "6370f76bbf61c0a50d2a6ef9" },
-  "username": "alice",
-  "projectname": "Q_Derived_test_108",
-  "Prompt Type": [
-    "prompt",
-    {
-      "English": {
-        "Audio": ["waveform", ""],
-        "Multimedia": ["file", ""],
-        "Image": ["file", ""],
-        "Text": ["text", ""]
-      },
-      "Hindi": {
-        "Audio": ["waveform", ""],
-        "Multimedia": ["file", ""],
-        "Image": ["file", ""],
-        "Text": ["text", ""]
-      }
-    }
-  ],
-  "Language_Script": [
-    "",
-    {
-      "English": "Latin",
-      "Hindi": "Devanagari"
-    }
-  ],
-  "Target": ["multiselect", ["on"]],
-  "Elicitation Method": ["select", ["Translation", "Narration", "Role-Play"]],
-  "Domain": ["multiselect", ["General", "Education", "Agriculture", "Science-Technology"]]
-}
-
-var testquesdata = {
-  "username": "",
-  "projectname": "",
-  "quesID": "",
-  "Q_Id": "",
-  "lastUpdatedBy": "",
-  "prompt": {
-    "domain": [],
-    "elicitation method": "",
-    "target": [],
-    "content": {
-      "English": {
-        "text": {
-          "txtboundaryspan": {
-            "startindex": "",
-            "endindex": "",
-            "textspan": {
-              "Latin": "This is english sentence."
-            }
-          }
-        },
-        "audio": {
-          "fileId": "",
-          "filename": "",
-          "instructions": "",
-          "textgrid": {
-            "sentence": {
-              "audioboundarydur": {
-                "startindex": "",
-                "endindex": "",
-                "transcription": {
-                  "script": ""
-                }
-              }
-            }
-          }
-        },
-        "image": {
-          "fileId": "",
-          "filename": "",
-          "instructions": "",
-          "imagetext": {
-            "txtboundaryspan": {
-              "startindex": "",
-              "endindex": "",
-              "textspan": {
-                "script": ""
-              }
-            }
-          }
-        },
-        "multimedia": {
-          "fileId": "",
-          "filename": "",
-          "instructions": "",
-          "textgrid": {
-            "sentence": {
-              "audioboundarydur": {
-                "startindex": "",
-                "endindex": "",
-                "transcription": {
-                  "script": ""
-                }
-              }
-            }
-          }
-        }
-      },
-      "Hindi": {
-        "text": {
-          "txtboundaryspan": {
-            "startindex": "",
-            "endindex": "",
-            "textspan": {
-              "Devanagari": "ye hindi sentence hai."
-            }
-          }
-        },
-        "audio": {
-          "fileId": "",
-          "filename": "",
-          "instructions": "",
-          "textgrid": {
-            "sentence": {
-              "audioboundarydur": {
-                "startindex": "",
-                "endindex": "",
-                "transcription": {
-                  "script": ""
-                }
-              }
-            }
-          }
-        },
-        "image": {
-          "fileId": "",
-          "filename": "",
-          "instructions": "",
-          "imagetext": {
-            "txtboundaryspan": {
-              "startindex": "",
-              "endindex": "",
-              "textspan": {
-                "script": ""
-              }
-            }
-          }
-        },
-        "multimedia": {
-          "fileId": "",
-          "filename": "",
-          "instructions": "",
-          "textgrid": {
-            "sentence": {
-              "audioboundarydur": {
-                "startindex": "",
-                "endindex": "",
-                "transcription": {
-                  "script": ""
-                }
-              }
-            }
-          }
-        }
-      }
-
-    }
-  },
-  "current_username": {
-    "prompt": {
-      "bhojpuri": "",
-      "awadhi": ""
-    }
-  }
-}
-
-var targets = [
-  { "id": "Simple and Complex", "text": "Simple and Complex" },
-  { "id": "Case", "text": "Case" },
-  { "id": "Classifiers", "text": "Classifiers" },
-  { "id": "Reflexives and Reciprocals", "text": "Reflexives and Reciprocals" },
-  { "id": "Interrogatives", "text": "Interrogatives" },
-  { "id": "Tag Questions", "text": "Tag Questions" },
-  { "id": "Tense Aspect Mood", "text": "Tense Aspect Mood" },
-  { "id": "Intransitive", "text": "Intransitive" },
-  { "id": "Transitive", "text": "Transitive" },
-  { "id": "Ditransitive", "text": "Ditransitive" },
-  { "id": "Additional", "text": "Additional" },
-  { "id": "ECV, Converbs, Serial Verbs", "text": "ECV, Converbs, Serial Verbs" },
-  { "id": "Negatives and Prohibitives", "text": "Negatives and Prohibitives" },
-  { "id": "Causatives and Passives", "text": "Causatives and Passives" },
-  { "id": "Reduplication, echo forms and binomials", "text": "Reduplication, echo forms and binomials" },
-  { "id": "Comparatives and Superlatives", "text": "Comparatives and Superlatives" },
-  { "id": "Sentences with Adverbs", "text": "Sentences with Adverbs" },
-  { "id": "Quantifiers and Intensifiers", "text": "Quantifiers and Intensifiers" },
-  { "id": "Scrambling", "text": "Scrambling" },
-  { "id": "Modifiers", "text": "Modifiers" },
-  { "id": "Agreement", "text": "Agreement" },
-  { "id": "Miscellaneous", "text": "Miscellaneous" }
-]
-
 var audioWaveform = 0
 
 function createInputElement(key, elevalue, type, quesdatavalue) {
@@ -297,7 +93,6 @@ function createSelectElement(key, elevalue, type, quesdatavalue) {
 
 function createquesform(quesprojectform) {
   // console.log(quesprojectform);
-  // quesprojectform = questionaireprojectform;
   localStorage.setItem("quesactiveprojectform", JSON.stringify(quesprojectform));
   if (!('quesdata' in quesprojectform) ||
     !(quesprojectform['quesdata'])) {
@@ -387,13 +182,9 @@ function createquesform(quesprojectform) {
         // test field start
 
         var testquesform = ''
-        // testtype = questionaireprojectform[key][0];
-        // testvalue = questionaireprojectform[key][1];
-        testquesdata = quesdata;
-        testtype = eletype
-        testvalue = elevalue
-        // console.log(questionaireprojectform[key], testtype, testvalue);
-        // console.log(testvalue);
+        var testquesdata = quesdata;
+        testtype = eletype;
+        testvalue = elevalue;
         for (let [testpromptTypeKey, testpromptTypeValue] of Object.entries(testvalue)) {
           transcriptionBoundaryForm = '';
           // testpromptTypeKey = testpromptTypeKey.replace(new RegExp(' ', 'g'), '');
@@ -508,7 +299,7 @@ function createquesform(quesprojectform) {
     });
     $('#Target').select2({
       placeholder: 'select',
-      data: targets,
+      data: getJsonfileData('grammatical_target'),
       allowClear: true
     });
 

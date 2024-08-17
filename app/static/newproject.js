@@ -55,7 +55,7 @@ var fieldType = [{
 ];
 
 var languages = [
-  {"id": "", "text": ""},
+  // {"id": "", "text": ""},
   {"id": "Assamese", "text": "Assamese"},
   {"id": "Angika", "text": "Angika"},
   {"id": "Awadhi", "text": "Awadhi"},
@@ -160,14 +160,14 @@ $(document).ready(function () {
   $('.lexemelanguage').select2({
     tags: true,
     placeholder: 'Lexeme Languages',
-    data: languages,
-    allowClear: true
+    data: getJsonfileData('languages'),
+    // allowClear: true
   });
 
   $('.lexemeformscript').select2({
     // tags: true,
     placeholder: 'Lexeme Scripts',
-    data: scripts,
+    data: getJsonfileData('scripts'),
     allowClear: true,
     // sorter: false
   });
@@ -185,7 +185,7 @@ $(document).ready(function () {
   $('.glosslanguage').select2({
     // tags: true,
     placeholder: 'Gloss Languages',
-    data: languages,
+    data: getJsonfileData('languages'),
     allowClear: true
   });
 
@@ -193,7 +193,7 @@ $(document).ready(function () {
   $('.transcriptionscript').select2({
     // tags: true,
     placeholder: 'Transcription Scripts',
-    data: scripts,
+    data: getJsonfileData('scripts'),
     allowClear: true,
     // sorter: false
   });
@@ -201,7 +201,7 @@ $(document).ready(function () {
   $('.translationlanguage').select2({
     // tags: true,
     placeholder: 'Translation Languages',
-    data: languages,
+    data: getJsonfileData('languages'),
     allowClear: true,
     // sorter: false
   });
@@ -209,7 +209,7 @@ $(document).ready(function () {
   $('.translationscript').select2({
     // tags: true,
     placeholder: 'Translation Scripts',
-    data: scripts,
+    data: getJsonfileData('scripts'),
     allowClear: true,
     // sorter: false
   });
@@ -233,7 +233,7 @@ $("#addGlossField").click(function(){
   var fItems = '<div class="col-md-3"><div class="form-group">'+
               // '<select class="form-control" name="Gloss Language' + glossField + '" required>';
               '<select class="form-control" name="Gloss Language" required>';
-  fItems += '<option value="">Translation/Gloss Language</option>';
+  fItems += '<option value="" selected disabled>Translation/Gloss Language</option>';
 
   for (var i = 0; i < languages.length; i++) {
     fItems += '<option value="' + languages[i].text + '">' + languages[i].id + '</option>';
@@ -244,7 +244,7 @@ $("#addGlossField").click(function(){
               '<div class="input-group">'+
               // '<select class="form-control" name="glossScriptField' + glossField + '" required>';
               '<select class="form-control" name="Gloss Script" required>';
-  fItems += '<option value="">Translation/Gloss Script</option>';
+  fItems += '<option value="" selected disabled>Translation/Gloss Script</option>';
 
   for (var i = 0; i < scripts.length; i++) {
     fItems += '<option value="' + scripts[i].text + '">' + scripts[i].id + '</option>';

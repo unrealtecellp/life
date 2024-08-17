@@ -12,170 +12,6 @@ var fieldType = [{
     }
   ];
   
-var languages = [
-  {"id": "", "text": ""},
-  {"id": "Assamese", "text": "Assamese"},
-  {"id": "Angika", "text": "Angika"},
-  {"id": "Awadhi", "text": "Awadhi"},
-  {"id": "Bajjika", "text": "Bajjika"},
-  {"id": "Bangla", "text": "Bangla"},
-  {"id": "Bhojpuri", "text": "Bhojpuri"},
-  {"id": "Bodo", "text": "Bodo"},
-  {"id": "Braj", "text": "Braj"},
-  {"id": "Bundeli", "text": "Bundeli"},
-  {"id": "Chhattisgarhi", "text": "Chhattisgarhi"},
-  {"id": "Chokri", "text": "Chokri"},
-  {"id": "Dogri", "text": "Dogri"},
-  {"id": "English", "text": "English"},
-  {"id": "Gujarati", "text": "Gujarati"},
-  {"id": "Haryanvi", "text": "Haryanvi"},
-  {"id": "Hindi", "text": "Hindi"},
-  {"id": "Kashmiri", "text": "Kashmiri"},
-  {"id": "Kannada", "text": "Kannada"},
-  {"id": "Khortha", "text": "Khortha"},
-  {"id": "Konkani", "text": "Konkani"},
-  {"id": "KokBorok", "text": "Kok Borok"},
-  {"id": "Magahi", "text": "Magahi"},
-  {"id": "Maithili", "text": "Maithili"},
-  {"id": "Malayalam", "text": "Malayalam"},
-  {"id": "Marathi", "text": "Marathi"},
-  {"id": "Meitei", "text": "Meitei"},
-  {"id": "Nagamese", "text": "Nagamese"},
-  {"id": "Nepali", "text": "Nepali"},
-  {"id": "Nyishi", "text": "Nyishi"},
-  {"id": "Odia", "text": "Odia"},
-  {"id": "Punjabi", "text": "Punjabi"},
-  {"id": "Sadri", "text": "Sadri"},
-  {"id": "Sanskrit", "text": "Sanskrit"},
-  {"id": "Santali", "text": "Santali"},
-  {"id": "Sambalpuri", "text": "Sambalpuri"},
-  {"id": "Tamil", "text": "Tamil"},
-  {"id": "Telugu", "text": "Telugu"},
-  {"id": "Toto", "text": "Toto"},
-  {"id": "Urdu", "text": "Urdu"},
-  {"id": "Azamgarhi", "text": "Azamgarhi"},
-  {"id": "Kannauji", "text": "Kannauji"},
-  {"id": "Marwari", "text": "Marwari"},
-  {"id": "TaiAiton", "text": "Tai Aiton"},
-  {"id": "Spiti", "text": "Spiti"},
-  {"id": "Karbi", "text": "Karbi"},
-  {"id": "Paite", "text": "Paite"},
-  {"id": "Chiru", "text": "Chiru"},
-  {"id": "Chothe", "text": "Chothe"},
-  {"id": "Purum", "text": "Purum"},
-  {"id": "Markodi", "text": "Markodi"},
-  {"id": "Byari", "text": "Byari"},
-  {"id": "Tanghkul", "text": "Tanghkul"},
-  {"id": "Chiru", "text": "Chiru"},
-  {"id": "Bangru", "text": "Bangru"},
-  {"id": "Ahirwati", "text": "Ahirwati"},
-  {"id": "Sumi", "text": "Sumi"},
-  {"id": "Sylheti", "text": "Sylheti"}
-]
-
-var scripts = 
-[    
-      {
-        "id": "",
-        "text": ""
-      },
-      {
-        "id": "Bengali", 
-        "text": "Bengali"
-      },
-      {
-        "id": "Devanagari", 
-        "text": "Devanagari"
-      },
-      {
-        "id": "Gujarati", 
-        "text": "Gujarati"
-      },
-      {
-        "id": "Gurumukhi", 
-        "text": "Gurumukhi"
-      },
-      {
-        "id": "IPA", 
-        "text": "IPA"
-      },
-      {
-        "id": "Kannada", 
-        "text": "Kannada"
-      },
-      {
-        "id": "Latin", 
-        "text": "Latin"
-      },
-      {
-        "id": "Malayalam", 
-        "text": "Malayalam"
-      },
-      {
-        "id": "Mayek", 
-        "text": "Mayek"
-      },
-      {
-        "id": "Odia", 
-        "text": "Odia"
-      },
-      {
-        "id": "OlChiki", 
-        "text": "Ol Chiki"
-      },
-      {
-        "id": "Tamil", 
-        "text": "Tamil"
-      },
-      {
-        "id": "Telugu", 
-        "text": "Telugu"
-      },
-      {
-        "id": "Toto", 
-        "text": "Toto"
-      },
-      {
-        "id": "LikTai", 
-        "text": "Lik-Tai"
-      }
-]
-
-var QuestionnaireDomain = [
-  // {"id": "", "text": ""},
-  {"id": "General", "text": "General"},
-  {"id": "Agriculture", "text": "Agriculture"},
-  {"id": "Education", "text": "Education"},
-  {"id": "Science-Technology", "text": "Science-Technology"},
-  {"id": "Culture", "text": "Culture"},
-  {"id": "Lifecycle", "text": "Lifecycle"},
-  {"id": "Healthcare", "text": "Healthcare"},
-  {"id": "Sports", "text": "Sports"},
-  {"id": "General-Oral-History", "text": "General-Oral-History"}
-];
-
-
-var ElicitationMethod = [
-  // {"id": "", "text": ""},
-  {"id": "Conversation", "text": "Conversation"},
-  {"id": "Interview", "text": "Interview"},
-  {"id": "Narration", "text": "Narration"},
-  {"id": "Picture Book Narration", "text": "Picture Book Narration"},
-  {"id": "Role-Play", "text": "Role-Play"},
-  {"id": "Translation", "text": "Translation"},
-  {"id": "Video Narration", "text": "Video Narration"}  
-];
-
-
-// var target = [
-//   {"id": "", "text": ""},
-//   {"id": "Anaphors", "text": "Anaphors"},
-//   {"id": "Case", "text": "Case"},
-//   {"id": "Oral", "text": "Oral"}
-
-// ];
-
-  
 var promptType = [
   // {"id": "", "text": ""},
   {"id": "Audio", "text": "Audio"},
@@ -183,29 +19,16 @@ var promptType = [
   {"id": "Multimedia", "text": "Multimedia"}
 ];
 
-// $('.promptlanguage').select2({
-//   tags: true,
-//   placeholder: 'Prompt Language',
-//   data: languages,
-//   allowClear: true
-// });
-
-// $('.promptlangscript').select2({
-//   tags: true,
-//   placeholder: 'Prompt Language Script',
-//   data: scripts,
-//   allowClear: true
-// });
 $('.translang').select2({
   placeholder: 'Transcription Language',
-  data: languages,
+  data: getJsonfileData('languages'),
   allowClear: true,
   // console.log( "ready!" )
 });
 
 $('.transscript').select2({
   placeholder: 'Transcription Script',
-  data: scripts,
+  data: getJsonfileData('scripts'),
   allowClear: true,
   // console.log( "ready!" )
 });
@@ -219,26 +42,18 @@ $('.prompttype').select2({
 
 $('.questionnairedomain').select2({
   tags: true,
-  placeholder: '-- Questionnire Domain --',
-  data: QuestionnaireDomain  ,
+  placeholder: 'Questionnaire Domain',
+  data: getJsonfileData('questionnaire_domain'),
   allowClear: true
 });
 
 $('.elicitationmethod').select2({
   tags: true,
-  placeholder: '--Elicitation Method--',
-  data: ElicitationMethod ,
+  placeholder: 'Elicitation Method',
+  data: getJsonfileData('elicitation_method'),
   allowClear: true,
   // console.log( "ready!" )
 });
-
-// $('.target').select2({
-//   tags: true,
-//   placeholder: '-- Target --',
-//   data: target,
-//   allowClear: true,
-//   // console.log( "ready!" )
-// });
 
 // For checking and unchecking the instructions and transcription checkbox based on
 // audio, mm or image is checked or not in new questionnaire form
@@ -251,9 +66,9 @@ $(document).ready(function(){
       var checkIdNumber = checkId.substring(checkId.indexOf("_"));
       if (checkId.indexOf("idpromptaudio") > -1) {
         var transboxId = "idincludeaudiotranscription"+checkIdNumber;
-        console.log('transboxId', transboxId);
+        // console.log('transboxId', transboxId);
         var transCheckbox = document.getElementById(transboxId);
-        console.log('transboxCheckbox', transCheckbox);
+        // console.log('transboxCheckbox', transCheckbox);
 
         var instboxId = "idincludeaudioinstruction"+checkIdNumber;
         var instCheckbox = document.getElementById(instboxId);
@@ -292,36 +107,37 @@ var langScriptPromptField = 0;
 $("#addpromptlangscripts").click(function(){
   langScriptPromptField++;
   
-  var drow = '<div class="row removelangScriptPromptfield' + langScriptPromptField + '">'+
+  var drow = '';
+  // drow += '<div class="form-group">';
+  drow += '<div class="removelangScriptPromptfield' + langScriptPromptField + '">'+
   '<div class="row">';
 
   var fItems = '<div class="col-md-3"><div class="form-group">'+
-              '<select class="form-control" name="Language_' + langScriptPromptField + '"  required>';
+              '<select class="form-control" id="language_id_' + langScriptPromptField + '" name="Language_' + langScriptPromptField + '" required>';
   fItems += '<option value="" selected disabled>Language</option>';
 
-  for (var i = 0; i < languages.length; i++) {
-    if (languages[i].id !== '' && languages[i].text !== '') {
-      fItems += '<option value="' + languages[i].text + '">' + languages[i].id + '</option>';
-    }
-  }
+  // for (var i = 0; i < languages.length; i++) {
+  //   if (languages[i].id !== '' && languages[i].text !== '') {
+  //     fItems += '<option value="' + languages[i].text + '">' + languages[i].id + '</option>';
+  //   }
+  // }
   fItems += '</select></div></div>';
 
   fItems += '<div class="col-md-3"><div class="form-group">'+
               '<div class="input-group">'+
-              '<select class="form-control" name="Script_' + langScriptPromptField + '"  required>';
+              '<select class="form-control" id="script_id_' + langScriptPromptField + '" name="Script_' + langScriptPromptField + '" required>';
   fItems += '<option value="" selected disabled>Script</option>';
 
-  for (var i = 0; i < scripts.length; i++) {
-    if (scripts[i].id !== '' && scripts[i].text) {
-      fItems += '<option value="' + scripts[i].text + '">' + scripts[i].id + '</option>';
-    }
-  }
+  // for (var i = 0; i < scripts.length; i++) {
+  //   if (scripts[i].id !== '' && scripts[i].text) {
+  //     fItems += '<option value="' + scripts[i].text + '">' + scripts[i].id + '</option>';
+  //   }
+  // }
   fItems += '</select>';
 
   fItems += '<div class="input-group-btn">'+
-            '<button class="btn btn-danger" type="button" onclick="removelangScriptPromptFields('+ langScriptPromptField +');">'+
+            '<button class="btn btn-sm btn-danger" type="button" onclick="removelangScriptPromptFields('+ langScriptPromptField +');">'+
             '<span class="glyphicon glyphicon-minus" aria-hidden="true"></span></button></div></div></div></div></div>';
-
 
   fItems += '<div class="row"><div class="col-md-3"><div class="form-group">'+
   '<input class="mmcheck" type="checkbox" id="idpromptaudio_' + langScriptPromptField + '" name="Audio_' + langScriptPromptField + '">'+
@@ -350,8 +166,21 @@ $("#addpromptlangscripts").click(function(){
 
   
   drow += fItems;
-  drow += '</div>'
+  drow += '</div>';
+  // drow += '</div>';
   $(".promptlangscripts").append(drow);
+  $('#language_id_' + langScriptPromptField).select2({
+    placeholder: 'Language',
+    data: getJsonfileData('languages'),
+    // tags: true,
+    // allowClear: true
+  });
+  $('#script_id_' + langScriptPromptField).select2({
+    placeholder: 'Script',
+    data: getJsonfileData('scripts'),
+    // tags: true,
+    // allowClear: true
+  });
 });
 
 var transcriptioncheckbox = document.getElementById("idincludetranscription")
