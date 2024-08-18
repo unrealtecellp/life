@@ -698,7 +698,7 @@ def progressReportAdmin():
         # Connect to MongoDB and get collection stats
         client = MongoClient(app.config["MONGO_URI"])
         project_stats, speaker_ids, speakers_audio_ids = progressreportadmin.get_collection_stats('lifedb', 'projects')
-
+        print("project_stats: ", project_stats)
         # Prepare additional data for the template
         collections = getdbcollectionslist.getdbcollectionslist(mongo)
         response = {}

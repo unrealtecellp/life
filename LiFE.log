@@ -392,3 +392,47 @@ Traceback (most recent call last):
   File "/home/kmi/Documents/lifetestapp/venv/lib/python3.8/site-packages/jinja2/environment.py", line 485, in getattr
     return getattr(obj, attribute)
 jinja2.exceptions.UndefinedError: 'loop' is undefined
+[2024-08-15 11:21:46,816] - logger: life - level: INFO - function: generate_languages_database - line: 102
+language Database found!
+[2024-08-15 11:21:46,818] - logger: life - level: INFO - function: generate_models_database - line: 55
+Models Database found!
+[2024-08-15 11:21:51,256] - logger: life - level: INFO - function: generate_languages_database - line: 102
+language Database found!
+[2024-08-15 11:21:51,257] - logger: life - level: INFO - function: generate_models_database - line: 55
+Models Database found!
+[2024-08-16 00:08:40,913] - logger: life - level: INFO - function: generate_languages_database - line: 102
+language Database found!
+[2024-08-16 00:08:40,914] - logger: life - level: INFO - function: generate_models_database - line: 55
+Models Database found!
+[2024-08-16 00:08:44,723] - logger: life - level: INFO - function: generate_languages_database - line: 102
+language Database found!
+[2024-08-16 00:08:44,724] - logger: life - level: INFO - function: generate_models_database - line: 55
+Models Database found!
+[2024-08-16 00:31:34,050] - logger: life - level: INFO - function: generate_languages_database - line: 102
+language Database found!
+[2024-08-16 00:31:34,050] - logger: life - level: INFO - function: generate_models_database - line: 55
+Models Database found!
+[2024-08-16 00:31:36,328] - logger: life - level: INFO - function: generate_languages_database - line: 102
+language Database found!
+[2024-08-16 00:31:36,329] - logger: life - level: INFO - function: generate_models_database - line: 55
+Models Database found!
+[2024-08-16 00:31:36,606] - logger: life - level: INFO - function: generate_languages_database - line: 102
+language Database found!
+[2024-08-16 00:31:36,607] - logger: life - level: INFO - function: generate_models_database - line: 55
+Models Database found!
+[2024-08-17 14:49:37,571] - logger: life - level: INFO - function: generate_languages_database - line: 102
+language Database found!
+[2024-08-17 14:49:37,574] - logger: life - level: INFO - function: generate_models_database - line: 55
+Models Database found!
+[2024-08-17 14:49:40,988] - logger: life - level: INFO - function: generate_languages_database - line: 102
+language Database found!
+[2024-08-17 14:49:40,989] - logger: life - level: INFO - function: generate_models_database - line: 55
+Models Database found!
+[2024-08-18 10:59:30,069] - logger: life - level: INFO - function: generate_languages_database - line: 102
+language Database found!
+[2024-08-18 10:59:30,072] - logger: life - level: INFO - function: generate_models_database - line: 55
+Models Database found!
+[2024-08-18 11:00:39,411] - logger: life - level: INFO - function: generate_languages_database - line: 102
+language Database found!
+[2024-08-18 11:00:39,411] - logger: life - level: INFO - function: generate_models_database - line: 55
+Models Database found!

@@ -116,6 +116,212 @@ logger = life_logging.get_logger()
 #                            dropdown_list=dropdown_list)
 
 
+@karya_bp.route('/get_otp', methods=['POST'])
+def get_otp():
+    data = request.json
+    phone_number = data.get('phone_number')
+    
+    urll = 'https://demo-karya.centralindia.cloudapp.azure.com/api_auth/v5/otp/generate'
+    headers = {'phone_number': phone_number}
+    
+    r = requests.post(url=urll, headers=headers)
+    
+    if r.status_code == 200:
+        response = json.loads(r.text)
+        otp_id = response['otp_id']
+        print("otp_id: ", otp_id)
+        return jsonify({"status": 200, "otp_id": otp_id})
+    else:
+        return jsonify({"status": r.status_code, "message": "Error sending OTP"})
+
+@karya_bp.route('/verify_otp', methods=['POST'])
+def verify_otp():
+    data = request.json
+    phone_number = data.get('phone_number')
+    otp_id = data.get('otp_id')
+    otp = data.get('otp')
+
+    print(f"phone_number: {phone_number}, otp_id: {otp_id}, otp: {otp}")
+    
+    urll = 'https://demo-karya.centralindia.cloudapp.azure.com/api_auth/v5/otp/verify'
+    headers = {
+        'phone_number': phone_number,
+        'otp_id': otp_id,
+        'otp': otp
+    }
+    print(headers)
+    
+    verify_ph = requests.put(url=urll, headers=headers)
+    
+    if verify_ph.status_code == 200:
+        response = verify_ph.json()
+        print("Response:", response)
+        
+        token_id = [p['id_token'] for p in response]
+        print("Token ID:", token_id)
+        
+        avatar_url = 'https://demo-karya.centralindia.cloudapp.azure.com/api_worker/v5/avatars'
+        avatar_headers = {'karya_worker_id_token': token_id[0]}
+        worker_response = requests.get(url=avatar_url, headers=avatar_headers)
+        
+        if worker_response.status_code == 200:
+            assign = worker_response.json()
+            print("Worker Avatar Response:", assign)
+            
+            access_codes = [item['access_code'] for item in assign]
+            print("Access Codes:", access_codes)
+
+            return jsonify({"status": 200, "access_codes": access_codes, "token_id": token_id[0]})
+        else:
+            return jsonify({"status": worker_response.status_code, "message": "Error fetching worker avatar"})
+    else:
+        return jsonify({"status": verify_ph.status_code, "message": "Error verifying OTP"})
+
+@karya_bp.route('/get_microtasks', methods=['POST'])
+def get_microtasks():
+    data = request.json
+    token_id = data.get('token_id')
+    access_code = data.get('access_code')
+
+    if not token_id:
+        return jsonify({"status": 400, "message": "Missing token_id"}), 400
+
+    print("token id : ", token_id)
+    print("selected access code: ", access_code)
+    
+    headers = {
+        'karya_worker_id_token': token_id, 
+        'access_code': access_code
+    }
+    print('headers : ', headers)
+    
+    urll = 'https://demo-karya.centralindia.cloudapp.azure.com/api_worker/v5/assignments?type=new&from=2024-01-17T20:11:35.213Z'
+    worker_response = requests.get(url=urll, headers=headers)
+    
+    if worker_response.status_code == 200:
+        data = worker_response.json()
+        print(data)
+        
+        microtasks = data.get('microtasks', [])
+        microtask_details = [{
+            'id': mt['id'],
+            'task_id': mt['task_id'],
+            'files': mt['input'].get('files', {}),
+            'input_dp_id': mt['input_dp_id'],
+            'created_at': mt['created_at'],
+            'last_updated_at': mt['last_updated_at']
+        } for mt in microtasks]
+        
+        organized_json = json.dumps(microtask_details, indent=4)
+        print(organized_json)
+        
+        return jsonify({"status": 200, "microtasks": microtask_details})
+    else:
+        return jsonify({"status": worker_response.status_code, "message": "Error fetching microtasks"})
+
+
+@karya_bp.route('/karya_beta_v5')
+@login_required
+def karya_beta_v5():
+    # print('starting...home')
+    projects, userprojects, accesscodedetails = getdbcollections.getdbcollections(mongo,
+                                                                                  'projects',
+                                                                                  'userprojects',
+                                                                                  'accesscodedetails')
+    current_username = getcurrentusername.getcurrentusername()
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                  userprojects)
+    shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
+                                                      current_username,
+                                                      activeprojectname)
+
+    activeprojectname = getactiveprojectname.getactiveprojectname(
+        current_username, userprojects)
+    projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
+    projectType = getprojecttype.getprojecttype(projects, activeprojectname)
+    print("projectType : ", projectType)
+    # Find documents without "acodedeleteFlag" field
+    query = {"acodedeleteFlag": {"$exists": False}}
+    documents = accesscodedetails.find(query)
+
+    # Update documents with "acodedeleteFlag: 0"
+    for document in documents:
+        document["acodedeleteFlag"] = 0
+        accesscodedetails.update_one(
+            {"_id": document["_id"], "projectname": activeprojectname}, {"$set": document})
+
+    # finding acccesscode list on the basis of accesscodedetails "Task"
+    access_code_list = access_code_management.get_access_code_list(
+        accesscodedetails, activeprojectname, current_username)
+
+    transcription_access_code_list = access_code_management.get_transcription_access_code_list(
+        accesscodedetails, activeprojectname, current_username)
+
+    verification_access_code_list = access_code_management.get_verification_access_code_list(
+        accesscodedetails, activeprojectname, current_username)
+
+    recording_access_code_list = access_code_management.get_recording_access_code_list(
+        accesscodedetails, activeprojectname, current_username)
+
+    # Add condition to check if the lists are empty
+    # if not verification_access_code_list:
+    #     verification_access_code_list = [""]
+    # if not transcription_access_code_list:
+    #     transcription_access_code_list = [""]
+
+    # print(verification_access_code_list)
+
+    # if projectType == "validation":
+    karya_speaker_ids = karya_speaker_management.get_recording_karya_speaker_ids(
+        accesscodedetails, activeprojectname, include_fetch=True)
+    # else:
+    #     karya_speaker_ids = karya_speaker_management.get_recording_karya_speaker_ids(
+    # accesscodedetails, activeprojectname, include_fetch=True)
+
+    if projectType == "transcriptions":
+        dropdown_dict = {
+            "newTranscription": "New Transcription",
+            "completedVerification": "Completed Verification",
+            "newVerification": "New Verification"
+        }
+    elif projectType == "validation":
+        dropdown_dict = {
+            "completedVerification": "Completed Verification",
+            "newVerification": "New Verification"
+        }
+    elif projectType == "recordings":
+        dropdown_dict = {
+            "completedRecordings": "Completed Recordings",
+            "newTranscription": "New Transcription",
+            "completedVerification": "Completed Verification",
+            "newVerification": "New Verification"
+        }
+    elif projectType == "questionnaires":
+                dropdown_dict = {
+            "newVerification": "New Verification"
+                }
+
+    else:
+        dropdown_dict = {
+            "newVerification": "New Verification",
+            "completedRecordings": "Completed Recordings"
+        }
+
+    dropdown_list = [{"value": key, "name": value}
+                     for key, value in dropdown_dict.items()]
+
+    return render_template("karya_beta_v5.html",
+                           projectName=activeprojectname,
+                           shareinfo=shareinfo,
+                           fetchaccesscodelist=access_code_list,
+                           transcription_access_code_list=transcription_access_code_list,
+                           verification_access_code_list=verification_access_code_list,
+                           recording_access_code_list=recording_access_code_list,
+                           karya_speaker_ids=karya_speaker_ids,
+                           dropdown_list=dropdown_list)
+
+
+
 @karya_bp.route('/home_insert')
 @login_required
 def home_insert():
