@@ -3444,7 +3444,11 @@ function transcriptionToGloss() {
             // console.log(sentence_morphemic_break);            
             let allTranscriptions = localStorageRegions[p]['data']['sentence'][boundaryID]['transcription'];
             let transcriptionInScript = allTranscriptions[scriptName];
-
+            // console.log(transcriptionInScript);
+            if (!transcriptionInScript) {
+                transcriptionInScript = '';
+            }
+            // console.log(transcriptionInScript);
             let cleanedTranscriptionInScript = transcriptionInScript.replace(morphemicBreakReplacerRegex, '');
 
             // if (sentenceMorphemicBreak == '') {

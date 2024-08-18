@@ -10,7 +10,7 @@ app = Flask(__name__)
 app.config.from_object(Config)
 if not os.path.exists('profiler'):
     os.mkdir('profiler')
-# app.wsgi_app = ProfilerMiddleware(app.wsgi_app, stream=None, profile_dir="./profiler")
+app.wsgi_app = ProfilerMiddleware(app.wsgi_app, stream=None, profile_dir="./profiler")
 mongo = PyMongo(app)
 bootstrap = Bootstrap(app)
 login = LoginManager(app)

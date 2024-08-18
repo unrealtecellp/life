@@ -381,7 +381,8 @@ def home():
                                        audiospeakerids=audio_speaker_ids,
                                        commentstats=commentstats,
                                        shareinfo=shareinfo,
-                                       allQuesIds=all_ques_ids)
+                                       allQuesIds=all_ques_ids,
+                                       derivedFromProjectType=derived_from_project_type)
             except:
                 logger.exception("")
                 flash('Upload first audio file.')
@@ -391,7 +392,8 @@ def home():
                                projectName=activeprojectname,
                                newData=activeprojectform,
                                data=currentuserprojectsname,
-                               shareinfo=shareinfo)
+                               shareinfo=shareinfo,
+                               derivedFromProjectType=derived_from_project_type)
     except:
         logger.exception("")
 
@@ -490,7 +492,7 @@ def audiobrowse():
         new_data['sourceMetadata'] = speaker_metadata
         new_data['audioData'] = new_audio_data_list
         new_data['audioDataFields'] = [
-            'audioId', 'audioFilename', 'Transcribed', 'Audio File']
+            'audioId', 'audioFilename', 'Transcribed', 'Shared With', 'Audio File']
         new_data['totalRecords'] = total_records
         new_data['transcriptionsBy'] = project_shared_with
     except:
@@ -507,7 +509,7 @@ def audiobrowse():
 def updateaudiosortingsubcategories():
     audio_sorting_sub_categories = {}
     audio_data_fields = ['audioId', 'audioFilename',
-                         'Transcribed', 'Audio File']
+                         'Transcribed', 'Shared With', 'Audio File']
     audio_data_list = []
     speaker_metadata = {}
     try:
@@ -551,18 +553,22 @@ def updateaudiosortingsubcategories():
         share_mode = shareinfo['sharemode']
         share_checked = shareinfo['sharechecked']
         download_checked = shareinfo['downloadchecked']
+        selected_audio_sorting_sub_categories = ''
 
         derived_from_project_type, derived_from_project_name = getprojecttype.getderivedfromprojectdetails(projects,
                                                                                                            activeprojectname)
+        # logger.debug(derived_from_project_type)
+        # logger.debug(derived_from_project_name)
         if (selected_audio_sorting_category == 'sourcemetainfo'):
-            audio_sorting_sub_categories = transcription_audiodetails.get_audio_sorting_subcategories(speakerdetails_collection,
-                                                                                                      activeprojectname,
-                                                                                                      speakerids,
-                                                                                                      selected_audio_sorting_category
-                                                                                                      )
-            selected_audio_sorting_sub_categories = ''
-            # logger.debug("audio_sorting_sub_categories: %s",
-            #              audio_sorting_sub_categories)
+            # audio_sorting_sub_categories = transcription_audiodetails.get_audio_sorting_subcategories(speakerdetails_collection,
+            #                                                                                           activeprojectname,
+            #                                                                                           speakerids,
+            #                                                                                           selected_audio_sorting_category
+            #                                                                                           )
+            audio_sorting_sub_categories = transcription_audiodetails.get_audio_sorting_subcategories_new(speakerdetails_collection,
+                                                                                                            activeprojectname,
+                                                                                                            speakerids)
+            # logger.debug("audio_sorting_sub_categories: %s", audio_sorting_sub_categories)
             if (derived_from_project_type != '' and
                     derived_from_project_name != ''):
                 if (derived_from_project_type == 'questionnaires'):
@@ -571,8 +577,8 @@ def updateaudiosortingsubcategories():
                                                                                                                               speakerids,
                                                                                                                               audio_sorting_sub_categories
                                                                                                                               )
-                    # logger.debug("audio_sorting_sub_categories_derived: %s", audio_sorting_sub_categories_derived)
-            # logger.debug("audio_sorting_sub_categories: %s", audio_sorting_sub_categories)
+                    # logger.debug("audio_sorting_sub_categories_derived: %s", pformat(audio_sorting_sub_categories_derived))
+            # logger.debug("audio_sorting_sub_categories: %s", pformat(audio_sorting_sub_categories))
         elif (selected_audio_sorting_category == 'lifespeakerid'):
             audio_sorting_sub_categories = speakerids
             active_speaker_id = shareinfo['activespeakerId']
@@ -610,12 +616,11 @@ def updateaudiosortingsubcategories():
                    downloadChecked=download_checked,
                    sourceMetadata=speaker_metadata)
 
-
 @transcription.route('/filteraudiobrowsetable', methods=['GET', 'POST'])
 @login_required
 def filteraudiobrowsetable():
     audio_data_fields = ['audioId', 'audioFilename',
-                         'Transcribed', 'Audio File']
+                         'Transcribed', 'Shared With', 'Audio File']
     audio_data_list = []
     try:
         projects, userprojects, speakerdetails_collection, transcriptions = getdbcollections.getdbcollections(mongo,
@@ -644,6 +649,7 @@ def filteraudiobrowsetable():
         start_from = ((page_id*audio_file_count)-audio_file_count)
         number_of_audios = page_id*audio_file_count
         filter_options = data['selectedFilterOptions']
+        temp_audio_data_list_partial = []
         temp_audio_data_list = []
         temp_audio_data_list_derived = []
         total_records = 0
@@ -651,14 +657,15 @@ def filteraudiobrowsetable():
         speakerids = transcription_audiodetails.combine_speaker_ids(projects,
                                                                     activeprojectname,
                                                                     current_username)
+        # logger.debug(speakerids)
     #     # logger.debug(audio_browse_info['activeSpeakerId'])
     #     active_speaker_id = audio_browse_info['activeSpeakerId']
 
-        filtered_speakers_list = transcription_audiodetails.filter_speakers(speakerdetails_collection,
+        filtered_speakers_list, used_filter_options = transcription_audiodetails.filter_speakers(speakerdetails_collection,
                                                                             activeprojectname,
                                                                             filter_options=filter_options)
         # logger.debug("filtered_speakers_list: %s", filtered_speakers_list)
-        # logger.debug("filtered_speakers_list: %s", filtered_speakers_list)
+        # logger.debug(used_filter_options)
         for speaker in filtered_speakers_list:
             speaker_audio_ids = transcription_audiodetails.get_speaker_audio_ids_new(projects,
                                                                                      activeprojectname,
@@ -666,7 +673,7 @@ def filteraudiobrowsetable():
                                                                                      speaker,
                                                                                      audio_browse_action=audio_browse_action)
             if (speaker in speakerids):
-                temp_total_records, temp_audio_data_list = transcription_audiodetails.get_n_audios(transcriptions,
+                temp_total_records, temp_audio_data_list_partial = transcription_audiodetails.get_n_audios(transcriptions,
                                                                                                    activeprojectname,
                                                                                                    current_username,
                                                                                                    speaker,
@@ -675,6 +682,7 @@ def filteraudiobrowsetable():
                                                                                                    number_of_audios=audio_file_count,
                                                                                                    audio_delete_flag=audio_browse_action,
                                                                                                    all_data=True)
+                temp_audio_data_list.extend(temp_audio_data_list_partial)
                 # logger.debug("temp_audio_data_list count: %s",
                 #              len(temp_audio_data_list))
                 # logger.debug("temp_audio_data_list: %s",
@@ -697,7 +705,12 @@ def filteraudiobrowsetable():
                 #                                                                                     filter_options=filter_options)
                 temp_total_records_derived, temp_audio_data_list_derived = transcription_audiodetails.filter_speakers_derived(transcriptions,
                                                                                                                               activeprojectname,
+                                                                                                                              current_username,
+                                                                                                                              filtered_speakers_list,
+                                                                                                                              used_filter_options,
                                                                                                                               filter_options=filter_options)
+                if (len(temp_audio_data_list_derived) != 0):
+                    temp_audio_data_list = []
                 # logger.debug("temp_audio_data_list_derived count: %s",
                 #             len(temp_audio_data_list_derived))
                 # logger.debug("temp_audio_data_list_derived: %s",
@@ -754,12 +767,11 @@ def filteraudiobrowsetable():
                    activePage=page_id,
                    downloadChecked=download_checked)
 
-
 @transcription.route('/updateaudiobrowsetable', methods=['GET', 'POST'])
 @login_required
 def updateaudiobrowsetable():
     audio_data_fields = ['audioId', 'audioFilename',
-                         'Transcribed', 'Audio File']
+                         'Transcribed', 'Shared With', 'Audio File']
     audio_data_list = []
     try:
         # data through ajax
@@ -885,7 +897,7 @@ def audiobrowseaction():
 @login_required
 def audiobrowseactionplay():
     audio_data_fields = ['audioId', 'audioFilename',
-                         'Transcribed', 'Audio File']
+                         'Transcribed', 'Shared With', 'Audio File']
     audio_data_list = []
     try:
         projects, userprojects, transcriptions = getdbcollections.getdbcollections(mongo,
@@ -990,7 +1002,7 @@ def audiobrowseactionshare():
 @login_required
 def audiobrowsechangepage():
     audio_data_fields = ['audioId', 'audioFilename',
-                         'Transcribed', 'Audio File']
+                         'Transcribed', 'Shared With', 'Audio File']
     audio_data_list = []
     try:
         # data through ajax
