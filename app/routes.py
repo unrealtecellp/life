@@ -7367,6 +7367,7 @@ def browsefilesharedwithuserslist():
 
 @app.route('/browsesharewith', methods=['GET', 'POST'])
 def browsesharewith():
+    sharing_success = False
     try:
         projects, userprojects, userlogin, transcriptions = getdbcollections.getdbcollections(mongo,
                                                                                               'projects',
@@ -7396,6 +7397,7 @@ def browsesharewith():
         for audio_id in audio_ids_list:
             speakerid = transcription_audiodetails.get_audio_speakerid(
                 transcriptions, activeprojectname, audio_id)
+            # logger.debug(speakerid)
             if (speakerid is not None):
                 if (speakerid in speaker_audioids):
                     speaker_audioids[speakerid].append(audio_id)
@@ -7476,10 +7478,12 @@ def browsesharewith():
                                     }
                                 }
                             )
+        sharing_success = True
     except:
         logger.exception("")
 
-    return jsonify(users=users)
+    return jsonify(users=users,
+                   sharingSuccess=sharing_success)
 
 
 @app.route('/get_jsonfile_data', methods=['GET', 'POST'])

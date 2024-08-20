@@ -7,6 +7,7 @@
 {% block styles %}
 {{super()}}
     <link href="{{url_for('.static', filename='audiobrowse.css')}}" rel="stylesheet">
+    <link href="{{url_for('static', filename='loader.css')}}" rel="stylesheet" />
 {% endblock %}
 
 {% block app_content %}
@@ -36,6 +37,7 @@
     </div> -->
 </div>
 <br>
+<div id="loader" style="display:none;"></div>
 <div id="audiobrowsetable"></div>
 <div class="text-center" id="audiobrowsepagination"></div>
 

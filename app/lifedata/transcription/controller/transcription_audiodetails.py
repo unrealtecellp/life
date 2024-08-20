@@ -4147,6 +4147,7 @@ def filter_speakers(speakerdetails_collection,
     # logger.debug("aggregate_output: %s", aggregate_output)
     for doc in aggregate_output:
         # logger.debug("aggregate_output: %s", pformat(doc))
+        # logger.debug("doc['lifesourceid']: %s", pformat(doc["lifesourceid"]))
         aggregate_output_list.append(doc["lifesourceid"])
     # logger.debug('aggregate_output_list: %s', pformat(aggregate_output_list))
 
@@ -4179,7 +4180,7 @@ def filter_speakers_derived(transcriptions_collection,
             value_list_len = len(value)
             if (value_list_len != 0):
                 speakers_match[db_key] = {"$in": value}
-    logger.debug("speakers_match: %s", speakers_match)
+    # logger.debug("speakers_match: %s", speakers_match)
     aggregate_output = []
     aggregate_output_list = []
     if (len(speakers_match) > 2):
