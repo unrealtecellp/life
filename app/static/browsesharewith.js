@@ -37,11 +37,11 @@ $(document).ready(function() {
           })
     }, function(data) {
         // console.log(data);
-        if (data.sharingSuccess) {
-          alert('File(s) sharing successful :)');
+        if (data.sharingSuccess[0]) {
+          alert('File(s) '+data.sharingSuccess[1]+' successful :)');
         }
         else {
-          alert('File(s) sharing failed :(');
+          alert('File(s) '+data.sharingSuccess[1]+' failed :(');
         }
         // return false;
         // window.location.reload();

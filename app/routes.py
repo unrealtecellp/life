@@ -7311,7 +7311,6 @@ def browseshareuserslist():
                    sourceList=sorted(sourceList),
                    sharemode=current_user_sharemode)
 
-
 @app.route('/browsefilesharedwithuserslist', methods=['GET', 'POST'])
 def browsefilesharedwithuserslist():
     browse_file_sharedwith_userslist = []
@@ -7364,7 +7363,6 @@ def browsefilesharedwithuserslist():
 
     return jsonify(sharedWithUsers=browse_file_sharedwith_userslist)
 
-
 @app.route('/browsesharewith', methods=['GET', 'POST'])
 def browsesharewith():
     sharing_success = False
@@ -7394,16 +7392,27 @@ def browsesharewith():
         audio_ids_list = audio_info
         # audio_ids_list = list(audio_info.keys())
         speaker_audioids = {}
+        speaker = ''
+        incoming_last_active_audio_id = ''
         for audio_id in audio_ids_list:
+            # logger.debug(audio_id)
             speakerid = transcription_audiodetails.get_audio_speakerid(
                 transcriptions, activeprojectname, audio_id)
             # logger.debug(speakerid)
             if (speakerid is not None):
-                if (speakerid in speaker_audioids):
-                    speaker_audioids[speakerid].append(audio_id)
-                else:
-                    speaker_audioids[speakerid] = [audio_id]
+                if (isinstance(speakerid, str)):
+                    speakerid = [speakerid]
+                for sid in speakerid:
+                    if (sid in speaker_audioids):
+                        speaker_audioids[sid].append(audio_id)
+                    else:
+                        speaker_audioids[sid] = [audio_id]
         # logger.debug("speaker_audioids: %s", pformat(speaker_audioids))
+        if (len(speaker_audioids) != 0):
+            speaker = list(speaker_audioids.keys())[0]
+            incoming_last_active_audio_id = speaker_audioids[speaker][0]
+        # logger.debug(speaker)
+        # logger.debug(incoming_last_active_audio_id)
         speaker_ids = projects.find_one({'projectname': activeprojectname},
                                         {'_id': 0, 'speakerIds': 1})
         if (speaker_ids):
@@ -7420,6 +7429,12 @@ def browsesharewith():
                                                 {"$addToSet": {
                                                     "fileSpeakerIds."+user+"."+speaker: {"$each": audio_ids}
                                                 }})
+                            incoming_last_active_audio_id = audio_ids[0]
+                            set_last_active_id(projects,
+                                               activeprojectname,
+                                                user,
+                                                speaker,
+                                                incoming_last_active_audio_id)
                 else:
                     file_speaker_ids = projects.find_one({'projectname': activeprojectname},
                                                          {'_id': 0, 'fileSpeakerIds': 1})
@@ -7433,36 +7448,65 @@ def browsesharewith():
                                                     {"$addToSet": {
                                                         "fileSpeakerIds."+user+"."+speaker: {"$each": audio_ids}
                                                     }})
-                            continue
-                    projects.update_one({"projectname": activeprojectname},
-                                        {"$set": {
-                                            "fileSpeakerIds."+user: speaker_audioids
-                                        }})
-                # logger.debug(speaker)
-                projects.update_one(
-                                    {
-                                        'projectname': activeprojectname
-                                    },
-                                    {
-                                        '$set':
-                                        {
-                                            'lastActiveId.'+user+'.'+speaker+'.audioId': audio_ids[-1]
-                                        }
-                                    }
-                                )
+                                incoming_last_active_audio_id = audio_ids[0]
+                                set_last_active_id(projects,
+                                                   activeprojectname,
+                                                    user,
+                                                    speaker,
+                                                    incoming_last_active_audio_id)
+                            # continue
+                        else:
+                            projects.update_one({"projectname": activeprojectname},
+                                                {"$set": {
+                                                    "fileSpeakerIds."+user: speaker_audioids
+                                                }})
+                            for speaker, audio_ids in speaker_audioids.items():
+                                incoming_last_active_audio_id = audio_ids[0]
+                                set_last_active_id(projects,
+                                                   activeprojectname,
+                                                    user,
+                                                    speaker,
+                                                    incoming_last_active_audio_id)
             elif (browse_share_selected_mode == 'remove'):
                 for speaker, audio_ids in speaker_audioids.items():
                     projects.update_one({"projectname": activeprojectname},
                                         {"$pull": {
                                             "fileSpeakerIds."+user+"."+speaker: {"$in": audio_ids}
                                         }})
-            # last_active_audio_id = projects.find_one({"projectname": activeprojectname},
-            #                                          {'lastActiveId.'+user+'.'+speaker+'.audioId': 1})
+            # logger.debug(speaker)
+            # logger.debug(incoming_last_active_audio_id)
+            last_active_audio_id = projects.find_one({"projectname": activeprojectname},
+                                                     {  '_id': 0,
+                                                         'lastActiveId.'+user+'.'+speaker+'.audioId': 1})
             # logger.debug(last_active_audio_id)
+            # last_active_audio_id = None
+            if (last_active_audio_id and
+                'lastActiveId' in last_active_audio_id and
+                user in last_active_audio_id['lastActiveId'] and
+                speaker in last_active_audio_id['lastActiveId'][user]):
+                last_active_audio_id = last_active_audio_id['lastActiveId'][user][speaker]['audioId']
+                # logger.debug(last_active_audio_id)
+            else:
+                if (speaker != '' and
+                    incoming_last_active_audio_id != ''):
+                    # logger.debug(speaker)
+                    # logger.debug(incoming_last_active_audio_id)
+                    projects.update_one(
+                                        {
+                                            'projectname': activeprojectname
+                                        },
+                                        {
+                                            '$set':
+                                            {
+                                                'lastActiveId.'+user+'.'+speaker+'.audioId': incoming_last_active_audio_id
+                                            }
+                                        }
+                                    )
             share_info = getuserprojectinfo.getuserprojectinfo(userprojects,
                                                               user,
                                                               activeprojectname)
-            if (share_info['activespeakerId'] == ''):
+            if (share_info['activespeakerId'] == '' and
+                speaker != ''):
                 if (user == projectowner):
                     userprojectinfo = 'myproject.'+activeprojectname+".activespeakerId"
                 else:
@@ -7474,7 +7518,7 @@ def browsesharewith():
                                 {
                                     "$set":
                                     {
-                                        userprojectinfo: list(speaker_audioids.keys())[-1]
+                                        userprojectinfo: speaker
                                     }
                                 }
                             )
@@ -7483,8 +7527,47 @@ def browsesharewith():
         logger.exception("")
 
     return jsonify(users=users,
-                   sharingSuccess=sharing_success)
+                   sharingSuccess=[sharing_success, browse_share_selected_mode])
 
+def set_last_active_id(projects,
+                       activeprojectname,
+                       user,
+                       speaker,
+                       incoming_last_active_audio_id):
+    try:
+        # logger.debug(speaker)
+        # logger.debug(incoming_last_active_audio_id)
+        last_active_audio_id = projects.find_one({"projectname": activeprojectname},
+                                                    {  '_id': 0,
+                                                        'lastActiveId.'+user+'.'+speaker+'.audioId': 1})
+        # logger.debug(last_active_audio_id)
+        # last_active_audio_id = None
+        if (last_active_audio_id and
+            'lastActiveId' in last_active_audio_id and
+            user in last_active_audio_id['lastActiveId'] and
+            speaker in last_active_audio_id['lastActiveId'][user]):
+            last_active_audio_id = last_active_audio_id['lastActiveId'][user][speaker]['audioId']
+            # logger.debug(last_active_audio_id)
+        else:
+            if (speaker != '' and
+                incoming_last_active_audio_id != ''):
+                # logger.debug(speaker)
+                # logger.debug(incoming_last_active_audio_id)
+                projects.update_one(
+                                    {
+                                        'projectname': activeprojectname
+                                    },
+                                    {
+                                        '$set':
+                                        {
+                                            'lastActiveId.'+user+'.'+speaker+'.audioId': incoming_last_active_audio_id
+                                        }
+                                    }
+                                )
+        return True
+    except:
+        logger.exception("")
+        return False
 
 @app.route('/get_jsonfile_data', methods=['GET', 'POST'])
 @login_required
