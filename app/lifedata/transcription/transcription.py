@@ -1497,6 +1497,7 @@ def maketranscription():
             hf_token = ''
             model_name = model_name.replace('bhashini_', '')
             model_type = 'bhashini'
+            create_boundaries = False
         else:
             hf_token = modelManager.get_hf_tokens(
                 lifeappconfigs, current_username)
@@ -1514,6 +1515,7 @@ def maketranscription():
             },
             'target': script_name
         }
+        # logger.debug("create_new_boundaries: %s", create_boundaries)
         transcription_audiodetails.save_boundaries_of_one_audio_file(mongo,
                                                                      projects,
                                                                      userprojects,

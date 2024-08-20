@@ -98,7 +98,6 @@ def get_file_format(current_file):
 
     return file_format
 
-
 def saveaudiofiles(mongo,
                    projects,
                    userprojects,
@@ -142,82 +141,84 @@ def saveaudiofiles(mongo,
         boundary_threshold: the threshold value of 'pause' where boundary is to be drawn
         slice_threshold: the threshold value of 'pause' where the file will be split into another files (0=no slice)
     """
+    try:
+        # logger.debug("**kwargs: %s", kwargs)
+        # return ('', '', '')
+        type = 'audiofile'
+        # logger.debug ('New ques file %s', new_ques_file)
+        file_states = []
+        transcription_doc_ids = []
+        fs_file_ids = []
 
-    # logger.debug("**kwargs: %s", kwargs)
-    # return ('', '', '')
-    type = 'audiofile'
-    # logger.debug ('New ques file %s', new_ques_file)
-    file_states = []
-    transcription_doc_ids = []
-    fs_file_ids = []
+        if new_audio_file[type].filename != '':
+            current_file = new_audio_file[type]
+            # logger.debug("Filepath %s", current_file)
+            file_format = get_file_format(current_file)
 
-    if new_audio_file[type].filename != '':
-        current_file = new_audio_file[type]
-        # logger.debug("Filepath %s", current_file)
-        file_format = get_file_format(current_file)
+            if (file_format in allowed_file_formats):
+                file_state, transcription_doc_id, fs_file_id = saveoneaudiofile(mongo,
+                                                                                projects,
+                                                                                userprojects,
+                                                                                transcriptions,
+                                                                                projectowner,
+                                                                                activeprojectname,
+                                                                                current_username,
+                                                                                speakerId,
+                                                                                new_audio_file,
+                                                                                sourceId,
+                                                                                run_vad,
+                                                                                run_asr,
+                                                                                split_into_smaller_chunks,
+                                                                                get_audio_json,
+                                                                                vad_model,
+                                                                                asr_model,
+                                                                                transcription_type,
+                                                                                boundary_threshold,
+                                                                                slice_threshold,
+                                                                                max_slice_size,
+                                                                                data_type,
+                                                                                new_audio_details,
+                                                                                prompt,
+                                                                                update,
+                                                                                slice_offset_value,
+                                                                                min_boundary_size,
+                                                                                **kwargs)
+                file_states.append(file_state)
+                transcription_doc_ids.append(transcription_doc_id)
+                fs_file_ids.append(fs_file_id)
 
-        if (file_format in allowed_file_formats):
-            file_state, transcription_doc_id, fs_file_id = saveoneaudiofile(mongo,
-                                                                            projects,
-                                                                            userprojects,
-                                                                            transcriptions,
-                                                                            projectowner,
-                                                                            activeprojectname,
-                                                                            current_username,
-                                                                            speakerId,
-                                                                            new_audio_file,
-                                                                            sourceId,
-                                                                            run_vad,
-                                                                            run_asr,
-                                                                            split_into_smaller_chunks,
-                                                                            get_audio_json,
-                                                                            vad_model,
-                                                                            asr_model,
-                                                                            transcription_type,
-                                                                            boundary_threshold,
-                                                                            slice_threshold,
-                                                                            max_slice_size,
-                                                                            data_type,
-                                                                            new_audio_details,
-                                                                            prompt,
-                                                                            update,
-                                                                            slice_offset_value,
-                                                                            min_boundary_size,
-                                                                            **kwargs)
-            file_states.append(file_state)
-            transcription_doc_ids.append(transcription_doc_id)
-            fs_file_ids.append(fs_file_id)
-
-        elif (file_format == 'zip'):
-            # logger.debug('ZIP file format')
-            file_states, transcription_doc_ids, fs_file_ids = savemultipleaudiofiles(mongo,
-                                                                                     projects,
-                                                                                     userprojects,
-                                                                                     transcriptions,
-                                                                                     projectowner,
-                                                                                     activeprojectname,
-                                                                                     current_username,
-                                                                                     speakerId,
-                                                                                     new_audio_file,
-                                                                                     sourceId,
-                                                                                     run_vad,
-                                                                                     run_asr,
-                                                                                     split_into_smaller_chunks,
-                                                                                     get_audio_json,
-                                                                                     vad_model,
-                                                                                     asr_model,
-                                                                                     transcription_type,
-                                                                                     boundary_threshold,
-                                                                                     slice_threshold,
-                                                                                     max_slice_size,
-                                                                                     data_type,
-                                                                                     new_audio_details,
-                                                                                     prompt,
-                                                                                     update,
-                                                                                     slice_offset_value,
-                                                                                     min_boundary_size)
-        else:
-            return ([False], ['Unsupported file format'], ['File not stored'])
+            elif (file_format == 'zip'):
+                # logger.debug('ZIP file format')
+                file_states, transcription_doc_ids, fs_file_ids = savemultipleaudiofiles(mongo,
+                                                                                        projects,
+                                                                                        userprojects,
+                                                                                        transcriptions,
+                                                                                        projectowner,
+                                                                                        activeprojectname,
+                                                                                        current_username,
+                                                                                        speakerId,
+                                                                                        new_audio_file,
+                                                                                        sourceId,
+                                                                                        run_vad,
+                                                                                        run_asr,
+                                                                                        split_into_smaller_chunks,
+                                                                                        get_audio_json,
+                                                                                        vad_model,
+                                                                                        asr_model,
+                                                                                        transcription_type,
+                                                                                        boundary_threshold,
+                                                                                        slice_threshold,
+                                                                                        max_slice_size,
+                                                                                        data_type,
+                                                                                        new_audio_details,
+                                                                                        prompt,
+                                                                                        update,
+                                                                                        slice_offset_value,
+                                                                                        min_boundary_size)
+            else:
+                return ([False], ['Unsupported file format'], ['File not stored'])
+    except:
+        logger.exception("")
 
     return (file_states, transcription_doc_ids, fs_file_ids)
 
@@ -265,69 +266,72 @@ def savemultipleaudiofiles(mongo,
         boundary_threshold: the threshold value of 'pause' where boundary is to be drawn
         slice_threshold: the threshold value of 'pause' where the file will be split into another files (0=no slice)
     """
-    all_file_states = []
-    transcription_doc_ids = []
-    fs_file_ids = []
-    new_audio_file = {}
-
-    if all_audio_files['audiofile'].filename != '':
-        zip_audio_files = all_audio_files['audiofile']
-
     try:
-        with ZipFile(zip_audio_files) as myzip:
-            # logger.debug('File list %s', myzip.namelist())
-            for file_name in myzip.namelist():
-                # if (file_name.endswith('.wav')):
-                # logger.debug('Current File name %s', file_name)
-                with myzip.open(file_name) as myfile:
-                    # file_format = get_file_format(myfile)
-                    file_format = file_name.rsplit('.', 1)[-1].lower()
-                    # logger.debug('File format during upload %s', file_format)
-                    if file_format in allowed_file_formats:
-                        # upload_file_full = {}
-                        file_content = io.BytesIO(myfile.read())
-                        # logger.debug ('ZIP file %s', mainfile)
-                        # logger.debug ("File content %s", file_content)
-                        # logger.debug ("Upload type 5s", fileType)
-                        new_audio_file['audiofile'] = FileStorage(
-                            file_content, filename=file_name)
-                        file_state, transcription_doc_id, fs_file_id = saveoneaudiofile(mongo,
-                                                                                        projects,
-                                                                                        userprojects,
-                                                                                        transcriptions,
-                                                                                        projectowner,
-                                                                                        activeprojectname,
-                                                                                        current_username,
-                                                                                        speakerId,
-                                                                                        new_audio_file,
-                                                                                        sourceId,
-                                                                                        run_vad,
-                                                                                        run_asr,
-                                                                                        split_into_smaller_chunks,
-                                                                                        get_audio_json,
-                                                                                        vad_model,
-                                                                                        asr_model,
-                                                                                        transcription_type,
-                                                                                        boundary_threshold,
-                                                                                        slice_threshold,
-                                                                                        max_slice_size,
-                                                                                        data_type,
-                                                                                        new_audio_details,
-                                                                                        prompt,
-                                                                                        update,
-                                                                                        slice_offset_value,
-                                                                                        min_boundary_size)
+        all_file_states = []
+        transcription_doc_ids = []
+        fs_file_ids = []
+        new_audio_file = {}
 
-                        all_file_states.append(file_state)
-                        transcription_doc_ids.append(transcription_doc_id)
-                        fs_file_ids.append(fs_file_id)
+        if all_audio_files['audiofile'].filename != '':
+            zip_audio_files = all_audio_files['audiofile']
+
+        try:
+            with ZipFile(zip_audio_files) as myzip:
+                # logger.debug('File list %s', myzip.namelist())
+                for file_name in myzip.namelist():
+                    # if (file_name.endswith('.wav')):
+                    # logger.debug('Current File name %s', file_name)
+                    with myzip.open(file_name) as myfile:
+                        # file_format = get_file_format(myfile)
+                        file_format = file_name.rsplit('.', 1)[-1].lower()
+                        # logger.debug('File format during upload %s', file_format)
+                        if file_format in allowed_file_formats:
+                            # upload_file_full = {}
+                            file_content = io.BytesIO(myfile.read())
+                            # logger.debug ('ZIP file %s', mainfile)
+                            # logger.debug ("File content %s", file_content)
+                            # logger.debug ("Upload type 5s", fileType)
+                            new_audio_file['audiofile'] = FileStorage(
+                                file_content, filename=file_name)
+                            file_state, transcription_doc_id, fs_file_id = saveoneaudiofile(mongo,
+                                                                                            projects,
+                                                                                            userprojects,
+                                                                                            transcriptions,
+                                                                                            projectowner,
+                                                                                            activeprojectname,
+                                                                                            current_username,
+                                                                                            speakerId,
+                                                                                            new_audio_file,
+                                                                                            sourceId,
+                                                                                            run_vad,
+                                                                                            run_asr,
+                                                                                            split_into_smaller_chunks,
+                                                                                            get_audio_json,
+                                                                                            vad_model,
+                                                                                            asr_model,
+                                                                                            transcription_type,
+                                                                                            boundary_threshold,
+                                                                                            slice_threshold,
+                                                                                            max_slice_size,
+                                                                                            data_type,
+                                                                                            new_audio_details,
+                                                                                            prompt,
+                                                                                            update,
+                                                                                            slice_offset_value,
+                                                                                            min_boundary_size)
+
+                            all_file_states.append(file_state)
+                            transcription_doc_ids.append(transcription_doc_id)
+                            fs_file_ids.append(fs_file_id)
+        except:
+            logger.exception("")
+            flash(f"ERROR")
+            all_file_states.append(False)
+            transcription_doc_ids.append('')
+            fs_file_ids.append('')
+            # return (False)
     except:
         logger.exception("")
-        flash(f"ERROR")
-        all_file_states.append(False)
-        transcription_doc_ids.append('')
-        fs_file_ids.append('')
-        # return (False)
 
     return (all_file_states, transcription_doc_ids, fs_file_ids)
 
@@ -377,303 +381,306 @@ def saveoneaudiofile(mongo,
         max_slice_size: the recommended size of each slice (might have some offset value). Slices should not be larger than this but might be lower than this.
         slice_offset_value: this is the amount of audio (in seconds) that is repeated / retained across different slices made by automatically slicing the audio into smaller chunks. This is added to the end and substracted from the beginning.
     """
-    all_transcription_doc_ids = []
-    all_audio_fs_file_ids = []
+    try:
+        all_transcription_doc_ids = []
+        all_audio_fs_file_ids = []
 
-    all_audio_ids = []
-    all_audio_filenames = []
+        all_audio_ids = []
+        all_audio_filenames = []
 
-    project_type = getprojecttype.getprojecttype(projects, activeprojectname)
+        project_type = getprojecttype.getprojecttype(projects, activeprojectname)
 
-    audiowaveform_json_dir_path = get_audio_dir_path()
-    audio_json_parent_dir = 'audiowaveform'
+        audiowaveform_json_dir_path = get_audio_dir_path()
+        audio_json_parent_dir = 'audiowaveform'
 
-    audiowaveform_file = new_audio_file['audiofile']
-    audio_duration, full_audio_file = get_audio_duration_from_file(
-        audiowaveform_file)
-    audiowaveform_file.stream.seek(0)
-    # full_audio_file_array = np.array(full_audio_file.get_array_of_samples())
+        audiowaveform_file = new_audio_file['audiofile']
+        audio_duration, full_audio_file = get_audio_duration_from_file(
+            audiowaveform_file)
+        audiowaveform_file.stream.seek(0)
+        # full_audio_file_array = np.array(full_audio_file.get_array_of_samples())
 
-    # Convert file to wav - takes care of files of other format as well
-    audiowaveform_file = io.BytesIO()
-    full_audio_file.export(audiowaveform_file, format='wav')
+        # Convert file to wav - takes care of files of other format as well
+        audiowaveform_file = io.BytesIO()
+        full_audio_file.export(audiowaveform_file, format='wav')
 
-    if slice_offset_value > audio_duration:
-        slice_offset_value = audio_duration
+        if slice_offset_value > audio_duration:
+            slice_offset_value = audio_duration
 
-    split_into_smaller_chunks = is_split_into_smaller_chunks(
-        audio_duration, max_slice_size)
+        split_into_smaller_chunks = is_split_into_smaller_chunks(
+            audio_duration, max_slice_size)
 
-    store_in_local = is_store_in_local(
-        get_audio_json, run_vad, run_asr, split_into_smaller_chunks)
+        store_in_local = is_store_in_local(
+            get_audio_json, run_vad, run_asr, split_into_smaller_chunks)
 
-    # store_in_mongo = is_store_in_mongo(split_into_smaller_chunks)
-    store_in_mongo = True
+        # store_in_mongo = is_store_in_mongo(split_into_smaller_chunks)
+        store_in_mongo = True
 
-    new_audio_details = get_audio_doc_details(projectowner,
-                                              activeprojectname,
-                                              current_username,
-                                              speakerId,
-                                              sourceId,
-                                              data_type,
-                                              prompt,
-                                              new_audio_details,
-                                              update,
-                                              kwargs.items())
+        new_audio_details = get_audio_doc_details(projectowner,
+                                                activeprojectname,
+                                                current_username,
+                                                speakerId,
+                                                sourceId,
+                                                data_type,
+                                                prompt,
+                                                new_audio_details,
+                                                update,
+                                                kwargs.items())
 
-    logger.debug("new_audio_details: %s", pformat(new_audio_details))
+        logger.debug("new_audio_details: %s", pformat(new_audio_details))
 
-    audio_id, audio_filename = get_audio_id_filename(new_audio_file)
-    updated_audio_filename = (audio_id +
-                              '_' +
-                              audio_filename)
+        audio_id, audio_filename = get_audio_id_filename(new_audio_file)
+        updated_audio_filename = (audio_id +
+                                '_' +
+                                audio_filename)
 
-    logger.debug("**kwargs: %s", kwargs)
-    for kwargs_key, kwargs_value in kwargs.items():
-        # logger.debug("kwargs_key: %s, kwargs_value: %s",
-        #              kwargs_key, kwargs_value)
-        if (kwargs_key == 'derivedfromprojectdetails'):
-            new_audio_details[kwargs_key] = kwargs_value
-    # return ('', '', '')
+        logger.debug("**kwargs: %s", kwargs)
+        for kwargs_key, kwargs_value in kwargs.items():
+            # logger.debug("kwargs_key: %s, kwargs_value: %s",
+            #              kwargs_key, kwargs_value)
+            if (kwargs_key == 'derivedfromprojectdetails'):
+                new_audio_details[kwargs_key] = kwargs_value
+        # return ('', '', '')
 
-    logger.debug("new_audio_details: %s", pformat(new_audio_details))
+        logger.debug("new_audio_details: %s", pformat(new_audio_details))
 
-    # Save audio file in mongoDb and also get it in Local File System
+        # Save audio file in mongoDb and also get it in Local File System
 
-    # if split_into_smaller_chunks:
-    logger.debug('Audio Duration %s', str(audio_duration))
-    logger.debug('Store in local %s, Store in Mongo %s, Get audio json %s',
-                 store_in_local, store_in_mongo, get_audio_json)
-    audio_fs_file_id, audio_file_path = save_audio_in_mongo_and_localFs(mongo,
-                                                                        updated_audio_filename,
-                                                                        audiowaveform_file,
-                                                                        audio_id,
-                                                                        projectowner,
-                                                                        activeprojectname,
-                                                                        current_username,
-                                                                        audiowaveform_json_dir_path,
-                                                                        audio_json_parent_dir,
-                                                                        store_in_local=store_in_local,
-                                                                        store_in_mongo=store_in_mongo)
+        # if split_into_smaller_chunks:
+        logger.debug('Audio Duration %s', str(audio_duration))
+        logger.debug('Store in local %s, Store in Mongo %s, Get audio json %s',
+                    store_in_local, store_in_mongo, get_audio_json)
+        audio_fs_file_id, audio_file_path = save_audio_in_mongo_and_localFs(mongo,
+                                                                            updated_audio_filename,
+                                                                            audiowaveform_file,
+                                                                            audio_id,
+                                                                            projectowner,
+                                                                            activeprojectname,
+                                                                            current_username,
+                                                                            audiowaveform_json_dir_path,
+                                                                            audio_json_parent_dir,
+                                                                            store_in_local=store_in_local,
+                                                                            store_in_mongo=store_in_mongo)
 
-    # mongo, audio_path, type, max_pause = 0.5
-    logger.debug("Audio File Path %s", audio_file_path)
-    audio_chunks, text_grids, boundary_offset_values, slice_offset_values, transcriptionFLAG, model_details = get_slices_and_text_grids(mongo,
-                                                                                                                                        run_vad,
-                                                                                                                                        run_asr,
-                                                                                                                                        split_into_smaller_chunks,
-                                                                                                                                        vad_model,
-                                                                                                                                        asr_model,
-                                                                                                                                        audio_file_path,
-                                                                                                                                        transcription_type,
-                                                                                                                                        boundary_threshold,
-                                                                                                                                        slice_threshold,
-                                                                                                                                        max_slice_size,
-                                                                                                                                        min_boundary_size,
-                                                                                                                                        audio_duration,
-                                                                                                                                        slice_offset_value)
+        # mongo, audio_path, type, max_pause = 0.5
+        logger.debug("Audio File Path %s", audio_file_path)
+        audio_chunks, text_grids, boundary_offset_values, slice_offset_values, transcriptionFLAG, model_details = get_slices_and_text_grids(mongo,
+                                                                                                                                            run_vad,
+                                                                                                                                            run_asr,
+                                                                                                                                            split_into_smaller_chunks,
+                                                                                                                                            vad_model,
+                                                                                                                                            asr_model,
+                                                                                                                                            audio_file_path,
+                                                                                                                                            transcription_type,
+                                                                                                                                            boundary_threshold,
+                                                                                                                                            slice_threshold,
+                                                                                                                                            max_slice_size,
+                                                                                                                                            min_boundary_size,
+                                                                                                                                            audio_duration,
+                                                                                                                                            slice_offset_value)
 
-    # logger.debug('Final generated text grid %s', text_grids)
-    logger.debug('Final transcription flag %s', transcriptionFLAG)
-    logger.debug('Final text grid length %s', len(text_grids))
-    logger.debug('Final boundary offset length %s',
-                 len(boundary_offset_values))
-    logger.debug('Slice Offset values %s', slice_offset_values)
-    logger.debug('Model Details %s', model_details)
-    # logger.debug('Final first two text grids %s', text_grids[:3])
+        # logger.debug('Final generated text grid %s', text_grids)
+        logger.debug('Final transcription flag %s', transcriptionFLAG)
+        logger.debug('Final text grid length %s', len(text_grids))
+        logger.debug('Final boundary offset length %s',
+                    len(boundary_offset_values))
+        logger.debug('Slice Offset values %s', slice_offset_values)
+        logger.debug('Model Details %s', model_details)
+        # logger.debug('Final first two text grids %s', text_grids[:3])
 
-    new_audio_details["transcriptionFLAG"] = transcriptionFLAG
+        new_audio_details["transcriptionFLAG"] = transcriptionFLAG
 
-    full_model_name = get_full_model_name(run_vad,
-                                          run_asr,
-                                          model_details.get(
-                                              'vad_model_name', ''),
-                                          model_details.get('asr_model_name', ''))
-    logger.debug('Model Details %s', model_details)
+        full_model_name = get_full_model_name(run_vad,
+                                            run_asr,
+                                            model_details.get(
+                                                'vad_model_name', ''),
+                                            model_details.get('asr_model_name', ''))
+        logger.debug('Model Details %s', model_details)
 
-    if not split_into_smaller_chunks:
-        all_audio_ids.append(audio_id)
-        all_audio_filenames.append(audio_filename)
-        all_audio_fs_file_ids.append(audio_fs_file_id)
+        if not split_into_smaller_chunks:
+            all_audio_ids.append(audio_id)
+            all_audio_filenames.append(audio_filename)
+            all_audio_fs_file_ids.append(audio_fs_file_id)
 
-        add_audio_doc_details(new_audio_details,
-                              get_audio_json,
-                              current_username,
-                              audio_id,
-                              updated_audio_filename,
-                              text_grids[0],
-                              audiowaveform_json_dir_path,
-                              audio_json_parent_dir,
-                              full_model_name,
-                              model_details,
-                              audio_duration=audio_duration,
-                              current_slice_duration=audio_duration
-                              )
-        if update:
-            transcription_doc_id = transcriptions.update_one({"audioId": audio_id},
-                                                             {"$set": new_audio_details})
-        else:
-            transcription_doc_id = transcriptions.insert_one(new_audio_details)
-        all_transcription_doc_ids.append(transcription_doc_id)
-
-    else:
-
-        # for i in range(len(text_grids)):
-        for i, current_text_grid in enumerate(text_grids):
-            # for current_text_gird in text_grids:
-            current_audio_id = audio_id + '-slice'+(str(i).zfill(4))
-            current_audio_filename = (current_audio_id +
-                                      '_' +
-                                      audio_filename)
-            all_audio_ids.append(current_audio_id)
-            all_audio_filenames.append(current_audio_filename)
-
-            current_audio_chunk = audio_chunks[i]
-            # current_slice_offset_value_begn = slice_offset_values[i]
-
-            # current_audio_chunk_begn = current_audio_chunk['start']*1000
-
-            if i > 0:
-                current_audio_chunk_begn = boundary_offset_values[i]*1000
-                # current_audio_chunk_begn = current_audio_chunk_begn - \
-                #     current_slice_offset_value_begn
-                # delete_previous = False
-            else:
-                current_audio_chunk_begn = 0.0
-                # delete_previous = True
-
-            current_audio_chunk_end = current_audio_chunk['end']*1000
-
-            if (i == len(text_grids)-1):
-                current_slice_offset_value_end = 0.0
-                current_audio_chunk_end = audio_duration*1000
-            elif (i < len(text_grids)-1):
-                # next_audio_chunk_start = audio_chunks[i+1]['start']*1000
-                # chunk_distance = next_audio_chunk_start - current_audio_chunk_end
-                # current_audio_chunk_end = current_audio_chunk_end + \
-                #     ((slice_offset_value*1000) + float(chunk_distance/2))
-                current_slice_offset_value_end = slice_offset_values[i+1]*1000
-                current_audio_chunk_end = current_audio_chunk_end + current_slice_offset_value_end
-                # current_audio_chunk_end = boundary_offset_values[i+1]*1000
-                # logger.debug('Slice based end: %s',
-                #              (slice_offset_values[i+1]*1000)+(current_audio_chunk_end))
-
-                # current_audio_chunk_end = audio_chunks[i+1]['start']*1000
-
-                logger.debug('Actual end %s', current_audio_chunk_end)
-            else:
-                current_audio_chunk_end = current_audio_chunk_end + \
-                    (slice_offset_value*1000)
-
-            logger.debug('Current chunk: %s \tTotal chunks:%s, \tCurrent chunk begin:%s, \tCurrent chunk end: %s \tAudio end: %s', i, len(
-                text_grids), current_audio_chunk_begn, current_audio_chunk_end, audio_duration*1000)
-
-            current_audio_file = full_audio_file[current_audio_chunk_begn: current_audio_chunk_end]
-            current_slice_duration = current_audio_file.duration_seconds
-            # current_audio_file_array = full_audio_file_array[
-            #     int(current_audio_chunk_begn): int(current_audio_chunk_end)]
-
-            # audio_exp_length = current_audio_chunk_end - current_audio_chunk_begn
-            # audio_actual_length = current_audio_file.duration_seconds
-            # logger.debug('Audio expected length: %s \tAudio Clip Actual Length: %s', audio_exp_length, audio_actual_length
-            #              )
-
-            # current_audio_segment_array = pydub.AudioSegment(current_audio_file_array.tobytes(
-            # ), frame_rate=full_audio_file.frame_rate, sample_width=full_audio_file.sample_width, channels=1)
-            # audio_array_length = current_audio_segment_array.duration_seconds
-            # logger.debug('Audio expected length: %s \tAudio Clip Array Length: %s', audio_exp_length, audio_array_length
-            #              )
-            audio_segment_bytes = BytesIO()
-            current_audio_file.export(audio_segment_bytes, format="wav")
-            current_audio_file_segment = FileStorage(
-                audio_segment_bytes, filename=current_audio_filename)
-
-            # current_text_grid = text_grids[i]
-            current_audio_details = json.loads(json.dumps(new_audio_details))
-            current_audio_fs_file_id, current_audio_file_path = save_audio_in_mongo_and_localFs(mongo,
-                                                                                                current_audio_filename,
-                                                                                                current_audio_file_segment,
-                                                                                                current_audio_id,
-                                                                                                projectowner,
-                                                                                                activeprojectname,
-                                                                                                current_username,
-                                                                                                audiowaveform_json_dir_path,
-                                                                                                audio_json_parent_dir,
-                                                                                                store_in_local=store_in_local,
-                                                                                                store_in_mongo=True)
-            all_audio_fs_file_ids.append(current_audio_fs_file_id)
-
-            add_audio_doc_details(current_audio_details,
-                                  get_audio_json,
-                                  current_username,
-                                  current_audio_id,
-                                  current_audio_filename,
-                                  current_text_grid,
-                                  audiowaveform_json_dir_path,
-                                  audio_json_parent_dir,
-                                  full_model_name,
-                                  model_details,
-                                  current_slice_number=i,
-                                  total_slices=len(text_grids),
-                                  boundary_offset_value=boundary_offset_values[i],
-                                  slice_offset_value=current_slice_offset_value_end,
-                                  slice_overlap_region=slice_offset_value,
-                                  audio_duration=audio_duration,
-                                  current_slice_duration=current_slice_duration,
-                                  original_audio_id=audio_id
-                                  )
-
+            add_audio_doc_details(new_audio_details,
+                                get_audio_json,
+                                current_username,
+                                audio_id,
+                                updated_audio_filename,
+                                text_grids[0],
+                                audiowaveform_json_dir_path,
+                                audio_json_parent_dir,
+                                full_model_name,
+                                model_details,
+                                audio_duration=audio_duration,
+                                current_slice_duration=audio_duration
+                                )
             if update:
                 transcription_doc_id = transcriptions.update_one({"audioId": audio_id},
-                                                                 {"$set": current_audio_details})
+                                                                {"$set": new_audio_details})
             else:
-                transcription_doc_id = transcriptions.insert_one(
-                    current_audio_details)
-
+                transcription_doc_id = transcriptions.insert_one(new_audio_details)
             all_transcription_doc_ids.append(transcription_doc_id)
 
-    # plogger.debug(new_audio_details)
+        else:
 
-        # logger.debug(speakerIds)
+            # for i in range(len(text_grids)):
+            for i, current_text_grid in enumerate(text_grids):
+                # for current_text_gird in text_grids:
+                current_audio_id = audio_id + '-slice'+(str(i).zfill(4))
+                current_audio_filename = (current_audio_id +
+                                        '_' +
+                                        audio_filename)
+                all_audio_ids.append(current_audio_id)
+                all_audio_filenames.append(current_audio_filename)
 
-    speaker_id_key_name, speakerIds = get_speaker_ids(projects,
-                                                      activeprojectname,
-                                                      current_username,
-                                                      speakerId,
-                                                      project_type)
+                current_audio_chunk = audio_chunks[i]
+                # current_slice_offset_value_begn = slice_offset_values[i]
 
-    speaker_audioid_key_name, speaker_audio_ids = get_speaker_audio_ids(projects,
-                                                                        activeprojectname,
-                                                                        all_audio_ids,
-                                                                        speakerId,
-                                                                        project_type)
-    # plogger.debug(speaker_audio_ids)
-    # try:
-    # Update projects collection with speakerIds and Audio Ids of each speakerIds
-    last_active_id = all_audio_ids[0]
-    update_speakerid_audioid(projects,
-                             activeprojectname,
-                             current_username,
-                             speakerId,
-                             last_active_id,
-                             speaker_id_key_name,
-                             speakerIds,
-                             speaker_audioid_key_name,
-                             speaker_audio_ids,
-                             existing_speaker_ids=[])
+                # current_audio_chunk_begn = current_audio_chunk['start']*1000
 
-    # Update active speaker ID in user projects
-    update_active_speaker_Id(userprojects,
-                             activeprojectname,
-                             current_username,
-                             speakerId
-                             )
-    # logger.debug('new_audio_file %s, %s', type(new_audio_file), new_audio_file)
-    # transcription_doc_id = transcriptions.insert(new_audio_details)
-    # save audio file details in fs collection
+                if i > 0:
+                    current_audio_chunk_begn = boundary_offset_values[i]*1000
+                    # current_audio_chunk_begn = current_audio_chunk_begn - \
+                    #     current_slice_offset_value_begn
+                    # delete_previous = False
+                else:
+                    current_audio_chunk_begn = 0.0
+                    # delete_previous = True
 
-    # logger.debug('audiowaveform_audio_path %s', audiowaveform_audio_path)
-    # audiowaveform_audio_path = os.path.join(audiowaveform_audio_path, updated_audio_filename)
+                current_audio_chunk_end = current_audio_chunk['end']*1000
+
+                if (i == len(text_grids)-1):
+                    current_slice_offset_value_end = 0.0
+                    current_audio_chunk_end = audio_duration*1000
+                elif (i < len(text_grids)-1):
+                    # next_audio_chunk_start = audio_chunks[i+1]['start']*1000
+                    # chunk_distance = next_audio_chunk_start - current_audio_chunk_end
+                    # current_audio_chunk_end = current_audio_chunk_end + \
+                    #     ((slice_offset_value*1000) + float(chunk_distance/2))
+                    current_slice_offset_value_end = slice_offset_values[i+1]*1000
+                    current_audio_chunk_end = current_audio_chunk_end + current_slice_offset_value_end
+                    # current_audio_chunk_end = boundary_offset_values[i+1]*1000
+                    # logger.debug('Slice based end: %s',
+                    #              (slice_offset_values[i+1]*1000)+(current_audio_chunk_end))
+
+                    # current_audio_chunk_end = audio_chunks[i+1]['start']*1000
+
+                    logger.debug('Actual end %s', current_audio_chunk_end)
+                else:
+                    current_audio_chunk_end = current_audio_chunk_end + \
+                        (slice_offset_value*1000)
+
+                logger.debug('Current chunk: %s \tTotal chunks:%s, \tCurrent chunk begin:%s, \tCurrent chunk end: %s \tAudio end: %s', i, len(
+                    text_grids), current_audio_chunk_begn, current_audio_chunk_end, audio_duration*1000)
+
+                current_audio_file = full_audio_file[current_audio_chunk_begn: current_audio_chunk_end]
+                current_slice_duration = current_audio_file.duration_seconds
+                # current_audio_file_array = full_audio_file_array[
+                #     int(current_audio_chunk_begn): int(current_audio_chunk_end)]
+
+                # audio_exp_length = current_audio_chunk_end - current_audio_chunk_begn
+                # audio_actual_length = current_audio_file.duration_seconds
+                # logger.debug('Audio expected length: %s \tAudio Clip Actual Length: %s', audio_exp_length, audio_actual_length
+                #              )
+
+                # current_audio_segment_array = pydub.AudioSegment(current_audio_file_array.tobytes(
+                # ), frame_rate=full_audio_file.frame_rate, sample_width=full_audio_file.sample_width, channels=1)
+                # audio_array_length = current_audio_segment_array.duration_seconds
+                # logger.debug('Audio expected length: %s \tAudio Clip Array Length: %s', audio_exp_length, audio_array_length
+                #              )
+                audio_segment_bytes = BytesIO()
+                current_audio_file.export(audio_segment_bytes, format="wav")
+                current_audio_file_segment = FileStorage(
+                    audio_segment_bytes, filename=current_audio_filename)
+
+                # current_text_grid = text_grids[i]
+                current_audio_details = json.loads(json.dumps(new_audio_details))
+                current_audio_fs_file_id, current_audio_file_path = save_audio_in_mongo_and_localFs(mongo,
+                                                                                                    current_audio_filename,
+                                                                                                    current_audio_file_segment,
+                                                                                                    current_audio_id,
+                                                                                                    projectowner,
+                                                                                                    activeprojectname,
+                                                                                                    current_username,
+                                                                                                    audiowaveform_json_dir_path,
+                                                                                                    audio_json_parent_dir,
+                                                                                                    store_in_local=store_in_local,
+                                                                                                    store_in_mongo=True)
+                all_audio_fs_file_ids.append(current_audio_fs_file_id)
+
+                add_audio_doc_details(current_audio_details,
+                                    get_audio_json,
+                                    current_username,
+                                    current_audio_id,
+                                    current_audio_filename,
+                                    current_text_grid,
+                                    audiowaveform_json_dir_path,
+                                    audio_json_parent_dir,
+                                    full_model_name,
+                                    model_details,
+                                    current_slice_number=i,
+                                    total_slices=len(text_grids),
+                                    boundary_offset_value=boundary_offset_values[i],
+                                    slice_offset_value=current_slice_offset_value_end,
+                                    slice_overlap_region=slice_offset_value,
+                                    audio_duration=audio_duration,
+                                    current_slice_duration=current_slice_duration,
+                                    original_audio_id=audio_id
+                                    )
+
+                if update:
+                    transcription_doc_id = transcriptions.update_one({"audioId": audio_id},
+                                                                    {"$set": current_audio_details})
+                else:
+                    transcription_doc_id = transcriptions.insert_one(
+                        current_audio_details)
+
+                all_transcription_doc_ids.append(transcription_doc_id)
+
+        # plogger.debug(new_audio_details)
+
+            # logger.debug(speakerIds)
+
+        speaker_id_key_name, speakerIds = get_speaker_ids(projects,
+                                                        activeprojectname,
+                                                        current_username,
+                                                        speakerId,
+                                                        project_type)
+
+        speaker_audioid_key_name, speaker_audio_ids = get_speaker_audio_ids(projects,
+                                                                            activeprojectname,
+                                                                            all_audio_ids,
+                                                                            speakerId,
+                                                                            project_type)
+        # plogger.debug(speaker_audio_ids)
+        # try:
+        # Update projects collection with speakerIds and Audio Ids of each speakerIds
+        last_active_id = all_audio_ids[0]
+        update_speakerid_audioid(projects,
+                                activeprojectname,
+                                current_username,
+                                speakerId,
+                                last_active_id,
+                                speaker_id_key_name,
+                                speakerIds,
+                                speaker_audioid_key_name,
+                                speaker_audio_ids,
+                                existing_speaker_ids=[])
+
+        # Update active speaker ID in user projects
+        update_active_speaker_Id(userprojects,
+                                activeprojectname,
+                                current_username,
+                                speakerId
+                                )
+        # logger.debug('new_audio_file %s, %s', type(new_audio_file), new_audio_file)
+        # transcription_doc_id = transcriptions.insert(new_audio_details)
+        # save audio file details in fs collection
+
+        # logger.debug('audiowaveform_audio_path %s', audiowaveform_audio_path)
+        # audiowaveform_audio_path = os.path.join(audiowaveform_audio_path, updated_audio_filename)
+    except:
+        logger.exception("")
 
     return (True, all_transcription_doc_ids, all_audio_fs_file_ids)
 
@@ -681,7 +688,6 @@ def saveoneaudiofile(mongo,
     #     logger.debug(e)
     #     flash(f"ERROR")
     #     return (False, '', '')
-
 
 def save_boundaries_of_one_audio_file(mongo,
                                       projects,
@@ -2725,44 +2731,48 @@ def update_existing_text_grid(text_grid, transcription_type, update_data={}, upd
 
 
 def update_blank_text_grid(mongo, text_grid, transcription_type, update_data={}, update_field='transcription'):
-    # transcription_scripts = get_current_transcription_langscripts(mongo)
-    # translation_langscripts = get_current_translation_langscripts(mongo)
-    logger.debug('Existing TG %s', text_grid)
-    logger.debug('Update Data %s', update_data)
-    logger.debug('Transcription type %s', transcription_type)
-    text_grid_boundaries = update_data[transcription_type][update_field]
+    try:
+        # transcription_scripts = get_current_transcription_langscripts(mongo)
+        # translation_langscripts = get_current_translation_langscripts(mongo)
+        # logger.debug('Existing TG %s', text_grid)
+        # logger.debug('Update Data %s', update_data)
+        # logger.debug('Transcription type %s', transcription_type)
+        text_grid_boundaries = update_data[transcription_type][update_field]
 
-    for boundary_id, boundary_elements in text_grid_boundaries.items():
-        logger.debug('Boundary elements %s', boundary_elements)
-        # all_fields=text_grid[boundary_id]
-        # if update_field in update_data:
+        for boundary_id, boundary_elements in text_grid_boundaries.items():
+            # logger.debug('Boundary elements %s', boundary_elements)
+            # all_fields=text_grid[boundary_id]
+            # if update_field in update_data:
 
-        # logger.debug('Data to update %s', data_to_update)
-        # logger.debug(
-        #     'Original Data %s', text_grid[transcription_type][boundary_id][update_field])
-        data_to_update = update_data[transcription_type][update_field][boundary_id]
+            # logger.debug('Data to update %s', data_to_update)
+            # logger.debug(
+            #     'Original Data %s', text_grid[transcription_type][boundary_id][update_field])
+            data_to_update = update_data[transcription_type][update_field][boundary_id]
 
-        boundary_vals = data_to_update.pop('boundary')
-        logger.debug('Data to update %s', data_to_update)
-        logger.debug('Boundary vals %s', boundary_vals)
+            boundary_vals = data_to_update.pop('boundary')
+            # logger.debug('Data to update %s', data_to_update)
+            # logger.debug('Boundary vals %s', boundary_vals)
 
-        start_boundary = boundary_vals['start']
-        end_boundary = boundary_vals['end']
-        # start_boundary = boundary_elements['boundary']['start']
-        # end_boundary = boundary_elements['boundary']['end']
+            start_boundary = boundary_vals['start']
+            end_boundary = boundary_vals['end']
+            # start_boundary = boundary_elements['boundary']['start']
+            # end_boundary = boundary_elements['boundary']['end']
 
-        text_grid = generate_new_boundary(mongo, text_grid, start_boundary, end_boundary,
-                                          transcription_type, boundary_id)
+            text_grid = generate_new_boundary(mongo, text_grid, start_boundary, end_boundary,
+                                            transcription_type, boundary_id)
 
-        text_grid = insert_data_into_text_grid(
-            text_grid, boundary_id, transcription_type, update_data, update_field)
+            text_grid = insert_data_into_text_grid(
+                text_grid, boundary_id, transcription_type, update_data, update_field)
 
-        # text_grid[transcription_type][boundary_id][update_field] = data_to_update
+            # text_grid[transcription_type][boundary_id][update_field] = data_to_update
 
-    # data_to_update = update_data[transcription_type]
+        # data_to_update = update_data[transcription_type]
 
-    # text_grid[transcription_type] = data_to_update
-    logger.debug('Updated TG %s', text_grid)
+        # text_grid[transcription_type] = data_to_update
+        # logger.debug('Updated TG %s', text_grid)
+    except:
+        logger.exception("")
+
     return text_grid
 
 
@@ -3151,89 +3161,103 @@ def get_audio_transcriptions(mongo, model_params, model_name, audio_data=[], mod
 
 
 def get_audio_boundaries(model_params, model_name, model_type="local"):
-    if model_name == '':
-        for textgrid_boundary_model in all_model_names['textGrid_boundary']:
-            model_names = textgrid_boundary_model['model']['local']
-            model_paths = textgrid_boundary_model['model']['localpath']
-            model_params['model_path'] = model_paths[0]
+    try:
+        if model_name == '':
+            for textgrid_boundary_model in all_model_names['textGrid_boundary']:
+                model_names = textgrid_boundary_model['model']['local']
+                model_paths = textgrid_boundary_model['model']['localpath']
+                model_params['model_path'] = model_paths[0]
 
-            if len(model_names) > 0:
-                model_name = model_names[0]
+                if len(model_names) > 0:
+                    model_name = model_names[0]
+                    boundaries, cleaned_file = predictFromLocalModels.get_boundaries(
+                        model_names[0], model_params)
+                    break
+        else:
+            if model_type == 'local':
                 boundaries, cleaned_file = predictFromLocalModels.get_boundaries(
-                    model_names[0], model_params)
-                break
-    else:
-        if model_type == 'local':
-            boundaries, cleaned_file = predictFromLocalModels.get_boundaries(
-                model_name, model_params)
-    logger.debug(boundaries)
+                    model_name, model_params)
+        logger.debug(boundaries)
+    except:
+        logger.exception("")
+
     return boundaries, cleaned_file, model_name
 
 
 def get_audio_chunk_bytes(audio_file, start_boundary, end_boundary, boundary_id, audio_path):
-    start_boundary = start_boundary*1000
-    end_boundary = end_boundary*1000
-    current_audio_file = audio_file[start_boundary: end_boundary]
-    # write_path = audio_path.replace('.wav', '_'+boundary_id+'.wav')
-    audio_segment_bytes = BytesIO()
-    # current_audio_file.stream.seek(0)
+    try:
+        start_boundary = start_boundary*1000
+        end_boundary = end_boundary*1000
+        current_audio_file = audio_file[start_boundary: end_boundary]
+        # write_path = audio_path.replace('.wav', '_'+boundary_id+'.wav')
+        audio_segment_bytes = BytesIO()
+        # current_audio_file.stream.seek(0)
 
-    current_audio_file.export(audio_segment_bytes, format="wav")
-    # current_audio_file.export(write_path, format="wav")
+        current_audio_file.export(audio_segment_bytes, format="wav")
+        # current_audio_file.export(write_path, format="wav")
 
-    # with open(write_path, "wb") as f:
-    #     f.write(audio_segment_bytes.getbuffer())
+        # with open(write_path, "wb") as f:
+        #     f.write(audio_segment_bytes.getbuffer())
+    except:
+        logger.exception("")
+
     return audio_segment_bytes.read()
     # return write_path
 
 
 def generate_boundary_id(current_boundary):
-    start_boundary = round(float(current_boundary['start']), 2)
-    end_boundary = round(float(current_boundary['end']), 2)
-    boundary_id_start = get_boundary_id_from_number(
-        format(start_boundary, '.2f'), 5)
-    boundary_id_end = get_boundary_id_from_number(
-        format(end_boundary, '.2f'), 5)
-    boundary_id = boundary_id_start+boundary_id_end
-    return boundary_id
+    try:
+        start_boundary = round(float(current_boundary['start']), 2)
+        end_boundary = round(float(current_boundary['end']), 2)
+        boundary_id_start = get_boundary_id_from_number(
+            format(start_boundary, '.2f'), 5)
+        boundary_id_end = get_boundary_id_from_number(
+            format(end_boundary, '.2f'), 5)
+        boundary_id = boundary_id_start+boundary_id_end
+    except:
+        logger.exception("")
 
+    return boundary_id
 
 def generate_boundaries(vad_model,
                         max_pause_boundary,
                         audio_path
                         ):
-    boundaries = []
-    min_speech_duration = 250
-    min_silence_duration = 100
-    vad_model_name = ''
-    vad_model_type = 'local'
-    max_pause_boundary_ms = max_pause_boundary*1000
-    if max_pause_boundary < min_speech_duration:
-        min_speech_duration = int(max_pause_boundary_ms)
+    try:
+        boundaries = []
+        min_speech_duration = 250
+        min_silence_duration = 100
+        vad_model_name = ''
+        vad_model_type = 'local'
+        max_pause_boundary_ms = max_pause_boundary*1000
+        if max_pause_boundary < min_speech_duration:
+            min_speech_duration = int(max_pause_boundary_ms)
 
-        if max_pause_boundary < min_silence_duration:
-            min_silence_duration = int(max_pause_boundary)
+            if max_pause_boundary < min_silence_duration:
+                min_silence_duration = int(max_pause_boundary)
 
-    # if 'textGrid_boundary' in all_model_names:
-    vad_model_params = {
-        "audio_file": audio_path,
-        "SAMPLING_RATE": 16000,
-        "remove_pauses": False,
-        "USE_ONNX": False,
-        "minimum_speech_duration": min_speech_duration,
-        "minimum_silence_duration": min_silence_duration
-    }
-    logger.debug('Vad Model %s', vad_model)
-    if len(vad_model) > 0:
-        vad_model_name = vad_model['model_name']
-        add_vad_model_params = vad_model['model_params']
-        vad_model_type = vad_model['model_type']
-        vad_model_params.update(add_vad_model_params)
+        # if 'textGrid_boundary' in all_model_names:
+        vad_model_params = {
+            "audio_file": audio_path,
+            "SAMPLING_RATE": 16000,
+            "remove_pauses": False,
+            "USE_ONNX": False,
+            "minimum_speech_duration": min_speech_duration,
+            "minimum_silence_duration": min_silence_duration
+        }
+        # logger.debug('Vad Model %s', vad_model)
+        if len(vad_model) > 0:
+            vad_model_name = vad_model['model_name']
+            add_vad_model_params = vad_model['model_params']
+            vad_model_type = vad_model['model_type']
+            vad_model_params.update(add_vad_model_params)
 
-    vad_start = datetime.now()
-    boundaries, cleaned_file, vad_model_name = get_audio_boundaries(
-        vad_model_params, vad_model_name, vad_model_type)
-    vad_end = datetime.now()
+        vad_start = datetime.now()
+        boundaries, cleaned_file, vad_model_name = get_audio_boundaries(
+            vad_model_params, vad_model_name, vad_model_type)
+        vad_end = datetime.now()
+    except:
+        logger.exception("")
 
     return boundaries, cleaned_file, vad_model_name, vad_start, vad_end, vad_model_params
 
@@ -3257,223 +3281,228 @@ def get_slices_and_text_grids(mongo,
                               all_audio_bytes={},
                               all_text_grids=[],
                               create_new_boundaries=False):
+    # logger.debug("create_new_boundaries: %s", create_new_boundaries)
+    try:
+        model_details = {}
+        # all_text_grids = []
 
-    model_details = {}
-    # all_text_grids = []
+        audio_chunk_boundaries = []
 
-    audio_chunk_boundaries = []
+        boundaries = []
+        offset_values = [0.0]
+        slice_offset_values = [0.0]
+        transcriptions = {}
+        transcribed = 0
 
-    boundaries = []
-    offset_values = [0.0]
-    slice_offset_values = [0.0]
-    transcriptions = {}
-    transcribed = 0
+        # TODO: This needs to be improved and based on user-inputs regarding the choice
+        # of a model. We could store project-specific prefeerences here.
+        # Currently it gives preference to local models and select the first
+        # model in the list.
+        # logger.debug("Run vad: %s, Run ASR: %s, Split: %s",
+        #             run_vad, run_asr, split_into_smaller_chunks)
+        # logger.debug('All audio bytes keys %s \nLength: %s',
+        #             all_audio_bytes.keys(), len(all_audio_bytes))
 
-    # TODO: This needs to be improved and based on user-inputs regarding the choice
-    # of a model. We could store project-specific prefeerences here.
-    # Currently it gives preference to local models and select the first
-    # model in the list.
-    logger.debug("Run vad: %s, Run ASR: %s, Split: %s",
-                 run_vad, run_asr, split_into_smaller_chunks)
-    logger.debug('All audio bytes keys %s \nLength: %s',
-                 all_audio_bytes.keys(), len(all_audio_bytes))
-
-    if run_vad or split_into_smaller_chunks:
-        # logger.debug('Boundaries received', boundaries)
-        boundaries, cleaned_file, vad_model_name, vad_start, vad_end, vad_model_params = generate_boundaries(vad_model,
-                                                                                                             max_pause_boundary,
-                                                                                                             audio_path
-                                                                                                             )
-        model_details.update([('vad_model_name', vad_model_name), ('vad_model_params',
-                                                                   vad_model_params), ('vad_start', vad_start), ('vad_end', vad_end)])
-        if split_into_smaller_chunks:
-            audio_chunk_boundaries = get_smaller_chunks_of_audio(
-                boundaries, max_pause_slice, max_new_file_duration, audio_duration)
-
-            audio_chunk_boundary_lists, offset_values, slice_offset_values = get_boundary_lists_of_smaller_chunks(
-                audio_chunk_boundaries, boundaries, audio_duration, slice_offset_value)
-
-        else:
-            audio_chunk_boundaries = [
-                {'start': boundaries[0], 'end': boundaries[-1]}]
-            audio_chunk_boundary_lists = [boundaries]
-
-        logger.debug('Total audio chunk boundaries %s Total offset values %s Total slice offset values %s', len(
-            audio_chunk_boundary_lists), len(offset_values), len(slice_offset_values))
-        all_text_grids = []
-        for audio_chunk_boundary_list, offset_value in zip(audio_chunk_boundary_lists, offset_values):
-            logger.debug('Length of all text grids %s', len(all_text_grids))
-            blank_text_grid = get_blank_text_grid()
-            # {
-            #     "discourse": {},
-            #     "sentence": {},
-            #     "word": {},
-            #     "phoneme": {}
-            # }
-            current_text_grid = generate_text_grid(
-                mongo, blank_text_grid, audio_chunk_boundary_list, transcriptions, transcription_type, max_pause_boundary, min_boundary_size, offset_value=offset_value)
-            print('length of current text grid %s', len(current_text_grid))
-            all_text_grids.append(current_text_grid)
-
-        # if run_asr and 'transcription' in all_model_names:
-    elif run_asr:
-        # audio_duration, audio_file = get_audio_duration_from_file(audio_path)
-        logger.info('Running ASR on file %s', audio_path)
-        audio_file = AudioSegment.from_file(audio_path)
-
-        logger.info('Running ASR on existing boundaries')
-        if len(all_text_grids) > 0:
-            current_text_grid = all_text_grids[0][transcription_type]
-        else:
-            current_text_grid = {}
-        logger.debug('Full Text Grid %s \nTotal text grids %s',
-                     all_text_grids, len(all_text_grids))
-        logger.debug('Current Text Grid %s \nLength: %s',
-                     current_text_grid, len(current_text_grid))
-        logger.debug('All audio bytes keys %s \nLength: %s',
-                     all_audio_bytes.keys(), len(all_audio_bytes))
-
-        create_vad = False
-        if len(asr_model) > 0:
-            inference_source = asr_model['model_params']['model_api']
-            if inference_source == 'hfinference' and create_new_boundaries:
-                create_vad = True
-                create_new_boundaries = False
-            elif inference_source == 'bhashini' and len(current_text_grid) == 0:
-                create_vad = True
-                create_new_boundaries = False
-
-        if create_vad:
-            logger.debug('All audio bytes keys %s \nLength: %s',
-                         all_audio_bytes.keys(), len(all_audio_bytes))
-            boundaries, __, vad_model_name, vad_start, vad_end, vad_model_params = generate_boundaries(vad_model,
-                                                                                                       max_pause_boundary,
-                                                                                                       audio_path
-                                                                                                       )
+        if run_vad or split_into_smaller_chunks:
+            # logger.debug('Boundaries received', boundaries)
+            boundaries, cleaned_file, vad_model_name, vad_start, vad_end, vad_model_params = generate_boundaries(vad_model,
+                                                                                                                max_pause_boundary,
+                                                                                                                audio_path
+                                                                                                                )
             model_details.update([('vad_model_name', vad_model_name), ('vad_model_params',
-                                                                       vad_model_params), ('vad_start', vad_start), ('vad_end', vad_end)])
-            audio_chunk_boundaries = [
-                {'start': boundaries[0], 'end': boundaries[-1]}]
-            audio_chunk_boundary_lists = [boundaries]
+                                                                    vad_model_params), ('vad_start', vad_start), ('vad_end', vad_end)])
+            if split_into_smaller_chunks:
+                audio_chunk_boundaries = get_smaller_chunks_of_audio(
+                    boundaries, max_pause_slice, max_new_file_duration, audio_duration)
 
-            blank_text_grid = get_blank_text_grid()
+                audio_chunk_boundary_lists, offset_values, slice_offset_values = get_boundary_lists_of_smaller_chunks(
+                    audio_chunk_boundaries, boundaries, audio_duration, slice_offset_value)
+
+            else:
+                audio_chunk_boundaries = [
+                    {'start': boundaries[0], 'end': boundaries[-1]}]
+                audio_chunk_boundary_lists = [boundaries]
+
+            # logger.debug('Total audio chunk boundaries %s Total offset values %s Total slice offset values %s', len(
+            #     audio_chunk_boundary_lists), len(offset_values), len(slice_offset_values))
             all_text_grids = []
-            for audio_chunk_boundary_list in audio_chunk_boundary_lists:
+            for audio_chunk_boundary_list, offset_value in zip(audio_chunk_boundary_lists, offset_values):
+                logger.debug('Length of all text grids %s', len(all_text_grids))
+                blank_text_grid = get_blank_text_grid()
+                # {
+                #     "discourse": {},
+                #     "sentence": {},
+                #     "word": {},
+                #     "phoneme": {}
+                # }
                 current_text_grid = generate_text_grid(
-                    mongo, blank_text_grid, audio_chunk_boundary_list, transcriptions, transcription_type, max_pause_boundary, min_boundary_size)
+                    mongo, blank_text_grid, audio_chunk_boundary_list, transcriptions, transcription_type, max_pause_boundary, min_boundary_size, offset_value=offset_value)
+                # print('length of current text grid %s', len(current_text_grid))
                 all_text_grids.append(current_text_grid)
 
-            logger.info('Current text grid after VAD %s\n Length: ',
-                        current_text_grid, len(current_text_grid))
-            logger.debug('All audio bytes keys %s \nLength: %s',
-                         all_audio_bytes.keys(), len(all_audio_bytes))
-            current_text_grid = all_text_grids[0][transcription_type]
-        # audio_file = AudioSegment.from_file(audio_path)
+            # if run_asr and 'transcription' in all_model_names:
+        elif run_asr:
+            # audio_duration, audio_file = get_audio_duration_from_file(audio_path)
+            logger.info('Running ASR on file %s', audio_path)
+            audio_file = AudioSegment.from_file(audio_path)
 
-        # for i, current_boundary in enumerate(boundaries):
-        #     start_boundary = round(float(current_boundary['start']), 2)
-        #     end_boundary = round(float(current_boundary['end']), 2)
-        #     boundary_id = generate_boundary_id(current_boundary)
-        #     all_audio_bytes[boundary_id] = get_audio_chunk_bytes(
-        #         audio_file, start_boundary, end_boundary, boundary_id, audio_path)
-        # current_audio_file_segment = FileStorage(
-        # audio_segment_bytes, filename=current_audio_filename)
-        # else:
-        # audio_file = AudioSegment.from_file(audio_path)
+            logger.info('Running ASR on existing boundaries')
+            if len(all_text_grids) > 0:
+                current_text_grid = all_text_grids[0][transcription_type]
+            else:
+                current_text_grid = {}
+            # logger.debug('Full Text Grid %s \nTotal text grids %s',
+            #             all_text_grids, len(all_text_grids))
+            # logger.debug('Current Text Grid %s \nLength: %s',
+            #             current_text_grid, len(current_text_grid))
+            # logger.debug('All audio bytes keys %s \nLength: %s',
+            #             all_audio_bytes.keys(), len(all_audio_bytes))
 
-        if (len(current_text_grid) > 0) and (not create_new_boundaries):
+            # logger.debug("create_new_boundaries: %s", create_new_boundaries)
+            create_vad = False
+            if len(asr_model) > 0:
+                inference_source = asr_model['model_params']['model_api']
+                if inference_source == 'hfinference' and create_new_boundaries:
+                    create_vad = True
+                    create_new_boundaries = False
+                elif inference_source == 'bhashini' and len(current_text_grid) == 0:
+                    create_vad = True
+                    create_new_boundaries = False
+            # logger.debug("create_new_boundaries: %s", create_new_boundaries)
+            if create_vad:
+                # logger.debug('All audio bytes keys %s \nLength: %s',
+                #             all_audio_bytes.keys(), len(all_audio_bytes))
+                boundaries, __, vad_model_name, vad_start, vad_end, vad_model_params = generate_boundaries(vad_model,
+                                                                                                        max_pause_boundary,
+                                                                                                        audio_path
+                                                                                                        )
+                model_details.update([('vad_model_name', vad_model_name), ('vad_model_params',
+                                                                        vad_model_params), ('vad_start', vad_start), ('vad_end', vad_end)])
+                audio_chunk_boundaries = [
+                    {'start': boundaries[0], 'end': boundaries[-1]}]
+                audio_chunk_boundary_lists = [boundaries]
+
+                blank_text_grid = get_blank_text_grid()
+                all_text_grids = []
+                for audio_chunk_boundary_list in audio_chunk_boundary_lists:
+                    current_text_grid = generate_text_grid(
+                        mongo, blank_text_grid, audio_chunk_boundary_list, transcriptions, transcription_type, max_pause_boundary, min_boundary_size)
+                    all_text_grids.append(current_text_grid)
+
+                logger.info('Current text grid after VAD %s\n Length: ',
+                            current_text_grid, len(current_text_grid))
+                # logger.debug('All audio bytes keys %s \nLength: %s',
+                #             all_audio_bytes.keys(), len(all_audio_bytes))
+                current_text_grid = all_text_grids[0][transcription_type]
+            # audio_file = AudioSegment.from_file(audio_path)
+
+            # for i, current_boundary in enumerate(boundaries):
+            #     start_boundary = round(float(current_boundary['start']), 2)
+            #     end_boundary = round(float(current_boundary['end']), 2)
+            #     boundary_id = generate_boundary_id(current_boundary)
+            #     all_audio_bytes[boundary_id] = get_audio_chunk_bytes(
+            #         audio_file, start_boundary, end_boundary, boundary_id, audio_path)
+            # current_audio_file_segment = FileStorage(
+            # audio_segment_bytes, filename=current_audio_filename)
+            # else:
+            # audio_file = AudioSegment.from_file(audio_path)
+            # logger.debug("create_new_boundaries: %s", create_new_boundaries)
+            if (len(current_text_grid) > 0) and (not create_new_boundaries):
+                logger.info('All audio bytes keys %s \nLength: %s',
+                            all_audio_bytes.keys(), len(all_audio_bytes))
+                logger.info('All text grid keys %s \nLength: %s',
+                            current_text_grid.keys(), len(current_text_grid))
+                for boundary_id, boundary_details in current_text_grid.items():
+                    start_boundary = round(float(boundary_details['start']), 2)
+                    end_boundary = round(float(boundary_details['end']), 2)
+                    all_audio_bytes[boundary_id] = get_audio_chunk_bytes(
+                        audio_file, start_boundary, end_boundary, boundary_id, audio_path)
+                    # current_audio_file = audio_file[start_boundary: end_boundary]
+                    # audio_segment_bytes = BytesIO()
+                    # current_audio_file.export(audio_segment_bytes, format="wav")
+                    # all_audio_bytes[boundary_id] = current_audio_file
+            else:
+                start_boundary = 0.0
+                end_boundary = round(float(audio_duration), 2)
+                current_boundary = {'start': start_boundary, 'end': end_boundary}
+                boundary_id = generate_boundary_id(current_boundary)
+                all_audio_bytes[boundary_id] = get_audio_chunk_bytes(
+                    audio_file, start_boundary, end_boundary, boundary_id, audio_path)
+
+                # create_new_boundaries = True
+
+                blank_text_grid = get_blank_text_grid()
+                all_text_grids = [blank_text_grid]
+
+                audio_chunk_boundaries = [
+                    {'start': start_boundary, 'end': end_boundary}]
+                boundaries.append(
+                    {'start': start_boundary, 'end': end_boundary})
+                audio_chunk_boundary_lists = [boundaries]
+                for audio_chunk_boundary_list in audio_chunk_boundary_lists:
+                    current_text_grid = generate_text_grid(
+                        mongo, blank_text_grid, audio_chunk_boundary_list, transcriptions, transcription_type, max_pause_boundary, min_boundary_size)
+                    all_text_grids.append(current_text_grid)
+
+                # logger.debug('Full Text Grid %s \nTotal text grids %s',
+                #             all_text_grids, len(all_text_grids))
+                current_text_grid = all_text_grids[0][transcription_type]
+                # logger.debug('Current Text Grid %s Length: %s',
+                #             current_text_grid, len(current_text_grid))
+
             logger.info('All audio bytes keys %s \nLength: %s',
                         all_audio_bytes.keys(), len(all_audio_bytes))
             logger.info('All text grid keys %s \nLength: %s',
                         current_text_grid.keys(), len(current_text_grid))
-            for boundary_id, boundary_details in current_text_grid.items():
-                start_boundary = round(float(boundary_details['start']), 2)
-                end_boundary = round(float(boundary_details['end']), 2)
-                all_audio_bytes[boundary_id] = get_audio_chunk_bytes(
-                    audio_file, start_boundary, end_boundary, boundary_id, audio_path)
-                # current_audio_file = audio_file[start_boundary: end_boundary]
-                # audio_segment_bytes = BytesIO()
-                # current_audio_file.export(audio_segment_bytes, format="wav")
-                # all_audio_bytes[boundary_id] = current_audio_file
-        else:
-            start_boundary = 0.0
-            end_boundary = round(float(audio_duration), 2)
-            current_boundary = {'start': start_boundary, 'end': end_boundary}
-            boundary_id = generate_boundary_id(current_boundary)
-            all_audio_bytes[boundary_id] = get_audio_chunk_bytes(
-                audio_file, start_boundary, end_boundary, boundary_id, audio_path)
+            asr_model_name = ''
+            asr_model_langscript = {}
+            asr_model_type = 'local'
+            asr_model_params = {
+                "audio_file": audio_filename,
+                "boundaries": boundaries
+            }
+            # logger.debug('ASR Model %s', asr_model)
+            if len(asr_model) > 0:
+                asr_model_name = asr_model['model_name']
+                add_asr_model_params = asr_model['model_params']
+                asr_model_langscript = asr_model['target']
+                asr_model_type = asr_model['model_type']
+                asr_model_params.update(add_asr_model_params)
 
+            asr_start = datetime.now()
+            transcriptions, transcribed, asr_model_name = get_audio_transcriptions(
+                mongo, model_params=asr_model_params, model_name=asr_model_name, audio_data=all_audio_bytes, model_langscript=asr_model_langscript, model_type=asr_model_type, hf_token=hf_token)
+            asr_end = datetime.now()
+
+            model_details.update([('asr_model_name', asr_model_name), ('asr_model_params',
+                                                                    asr_model_params), ('asr_start', asr_start), ('asr_end', asr_end)])
+
+            # if create_new_boundaries:
+            #     blank_text_grid = get_blank_text_grid()
+            #     for audio_chunk_boundary_list in audio_chunk_boundary_lists:
+            #         current_text_grid = generate_text_grid(
+            #             mongo, blank_text_grid, audio_chunk_boundary_list, transcriptions, transcription_type, max_pause_boundary, min_boundary_size)
+            #         all_text_grids.append(current_text_grid)
+            # else:
             # create_new_boundaries = True
+            # logger.debug("create_new_boundaries: %s", create_new_boundaries)
+            if create_new_boundaries:
+                current_text_grid = get_blank_text_grid()
+                current_text_grid = update_blank_text_grid(
+                    mongo, current_text_grid, transcription_type, transcriptions)
+            else:
+                current_text_grid = all_text_grids[0]
+                current_text_grid = update_existing_text_grid(
+                    current_text_grid, transcription_type, transcriptions)
+            all_text_grids = [current_text_grid]
 
-            blank_text_grid = get_blank_text_grid()
-            all_text_grids = [blank_text_grid]
-
-            audio_chunk_boundaries = [
-                {'start': start_boundary, 'end': end_boundary}]
-            boundaries.append(
-                {'start': start_boundary, 'end': end_boundary})
-            audio_chunk_boundary_lists = [boundaries]
-            for audio_chunk_boundary_list in audio_chunk_boundary_lists:
-                current_text_grid = generate_text_grid(
-                    mongo, blank_text_grid, audio_chunk_boundary_list, transcriptions, transcription_type, max_pause_boundary, min_boundary_size)
-                all_text_grids.append(current_text_grid)
-
-            logger.debug('Full Text Grid %s \nTotal text grids %s',
-                         all_text_grids, len(all_text_grids))
-            current_text_grid = all_text_grids[0][transcription_type]
-            logger.debug('Current Text Grid %s Length: %s',
-                         current_text_grid, len(current_text_grid))
-
-        logger.info('All audio bytes keys %s \nLength: %s',
-                    all_audio_bytes.keys(), len(all_audio_bytes))
-        logger.info('All text grid keys %s \nLength: %s',
-                    current_text_grid.keys(), len(current_text_grid))
-        asr_model_name = ''
-        asr_model_langscript = {}
-        asr_model_type = 'local'
-        asr_model_params = {
-            "audio_file": audio_filename,
-            "boundaries": boundaries
-        }
-        logger.debug('ASR Model %s', asr_model)
-        if len(asr_model) > 0:
-            asr_model_name = asr_model['model_name']
-            add_asr_model_params = asr_model['model_params']
-            asr_model_langscript = asr_model['target']
-            asr_model_type = asr_model['model_type']
-            asr_model_params.update(add_asr_model_params)
-
-        asr_start = datetime.now()
-        transcriptions, transcribed, asr_model_name = get_audio_transcriptions(
-            mongo, model_params=asr_model_params, model_name=asr_model_name, audio_data=all_audio_bytes, model_langscript=asr_model_langscript, model_type=asr_model_type, hf_token=hf_token)
-        asr_end = datetime.now()
-
-        model_details.update([('asr_model_name', asr_model_name), ('asr_model_params',
-                                                                   asr_model_params), ('asr_start', asr_start), ('asr_end', asr_end)])
-
-        # if create_new_boundaries:
-        #     blank_text_grid = get_blank_text_grid()
-        #     for audio_chunk_boundary_list in audio_chunk_boundary_lists:
-        #         current_text_grid = generate_text_grid(
-        #             mongo, blank_text_grid, audio_chunk_boundary_list, transcriptions, transcription_type, max_pause_boundary, min_boundary_size)
-        #         all_text_grids.append(current_text_grid)
-        # else:
-
-        if create_new_boundaries:
-            current_text_grid = get_blank_text_grid()
-            current_text_grid = update_blank_text_grid(
-                mongo, current_text_grid, transcription_type, transcriptions)
         else:
-            current_text_grid = all_text_grids[0]
-            current_text_grid = update_existing_text_grid(
-                current_text_grid, transcription_type, transcriptions)
-        all_text_grids = [current_text_grid]
-
-    else:
-        blank_text_grid = get_blank_text_grid()
-        audio_chunk_boundaries = []
-        all_text_grids = [blank_text_grid]
-        model_details = {}
+            blank_text_grid = get_blank_text_grid()
+            audio_chunk_boundaries = []
+            all_text_grids = [blank_text_grid]
+            model_details = {}
+    except:
+        logger.exception("")
 
     return audio_chunk_boundaries, all_text_grids, offset_values, slice_offset_values, transcribed, model_details
 
