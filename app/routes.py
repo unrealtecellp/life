@@ -7258,52 +7258,53 @@ def browseshareuserslist():
     current_user_sharemode = 0
     share_with_users_list = []
     try:
-        activeprojectname = getactiveprojectname.getactiveprojectname(
-            current_username, userprojects)
-        projectowner = getprojectowner.getprojectowner(
-            projects, activeprojectname)
-        shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
-                                                          current_username,
-                                                          activeprojectname)
-        current_user_sharemode = int(shareinfo['sharemode'])
-        project_type = getprojecttype.getprojecttype(projects,
-                                                     activeprojectname)
+        activeprojectname = getactiveprojectname.getactiveprojectname(current_username, userprojects)
+        # logger.debug(activeprojectname)
+        if (activeprojectname != ''):
+            projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
+            # logger.debug(projectowner)
+            shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
+                                                            current_username,
+                                                            activeprojectname)
+            current_user_sharemode = int(shareinfo['sharemode'])
+            project_type = getprojecttype.getprojecttype(projects,
+                                                        activeprojectname)
 
-        # get list of all the users registered in the application LiFE
-        for user in userlogin.find({}, {"_id": 0, "username": 1, "isActive": 1}):
-            # logger.debug(user)
-            if ('isActive' in user and user['isActive'] == 1):
-                usersList.append(user["username"])
+            # get list of all the users registered in the application LiFE
+            for user in userlogin.find({}, {"_id": 0, "username": 1, "isActive": 1}):
                 # logger.debug(user)
-        if (current_username == projectowner):
-            usersList.remove(projectowner)
-            share_with_users_list = usersList
-        else:
-            # logger.debug(usersList)
-            usersList.remove(projectowner)
-            usersList.remove(current_username)
-            # logger.debug(usersList)
-            # share_with_users_list = usersList
-            # logger.debug(usersList)
-            for username in usersList:
-                # logger.debug(username)
-                usershareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
-                                                                      username,
-                                                                      activeprojectname)
-                usersharemode = int(usershareinfo['sharemode'])
-                # logger.debug(current_username, current_user_sharemode, username, usersharemode)
-                # logger.debug(current_username, type(current_user_sharemode), username, type(usersharemode))
-                if (current_user_sharemode <= usersharemode):
-                    # logger.debug(f"username!!!: {username}")
-                    # share_with_users_list.remove(username)
-                    pass
-                else:
-                    # logger.debug(f"username!!!: {username}")
-                    share_with_users_list.append(username)
-        # project_shared_with = projects.find_one({'projectname': activeprojectname},
-        #                                         {'_id': 0, 'sharedwith': 1})["sharedwith"]
-        # share_with_users_list = list(set(share_with_users_list) & set(project_shared_with))
-        share_with_users_list = shareinfo["isharedwith"]
+                if ('isActive' in user and user['isActive'] == 1):
+                    usersList.append(user["username"])
+                    # logger.debug(user)
+            if (current_username == projectowner):
+                usersList.remove(projectowner)
+                share_with_users_list = usersList
+            else:
+                # logger.debug(usersList)
+                usersList.remove(projectowner)
+                usersList.remove(current_username)
+                # logger.debug(usersList)
+                # share_with_users_list = usersList
+                # logger.debug(usersList)
+                for username in usersList:
+                    # logger.debug(username)
+                    usershareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
+                                                                        username,
+                                                                        activeprojectname)
+                    usersharemode = int(usershareinfo['sharemode'])
+                    # logger.debug(current_username, current_user_sharemode, username, usersharemode)
+                    # logger.debug(current_username, type(current_user_sharemode), username, type(usersharemode))
+                    if (current_user_sharemode <= usersharemode):
+                        # logger.debug(f"username!!!: {username}")
+                        # share_with_users_list.remove(username)
+                        pass
+                    else:
+                        # logger.debug(f"username!!!: {username}")
+                        share_with_users_list.append(username)
+            # project_shared_with = projects.find_one({'projectname': activeprojectname},
+            #                                         {'_id': 0, 'sharedwith': 1})["sharedwith"]
+            # share_with_users_list = list(set(share_with_users_list) & set(project_shared_with))
+            share_with_users_list = shareinfo["isharedwith"]
     except:
         logger.exception("")
 
@@ -7341,23 +7342,29 @@ def browsefilesharedwithuserslist():
         file_speaker_ids = projects.find_one({"projectname": activeprojectname},
                                              {"_id": 0,
                                               "fileSpeakerIds": 1})
-        file_speaker_ids = file_speaker_ids["fileSpeakerIds"]
-        # logger.debug("file_speaker_ids: %s", file_speaker_ids)
-        for audio_id in audio_ids_list:
-            speakerid = transcription_audiodetails.get_audio_speakerid(
-                transcriptions, activeprojectname, audio_id)
-            if (speakerid is not None and file_speaker_ids is not None):
-                for user, speaker_ids in file_speaker_ids.items():
-                    if (speakerid in speaker_ids and
-                            audio_id in speaker_ids[speakerid] and
-                            user in shareinfo["isharedwith"]):
-                        browse_file_sharedwith_userslist.append(user)
-        # logger.debug(browse_file_sharedwith_userslist)
-        if (current_username in browse_file_sharedwith_userslist):
-            browse_file_sharedwith_userslist.remove(current_username)
-        # logger.debug(browse_file_sharedwith_userslist)
-        for user_name in shareinfo["tomesharedby"]:
-            browse_file_sharedwith_userslist.remove(user_name)
+        if (file_speaker_ids and
+            "fileSpeakerIds" in file_speaker_ids):
+            # logger.debug("file_speaker_ids: %s", file_speaker_ids)
+            file_speaker_ids = file_speaker_ids["fileSpeakerIds"]
+            # logger.debug("file_speaker_ids: %s", file_speaker_ids)
+            for audio_id in audio_ids_list:
+                speakerid = transcription_audiodetails.get_audio_speakerid(
+                    transcriptions, activeprojectname, audio_id)
+                if (speakerid is not None and file_speaker_ids is not None):
+                    for user, speaker_ids in file_speaker_ids.items():
+                        for sid in speakerid:
+                            if (sid in speaker_ids and
+                                    audio_id in speaker_ids[sid] and
+                                    user in shareinfo["isharedwith"]):
+                                browse_file_sharedwith_userslist.append(user)
+            # logger.debug(browse_file_sharedwith_userslist)
+            if (current_username in browse_file_sharedwith_userslist):
+                browse_file_sharedwith_userslist.remove(current_username)
+            logger.debug(browse_file_sharedwith_userslist)
+            for user_name in shareinfo["tomesharedby"]:
+                # logger.debug(user_name)
+                if (user_name in browse_file_sharedwith_userslist):
+                    browse_file_sharedwith_userslist.remove(user_name)
     except:
         logger.exception("")
 
@@ -7400,8 +7407,6 @@ def browsesharewith():
                 transcriptions, activeprojectname, audio_id)
             # logger.debug(speakerid)
             if (speakerid is not None):
-                if (isinstance(speakerid, str)):
-                    speakerid = [speakerid]
                 for sid in speakerid:
                     if (sid in speaker_audioids):
                         speaker_audioids[sid].append(audio_id)

@@ -441,60 +441,58 @@ def audiobrowse():
         current_username = getcurrentusername.getcurrentusername()
         activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
                                                                       userprojects)
-        projectowner = getprojectowner.getprojectowner(projects,
-                                                       activeprojectname)
-        shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
-                                                          current_username,
-                                                          activeprojectname)
+        # logger.debug(activeprojectname)
+        if (activeprojectname != ''):
+            projectowner = getprojectowner.getprojectowner(projects,
+                                                        activeprojectname)
+            shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
+                                                            current_username,
+                                                            activeprojectname)
 
-        project_shared_with = projectDetails.get_shared_with_users(
-            projects, activeprojectname)
-        project_shared_with.append("latest")
-        # speakerids = projects.find_one({"projectname": activeprojectname},
-        #                                {"_id": 0, "speakerIds." + current_username: 1})
-        # # logger.debug('speakerids: %s', pformat(speakerids))
-        # if ("speakerIds" in speakerids and speakerids["speakerIds"]):
-        #     speakerids = speakerids["speakerIds"][current_username]
-        #     speakerids.append('')
-        # else:
-        #     speakerids = ['']
-        speakerids = transcription_audiodetails.combine_speaker_ids(projects,
-                                                                    activeprojectname,
-                                                                    current_username)
-        speakerids.append('')
-        speaker_metadata = transcription_audiodetails.get_speaker_metadata(speakerdetails_collection,
-                                                                           speakerids,
-                                                                           activeprojectname)
-        # logger.debug('speaker_metadata: %s', speaker_metadata)
-        active_speaker_id = shareinfo['activespeakerId']
-        speaker_audio_ids = transcription_audiodetails.get_speaker_audio_ids_new(projects,
-                                                                                 activeprojectname,
-                                                                                 current_username,
-                                                                                 active_speaker_id)
-        # logger.debug("speaker_audio_ids: %s", pformat(speaker_audio_ids))
-        total_records = 0
-        if (active_speaker_id != ''):
-            total_records, audio_data_list = transcription_audiodetails.get_n_audios(transcriptions,
-                                                                                     activeprojectname,
-                                                                                     current_username,
-                                                                                     active_speaker_id,
-                                                                                     speaker_audio_ids)
+            project_shared_with = projectDetails.get_shared_with_users(projects, activeprojectname)
+            # logger.debug(project_shared_with)
+            project_shared_with.append("latest")
+            speakerids = transcription_audiodetails.combine_speaker_ids(projects,
+                                                                        activeprojectname,
+                                                                        current_username)
+            speakerids.append('')
+            speaker_metadata = transcription_audiodetails.get_speaker_metadata(speakerdetails_collection,
+                                                                            speakerids,
+                                                                            activeprojectname)
+            # logger.debug('speaker_metadata: %s', speaker_metadata)
+            active_speaker_id = shareinfo['activespeakerId']
+            speaker_audio_ids = transcription_audiodetails.get_speaker_audio_ids_new(projects,
+                                                                                    activeprojectname,
+                                                                                    current_username,
+                                                                                    active_speaker_id)
+            # logger.debug("speaker_audio_ids: %s", pformat(speaker_audio_ids))
+            total_records = 0
+            if (active_speaker_id != ''):
+                total_records, audio_data_list = transcription_audiodetails.get_n_audios(transcriptions,
+                                                                                        activeprojectname,
+                                                                                        current_username,
+                                                                                        active_speaker_id,
+                                                                                        speaker_audio_ids)
+            else:
+                audio_data_list = []
+            # get audio file src
+            new_audio_data_list = audio_data_list
+            # logger.debug("new_audio_data_list: %s", pformat(new_audio_data_list))
+            new_data['currentUsername'] = current_username
+            new_data['activeProjectName'] = activeprojectname
+            new_data['projectOwner'] = projectowner
+            new_data['shareInfo'] = shareinfo
+            new_data['speakerIds'] = speakerids
+            new_data['sourceMetadata'] = speaker_metadata
+            new_data['audioData'] = new_audio_data_list
+            new_data['audioDataFields'] = [
+                'audioId', 'audioFilename', 'Transcribed', 'Shared With', 'Audio File']
+            new_data['totalRecords'] = total_records
+            new_data['transcriptionsBy'] = project_shared_with
         else:
-            audio_data_list = []
-        # get audio file src
-        new_audio_data_list = audio_data_list
-        # logger.debug("new_audio_data_list: %s", pformat(new_audio_data_list))
-        new_data['currentUsername'] = current_username
-        new_data['activeProjectName'] = activeprojectname
-        new_data['projectOwner'] = projectowner
-        new_data['shareInfo'] = shareinfo
-        new_data['speakerIds'] = speakerids
-        new_data['sourceMetadata'] = speaker_metadata
-        new_data['audioData'] = new_audio_data_list
-        new_data['audioDataFields'] = [
-            'audioId', 'audioFilename', 'Transcribed', 'Shared With', 'Audio File']
-        new_data['totalRecords'] = total_records
-        new_data['transcriptionsBy'] = project_shared_with
+            # logger.debug('activeprojectname')
+            flash(f"select a project from 'Change Active Project' to work on!")
+            return redirect(url_for('home'))
     except:
         logger.exception("")
 
@@ -521,14 +519,6 @@ def updateaudiosortingsubcategories():
         current_username = getcurrentusername.getcurrentusername()
         activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
                                                                       userprojects)
-        # speakerids = projects.find_one({"projectname": activeprojectname},
-        #                                 {"_id": 0, "speakerIds." + current_username: 1})
-        # # logger.debug('speakerids: %s', pformat(speakerids))
-        # if ("speakerIds" in speakerids and speakerids["speakerIds"]):
-        #     speakerids = speakerids["speakerIds"][current_username]
-        #     speakerids.append('')
-        # else:
-        #     speakerids = []
         # data through ajax
         data = json.loads(request.args.get('a'))
         # logger.debug('data: %s', pformat(data))

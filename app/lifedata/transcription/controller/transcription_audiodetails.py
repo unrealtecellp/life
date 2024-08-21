@@ -2432,20 +2432,28 @@ def get_audio_speakerid(data_collection,
     Returns:
         _type_: _description_
     """
-    audio_speakerid = data_collection.find_one(
-        {'projectname': activeprojectname, 'audioId': audio_id},
-        {'_id': 1, 'lifesourceid': 1, 'speakerId': 1})
-    # logger.debug(audio_filename)
-    if (audio_speakerid is not None and
-        'lifesourceid' in audio_speakerid):
-        return audio_speakerid['lifesourceid']
-    elif (audio_speakerid is not None and
-          'speakerId' in audio_speakerid and
-          audio_speakerid['speakerId'] != ''):
-        return audio_speakerid['speakerId']
-    else:
-        return None
+    try:
+        speaker_id = []
+        audio_speakerid = data_collection.find_one(
+            {'projectname': activeprojectname, 'audioId': audio_id},
+            {'_id': 1, 'lifesourceid': 1, 'speakerId': 1})
+        # logger.debug(audio_filename)
+        if (audio_speakerid is not None and
+            'lifesourceid' in audio_speakerid):
+            speaker_id = audio_speakerid['lifesourceid']
+        elif (audio_speakerid is not None and
+            'speakerId' in audio_speakerid and
+            audio_speakerid['speakerId'] != ''):
+            speaker_id = audio_speakerid['speakerId']
+        else:
+            return None
+        
+        if (isinstance(speaker_id, str)):
+            speaker_id = [speaker_id]
+    except:
+        logger.exception("")
 
+    return speaker_id
 
 def lastupdatedby(transcriptions,
                   activeprojectname,
