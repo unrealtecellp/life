@@ -400,21 +400,22 @@ function eventsMapping() {
             quesBrowseAction(ques);
         }
     });
+    playpauseEvent();
     // play single ques
-    $(".playquesclass").click(function() {
-        let quesInfo = getSingleQuesBrowseAction(this);
-        quesBrowseActionPlay(quesInfo, this);
-    });
-    $(".pausequesclass").click(function() {
-        let playingQuesId = this.id;
-        // console.log(playingQuesId);
-        let playingQuesEleId = playingQuesId + "_quesEle";
-        let playingQuesEle = document.getElementById(playingQuesEleId);
-        // console.log(playingQuesEleId, playingQuesEle);
-        playingQuesEle.pause();
-        togglePlayPause(this, 'playquesclass', 'play');
+    // $(".playquesclass").click(function() {
+    //     let quesInfo = getSingleQuesBrowseAction(this);
+    //     quesBrowseActionPlay(quesInfo, this);
+    // });
+    // $(".pausequesclass").click(function() {
+    //     let playingQuesId = this.id;
+    //     // console.log(playingQuesId);
+    //     let playingQuesEleId = playingQuesId + "_quesEle";
+    //     let playingQuesEle = document.getElementById(playingQuesEleId);
+    //     // console.log(playingQuesEleId, playingQuesEle);
+    //     playingQuesEle.pause();
+    //     togglePlayPause(this, 'playquesclass', 'play');
         
-    });
+    // });
     $(".sharequesclass").click(function() {
         let quesInfo = getSingleQuesBrowseAction(this);
         // console.log(quesInfo);
@@ -464,6 +465,23 @@ function eventsMapping() {
     });
 }
 
+function playpauseEvent() {
+    $(".playquesclass").click(function() {
+        let quesInfo = getSingleQuesBrowseAction(this);
+        quesBrowseActionPlay(quesInfo, this);
+    });
+    $(".pausequesclass").click(function() {
+        let playingQuesId = this.id;
+        // console.log(playingQuesId);
+        let playingQuesEleId = playingQuesId + "_quesEle";
+        let playingQuesEle = document.getElementById(playingQuesEleId);
+        // console.log(playingQuesEleId, playingQuesEle);
+        playingQuesEle.pause();
+        togglePlayPause(this, 'playquesclass', 'play');
+        
+    });
+}
+
 function updateQuesSortingSubCategoriesDropdown() {
     let quesBrowseInfo = getQuesBrowseInfo();
     // let selectedQuesSortingCategories = document.getElementById("quesortingcategoriesdropdown").value;
@@ -498,7 +516,7 @@ function updateQuesSortingSubCategoriesDropdown() {
             createSelect2('speakeridsdropdown', quesSortingSubCategories, selectedQuesSortingSubCategories);
         }
         createQuesBrowseTable(data.quesDataFields, data.quesData, data.shareMode, data.totalRecords, data.shareChecked, data.downloadChecked);
-        eventsMapping();
+        // eventsMapping();
         createPagination(data.totalRecords)
       });
 }
@@ -514,7 +532,7 @@ function updateQuesBrowseTable() {
       }).done(function(data){
         // console.log(data.quesDataFields, data.quesData, data.shareMode);
         createQuesBrowseTable(data.quesDataFields, data.quesData, data.shareMode, data.totalRecords, data.shareChecked, data.downloadChecked);
-        eventsMapping();
+        // eventsMapping();
         createPagination(data.totalRecords)
       });
 }
@@ -551,7 +569,7 @@ function quesBrowseActionPlay(quesInfo, quesCountInfo) {
             // window.location.reload();
             // console.log(data)
             createQuesBrowseTable(data.quesDataFields, data.quesData, data.shareMode, data.totalRecords, data.shareChecked, data.downloadChecked);
-            eventsMapping();
+            // eventsMapping();
             // console.log(activePageNumber);
             createPagination(data.totalRecords, activePageNumber);
             // console.log(quesCountInfo);
@@ -735,7 +753,8 @@ function changeQuesBrowsePage(pageId) {
         }).done(function(data){
         // console.log(data.quesDataFields, data.quesData, data.shareMode);
         createQuesBrowseTable(data.quesDataFields, data.quesData, data.shareMode, data.totalRecords, data.shareChecked, data.downloadChecked);
-        eventsMapping();
+        // eventsMapping();
+        playpauseEvent();
         createPagination(data.totalRecords, data.activePage);
     });
     // }
@@ -752,7 +771,8 @@ function togglePlayPause(ele, state, icon, quesSource=undefined) {
         togglePlayPause += embededQues;
     }
     ele.parentNode.innerHTML = togglePlayPause;
-    eventsMapping();
+    // eventsMapping();
+    playpauseEvent();
 }
 
 function quesEnded(ele) {

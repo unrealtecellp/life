@@ -3732,6 +3732,7 @@ def get_n_audios(data_collection,
                  number_of_audios=10,
                  audio_delete_flag=0,
                  all_data=False):
+    # logger.debug(f"start_from: {start_from}\nnumber_of_audios: {number_of_audios}")
     aggregate_output_list = []
     total_records = 0
     try:
@@ -3749,6 +3750,8 @@ def get_n_audios(data_collection,
                     "audioId": 1
                 }
             },
+            # { "$skip" : start_from },
+            # { "$limit" : number_of_audios-start_from },
             {
                 "$project": {
                     "_id": 0,
@@ -3776,6 +3779,20 @@ def get_n_audios(data_collection,
 
         # logger.debug('aggregate_output_list: %s', pformat(aggregate_output_list))
         total_records = len(aggregate_output_list)
+        logger.debug('total_records AUDIO: %s', total_records)
+        # total_records = data_collection.aggregate([
+        #     {
+        #         "$match": {
+        #             "projectname": activeprojectname,
+        #             "speakerId": active_speaker_id,
+        #             "audiodeleteFLAG": audio_delete_flag
+        #         }
+        #     },
+        #     {
+        #         "$count": "total_records"
+        #     }
+        # ])
+        # total_records = list(total_records)[0]['total_records']
         # logger.debug('total_records AUDIO: %s', total_records)
         if (not all_data):
             aggregate_output_list = aggregate_output_list[start_from:number_of_audios]
@@ -3798,7 +3815,7 @@ def audio_shared_with(activeprojectname,
                                                         "speakerIds": 1,
                                                         "fileSpeakerIds": 1})
         # logger.debug(pformat(shared_with_info))
-        if ('speakerIds'):
+        if ('speakerIds' in shared_with_info):
             shared_with_list = [user for user, user_speaker_ids in shared_with_info['speakerIds'].items() if active_speaker_id in user_speaker_ids]
         # logger.debug(shared_with_list)
         if ('fileSpeakerIds' in shared_with_info):

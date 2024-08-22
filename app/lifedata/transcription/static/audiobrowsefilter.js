@@ -37,7 +37,7 @@ function audioFilter(pageId=1) {
             data.totalRecords,
             data.shareChecked,
             data.downloadChecked);
-        eventsMapping();
+        // eventsMapping();
         createPagination(data.totalRecords, data.activePage);
         });
 }

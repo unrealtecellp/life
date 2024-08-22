@@ -245,7 +245,8 @@ function togglePlayPause(ele, state, icon, audioSource=undefined) {
         togglePlayPause += embededAudio;
     }
     ele.parentNode.innerHTML = togglePlayPause;
-    eventsMapping();
+    // eventsMapping();
+    playpauseEvent();
 }
 
 function audioBrowseActionPlay(audioInfo, audioCountInfo) {
@@ -271,7 +272,7 @@ function audioBrowseActionPlay(audioInfo, audioCountInfo) {
             data.totalRecords,
             data.shareChecked,
             data.downloadChecked);
-        eventsMapping();
+        // eventsMapping();
         console.log(activePageNumber);
         createPagination(data.totalRecords, activePageNumber);
         audioCountInfo = document.getElementById(audioCountInfo.id);
@@ -349,8 +350,25 @@ function eventsMapping() {
     $("#loadnextbutton").click(function() {
         loadNextNData();
     });
-
+    playpauseEvent();
     // play single audio
+    // $(".playaudioclass").click(function() {
+    //     let audioInfo = getSingleAudioBrowseAction(this);
+    //     audioBrowseActionPlay(audioInfo, this);
+    // });
+    // $(".pauseaudioclass").click(function() {
+    //     let playingAudioId = this.id;
+    //     // console.log(playingAudioId);
+    //     let playingAudioEleId = playingAudioId + "_audioEle";
+    //     let playingAudioEle = document.getElementById(playingAudioEleId);
+    //     // console.log(playingAudioEleId, playingAudioEle);
+    //     playingAudioEle.pause();
+    //     togglePlayPause(this, 'playaudioclass', 'play');
+        
+    // });
+}
+
+function playpauseEvent() {
     $(".playaudioclass").click(function() {
         let audioInfo = getSingleAudioBrowseAction(this);
         audioBrowseActionPlay(audioInfo, this);
@@ -383,7 +401,7 @@ function updateCrawlerBrowseTable() {
             data.shareMode,
             data.totalRecords,
             data.dataType);
-        eventsMapping();
+        // eventsMapping();
         createPagination(data.totalRecords);
       });
 }
@@ -593,7 +611,8 @@ function changeCrawlerBrowsePage(pageId) {
             data.shareMode,
             data.totalRecords,
             data.dataType);
-        eventsMapping();
+        // eventsMapping();
+        playpauseEvent();
         createPagination(data.totalRecords, data.activePage);
     });
 }

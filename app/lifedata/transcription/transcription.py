@@ -1,7 +1,7 @@
 # 6ae7e44db9ce6bad1ee4bbcf32e70edbc251fe65
 """Module containing the routes for the transcription part of the LiFE."""
 
-from app import mongo
+from app import mongo, cache
 from flask import (
     Blueprint,
     render_template,
@@ -576,7 +576,7 @@ def updateaudiosortingsubcategories():
                                                                                      activeprojectname,
                                                                                      current_username,
                                                                                      active_speaker_id)
-            logger.debug("active_speaker_id: %s", active_speaker_id)
+            # logger.debug("active_speaker_id: %s", active_speaker_id)
             selected_audio_sorting_sub_categories = active_speaker_id
 
             if (active_speaker_id != ''):
@@ -608,6 +608,7 @@ def updateaudiosortingsubcategories():
 
 @transcription.route('/filteraudiobrowsetable', methods=['GET', 'POST'])
 @login_required
+# @cache.cached(timeout=10)
 def filteraudiobrowsetable():
     audio_data_fields = ['audioId', 'audioFilename',
                          'Transcribed', 'Shared With', 'Audio File']
@@ -621,14 +622,6 @@ def filteraudiobrowsetable():
         current_username = getcurrentusername.getcurrentusername()
         activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
                                                                       userprojects)
-        # speakerids = projects.find_one({"projectname": activeprojectname},
-        #                                 {"_id": 0, "speakerIds." + current_username: 1})
-        # # logger.debug('speakerids: %s', pformat(speakerids))
-        # if ("speakerIds" in speakerids and speakerids["speakerIds"]):
-        #     speakerids = speakerids["speakerIds"][current_username]
-        #     # speakerids.append('')
-        # else:
-        #     speakerids = []
         # data through ajax
         data = json.loads(request.args.get('a'))
         # logger.debug('audio_browse_info: %s', pformat(data))
@@ -916,6 +909,7 @@ def audiobrowseactionplay():
             # logger.debug("audio_filename: %s", audio_filename)
             # audio_src = url_for('retrieve', filename=audio_filename)
             audio_src = os.path.join('retrieve', audio_filename)
+            # logger.debug(f"audio_src: {audio_src}")
             # logger.debug(audio_browse_info['activeSpeakerId'])
             active_speaker_id = audio_browse_info['activeSpeakerId']
             audio_browse_action = audio_browse_info['browseActionSelectedOption']
