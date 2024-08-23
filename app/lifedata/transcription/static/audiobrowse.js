@@ -536,7 +536,7 @@ function updateAudioSortingSubCategoriesDropdown() {
         type: 'GET',
         url: '/lifedata/transcription/updateaudiosortingsubcategories'
     }).done(function (data) {
-        console.log(data);
+        // console.log(data);
         audioSortingSubCategories = data.audioSortingSubCategories;
         selectedAudioSortingSubCategories = data.selectedAudioSortingSubCategories;
         // console.log(audioSortingSubCategories, selectedAudioSortingSubCategories);
@@ -563,7 +563,7 @@ function updateAudioSortingSubCategoriesDropdown() {
             data.totalRecords,
             data.shareChecked,
             data.downloadChecked);
-        // eventsMapping();
+        eventsMapping();
         createPagination(data.totalRecords)
     });
 }
@@ -584,7 +584,7 @@ function updateAudioBrowseTable() {
             data.totalRecords,
             data.shareChecked,
             data.downloadChecked);
-        // eventsMapping();
+        eventsMapping();
         createPagination(data.totalRecords)
     });
 }
@@ -607,11 +607,31 @@ function audioBrowseAction(audioInfo) {
 
 function audioBrowseActionPlay(audioInfo, audioCountInfo) {
     // console.log(audioCountInfo);
+    let selectedAudioSortingCategories = document.getElementById("audiosortingcategoriesdropdown").value;
+    // console.log(selectedAudioSortingCategories);
+    let selectedFilterOptions = {};
+    if (selectedAudioSortingCategories === 'sourcemetainfo') {
+        let filterOptions = $('#audiosortingsubcategoriesdropdown').select2('data');
+        // console.log(filterOptions); 
+        for (let i=0; i<filterOptions.length; i++) {
+            let option = filterOptions[i].text;
+            let optGroup = filterOptions[i].element.parentNode.id;
+            // console.log(option, optGroup);
+            if (optGroup in selectedFilterOptions) {
+                selectedFilterOptions[optGroup].push(option);
+            }
+            else {
+                selectedFilterOptions[optGroup] = [option];
+            }
+        }
+    }
     let audioBrowseInfo = getAudioBrowseInfo();
     audioBrowseInfo['pageId'] = activePageNumber;
     let data_1 = {
         audioInfo: audioInfo,
-        audioBrowseInfo: audioBrowseInfo
+        audioBrowseInfo: audioBrowseInfo,
+        selectedAudioSortingCategories: selectedAudioSortingCategories,
+        selectedFilterOptions: selectedFilterOptions,
     }
     $.post("/lifedata/transcription/audiobrowseactionplay", {
         a: JSON.stringify(data_1)
@@ -627,7 +647,7 @@ function audioBrowseActionPlay(audioInfo, audioCountInfo) {
                 data.totalRecords,
                 data.shareChecked,
                 data.downloadChecked);
-            // eventsMapping();
+            eventsMapping();
             // console.log(activePageNumber);
             createPagination(data.totalRecords, activePageNumber);
             // console.log(audioCountInfo);
@@ -647,7 +667,7 @@ function audioBrowseActionPlay(audioInfo, audioCountInfo) {
             // let embededAudio = '<audio controls autoplay hidden oncontextmenu="return false" controlslist="nofullscreen nodownload noremoteplayback noplaybackrate">'+
             //                     '<source src="'+audioSource+'" type="audio/wav"></audio>';
             // audioCountInfo.parentNode.innerHTML = togglePlayPause;
-            // eventsMapping();
+            eventsMapping();
         });
 }
 
@@ -816,7 +836,7 @@ function changeAudioBrowsePage(pageId) {
                 data.totalRecords,
                 data.shareChecked,
                 data.downloadChecked);
-            // eventsMapping();
+            eventsMapping();
             playpauseEvent();
             createPagination(data.totalRecords, data.activePage);
         });
@@ -837,7 +857,7 @@ function togglePlayPause(ele, state, icon, audioSource = undefined) {
     // console.log(audioSource);
     ele.parentNode.innerHTML = togglePlayPause;
     // console.log(audioSource);
-    // eventsMapping();
+    eventsMapping();
     playpauseEvent();
     // console.log(audioSource);
 }

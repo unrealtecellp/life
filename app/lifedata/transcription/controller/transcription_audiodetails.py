@@ -1709,6 +1709,7 @@ def updatelatestaudioid(projects,
         latest_audio_id (_type_): _description_
         current_username (_type_): _description_
     """
+    # logger.debug('updatelatestaudioid')
     projects.update_one({'projectname': activeprojectname},
                         {'$set': {'lastActiveId.'+current_username+'.'+activespeakerId+'.audioId':  latest_audio_id}})
 
@@ -3733,15 +3734,19 @@ def get_n_audios(data_collection,
                  audio_delete_flag=0,
                  all_data=False):
     # logger.debug(f"start_from: {start_from}\nnumber_of_audios: {number_of_audios}")
+    # logger.debug(active_speaker_id)
     aggregate_output_list = []
     total_records = 0
     try:
         # logger.debug("speaker_audio_ids: %s", pformat(speaker_audio_ids))
+        if (isinstance(active_speaker_id, str)):
+            active_speaker_id = [active_speaker_id]
         aggregate_output = data_collection.aggregate([
             {
                 "$match": {
                     "projectname": activeprojectname,
-                    "speakerId": active_speaker_id,
+                    # "speakerId": active_speaker_id,
+                    "speakerId": {'$in': active_speaker_id},
                     "audiodeleteFLAG": audio_delete_flag
                 }
             },
@@ -3750,8 +3755,8 @@ def get_n_audios(data_collection,
                     "audioId": 1
                 }
             },
-            # { "$skip" : start_from },
-            # { "$limit" : number_of_audios-start_from },
+            { "$skip" : start_from },
+            { "$limit" : number_of_audios-start_from },
             {
                 "$project": {
                     "_id": 0,
@@ -3767,9 +3772,10 @@ def get_n_audios(data_collection,
             # logger.debug("aggregate_output: %s", pformat(doc))
             if (doc['audioId'] in speaker_audio_ids):
                 doc['Audio File'] = ''
-                doc['Shared With'] = audio_shared_with(activeprojectname,
-                                                    active_speaker_id,
-                                                    doc['audioId'])
+                for sid in active_speaker_id:
+                    doc['Shared With'] = audio_shared_with(activeprojectname,
+                                                        sid,
+                                                        doc['audioId'])
                 if current_username in doc:
                     doc['Transcribed'] = doc.pop(current_username, {}).get(
                         'audioCompleteFLAG', False)
@@ -3778,24 +3784,24 @@ def get_n_audios(data_collection,
                 # logger.debug(len(aggregate_output_list))
 
         # logger.debug('aggregate_output_list: %s', pformat(aggregate_output_list))
-        total_records = len(aggregate_output_list)
-        logger.debug('total_records AUDIO: %s', total_records)
-        # total_records = data_collection.aggregate([
-        #     {
-        #         "$match": {
-        #             "projectname": activeprojectname,
-        #             "speakerId": active_speaker_id,
-        #             "audiodeleteFLAG": audio_delete_flag
-        #         }
-        #     },
-        #     {
-        #         "$count": "total_records"
-        #     }
-        # ])
-        # total_records = list(total_records)[0]['total_records']
+        total_records_aggregate = data_collection.aggregate([
+            {
+                "$match": {
+                    "projectname": activeprojectname,
+                    # "speakerId": active_speaker_id,
+                    "speakerId": {'$in': active_speaker_id},
+                    "audiodeleteFLAG": audio_delete_flag
+                }
+            },
+            {
+                "$count": "total_records"
+            }
+        ])
+        for tr in total_records_aggregate:
+            # logger.debug(tr)
+            if ('total_records' in tr):
+                total_records = tr['total_records']
         # logger.debug('total_records AUDIO: %s', total_records)
-        if (not all_data):
-            aggregate_output_list = aggregate_output_list[start_from:number_of_audios]
     except:
         logger.exception("")
 
@@ -4185,77 +4191,102 @@ def filter_speakers_derived(transcriptions_collection,
                             filtered_speakers_list,
                             used_filter_options,
                             filter_options,
+                            start_from=0,
+                            number_of_audios=10,
                             logical_operator="and"):
     '''Get the audioIds and filename based on prompt filter options.'''
-    # prompt_map = {
-    #     'domain': 'Domain',
-    #     'elicitationmethod': 'Elicitation Method',
-    #     'target': 'Target',
-    #     'Q_Id': 'Q_Id'
-    # }
-    speakers_match = {
-        "projectname": activeprojectname,
-        "audiodeleteFLAG": 0
-    }
-    for key, value in filter_options.items():
-        # if (key in prompt_map):
-        # db_key = "prompt."+prompt_map[key]
-        if (key not in used_filter_options):
-            db_key = "prompt."+key
-            value_list_len = len(value)
-            if (value_list_len != 0):
-                speakers_match[db_key] = {"$in": value}
-    # logger.debug("speakers_match: %s", speakers_match)
-    aggregate_output = []
     aggregate_output_list = []
-    if (len(speakers_match) > 2):
-        aggregate_output = transcriptions_collection.aggregate([
-            {
-                "$match": speakers_match
-            },
-            {
-                "$sort": {
-                    # "speakerId": 1
-                    "audioId": 1
+    total_records = 0
+    try:
+        # prompt_map = {
+        #     'domain': 'Domain',
+        #     'elicitationmethod': 'Elicitation Method',
+        #     'target': 'Target',
+        #     'Q_Id': 'Q_Id'
+        # }
+        # logger.debug(f"start_from: {start_from}\nnumber_of_audios: {number_of_audios}")
+        speakers_match = {
+            "projectname": activeprojectname,
+            "audiodeleteFLAG": 0,
+            # "speakerId": { "$not": { "$eq": '' } }
+        }
+        if (len(filtered_speakers_list) != 0):
+            speakers_match['speakerId'] = {'$in': filtered_speakers_list}
+        else:
+            speakers_match['speakerId'] = { "$not": { "$eq": '' } }
+        for key, value in filter_options.items():
+            # if (key in prompt_map):
+            # db_key = "prompt."+prompt_map[key]
+            if (key not in used_filter_options):
+                db_key = "prompt."+key
+                value_list_len = len(value)
+                if (value_list_len != 0):
+                    speakers_match[db_key] = {"$in": value}
+        # logger.debug("speakers_match: %s", speakers_match)
+        aggregate_output = []
+        # aggregate_output_list = []
+        if (len(speakers_match) > 2):
+            aggregate_output = transcriptions_collection.aggregate([
+                {
+                    "$match": speakers_match
+                },
+                {
+                    "$sort": {
+                        # "speakerId": 1
+                        "audioId": 1
+                    }
+                },
+                { "$skip" : start_from },
+                { "$limit" : number_of_audios-start_from },
+                {
+                    "$project": {
+                        "_id": 0,
+                        "speakerId": 1,
+                        "audioId": 1,
+                        "audioFilename": 1,
+                        # "prompt.Domain": 1,
+                        current_username + '.audioCompleteFLAG': 1
+                    }
                 }
-            },
-            {
-                "$project": {
-                    "_id": 0,
-                    "speakerId": 1,
-                    "audioId": 1,
-                    "audioFilename": 1,
-                    # "prompt.Domain": 1,
-                    current_username + '.audioCompleteFLAG': 1
+            ])
+        for doc in aggregate_output:
+            # logger.debug("aggregate_output: %s", pformat(doc))
+            # if (doc['audioId'] in speaker_audio_ids):
+            speaker = doc["speakerId"]
+            if (isinstance(speaker, str)):
+                speaker = [speaker]
+            if (len(speaker) != 0):
+                # logger.debug("aggregate_output: %s", pformat(doc))
+                # if (len(filtered_speakers_list) != 0 and
+                #     speaker not in filtered_speakers_list):
+                #     continue
+                # logger.debug("prompt.Domain: %s", doc["prompt"]["Domain"])
+                doc['Audio File'] = ''
+                for sid in speaker:
+                    doc['Shared With'] = audio_shared_with(activeprojectname,
+                                                            sid,
+                                                            doc['audioId'])
+                if current_username in doc:
+                    doc['Transcribed'] = doc.pop(current_username, {}).get(
+                        'audioCompleteFLAG', False)
+                del doc["speakerId"]
+                aggregate_output_list.append(doc)
+        total_records_aggregate  = transcriptions_collection.aggregate([
+                {
+                    "$match": speakers_match
+                },
+                {
+                    "$count": "total_records"
                 }
-            }
-        ])
+            ])
+        for tr in total_records_aggregate:
+            # logger.debug(tr)
+            if ('total_records' in tr):
+                total_records = tr['total_records']
+        # logger.debug('total_records AUDIO: %s', total_records)
+    except:
+        logger.exception("")
 
-    # logger.debug("aggregate_output: %s", aggregate_output)
-    aggregate_output_list = []
-    for doc in aggregate_output:
-        # logger.debug("aggregate_output: %s", pformat(doc))
-        # if (doc['audioId'] in speaker_audio_ids):
-        speaker = doc["speakerId"]
-        if (speaker != ''):
-            if (len(filtered_speakers_list) != 0 and
-                speaker not in filtered_speakers_list):
-                continue
-            # logger.debug("prompt.Domain: %s", doc["prompt"]["Domain"])
-            doc['Audio File'] = ''
-            doc['Shared With'] = audio_shared_with(activeprojectname,
-                                                    speaker,
-                                                    doc['audioId'])
-            if current_username in doc:
-                doc['Transcribed'] = doc.pop(current_username, {}).get(
-                    'audioCompleteFLAG', False)
-            del doc["speakerId"]
-            aggregate_output_list.append(doc)
-    # logger.debug('aggregate_output_list: %s', pformat(aggregate_output_list))
-    total_records = len(aggregate_output_list)
-    # logger.debug('total_records AUDIO: %s', total_records)
-    # if (not all_data):
-    #     aggregate_output_list = aggregate_output_list[start_from:number_of_audios]
     return (total_records,
             aggregate_output_list)
     # logger.debug("aggregate_output: %s", aggregate_output)
