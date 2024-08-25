@@ -359,7 +359,7 @@ function eventsMapping() {
     })
     // change audio sorting categories
     $("#audiosortingcategoriesdropdown").change(function () {
-        // console.log(browseActionSelectedOption);
+        // console.log('browseActionSelectedOption');
         updateAudioSortingSubCategoriesDropdown();
     })
     // change audio file count to show
@@ -409,7 +409,6 @@ function eventsMapping() {
         }
         $('#idaudioids').trigger('change');
         // console.log("Multiple audios", multipleAudiosInfo);
-
     });
 
     // delete single audio
@@ -447,21 +446,22 @@ function eventsMapping() {
             audioBrowseAction(audios);
         }
     });
+    playpauseEvent();
     // play single audio
-    $(".playaudioclass").click(function () {
-        let audioInfo = getSingleAudioBrowseAction(this);
-        audioBrowseActionPlay(audioInfo, this);
-    });
-    $(".pauseaudioclass").click(function () {
-        let playingAudioId = this.id;
-        // console.log(playingAudioId);
-        let playingAudioEleId = playingAudioId + "_audioEle";
-        let playingAudioEle = document.getElementById(playingAudioEleId);
-        // console.log(playingAudioEleId, playingAudioEle);
-        playingAudioEle.pause();
-        togglePlayPause(this, 'playaudioclass', 'play');
+    // $(".playaudioclass").click(function () {
+    //     let audioInfo = getSingleAudioBrowseAction(this);
+    //     audioBrowseActionPlay(audioInfo, this);
+    // });
+    // $(".pauseaudioclass").click(function () {
+    //     let playingAudioId = this.id;
+    //     // console.log(playingAudioId);
+    //     let playingAudioEleId = playingAudioId + "_audioEle";
+    //     let playingAudioEle = document.getElementById(playingAudioEleId);
+    //     // console.log(playingAudioEleId, playingAudioEle);
+    //     playingAudioEle.pause();
+    //     togglePlayPause(this, 'playaudioclass', 'play');
 
-    });
+    // });
     $(".shareaudioclass").click(function () {
         let audioInfo = getSingleAudioBrowseAction(this);
         // console.log(audioInfo);
@@ -503,6 +503,24 @@ function eventsMapping() {
         // browseShareMode(["share"]);
         // audioBrowseActionShare(audios);
     });
+    audioFilteringEvent();
+}
+
+function playpauseEvent() {
+    $(".playaudioclass").click(function () {
+        let audioInfo = getSingleAudioBrowseAction(this);
+        audioBrowseActionPlay(audioInfo, this);
+    });
+    $(".pauseaudioclass").click(function () {
+        let playingAudioId = this.id;
+        // console.log(playingAudioId);
+        let playingAudioEleId = playingAudioId + "_audioEle";
+        let playingAudioEle = document.getElementById(playingAudioEleId);
+        // console.log(playingAudioEleId, playingAudioEle);
+        playingAudioEle.pause();
+        togglePlayPause(this, 'playaudioclass', 'play');
+
+    });
 }
 
 function updateAudioSortingSubCategoriesDropdown() {
@@ -518,7 +536,7 @@ function updateAudioSortingSubCategoriesDropdown() {
         type: 'GET',
         url: '/lifedata/transcription/updateaudiosortingsubcategories'
     }).done(function (data) {
-        console.log(data);
+        // console.log(data);
         audioSortingSubCategories = data.audioSortingSubCategories;
         selectedAudioSortingSubCategories = data.selectedAudioSortingSubCategories;
         // console.log(audioSortingSubCategories, selectedAudioSortingSubCategories);
@@ -529,7 +547,7 @@ function updateAudioSortingSubCategoriesDropdown() {
             document.getElementById('audiofilter').style.display = "inline";
             createSelect2optgroup('audiosortingsubcategoriesdropdown', audioSortingSubCategories, selectedAudioSortingSubCategories);
             // audiobrowsefilter.js
-            audioFilteringEvent();
+            // audioFilteringEvent();
         }
         else if (selectedAudioSortingCategories === 'lifespeakerid') {
             let sourceMetadata = data.sourceMetadata;
@@ -589,11 +607,31 @@ function audioBrowseAction(audioInfo) {
 
 function audioBrowseActionPlay(audioInfo, audioCountInfo) {
     // console.log(audioCountInfo);
+    let selectedAudioSortingCategories = document.getElementById("audiosortingcategoriesdropdown").value;
+    // console.log(selectedAudioSortingCategories);
+    let selectedFilterOptions = {};
+    if (selectedAudioSortingCategories === 'sourcemetainfo') {
+        let filterOptions = $('#audiosortingsubcategoriesdropdown').select2('data');
+        // console.log(filterOptions); 
+        for (let i=0; i<filterOptions.length; i++) {
+            let option = filterOptions[i].text;
+            let optGroup = filterOptions[i].element.parentNode.id;
+            // console.log(option, optGroup);
+            if (optGroup in selectedFilterOptions) {
+                selectedFilterOptions[optGroup].push(option);
+            }
+            else {
+                selectedFilterOptions[optGroup] = [option];
+            }
+        }
+    }
     let audioBrowseInfo = getAudioBrowseInfo();
     audioBrowseInfo['pageId'] = activePageNumber;
     let data_1 = {
         audioInfo: audioInfo,
-        audioBrowseInfo: audioBrowseInfo
+        audioBrowseInfo: audioBrowseInfo,
+        selectedAudioSortingCategories: selectedAudioSortingCategories,
+        selectedFilterOptions: selectedFilterOptions,
     }
     $.post("/lifedata/transcription/audiobrowseactionplay", {
         a: JSON.stringify(data_1)
@@ -629,7 +667,7 @@ function audioBrowseActionPlay(audioInfo, audioCountInfo) {
             // let embededAudio = '<audio controls autoplay hidden oncontextmenu="return false" controlslist="nofullscreen nodownload noremoteplayback noplaybackrate">'+
             //                     '<source src="'+audioSource+'" type="audio/wav"></audio>';
             // audioCountInfo.parentNode.innerHTML = togglePlayPause;
-            // eventsMapping();
+            eventsMapping();
         });
 }
 
@@ -772,7 +810,6 @@ function createPagination(totalRecords, active = 1) {
     $("#audiobrowsepagination").html(paginationEle);
 }
 
-
 function changeAudioBrowsePage(pageId) {
     // console.log(pageId);
     let audioBrowseInfo = getAudioBrowseInfo();
@@ -800,6 +837,7 @@ function changeAudioBrowsePage(pageId) {
                 data.shareChecked,
                 data.downloadChecked);
             eventsMapping();
+            playpauseEvent();
             createPagination(data.totalRecords, data.activePage);
         });
     }
@@ -811,12 +849,17 @@ function togglePlayPause(ele, state, icon, audioSource = undefined) {
         // ' Play Audio'+
         '</button>';
     if (audioSource) {
+        // console.log(audioSource);
         let embededAudio = '<audio id="' + ele.id + '_audioEle" onended="audioEnded(this)" controls autoplay hidden oncontextmenu="return false" controlslist="nofullscreen nodownload noremoteplayback noplaybackrate">' +
             '<source src="' + audioSource + '" type="audio/wav"></audio>';
         togglePlayPause += embededAudio;
     }
+    // console.log(audioSource);
     ele.parentNode.innerHTML = togglePlayPause;
+    // console.log(audioSource);
     eventsMapping();
+    playpauseEvent();
+    // console.log(audioSource);
 }
 
 function audioEnded(ele) {

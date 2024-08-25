@@ -105,8 +105,8 @@ def get_model_list(models, languages, featured_authors=[], lang_name='Hindi', ta
     model_list = []
     for lang_code, models in models_of_lang.items():
         lang_name = lang_names.get(lang_code, '')
-        logger.debug(models)
-        logger.debug(model_id_map)
+        # logger.debug(models)
+        # logger.debug(model_id_map)
         for model_id in models:
             current_model_list = {}
             if model_id in model_id_map:
@@ -114,7 +114,7 @@ def get_model_list(models, languages, featured_authors=[], lang_name='Hindi', ta
                 model_name = model_info['modelId']
                 display_model_name = lang_name+'-'+model_name
                 current_model_list['text'] = display_model_name
-                logger.debug('lang_code: %s, model_name: %s', lang_code, model_name)
+                # logger.debug('lang_code: %s, model_name: %s', lang_code, model_name)
                 current_model_list['id'] = lang_code+'##'+model_name
                 # current_model_list[display_model_name] = model_name
                 model_list.append(current_model_list)

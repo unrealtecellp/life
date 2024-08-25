@@ -30,7 +30,7 @@ function audioFilter(pageId=1) {
         }).done(function(data){
         console.log(data.audioDataFields, data.audioData, data.shareMode);
         createAudioBrowseTable(data.audioDataFields, data.audioData, data.shareMode, data.totalRecords, data.shareChecked, data.downloadChecked);
-        eventsMapping();
+        // eventsMapping();
         createPagination(data.totalRecords, data.activePage);
         });
 }

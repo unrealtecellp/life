@@ -4419,6 +4419,7 @@ function updateTokenId(differences, scriptName, allGlossScripts, allTranscriptio
     console.log(differences, scriptName, allGlossScripts, allTranscriptions);
     let localStorageRegions = JSON.parse(localStorage.regions);
     let activeBoundaryID = document.getElementById('activeBoundaryID').value;
+    let boundaryID = activeBoundaryID;
     let existingTokenIdInfo = {};
     let existingGloss = {};
     let currentBoundaryIndex = 0;
@@ -4556,8 +4557,10 @@ function generateTokenId(sentencemorphemicbreakupdatedvalue) {
     let tokenIdObject = {};
     let localStorageRegions = JSON.parse(localStorage.regions);
     let activeBoundaryID = document.getElementById('activeBoundaryID').value;
+    let boundaryID = activeBoundaryID;
     for (let p = 0; p < localStorageRegions.length; p++) {
         // console.log(p);
+        // console.log(localStorageRegions[p]);
         // console.log(localStorageRegions[p]['data']['sentence'][boundaryID])
         if (localStorageRegions[p]['data']['sentence'][boundaryID] &&
             localStorageRegions[p]['boundaryID'] === activeBoundaryID &&
@@ -4666,6 +4669,7 @@ function getGlossTokenIdInfo() {
     let glossTokenIdInfo = {};
     let localStorageRegions = JSON.parse(localStorage.regions);
     let activeBoundaryID = document.getElementById('activeBoundaryID').value;
+    let boundaryID = activeBoundaryID;
     for (let p = 0; p < localStorageRegions.length; p++) {
         // console.log(p);
         if (localStorageRegions[p]['data']['sentence'][boundaryID] &&
