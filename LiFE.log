@@ -480,3 +480,11 @@ Models Database found!
 language Database found!
 [2024-08-22 16:23:24,314] - logger: life - level: INFO - function: generate_models_database - line: 55
 Models Database found!
+[2024-08-25 13:40:19,898] - logger: life - level: INFO - function: generate_languages_database - line: 102
+language Database found!
+[2024-08-25 13:40:19,899] - logger: life - level: INFO - function: generate_models_database - line: 55
+Models Database found!
+[2024-08-25 13:40:22,422] - logger: life - level: INFO - function: generate_languages_database - line: 102
+language Database found!
+[2024-08-25 13:40:22,423] - logger: life - level: INFO - function: generate_models_database - line: 55
+Models Database found!
