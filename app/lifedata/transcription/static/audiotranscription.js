@@ -1966,11 +1966,11 @@ function createSentenceForm(formElement, boundaryID) {
     let activeTag = getActiveTag();
     createNavTabs(activeprojectform, activeTag);
     let anonymize_checked = false;
+    if('anonymize' in formElement) {
+        anonymize_checked = formElement['anonymize'];
+    }
     // console.log("activeprojectform", activeprojectform);
     for (let [key, value] of Object.entries(formElement)) {
-        if (key === 'anonymize') {
-            anonymize_checked = value;
-        }
         // console.log('first', key, value)
         if (key === 'transcription') {
             let transcriptionScriptList = activeprojectform['Transcription'][1];
@@ -2029,7 +2029,6 @@ function createSentenceForm(formElement, boundaryID) {
                     }
                 }
             }
-
             sentSpeakerIdEle += '</select>';
             let anonymize = '';
             if (anonymize_checked) {
@@ -2802,7 +2801,7 @@ function getActiveRegionSentence(region) {
             if ('sentence' in regions[i]['data']) {
                 // console.log("'sentence' in Object.values(regions[i])")
                 sentence = Object.values(regions[i]['data']['sentence'])[0]
-                // console.log('sentence YES getActiveRegionSentence(region)', sentence)    
+                // console.log('sentence YES getActiveRegionSentence(region)', sentence)
             }
             else {
                 // console.log('sentence NOT getActiveRegionSentence(region)', sentence)
