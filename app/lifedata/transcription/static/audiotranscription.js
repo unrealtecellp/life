@@ -29,6 +29,8 @@ lastUpdatedBy(lstUpdatedBy)
 /**
  * Init & load.
  */
+let preservePitch = true;
+const speeds = [0.25, 0.5, 0.75, 1, 1.25, 1.50, 2];
 document.addEventListener('DOMContentLoaded', function () {
     // Init wavesurfer
     wavesurfer = WaveSurfer.create({
@@ -74,8 +76,17 @@ document.addEventListener('DOMContentLoaded', function () {
         ]
     });
     document.querySelector('#slider').oninput = function () {
+        // console.log(Number(this.value));
         wavesurfer.zoom(Number(this.value));
     };
+    // Set the playback rate
+    document.querySelector('#playbackRateSliderdivId').addEventListener('input', (e) => {
+        const speed = speeds[e.target.valueAsNumber];
+        document.querySelector('#rate').textContent = speed.toFixed(2);
+        wavesurfer.setPlaybackRate(speed, preservePitch);
+        // console.log(wavesurfer.getPlaybackRate());
+        // wavesurfer.play()
+    })
 
     // wavesurfer.load(filePath);
     if (audiowaveformData === '') {

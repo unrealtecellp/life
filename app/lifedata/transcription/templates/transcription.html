@@ -63,12 +63,14 @@
         <span class="nextaudio glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
       </button>
       <!-- &nbsp; -->
-      <button class="btn btn-warning" id="save" data-toggle="tooltip" title="Save Transcriptions">
-        <span class="saveaudio glyphicon glyphicon-floppy-open" aria-hidden="true"></span>
-      </button>
-      <button class="btn btn-danger" id="toggleComplete" data-toggle="tooltip" title="Toggle Complete">
-        <span class="togglecompleteclass glyphicon glyphicon-ok" aria-hidden="true"></span>
-      </button>
+      {% if shareinfo['sharemode']|int >= 2 %}
+        <button class="btn btn-warning" id="save" data-toggle="tooltip" title="Save Transcriptions">
+          <span class="saveaudio glyphicon glyphicon-floppy-open" aria-hidden="true"></span>
+        </button>
+        <button class="btn btn-danger" id="toggleComplete" data-toggle="tooltip" title="Toggle Complete">
+          <span class="togglecompleteclass glyphicon glyphicon-ok" aria-hidden="true"></span>
+        </button>
+      {% endif %}
       <!-- &nbsp;&nbsp; -->
     </div>
     <div class="col-sm-2 pull-right">
@@ -86,28 +88,6 @@
     
     <span class="pull-right" style="font-size:30px; position:absolute; right:10px;cursor:pointer" onclick="openNav()"><i class="glyphicon glyphicon-menu-hamburger"></i></span>
     <div id="sidepanel"></div>
-    <!-- <div class="col-sm-7 pull-right">
-      <button type="button" id="progressreport" class="btn btn-lg btn-danger" data-toggle="modal"
-        data-target="#myProgressReportModal">
-          Progress Report
-      </button>
-      {% if 'downloadchecked' in shareinfo and shareinfo['downloadchecked'] == 'true' %}
-        <button type="button" id="downloadtranscription" class="btn btn-lg btn-warning" data-toggle="modal"
-          data-target="#myDownloadTranscriptionModal">
-            Download
-        </button>
-      {% endif %}
-      {% if shareinfo['sharemode']|int >= 3 %}
-        <button type="button" id="addnewspeakertranscriptionid" class="btn btn-lg btn-info addnewspeaker"
-          data-toggle="modal" data-target="#addNewSpeakerModal">
-            Add New Source
-        </button>
-        <button type="button" id="uploadaudioid" class="btn btn-lg btn-primary uploadaudio" data-toggle="modal"
-          data-target="#myUploadAudioModal">
-            Upload Audio
-        </button>
-      {% endif %}
-    </div> -->
   </div>
   <hr>
   <div class="row" id="audiometadata" style="display: none;">
@@ -141,17 +121,6 @@
       <div class="col-md-6">
         <label for="speakeridsdropdown">Audio Source: </label>
         <select id="speakeridsdropdown" style="width: 100%;"></select>
-        <!-- {% if speakerids is defined %}
-          <label for="speakeridsdropdown">Audio Source: </label>
-          <select class="custom-select custom-select-sm" id="speakeridsdropdown" style="width: 50%;">
-            <option selected disabled>{{ activespeakerid }}</option>
-            {% for d in speakerids %}
-              {% if d != activespeakerid %}
-                <option value="{{ d }}">{{ d }}</option>
-              {% endif %}
-            {% endfor %}
-          </select>
-        {% endif %} -->
       </div>
       {% if ('sharelatestchecked' not in shareinfo) or ('sharelatestchecked' in shareinfo and shareinfo['sharelatestchecked']
       == 'true') %}
@@ -197,7 +166,7 @@
   <!-- <p id="regioninfo" class="text-danger">&nbsp;</p> -->
   <br>
   <div class="row">    
-    <div class=" col-sm-5">
+    <div class=" col-sm-4">
       AUDIO:<br>
       <button class="btn btn-danger" type="button" id="stopAudio" title="Stop Audio">
         <span class="audiostop glyphicon glyphicon-stop" aria-hidden="true"></span>
@@ -205,33 +174,37 @@
       <button class="btn btn-primary" type="button" id="playPauseAudio" title="Play/Pause Audio">
         <span class="audioplaypause glyphicon glyphicon-play" aria-hidden="true"></span>
       </button>
-      <button type="button" id="myAutomationButton" class="btn btn-dark automation" data-toggle="modal"
-        data-target="#myAutomationModal" title="Use Automation">
-        <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
-      </button>
-      <button type="button" id="editAudioSettingsButton" class="btn btn-dark btn-info editaudiosettings" data-toggle="modal"
-        data-target="#editAudioSettingsModal" title="Edit Settings">
-        <!-- <span class="glyphicon glyphicon-user" aria-hidden="true"></span> -->
-        <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
-      </button>
-      <button type="button" id="syncTranscriptsAllModalButton" class="btn btn-success" data-toggle="modal" data-target="#syncTranscriptsAllModal" title="Sync Transcription">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-repeat"
-          viewBox="0 0 16 16">
-          <path
-            d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41m-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9" />
-          <path fill-rule="evenodd"
-            d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5 5 0 0 0 8 3M3.1 9a5.002 5.002 0 0 0 8.757 2.182.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9z" />
-        </svg>
-      </button>
+      {% if shareinfo['sharemode']|int >= 2 %}
+        <button type="button" id="myAutomationButton" class="btn btn-dark automation" data-toggle="modal"
+          data-target="#myAutomationModal" title="Use Automation">
+          <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
+        </button>
+        <button type="button" id="editAudioSettingsButton" class="btn btn-dark btn-info editaudiosettings" data-toggle="modal"
+          data-target="#editAudioSettingsModal" title="Edit Settings">
+          <!-- <span class="glyphicon glyphicon-user" aria-hidden="true"></span> -->
+          <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+        </button>
+        <button type="button" id="syncTranscriptsAllModalButton" class="btn btn-success" data-toggle="modal" data-target="#syncTranscriptsAllModal" title="Sync Transcription">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-repeat"
+            viewBox="0 0 16 16">
+            <path
+              d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41m-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9" />
+            <path fill-rule="evenodd"
+              d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5 5 0 0 0 8 3M3.1 9a5.002 5.002 0 0 0 8.757 2.182.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9z" />
+          </svg>
+        </button>
+      {% endif %}
     </div>
-    <div class=" col-sm-5">
+    <div class=" col-sm-4">
       BOUNDARIES:<br>
-      <button type="button" class="btn btn-danger" data-action="delete-region-all" title="Delete all boundaries">
-        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
-      </button>
-      <button type="button" class="btn btn-warning" data-action="delete-region" title="Delete Boundary">
-        <span class="glyphicon glyphicon-minus" aria-hidden="true"></span>
-      </button>
+      {% if shareinfo['sharemode']|int >= 2 %}
+        <button type="button" class="btn btn-danger" data-action="delete-region-all" title="Delete all boundaries">
+          <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+        </button>
+        <button type="button" class="btn btn-warning" data-action="delete-region" title="Delete Boundary">
+          <span class="glyphicon glyphicon-minus" aria-hidden="true"></span>
+        </button>
+      {% endif %}
       <button class="btn btn-primary" type="button" id="playPauseBoundary" title="Play/Pause boundary audio from cursor position">
         <span class="audioplaypauseboundary glyphicon glyphicon-play" aria-hidden="true"></span>
       </button>
@@ -239,10 +212,12 @@
                 <span class="glyphicon glyphicon-repeat" aria-hidden="true"></span>
                 <span class="audioplaypauseboundarystart glyphicon glyphicon-play" aria-hidden="true"></span>
       </button>
-      <button type="button" id="myMakeBoundaryModalButton" class="btn btn-success makeboundary" data-toggle="modal"
-        data-target="#myMakeBoundaryModal" title="Make Boundaries">
-        <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
-      </button>
+      {% if shareinfo['sharemode']|int >= 2 %}
+        <button type="button" id="myMakeBoundaryModalButton" class="btn btn-success makeboundary" data-toggle="modal"
+          data-target="#myMakeBoundaryModal" title="Make Boundaries">
+          <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+        </button>
+      {% endif %}
       <!-- <button class="btn btn-info" type="button" id="drawBoundary">
         Draw Boundaries
       </button> -->
@@ -251,6 +226,7 @@
 
       <!-- <input id="slider" data-action="zoom" type="range" min="0" max="5000" value="0" style="width: 90%"> -->
     </div>
+    <div class="col-sm-2 pull-right" id="playbackRateSliderdivId"></div>
   </div>
   <div id="loader" style="display:none;"></div>
   <p id="regioninfo" class="text-danger">&nbsp;</p>
