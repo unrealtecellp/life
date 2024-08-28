@@ -1,0 +1,14 @@
+#myTablediv {
+    height: calc(100vh - 38vh);
+    overflow-y:scroll;
+    overflow-x:auto;
+}
+#myTablediv th {
+    cursor: pointer;
+}
+
+th {
+    background: rgb(255, 255, 255);
+    position: sticky;
+    top: 0;
+  }

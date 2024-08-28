@@ -16,7 +16,6 @@
         Project Name : {{ projectName }}
     </h4>
 {% endif %}
-<br>
 <div class="row">
     <div class="col col-md-8">
         <!-- <label for="speakeridsdropdown">Source:</label> -->
@@ -38,6 +37,7 @@
 </div>
 <br>
 <div id="loader" style="display:none;"></div>
+<div id="audiobrowsetableinfo"></div>
 <div id="audiobrowsetable"></div>
 <div class="text-center" id="audiobrowsepagination"></div>
 
@@ -53,11 +53,11 @@
 {{super()}}
     <script src="{{url_for('static', filename='downloader/transcriptiondownload.js')}}"></script>
     <script src="{{url_for('static', filename='speaker_select2_dropdown.js')}}"></script>
+    <script src="{{url_for('.static', filename='search.js')}}"></script>
     <script src="{{url_for('.static', filename='audiobrowsefilter.js')}}"></script>
     <script src="{{url_for('.static', filename='audiobrowse.js')}}"></script>
     <script src="{{url_for('.static', filename='changeactivespeaker.js')}}"></script>
     <script type="text/javascript">createAudioBrowse({{ newData | tojson | safe }});</script>
-    <script src="{{url_for('.static', filename='search.js')}}"></script>
     <script src="{{url_for('.static', filename='sorttable.js')}}"></script>
     <script src="{{url_for('static', filename='browsesharemodal.js')}}"></script>
     <script src="{{url_for('static', filename='browseshare.js')}}"></script>

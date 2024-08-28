@@ -3778,7 +3778,7 @@ def get_n_audios(data_collection,
                 if (isinstance(sids, str)):
                     sids = [sids]
                 for sid in sids:
-                    logger.debug(sid)
+                    # logger.debug(sid)
                     doc['Shared With'] = audio_shared_with(activeprojectname,
                                                             sid,
                                                             doc['audioId'])
