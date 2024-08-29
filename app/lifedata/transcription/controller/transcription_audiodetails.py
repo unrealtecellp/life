@@ -4018,14 +4018,6 @@ def get_audio_sorting_subcategories_derived(transcriptions_collection,
                                             audio_sorting_sub_categories
                                             ):
     # logger.debug("speakerids: %s", pformat(speakerids))
-    # selected_audio_sorting_subcategory = {
-    #     "agegroup": "Age Group",
-    #     "gender": "Gender",
-    #     "educationlevel": "Education Level",
-    #     "educationmediumupto12": "Education Medium Upto 12",
-    #     "educationmediumafter12": "Education Medium After 12",
-    #     "speakerspeaklanguage": "Speaker Speak Language"
-    # }
     aggregate_output = transcriptions_collection.aggregate([
         {
             "$match": {

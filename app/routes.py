@@ -5549,8 +5549,7 @@ def register():
 
 def dummyUserandProject():
     """ Creates dummy user and project if the database has no collection """
-    logger.debug(
-        "Creates dummy user and project if the database has no collection")
+    # logger.debug("Creates dummy user and project if the database has no collection")
     # collection of users and their projectlist and active project
     userprojects = mongo.db.userprojects
     projects = mongo.db.projects

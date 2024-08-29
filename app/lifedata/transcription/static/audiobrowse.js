@@ -862,7 +862,7 @@ function playPauseEvent() {
 
 function togglePlayPause(ele, state, icon, audioSource=undefined) {
     // console.log(ele, state, icon, audioSource);
-    let toggle_play_pause = '<button type="button" id="' + ele.id + '" class="btn btn-primary ' + state + '">' +
+    let toggle_play_pause = '<button type="button" id="' + ele.id + '" class="btn btn-sm btn-primary ' + state + '">' +
         '<span class="glyphicon glyphicon-' + icon + '" aria-hidden="true"></span>' +
         // ' Play Audio'+
         '</button>';
