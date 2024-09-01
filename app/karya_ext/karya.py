@@ -1375,7 +1375,7 @@ def fetch_karya_audio():
 
         fileid_sentence_map = karya_api_access.get_fileid_sentence_mapping(fileID_list, workerId_list, sentence_list, karya_audio_report)
         logger.debug("fileid_sentence_map: %s", fileid_sentence_map)
-        print("fileid_sentence_map", fileid_sentence_map)
+        # print("fileid_sentence_map", fileid_sentence_map)
 
         #Output fileid_sentence_map sample  from server
         # {('281474976758604', 'In which months / seasons are these vegetables grown?'): ('16784394',), ('281474976758605', 'What is the process of growing these vegetables?'): ('16784394',)}
@@ -1393,9 +1393,12 @@ def fetch_karya_audio():
         # print(matched_unmathched_fetched_sentences)  
 
         matched, unmatched, already_fetched = matched_unmathched_fetched_sentences
-        print("Matched Sentences:", matched)
-        print("Unmatched Sentences:", unmatched)
-        print("Already Fetched Sentences:", already_fetched)
+        # print("Matched Sentences:", matched)
+        # print("Unmatched Sentences:", unmatched)
+        # print("Already Fetched Sentences:", already_fetched)
+        logger.debug("Matched Sentences: %s", matched)
+        logger.debug("Unmatched Sentences: %s", unmatched)
+        logger.debug("Already Fetched Sentences: %s", already_fetched)
 
 
         #############################################################################################
