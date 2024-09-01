@@ -61,7 +61,7 @@ def get_all_karya_assignments(verifyPh_request, assignment_url):
     hederr = {'karya-id-token': getTokenid_assignment_hedder}
     assignment_request = requests.get(url=assignment_url, headers=hederr)
     r_j = assignment_request.json()
-    # print(r_j)
+    
     return r_j, hederr
 
 
@@ -234,23 +234,33 @@ def get_assignment_metadata(
 def get_fileid_sentence_mapping(
     fileID_list, workerId_list, sentence_list, karya_audio_report
 ):
+    """
+    Function to create a mapping between file IDs, sentences, and worker IDs,
+    with optional inclusion of audio report data.
+    """
+
+    # Check if karya_audio_report is empty
     if len(karya_audio_report) == 0:
+        # Create a list of tuples pairing file IDs with sentences
         fileID_sentence_list = tuple(zip(fileID_list, sentence_list))
-        # print("line 859 ", fileID_sentence_list)
-
-        # put check condiotn -> if the speakerId and fileID  previouls fetched or not / Fetch on the basis of fileID assign to speakerID
+        
+        # Merge file ID-sentence pairs with worker IDs into a dictionary
+        # Each key is a (fileID, sentence) pair, and the value is the corresponding worker ID
         audio_speaker_merge = {key: (value,) for key, value in zip(
-            fileID_sentence_list, workerId_list)}  # speakerID = fileID_list(fieldID)
+            fileID_sentence_list, workerId_list)}
     else:
-        fileID_sentence_list = tuple(
-            zip(fileID_list, sentence_list))
+        # Create a list of tuples pairing file IDs with sentences
+        fileID_sentence_list = tuple(zip(fileID_list, sentence_list))
 
-        worderId_report_list = tuple(
-            zip(workerId_list, karya_audio_report))
+        # Create a list of tuples pairing worker IDs with audio report data
+        workerId_report_list = tuple(zip(workerId_list, karya_audio_report))
 
+        # Merge file ID-sentence pairs with worker ID-audio report pairs into a dictionary
+        # Each key is a (fileID, sentence) pair, and the value is the corresponding (worker ID, audio report) tuple
         audio_speaker_merge = {key: value for key, value in zip(
-            fileID_sentence_list, worderId_report_list)}  # speakerID = fileID_list(fieldID)
+            fileID_sentence_list, workerId_report_list)}
 
+    # Return the resulting dictionary
     return audio_speaker_merge
 
 
@@ -276,7 +286,7 @@ def get_audio_file_from_karya(current_file_id, hederr):
             new_audio_file = {}
             new_audio_file['audiofile'] = FileStorage(
                 io.BytesIO(content), filename=fileAudio.getnames()[0])
-            print(new_audio_file['audiofile'])
+            # print(new_audio_file['audiofile'])
 
     return new_audio_file
 

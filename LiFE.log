@@ -488,3 +488,207 @@ Models Database found!
 language Database found!
 [2024-08-25 13:40:22,423] - logger: life - level: INFO - function: generate_models_database - line: 55
 Models Database found!
+[2024-08-26 11:05:38,037] - logger: life - level: INFO - function: generate_languages_database - line: 102
+language Database found!
+[2024-08-26 11:05:38,039] - logger: life - level: INFO - function: generate_models_database - line: 55
+Models Database found!
+[2024-08-26 11:05:41,144] - logger: life - level: INFO - function: generate_languages_database - line: 102
+language Database found!
+[2024-08-26 11:05:41,145] - logger: life - level: INFO - function: generate_models_database - line: 55
+Models Database found!
+[2024-08-27 11:05:28,006] - logger: life - level: INFO - function: generate_languages_database - line: 102
+language Database found!
+[2024-08-27 11:05:28,007] - logger: life - level: INFO - function: generate_models_database - line: 55
+Models Database found!
+[2024-08-27 11:05:30,035] - logger: life - level: INFO - function: generate_languages_database - line: 102
+language Database found!
+[2024-08-27 11:05:30,037] - logger: life - level: INFO - function: generate_models_database - line: 55
+Models Database found!
+[2024-08-27 12:42:48,741] - logger: life - level: INFO - function: generate_languages_database - line: 102
+language Database found!
+[2024-08-27 12:42:48,742] - logger: life - level: INFO - function: generate_models_database - line: 55
+Models Database found!
+[2024-08-27 12:42:51,736] - logger: life - level: INFO - function: generate_languages_database - line: 102
+language Database found!
+[2024-08-27 12:42:51,746] - logger: life - level: INFO - function: generate_models_database - line: 55
+Models Database found!
+[2024-08-27 17:41:55,017] - logger: life - level: INFO - function: generate_languages_database - line: 102
+language Database found!
+[2024-08-27 17:41:55,019] - logger: life - level: INFO - function: generate_models_database - line: 55
+Models Database found!
+[2024-08-27 17:41:57,266] - logger: life - level: INFO - function: generate_languages_database - line: 102
+language Database found!
+[2024-08-27 17:41:57,266] - logger: life - level: INFO - function: generate_models_database - line: 55
+Models Database found!
+[2024-08-28 00:05:35,211] - logger: life - level: INFO - function: generate_languages_database - line: 102
+language Database found!
+[2024-08-28 00:05:35,212] - logger: life - level: INFO - function: generate_models_database - line: 55
+Models Database found!
+[2024-08-28 00:05:41,958] - logger: life - level: INFO - function: generate_languages_database - line: 102
+language Database found!
+[2024-08-28 00:05:41,959] - logger: life - level: INFO - function: generate_models_database - line: 55
+Models Database found!
+[2024-08-28 10:44:58,023] - logger: life - level: INFO - function: generate_languages_database - line: 102
+language Database found!
+[2024-08-28 10:44:58,025] - logger: life - level: INFO - function: generate_models_database - line: 55
+Models Database found!
+[2024-08-28 10:45:03,241] - logger: life - level: INFO - function: generate_languages_database - line: 102
+language Database found!
+[2024-08-28 10:45:03,241] - logger: life - level: INFO - function: generate_models_database - line: 55
+Models Database found!
+[2024-08-28 10:49:51,197] - logger: life - level: INFO - function: generate_languages_database - line: 102
+language Database found!
+[2024-08-28 10:49:51,198] - logger: life - level: INFO - function: generate_models_database - line: 55
+Models Database found!
+[2024-08-28 10:49:53,600] - logger: life - level: INFO - function: generate_languages_database - line: 102
+language Database found!
+[2024-08-28 10:49:53,600] - logger: life - level: INFO - function: generate_models_database - line: 55
+Models Database found!
+[2024-08-29 19:33:35,806] - logger: life - level: INFO - function: generate_languages_database - line: 102
+language Database found!
+[2024-08-29 19:33:35,808] - logger: life - level: INFO - function: generate_models_database - line: 55
+Models Database found!
+[2024-08-29 19:33:38,325] - logger: life - level: INFO - function: generate_languages_database - line: 102
+language Database found!
+[2024-08-29 19:33:38,325] - logger: life - level: INFO - function: generate_models_database - line: 55
+Models Database found!
+[2024-08-31 20:40:00,374] - logger: life - level: INFO - function: generate_languages_database - line: 102
+language Database found!
+[2024-08-31 20:40:00,375] - logger: life - level: INFO - function: generate_models_database - line: 55
+Models Database found!
+[2024-08-31 20:40:00,819] - logger: life - level: INFO - function: generate_languages_database - line: 102
+language Database found!
+[2024-08-31 20:40:00,820] - logger: life - level: INFO - function: generate_models_database - line: 55
+Models Database found!
+[2024-08-31 20:40:04,437] - logger: life - level: INFO - function: generate_languages_database - line: 102
+language Database found!
+[2024-08-31 20:40:04,438] - logger: life - level: INFO - function: generate_models_database - line: 55
+Models Database found!
+[2024-09-01 12:34:12,032] - logger: life - level: INFO - function: getaudiofromprompttext - line: 1736
+Fetching project form data...
+[2024-09-01 12:34:12,035] - logger: life - level: INFO - function: getaudiofromprompttext - line: 1740
+Extracting language script...
+[2024-09-01 12:34:12,035] - logger: life - level: INFO - function: getaudiofromprompttext - line: 1743
+Fetching all audio entries...
+[2024-09-01 12:34:12,036] - logger: life - level: INFO - function: getaudiofromprompttext - line: 1747
+Name of the collection: Collection(Database(MongoClient(host=['localhost:27017'], document_class=dict, tz_aware=False, connect=False), 'lifedb'), 'transcriptions')
+[2024-09-01 14:06:29,471] - logger: life - level: INFO - function: generate_languages_database - line: 102
+language Database found!
+[2024-09-01 14:06:29,472] - logger: life - level: INFO - function: generate_models_database - line: 55
+Models Database found!
+[2024-09-01 14:06:32,246] - logger: life - level: INFO - function: generate_languages_database - line: 102
+language Database found!
+[2024-09-01 14:06:32,257] - logger: life - level: INFO - function: generate_models_database - line: 55
+Models Database found!
+[2024-09-01 14:21:18,197] - logger: life - level: INFO - function: getaudiofromprompttext - line: 1736
+Fetching project form data...
+[2024-09-01 14:21:18,198] - logger: life - level: INFO - function: getaudiofromprompttext - line: 1740
+Extracting language script...
+[2024-09-01 14:21:18,198] - logger: life - level: INFO - function: getaudiofromprompttext - line: 1743
+Fetching all audio entries...
+[2024-09-01 14:21:18,198] - logger: life - level: INFO - function: getaudiofromprompttext - line: 1747
+Name of the collection: Collection(Database(MongoClient(host=['localhost:27017'], document_class=dict, tz_aware=False, connect=False), 'lifedb'), 'transcriptions')
+[2024-09-01 14:35:32,718] - logger: life - level: INFO - function: getaudiofromprompttext - line: 1736
+Fetching project form data...
+[2024-09-01 14:35:32,720] - logger: life - level: INFO - function: getaudiofromprompttext - line: 1740
+Extracting language script...
+[2024-09-01 14:35:32,720] - logger: life - level: INFO - function: getaudiofromprompttext - line: 1743
+Fetching all audio entries...
+[2024-09-01 14:35:32,720] - logger: life - level: INFO - function: getaudiofromprompttext - line: 1747
+Name of the collection: Collection(Database(MongoClient(host=['localhost:27017'], document_class=dict, tz_aware=False, connect=False), 'lifedb'), 'transcriptions')
+[2024-09-01 14:40:46,362] - logger: life - level: INFO - function: getaudiofromprompttext - line: 1736
+Fetching project form data...
+[2024-09-01 14:40:46,365] - logger: life - level: INFO - function: getaudiofromprompttext - line: 1741
+Extracting language script...
+[2024-09-01 14:40:46,365] - logger: life - level: INFO - function: getaudiofromprompttext - line: 1745
+Fetching all audio entries...
+[2024-09-01 14:40:46,408] - logger: life - level: INFO - function: getaudiofromprompttext - line: 1749
+Name of the collection: Collection(Database(MongoClient(host=['localhost:27017'], document_class=dict, tz_aware=False, connect=False), 'lifedb'), 'transcriptions')
+[2024-09-01 14:44:48,374] - logger: life - level: INFO - function: getaudiofromprompttext - line: 1736
+Fetching project form data...
+[2024-09-01 14:44:48,375] - logger: life - level: INFO - function: getaudiofromprompttext - line: 1741
+Extracting language script...
+[2024-09-01 14:44:48,376] - logger: life - level: INFO - function: getaudiofromprompttext - line: 1745
+Fetching all audio entries...
+[2024-09-01 14:44:48,416] - logger: life - level: INFO - function: getaudiofromprompttext - line: 1749
+Name of the collection: Collection(Database(MongoClient(host=['localhost:27017'], document_class=dict, tz_aware=False, connect=False), 'lifedb'), 'transcriptions')
+[2024-09-01 14:44:49,039] - logger: life - level: INFO - function: getaudiofromprompttext - line: 1736
+Fetching project form data...
+[2024-09-01 14:44:49,040] - logger: life - level: INFO - function: getaudiofromprompttext - line: 1741
+Extracting language script...
+[2024-09-01 14:44:49,040] - logger: life - level: INFO - function: getaudiofromprompttext - line: 1745
+Fetching all audio entries...
+[2024-09-01 14:44:49,069] - logger: life - level: INFO - function: getaudiofromprompttext - line: 1749
+Name of the collection: Collection(Database(MongoClient(host=['localhost:27017'], document_class=dict, tz_aware=False, connect=False), 'lifedb'), 'transcriptions')
+[2024-09-01 14:50:01,569] - logger: life - level: INFO - function: getaudiofromprompttext - line: 1735
+Fetching project form data...
+[2024-09-01 14:50:01,571] - logger: life - level: INFO - function: getaudiofromprompttext - line: 1739
+Extracting language script...
+[2024-09-01 14:50:01,571] - logger: life - level: INFO - function: getaudiofromprompttext - line: 1742
+Fetching all audio entries...
+[2024-09-01 14:50:01,622] - logger: life - level: INFO - function: getaudiofromprompttext - line: 1746
+Name of the collection: Collection(Database(MongoClient(host=['localhost:27017'], document_class=dict, tz_aware=False, connect=False), 'lifedb'), 'transcriptions')
+[2024-09-01 14:50:02,295] - logger: life - level: INFO - function: getaudiofromprompttext - line: 1735
+Fetching project form data...
+[2024-09-01 14:50:02,296] - logger: life - level: INFO - function: getaudiofromprompttext - line: 1739
+Extracting language script...
+[2024-09-01 14:50:02,296] - logger: life - level: INFO - function: getaudiofromprompttext - line: 1742
+Fetching all audio entries...
+[2024-09-01 14:50:02,346] - logger: life - level: INFO - function: getaudiofromprompttext - line: 1746
+Name of the collection: Collection(Database(MongoClient(host=['localhost:27017'], document_class=dict, tz_aware=False, connect=False), 'lifedb'), 'transcriptions')
+[2024-09-01 14:53:19,480] - logger: life - level: INFO - function: getaudiofromprompttext - line: 1735
+Fetching project form data...
+[2024-09-01 14:53:19,481] - logger: life - level: INFO - function: getaudiofromprompttext - line: 1739
+Extracting language script...
+[2024-09-01 14:53:19,481] - logger: life - level: INFO - function: getaudiofromprompttext - line: 1742
+Fetching all audio entries...
+[2024-09-01 14:53:19,519] - logger: life - level: INFO - function: getaudiofromprompttext - line: 1746
+Name of the collection: Collection(Database(MongoClient(host=['localhost:27017'], document_class=dict, tz_aware=False, connect=False), 'lifedb'), 'transcriptions')
+[2024-09-01 14:53:20,135] - logger: life - level: INFO - function: getaudiofromprompttext - line: 1735
+Fetching project form data...
+[2024-09-01 14:53:20,136] - logger: life - level: INFO - function: getaudiofromprompttext - line: 1739
+Extracting language script...
+[2024-09-01 14:53:20,136] - logger: life - level: INFO - function: getaudiofromprompttext - line: 1742
+Fetching all audio entries...
+[2024-09-01 14:53:20,161] - logger: life - level: INFO - function: getaudiofromprompttext - line: 1746
+Name of the collection: Collection(Database(MongoClient(host=['localhost:27017'], document_class=dict, tz_aware=False, connect=False), 'lifedb'), 'transcriptions')
+[2024-09-01 14:58:02,371] - logger: life - level: INFO - function: getaudiofromprompttext - line: 1734
+Fetching project form data...
+[2024-09-01 14:58:02,374] - logger: life - level: INFO - function: getaudiofromprompttext - line: 1738
+Extracting language script...
+[2024-09-01 14:58:02,374] - logger: life - level: INFO - function: getaudiofromprompttext - line: 1741
+Fetching all audio entries...
+[2024-09-01 14:58:02,416] - logger: life - level: INFO - function: getaudiofromprompttext - line: 1744
+Name of the collection: Collection(Database(MongoClient(host=['localhost:27017'], document_class=dict, tz_aware=False, connect=False), 'lifedb'), 'transcriptions')
+[2024-09-01 14:58:03,017] - logger: life - level: INFO - function: getaudiofromprompttext - line: 1734
+Fetching project form data...
+[2024-09-01 14:58:03,018] - logger: life - level: INFO - function: getaudiofromprompttext - line: 1738
+Extracting language script...
+[2024-09-01 14:58:03,018] - logger: life - level: INFO - function: getaudiofromprompttext - line: 1741
+Fetching all audio entries...
+[2024-09-01 14:58:03,042] - logger: life - level: INFO - function: getaudiofromprompttext - line: 1744
+Name of the collection: Collection(Database(MongoClient(host=['localhost:27017'], document_class=dict, tz_aware=False, connect=False), 'lifedb'), 'transcriptions')
+[2024-09-01 15:20:06,095] - logger: life - level: INFO - function: getaudiofromprompttext - line: 1736
+Fetching project form data...
+[2024-09-01 15:20:06,106] - logger: life - level: INFO - function: getaudiofromprompttext - line: 1740
+Extracting language script...
+[2024-09-01 15:20:06,106] - logger: life - level: INFO - function: getaudiofromprompttext - line: 1743
+Fetching all audio entries...
+[2024-09-01 15:20:06,138] - logger: life - level: INFO - function: getaudiofromprompttext - line: 1745
+Total audio entries fetched: 713
+[2024-09-01 15:20:06,776] - logger: life - level: INFO - function: getaudiofromprompttext - line: 1736
+Fetching project form data...
+[2024-09-01 15:20:06,778] - logger: life - level: INFO - function: getaudiofromprompttext - line: 1740
+Extracting language script...
+[2024-09-01 15:20:06,778] - logger: life - level: INFO - function: getaudiofromprompttext - line: 1743
+Fetching all audio entries...
+[2024-09-01 15:20:06,807] - logger: life - level: INFO - function: getaudiofromprompttext - line: 1745
+Total audio entries fetched: 714
+[2024-09-02 01:02:49,131] - logger: life - level: INFO - function: generate_languages_database - line: 102
+language Database found!
+[2024-09-02 01:02:49,134] - logger: life - level: INFO - function: generate_models_database - line: 55
+Models Database found!
+[2024-09-02 01:03:03,012] - logger: life - level: INFO - function: generate_languages_database - line: 102
+language Database found!
+[2024-09-02 01:03:03,013] - logger: life - level: INFO - function: generate_models_database - line: 55
+Models Database found!

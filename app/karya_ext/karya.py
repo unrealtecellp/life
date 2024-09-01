@@ -1300,40 +1300,6 @@ def fetch_karya_audio():
                 print("the project type is ", project_type, "and",
                       access_code_task, "and", "verified url")
 
-
-
-                  
-
-        # if project_type == 'validation' and access_code_task == "newVerification":
-        #     assignment_url = 'https://karyanltmbox.centralindia.cloudapp.azure.com/assignments?type=new&from=2021-05-11T07:23:40.654Z'
-        #     print("the project type is ", project_type,
-        #           "and", access_code_task, "and", " New url")
-
-        # elif project_type == 'validation' and access_code_task == "completedVerification":
-        #     assignment_url = 'https://karyanltmbox.centralindia.cloudapp.azure.com/assignments?type=verified&includemt=true&from=2021-05-11T07:23:40.654Z'
-        #     print("the project type is ", project_type, "and",
-        #           access_code_task, "and", "verified url")
-
-        # elif project_type == 'transcriptions' and access_code_task == "newTranscription":
-        #     assignment_url = 'https://karyanltmbox.centralindia.cloudapp.azure.com/assignments?type=new&from=2021-05-11T07:23:40.654Z'
-        #     print("the project type is ", project_type,
-        #           "and", access_code_task, "and", "New url")
-
-        # elif project_type == 'transcriptions' and access_code_task == "completedVerification":
-        #     assignment_url = 'https://karyanltmbox.centralindia.cloudapp.azure.com/assignments?type=verified&includemt=true&from=2021-05-11T07:23:40.654Z'
-        #     print("the project type is ", project_type, "and",
-        #           access_code_task, "and", "verified url")
-
-        # elif project_type == 'transcriptions' and access_code_task == "completedRecordings":
-        #     assignment_url = 'https://karyanltmbox.centralindia.cloudapp.azure.com/assignments?type=verified&includemt=true&from=2021-05-11T07:23:40.654Z'
-        #     print("the project type is ", project_type, "and",
-        #           access_code_task, "and", "verified url")
-
-        # elif project_type == 'recordings' and access_code_task == "completedRecordings":
-        #     assignment_url = 'https://karyanltmbox.centralindia.cloudapp.azure.com/assignments?type=verified&includemt=true&from=2021-05-11T07:23:40.654Z'
-        #     print("the project type is ", project_type, "and",
-        #           access_code_task, "and", "verified url")
-
         else:
             flash(
                 "This action is not allowed in this project. Please fetch the recording in a new/other project.")
@@ -1398,12 +1364,42 @@ def fetch_karya_audio():
                 r_j, for_worker_id
             )
 
-        fileid_sentence_map = karya_api_access.get_fileid_sentence_mapping(
-            fileID_list, workerId_list, sentence_list, karya_audio_report
-        )
-        logger.debug("fileid_sentence_map: %s", fileid_sentence_map)
-        #############################################################################################
+        
+        # Get the file ID to sentence mapping using the get_fileid_sentence_mapping function from the api assignment 
+        # The fileid_sentence_map is a dictionary that returns:
+        # - If karya_audio_report is empty:
+        #   A dictionary where each key is a tuple of (fileID, sentence), and each value is the corresponding worker ID.
+        # - If karya_audio_report is not empty:
+        #   A dictionary where each key is a tuple of (fileID, sentence), and each value is a tuple of (worker ID, audio report).
 
+
+        fileid_sentence_map = karya_api_access.get_fileid_sentence_mapping(fileID_list, workerId_list, sentence_list, karya_audio_report)
+        logger.debug("fileid_sentence_map: %s", fileid_sentence_map)
+        print("fileid_sentence_map", fileid_sentence_map)
+
+        #Output fileid_sentence_map sample  from server
+        # {('281474976758604', 'In which months / seasons are these vegetables grown?'): ('16784394',), ('281474976758605', 'What is the process of growing these vegetables?'): ('16784394',)}
+
+        #this will find matched, unmatched and already fetched senteces and its file_id
+        matched_unmathched_fetched_sentences = karya_audio_management.matched_unmatched_alreadyfetched_sentences(
+            mongo,
+            projects, userprojects, projectowner, accesscodedetails,
+            projectsform, questionnaires, transcriptions, recordings,
+            activeprojectname, derivedFromProjectName, current_username,
+            project_type, derive_from_project_type,
+            fileid_sentence_map, fetched_audio_list, exclude_ids,
+            language, hederr, access_code
+        )
+        # print(matched_unmathched_fetched_sentences)  
+
+        matched, unmatched, already_fetched = matched_unmathched_fetched_sentences
+        print("Matched Sentences:", matched)
+        print("Unmatched Sentences:", unmatched)
+        print("Already Fetched Sentences:", already_fetched)
+
+
+        #############################################################################################
+        # getnsave_karya_recordings -> get_insert_id -> getaudiofromprompttext
         karya_audio_management.getnsave_karya_recordings(
             mongo,
             projects, userprojects, projectowner, accesscodedetails,

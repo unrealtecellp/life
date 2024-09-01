@@ -26,7 +26,7 @@ def get_fetched_audio_list(accesscodedetails, accesscode, activeprojectname):
                                                   {"karyafetchedaudios": 1, "_id": 0}
                                                   )
     fetched_audio_list = fetchedaudiodict['karyafetchedaudios']
-    # print("3 : ", fetched_audio_list)
+    print("fetched_audio_list : ", fetched_audio_list)
     return fetched_audio_list
 
 
@@ -106,34 +106,125 @@ def get_insert_id(
     current_sentence,
     project_type, exclude_ids
 ):
-    logger.debug("%s", project_type)
-    logger.debug("%s, %s", derive_from_project_type, derivedFromProjectName)
-    if (project_type == 'questionnaires'):
-        insert_audio_id, message = getquesfromprompttext.getquesfromprompttext(projectsform,
-                                                                               questionnaires,
-                                                                               activeprojectname,
-                                                                               current_sentence,
-                                                                               exclude_ids)
+    """
+    Function to retrieve the appropriate audio ID based on the project type and current sentence.
+    """
 
+    # Log the current project type
+    logger.debug("%s", project_type)
+    
+    # Log the derived project type and name
+    logger.debug("%s, %s", derive_from_project_type, derivedFromProjectName)
+    
+    # Handle the case where the project type is 'questionnaires'
+    if (project_type == 'questionnaires'):
+        # Retrieve the audio ID and message using the 'getquesfromprompttext' function
+        insert_audio_id, message = getquesfromprompttext.getquesfromprompttext(
+            projectsform,
+            questionnaires,
+            activeprojectname,
+            current_sentence,
+            exclude_ids
+        )
+
+    # Handle the case where the project type is 'transcriptions' and derived from 'questionnaires'
     elif (project_type == 'transcriptions' and
             derive_from_project_type == 'questionnaires'):
-        insert_audio_id, message = audiodetails.getaudiofromprompttext(projectsform,
-                                                                       transcriptions,
-                                                                       derivedFromProjectName,
-                                                                       activeprojectname,
-                                                                       current_sentence,
-                                                                       exclude_ids)
+        # Retrieve the audio ID and message using the 'getaudiofromprompttext' function
+        insert_audio_id, message = audiodetails.getaudiofromprompttext(
+            projectsform,
+            transcriptions,
+            derivedFromProjectName,
+            activeprojectname,
+            current_sentence,
+            exclude_ids
+        )
         
+        # Log the retrieved audio ID and message
         logger.debug("insert_audio_id: %s\nmessage: %s", insert_audio_id, message)
+    
+    # Handle the case where the project type is 'recordings' and derived from 'questionnaires'
     elif (project_type == 'recordings' and
             derive_from_project_type == 'questionnaires'):
-        insert_audio_id, message = audiodetails.getaudiofromprompttext(projectsform,
-                                                                       recordings,
-                                                                       derivedFromProjectName,
-                                                                       activeprojectname,
-                                                                       current_sentence,
-                                                                       exclude_ids)
+        # Retrieve the audio ID and message using the 'getaudiofromprompttext' function
+        insert_audio_id, message = audiodetails.getaudiofromprompttext(
+            projectsform,
+            recordings,
+            derivedFromProjectName,
+            activeprojectname,
+            current_sentence,
+            exclude_ids
+        )
+    
+    # Return the retrieved audio ID and message
     return insert_audio_id, message
+
+        
+def matched_unmatched_alreadyfetched_sentences(mongo,
+                                        projects, userprojects, projectowner, accesscodedetails,
+                                        projectsform, questionnaires, transcriptions, recordings,
+                                        activeprojectname, derivedFromProjectName, current_username,
+                                        project_type, derive_from_project_type,
+                                        fileid_sentence_map, fetched_audio_list, exclude_ids,
+                                        language, hederr, access_code):
+    logger.debug("%s, %s", derive_from_project_type, derivedFromProjectName)
+
+    # Initialize dictionaries to store matched, unmatched, and already fetched sentences
+    matched_sentences = {}
+    unmatched_sentences = {}
+    already_fetched_sentences = {}
+
+    # Iterate over the dictionary keys (file ID and sentence pairs)
+    for file_id_and_sentence in fileid_sentence_map.keys():
+        file_id = file_id_and_sentence[0]
+        sentence = file_id_and_sentence[1].strip()
+
+        # Check if the file ID is already in the fetched list
+        if file_id in fetched_audio_list:
+            already_fetched_sentences[file_id] = sentence
+        else:
+            # Handle case where the file is not yet fetched
+            if (project_type == 'transcriptions' and
+                derive_from_project_type == 'questionnaires'):
+                projectform = projectsform.find_one(
+                    {"projectname": derivedFromProjectName}, {"_id": 0})
+                lang_script = projectform['LangScript'][1]
+
+                all_audio = transcriptions.find({"projectname": activeprojectname},
+                                                {"_id": 0})
+                
+                found_match = False
+
+                for audio in all_audio:
+                    speaker_id = audio['speakerId']
+
+                    for lang, lang_info in audio["prompt"]["content"].items():
+                        script = lang_script[lang]
+
+                        for prompt_type, prompt_info in lang_info.items():
+                            if prompt_type == 'text':
+                                for boundaryId in lang_info['text'].keys():
+                                    prompt_text = lang_info['text'][boundaryId]['textspan'][script].strip()
+
+                                    # Check for matched sentence
+                                    if sentence == prompt_text and speaker_id == '':
+                                        matched_sentences[file_id] = sentence
+                                        found_match = True
+                                        break
+                                if found_match:
+                                    break
+
+                        if found_match:
+                            break
+
+                    if found_match:
+                        break
+
+                if not found_match:
+                    unmatched_sentences[file_id] = sentence
+
+    # Return the results as dictionaries
+    return matched_sentences, unmatched_sentences, already_fetched_sentences
 
 
 def getnsave_karya_recordings(mongo,
@@ -145,26 +236,42 @@ def getnsave_karya_recordings(mongo,
                               language, hederr, access_code
                               ):
     logger.debug("%s, %s", derive_from_project_type , derivedFromProjectName)
+
+    # print(fetched_audio_list)
+
+    # Initialize a list to store file IDs
     file_id_list = []
+
+     # Iterate over the dictionary keys (file ID and sentence pairs)
+     #fileid_sentence_map is audio_speaker_merge this contain sentences, 
     for file_id_and_sent in list(audio_speaker_merge.keys()):
         audio_speaker_merge_vals = audio_speaker_merge[file_id_and_sent]
+
+        # Extract speaker ID from the audio_speaker_merge dictionary
         karyaspeakerId = audio_speaker_merge_vals[0]
+ 
+        # Retrieve the life speaker ID associated with the Karya speaker ID
         lifespeakerid = accesscodedetails.find_one(
             {'karyaspeakerid': karyaspeakerId, 'projectname': activeprojectname}, {'lifespeakerid': 1, '_id': 0})
-
+        
+        # Attempt to get the current audio report, handle if it doesn't exist
         try:
             current_audio_report = audio_speaker_merge_vals[1]
         except:
             current_audio_report = {}
         logger.debug("karyaspeakerId: %s", karyaspeakerId)
 
+        # Extract the file ID and sentence from the key
         current_file_id = file_id_and_sent[0]
         current_sentence = file_id_and_sent[1].strip()
 
+        # Add the current file ID to the file ID list
         file_id_list.append(current_file_id)
 
         # Checking if the file is already fetched or not
         if current_file_id not in fetched_audio_list:
+
+            # Generate or retrieve the insert audio ID and a message
             insert_audio_id, message = get_insert_id(
                 projectsform, questionnaires, transcriptions, recordings,
                 activeprojectname, derive_from_project_type, derivedFromProjectName,
@@ -172,16 +279,22 @@ def getnsave_karya_recordings(mongo,
                 project_type, exclude_ids
             )
             logger.debug("insert_audio_id: %s\nmessage: %s", insert_audio_id, message)
+
+            # If the insert audio ID is not valid, skip the current iteration
             if insert_audio_id == 'False':
                 logger.debug("insert_audio_id: %s\nmessage: %s\ncurrent_sentence: %s", insert_audio_id, message, current_sentence)
                 continue
-
+            
+            # If the life speaker ID is found, proceed to fetch and save the audio file
             if lifespeakerid is not None:
                 logger.debug('lifespeakerid: %s', lifespeakerid)
                 lifespeakerid = lifespeakerid["lifespeakerid"]
+
+                # Fetch the audio file from Karya
                 new_audio_file = karya_api_access.get_audio_file_from_karya(
                     current_file_id, hederr)
 
+                # Save the fetched audio file and retrieve the save status
                 save_status = save_audio_file_fetched_from_karya(
                     mongo,
                     projects, userprojects, projectowner,
@@ -195,8 +308,10 @@ def getnsave_karya_recordings(mongo,
 
                 logger.debug('save_status: %s', save_status)
 
+                # If the audio file was saved successfully, update the list of fetched audios and access code details
                 if save_status[0]:
                     # save in the list of fetched audios
+                    # Add the insert audio ID to the list of excluded IDs
                     exclude_ids.append(insert_audio_id)
                     # if (project_type == 'questionnaires'):
                     #     exclude_ids.append(insert_audio_id)
@@ -205,6 +320,8 @@ def getnsave_karya_recordings(mongo,
                     #     exclude_ids.append(
                     #         insert_audio_id)
                     # print("status of save_status : ", save_status)
+                    
+                    # Update the access code details with the newly fetched audio file ID
                     accesscodedetails.update_one({"projectname": activeprojectname, "karyaaccesscode": access_code},
                                                  {"$addToSet": {"karyafetchedaudios": current_file_id}})
                 else:
@@ -213,3 +330,10 @@ def getnsave_karya_recordings(mongo,
                 logger.debug("lifespeakerid not found!: %s, %s", karyaspeakerId, lifespeakerid)
         else:
             logger.debug("Audio already fetched: %s", current_sentence)
+            print("audio already fetched", current_sentence )
+
+
+
+
+
+
