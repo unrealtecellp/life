@@ -29,6 +29,8 @@ lastUpdatedBy(lstUpdatedBy)
 /**
  * Init & load.
  */
+let preservePitch = true;
+const speeds = [0.25, 0.5, 0.75, 1, 1.25, 1.50, 2];
 document.addEventListener('DOMContentLoaded', function () {
     // Init wavesurfer
     wavesurfer = WaveSurfer.create({
@@ -74,8 +76,17 @@ document.addEventListener('DOMContentLoaded', function () {
         ]
     });
     document.querySelector('#slider').oninput = function () {
+        // console.log(Number(this.value));
         wavesurfer.zoom(Number(this.value));
     };
+    // Set the playback rate
+    document.querySelector('#playbackRateSliderdivId').addEventListener('input', (e) => {
+        const speed = speeds[e.target.valueAsNumber];
+        document.querySelector('#rate').textContent = speed.toFixed(2);
+        wavesurfer.setPlaybackRate(speed, preservePitch);
+        // console.log(wavesurfer.getPlaybackRate());
+        // wavesurfer.play()
+    })
 
     // wavesurfer.load(filePath);
     if (audiowaveformData === '') {
@@ -1955,11 +1966,11 @@ function createSentenceForm(formElement, boundaryID) {
     let activeTag = getActiveTag();
     createNavTabs(activeprojectform, activeTag);
     let anonymize_checked = false;
+    if('anonymize' in formElement) {
+        anonymize_checked = formElement['anonymize'];
+    }
     // console.log("activeprojectform", activeprojectform);
     for (let [key, value] of Object.entries(formElement)) {
-        if (key === 'anonymize') {
-            anonymize_checked = value;
-        }
         // console.log('first', key, value)
         if (key === 'transcription') {
             let transcriptionScriptList = activeprojectform['Transcription'][1];
@@ -2018,7 +2029,6 @@ function createSentenceForm(formElement, boundaryID) {
                     }
                 }
             }
-
             sentSpeakerIdEle += '</select>';
             let anonymize = '';
             if (anonymize_checked) {
@@ -2791,7 +2801,7 @@ function getActiveRegionSentence(region) {
             if ('sentence' in regions[i]['data']) {
                 // console.log("'sentence' in Object.values(regions[i])")
                 sentence = Object.values(regions[i]['data']['sentence'])[0]
-                // console.log('sentence YES getActiveRegionSentence(region)', sentence)    
+                // console.log('sentence YES getActiveRegionSentence(region)', sentence)
             }
             else {
                 // console.log('sentence NOT getActiveRegionSentence(region)', sentence)

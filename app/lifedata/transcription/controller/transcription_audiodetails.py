@@ -3739,6 +3739,7 @@ def get_n_audios(data_collection,
     total_records = 0
     try:
         # logger.debug("speaker_audio_ids: %s", pformat(speaker_audio_ids))
+        # logger.debug("speaker_audio_ids: %s", len(speaker_audio_ids))
         if (isinstance(active_speaker_id, str)):
             active_speaker_id = [active_speaker_id]
         aggregate_output = data_collection.aggregate([
@@ -3762,6 +3763,7 @@ def get_n_audios(data_collection,
                     "_id": 0,
                     "audioId": 1,
                     "audioFilename": 1,
+                    "speakerId": 1,
                     current_username + '.audioCompleteFLAG': 1
                 }
             }
@@ -3772,10 +3774,15 @@ def get_n_audios(data_collection,
             # logger.debug("aggregate_output: %s", pformat(doc))
             if (doc['audioId'] in speaker_audio_ids):
                 doc['Audio File'] = ''
-                for sid in active_speaker_id:
+                sids = doc['speakerId']
+                if (isinstance(sids, str)):
+                    sids = [sids]
+                for sid in sids:
+                    # logger.debug(sid)
                     doc['Shared With'] = audio_shared_with(activeprojectname,
-                                                        sid,
-                                                        doc['audioId'])
+                                                            sid,
+                                                            doc['audioId'])
+                    # logger.debug(doc['Shared With'])
                 if current_username in doc:
                     doc['Transcribed'] = doc.pop(current_username, {}).get(
                         'audioCompleteFLAG', False)
@@ -3784,24 +3791,25 @@ def get_n_audios(data_collection,
                 # logger.debug(len(aggregate_output_list))
 
         # logger.debug('aggregate_output_list: %s', pformat(aggregate_output_list))
-        total_records_aggregate = data_collection.aggregate([
-            {
-                "$match": {
-                    "projectname": activeprojectname,
-                    # "speakerId": active_speaker_id,
-                    "speakerId": {'$in': active_speaker_id},
-                    "audiodeleteFLAG": audio_delete_flag
-                }
-            },
-            {
-                "$count": "total_records"
-            }
-        ])
-        for tr in total_records_aggregate:
-            # logger.debug(tr)
-            if ('total_records' in tr):
-                total_records = tr['total_records']
-        # logger.debug('total_records AUDIO: %s', total_records)
+        # total_records_aggregate = data_collection.aggregate([
+        #     {
+        #         "$match": {
+        #             "projectname": activeprojectname,
+        #             # "speakerId": active_speaker_id,
+        #             "speakerId": {'$in': active_speaker_id},
+        #             "audiodeleteFLAG": audio_delete_flag
+        #         }
+        #     },
+        #     {
+        #         "$count": "total_records"
+        #     }
+        # ])
+        # for tr in total_records_aggregate:
+        #     # logger.debug(tr)
+        #     if ('total_records' in tr):
+        #         total_records = tr['total_records']
+        # # logger.debug('total_records AUDIO: %s', total_records)
+        total_records = len(speaker_audio_ids)
     except:
         logger.exception("")
 
@@ -3813,6 +3821,7 @@ def audio_shared_with(activeprojectname,
                       audio_id):
     try:
         # logger.debug(active_speaker_id)
+        # logger.debug(audio_id)
         shared_with_list = []
         projects_collection, = getdbcollections.getdbcollections(mongo, 'projects')
 
@@ -3831,10 +3840,11 @@ def audio_shared_with(activeprojectname,
                 if (active_speaker_id in user_speaker_ids and
                     audio_id in user_speaker_ids[active_speaker_id]):
                     shared_with_list.append(user)
+                    # logger.debug(shared_with_list)
         shared_with_list = ', '.join(list(set(shared_with_list)))
     except:
         logger.exception("")
-    
+    # logger.debug(shared_with_list)
     return shared_with_list
 
 def get_audio_sorting_subcategories(speakerdetails_collection,

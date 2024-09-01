@@ -180,9 +180,9 @@ def home():
                                 annotated_comments, remaining_comments]
                 # logger.debug("commentstats: %s", commentstats)
                 # logger.debug("total_comments: %s", total_comments)
-                if (total_comments == 0):
-                    flash(f"Change active source ID")
-                    return redirect(url_for('lifedata.transcription.audiobrowse'))
+                # if (total_comments == 0):
+                #     flash(f"Change active source ID")
+                #     return redirect(url_for('lifedata.transcription.audiobrowse'))
                     # audio_id = ''
                 # TODO: Get active speaker ID of the first speaker - also do the same while storing
                 # else:

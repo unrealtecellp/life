@@ -1240,8 +1240,17 @@ $('#uploadparameters-vadid').change(function () {
 
 
 function replaceZoomSlider() {
-  let slider = '<br><input id="slider" data-action="zoom" type="range" min="20" max="1500" value="0" style="width: 90%">';
+  let slider = '';
+  slider += '<label for="slider">Zoom</label>';
+  slider += '<br><input id="slider" data-action="zoom" type="range" min="20" max="1500" value="0" style="width: 90%">';
   $("#sliderdivid").html(slider);
+}
+
+function playbackRateSlider() {
+  let slider = '';
+  slider += '<label for="slider">Playback Rate: <span id="rate">1.00</span>x</label>';
+  slider += '<br><label><input type="range" min="0" max="6" step="1" value="3" style="width: 90%"/></label>';
+  $("#playbackRateSliderdivId").html(slider);
 }
 
 $("#deleteaudio").click(function () {
@@ -1364,3 +1373,4 @@ $("#glossbtnid").click(function () {
 });
 
 replaceZoomSlider();
+playbackRateSlider();

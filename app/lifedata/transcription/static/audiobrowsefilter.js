@@ -38,13 +38,13 @@ function audioFilter(pageId=1) {
             data.shareChecked,
             data.downloadChecked);
         eventsMapping();
-        playpauseEvent();
         createPagination(data.totalRecords, data.activePage);
         });
 }
 // filter audios
 function audioFilteringEvent() {
     $("#audiofilter").click(function() {
+        activePageNumber = 1;
         audioFilter();
     });
 }

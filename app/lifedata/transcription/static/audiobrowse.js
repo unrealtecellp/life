@@ -1,5 +1,6 @@
 var activePageNumber = 1;
 var audioIds = [];
+var totalData = 0;
 
 var audioSortingCategories = [
     { "id": "lifespeakerid", "text": "Source" },
@@ -88,14 +89,14 @@ function createBrowseActions(projectOwner, currentUsername, shareMode, shareChec
     ele += '<div class="pull-right">';
     if (downloadChecked === 'true') {
         // multiple audio download
-        ele += '<button type="button" class="btn btn-success classmultipletranscriptiondownload" id="idmultipletranscriptiondownload" style="display: inline;" data-toggle="modal" data-target="#myDownloadTranscriptionModal">' +
+        ele += '<button type="button" class="btn btn-sm btn-success classmultipletranscriptiondownload" id="idmultipletranscriptiondownload" style="display: inline;" data-toggle="modal" data-target="#myDownloadTranscriptionModal">' +
             '<span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span>' +
             ' +1</button>';
     }
 
     if (shareChecked === 'true') {
         // multiple audio share
-        ele += '<button type="button" class="btn btn-warning" id="multipleaudioshare" style="display: inline;" data-toggle="modal" data-target="#browseShareModal">' +
+        ele += '<button type="button" class="btn btn-sm btn-warning" id="multipleaudioshare" style="display: inline;" data-toggle="modal" data-target="#browseShareModal">' +
             '<span class="glyphicon glyphicon-share-alt" aria-hidden="true"></span>' +
             ' +1</button>';
     }
@@ -107,12 +108,12 @@ function createBrowseActions(projectOwner, currentUsername, shareMode, shareChec
         ele += '<select class="custom-select custom-select-sm" id="browseactiondropdown"></select>';
         // ele += tabSpace;
         // multiple audio delete
-        ele += '<button type="button" class="btn btn-danger" id="multipleaudiodelete"  style="display: inline;">' +
+        ele += '<button type="button" class="btn btn-sm btn-danger" id="multipleaudiodelete"  style="display: inline;">' +
             '<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>' +
             ' +1</button>';
         // ele += tabSpace;
         // multiple audio revove
-        ele += '<button type="button" class="btn btn-success" id="multipleaudiorevoke" style="display: none;">' +
+        ele += '<button type="button" class="btn btn-sm btn-success" id="multipleaudiorevoke" style="display: none;">' +
             '<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>' +
             ' +1</button>';
 
@@ -143,21 +144,25 @@ function createAudioBrowseTable(
     // console.log(audioData);
     // console.log(shareChecked);
     // console.log(downloadChecked);
-    let count = audioData.length
+    totalData = totalRecords;
+    let count = audioData.length;
+    let eleInfo = '';
     let ele = '';
     let browseActionSelectedOption = '';
     let audioIdAdded = [];
     // ele += '<p id="actualtotalrecords">Total Records:&nbsp;'+totalRecords+'</p>';
-    ele += '<div class="col">';
-    ele += '<strong><p id="totalrecords" style="display:inline">Showing Records:&nbsp;' + count + ' of ' + totalRecords + '</p></strong>';
-    ele += '<div class="pull-right">' +
-        '<input id="myInput" type="text" placeholder="Search">'
-    '</div>';
-    ele += '</div>';
-    ele += '<hr>';
-    ele += '<table class="table table-striped " id="myTable">' +
-        '<thead>' +
-        '<tr>' +
+    eleInfo += '<div class="col">';
+    eleInfo += '<strong><p id="totalrecords" style="display:inline">Records:&nbsp;' + count + ' of ' + totalRecords + '</p></strong>';
+    eleInfo += '<div class="pull-right">';
+    eleInfo += '<input class="form-control" id="myInput" type="search" placeholder="Search">';
+    eleInfo += '</div>';
+    eleInfo += '</div>';
+    eleInfo += '<hr>';
+    $('#audiobrowsetableinfo').html(eleInfo);
+    ele += '<div id="myTablediv">';
+    ele += '<table class="table table-striped table-hover" id="myTable">';
+    ele += '<thead>';
+    ele += '<tr>' +
         '<th><input type="checkbox" id="headcheckbox" onchange="checkAllAudio(this)" name="chk[]" checked/>&nbsp;</th>';
     for (let i = 0; i < audioDataFields.length; i++) {
         // console.log(audioDataFields[i]);
@@ -187,11 +192,8 @@ function createAudioBrowseTable(
         browseActionSelectedOption = document.getElementById('browseactiondropdown').value;
         ele += '<th>' + browseActionSelectedOption + '</th>';
     }
-
-
-
-    ele += '</tr>' +
-        '</thead>';
+    ele += '</tr>';
+    ele += '</thead>';
     ele += '<tbody id="myTableBody">';
     // {% for data in sdata %}
     for (let i = 0; i < audioData.length; i++) {
@@ -215,7 +217,7 @@ function createAudioBrowseTable(
                 }
                 else if (field == 'Audio File') {
                     ele += '<td>' +
-                        '<button type="button" id="playaudio_' + audioCount + '" class="btn btn-primary playaudioclass">' +
+                        '<button type="button" id="playaudio_' + audioCount + '" class="btn btn-sm btn-primary playaudioclass">' +
                         '<span class="glyphicon glyphicon-play" aria-hidden="true"></span>' +
                         // ' Play Audio'+
                         '</button>' +
@@ -245,18 +247,18 @@ function createAudioBrowseTable(
                 ele += '<td> - </td>';
             }
         }
-        ele += '<td><button type="button" id="viewaudio" class="btn btn-primary viewaudioclass">' +
+        ele += '<td><button type="button" id="viewaudio" class="btn btn-sm btn-primary viewaudioclass">' +
             '<span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>' +
             // ' View Audio'+
             '</button></td>';
         if (downloadChecked === 'true') {
             // multiple audio download
-            ele += '<td><button type="button" class="btn btn-success classsingletranscriptiondownload" id="idsingletranscriptiondownload" data-toggle="modal" data-target="#myDownloadTranscriptionModal">' +
+            ele += '<td><button type="button" class="btn btn-sm btn-success classsingletranscriptiondownload" id="idsingletranscriptiondownload" data-toggle="modal" data-target="#myDownloadTranscriptionModal">' +
                 '<span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span>' +
                 '</button></td>';
         }
         if (shareChecked === 'true') {
-            ele += '<td><button type="button" id="shareaudio" class="btn btn-warning shareaudioclass"  data-toggle="modal" data-target="#browseShareModal">' +
+            ele += '<td><button type="button" id="shareaudio" class="btn btn-sm btn-warning shareaudioclass"  data-toggle="modal" data-target="#browseShareModal">' +
                 '<span class="glyphicon glyphicon-share-alt" aria-hidden="true"></span>' +
                 // ' Share Audio'+
                 '</button></td>';
@@ -269,25 +271,23 @@ function createAudioBrowseTable(
             // }
         }
         if (browseActionSelectedOption === 'Delete') {
-            ele += '<td><button type="button" id="deleteaudio" class="btn btn-danger deleteaudioclass">' +
+            ele += '<td><button type="button" id="deleteaudio" class="btn btn-sm btn-danger deleteaudioclass">' +
                 '<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>' +
                 // ' Delete Audio'+
                 '</button></td>';
 
         }
         else if (browseActionSelectedOption === 'Revoke') {
-            ele += '<td><button type="button" id="revokeaudio" class="btn btn-success revokeaudioclass">' +
+            ele += '<td><button type="button" id="revokeaudio" class="btn btn-sm btn-success revokeaudioclass">' +
                 '<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>' +
                 // ' Revoke Audio'+
                 '</button></td>';
-
         }
-
-
         ele += '</tr>';
     }
-    ele += '</tbody>' +
-        '</table>';
+    ele += '</tbody>';
+    ele += '</table>';
+    ele += '</div>';
     $('#audiobrowsetable').html(ele);
 }
 
@@ -299,6 +299,7 @@ function createAudioBrowse(newData) {
     let projectOwner = newData['projectOwner'];
     let projectName = newData['activeProjectName'];
     let totalRecords = newData['totalRecords'];
+    totalData = totalRecords;
     let shareInfo = newData['shareInfo'];
     // console.log("Share info", shareInfo);
     let shareMode = shareInfo['sharemode'];
@@ -330,41 +331,22 @@ function createAudioBrowse(newData) {
         projectName);
 
     // downloadModalSelect2();
-
+    eventsMappingOnce();
     eventsMapping();
-    createPagination(totalRecords)
+    createPagination(totalRecords);
 }
 
-function eventsMapping() {
-    // change in browse action select
-    $("#browseactiondropdown").change(function () {
-        let browseActionSelectedOption = document.getElementById('browseactiondropdown').value;
-        // console.log(browseActionSelectedOption);
-        let selectedAudioSortingCategories = document.getElementById("audiosortingcategoriesdropdown").value;
-        // console.log(selectedAudioSortingCategories);
-        if (selectedAudioSortingCategories === 'sourcemetainfo') {
-            audioFilter();
-        }
-        else {
-            updateAudioBrowseTable();
-        }
-        if (browseActionSelectedOption === 'Delete') {
-            document.getElementById('multipleaudiorevoke').style.display = "none";
-            document.getElementById('multipleaudiodelete').style.display = "inline";
-        }
-        else if (browseActionSelectedOption === 'Revoke') {
-            document.getElementById('multipleaudiodelete').style.display = "none";
-            document.getElementById('multipleaudiorevoke').style.display = "inline";
-        }
-    })
+function eventsMappingOnce() {
     // change audio sorting categories
     $("#audiosortingcategoriesdropdown").change(function () {
         // console.log('browseActionSelectedOption');
+        activePageNumber = 1;
         updateAudioSortingSubCategoriesDropdown();
     })
     // change audio file count to show
     $("#audiofilescountdropdown").change(function () {
         // console.log(browseActionSelectedOption);
+        activePageNumber = 1;
         let selectedAudioSortingCategories = document.getElementById("audiosortingcategoriesdropdown").value;
         console.log(selectedAudioSortingCategories);
         if (selectedAudioSortingCategories === 'sourcemetainfo') {
@@ -374,23 +356,7 @@ function eventsMapping() {
             updateAudioBrowseTable();
         }
     })
-
-    // download single transcription
-    $(".classsingletranscriptiondownload").click(function () {
-        let audioInfo = getSingleAudioBrowseAction(this);
-        audioIds = Object.keys(audioInfo);
-        current_id = audioIds[0];
-        console.log("Single audio info", audioIds);
-        // $('#idaudioids').val("").trigger('change');
-        $('#idaudioids').empty().trigger('change');
-        let new_option = new Option(audioInfo[current_id], current_id, false, true);
-        $('#idaudioids').append(new_option);
-        $('#idaudioids').trigger('change');
-
-        // $("#idaudioids").val(audioIds).trigger("change");
-
-    });
-
+    audioFilteringEvent();
     // download multiple transcriptions
     $("#idmultipletranscriptiondownload").click(function () {
         let multipleAudiosInfo = GetSelected();
@@ -410,82 +376,7 @@ function eventsMapping() {
         $('#idaudioids').trigger('change');
         // console.log("Multiple audios", multipleAudiosInfo);
     });
-
-    // delete single audio
-    $(".deleteaudioclass").click(function () {
-        let audioInfo = getSingleAudioBrowseAction(this);
-        // console.log("Single audio info", audioInfo);
-        deleteAudioFLAG = confirm("Delete This Audio!!!");
-        if (deleteAudioFLAG) {
-            audioBrowseAction(audioInfo);
-        }
-    });
-    // delete multiple audios
-    $("#multipleaudiodelete").click(function () {
-        audios = GetSelected();
-        // console.log("Multiple audios", audios);
-        deleteAudioFLAG = confirm("Delete These Audios!!!");
-        if (deleteAudioFLAG) {
-            audioBrowseAction(audios);
-        }
-    });
-    // revoke single audio
-    $(".revokeaudioclass").click(function () {
-        let audioInfo = getSingleAudioBrowseAction(this);
-        revokeAudioFLAG = confirm("Revoke This Audio!!!");
-        if (revokeAudioFLAG) {
-            audioBrowseAction(audioInfo);
-        }
-    });
-    // revoke multiple audios
-    $("#multipleaudiorevoke").click(function () {
-        audios = GetSelected();
-        // console.log(audios);
-        revokeAudioFLAG = confirm("Revoke These Audios!!!");
-        if (revokeAudioFLAG) {
-            audioBrowseAction(audios);
-        }
-    });
-    playpauseEvent();
-    // play single audio
-    // $(".playaudioclass").click(function () {
-    //     let audioInfo = getSingleAudioBrowseAction(this);
-    //     audioBrowseActionPlay(audioInfo, this);
-    // });
-    // $(".pauseaudioclass").click(function () {
-    //     let playingAudioId = this.id;
-    //     // console.log(playingAudioId);
-    //     let playingAudioEleId = playingAudioId + "_audioEle";
-    //     let playingAudioEle = document.getElementById(playingAudioEleId);
-    //     // console.log(playingAudioEleId, playingAudioEle);
-    //     playingAudioEle.pause();
-    //     togglePlayPause(this, 'playaudioclass', 'play');
-
-    // });
-    $(".shareaudioclass").click(function () {
-        let audioInfo = getSingleAudioBrowseAction(this);
-        // console.log(audioInfo);
-        // console.log(Object.keys(audioInfo));
-        audioIds = Object.keys(audioInfo);
-        $("#browseShareSelectMode").val(null).trigger('change');
-        $('#browseShareSelectMode').select2({
-            // placeholder: 'Share with',
-            data: browseShareSelMode,
-            // allowClear: true
-        });
-        document.getElementById("browseRemoveShareSelect").style.display = "none";
-        document.getElementById("removesharedfileaccess").style.display = "none";
-        // $('#audioInfo').select2({
-        //     // placeholder: 'Share with',
-        //     data: audioInfo,
-        //     // allowClear: true
-        // });
-        // shareAudioFLAG = confirm("Share This Audio!!!");
-        // if(shareAudioFLAG) {
-        // getAudioSharedWithUsersList(audioInfo);
-        // audioBrowseActionShare(audioInfo);
-        // }
-    });
+    // share multiple audios
     $("#multipleaudioshare").click(function () {
         audios = GetSelected();
         // console.log(audios);
@@ -503,23 +394,95 @@ function eventsMapping() {
         // browseShareMode(["share"]);
         // audioBrowseActionShare(audios);
     });
-    audioFilteringEvent();
+    // change in browse action select
+    $("#browseactiondropdown").change(function () {
+        activePageNumber = 1;
+        let browseActionSelectedOption = document.getElementById('browseactiondropdown').value;
+        // console.log(browseActionSelectedOption);
+        let selectedAudioSortingCategories = document.getElementById("audiosortingcategoriesdropdown").value;
+        // console.log(selectedAudioSortingCategories);
+        if (selectedAudioSortingCategories === 'sourcemetainfo') {
+            audioFilter();
+        }
+        else {
+            updateAudioBrowseTable();
+        }
+        if (browseActionSelectedOption === 'Delete') {
+            document.getElementById('multipleaudiorevoke').style.display = "none";
+            document.getElementById('multipleaudiodelete').style.display = "inline";
+        }
+        else if (browseActionSelectedOption === 'Revoke') {
+            document.getElementById('multipleaudiodelete').style.display = "none";
+            document.getElementById('multipleaudiorevoke').style.display = "inline";
+        }
+    })
+    // delete multiple audios
+    $("#multipleaudiodelete").click(function () {
+        audios = GetSelected();
+        // console.log("Multiple audios", audios);
+        deleteAudioFLAG = confirm("Delete These Audios!!!");
+        if (deleteAudioFLAG) {
+            audioBrowseAction(audios);
+        }
+    });
+    // revoke multiple audios
+    $("#multipleaudiorevoke").click(function () {
+        audios = GetSelected();
+        // console.log(audios);
+        revokeAudioFLAG = confirm("Revoke These Audios!!!");
+        if (revokeAudioFLAG) {
+            audioBrowseAction(audios);
+        }
+    });
 }
 
-function playpauseEvent() {
-    $(".playaudioclass").click(function () {
+function eventsMapping(playPauseEventActive=true) {
+    searchEvent();
+    if (playPauseEventActive) {
+        playPauseEvent();
+    }
+    // download single transcription
+    $(".classsingletranscriptiondownload").click(function () {
         let audioInfo = getSingleAudioBrowseAction(this);
-        audioBrowseActionPlay(audioInfo, this);
+        audioIds = Object.keys(audioInfo);
+        current_id = audioIds[0];
+        console.log("Single audio info", audioIds);
+        // $('#idaudioids').val("").trigger('change');
+        $('#idaudioids').empty().trigger('change');
+        let new_option = new Option(audioInfo[current_id], current_id, false, true);
+        $('#idaudioids').append(new_option);
+        $('#idaudioids').trigger('change');
     });
-    $(".pauseaudioclass").click(function () {
-        let playingAudioId = this.id;
-        // console.log(playingAudioId);
-        let playingAudioEleId = playingAudioId + "_audioEle";
-        let playingAudioEle = document.getElementById(playingAudioEleId);
-        // console.log(playingAudioEleId, playingAudioEle);
-        playingAudioEle.pause();
-        togglePlayPause(this, 'playaudioclass', 'play');
-
+    $(".shareaudioclass").click(function () {
+        let audioInfo = getSingleAudioBrowseAction(this);
+        // console.log(audioInfo);
+        // console.log(Object.keys(audioInfo));
+        audioIds = Object.keys(audioInfo);
+        $("#browseShareSelectMode").val(null).trigger('change');
+        $('#browseShareSelectMode').select2({
+            // placeholder: 'Share with',
+            data: browseShareSelMode,
+            // allowClear: true
+        });
+        document.getElementById("browseRemoveShareSelect").style.display = "none";
+        document.getElementById("removesharedfileaccess").style.display = "none";
+    });
+    // delete single audio
+    $(".deleteaudioclass").click(function () {
+        let audioInfo = getSingleAudioBrowseAction(this);
+        // console.log("Single audio info", audioInfo);
+        deleteAudioFLAG = confirm("Delete This Audio!!!");
+        if (deleteAudioFLAG) {
+            audioBrowseAction(audioInfo);
+        }
+    });
+    // revoke single audio
+    $(".revokeaudioclass").click(function () {
+        let audioInfo = getSingleAudioBrowseAction(this);
+        revokeAudioFLAG = confirm("Revoke This Audio!!!");
+        if (revokeAudioFLAG) {
+            audioBrowseAction(audioInfo);
+        }
     });
 }
 
@@ -546,8 +509,6 @@ function updateAudioSortingSubCategoriesDropdown() {
             document.getElementById('audiosortingsubcategoriesdropdown').style.display = "block";
             document.getElementById('audiofilter').style.display = "inline";
             createSelect2optgroup('audiosortingsubcategoriesdropdown', audioSortingSubCategories, selectedAudioSortingSubCategories);
-            // audiobrowsefilter.js
-            // audioFilteringEvent();
         }
         else if (selectedAudioSortingCategories === 'lifespeakerid') {
             let sourceMetadata = data.sourceMetadata;
@@ -647,45 +608,16 @@ function audioBrowseActionPlay(audioInfo, audioCountInfo) {
                 data.totalRecords,
                 data.shareChecked,
                 data.downloadChecked);
-            eventsMapping();
+            eventsMapping(false);
             // console.log(activePageNumber);
             createPagination(data.totalRecords, activePageNumber);
             // console.log(audioCountInfo);
             audioCountInfo = document.getElementById(audioCountInfo.id);
             // console.log(audioCountInfo);
             let audioSource = data.audioSource;
-            // console.log(audioSource)
-            // let embededAudio = new Audio(audioSource);
-            // embededAudio = new Audio(audioSource);
-            // console.log(embededAudio);
-            // embededAudio.play();
             togglePlayPause(audioCountInfo, 'pauseaudioclass', 'pause', audioSource)
-            // let togglePlayPause = '<button type="button" id="'+audioCountInfo.id+'" class="btn btn-primary pauseaudioclass">'+
-            //                         '<span class="glyphicon glyphicon-pause" aria-hidden="true"></span>'+
-            //                         // ' Play Audio'+
-            //                         '</button>';
-            // let embededAudio = '<audio controls autoplay hidden oncontextmenu="return false" controlslist="nofullscreen nodownload noremoteplayback noplaybackrate">'+
-            //                     '<source src="'+audioSource+'" type="audio/wav"></audio>';
-            // audioCountInfo.parentNode.innerHTML = togglePlayPause;
-            eventsMapping();
         });
 }
-
-// function audioBrowseActionShare(audioInfo) {
-//     let audioBrowseInfo = getAudioBrowseInfo();
-//     $.ajax({
-//         data : {
-//           a : JSON.stringify({
-//             "audioInfo": audioInfo,
-//             "audioBrowseInfo": audioBrowseInfo
-//         })
-//         },
-//         type : 'GET',
-//         url : '/lifedata/transcription/audiobrowseactionshare'
-//       }).done(function(data){
-//             window.location.reload();
-//       });
-// }
 
 function getAudioBrowseInfo() {
     let activeSpeakerId = document.getElementById('speakeridsdropdown').value;
@@ -792,26 +724,95 @@ function getSingleAudioBrowseAction(element) {
     return audioInfo
 }
 
-function createPagination(totalRecords, active = 1) {
+function createPagination(totalRecords, active=1) {
+    let defaultShowpages = 6;
+    let showpages = defaultShowpages;
+    let startFrom = active;
     let audioFilesCount = Number(document.getElementById('audiofilescountdropdown').value);
     let paginationEle = '';
-    totalPages = Math.ceil(totalRecords / audioFilesCount);
+    let totalPages = Math.ceil(totalRecords / audioFilesCount);
     // console.log(totalPages);
-    paginationEle += '<div class="btn-group">';
-    for (let i = 1; i <= totalPages; i++) {
-        if (i == active) {
-            paginationEle += '<button type="button" class="btn btn-primary createpagination" id="' + i + '" onclick="changeAudioBrowsePage(this.id)">' + i + '</button>';
-        }
-        else {
-            paginationEle += '<button type="button" class="btn createpagination" id="' + i + '" onclick="changeAudioBrowsePage(this.id)">' + i + '</button>';
+    showpages+= active;
+    if (totalPages <= defaultShowpages) {
+        showpages = totalPages;
+        startFrom = 1;
+    }
+    else if (totalPages > defaultShowpages &&
+        totalPages >= showpages-1) {
+        showpages = startFrom+Math.ceil(defaultShowpages/2);
+        startFrom -= Math.floor(defaultShowpages/2);
+        if (active <= Math.ceil(defaultShowpages/2)) {
+            startFrom = 1;
+            showpages = defaultShowpages+1;
         }
     }
+    else if (totalPages <= showpages) {
+        showpages = totalPages;
+        startFrom -= defaultShowpages - (showpages-startFrom);
+    }
+    // console.log(startFrom, showpages);
+    paginationEle += '<div class="btn-group">';
+    paginationEle += '<button type="button" class="btn btn-sm" id="pagebackward" onclick="changeAudioBrowsePage2(this.id)">'+
+                        '<span class="glyphicon glyphicon-backward" aria-hidden="true"></span>'+
+                        '</button>';
+    paginationEle += '<button type="button" class="btn btn-sm" id="pageleft" onclick="changeAudioBrowsePage2(this.id)">'+
+                        '<span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>'+
+                        '</button>';
+    for (let i = startFrom; i <= showpages; i++) {
+        if (i == active) {
+            paginationEle += '<button type="button" class="btn btn-sm btn-primary createpagination" id="' + i + '" onclick="changeAudioBrowsePage(this.id)">' + i + '</button>';
+        }
+        else {
+            paginationEle += '<button type="button" class="btn btn-sm createpagination" id="' + i + '" onclick="changeAudioBrowsePage(this.id)">' + i + '</button>';
+        }
+    }
+    paginationEle += '<button type="button" class="btn btn-sm" id="pageright" onclick="changeAudioBrowsePage2(this.id)">'+
+                        '<span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>'+
+                        '</button>';
+    paginationEle += '<button type="button" class="btn btn-sm" id="pageforward" onclick="changeAudioBrowsePage2(this.id)">'+
+                    '<span class="glyphicon glyphicon-forward" aria-hidden="true"></span>'+
+                    '</button>';
     paginationEle += '</div><br><br>';
     $("#audiobrowsepagination").html(paginationEle);
+    if (active === 1) {
+        document.getElementById('pagebackward').disabled = true;
+        document.getElementById('pageleft').disabled = true;
+    }
+    if (active === totalPages) {
+        document.getElementById('pageright').disabled = true;
+        document.getElementById('pageforward').disabled = true;
+    }
+}
+
+function changeAudioBrowsePage2(movePageTo) {
+    // console.log(movePageTo, activePageNumber, totalData);
+    let audioFilesCount = Number(document.getElementById('audiofilescountdropdown').value);
+    // console.log(audioFilesCount);
+    let lastPage = Math.ceil(totalData / audioFilesCount);
+    // console.log(lastPage);
+    let pageId = activePageNumber;
+    if (movePageTo === 'pagebackward') {
+        pageId = 1;
+    }
+    else if (movePageTo === 'pageleft') {
+        pageId -= 1;
+    }
+    else if (movePageTo === 'pageright') {
+        pageId += 1;
+    }
+    else if (movePageTo === 'pageforward') {
+        pageId = lastPage;
+    }
+    // console.log(pageId);
+    if (pageId >= 1 &&
+        pageId <= lastPage) {
+            changeAudioBrowsePage(pageId);
+        }
 }
 
 function changeAudioBrowsePage(pageId) {
     // console.log(pageId);
+    // console.log(activePageNumber);
     let audioBrowseInfo = getAudioBrowseInfo();
     activePageNumber = Number(pageId);
     audioBrowseInfo['pageId'] = Number(pageId);
@@ -837,14 +838,31 @@ function changeAudioBrowsePage(pageId) {
                 data.shareChecked,
                 data.downloadChecked);
             eventsMapping();
-            playpauseEvent();
             createPagination(data.totalRecords, data.activePage);
         });
     }
 }
 
-function togglePlayPause(ele, state, icon, audioSource = undefined) {
-    let togglePlayPause = '<button type="button" id="' + ele.id + '" class="btn btn-primary ' + state + '">' +
+function playPauseEvent() {
+    $(".playaudioclass").click(function () {
+        let audioInfo = getSingleAudioBrowseAction(this);
+        audioBrowseActionPlay(audioInfo, this);
+    });
+    $(".pauseaudioclass").click(function () {
+        let playingAudioId = this.id;
+        // console.log(playingAudioId);
+        let playingAudioEleId = playingAudioId + "_audioEle";
+        let playingAudioEle = document.getElementById(playingAudioEleId);
+        // console.log(playingAudioEleId, playingAudioEle);
+        playingAudioEle.pause();
+        togglePlayPause(this, 'playaudioclass', 'play');
+
+    });
+}
+
+function togglePlayPause(ele, state, icon, audioSource=undefined) {
+    // console.log(ele, state, icon, audioSource);
+    let toggle_play_pause = '<button type="button" id="' + ele.id + '" class="btn btn-primary ' + state + '">' +
         '<span class="glyphicon glyphicon-' + icon + '" aria-hidden="true"></span>' +
         // ' Play Audio'+
         '</button>';
@@ -852,13 +870,12 @@ function togglePlayPause(ele, state, icon, audioSource = undefined) {
         // console.log(audioSource);
         let embededAudio = '<audio id="' + ele.id + '_audioEle" onended="audioEnded(this)" controls autoplay hidden oncontextmenu="return false" controlslist="nofullscreen nodownload noremoteplayback noplaybackrate">' +
             '<source src="' + audioSource + '" type="audio/wav"></audio>';
-        togglePlayPause += embededAudio;
+            toggle_play_pause += embededAudio;
     }
     // console.log(audioSource);
-    ele.parentNode.innerHTML = togglePlayPause;
+    ele.parentNode.innerHTML = toggle_play_pause;
     // console.log(audioSource);
-    eventsMapping();
-    playpauseEvent();
+    playPauseEvent();
     // console.log(audioSource);
 }
 
