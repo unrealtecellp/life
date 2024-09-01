@@ -159,14 +159,13 @@ def get_insert_id(
     # Return the retrieved audio ID and message
     return insert_audio_id, message
 
-        
 def matched_unmatched_alreadyfetched_sentences(mongo,
-                                        projects, userprojects, projectowner, accesscodedetails,
-                                        projectsform, questionnaires, transcriptions, recordings,
-                                        activeprojectname, derivedFromProjectName, current_username,
-                                        project_type, derive_from_project_type,
-                                        fileid_sentence_map, fetched_audio_list, exclude_ids,
-                                        language, hederr, access_code):
+                                               projects, userprojects, projectowner, accesscodedetails,
+                                               projectsform, questionnaires, transcriptions, recordings,
+                                               activeprojectname, derivedFromProjectName, current_username,
+                                               project_type, derive_from_project_type,
+                                               fileid_sentence_map, fetched_audio_list, exclude_ids,
+                                               language, hederr, access_code):
     logger.debug("%s, %s", derive_from_project_type, derivedFromProjectName)
 
     # Initialize dictionaries to store matched, unmatched, and already fetched sentences
@@ -223,8 +222,19 @@ def matched_unmatched_alreadyfetched_sentences(mongo,
                 if not found_match:
                     unmatched_sentences[file_id] = sentence
 
+    # Log and print the results
+    logger.debug("Matched Sentences: %s, Total: %d", matched_sentences, len(matched_sentences))
+    logger.debug("Unmatched Sentences: %s, Total: %d", unmatched_sentences, len(unmatched_sentences))
+    logger.debug("Already Fetched Sentences: %s, Total: %d", already_fetched_sentences, len(already_fetched_sentences))
+
+    # print("Matched Sentences:", matched_sentences, "Total:", len(matched_sentences))
+    # print("Unmatched Sentences:", unmatched_sentences, "Total:", len(unmatched_sentences))
+    # print("Already Fetched Sentences:", already_fetched_sentences, "Total:", len(already_fetched_sentences))
+
     # Return the results as dictionaries
     return matched_sentences, unmatched_sentences, already_fetched_sentences
+
+
 
 
 def getnsave_karya_recordings(mongo,
