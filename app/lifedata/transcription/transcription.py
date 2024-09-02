@@ -1655,7 +1655,7 @@ def syncaudio():
         sync_audio_status = False
         if (derive_from_project_name != ''):
             if (derive_from_project_type == 'crawling'):
-                copydatafromparentproject.sync_transcription_project_from_crawling_project(mongo,
+                sync_audio_status = copydatafromparentproject.sync_transcription_project_from_crawling_project(mongo,
                                                                                            projects,
                                                                                            userprojects,
                                                                                            crawling,
@@ -1663,7 +1663,6 @@ def syncaudio():
                                                                                            derive_from_project_name,
                                                                                            activeprojectname,
                                                                                            current_username)
-                sync_audio_status = True
     except:
         logger.exception("")
 
@@ -1713,7 +1712,6 @@ def toggleComplete():
         transcription_data = dict(transcription_data)
         # logger.info("transcription_data receieved: %s",
         #             pformat(transcription_data))
-        lastActiveId = transcription_data['lastActiveId']
         lastActiveId = transcription_data['lastActiveId']
         accessedOnTime = transcription_data['accessedOnTime']
 

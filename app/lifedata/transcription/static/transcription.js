@@ -1338,6 +1338,9 @@ $("#syncaudio").click(function () {
   $.post("/lifedata/transcription/syncaudio", {})
     .done(function (data) {
       console.log(data);
+      if (data.syncAudioStatus) {
+        alert("Up-To-Date");
+      }
       window.location.reload();
     });
 });

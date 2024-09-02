@@ -1082,22 +1082,22 @@ def update_active_speaker_Id(userprojects,
                              current_username,
                              speakerIds
                              ):
-    logger.info('Speaker IDs %s', speakerIds)
+    # logger.info('Speaker IDs %s', speakerIds)
     if type(speakerIds) == str:
         speakerIds = [speakerIds]
     # update active speaker ID in userprojects collection
     projectinfo = userprojects.find_one({'username': current_username},
                                         {'_id': 0, 'myproject': 1, 'projectsharedwithme': 1})
 
-    logger.info(projectinfo)
-    logger.info(activeprojectname)
+    # logger.info(projectinfo)
+    # logger.info(activeprojectname)
     userprojectinfo = ''
     for key, value in projectinfo.items():
         if len(value) != 0:
-            logger.info(activeprojectname in value)
+            # logger.info(activeprojectname in value)
             if activeprojectname in value:
                 userprojectinfo = key+'.'+activeprojectname+".activespeakerId"
-    logger.info(userprojectinfo)
+    # logger.info(userprojectinfo)
     userprojects.update_one({"username": current_username},
                             {"$set": {
                                 userprojectinfo: speakerIds[0]
