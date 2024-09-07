@@ -402,7 +402,7 @@ function editAnnotation(region) {
     // console.log('editAnnotation(region)')
     // console.log(region)
     let form = document.forms.edit;
-    // console.log(form);
+    console.log(form);
     // let id = form.dataset.region;
     // let wavesurferregion = wavesurfer.regions.list[id];
     // console.log(wavesurferregion)
@@ -470,7 +470,9 @@ function editAnnotation(region) {
     //     transcriptionFormDisplay(form);
     //     form.dataset.region = null;
     // };
+    console.log(form.dataset.region, rid);
     form.dataset.region = region.id;
+    console.log(form.dataset.region, rid);
     // region.color = boundaryColor(255, 255, 0, 0.1);
 }
 

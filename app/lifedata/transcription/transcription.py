@@ -180,12 +180,14 @@ def home():
                 lang_list = list(Q_Id['prompt']['content'].keys())
                 if ('English-Latin' in lang_list):
                     get_text = Q_Id['prompt']['content']['English-Latin']['text']
-                    all_ques_ids[ques_id] = q_id+'_'+Q_Id['prompt']['content']['English-Latin']['text'][list(get_text.keys())[0]]['textspan']['Latin']
+                    all_ques_ids[ques_id] = q_id+'_'+Q_Id['prompt']['content']['English-Latin']['text'][list(
+                        get_text.keys())[0]]['textspan']['Latin']
                 else:
                     lang_script = lang_list[0]
                     script = lang_script.split('-')[-1]
                     get_text = Q_Id['prompt']['content'][lang_script]['text']
-                    all_ques_ids[ques_id] = q_id+'_'+Q_Id['prompt']['content'][lang_script]['text'][list(get_text.keys())[0]]['textspan'][script]
+                    all_ques_ids[ques_id] = q_id+'_'+Q_Id['prompt']['content'][lang_script]['text'][list(
+                        get_text.keys())[0]]['textspan'][script]
             # logger.debug("all_ques_ids: %s", pformat(all_ques_ids))
         if activeprojectform is not None:
             try:
@@ -325,10 +327,10 @@ def home():
                 #              speakerids, added_speaker_ids, activespeakerid)
                 if (current_username == projectowner):
                     speakerids = update_owner_speakers.update_owner_speakers(projects,
-                          activeprojectname,
-                          projectowner,
-                          speakerids,
-                          added_speaker_ids)
+                                                                             activeprojectname,
+                                                                             projectowner,
+                                                                             speakerids,
+                                                                             added_speaker_ids)
                 # logger.debug('speakerids: %s, added_speaker_ids: %s, activespeakerid: %s',
                 #              speakerids, added_speaker_ids, activespeakerid)
                 activeprojectform['speakerIds'] = speakerids
@@ -1108,12 +1110,12 @@ def uploadaudiofiles():
             speakerId = data['speakerId']
             if ('null' in speakerId):
                 speakerId = [getuserprojectinfo.getuserprojectinfo(userprojects,
-                                                            current_username,
-                                                            activeprojectname)['activespeakerId']]
+                                                                   current_username,
+                                                                   activeprojectname)['activespeakerId']]
         else:
             speakerId = [getuserprojectinfo.getuserprojectinfo(userprojects,
-                                                            current_username,
-                                                            activeprojectname)['activespeakerId']]
+                                                               current_username,
+                                                               activeprojectname)['activespeakerId']]
 
         if 'uploadparameters-vad' in data:
             run_vad = True
@@ -1468,7 +1470,7 @@ def maketranscription():
         '''
         accessed_time = data['accessedOnTime'][0]
 
-        logger.debug(model_name)
+        logger.info(model_name)
         model_info = model_name.split('##')
         model_name = model_info[1]
         model_lang_code = model_info[0]

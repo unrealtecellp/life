@@ -2017,6 +2017,22 @@ def makegloss():
         else:
             free_translation = False
 
+        if 'get-translation' in data:
+            translate_tokens = True
+        else:
+            translate_tokens = False
+
+        if 'get-gloss' in data:
+            gloss_data = True
+        else:
+            gloss_data = False
+
+        if gloss_lang_code == 'en':
+            if source_script_code == 'Latn':
+                translate_tokens = False
+            else:
+                translate_tokens = True
+
         '''
         Translation Model
 
@@ -2064,7 +2080,7 @@ def makegloss():
             'model_type': "local",
             'model_params': {
                 'model_path': gloss_model_name,
-                'glossing_language': gloss_lang_code,
+                'gloss_lang_code': gloss_lang_code,
                 'source_language': audio_lang_code,
                 'source_language_name': audio_language,
                 'source_script': source_script_name,
@@ -2075,9 +2091,9 @@ def makegloss():
             'target': output_language_name
         }
 
-        logger.debug('Translation model vals %s', translation_model)
-        logger.debug('Gloss model vals %s', gloss_model)
-        logger.debug('Access time %s', access_time)
+        logger.info('Translation model vals %s', translation_model)
+        logger.info('Gloss model vals %s', gloss_model)
+        logger.info('Access time %s', access_time)
 
         gloss_utils.save_gloss_of_one_audio_file(transcriptions,
                                                  activeprojectname,
@@ -2090,7 +2106,8 @@ def makegloss():
                                                  hf_token=hf_token,
                                                  audio_details=existing_audio_details,
                                                  accessedOnTime=access_time,
-                                                 get_free_translation=free_translation
+                                                 get_free_translation=free_translation,
+                                                 translate_tokens=translate_tokens
                                                  )
 
     return redirect(url_for('lifedata.transcription.home'))

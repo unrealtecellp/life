@@ -368,3 +368,10 @@ $('#transcribebtnid').on('click', function (e) {
   console.log(fname, duration, model_name, elem_name);
   $('#myASRModal').hide.bs.modal;
 });
+
+function updateClickSource(e) {
+  let currentId = e.id;
+  // document.getElementById('clickSourceId')
+  $('#clickSourceId').val (currentId);
+  console.log(currentId);
+}

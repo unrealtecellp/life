@@ -36,11 +36,11 @@ def save_translation_of_one_audio_file(transcriptions,
 
         full_model_name = translation_model.get("model_name")
 
-        text_grids, model_details, input_data = get_translation_of_audio_transcription(translation_model,
-                                                                                       transcription_type,
-                                                                                       hf_token,
-                                                                                       audio_details,
-                                                                                       existing_text_grid)
+        text_grids, model_details, _ = get_translation_of_audio_transcription(translation_model,
+                                                                              transcription_type,
+                                                                              hf_token,
+                                                                              audio_details,
+                                                                              existing_text_grid)
 
         for text_grid in text_grids:
             audio_details_dict = {}
