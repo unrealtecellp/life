@@ -17,12 +17,12 @@
   {% endif %}
 
   <button type="button" id="karya-setup" class="btn btn-lg btn-info" 
-    onclick="window.location.href='{{ url_for('karya_bp.karya_beta_v5_uploadacesscode') }}';">
+    onclick="window.location.href='{{ url_for('karya_bp.karya_new_uploadacesscode') }}';">
     Upload Access Code
   </button>
 
   <button type="button" id="karya-setup" class="btn btn-lg btn-success" 
-    onclick="window.location.href='{{ url_for('karya_bp.karya_beta_v5_manage_accesscode') }}';">
+    onclick="window.location.href='{{ url_for('karya_bp.karya_new_manage_accesscode') }}';">
     Manage Access Code
   </button>
 
@@ -32,8 +32,8 @@
   </button>
 
   <button type="button" id="karya-setup" class="btn btn-lg btn-primary" 
-  onclick="window.location.href='{{ url_for('karya_bp.karya_beta_v5_fetch_karya') }}';">
-  Fetch karya Beta V5
+  onclick="window.location.href='{{ url_for('karya_bp.karya_new_fetch_karya') }}';">
+  Fetch Karya New
   </button>
 
 {% endblock %}

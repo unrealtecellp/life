@@ -1,0 +1,304 @@
+{% extends "karyav5links.html" %}
+
+{% block title %}
+  Karya Extension
+{% endblock title %}
+
+{% block styles %}
+  {{ super() }}
+  <link href="{{ url_for('karya_bp.static', filename='home_insert.css') }}" rel="stylesheet" />
+{% endblock %}
+
+{% block app_content %}
+  {% if projectName is defined %}
+    <h4>
+      Project Name : {{ projectName }}
+    </h4>
+  {% endif %}
+        <p>To Fetch Karya Recoding Select The Task To Get Access Code(s) : </p>
+
+        <form id="accessCodeForm">
+
+          <div class="dropdown-container">
+            <h5 style="font-weight: bold; margin-right: 10px;">Recording Type:</h5>
+            <select id="additionalDropdown" name="additionalDropdown" required>
+              <option value="">Select an option</option>
+              {% for option in dropdown_list %}
+                <option value="{{ option.value }}">{{ option.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          
+        <div class="dropdown-container">
+          <label for="transcriptionDropdown" id="transcriptionLabel" style="display: none;">Access Code:</label>
+          <select id="transcriptionDropdown"  name="transcriptionDropdown"style="display: none;">
+            {% for item in transcription_access_code_list %}
+              <option value="{{ item }}">{{ item }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="dropdown-container">
+          <label for="verificationDropdown" id="verificationLabel" style="display: none;">Access Code:</label>
+          <select id="verificationDropdown" name = "verificationDropdown" style="display: none;">
+            {% for item in verification_access_code_list %}
+              <option value="{{ item }}">{{ item }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="dropdown-container">
+          <label for="recordingDropdown" id="recordingLabel" style="display: none;">Access Code:</label>
+          <select id="recordingDropdown" name="recordingDropdown" style="display: none;">
+            {% for item in recording_access_code_list %}
+            <option value="{{ item }}">{{ item }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+          <div id="idforworker"></div>
+          <br>
+          <label for="pimobilenumber">Mobile Number :</label>
+          <input type="text" name="mobile_number" id="pimobilenumber" placeholder="Enter Mobile Number" required>
+          <br>
+          <!-- <input type="button" style="background-color: #55c410; color: white;"  class="btn btn-lg btn-info" id="getotpid" value="Get OTP"> -->
+          <input type="button" class="btn btn-lg btn-info" id="getotpid" value="Get OTP">
+
+          <br>
+          <label for="karyaotp">Enter OTP : </label>
+          <input type="text" name="karya_otp" id="karyaotp" hidden required>
+          <br>
+          <br>
+          <!-- <input type="submit" style="background-color: #253ded; color: white;" class="btn btn-lg btn-primary" id="fetchaudioid" value="Fetch Audio"> -->
+          <input type="submit"  class="btn btn-info" id="fetchaudioid" value="Fetch Audio">
+
+          <br>
+      </form>    
+      </div> 
+
+{% endblock %}
+
+{% block scripts %}
+  {{ super() }}
+  <script type="text/javascript">
+    $(document).ready(function() {
+        let otpId = '';  // Initialize a variable to store otp_id
+
+        $('#getOtpBtn').on('click', function() {
+            const phoneNumber = $('#phoneNumber').val();
+            $.ajax({
+                url: "{{ url_for('karya_bp.get_otp_new') }}",
+                method: "POST",
+                contentType: "application/json",
+                data: JSON.stringify({ "phone_number": phoneNumber }),
+                success: function(response) {
+                    if (response.status === 200) {
+                        otpId = response.otp_id;  // Store the received otp_id
+                        $('#otpInput').show();
+                    } else {
+                        alert('Enter correct mobile number');
+                    }
+                },
+                error: function() {
+                    alert('Error occurred while requesting OTP.');
+                }
+            });
+        });
+
+        $('#verifyOtpBtn').on('click', function() {
+            const phoneNumber = $('#phoneNumber').val();
+            const otp = $('#otp').val();
+
+            $.ajax({
+                url: "{{ url_for('karya_bp.verify_otp_new') }}",
+                method: "POST",
+                contentType: "application/json",
+                data: JSON.stringify({
+                    "phone_number": phoneNumber,
+                    "otp": otp,
+                    "otp_id": otpId  // Use the stored otp_id
+                }),
+                success: function(response) {
+                    if (response.status === 200) {
+                        const token_id = response.token_id;  // Get token_id from the response
+                        const accessCodes = response.access_codes;
+                        const dropdown = $('#accessCode');
+
+                        dropdown.empty(); // Clear any existing options
+                        $.each(accessCodes, function(index, value) {
+                            dropdown.append($('<option></option>').attr('value', value).text(value));
+                        });
+
+                        $('#accessCodeDropdown').show();  // Show the dropdown list
+
+                        // Store token_id to use when fetching microtasks
+                        $('#fetchMicrotasksBtn').data('token_id', token_id);
+                    } else {
+                        alert('Enter correct OTP');
+                    }
+                },
+                error: function() {
+                    alert('Error occurred while verifying OTP.');
+                }
+            });
+        });
+
+        $('#fetchMicrotasksBtn').on('click', function() {
+            const accessCode = $('#accessCode').val();
+            const token_id = $('#fetchMicrotasksBtn').data('token_id');  // Retrieve stored token_id
+
+            $.ajax({
+                url: "{{ url_for('karya_bp.get_microtasks_new') }}",
+                method: "POST",
+                contentType: "application/json",
+                data: JSON.stringify({ "token_id": token_id, "access_code": accessCode }),
+                success: function(response) {
+                    const microtasks = response.microtasks;
+                    const microtasksList = $('#microtasksList');
+
+                    microtasksList.empty(); // Clear previous microtasks
+
+                    if (microtasks && microtasks.length > 0) {
+                        $.each(microtasks, function(index, task) {
+                            const listItem = `
+                                <li>
+                                    <strong>Task ID:</strong> ${task.task_id} <br>
+                                    <strong>Microtask ID:</strong> ${task.id} <br>
+                                    <strong>Input Data Point ID:</strong> ${task.input_dp_id} <br>
+                                    <strong>File:</strong> ${task.files.image} <br>
+                                    <strong>Created At:</strong> ${task.created_at} <br>
+                                    <strong>Last Updated At:</strong> ${task.last_updated_at} <br>
+                                </li>
+                                <hr>`;
+                            microtasksList.append(listItem);
+                        });
+
+                        $('#microtasksDisplay').show();  // Show the microtasks section
+                    } else {
+                        microtasksList.append('<li>No microtasks found.</li>');
+                        $('#microtasksDisplay').show();  // Show the microtasks section
+                    }
+                },
+                error: function() {
+                    alert('Error occurred while fetching microtasks.');
+                }
+            });
+        });
+    });  // End of $(document).ready function
+  </script>
+
+
+
+
+
+
+
+
+<script src="{{url_for('.static', filename='home_insert.js')}}"></script>
+<script src="{{url_for('.static', filename='speaker_select2_dropdown.js')}}"></script>
+<script src="{{url_for('.static', filename='fetchaccesscodelist.js')}}"></script>
+<script type="text/javascript">fetchAccessCodeList({{ fetchaccesscodelist | tojson | safe }});</script>
+<!-- <script type="text/javascript">fetchTransAccessCodeList({{ transcription_access_code_list | tojson | safe }});</script> -->
+<!-- <script type="text/javascript">fetchVerAccessCodeList({{ verification_access_code_list | tojson | safe }});</script> -->
+<script type="text/javascript">karyaSpeakerIdsList({{ karya_speaker_ids | tojson | safe }});</script>
+
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var additionalDropdown = document.getElementById('additionalDropdown');
+    var transcriptionDropdown = document.getElementById('transcriptionDropdown');
+    var verificationDropdown = document.getElementById('verificationDropdown');
+    var transcriptionLabel = document.getElementById('transcriptionLabel');
+    var verificationLabel = document.getElementById('verificationLabel');
+
+    additionalDropdown.addEventListener('change', function() {
+      var selectedOption = additionalDropdown.value;
+
+      if (selectedOption === "newVerification" || selectedOption === "completedVerification") {
+        verificationDropdown.style.display = "block";
+        verificationLabel.style.display = "block";
+        transcriptionDropdown.style.display = "none";
+        transcriptionLabel.style.display = "none";
+        recordingDropdown.style.display = "none";
+        recordingLabel.style.display = "none";
+      } else if (selectedOption === "newTranscription") {
+        verificationDropdown.style.display = "none";
+        verificationLabel.style.display = "none";
+        transcriptionDropdown.style.display = "block";
+        transcriptionLabel.style.display = "block";
+        recordingDropdown.style.display = "none";
+        recordingLabel.style.display = "none";
+      } else if (selectedOption == "completedRecordings") {
+        verificationDropdown.style.display = "none";
+        verificationLabel.style.display = "none";
+        transcriptionDropdown.style.display = "none";
+        transcriptionLabel.style.display = "none";
+        recordingDropdown.style.display = "block";
+        recordingLabel.style.display = "block";
+      } else {
+        verificationDropdown.style.display = "none";
+        verificationLabel.style.display = "none";
+        transcriptionDropdown.style.display = "none";
+        transcriptionLabel.style.display = "none";
+        recordingDropdown.style.display = "none";
+        recordingLabel.style.display = "none";
+      }
+    });
+  });
+</script>
+
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script>
+  $(document).ready(function() {
+    $('#getotpid').click(function() {
+      var selectedValue = $('#additionalDropdown').val();
+      var acode = null;
+
+      if (selectedValue === "newVerification" || selectedValue === "completedVerification") {
+        // Code for Verification Access Code selected
+        var verAccessCodeSelect = document.getElementById("verificationDropdown");
+        acode = verAccessCodeSelect.value;
+      } else if (selectedValue === "newTranscription") {
+        // Code for Transcription Access Code selected
+        var transAccessCodeSelect = document.getElementById("transcriptionDropdown");
+        acode = transAccessCodeSelect.value;
+      } else if (selectedValue === "completedRecordings") {
+        // Code for Transcription Access Code selected
+        var recordAccessCodeSelect = document.getElementById("recordingDropdown");
+        acode = recordAccessCodeSelect.value
+      }
+
+      var mob = $('#pimobilenumber').val();
+
+      console.log("Selected Value:", selectedValue);
+      console.log("Access Code:", acode);
+      console.log("Mobile Number:", mob);
+
+      $.getJSON("{{url_for('karya_bp.fetch_karya_otp')}}", {
+        acode: String(acode),
+        mob: String(mob)
+      })
+      .done(function(data) {
+        console.log("API Response:", data);
+        $('#getotpid').hide();
+        $('#fetchaudioid').prop('disabled', false);
+        $('#karyaotp').prop('hidden', false);
+      })
+      .fail(function(jqXHR, textStatus, errorThrown) {
+        console.log("API Request Failed:", textStatus, errorThrown);
+        // Handle the failure scenario here
+      });
+
+      return false;
+    });
+  });
+</script>
+{% endblock %}
