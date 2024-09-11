@@ -4376,7 +4376,7 @@ def get_speaker_audio_ids_new(projects_collection,
         # logger.debug("speaker_audio_ids: %s", pformat(speaker_audio_ids))
         if (len(speaker_audio_ids) != 0):
             # logger.debug("speaker_audio_ids: %s", pformat(speaker_audio_ids))
-            return speaker_audio_ids
+            return list(set(speaker_audio_ids))
 
         file_speaker_ids = projects_collection.find_one({'projectname': activeprojectname},
                                                         {'_id': 0,
@@ -4388,7 +4388,7 @@ def get_speaker_audio_ids_new(projects_collection,
                 active_speaker_id in file_speaker_ids['fileSpeakerIds'][current_username]):
             file_speaker_audio_ids = file_speaker_ids['fileSpeakerIds'][current_username][active_speaker_id]
         if (len(file_speaker_audio_ids) != 0):
-            return file_speaker_audio_ids
+            return list(set(file_speaker_audio_ids))
     except:
         logger.exception("")
 
