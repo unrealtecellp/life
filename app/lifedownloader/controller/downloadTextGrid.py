@@ -814,165 +814,92 @@ def get_boundaries_tiers(activeprojectname, projectelements, text_grid, offset=0
                              current_xmin, offset, slice_overlap)
                 logger.debug('Received xmax %s Offset %s Overlap %s',
                              current_xmax, offset, slice_overlap)
-                if current_xmin < slice_overlap:
-                    # previous_without_overlap = offset-slice_overlap
-                    # previous_xmax = xmax[-1]
-                    # logger.debug('Previous without overlap %s Previous xmax %s', previous_without_overlap, previous_xmax)
-                    # if previous_xmax < previous_without_overlap:
-                    # if overlap_boundary > 0:
-                    # overlap_boundary = current_xmin-slice_overlap
-                    # overlap_boundary = slice_overlap - current_xmin
-                    # overlap_with_max = slice_overlap - current_xmax
-                    if current_xmax > slice_overlap:
-                        # original_slice_overlap = slice_overlap
-                        previous_without_overlap = offset-slice_overlap
-                        previous_xmax = xmax[-1]
-                        logger.debug('Previous without overlap %s',
-                                     previous_without_overlap)
-                        # previous_no_boundary = previous_xmax - previous_without_overlap
-                        if previous_xmax > previous_without_overlap:
-                            logger.debug('Previous max covering overlap')
-                            previous_covered_overlap = previous_xmax - previous_without_overlap
-                            if previous_covered_overlap > slice_overlap:
-                                previous_covered_overlap = slice_overlap
+                if (current_xmin < current_xmax):
+                    if current_xmin < slice_overlap:
+                        if current_xmax > slice_overlap:
+                            # original_slice_overlap = slice_overlap
+                            previous_without_overlap = offset-slice_overlap
+                            if (len(xmax) == 0):
+                                previous_xmax = 0.0
+                            else:
+                                previous_xmax = xmax[-1]
+                            logger.debug('Previous without overlap %s',
+                                        previous_without_overlap)
+                            # previous_no_boundary = previous_xmax - previous_without_overlap
+                            if previous_xmax > previous_without_overlap:
+                                logger.debug('Previous max covering overlap')
+                                previous_covered_overlap = previous_xmax - previous_without_overlap
+                                if previous_covered_overlap > slice_overlap:
+                                    previous_covered_overlap = slice_overlap
+                                logger.debug(
+                                    'Covered overlap portion in previous %s', previous_covered_overlap)
+                                overlap_remaining_in_previous = slice_overlap - previous_covered_overlap
+                                logger.debug('Free portion in previous %s',
+                                            overlap_remaining_in_previous)
+                                remaining_overlap_for_current = slice_overlap - overlap_remaining_in_previous
+                                logger.debug('Adjusted Overlap %s',
+                                            remaining_overlap_for_current)
+                                overlap_covered_in_previous = slice_overlap - previous_covered_overlap
+
+                                slice_overlap = remaining_overlap_for_current
+                                offset -= overlap_covered_in_previous
+                            else:
+                                # previous_covered_overlap = 0.0
+                                logger.debug('Previous max without overlap')
+                                offset -= slice_overlap
+
+                                # slice_overlap = -slice_overlap
+                                slice_overlap = 0.0
+                            logger.debug('Adjusted offset %s', offset)
                             logger.debug(
-                                'Covered overlap portion in previous %s', previous_covered_overlap)
-                            overlap_remaining_in_previous = slice_overlap - previous_covered_overlap
-                            logger.debug('Free portion in previous %s',
-                                         overlap_remaining_in_previous)
-                            remaining_overlap_for_current = slice_overlap - overlap_remaining_in_previous
-                            logger.debug('Adjusted Overlap %s',
-                                         remaining_overlap_for_current)
-                            overlap_covered_in_previous = slice_overlap - previous_covered_overlap
+                                'Adjusted Slice Overlap %s', slice_overlap)
+                            current_xmin -= slice_overlap
+                            if current_xmin < 0.0:
+                                current_xmin = 0.0
+                            current_xmin += offset
+                            xmin.append(current_xmin)
 
-                            slice_overlap = remaining_overlap_for_current
-                            offset -= overlap_covered_in_previous
-                        else:
-                            # previous_covered_overlap = 0.0
-                            logger.debug('Previous max without overlap')
-                            offset -= slice_overlap
-
-                            # slice_overlap = -slice_overlap
-                            slice_overlap = 0.0
-
-                            # overlap_remaining_in_previous = slice_overlap
-                            # remaining_overlap_for_current = slice_overlap
-
-                        # slice_overlap += overlap_covered_in_previous
-
-                        # current_starting_point =
-
-                        # current_xmin = 0.0
-                        logger.debug('Adjusted offset %s', offset)
-                        logger.debug(
-                            'Adjusted Slice Overlap %s', slice_overlap)
+                            current_xmax -= slice_overlap
+                            current_xmax += offset
+                            xmax.append(current_xmax)
+                            add_bundary = True
+                    else:
+                        logger.debug('Adding in else')
                         current_xmin -= slice_overlap
-                        if current_xmin < 0.0:
-                            current_xmin = 0.0
-                        current_xmin += offset
-                        xmin.append(current_xmin)
+                        xmin.append(current_xmin+offset)
 
                         current_xmax -= slice_overlap
-                        current_xmax += offset
-                        xmax.append(current_xmax)
+                        xmax.append(current_xmax+offset)
+
                         add_bundary = True
-                        # else:
-                        #     current_xmin -= slice_overlap
-                        #     xmin.append(current_xmin+offset)
 
-                        #     current_xmax -= slice_overlap
-                        #     xmax.append(current_xmax+offset)
+                    logger.debug('Added Xmin value %s %s', xmin[-1], len(xmin))
+                    logger.debug('Added Xmax value %s %s', xmax[-1], len(xmax))
+                    if add_bundary:
+                        boundary_element.pop('start', 'start not found')
+                        boundary_element.pop('end', 'end not found')
+                        # logger.debug('Boundary element %s', boundary_element)
+                        for cur_boundary_element in boundary_element:
+                            # If the element is in projectelements only then
+                            # its tiers are being fetched
+                            if cur_boundary_element in projectelements:
+                                value_type = boundary_element[cur_boundary_element]
+                                # print('Value type', value_type)
 
-                        #     add_bundary = True
-                        #     # slice_overlap -= overlap_boundary
-                        # offset -= overlap_boundary
-                        # add_boundary = True
-                        # offset -= slice_overlap
-                        # slice_overlap = 0.0
-                        # xmin.append(current_xmin+offset)
-                        # xmax.append(current_xmax+offset)
-                        # add_bundary = True
+                                if (type(value_type) is dict) and (len(value_type) > 0):
+                                    for script_name in value_type:
+                                        tier_name = tier+'-'+script_name+'-'+cur_boundary_element
+                                        tier_value = value_type[script_name]
 
-                        # current_xmax = boundary_element['end']
-                        # current_xmax = round(current_xmax, 2)
-                        # current_xmax -= slice_overlap
-                        # logger.debug('Added Xmax value %s', xmax[-1])
-                    # else:
-                    #     current_xmin = 0.0
-                    #     xmin.append(current_xmin+offset)
-                else:
-                    logger.debug('Adding in else')
-                    current_xmin -= slice_overlap
-                    xmin.append(current_xmin+offset)
-
-                    current_xmax -= slice_overlap
-                    xmax.append(current_xmax+offset)
-
-                    add_bundary = True
-
-                logger.debug('Added Xmin value %s %s', xmin[-1], len(xmin))
-                logger.debug('Added Xmax value %s %s', xmax[-1], len(xmax))
-
-                # if (len(xmin) - len(xmax)) == 1:
-                # current_xmax = boundary_element['end']
-                # current_xmax = round(current_xmax, 2)
-                # # overlap_boundary = original_slice_overlap - current_xmax
-                # # logger.debug('Received xmax value %s Offset %s Overlap %s',
-                # #              current_xmax, offset, slice_overlap)
-                # # # if current_xmax < slice_overlap:
-                # # if overlap_boundary > 0:
-                # #     # if (len(xmin) - len(xmax)) == 1:
-                # #     if previous_xmax <= previous_without_overlap:
-                # #         xmax.append(current_xmax+offset)
-                # #     else:
-                # #         xmin.pop()
-                # # else:
-                # current_xmax -= slice_overlap
-                # xmax.append(current_xmax+offset)
-                # logger.debug('Added Xmax value %s', xmax[-1])
-                if add_bundary:
-                    boundary_element.pop('start', 'start not found')
-                    boundary_element.pop('end', 'end not found')
-                    # logger.debug('Boundary element %s', boundary_element)
-                    for cur_boundary_element in boundary_element:
-                        # If the element is in projectelements only then
-                        # its tiers are being fetched
-                        if cur_boundary_element in projectelements:
-                            value_type = boundary_element[cur_boundary_element]
-                            # print('Value type', value_type)
-
-                            if (type(value_type) is dict) and (len(value_type) > 0):
-                                for script_name in value_type:
-                                    tier_name = tier+'-'+script_name+'-'+cur_boundary_element
-                                    tier_value = value_type[script_name]
-                                    # if len(tier_value) > 0:
-                                    # print ('Tier name', tier_name)
-                                    # print ('Tiers', tiers)
-
-                                    # TODO: This will only work for transcription and translation
-                                    # Fix needed for gloss and morphemic break which are dicts and
-                                    # need to be converged into a string.
-                                    if (type(tier_value) is str):
-                                        if tier_name in tiers:
-                                            # print (activeprojectname, 'Length of current tier', tier_name, len(tiers[tier_name]))
-                                            tiers[tier_name].append(tier_value)
-                                        else:
-                                            tiers[tier_name] = [tier_value]
-
-                                    # else:
-                                    #     print (activeprojectname, 'Boundary ID', cur_boundary_id)
-                                    #     print (activeprojectname, 'Boundary element', cur_boundary_element, value_type)
-                                    #     print (activeprojectname, 'current tier', tier_name)
-                                    #     print (activeprojectname, 'Tier value', tier_value)
-                                        # print ('xmin', xmin)
-                                        # print ('xmax', xmax)
-                                        # print ('tier_name', tier_name)
-                                        # print ('tier_value', tier_value)
-
-    # print('All tiers', tiers)
-    # for tier in tiers:
-    #     print(activeprojectname, 'Tier', tier, len(tiers[tier]))
-    #     print(tiers[tier])
+                                        # TODO: This will only work for transcription and translation
+                                        # Fix needed for gloss and morphemic break which are dicts and
+                                        # need to be converged into a string.
+                                        if (type(tier_value) is str):
+                                            if tier_name in tiers:
+                                                # print (activeprojectname, 'Length of current tier', tier_name, len(tiers[tier_name]))
+                                                tiers[tier_name].append(tier_value)
+                                            else:
+                                                tiers[tier_name] = [tier_value]
 
     logger.debug("Project: %s, XMin lenngth: %s", activeprojectname, len(xmin))
     logger.debug("Project: %s, XMax lenngth: %s", activeprojectname, len(xmax))

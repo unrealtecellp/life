@@ -1082,22 +1082,22 @@ def update_active_speaker_Id(userprojects,
                              current_username,
                              speakerIds
                              ):
-    logger.info('Speaker IDs %s', speakerIds)
+    # logger.info('Speaker IDs %s', speakerIds)
     if type(speakerIds) == str:
         speakerIds = [speakerIds]
     # update active speaker ID in userprojects collection
     projectinfo = userprojects.find_one({'username': current_username},
                                         {'_id': 0, 'myproject': 1, 'projectsharedwithme': 1})
 
-    logger.info(projectinfo)
-    logger.info(activeprojectname)
+    # logger.info(projectinfo)
+    # logger.info(activeprojectname)
     userprojectinfo = ''
     for key, value in projectinfo.items():
         if len(value) != 0:
-            logger.info(activeprojectname in value)
+            # logger.info(activeprojectname in value)
             if activeprojectname in value:
                 userprojectinfo = key+'.'+activeprojectname+".activespeakerId"
-    logger.info(userprojectinfo)
+    # logger.info(userprojectinfo)
     userprojects.update_one({"username": current_username},
                             {"$set": {
                                 userprojectinfo: speakerIds[0]
@@ -4018,14 +4018,6 @@ def get_audio_sorting_subcategories_derived(transcriptions_collection,
                                             audio_sorting_sub_categories
                                             ):
     # logger.debug("speakerids: %s", pformat(speakerids))
-    # selected_audio_sorting_subcategory = {
-    #     "agegroup": "Age Group",
-    #     "gender": "Gender",
-    #     "educationlevel": "Education Level",
-    #     "educationmediumupto12": "Education Medium Upto 12",
-    #     "educationmediumafter12": "Education Medium After 12",
-    #     "speakerspeaklanguage": "Speaker Speak Language"
-    # }
     aggregate_output = transcriptions_collection.aggregate([
         {
             "$match": {

@@ -158,9 +158,9 @@ def copy_sourcedetails_to_speakerdetails(mongo,
                                                                                                 'speakerdetails')
         project_speakerdetail = speakerdetails_collection.find_one({ "projectname": project_name, "lifesourceid": lifesourceid })
         if (project_speakerdetail is None):
-            logger.debug(project_speakerdetail)
+            # logger.debug(project_speakerdetail)
             project_sourcedetail = sourcedetails_collection.find_one({ "projectname": derived_from_project_name, "lifesourceid": lifesourceid })
-            logger.debug(project_sourcedetail)
+            # logger.debug(project_sourcedetail)
             project_sourcedetail['derivedfromprojectdetails'] = {
                 "derivedfromprojectname": derived_from_project_name,
                 "source_doc_id": project_sourcedetail.pop('_id')
@@ -191,85 +191,20 @@ def copy_sourcedetails_to_speakerdetails(mongo,
     except:
         logger.exception("")
 
-def sync_transcription_project_from_crawling_project(mongo,
-                                                     projects_collection,
-                                                        userprojects_collection,
-                                                        crawling_collection,
-                                                        data_collection,
-                                                        derived_from_project_name,
-                                                        project_name,
-                                                        current_username):
+def update_speakersIds(projects_collection,
+                       userprojects_collection,
+                       project_name,
+                       current_username,
+                       speaker_ids):
     try:
-        projectowner = getprojectowner.getprojectowner(projects_collection, project_name)
-        all_crawled_audio_data = crawling_collection.find(
-            {"projectname": derived_from_project_name, "audiodeleteFLAG": 0}, {"_id": 0})
-        speaker_ids = {}
-        for i, crawled_data in enumerate(all_crawled_audio_data):
-            try:
-                # logger.debug('crawled_data: %s -> %s', i, pformat(crawled_data))
-                audioId = crawled_data['audioId']
-                speaker_audiodetail = data_collection.find_one({ "projectname": project_name, "audioId": audioId })
-                if (speaker_audiodetail is None):
-                    audio_filename = crawled_data['audioFilename']
-                    audio_duration = crawled_data['audioMetadata']['currentSliceDuration']
-                    derived_from_project_details = {
-                        "derivedfromprojectname": derived_from_project_name,
-                        "audioId": audioId
-                    }
-                    audio_detail = crawled_data
-                    audio_detail['username'] = current_username
-                    audio_detail['projectname'] = project_name
-                    lifesourceid = crawled_data['lifesourceid']
-                    if (lifesourceid in speaker_ids):
-                        speaker_ids[lifesourceid].append(audioId)
-                    else:
-                        speaker_ids[lifesourceid] = [audioId]
-                    audio_detail['lastUpdatedBy'] = current_username
-                    audio_detail['derivedfromprojectdetails'] = derived_from_project_details
-                    audio_detail['prompt'] = {}
-                    # logger.debug('data_anno_detail: %s -> %s', i, pformat(data_anno_detail))
-                    data_collection.insert_one(audio_detail)
-
-                    # transcription_audiodetails.save_boundaries_of_one_audio_file(mongo,
-                    #                                                         projects_collection,
-                    #                                                         userprojects_collection,
-                    #                                                         data_collection,
-                    #                                                         projectowner,
-                    #                                                         project_name,
-                    #                                                         current_username,
-                    #                                                         audio_filename,
-                    #                                                         audio_duration,
-                    #                                                         # change this and boundary_threshold for automatic detection of boundaries of different kinds
-                    #                                                         run_vad=True,
-                    #                                                         run_asr=False,
-                    #                                                         split_into_smaller_chunks=False,
-                    #                                                         get_audio_json=False,
-                    #                                                         #  vad_model={},
-                    #                                                         #  asr_model={},
-                    #                                                         #  transcription_type='sentence',
-                    #                                                         #  boundary_threshold=boundary_threshold,
-                    #                                                         #  min_boundary_size=min_boundary_size,
-                    #                                                         save_for_user=True
-                    #                                                         )
-                    copy_sourcedetails_to_speakerdetails(mongo,
-                                                derived_from_project_name,
-                                                project_name,
-                                                projectowner,
-                                                current_username,
-                                                lifesourceid)
-                # else:
-                #     logger.debug(speaker_audiodetail)
-            except:
-                logger.exception("")
-                continue
-        logger.debug("speaker_ids: %s", pformat(speaker_ids))
+        # logger.debug("speaker_ids: %s", pformat(speaker_ids))
         speaker_Ids_list = []
         lastActiveId = {current_username: {}}
         for key in speaker_ids.keys():
             speaker_Ids_list.append(key)
             lastActiveId[current_username][key] = {
                 "audioId": speaker_ids[key][0]}
-            logger.debug("speaker_Ids_list: %s", pformat(speaker_Ids_list))
+            # logger.debug("speaker_Ids_list: %s", pformat(speaker_Ids_list))
         # logger.debug("lastActiveId: %s", pformat(lastActiveId))
             projects_collection.update_one({"projectname": project_name},
                                         {"$set": {
@@ -290,3 +225,111 @@ def sync_transcription_project_from_crawling_project(mongo,
                                                     speaker_Ids_list[0])
     except:
         logger.exception("")
+
+def sync_transcription_project_from_crawling_project(mongo,
+                                                     projects_collection,
+                                                        userprojects_collection,
+                                                        crawling_collection,
+                                                        data_collection,
+                                                        derived_from_project_name,
+                                                        project_name,
+                                                        current_username):
+    sync_audio_status = False
+    try:
+        projectowner = getprojectowner.getprojectowner(projects_collection, project_name)
+        # all_crawled_audio_data = crawling_collection.find(
+        #     {"projectname": derived_from_project_name, "audiodeleteFLAG": 0}, {"_id": 0})
+        source_audio_ids = projects_collection.find_one({"projectname": derived_from_project_name},
+                                                        {"_id": 0,
+                                                         "sourceAudioIds": 1})
+        if (source_audio_ids is not None and
+            'sourceAudioIds' in source_audio_ids):
+            source_audio_ids = source_audio_ids['sourceAudioIds']
+        else:
+            source_audio_ids = {}
+        # logger.debug(source_audio_ids)
+        speakers_audio_ids = projects_collection.find_one({"projectname": project_name},
+                                                        {"_id": 0,
+                                                         "speakersAudioIds": 1})
+        if (speakers_audio_ids is not None and
+            'speakersAudioIds' in speakers_audio_ids):
+            speakers_audio_ids = speakers_audio_ids['speakersAudioIds']
+        else:
+            speakers_audio_ids = {}
+        # logger.debug(speakers_audio_ids)
+        # source_speaker_diff = []
+        source_speaker_diff  = sorted(list(set(list(source_audio_ids.keys())).difference(list(speakers_audio_ids.keys()))))
+        # logger.debug(source_speaker_diff)
+        for source in source_speaker_diff:
+            speaker_ids = {}
+            # audio_ids = source_audio_ids[source]
+            # speaker_ids[source] = audio_ids
+            all_transcription_audio_data = []
+            all_crawled_audio_data = crawling_collection.aggregate([
+                                        {
+                                            "$match": {
+                                                "projectname": derived_from_project_name,
+                                                # "audioId": {'$in': audio_ids},
+                                                "lifesourceid": source,
+                                                "audiodeleteFLAG": 0,
+                                                "dataType": "audio"
+                                            }
+                                        },
+                                        {
+                                            "$sort": {
+                                                "audioId": 1
+                                            }
+                                        },
+                                        {
+                                            "$project": {
+                                                "_id": 0,
+                                            }
+                                        }
+                                    ])
+            for i, crawled_data in enumerate(all_crawled_audio_data):
+                # logger.debug('crawled_data: %s -> %s', i, pformat(crawled_data))
+                audioId = crawled_data['audioId']
+                # logger.debug('crawled_data: %s', audioId)
+                speaker_audiodetail = data_collection.find_one({ "projectname": project_name, "audioId": audioId })
+                if (speaker_audiodetail is None):
+                    # audio_filename = crawled_data['audioFilename']
+                    # audio_duration = crawled_data['audioMetadata']['currentSliceDuration']
+                    derived_from_project_details = {
+                        "derivedfromprojectname": derived_from_project_name,
+                        "audioId": audioId
+                    }
+                    audio_detail = crawled_data
+                    audio_detail['username'] = current_username
+                    audio_detail['projectname'] = project_name
+                    audio_detail['lastUpdatedBy'] = current_username
+                    audio_detail['derivedfromprojectdetails'] = derived_from_project_details
+                    audio_detail['prompt'] = {}
+                    # logger.debug('audio_detail: %s -> %s', i, pformat(audio_detail))
+                    all_transcription_audio_data.append(audio_detail)
+                lifesourceid = crawled_data['lifesourceid']
+                if (lifesourceid in speaker_ids):
+                    speaker_ids[lifesourceid].append(audioId)
+                else:
+                    speaker_ids[lifesourceid] = [audioId]
+            # logger.debug(pformat(all_transcription_audio_data))
+            if (len(all_transcription_audio_data) != 0):
+                data_collection.insert_many(all_transcription_audio_data)
+            # logger.debug(speaker_ids)
+            if (speaker_ids):
+                update_speakersIds(projects_collection,
+                                    userprojects_collection,
+                                    project_name,
+                                    current_username,
+                                    speaker_ids)
+            copy_sourcedetails_to_speakerdetails(mongo,
+                                                    derived_from_project_name,
+                                                    project_name,
+                                                    projectowner,
+                                                    current_username,
+                                                    source)
+        if (len(source_speaker_diff) == 0):
+            sync_audio_status = True
+    except:
+        logger.exception("")
+
+    return sync_audio_status
