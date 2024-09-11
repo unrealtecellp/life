@@ -16,6 +16,32 @@
     </h4>
   {% endif %}
 
+<!-- "i" button to toggle the display of instructions -->
+<button type="button" class="btn btn-info" onclick="toggleInfo()">
+  i
+</button>
+
+<!-- Hidden information div, initially hidden -->
+<div id="infoText" style="display:none; margin-top: 10px; border: 1px solid #ccc; padding: 10px;">
+  <ol>
+    <li>
+      Assign New Access Code for a new speaker/user by clicking on the <span class="btn-danger"> Get New Access Code </span> button. 
+      <br>* If you get the flash message <span class="btn-info">Please Upload New Access Code</span>, there might be two issues:
+      <ul>
+        <li>Your condition didn't match the uploaded access code (e.g., inactive access code).</li>
+        <li>All uploaded access codes are already assigned (active access codes).</li>
+      </ul>
+      To know more about active and inactive access codes, go to the <span class="btn-info">Upload Access Code</span> section where you can check active and inactive access codes.
+    </li>
+    <li>
+      After assigning the access code, the user/project owner needs to <span class="btn-primary">Link Access Code(s)</span> to get the Karya ID and Life ID. 
+      Without linking the assigned access code, you can't fetch the data.
+    </li>
+  </ol>
+</div>
+
+<br>
+<br>
 
   <div class="panel panel-default">
       <div class="panel-heading">
@@ -24,7 +50,7 @@
         </button>
 
          <!-- Button to trigger modal for registering speaker -->
-         <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#registerSpeakerModal">Register Speaker</button>
+         <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#registerSpeakerModal">Link Access Code(s)</button>
       
          <!-- button for table -->
         <button type="button" class="btn btn-success" id="toggleTableBtn" onclick="toggleTableVisibility()">Assigned Access Code</button>
@@ -475,6 +501,8 @@
     
 </script>
 
+
+
 <script>
   $(document).ready(function() {
       var otpId = null;  // Declare a variable to store otp_id
@@ -533,19 +561,26 @@
                           // Iterate over each result and save it to MongoDB
                           results.forEach(function(result) {
                               $.ajax({
-                                  url: "{{ url_for('karya_bp.save_speaker') }}",
+                                  url: "{{ url_for('karya_bp.karya_new_assign_karya_life_id') }}",
                                   method: "POST",
                                   contentType: "application/json",
                                   data: JSON.stringify({ access_code: result.access_code, worker_id: result.worker_id }),
                                   success: function(saveResponse) {
-                                      alert('Speaker registered successfully!');
-                                      $('#registerSpeakerModal').modal('hide');
+                                      if (saveResponse.status === 'Speaker registered Already!') {
+                                          alert('Speaker already registered for access code: ' + result.access_code);
+                                      } else if (saveResponse.status === 'Speaker updated successfully!') {
+                                          alert('Speaker updated successfully for access code: ' + result.access_code);
+                                      } else if (saveResponse.status === 'Access code not found or inactive') {
+                                          alert('Access code not found or inactive: ' + result.access_code);
+                                      }
                                   },
                                   error: function(err) {
-                                      alert('Error saving speaker. Please try again.');
+                                      alert('Error saving speaker: ' + result.access_code + '. Please try again.');
                                   }
                               });
                           });
+                          // Hide modal after processing all access codes
+                          $('#registerSpeakerModal').modal('hide');
                       } else {
                           alert('No valid access codes found.');
                       }
@@ -560,5 +595,18 @@
       });
   });
 </script>
-    
+
+  <!-- JavaScript for toggle functionality -->
+  <script>
+    function toggleInfo() {
+      var infoText = document.getElementById("infoText");
+      if (infoText.style.display === "none") {
+        infoText.style.display = "block";
+      } else {
+        infoText.style.display = "none";
+      }
+    }
+  </script>
+
+
 {% endblock %}

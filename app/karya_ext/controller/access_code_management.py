@@ -469,7 +469,7 @@ def get_new_accesscode_speakerid(
     return speakerid, acode
 
 
-def karya_new_get_new_accesscode_speakerid(
+def karya_new_get_new_accesscode_and_speakerid(
     accesscodedetails,
     activeprojectname,
     accesscodefor,
@@ -527,13 +527,13 @@ def add_access_code_metadata(
     toc
 ):
 
-    # renameInFormDOB = fage.replace("-", "")
-    # renameInForm = fname.replace(" ", "")
-    # lowerRenameInForm = renameInForm.lower()
-    # renameDOB = "".join([lowerRenameInForm, renameInFormDOB])
-    # renameCode = "_".join([renameDOB, karyaspeakerid])
+    renameInFormDOB = fage.replace("-", "")
+    renameInForm = fname.replace(" ", "")
+    lowerRenameInForm = renameInForm.lower()
+    renameDOB = "".join([lowerRenameInForm, renameInFormDOB])
+    renameCode = "_".join([renameDOB, karyaspeakerid])
 
-    update_data = {"lifespeakerid": '',
+    update_data = {"lifespeakerid": renameCode,
                    "assignedBy":  current_username,
                    "current.updatedBy":  current_username,
                    "current.workerMetadata.name": fname,
