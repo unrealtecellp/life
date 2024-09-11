@@ -501,8 +501,6 @@
     
 </script>
 
-
-
 <script>
   $(document).ready(function() {
       var otpId = null;  // Declare a variable to store otp_id
@@ -558,27 +556,39 @@
                       var results = response.results;  // Get the list of access_code and worker_id pairs
 
                       if (results.length > 0) {
-                          // Iterate over each result and save it to MongoDB
-                          results.forEach(function(result) {
+                          // Convert results into the desired format
+                          var formattedResults = results.map(function(result) {
+                              var obj = {};
+                              obj[result.access_code] = result.worker_id;
+                              return obj;
+                          });
+
+                          // Process each result independently
+                          formattedResults.forEach(function(result) {
                               $.ajax({
                                   url: "{{ url_for('karya_bp.karya_new_assign_karya_life_id') }}",
                                   method: "POST",
                                   contentType: "application/json",
-                                  data: JSON.stringify({ access_code: result.access_code, worker_id: result.worker_id }),
+                                  data: JSON.stringify(result),
                                   success: function(saveResponse) {
+                                      var accessCode = Object.keys(result)[0];  // Get the access code
                                       if (saveResponse.status === 'Speaker registered Already!') {
-                                          alert('Speaker already registered for access code: ' + result.access_code);
+                                          alert('Speaker already registered for access code: ' + accessCode);
                                       } else if (saveResponse.status === 'Speaker updated successfully!') {
-                                          alert('Speaker updated successfully for access code: ' + result.access_code);
+                                          alert('Speaker updated successfully for access code: ' + accessCode);
                                       } else if (saveResponse.status === 'Access code not found or inactive') {
-                                          alert('Access code not found or inactive: ' + result.access_code);
+                                          alert('Access code not found or inactive: ' + accessCode);
+                                      } else if (saveResponse.status === 'Missing worker metadata for lifespeakerid creation.') {
+                                          alert('Error saving speaker for access code: ' + accessCode + '. Please try again.');
                                       }
                                   },
                                   error: function(err) {
-                                      alert('Error saving speaker: ' + result.access_code + '. Please try again.');
+                                      var accessCode = Object.keys(result)[0];
+                                      alert('Error saving speaker for access code: ' + accessCode + '. Please try again.');
                                   }
                               });
                           });
+
                           // Hide modal after processing all access codes
                           $('#registerSpeakerModal').modal('hide');
                       } else {
@@ -595,6 +605,9 @@
       });
   });
 </script>
+
+
+
 
   <!-- JavaScript for toggle functionality -->
   <script>

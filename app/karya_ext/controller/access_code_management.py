@@ -478,14 +478,7 @@ def karya_new_get_new_accesscode_and_speakerid(
     elicitationmethod,
     language
 ):
-    
-    print(
-    activeprojectname,
-    accesscodefor,
-    task,
-    domain,
-    elicitationmethod,
-    language)
+
 
     new_acode_spkrid = accesscodedetails.find_one({"isActive": 0, "projectname": activeprojectname,
                                                    "fetchData": accesscodefor, "task": task,
@@ -506,6 +499,41 @@ def karya_new_get_new_accesscode_and_speakerid(
         acode = ''
 
     return speakerid, acode
+
+
+
+def karya_new_get_assigned_accesscode_and_speakerid(
+    accesscodedetails,
+    activeprojectname,
+    accesscodefor,
+    task,
+    domain,
+    elicitationmethod,
+    language
+):
+    # Retrieve all documents matching the criteria
+    results = accesscodedetails.find(
+        {"isActive": 1, "projectname": activeprojectname,
+         "fetchData": accesscodefor, "task": task,
+         "domain": domain, "elicitationmethod": elicitationmethod,
+         "language": language, "additionalInfo.karya_version": "karya_main"},
+        {"karyaspeakerid": 1, "karyaaccesscode": 1, "_id": 0}
+    )
+
+    # Initialize a dictionary to store the access codes and speaker IDs
+    access_code_speakerid_map = {}
+
+    # Process each document and populate the dictionary
+    for result in results:
+        speakerid = result.get('karyaspeakerid', '')
+        acode = result.get('karyaaccesscode', '')
+        
+        if speakerid != '':
+            access_code_speakerid_map[acode] = {
+                'karyaspeakerid': speakerid
+            }
+
+    return access_code_speakerid_map
 
 
 """ Adding speaker details for new/fresh access code {Manage access code -> Get new access code button } in accesscodedetails

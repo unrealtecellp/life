@@ -2317,46 +2317,91 @@ def register_speaker_verify_otp():
 # and existing_lifesourceid put in old_lifesourcedid so if existing_lifesourceid is needed that can be find in old_lifesourcedid
 @karya_bp.route('/karya_new_assign_karya_life_id', methods=['POST'])
 def karya_new_assign_karya_life_id():
-    accesscodedetails, userprojects, speakerdetails = getdbcollections.getdbcollections(mongo,
-                                                                        'accesscodedetails',
-                                                                        'userprojects', 
-                                                                        'speakerdetails')
-    # Retrieve the current user's username and active project name
-    current_username = getcurrentusername.getcurrentusername()
-    activeprojectname = getactiveprojectname.getactiveprojectname(current_username, userprojects)
+    try:
+        # Get required collections
+        accesscodedetails, userprojects, speakerdetails = getdbcollections.getdbcollections(
+            mongo, 'accesscodedetails', 'userprojects', 'speakerdetails'
+        )
+        
+        # Retrieve current username and active project name
+        current_username = getcurrentusername.getcurrentusername()
+        activeprojectname = getactiveprojectname.getactiveprojectname(current_username, userprojects)
 
-    data = request.json
-    access_code = data.get('access_code')
-    worker_id = data.get('worker_id')
+        data = request.json
+        access_code = list(data.keys())[0]
+        worker_id = data[access_code]
 
-    if not access_code or not worker_id:
-        return jsonify({'status': 'Invalid input'}), 400
+        if not access_code or not worker_id:
+            return jsonify({'status': 'Access code or worker ID is missing'}), 400
 
-    # Check if access_code already exists in the database
-    speaker_record = accesscodedetails.find_one({'karyaaccesscode': access_code,
-                                                  "additionalInfo.karya_version":"karya_main", 
-                                                  "projectname":activeprojectname, 
-                                                  "isActive":1})
+        # Check if the access_code exists in the database and is active
+        speaker_record = accesscodedetails.find_one({
+            'karyaaccesscode': access_code,
+            "additionalInfo.karya_version": "karya_main", 
+            "projectname": activeprojectname, 
+            "isActive": 1
+        })
 
-    if speaker_record:
-        if 'karyaspeakerid' in speaker_record and speaker_record['karyaspeakerid'] == worker_id:
-            # Speaker is already registered
-            return jsonify({'status': 'Speaker registered Already!'})
+        if speaker_record:
+            existing_karyaspeakerid = speaker_record.get('karyaspeakerid')
+
+            if existing_karyaspeakerid:
+                # If karyaspeakerid already exists, return that the speaker is already registered
+                return jsonify({'status': 'Speaker registered Already!', 'access_code': access_code})
+            
+            # Retrieve worker metadata from 'workerMetadata'
+            worker_metadata = speaker_record.get('current', {}).get('workerMetadata', {})
+            name = worker_metadata.get('name', '')
+            age_group = worker_metadata.get('agegroup', '')
+
+            if name and age_group:
+                # Create the lifespeakerid
+                rename_in_form_dob = age_group.replace("-", "")
+                rename_in_form = name.replace(" ", "")
+                lower_rename_in_form = rename_in_form.lower()
+                lifespeakerid = f"{lower_rename_in_form}{rename_in_form_dob}_{worker_id}"
+
+                # Update both karyaspeakerid and lifespeakerid
+                update_result = accesscodedetails.update_one(
+                    {'karyaaccesscode': access_code, 
+                     "additionalInfo.karya_version": "karya_main",
+                     "projectname": activeprojectname, 
+                     "isActive": 1},
+                    {'$set': {
+                        'karyaspeakerid': worker_id,
+                        'lifespeakerid': lifespeakerid
+                    }}
+                )
+
+                # Check if the update was successful
+                if update_result.modified_count > 0:
+                    return jsonify({'status': 'Speaker updated successfully!', 'access_code': access_code})
+                else:
+                    return jsonify({'status': 'No updates made to the database for access code', 'access_code': access_code}), 400
+            else:
+                # Return error if worker metadata is incomplete or missing
+                return jsonify({'status': 'Missing worker metadata for lifespeakerid creation.'}), 400
         else:
-            # Update worker_id if access_code is found but speaker is not yet registered
-            accesscodedetails.update_one(
-                {'karyaaccesscode': access_code, 
-                 "additionalInfo.karya_version":"karya_main",
-                 "projectname":activeprojectname, 
-                 "isActive":1},
-                {'$set': {'karyaspeakerid': worker_id}}
-            )
-            return jsonify({'status': 'Speaker updated successfully!'})
-    else:
-        # If no matching access code is found, speaker is not registered
-        return jsonify({'status': 'Access code not found or inactive'}), 404
+            # Return 404 if access code not found or inactive
+            return jsonify({'status': 'Access code not found or inactive', 'access_code': access_code}), 404
+
+    except Exception as e:
+        return jsonify({'status': 'Error occurred during operation', 'error': str(e)}), 500
+
+
+    
+    # access_code_speakerid_map = access_code_management.karya_new_get_assigned_accesscode_and_speakerid(
+    #     accesscodedetails=accesscodedetails,
+    #     activeprojectname=activeprojectname,
+    #     accesscodefor=accesscodefor,
+    #     task=task,
+    #     domain=domain,
+    #     elicitationmethod=elicitationmethod,
+    #     language=language)
+
     
     
+
 
 
 
