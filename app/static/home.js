@@ -1,4 +1,4 @@
-// 1c10c4e2fe71e0f346311f143ac085b119561e67
+localStorage.clear();
 function createSelectElement(elevalue, activeprojectname) {
     // console.log(activeprojectname)
     var qform = '';

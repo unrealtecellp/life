@@ -1,27 +1,28 @@
-var Sense = [{
-    "name": "Grammatical Category",
-    "value": "Grammatical Category"
-  },
-  {
-    "name": "Example",
-    "value": "Example"
-  },
-  {
-    "name": "Free Translation",
-    "value": "Free Translation"
-  },
-  {
-    "name": "Semantic Domain",
-    "value": "Semantic Domain"
-  },
-  {
-    "name": "Lexical Relation",
-    "value": "Lexical Relation"
-  },
-  {
-    "name": "Upload Picture",
-    "value": "Upload Picture"
-  }
+var Sense = [
+// 	{
+//     "name": "Grammatical Category",
+//     "value": "Grammatical Category"
+//   },
+//   {
+//     "name": "Example",
+//     "value": "Example"
+//   },
+//   {
+//     "name": "Free Translation",
+//     "value": "Free Translation"
+//   },
+//   {
+//     "name": "Semantic Domain",
+//     "value": "Semantic Domain"
+//   },
+//   {
+//     "name": "Lexical Relation",
+//     "value": "Lexical Relation"
+//   },
+//   {
+//     "name": "Upload Picture",
+//     "value": "Upload Picture"
+//   }
 ];
 
 var Variant = [{
@@ -48,15 +49,15 @@ var Allomorph = [{
   }
 ];
 
-var language = [{
-  "id": "English",
-  "text": "English"
-  },
-  {
-  "id": "Hindi",
-  "text": "Hindi"
-  }
-];
+// var language = [{
+//   "id": "English",
+//   "text": "English"
+//   },
+//   {
+//   "id": "Hindi",
+//   "text": "Hindi"
+//   }
+// ];
 
 var semanticDomains = [
 	{"id": "", "text": ""},
@@ -7435,7 +7436,7 @@ function myFunction(newData) {
       var lexemeScript = newData[key];
         inpt += '<fieldset class="form-group border">'+
                 '<legend class="col-form-label">Lexeme Form'+
-                '<button class="btn btn-default pull-right" type="button" data-toggle="collapse"'+
+                '<button class="btn btn-sm btn-default pull-right" type="button" data-toggle="collapse"'+
                 'data-target=".script" aria-expanded="false" aria-controls="lexemeform">'+
                 '<span class="glyphicon glyphicon-chevron-up lf" aria-hidden="true"></span>'+
                 '</button></legend>';
@@ -7463,10 +7464,10 @@ function myFunction(newData) {
         senseCount += 1;
         inpt += '<fieldset class="form-group border">'+
                 '<legend class="col-form-label">'+
-                '<button class="btn btn-success" type="button" id="addSense" onclick="addsense()">'+
+                '<button class="btn btn-sm btn-success" type="button" id="addSense" onclick="addsense()">'+
                 '<span class="glyphicon glyphicon-plus" aria-hidden="true"></span> </button>'+
                 ' Sense'+' '+ senseCount +
-                '<button class="btn btn-default pull-right" type="button" data-toggle="collapse"'+
+                '<button class="btn btn-sm btn-default pull-right" type="button" data-toggle="collapse"'+
                 'data-target=".sense' + senseCount +'" aria-expanded="false" aria-controls="sense' + senseCount +'" '+
                 'onclick="collapseSense('+senseCount+')">'+
                 '<span class="glyphicon glyphicon-chevron-down s'+senseCount+'" aria-hidden="true"></span>'+
@@ -7478,24 +7479,24 @@ function myFunction(newData) {
                   '<label for="Gloss '+ glossLang[i] +'">Gloss '+ glossLang[i] +'</label>'+
                   '<input type="text" class="form-control" id="Gloss '+ glossLang[i] +'"'+ 
                   'name="Gloss '+ glossLang[i] + ' Sense '+ senseCount+'" required>'+
-                  '</div></div>'+
-                  '<div class="col-md-6 collapse sense' + senseCount +'"><div class="form-group">'+
-                  '<label for="Definition '+ glossLang[i] +'">Definition '+ glossLang[i] +'</label>'+
-                  '<input type="text" class="form-control" id="Definition '+ glossLang[i] +'"'+ 
-                  'name="Definition '+ glossLang[i] + ' Sense '+ senseCount+'">'+
                   '</div></div>';
+                //   inpt += '<div class="col-md-6 collapse sense' + senseCount +'"><div class="form-group">'+
+                //   '<label for="Definition '+ glossLang[i] +'">Definition '+ glossLang[i] +'</label>'+
+                //   '<input type="text" class="form-control" id="Definition '+ glossLang[i] +'"'+ 
+                //   'name="Definition '+ glossLang[i] + ' Sense '+ senseCount+'">'+
+                //   '</div></div>';
 			}
 			else {
 				inpt += '<div class="col-md-6 collapse sense' + senseCount +'"><div class="form-group">'+
                   '<label for="Gloss '+ glossLang[i] +'">Gloss '+ glossLang[i] +'</label>'+
                   '<input type="text" class="form-control" id="Gloss '+ glossLang[i] +'"'+ 
                   'name="Gloss '+ glossLang[i] + ' Sense '+ senseCount+'">'+
-                  '</div></div>'+
-                  '<div class="col-md-6 collapse sense' + senseCount +'"><div class="form-group">'+
-                  '<label for="Definition '+ glossLang[i] +'">Definition '+ glossLang[i] +'</label>'+
-                  '<input type="text" class="form-control" id="Definition '+ glossLang[i] +'"'+ 
-                  'name="Definition '+ glossLang[i] + ' Sense '+ senseCount+'">'+
                   '</div></div>';
+                // inpt += '<div class="col-md-6 collapse sense' + senseCount +'"><div class="form-group">'+
+                //   '<label for="Definition '+ glossLang[i] +'">Definition '+ glossLang[i] +'</label>'+
+                //   '<input type="text" class="form-control" id="Definition '+ glossLang[i] +'"'+ 
+                //   'name="Definition '+ glossLang[i] + ' Sense '+ senseCount+'">'+
+                //   '</div></div>';
 			}
           
         }
@@ -7544,7 +7545,7 @@ function myFunction(newData) {
         variantCount += 1;
         inpt += '<fieldset class="form-group border">'+
                 '<legend class="col-form-label">'+
-                '<button class="btn btn-success" type="button" id="addVariant" onclick="addvariant()">'+
+                '<button class="btn btn-sm btn-success" type="button" id="addVariant" onclick="addvariant()">'+
                 '<span class="glyphicon glyphicon-plus" aria-hidden="true"></span> </button>'+
                 ' '+ key + ' ' + variantCount +'</legend>';
             
@@ -7578,7 +7579,7 @@ function myFunction(newData) {
         allomorphCount += 1;
         inpt += '<fieldset class="form-group border">'+
                 '<legend class="col-form-label">'+
-                '<button class="btn btn-success" type="button" id="addAllomorph" onclick="addallomorph()">'+
+                '<button class="btn btn-sm btn-success" type="button" id="addAllomorph" onclick="addallomorph()">'+
                 '<span class="glyphicon glyphicon-plus" aria-hidden="true"></span> </button>'+
                 ' '+ key + ' ' + allomorphCount +'</legend>';
             
@@ -7660,7 +7661,7 @@ function myFunction(newData) {
     else if (key === 'Custom Fields') {
       inpt += '<fieldset class="form-group border">'+
                 '<legend class="col-form-label">Custom Fields'+
-                '<button class="btn btn-default pull-right" type="button" data-toggle="collapse"'+
+                '<button class="btn-sm btn-default pull-right" type="button" data-toggle="collapse"'+
                 'data-target=".customfield" aria-expanded="false" aria-controls="customfields">'+
                 '<span class="glyphicon glyphicon-chevron-down cf" aria-hidden="true"></span>'+
                 '</button></legend>';
@@ -7700,10 +7701,10 @@ function addsense() {
   senseCount += 1;
   var addSense = '<fieldset class="form-group border removesense' + senseCount +'">'+
                 '<legend class="col-form-label">'+
-                '<button class="btn btn-danger" type="button" id="deleteSense" onclick="deletesense('+ senseCount+')">'+
+                '<button class="btn btn-sm btn-danger" type="button" id="deleteSense" onclick="deletesense('+ senseCount+')">'+
                 '<span class="glyphicon glyphicon-minus" aria-hidden="true"></span> </button>'+
                 ' Sense'+' '+ senseCount +
-                '<button class="btn btn-default pull-right" type="button" data-toggle="collapse"'+
+                '<button class="btn btn-sm btn-default pull-right" type="button" data-toggle="collapse"'+
                 'data-target=".sense' + senseCount +'" aria-expanded="false" aria-controls="sense' + senseCount +'" '+
                 'onclick="collapseSense('+senseCount+')">'+
                 '<span class="glyphicon glyphicon-chevron-down s'+senseCount+'" aria-hidden="true"></span>'+
@@ -7714,12 +7715,12 @@ function addsense() {
             '<label for="Gloss '+ glossLang[i] +'">Gloss '+ glossLang[i] +'</label>'+
             '<input type="text" class="form-control" id="Gloss '+ glossLang[i] +'"'+ 
             'name="Gloss '+ glossLang[i] + ' Sense '+ senseCount+'">'+
-            '</div></div>'+
-            '<div class="col-md-6 collapse sense' + senseCount +'"><div class="form-group">'+
-            '<label for="Definition '+ glossLang[i] +'">Definition '+ glossLang[i] +'</label>'+
-            '<input type="text" class="form-control" id="Definition '+ glossLang[i] +'"'+ 
-            'name="Definition '+ glossLang[i] + ' Sense '+ senseCount+'">'+
             '</div></div>';
+        // addSense += '<div class="col-md-6 collapse sense' + senseCount +'"><div class="form-group">'+
+        //     '<label for="Definition '+ glossLang[i] +'">Definition '+ glossLang[i] +'</label>'+
+        //     '<input type="text" class="form-control" id="Definition '+ glossLang[i] +'"'+ 
+        //     'name="Definition '+ glossLang[i] + ' Sense '+ senseCount+'">'+
+        //     '</div></div>';
   }
         
   for (var i = 0; i < Sense.length; i++) {
@@ -7791,7 +7792,7 @@ function addvariant() {
   variantCount += 1;
   var addVariant = '<fieldset class="form-group border removevariant' + variantCount +'">'+
                 '<legend class="col-form-label">'+
-                '<button class="btn btn-danger" type="button" id="deleteVariant" onclick="deletevariant('+ variantCount+')">'+
+                '<button class="btn btn-sm btn-danger" type="button" id="deleteVariant" onclick="deletevariant('+ variantCount+')">'+
                 '<span class="glyphicon glyphicon-minus" aria-hidden="true"></span> </button>'+
                 ' Variant ' + variantCount +'</legend>';
         
@@ -7840,7 +7841,7 @@ function addallomorph() {
   allomorphCount += 1;
   var addAllomorph = '<fieldset class="form-group border removeallomorph' + allomorphCount +'">'+
                 '<legend class="col-form-label">'+
-                '<button class="btn btn-danger" type="button" id="deleteAllomorph" onclick="deleteallomorph('+ allomorphCount+')">'+
+                '<button class="btn btn-sm btn-danger" type="button" id="deleteAllomorph" onclick="deleteallomorph('+ allomorphCount+')">'+
                 '<span class="glyphicon glyphicon-minus" aria-hidden="true"></span> </button>'+
                 ' Allomorph ' + allomorphCount +'</legend>';
         

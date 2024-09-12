@@ -108,7 +108,7 @@ function createBrowseActions(projectOwner, currentUsername, shareMode, shareChec
         ele += '<select class="custom-select custom-select-sm" id="browseactiondropdown"></select>';
         // ele += tabSpace;
         // multiple audio delete
-        ele += '<button type="button" class="btn btn-sm btn-danger" id="multipleaudiodelete"  style="display: inline;">' +
+        ele += '<button type="button" class="btn btn-sm btn-danger" id="multipleaudiodelete" style="display: inline;">' +
             '<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>' +
             ' +1</button>';
         // ele += tabSpace;
