@@ -2318,14 +2318,18 @@ def register_speaker_verify_otp():
 @karya_bp.route('/karya_new_assign_karya_life_id', methods=['POST'])
 def karya_new_assign_karya_life_id():
     try:
-        # Get required collections
-        accesscodedetails, userprojects, speakerdetails = getdbcollections.getdbcollections(
-            mongo, 'accesscodedetails', 'userprojects', 'speakerdetails'
+        # Consolidate collection retrieval
+        accesscodedetails, userprojects, userlogin, speakermeta, projects, speakerdetails = getdbcollections.getdbcollections(
+            mongo, 'accesscodedetails', 'userprojects', 'userlogin', 'speakermeta', 'projects', 'speakerdetails'
         )
-        
+
         # Retrieve current username and active project name
         current_username = getcurrentusername.getcurrentusername()
         activeprojectname = getactiveprojectname.getactiveprojectname(current_username, userprojects)
+
+        usertype = userdetails.get_user_type(userlogin, current_username)
+        shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects, current_username, activeprojectname)
+        projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
 
         data = request.json
         access_code = list(data.keys())[0]
@@ -2347,9 +2351,9 @@ def karya_new_assign_karya_life_id():
 
             if existing_karyaspeakerid:
                 # If karyaspeakerid already exists, return that the speaker is already registered
-                return jsonify({'status': 'Speaker registered Already!', 'access_code': access_code})
-            
-            # Retrieve worker metadata from 'workerMetadata'
+                return jsonify({'status': 'Speaker registered already!', 'access_code': access_code})
+
+            # Retrieve worker metadata
             worker_metadata = speaker_record.get('current', {}).get('workerMetadata', {})
             name = worker_metadata.get('name', '')
             age_group = worker_metadata.get('agegroup', '')
@@ -2357,36 +2361,85 @@ def karya_new_assign_karya_life_id():
             if name and age_group:
                 # Create the lifespeakerid
                 rename_in_form_dob = age_group.replace("-", "")
-                rename_in_form = name.replace(" ", "")
-                lower_rename_in_form = rename_in_form.lower()
-                lifespeakerid = f"{lower_rename_in_form}{rename_in_form_dob}_{worker_id}"
+                rename_in_form = name.replace(" ", "").lower()
+                lifespeakerid = f"{rename_in_form}{rename_in_form_dob}_{worker_id}"
 
                 # Update both karyaspeakerid and lifespeakerid
                 update_result = accesscodedetails.update_one(
-                    {'karyaaccesscode': access_code, 
+                    {"karyaaccesscode": access_code, 
                      "additionalInfo.karya_version": "karya_main",
                      "projectname": activeprojectname, 
                      "isActive": 1},
                     {'$set': {
-                        'karyaspeakerid': worker_id,
-                        'lifespeakerid': lifespeakerid
+                        "karyaspeakerid": worker_id,
+                        "lifespeakerid": lifespeakerid
                     }}
                 )
 
-                # Check if the update was successful
+                # Retrieve updated document for metadata insertion
+                document = accesscodedetails.find_one({
+                    "karyaaccesscode": access_code, 
+                    "karyaspeakerid": worker_id,
+                    "projectname": activeprojectname, 
+                    "isActive": 1,
+                    "additionalInfo.karya_version": "karya_main"
+                }, {
+                    "lifespeakerid": 1, "karyaaccesscode": 1, "karyaspeakerid": 1,
+                    "current.workerMetadata": 1, "additionalInfo": 1, "_id": 0
+                })
+
+                try:
+                    new_metadata = {
+                        "name": document["current"]["workerMetadata"].get("name", ""),
+                        "agegroup": document["current"]["workerMetadata"].get("agegroup", ""),
+                        "gender": document["current"]["workerMetadata"].get("gender", ""),
+                        "educationlevel": document["current"]["workerMetadata"].get("educationlevel", ""),
+                        "educationmediumupto12": document["current"]["workerMetadata"].get("educationmediumupto12", []),
+                        "educationmediumafter12": document["current"]["workerMetadata"].get("educationmediumafter12", []),
+                        "speakerspeaklanguage": document["current"]["workerMetadata"].get("speakerspeaklanguage", []),
+                        "recordingplace": document["current"]["workerMetadata"].get("recordingplace", ""),
+                        "typeofrecordingplace": document["current"]["workerMetadata"].get("typeofrecordingplace", ""),
+                        "lifespeakerid": document["lifespeakerid"],
+                        "karyaaccesscode": document["karyaaccesscode"],
+                        "karyaspeakerid": document["karyaspeakerid"]
+                    }
+
+                    # Replace None values
+                    for field in ["name", "agegroup", "gender", "educationlevel", "recordingplace", "typeofrecordingplace"]:
+                        if new_metadata[field] is None:
+                            new_metadata[field] = ""
+                    for field in ["educationmediumupto12", "educationmediumafter12", "speakerspeaklanguage"]:
+                        if new_metadata[field] is None:
+                            new_metadata[field] = []
+
+                    lifespeakerid_var = new_metadata["lifespeakerid"]
+                    additionalInfo_var = document["additionalInfo"]
+                    print('###################################################')
+                    print('additional_info from the function karya_new_write_speaker_metadata: ', additionalInfo_var)
+                    print('###################################################')
+
+                    # Insert metadata into speakerdetails
+                    speakerDetails.karya_new_write_speaker_metadata_details(
+                        speakerdetails, current_username, activeprojectname,
+                        current_username, 'field', 'speed', lifespeakerid_var, new_metadata, 'single',
+                        additionalInfo_var
+                    )
+                except Exception as e:
+                    print(f"Error inserting metadata: {e}")
+
                 if update_result.modified_count > 0:
                     return jsonify({'status': 'Speaker updated successfully!', 'access_code': access_code})
                 else:
                     return jsonify({'status': 'No updates made to the database for access code', 'access_code': access_code}), 400
             else:
-                # Return error if worker metadata is incomplete or missing
                 return jsonify({'status': 'Missing worker metadata for lifespeakerid creation.'}), 400
         else:
-            # Return 404 if access code not found or inactive
             return jsonify({'status': 'Access code not found or inactive', 'access_code': access_code}), 404
 
     except Exception as e:
         return jsonify({'status': 'Error occurred during operation', 'error': str(e)}), 500
+
+
 
 
     
