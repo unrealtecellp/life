@@ -20,15 +20,20 @@ function createSidePanel(shareinfo) {
     if ('downloadchecked' in shareinfo &&
         shareinfo['downloadchecked'] == 'true') {
         sidePanelElement += '<a href=/downloadlexemeformexcel>'+
-                            '<button type="button" class="btn btn-primary downloadlexform">Download Lexeme Entry/Edit Form<i class="fa fa-download" aria-hidden="true"></i></button>'+
+                            '<button type="button" class="btn btn-primary downloadlexform">'+
+                            '<span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span>'+
+                            ' Lexeme Entry/Edit Form</button>'+
                             '</a>';
         }
                         
     if (shareinfo['sharemode'] >= 3) {
-        sidePanelElement += '<a><button type="button" id="uploadexcelliftXMLmodalid" class="btn btn-primary uploadexcelliftXMLmodal" data-toggle="modal"'+
-                            'data-target="#uploadExcelLiftXMLModal">'+
+        sidePanelElement += '<button type="button" id="uploadexcelliftXMLmodalid"'+
+                            ' class="btn btn-primary pull-right uploadexcelliftXMLmodal"'+
+                            ' data-toggle="modal"'+
+                            ' data-target="#uploadExcelLiftXMLModal">'+
+                            // '<span class="glyphicon glyphicon-upload" aria-hidden="true"></span>'+
                             'Upload Excel/LiftXML'+
-                            '</button></a>';
+                            '</button>';
 
     }
     sidePanelElement += '</div>';

@@ -85,13 +85,7 @@
         margin-bottom: 10px;
     }
 
-    #deleteSelectedBtn {
-        padding: 8px 16px;
-        border-radius: 4px;
-        font-weight: bold;
-        color: #fff;
-        cursor: pointer;
-    }
+  
 
     /* #deleteSelectedBtn:hover {
         background-color: #5ecc27;
@@ -117,6 +111,6 @@
 
     .audio::-webkit-media-controls-play-button,
     audio::-webkit-media-controls-panel {
-    background-color: #62e84b;
-    color: #010101;
+    background-color: #ccc7c7;
+    color: #000000;
     }

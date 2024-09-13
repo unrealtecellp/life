@@ -1,0 +1,39 @@
+{% extends "links.html" %}
+
+{% block title %}
+  Karya Extension
+{% endblock title %}
+
+{% block styles %}
+{{super()}}
+  <link href="{{url_for('.static', filename='home_insert.css')}}" rel="stylesheet" />
+{% endblock %}
+  
+{% block app_content %}
+  {% if activeprojectname is defined %}
+    <h4>
+        Project Name: {{ activeprojectname }}
+    </h4>
+  {% endif %}
+
+  <button type="button" id="karya-setup" class="btn btn-lg btn-success" 
+    onclick="window.location.href='{{ url_for('karya_bp.home_insert') }}';">
+    Karya
+  </button>
+
+
+  <button type="button" id="karya-setup" class="btn btn-lg btn-danger" 
+  onclick="window.location.href='{{ url_for('karya_bp.home_insert') }}';" disabled>
+  Karya Beta V5
+</button>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="{{ url_for('.static', filename='shareproject.js') }}"></script>
+<script src="{{ url_for('.static', filename='shareprojectwith.js') }}"></script>
+<script src="{{ url_for('.static', filename='assignkaryaaccesscode.js') }}"></script>
+<script src="{{ url_for('.static', filename='home.js') }}"></script>
+<!-- <script src="{{ url_for('.static', filename='speak.js') }}"></script> -->
+<script type="text/javascript">allProjects({{ data | tojson | safe }});</script>
+{% endblock %}

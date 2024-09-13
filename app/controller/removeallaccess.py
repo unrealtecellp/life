@@ -48,7 +48,9 @@ def removeallaccess(projects,
             projects.update_one({ "projectname": activeprojectname },
                                 {
                                     "$unset": { "lastActiveId."+user_to_remove: "",
-                                            sourceIdsKeyName+"."+user_to_remove: ""},
+                                            sourceIdsKeyName+"."+user_to_remove: "",
+                                            "fileSpeakerIds."+user_to_remove: ""
+                                            },
                                     "$pull": {"sharedwith": user_to_remove}
                                 })
             

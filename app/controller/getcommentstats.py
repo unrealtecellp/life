@@ -48,7 +48,8 @@ def getcommentstats(projects,
                 elif (transcribedfile['audiodeleteFLAG'] == 1):
                     speakerfiles.remove(audioId)
         # print(transcribed, nottranscribed)
-        # logger.debug('total_comments: %s, transcribed: %s, nottranscribed: %s', total_comments, transcribed, nottranscribed)
+        # logger.debug('total_comments: %s, transcribed: %s, nottranscribed: %s',
+        #              total_comments, transcribed, nottranscribed)
         total_comments = len(speakerfiles)
     except:
         logger.exception("")
@@ -65,7 +66,8 @@ def getcommentstatsnew(projects_collection,
     aggregate_output = data_collection.aggregate( [
                                 {
                                     "$match": { "projectname": activeprojectname,
-                                               "speakerId": match_key }
+                                               "speakerId": match_key,
+                                                "audiodeleteFLAG": 0 }
                                 },
                                 {
                                     "$group": { "_id": "$"+groupBy_key,
@@ -81,7 +83,8 @@ def getcommentstatsnew(projects_collection,
         elif doc['_id'] == 1:
             annotated_comments = doc['count']
     total_comments = remaining_comments+annotated_comments
-    # logger.debug("total_comments: %s\nannotated_comments: %s\nremaining_comments: %s", total_comments, annotated_comments, remaining_comments)
+    # logger.debug("total_comments: %s\nannotated_comments: %s\nremaining_comments: %s",
+    #              total_comments, annotated_comments, remaining_comments)
 
     return (total_comments, annotated_comments, remaining_comments)
 

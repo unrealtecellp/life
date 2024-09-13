@@ -45,6 +45,7 @@ def get_script_name(langname):
         "Nepali": "Devanagari",
         "Odia": "Odia",
         "Punjabi": "Gurumukhi",
+        "Sanskrit": "Devanagari",
         "Santali": "Ol_Chiki",
         "Tamil": "Tamil",
         "Telugu": "Telugu",

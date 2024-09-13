@@ -123,13 +123,13 @@ function viewFunction(newData, lexeme, filen) {
                 '<input type="text" class="form-control" id="Gloss '+ glossLang[i] +'"'+ 
                 'name="Gloss '+ glossLang[i] + ' Sense '+ senseCount+'"'+
                 'value="'+ lexeme["SenseNew"]["Sense "+senseCount]["Gloss"][glossLang[i].substr(0, 3).toLowerCase()]+'" readonly>'+
-                '</div></div>'+
-                '<div class="col-md-6 collapse sense' + senseCount +'"><div class="form-group">'+
-                '<label for="Definition '+ glossLang[i] +'">Definition '+ glossLang[i] +'</label>'+
-                '<input type="text" class="form-control" id="Definition '+ glossLang[i] +'"'+ 
-                'name="Definition '+ glossLang[i] + ' Sense '+ senseCount+'"'+
-                'value="'+ lexeme["SenseNew"]["Sense "+senseCount]["Definition"][glossLang[i].substr(0, 3).toLowerCase()]+'" readonly>'+
                 '</div></div>';
+              // inpt += '<div class="col-md-6 collapse sense' + senseCount +'"><div class="form-group">'+
+              //   '<label for="Definition '+ glossLang[i] +'">Definition '+ glossLang[i] +'</label>'+
+              //   '<input type="text" class="form-control" id="Definition '+ glossLang[i] +'"'+ 
+              //   'name="Definition '+ glossLang[i] + ' Sense '+ senseCount+'"'+
+              //   'value="'+ lexeme["SenseNew"]["Sense "+senseCount]["Definition"][glossLang[i].substr(0, 3).toLowerCase()]+'" readonly>'+
+              //   '</div></div>';
             }
                 
             for (var i = 0; i < Sense.length; i++) {

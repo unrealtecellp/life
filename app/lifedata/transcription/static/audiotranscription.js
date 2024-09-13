@@ -29,6 +29,8 @@ lastUpdatedBy(lstUpdatedBy)
 /**
  * Init & load.
  */
+let preservePitch = true;
+const speeds = [0.25, 0.5, 0.75, 1, 1.25, 1.50, 2];
 document.addEventListener('DOMContentLoaded', function () {
     // Init wavesurfer
     wavesurfer = WaveSurfer.create({
@@ -74,8 +76,17 @@ document.addEventListener('DOMContentLoaded', function () {
         ]
     });
     document.querySelector('#slider').oninput = function () {
+        // console.log(Number(this.value));
         wavesurfer.zoom(Number(this.value));
     };
+    // Set the playback rate
+    document.querySelector('#playbackRateSliderdivId').addEventListener('input', (e) => {
+        const speed = speeds[e.target.valueAsNumber];
+        document.querySelector('#rate').textContent = speed.toFixed(2);
+        wavesurfer.setPlaybackRate(speed, preservePitch);
+        // console.log(wavesurfer.getPlaybackRate());
+        // wavesurfer.play()
+    })
 
     // wavesurfer.load(filePath);
     if (audiowaveformData === '') {
@@ -1957,11 +1968,11 @@ function createSentenceForm(formElement, boundaryID) {
     let activeTag = getActiveTag();
     createNavTabs(activeprojectform, activeTag);
     let anonymize_checked = false;
+    if('anonymize' in formElement) {
+        anonymize_checked = formElement['anonymize'];
+    }
     // console.log("activeprojectform", activeprojectform);
     for (let [key, value] of Object.entries(formElement)) {
-        if (key === 'anonymize') {
-            anonymize_checked = value;
-        }
         // console.log('first', key, value)
         if (key === 'transcription') {
             let transcriptionScriptList = activeprojectform['Transcription'][1];
@@ -2020,7 +2031,6 @@ function createSentenceForm(formElement, boundaryID) {
                     }
                 }
             }
-
             sentSpeakerIdEle += '</select>';
             let anonymize = '';
             if (anonymize_checked) {
@@ -2191,7 +2201,9 @@ function createSentenceForm(formElement, boundaryID) {
             inpt = '';
             glossInpt = '';
             let scripttoglossdropdownselected = getScriptToGlossDropdownSelected();
-            document.getElementById("interlinearglosstab").onclick = function () { transcriptionToGloss() };
+            if (document.getElementById("interlinearglosstab")) {
+                document.getElementById("interlinearglosstab").onclick = function () { transcriptionToGloss() };
+            }
         }
         else if ('Translation' in activeprojectform &&
             key === 'translation') {
@@ -2791,7 +2803,7 @@ function getActiveRegionSentence(region) {
             if ('sentence' in regions[i]['data']) {
                 // console.log("'sentence' in Object.values(regions[i])")
                 sentence = Object.values(regions[i]['data']['sentence'])[0]
-                // console.log('sentence YES getActiveRegionSentence(region)', sentence)    
+                // console.log('sentence YES getActiveRegionSentence(region)', sentence)
             }
             else {
                 // console.log('sentence NOT getActiveRegionSentence(region)', sentence)
@@ -3402,17 +3414,21 @@ function transcriptionToGloss() {
         alert('Number of words mismatch: \n' + JSON.stringify(transcriptionWordCountMismatch));
         return;
     }
-    let ipaTranscription = document.getElementById('Transcription_IPA').value.trim();
-    let ipaTranscriptionCleaned = ipaTranscription.replace(morphemicBreakReplacerRegex, '');
-    if (ipaTranscription !== ipaTranscriptionCleaned) {
-        alert('IPA transcription cannot have characters reserved for morphemic break: \n' + morphemicBreakSymbols.join(', '));
-        return;
+    if (document.getElementById('Transcription_IPA')) {
+        let ipaTranscription = document.getElementById('Transcription_IPA').value.trim();
+        let ipaTranscriptionCleaned = ipaTranscription.replace(morphemicBreakReplacerRegex, '');
+        if (ipaTranscription !== ipaTranscriptionCleaned) {
+            alert('IPA transcription cannot have characters reserved for morphemic break: \n' + morphemicBreakSymbols.join(', '));
+            return;
+        }
     }
 
 
     let scripttoglossdropdownselected = getScriptToGlossDropdownSelected();
     // console.log(scripttoglossdropdownselected);
-    document.getElementById("interlinearglosstab").onclick = function () { transcriptionToGloss() };
+    if (document.getElementById("interlinearglosstab")) {
+        document.getElementById("interlinearglosstab").onclick = function () { transcriptionToGloss() };
+    }
     let sentenceMorphemicBreakUpdatedValue = '';
     let localStorageRegions = JSON.parse(localStorage.regions);
     // let scriptName = ele.value;
@@ -3440,7 +3456,11 @@ function transcriptionToGloss() {
             // console.log(sentence_morphemic_break);            
             let allTranscriptions = localStorageRegions[p]['data']['sentence'][boundaryID]['transcription'];
             let transcriptionInScript = allTranscriptions[scriptName];
-
+            // console.log(transcriptionInScript);
+            if (!transcriptionInScript) {
+                transcriptionInScript = '';
+            }
+            // console.log(transcriptionInScript);
             let cleanedTranscriptionInScript = transcriptionInScript.replace(morphemicBreakReplacerRegex, '');
 
             // if (sentenceMorphemicBreak == '') {
@@ -4408,8 +4428,10 @@ function morphemicBreak(e, ele) {
 
 function updateTokenId(differences, scriptName, allGlossScripts, allTranscriptions) {
     console.log("Updating token ID");
+    console.log(differences, scriptName, allGlossScripts, allTranscriptions);
     let localStorageRegions = JSON.parse(localStorage.regions);
     let activeBoundaryID = document.getElementById('activeBoundaryID').value;
+    let boundaryID = activeBoundaryID;
     let existingTokenIdInfo = {};
     let existingGloss = {};
     let currentBoundaryIndex = 0;
@@ -4459,6 +4481,12 @@ function updateTokenId(differences, scriptName, allGlossScripts, allTranscriptio
             console.log('Current Boundary Index', currentBoundaryIndex);
             break;
         }
+        else if (localStorageRegions[p]['data']['sentence'][boundaryID] &&
+                    localStorageRegions[p]['boundaryID'] === activeBoundaryID) {
+            currentBoundaryIndex = p;
+            console.log('Current Boundary Index', currentBoundaryIndex);
+            break;
+        }
     }
 
     console.log('Existing token ID info', existingTokenIdInfo);
@@ -4466,6 +4494,7 @@ function updateTokenId(differences, scriptName, allGlossScripts, allTranscriptio
 
     for (let entry of differences) {
         let status = entry[0];
+        // console.log(entry, status);
         let existingTokens = entry[1].trim().split(" ");
         for (let token of existingTokens) {
             let existingTokenValue = {};
@@ -4517,6 +4546,7 @@ function updateTokenId(differences, scriptName, allGlossScripts, allTranscriptio
             updatedTokenIndex++;
         }
     }
+    // console.log(newTokenIdInfo);
     localStorage.setItem("glossTokenId", JSON.stringify(Object.keys(newTokenIdInfo)));
 
     // console.log('Current Boundary Index', currentBoundaryIndex);
@@ -4539,8 +4569,10 @@ function generateTokenId(sentencemorphemicbreakupdatedvalue) {
     let tokenIdObject = {};
     let localStorageRegions = JSON.parse(localStorage.regions);
     let activeBoundaryID = document.getElementById('activeBoundaryID').value;
+    let boundaryID = activeBoundaryID;
     for (let p = 0; p < localStorageRegions.length; p++) {
         // console.log(p);
+        // console.log(localStorageRegions[p]);
         // console.log(localStorageRegions[p]['data']['sentence'][boundaryID])
         if (localStorageRegions[p]['data']['sentence'][boundaryID] &&
             localStorageRegions[p]['boundaryID'] === activeBoundaryID &&
@@ -4649,6 +4681,7 @@ function getGlossTokenIdInfo() {
     let glossTokenIdInfo = {};
     let localStorageRegions = JSON.parse(localStorage.regions);
     let activeBoundaryID = document.getElementById('activeBoundaryID').value;
+    let boundaryID = activeBoundaryID;
     for (let p = 0; p < localStorageRegions.length; p++) {
         // console.log(p);
         if (localStorageRegions[p]['data']['sentence'][boundaryID] &&

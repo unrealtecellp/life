@@ -29,7 +29,7 @@ def get_shared_with_users(projects,
     Args:
         projects (_type_): _description_
     """
-    project_shared_with = ''
+    project_shared_with = []
     try:
         # logger.debug("projectname from getprojecttype(): %s", activeprojectname)
         project_shared_with = projects.find_one({"projectname": activeprojectname},
@@ -38,7 +38,7 @@ def get_shared_with_users(projects,
         if (project_shared_with):
             project_shared_with = project_shared_with["sharedwith"]
         else:
-            project_shared_with = ''
+            project_shared_with = []
     except:
         logger.exception("")
         # project_type = ''

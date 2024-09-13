@@ -1,4 +1,5 @@
 function audioFilter(pageId=1) {
+    document.getElementById("loader").style.display = "block";
     // console.log('filtering...');
     selectedFilterOptions = {};
     let filterOptions = $('#audiosortingsubcategoriesdropdown').select2('data');
@@ -28,6 +29,7 @@ function audioFilter(pageId=1) {
         type : 'GET',
         url : '/lifedata/transcription/filteraudiobrowsetable'
         }).done(function(data){
+        document.getElementById("loader").style.display = "none";
         // console.log(data.audioDataFields, data.audioData, data.shareMode);
         createAudioBrowseTable(data.audioDataFields,
             data.audioData,
@@ -42,6 +44,7 @@ function audioFilter(pageId=1) {
 // filter audios
 function audioFilteringEvent() {
     $("#audiofilter").click(function() {
+        activePageNumber = 1;
         audioFilter();
     });
 }

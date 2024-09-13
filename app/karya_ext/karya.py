@@ -19,7 +19,14 @@ from io import BytesIO
 import json
 from datetime import datetime
 from pprint import pprint, pformat
+import gridfs
+import base64
 # from pylatex.utils import bold, NoEscape
+from app.controller import (manageAppConfig, questionnairedetails,
+                            readJSONFile, removeallaccess, savenewlexeme,
+                            savenewproject, savenewprojectform,
+                            savenewsentence, unannotatedfilename, updateuserprojects,
+                            userdetails, life_logging, processHTMLForm)
 
 from flask_login import current_user, login_user, logout_user, login_required
 from app.controller import (
@@ -208,6 +215,34 @@ def home_insert():
                            recording_access_code_list=recording_access_code_list,
                            karya_speaker_ids=karya_speaker_ids,
                            dropdown_list=dropdown_list)
+
+
+
+
+
+
+
+# Karya Setup
+@karya_bp.route('/karya_setupall', methods=['GET', 'POST'])
+@login_required
+def karya_setupall():
+    userprojects, userlogin = getdbcollections.getdbcollections(
+        mongo, 'userprojects', 'userlogin')
+    current_username = getcurrentusername.getcurrentusername()
+    usertype = userdetails.get_user_type(userlogin, current_username)
+    currentuserprojectsname = getcurrentuserprojects.getcurrentuserprojects(current_username, userprojects)
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_username, userprojects)
+    shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects, current_username, activeprojectname)
+    print(activeprojectname)
+    return render_template(
+        'karya_setupall.html',
+        data=currentuserprojectsname,
+        activeprojectname=activeprojectname,
+        shareinfo=shareinfo,
+        usertype=usertype
+    )
+
+
 
 
 ##############################################################################################################
@@ -431,37 +466,65 @@ def deactive_update_table_data():
     print("languagescript :", languagescript)
 
     current_speakerdetails = accesscodedetails.find_one({"karyaaccesscode": accessCode, "projectname": activeprojectname, "isActive": 0},
-                                                        {"current.workerMetadata.name": 1, "current.workerMetadata.agegroup": 1, "_id": 0, })
+                                                        {"current.workerMetadata.name": 1, "current.workerMetadata.agegroup": 1, "_id": 1 })
 
     current_speakerdetails_name = current_speakerdetails['current']['workerMetadata']['name']
     current_speakerdetails_age = current_speakerdetails['current']['workerMetadata']['agegroup']
+    current_speakerdetails_id = current_speakerdetails["_id"]
     print("current_speakerdetails_name: ", current_speakerdetails_name)
     print("current_speakerdetails_age: ", current_speakerdetails_age)
 
-    update_data = {"current.updatedBy":  current_username,
-                   "karyaaccesscode": accessCode,
-                   "karyaspeakerid": speakerID,
-                   "fetchData": fetchData,
-                   "elicitationmethod": elicitation,
-                   "phase": phase,
-                   "domain": domain,
-                   "language": languagescript,
-                   "task": task
-                   }
+    
+
+    # update_data = {"current.updatedBy":  current_username,
+    #                "karyaaccesscode": accessCode,
+    #                "karyaspeakerid": speakerID,
+    #                "fetchData": int(fetchData),
+    #                "elicitationmethod": [elicitation],
+    #                "phase": phase,
+    #                "domain": [domain],
+    #                "language": languagescript,
+    #                "task": task
+    #                }
+
+
+
+
+
+    # Split the elicitation and domain strings into lists
+    elicitation_list = elicitation.split(',')
+    domain_list = domain.split(',')
+    languagescript_list = languagescript.split(',')
+    update_data = {
+        "current.updatedBy": current_username,
+        "karyaaccesscode": accessCode,
+        "karyaspeakerid": speakerID,
+        "fetchData": int(fetchData),
+        "elicitationmethod": elicitation_list,
+        "phase": phase,
+        "domain": domain_list,
+        "language": languagescript_list,
+        "task": task
+    }
+
 
     date_of_modified = str(datetime.now()).replace(".", ":")
 
+    # new_user_info
+    # accesscodedetails.update_one({"karyaaccesscode": accessCode, "projectname": activeprojectname, "isActive": 0}, {
+    #                              "$set": update_data}) 
+
     accesscodedetails.update_one({"karyaaccesscode": accessCode, "projectname": activeprojectname, "isActive": 0}, {
-                                 "$set": update_data})  # new_user_info
+                                "$set": update_data}) 
+
+
     print("if condtion working inactive access code")
 
     # Return a response indicating the success or failure of the update operation
-    return jsonify({'status': 'success', 'message': 'Table data updated successfully'})
+    return jsonify({'status': 'success', 'message': 'Deactivated Table data updated successfully'})
 
 
 '''updating active accesscode'''
-
-
 @karya_bp.route('/update_table_data', methods=['POST'])
 def update_table_data():
     accesscodedetails, userprojects = getdbcollections.getdbcollections(
@@ -606,6 +669,24 @@ def add():
     current_username = getcurrentusername.getcurrentusername()
     activeprojectname = getactiveprojectname.getactiveprojectname(
         current_username, userprojects)
+    
+    accesscodedetails, userprojects, userlogin, speakermeta, projects = getdbcollections.getdbcollections(
+	mongo, 'accesscodedetails', 'userprojects', 'userlogin', 'speakerdetails', 'projects')
+
+    
+    # current_username = getcurrentusername.getcurrentusername()
+    logger.debug('USERNAME: ', current_username)
+    usertype = userdetails.get_user_type(
+        userlogin, current_username)
+    currentuserprojectsname = getcurrentuserprojects.getcurrentuserprojects(
+        current_username, userprojects)
+    activeprojectname = getactiveprojectname.getactiveprojectname(
+        current_username, userprojects)
+    shareinfo = getuserprojectinfo.getuserprojectinfo(
+        userprojects, current_username, activeprojectname)
+    allspeakerdetails, alldatalengths, allkeys = speakerDetails.getspeakerdetails(
+        activeprojectname, speakermeta)
+    projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
 
     if request.method == 'POST':
         accesscode = request.form.get('accode')
@@ -779,6 +860,151 @@ def add():
                 por,
                 toc
             )
+
+
+        #sync life speakeid with lifesourceid and more meta data to speakerdetalis    
+        find_accesscodedetails = accesscodedetails.find({
+        "projectname": activeprojectname, 'isActive':1},
+                                            {"lifespeakerid": 1,
+                                            "karyaaccesscode": 1,
+                                            "karyaspeakerid": 1,
+                                            "current.workerMetadata.name": 1,
+                                            "current.workerMetadata.agegroup": 1,
+                                            "current.workerMetadata.gender": 1,
+                                            "current.workerMetadata.educationlevel": 1,
+                                            "current.workerMetadata.educationmediumupto12": 1,
+                                            "current.workerMetadata.educationmediumafter12": 1,
+                                            "current.workerMetadata.speakerspeaklanguage": 1,
+                                            "current.workerMetadata.recordingplace": 1,
+                                            "current.workerMetadata.typeofrecordingplace": 1,
+                                            "current.workerMetadata.activeAccessCode": 1,
+                                            "_id": 0})
+
+        total_documents = find_accesscodedetails.count()
+        print("Total number of documents found from accesscodedetails:", total_documents)
+
+        metadata_schema = 'speed'
+        audio_source = 'field'
+        upload_type = 'single'
+
+        for document in find_accesscodedetails:
+            try:
+                new_metadata = {
+                    "name": document["current"]["workerMetadata"].get("name", ""),
+                    "agegroup": document["current"]["workerMetadata"].get("agegroup", ""),
+                    "gender": document["current"]["workerMetadata"].get("gender", ""),
+                    "educationlevel": document["current"]["workerMetadata"].get("educationlevel", ""),
+                    "educationmediumupto12": document["current"]["workerMetadata"].get("educationmediumupto12", []),
+                    "educationmediumafter12": document["current"]["workerMetadata"].get("educationmediumafter12", []),
+                    "speakerspeaklanguage": document["current"]["workerMetadata"].get("speakerspeaklanguage", []),
+                    "recordingplace": document["current"]["workerMetadata"].get("recordingplace", ""),
+                    "typeofrecordingplace": document["current"]["workerMetadata"].get("typeofrecordingplace", ""),
+                    "lifespeakerid": document["lifespeakerid"],
+                    "karyaaccesscode": document["karyaaccesscode"],
+                    "karyaspeakerid": document["karyaspeakerid"]
+                }
+                # print('new_metadata : ', new_metadata)
+
+                # Additional conditions to replace None values
+                if new_metadata["name"] is None:
+                    new_metadata["name"] = ""
+                if new_metadata["agegroup"] is None:
+                    new_metadata["agegroup"] = ""
+                if new_metadata["gender"] is None:
+                    new_metadata["gender"] = ""
+                if new_metadata["educationlevel"] is None:
+                    new_metadata["educationlevel"] = ""
+                if new_metadata["recordingplace"] is None:
+                    new_metadata["recordingplace"] = ""
+                if new_metadata["typeofrecordingplace"] is None:
+                    new_metadata["typeofrecordingplace"] = ""
+                # For array fields
+                if new_metadata["educationmediumupto12"] is None:
+                    new_metadata["educationmediumupto12"] = []
+                if new_metadata["educationmediumafter12"] is None:
+                    new_metadata["educationmediumafter12"] = []
+                if new_metadata["speakerspeaklanguage"] is None:
+                    new_metadata["speakerspeaklanguage"] = []
+
+            except Exception as e:
+                # Handle exception
+                print("An error occurred:", e)
+                continue  # Skip to the next document
+
+            # Check if the metadata already exists in speakermeta (speakerdetails)
+            existing_metadata = speakermeta.find_one({
+                                            "projectname": activeprojectname,
+                                            "current.sourceMetadata.lifespeakerid": new_metadata["lifespeakerid"],
+                                            "current.sourceMetadata.karyaaccesscode":  new_metadata["karyaaccesscode"],
+                                            "current.sourceMetadata.karyaspeakerid": new_metadata["karyaspeakerid"]
+                                        })
+            print('existing_metadata :', existing_metadata)
+
+            if not existing_metadata:
+                # Metadata does not exist, so write it to the speakermeta collection
+                not_existing_metadata = speakerDetails.write_speaker_metadata_details(
+                                                                                    speakermeta,
+                                                                                    projectowner,
+                                                                                    activeprojectname,
+                                                                                    current_username,
+                                                                                    audio_source,
+                                                                                    metadata_schema,
+                                                                                    new_metadata,
+                                                                                    upload_type
+                                                                                )
+                # print('not existing_metadata')
+
+        check_existing_lifesourceid = speakermeta.find({
+                                                        "projectname": activeprojectname},
+                                                        {"lifesourceid": 1,
+                                                        "current.sourceMetadata.lifespeakerid": 1,
+                                                        "current.sourceMetadata.karyaaccesscode":  1,
+                                                        "current.sourceMetadata.karyaspeakerid": 1,
+                                                            "_id": 0
+                                                        })
+
+
+
+        for existing_lifesourceid in check_existing_lifesourceid:
+            if existing_lifesourceid["lifesourceid"] != existing_lifesourceid["current"]["sourceMetadata"]["lifespeakerid"]:
+                # Define filter criteria to check if old_lifesourceid is already present
+                filter_criteria_old_lifesourceid = {
+                    "projectname": activeprojectname,
+                    "current.sourceMetadata.lifespeakerid": existing_lifesourceid["current"]["sourceMetadata"]["lifespeakerid"],
+                    # Check if old_lifesourceid does not exist
+                    "old_lifesourceid": {"$exists": False}
+                }
+                # print('filter_criteria_old_lifesourceid :', filter_criteria_old_lifesourceid)
+
+                # Define filter criteria to update lifespeakerid to lifesourceid
+                filter_criteria_lifespeakerid_to_lifesourceid = {
+                    "projectname": activeprojectname,
+                    "current.sourceMetadata.lifespeakerid": existing_lifesourceid["current"]["sourceMetadata"]["lifespeakerid"]
+                }
+                # print('filter_criteria_lifespeakerid_to_lifesourceid :', filter_criteria_lifespeakerid_to_lifesourceid)
+                # Define the data to be added
+                lifesource_to_old_lifesourceid = {
+                    "old_lifesourceid": existing_lifesourceid["lifesourceid"]}
+                lifespeakerid_to_lifesourceid = {
+                    "lifesourceid": existing_lifesourceid["current"]["sourceMetadata"]["lifespeakerid"]}
+                
+                # print('lifesource_to_old_lifesourceid :', lifesource_to_old_lifesourceid , 'lifespeakerid_to_lifesourceid :',lifespeakerid_to_lifesourceid  )
+
+                # Update old_lifesourceid only if it does not exist in the document
+                try:
+                    # Update old_lifesourceid
+                    result = speakermeta.update_many(filter_criteria_old_lifesourceid, {
+                                                    "$set": lifesource_to_old_lifesourceid})
+
+                    # Update lifespeakerid to lifesourceid
+                    result = speakermeta.update_many(filter_criteria_lifespeakerid_to_lifesourceid, {
+                                                    "$set": lifespeakerid_to_lifesourceid})
+
+                except Exception as e:
+                    print("An error occurred:", e)
+
+
+
 
     return redirect(url_for('karya_bp.homespeaker'))
     # return render_template("homespeaker.html",
@@ -1117,7 +1343,6 @@ def fetch_karya_audio():
         # r_j, hederr = karya_api_access.get_all_karya_assignments(
         #     verification_details, additional_task, project_type, access_code_task)
 
-        print("line 790")
 
         logger.debug("r_j: %s\nhederr: %s", r_j, hederr)
         #############################################################################################
@@ -1128,7 +1353,7 @@ def fetch_karya_audio():
         ################################ Get already fetched audio list and quesIDs   ########################################
         fetched_audio_list = karya_audio_management.get_fetched_audio_list(
             accesscodedetails, access_code, activeprojectname)
-        print("898", fetched_audio_list)
+        # print("898", fetched_audio_list)
         logger.debug("fetched_audio_list: %s", fetched_audio_list)
         exclude_ids = []
         if (project_type == 'questionnaires'):
@@ -1441,6 +1666,7 @@ def update_speaker_ids():
 @login_required
 def karyaaudiobrowse():
     try:
+        fs = gridfs.GridFS(mongo.db)
         projects, userprojects, transcriptions, accesscodedetails, fs_files, fs_chunks = getdbcollections.getdbcollections(
             mongo, 'projects', 'userprojects', 'transcriptions', 'accesscodedetails', 'fs.files', 'fs.chunks')
         current_username = getcurrentusername.getcurrentusername()
@@ -1469,38 +1695,52 @@ def karyaaudiobrowse():
                     "karyaInfo.karyaSpeakerId": 1
                 }
         ):
+            # print(transcriptions_data)
             if "karyaInfo" in transcriptions_data and "karyaSpeakerId" in transcriptions_data["karyaInfo"] and "karyaFetchedAudioId" in transcriptions_data["karyaInfo"]:
                 speaker_id = transcriptions_data["speakerId"]
                 if speaker_id not in data:
                     data[speaker_id] = []
                 data[speaker_id].append(transcriptions_data)
-
+        
+        # for key, value in data.items():
+        #     print("Key:", key)
+        #     print("Value:", value)
         for speaker_id, transcriptions_list in data.items():
             for transcription in transcriptions_list:
-                karya_fetched_audio_id = transcription["karyaInfo"]["karyaFetchedAudioId"]
-                if karya_fetched_audio_id in accesscodedetails.distinct("karyafetchedaudios"):
-                    access_code = accesscodedetails.find_one(
-                        {"karyafetchedaudios": karya_fetched_audio_id})["karyaaccesscode"]
-                    transcription["accesscode"] = access_code
-                    print("access_code : ", access_code)
-        print(100*"#", "\n", data)
+                if "karyaInfo" in transcription and "karyaSpeakerId" in transcription["karyaInfo"] and "karyaFetchedAudioId" in transcription["karyaInfo"] and "audioFilename" in transcription:
+                    karya_fetched_audio_id = transcription["karyaInfo"]["karyaFetchedAudioId"]
+                    audio_filename = transcription["audioFilename"]
+                    if karya_fetched_audio_id in accesscodedetails.distinct("karyafetchedaudios"):
+                        access_code = accesscodedetails.find_one({"karyafetchedaudios": karya_fetched_audio_id, "isActive":1})["karyaaccesscode"]
+                        transcription["accesscode"] = access_code
+                        # print("access_code : ", access_code)
 
-        #################################################################
-        ########################################################################      
-        print('speaker_id : ', speaker_id)
-        print(100*"#", "\n")
-        audio_filenames = [item['audioFilename'] for item in data[speaker_id]]
-        print(audio_filenames)
-        for audio_filename in audio_filenames:
-            files = fs_files.find({"filename": audio_filename}, {"_id": 1})
-            for file in files: 
-                print('files: ',file)
-                file_chunk = fs_chunks.find_one({"files_id": file['_id']}, {"_id": 0, "data":1} )
-        ########################################################################  
-        ########################################################################      
-    
+                    files = fs_files.find({"filename": audio_filename, "projectname": activeprojectname}, {"_id": 1, "filename": 1})
+                    for file in files:
+                        gridfs_file = fs.get(file['_id'])
+                        audio_data = gridfs_file.read()
+                        # print("File Name:", audio_filename)
+                        # print("File Data:", type(audio_data))
 
+                        
+                        # Append the audio data to the transcription entry in data
+                        
+                        # transcription["audio_data_in_bytes"] = audio_data
+                        
+                        # Encode audio data as base64 for embedding in HTML
 
+                        audio_data_base64 = base64.b64encode(audio_data).decode('utf-8')
+                        transcription["audio_data_in_bytes"] = audio_data_base64
+                        # transcription[audio_filename] = type(audio_data)
+        for key, value in data.items():
+            print("Key:", key)
+            # print("Value:", value)
+            # Append modified transcription entry to data
+            # data[speaker_id].append(transcription)
+            # print("data type : ", data)
+########################################################################  
+######################################################################## 
+        # print(data)
 
     except Exception as e:
         logger.exception(e)
@@ -1565,8 +1805,8 @@ def karyadeleteaudiobrowse():
         # print("accesscodedetails_result_find : ","karya audio ids: ",accesscodedetails_result_find['karyafetchedaudios'],
         #                                         "accesscode: ",accesscodedetails_result_find['karyaaccesscode'])
 
-        print("accesscodedetails_result_find : ", "karya audio ids: ",
-              accesscodedetails_result_find['karyafetchedaudios'])
+        # print("accesscodedetails_result_find : ", "karya audio ids: ",
+        #       accesscodedetails_result_find['karyafetchedaudios'])
         # delete karya audio id
         accesscodedetails_result = accesscodedetails.update_one(
             {

@@ -14,6 +14,7 @@ backports.zoneinfo==0.2.1
 bibtexparser==2.0.0b7
 bidict==0.23.1
 blinker==1.7.0
+cachelib==0.9.0
 cachetools==5.3.2
 certifi==2022.12.7
 cffi==1.15.1
@@ -42,6 +43,7 @@ ffmpeg-python==0.2.0
 filelock==3.13.1
 Flask==2.2.3
 Flask-Bootstrap==3.3.7.1
+Flask-Caching==2.3.0
 Flask-Login==0.6.2
 Flask-PyMongo==2.3.0
 Flask-WTF==1.1.1
@@ -157,6 +159,7 @@ python-socketio==5.11.1
 pytorch-lightning==2.2.4
 pytorch-metric-learning==2.5.0
 pytube==15.0.0
+pytubefix==6.8.1
 pytz==2023.3.post1
 PyYAML==6.0
 rdflib==6.2.0
@@ -185,6 +188,7 @@ simple-websocket==1.0.0
 simpletransformers==0.64.5
 six==1.16.0
 smmap==5.0.1
+snakeviz==2.2.0
 sortedcontainers==2.4.0
 soundfile==0.12.1
 soxr==0.3.5

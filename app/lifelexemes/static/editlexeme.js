@@ -1,27 +1,28 @@
-var Sense = [{
-    "name": "Grammatical Category",
-    "value": "Grammatical Category"
-  },
-  {
-    "name": "Example",
-    "value": "Example"
-  },
-  {
-    "name": "Free Translation",
-    "value": "Free Translation"
-  },
-  {
-    "name": "Semantic Domain",
-    "value": "Semantic Domain"
-  },
-  {
-    "name": "Lexical Relation",
-    "value": "Lexical Relation"
-  },
-  {
-    "name": "Upload Picture",
-    "value": "Upload Picture"
-  }
+var Sense = [
+// 	{
+//     "name": "Grammatical Category",
+//     "value": "Grammatical Category"
+//   },
+//   {
+//     "name": "Example",
+//     "value": "Example"
+//   },
+//   {
+//     "name": "Free Translation",
+//     "value": "Free Translation"
+//   },
+//   {
+//     "name": "Semantic Domain",
+//     "value": "Semantic Domain"
+//   },
+//   {
+//     "name": "Lexical Relation",
+//     "value": "Lexical Relation"
+//   },
+//   {
+//     "name": "Upload Picture",
+//     "value": "Upload Picture"
+//   }
 ];
 
 var Variant = [{
@@ -48,15 +49,15 @@ var Allomorph = [{
   }
 ];
 
-var language = [{
-  "id": "English",
-  "text": "English"
-  },
-  {
-  "id": "Hindi",
-  "text": "Hindi"
-  }
-];
+// var language = [{
+//   "id": "English",
+//   "text": "English"
+//   },
+//   {
+//   "id": "Hindi",
+//   "text": "Hindi"
+//   }
+// ];
 
 var semanticDomains = [
 	{"id": "", "text": ""},
@@ -7526,13 +7527,13 @@ function editFunction(newData, lexeme, filen) {
 						'<input type="text" class="form-control" id="Gloss '+ glossLang[i] +'"'+ 
 						'name="Gloss '+ glossLang[i] + ' Sense '+ senseCount+'"'+
 						'value="'+ lexeme["SenseNew"]["Sense "+senseCount]["Gloss"][glossLang[i].substr(0, 3).toLowerCase()]+'">'+
-						'</div></div>'+
-						'<div class="col-md-6 collapse sense' + senseCount +'"><div class="form-group">'+
-						'<label for="Definition '+ glossLang[i] +'">Definition '+ glossLang[i] +'</label>'+
-						'<input type="text" class="form-control" id="Definition '+ glossLang[i] +'"'+ 
-						'name="Definition '+ glossLang[i] + ' Sense '+ senseCount+'"'+
-						'value="'+ lexeme["SenseNew"]["Sense "+senseCount]["Definition"][glossLang[i].substr(0, 3).toLowerCase()]+'">'+
 						'</div></div>';
+				// inpt += '<div class="col-md-6 collapse sense' + senseCount +'"><div class="form-group">'+
+				// 		'<label for="Definition '+ glossLang[i] +'">Definition '+ glossLang[i] +'</label>'+
+				// 		'<input type="text" class="form-control" id="Definition '+ glossLang[i] +'"'+ 
+				// 		'name="Definition '+ glossLang[i] + ' Sense '+ senseCount+'"'+
+				// 		'value="'+ lexeme["SenseNew"]["Sense "+senseCount]["Definition"][glossLang[i].substr(0, 3).toLowerCase()]+'">'+
+				// 		'</div></div>';
 				}
 						
 				for (var i = 0; i < Sense.length; i++) {
@@ -7585,13 +7586,13 @@ function editFunction(newData, lexeme, filen) {
 						'<input type="text" class="form-control" id="Gloss '+ glossLang[i] +'"'+ 
 						'name="Gloss '+ glossLang[i] + ' Sense '+ senseCount+'"'+
 						'value="'+ lexeme["SenseNew"]["Sense "+senseCount]["Gloss"][glossLang[i].substr(0, 3).toLowerCase()]+'">'+
-						'</div></div>'+
-						'<div class="col-md-6 collapse sense' + senseCount +'"><div class="form-group">'+
-						'<label for="Definition '+ glossLang[i] +'">Definition '+ glossLang[i] +'</label>'+
-						'<input type="text" class="form-control" id="Definition '+ glossLang[i] +'"'+ 
-						'name="Definition '+ glossLang[i] + ' Sense '+ senseCount+'"'+
-						'value="'+ lexeme["SenseNew"]["Sense "+senseCount]["Definition"][glossLang[i].substr(0, 3).toLowerCase()]+'">'+
 						'</div></div>';
+					// inpt += '<div class="col-md-6 collapse sense' + senseCount +'"><div class="form-group">'+
+					// 	'<label for="Definition '+ glossLang[i] +'">Definition '+ glossLang[i] +'</label>'+
+					// 	'<input type="text" class="form-control" id="Definition '+ glossLang[i] +'"'+ 
+					// 	'name="Definition '+ glossLang[i] + ' Sense '+ senseCount+'"'+
+					// 	'value="'+ lexeme["SenseNew"]["Sense "+senseCount]["Definition"][glossLang[i].substr(0, 3).toLowerCase()]+'">'+
+					// 	'</div></div>';
 				}
 						
 				for (var i = 0; i < Sense.length; i++) {
@@ -7966,12 +7967,12 @@ function addsense() {
             '<label for="Gloss '+ glossLang[i] +'">Gloss '+ glossLang[i] +'</label>'+
             '<input type="text" class="form-control" id="Gloss '+ glossLang[i] +'"'+ 
             'name="Gloss '+ glossLang[i] + ' Sense '+ senseCount+'">'+
-            '</div></div>'+
-            '<div class="col-md-6 collapse sense' + senseCount +'"><div class="form-group">'+
-            '<label for="Definition '+ glossLang[i] +'">Definition '+ glossLang[i] +'</label>'+
-            '<input type="text" class="form-control" id="Definition '+ glossLang[i] +'"'+ 
-            'name="Definition '+ glossLang[i] + ' Sense '+ senseCount+'">'+
             '</div></div>';
+        // addSense += '<div class="col-md-6 collapse sense' + senseCount +'"><div class="form-group">'+
+        //     '<label for="Definition '+ glossLang[i] +'">Definition '+ glossLang[i] +'</label>'+
+        //     '<input type="text" class="form-control" id="Definition '+ glossLang[i] +'"'+ 
+        //     'name="Definition '+ glossLang[i] + ' Sense '+ senseCount+'">'+
+        //     '</div></div>';
   }
         
   for (var i = 0; i < Sense.length; i++) {

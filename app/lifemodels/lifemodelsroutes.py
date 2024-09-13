@@ -1,4 +1,4 @@
-"""Module containing the routes for the models part of the LiFe."""
+"""Module containing the routes for the models part of the LiFE."""
 from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify, send_file
 from flask_login import current_user, login_required, login_user, logout_user
 from app.controller import (

@@ -10,6 +10,7 @@ function showDTable(event) {
       },
       success: function(response) {
         console.log(response);
+        console.log('james');
         if ($.isEmptyObject(response)) {
           alert('No data found for the selected code!');
         } else {

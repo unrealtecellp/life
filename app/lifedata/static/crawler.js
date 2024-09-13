@@ -154,7 +154,7 @@ function crawlerInterfaceEvents() {
         $(".videoschannelsid").append(drow);
         $('#idsearchkeywords' + crawlerVideosChannelsId).select2({
             placeholder: 'Search Keywords',
-            // data: languages,
+            data: getJsonfileData('questionnaire_domain'),
             tags: true,
             allowClear: true
         });
