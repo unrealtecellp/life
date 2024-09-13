@@ -2464,112 +2464,215 @@ def karya_new_assign_karya_life_id():
 
 
 
-@karya_bp.route('/get_otp_new', methods=['POST'])
+@karya_bp.route('/karya_new_get_otp', methods=['GET', 'POST'])
 @login_required
-def get_otp_new():
-    data = request.json
-    phone_number = data.get('phone_number')
-    
-    urll = 'https://demo-karya.centralindia.cloudapp.azure.com/api_auth/v5/otp/generate'
-    headers = {'phone_number': phone_number}
-    
-    r = requests.post(url=urll, headers=headers)
-    
-    if r.status_code == 200:
-        response = json.loads(r.text)
-        otp_id = response['otp_id']
-        print("otp_id: ", otp_id)
-        return jsonify({"status": 200, "otp_id": otp_id})
-    else:
-        return jsonify({"status": r.status_code, "message": "Error sending OTP"})
+def karya_new_get_otp():
+    phone_number = request.args.get("mob")
+    print("karya_new_get_otp phone number: ", phone_number)
 
-@karya_bp.route('/verify_otp_new', methods=['POST'])
+    # Generate the otp_id using the phone number
+    otp_id = karya_api_access.karya_new_get_otp_id(phone_number)
+    
+    if not otp_id:
+        flash("Failed to generate OTP. Please try again.")
+        return jsonify(result="False")
+
+    # Send the OTP and return the otp_id to the frontend for verification
+    return jsonify(result="True", otp_id=otp_id)
+
+
+
+@karya_bp.route('/karya_new_fetch_audio', methods=['GET', 'POST'])
 @login_required
-def verify_otp_new():
-    data = request.json
-    phone_number = data.get('phone_number')
-    otp_id = data.get('otp_id')
-    otp = data.get('otp')
+def karya_new_fetch_audio():
+    projects, userprojects, projectsform, recordings, transcriptions, questionnaires, accesscodedetails = getdbcollections.getdbcollections(mongo,
+                                                                                                                                            'projects',
+                                                                                                                                            'userprojects',
+                                                                                                                                            'projectsform',
+                                                                                                                                            'recordings',
+                                                                                                                                            'transcriptions',
+                                                                                                                                            'questionnaires',
+                                                                                                                                            'accesscodedetails')
+    current_username = getcurrentusername.getcurrentusername()
+    print('curent user : ', current_username)
+    activeprojectname = getactiveprojectname.getactiveprojectname(
+        current_username, userprojects)
+    projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
+    project_type = getprojecttype.getprojecttype(projects, activeprojectname)
+    logger.debug("project_type: %s", project_type)
+    logger.debug("activeprojectname: %s", activeprojectname)
+    derivedFromProjectName = ''
+    derive_from_project_type = ''
+    if (project_type == 'transcriptions' or
+            project_type == 'recordings'):
 
-    print(f"phone_number: {phone_number}, otp_id: {otp_id}, otp: {otp}")
-    
-    urll = 'https://demo-karya.centralindia.cloudapp.azure.com/api_auth/v5/otp/verify'
-    headers = {
-        'phone_number': phone_number,
-        'otp_id': otp_id,
-        'otp': otp
-    }
-    print(headers)
-    
-    verify_ph = requests.put(url=urll, headers=headers)
-    
-    if verify_ph.status_code == 200:
-        response = verify_ph.json()
-        print("Response:", response)
-        
-        token_id = [p['id_token'] for p in response]
-        print("Token ID:", token_id)
-        
-        avatar_url = 'https://demo-karya.centralindia.cloudapp.azure.com/api_worker/v5/avatars'
-        avatar_headers = {'karya_worker_id_token': token_id[0]}
-        worker_response = requests.get(url=avatar_url, headers=avatar_headers)
-        
-        if worker_response.status_code == 200:
-            assign = worker_response.json()
-            print("Worker Avatar Response:", assign)
-            
-            access_codes = [item['access_code'] for item in assign]
-            print("Access Codes:", access_codes)
+        derive_from_project_type, derivedFromProjectName = getprojecttype.getderivedfromprojectdetails(projects,
+                                                                                                       activeprojectname)
+        logger.debug("derive_from_project_type: %s, derivedFromProjectName: %s",
+                     derive_from_project_type, derivedFromProjectName)
 
-            return jsonify({"status": 200, "access_codes": access_codes, "token_id": token_id[0]})
+    if request.method == 'POST':
+
+        project_type = projects.find_one({"projectname": activeprojectname}, {
+                                         "projectType": 1})['projectType']
+
+        access_code_task = request.form.get('additionalDropdown')
+        # access_code = None
+        access_code = request.form.get('transcriptionDropdown')
+
+        if access_code_task == "newVerification" or access_code_task == "completedVerification":
+            access_code = request.form.get('verificationDropdown')
+        elif access_code_task == "newTranscription":
+            access_code = request.form.get('transcriptionDropdown')
+        elif access_code_task == "completedRecordings":
+            access_code = request.form.get('recordingDropdown')
+
+        for_worker_id = request.form.get("speaker_id")
+        phone_number = request.form.get("mobile_number")
+        otp = request.form.get("karya_otp")
+        get_otp_id = request.form.get('otp_id')
+        otp_id = get_otp_id.split(',')[0]
+
+
+        print("OTP : ", otp)
+        print("OTP ID : ", otp_id)
+        print("project_type: ", project_type)
+        # print("additional_task : ", additional_task)
+        print("access_code_task : ", access_code_task)
+        print("access_code : ", access_code)
+        print("for_worker_id : ", for_worker_id)
+        print("phone_number : ", phone_number)
+        ###############################   verify OTP    ##########################################
+        # Verify OTP using the otp_id
+        otp_verified, otp_verification_details = karya_api_access.karya_new_verify_karya_otp(phone_number, otp, otp_id)
+        if not otp_verified:
+            flash("Invalid OTP OR Mobile number is not registered with this project. Please try again.")
+            return redirect(url_for('karya_bp.karya_new_home'))
+
+        # Fetch assignments based on project type and access code task
+        if project_type in ['validation', 'transcriptions', 'recordings', 'questionnaires']:
+            if "new" in access_code_task:
+                assignment_url = 'https://main-karya.centralindia.cloudapp.azure.com/api_auth/v5/assignments?type=new&from=2021-05-11T07:23:40.654Z'
+                print("Fetching new assignments for project type:", project_type)
+            elif "completed" in access_code_task:
+                assignment_url = 'https://main-karya.centralindia.cloudapp.azure.com/api_auth/v5/assignments?type=verified&includemt=true&from=2021-05-11T07:23:40.654Z'
+                print("Fetching completed assignments for project type:", project_type)
+            # Fetch and process the assignment URL here
         else:
-            return jsonify({"status": worker_response.status_code, "message": "Error fetching worker avatar"})
-    else:
-        return jsonify({"status": verify_ph.status_code, "message": "Error verifying OTP"})
+            flash("Action not allowed for this project type.")
+            return redirect(url_for('karya_bp.karya_new_home'))
 
-@karya_bp.route('/get_microtasks_new', methods=['POST'])
-@login_required
-def get_microtasks_new():
-    data = request.json
-    token_id = data.get('token_id')
-    access_code = data.get('access_code')
+        ###############################   Get Assignments    ########################################
 
-    if not token_id:
-        return jsonify({"status": 400, "message": "Missing token_id"}), 400
+        token_id_json, token_id_header = karya_api_access.karya_new_get_all_karya_assignments(
+            otp_verification_details, assignment_url)
+        # r_j, hederr = karya_api_access.get_all_karya_assignments(
+        #     verification_details, additional_task, project_type, access_code_task)
 
-    print("token id : ", token_id)
-    print("selected access code: ", access_code)
-    
-    headers = {
-        'karya_worker_id_token': token_id, 
-        'access_code': access_code
-    }
-    print('headers : ', headers)
-    
-    urll = 'https://demo-karya.centralindia.cloudapp.azure.com/api_worker/v5/assignments?type=new&from=2024-01-17T20:11:35.213Z'
-    worker_response = requests.get(url=urll, headers=headers)
-    
-    if worker_response.status_code == 200:
-        data = worker_response.json()
-        print(data)
+
+        print("token_id_header : ", token_id_header)
+        logger.debug("token_id_json: %s\n token_id_header: %s", token_id_json, token_id_header)
+        #############################################################################################
+        language = accesscodedetails.find_one({"projectname": activeprojectname,
+                                                "karyaaccesscode": access_code},
+                                              {'language': 1, '_id': 0})['language']
+        logger.debug("language: %s", language)
+        ################################ Get already fetched audio list and quesIDs   ########################################
+        fetched_audio_list = karya_audio_management.get_fetched_audio_list(
+            accesscodedetails, access_code, activeprojectname)
+        # print("898", fetched_audio_list)
+        logger.debug("fetched_audio_list: %s", fetched_audio_list)
+        exclude_ids = []
+        if (project_type == 'questionnaires'):
+            exclude_ids = getquesidlistofsavedaudios.getquesidlistofsavedaudios(questionnaires,
+                                                                                activeprojectname,
+                                                                                language,
+                                                                                exclude_ids)
+        elif (project_type == 'transcriptions' and
+                derive_from_project_type == 'questionnaires'):
+            exclude_ids = audiodetails.getaudioidlistofsavedaudios(transcriptions,
+                                                                   activeprojectname,
+                                                                   language,
+                                                                   exclude_ids,
+                                                                   for_worker_id)
+        elif (project_type == 'recordings' and
+                derive_from_project_type == 'questionnaires'):
+            exclude_ids = audiodetails.getaudioidlistofsavedaudios(recordings,
+                                                                   activeprojectname,
+                                                                   language,
+                                                                   exclude_ids,
+                                                                   for_worker_id)
+            logger.debug("exclude_ids: %s", exclude_ids)
+
+        #############################################################################################
+
+        ##############################  File ID and sentence mapping   #################################
+        '''worker ID'''
+
+        if "completedRecordings" in access_code_task:
+            micro_task_ids, workerId_list, sentence_list, karya_audio_report, filename_list, fileID_list = karya_api_access.get_assignment_metadata_recording(
+                accesscodedetails, activeprojectname,
+                access_code,
+                r_j, for_worker_id
+            )
+        else:
+            micro_task_ids, workerId_list, sentence_list, karya_audio_report, filename_list, fileID_list = karya_api_access.get_assignment_metadata(
+                accesscodedetails, activeprojectname,
+                access_code,
+                r_j, for_worker_id
+            )
+
         
-        microtasks = data.get('microtasks', [])
-        microtask_details = [{
-            'id': mt['id'],
-            'task_id': mt['task_id'],
-            'files': mt['input'].get('files', {}),
-            'input_dp_id': mt['input_dp_id'],
-            'created_at': mt['created_at'],
-            'last_updated_at': mt['last_updated_at']
-        } for mt in microtasks]
-        
-        organized_json = json.dumps(microtask_details, indent=4)
-        print(organized_json)
-        
-        return jsonify({"status": 200, "microtasks": microtask_details})
-    else:
-        return jsonify({"status": worker_response.status_code, "message": "Error fetching microtasks"})
+        # Get the file ID to sentence mapping using the get_fileid_sentence_mapping function from the api assignment 
+        # The fileid_sentence_map is a dictionary that returns:
+        # - If karya_audio_report is empty:
+        #   A dictionary where each key is a tuple of (fileID, sentence), and each value is the corresponding worker ID.
+        # - If karya_audio_report is not empty:
+        #   A dictionary where each key is a tuple of (fileID, sentence), and each value is a tuple of (worker ID, audio report).
 
+
+        fileid_sentence_map = karya_api_access.get_fileid_sentence_mapping(fileID_list, workerId_list, sentence_list, karya_audio_report)
+        logger.debug("fileid_sentence_map: %s", fileid_sentence_map)
+        # print("fileid_sentence_map", fileid_sentence_map)
+
+        #Output fileid_sentence_map sample  from server
+        # {('281474976758604', 'In which months / seasons are these vegetables grown?'): ('16784394',), ('281474976758605', 'What is the process of growing these vegetables?'): ('16784394',)}
+
+        #this will find matched, unmatched and already fetched senteces and its file_id
+        matched_unmathched_fetched_sentences = karya_audio_management.matched_unmatched_alreadyfetched_sentences(
+            mongo,
+            projects, userprojects, projectowner, accesscodedetails,
+            projectsform, questionnaires, transcriptions, recordings,
+            activeprojectname, derivedFromProjectName, current_username,
+            project_type, derive_from_project_type,
+            fileid_sentence_map, fetched_audio_list, exclude_ids,
+            language, hederr, access_code
+        )
+        # print(matched_unmathched_fetched_sentences)  
+
+        matched, unmatched, already_fetched = matched_unmathched_fetched_sentences
+        # print("Matched Sentences:", matched)
+        # print("Unmatched Sentences:", unmatched)
+        # print("Already Fetched Sentences:", already_fetched)
+        logger.debug("Matched Sentences: %s", matched)
+        logger.debug("Unmatched Sentences: %s", unmatched)
+        logger.debug("Already Fetched Sentences: %s", already_fetched)
+
+
+        #############################################################################################
+        # getnsave_karya_recordings -> get_insert_id -> getaudiofromprompttext
+        karya_audio_management.getnsave_karya_recordings(
+            mongo,
+            projects, userprojects, projectowner, accesscodedetails,
+            projectsform, questionnaires, transcriptions, recordings,
+            activeprojectname, derivedFromProjectName, current_username,
+            project_type, derive_from_project_type,
+            fileid_sentence_map, fetched_audio_list, exclude_ids,
+            language, hederr, access_code
+        )
+        return redirect(url_for('karya_bp.home_insert'))
+
+    return render_template("fetch_karya_audio.html")
 
 
 

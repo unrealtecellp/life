@@ -38,6 +38,21 @@ def send_karya_otp(
             'access-code': input_access_code, 'phone-number': phone_number}
         register_request = requests.put(
             url=registeruser_urll, headers=registeruser_hederr)
+        
+
+
+def karya_new_get_otp_id(phone_number):
+    url = 'https://main-karya.centralindia.cloudapp.azure.com/api_auth/v5/otp/generate'
+    headers = {'phone_number': phone_number}
+    
+    response = requests.post(url=url, headers=headers)
+    if response.status_code == 200:
+        response_json = response.json()
+        otp_id = response_json.get('otp_id')
+        print("function karya_new_get_otp_id", otp_id)
+        return otp_id, True
+    else:
+        return None, False
 
 
 def verify_karya_otp(
@@ -54,6 +69,19 @@ def verify_karya_otp(
     return verification_details.status_code == int(200), verification_details
 
 
+def karya_new_verify_karya_otp(phone_number, otp, otp_id):
+    url = 'https://main-karya.centralindia.cloudapp.azure.com/api_auth/v5/otp/verify'
+    headers = {
+        'phone_number': phone_number,
+        'otp_id': otp_id,
+        'otp': otp
+    }
+    # print("verify headers: ", headers)
+    otp_verification_details = requests.put(url=url, headers=headers)
+   
+    return otp_verification_details.status_code == int(200), otp_verification_details
+
+
 # def get_all_karya_assignments(verifyPh_request, additional_task, project_type, access_code_task):
 def get_all_karya_assignments(verifyPh_request, assignment_url):
 
@@ -64,6 +92,14 @@ def get_all_karya_assignments(verifyPh_request, assignment_url):
     
     return r_j, hederr
 
+def karya_new_get_all_karya_assignments(otp_verification_details, assignment_url):
+
+    getTokenid_assignment_hedder = otp_verification_details.json()['id_token']
+    token_id_header = {'karya-id-token': getTokenid_assignment_hedder}
+    assignment_request = requests.get(url=assignment_url, headers=token_id_header)
+    token_id_json = assignment_request.json()
+    
+    return token_id_json, token_id_header
 
 def get_assignment_metadata_recording(
     accesscodedetails, activeprojectname,

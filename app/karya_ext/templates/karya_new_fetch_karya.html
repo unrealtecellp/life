@@ -1,24 +1,80 @@
+
 {% extends "karyav5links.html" %}
+
+
 
 {% block title %}
   Karya Extension
 {% endblock title %}
 
-{% block styles %}
-  {{ super() }}
-  <link href="{{ url_for('karya_bp.static', filename='home_insert.css') }}" rel="stylesheet" />
-{% endblock %}
+<!-- <body> -->
 
+
+
+
+{% block styles %}
+{{super()}}
+  <link href="{{url_for('.static', filename='home_insert.css')}}" rel="stylesheet" />
+  <style>
+    /* Pop-up box styles */
+    #popupBox {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+    }
+
+    #closeButton {
+      position: absolute;
+      top: 5px;
+      right: 10px;
+      cursor: pointer;
+      font-size: 20px;
+    }
+
+    /* Downloading bar styles */
+    #downloadingBar {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: #f8f9fa;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+    }
+
+    #downloadProgress {
+      width: 100%;
+      height: 20px;
+      border-radius: 10px;
+      background-color: #ddd;
+    }
+  </style>
+{% endblock %}
+  
 {% block app_content %}
   {% if projectName is defined %}
     <h4>
-      Project Name : {{ projectName }}
+        Project Name : {{ projectName }}
     </h4>
   {% endif %}
-        <p>To Fetch Karya Recoding Select The Task To Get Access Code(s) : </p>
 
-        <form id="accessCodeForm">
-
+  <div id="uploadmanage">
+    <div class="row karyaaudiodata">
+      {% if shareinfo['sharemode']|int >= 3 %}
+      <div class="col-md-6 fetchkaryarecording">
+        <br>
+        <h3><b>Fetch Karya Recordings</b></h3>
+        <form name="fetchdata" method="POST" action="{{url_for('karya_bp.karya_new_fetch_audio')}}">
+          <p>To Fetch Karya Recording, Select The Task To Get Access Code(s): </p>
+  
           <div class="dropdown-container">
             <h5 style="font-weight: bold; margin-right: 10px;">Recording Type:</h5>
             <select id="additionalDropdown" name="additionalDropdown" required>
@@ -28,172 +84,71 @@
               {% endfor %}
             </select>
           </div>
-          
-        <div class="dropdown-container">
-          <label for="transcriptionDropdown" id="transcriptionLabel" style="display: none;">Access Code:</label>
-          <select id="transcriptionDropdown"  name="transcriptionDropdown"style="display: none;">
-            {% for item in transcription_access_code_list %}
-              <option value="{{ item }}">{{ item }}</option>
-            {% endfor %}
-          </select>
-        </div>
-
-        <div class="dropdown-container">
-          <label for="verificationDropdown" id="verificationLabel" style="display: none;">Access Code:</label>
-          <select id="verificationDropdown" name = "verificationDropdown" style="display: none;">
-            {% for item in verification_access_code_list %}
-              <option value="{{ item }}">{{ item }}</option>
-            {% endfor %}
-          </select>
-        </div>
-
-        <div class="dropdown-container">
-          <label for="recordingDropdown" id="recordingLabel" style="display: none;">Access Code:</label>
-          <select id="recordingDropdown" name="recordingDropdown" style="display: none;">
-            {% for item in recording_access_code_list %}
-            <option value="{{ item }}">{{ item }}</option>
-            {% endfor %}
-          </select>
-        </div>
+  
+          <div class="dropdown-container">
+            <label for="transcriptionDropdown" id="transcriptionLabel" style="display: none;">Access Code:</label>
+            <select id="transcriptionDropdown" name="transcriptionDropdown" style="display: none;">
+              {% for item in transcription_access_code_list %}
+                <option value="{{ item }}">{{ item }}</option>
+              {% endfor %}
+            </select>
+          </div>
+  
+          <div class="dropdown-container">
+            <label for="verificationDropdown" id="verificationLabel" style="display: none;">Access Code:</label>
+            <select id="verificationDropdown" name="verificationDropdown" style="display: none;">
+              {% for item in verification_access_code_list %}
+                <option value="{{ item }}">{{ item }}</option>
+              {% endfor %}
+            </select>
+          </div>
+  
+          <div class="dropdown-container">
+            <label for="recordingDropdown" id="recordingLabel" style="display: none;">Access Code:</label>
+            <select id="recordingDropdown" name="recordingDropdown" style="display: none;">
+              {% for item in recording_access_code_list %}
+                <option value="{{ item }}">{{ item }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <input type="hidden" id="otp_id" name="otp_id" value="">
 
           <div id="idforworker"></div>
+  
           <br>
-          <label for="pimobilenumber">Mobile Number :</label>
+          <label for="pimobilenumber">Mobile Number:</label>
           <input type="text" name="mobile_number" id="pimobilenumber" placeholder="Enter Mobile Number" required>
           <br>
-          <!-- <input type="button" style="background-color: #55c410; color: white;"  class="btn btn-lg btn-info" id="getotpid" value="Get OTP"> -->
+  
           <input type="button" class="btn btn-lg btn-info" id="getotpid" value="Get OTP">
-
+         
           <br>
-          <label for="karyaotp">Enter OTP : </label>
+          <label for="karyaotp">Enter OTP:</label>
           <input type="text" name="karya_otp" id="karyaotp" hidden required>
           <br>
           <br>
-          <!-- <input type="submit" style="background-color: #253ded; color: white;" class="btn btn-lg btn-primary" id="fetchaudioid" value="Fetch Audio"> -->
-          <input type="submit"  class="btn btn-info" id="fetchaudioid" value="Fetch Audio">
-
+          <input type="submit" class="btn btn-info" id="fetchaudioid" value="Fetch Audio">
           <br>
-      </form>    
-      </div> 
-
+        </form>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+  
+  <div id="popupBox">
+    <span id="closeButton">&times;</span>
+    <p>Fetching Complete</p>
+  </div>
+  
+  <div id="downloadingBar">
+    <div id="downloadProgress"></div>
+  </div>
+  <!-- <br><br><br><br> -->
 {% endblock %}
+<!-- </body> -->
 
 {% block scripts %}
-  {{ super() }}
-  <script type="text/javascript">
-    $(document).ready(function() {
-        let otpId = '';  // Initialize a variable to store otp_id
-
-        $('#getOtpBtn').on('click', function() {
-            const phoneNumber = $('#phoneNumber').val();
-            $.ajax({
-                url: "{{ url_for('karya_bp.get_otp_new') }}",
-                method: "POST",
-                contentType: "application/json",
-                data: JSON.stringify({ "phone_number": phoneNumber }),
-                success: function(response) {
-                    if (response.status === 200) {
-                        otpId = response.otp_id;  // Store the received otp_id
-                        $('#otpInput').show();
-                    } else {
-                        alert('Enter correct mobile number');
-                    }
-                },
-                error: function() {
-                    alert('Error occurred while requesting OTP.');
-                }
-            });
-        });
-
-        $('#verifyOtpBtn').on('click', function() {
-            const phoneNumber = $('#phoneNumber').val();
-            const otp = $('#otp').val();
-
-            $.ajax({
-                url: "{{ url_for('karya_bp.verify_otp_new') }}",
-                method: "POST",
-                contentType: "application/json",
-                data: JSON.stringify({
-                    "phone_number": phoneNumber,
-                    "otp": otp,
-                    "otp_id": otpId  // Use the stored otp_id
-                }),
-                success: function(response) {
-                    if (response.status === 200) {
-                        const token_id = response.token_id;  // Get token_id from the response
-                        const accessCodes = response.access_codes;
-                        const dropdown = $('#accessCode');
-
-                        dropdown.empty(); // Clear any existing options
-                        $.each(accessCodes, function(index, value) {
-                            dropdown.append($('<option></option>').attr('value', value).text(value));
-                        });
-
-                        $('#accessCodeDropdown').show();  // Show the dropdown list
-
-                        // Store token_id to use when fetching microtasks
-                        $('#fetchMicrotasksBtn').data('token_id', token_id);
-                    } else {
-                        alert('Enter correct OTP');
-                    }
-                },
-                error: function() {
-                    alert('Error occurred while verifying OTP.');
-                }
-            });
-        });
-
-        $('#fetchMicrotasksBtn').on('click', function() {
-            const accessCode = $('#accessCode').val();
-            const token_id = $('#fetchMicrotasksBtn').data('token_id');  // Retrieve stored token_id
-
-            $.ajax({
-                url: "{{ url_for('karya_bp.get_microtasks_new') }}",
-                method: "POST",
-                contentType: "application/json",
-                data: JSON.stringify({ "token_id": token_id, "access_code": accessCode }),
-                success: function(response) {
-                    const microtasks = response.microtasks;
-                    const microtasksList = $('#microtasksList');
-
-                    microtasksList.empty(); // Clear previous microtasks
-
-                    if (microtasks && microtasks.length > 0) {
-                        $.each(microtasks, function(index, task) {
-                            const listItem = `
-                                <li>
-                                    <strong>Task ID:</strong> ${task.task_id} <br>
-                                    <strong>Microtask ID:</strong> ${task.id} <br>
-                                    <strong>Input Data Point ID:</strong> ${task.input_dp_id} <br>
-                                    <strong>File:</strong> ${task.files.image} <br>
-                                    <strong>Created At:</strong> ${task.created_at} <br>
-                                    <strong>Last Updated At:</strong> ${task.last_updated_at} <br>
-                                </li>
-                                <hr>`;
-                            microtasksList.append(listItem);
-                        });
-
-                        $('#microtasksDisplay').show();  // Show the microtasks section
-                    } else {
-                        microtasksList.append('<li>No microtasks found.</li>');
-                        $('#microtasksDisplay').show();  // Show the microtasks section
-                    }
-                },
-                error: function() {
-                    alert('Error occurred while fetching microtasks.');
-                }
-            });
-        });
-    });  // End of $(document).ready function
-  </script>
-
-
-
-
-
-
-
-
+{{super()}}
 <script src="{{url_for('.static', filename='home_insert.js')}}"></script>
 <script src="{{url_for('.static', filename='speaker_select2_dropdown.js')}}"></script>
 <script src="{{url_for('.static', filename='fetchaccesscodelist.js')}}"></script>
@@ -282,15 +237,19 @@
       console.log("Access Code:", acode);
       console.log("Mobile Number:", mob);
 
-      $.getJSON("{{url_for('karya_bp.fetch_karya_otp')}}", {
-        acode: String(acode),
-        mob: String(mob)
+      $.getJSON("{{url_for('karya_bp.karya_new_get_otp')}}", {
+        mob: String(mob),
       })
       .done(function(data) {
         console.log("API Response:", data);
+        if (data.result === "True") {
+        $('#otp_id').val(data.otp_id); // Set the OTP ID in the hidden field
         $('#getotpid').hide();
         $('#fetchaudioid').prop('disabled', false);
         $('#karyaotp').prop('hidden', false);
+      } else {
+        alert("Failed to get OTP. Please try again.");
+      }
       })
       .fail(function(jqXHR, textStatus, errorThrown) {
         console.log("API Request Failed:", textStatus, errorThrown);
@@ -301,4 +260,30 @@
     });
   });
 </script>
-{% endblock %}
+
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+  $(document).ready(function() {
+    $('#fetchaudioid').click(function() {
+      $('#downloadingBar').show();
+      // Perform data fetching action here
+      // For demonstration purposes, simulating a delay of 3 seconds
+      setTimeout(function() {
+        $('#downloadingBar').hide();
+        // Show pop-up box with "Fetching Complete" message
+        $('#popupBox').fadeIn();
+      }, 30000);
+    });
+
+    // Close pop-up box when close button is clicked
+    $('#closeButton').click(function() {
+      $('#popupBox').fadeOut();
+    });
+  });
+</script>
+
+
+{% endblock %} 
