@@ -1696,7 +1696,7 @@ def getaudioidforderivedtranscriptionproject(transcriptions,
 
     return 'False'
 
-
+# empty_list [] = exclude, karyaspeakerid=for_worker_id that is slected from fetch form page
 def getaudioidlistofsavedaudios(data_collection,
                                 activeprojectname,
                                 language,
@@ -1705,6 +1705,10 @@ def getaudioidlistofsavedaudios(data_collection,
     """_summary_
     """
     logger.debug('checking recordings')
+
+    # finding data=transcriptions_document form transcriptions collection 
+    # that is created when data project in made this contain sentence, domain, Q_id, quesId, speakerId , audioId, audioFilename
+    # in every document of transcriptions collection
     all_audio = data_collection.find({"projectname": activeprojectname},
                                      {
         "_id": 0,
