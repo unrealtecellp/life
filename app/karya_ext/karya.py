@@ -2840,13 +2840,13 @@ def karya_new_fetch_karya():
         }
     elif projectType == "questionnaires":
                 dropdown_dict = {
-            "newVerification": "New Verification"
+            "newVerification": "Unverified Recordings"
                 }
 
     else:
         dropdown_dict = {
-            "newVerification": "New Verification",
-            "completedRecordings": "Completed Recordings"
+            "newVerification": "Unverified Recordings",
+            "completedRecordings": "Verified Recordings"
         }
 
     dropdown_list = [{"value": key, "name": value}
