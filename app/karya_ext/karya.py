@@ -2643,15 +2643,29 @@ def karya_new_fetch_audio():
             print('recording')
             # Fetch metadata for completed recordings
             micro_task_ids, workerId_list, sentence_list, karya_audio_report, filename_list, fileID_list = karya_api_access.karya_new_get_assignment_metadata_recording(
-                accesscodedetails, activeprojectname,
-                access_code,
-                karya_new_api_metadata, for_worker_id
-            )
+                                                                                                                        accesscodedetails, activeprojectname,
+                                                                                                                        access_code,
+                                                                                                                        karya_new_api_metadata, for_worker_id
+                                                                                                                    )           
 
             # Call to map fileID to sentence and workerId for completed recordings
             fileid_sentence_map = karya_api_access.karya_new_get_fileid_sentence_mapping(
-                fileID_list, workerId_list, sentence_list, karya_audio_report, filename_list
-            )
+                                                            fileID_list, workerId_list, sentence_list, karya_audio_report, filename_list
+                                                        )
+            
+            # Log and process the fileID-sentence map
+            logger.debug("fileid_sentence_map: %s", fileid_sentence_map)
+            print("fileid_sentence_map :", fileid_sentence_map)
+
+            karya_audio_management.karya_new_getnsave_karya_recordings(
+                                                                        mongo,
+                                                                        projects, userprojects, projectowner, accesscodedetails,
+                                                                        projectsform, questionnaires, transcriptions, recordings,
+                                                                        activeprojectname, derivedFromProjectName, current_username,
+                                                                        project_type, derive_from_project_type,
+                                                                        fileid_sentence_map, fetched_audio_list, exclude_ids,
+                                                                        language, file_download_header, access_code
+                                                                        )
         else:
             print('verified')
             # Fetch metadata for verified assignments
@@ -2665,12 +2679,23 @@ def karya_new_fetch_audio():
             fileid_sentence_map = karya_api_access.karya_new_get_fileid_sentence_mapping(
                 fileID_list, sepaker_access_code_list, sentence_list, karya_audio_report, filename_list
             )
+            # Log and process the fileID-sentence map
+            logger.debug("fileid_sentence_map: %s", fileid_sentence_map)
+            print("fileid_sentence_map :", fileid_sentence_map)
 
-        # Log and process the fileID-sentence map
-        logger.debug("fileid_sentence_map: %s", fileid_sentence_map)
-        print("fileid_sentence_map :", fileid_sentence_map)
 
-
+            file_download_header = {"karya_worker_id_token" : token_id, 'access_code': access_code}
+            # getnsave_karya_recordings -> get_insert_id -> getaudiofromprompttext
+            karya_audio_management.karya_new_getnsave_karya_recordings_from_verified(
+                mongo,
+                projects, userprojects, projectowner, accesscodedetails,
+                projectsform, questionnaires, transcriptions, recordings,
+                activeprojectname, derivedFromProjectName, current_username,
+                project_type, derive_from_project_type,
+                fileid_sentence_map, fetched_audio_list, exclude_ids,
+                language, file_download_header, access_code
+            )
+            
         # print('\n','\n','\n','\n', '############################################################################################', '\n', '\n', '\n')
         # print(sepaker_access_code_list,'\n' ,sentence_list, '\n',karya_audio_report,'\n', filename_list, '\n',fileID_list)
         # print('\n','\n','\n','\n', '############################################################################################', '\n', '\n', '\n')
@@ -2716,26 +2741,26 @@ def karya_new_fetch_audio():
 
         #############################################################################################
 
-        file_download_header = {"karya_worker_id_token" : token_id, 'access_code': access_code}
-        # getnsave_karya_recordings -> get_insert_id -> getaudiofromprompttext
-        karya_audio_management.karya_new_getnsave_karya_recordings_from_verified(
-            mongo,
-            projects, userprojects, projectowner, accesscodedetails,
-            projectsform, questionnaires, transcriptions, recordings,
-            activeprojectname, derivedFromProjectName, current_username,
-            project_type, derive_from_project_type,
-            fileid_sentence_map, fetched_audio_list, exclude_ids,
-            language, file_download_header, access_code
-        )
-        '''karya_audio_management.karya_new_getnsave_karya_recordings(
-            mongo,
-            projects, userprojects, projectowner, accesscodedetails,
-            projectsform, questionnaires, transcriptions, recordings,
-            activeprojectname, derivedFromProjectName, current_username,
-            project_type, derive_from_project_type,
-            fileid_sentence_map, fetched_audio_list, exclude_ids,
-            language, file_download_header, access_code
-        )'''
+        # file_download_header = {"karya_worker_id_token" : token_id, 'access_code': access_code}
+        # # getnsave_karya_recordings -> get_insert_id -> getaudiofromprompttext
+        # karya_audio_management.karya_new_getnsave_karya_recordings_from_verified(
+        #     mongo,
+        #     projects, userprojects, projectowner, accesscodedetails,
+        #     projectsform, questionnaires, transcriptions, recordings,
+        #     activeprojectname, derivedFromProjectName, current_username,
+        #     project_type, derive_from_project_type,
+        #     fileid_sentence_map, fetched_audio_list, exclude_ids,
+        #     language, file_download_header, access_code
+        # )
+        # '''karya_audio_management.karya_new_getnsave_karya_recordings(
+        #     mongo,
+        #     projects, userprojects, projectowner, accesscodedetails,
+        #     projectsform, questionnaires, transcriptions, recordings,
+        #     activeprojectname, derivedFromProjectName, current_username,
+        #     project_type, derive_from_project_type,
+        #     fileid_sentence_map, fetched_audio_list, exclude_ids,
+        #     language, file_download_header, access_code
+        # )'''
         return redirect(url_for('karya_bp.karya_new_home'))
 
     return render_template("fetch_karya_audio.html")
@@ -2801,22 +2826,17 @@ def karya_new_fetch_karya():
     # accesscodedetails, activeprojectname, include_fetch=True)
 
     if projectType == "transcriptions":
-        dropdown_dict = {
-            "newTranscription": "New Transcription",
-            "completedVerification": "Completed Verification",
-            "newVerification": "New Verification"
-        }
+        dropdown_dict = { "newVerification": "Unverified Recordings",
+            "completedVerification": "Verified Recordings"}
     elif projectType == "validation":
-        dropdown_dict = {
-            "completedVerification": "Completed Verification",
-            "newVerification": "New Verification"
-        }
+        dropdown_dict = { "newVerification": "Unverified Recordings",
+            "completedVerification": "Verified Recordings"}
+        
     elif projectType == "recordings":
         dropdown_dict = {
             "completedRecordings": "Completed Recordings",
-            "newTranscription": "New Transcription",
-            "completedVerification": "Completed Verification",
-            "newVerification": "New Verification"
+            "newVerification": "Unverified Recordings",
+            "completedVerification": "Verified Recordings"
         }
     elif projectType == "questionnaires":
                 dropdown_dict = {
