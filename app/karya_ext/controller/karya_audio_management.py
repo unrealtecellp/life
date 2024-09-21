@@ -49,6 +49,10 @@ def save_audio_file_fetched_from_karya(
     lifespeakerid, karyaspeakerId,
     current_file_id, current_audio_report
 ):
+    logger.debug("Project_type: %s", project_type)
+    logger.debug("derive_from_project_type: %s", derive_from_project_type)
+    logger.debug("Project_types: %s", project_types)
+
     if project_type == "questionnaires":
         new_audio_file['Prompt_Audio'+"_" +
                        language] = new_audio_file['audiofile']
@@ -92,6 +96,7 @@ def save_audio_file_fetched_from_karya(
                                                         additionalInfo={}
                                                         )
         else:
+            logger.debug("Saving audio file to Transcription")
             save_status = audiodetails.saveaudiofiles(mongo,
                                                       projects,
                                                       userprojects,
@@ -174,7 +179,7 @@ def matched_unmatched_alreadyfetched_sentences(mongo,
                                                activeprojectname, derivedFromProjectName, current_username,
                                                project_type, derive_from_project_type,
                                                fileid_sentence_map, fetched_audio_list, exclude_ids,
-                                               language, hederr, access_code):
+                                               language, access_code):
     logger.debug("%s, %s", derive_from_project_type, derivedFromProjectName)
 
     # Initialize dictionaries to store matched, unmatched, and already fetched sentences
@@ -353,6 +358,111 @@ def getnsave_karya_recordings(mongo,
 
 
 
+def karya_new_getnsave_karya_recordings_from_verified(
+    mongo, projects, userprojects, projectowner, accesscodedetails,
+    projectsform, questionnaires, transcriptions, recordings,
+    activeprojectname, derivedFromProjectName, current_username,
+    project_type, derive_from_project_type, audio_speaker_merge,
+    fetched_audio_list, exclude_ids, language, hederr, access_code
+):
+    logger.debug("%s, %s", derive_from_project_type , derivedFromProjectName)
+
+    # Initialize a list to store file IDs
+    file_id_list = []
+
+    # Iterate over the dictionary keys (file ID, sentence, and filename tuples)
+    for file_id_and_sent in list(audio_speaker_merge.keys()):
+        audio_speaker_merge_vals = audio_speaker_merge[file_id_and_sent]
+
+        # Extract speaker ID from the audio_speaker_merge dictionary
+        # karyaspeakerId = audio_speaker_merge_vals[0]
+        karyaaccesscode = audio_speaker_merge_vals[0]
+        print("karyaaccesscode: ", karyaaccesscode)
+
+        # Retrieve the life speaker ID associated with the Karya speaker ID
+        karyaspeakerId = accesscodedetails.find_one(
+            {'karyaaccesscode': karyaaccesscode, 'projectname': activeprojectname}, {'karyaspeakerid': 1, '_id': 0})['karyaspeakerid']
+        
+        lifespeakerid = accesscodedetails.find_one(
+            {'karyaspeakerid': karyaspeakerId, 'projectname': activeprojectname}, {'lifespeakerid': 1, '_id': 0})
+        
+        # Attempt to get the current audio report, handle if it doesn't exist
+        try:
+            current_audio_report = audio_speaker_merge_vals[1]
+        except:
+            current_audio_report = {}
+        logger.debug("karyaspeakerId: %s", karyaspeakerId)
+
+        # Extract the file ID, sentence, and file name from the key
+        current_file_id = file_id_and_sent[0]
+        current_sentence = file_id_and_sent[1].strip()
+        current_file_name = file_id_and_sent[2]  # Extract the file name
+
+        # Add the current file ID to the file ID list
+        file_id_list.append(current_file_id)
+
+        # Checking if the file is already fetched or not
+        if current_file_id not in fetched_audio_list:
+
+            # Generate or retrieve the insert audio ID and a message
+            insert_audio_id, message = get_insert_id(
+                projectsform, questionnaires, transcriptions, recordings,
+                activeprojectname, derive_from_project_type, derivedFromProjectName,
+                current_sentence,
+                project_type, exclude_ids
+            )
+            logger.debug("insert_audio_id: %s\nmessage: %s", insert_audio_id, message)
+
+            # If the insert audio ID is not valid, skip the current iteration
+            if insert_audio_id == 'False':
+                logger.debug("insert_audio_id: %s\nmessage: %s\ncurrent_sentence: %s", insert_audio_id, message, current_sentence)
+                continue
+            
+            # If the life speaker ID is found, proceed to fetch and save the audio file
+            if lifespeakerid is not None:
+                logger.debug('lifespeakerid: %s', lifespeakerid)
+                lifespeakerid = lifespeakerid["lifespeakerid"]
+
+                # Print the file name that will be sent to the Karya API
+                print(f"Sending file name to karya_new_get_audio_file_from_karya: {current_file_name}")
+                logger.debug('current_file_name: %s', current_file_name)
+
+                # Fetch the audio file using the file name instead of the file ID
+                new_audio_file = karya_api_access.karya_new_get_audio_file_from_karya(
+                    current_file_name, hederr)  # Use `current_file_name` here
+                print("new_audio_file : ", new_audio_file)
+                logger.debug('new_audio_file: %s', new_audio_file)
+
+                # Save the fetched audio file and retrieve the save status
+                save_status = save_audio_file_fetched_from_karya(
+                    mongo,
+                    projects, userprojects, projectowner,
+                    projectsform, questionnaires, transcriptions, recordings,
+                    activeprojectname, current_username,
+                    project_type, new_audio_file, derive_from_project_type,
+                    language, insert_audio_id,
+                    lifespeakerid, karyaspeakerId,
+                    current_file_id, current_audio_report
+                )
+
+                logger.debug('save_status: %s', save_status)
+
+                # If the audio file was saved successfully, update the list of fetched audios and access code details
+                if save_status[0]:
+                    # Save in the list of fetched audios
+                    exclude_ids.append(insert_audio_id)
+                    
+                    # Update the access code details with the newly fetched audio file ID
+                    accesscodedetails.update_one({"projectname": activeprojectname, "karyaaccesscode": access_code},
+                                                 {"$addToSet": {"karyafetchedaudios": current_file_id}})
+                else:
+                    logger.debug("lifespeakerid not found!: %s, %s", karyaspeakerId, lifespeakerid)
+            else:
+                logger.debug("lifespeakerid not found!: %s, %s", karyaspeakerId, lifespeakerid)
+        else:
+            logger.debug("Audio already fetched: %s", current_sentence)
+            print("audio already fetched", current_sentence)
+
 def karya_new_getnsave_karya_recordings(
     mongo, projects, userprojects, projectowner, accesscodedetails,
     projectsform, questionnaires, transcriptions, recordings,
@@ -371,6 +481,7 @@ def karya_new_getnsave_karya_recordings(
 
         # Extract speaker ID from the audio_speaker_merge dictionary
         karyaspeakerId = audio_speaker_merge_vals[0]
+        print("karyaspeakerId: ", karyaspeakerId)
 
         # Retrieve the life speaker ID associated with the Karya speaker ID
         lifespeakerid = accesscodedetails.find_one(
@@ -415,10 +526,13 @@ def karya_new_getnsave_karya_recordings(
 
                 # Print the file name that will be sent to the Karya API
                 print(f"Sending file name to karya_new_get_audio_file_from_karya: {current_file_name}")
+                logger.debug('current_file_name: %s', current_file_name)
 
                 # Fetch the audio file using the file name instead of the file ID
                 new_audio_file = karya_api_access.karya_new_get_audio_file_from_karya(
                     current_file_name, hederr)  # Use `current_file_name` here
+                print("new_audio_file : ", new_audio_file)
+                logger.debug('new_audio_file: %s', new_audio_file)
 
                 # Save the fetched audio file and retrieve the save status
                 save_status = save_audio_file_fetched_from_karya(
@@ -449,6 +563,8 @@ def karya_new_getnsave_karya_recordings(
         else:
             logger.debug("Audio already fetched: %s", current_sentence)
             print("audio already fetched", current_sentence)
+
+
 
 
 

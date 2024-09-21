@@ -122,8 +122,9 @@ def saveaudiofiles(mongo,
 
     if new_audio_file[type].filename != '':
         current_file = new_audio_file[type]
-        # logger.debug("Filepath %s", current_file)
+        logger.debug("Filepath %s", current_file)
         file_format = get_file_format(current_file)
+        logger.debug("file_format %s", file_format)
 
         if (file_format in allowed_file_formats):
             file_state, transcription_doc_id, fs_file_id = saveoneaudiofile(mongo,

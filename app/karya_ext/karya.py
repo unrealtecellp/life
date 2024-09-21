@@ -2533,6 +2533,10 @@ def karya_new_fetch_audio():
         otp = request.form.get("karya_otp")
         get_otp_id = request.form.get('otp_id')
         otp_id = get_otp_id.split(',')[0]
+        access_code_for_worker_id = accesscodedetails.find_one({"projectname": activeprojectname,
+                                        "karyaspeakerid": for_worker_id,
+                                            "additionalInfo.karya_version": "karya_main"},
+                                        {'karyaaccesscode': 1, '_id': 0})['karyaaccesscode']
 
 
         print("OTP : ", otp)
@@ -2543,6 +2547,7 @@ def karya_new_fetch_audio():
         print("access_code : ", access_code)
         print("for_worker_id : ", for_worker_id) #karyaspeakerid
         print("phone_number : ", phone_number)
+        print("access_code_for_worker_id: ", access_code_for_worker_id)
         ###############################   verify OTP    ##########################################
         # Verify OTP using the otp_id
         # Returning multiple values: 
@@ -2559,10 +2564,6 @@ def karya_new_fetch_audio():
         # print(token_id)
         # print("Token ID : " ,token_id)
 
-        # get the karya metadata file using above token_id
-        header = {"karya-id-token" : token_id }
-
-
         if not is_verified:
             flash("Invalid OTP OR Mobile number is not registered with this project. Please try again.")
             return redirect(url_for('karya_bp.karya_new_home'))
@@ -2570,12 +2571,14 @@ def karya_new_fetch_audio():
         # Fetch assignments based on project type and access code task
         if project_type in ['validation', 'transcriptions', 'recordings', 'questionnaires']:
             if "new" in access_code_task:
-                # assignment_url = 'https://main-karya.centralindia.cloudapp.azure.com/api_worker/v5/assignments?type=new&from=2024-01-17T20:11:35.213Z'
-                assignment_url = 'https://main-karya.centralindia.cloudapp.azure.com/api_worker/v5/assignments?type=verified&from=2024-01-17T20:11:35.213Z'
+                assignment_url = 'https://main-karya.centralindia.cloudapp.azure.com/api_worker/v5/assignments?type=new&from=2024-01-17T20:11:35.213Z'
+                print("new")
+                #assignment_url = 'https://main-karya.centralindia.cloudapp.azure.com/api_worker/v5/assignments?type=verified&from=2024-01-17T20:11:35.213Z'
                 print("Fetching new assignments for project type:", project_type)
             elif "completed" in access_code_task:
                 assignment_url = 'https://main-karya.centralindia.cloudapp.azure.com/api_worker/v5/assignments?type=verified&includemt=true&from=2021-05-11T07:23:40.654Z'
                 print("Fetching completed assignments for project type:", project_type)
+                print("completed")
             # Fetch and process the assignment URL here
         else:
             flash("Action not allowed for this project type.")
@@ -2638,21 +2641,38 @@ def karya_new_fetch_audio():
 
         if "completedRecordings" in access_code_task:
             print('recording')
+            # Fetch metadata for completed recordings
             micro_task_ids, workerId_list, sentence_list, karya_audio_report, filename_list, fileID_list = karya_api_access.karya_new_get_assignment_metadata_recording(
                 accesscodedetails, activeprojectname,
                 access_code,
                 karya_new_api_metadata, for_worker_id
             )
+
+            # Call to map fileID to sentence and workerId for completed recordings
+            fileid_sentence_map = karya_api_access.karya_new_get_fileid_sentence_mapping(
+                fileID_list, workerId_list, sentence_list, karya_audio_report, filename_list
+            )
         else:
             print('verified')
-            micro_task_ids, workerId_list, sentence_list, karya_audio_report, filename_list, fileID_list = karya_api_access.karya_new_get_assignment_metadata(
+            # Fetch metadata for verified assignments
+            micro_task_ids, sepaker_access_code_list, sentence_list, karya_audio_report, filename_list, fileID_list = karya_api_access.karya_verified_get_assignment_metadata(
                 accesscodedetails, activeprojectname,
-                access_code,
-                karya_new_api_metadata, for_worker_id
+                access_code_for_worker_id,
+                karya_new_api_metadata, for_worker_id,
             )
 
+            # Call to map fileID to sentence and speaker access code for verified assignments
+            fileid_sentence_map = karya_api_access.karya_new_get_fileid_sentence_mapping(
+                fileID_list, sepaker_access_code_list, sentence_list, karya_audio_report, filename_list
+            )
+
+        # Log and process the fileID-sentence map
+        logger.debug("fileid_sentence_map: %s", fileid_sentence_map)
+        print("fileid_sentence_map :", fileid_sentence_map)
+
+
         # print('\n','\n','\n','\n', '############################################################################################', '\n', '\n', '\n')
-        # print(micro_task_ids,'\n' ,workerId_list,'\n' ,sentence_list, '\n',karya_audio_report,'\n', filename_list, '\n',fileID_list)
+        # print(sepaker_access_code_list,'\n' ,sentence_list, '\n',karya_audio_report,'\n', filename_list, '\n',fileID_list)
         # print('\n','\n','\n','\n', '############################################################################################', '\n', '\n', '\n')
         
         # Get the file ID to sentence mapping using the get_fileid_sentence_mapping function from the api assignment 
@@ -2662,11 +2682,13 @@ def karya_new_fetch_audio():
         # - If karya_audio_report is not empty:
         #   A dictionary where each key is a tuple of (fileID, sentence), and each value is a tuple of (worker ID, audio report).
 
+        
+        # fileid_sentence_map = karya_api_access.karya_new_get_fileid_sentence_mapping(fileID_list, workerId_list, sentence_list, karya_audio_report, filename_list)
 
-        fileid_sentence_map = karya_api_access.karya_new_get_fileid_sentence_mapping(fileID_list, workerId_list, sentence_list, karya_audio_report, filename_list)
-        logger.debug("fileid_sentence_map: %s", fileid_sentence_map)
-        # print("fileid_sentence_map", fileid_sentence_map)
-        print("fileid_sentence_map :", fileid_sentence_map)
+        # fileid_sentence_map = karya_api_access.karya_new_get_fileid_sentence_mapping(fileID_list, sepaker_access_code_list, sentence_list, karya_audio_report, filename_list)
+        # logger.debug("fileid_sentence_map: %s", fileid_sentence_map)
+        # # print("fileid_sentence_map", fileid_sentence_map)
+        # print("fileid_sentence_map :", fileid_sentence_map)
 
         #Output fileid_sentence_map sample  from server
         # {('281474976758604', 'In which months / seasons are these vegetables grown?'): ('16784394',), ('281474976758605', 'What is the process of growing these vegetables?'): ('16784394',)}
@@ -2679,7 +2701,7 @@ def karya_new_fetch_audio():
             activeprojectname, derivedFromProjectName, current_username,
             project_type, derive_from_project_type,
             fileid_sentence_map, fetched_audio_list, exclude_ids,
-            language, header, access_code
+            language, access_code
         )
         # print(matched_unmathched_fetched_sentences)  
 
@@ -2689,14 +2711,14 @@ def karya_new_fetch_audio():
         print("Already Fetched Sentences:", already_fetched)
         logger.debug("Matched Sentences: %s", matched)
         logger.debug("Unmatched Sentences: %s", unmatched)
-        logger.debug("Already Fetched Sentences: %s", already_fetched)
+        # logger.debug("Already Fetched Sentences: %s", already_fetched)
 
 
         #############################################################################################
 
         file_download_header = {"karya_worker_id_token" : token_id, 'access_code': access_code}
         # getnsave_karya_recordings -> get_insert_id -> getaudiofromprompttext
-        karya_audio_management.karya_new_getnsave_karya_recordings(
+        karya_audio_management.karya_new_getnsave_karya_recordings_from_verified(
             mongo,
             projects, userprojects, projectowner, accesscodedetails,
             projectsform, questionnaires, transcriptions, recordings,
@@ -2705,7 +2727,16 @@ def karya_new_fetch_audio():
             fileid_sentence_map, fetched_audio_list, exclude_ids,
             language, file_download_header, access_code
         )
-        return redirect(url_for('karya_bp.home_insert'))
+        '''karya_audio_management.karya_new_getnsave_karya_recordings(
+            mongo,
+            projects, userprojects, projectowner, accesscodedetails,
+            projectsform, questionnaires, transcriptions, recordings,
+            activeprojectname, derivedFromProjectName, current_username,
+            project_type, derive_from_project_type,
+            fileid_sentence_map, fetched_audio_list, exclude_ids,
+            language, file_download_header, access_code
+        )'''
+        return redirect(url_for('karya_bp.karya_new_home'))
 
     return render_template("fetch_karya_audio.html")
 

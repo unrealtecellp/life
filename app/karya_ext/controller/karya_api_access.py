@@ -257,152 +257,8 @@ def get_assignment_metadata_recording(
 
     return micro_task_ids, workerId_list, sentence_list, karya_audio_report, filename_list, fileID_list
 
+
 def karya_new_get_assignment_metadata_recording(
-    accesscodedetails, activeprojectname, access_code,
-    karya_new_api_metadata, for_worker_id
-):
-    # for_worker_id = speaker_id received from the form
-    workerId_list = []
-    sentence_list = []
-    karya_audio_report = []
-    filename_list = []
-    fileID_list = []  # to store file IDs
-
-    # Create a dictionary of microtasks for quick lookup by 'id'
-    micro_task_ids = {item['id']: item for item in karya_new_api_metadata["microtasks"]}
-
-    # Iterate through assignments in the metadata
-    for assignment in karya_new_api_metadata['assignments']:
-        micro_task_id = assignment['microtask_id']
-        
-        # Look up the corresponding microtask using the micro_task_id
-        assignment_input = micro_task_ids.get(micro_task_id, {}).get('input', {})
-        assignment_data = assignment_input.get('data', {})
-
-        # Extract worker_id from assignment
-        worker_id = assignment.get('worker_id')
-        if not worker_id:
-            continue  # Skip this iteration if worker_id is missing
-
-        try:
-            if worker_id == for_worker_id:  # for_worker_id is speaker_id from the form
-                workerId_list.append(worker_id)
-
-                # Extract fileID from assignment
-                fileID_lists = assignment['id']
-                fileID_list.append(fileID_lists)
-
-                # Extract sentence from microtask input data
-                sentence = assignment_data.get("sentence")
-                sentence_list.append(sentence)
-
-                # Attempt to extract report if available
-                try:
-                    karyareport = assignment.get('report', {})
-                    karya_audio_report.append(karyareport)
-                except KeyError:
-                    # If no report is found, append an empty dict
-                    karya_audio_report.append({})
-
-                # Extract the filename for the audio file
-                try:
-                    filename = assignment['output']['files']['OutputRecording']
-                    filename_list.append(filename)
-                except KeyError:
-                    # If no recording is found, append None
-                    filename_list.append(None)
-
-        except Exception as e:
-            logger.exception(f"Error processing worker_id {worker_id}: {e}")
-            continue
-
-    logger.debug("karya_audio_report: %s", karya_audio_report)
-    logger.debug("sentence_list: %s", sentence_list)
-    logger.debug("workerId_list: %s", workerId_list)
-
-    return micro_task_ids, workerId_list, sentence_list, karya_audio_report, filename_list, fileID_list
-
-
-def get_assignment_metadata(
-    accesscodedetails, activeprojectname,
-    access_code,
-    r_j, for_worker_id
-):
-    # for_worker_id = spekaer_id recived from form
-    workerId_list = []
-    sentence_list = []
-    karya_audio_report = []
-    filename_list = []
-    fileID_list = []  # filname
-
-    micro_task_ids = dict((item['id'], item) for item in r_j["microtasks"])
-
-    # for item in r_j["microtasks"]:
-    #     karyareport = item['input']['data']['report']
-    #     print('line 692', karyareport)
-
-    # pprint(r_j)
-    for item in r_j['assignments']:
-        micro_task_id = item['microtask_id']
-        assignment_input = micro_task_ids[micro_task_id]['input']
-        assignment_data = assignment_input['data']
-        # assignment_files = assignment_input['files']
-        findWorker_id = assignment_input['chain']
-
-        try:
-            # recorder_id is colection speaker_id
-            worker_id = assignment_data['recorder_id']
-            # recorder_id is colection speaker_id
-            logger.debug("recorder_id: %s", worker_id)
-
-        except:
-            # print('worker_id', worker_id, 'for_worker_id', for_worker_id)
-            worker_id = findWorker_id['workerId']
-            logger.debug("worker_id: %s", worker_id)
-
-        try:
-            if (worker_id == for_worker_id):  # for_worker_id = spekaer_id recived from form
-                workerId_list.append(worker_id)
-
-                fileID_lists = item['id']
-                fileID_list.append(fileID_lists)
-
-                sentences = assignment_data["sentence"]
-                sentence_list.append(sentences)
-
-                # appending karya report to list
-                karyareport = assignment_data['report']
-                karya_audio_report.append(karyareport)
-
-                # appending audio file name
-                # karya_file_name = assignment_files['recording']
-                # filename_list.append(karya_file_name)
-
-            # speakerid of accesscode
-            # accesscode_speakerid = accesscodedetails.find_one({"projectname": activeprojectname, "karyaaccesscode": access_code},
-            #                                                   {'karyaInfo.karyaSpeakerId': 1, '_id': 0})['karyaInfo.karyaSpeakerId']
-
-            # # task
-            # task = accesscodedetails.find_one({"projectname": activeprojectname, "karyaInfo.karyaSpeakerId": accesscode_speakerid,
-            #                                    "karyaaccesscode": access_code}, {'task': 1, '_id': 0})['task']
-
-        except:
-            if (worker_id == for_worker_id):
-                workerId_list.append(worker_id)
-
-                sentences = assignment_data["sentence"]
-                sentence_list.append(sentences)
-
-                fileID_lists = item['id']
-                fileID_list.append(fileID_lists)
-
-    logger.debug("karya_audio_report: %s", karya_audio_report)
-    logger.debug("sentence_list: %s", sentence_list)
-    logger.debug("workerId_list: %s", workerId_list)
-
-    return micro_task_ids, workerId_list, sentence_list, karya_audio_report, filename_list, fileID_list
-
-def karya_new_get_assignment_metadata(
     accesscodedetails, activeprojectname,
     access_code,
     karya_new_api_metadata, for_worker_id
@@ -493,6 +349,182 @@ def karya_new_get_assignment_metadata(
     print("Final fileID_list:", fileID_list)
 
     return micro_task_ids, workerId_list, sentence_list, karya_audio_report, filename_list, fileID_list
+
+
+
+def get_assignment_metadata(
+    accesscodedetails, activeprojectname,
+    access_code,
+    r_j, for_worker_id
+):
+    # for_worker_id = spekaer_id recived from form
+    workerId_list = []
+    sentence_list = []
+    karya_audio_report = []
+    filename_list = []
+    fileID_list = []  # filname
+
+    micro_task_ids = dict((item['id'], item) for item in r_j["microtasks"])
+
+    # for item in r_j["microtasks"]:
+    #     karyareport = item['input']['data']['report']
+    #     print('line 692', karyareport)
+
+    # pprint(r_j)
+    for item in r_j['assignments']:
+        micro_task_id = item['microtask_id']
+        assignment_input = micro_task_ids[micro_task_id]['input']
+        assignment_data = assignment_input['data']
+        # assignment_files = assignment_input['files']
+        findWorker_id = assignment_input['chain']
+
+        try:
+            # recorder_id is colection speaker_id
+            worker_id = assignment_data['recorder_id']
+            # recorder_id is colection speaker_id
+            logger.debug("recorder_id: %s", worker_id)
+
+        except:
+            # print('worker_id', worker_id, 'for_worker_id', for_worker_id)
+            worker_id = findWorker_id['workerId']
+            logger.debug("worker_id: %s", worker_id)
+
+        try:
+            if (worker_id == for_worker_id):  # for_worker_id = spekaer_id recived from form
+                workerId_list.append(worker_id)
+
+                fileID_lists = item['id']
+                fileID_list.append(fileID_lists)
+
+                sentences = assignment_data["sentence"]
+                sentence_list.append(sentences)
+
+                # appending karya report to list
+                karyareport = assignment_data['report']
+                karya_audio_report.append(karyareport)
+
+                # appending audio file name
+                # karya_file_name = assignment_files['recording']
+                # filename_list.append(karya_file_name)
+
+            # speakerid of accesscode
+            # accesscode_speakerid = accesscodedetails.find_one({"projectname": activeprojectname, "karyaaccesscode": access_code},
+            #                                                   {'karyaInfo.karyaSpeakerId': 1, '_id': 0})['karyaInfo.karyaSpeakerId']
+
+            # # task
+            # task = accesscodedetails.find_one({"projectname": activeprojectname, "karyaInfo.karyaSpeakerId": accesscode_speakerid,
+            #                                    "karyaaccesscode": access_code}, {'task': 1, '_id': 0})['task']
+
+        except:
+            if (worker_id == for_worker_id):
+                workerId_list.append(worker_id)
+
+                sentences = assignment_data["sentence"]
+                sentence_list.append(sentences)
+
+                fileID_lists = item['id']
+                fileID_list.append(fileID_lists)
+
+    logger.debug("karya_audio_report: %s", karya_audio_report)
+    logger.debug("sentence_list: %s", sentence_list)
+    logger.debug("workerId_list: %s", workerId_list)
+
+    return micro_task_ids, workerId_list, sentence_list, karya_audio_report, filename_list, fileID_list
+
+
+
+def karya_verified_get_assignment_metadata(
+    accesscodedetails, activeprojectname, access_code_for_worker_id,
+    karya_new_api_metadata, for_worker_id
+):
+    # for_worker_id = speaker_id received from the form
+    # workerId_list = []
+    sepaker_access_code_list =[]
+    sentence_list = []
+    karya_audio_report = []
+    filename_list = []
+    fileID_list = []  # to store file IDs
+
+    # Create a dictionary of microtasks for quick lookup by 'id'
+    micro_task_ids = {item['id']: item for item in karya_new_api_metadata["microtasks"]}
+    # print("micro_task_ids: ", micro_task_ids)
+    # Iterate through assignments in the metadata
+    for assignment in karya_new_api_metadata['assignments']:
+        micro_task_id = assignment['microtask_id']
+        
+        # Look up the corresponding microtask using the micro_task_id
+        assignment_input = micro_task_ids.get(micro_task_id, {}).get('input', {})
+        # print('assignment_input : ', assignment_input)
+        assignment_data = assignment_input.get('data', {})
+
+        assignment_output = micro_task_ids.get(micro_task_id, {}).get('output', {})
+
+        # Extract worker_id from assignment
+        # worker_id = assignment.get('worker_id')
+        #now worker_id is not avialble now we have to find the own_access_code 
+        sepaker_access_code = assignment_data.get("own_access_code")
+        print("sepaker_access_code: ", sepaker_access_code)
+
+        if not sepaker_access_code:
+            continue  # Skip this iteration if worker_id is missing
+
+        try:
+            if sepaker_access_code == access_code_for_worker_id:  # for_worker_id is speaker_id from the form
+                sepaker_access_code_list.append(sepaker_access_code)
+                print("condtion sepaker_access_code: ", sepaker_access_code)
+
+                # Extract fileID from assignment
+                fileID_lists = assignment['id']
+                fileID_list.append(fileID_lists)
+
+                # Extract sentence from microtask input data
+                sentence = assignment_data.get("sentence")
+                sentence_list.append(sentence)
+
+                # Attempt to extract report if available
+            
+                # Build the report based on the 'accepted' value
+                report_data = assignment_output.get('data', {})
+                if report_data.get('accepted', False):
+                    report = {
+                        'data': {
+                            'accepted': report_data['accepted']
+                        }
+                    }
+                else:
+                    report = {
+                        'data': {
+                            'accepted': report_data['accepted'],
+                            'accuracy': report_data.get('accuracy', [])
+                        }
+                    }
+                
+                # Append the constructed report to karya_audio_report
+                karya_audio_report.append(report)
+
+                # Extract the filename for the audio file
+                try:
+                    # filename = assignment['output']['files']['OutputRecording']
+                    files = assignment_input.get('files', {})
+                    # print("Files from data:", files)  # Should print the 'files' dictionary
+
+                    karya_file_name = files.get('OutputRecording')
+                    filename_list.append(karya_file_name)
+                except KeyError:
+                    # If no recording is found, append None
+                    filename_list.append(None)
+
+        except Exception as e:
+            logger.exception(f"Error processing worker_id {sepaker_access_code}: {e}")
+            continue
+
+    logger.debug("karya_audio_report: %s", karya_audio_report)
+    logger.debug("sentence_list: %s", sentence_list)
+    logger.debug("workerId_list: %s", sepaker_access_code_list)
+
+    return micro_task_ids, sepaker_access_code_list, sentence_list, karya_audio_report, filename_list, fileID_list
+
+
 
 
 
@@ -589,36 +621,103 @@ def get_audio_file_from_karya(current_file_id, hederr):
     return new_audio_file
 
 
+import os
+import requests
+
 def karya_new_get_audio_file_from_karya(current_file_name, hederr):
     """
-    Fetches the audio file from the new Karya API and returns it as a FileStorage object.
+    Fetches the SAS URL for the audio file from the Karya API, then uses that URL to download and save the file.
+    
+    Arguments:
+    - current_file_name: The name of the file to fetch.
+    - hederr: The headers required for the request.
+    
+    Returns:
+    - local_file_path: The path of the saved audio file.
     """
-    # Define the URL for downloading the audio file
-    file_download_url = 'https://main-karya.centralindia.cloudapp.azure.com/fileserver/v1/worker/file_download_sas_url?filename=real_filename'
-    
-    # Replace 'real_filename' with the current_file_id in the URL
-    new_url = file_download_url.replace("real_filename", current_file_name)
-    print("new_url :", new_url)
-    print("current_file_name :", current_file_name)
-    print(hederr)
-    # Fetch the audio file using the updated URL and headers
-    response = requests.get(url=new_url, headers=hederr)
-    
-    # Check if the request was successful
+    # Define the URL to get the SAS URL for the audio file
+    sas_url_request = f'https://main-karya.centralindia.cloudapp.azure.com/fileserver/v1/worker/file_download_sas_url?filename={current_file_name}'
+
+    # Fetch the SAS URL
+    response = requests.get(url=sas_url_request, headers=hederr)
+
+    # Check if the request for the SAS URL was successful
     if response.status_code == 200:
-        # The file content is directly fetched
-        filebytes = response.content
-        print('filebytes : ', filebytes)
-        
-        # Prepare the audio file as a FileStorage object
-        new_audio_file = {
-            'audiofile': FileStorage(io.BytesIO(filebytes), filename=current_file_name)
-        }
-        
+        # Extract the SAS URL from the response
+        sas_url = response.json().get('sasURL')
+
+        if not sas_url:
+            raise Exception("SAS URL not found in the response.")
+
+        # Use the SAS URL to download the actual file
+        file_response = requests.get(sas_url)
+        # print("file_response type : " , file_response)
+        logger.debug("file_response type : %s", file_response)
+
+        if file_response.status_code == 200:        
+            # Prepare the audio file as a FileStorage object
+            new_audio_file = {
+                'audiofile': FileStorage(io.BytesIO(file_response.content), filename=current_file_name)
+            }
+            
         return new_audio_file
     else:
+        print("file not fetched")
         # Handle any errors that occurred during the request
         raise Exception(f"Failed to fetch file. Status code: {response.status_code}")
+
+
+
+
+
+# import os
+# import requests
+
+# def karya_new_get_audio_file_from_karya(current_file_name, hederr):
+#     """
+#     Fetches the SAS URL for the audio file from the Karya API, then uses that URL to download and save the file.
+    
+#     Arguments:
+#     - current_file_name: The name of the file to fetch.
+#     - hederr: The headers required for the request.
+    
+#     Returns:
+#     - local_file_path: The path of the saved audio file.
+#     """
+#     # Define the URL to get the SAS URL for the audio file
+#     sas_url_request = f'https://main-karya.centralindia.cloudapp.azure.com/fileserver/v1/worker/file_download_sas_url?filename={current_file_name}'
+
+#     # Fetch the SAS URL
+#     response = requests.get(url=sas_url_request, headers=hederr)
+
+#     # Check if the request for the SAS URL was successful
+#     if response.status_code == 200:
+#         # Extract the SAS URL from the response
+#         sas_url = response.json().get('sasURL')
+
+#         if not sas_url:
+#             raise Exception("SAS URL not found in the response.")
+
+#         # Use the SAS URL to download the actual file
+#         file_response = requests.get(sas_url)
+
+#         if file_response.status_code == 200:
+#             # Save the file to the local system
+#             local_directory = "/home/kmi/Desktop/karya-main/audio"
+#             os.makedirs(local_directory, exist_ok=True)  # Create the directory if it doesn't exist
+#             local_file_path = os.path.join(local_directory, current_file_name)
+
+#             # Save the file to the local path
+#             with open(local_file_path, 'wb') as file:
+#                 file.write(file_response.content)
+
+#             return local_file_path
+#         else:
+#             raise Exception(f"Failed to download file using SAS URL. Status code: {file_response.status_code}")
+#     else:
+#         raise Exception(f"Failed to fetch SAS URL. Status code: {response.status_code}")
+
+
 
 
 
