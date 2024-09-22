@@ -1076,7 +1076,6 @@ def crawlerbrowseaction():
 
     return 'OK'
 
-
 @lifedata.route('/crawlerbrowseactionviewdata', methods=['GET', 'POST'])
 @login_required
 def crawlerbrowseactionviewdata():
@@ -1087,25 +1086,33 @@ def crawlerbrowseactionviewdata():
         current_username = getcurrentusername.getcurrentusername()
         activeprojectname = getactiveprojectname.getactiveprojectname(
             current_username, userprojects)
-        logger.debug("%s,%s", current_username, activeprojectname)
+        # logger.debug("%s, %s", current_username, activeprojectname)
         # data from ajax
         data = json.loads(request.args.get('a'))
-        logger.debug('data: %s', pformat(data))
+        # logger.debug('data: %s', pformat(data))
         data_info = data['dataInfo']
         # logger.debug('data_info: %s', pformat(data_info))
         crawler_browse_info = data['crawlerBrowseInfo']
         # logger.debug('crawler_browse_info: %s', pformat(crawler_browse_info))
         # browse_action = crawler_browse_info['browseActionSelectedOption']
         active_source_id = crawler_browse_info['activeSourceId']
+        # logger.debug(active_source_id)
         data_id = list(data_info.keys())[0]
-        logger.debug("data_id: %s", data_id)
+        # logger.debug(data_id)
         comment_info = crawling_collection.find_one({"projectname": activeprojectname,
                                                      "lifesourceid": active_source_id,
-                                                     "dataId": data_id},
+                                                     "$or": [
+                                                        { "dataId": data_id },
+                                                        { "audioId": data_id }
+                                                    ]},
                                                     {"_id": 0,
-                                                     "additionalInfo.comment_info": 1})
-        comment_info = comment_info["additionalInfo"]["comment_info"]
-        logger.debug("comment_info: %s", pformat(comment_info))
+                                                    #  "additionalInfo.comment_info": 1,
+                                                    "additionalInfo": 1
+                                                     })
+        # logger.debug(pformat(comment_info))
+        # comment_info = comment_info["additionalInfo"]["comment_info"]
+        comment_info = comment_info["additionalInfo"]
+        # logger.debug("comment_info: %s", pformat(comment_info))
         return jsonify(commentInfo=comment_info)
     except:
         logger.exception("")
@@ -1120,7 +1127,7 @@ def crawlerbrowsechangepage():
     try:
         # data through ajax
         crawler_browse_info = json.loads(request.args.get('a'))
-        logger.debug('crawler_browse_info: %s', pformat(crawler_browse_info))
+        # logger.debug('crawler_browse_info: %s', pformat(crawler_browse_info))
         userprojects, crawling = getdbcollections.getdbcollections(mongo,
                                                                    'userprojects',
                                                                    'crawling')
@@ -1135,8 +1142,8 @@ def crawlerbrowsechangepage():
         page_id = crawler_browse_info['pageId']
         start_from = ((page_id*crawled_data_count)-crawled_data_count)
         number_of_crawled_data = page_id*crawled_data_count
-        logger.debug('pageId: %s, start_from: %s, number_of_crawled_data: %s',
-                     page_id, start_from, number_of_crawled_data)
+        # logger.debug('pageId: %s, start_from: %s, number_of_crawled_data: %s',
+        #              page_id, start_from, number_of_crawled_data)
         total_records = 0
         if (active_source_id != ''):
             total_records, crawled_data_list = crawled_data_details.get_n_crawled_data(crawling,

@@ -51,9 +51,11 @@ $('.metadataview').click(function () {
         $('#idmetadataformdisplaydiv').attr('data-error', 'This field is required.')
 
         $('#idmetadataformdisplaydiv').find('input, select').attr('disabled', true);
+        $('#editbutton').attr('hidden', false);
 
         addNewSpeakerFormEvents();
         addNewSpeakerSelect2();
+        addNewSpeakerSelect2_2('metadatadetailsmodal');
     });
 });
 
@@ -1146,9 +1148,14 @@ function addNewSpeakerSelect2() {
         data: metadataSchema,
         // allowClear: true
     });
+}
 
+function addNewSpeakerSelect2_2(dropdownParent='addNewSpeakerModal') {
+    // console.log('addNewSpeakerSelect2_2');
+    // console.log(dropdownParent);
     $('.classlanguage').select2({
         // tags: true,
+        dropdownParent: $("#"+dropdownParent),
         placeholder: '--Language--',
         data: OtherLanguagesSpeakerCouldSpeak,
         // allowClear: true
@@ -1156,6 +1163,7 @@ function addNewSpeakerSelect2() {
 
     $('.classagegroup').select2({
         // tags: true,
+        dropdownParent: $("#"+dropdownParent),
         placeholder: '--Age Group--',
         data: AgeGroup,
         // allowClear: true
@@ -1163,6 +1171,7 @@ function addNewSpeakerSelect2() {
 
     $('.classldcilagegroup').select2({
         // tags: true,
+        dropdownParent: $("#"+dropdownParent),
         placeholder: '--Age Group--',
         data: LdcilAgeGroup,
         // allowClear: true
@@ -1170,6 +1179,7 @@ function addNewSpeakerSelect2() {
 
     $('.classgender').select2({
         // tags: true,
+        dropdownParent: $("#"+dropdownParent),
         placeholder: '--Gender--',
         data: gender,
         // allowClear: true
@@ -1177,6 +1187,7 @@ function addNewSpeakerSelect2() {
 
     $('.classeducationlevel').select2({
         // tags: true,
+        dropdownParent: $("#"+dropdownParent),
         placeholder: '-- Educational Level --',
         data: EducationLevel,
         // allowClear: true
@@ -1184,6 +1195,7 @@ function addNewSpeakerSelect2() {
 
     $('.classldcileducationlevel').select2({
         // tags: true,
+        dropdownParent: $("#"+dropdownParent),
         placeholder: '-- Educational Level --',
         data: LdcilEducationLevel,
         // allowClear: true
@@ -1191,6 +1203,7 @@ function addNewSpeakerSelect2() {
 
     $('.classeducationmediumafter12').select2({
         tags: true,
+        dropdownParent: $("#"+dropdownParent),
         placeholder: '-- Medium Of Education (After 12ᵗʰ) --',
         data: EducationMedium,
         // allowClear: true
@@ -1198,6 +1211,7 @@ function addNewSpeakerSelect2() {
 
     $('.classeducationmediumupto12').select2({
         tags: true,
+        dropdownParent: $("#"+dropdownParent),
         placeholder: '-- Medium Of Education (Upto 12ᵗʰ) --',
         data: EducationMedium,
         // allowClear: true
@@ -1205,6 +1219,7 @@ function addNewSpeakerSelect2() {
 
     $('.classotherlanguages').select2({
         tags: true,
+        dropdownParent: $("#"+dropdownParent),
         placeholder: '-- Other Languages Speaker Could Speak --',
         data: OtherLanguagesSpeakerCouldSpeak,
         // allowClear: true
@@ -1212,6 +1227,7 @@ function addNewSpeakerSelect2() {
 
     $('.classtypeofplace').select2({
         // tags: true,
+        dropdownParent: $("#"+dropdownParent),
         placeholder: '--Type Of Place:--',
         data: TypeOfCity,
         // allowClear: true,
@@ -1220,13 +1236,15 @@ function addNewSpeakerSelect2() {
     // console.log("Multilila participants near select2", multililaParticipants);
     $('.classparticipantRole').select2({
         // tags: true,
+        dropdownParent: $("#"+dropdownParent),
         placeholder: '--Participant Role:--',
         data: multililaParticipants,
         // allowClear: true,
         // console.log( "ready!" )
     });
     $('.classclasssection').select2({
-        // tags: true,
+        tags: true,
+        dropdownParent: $("#"+dropdownParent),
         placeholder: '--Class and Section:--',
         data: multililaClasses,
         // allowClear: true,
@@ -1234,6 +1252,7 @@ function addNewSpeakerSelect2() {
     });
     $('.classschoollanguages').select2({
         tags: true,
+        dropdownParent: $("#"+dropdownParent),
         placeholder: '--School Languages:--',
         data: OtherLanguagesSpeakerCouldSpeak,
         // allowClear: true,
@@ -1241,6 +1260,7 @@ function addNewSpeakerSelect2() {
     });
     $('.classhomelanguages').select2({
         tags: true,
+        dropdownParent: $("#"+dropdownParent),
         placeholder: '--Home Languages:--',
         data: OtherLanguagesSpeakerCouldSpeak,
         // allowClear: true,
@@ -1248,6 +1268,7 @@ function addNewSpeakerSelect2() {
     });
     $('.classplaceofbirth').select2({
         tags: true,
+        dropdownParent: $("#"+dropdownParent),
         placeholder: '--Birth Place:--',
         // data: EducationMedium,
         // allowClear: true,
@@ -1255,6 +1276,7 @@ function addNewSpeakerSelect2() {
     });
     $('.classmediumofeducation').select2({
         tags: true,
+        dropdownParent: $("#"+dropdownParent),
         placeholder: '--Medium of Education:--',
         data: EducationMedium,
         // allowClear: true,
@@ -1262,6 +1284,7 @@ function addNewSpeakerSelect2() {
     });
     $('.classparentseducationlevel').select2({
         // tags: true,
+        dropdownParent: $("#"+dropdownParent),
         placeholder: '--Parents Education Level:--',
         data: EducationLevel,
         // allowClear: true,
@@ -1269,6 +1292,7 @@ function addNewSpeakerSelect2() {
     });
     $('.classschoolname').select2({
         tags: true,
+        dropdownParent: $("#"+dropdownParent),
         placeholder: '--Name of School:--',
         data: multililaSchools,
         // allowClear: true,
@@ -1276,6 +1300,7 @@ function addNewSpeakerSelect2() {
     });
     $('.classschoolserialnumber').select2({
         tags: true,
+        dropdownParent: $("#"+dropdownParent),
         placeholder: '--School Serial Number:--',
         data: multililaSchoolNumbers,
         // allowClear: true,
@@ -1283,6 +1308,7 @@ function addNewSpeakerSelect2() {
     });
     $('.classschooltype').select2({
         tags: true,
+        dropdownParent: $("#"+dropdownParent),
         placeholder: '--School Type:--',
         data: multililaSchoolTypes,
         // allowClear: true,
@@ -1290,6 +1316,7 @@ function addNewSpeakerSelect2() {
     });
     $('.classsitetype').select2({
         tags: true,
+        dropdownParent: $("#"+dropdownParent),
         placeholder: '--Site:--',
         data: multililaSiteTypes,
         // allowClear: true,
@@ -1297,6 +1324,7 @@ function addNewSpeakerSelect2() {
     });
     $('.classcity').select2({
         tags: true,
+        dropdownParent: $("#"+dropdownParent),
         placeholder: '--City:--',
         data: multililaCities,
         // allowClear: true,
@@ -1304,6 +1332,7 @@ function addNewSpeakerSelect2() {
     });
     $('.classstate').select2({
         tags: true,
+        dropdownParent: $("#"+dropdownParent),
         placeholder: '--State:--',
         data: states,
         // allowClear: true,
@@ -1311,6 +1340,7 @@ function addNewSpeakerSelect2() {
     });
     $('.classsubjectarea').select2({
         tags: true,
+        dropdownParent: $("#"+dropdownParent),
         placeholder: '--Subject Area:--',
         data: multililaSubjects,
         // allowClear: true,
@@ -1319,6 +1349,7 @@ function addNewSpeakerSelect2() {
 
     $('.classmultililaagegroup').select2({
         tags: true,
+        dropdownParent: $("#"+dropdownParent),
         placeholder: '--Age Group--',
         data: multililaAgeGroup,
         // allowClear: true
@@ -1326,6 +1357,7 @@ function addNewSpeakerSelect2() {
 
     $('.classmultililamediumofeducation').select2({
         tags: true,
+        dropdownParent: $("#"+dropdownParent),
         placeholder: '--Medium of Education:--',
         data: multililaMedium,
         // allowClear: true,
@@ -1393,8 +1425,8 @@ function addNewSpeakerFormEvents() {
         }
         $('#idmetadatasubmitbutton').prop("disabled", true);
         $('#idmetadatauploadbutton').prop("disabled", true);
-        addNewSpeakerFormEvents();
-        addNewSpeakerSelect2();
+        // addNewSpeakerFormEvents();
+        // addNewSpeakerSelect2();
     });
 
     $('#idaudiosourcebulk').change(function () {
@@ -1448,8 +1480,8 @@ function addNewSpeakerFormEvents() {
         if (field_element) {
             $('#idmetadatauploadbutton').prop("disabled", false);
         }
-        addNewSpeakerFormEvents();
-        addNewSpeakerSelect2();
+        // addNewSpeakerFormEvents();
+        // addNewSpeakerSelect2();
     });
 
     $('#idaudiointernetsource').change(function () {
@@ -1488,8 +1520,8 @@ function addNewSpeakerFormEvents() {
         //     $('#idinternetsourcedetailsdiv').removeAttr('required');
         //     $('#idinternetsourcedetailsdiv').removeAttr('data-error');
         // }
-        addNewSpeakerFormEvents();
-        addNewSpeakerSelect2();
+        // addNewSpeakerFormEvents();
+        // addNewSpeakerSelect2();
     });
 
     $('#idfieldmetadataschema').change(function () {
@@ -1520,8 +1552,9 @@ function addNewSpeakerFormEvents() {
         $('#idspeakerdetails').attr('required', '');
         $('#idspeakerdetails').attr('data-error', 'This field is required.')
         $('#idmetadatasubmitbutton').prop("disabled", false);
-        addNewSpeakerFormEvents();
-        addNewSpeakerSelect2();
+        // addNewSpeakerFormEvents();
+        // addNewSpeakerSelect2();
+        addNewSpeakerSelect2_2();
         // else if (sourceVal === "internet") {
         //     $('#idspeakerdetailsdiv').hide();
         //         $('#idspeakerdetailsdiv').removeAttr('required');
