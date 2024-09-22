@@ -36,6 +36,7 @@ function createrShareProjectAction(shareAction) {
   $('#shareProjectAction').select2({
     placeholder: 'Share Action',
     data: shareProjectActionOptions,
+    dropdownParent: $("#myShareProjectModal"),
     // allowClear: true
   });
   $('#shareProjectAction').val(shareAction);
