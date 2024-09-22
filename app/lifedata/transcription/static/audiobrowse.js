@@ -108,7 +108,7 @@ function createBrowseActions(projectOwner, currentUsername, shareMode, shareChec
         ele += '<select class="custom-select custom-select-sm" id="browseactiondropdown"></select>';
         // ele += tabSpace;
         // multiple audio delete
-        ele += '<button type="button" class="btn btn-sm btn-danger" id="multipleaudiodelete"  style="display: inline;">' +
+        ele += '<button type="button" class="btn btn-sm btn-danger" id="multipleaudiodelete" style="display: inline;">' +
             '<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>' +
             ' +1</button>';
         // ele += tabSpace;
@@ -441,6 +441,11 @@ function eventsMapping(playPauseEventActive=true) {
     if (playPauseEventActive) {
         playPauseEvent();
     }
+    // view single audio info
+    $(".viewaudioclass").click(function() {
+        let dataInfo = getSingleAudioBrowseAction(this);
+        audioBrowseActionViewData(dataInfo);
+    });
     // download single transcription
     $(".classsingletranscriptiondownload").click(function () {
         let audioInfo = getSingleAudioBrowseAction(this);
@@ -484,6 +489,102 @@ function eventsMapping(playPauseEventActive=true) {
             audioBrowseAction(audioInfo);
         }
     });
+}
+
+
+function audioBrowseActionViewData(dataInfo) {
+    let audioBrowseInfo = getAudioBrowseInfo();
+    $.ajax({
+        data : {
+          a : JSON.stringify({
+            "audioInfo": dataInfo,
+            "audioBrowseInfo": audioBrowseInfo
+        })
+        },
+        type : 'GET',
+        url : '/lifedata/transcription/audiobrowseactionviewdata'
+      }).done(function(data){
+        let audioInfo = data.audioInfo;
+        // console.log(audioInfo);
+        let audioViewFilterOptions = data.audioViewFilterOptions;
+        // console.log(dataInfo);
+        let audio_id = Object.keys(dataInfo)[0];
+        let audio_src = '/retrieve/'+Object.values(dataInfo)[0];
+        // console.log(audio_src);
+        let modalEle = '';
+        modalEle += '<div class="modal fade" id="myViewModal" role="dialog">'+
+                    '<div class="modal-dialog modal-lg">'+
+                    '<div class="modal-content">'+
+                    '<div class="modal-header" style="padding:10px 50px;">'+
+                    '<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span'+
+                    ' aria-hidden="true">&times;</span></button>'+
+                    '<h4 class="modal-title">'+audio_id+'</h4>'+
+                    '</div>'+
+                    '<div class="modal-body" style="padding:30px 60px; word-wrap: break-word;">';
+        modalEle += '<div class="row">';
+        modalEle += '<div class="col col-md-6">';
+        modalEle += '<audio id="idaudioviewmodal" controls'+
+        ' oncontextmenu="return false" controlslist="nofullscreen nodownload noremoteplayback noplaybackrate">'+
+        '<source src="'+audio_src+'" type="audio/wav">'+
+        '</audio>';
+        modalEle += '</div>';
+        // modalEle += '<div class="col col-md-6">';
+        // modalEle += '<select id="audioviewfilteroptions" multiple="multiple" style="width: 100%; display: block;"></select>';
+        // modalEle += '</div>';
+        modalEle += '</div>';
+        for (let i=0; i<audioInfo.length; i++) {
+            modalEle += '<hr>';
+            let tempAudioInfo = audioInfo[i];
+            for (let [key, value] of Object.entries(tempAudioInfo)){
+                value = JSON.stringify(value);
+                modalEle += '<p><strong>'+key+':</strong> '+value+'</p>'
+            }
+        }
+        
+        modalEle += '</div>'+
+                    '<div class="modal-footer">'+
+                    '<button id="refreshmodal" type="submit" class="btn btn-danger btn-default pull-left" data-dismiss="modal">Close</button>'+
+                    '<button type="button" id="ideditaudio" class="btn btn-sm btn-primary">' +
+                    '<span class="glyphicon glyphicon-edit" aria-hidden="true"></span>' +
+                    // ' Edit Audio'+
+                    '</button>'+
+                    '</div>'+
+                    '</div>'+
+                    '</div>'+
+                    '</div>';
+        $("#audiobrowsedataview").html(modalEle);
+        $("#myViewModal").modal();
+        // edit single audio info
+        $("#ideditaudio").click(function() {
+            audioBrowseActionEditData(dataInfo);
+        });
+        createSelect2optgroup('audioviewfilteroptions', audioViewFilterOptions, '');
+        $('#myViewModal').on('hidden.bs.modal', function() {
+            let sound = document.getElementById("idaudioviewmodal");
+            sound.pause();
+            sound.currentTime = 0;
+        });
+      });
+}
+
+function audioBrowseActionEditData(dataInfo) {
+    console.log(dataInfo);
+    let audioBrowseInfo = getAudioBrowseInfo();
+    $.ajax({
+        data : {
+            a : JSON.stringify({
+                "audioInfo": dataInfo,
+                "audioBrowseInfo": audioBrowseInfo
+            })
+            },
+            type : 'GET',
+            url : '/lifedata/transcription/audiobrowseactioneditdata'
+      }).done(function(data){
+            console.log(data);
+            route = data.route;
+            windowHref = window.location.href
+            window.location.href = windowHref.replace('audiobrowse', route);
+      });
 }
 
 function updateAudioSortingSubCategoriesDropdown() {

@@ -296,6 +296,7 @@ def newproject():
                                                                             userprojects)
     if request.method == 'POST':
         project_form_data = dict(request.form.lists())
+        # logger.debug(project_form_data)
         project_name = project_form_data['projectname'][0].strip()
         project_name = savenewproject.savenewproject(projects,
                                                      project_name,
@@ -1877,10 +1878,10 @@ def enterlexemefromuploadedfile(alllexemedf):
     # when testing comment these to avoid any database update/changes
     # saving data for that new lexeme to database in lexemes collection
     # try:
-    # logger.debug(lexemedf)
+    logger.debug(alllexemedf)
     for lexeme_type, lexemedf in alllexemedf.items():
-        # logger.debug('Data key', lexeme_type)
-        # logger.debug(lexemedf)
+        logger.debug('Data key', lexeme_type)
+        logger.debug(lexemedf)
         for index, row in lexemedf.iterrows():
             uploadedFileLexeme = {
                 "username": projectowner,
@@ -2939,7 +2940,7 @@ def downloadlexemeformexcel():
         columns = df.columns
         drop_cols = [c for c in df.columns if c.startswith('langscripts.')]
         drop_cols.append('lexemedeleteFLAG')
-        drop_cols.append('grammaticalcategory')
+        # drop_cols.append('grammaticalcategory')
         drop_cols.append('projectname')
 
         if 'gloss' in columns:
@@ -3790,7 +3791,7 @@ def downloadselectedlexeme():
         columns = df.columns
         drop_cols = [c for c in df.columns if c.startswith('langscripts.')]
         drop_cols.append('lexemedeleteFLAG')
-        drop_cols.append('grammaticalcategory')
+        # drop_cols.append('grammaticalcategory')
         drop_cols.append('projectname')
 
         if 'gloss' in columns:
