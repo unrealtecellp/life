@@ -395,7 +395,7 @@ var multililaParticipants = [
 // If edited, also map values in speakerDetails.py - update_bulk_multilila_data() for bulk upload
 var multililaMedium = [
   { "id": "", "text": "" },
-  { "id": "1", "text": "Only English4" },
+  { "id": "1", "text": "Only English" },
   { "id": "2", "text": "Telugu+English" },
   { "id": "3", "text": "Hindi+English" },
   { "id": "4", "text": "Assamese+English" }
@@ -404,7 +404,7 @@ var multililaMedium = [
 var multililaClasses = [
   { "id": "", "text": "" },
   { "id": "4E", "text": "4E" },
-  { "id": "5E", "text": "4E" }
+  { "id": "5E", "text": "5E" }
 ]
 
 var multililaSchools = [

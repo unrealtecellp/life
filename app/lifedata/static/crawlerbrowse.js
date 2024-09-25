@@ -445,6 +445,7 @@ function crawlerBrowseActionViewData(dataInfo) {
                     '</div>'+
                     '<div class="modal-body" style="padding:50px 60px; word-wrap: break-word;">';
         for (let [key, value] of Object.entries(commentInfo)){
+            value = JSON.stringify(value);
             modalEle += '<p><strong>'+key+':</strong> '+value+'</p>'
         }
         modalEle += '</div>'+

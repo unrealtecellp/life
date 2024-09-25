@@ -944,6 +944,92 @@ def audiobrowseactionplay():
         return jsonify(audioSource='')
 
 
+@transcription.route('/audiobrowseactionviewdata', methods=['GET', 'POST'])
+@login_required
+def audiobrowseactionviewdata():
+    try:
+        new_audio_info = []
+        audio_view_filter_options = {
+            'Transcription': []
+        }
+        userprojects, transcription_collection = getdbcollections.getdbcollections(mongo,
+                                                                                   'userprojects',
+                                                                                   'transcriptions')
+        current_username = getcurrentusername.getcurrentusername()
+        activeprojectname = getactiveprojectname.getactiveprojectname(
+            current_username, userprojects)
+        logger.debug("%s, %s", current_username, activeprojectname)
+        # data from ajax
+        data = json.loads(request.args.get('a'))
+        logger.debug('data: %s', pformat(data))
+        audio_info = data['audioInfo']
+        # logger.debug('audio_info: %s', pformat(audio_info))
+        audio_browse_info = data['audioBrowseInfo']
+        # logger.debug('audio_browse_info: %s', pformat(audio_browse_info))
+        # browse_action = audio_browse_info['browseActionSelectedOption']
+        active_source_id = audio_browse_info['activeSpeakerId']
+        logger.debug(active_source_id)
+        audio_id = list(audio_info.keys())[0]
+        logger.debug(audio_id)
+        audio_info = transcription_collection.find_one({"projectname": activeprojectname,
+                                                        "lifesourceid": active_source_id,
+                                                        "audioId": audio_id
+                                                        },
+                                                       {"_id": 0,
+                                                        "textGrid.sentence": 1
+                                                        })
+        # logger.debug(pformat(audio_info))
+        audio_info = audio_info["textGrid"]["sentence"]
+        logger.debug("audio_info: %s", pformat(audio_info))
+        for i, boundary_id in enumerate(sorted(list(audio_info.keys()))):
+            temp = {
+                'Boundary': i+1,
+                'Boundary ID': int(boundary_id),
+            }
+            for key, value in audio_info[boundary_id]['transcription'].items():
+                temp['Transcription '+key] = value
+                if (key not in audio_view_filter_options['Transcription']):
+                    audio_view_filter_options['Transcription'].append(key)
+            new_audio_info.append(temp)
+        return jsonify(audioInfo=new_audio_info,
+                       audioViewFilterOptions=audio_view_filter_options)
+    except:
+        logger.exception("")
+        return jsonify(audioInfo=new_audio_info,
+                       audioViewFilterOptions=audio_view_filter_options)
+
+
+@transcription.route('/audiobrowseactioneditdata', methods=['GET', 'POST'])
+@login_required
+def audiobrowseactioneditdata():
+    try:
+        route = 'home'
+        projects_collection, userprojects = getdbcollections.getdbcollections(mongo,
+                                                                              'projects',
+                                                                              'userprojects')
+        current_username = getcurrentusername.getcurrentusername()
+        activeprojectname = getactiveprojectname.getactiveprojectname(
+            current_username, userprojects)
+        # logger.debug("%s,%s", current_username, activeprojectname)
+        # data from ajax
+        data = json.loads(request.args.get('a'))
+        logger.debug('data: %s', pformat(data))
+        audio_info = data['audioInfo']
+        # logger.debug('audio_info: %s', pformat(audio_info))
+        audio_browse_info = data['audioBrowseInfo']
+        active_speaker_id = audio_browse_info['activeSpeakerId']
+        latest_audio_id = list(audio_info.keys())[0]
+        transcription_audiodetails.updatelatestaudioid(projects_collection,
+                                                       activeprojectname,
+                                                       latest_audio_id,
+                                                       current_username,
+                                                       active_speaker_id)
+    except:
+        logger.exception("")
+
+    return jsonify(route=route)
+
+
 @transcription.route('/audiobrowseactionshare', methods=['GET', 'POST'])
 @login_required
 def audiobrowseactionshare():
@@ -1775,11 +1861,11 @@ def toggleComplete():
                                                          'next')
             # logger.debug("latest_audio_id: %s", latest_audio_id)
             if (latest_audio_id):
-                audiodetails.updatelatestaudioid(projects,
-                                                 activeprojectname,
-                                                 latest_audio_id,
-                                                 current_username,
-                                                 activespeakerid)
+                transcription_audiodetails.updatelatestaudioid(projects,
+                                                               activeprojectname,
+                                                               latest_audio_id,
+                                                               current_username,
+                                                               activespeakerid)
             # return redirect(url_for('enternewsentences'))
             return jsonify({'status': -1})
 

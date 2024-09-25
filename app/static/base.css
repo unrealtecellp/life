@@ -64,3 +64,8 @@
 .btn {
   margin: 2px 2px 2px 2px;
 }
+
+.modal-body {
+  max-height: calc(100vh - 212px);
+  overflow-y: auto;
+}

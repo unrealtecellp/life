@@ -56,7 +56,7 @@ def get_model_id(source='hfapi'):
 def generate_models_database():
     try:
         mongo.db.validate_collection("models")
-        logger.info('Models Database found!')
+        # logger.info('Models Database found!')
     except Exception as e:
         logger.info('Creating Models Database %s', e)
         models_collection = mongo.db.models
