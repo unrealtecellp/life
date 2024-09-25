@@ -109,28 +109,8 @@ function createquesform(quesprojectform) {
     if (activeAudioFilename === undefined) {
       activeAudioFilename = '';
     }
-    // console.log(activeAudioFilename)
-    // var inpt = '<strong>Audio Filename: </strong><strong id="audioFilename">'+ activeAudioFilename +'</strong>'
-    // $(".defaultfield").append(inpt);
-    // lastActiveId = newData["lastActiveId"]
-    // // console.log(lastActiveId)
-    // inpt = '<input type="hidden" id="lastActiveId" name="lastActiveId" value="'+lastActiveId+'">';
-    // $('.defaultfield').append(inpt);
-    // inpt = ''
-    // localStorage.removeItem('regions');
     localStorage.setItem("transcriptionDetails", JSON.stringify([quesprojectform['transcriptionDetails']]));
     localStorage.setItem("QuesAudioFilePath", JSON.stringify(quesprojectform['QuesAudioFilePath']));
-    // console.log(quesdata);
-    // var quesformControlAbove = '<div id="quesformControlAbove">'+
-    //                             '<button class="btn btn-info btn-lg" type="button" id="previous" onclick="previousQues()">'+
-    //                             '<span class="previousaudio glyphicon glyphicon-chevron-left" aria-hidden="true"></span>'+
-    //                             'Previous'+
-    //                             '</button>'+
-    //                             '<button class="btn btn-info btn-lg pull-right" type="button" id="next" onclick="nextQues()">'+
-    //                             'Next'+
-    //                             '<span class="nextaudio glyphicon glyphicon-chevron-right" aria-hidden="true"></span>'+
-    //                             '</button>'+
-    //                           '</div>';
     let quesform = '';
     quesform += createInputElement('Q_Id', [''], 'text', quesdata['Q_Id'])
     let transcriptionBoundaryForm = '';
@@ -267,25 +247,6 @@ function createquesform(quesprojectform) {
         // test field end
       }
     }
-    // quesform += '<input class="btn btn-lg btn-primary" type="submit" value="Submit">';
-    // quesform += '<div id="quesformControlBelow">'+
-    //                 '<button class="btn btn-info btn-lg" type="button" id="previous" onclick="previousQues()">'+
-    //                 '<span class="previousaudio glyphicon glyphicon-chevron-left" aria-hidden="true"></span>'+
-    //                 'Previous'+
-    //                 '</button>'+
-    //                 '<button class="btn btn-info btn-lg pull-right" type="button" id="next" onclick="nextQues()">'+
-    //                 'Next'+
-    //                 '<span class="nextaudio glyphicon glyphicon-chevron-right" aria-hidden="true"></span>'+
-    //                 '</button>'+
-    //                 '<br>'+
-    //                 '<br>'+
-    //                 '<button type="submit" class="btn btn-warning btn-lg btn-block pull-right" id="saveques">'+
-    //                   'Save'+
-    //                   '<span class="glyphicon glyphicon-floppy-save" aria-hidden="true"></span>'+
-    //                 '</button>'+
-    //             '</div>';
-
-    // qform += quesformControlAbove + '<br>' + transcriptionBoundaryForm + '<hr>' + quesform;
     qform += transcriptionBoundaryForm + '<hr>' + quesform;
     qform += '</form>'
     // quesform += '</div>';
@@ -351,11 +312,6 @@ function testwaveFormFunction(key, promptTypeKey, promptTypeValue, quesdatavalue
     if (val === undefined) {
       val = '';
     }
-    // console.log(val);
-    // var x = document.getElementById("questranscriptionsubmit");
-    // x.style.display = "none";
-    // var x = document.getElementById("questranscriptionwaveform");
-    // x.style.display = "block";
     quesTranscription += createInputElement(key + ' Transcription', [lang], 'text', val);
 
     let waveform = '<div id="wave-timeline"></div>' +
@@ -374,13 +330,6 @@ function testwaveFormFunction(key, promptTypeKey, promptTypeValue, quesdatavalue
       '<button type="button" id="deleteboundary" class="btn btn-warning btn-block" data-toggle="tooltip" title="Delete Boundary" data-action="delete-region" disabled>' +
       '<span class="glyphicon glyphicon-minus" aria-hidden="true"></span>' +
       '</button>' +
-      // '<br>'+
-      // '<button class="btn btn-danger" type="button" id="stopAudio" data-action="stop-audio">STOP'+
-      //   '<span class="audiostop glyphicon glyphicon-stop" aria-hidden="true"></span>'+
-      // '</button>'+
-      // '<button class="btn btn-primary" type="button" id="playPauseAudio">PLAY/PAUSE'+
-      //   '<span class="audioplaypause glyphicon glyphicon-play" aria-hidden="true"></span>'+
-      // '</button>'+
       '</div><br><br><hr>';
 
     transcriptionBoundaryForm += waveform + waveformController;
@@ -436,9 +385,6 @@ function testpromptFileFunction(key, promptTypeKey, promptTypeValue, quesdataval
     return quesTranscription;
   }
   else {
-    // var x = document.getElementById("questranscriptionsubmit");
-    // x.style.display = "none";
-    // filePath = JSON.parse(localStorage.getItem('QuesAudioFilePath'));
     fileCaption = key + ' ' + promptTypeKey
     var fileId = fileCaption.replace(new RegExp(' ', 'g'), '');
     // console.log(fileId);
@@ -653,20 +599,6 @@ $("#save").click(function () {
       }
       window.location.reload();
     });
-  // $.post( "/savetranscription", {
-  //   a: JSON.stringify(questionnaireData)
-  // })
-  // .done(function( data ) {
-  //   // console.log(data.savedTranscription);
-  //   if (!data.savedQuestionnaire) {
-  //     alert("Unable to save the questionnaire as question seem to be deleted or revoked access by one of the shared users. Showing you the next question in the list.")
-  //     window.location.reload();
-  //   }
-  //   else {
-  //     alert("Questionnaire saved successfully.")
-  //   }
-  //   // window.location.reload();
-  // });
 });
 
 $("#addnewques").click(function () {

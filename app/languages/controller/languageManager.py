@@ -99,7 +99,7 @@ logger = life_logging.get_logger()
 def generate_languages_database(regenerate=False):
     try:
         mongo.db.validate_collection("languages")
-        logger.info('language Database found!')
+        # logger.info('language Database found!')
         if regenerate:
             mongo.db.drop_collection("languages")
             langs_collection = mongo.db.languages
