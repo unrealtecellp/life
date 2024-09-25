@@ -7,6 +7,8 @@ from flask import (
     request,
     jsonify
 )
+
+import os
 import requests
 import gzip
 import tarfile
@@ -130,14 +132,14 @@ def get_all_karya_assignments(verifyPh_request, assignment_url):
 
 
 
-def karya_new_get_all_karya_assignments(token_id, access_code, assignment_url):
+def karya_new_get_all_karya_assignments(token_id, accesscode_of_speaker, assignment_url):
     # Debugging: Print token_id, access_code, and URL
-    print(f"Token ID: {token_id}\nAccess Code: {access_code}\nAssignment URL: {assignment_url}")
+    print(f"Token ID: {token_id}\nAccess Code: {accesscode_of_speaker}\nAssignment URL: {assignment_url}")
 
     # Set headers with token ID and access code
     tokenid_accesscode_header = {
         'karya_worker_id_token': token_id,
-        'access_code': access_code
+        'access_code': accesscode_of_speaker
     }
 
     # Make the API request
@@ -434,7 +436,7 @@ def get_assignment_metadata(
 
 
 def karya_verified_get_assignment_metadata(
-    accesscodedetails, activeprojectname, access_code_for_worker_id,
+    accesscodedetails, activeprojectname, accesscode_of_speaker,
     karya_new_api_metadata, for_worker_id
 ):
     # for_worker_id = speaker_id received from the form
@@ -469,7 +471,7 @@ def karya_verified_get_assignment_metadata(
             continue  # Skip this iteration if worker_id is missing
 
         try:
-            if sepaker_access_code == access_code_for_worker_id:  # for_worker_id is speaker_id from the form
+            if sepaker_access_code == accesscode_of_speaker:  # for_worker_id is speaker_id from the form
                 sepaker_access_code_list.append(sepaker_access_code)
                 print("condtion sepaker_access_code: ", sepaker_access_code)
 
@@ -621,8 +623,7 @@ def get_audio_file_from_karya(current_file_id, hederr):
     return new_audio_file
 
 
-import os
-import requests
+
 
 def karya_new_get_audio_file_from_karya(current_file_name, hederr):
     """

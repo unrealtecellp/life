@@ -10,11 +10,13 @@
 {% endblock %}
   
 {% block app_content %}
-  {% if activeprojectname is defined %}
-    <h4>
-      Project Name: {{ activeprojectname }}
-    </h4>
-  {% endif %}
+{% if projectName is defined %}
+<h4>
+    Project Name : {{ projectName }}
+</h4>
+{% endif %}
+
+  <br>
 
 <!-- "i" button to toggle the display of instructions -->
 <button type="button" class="btn btn-info" onclick="toggleInfo()">

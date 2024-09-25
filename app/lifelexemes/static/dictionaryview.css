@@ -7,11 +7,3 @@ table {
 th {
   cursor: pointer;
 }
-
-.deleteproject{
-  float: right;
-}
-
-.multipledelete{
-  float: right;
-}

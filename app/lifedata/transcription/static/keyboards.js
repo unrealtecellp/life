@@ -205,6 +205,10 @@ function updateKeyboard(e) {
         keyman.setActiveKeyboard('Keyboard_txo_toto');
         // addedScripts.push(currentScript);
     }
+    else if (currentScript.includes('Latin')) {
+        keyman.setActiveKeyboard('Keyboard_sil_euro_latin');
+        // addedScripts.push(currentScript);
+    }
     // else if (currentScript == 'Latin') {
     //     keyman.setActiveKeyboard('basic_kbdinen');
     //     // addedScripts.push(currentScript);

@@ -2,7 +2,8 @@ function getJsonfileData(fileName) {
     let jsonFileNames = {
         select2DataKey: "select2_"+fileName+".json"
     }
-    var select2Data = JSON.parse(localStorage.getItem(fileName));
+    // console.log(fileName)
+    let select2Data = JSON.parse(localStorage.getItem(fileName));
     // console.log(select2Data);
     if (!select2Data) {
         $.ajax({

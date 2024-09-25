@@ -29,9 +29,9 @@ def get_fetched_audio_list(accesscodedetails, accesscode, activeprojectname):
     return fetched_audio_list
 
 
-def karya_new_get_fetched_audio_list(accesscodedetails, accesscode, activeprojectname):
+def karya_new_get_fetched_audio_list(accesscodedetails, accesscode_of_speaker, activeprojectname):
     # mongodb_info = mongo.db.accesscodedetails
-    fetchedaudiodict = accesscodedetails.find_one({"projectname": activeprojectname, "karyaaccesscode": accesscode, 
+    fetchedaudiodict = accesscodedetails.find_one({"projectname": activeprojectname, "karyaaccesscode": accesscode_of_speaker, 
                                                    "additionalInfo.karya_version": "karya_main"},
                                                   {"karyafetchedaudios": 1, "_id": 0}
                                                   )
@@ -75,7 +75,7 @@ def save_audio_file_fetched_from_karya(
     elif (project_type in project_types):
         project_type_collection, = getdbcollections.getdbcollections(mongo, project_type)
         if (derive_from_project_type == 'questionnaires'):
-            save_status = audiodetails.updateaudiofiles(mongo,
+            save_status = audiodetails.karya_new_updateaudiofiles(mongo,
                                                         projects,
                                                         userprojects,
                                                         project_type_collection,
@@ -90,7 +90,6 @@ def save_audio_file_fetched_from_karya(
                                                             "karyaFetchedAudioId": current_file_id
                                                         },
                                                         audioMetadata={
-                                                            "karyaVerificationMetadata": current_audio_report,
                                                             "verificationReport": current_audio_report},
 
                                                         additionalInfo={}
@@ -363,7 +362,7 @@ def karya_new_getnsave_karya_recordings_from_verified(
     projectsform, questionnaires, transcriptions, recordings,
     activeprojectname, derivedFromProjectName, current_username,
     project_type, derive_from_project_type, audio_speaker_merge,
-    fetched_audio_list, exclude_ids, language, hederr, access_code
+    fetched_audio_list, exclude_ids, language, hederr, accesscode_of_speaker
 ):
     logger.debug("%s, %s", derive_from_project_type , derivedFromProjectName)
 
@@ -453,7 +452,7 @@ def karya_new_getnsave_karya_recordings_from_verified(
                     exclude_ids.append(insert_audio_id)
                     
                     # Update the access code details with the newly fetched audio file ID
-                    accesscodedetails.update_one({"projectname": activeprojectname, "karyaaccesscode": access_code},
+                    accesscodedetails.update_one({"projectname": activeprojectname, "karyaaccesscode": accesscode_of_speaker},
                                                  {"$addToSet": {"karyafetchedaudios": current_file_id}})
                 else:
                     logger.debug("lifespeakerid not found!: %s, %s", karyaspeakerId, lifespeakerid)

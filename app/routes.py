@@ -296,6 +296,7 @@ def newproject():
                                                                             userprojects)
     if request.method == 'POST':
         project_form_data = dict(request.form.lists())
+        # logger.debug(project_form_data)
         project_name = project_form_data['projectname'][0].strip()
         project_name = savenewproject.savenewproject(projects,
                                                      project_name,
@@ -392,13 +393,11 @@ def enternewsentences():
                                                                                                      'audio')
             commentstats = [total_comments,
                             annotated_comments, remaining_comments]
-            print(commentstats)
             # logger.debug("commentstats: %s", commentstats)
             audio_id = audiodetails.getactiveaudioid(projects,
                                                      activeprojectname,
                                                      activespeakerid,
                                                      current_username)
-            print(audio_id)
             # logger.debug("audio_id: %s", audio_id)
             if (audio_id != ''):
                 audio_delete_flag = audiodetails.get_audio_delete_flag(transcriptions,
@@ -1879,10 +1878,10 @@ def enterlexemefromuploadedfile(alllexemedf):
     # when testing comment these to avoid any database update/changes
     # saving data for that new lexeme to database in lexemes collection
     # try:
-    # logger.debug(lexemedf)
+    logger.debug(alllexemedf)
     for lexeme_type, lexemedf in alllexemedf.items():
-        # logger.debug('Data key', lexeme_type)
-        # logger.debug(lexemedf)
+        logger.debug('Data key', lexeme_type)
+        logger.debug(lexemedf)
         for index, row in lexemedf.iterrows():
             uploadedFileLexeme = {
                 "username": projectowner,
@@ -2941,7 +2940,7 @@ def downloadlexemeformexcel():
         columns = df.columns
         drop_cols = [c for c in df.columns if c.startswith('langscripts.')]
         drop_cols.append('lexemedeleteFLAG')
-        drop_cols.append('grammaticalcategory')
+        # drop_cols.append('grammaticalcategory')
         drop_cols.append('projectname')
 
         if 'gloss' in columns:
@@ -3792,7 +3791,7 @@ def downloadselectedlexeme():
         columns = df.columns
         drop_cols = [c for c in df.columns if c.startswith('langscripts.')]
         drop_cols.append('lexemedeleteFLAG')
-        drop_cols.append('grammaticalcategory')
+        # drop_cols.append('grammaticalcategory')
         drop_cols.append('projectname')
 
         if 'gloss' in columns:
@@ -6069,7 +6068,6 @@ def syncspeakermetadata():
                 "karyaaccesscode": document["karyaaccesscode"],
                 "karyaspeakerid": document["karyaspeakerid"]
             }
-            # print('new_metadata : ', new_metadata)
 
             # Additional conditions to replace None values
             if new_metadata["name"] is None:
@@ -6092,9 +6090,8 @@ def syncspeakermetadata():
             if new_metadata["speakerspeaklanguage"] is None:
                 new_metadata["speakerspeaklanguage"] = []
 
-        except Exception as e:
-            # Handle exception
-            print("An error occurred:", e)
+        except:
+            logger.exception("")
             continue  # Skip to the next document
 
         # Check if the metadata already exists in speakermeta (speakerdetails)
@@ -6118,7 +6115,6 @@ def syncspeakermetadata():
                                                                                 new_metadata,
                                                                                 upload_type
                                                                             )
-            # print('not existing_metadata')
 
     check_existing_lifesourceid = speakermeta.find({
                                                     "projectname": activeprojectname},
@@ -6140,21 +6136,17 @@ def syncspeakermetadata():
                 # Check if old_lifesourceid does not exist
                 "old_lifesourceid": {"$exists": False}
             }
-            # print('filter_criteria_old_lifesourceid :', filter_criteria_old_lifesourceid)
 
             # Define filter criteria to update lifespeakerid to lifesourceid
             filter_criteria_lifespeakerid_to_lifesourceid = {
                 "projectname": activeprojectname,
                 "current.sourceMetadata.lifespeakerid": existing_lifesourceid["current"]["sourceMetadata"]["lifespeakerid"]
             }
-            # print('filter_criteria_lifespeakerid_to_lifesourceid :', filter_criteria_lifespeakerid_to_lifesourceid)
             # Define the data to be added
             lifesource_to_old_lifesourceid = {
                 "old_lifesourceid": existing_lifesourceid["lifesourceid"]}
             lifespeakerid_to_lifesourceid = {
                 "lifesourceid": existing_lifesourceid["current"]["sourceMetadata"]["lifespeakerid"]}
-            
-            # print('lifesource_to_old_lifesourceid :', lifesource_to_old_lifesourceid , 'lifespeakerid_to_lifesourceid :',lifespeakerid_to_lifesourceid  )
 
             # Update old_lifesourceid only if it does not exist in the document
             try:
@@ -6166,8 +6158,8 @@ def syncspeakermetadata():
                 result = speakermeta.update_many(filter_criteria_lifespeakerid_to_lifesourceid, {
                                                  "$set": lifespeakerid_to_lifesourceid})
 
-            except Exception as e:
-                print("An error occurred:", e)
+            except:
+                logger.exception("")
 
     return render_template('manageProject.html',
                            shareinfo=shareinfo,

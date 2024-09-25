@@ -31,7 +31,6 @@ def saveques(questionnaires,
         transcription_boundary_data = {}
         transcription = ''
         for key, value in ques_data.items():
-            print(key)
             if (key == 'Q_Id'):
                 qid = value[0]
             if (key in prompt):
@@ -78,8 +77,6 @@ def saveques(questionnaires,
                                                                 lang_script: value
                                                             }
                 }
-                # print(text_boundary_data)
-                # content[lang_name] = value
                 prompt['content'][lang_name]['text'] = text_boundary_data
             if ('Instruction' in key):
                 # logger.debug("key: %s, value: %s",
