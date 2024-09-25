@@ -59,7 +59,7 @@ function languageScriptFieldsSelect2(langIdName,
 
   $('#'+scriptIdName+id).select2({
     tags: scriptTags,
-    // placeholder: scriptIdName,
+    placeholder: 'Script',
     data: tempScripts,
     allowClear: allowClear
   });
@@ -240,9 +240,9 @@ function removeInterlinearGlossFields(rid) {
 }
 
 $("#idprojecttype").change(function() {
-  var projecttypevalue = document.getElementById("idprojecttype").value;
+  let projecttypevalue = document.getElementById("idprojecttype").value;
   // console.log(projecttypevalue, this);
-  projectTypeOptions = this.options;
+  let projectTypeOptions = this.options;
   for (i=0; i<projectTypeOptions.length; i++) {
     if (projectTypeOptions[i].value === '') continue
     let projecttypeId = projectTypeOptions[i].value+"typeproject";
