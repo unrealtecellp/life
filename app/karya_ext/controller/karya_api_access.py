@@ -51,7 +51,7 @@ def karya_new_get_otp_id(phone_number):
     if response.status_code == 200:
         response_json = response.json()
         otp_id = response_json.get('otp_id')
-        print("function karya_new_get_otp_id", otp_id)
+        # print("function karya_new_get_otp_id", otp_id)
         return otp_id, True
     else:
         return None, False
@@ -134,7 +134,7 @@ def get_all_karya_assignments(verifyPh_request, assignment_url):
 
 def karya_new_get_all_karya_assignments(token_id, accesscode_of_speaker, assignment_url):
     # Debugging: Print token_id, access_code, and URL
-    print(f"Token ID: {token_id}\nAccess Code: {accesscode_of_speaker}\nAssignment URL: {assignment_url}")
+    # print(f"Token ID: {token_id}\nAccess Code: {accesscode_of_speaker}\nAssignment URL: {assignment_url}")
 
     # Set headers with token ID and access code
     tokenid_accesscode_header = {
@@ -149,7 +149,7 @@ def karya_new_get_all_karya_assignments(token_id, accesscode_of_speaker, assignm
     karya_new_api_metadata_status_code = karya_new_api_metadata_request.status_code
 
     # Debugging: Print status code
-    print(f"Status Code: {karya_new_api_metadata_status_code}")
+    # print(f"Status Code: {karya_new_api_metadata_status_code}")
 
     # Handle non-200 status codes
     if karya_new_api_metadata_status_code == 403:
@@ -465,7 +465,7 @@ def karya_verified_get_assignment_metadata(
         # worker_id = assignment.get('worker_id')
         #now worker_id is not avialble now we have to find the own_access_code 
         sepaker_access_code = assignment_data.get("own_access_code")
-        print("sepaker_access_code: ", sepaker_access_code)
+        # print("sepaker_access_code: ", sepaker_access_code)
 
         if not sepaker_access_code:
             continue  # Skip this iteration if worker_id is missing
@@ -473,7 +473,7 @@ def karya_verified_get_assignment_metadata(
         try:
             if sepaker_access_code == accesscode_of_speaker:  # for_worker_id is speaker_id from the form
                 sepaker_access_code_list.append(sepaker_access_code)
-                print("condtion sepaker_access_code: ", sepaker_access_code)
+                # print("condtion sepaker_access_code: ", sepaker_access_code)
 
                 # Extract fileID from assignment
                 fileID_lists = assignment['id']
@@ -663,7 +663,7 @@ def karya_new_get_audio_file_from_karya(current_file_name, hederr):
             
         return new_audio_file
     else:
-        print("file not fetched")
+        # print("file not fetched")
         # Handle any errors that occurred during the request
         raise Exception(f"Failed to fetch file. Status code: {response.status_code}")
 

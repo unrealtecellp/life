@@ -1249,9 +1249,9 @@ def karya_new_updateaudiofiles(mongo,
     
     # Check the verification report and set audiodeleteFLAG if not accepted
     verification_report = kwargs.get('audioMetadata', {}).get('verificationReport', {}).get('data', {})
-    print("###################################")
-    print("verification_report for transcription :", verification_report)
-    print("###################################")
+    # print("###################################")
+    # print("verification_report for transcription :", verification_report)
+    # print("###################################")
 
     if new_audio_file['audiofile'].filename != '':
         audio_filename = new_audio_file['audiofile'].filename
