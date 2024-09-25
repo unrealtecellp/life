@@ -126,6 +126,24 @@ def get_translation_model(source_lang='hi', target_lang='en'):
                 source_script = language['sourceScriptCode']
                 target_script = language['targetScriptCode']
                 return model_id, api_key, end_url, source_script, target_script
+    return '', '', '', '', ''
+
+
+def get_translation_model_from_id(model_id=''):
+    all_results = get_bhashini_translation_result()
+    models = all_results['pipelineResponseConfig'][0]['config']
+    # print(models)
+    for model in models:
+        # print(model)
+        current_model_id = model['serviceId']
+        if current_model_id == model_id:
+            language = model['language']
+            api_key = all_results['pipelineInferenceAPIEndPoint']['inferenceApiKey']['value']
+            end_url = all_results['pipelineInferenceAPIEndPoint']['callbackUrl']
+            # source_script = language['sourceScriptCode']
+            # target_script = language['targetScriptCode']
+            # return model_id, api_key, end_url, source_script, target_script
+        return model_id, api_key, end_url
     return '', '', ''
 
 

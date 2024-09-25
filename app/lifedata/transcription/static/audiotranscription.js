@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', function () {
         barGap: 3,
         // partialRender: true,
         plugins: [
-            WaveSurfer.regions.create(),
+            WaveSurfer.regions.create({content: 'Test'}),
             // WaveSurfer.minimap.create({
             //     height: 30,
             //     waveColor: '#ddd',
@@ -413,7 +413,7 @@ function editAnnotation(region) {
     // console.log('editAnnotation(region)')
     // console.log(region)
     let form = document.forms.edit;
-    // console.log(form);
+    console.log(form);
     // let id = form.dataset.region;
     // let wavesurferregion = wavesurfer.regions.list[id];
     // console.log(wavesurferregion)
@@ -473,6 +473,7 @@ function editAnnotation(region) {
     saveBoundaryData(region, form)
     updateBoundaryColor(region, form);
     formOnSubmit(form, region)
+    localStorage.setItem("activeboundaryid", JSON.stringify(rid));
     // console.log(sentence);
 
     // form.onreset = function () {
@@ -481,7 +482,9 @@ function editAnnotation(region) {
     //     transcriptionFormDisplay(form);
     //     form.dataset.region = null;
     // };
+    console.log(form.dataset.region, rid);
     form.dataset.region = region.id;
+    console.log(form.dataset.region, rid);
     // region.color = boundaryColor(255, 255, 0, 0.1);
 }
 
@@ -1101,9 +1104,9 @@ function processTokenGloss(glossTokenId,
     existingMorphemes) {
     // console.log('processTokenGloss');
     // console.log('Gloss token ID info', glossTokenIdInfo);
-    try {
-        let glossedSentenceWithMorphemicBreakInfo = {};
-        let glossedSentenceWithTokenIdInfo = {};
+    let glossedSentenceWithMorphemicBreakInfo = {};
+    let glossedSentenceWithTokenIdInfo = {};
+    try {        
         for (let i = 0; i < glossTokenId.length; i++) {
             let tokenId = glossTokenId[i];
             // console.log('Processing', tokenId);
@@ -1252,17 +1255,18 @@ function processTokenGloss(glossTokenId,
         // console.log(glossedSentenceWithTokenIdInfo);
         // console.log(glossedSentenceWithMorphemicBreakInfo);
         // console.log(glossedSentenceWithTokenIdInfo);
-
         return {
             glossedSentenceWithMorphemicBreakInfo: glossedSentenceWithMorphemicBreakInfo,
             glossedSentenceWithTokenIdInfo: glossedSentenceWithTokenIdInfo
         }
     }
+    
     catch (error) {
         console.error(error);
         // console.log(glossedSentenceWithTokenIdInfo);
-        console.log('error');
+        console.log('error in processing token gloss. Most likely gloss not found');
     }
+    
     // console.log(glossedSentenceWithTokenIdInfo);
 }
 
@@ -1370,9 +1374,10 @@ function updateSentenceDetailsOnSaveBoundary(boundaryID, sentence, region, form)
                                 customizeGloss,
                                 sentence[boundaryID]['glossTokenIdInfo'],
                                 sentence[boundaryID]['gloss'][k]);
-                            // console.log(glossedSentenceWithMorphemicBreakInfo);
+                            // console.log('Glossed info', glossedSentenceWithMorphemicBreakInfo);
                             sentence[boundaryID]['gloss'][k] = glossedSentenceWithMorphemicBreakInfo.glossedSentenceWithMorphemicBreakInfo;
                             sentence[boundaryID]['glossTokenIdInfo'] = glossedSentenceWithMorphemicBreakInfo.glossedSentenceWithTokenIdInfo;
+                            // console.log(sentence);
                         }
                     }
                     // sentence[boundaryID][key][k] = form[eleName].value;
@@ -3031,6 +3036,7 @@ function autoSavetranscription(e, transcriptionField, recurse = true, update = t
     // console.log(e.keyCode);
     // console.log(transcriptionField, transcriptionField.id, transcriptionField.value);
     // console.log(e, transcriptionField);
+    console.log('Transcription field', transcriptionField);
     let fieldId = transcriptionField.id;
     // let fieldClasses = transcriptionField.className;
     // console.log('Inputs for autosave', e, transcriptionField, update, from);
@@ -3394,6 +3400,7 @@ function getScriptToGlossDropdownSelected() {
 }
 
 function transcriptionToGloss() {
+    console.log("Triggered transcription to gloss");
     // console.log($('#scripttoglossdropdown').select2('data'));
     // console.log($('#scripttoglossdropdown').select2('data')[0].id);
     let activeprojectform = JSON.parse(localStorage.activeprojectform);

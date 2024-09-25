@@ -13,7 +13,8 @@ from app.lifemodels.controller.bhashiniUtils import (
     transcribe_data,
     translate_data,
     get_translation_model,
-    get_transcription_model
+    get_transcription_model,
+    get_translation_model_from_id
 )
 
 
@@ -176,24 +177,41 @@ def transcribe_using_bhashini(model_inputs, model_url, model_params={}, script_n
     status = 0
     lang_code = model_params['language_code']
     model_lang_code = model_params['model_language_code']
+
+    model, api_key, end_url, target_script = get_transcription_model(
+        model_lang_code, model_url)
+
     all_outputs = {}
-    script_name = script_names[0]
-    script_code = sn.get(
-        name=script_name).get("alpha_4", script_name)
-    if len(script_names) > 1:
-        other_scripts = script_names[1:]
-    else:
-        other_scripts = []
+
+    # script_name = script_names[0]
+    # script_code = sn.get(
+    #     name=script_name).get("alpha_4", script_name)
+    script_name = ''
+
+    other_scripts = []
+
+    logger.info('All script names %s', script_names)
+
+    for current_script_name in script_names:
+        if current_script_name == 'Latin':
+            current_script_code = 'Latn'
+        else:
+            current_script_code = sn.get(
+                name=current_script_name).get("alpha_4", current_script_name)
+        if current_script_code == target_script:
+            script_code = current_script_code
+            script_name = current_script_name
+        else:
+            other_scripts.append(current_script_name)
 
     completed_count = 0
     retry_count = 0
     all_count = len(model_inputs)
     completed_ids = []
 
-    model, api_key, end_url, target_script = get_transcription_model(
-        model_lang_code, model_url)
-
     logger.info('Model URL %s, %s', model, model_url)
+    logger.info('Current Script: %s %s\tTarget Script %s \tOther Scripts %s \tLanguage %s \tModel Lang Code%s',
+                script_name, script_code, target_script, other_scripts, lang_code, model_lang_code)
 
     if model != '' and target_script == script_code:
         while completed_count < all_count and retry_count < max_retries:
@@ -251,17 +269,30 @@ def translate_using_bhashini(model_inputs, model_params={}, max_retries=3):
     source_script_code = model_params['source_script_code']
     target_lang_code = model_params['target_language']
     target_script_code = model_params['target_script']
+    model_id = model_params['model_path']
+
+    logger.info('Model ID %s', model_id)
 
     all_outputs = {}
-    model, api_key, end_url, source_script, target_script = get_translation_model(
-        source_lang_code, target_lang_code)
+    # model, api_key, end_url, source_script, target_script = get_translation_model(
+    #     source_lang_code, target_lang_code)
+    # model, api_key, end_url, source_script, target_script = get_translation_model_from_id(
+    #     model_id)
+    model, api_key, end_url = get_translation_model_from_id(
+        model_id)
+    logger.info('Retrieved Model ID %s', model)
+    # logger.info('Model source script code %s \t Input source script code: %s',
+    #             source_script, source_script_code)
+    # logger.info('Model target script code %s \t Input target script code: %s',
+    #             target_script, target_script_code)
 
     completed_count = 0
     retry_count = 0
     all_count = len(model_inputs)
     completed_ids = []
 
-    if model != '' and target_script_code == target_script and source_script_code == source_script:
+    # if model != '' and target_script_code == target_script and source_script_code == source_script:
+    if model != '':
         while completed_count < all_count and retry_count < max_retries:
             retry_count += 1
             for input_id, model_input_str in model_inputs.items():

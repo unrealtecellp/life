@@ -1631,6 +1631,8 @@ def savetranscription(transcriptions,
     except:
         logger.exception("")
 
+    return sentence
+
 
 def getaudioprogressreport(projects,
                            transcriptions,
