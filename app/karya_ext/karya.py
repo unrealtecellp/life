@@ -2533,7 +2533,7 @@ def karya_new_fetch_audio():
         otp = request.form.get("karya_otp")
         get_otp_id = request.form.get('otp_id')
         otp_id = get_otp_id.split(',')[0]
-        access_code_for_worker_id = accesscodedetails.find_one({"projectname": activeprojectname,
+        access_code_of_speaker = accesscodedetails.find_one({"projectname": activeprojectname,
                                         "karyaspeakerid": for_worker_id,
                                             "additionalInfo.karya_version": "karya_main"},
                                         {'karyaaccesscode': 1, '_id': 0})['karyaaccesscode']
@@ -2547,7 +2547,7 @@ def karya_new_fetch_audio():
         print("access_code : ", access_code)
         print("for_worker_id : ", for_worker_id) #karyaspeakerid
         print("phone_number : ", phone_number)
-        print("access_code_for_worker_id: ", access_code_for_worker_id)
+        print("access_code_for_worker_id: ", access_code_of_speaker)
         ###############################   verify OTP    ##########################################
         # Verify OTP using the otp_id
         # Returning multiple values: 
@@ -2605,8 +2605,8 @@ def karya_new_fetch_audio():
         ################################ Get already fetched audio list and quesIDs   ########################################
 
         #getting already fetched audio list form the data base - "karyafetchedaudios": 1
-        fetched_audio_list = karya_audio_management.get_fetched_audio_list(
-            accesscodedetails, access_code, activeprojectname)
+        fetched_audio_list = karya_audio_management.karya_new_get_fetched_audio_list(
+            accesscodedetails, access_code_of_speaker, activeprojectname)
         # print("898", fetched_audio_list) 
         logger.debug("fetched_audio_list: %s", fetched_audio_list)
 
@@ -2671,7 +2671,7 @@ def karya_new_fetch_audio():
             # Fetch metadata for verified assignments
             micro_task_ids, sepaker_access_code_list, sentence_list, karya_audio_report, filename_list, fileID_list = karya_api_access.karya_verified_get_assignment_metadata(
                 accesscodedetails, activeprojectname,
-                access_code_for_worker_id,
+                access_code_of_speaker,
                 karya_new_api_metadata, for_worker_id,
             )
 
@@ -2693,7 +2693,7 @@ def karya_new_fetch_audio():
                 activeprojectname, derivedFromProjectName, current_username,
                 project_type, derive_from_project_type,
                 fileid_sentence_map, fetched_audio_list, exclude_ids,
-                language, file_download_header, access_code
+                language, file_download_header, access_code_of_speaker
             )
             
         # print('\n','\n','\n','\n', '############################################################################################', '\n', '\n', '\n')

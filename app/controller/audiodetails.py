@@ -1215,7 +1215,143 @@ def updateaudiofiles(mongo,
         flash(f"ERROR")
         return (False, "", "")
 
+def karya_new_updateaudiofiles(mongo,
+                               projects,
+                               userprojects,
+                               project_type_collection,
+                               projectowner,
+                               activeprojectname,
+                               current_username,
+                               speakerId,
+                               new_audio_file,
+                               audio_id,
+                               **kwargs):
+    """mapping of this function is with the 'uploadaudiofiles' route.
 
+    Args:
+        mongo: instance of PyMongo
+        projects: instance of 'projects' collection.
+        userprojects: instance of 'userprojects' collection.
+        transcriptions: instance of 'transcriptions' collection.
+        projectowner: owner of the project.
+        activeprojectname: name of the project activated by current active user.
+        current_username: name of the current active user.
+        speakerId: speaker ID for this audio.
+        new_audio_file: uploaded audio file details.
+    """
+
+    # save audio file details in transcriptions collection
+    new_audio_details = {
+        "speakerId": speakerId
+    }
+    for kwargs_key, kwargs_value in kwargs.items():
+        new_audio_details[kwargs_key] = kwargs_value
+    
+    # Check the verification report and set audiodeleteFLAG if not accepted
+    verification_report = kwargs.get('audioMetadata', {}).get('verificationReport', {}).get('data', {})
+    print("###################################")
+    print("verification_report for transcription :", verification_report)
+    print("###################################")
+
+    if new_audio_file['audiofile'].filename != '':
+        audio_filename = new_audio_file['audiofile'].filename
+        updated_audio_filename = (audio_id +
+                                  '_' +
+                                  audio_filename)
+        new_audio_details['audioFilename'] = updated_audio_filename
+
+    # save audio file details and speaker ID in projects collection
+    speakerIds = projects.find_one({'projectname': activeprojectname},
+                                   {'_id': 0, 'speakerIds': 1})
+    # logger.debug(f"SPEAKER IDS: {speakerIds}")
+    if len(speakerIds) != 0:
+        speakerIds = speakerIds['speakerIds']
+        if current_username in speakerIds:
+            speakerIdskeylist = speakerIds[current_username]
+            speakerIdskeylist.append(speakerId)
+            speakerIds[current_username] = list(set(speakerIdskeylist))
+        else:
+            speakerIds[current_username] = [speakerId]
+    else:
+        speakerIds = {
+            current_username: [speakerId]
+        }
+
+    speaker_audio_ids = projects.find_one({'projectname': activeprojectname},
+                                          {'_id': 0, 'speakersAudioIds': 1})
+    # logger.debug("Length of speaker audio IDs %s", len(speaker_audio_ids))
+    # logger.debug("Speaker Audio IDs %s", speaker_audio_ids)
+    if len(speaker_audio_ids) != 0:
+        speaker_audio_ids = speaker_audio_ids['speakersAudioIds']
+        # logger.debug('speaker_audio_ids %s', speaker_audio_ids)
+        if speakerId in speaker_audio_ids:
+            speaker_audio_idskeylist = speaker_audio_ids[speakerId]
+            speaker_audio_idskeylist.append(audio_id)
+            speaker_audio_ids[speakerId] = speaker_audio_idskeylist
+        else:
+            # logger.debug('speakerId %s', speakerId)
+            speaker_audio_ids[speakerId] = [audio_id]
+        # plogger.debug(speaker_audio_ids)
+    else:
+        speaker_audio_ids = {
+            speakerId: [audio_id]
+        }
+    # plogger.debug(speaker_audio_ids)
+    try:
+        projects.update_one({'projectname': activeprojectname},
+                            {'$set': {
+                                'lastActiveId.'+current_username+'.'+speakerId+'.audioId':  audio_id,
+                                'speakerIds': speakerIds,
+                                'speakersAudioIds': speaker_audio_ids
+                            }})
+        # update active speaker ID in userprojects collection
+        projectinfo = userprojects.find_one({'username': current_username},
+                                            {'_id': 0, 'myproject': 1, 'projectsharedwithme': 1})
+
+        # logger.debug(projectinfo)
+        userprojectinfo = ''
+        for type, value in projectinfo.items():
+            if len(value) != 0:
+                if activeprojectname in value:
+                    userprojectinfo = type+'.'+activeprojectname+".activespeakerId"
+        userprojects.update_one({"username": current_username},
+                                {"$set": {
+                                    userprojectinfo: speakerId
+                                }})
+        # logger.debug("audio_id: %s", audio_id)
+        # logger.debug("new_audio_details: %s", pformat(new_audio_details))
+        # logger.debug("project_type_collection: %s", project_type_collection)
+        # pprint(new_audio_details)
+        if verification_report.get('accepted') == False:
+            project_type_collection.update_one({"audioId": audio_id},
+                                    {"$set": {
+                                    "audiodeleteFLAG":1
+                                    }})
+                                
+            project_type_collection_doc_id = project_type_collection.update_one({"audioId": audio_id},
+                                                                            {"$set": new_audio_details}) 
+                                                                            
+        else: 
+            project_type_collection_doc_id = project_type_collection.update_one({"audioId": audio_id},
+                                                                                    {"$set": new_audio_details}) 
+            project_type_collection_doc_id = project_type_collection.update_one({"audioId": audio_id},
+                                                                            {"$set": new_audio_details})
+        # save audio file details in fs collection
+        fs_file_id = mongo.save_file(updated_audio_filename,
+                                     new_audio_file['audiofile'],
+                                     audioId=audio_id,
+                                     username=projectowner,
+                                     projectname=activeprojectname,
+                                     updatedBy=current_username)
+
+        return (True, project_type_collection_doc_id, fs_file_id)
+
+    except:
+        logger.exception("")
+        flash(f"ERROR")
+        return (False, "", "")
+    
+    
 def get_blank_text_grid():
     blank_text_grid = {
         "discourse": {},
