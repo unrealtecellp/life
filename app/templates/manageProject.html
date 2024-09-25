@@ -42,7 +42,7 @@ Manage Project
       {% endif %}
 
       {% if shareinfo['sharemode']|int >= 3 %}
-      <button type="button" class="btn btn-lg btn-danger" onclick="syncSpeakerMetadata();">Sync Speaker Details</button>
+      <button type="button" class="btn btn-lg btn-danger" onclick="syncSpeakerMetadata();" disabled >Sync Speaker Details</button>
       {% endif %}
 
       {% if 'downloadchecked' in shareinfo and shareinfo['downloadchecked'] == 'true' %}

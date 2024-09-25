@@ -385,8 +385,8 @@ def active_accesscodes():
                                                "current.workerMetadata.typeofrecordingplace": 1, "current.workerMetadata.activeAccessCode": 1,
                                                "_id": 0})
     # acodedetails = accesscodedetails.find({"isActive": 1, "projectname": activeprojectname, "karyaaccesscode": str(asycaccesscode)})
-    print("Access Code:", asycaccesscode)
-    print(acodedetails)
+    # print("Access Code:", asycaccesscode)
+    # print(acodedetails)
 
     # details_list = []  # Create an empty list
 
@@ -422,8 +422,8 @@ def deactive_accesscodes():
                                                "current.workerMetadata.typeofrecordingplace": 1, "current.workerMetadata.activeAccessCode": 1,
                                                "_id": 0})
     # acodedetails = accesscodedetails.find({"isActive": 1, "projectname": activeprojectname, "karyaaccesscode": str(asycaccesscode)})
-    print("Access Code:", asycaccesscode)
-    print(acodedetails)
+    # print("Access Code:", asycaccesscode)
+    # print(acodedetails)
 
     print(jsonify(acodedetails))
 
@@ -461,12 +461,12 @@ def deactive_update_table_data():
     # typeofplace = request.form.get('typeofplace')
 
     # Print the received data
-    print("Access Code:", accessCode)
-    print("Speaker ID:", speakerID)
-    print("elicitation :", elicitation)
-    print("domain :", domain)
-    print("phase :", phase)
-    print("languagescript :", languagescript)
+    # print("Access Code:", accessCode)
+    # print("Speaker ID:", speakerID)
+    # print("elicitation :", elicitation)
+    # print("domain :", domain)
+    # print("phase :", phase)
+    # print("languagescript :", languagescript)
 
     current_speakerdetails = accesscodedetails.find_one({"karyaaccesscode": accessCode, "projectname": activeprojectname, "isActive": 0},
                                                         {"current.workerMetadata.name": 1, "current.workerMetadata.agegroup": 1, "_id": 1 })
@@ -554,10 +554,10 @@ def update_table_data():
     # print("Name:", name)
     # print("Age:", age)
     # print("Gender:", gender)
-    print("Access Code:", accessCode)
+    # print("Access Code:", accessCode)
     # print("Speaker ID:", speakerID)
     # print("Status:", status)
-    print("Fetch Data:", fetchData)
+    # print("Fetch Data:", fetchData)
     # print("Education Level:", educationlevel)
     # print("Education Medium Upto 12:", educationmediumupto12)
     # print("Education Medium After 12:", educationmediumafter12)
@@ -1237,7 +1237,7 @@ def fetch_karya_audio():
                                                                                                                                             'questionnaires',
                                                                                                                                             'accesscodedetails')
     current_username = getcurrentusername.getcurrentusername()
-    print('curent user : ', current_username)
+    # print('curent user : ', current_username)
     activeprojectname = getactiveprojectname.getactiveprojectname(
         current_username, userprojects)
     projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
@@ -1274,13 +1274,13 @@ def fetch_karya_audio():
         phone_number = request.form.get("mobile_number")
         otp = request.form.get("karya_otp")
 
-        print("OTP : ", otp)
-        print("project_type: ", project_type)
-        # print("additional_task : ", additional_task)
-        print("access_code_task : ", access_code_task)
-        print("access_code : ", access_code)
-        print("for_worker_id : ", for_worker_id)
-        print("phone_number : ", phone_number)
+        # print("OTP : ", otp)
+        # print("project_type: ", project_type)
+        # # print("additional_task : ", additional_task)
+        # print("access_code_task : ", access_code_task)
+        # print("access_code : ", access_code)
+        # print("for_worker_id : ", for_worker_id)
+        # print("phone_number : ", phone_number)
         ###############################   verify OTP    ##########################################
         otp_verified, verification_details = karya_api_access.verify_karya_otp(
             access_code, phone_number, otp
@@ -2250,7 +2250,7 @@ def register_speaker_get_otp():
         if response.status_code == 200:
             response_data = response.json()
             otp_id = response_data['otp_id']
-            print("otp_id gentrated from get otp: ", otp_id)
+            # print("otp_id gentrated from get otp: ", otp_id)
             return jsonify({'success': True, 'otp_id': otp_id})
         else:
             return jsonify({'success': False, 'message': 'Failed to generate OTP'}), 400
@@ -2284,7 +2284,7 @@ def register_speaker_verify_otp():
 
             # Extract token_id from the OTP response
             token_id = [p['id_token'] for p in response_data][0]
-            print("Token ID: ", token_id)
+            # print("Token ID: ", token_id)
 
             # Use token_id to fetch worker metadata
             metadata_url = 'https://main-karya.centralindia.cloudapp.azure.com/api_worker/v5/avatars'
@@ -2469,7 +2469,7 @@ def karya_new_assign_karya_life_id():
 @login_required
 def karya_new_get_otp():
     phone_number = request.args.get("mob")
-    print("karya_new_get_otp phone number: ", phone_number)
+    # print("karya_new_get_otp phone number: ", phone_number)
 
     # Generate the otp_id using the phone number
     otp_id = karya_api_access.karya_new_get_otp_id(phone_number)
@@ -2495,7 +2495,7 @@ def karya_new_fetch_audio():
                                                                                                                                             'questionnaires',
                                                                                                                                             'accesscodedetails')
     current_username = getcurrentusername.getcurrentusername()
-    print('curent user : ', current_username)
+    # print('curent user : ', current_username)
     activeprojectname = getactiveprojectname.getactiveprojectname(
         current_username, userprojects)
     projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
@@ -2539,15 +2539,15 @@ def karya_new_fetch_audio():
                                         {'karyaaccesscode': 1, '_id': 0})['karyaaccesscode']
 
 
-        print("OTP : ", otp)
-        print("OTP ID : ", otp_id)
-        print("project_type: ", project_type)
-        # print("additional_task : ", additional_task)
-        print("access_code_task : ", access_code_task)
-        print("access_code : ", access_code)
-        print("for_worker_id : ", for_worker_id) #karyaspeakerid
-        print("phone_number : ", phone_number)
-        print("access_code_for_worker_id: ", access_code_of_speaker)
+        # print("OTP : ", otp)
+        # print("OTP ID : ", otp_id)
+        # print("project_type: ", project_type)
+        # # print("additional_task : ", additional_task)
+        # print("access_code_task : ", access_code_task)
+        # print("access_code : ", access_code)
+        # print("for_worker_id : ", for_worker_id) #karyaspeakerid
+        # print("phone_number : ", phone_number)
+        # print("access_code_for_worker_id: ", access_code_of_speaker)
         ###############################   verify OTP    ##########################################
         # Verify OTP using the otp_id
         # Returning multiple values: 
@@ -2572,13 +2572,13 @@ def karya_new_fetch_audio():
         if project_type in ['validation', 'transcriptions', 'recordings', 'questionnaires']:
             if "new" in access_code_task:
                 assignment_url = 'https://main-karya.centralindia.cloudapp.azure.com/api_worker/v5/assignments?type=new&from=2024-01-17T20:11:35.213Z'
-                print("new")
+                print("new api")
                 #assignment_url = 'https://main-karya.centralindia.cloudapp.azure.com/api_worker/v5/assignments?type=verified&from=2024-01-17T20:11:35.213Z'
-                print("Fetching new assignments for project type:", project_type)
+                # print("Fetching new assignments for project type:", project_type)
             elif "completed" in access_code_task:
                 assignment_url = 'https://main-karya.centralindia.cloudapp.azure.com/api_worker/v5/assignments?type=verified&includemt=true&from=2021-05-11T07:23:40.654Z'
-                print("Fetching completed assignments for project type:", project_type)
-                print("completed")
+                # print("Fetching completed assignments for project type:", project_type)
+                print("verified api")
             # Fetch and process the assignment URL here
         else:
             flash("Action not allowed for this project type.")
@@ -2655,7 +2655,7 @@ def karya_new_fetch_audio():
             
             # Log and process the fileID-sentence map
             logger.debug("fileid_sentence_map: %s", fileid_sentence_map)
-            print("fileid_sentence_map :", fileid_sentence_map)
+            # print("fileid_sentence_map :", fileid_sentence_map)
 
             karya_audio_management.karya_new_getnsave_karya_recordings(
                                                                         mongo,
@@ -2681,7 +2681,7 @@ def karya_new_fetch_audio():
             )
             # Log and process the fileID-sentence map
             logger.debug("fileid_sentence_map: %s", fileid_sentence_map)
-            print("fileid_sentence_map :", fileid_sentence_map)
+            # print("fileid_sentence_map :", fileid_sentence_map)
 
 
             file_download_header = {"karya_worker_id_token" : token_id, 'access_code': access_code}
@@ -2731,9 +2731,9 @@ def karya_new_fetch_audio():
         # print(matched_unmathched_fetched_sentences)  
 
         matched, unmatched, already_fetched = matched_unmathched_fetched_sentences
-        print("Matched Sentences:", matched)
-        print("Unmatched Sentences:", unmatched)
-        print("Already Fetched Sentences:", already_fetched)
+        # print("Matched Sentences:", matched)
+        # print("Unmatched Sentences:", unmatched)
+        # print("Already Fetched Sentences:", already_fetched)
         logger.debug("Matched Sentences: %s", matched)
         logger.debug("Unmatched Sentences: %s", unmatched)
         # logger.debug("Already Fetched Sentences: %s", already_fetched)

@@ -376,7 +376,7 @@ def karya_new_getnsave_karya_recordings_from_verified(
         # Extract speaker ID from the audio_speaker_merge dictionary
         # karyaspeakerId = audio_speaker_merge_vals[0]
         karyaaccesscode = audio_speaker_merge_vals[0]
-        print("karyaaccesscode: ", karyaaccesscode)
+        # print("karyaaccesscode: ", karyaaccesscode)
 
         # Retrieve the life speaker ID associated with the Karya speaker ID
         karyaspeakerId = accesscodedetails.find_one(
@@ -423,13 +423,13 @@ def karya_new_getnsave_karya_recordings_from_verified(
                 lifespeakerid = lifespeakerid["lifespeakerid"]
 
                 # Print the file name that will be sent to the Karya API
-                print(f"Sending file name to karya_new_get_audio_file_from_karya: {current_file_name}")
+                # print(f"Sending file name to karya_new_get_audio_file_from_karya: {current_file_name}")
                 logger.debug('current_file_name: %s', current_file_name)
 
                 # Fetch the audio file using the file name instead of the file ID
                 new_audio_file = karya_api_access.karya_new_get_audio_file_from_karya(
                     current_file_name, hederr)  # Use `current_file_name` here
-                print("new_audio_file : ", new_audio_file)
+                # print("new_audio_file : ", new_audio_file)
                 logger.debug('new_audio_file: %s', new_audio_file)
 
                 # Save the fetched audio file and retrieve the save status
@@ -524,13 +524,13 @@ def karya_new_getnsave_karya_recordings(
                 lifespeakerid = lifespeakerid["lifespeakerid"]
 
                 # Print the file name that will be sent to the Karya API
-                print(f"Sending file name to karya_new_get_audio_file_from_karya: {current_file_name}")
+                # print(f"Sending file name to karya_new_get_audio_file_from_karya: {current_file_name}")
                 logger.debug('current_file_name: %s', current_file_name)
 
                 # Fetch the audio file using the file name instead of the file ID
                 new_audio_file = karya_api_access.karya_new_get_audio_file_from_karya(
                     current_file_name, hederr)  # Use `current_file_name` here
-                print("new_audio_file : ", new_audio_file)
+                # print("new_audio_file : ", new_audio_file)
                 logger.debug('new_audio_file: %s', new_audio_file)
 
                 # Save the fetched audio file and retrieve the save status
