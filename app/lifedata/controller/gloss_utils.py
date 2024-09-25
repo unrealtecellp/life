@@ -44,7 +44,13 @@ stanza_pipeline_token = {
     'hi': stanza.Pipeline(
         'hi', processors='tokenize', tokenize_no_ssplit=True, download_method=DownloadMethod.REUSE_RESOURCES),
     'en': stanza.Pipeline(
-        'en', processors='tokenize', tokenize_no_ssplit=True, download_method=DownloadMethod.REUSE_RESOURCES)
+        'en', processors='tokenize', tokenize_no_ssplit=True, download_method=DownloadMethod.REUSE_RESOURCES),
+    'ta': stanza.Pipeline(
+        'ta', processors='tokenize', tokenize_no_ssplit=True, download_method=DownloadMethod.REUSE_RESOURCES),
+    'te': stanza.Pipeline(
+        'te', processors='tokenize', tokenize_no_ssplit=True, download_method=DownloadMethod.REUSE_RESOURCES),
+    'mr': stanza.Pipeline(
+        'mr', processors='tokenize', tokenize_no_ssplit=True, download_method=DownloadMethod.REUSE_RESOURCES)
 }
 
 
@@ -60,7 +66,8 @@ def save_gloss_of_one_audio_file(transcriptions,
                                  audio_details,
                                  accessedOnTime,
                                  get_free_translation=False,
-                                 translate_tokens=True
+                                 translate_tokens=True,
+                                 boundary_ids=['*']
                                  ):
 
     transcription_doc_id = ''
@@ -72,14 +79,15 @@ def save_gloss_of_one_audio_file(transcriptions,
 
         full_model_name = translation_model.get("model_name")
 
-        text_grids, model_details = get_gloss_of_audio_transcription(gloss_model,
-                                                                     hf_token,
-                                                                     audio_details,
-                                                                     existing_text_grid,
-                                                                     get_free_translation,
-                                                                     translation_model,
-                                                                     transcription_type,
-                                                                     translate_tokens)
+        text_grids, model_details, glossed_data = get_gloss_of_audio_transcription(gloss_model,
+                                                                                   hf_token,
+                                                                                   audio_details,
+                                                                                   existing_text_grid,
+                                                                                   get_free_translation,
+                                                                                   translation_model,
+                                                                                   transcription_type,
+                                                                                   translate_tokens,
+                                                                                   boundary_ids=boundary_ids)
 
         for text_grid in text_grids:
             audio_details_dict = {}
@@ -100,7 +108,7 @@ def save_gloss_of_one_audio_file(transcriptions,
                                                                                                 accessedOnTime)
         # transcription_doc_id = transcriptions.update_one({"projectname": activeprojectname, "audioId": audio_id},
         #                                                  {"$set": audio_details_dict})
-    return transcription_doc_id
+    return transcription_doc_id, glossed_data
 
 
 def get_gloss_of_audio_transcription(gloss_model,
@@ -110,7 +118,8 @@ def get_gloss_of_audio_transcription(gloss_model,
                                      get_free_translation=True,
                                      translation_model={},
                                      transcription_type='sentence',
-                                     translate_tokens=True):
+                                     translate_tokens=True,
+                                     boundary_ids=['*']):
 
     lang_script_map = {
         'hi': 'Devanagari',
@@ -121,6 +130,7 @@ def get_gloss_of_audio_transcription(gloss_model,
     model_details = {}
     final_text_grids = []
     translations = {}
+    all_glossed_data = []
     if len(existing_text_grids) > 0:
         for text_grid in existing_text_grids:
             translations[transcription_type] = {'translation': {}}
@@ -139,21 +149,22 @@ def get_gloss_of_audio_transcription(gloss_model,
                     prepare_for_gloss = True
 
             if get_free_translation or prepare_for_gloss:
-                text_grids, model_details, input_data = translation_utils.get_translation_of_audio_transcription(translation_model,
-                                                                                                                 transcription_type,
-                                                                                                                 hf_token,
-                                                                                                                 audio_details,
-                                                                                                                 [text_grid])
+                text_grids, model_details, input_data, _ = translation_utils.get_translation_of_audio_transcription(translation_model,
+                                                                                                                    transcription_type,
+                                                                                                                    hf_token,
+                                                                                                                    audio_details,
+                                                                                                                    [text_grid],
+                                                                                                                    boundary_ids=boundary_ids)
                 temp_text_grid = text_grids[0]
             else:
                 temp_text_grid = text_grid
                 input_data = translation_utils.get_input_data_for_translation(
-                    current_text_grid, source_script)
+                    current_text_grid, source_script, boundary_ids=boundary_ids)
 
             if prepare_for_gloss:
                 target_lang_script = translation_model['model_params']['output_language']
                 gloss_input_data = prepare_gloss_input_data(
-                    temp_text_grid[transcription_type], input_data, translation_model, source_lang_code, 'en', target_lang_script)
+                    temp_text_grid[transcription_type], input_data, translation_model, source_lang_code, 'en', target_lang_script, boundary_ids=boundary_ids)
             else:
                 gloss_input_data = input_data
 
@@ -164,20 +175,22 @@ def get_gloss_of_audio_transcription(gloss_model,
             model_details.update([('gloss_model_name', gloss_model_name), ('gloss_model_params',
                                                                            gloss_params), ('gloss_start', gloss_start), ('gloss_end', gloss_end)])
 
-            final_text_grids.append(
-                update_existing_text_grid_with_gloss(temp_text_grid,
-                                                     transcription_type,
-                                                     model_details,
-                                                     input_data,
-                                                     translate_tokens=translate_tokens,
-                                                     translation_model=translation_model,
-                                                     glossed_data=gloss,
-                                                     source_lang_name=source_lang_name,
-                                                     source_lang_code=source_lang_code,
-                                                     source_script_code=source_script_code,
-                                                     source_script_name=source_script))
+            append_text_grid, glossed_data = update_existing_text_grid_with_gloss(temp_text_grid,
+                                                                                  transcription_type,
+                                                                                  model_details,
+                                                                                  input_data,
+                                                                                  translate_tokens=translate_tokens,
+                                                                                  translation_model=translation_model,
+                                                                                  glossed_data=gloss,
+                                                                                  source_lang_name=source_lang_name,
+                                                                                  source_lang_code=source_lang_code,
+                                                                                  source_script_code=source_script_code,
+                                                                                  source_script_name=source_script,
+                                                                                  boundary_ids=boundary_ids)
+            final_text_grids.append(append_text_grid)
+            all_glossed_data.append(glossed_data)
 
-    return final_text_grids, model_details
+    return final_text_grids, model_details, all_glossed_data
 
 
 def generate_gloss_token_id(start, end, max_len=14):
@@ -206,7 +219,7 @@ def get_token_translation(token, model, api_key, end_url, source_lang_code, targ
     return trans_output
 
 
-def prepare_gloss_input_data(temp_text_grid, input_data, translation_model, source_lang_code, target_lang_code, target_lang_script):
+def prepare_gloss_input_data(temp_text_grid, input_data, translation_model, source_lang_code, target_lang_code, target_lang_script, boundary_ids=['*']):
     gloss_input = {}
     logger.info('Text grid %s', temp_text_grid)
     logger.info('Input data %s', input_data)
@@ -215,20 +228,21 @@ def prepare_gloss_input_data(temp_text_grid, input_data, translation_model, sour
         translation_model_id)
 
     for boundary_id, boundary_grid in temp_text_grid.items():
-        original_data = input_data[boundary_id]
-        translated_data = boundary_grid['translation'][target_lang_script]
-        translate_data_length = len(translated_data.split(' '))
-        original_data_length = len(original_data.split(' '))
-        if translate_data_length == original_data_length:
-            gloss_input[boundary_id] = translated_data
-        else:
-            word_translations = ''
-            for token in original_data.split(' '):
-                token_trans = get_token_translation(
-                    token, model, api_key, end_url, source_lang_code, target_lang_code)
-                token_trans = token_trans.replace(' ', '-')
-                word_translations = word_translations + ' ' + token_trans
-            gloss_input[boundary_id] = word_translations.strip()
+        if '*' in boundary_ids or boundary_id in boundary_ids:
+            original_data = input_data[boundary_id]
+            translated_data = boundary_grid['translation'][target_lang_script]
+            translate_data_length = len(translated_data.split(' '))
+            original_data_length = len(original_data.split(' '))
+            if translate_data_length == original_data_length:
+                gloss_input[boundary_id] = translated_data
+            else:
+                word_translations = ''
+                for token in original_data.split(' '):
+                    token_trans = get_token_translation(
+                        token, model, api_key, end_url, source_lang_code, target_lang_code)
+                    token_trans = token_trans.replace(' ', '-')
+                    word_translations = word_translations + ' ' + token_trans
+                gloss_input[boundary_id] = word_translations.strip()
     return gloss_input
 
 
@@ -290,6 +304,7 @@ def conll_to_leipzig_gloss(feats, upos='', trans_output='_'):
                     output = output+'.'+feat_val[1]
                 # output = output + '.' + feat_val.upper()
 
+        # output = output.strip('_').strip()
         output = output.strip('.').strip()
 
     return output
@@ -323,9 +338,11 @@ def update_existing_text_grid_with_gloss(current_text_grid,
                                          source_lang_name="",
                                          source_lang_code="",
                                          source_script_code="",
-                                         source_script_name=""):
+                                         source_script_name="",
+                                         boundary_ids=['*']):
     try:
         logger.debug('Existing textgrid before gloss %s', current_text_grid)
+        all_glossed_entries = {}
         if translate_tokens:
             target_lang_code = 'en'
             target_script_code = 'Latn'
@@ -374,6 +391,8 @@ def update_existing_text_grid_with_gloss(current_text_grid,
                 end_index = str(token_gloss['end_char'])
                 token_id = generate_gloss_token_id(start_index, end_index)
 
+                # if source_lang_code == 'en':
+                #     trans_output = ''
                 # if translate_tokens and upos in translate_token_categs:
                 if translate_tokens and source_lang_code != target_lang_code:
                     # if model != '' and target_script_code == target_script and source_script_code == source_script:
@@ -410,8 +429,9 @@ def update_existing_text_grid_with_gloss(current_text_grid,
 
             current_text_grid[transcription_type][sent_id]['gloss'] = sent_token_entry
             current_text_grid[transcription_type][sent_id]['glossTokenIdInfo'] = sent_gloss_entry
+            all_glossed_entries[sent_id] = sent_gloss_entry
     except:
         logger.exception("")
 
     logger.debug('Final text grid after gloss %s', current_text_grid)
-    return current_text_grid
+    return current_text_grid, all_glossed_entries

@@ -30,7 +30,13 @@ stanza_pipelines = {
     'hi': stanza.Pipeline(
         'hi', download_method=DownloadMethod.REUSE_RESOURCES),
     'en': stanza.Pipeline(
-        'en', download_method=DownloadMethod.REUSE_RESOURCES)
+        'en', download_method=DownloadMethod.REUSE_RESOURCES),
+    'ta': stanza.Pipeline(
+        'ta', download_method=DownloadMethod.REUSE_RESOURCES),
+    'te': stanza.Pipeline(
+        'te', download_method=DownloadMethod.REUSE_RESOURCES),
+    'mr': stanza.Pipeline(
+        'mr', download_method=DownloadMethod.REUSE_RESOURCES)
 }
 
 
@@ -38,7 +44,13 @@ stanza_pipeline_token = {
     'hi': stanza.Pipeline(
         'hi', processors='tokenize', tokenize_no_ssplit=True, download_method=DownloadMethod.REUSE_RESOURCES),
     'en': stanza.Pipeline(
-        'en', processors='tokenize', tokenize_no_ssplit=True, download_method=DownloadMethod.REUSE_RESOURCES)
+        'en', processors='tokenize', tokenize_no_ssplit=True, download_method=DownloadMethod.REUSE_RESOURCES),
+    'ta': stanza.Pipeline(
+        'ta', processors='tokenize', tokenize_no_ssplit=True, download_method=DownloadMethod.REUSE_RESOURCES),
+    'te': stanza.Pipeline(
+        'te', processors='tokenize', tokenize_no_ssplit=True, download_method=DownloadMethod.REUSE_RESOURCES),
+    'mr': stanza.Pipeline(
+        'mr', processors='tokenize', tokenize_no_ssplit=True, download_method=DownloadMethod.REUSE_RESOURCES)
 }
 
 

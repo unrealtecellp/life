@@ -177,24 +177,41 @@ def transcribe_using_bhashini(model_inputs, model_url, model_params={}, script_n
     status = 0
     lang_code = model_params['language_code']
     model_lang_code = model_params['model_language_code']
+
+    model, api_key, end_url, target_script = get_transcription_model(
+        model_lang_code, model_url)
+
     all_outputs = {}
-    script_name = script_names[0]
-    script_code = sn.get(
-        name=script_name).get("alpha_4", script_name)
-    if len(script_names) > 1:
-        other_scripts = script_names[1:]
-    else:
-        other_scripts = []
+
+    # script_name = script_names[0]
+    # script_code = sn.get(
+    #     name=script_name).get("alpha_4", script_name)
+    script_name = ''
+
+    other_scripts = []
+
+    logger.info('All script names %s', script_names)
+
+    for current_script_name in script_names:
+        if current_script_name == 'Latin':
+            current_script_code = 'Latn'
+        else:
+            current_script_code = sn.get(
+                name=current_script_name).get("alpha_4", current_script_name)
+        if current_script_code == target_script:
+            script_code = current_script_code
+            script_name = current_script_name
+        else:
+            other_scripts.append(current_script_name)
 
     completed_count = 0
     retry_count = 0
     all_count = len(model_inputs)
     completed_ids = []
 
-    model, api_key, end_url, target_script = get_transcription_model(
-        model_lang_code, model_url)
-
     logger.info('Model URL %s, %s', model, model_url)
+    logger.info('Current Script: %s %s\tTarget Script %s \tOther Scripts %s \tLanguage %s \tModel Lang Code%s',
+                script_name, script_code, target_script, other_scripts, lang_code, model_lang_code)
 
     if model != '' and target_script == script_code:
         while completed_count < all_count and retry_count < max_retries:

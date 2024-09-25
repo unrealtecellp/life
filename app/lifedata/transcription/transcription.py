@@ -1338,8 +1338,10 @@ def maketranscription():
     projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
     audio_language = getactiveprojectform.getaudiolanguage(
         projectsform, projectowner, activeprojectname)
-    audio_lang_code = languageManager.get_bcp_language_code(
-        languages, audio_language)
+
+    # language_scripts = projectDetails.get_all_audio_language_scripts(
+    #     projectsform, activeprojectname)
+    # audio_languages = language_scripts["languages"]
 
     if request.method == 'POST':
         run_vad = False
@@ -1349,8 +1351,10 @@ def maketranscription():
         # overwrite_user = False
 
         data = dict(request.form.lists())
-        # logger.debug("Form data %s", data)
+        logger.debug("Form data %s", data)
         transcription_source = data['transcribeUsingSelect2'][0]
+
+        boundary_ids = data['processBoundariesTranscription']
 
         if transcription_source == 'hfinference':
             if not 'hfinferenceagree' in data:
@@ -1367,6 +1371,12 @@ def maketranscription():
         existing_audio_details = transcriptions.find_one(
             {'projectname': activeprojectname, 'audioFilename': audio_filename})
         # logger.debug("Existing audio data %s", existing_audio_details)
+
+        if 'languageName' in data:
+            audio_language = data['languageName'][0]
+
+        audio_lang_code = languageManager.get_bcp_language_code(
+            languages, audio_language)
 
         if 'modelId' in data:
             model_name = data['modelId'][0]
@@ -1472,33 +1482,34 @@ def maketranscription():
             'target': script_name
         }
         # logger.debug("create_new_boundaries: %s", create_boundaries)
-        transcription_audiodetails.save_boundaries_of_one_audio_file(mongo,
-                                                                     projects,
-                                                                     userprojects,
-                                                                     transcriptions,
-                                                                     projectowner,
-                                                                     activeprojectname,
-                                                                     current_username,
-                                                                     audio_filename,
-                                                                     audio_duration,
-                                                                     # change this and boundary_threshold for automatic detection of boundaries of different kinds
-                                                                     run_vad=run_vad,
-                                                                     run_asr=run_asr,
-                                                                     split_into_smaller_chunks=split_into_smaller_chunks,
-                                                                     get_audio_json=get_audio_json,
-                                                                     vad_model={},
-                                                                     asr_model=asr_model,
-                                                                     transcription_type='sentence',
-                                                                     boundary_threshold=boundary_threshold,
-                                                                     min_boundary_size=min_boundary_size,
-                                                                     save_for_user=save_for_user,
-                                                                     hf_token=hf_token,
-                                                                     audio_details=existing_audio_details,
-                                                                     create_boundaries=create_boundaries,
-                                                                     accessed_time=accessed_time
-                                                                     )
-
-    return redirect(url_for('lifedata.transcription.home'))
+        saved_doc_id, saved_data = transcription_audiodetails.save_boundaries_of_one_audio_file(mongo,
+                                                                                                projects,
+                                                                                                userprojects,
+                                                                                                transcriptions,
+                                                                                                projectowner,
+                                                                                                activeprojectname,
+                                                                                                current_username,
+                                                                                                audio_filename,
+                                                                                                audio_duration,
+                                                                                                # change this and boundary_threshold for automatic detection of boundaries of different kinds
+                                                                                                run_vad=run_vad,
+                                                                                                run_asr=run_asr,
+                                                                                                split_into_smaller_chunks=split_into_smaller_chunks,
+                                                                                                get_audio_json=get_audio_json,
+                                                                                                vad_model={},
+                                                                                                asr_model=asr_model,
+                                                                                                transcription_type='sentence',
+                                                                                                boundary_threshold=boundary_threshold,
+                                                                                                min_boundary_size=min_boundary_size,
+                                                                                                save_for_user=save_for_user,
+                                                                                                hf_token=hf_token,
+                                                                                                audio_details=existing_audio_details,
+                                                                                                create_boundaries=create_boundaries,
+                                                                                                accessed_time=accessed_time,
+                                                                                                boundary_ids=boundary_ids
+                                                                                                )
+    return jsonify({"savedTranscription": 1, "data": saved_data})
+    # return redirect(url_for('lifedata.transcription.home'))
 
 
 @transcription.route('/addnewspeakerdetails', methods=['GET', 'POST'])

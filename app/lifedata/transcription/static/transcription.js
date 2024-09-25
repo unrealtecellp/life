@@ -938,6 +938,9 @@ $("#syncallbtnid").click(function () {
     transcriptionData['action'] = 'sync';
     transcriptionData['sourceScript'] = sourceScript;
     transcriptionData['targetScripts'] = targetScripts;
+    let boundaryIds = $('#processBoundariesSyncTranscriptionSelect2Id').val();
+    console.log('Boundary IDs', boundaryIds);
+    transcriptionData['processBoundariesSyncTranscription'] = boundaryIds;
 
     let overwrite = document.getElementById('overwrite-existing-transcriptionsid').checked;
     // console.log('Overwrite', overwrite);
@@ -958,7 +961,36 @@ $("#syncallbtnid").click(function () {
         // else {
         //   alert("Transcription saved successfully.")
         // }
-        window.location.reload();
+        let activeBoundaryId = JSON.parse(localStorage.getItem('activeboundaryid'));
+        console.log('All boundaries', boundaryIds);
+        console.log('Active boundary ID', activeBoundaryId);
+        if ((boundaryIds.length == 1) && (boundaryIds[0] === activeBoundaryId)) {
+          console.log('Setting Data');
+          let syncedData = data.data;
+          console.log('Synced Data', syncedData);
+          for (const currentBoundaryData of syncedData) {            
+            for (const currentBoundaryId in currentBoundaryData) {
+              console.log('Current Boundary', currentBoundaryId);
+              if (currentBoundaryId === activeBoundaryId) {
+                let currentTransData = currentBoundaryData[currentBoundaryId];
+                console.log('Current transc data', currentTransData);
+                for (const currentScript in currentTransData) {
+                  let value = currentTransData[currentScript];
+                  console.log('Current script value', value);
+                  $('#Transcription_' + currentScript).val(value).change();
+                  var e = jQuery.Event("input", { keyCode: 64 });
+                  console.log($('#Transcription_' + currentScript)[0]);
+                  // console.log(document.getElementById('#Transcription_' + currentScript)[0]);
+                  autoSavetranscription(e, $('#Transcription_' + currentScript)[0]);
+                  stopLoader();
+                }
+              }
+            }
+          }
+        }
+        else {
+          window.location.reload();
+        }
       });
   }
   $('#syncTranscriptsAllModal').modal('toggle');
@@ -1331,6 +1363,12 @@ function runLoader() {
   // console.log('123213');
   // console.log(document.getElementById("loader"));
   document.getElementById("loader").style.display = "block";
+}
+
+function stopLoader() {
+  // console.log('123213');
+  // console.log(document.getElementById("loader"));
+  document.getElementById("loader").style.display = "none";
 }
 
 $("#syncaudio").click(function () {

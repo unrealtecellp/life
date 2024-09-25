@@ -681,7 +681,7 @@ Transcription
             aria-hidden="true">&times;</span></button>
         <h4 class="modal-title" id="myAutomationModalLabel">Project Name: {{ projectName }}</h4>
       </div>
-      <div class="modal-body">
+      <div class="modal-body">        
         <div class="input-group col-md-12" id="taskTypeSelect2-divid">
           <label for="taskTypeSelect2Id">Select Task: </label><br />
           <select class="custom-select custom-select-sm" id="taskTypeSelect2Id" name="taskTypeSelect2"
@@ -691,7 +691,7 @@ Transcription
         </div>
 
         <div class="gloss-body" id="autoGloss-divid" style="display: none;">
-          <form name="makegloss" action="/lifedata/makegloss" method="POST" enctype="multipart/form-data">
+          <form name="makegloss" id="makeglossformid" action="/lifedata/makegloss" method="POST" enctype="multipart/form-data">
             <!-- <div class="col upload"> -->
             <!-- <strong>Audio Files from Source: </strong> -->
             <input type="hidden" id="glossingAccessedOnTime" name="accessedOnTime" value="">
@@ -716,12 +716,18 @@ Transcription
             </div>
             <hr>
             <div class="input-group col-md-12 glossModelLang" id="glossmodellangselectdivid">
-              <label for="myglossModelLangListSelect2">Language: </label><br />
+              <label for="myglossModelLangListSelect2">Audio Language: </label><br />
               <select class="custom-select custom-select-sm" id="myglossModelLangListSelect2" name="glossModelLang"
                 style="width: 50%;">
               </select>
             </div>
             <br />
+            <div class="input-group col-md-12" id="processBoundariesGlossSelect2-divid">
+              <label for="processBoundariesGlossSelect2Id">Boundary ID: </label><br />
+              <select class="custom-select custom-select-sm" id="processBoundariesGlossSelect2Id"
+                name="processBoundariesGloss" multiple="multiple" style="width: 50%;" required>
+              </select>
+            </div>
             <div class="input-group col-md-12 modelSource" id="glossingselectdivid">
               <label for="myglossingModelListSelect2">Gloss Using: </label><br />
               <select class="custom-select custom-select-sm" id="myglossingModelListSelect2" name="glossModelId"
@@ -730,57 +736,59 @@ Transcription
             </div>
             <hr />
             <!-- <h4>Word-by-word Translation Settings </h4> -->
-            <div class="input-group col-md-12" id="freetranslateUsingSelect2-divid">
-              <label for="freetranslateUsingSelect2Id">Translate Using: </label><br />
-              <select class="custom-select custom-select-sm" id="freetranslateUsingSelect2Id"
-                name="translateUsingSelect2" style="width: 50%;">
-              </select>
-              <br>
-              *<i>
-                <font color="red"> HF Inference API sends the data to HuggingFace server for inference.
-                </font>
-              </i>
+            <div id="glosstranslationsettingsid" style="display: block;">
+              <div class="input-group col-md-12" id="freetranslateUsingSelect2-divid">
+                <label for="freetranslateUsingSelect2Id">Translate Using: </label><br />
+                <select class="custom-select custom-select-sm" id="freetranslateUsingSelect2Id"
+                  name="translateUsingSelect2" style="width: 50%;">
+                </select>
+                <br>
+                *<i>
+                  <font color="red"> HF Inference API sends the data to HuggingFace server for inference.
+                  </font>
+                </i>
+              </div>
+              <div class="input-group col-md-12" id="hfinferenceagree-divid">
+                <input type="checkbox" id="hfinferenceagreeid" name="hfinferenceagree">
+                <label for="hfinferenceagreeid"> I agree to HuggingFace Privacy Policy for using HF Inference API.
+                </label>
+                <br>
+              </div>
+              <div class="input-group col-md-12 modelSource" id="freetranslationselectdivid">
+                <label for="mytranslationModelListSelect2">Model: </label><br />
+                <select class="custom-select custom-select-sm" id="myfreetranslationModelListSelect2"
+                  name="translationModelId" style="width: 50%;">
+                </select>
+              </div>
+              <hr>
+              <div class="input-group col-md-12 sourceScript" id="freetranslationsourcedivid">
+                <label for="mytranslationSourceScriptListSelect2">Source Script: </label><br />
+                <select class="custom-select custom-select-sm" id="myfreetranslationSourceScriptListSelect2"
+                  name="sourceScriptName" style="width: 50%;">
+                </select>
+              </div>
+              <hr>
+              <div class="input-group col-md-12 targetLanguage" id="freetranslationtargetlanguagedivid">
+                <label for="mytranslationTargetLanguageListSelect2">Target Language(s): </label><br />
+                <select class="custom-select custom-select-sm" id="myfreetranslationTargetLanguageListSelect2"
+                  name="targetLanguageName" style="width: 50%;">
+                </select>
+              </div>
+              <div class="input-group col-md-8" id="overwrite-my-gloss-divid">
+                <input type="checkbox" id="overwrite-my-glossid" name="overwrite-my-gloss" checked>
+                <label for="overwrite-my-glossid">Overwrite my Gloss</label>
+              </div>
+              <hr>
             </div>
-            <div class="input-group col-md-12" id="hfinferenceagree-divid">
-              <input type="checkbox" id="hfinferenceagreeid" name="hfinferenceagree">
-              <label for="hfinferenceagreeid"> I agree to HuggingFace Privacy Policy for using HF Inference API.
-              </label>
-              <br>
-            </div>
-            <div class="input-group col-md-12 modelSource" id="freetranslationselectdivid">
-              <label for="mytranslationModelListSelect2">Model: </label><br />
-              <select class="custom-select custom-select-sm" id="myfreetranslationModelListSelect2"
-                name="translationModelId" style="width: 50%;">
-              </select>
-            </div>
-            <hr>
-            <div class="input-group col-md-12 sourceScript" id="freetranslationsourcedivid">
-              <label for="mytranslationSourceScriptListSelect2">Source Script: </label><br />
-              <select class="custom-select custom-select-sm" id="myfreetranslationSourceScriptListSelect2"
-                name="sourceScriptName" style="width: 50%;">
-              </select>
-            </div>
-            <hr>
-            <div class="input-group col-md-12 targetLanguage" id="freetranslationtargetlanguagedivid">
-              <label for="mytranslationTargetLanguageListSelect2">Target Language(s): </label><br />
-              <select class="custom-select custom-select-sm" id="myfreetranslationTargetLanguageListSelect2"
-                name="targetLanguageName" style="width: 50%;">
-              </select>
-            </div>
-            <div class="input-group col-md-8" id="overwrite-my-gloss-divid">
-              <input type="checkbox" id="overwrite-my-glossid" name="overwrite-my-gloss" checked>
-              <label for="overwrite-my-glossid">Overwrite my Gloss</label>
-            </div>
-            <hr>
             <div class="input-group" id="dogloss-divid">
-              <input class="btn btn-primary glossbtn" id="glossbtnid" type="submit" value="Gloss">
+              <input class="btn btn-primary glossbtn" id="glossbtnid" type="button" value="Gloss">
             </div>
             <!-- </div> -->
           </form>
         </div>
 
-        <div class="transcription-body" id="autoTranslation-divid" style="display: none;">
-          <form name="maketranscription" action="/lifedata/maketranslation" method="POST" enctype="multipart/form-data">
+        <div class="translation-body" id="autoTranslation-divid" style="display: none;">
+          <form name="maketranslation" id="maketranslationformid" action="/lifedata/maketranslation" method="POST" enctype="multipart/form-data">
             <!-- <div class="col upload"> -->
             <!-- <strong>Audio Files from Source: </strong> -->
             <h4>Translate the Text </h4>
@@ -789,7 +797,6 @@ Transcription
               <label for="translationspeakeriduploaddropdown">Data Source: </label><br />
               <input class="col-md-6" type="text" id="translationspeakeriduploaddropdown" name="translationSpeakerId"
                 value="" readonly>
-
             </div>
             <div class="input-group col-md-12" id="translationaudiofilename-divid">
               <label for="audiofile">Filename: </label><br />
@@ -814,7 +821,12 @@ Transcription
               <br>
             </div>
             <hr />
-
+            <div class="input-group col-md-12" id="processBoundariesTranslationSelect2-divid">
+              <label for="processBoundariesTranslationSelect2Id">Boundary ID: </label><br />
+              <select class="custom-select custom-select-sm" id="processBoundariesTranslationSelect2Id" name="processBoundariesTranslation"
+                multiple="multiple" style="width: 50%;" required>
+              </select>
+            </div>
             <div class="input-group col-md-12 modelSource" id="translationselectdivid">
               <label for="mytranslationModelListSelect2">Model: </label><br />
               <select class="custom-select custom-select-sm" id="mytranslationModelListSelect2" name="modelId"
@@ -842,14 +854,14 @@ Transcription
             </div>
             <hr>
             <div class="input-group" id="dotranslation-divid">
-              <input class="btn btn-primary translationbtn" id="translatebtnid" type="submit" value="Translate">
+              <input class="btn btn-primary translationbtn" id="translatebtnid" type="button" value="Translate">
             </div>
             <!-- </div> -->
           </form>
         </div>
 
         <div class="transcription-body" id="autoTranscription-divid" style="display: none;">
-          <form name="maketranscription" action="/lifedata/transcription/maketranscription" method="POST"
+          <form name="maketranscription" id="maketranscriptionformid" action="/lifedata/transcription/maketranscription" method="POST"
             enctype="multipart/form-data">
             <!-- <div class="col upload"> -->
             <!-- <strong>Audio Files from Source: </strong> -->
@@ -899,6 +911,12 @@ Transcription
                 </i> -->
             </div>
             <hr />
+            <div class="input-group col-md-12" id="processBoundariesTranscriptionSelect2-divid">
+              <label for="processBoundariesTranscriptionSelect2Id">Boundary ID: </label><br />
+              <select class="custom-select custom-select-sm" id="processBoundariesTranscriptionSelect2Id"
+                name="processBoundariesTranscription" multiple="multiple" style="width: 50%;" required>
+              </select>
+            </div>
             <div class="input-group col-md-12 modelSource" id="asrselectdivid">
               <label for="myASRModelListSelect2">Model: </label><br />
               <select class="custom-select custom-select-sm" id="myASRModelListSelect2" name="modelId"
@@ -908,6 +926,12 @@ Transcription
             </div>
             <hr>
 
+            <div class="input-group col-md-12 sourceLanguage" id="asrsourcedivid">
+              <label for="myASRScriptListSelect2">Audio Language</label>
+              <select class="custom-select custom-select-sm" id="myASRLanguageListSelect2" name="languageName" style="width: 50%;">
+              </select>
+
+            </div>
             <div class="input-group col-md-12 targetScript" id="asrtargetdivid">
               <label for="myASRScriptListSelect2">Target Script(s): </label><br />
               <span id="ipaspanid" hidden="hidden"><input type="checkbox" id="get-ipaid" name="get-ipa" checked>
@@ -953,7 +977,7 @@ Transcription
             </div>
             <hr>
             <div class="input-group" id="doasr-divid">
-              <input class="btn btn-primary asrbtn" id="transcribebtnid" type="submit" value="Transcribe">
+              <input class="btn btn-primary asrbtn" id="transcribebtnid" type="button" value="Transcribe">
             </div>
             <!-- </div> -->
           </form>
@@ -988,6 +1012,12 @@ Transcription
                 <font color="red">It will overwrite any boundaries creeated earlier</font>
               </i> -->
           <input type="hidden" id="syncTranscriptAccessedOnTime" name="accessedOnTime" value="">
+          <div class="input-group col-md-12" id="processBoundariesSyncTranscriptionSelect2-divid">
+            <label for="processBoundariesSyncTranscriptionSelect2Id">Boundary ID: </label><br />
+            <select class="custom-select custom-select-sm" id="processBoundariesSyncTranscriptionSelect2Id"
+              name="processBoundariesSyncTranscription" multiple="multiple" style="width: 50%;" required>
+            </select>
+          </div>
           <div class="input-group col-md-12 upload" id="allformelementsdiv">
             <label for="syncTranscriptScriptsSource">Source Script: </label><br />
             <select class="custom-select custom-select-sm" id="syncTranscriptScriptsSource" name="allSyncSourceScript"
@@ -1080,6 +1110,7 @@ Transcription
   <script src="{{url_for('static', filename='globalVars.js')}}"></script>
   <script src="{{url_for('static', filename='speaker_select2_dropdown.js')}}"></script>
   <script src="{{url_for('.static', filename='diff_match_patch_uncompressed.js')}}"></script>
+  <script src="{{url_for('.static', filename='audiotranscription.js')}}"></script>
   <script src="{{url_for('.static', filename='transcription.js')}}"></script>
   <script src="{{url_for('.static', filename='sidepanel.js')}}"></script>
   <script type="text/javascript">createSidePanel({{ shareinfo | tojson | safe }});</script>
@@ -1090,8 +1121,7 @@ Transcription
   <script src="{{url_for('.static', filename='progressreport.js')}}"></script>  
   <script src="{{url_for('static', filename='addnewspeaker.js')}}"></script>  
   <script src="{{url_for('.static', filename='search.js')}}"></script>
-  <script src="{{url_for('.static', filename='sorttable.js')}}"></script>
-  <script src="{{url_for('.static', filename='audiotranscription.js')}}"></script>
+  <script src="{{url_for('.static', filename='sorttable.js')}}"></script>  
   <script src="{{url_for('.static', filename='transcriptionannotation.js')}}"></script>
   <script src="{{url_for('.static', filename='automation.js')}}"></script>
   <script src="{{url_for('static', filename='downloader/transcriptiondownload.js')}}"></script>
