@@ -470,9 +470,9 @@ $('#transcribebtnid').on('click', function (e) {
                   // console.log(document.getElementById('#Transcription_' + currentScript)[0]);
                   autoSavetranscription(e, $('#Transcription_' + currentScript)[0]);
                   // stopLoader();
-                  if (response500) {
-                    alert('Unable to predict! Maybe boundary is more than 20s or boundary is without any speech!')
-                  }
+                }
+                if (response500) {
+                  alert('Unable to predict! Maybe boundary is more than 20s or boundary is without any speech!')
                 }
               }
             }
