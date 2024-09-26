@@ -102,6 +102,7 @@ function autoTranscription() {
             }
             if (entry == 'Latin') {
               $('#romanspanid').show();
+              $('#romanspanid').prop("checked", true);
             }
           }
         }
@@ -436,14 +437,21 @@ $('#transcribebtnid').on('click', function (e) {
     processData: false,
     contentType: false,
     success: function (data) {
-      let activeBoundaryId = JSON.parse(localStorage.getItem('activeboundaryid'));
-        // console.log('All boundaries', boundaryIds);
-        // console.log('Active boundary ID', activeBoundaryId);
-        if ((boundaryIds.length == 1) && (boundaryIds[0] === activeBoundaryId)) {
-          // console.log('Setting Data');
-          let syncedData = data.data;
-          // console.log('Synced Data', syncedData);
-          // for (const currentBoundaryData of syncedData) {            
+      console.log(data);
+      try {
+        let activeBoundaryId = JSON.parse(localStorage.getItem('activeboundaryid'));
+          // console.log('All boundaries', boundaryIds);
+          // console.log('Active boundary ID', activeBoundaryId);
+          if ((boundaryIds.length == 1) && (boundaryIds[0] === activeBoundaryId)) {
+            // console.log('Setting Data');
+            let syncedData = data.data;
+            if (Object.keys(syncedData).length === 0) {
+              stopLoader();
+              alert('Boundary mismatch. Please save the created boundaries.')
+              return false
+            }
+            // console.log('Synced Data', syncedData);
+            // for (const currentBoundaryData of syncedData) {            
             for (const currentBoundaryId in syncedData) {
               // console.log('Current Boundary', currentBoundaryId);
               if (currentBoundaryId === activeBoundaryId) {
@@ -451,22 +459,31 @@ $('#transcribebtnid').on('click', function (e) {
                 // console.log('Current transc data', currentTransData);
                 for (const currentScript in currentTransData) {
                   let value = currentTransData[currentScript];
-                  // console.log('Current script value', value);
+                  console.log('Current script value', value);
                   $('#Transcription_' + currentScript).val(value).change();
                   var e = jQuery.Event("input", { keyCode: 64 });
                   // console.log($('#Transcription_' + currentScript)[0]);
                   // console.log(document.getElementById('#Transcription_' + currentScript)[0]);
                   autoSavetranscription(e, $('#Transcription_' + currentScript)[0]);
-                  stopLoader();
+                  // stopLoader();
+                  if (value === '') {
+                    alert('Unable to predict! Maybe boundary is more than 20s or boundary is without any speech!')
+                  }
                 }
               }
             }
-          // }
-        }
-        else {
-          window.location.reload();
-          // alert('Going for reload', activeBoundaryId, boundaryIds);
-        }
+            // }
+          }
+          else {
+            window.location.reload();
+            // alert('Going for reload', activeBoundaryId, boundaryIds);
+          }
+          stopLoader();
+      }
+      catch {
+        alert("Some error occured!!");
+        stopLoader();
+      }
     }
   });
 });
@@ -485,43 +502,49 @@ $('#translatebtnid').on('click', function (e) {
       processData: false,
       contentType: false,
       success: function (data) {
-        let allLangScripts = projectForm['Translation'][1];
-        console.log('All Lang Scripts', allLangScripts);
-        let activeBoundaryId = JSON.parse(localStorage.getItem('activeboundaryid'));
-        console.log('All boundaries', boundaryIds);
-        console.log('Active boundary ID', activeBoundaryId);
-        console.log('Data', data);
-        // alert('Received!');
-        if ((boundaryIds.length == 1) && (boundaryIds[0] === activeBoundaryId)) {
-          // console.log('Setting Data');
-          let syncedData = data.data;
-          // console.log('Synced Data', syncedData);
-          for (const currentBoundaryData of syncedData) {            
-            for (const currentBoundaryId in currentBoundaryData) {
-              // console.log('Current Boundary', currentBoundaryId);
-              if (currentBoundaryId === activeBoundaryId) {
-                let currentTransData = currentBoundaryData[currentBoundaryId];
-                // console.log('Current transl data', currentTransData);
-                for (const currentLangScript in currentTransData) {
-                  if (currentLangScript in allLangScripts) {
-                    let currentScript = allLangScripts[currentLangScript];
-                    let value = currentTransData[currentLangScript];
-                    // console.log('Current script value', value);
-                    $('#Translation_' + currentScript).val(value).change();
-                    var e = jQuery.Event("input", { keyCode: 64 });
-                    // console.log($('#Translation_' + currentScript)[0]);
-                    // console.log(document.getElementById('#Transcription_' + currentScript)[0]);
-                    autoSavetranscription(e, $('#Translation_' + currentScript)[0]);
-                    stopLoader();
+        try {
+          let allLangScripts = projectForm['Translation'][1];
+          console.log('All Lang Scripts', allLangScripts);
+          let activeBoundaryId = JSON.parse(localStorage.getItem('activeboundaryid'));
+          console.log('All boundaries', boundaryIds);
+          console.log('Active boundary ID', activeBoundaryId);
+          console.log('Data', data);
+          // alert('Received!');
+          if ((boundaryIds.length == 1) && (boundaryIds[0] === activeBoundaryId)) {
+            // console.log('Setting Data');
+            let syncedData = data.data;
+            // console.log('Synced Data', syncedData);
+            for (const currentBoundaryData of syncedData) {            
+              for (const currentBoundaryId in currentBoundaryData) {
+                // console.log('Current Boundary', currentBoundaryId);
+                if (currentBoundaryId === activeBoundaryId) {
+                  let currentTransData = currentBoundaryData[currentBoundaryId];
+                  // console.log('Current transl data', currentTransData);
+                  for (const currentLangScript in currentTransData) {
+                    if (currentLangScript in allLangScripts) {
+                      let currentScript = allLangScripts[currentLangScript];
+                      let value = currentTransData[currentLangScript];
+                      // console.log('Current script value', value);
+                      $('#Translation_' + currentScript).val(value).change();
+                      var e = jQuery.Event("input", { keyCode: 64 });
+                      // console.log($('#Translation_' + currentScript)[0]);
+                      // console.log(document.getElementById('#Transcription_' + currentScript)[0]);
+                      autoSavetranscription(e, $('#Translation_' + currentScript)[0]);
+                    }
                   }
                 }
               }
             }
           }
+          else {
+            window.location.reload();
+            // alert('Going for reload', activeBoundaryId, boundaryIds);
+          }
+          stopLoader();
         }
-        else {
-          window.location.reload();
-          // alert('Going for reload', activeBoundaryId, boundaryIds);
+        catch {
+          alert("Some error occured!!");
+          stopLoader();
         }
       }
     });
@@ -546,58 +569,64 @@ $('#glossbtnid').on('click', function (e) {
       processData: false,
       contentType: false,
       success: function (data) {
-        // let allLangScripts = projectForm['Translation'][1];
-        // console.log('All Lang Scripts', allLangScripts);
-        let activeBoundaryId = JSON.parse(localStorage.getItem('activeboundaryid'));
-        let localStorageRegions = JSON.parse(localStorage.getItem('regions'));
-        // console.log('All boundaries', boundaryIds);
-        // console.log('Active boundary ID', activeBoundaryId);
-        // console.log('Data', data);
-        // alert('Received!');
-        if ((boundaryIds.length == 1) && (boundaryIds[0] === activeBoundaryId)) {
-          // console.log('Setting Data');
-          let syncedData = data.data;
-          // console.log('Synced Data', syncedData);
-          // for (const currentBoundaryData of syncedData) {            
-            for (const currentBoundaryId in syncedData) {
-              // console.log('Current Boundary', currentBoundaryId);
-              if (currentBoundaryId === activeBoundaryId) {
-                let currentGlossData = syncedData[currentBoundaryId];
-                // console.log('Current gloss data', currentGlossData);
-                for (let p = 0; p < localStorageRegions.length; p++) {
-                  // console.log(p);
-                  if (localStorageRegions[p]['data']['sentence'][currentBoundaryId] &&
-                      localStorageRegions[p]['boundaryID'] === activeBoundaryId) {
-                      // console.log(localStorageRegions[p]['data']['sentence'][boundaryID])
-                    localStorageRegions[p]['data']['sentence'][boundaryID]['glossTokenIdInfo'] = currentGlossData;
-                      break;
+        try {
+          // let allLangScripts = projectForm['Translation'][1];
+          // console.log('All Lang Scripts', allLangScripts);
+          let activeBoundaryId = JSON.parse(localStorage.getItem('activeboundaryid'));
+          let localStorageRegions = JSON.parse(localStorage.getItem('regions'));
+          // console.log('All boundaries', boundaryIds);
+          // console.log('Active boundary ID', activeBoundaryId);
+          // console.log('Data', data);
+          // alert('Received!');
+          if ((boundaryIds.length == 1) && (boundaryIds[0] === activeBoundaryId)) {
+            // console.log('Setting Data');
+            let syncedData = data.data;
+            // console.log('Synced Data', syncedData);
+            // for (const currentBoundaryData of syncedData) {            
+              for (const currentBoundaryId in syncedData) {
+                // console.log('Current Boundary', currentBoundaryId);
+                if (currentBoundaryId === activeBoundaryId) {
+                  let currentGlossData = syncedData[currentBoundaryId];
+                  // console.log('Current gloss data', currentGlossData);
+                  for (let p = 0; p < localStorageRegions.length; p++) {
+                    // console.log(p);
+                    if (localStorageRegions[p]['data']['sentence'][currentBoundaryId] &&
+                        localStorageRegions[p]['boundaryID'] === activeBoundaryId) {
+                        // console.log(localStorageRegions[p]['data']['sentence'][boundaryID])
+                      localStorageRegions[p]['data']['sentence'][boundaryID]['glossTokenIdInfo'] = currentGlossData;
+                        break;
+                    }
                   }
-                }
-                // for (const token_id in currentGlossData) {
-                //   let tokenGlossData = currentGlossData[token_id];
-                //   for (const glossField in tokenGlossData) {
+                  // for (const token_id in currentGlossData) {
+                  //   let tokenGlossData = currentGlossData[token_id];
+                  //   for (const glossField in tokenGlossData) {
 
-                //     let currentScript = allLangScripts[currentLangScript];
-                //     let value = currentTransData[currentLangScript];
-                //     console.log('Current script value', value);
-                //     $('#Translation_' + currentScript).val(value).change();
-                //     var e = jQuery.Event("input", { keyCode: 64 });
-                //     console.log($('#Translation_' + currentScript)[0]);
-                //     // console.log(document.getElementById('#Transcription_' + currentScript)[0]);
-                //     autoSavetranscription(e, $('#Translation_' + currentScript)[0]);
-                //     stopLoader();
-                //   }
-                // }
-              }
-            // }
+                  //     let currentScript = allLangScripts[currentLangScript];
+                  //     let value = currentTransData[currentLangScript];
+                  //     console.log('Current script value', value);
+                  //     $('#Translation_' + currentScript).val(value).change();
+                  //     var e = jQuery.Event("input", { keyCode: 64 });
+                  //     console.log($('#Translation_' + currentScript)[0]);
+                  //     // console.log(document.getElementById('#Transcription_' + currentScript)[0]);
+                  //     autoSavetranscription(e, $('#Translation_' + currentScript)[0]);
+                  //     stopLoader();
+                  //   }
+                  // }
+                }
+              // }
+            }
+            localStorage.setItem("regions", JSON.stringify(localStorageRegions));
+            $('#interlinearglosstab').click();
           }
-          localStorage.setItem("regions", JSON.stringify(localStorageRegions));
-          $('#interlinearglosstab').click();
+          else {
+            window.location.reload();
+            // alert('Going for reload', activeBoundaryId, boundaryIds);
+          }
           stopLoader();
         }
-        else {
-          window.location.reload();
-          // alert('Going for reload', activeBoundaryId, boundaryIds);
+        catch {
+          alert("Some error occured!!");
+          stopLoader();
         }
       }
     });

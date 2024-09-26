@@ -3426,7 +3426,7 @@ def get_slices_and_text_grids(mongo,
                         mongo, blank_text_grid, audio_chunk_boundary_list, transcriptions, transcription_type, max_pause_boundary, min_boundary_size)
                     all_text_grids.append(current_text_grid)
 
-                logger.info('Current text grid after VAD %s\n Length: ',
+                logger.info('Current text grid after VAD %s\n Length: %s',
                             current_text_grid, len(current_text_grid))
                 # logger.debug('All audio bytes keys %s \nLength: %s',
                 #             all_audio_bytes.keys(), len(all_audio_bytes))
