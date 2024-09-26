@@ -1076,6 +1076,7 @@ def crawlerbrowseaction():
 
     return 'OK'
 
+
 @lifedata.route('/crawlerbrowseactionviewdata', methods=['GET', 'POST'])
 @login_required
 def crawlerbrowseactionviewdata():
@@ -1102,12 +1103,12 @@ def crawlerbrowseactionviewdata():
         comment_info = crawling_collection.find_one({"projectname": activeprojectname,
                                                      "lifesourceid": active_source_id,
                                                      "$or": [
-                                                        { "dataId": data_id },
-                                                        { "audioId": data_id }
-                                                    ]},
+                                                         {"dataId": data_id},
+                                                         {"audioId": data_id}
+                                                     ]},
                                                     {"_id": 0,
                                                     #  "additionalInfo.comment_info": 1,
-                                                    "additionalInfo": 1
+                                                     "additionalInfo": 1
                                                      })
         # logger.debug(pformat(comment_info))
         # comment_info = comment_info["additionalInfo"]["comment_info"]
@@ -1840,9 +1841,11 @@ def maketranslation():
         speakerId = data['translationSpeakerId'][0]
         # new_audio_file = request.files.to_dict()
         audio_filename = data['translationfile'][0]
-
+        audio_id = audio_filename.split('_')[0]
         existing_audio_details = transcriptions.find_one(
-            {'projectname': activeprojectname, 'audioFilename': audio_filename})
+            {'projectname': activeprojectname, 'audioId': audio_id})
+        # existing_audio_details = transcriptions.find_one(
+        #     {'projectname': activeprojectname, 'audioFilename': audio_filename})
         # logger.debug("Existing audio data %s", existing_audio_details)
 
         if 'modelId' in data:
@@ -1977,9 +1980,9 @@ def makegloss():
         # speakerId = data['glossingSpeakerId'][0]
         # new_audio_file = request.files.to_dict()
         audio_filename = data['glossingfile'][0]
-
+        audio_id = audio_filename.split('_')[0]
         existing_audio_details = transcriptions.find_one(
-            {'projectname': activeprojectname, 'audioFilename': audio_filename})
+            {'projectname': activeprojectname, 'audioId': audio_id})
         # logger.debug("Existing audio data %s", existing_audio_details)
 
         if 'glossModelId' in data:

@@ -729,7 +729,8 @@ def save_boundaries_of_one_audio_file(mongo,
     # if get_audio_json:
     audiowaveform_json_dir_path = get_audio_dir_path()
     audio_json_parent_dir = 'audiowaveform'
-
+    # logger.debug("Existing audio data %s", audio_details)
+    # logger.debug("Current username %s", current_username)
     if current_username in audio_details:
         text_grid = [audio_details[current_username]['textGrid']]
     else:

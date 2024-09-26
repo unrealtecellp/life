@@ -135,7 +135,7 @@ def get_model_list(models, languages, featured_authors=[], lang_name='Hindi', ta
             display_model_name = 'Bhashini_' + lang_name + '-' + model_name
             model_name = 'bhashini_'+model_name
             current_model_list['text'] = display_model_name
-            current_model_list['id'] = lang_code+'##'+model_name
+            current_model_list['id'] = bcp_code+'##'+model_name
             logger.info('ASR BHASHINI Model: %s',
                         current_model_list)
             model_list.insert(0, current_model_list)
