@@ -1307,9 +1307,9 @@ $("#deleteaudio").click(function () {
 });
 
 function questionnaireDerived(allQuesIds) {
+  localStorage.setItem("allQuesIds", JSON.stringify(allQuesIds));
   if (Object.keys(allQuesIds).length !== 0) {
-    // console.log(allQuesIds);
-    localStorage.setItem("allQuesIds", JSON.stringify(allQuesIds));
+    console.log(allQuesIds);    
     let quesIds = '';
     quesIds += '<h4>Prompt for Transcription:</h4>' +
       '<div class="input-group col-md-12" id="quesiddropdown-divid">' +
