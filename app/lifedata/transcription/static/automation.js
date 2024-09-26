@@ -447,26 +447,30 @@ $('#transcribebtnid').on('click', function (e) {
             let syncedData = data.data;
             if (Object.keys(syncedData).length === 0) {
               stopLoader();
-              alert('Boundary mismatch. Please save the created boundaries.')
+              alert('Boundary mismatch. Please save the created boundaries. OR There is model and script mismatch');
               return false
             }
             // console.log('Synced Data', syncedData);
-            // for (const currentBoundaryData of syncedData) {            
+            // for (const currentBoundaryData of syncedData) {
             for (const currentBoundaryId in syncedData) {
               // console.log('Current Boundary', currentBoundaryId);
               if (currentBoundaryId === activeBoundaryId) {
                 let currentTransData = syncedData[currentBoundaryId];
                 // console.log('Current transc data', currentTransData);
+                let response500 = true;
                 for (const currentScript in currentTransData) {
                   let value = currentTransData[currentScript];
                   console.log('Current script value', value);
+                  if (value !== '') {
+                    response500 = false;
+                  }
                   $('#Transcription_' + currentScript).val(value).change();
                   var e = jQuery.Event("input", { keyCode: 64 });
                   // console.log($('#Transcription_' + currentScript)[0]);
                   // console.log(document.getElementById('#Transcription_' + currentScript)[0]);
                   autoSavetranscription(e, $('#Transcription_' + currentScript)[0]);
                   // stopLoader();
-                  if (value === '') {
+                  if (response500) {
                     alert('Unable to predict! Maybe boundary is more than 20s or boundary is without any speech!')
                   }
                 }
