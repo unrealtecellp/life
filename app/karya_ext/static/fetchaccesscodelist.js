@@ -4,13 +4,14 @@ function createSelectElement(key, elevalue, type, quesdatavalue, classname) {
     var qform = '';
     var keyid = key.replace(new RegExp(' ', 'g'), '_');
     // qform += '<div class="form-group">'+
-    qform += '<label for="'+keyid+'">'+tempKey+': </label>';
+    qform += '<label for="'+keyid+'">'+tempKey+': </label><br>';
 
     if (type === 'multiple') {
-      qform += '<select class="'+classname+'" id="'+keyid+'" name="'+key+'" multiple="'+type+'" style="width: 37%" required>';
+      qform += '<select class="'+classname+'" id="'+keyid+'" name="'+key+'" multiple="'+type+'" style="width: 50%; height: 1000px;" required>';
     }
     else {
-      qform += '<select class="'+classname+'" id="'+keyid+'" name="'+key+'" style="width: 37%" required>';
+      qform += '<select class="'+classname+'" id="'+keyid+'" name="'+key+'" style="width: 50%; height: 1000px;" required>';
+
     }
     
     for (let i=0; i<elevalue.length; i++) {

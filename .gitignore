@@ -33,4 +33,5 @@ app/lifedata/download
 app/lifedata/transcription/audiowaveform
 app/lifemodels/model_prediction_download
 app/lifeques/lifexlsxdf.tsv
+.venv/
 TODO
