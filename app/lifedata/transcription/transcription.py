@@ -1452,11 +1452,14 @@ def maketranscription():
         speakerId = data['asrSpeakerId'][0]
         # new_audio_file = request.files.to_dict()
         audio_filename = data['audiofile'][0]
+        audio_id = audio_filename.split('_')[0]
+        logger.debug("Audio file details %s %s", audio_filename, audio_id)
         # converts into seconds
         audio_duration = float(data['audioduration'][0]) * 60
         existing_audio_details = transcriptions.find_one(
-            {'projectname': activeprojectname, 'audioFilename': audio_filename})
+            {'projectname': activeprojectname, 'audioId': audio_id})
         # logger.debug("Existing audio data %s", existing_audio_details)
+        logger.debug("Current username %s", current_username)
 
         if 'languageName' in data:
             audio_language = data['languageName'][0]

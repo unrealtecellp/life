@@ -20,7 +20,8 @@ catch (err) {
     lstUpdatedBy = '';
 }
 
-filePath = JSON.parse(localStorage.getItem('AudioFilePath'));
+var filePath = JSON.parse(localStorage.getItem('AudioFilePath'));
+// console.log('Audio file path', filePath);
 getAudiDuration(filePath);
 showBoundaryCount(boundaryCount);
 lastUpdatedBy(lstUpdatedBy)
@@ -89,6 +90,7 @@ document.addEventListener('DOMContentLoaded', function () {
     })
 
     // wavesurfer.load(filePath);
+    // console.log('Audio file path before loading', filePath);
     if (audiowaveformData === '') {
         wavesurfer.load(filePath);
 

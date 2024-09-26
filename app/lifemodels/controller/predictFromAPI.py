@@ -198,6 +198,8 @@ def transcribe_using_bhashini(model_inputs, model_url, model_params={}, script_n
         else:
             current_script_code = sn.get(
                 name=current_script_name).get("alpha_4", current_script_name)
+        logger.info('Current script name %s\tCurrent script code %s\tTarget Script %s',
+                    current_script_name, current_script_code, target_script)
         if current_script_code == target_script:
             script_code = current_script_code
             script_name = current_script_name

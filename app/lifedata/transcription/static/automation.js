@@ -464,8 +464,8 @@ $('#transcribebtnid').on('click', function (e) {
           // }
         }
         else {
-          // window.location.reload();
-          alert('Going for reload', activeBoundaryId, boundaryIds);
+          window.location.reload();
+          // alert('Going for reload', activeBoundaryId, boundaryIds);
         }
     }
   });
@@ -625,13 +625,13 @@ function populateBoundaryId (task, parent='myAutomationModal') {
         });
   let regions = JSON.parse(localStorage.getItem('regions'));
   let activeBoundaryId = JSON.parse(localStorage.getItem('activeboundaryid'));
-  console.log('Active Boundary ID', activeBoundaryId);
+  // console.log('Active Boundary ID', activeBoundaryId);
   // for (const [regionn, regionData] of regions) {
   var defaultAdded = false;
   for (let regionData of regions) {
-    console.log(regionData);
+    // console.log(regionData);
     let currentBoundaryId = regionData['boundaryID'];
-    console.log('Current ID', currentBoundaryId);
+    // console.log('Current ID', currentBoundaryId);
     if (activeBoundaryId === currentBoundaryId) {
       var newOption = new Option(currentBoundaryId + '(Current Boundary)', currentBoundaryId, true, true);
       defaultAdded = true;
