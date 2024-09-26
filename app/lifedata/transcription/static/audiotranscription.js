@@ -20,7 +20,8 @@ catch (err) {
     lstUpdatedBy = '';
 }
 
-filePath = JSON.parse(localStorage.getItem('AudioFilePath'));
+var filePath = JSON.parse(localStorage.getItem('AudioFilePath'));
+// console.log('Audio file path', filePath);
 getAudiDuration(filePath);
 showBoundaryCount(boundaryCount);
 lastUpdatedBy(lstUpdatedBy)
@@ -47,7 +48,7 @@ document.addEventListener('DOMContentLoaded', function () {
         barGap: 3,
         // partialRender: true,
         plugins: [
-            WaveSurfer.regions.create(),
+            WaveSurfer.regions.create({content: 'Test'}),
             // WaveSurfer.minimap.create({
             //     height: 30,
             //     waveColor: '#ddd',
@@ -89,6 +90,7 @@ document.addEventListener('DOMContentLoaded', function () {
     })
 
     // wavesurfer.load(filePath);
+    // console.log('Audio file path before loading', filePath);
     if (audiowaveformData === '') {
         wavesurfer.load(filePath);
 
@@ -413,7 +415,7 @@ function editAnnotation(region) {
     // console.log('editAnnotation(region)')
     // console.log(region)
     let form = document.forms.edit;
-    // console.log(form);
+    console.log(form);
     // let id = form.dataset.region;
     // let wavesurferregion = wavesurfer.regions.list[id];
     // console.log(wavesurferregion)
@@ -473,6 +475,7 @@ function editAnnotation(region) {
     saveBoundaryData(region, form)
     updateBoundaryColor(region, form);
     formOnSubmit(form, region)
+    localStorage.setItem("activeboundaryid", JSON.stringify(rid));
     // console.log(sentence);
 
     // form.onreset = function () {
@@ -481,7 +484,9 @@ function editAnnotation(region) {
     //     transcriptionFormDisplay(form);
     //     form.dataset.region = null;
     // };
+    console.log(form.dataset.region, rid);
     form.dataset.region = region.id;
+    console.log(form.dataset.region, rid);
     // region.color = boundaryColor(255, 255, 0, 0.1);
 }
 
@@ -1101,9 +1106,9 @@ function processTokenGloss(glossTokenId,
     existingMorphemes) {
     // console.log('processTokenGloss');
     // console.log('Gloss token ID info', glossTokenIdInfo);
-    try {
-        let glossedSentenceWithMorphemicBreakInfo = {};
-        let glossedSentenceWithTokenIdInfo = {};
+    let glossedSentenceWithMorphemicBreakInfo = {};
+    let glossedSentenceWithTokenIdInfo = {};
+    try {        
         for (let i = 0; i < glossTokenId.length; i++) {
             let tokenId = glossTokenId[i];
             // console.log('Processing', tokenId);
@@ -1252,17 +1257,18 @@ function processTokenGloss(glossTokenId,
         // console.log(glossedSentenceWithTokenIdInfo);
         // console.log(glossedSentenceWithMorphemicBreakInfo);
         // console.log(glossedSentenceWithTokenIdInfo);
-
         return {
             glossedSentenceWithMorphemicBreakInfo: glossedSentenceWithMorphemicBreakInfo,
             glossedSentenceWithTokenIdInfo: glossedSentenceWithTokenIdInfo
         }
     }
+    
     catch (error) {
         console.error(error);
         // console.log(glossedSentenceWithTokenIdInfo);
-        console.log('error');
+        console.log('error in processing token gloss. Most likely gloss not found');
     }
+    
     // console.log(glossedSentenceWithTokenIdInfo);
 }
 
@@ -1370,9 +1376,10 @@ function updateSentenceDetailsOnSaveBoundary(boundaryID, sentence, region, form)
                                 customizeGloss,
                                 sentence[boundaryID]['glossTokenIdInfo'],
                                 sentence[boundaryID]['gloss'][k]);
-                            // console.log(glossedSentenceWithMorphemicBreakInfo);
+                            // console.log('Glossed info', glossedSentenceWithMorphemicBreakInfo);
                             sentence[boundaryID]['gloss'][k] = glossedSentenceWithMorphemicBreakInfo.glossedSentenceWithMorphemicBreakInfo;
                             sentence[boundaryID]['glossTokenIdInfo'] = glossedSentenceWithMorphemicBreakInfo.glossedSentenceWithTokenIdInfo;
+                            // console.log(sentence);
                         }
                     }
                     // sentence[boundaryID][key][k] = form[eleName].value;
@@ -2011,8 +2018,10 @@ function createSentenceForm(formElement, boundaryID) {
             // console.log('second', 'Object.keys(transcriptionScript)[0]', Object.keys(transcriptionScript)[0]);
             // firstTranscriptionScript = Object.keys(transcriptionScript)[0]
             sentSpeakerIdEle = '<label for="sentspeakeriddropdown">Speaker ID: </label>'
-            sentSpeakerIdEle += '<select class="custom-select custom-select-sm keyman-attached" id="sentspeakeriddropdown"'
-                + 'name = "sentSpeakerId" multiple = "multiple" style = "width:70%" required onclick="updateKeyboard(this)" onchange="autoSavetranscription(event,this)"> "';
+            sentSpeakerIdEle += '<select class="custom-select custom-select-sm keyman-attached"'+
+                                ' id="sentspeakeriddropdown" name = "sentSpeakerId" multiple = "multiple"'+
+                                ' style = "width:40%" required'+
+                                ' onclick="updateKeyboard(this)" onchange="autoSavetranscription(event,this)"> "';
 
 
             for (let i = 0; i < currentAudioAllSpeakerids.length; i++) {
@@ -2030,6 +2039,21 @@ function createSentenceForm(formElement, boundaryID) {
                 }
             }
             sentSpeakerIdEle += '</select>';
+
+            // let allQuesIds = '';
+            let allQuesIds = JSON.parse(localStorage.allQuesIds);
+            let quesIds = '&nbsp;&nbsp;&nbsp;&nbsp;';
+            if (Object.keys(allQuesIds).length !== 0) {
+                // console.log(allQuesIds);
+                quesIds +='<label for="quesiddropdownboundary">Prompt: </label>' +
+                            '<select class="custom-select custom-select-sm" id="quesiddropdownboundary"'+
+                            ' name="quesId" style="width:30%" required>';
+                for (let [quesId, Q_Id] of Object.entries(allQuesIds)) {
+                quesIds += '<option value="' + quesId + '">' + Q_Id + '</option>';
+                }
+                quesIds += '</select>';
+            }
+
             let anonymize = '';
             if (anonymize_checked) {
                 anonymize = '<label class="pull-right" for="anonymizecheckboxid_'+boundaryID+'">&nbsp;Anonymize</label>'+
@@ -2045,6 +2069,8 @@ function createSentenceForm(formElement, boundaryID) {
 
 
             inpt += sentSpeakerIdEle;
+
+            inpt += quesIds;
 
             inpt+= anonymize;
 
@@ -2169,9 +2195,8 @@ function createSentenceForm(formElement, boundaryID) {
             // document.getElementById("transcription2").value = "-";
             // $('.transcription1').append(inpt);
             $('#transcription2').append(inpt);
-            $('#sentspeakeriddropdown').select2({
-                // data: optionsList
-            });
+            $('#sentspeakeriddropdown').select2({});
+            $('#quesiddropdownboundary').select2({});
             // console.log(document.getElementById("transcription2").innerHTML)
             // console.log(activeprojectform['Interlinear Gloss'][1]);
             if ('Interlinear Gloss' in activeprojectform &&
@@ -3013,6 +3038,7 @@ function autoSavetranscription(e, transcriptionField, recurse = true, update = t
     // console.log(e.keyCode);
     // console.log(transcriptionField, transcriptionField.id, transcriptionField.value);
     // console.log(e, transcriptionField);
+    console.log('Transcription field', transcriptionField);
     let fieldId = transcriptionField.id;
     // let fieldClasses = transcriptionField.className;
     // console.log('Inputs for autosave', e, transcriptionField, update, from);
@@ -3376,6 +3402,7 @@ function getScriptToGlossDropdownSelected() {
 }
 
 function transcriptionToGloss() {
+    console.log("Triggered transcription to gloss");
     // console.log($('#scripttoglossdropdown').select2('data'));
     // console.log($('#scripttoglossdropdown').select2('data')[0].id);
     let activeprojectform = JSON.parse(localStorage.activeprojectform);

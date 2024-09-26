@@ -337,16 +337,20 @@ function createTranscriptionInterfaceForm(newData) {
   let sourceMetadata = newData['sourceMetadata']
   // let audio_lang_script = audio_language
   // console.log(audio_lang_script);
-  let allData = newData['transcriptionDetails']['data'];
-  if ("audioCompleteFLAG" in allData) {
-    let completedFlag = allData["audioCompleteFLAG"];
-    if (completedFlag) {
-      $('#toggleComplete').removeClass("btn-danger");
-      $('#toggleComplete').addClass("btn-success");
-    }
-    else {
-      $('#toggleComplete').removeClass("btn-success");
-      $('#toggleComplete').addClass("btn-danger");
+  if ('transcriptionDetails' in newData &&
+    'data' in newData['transcriptionDetails']
+  ) {
+    let allData = newData['transcriptionDetails']['data'];
+    if ("audioCompleteFLAG" in allData) {
+      let completedFlag = allData["audioCompleteFLAG"];
+      if (completedFlag) {
+        $('#toggleComplete').removeClass("btn-danger");
+        $('#toggleComplete').addClass("btn-success");
+      }
+      else {
+        $('#toggleComplete').removeClass("btn-success");
+        $('#toggleComplete').addClass("btn-danger");
+      }
     }
   }
   for (let [key, value] of Object.entries(newData)) {
@@ -938,6 +942,9 @@ $("#syncallbtnid").click(function () {
     transcriptionData['action'] = 'sync';
     transcriptionData['sourceScript'] = sourceScript;
     transcriptionData['targetScripts'] = targetScripts;
+    let boundaryIds = $('#processBoundariesSyncTranscriptionSelect2Id').val();
+    console.log('Boundary IDs', boundaryIds);
+    transcriptionData['processBoundariesSyncTranscription'] = boundaryIds;
 
     let overwrite = document.getElementById('overwrite-existing-transcriptionsid').checked;
     // console.log('Overwrite', overwrite);
@@ -958,7 +965,36 @@ $("#syncallbtnid").click(function () {
         // else {
         //   alert("Transcription saved successfully.")
         // }
-        window.location.reload();
+        let activeBoundaryId = JSON.parse(localStorage.getItem('activeboundaryid'));
+        console.log('All boundaries', boundaryIds);
+        console.log('Active boundary ID', activeBoundaryId);
+        if ((boundaryIds.length == 1) && (boundaryIds[0] === activeBoundaryId)) {
+          console.log('Setting Data');
+          let syncedData = data.data;
+          console.log('Synced Data', syncedData);
+          for (const currentBoundaryData of syncedData) {            
+            for (const currentBoundaryId in currentBoundaryData) {
+              console.log('Current Boundary', currentBoundaryId);
+              if (currentBoundaryId === activeBoundaryId) {
+                let currentTransData = currentBoundaryData[currentBoundaryId];
+                console.log('Current transc data', currentTransData);
+                for (const currentScript in currentTransData) {
+                  let value = currentTransData[currentScript];
+                  console.log('Current script value', value);
+                  $('#Transcription_' + currentScript).val(value).change();
+                  var e = jQuery.Event("input", { keyCode: 64 });
+                  console.log($('#Transcription_' + currentScript)[0]);
+                  // console.log(document.getElementById('#Transcription_' + currentScript)[0]);
+                  autoSavetranscription(e, $('#Transcription_' + currentScript)[0]);
+                  stopLoader();
+                }
+              }
+            }
+          }
+        }
+        else {
+          window.location.reload();
+        }
       });
   }
   $('#syncTranscriptsAllModal').modal('toggle');
@@ -1271,8 +1307,9 @@ $("#deleteaudio").click(function () {
 });
 
 function questionnaireDerived(allQuesIds) {
-  if (allQuesIds !== '') {
-    // console.log(allQuesIds);
+  localStorage.setItem("allQuesIds", JSON.stringify(allQuesIds));
+  if (Object.keys(allQuesIds).length !== 0) {
+    console.log(allQuesIds);    
     let quesIds = '';
     quesIds += '<h4>Prompt for Transcription:</h4>' +
       '<div class="input-group col-md-12" id="quesiddropdown-divid">' +
@@ -1299,7 +1336,7 @@ function questionnaireDerived(allQuesIds) {
 }
 
 function questionnaireDerivedRecording(allQuesIds) {
-  if (allQuesIds !== '') {
+  if (Object.keys(allQuesIds).length !== 0) {
     // console.log(allQuesIds);
     let quesIds = '';
     quesIds += '<h4>Prompt for Transcription:</h4>' +
@@ -1331,6 +1368,12 @@ function runLoader() {
   // console.log('123213');
   // console.log(document.getElementById("loader"));
   document.getElementById("loader").style.display = "block";
+}
+
+function stopLoader() {
+  // console.log('123213');
+  // console.log(document.getElementById("loader"));
+  document.getElementById("loader").style.display = "none";
 }
 
 $("#syncaudio").click(function () {

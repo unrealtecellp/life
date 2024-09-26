@@ -114,7 +114,7 @@ def getModelList():
             for current_lang in all_langs:
                 all_models.extend(modelManager.get_model_list(
                     models, languages, featured_authors, current_lang))
-        return jsonify({'models': all_models, 'scripts': language_scripts['scripts']})
+        return jsonify({'models': all_models, 'scripts': language_scripts['scripts'], 'languages': language_scripts['languages']})
     except:
         logger.exception("")
 

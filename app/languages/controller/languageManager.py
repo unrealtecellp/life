@@ -455,15 +455,15 @@ def get_glottolog_info(langs_collection, dirpath, iso_info):
 def get_models_of_language(languages, lang_name, task_name='asr'):
     all_models = []
     model_info = languages.find_one({'$or': [{'codeISO6393': lang_name},
-                                            {'part2bISO639': lang_name}, 
-                                            {'part2tISO639': lang_name},
-                                            {'part1ISO639': lang_name},
-                                            {'languageNameISO639': lang_name},
-                                            {'glottologName': lang_name}]},
-                                            {'models.'+task_name: 1,
-                                            'codeISO6393': 1,
-                                            'languageNameISO639': 1,
-                                            '_id': 0})
+                                             {'part2bISO639': lang_name},
+                                             {'part2tISO639': lang_name},
+                                             {'part1ISO639': lang_name},
+                                             {'languageNameISO639': lang_name},
+                                             {'glottologName': lang_name}]},
+                                    {'models.'+task_name: 1,
+                                     'codeISO6393': 1,
+                                     'languageNameISO639': 1,
+                                     '_id': 0})
     # logger.debug ('Lang name, %s, models %s', lang_name, model_info)
     if not model_info is None:
         all_model_details = model_info.get('models', {})
@@ -471,7 +471,10 @@ def get_models_of_language(languages, lang_name, task_name='asr'):
         for model_detail in task_model_details:
             current_model_id = model_detail['modelId']
             all_models.append(current_model_id)
-        lang_code = model_info.get('codeISO6393', '')
+        # lang_code = model_info.get('codeISO6393', '')
+        code1 = model_info.get('part1ISO639', '')
+        code3 = model_info.get('codeISO6393', '')
+        lang_code = infer_bcp_language_code(code1, code3)
         lang_name = model_info.get('languageNameISO639', '')
     return {lang_code: all_models}, {lang_code: lang_name}
 
@@ -581,3 +584,9 @@ def get_bcp_language_code(languages, lang_name):
         code = iso639
 
     return code
+
+
+def infer_bcp_language_code(iso639_1_code, iso639_3_code):
+    if iso639_1_code == '':
+        return iso639_3_code
+    return iso639_1_code
