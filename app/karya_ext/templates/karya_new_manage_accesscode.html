@@ -52,13 +52,43 @@
         </button>
 
          <!-- Button to trigger modal for registering speaker -->
-         <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#registerSpeakerModal">Link Access Code(s)</button>
-      
-         <!-- button for table -->
+         <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#registerSpeakerModal" disabled>Link Access Code(s)</button>
+        
+         <!-- Updated button to open modal -->
+          <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#uploadCSVModal">Upload CSV to Link Access Code(s)</button>
+        
+          <!-- button for table -->
         <button type="button" class="btn btn-success" id="toggleTableBtn" onclick="toggleTableVisibility()">Assigned Access Code</button>
        
       </div>
      
+
+
+<!-- Modal for CSV file upload -->
+<div class="modal fade" id="uploadCSVModal" tabindex="-1" role="dialog" aria-labelledby="uploadCSVModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="uploadCSVModalLabel">Upload CSV File To Update The Speaker/User ID </h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form id="csvUploadForm" enctype="multipart/form-data">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="csvFile">Upload CSV File</label>
+            <input type="file" class="form-control-file" id="csvFile" name="csvFile" accept=".csv" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-success">Upload and Update</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 
       <!-- Add/Edit Speaker button -->
       <!-- Modal -->
@@ -623,5 +653,37 @@
     }
   </script>
 
+<script>
+  document.getElementById('csvUploadForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    var formData = new FormData();
+    var fileInput = document.getElementById('csvFile');
+    
+    if (fileInput.files.length > 0) {
+        formData.append('csvFile', fileInput.files[0]);
+
+        // Use Jinja2 to get the URL for the route
+        fetch("{{ url_for('karya_bp.upload_csv_update_karya_speaker') }}", {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                alert('CSV processed and speakers updated successfully!');
+            } else {
+                alert('Error: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while uploading the CSV file.');
+        });
+    } else {
+        alert('Please select a CSV file.');
+    }
+});
+</script>
 
 {% endblock %}

@@ -626,14 +626,14 @@ def karya_new_write_speaker_metadata_details(speakerdetails,
     print("additionalInfo_var from function karya_new_write_speaker_metadata_details:" ,  additionalInfo_var)
 
     if upload_type == 'bulk':
-        metadata_data = write_bulk_speaker_metadata(speakerdetails,
-                                                    projectowner,
-                                                    activeprojectname,
-                                                    current_username,
-                                                    audio_source,
-                                                    metadata_schema,
-                                                    metadata_data,
-                                                    additionalInfo_var)
+        write_bulk_speaker_metadata(speakerdetails,
+                                                projectowner,
+                                                activeprojectname,
+                                                current_username,
+                                                audio_source,
+                                                metadata_schema,
+                                                metadata_data,
+                                                additionalInfo_var)
     else:
         source_id = get_source_id(audio_source, metadata_schema, metadata_data)
         logger.debug('Source ID %s', source_id)

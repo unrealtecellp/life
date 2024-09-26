@@ -2440,7 +2440,283 @@ def karya_new_assign_karya_life_id():
     except Exception as e:
         return jsonify({'status': 'Error occurred during operation', 'error': str(e)}), 500
 
+import csv
+from io import StringIO
+from flask import request, jsonify
+'''
+@karya_bp.route('/upload_csv_update_karya_speaker', methods=['POST'])
+def upload_csv_update_karya_speaker():
+    try:
+        # Consolidate collection retrieval
+        accesscodedetails, userprojects, userlogin, speakermeta, projects, speakerdetails = getdbcollections.getdbcollections(
+            mongo, 'accesscodedetails', 'userprojects', 'userlogin', 'speakermeta', 'projects', 'speakerdetails'
+        )
 
+        # Retrieve current username and active project name
+        current_username = getcurrentusername.getcurrentusername()
+        activeprojectname = getactiveprojectname.getactiveprojectname(current_username, userprojects)
+
+        usertype = userdetails.get_user_type(userlogin, current_username)
+        shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects, current_username, activeprojectname)
+        projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
+
+
+        # Get the uploaded file
+        file = request.files.get('csvFile')
+
+        if not file:
+            flash("No file uploaded Or Check The File Format")
+            return jsonify({'status': 'error', 'message': 'No file uploaded'}), 400
+
+        # Read the CSV file
+        stream = StringIO(file.stream.read().decode("UTF8"), newline=None)
+        csv_reader = csv.DictReader(stream)
+
+        # # Retrieve relevant collections
+        # accesscodedetails, userprojects, userlogin, speakerdetails = getdbcollections.getdbcollections(
+        #     mongo, 'accesscodedetails', 'userprojects', 'userlogin', 'speakerdetails'
+        # )
+
+        # Iterate over rows and update database
+        for row in csv_reader:
+            access_code = row['access_code']
+            worker_id = row['worker_id']
+            avatar_id = row['avatar_id']  # This is the karyaspeakerid
+
+            # Check if the access_code exists in the database and is active
+        speaker_record = accesscodedetails.find_one({
+            'karyaaccesscode': access_code,
+            "additionalInfo.karya_version": "karya_main", 
+            "projectname": activeprojectname, 
+            "isActive": 1
+        })
+
+        if speaker_record:
+            existing_karyaspeakerid = speaker_record.get('karyaspeakerid')
+
+            if existing_karyaspeakerid:
+                # If karyaspeakerid already exists, return that the speaker is already registered
+                return jsonify({'status': 'Speaker registered already!', 'access_code': access_code})
+
+            # Retrieve worker metadata
+            worker_metadata = speaker_record.get('current', {}).get('workerMetadata', {})
+            name = worker_metadata.get('name', '')
+            age_group = worker_metadata.get('agegroup', '')
+
+            if name and age_group:
+                # Create the lifespeakerid
+                rename_in_form_dob = age_group.replace("-", "")
+                rename_in_form = name.replace(" ", "").lower()
+                lifespeakerid = f"{rename_in_form}{rename_in_form_dob}_{worker_id}"
+
+                # Update both karyaspeakerid and lifespeakerid
+                update_result = accesscodedetails.update_one(
+                    {"karyaaccesscode": access_code, 
+                     "additionalInfo.karya_version": "karya_main",
+                     "projectname": activeprojectname, 
+                     "isActive": 1},
+                    {'$set': {
+                        "karyaspeakerid": worker_id,
+                        "lifespeakerid": lifespeakerid,
+                        "avatar_id" : avatar_id
+                    }}
+                )
+
+                # Retrieve updated document for metadata insertion
+                document = accesscodedetails.find_one({
+                    "karyaaccesscode": access_code, 
+                    "karyaspeakerid": worker_id,
+                    "projectname": activeprojectname, 
+                    "isActive": 1,
+                    "additionalInfo.karya_version": "karya_main"
+                }, {
+                    "lifespeakerid": 1, "karyaaccesscode": 1, "karyaspeakerid": 1,
+                    "current.workerMetadata": 1, "additionalInfo": 1, "avatar_id": 1, "_id": 0
+                })
+
+                try:
+                    new_metadata = {
+                        "name": document["current"]["workerMetadata"].get("name", ""),
+                        "agegroup": document["current"]["workerMetadata"].get("agegroup", ""),
+                        "gender": document["current"]["workerMetadata"].get("gender", ""),
+                        "educationlevel": document["current"]["workerMetadata"].get("educationlevel", ""),
+                        "educationmediumupto12": document["current"]["workerMetadata"].get("educationmediumupto12", []),
+                        "educationmediumafter12": document["current"]["workerMetadata"].get("educationmediumafter12", []),
+                        "speakerspeaklanguage": document["current"]["workerMetadata"].get("speakerspeaklanguage", []),
+                        "recordingplace": document["current"]["workerMetadata"].get("recordingplace", ""),
+                        "typeofrecordingplace": document["current"]["workerMetadata"].get("typeofrecordingplace", ""),
+                        "lifespeakerid": document["lifespeakerid"],
+                        "karyaaccesscode": document["karyaaccesscode"],
+                        "karyaspeakerid": document["karyaspeakerid"], 
+                        "avatar_id" : document["avatar_id"]
+                    }
+
+                    # Replace None values
+                    for field in ["name", "agegroup", "gender", "educationlevel", "recordingplace", "typeofrecordingplace"]:
+                        if new_metadata[field] is None:
+                            new_metadata[field] = ""
+                    for field in ["educationmediumupto12", "educationmediumafter12", "speakerspeaklanguage"]:
+                        if new_metadata[field] is None:
+                            new_metadata[field] = []
+
+                    lifespeakerid_var = new_metadata["lifespeakerid"]
+                    additionalInfo_var = document["additionalInfo"]
+                    print('###################################################')
+                    print('additional_info from the function karya_new_write_speaker_metadata: ', additionalInfo_var)
+                    print('###################################################')
+
+                    # Insert metadata into speakerdetails
+                    speakerDetails.karya_new_write_speaker_metadata_details(
+                        speakerdetails, current_username, activeprojectname,
+                        current_username, 'field', 'speed', lifespeakerid_var, new_metadata, 'single',
+                        additionalInfo_var
+                    )
+        
+        return jsonify({'status': 'success', 'message': 'CSV processed successfully!'})
+    
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 500
+    '''
+
+
+
+import csv
+from io import StringIO
+from flask import request, jsonify
+
+@karya_bp.route('/upload_csv_update_karya_speaker', methods=['POST'])
+def upload_csv_update_karya_speaker():
+    try:
+        # Consolidate collection retrieval
+        accesscodedetails, userprojects, userlogin, speakermeta, projects, speakerdetails = getdbcollections.getdbcollections(
+            mongo, 'accesscodedetails', 'userprojects', 'userlogin', 'speakermeta', 'projects', 'speakerdetails'
+        )
+
+        # Retrieve current username and active project name
+        current_username = getcurrentusername.getcurrentusername()
+        activeprojectname = getactiveprojectname.getactiveprojectname(current_username, userprojects)
+
+        # Get the uploaded file
+        file = request.files.get('csvFile')
+        
+
+        if not file:
+            print("csv file : ", file )
+            flash("No file uploaded Or Check The File Format")
+            return jsonify({'status': 'error', 'message': 'No file uploaded'}), 400
+
+        # Read the CSV file
+        stream = StringIO(file.stream.read().decode("UTF8"), newline=None)
+        csv_reader = csv.DictReader(stream)
+
+        # Iterate over rows and update database
+        for row in csv_reader:
+            access_code_uncleaned = row['access_code']
+            worker_id = row['worker_id']
+            avatar_id = row['avatar_id']  # This is the karyaspeakerid
+
+
+            # Clean the access code
+            access_code = access_code_management.clean_access_code(access_code_uncleaned)
+
+            print("access_code : ", access_code, "\n", "worker_id : ", worker_id, "\n", "avatar_id : ", avatar_id)
+
+
+            print("access_code : ", access_code, "\n", "worker_id : ", worker_id, "\n", "avatar_id : ", avatar_id )
+
+
+
+            # Check if the access_code exists in the database and is active
+            speaker_record = accesscodedetails.find_one({
+                'karyaaccesscode': access_code,
+                "additionalInfo.karya_version": "karya_main", 
+                "projectname": activeprojectname, 
+                "isActive": 1
+            })
+
+            if speaker_record:
+                existing_karyaspeakerid = speaker_record.get('karyaspeakerid')
+
+                if existing_karyaspeakerid:
+                    # If karyaspeakerid already exists, skip this speaker
+                    continue
+
+                # Retrieve worker metadata
+                worker_metadata = speaker_record.get('current', {}).get('workerMetadata', {})
+                name = worker_metadata.get('name', '')
+                age_group = worker_metadata.get('agegroup', '')
+
+                if name and age_group:
+                    # Create the lifespeakerid
+                    rename_in_form_dob = age_group.replace("-", "")
+                    rename_in_form = name.replace(" ", "").lower()
+                    lifespeakerid = f"{rename_in_form}{rename_in_form_dob}_{worker_id}"
+
+                    # Update both karyaspeakerid and lifespeakerid
+                    accesscodedetails.update_one(
+                        {"karyaaccesscode": access_code, 
+                         "additionalInfo.karya_version": "karya_main",
+                         "projectname": activeprojectname, 
+                         "isActive": 1},
+                        {'$set': {
+                            "karyaspeakerid": worker_id,
+                            "lifespeakerid": lifespeakerid,
+                            "avatar_id": avatar_id
+                        }}
+                    )
+
+                    # Retrieve updated document for metadata insertion
+                    document = accesscodedetails.find_one({
+                        "karyaaccesscode": access_code, 
+                        "karyaspeakerid": worker_id,
+                        "projectname": activeprojectname, 
+                        "isActive": 1,
+                        "additionalInfo.karya_version": "karya_main"
+                    }, {
+                        "lifespeakerid": 1, "karyaaccesscode": 1, "karyaspeakerid": 1,
+                        "current.workerMetadata": 1, "additionalInfo": 1, "avatar_id": 1, "_id": 0
+                    })
+
+                    try:
+                        new_metadata = {
+                            "name": document["current"]["workerMetadata"].get("name", ""),
+                            "agegroup": document["current"]["workerMetadata"].get("agegroup", ""),
+                            "gender": document["current"]["workerMetadata"].get("gender", ""),
+                            "educationlevel": document["current"]["workerMetadata"].get("educationlevel", ""),
+                            "educationmediumupto12": document["current"]["workerMetadata"].get("educationmediumupto12", []),
+                            "educationmediumafter12": document["current"]["workerMetadata"].get("educationmediumafter12", []),
+                            "speakerspeaklanguage": document["current"]["workerMetadata"].get("speakerspeaklanguage", []),
+                            "recordingplace": document["current"]["workerMetadata"].get("recordingplace", ""),
+                            "typeofrecordingplace": document["current"]["workerMetadata"].get("typeofrecordingplace", ""),
+                            "lifespeakerid": document["lifespeakerid"],
+                            "karyaaccesscode": document["karyaaccesscode"],
+                            "karyaspeakerid": document["karyaspeakerid"], 
+                            "avatar_id": document["avatar_id"]
+                        }
+
+                        # Replace None values
+                        for field in ["name", "agegroup", "gender", "educationlevel", "recordingplace", "typeofrecordingplace"]:
+                            if new_metadata[field] is None:
+                                new_metadata[field] = ""
+                        for field in ["educationmediumupto12", "educationmediumafter12", "speakerspeaklanguage"]:
+                            if new_metadata[field] is None:
+                                new_metadata[field] = []
+
+                        # Insert metadata into speakerdetails
+                        speakerDetails.karya_new_write_speaker_metadata_details(
+                            speakerdetails, current_username, activeprojectname,
+                            current_username, 'field', 'speed', new_metadata["lifespeakerid"], new_metadata, 'single',
+                            document["additionalInfo"]
+                        )
+                        flash("Speaker/User Id Updated")
+
+                    except Exception as e:
+                        print(f"Error inserting metadata: {e}")
+
+        return jsonify({'status': 'success', 'message': 'CSV processed successfully!'})
+    
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 500
 
 
     
@@ -2586,7 +2862,8 @@ def karya_new_fetch_audio():
 
         ###############################  Get All API Meta-Data   ########################################
 
-        
+        flash("Please wait, LiFE is fetching the data for you! You will receive a notification once the data has been fetched.")
+
         karya_new_api_metadata = karya_api_access.karya_new_get_all_karya_assignments(token_id, access_code, assignment_url)
         # r_j, hederr = karya_api_access.get_all_karya_assignments(
         #     verification_details, additional_task, project_type, access_code_task)
@@ -2695,6 +2972,7 @@ def karya_new_fetch_audio():
                 fileid_sentence_map, fetched_audio_list, exclude_ids,
                 language, file_download_header, access_code_of_speaker
             )
+            flash("Karya Audio/s Successfully Fetched!")
             
         # print('\n','\n','\n','\n', '############################################################################################', '\n', '\n', '\n')
         # print(sepaker_access_code_list,'\n' ,sentence_list, '\n',karya_audio_report,'\n', filename_list, '\n',fileID_list)

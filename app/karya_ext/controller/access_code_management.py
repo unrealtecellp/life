@@ -294,7 +294,17 @@ def get_upload_df(access_code_file):
 
     return data
 
-
+# Function to clean the access code
+def clean_access_code(value, prefix=None, suffix=None):
+    # Remove prefix if provided and present in the value
+    if prefix and value.startswith(prefix):
+        value = value[len(prefix):]
+    # Remove suffix if provided and present in the value
+    if suffix and value.endswith(suffix):
+        value = value[:-len(suffix)]
+    # Remove all non-numeric characters using regex
+    value = re.sub(r'\D', '', value)  # \D matches any non-digit character
+    return value
 
 
 def process_access_code_csv_karya_new(access_code_file, prefix=None, suffix=None):
