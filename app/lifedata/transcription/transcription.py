@@ -110,7 +110,7 @@ def home():
                                                                       activeprojectname)
         # logger.debug('trancription active project form: %s',
         #              pformat(activeprojectform))
-        all_ques_ids = ''
+        all_ques_ids = {}
         derived_from_project_type, derived_from_project_name = getprojecttype.getderivedfromprojectdetails(projects,
                                                                                                            activeprojectname)
         # logger.debug("derived_from_project_type: %s, derived_from_project_name: %s",
@@ -187,7 +187,7 @@ def home():
                                                                        activespeakerid,
                                                                        current_username)
                 # logger.debug("audio_id: %s", audio_id)
-                activeprojectform['prompt'] = ''
+                activeprojectform['prompt'] = {}
                 if (audio_id != ''):
 
                     prompt = transcriptions.find_one({"projectname": activeprojectname,

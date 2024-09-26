@@ -2018,8 +2018,10 @@ function createSentenceForm(formElement, boundaryID) {
             // console.log('second', 'Object.keys(transcriptionScript)[0]', Object.keys(transcriptionScript)[0]);
             // firstTranscriptionScript = Object.keys(transcriptionScript)[0]
             sentSpeakerIdEle = '<label for="sentspeakeriddropdown">Speaker ID: </label>'
-            sentSpeakerIdEle += '<select class="custom-select custom-select-sm keyman-attached" id="sentspeakeriddropdown"'
-                + 'name = "sentSpeakerId" multiple = "multiple" style = "width:70%" required onclick="updateKeyboard(this)" onchange="autoSavetranscription(event,this)"> "';
+            sentSpeakerIdEle += '<select class="custom-select custom-select-sm keyman-attached"'+
+                                ' id="sentspeakeriddropdown" name = "sentSpeakerId" multiple = "multiple"'+
+                                ' style = "width:40%" required'+
+                                ' onclick="updateKeyboard(this)" onchange="autoSavetranscription(event,this)"> "';
 
 
             for (let i = 0; i < currentAudioAllSpeakerids.length; i++) {
@@ -2037,6 +2039,21 @@ function createSentenceForm(formElement, boundaryID) {
                 }
             }
             sentSpeakerIdEle += '</select>';
+
+            // let allQuesIds = '';
+            let allQuesIds = JSON.parse(localStorage.allQuesIds);
+            let quesIds = '&nbsp;&nbsp;&nbsp;&nbsp;';
+            if (Object.keys(allQuesIds).length !== 0) {
+                // console.log(allQuesIds);
+                quesIds +='<label for="quesiddropdownboundary">Prompt: </label>' +
+                            '<select class="custom-select custom-select-sm" id="quesiddropdownboundary"'+
+                            ' name="quesId" style="width:30%" required>';
+                for (let [quesId, Q_Id] of Object.entries(allQuesIds)) {
+                quesIds += '<option value="' + quesId + '">' + Q_Id + '</option>';
+                }
+                quesIds += '</select>';
+            }
+
             let anonymize = '';
             if (anonymize_checked) {
                 anonymize = '<label class="pull-right" for="anonymizecheckboxid_'+boundaryID+'">&nbsp;Anonymize</label>'+
@@ -2052,6 +2069,8 @@ function createSentenceForm(formElement, boundaryID) {
 
 
             inpt += sentSpeakerIdEle;
+
+            inpt += quesIds;
 
             inpt+= anonymize;
 
@@ -2176,9 +2195,8 @@ function createSentenceForm(formElement, boundaryID) {
             // document.getElementById("transcription2").value = "-";
             // $('.transcription1').append(inpt);
             $('#transcription2').append(inpt);
-            $('#sentspeakeriddropdown').select2({
-                // data: optionsList
-            });
+            $('#sentspeakeriddropdown').select2({});
+            $('#quesiddropdownboundary').select2({});
             // console.log(document.getElementById("transcription2").innerHTML)
             // console.log(activeprojectform['Interlinear Gloss'][1]);
             if ('Interlinear Gloss' in activeprojectform &&

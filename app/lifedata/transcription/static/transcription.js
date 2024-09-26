@@ -337,16 +337,20 @@ function createTranscriptionInterfaceForm(newData) {
   let sourceMetadata = newData['sourceMetadata']
   // let audio_lang_script = audio_language
   // console.log(audio_lang_script);
-  let allData = newData['transcriptionDetails']['data'];
-  if ("audioCompleteFLAG" in allData) {
-    let completedFlag = allData["audioCompleteFLAG"];
-    if (completedFlag) {
-      $('#toggleComplete').removeClass("btn-danger");
-      $('#toggleComplete').addClass("btn-success");
-    }
-    else {
-      $('#toggleComplete').removeClass("btn-success");
-      $('#toggleComplete').addClass("btn-danger");
+  if ('transcriptionDetails' in newData &&
+    'data' in newData['transcriptionDetails']
+  ) {
+    let allData = newData['transcriptionDetails']['data'];
+    if ("audioCompleteFLAG" in allData) {
+      let completedFlag = allData["audioCompleteFLAG"];
+      if (completedFlag) {
+        $('#toggleComplete').removeClass("btn-danger");
+        $('#toggleComplete').addClass("btn-success");
+      }
+      else {
+        $('#toggleComplete').removeClass("btn-success");
+        $('#toggleComplete').addClass("btn-danger");
+      }
     }
   }
   for (let [key, value] of Object.entries(newData)) {
@@ -1303,8 +1307,9 @@ $("#deleteaudio").click(function () {
 });
 
 function questionnaireDerived(allQuesIds) {
-  if (allQuesIds !== '') {
+  if (Object.keys(allQuesIds).length !== 0) {
     // console.log(allQuesIds);
+    localStorage.setItem("allQuesIds", JSON.stringify(allQuesIds));
     let quesIds = '';
     quesIds += '<h4>Prompt for Transcription:</h4>' +
       '<div class="input-group col-md-12" id="quesiddropdown-divid">' +
@@ -1331,7 +1336,7 @@ function questionnaireDerived(allQuesIds) {
 }
 
 function questionnaireDerivedRecording(allQuesIds) {
-  if (allQuesIds !== '') {
+  if (Object.keys(allQuesIds).length !== 0) {
     // console.log(allQuesIds);
     let quesIds = '';
     quesIds += '<h4>Prompt for Transcription:</h4>' +
