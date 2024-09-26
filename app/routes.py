@@ -391,13 +391,11 @@ def enternewsentences():
                                                                                                      'audio')
             commentstats = [total_comments,
                             annotated_comments, remaining_comments]
-            print(commentstats)
             # logger.debug("commentstats: %s", commentstats)
             audio_id = audiodetails.getactiveaudioid(projects,
                                                      activeprojectname,
                                                      activespeakerid,
                                                      current_username)
-            print(audio_id)
             # logger.debug("audio_id: %s", audio_id)
             if (audio_id != ''):
                 audio_delete_flag = audiodetails.get_audio_delete_flag(transcriptions,

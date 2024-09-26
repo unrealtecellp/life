@@ -37,7 +37,7 @@ basedir_parent = '/'.join(basedir.split('/')[:-2])
 map_path = os.path.join(
     basedir_parent, 'jsonfiles/leipzig_ud_map.json')
 
-print('Path', map_path)
+# print('Path', map_path)
 ud_leipzig_map = pd.read_json(map_path, dtype=str)
 
 stanza_pipeline_token = {
