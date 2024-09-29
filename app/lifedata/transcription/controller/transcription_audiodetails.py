@@ -157,7 +157,7 @@ def saveaudiofiles(mongo,
             file_format = get_file_format(current_file)
 
             if (file_format in allowed_file_formats):
-                file_state, transcription_doc_id, fs_file_id = saveoneaudiofile(mongo,
+                file_state, transcription_doc_id, fs_file_id, transcription_data = saveoneaudiofile(mongo,
                                                                                 projects,
                                                                                 userprojects,
                                                                                 transcriptions,
@@ -294,7 +294,7 @@ def savemultipleaudiofiles(mongo,
                             # logger.debug ("Upload type 5s", fileType)
                             new_audio_file['audiofile'] = FileStorage(
                                 file_content, filename=file_name)
-                            file_state, transcription_doc_id, fs_file_id = saveoneaudiofile(mongo,
+                            file_state, transcription_doc_id, fs_file_id, transcription_data = saveoneaudiofile(mongo,
                                                                                             projects,
                                                                                             userprojects,
                                                                                             transcriptions,
