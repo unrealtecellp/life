@@ -1389,7 +1389,7 @@ def fetch_karya_audio():
             activeprojectname, derivedFromProjectName, current_username,
             project_type, derive_from_project_type,
             fileid_sentence_map, fetched_audio_list, exclude_ids,
-            language, hederr, access_code
+            language, access_code
         )
         # print(matched_unmathched_fetched_sentences)  
 
