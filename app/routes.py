@@ -1,4 +1,29 @@
 # 87bb4a4008392471de988181193f7e6e98e0d195
+from app.lifedata.controller import (
+    sourceid_to_souremetadata,
+)
+from app.lifedata.transcription.controller import (
+    transcription_audiodetails,
+)
+from app.lifemodels.controller import modelManager as mman
+from app.languages.controller import languageManager as lman
+from app.models import UserLogin
+from app.forms import RegistrationForm, UserLoginForm
+from app.controller import (manageAppConfig, questionnairedetails,
+                            readJSONFile, removeallaccess, savenewlexeme,
+                            savenewproject, savenewprojectform,
+                            savenewsentence, unannotatedfilename, updateuserprojects,
+                            userdetails, life_logging, processHTMLForm)
+from app.controller import latex_generator as lg
+from app.controller import (audiodetails, createdummylexemeentry,
+                            emailController, getactiveprojectform,
+                            getactiveprojectname, getcommentstats,
+                            getcurrentusername, getcurrentuserprojects,
+                            getdbcollections, getdbcollectionslist, getprojectowner, getprojecttype,
+                            getuserprojectinfo, langscriptutils,
+                            lexicondetails, speakerDetails, progressreportadmin, projectDetails,
+                            lifeshare, getprojectnamesharedwith)
+from app import app, mongo
 import glob
 import json
 import os
@@ -45,33 +70,6 @@ import logging
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
-
-from app import app, mongo
-from app.controller import (audiodetails, createdummylexemeentry,
-                            emailController, getactiveprojectform,
-                            getactiveprojectname, getcommentstats,
-                            getcurrentusername, getcurrentuserprojects,
-                            getdbcollections, getdbcollectionslist, getprojectowner, getprojecttype,
-                            getuserprojectinfo, langscriptutils,
-                            lexicondetails, speakerDetails,progressreportadmin, projectDetails,
-                            lifeshare,getprojectnamesharedwith)
-from app.controller import latex_generator as lg
-from app.controller import (manageAppConfig, questionnairedetails,
-                            readJSONFile, removeallaccess, savenewlexeme,
-                            savenewproject, savenewprojectform,
-                            savenewsentence, unannotatedfilename, updateuserprojects,
-                            userdetails, life_logging, processHTMLForm)
-from app.forms import RegistrationForm, UserLoginForm
-from app.models import UserLogin
-
-from app.languages.controller import languageManager as lman
-from app.lifemodels.controller import modelManager as mman
-from app.lifedata.transcription.controller import (
-    transcription_audiodetails,
-)
-from app.lifedata.controller import (
-    sourceid_to_souremetadata,
-)
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 scriptCodeJSONFilePath = os.path.join(basedir, 'static/json/scriptCode.json')
@@ -508,6 +506,7 @@ def enternewsentences():
                            newData=activeprojectform,
                            data=currentuserprojectsname)
 
+
 '''
 # progressreport only view by admin
 @app.route('/progressReportAdmin', methods=['GET'])
@@ -644,7 +643,7 @@ def progressReportAdmin():
 
 #         project_sharedwith = getprojectnamesharedwith.getprojectnamesharedwith(projects, activeprojectname)
 #         print("project_sharedwith : ", project_sharedwith)
-        
+
 #         if activeprojectform is not None:
 #             try:
 #                 activespeakerid = getuserprojectinfo.getuserprojectinfo(userprojects, current_username,
@@ -686,9 +685,9 @@ def progressReportAdmin():
 #                            speakerids_list=speakerids_list, all_projects=all_projects)
 
 
-
 # MongoDB URI from Config class
 mongo_uri = Config.MONGO_URI
+
 
 @app.route('/progressReportAdmin', methods=['GET'])
 @login_required
@@ -713,16 +712,21 @@ def progressReportAdmin():
 
         db = client['lifedb']
         db_stats = db.command('dbStats')
-        data_size_value, data_size_unit = progressreportadmin.convert_size(db_stats['dataSize'])
-        storage_size_value, storage_size_unit = progressreportadmin.convert_size(db_stats['storageSize'])
-        index_size_value, index_size_unit = progressreportadmin.convert_size(db_stats['indexSize'])
+        data_size_value, data_size_unit = progressreportadmin.convert_size(
+            db_stats['dataSize'])
+        storage_size_value, storage_size_unit = progressreportadmin.convert_size(
+            db_stats['storageSize'])
+        index_size_value, index_size_unit = progressreportadmin.convert_size(
+            db_stats['indexSize'])
         num_objects = db_stats['objects']
         allocated_storage_size = db_stats.get('fsUsedSize', None)
         total_allocated_size_value, total_allocated_size_unit = (
-            progressreportadmin.convert_size(allocated_storage_size) if allocated_storage_size else ("N/A", "")
+            progressreportadmin.convert_size(
+                allocated_storage_size) if allocated_storage_size else ("N/A", "")
         )
         remaining_space_value, remaining_space_unit = (
-            progressreportadmin.convert_size(allocated_storage_size - db_stats['storageSize'])
+            progressreportadmin.convert_size(
+                allocated_storage_size - db_stats['storageSize'])
             if allocated_storage_size else ("N/A", "")
         )
 
@@ -737,8 +741,10 @@ def progressReportAdmin():
             'speakerdetails'
         )
         current_username = getcurrentusername.getcurrentusername()
-        activeprojectname = getactiveprojectname.getactiveprojectname(current_username, userprojects)
-        shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects, current_username, activeprojectname)
+        activeprojectname = getactiveprojectname.getactiveprojectname(
+            current_username, userprojects)
+        shareinfo = getuserprojectinfo.getuserprojectinfo(
+            userprojects, current_username, activeprojectname)
 
         if not activeprojectname:
             flash("Select a project from 'Change Active Project' to work on!")
@@ -749,9 +755,11 @@ def progressReportAdmin():
         list_projectname = projects.find({}, {"projectname": 1, "_id": 0})
         for project in list_projectname:
             projectname = project["projectname"]
-            speakerids_list = audiodetails.combine_speaker_ids(projects, projectname, current_username)
+            speakerids_list = audiodetails.combine_speaker_ids(
+                projects, projectname, current_username)
             # print("first speakerids_list:", speakerids_list)
-            project_details = projects.find_one({"projectname": projectname}, {"speakersAudioIds": 1, "_id": 0})
+            project_details = projects.find_one({"projectname": projectname}, {
+                                                "speakersAudioIds": 1, "_id": 0})
             if project_details and 'speakersAudioIds' in project_details:
                 speakers_audio_ids = project_details['speakersAudioIds']
                 for speakerid, audio_ids in speakers_audio_ids.items():
@@ -761,12 +769,11 @@ def progressReportAdmin():
                                 'speaker_id': speakerid,
                                 'audio_id': audio_id
                             })
-            
+
             # all_projects = []
-                          
+
             # speakerids_lists = audiodetails.combine_speaker_ids(projects, projectname, current_username)
             # print("second speaker_id:",speakerids_lists)
-           
 
         # list_projectname = projects.find({}, {"projectname": 1, "_id": 0})
         # for project in list_projectname:
@@ -786,13 +793,13 @@ def progressReportAdmin():
 
             # # print("in progress_report :")
             # progress_reports = []
-            # project_documents_file_wise = {} 
+            # project_documents_file_wise = {}
             # projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
             # # print("projectowner : ", projectowner)
 
             # activeprojectform = getactiveprojectform.getactiveprojectform(projectsform, projectowner, activeprojectname)
             # # print("activeprojectform: ", activeprojectform)
-            
+
             # project_sharedwith = getprojectnamesharedwith.getprojectnamesharedwith(projects, activeprojectname)
             # # print("project_sharedwith",project_sharedwith)
             # if activeprojectform:
@@ -814,7 +821,7 @@ def progressReportAdmin():
             #             'Completed files': annotated_comments,
             #             'Remaining files': remaining_comments
             #         }
-                    
+
             #         # print("in progress_report :", progress_report)
             #         progress_reports.append(progress_report)
 
@@ -822,7 +829,7 @@ def progressReportAdmin():
             #         logger.error("An error occurred: %s", e)
             #         return jsonify(error="An error occurred while processing the progress report"), 500
 
-            project_documents_file_wise = {} 
+            project_documents_file_wise = {}
 
             # Get database collections
             projects, userprojects, projectsform, sentences, transcriptions, speakerdetails = getdbcollections.getdbcollections(
@@ -837,8 +844,10 @@ def progressReportAdmin():
 
             # Get the current username and their active project
             current_username = getcurrentusername.getcurrentusername()
-            currentuserprojectsname = getcurrentuserprojects.getcurrentuserprojects(current_username, userprojects)
-            activeprojectname = getactiveprojectname.getactiveprojectname(current_username, userprojects)
+            currentuserprojectsname = getcurrentuserprojects.getcurrentuserprojects(
+                current_username, userprojects)
+            activeprojectname = getactiveprojectname.getactiveprojectname(
+                current_username, userprojects)
 
             # If no active project is selected, redirect to home with a message
             if not activeprojectname:
@@ -846,17 +855,21 @@ def progressReportAdmin():
                 return redirect(url_for('home'))
 
             # Get shared project info
-            shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects, current_username, activeprojectname)
+            shareinfo = getuserprojectinfo.getuserprojectinfo(
+                userprojects, current_username, activeprojectname)
 
             progress_reports = []
             all_projects = []
 
-
             # Get the owner of the active project
-            projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
-            projectsNames = projects.find({"projectOwner": projectowner}, {"projectname": 1, "_id": 0})
-            project_type = getprojecttype.getprojecttype(projects, activeprojectname)
-            data_collection, = getdbcollections.getdbcollections(mongo, project_type)
+            projectowner = getprojectowner.getprojectowner(
+                projects, activeprojectname)
+            projectsNames = projects.find({"projectOwner": projectowner}, {
+                                          "projectname": 1, "_id": 0})
+            project_type = getprojecttype.getprojecttype(
+                projects, activeprojectname)
+            data_collection, = getdbcollections.getdbcollections(
+                mongo, project_type)
 
             # Collect all project names
             for project in projectsNames:
@@ -867,13 +880,18 @@ def progressReportAdmin():
             # Generate progress reports for each project
             for projectname in all_projects:
                 try:
-                    speakerids_list = audiodetails.combine_speaker_ids(projects, projectname, current_username)
-                    activeprojectform = getactiveprojectform.getactiveprojectform(projectsform, projectowner, projectname)
-                    project_sharedwith = getprojectnamesharedwith.getprojectnamesharedwith(projects, projectname)
+                    speakerids_list = audiodetails.combine_speaker_ids(
+                        projects, projectname, current_username)
+                    activeprojectform = getactiveprojectform.getactiveprojectform(
+                        projectsform, projectowner, projectname)
+                    project_sharedwith = getprojectnamesharedwith.getprojectnamesharedwith(
+                        projects, projectname)
 
                     if activeprojectform is not None:
-                        activespeakerid = getuserprojectinfo.getuserprojectinfo(userprojects, current_username, projectname).get('activespeakerId')
-                        speaker_audio_ids = audiodetails.get_speaker_audio_ids_new(projects, projectname, current_username, activespeakerid)
+                        activespeakerid = getuserprojectinfo.getuserprojectinfo(
+                            userprojects, current_username, projectname).get('activespeakerId')
+                        speaker_audio_ids = audiodetails.get_speaker_audio_ids_new(
+                            projects, projectname, current_username, activespeakerid)
 
                         total_comments, annotated_comments, remaining_comments = getcommentstats.getcommentstats(
                             projects,
@@ -889,8 +907,8 @@ def progressReportAdmin():
                             'Created by': projectowner,
                             'Speaker ID': activespeakerid,
                             'Assigned to': project_sharedwith,
-                            'Time and date': "", 
-                            'Duration': "",      
+                            'Time and date': "",
+                            'Duration': "",
                             'Total no. of files': total_comments,
                             'Completed files': annotated_comments,
                             'Remaining files': remaining_comments
@@ -906,16 +924,20 @@ def progressReportAdmin():
             # print("progress_reports :",progress_reports)
 
             if current_username == projectowner:
-                find_current_user_projects = userprojects.find_one({'username': projectowner}, {'myproject': 1, '_id': 0})
+                find_current_user_projects = userprojects.find_one(
+                    {'username': projectowner}, {'myproject': 1, '_id': 0})
                 if find_current_user_projects and 'myproject' in find_current_user_projects:
                     project_names = find_current_user_projects['myproject']
                     for project_name in project_names:
                         find_current_user_documents = projects.find_one(
-                            {'projectOwner': projectowner, 'projectname': project_name},
-                            {'speakersAudioIds': 1, 'projectOwner': 1, 'sharedwith': 1, '_id': 0}
+                            {'projectOwner': projectowner,
+                                'projectname': project_name},
+                            {'speakersAudioIds': 1, 'projectOwner': 1,
+                                'sharedwith': 1, '_id': 0}
                         )
                         if find_current_user_documents:
-                            speakers_audio_ids = find_current_user_documents.get('speakersAudioIds', {})
+                            speakers_audio_ids = find_current_user_documents.get(
+                                'speakersAudioIds', {})
                             project_documents_file_wise[project_name] = {
                                 'projectowner': projectowner,
                                 'speakersAudioIds': speakers_audio_ids
@@ -923,8 +945,6 @@ def progressReportAdmin():
 
             else:
                 print("No projects found for the current user.")
-
-
 
             project_names_file_wise = list(project_documents_file_wise.keys())
 
@@ -953,27 +973,27 @@ def progressReportAdmin():
             # print("Project Documents File Wise:", project_documents_file_wise)
 
             return render_template('progressReportAdmin.html',
-                                progress_reports=progress_reports,
-                                activeprojectname=activeprojectname,
-                                shareinfo=shareinfo,
-                                speakerids_list=speakerids_list,
-                                all_projects=all_projects,
-                                data_size_value=data_size_value,
-                                data_size_unit=data_size_unit,
-                                storage_size_value=storage_size_value,
-                                storage_size_unit=storage_size_unit,
-                                index_size_value=index_size_value,
-                                index_size_unit=index_size_unit,
-                                num_objects=num_objects,
-                                collection_stats=response,
-                                total_allocated_size_value=total_allocated_size_value,
-                                total_allocated_size_unit=total_allocated_size_unit,
-                                remaining_space_value=remaining_space_value,
-                                remaining_space_unit=remaining_space_unit,
-                                project_stats=project_stats,
-                                speaker_audio_data=speaker_audio_data,
-                                project_names_file_wise=project_names_file_wise,
-                                project_documents_file_wise=project_documents_file_wise)  # Pass the collected data to the template
+                                   progress_reports=progress_reports,
+                                   activeprojectname=activeprojectname,
+                                   shareinfo=shareinfo,
+                                   speakerids_list=speakerids_list,
+                                   all_projects=all_projects,
+                                   data_size_value=data_size_value,
+                                   data_size_unit=data_size_unit,
+                                   storage_size_value=storage_size_value,
+                                   storage_size_unit=storage_size_unit,
+                                   index_size_value=index_size_value,
+                                   index_size_unit=index_size_unit,
+                                   num_objects=num_objects,
+                                   collection_stats=response,
+                                   total_allocated_size_value=total_allocated_size_value,
+                                   total_allocated_size_unit=total_allocated_size_unit,
+                                   remaining_space_value=remaining_space_value,
+                                   remaining_space_unit=remaining_space_unit,
+                                   project_stats=project_stats,
+                                   speaker_audio_data=speaker_audio_data,
+                                   project_names_file_wise=project_names_file_wise,
+                                   project_documents_file_wise=project_documents_file_wise)  # Pass the collected data to the template
 
     # except Exception as e:
     #     error_message = str(e)
@@ -982,7 +1002,6 @@ def progressReportAdmin():
     except:
         logger.exception("")
         # return jsonify(error=f"An error occurred while processing the request: {error_message}"), 500
-
 
 
 @app.route('/savetranscription', methods=['GET', 'POST'])
@@ -1015,6 +1034,7 @@ def savetranscription():
         lastActiveId = transcription_data['lastActiveId']
         transcription_regions = transcription_data['transcriptionRegions']
         accessedOnTime = transcription_data['accessedOnTime']
+
         # logger.info("transcription_regions: %s", pformat(
         # json.loads(transcription_regions)))
         # logger.debug(lastActiveId)
@@ -1049,16 +1069,17 @@ def savetranscription():
         action = transcription_data['action']
 
         if action == 'save':
-            audiodetails.savetranscription(transcriptions,
-                                           activeprojectname,
-                                           activeprojectform,
-                                           scriptCode,
-                                           current_username,
-                                           transcription_regions,
-                                           lastActiveId,
-                                           activespeakerid,
-                                           accessedOnTime)
+            updated_data = audiodetails.savetranscription(transcriptions,
+                                                          activeprojectname,
+                                                          activeprojectform,
+                                                          scriptCode,
+                                                          current_username,
+                                                          transcription_regions,
+                                                          lastActiveId,
+                                                          activespeakerid,
+                                                          accessedOnTime)
         elif action == 'sync':
+            boundary_ids = transcription_data['processBoundariesSyncTranscription']
             source_script = transcription_data['sourceScript']
             target_scripts = transcription_data['targetScripts']
             overwrite = transcription_data['overwrite']
@@ -1066,19 +1087,20 @@ def savetranscription():
                 projectsform, projectowner, activeprojectname)
             audio_lang_code = lman.get_bcp_language_code(
                 languages, audio_lang)
-            transcription_audiodetails.synctranscription(transcriptions,
-                                                         activeprojectname,
-                                                         activeprojectform,
-                                                         source_script,
-                                                         target_scripts,
-                                                         audio_lang_code,
-                                                         current_username,
-                                                         transcription_regions,
-                                                         lastActiveId,
-                                                         accessedOnTime,
-                                                         overwrite)
+            updated_data = transcription_audiodetails.synctranscription(transcriptions,
+                                                                        activeprojectname,
+                                                                        activeprojectform,
+                                                                        source_script,
+                                                                        target_scripts,
+                                                                        audio_lang_code,
+                                                                        current_username,
+                                                                        transcription_regions,
+                                                                        lastActiveId,
+                                                                        accessedOnTime,
+                                                                        overwrite,
+                                                                        boundary_ids=boundary_ids)
 
-        return jsonify(savedTranscription=1)
+        return jsonify({"savedTranscription": 1, "data": updated_data})
     except:
         logger.exception("")
 
@@ -1834,6 +1856,8 @@ def dictionaryview():
 # to solve the problem of accessing the variable later by some functions
 # file_format = ''
 # uploaded_file_content = ''
+
+
 def enterlexemefromuploadedfile(alllexemedf):
     projects, userprojects, lexemes, projectsform = getdbcollections.getdbcollections(mongo,
                                                                                       'projects',
@@ -4668,7 +4692,7 @@ def shareprojectwith():
                         # for key, value in projectinfo.items():
                         #     if len(value) != 0:
                         #         if activeprojectname in value:
-                                    # userprojectinfo = key+'.'+activeprojectname+".activespeakerId"
+                        # userprojectinfo = key+'.'+activeprojectname+".activespeakerId"
                         userprojectinfo = 'projectsharedwithme.'+activeprojectname+".activespeakerId"
                         # logger.debug(userprojectinfo)
                         if (usershareprojectsname[activeprojectname]['activespeakerId'] == ''):
@@ -6007,13 +6031,13 @@ def addnewspeakerdetails():
 
 ''' Sync speaker details of accesscodedetails in speakerdetails'''
 
+
 @app.route('/syncspeakermetadata', methods=['GET', 'POST'])
 @login_required
 def syncspeakermetadata():
     accesscodedetails, userprojects, userlogin, speakermeta, projects = getdbcollections.getdbcollections(
         mongo, 'accesscodedetails', 'userprojects', 'userlogin', 'speakerdetails', 'projects')
 
-    
     current_username = getcurrentusername.getcurrentusername()
     logger.debug('USERNAME: ', current_username)
     usertype = userdetails.get_user_type(
@@ -6029,21 +6053,21 @@ def syncspeakermetadata():
     projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
 
     find_accesscodedetails = accesscodedetails.find({
-        "projectname": activeprojectname, 'isActive':1},
-                                            {"lifespeakerid": 1,
-                                            "karyaaccesscode": 1,
-                                            "karyaspeakerid": 1,
-                                            "current.workerMetadata.name": 1,
-                                            "current.workerMetadata.agegroup": 1,
-                                            "current.workerMetadata.gender": 1,
-                                            "current.workerMetadata.educationlevel": 1,
-                                            "current.workerMetadata.educationmediumupto12": 1,
-                                            "current.workerMetadata.educationmediumafter12": 1,
-                                            "current.workerMetadata.speakerspeaklanguage": 1,
-                                            "current.workerMetadata.recordingplace": 1,
-                                            "current.workerMetadata.typeofrecordingplace": 1,
-                                            "current.workerMetadata.activeAccessCode": 1,
-                                            "_id": 0})
+        "projectname": activeprojectname, 'isActive': 1},
+        {"lifespeakerid": 1,
+         "karyaaccesscode": 1,
+         "karyaspeakerid": 1,
+         "current.workerMetadata.name": 1,
+         "current.workerMetadata.agegroup": 1,
+         "current.workerMetadata.gender": 1,
+         "current.workerMetadata.educationlevel": 1,
+         "current.workerMetadata.educationmediumupto12": 1,
+         "current.workerMetadata.educationmediumafter12": 1,
+         "current.workerMetadata.speakerspeaklanguage": 1,
+         "current.workerMetadata.recordingplace": 1,
+         "current.workerMetadata.typeofrecordingplace": 1,
+         "current.workerMetadata.activeAccessCode": 1,
+         "_id": 0})
 
     total_documents = find_accesscodedetails.count()
     print("Total number of documents found from accesscodedetails:", total_documents)
@@ -6096,36 +6120,35 @@ def syncspeakermetadata():
 
         # Check if the metadata already exists in speakermeta (speakerdetails)
         existing_metadata = speakermeta.find_one({
-                                        "projectname": activeprojectname,
-                                        "current.sourceMetadata.lifespeakerid": new_metadata["lifespeakerid"],
-                                        "current.sourceMetadata.karyaaccesscode":  new_metadata["karyaaccesscode"],
-                                        "current.sourceMetadata.karyaspeakerid": new_metadata["karyaspeakerid"]
-                                    })
+            "projectname": activeprojectname,
+            "current.sourceMetadata.lifespeakerid": new_metadata["lifespeakerid"],
+            "current.sourceMetadata.karyaaccesscode":  new_metadata["karyaaccesscode"],
+            "current.sourceMetadata.karyaspeakerid": new_metadata["karyaspeakerid"]
+        })
         # print('existing_metadata :', existing_metadata)
 
         if not existing_metadata:
             # Metadata does not exist, so write it to the speakermeta collection
             not_existing_metadata = speakerDetails.write_speaker_metadata_details(
-                                                                                speakermeta,
-                                                                                projectowner,
-                                                                                activeprojectname,
-                                                                                current_username,
-                                                                                audio_source,
-                                                                                metadata_schema,
-                                                                                new_metadata,
-                                                                                upload_type
-                                                                            )
+                speakermeta,
+                projectowner,
+                activeprojectname,
+                current_username,
+                audio_source,
+                metadata_schema,
+                new_metadata,
+                upload_type
+            )
+            # print('not existing_metadata')
 
     check_existing_lifesourceid = speakermeta.find({
-                                                    "projectname": activeprojectname},
-                                                    {"lifesourceid": 1,
-                                                    "current.sourceMetadata.lifespeakerid": 1,
-                                                    "current.sourceMetadata.karyaaccesscode":  1,
-                                                    "current.sourceMetadata.karyaspeakerid": 1,
-                                                        "_id": 0
-                                                    })
-
-
+        "projectname": activeprojectname},
+        {"lifesourceid": 1,
+         "current.sourceMetadata.lifespeakerid": 1,
+         "current.sourceMetadata.karyaaccesscode":  1,
+         "current.sourceMetadata.karyaspeakerid": 1,
+         "_id": 0
+         })
 
     for existing_lifesourceid in check_existing_lifesourceid:
         if existing_lifesourceid["lifesourceid"] != existing_lifesourceid["current"]["sourceMetadata"]["lifespeakerid"]:
@@ -6147,6 +6170,8 @@ def syncspeakermetadata():
                 "old_lifesourceid": existing_lifesourceid["lifesourceid"]}
             lifespeakerid_to_lifesourceid = {
                 "lifesourceid": existing_lifesourceid["current"]["sourceMetadata"]["lifespeakerid"]}
+
+            # print('lifesource_to_old_lifesourceid :', lifesource_to_old_lifesourceid , 'lifespeakerid_to_lifesourceid :',lifespeakerid_to_lifesourceid  )
 
             # Update old_lifesourceid only if it does not exist in the document
             try:
@@ -6206,6 +6231,8 @@ def syncspeakermetadata():
         '''
 
 # Manage Speaker Metadata
+
+
 @app.route('/managespeakermetadata', methods=['GET', 'POST'])
 @login_required
 def managespeakermetadata():
@@ -6679,8 +6706,6 @@ def progressreport():
     return jsonify(progressreport=progressreport)
 
 
-
-
 # Update progressreport route
 @app.route('/progressreportchart', methods=['GET'])
 @login_required
@@ -6710,12 +6735,12 @@ def progressreportchart():
     project_type = getprojecttype.getprojecttype(projects, activeprojectname)
     data_collection, = getdbcollections.getdbcollections(mongo, project_type)
     # logger.debug("data_collection: %s", data_collection)
-    
+
     # if method is not 'POST'
     projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
     activeprojectform = getactiveprojectform.getactiveprojectform(projectsform,
-                                                                projectowner,
-                                                                activeprojectname)
+                                                                  projectowner,
+                                                                  activeprojectname)
     if activeprojectform is not None:
         try:
             # , audio_file_path, transcription_details
@@ -6724,18 +6749,19 @@ def progressreportchart():
                                                                     current_username,
                                                                     activeprojectname)['activespeakerId']
             speaker_audio_ids = audiodetails.get_speaker_audio_ids_new(projects,
-                                                                    activeprojectname,
-                                                                    current_username,
-                                                                    activespeakerid)
+                                                                       activeprojectname,
+                                                                       current_username,
+                                                                       activespeakerid)
             # logger.debug("speaker_audio_ids: %s", pformat(speaker_audio_ids))
             total_comments, annotated_comments, remaining_comments = getcommentstats.getcommentstats(projects,
-                                                                                                    data_collection,
-                                                                                                    activeprojectname,
-                                                                                                    activespeakerid,
-                                                                                                    speaker_audio_ids,
-                                                                                                    'audio')
+                                                                                                     data_collection,
+                                                                                                     activeprojectname,
+                                                                                                     activespeakerid,
+                                                                                                     speaker_audio_ids,
+                                                                                                     'audio')
             # Calculate normal data
-            normal_data = [total_comments, annotated_comments, remaining_comments]
+            normal_data = [total_comments,
+                           annotated_comments, remaining_comments]
 
             # Calculate percentages
             total = sum([annotated_comments, remaining_comments])
@@ -6750,8 +6776,7 @@ def progressreportchart():
 
         except Exception as e:
             logger.error("An error occurred: %s", e)
-            return jsonify(error="An error occurred while processing the progress report"), 500 
-
+            return jsonify(error="An error occurred while processing the progress report"), 500
 
 
 # get progress report
@@ -7249,17 +7274,19 @@ def browseshareuserslist():
     current_user_sharemode = 0
     share_with_users_list = []
     try:
-        activeprojectname = getactiveprojectname.getactiveprojectname(current_username, userprojects)
+        activeprojectname = getactiveprojectname.getactiveprojectname(
+            current_username, userprojects)
         # logger.debug(activeprojectname)
         if (activeprojectname != ''):
-            projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
+            projectowner = getprojectowner.getprojectowner(
+                projects, activeprojectname)
             # logger.debug(projectowner)
             shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
-                                                            current_username,
-                                                            activeprojectname)
+                                                              current_username,
+                                                              activeprojectname)
             current_user_sharemode = int(shareinfo['sharemode'])
             project_type = getprojecttype.getprojecttype(projects,
-                                                        activeprojectname)
+                                                         activeprojectname)
 
             # get list of all the users registered in the application LiFE
             for user in userlogin.find({}, {"_id": 0, "username": 1, "isActive": 1}):
@@ -7280,8 +7307,8 @@ def browseshareuserslist():
                 for username in usersList:
                     # logger.debug(username)
                     usershareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
-                                                                        username,
-                                                                        activeprojectname)
+                                                                          username,
+                                                                          activeprojectname)
                     usersharemode = int(usershareinfo['sharemode'])
                     # logger.debug(current_username, current_user_sharemode, username, usersharemode)
                     # logger.debug(current_username, type(current_user_sharemode), username, type(usersharemode))
@@ -7302,6 +7329,7 @@ def browseshareuserslist():
     return jsonify(usersList=sorted(share_with_users_list),
                    sourceList=sorted(sourceList),
                    sharemode=current_user_sharemode)
+
 
 @app.route('/browsefilesharedwithuserslist', methods=['GET', 'POST'])
 def browsefilesharedwithuserslist():
@@ -7334,7 +7362,7 @@ def browsefilesharedwithuserslist():
                                              {"_id": 0,
                                               "fileSpeakerIds": 1})
         if (file_speaker_ids and
-            "fileSpeakerIds" in file_speaker_ids):
+                "fileSpeakerIds" in file_speaker_ids):
             # logger.debug("file_speaker_ids: %s", file_speaker_ids)
             file_speaker_ids = file_speaker_ids["fileSpeakerIds"]
             # logger.debug("file_speaker_ids: %s", file_speaker_ids)
@@ -7361,6 +7389,7 @@ def browsefilesharedwithuserslist():
 
     return jsonify(sharedWithUsers=browse_file_sharedwith_userslist)
 
+
 @app.route('/browsesharewith', methods=['GET', 'POST'])
 def browsesharewith():
     sharing_success = False
@@ -7374,7 +7403,8 @@ def browsesharewith():
         activeprojectname = getactiveprojectname.getactiveprojectname(
             current_username, userprojects)
 
-        projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
+        projectowner = getprojectowner.getprojectowner(
+            projects, activeprojectname)
         # project_type = getprojecttype.getprojecttype(projects,
         #                                             activeprojectname)
 
@@ -7428,9 +7458,9 @@ def browsesharewith():
                             incoming_last_active_audio_id = audio_ids[0]
                             set_last_active_id(projects,
                                                activeprojectname,
-                                                user,
-                                                speaker,
-                                                incoming_last_active_audio_id)
+                                               user,
+                                               speaker,
+                                               incoming_last_active_audio_id)
                 else:
                     file_speaker_ids = projects.find_one({'projectname': activeprojectname},
                                                          {'_id': 0, 'fileSpeakerIds': 1})
@@ -7447,9 +7477,9 @@ def browsesharewith():
                                 incoming_last_active_audio_id = audio_ids[0]
                                 set_last_active_id(projects,
                                                    activeprojectname,
-                                                    user,
-                                                    speaker,
-                                                    incoming_last_active_audio_id)
+                                                   user,
+                                                   speaker,
+                                                   incoming_last_active_audio_id)
                             # continue
                         else:
                             projects.update_one({"projectname": activeprojectname},
@@ -7460,9 +7490,9 @@ def browsesharewith():
                                 incoming_last_active_audio_id = audio_ids[0]
                                 set_last_active_id(projects,
                                                    activeprojectname,
-                                                    user,
-                                                    speaker,
-                                                    incoming_last_active_audio_id)
+                                                   user,
+                                                   speaker,
+                                                   incoming_last_active_audio_id)
             elif (browse_share_selected_mode == 'remove'):
                 for speaker, audio_ids in speaker_audioids.items():
                     projects.update_one({"projectname": activeprojectname},
@@ -7472,58 +7502,59 @@ def browsesharewith():
             # logger.debug(speaker)
             # logger.debug(incoming_last_active_audio_id)
             last_active_audio_id = projects.find_one({"projectname": activeprojectname},
-                                                     {  '_id': 0,
+                                                     {'_id': 0,
                                                          'lastActiveId.'+user+'.'+speaker+'.audioId': 1})
             # logger.debug(last_active_audio_id)
             # last_active_audio_id = None
             if (last_active_audio_id and
                 'lastActiveId' in last_active_audio_id and
                 user in last_active_audio_id['lastActiveId'] and
-                speaker in last_active_audio_id['lastActiveId'][user]):
+                    speaker in last_active_audio_id['lastActiveId'][user]):
                 last_active_audio_id = last_active_audio_id['lastActiveId'][user][speaker]['audioId']
                 # logger.debug(last_active_audio_id)
             else:
                 if (speaker != '' and
-                    incoming_last_active_audio_id != ''):
+                        incoming_last_active_audio_id != ''):
                     # logger.debug(speaker)
                     # logger.debug(incoming_last_active_audio_id)
                     projects.update_one(
-                                        {
-                                            'projectname': activeprojectname
-                                        },
-                                        {
-                                            '$set':
-                                            {
-                                                'lastActiveId.'+user+'.'+speaker+'.audioId': incoming_last_active_audio_id
-                                            }
-                                        }
-                                    )
+                        {
+                            'projectname': activeprojectname
+                        },
+                        {
+                            '$set':
+                            {
+                                'lastActiveId.'+user+'.'+speaker+'.audioId': incoming_last_active_audio_id
+                            }
+                        }
+                    )
             share_info = getuserprojectinfo.getuserprojectinfo(userprojects,
-                                                              user,
-                                                              activeprojectname)
+                                                               user,
+                                                               activeprojectname)
             if (share_info['activespeakerId'] == '' and
-                speaker != ''):
+                    speaker != ''):
                 if (user == projectowner):
                     userprojectinfo = 'myproject.'+activeprojectname+".activespeakerId"
                 else:
                     userprojectinfo = 'projectsharedwithme.'+activeprojectname+".activespeakerId"
                 userprojects.update_one(
-                                {
-                                    "username": user
-                                },
-                                {
-                                    "$set":
-                                    {
-                                        userprojectinfo: speaker
-                                    }
-                                }
-                            )
+                    {
+                        "username": user
+                    },
+                    {
+                        "$set":
+                        {
+                            userprojectinfo: speaker
+                        }
+                    }
+                )
         sharing_success = True
     except:
         logger.exception("")
 
     return jsonify(users=users,
                    sharingSuccess=[sharing_success, browse_share_selected_mode])
+
 
 def set_last_active_id(projects,
                        activeprojectname,
@@ -7534,36 +7565,37 @@ def set_last_active_id(projects,
         # logger.debug(speaker)
         # logger.debug(incoming_last_active_audio_id)
         last_active_audio_id = projects.find_one({"projectname": activeprojectname},
-                                                    {  '_id': 0,
-                                                        'lastActiveId.'+user+'.'+speaker+'.audioId': 1})
+                                                 {'_id': 0,
+                                                  'lastActiveId.'+user+'.'+speaker+'.audioId': 1})
         # logger.debug(last_active_audio_id)
         # last_active_audio_id = None
         if (last_active_audio_id and
             'lastActiveId' in last_active_audio_id and
             user in last_active_audio_id['lastActiveId'] and
-            speaker in last_active_audio_id['lastActiveId'][user]):
+                speaker in last_active_audio_id['lastActiveId'][user]):
             last_active_audio_id = last_active_audio_id['lastActiveId'][user][speaker]['audioId']
             # logger.debug(last_active_audio_id)
         else:
             if (speaker != '' and
-                incoming_last_active_audio_id != ''):
+                    incoming_last_active_audio_id != ''):
                 # logger.debug(speaker)
                 # logger.debug(incoming_last_active_audio_id)
                 projects.update_one(
-                                    {
-                                        'projectname': activeprojectname
-                                    },
-                                    {
-                                        '$set':
-                                        {
-                                            'lastActiveId.'+user+'.'+speaker+'.audioId': incoming_last_active_audio_id
-                                        }
-                                    }
-                                )
+                    {
+                        'projectname': activeprojectname
+                    },
+                    {
+                        '$set':
+                        {
+                            'lastActiveId.'+user+'.'+speaker+'.audioId': incoming_last_active_audio_id
+                        }
+                    }
+                )
         return True
     except:
         logger.exception("")
         return False
+
 
 @app.route('/get_jsonfile_data', methods=['GET', 'POST'])
 @login_required

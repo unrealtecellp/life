@@ -10,7 +10,6 @@ class UserLogin(UserMixin):
 
     def __init__(self, username):
             userName = userlogin.find_one({"username": username})
-            # print(userName)
             if userName != None:
                 self.username = userName["username"]
                 self.password_hash = userName["password"]
@@ -32,5 +31,5 @@ class UserLogin(UserMixin):
 @login.user_loader
 def load_user(id):
     if userlogin.find_one({"_id": ObjectId(id)}) != None:
-        # print(id, userlogin.find_one({"_id": ObjectId(id)}), UserLogin(userlogin.find_one({"_id": ObjectId(id)})["username"]))
+        # logger.debug(id, userlogin.find_one({"_id": ObjectId(id)}), UserLogin(userlogin.find_one({"_id": ObjectId(id)})["username"]))
         return UserLogin(username=userlogin.find_one({"_id": ObjectId(id)})["username"])

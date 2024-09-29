@@ -98,7 +98,7 @@ $("#derivefromdataselect").change(function(){
                             '<input type="text" class="form-control" id="idderivefromproject"'+
                             'placeholder="Derive From Project" name="derivefromproject" value="'+derivedprojectvalue+'" style="width: 55%" readonly>'
     $('#beforefield').html(derivedprojectform);
-    addlanguagelist(derivedprojectvalue);
+    // addlanguagelist(derivedprojectvalue);
     var x = document.getElementById("dataform");
     if (x.style.display === "none") {
         x.style.display = "block";

@@ -126,10 +126,28 @@ def get_translation_model(source_lang='hi', target_lang='en'):
                 source_script = language['sourceScriptCode']
                 target_script = language['targetScriptCode']
                 return model_id, api_key, end_url, source_script, target_script
+    return '', '', '', '', ''
+
+
+def get_translation_model_from_id(model_id=''):
+    all_results = get_bhashini_translation_result()
+    models = all_results['pipelineResponseConfig'][0]['config']
+    # print(models)
+    for model in models:
+        # print(model)
+        current_model_id = model['serviceId']
+        if current_model_id == model_id:
+            language = model['language']
+            api_key = all_results['pipelineInferenceAPIEndPoint']['inferenceApiKey']['value']
+            end_url = all_results['pipelineInferenceAPIEndPoint']['callbackUrl']
+            # source_script = language['sourceScriptCode']
+            # target_script = language['targetScriptCode']
+            # return model_id, api_key, end_url, source_script, target_script
+        return model_id, api_key, end_url
     return '', '', ''
 
 
-def get_transcription_model(source_lang='hi', model_url=''):
+def get_transcription_model(source_lang, model_url=''):
     all_results = get_bhashini_asr_result()
     models = all_results['pipelineResponseConfig'][0]['config']
     for model in models:
@@ -145,10 +163,13 @@ def get_transcription_model(source_lang='hi', model_url=''):
         else:
             model_id = model['serviceId']
             if model_id == model_url:
-                end_url = all_results['pipelineInferenceAPIEndPoint']['callbackUrl']
-                api_key = all_results['pipelineInferenceAPIEndPoint']['inferenceApiKey']['value']
-                target_script = language['sourceScriptCode']
-                return model_id, api_key, end_url, target_script
+                logger.debug(
+                    'Model source language %s\tSource Language %s', model_source_lang, source_lang)
+                if model_source_lang == source_lang:
+                    end_url = all_results['pipelineInferenceAPIEndPoint']['callbackUrl']
+                    api_key = all_results['pipelineInferenceAPIEndPoint']['inferenceApiKey']['value']
+                    target_script = language['sourceScriptCode']
+                    return model_id, api_key, end_url, target_script
 
     return '', '', '', ''
 
@@ -234,17 +255,17 @@ def transcribe_data(audio_data, model, api_key, end_url, lang_name='hi'):
 
 
 if __name__ == '__main__':
-    data = ["लास्ट में एन और सेकंड लास्ट में वॉवेल ठीक है दिस इज़ द वे 2 कन्वर्ट थिन आर हो जाएगा 2 एन हो जाएंगे तो हमारा लास्ट में क्या है एन तो हम 2 एन कर देंगे सिंपल।",
-            "अंडरस्टैंड।",
-            "ओके",
-            "ठीक है यस।",
-            "बनाना ग्रेप्स ऑरेंज।",
-            "और यहाँ पे आपको क्या लगने लगती है कैसे महसूस कर रहा है बहुत ही अच्छा क्यों अच्छा लगने लगती है?"]
-    for current_data in data:
-        print('Source', current_data)
-        result = translate_data(current_data)
-        output = result["pipelineResponse"][0]["output"][0]["target"]
-        print('Target', output)
+    # data = ["लास्ट में एन और सेकंड लास्ट में वॉवेल ठीक है दिस इज़ द वे 2 कन्वर्ट थिन आर हो जाएगा 2 एन हो जाएंगे तो हमारा लास्ट में क्या है एन तो हम 2 एन कर देंगे सिंपल।",
+    #         "अंडरस्टैंड।",
+    #         "ओके",
+    #         "ठीक है यस।",
+    #         "बनाना ग्रेप्स ऑरेंज।",
+    #         "और यहाँ पे आपको क्या लगने लगती है कैसे महसूस कर रहा है बहुत ही अच्छा क्यों अच्छा लगने लगती है?"]
+    # for current_data in data:
+    #     print('Source', current_data)
+    #     result = translate_data(current_data)
+    #     output = result["pipelineResponse"][0]["output"][0]["target"]
+    #     print('Target', output)
     # get_bhashini_transliteration_models()
     # get_bhashini_translation_models()
-    # get_bhashini_asr_models()
+    pprint(get_bhashini_asr_models())

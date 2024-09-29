@@ -1076,6 +1076,7 @@ def crawlerbrowseaction():
 
     return 'OK'
 
+
 @lifedata.route('/crawlerbrowseactionviewdata', methods=['GET', 'POST'])
 @login_required
 def crawlerbrowseactionviewdata():
@@ -1102,12 +1103,12 @@ def crawlerbrowseactionviewdata():
         comment_info = crawling_collection.find_one({"projectname": activeprojectname,
                                                      "lifesourceid": active_source_id,
                                                      "$or": [
-                                                        { "dataId": data_id },
-                                                        { "audioId": data_id }
-                                                    ]},
+                                                         {"dataId": data_id},
+                                                         {"audioId": data_id}
+                                                     ]},
                                                     {"_id": 0,
                                                     #  "additionalInfo.comment_info": 1,
-                                                    "additionalInfo": 1
+                                                     "additionalInfo": 1
                                                      })
         # logger.debug(pformat(comment_info))
         # comment_info = comment_info["additionalInfo"]["comment_info"]
@@ -1827,6 +1828,9 @@ def maketranslation():
 
         translation_source = data['translateUsingSelect2'][0]
 
+        boundary_ids = data['processBoundariesTranslation']
+        logger.debug("Boundary Ids %s", boundary_ids)
+
         if translation_source == 'hfinference':
             if not 'hfinferenceagree' in data:
                 # flash('')
@@ -1837,9 +1841,11 @@ def maketranslation():
         speakerId = data['translationSpeakerId'][0]
         # new_audio_file = request.files.to_dict()
         audio_filename = data['translationfile'][0]
-
+        audio_id = audio_filename.split('_')[0]
         existing_audio_details = transcriptions.find_one(
-            {'projectname': activeprojectname, 'audioFilename': audio_filename})
+            {'projectname': activeprojectname, 'audioId': audio_id})
+        # existing_audio_details = transcriptions.find_one(
+        #     {'projectname': activeprojectname, 'audioFilename': audio_filename})
         # logger.debug("Existing audio data %s", existing_audio_details)
 
         if 'modelId' in data:
@@ -1920,19 +1926,20 @@ def maketranslation():
         logger.debug('Translation model vals %s', translation_model)
         logger.debug('Access time %s', access_time)
 
-        translation_utils.save_translation_of_one_audio_file(transcriptions,
-                                                             activeprojectname,
-                                                             current_username,
-                                                             audio_filename,
-                                                             translation_model,
-                                                             transcription_type='sentence',
-                                                             save_for_user=save_for_user,
-                                                             hf_token=hf_token,
-                                                             audio_details=existing_audio_details,
-                                                             accessedOnTime=access_time
-                                                             )
-
-    return redirect(url_for('lifedata.transcription.home'))
+        transcription_doc_id, translated_data = translation_utils.save_translation_of_one_audio_file(transcriptions,
+                                                                                                     activeprojectname,
+                                                                                                     current_username,
+                                                                                                     audio_filename,
+                                                                                                     translation_model,
+                                                                                                     transcription_type='sentence',
+                                                                                                     save_for_user=save_for_user,
+                                                                                                     hf_token=hf_token,
+                                                                                                     audio_details=existing_audio_details,
+                                                                                                     accessedOnTime=access_time,
+                                                                                                     boundary_ids=boundary_ids
+                                                                                                     )
+    return jsonify({"data": translated_data})
+    # return redirect(url_for('lifedata.transcription.home'))
 
 
 @lifedata.route('/makegloss', methods=['GET', 'POST'])
@@ -1949,16 +1956,19 @@ def makegloss():
     activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
                                                                   userprojects)
     projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
-    audio_language = getactiveprojectform.getaudiolanguage(
-        projectsform, projectowner, activeprojectname)
-    audio_lang_code = languageManager.get_bcp_language_code(
-        languages, audio_language)
+    # audio_language = getactiveprojectform.getaudiolanguage(
+    #     projectsform, projectowner, activeprojectname)
 
     if request.method == 'POST':
         data = dict(request.form.lists())
         logger.debug("Form data %s", data)
 
-        translation_source = data['translateUsingSelect2'][0]
+        if 'translateUsingSelect2' in data:
+            translation_source = data['translateUsingSelect2'][0]
+        else:
+            translation_source = ''
+
+        boundary_ids = data['processBoundariesGloss']
 
         if translation_source == 'hfinference':
             if not 'hfinferenceagree' in data:
@@ -1967,18 +1977,25 @@ def makegloss():
                     'We do not have sufficient permission to send the data to HF Inference Server.', category='error')
                 return redirect(url_for('lifedata.transcription.home'))
 
-        speakerId = data['glossingSpeakerId'][0]
+        # speakerId = data['glossingSpeakerId'][0]
         # new_audio_file = request.files.to_dict()
         audio_filename = data['glossingfile'][0]
-
+        audio_id = audio_filename.split('_')[0]
         existing_audio_details = transcriptions.find_one(
-            {'projectname': activeprojectname, 'audioFilename': audio_filename})
+            {'projectname': activeprojectname, 'audioId': audio_id})
         # logger.debug("Existing audio data %s", existing_audio_details)
 
         if 'glossModelId' in data:
             gloss_model_name = data['glossModelId'][0]
         else:
             gloss_model_name = ''
+
+        if 'glossModelLang' in data:
+            audio_language = data['glossModelLang'][0]
+            audio_lang_code = languageManager.get_bcp_language_code(
+                languages, audio_language)
+        else:
+            audio_lang_code = 'en'
 
         if 'translationModelId' in data:
             translation_model_name = data['translationModelId'][0]
@@ -2018,6 +2035,25 @@ def makegloss():
             free_translation = True
         else:
             free_translation = False
+
+        if 'get-translation' in data:
+            translate_tokens = True
+        else:
+            translate_tokens = False
+
+        if 'get-gloss' in data:
+            gloss_data = True
+        else:
+            gloss_data = False
+
+        if audio_lang_code == 'en':
+            translate_tokens = False
+            source_script_code = 'Latn'
+            source_script_name = 'Latin'
+            # if source_script_code == 'Latn':
+            #     translate_tokens = False
+            # else:
+            #     translate_tokens = True
 
         '''
         Translation Model
@@ -2066,6 +2102,7 @@ def makegloss():
             'model_type': "local",
             'model_params': {
                 'model_path': gloss_model_name,
+                'gloss_lang_code': audio_lang_code,
                 'source_language': audio_lang_code,
                 'source_language_name': audio_language,
                 'source_script': source_script_name,
@@ -2076,22 +2113,24 @@ def makegloss():
             'target': output_language_name
         }
 
-        logger.debug('Translation model vals %s', translation_model)
-        logger.debug('Gloss model vals %s', gloss_model)
-        logger.debug('Access time %s', access_time)
+        logger.info('Translation model vals %s', translation_model)
+        logger.info('Gloss model vals %s', gloss_model)
+        logger.info('Access time %s', access_time)
 
-        gloss_utils.save_gloss_of_one_audio_file(transcriptions,
-                                                 activeprojectname,
-                                                 current_username,
-                                                 audio_filename,
-                                                 translation_model,
-                                                 gloss_model,
-                                                 transcription_type='sentence',
-                                                 save_for_user=save_for_user,
-                                                 hf_token=hf_token,
-                                                 audio_details=existing_audio_details,
-                                                 accessedOnTime=access_time,
-                                                 get_free_translation=free_translation
-                                                 )
-
-    return redirect(url_for('lifedata.transcription.home'))
+        _, glossed_data = gloss_utils.save_gloss_of_one_audio_file(transcriptions,
+                                                                   activeprojectname,
+                                                                   current_username,
+                                                                   audio_filename,
+                                                                   translation_model,
+                                                                   gloss_model,
+                                                                   transcription_type='sentence',
+                                                                   save_for_user=save_for_user,
+                                                                   hf_token=hf_token,
+                                                                   audio_details=existing_audio_details,
+                                                                   accessedOnTime=access_time,
+                                                                   get_free_translation=free_translation,
+                                                                   translate_tokens=translate_tokens,
+                                                                   boundary_ids=boundary_ids
+                                                                   )
+    return jsonify({"data": glossed_data[0]})
+    # return redirect(url_for('lifedata.transcription.home'))

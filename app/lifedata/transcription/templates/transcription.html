@@ -2,22 +2,22 @@
 {% extends "transcriptionlinks.html" %}
 
 {% block title %}
-  Transcription
+Transcription
 {% endblock title %}
 
 
 {% block styles %}
 {{super()}}
-  <link href="{{url_for('.static', filename='transcription.css')}}" rel="stylesheet" />
-  <link href="{{url_for('.static', filename='audiotranscription.css')}}" rel="stylesheet" />
-  <link href="{{url_for('.static', filename='transcriptionannotation.css')}}" rel="stylesheet" />
-  <link href="{{url_for('.static', filename='sidepanel.css')}}" rel="stylesheet" />
-  <link href="{{url_for('.static', filename='addnewspeaker.css')}}" rel="stylesheet" />
-  <link href="{{url_for('static', filename='loader.css')}}" rel="stylesheet" />
-  <link href="https://unpkg.com/dropzone@6.0.0-beta.1/dist/dropzone.css" rel="stylesheet" type="text/css" />
-  <script src='https://s.keyman.com/kmw/engine/16.0.147/keymanweb.js'></script>
-  <script src='https://s.keyman.com/kmw/engine/16.0.147/kmwuitoggle.js'></script>
-  <link href="{{url_for('.static', filename='recording.css')}}" rel="stylesheet" />
+<link href="{{url_for('.static', filename='transcription.css')}}" rel="stylesheet" />
+<link href="{{url_for('.static', filename='audiotranscription.css')}}" rel="stylesheet" />
+<link href="{{url_for('.static', filename='transcriptionannotation.css')}}" rel="stylesheet" />
+<link href="{{url_for('.static', filename='sidepanel.css')}}" rel="stylesheet" />
+<link href="{{url_for('.static', filename='addnewspeaker.css')}}" rel="stylesheet" />
+<link href="{{url_for('static', filename='loader.css')}}" rel="stylesheet" />
+<link href="https://unpkg.com/dropzone@6.0.0-beta.1/dist/dropzone.css" rel="stylesheet" type="text/css" />
+<script src='https://s.keyman.com/kmw/engine/16.0.147/keymanweb.js'></script>
+<script src='https://s.keyman.com/kmw/engine/16.0.147/kmwuitoggle.js'></script>
+<link href="{{url_for('.static', filename='recording.css')}}" rel="stylesheet" />
 {% endblock %}
 
 {% block app_content %}
@@ -35,7 +35,8 @@
             <path d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708z"/>
           </svg>
         </button>
-        {% if activespeakerid != '' %}
+        {# {% if activespeakerid != '' %} #}
+        {% if addedspeakerids|length > 0 %}
           <button type="button" id="recordeaudio" class="btn btn-dark" data-toggle="modal" data-target="#myRecordingModal">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-mic" viewBox="0 0 16 16">
               <path d="M3.5 6.5A.5.5 0 0 1 4 7v1a4 4 0 0 0 8 0V7a.5.5 0 0 1 1 0v1a5 5 0 0 1-4.5 4.975V15h3a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1h3v-2.025A5 5 0 0 1 3 8V7a.5.5 0 0 1 .5-.5"/>
@@ -165,7 +166,7 @@
   <div id="wave-spectrogram" style="display: none;"></div>
   <!-- <p id="regioninfo" class="text-danger">&nbsp;</p> -->
   <br>
-  <div class="row">    
+  <div class="row">
     <div class=" col-sm-4">
       AUDIO:<br>
       <button class="btn btn-danger" type="button" id="stopAudio" title="Stop Audio">
@@ -221,8 +222,8 @@
       <!-- <button class="btn btn-info" type="button" id="drawBoundary">
         Draw Boundaries
       </button> -->
-    </div>
-    <div class="col-sm-2 pull-right" id="sliderdivid">
+  </div>
+  <div class="col-sm-2 pull-right" id="sliderdivid">
 
       <!-- <input id="slider" data-action="zoom" type="range" min="0" max="5000" value="0" style="width: 90%"> -->
     </div>
@@ -240,34 +241,34 @@
       <div class="form-group tab-pane annotation1" id="annotation2"></div>
     </div>
 
-    <!-- <div class="row"> -->
-      <!-- <div class="form-group col-sm-6"> -->
-        <!-- <label for="start">Boundary Start Time</label> -->
-    <input type="hidden" class="form-control" id="start" name="start" readonly required/>
-      <!-- </div> -->
+  <!-- <div class="row"> -->
+  <!-- <div class="form-group col-sm-6"> -->
+  <!-- <label for="start">Boundary Start Time</label> -->
+  <input type="hidden" class="form-control" id="start" name="start" readonly required />
+  <!-- </div> -->
 
-      <!-- <div class="form-group col-sm-6"> -->
-        <!-- <label for="end">Boundary End Time</label> -->
-    <input type="hidden" class="form-control" id="end" name="end" readonly required />
-      <!-- </div> -->
-    <!-- </div> -->
-    <hr>
-    <div class="form-group comments" id="transcription-comments"></div>
+  <!-- <div class="form-group col-sm-6"> -->
+  <!-- <label for="end">Boundary End Time</label> -->
+  <input type="hidden" class="form-control" id="end" name="end" readonly required />
+  <!-- </div> -->
+  <!-- </div> -->
+  <hr>
+  <div class="form-group comments" id="transcription-comments"></div>
 
-    <!-- <div class="row">
+  <!-- <div class="row">
       <div class=" col-sm-3"></div>
       <div class=" col-sm-5 pull-right"> -->
-        <!-- <button type="submit" class="btn btn-success btn-lg pull-right" id="saveTempTranscription">Save This
+  <!-- <button type="submit" class="btn btn-success btn-lg pull-right" id="saveTempTranscription">Save This
           Boundary
         </button> -->
-      <!-- </div>
+  <!-- </div>
     </div> -->
-  </form>
-  <div class="form-group transcriptionpromptfield1" id="transcriptionpromptfield2"></div>
-  <!-- <br>
+</form>
+<div class="form-group transcriptionpromptfield1" id="transcriptionpromptfield2"></div>
+<!-- <br>
   <br>
   <br> -->
-  <!-- <div id="waveformControl">
+<!-- <div id="waveformControl">
     <button class="btn btn-info btn-lg" type="button" id="previous" onclick="previousAudio()">
       <span class="previousaudio glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
       Previous Audio
@@ -278,131 +279,133 @@
     </button>
   </div> -->
 
-  <!-- Progress Report Modal -->
-  <div class="modal fade" id="myProgressReportModal" tabindex="-1" role="dialog"
-    aria-labelledby="myProgressReportModalLabel">
-    <div class="modal-dialog modal-lg" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-              aria-hidden="true">&times;</span></button>
-          <h4 class="modal-title" id="myProgressReportModalLabel">Project Name: {{ projectName }}</h4>
-        </div>
-        <div class="modal-body">
-          <!-- <div class="col-xs-6"> -->
-          <input id="myInput" class="form-control" type="text" placeholder="Search">
-          <!-- </div> -->
-          <br>
-          <div class="row">
-            <div class="col-xs-12">
-              <div class="form-group">
-                <div class="progressreport"></div>
-              </div>
+<!-- Progress Report Modal -->
+<div class="modal fade" id="myProgressReportModal" tabindex="-1" role="dialog"
+  aria-labelledby="myProgressReportModalLabel">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+            aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myProgressReportModalLabel">Project Name: {{ projectName }}</h4>
+      </div>
+      <div class="modal-body">
+        <!-- <div class="col-xs-6"> -->
+        <input id="myInput" class="form-control" type="text" placeholder="Search">
+        <!-- </div> -->
+        <br>
+        <div class="row">
+          <div class="col-xs-12">
+            <div class="form-group">
+              <div class="progressreport"></div>
             </div>
           </div>
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
       </div>
     </div>
   </div>
+</div>
 
-  <!-- Add new Speaker Modal -->
-  <div class="modal fade" id="addNewSpeakerModal" tabindex="-1" role="dialog" aria-labelledby="addNewSpeakerModalLabel">
-    <div class="modal-dialog modal-lg" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-              aria-hidden="true">&times;</span></button>
-          <h4 class="modal-title" id="addNewSpeakerModalLabel">Project Name: {{ projectName }}</h4>
-        </div>
-        <div class="modal-body">
-          
-          <br>
-          <div class="row">
-            <div class="col-xs-12">
-              <div class="form-group">
-                <div id="addnewspeakerform"></div>
-              </div>
+<!-- Add new Speaker Modal -->
+<div class="modal fade" id="addNewSpeakerModal" tabindex="-1" role="dialog" aria-labelledby="addNewSpeakerModalLabel">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+            aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="addNewSpeakerModalLabel">Project Name: {{ projectName }}</h4>
+      </div>
+      <div class="modal-body">
+
+        <br>
+        <div class="row">
+          <div class="col-xs-12">
+            <div class="form-group">
+              <div id="addnewspeakerform"></div>
             </div>
           </div>
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
       </div>
     </div>
   </div>
+</div>
 
-  <!-- Update Audio Settings -->
-  <div class="modal fade" id="editAudioSettingsModal" tabindex="-1" role="dialog" aria-labelledby="editAudioSettingsModalLabel">
-    <div class="modal-dialog modal-lg" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-              aria-hidden="true">&times;</span></button>
-          <h4 class="modal-title" id="myUploadAudioModalLabel">Project Name: {{ projectName }}</h4>
-        </div>
-        <div class="modal-body">
-          <form name="newaudioupload" action="/lifedata/transcription/updateaudiosettings" method="POST"
-            enctype="multipart/form-data">
-            <!-- <div class="col upload"> -->
-            <!-- <strong>Audio Files from Source: </strong> -->
-            <div class="input-group col-md-12" id="settingsaudiofilename-divid">
-              <label for="settingsaudiofileid">Filename: </label><br />
-              <input class="col-md-6" type="text" id="settingsaudiofileid" name="settingsaudiofile" readonly>
-            </div>
-            <hr>
-            <div class="input-group col-md-12 upload" id="speakeridsettings-divid">              
-              <label for="speakeridsettingsdropdown">Edit Audio Sources: </label>
-              <select class="custom-select custom-select-sm" id="speakeridsettingsdropdown" name="speakerIdEdit"
-                multiple="multiple" style="width:80%" required>
-                <!-- <option selected disabled></option> -->
-                <!-- {% for d in speakerids %}
+<!-- Update Audio Settings -->
+<div class="modal fade" id="editAudioSettingsModal" tabindex="-1" role="dialog"
+  aria-labelledby="editAudioSettingsModalLabel">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+            aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myUploadAudioModalLabel">Project Name: {{ projectName }}</h4>
+      </div>
+      <div class="modal-body">
+        <form name="newaudioupload" action="/lifedata/transcription/updateaudiosettings" method="POST"
+          enctype="multipart/form-data">
+          <!-- <div class="col upload"> -->
+          <!-- <strong>Audio Files from Source: </strong> -->
+          <div class="input-group col-md-12" id="settingsaudiofilename-divid">
+            <label for="settingsaudiofileid">Filename: </label><br />
+            <input class="col-md-6" type="text" id="settingsaudiofileid" name="settingsaudiofile" readonly>
+          </div>
+          <hr>
+          <div class="input-group col-md-12 upload" id="speakeridsettings-divid">
+            <label for="speakeridsettingsdropdown">Edit Audio Sources: </label>
+            <select class="custom-select custom-select-sm" id="speakeridsettingsdropdown" name="speakerIdEdit"
+              multiple="multiple" style="width:80%" required>
+              <!-- <option selected disabled></option> -->
+              <!-- {% for d in speakerids %}
                 {{ d }}                
                 <option value="{{ d }}" selected>{{ d }}</option>
                 {% endfor %} -->
-              </select>              
-            </div>
-            <hr />
-            
-            <div class="input-group" id="audioupload-divid">
-              <input class="btn btn-primary uploadbtn" type="submit" value="Submit">
-            </div>
-            </form>
+            </select>
           </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+          <hr />
+
+          <div class="input-group" id="audioupload-divid">
+            <input class="btn btn-primary uploadbtn" type="submit" value="Submit">
           </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
       </div>
     </div>
   </div>
+</div>
 
-  <!-- Upload Audio Modal -->
-  <div class="modal fade" id="myUploadAudioModal" tabindex="-1" role="dialog" aria-labelledby="myUploadAudioModalLabel">
-    <div class="modal-dialog modal-lg" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-              aria-hidden="true">&times;</span></button>
-          <h4 class="modal-title" id="myUploadAudioModalLabel">Project Name: {{ projectName }}</h4>
-        </div>
-        <div class="modal-body">
-          <form id="newaudiouploadId" name="newaudioupload" action="/lifedata/transcription/uploadaudiofiles" method="POST" enctype="multipart/form-data">
-            <!-- <div class="col upload"> -->
-              <!-- <strong>Audio Files from Source: </strong> -->
-              <ul class="nav nav-tabs" id="tabContent">
-                <li class="active"><a href="#basicUpload" data-toggle="tab">Upload</a></li>
-                <li><a href="#advSetup" data-toggle="tab">Advanced</a></li>                
-              </ul>
+<!-- Upload Audio Modal -->
+<div class="modal fade" id="myUploadAudioModal" tabindex="-1" role="dialog" aria-labelledby="myUploadAudioModalLabel">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+            aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myUploadAudioModalLabel">Project Name: {{ projectName }}</h4>
+      </div>
+      <div class="modal-body">
+        <form id="newaudiouploadId" name="newaudioupload" action="/lifedata/transcription/uploadaudiofiles"
+          method="POST" enctype="multipart/form-data">
+          <!-- <div class="col upload"> -->
+          <!-- <strong>Audio Files from Source: </strong> -->
+          <ul class="nav nav-tabs" id="tabContent">
+            <li class="active"><a href="#basicUpload" data-toggle="tab">Upload</a></li>
+            <li><a href="#advSetup" data-toggle="tab">Advanced</a></li>
+          </ul>
 
-            <div class="tab-content">
-              
-              <!-- <div class="input-group col-md-6" id="audiobrowse-classid">
+          <div class="tab-content">
+
+            <!-- <div class="input-group col-md-6" id="audiobrowse-classid">
                 <input type="file" id="audiofile" name="audiofile" required>
               </div> -->
-              <!-- <br/>
+            <!-- <br/>
               <div class="input-group col-md-12" id="uploadparameters-optimise-divid">
                 <label>Optimise Uploaded Audio For: </label><br/>
                 <input type="radio" id="uploadparameters-optimiseforflid" name="uploadparameters-optimisefor" value="True" checked>
@@ -411,77 +414,85 @@
                 <label for="uploadparameters-optimiseforwaveid">High-quality waveform</label>
                 
               </div> -->
-              
-              <hr>
-              <div class="tab-pane" id="advSetup">
+
+            <hr>
+            <div class="tab-pane" id="advSetup">
 
               <h4>Boundary Options:</h4>
-              <i>Boundaries are anyway created if your file size is greater than the 'maximum file duration' specified below - in that case checking this option will give 
-                you an opportunity to select the parameters - otherwise boundaries are made with default parameter Values</i>
-              
+              <i>Boundaries are anyway created if your file size is greater than the 'maximum file duration' specified
+                below - in that case checking this option will give
+                you an opportunity to select the parameters - otherwise boundaries are made with default parameter
+                Values</i>
+
               <div class="input-group col-md-4" id="uploadparameters-vad-divid">
-              <input type="checkbox" id="uploadparameters-vadid" name="uploadparameters-vad">
-              <label for="uploadparameters-vadid">Make Boundaries</label><br/>
-              </div>  
-              <div class="input-group col-md-8" id="vad-algorithms-divid">                
-              
+                <input type="checkbox" id="uploadparameters-vadid" name="uploadparameters-vad">
+                <label for="uploadparameters-vadid">Make Boundaries</label><br />
               </div>
-              <div class="input-group col-md-8" id="uploadparameters-boundarypause-divid" style="display: none;" aria-disabled="true">              
-              <!-- <label title="Select a VAD Algorithm" for="vad-algorithms-divid">VAD Model</label> -->
-              <label for="vadalgorithmdropdown">VAD Algorithm: </label>
-              <select class="custom-select custom-select-sm" id="vadalgorithmdropdown" name="vadAlgorithm"
-                style="width:80%">
-                <!-- <option selected disabled></option> -->
-                <option value="vadsilero" selected>Silero VAD</option>
-                <option value="pyanote">Pyannote</option>
-              </select>              
-              
+              <div class="input-group col-md-8" id="vad-algorithms-divid">
+
+              </div>
+              <div class="input-group col-md-8" id="uploadparameters-boundarypause-divid" style="display: none;"
+                aria-disabled="true">
+                <!-- <label title="Select a VAD Algorithm" for="vad-algorithms-divid">VAD Model</label> -->
+                <label for="vadalgorithmdropdown">VAD Algorithm: </label>
+                <select class="custom-select custom-select-sm" id="vadalgorithmdropdown" name="vadAlgorithm"
+                  style="width:80%">
+                  <!-- <option selected disabled></option> -->
+                  <option value="vadsilero" selected>Silero VAD</option>
+                  <option value="pyanote">Pyannote</option>
+                </select>
+
                 <label title="It defines the minimum value of pause at which a new boundary is made"
-                for="uploadparameters-boundarypauseid`">Boundary Pause Threshold (between 0.00001-10.0 seconds) </label>
+                  for="uploadparameters-boundarypauseid`">Boundary Pause Threshold (between 0.00001-10.0 seconds)
+                </label>
                 <!-- <br /> Suggested Values: <i>For sentence: 0.3; For words: 0.01; For phones: 0.001</i> -->
-                <br/>
-              
-              <input type="number" name="boundaryPause" id="uploadparameters-boundarypauseid" min="0.00001" max="10.0" step="0.00001"
-                  placeholder="Value between 0.00001 to 10.0" value="1.0" disabled>
-              <br>
-              <label title="It defines the minimum length of a boundary - smaller boundaries are merged to the next or previous boundaries"
-                    for="uploadparameters-minboundarysizeid">Minimum Boundary Size (between 0.5-10.0 seconds) </label><br>
-              <input type="number" name="minBoundarySize" id="uploadparameters-minboundarysizeid" min="0.5" max="10.0" step="0.5"
-                placeholder="Value between 0.5 to 10.0" value="2.0" disabled>
+                <br />
+
+                <input type="number" name="boundaryPause" id="uploadparameters-boundarypauseid" min="0.00001" max="10.0"
+                  step="0.00001" placeholder="Value between 0.00001 to 10.0" value="1.0" disabled>
+                <br>
+                <label
+                  title="It defines the minimum length of a boundary - smaller boundaries are merged to the next or previous boundaries"
+                  for="uploadparameters-minboundarysizeid">Minimum Boundary Size (between 0.5-10.0 seconds) </label><br>
+                <input type="number" name="minBoundarySize" id="uploadparameters-minboundarysizeid" min="0.5" max="10.0"
+                  step="0.5" placeholder="Value between 0.5 to 10.0" value="2.0" disabled>
               </div>
-              
-              <hr/>
-              
+
+              <hr />
+
               <h4>File Options:</h4>
-              
+
               <div class="input-group col-md-8" id="uploadparameters-maxFileSeize-divid">
-              <label title="It defines the maximum size of one audio file to be generated after splitting"
-                for="uploadparameters-splitpausedropdown">Maximum File Duration (between 60-150 seconds): </label><br/>
-              <input type="number" name="maxFileSize" id="uploadparameters-maxfilesizeid" min="60" max="150"
-                placeholder="Value between 60 to 150" value="150"><br/><br/>            
+                <label title="It defines the maximum size of one audio file to be generated after splitting"
+                  for="uploadparameters-splitpausedropdown">Maximum File Duration (between 60-150 seconds):
+                </label><br />
+                <input type="number" name="maxFileSize" id="uploadparameters-maxfilesizeid" min="60" max="150"
+                  placeholder="Value between 60 to 150" value="150"><br /><br />
               </div>
-<!-- sliceOffsetValue -->
+              <!-- sliceOffsetValue -->
               <div class="input-group col-md-8" id="uploadparameters-filesplitthreshold-divid">
-              <label for="uploadparameters-filesplitthresholdid">File Split Pause Threshold (between 0.1-5.0 seconds):</label><br>
-              <input type="number" name="fileSplitThreshold" id="uploadparameters-filesplitthresholdid" min="0.1" max="5.0" step="0.1" value="5.0"
-                placeholder="Value between 0.1 to 5.0">
+                <label for="uploadparameters-filesplitthresholdid">File Split Pause Threshold (between 0.1-5.0
+                  seconds):</label><br>
+                <input type="number" name="fileSplitThreshold" id="uploadparameters-filesplitthresholdid" min="0.1"
+                  max="5.0" step="0.1" value="5.0" placeholder="Value between 0.1 to 5.0">
               </div>
 
               <div class="input-group col-md-8" id="uploadparameters-sliceOffsetValue-divid">
-                <label for="uploadparameters-sliceOffsetValueid">Overlap across Split Audios (between 0.01-10.0 seconds):</label><br>
-                <input type="number" name="sliceOffsetValue" id="uploadparameters-sliceOffsetValueid" min="0.01" max="10.0"
-                  step="0.01" value="0.1" placeholder="Value between 0.01 to 10.0">
+                <label for="uploadparameters-sliceOffsetValueid">Overlap across Split Audios (between 0.01-10.0
+                  seconds):</label><br>
+                <input type="number" name="sliceOffsetValue" id="uploadparameters-sliceOffsetValueid" min="0.01"
+                  max="10.0" step="0.01" value="0.1" placeholder="Value between 0.01 to 10.0">
               </div>
-              <hr/>
-              </div>
+              <hr />
+            </div>
 
-              <div class="tab-pane active" id="basicUpload">
+            <div class="tab-pane active" id="basicUpload">
               <div id="questionnairederived" class="questionnairederivedclass"></div>
               <h4>Select File:</h4>
               <div class="input-group col-md-12 upload" id="speakeriduploaddropdown-divid">
                 <label for="speakeriduploaddropdown">Audio Source: </label>
-                <select class="custom-select custom-select-sm" id="speakeriduploaddropdown" name="speakerId" multiple="multiple"
-                  style="width:80%" required>
+                <select class="custom-select custom-select-sm" id="speakeriduploaddropdown" name="speakerId"
+                  multiple="multiple" style="width:80%" required>
                   <!-- <option selected disabled></option> -->
                   {% for d in addedspeakerids %}
                   <option value="{{ d }}">{{ d }}</option>
@@ -494,21 +505,21 @@
               <!-- <div class="input-group" id="audioupload-divid">
               <button id="uploadaudiofilebtn" class="btn btn-primary uploadbtn" type="submit" value="Upload Audio File">Upload Audio</button>
               </div> -->
-              </div>
-            <!-- </div> -->
             </div>
-          </form>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-        </div>
+            <!-- </div> -->
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
       </div>
     </div>
   </div>
+</div>
 
-  <!-- Download Transcription Modal -->
-  <div id="idTranscriptionDownloadModal"></div>
-  <!-- <div class="modal fade" id="myDownloadTranscriptionModal" tabindex="-1" role="dialog"
+<!-- Download Transcription Modal -->
+<div id="idTranscriptionDownloadModal"></div>
+<!-- <div class="modal fade" id="myDownloadTranscriptionModal" tabindex="-1" role="dialog"
     aria-labelledby="myDownloadTranscriptionModalLabel">
     <div class="modal-dialog modal-lg" role="document">
       <div class="modal-content">
@@ -570,140 +581,167 @@
   </div> -->
 
 
-  <!-- Make Boundary Modal -->
-  <div class="modal fade" id="myMakeBoundaryModal" tabindex="-1" role="dialog" aria-labelledby="myMakeBoundaryModalLabel">
-    <div class="modal-dialog modal-lg" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-              aria-hidden="true">&times;</span></button>
-          <h4 class="modal-title" id="myMakeBoundaryModalLabel">Project Name: {{ projectName }}</h4>
-        </div>
-        <div class="modal-body">
-          <form name="makeboundary" action="/lifedata/transcription/makeboundary" method="POST" enctype="multipart/form-data">
-            <!-- <div class="col upload"> -->
-            <!-- <strong>Audio Files from Source: </strong> -->
-            <h4>Make Boundaries for this file </h4>
-            <i><font color="red">It will overwrite any boundaries made earlier using this model</font></i>
-            <input type="hidden" id="boundaryAccessedOnTime" name="accessedOnTime" value="">
-            <div class="input-group col-md-12 upload" id="  ">
-              <label for="makeboundaryspeakeriduploaddropdown">Source: </label><br />
-              <input class="col-md-6" type="text" id="makeboundaryspeakeriduploaddropdown" name="speakerId" value="" readonly>
-              <!-- <select class="custom-select custom-select-sm" id="speakeriduploaddropdown" name="speakerId" -->
-                <!-- style="width:30%" readonly> -->
-                <!-- <option selected disabled></option> -->
-                <!-- {% for d in addedspeakerids %}
+<!-- Make Boundary Modal -->
+<div class="modal fade" id="myMakeBoundaryModal" tabindex="-1" role="dialog" aria-labelledby="myMakeBoundaryModalLabel">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+            aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myMakeBoundaryModalLabel">Project Name: {{ projectName }}</h4>
+      </div>
+      <div class="modal-body">
+        <form name="makeboundary" action="/lifedata/transcription/makeboundary" method="POST"
+          enctype="multipart/form-data">
+          <!-- <div class="col upload"> -->
+          <!-- <strong>Audio Files from Source: </strong> -->
+          <h4>Make Boundaries for this file </h4>
+          <i>
+            <font color="red">It will overwrite any boundaries made earlier using this model</font>
+          </i>
+          <input type="hidden" id="boundaryAccessedOnTime" name="accessedOnTime" value="">
+          <div class="input-group col-md-12 upload" id="  ">
+            <label for="makeboundaryspeakeriduploaddropdown">Source: </label><br />
+            <input class="col-md-6" type="text" id="makeboundaryspeakeriduploaddropdown" name="speakerId" value=""
+              readonly>
+            <!-- <select class="custom-select custom-select-sm" id="speakeriduploaddropdown" name="speakerId" -->
+            <!-- style="width:30%" readonly> -->
+            <!-- <option selected disabled></option> -->
+            <!-- {% for d in addedspeakerids %}
                 <option value="{{ d }}">{{ d }}</option>
                 {% endfor %}
               </select> -->
-            </div>
-            <br>
-            <div class="input-group col-md-12" id="audiofilename-divid">
-              <label for="audiofile">Filename: </label><br/>
-              <input class="col-md-6" type="text" id="makeboundaryaudiofileid" name="audiofile" readonly>
-            </div>
-            <br>
-            <div class="input-group col-md-12" id="audioduration-divid">
-              <label for="makeboundaryaudiodurationid">Audio Duration: </label><br />
-              <input class="col-md-6" type="text" id="makeboundaryaudiodurationid" name="audioduration" readonly>
-            </div>
-            <hr>
-            <label for="vadalgorithmdropdown">VAD Algorithm: </label>
-            <select class="custom-select custom-select-sm" id="vadalgorithmboundarydropdown" name="vadAlgorithm-boundary" style="width:80%">
-              <!-- <option selected disabled></option> -->
-              <option value="vadsilero" selected>Silero VAD</option>
-              <option value="pyanote">Pyannote</option>
-            </select>
-            <div class="input-group col-md-8" id="uploadparameters-boundarypause-divid" style="display: block;"
-              aria-disabled="true">
-              <label title="It defines the minimum value of pause at which a new boundary is made"
-                for="uploadparameters-boundarypause">Boundary Pause Threshold (between 0.00001-10.0 seconds)
-              </label><br /> Suggested Values: <i>For sentence: 0.3; For words: 0.01; For phones: 0.001</i><br />
-  
-              <input type="number" name="boundaryPause" id="uploadparameters-boundarypauseid" min="0.00001" max="10.0"
-                step="0.00001" placeholder="Value between 0.00001 to 10.0" value="0.3" required><br/><br>
+          </div>
+          <br>
+          <div class="input-group col-md-12" id="audiofilename-divid">
+            <label for="audiofile">Filename: </label><br />
+            <input class="col-md-6" type="text" id="makeboundaryaudiofileid" name="audiofile" readonly>
+          </div>
+          <br>
+          <div class="input-group col-md-12" id="audioduration-divid">
+            <label for="makeboundaryaudiodurationid">Audio Duration: </label><br />
+            <input class="col-md-6" type="text" id="makeboundaryaudiodurationid" name="audioduration" readonly>
+          </div>
+          <hr>
+          <label for="vadalgorithmdropdown">VAD Algorithm: </label>
+          <select class="custom-select custom-select-sm" id="vadalgorithmboundarydropdown" name="vadAlgorithm-boundary"
+            style="width:80%">
+            <!-- <option selected disabled></option> -->
+            <option value="vadsilero" selected>Silero VAD</option>
+            <option value="pyanote">Pyannote</option>
+          </select>
+          <div class="input-group col-md-8" id="uploadparameters-boundarypause-divid" style="display: block;"
+            aria-disabled="true">
+            <label title="It defines the minimum value of pause at which a new boundary is made"
+              for="uploadparameters-boundarypause">Boundary Pause Threshold (between 0.00001-10.0 seconds)
+            </label><br /> Suggested Values: <i>For sentence: 0.3; For words: 0.01; For phones: 0.001</i><br />
 
-              <label
-                title="It defines the minimum length of a boundary - smaller boundaries are merged to the next or previous boundaries"
-                for="uploadparameters-minboundarysizeid">Minimum Boundary Size (between 0.5-10.0 seconds) </label>
-              <input type="number" name="minBoundarySize" id="uploadparameters-minboundarysizeid" min="0.5" max="10.0" step="0.5"
-                placeholder="Value between 0.5 to 10.0" value="2.0"><br/>
-            </div>
+            <input type="number" name="boundaryPause" id="uploadparameters-boundarypauseid" min="0.00001" max="10.0"
+              step="0.00001" placeholder="Value between 0.00001 to 10.0" value="0.3" required><br /><br>
 
-            <div class="input-group col-md-8" id="overwrite-my-boundaries-divid">
-              <input type="checkbox" id="do-diarisationid" name="do-diarisation" checked>
-              <label for="do-diarisationid">Infer Speakers</label>
-              <input type="checkbox" id="overwrite-my-boundariesid" name="overwrite-my-boundaries" checked>
-              <label for="overwrite-my-boundariesid">Overwrite my Boundaries</label>
-              
-            </div>
+            <label
+              title="It defines the minimum length of a boundary - smaller boundaries are merged to the next or previous boundaries"
+              for="uploadparameters-minboundarysizeid">Minimum Boundary Size (between 0.5-10.0 seconds) </label>
+            <input type="number" name="minBoundarySize" id="uploadparameters-minboundarysizeid" min="0.5" max="10.0"
+              step="0.5" placeholder="Value between 0.5 to 10.0" value="2.0"><br />
+          </div>
 
-            <!-- <div class="input-group col-md-4" id="createaudiojson-divid">
+          <div class="input-group col-md-8" id="overwrite-my-boundaries-divid">
+            <input type="checkbox" id="do-diarisationid" name="do-diarisation" checked>
+            <label for="do-diarisationid">Infer Speakers</label>
+            <input type="checkbox" id="overwrite-my-boundariesid" name="overwrite-my-boundaries" checked>
+            <label for="overwrite-my-boundariesid">Overwrite my Boundaries</label>
+
+          </div>
+
+          <!-- <div class="input-group col-md-4" id="createaudiojson-divid">
               <input type="checkbox" id="createaudiojsonid" name="createaudiojson">
               <label for="uploadparameters-vadid">Create Audio JSON (for faster loading - already created</label>
             </div> -->
-  
-            <hr>
-            <div class="input-group" id="audioupload-divid">
-              <input id="makeboundaries" class="btn btn-primary uploadbtn" type="submit" value="Make Boundaries">
-            </div>
-            <!-- </div> -->
-          </form>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-        </div>
+
+          <hr>
+          <div class="input-group" id="audioupload-divid">
+            <input id="makeboundaries" class="btn btn-primary uploadbtn" type="submit" value="Make Boundaries">
+          </div>
+          <!-- </div> -->
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
       </div>
     </div>
   </div>
+</div>
 
-  <!-- Automation Modal -->
-  <div class="modal fade" id="myAutomationModal" tabindex="-1" role="dialog" aria-labelledby="myAutomationModalLabel">
-    <div class="modal-dialog modal-lg" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-              aria-hidden="true">&times;</span></button>
-          <h4 class="modal-title" id="myAutomationModalLabel">Project Name: {{ projectName }}</h4>
+<!-- Automation Modal -->
+<div class="modal fade" id="myAutomationModal" tabindex="-1" role="dialog" aria-labelledby="myAutomationModalLabel">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+            aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myAutomationModalLabel">Project Name: {{ projectName }}</h4>
+      </div>
+      <div class="modal-body">        
+        <div class="input-group col-md-12" id="taskTypeSelect2-divid">
+          <label for="taskTypeSelect2Id">Select Task: </label><br />
+          <select class="custom-select custom-select-sm" id="taskTypeSelect2Id" name="taskTypeSelect2"
+            style="width: 50%;">
+          </select>
+          <input type="hidden" name="clickSource" id="clickSourceId" value=""/>
         </div>
-        <div class="modal-body">          
-          <div class="input-group col-md-12" id="taskTypeSelect2-divid">
-            <label for="taskTypeSelect2Id">Select Task: </label><br />
-            <select class="custom-select custom-select-sm" id="taskTypeSelect2Id" name="taskTypeSelect2"
-              style="width: 50%;">
-            </select>            
-          </div>
 
-          <div class="gloss-body" id="autoGloss-divid" style="display: none;">
-            <form name="makegloss" action="/lifedata/makegloss" method="POST" enctype="multipart/form-data">
-              <!-- <div class="col upload"> -->
-              <!-- <strong>Audio Files from Source: </strong> -->
-              <input type="hidden" id="glossingAccessedOnTime" name="accessedOnTime" value="">
-              <div class="input-group col-md-12 upload" id="  ">
-                <label for="glossingspeakeriduploaddropdown">Data Source: </label><br />
-                <input class="col-md-6" type="text" id="glossingspeakeriduploaddropdown" name="glossingSpeakerId" value=""
-                  readonly>
-          
-              </div>
-              <div class="input-group col-md-12" id="glossingaudiofilename-divid">
-                <label for="glossingaudiofileid">Filename: </label><br />
-                <input class="col-md-6" type="text" id="glossingaudiofileid" name="glossingfile" readonly>
-              </div>
-              
-              <hr />
-              <h4>Interlinear Glossing Settings </h4>
-              <div class="input-group col-md-12 modelSource" id="glossingselectdivid">
-                <label for="myglossingModelListSelect2">Glossing Model: </label><br />
-                <select class="custom-select custom-select-sm" id="myglossingModelListSelect2" name="glossModelId" style="width: 50%;">
-                </select>
-              </div>
+        <div class="gloss-body" id="autoGloss-divid" style="display: none;">
+          <form name="makegloss" id="makeglossformid" action="/lifedata/makegloss" method="POST" enctype="multipart/form-data">
+            <!-- <div class="col upload"> -->
+            <!-- <strong>Audio Files from Source: </strong> -->
+            <input type="hidden" id="glossingAccessedOnTime" name="accessedOnTime" value="">
+            <div class="input-group col-md-12 upload" id="  ">
+              <label for="glossingspeakeriduploaddropdown">Data Source: </label><br />
+              <input class="col-md-6" type="text" id="glossingspeakeriduploaddropdown" name="glossingSpeakerId" value=""
+                readonly>
 
-              <hr />              
-              <h4>Free Translation Settings </h4>
+            </div>
+            <div class="input-group col-md-12" id="glossingaudiofilename-divid">
+              <label for="glossingaudiofileid">Filename: </label><br />
+              <input class="col-md-6" type="text" id="glossingaudiofileid" name="glossingfile" readonly>
+            </div>
+
+            <hr />
+            <h4>Interlinear Glossing Settings </h4>
+            <div class="input-group col-md-8" id="get-gloss-divid">
+              <input type="checkbox" id="get-translationid" name="get-translation" checked>
+              <label for="get-translationid">Get Word-by-word Translation</label> &nbsp;&nbsp;&nbsp;
+              <input type="checkbox" id="get-glossid" name="get-gloss" checked>
+              <label for="get-glossid">Get Grammatical Glosses</label>
+            </div>
+            <hr>
+            <div class="input-group col-md-12 glossModelLang" id="glossmodellangselectdivid">
+              <label for="myglossModelLangListSelect2">Audio Language: </label><br />
+              <select class="custom-select custom-select-sm" id="myglossModelLangListSelect2" name="glossModelLang"
+                style="width: 50%;">
+              </select>
+            </div>
+            <br />
+            <div class="input-group col-md-12" id="processBoundariesGlossSelect2-divid">
+              <label for="processBoundariesGlossSelect2Id">Boundary ID: </label><br />
+              <select class="custom-select custom-select-sm" id="processBoundariesGlossSelect2Id"
+                name="processBoundariesGloss" multiple="multiple" style="width: 50%;" required>
+              </select>
+            </div>
+            <div class="input-group col-md-12 modelSource" id="glossingselectdivid">
+              <label for="myglossingModelListSelect2">Gloss Using: </label><br />
+              <select class="custom-select custom-select-sm" id="myglossingModelListSelect2" name="glossModelId"
+                style="width: 50%;">
+              </select>
+            </div>
+            <hr />
+            <!-- <h4>Word-by-word Translation Settings </h4> -->
+            <div id="glosstranslationsettingsid" style="display: block;">
               <div class="input-group col-md-12" id="freetranslateUsingSelect2-divid">
                 <label for="freetranslateUsingSelect2Id">Translate Using: </label><br />
-                <select class="custom-select custom-select-sm" id="freetranslateUsingSelect2Id" name="translateUsingSelect2"
-                  style="width: 50%;">
+                <select class="custom-select custom-select-sm" id="freetranslateUsingSelect2Id"
+                  name="translateUsingSelect2" style="width: 50%;">
                 </select>
                 <br>
                 *<i>
@@ -719,15 +757,15 @@
               </div>
               <div class="input-group col-md-12 modelSource" id="freetranslationselectdivid">
                 <label for="mytranslationModelListSelect2">Model: </label><br />
-                <select class="custom-select custom-select-sm" id="myfreetranslationModelListSelect2" name="translationModelId"
-                  style="width: 50%;">
+                <select class="custom-select custom-select-sm" id="myfreetranslationModelListSelect2"
+                  name="translationModelId" style="width: 50%;">
                 </select>
               </div>
               <hr>
               <div class="input-group col-md-12 sourceScript" id="freetranslationsourcedivid">
                 <label for="mytranslationSourceScriptListSelect2">Source Script: </label><br />
-                <select class="custom-select custom-select-sm" id="myfreetranslationSourceScriptListSelect2" name="sourceScriptName"
-                  style="width: 50%;">
+                <select class="custom-select custom-select-sm" id="myfreetranslationSourceScriptListSelect2"
+                  name="sourceScriptName" style="width: 50%;">
                 </select>
               </div>
               <hr>
@@ -737,92 +775,94 @@
                   name="targetLanguageName" style="width: 50%;">
                 </select>
               </div>
-              <hr>
               <div class="input-group col-md-8" id="overwrite-my-gloss-divid">
-                <input type="checkbox" id="overwrite-my-freetranslationid" name="overwrite-my-freetranslation">
-                <label for="overwrite-my-freetranslationid">Replace Existing Translation</label> &nbsp;&nbsp;&nbsp;
                 <input type="checkbox" id="overwrite-my-glossid" name="overwrite-my-gloss" checked>
                 <label for="overwrite-my-glossid">Overwrite my Gloss</label>
               </div>
               <hr>
-              <div class="input-group" id="dogloss-divid">
-                <input class="btn btn-primary glossbtn" id="glossbtnid" type="submit" value="Gloss">
-              </div>
-              <!-- </div> -->
-            </form>
-          </div>
-
-          <div class="transcription-body" id="autoTranslation-divid" style="display: none;">
-            <form name="maketranscription" action="/lifedata/maketranslation" method="POST"
-              enctype="multipart/form-data">
-              <!-- <div class="col upload"> -->
-              <!-- <strong>Audio Files from Source: </strong> -->
-              <h4>Translate the Text </h4>
-              <input type="hidden" id="translationAccessedOnTime" name="accessedOnTime" value="">
-              <div class="input-group col-md-12 upload" id="  ">
-                <label for="translationspeakeriduploaddropdown">Data Source: </label><br />
-                <input class="col-md-6" type="text" id="translationspeakeriduploaddropdown" name="translationSpeakerId" value=""
-                  readonly>
-              
-              </div>
-              <div class="input-group col-md-12" id="translationaudiofilename-divid">
-                <label for="audiofile">Filename: </label><br />
-                <input class="col-md-6" type="text" id="translationaudiofileid" name="translationfile" readonly>
-              </div>
-              <hr>
-              <div class="input-group col-md-12" id="translateUsingSelect2-divid">
-                <label for="translateUsingSelect2Id">Translate Using: </label><br />
-                <select class="custom-select custom-select-sm" id="translateUsingSelect2Id" name="translateUsingSelect2"
-                  style="width: 50%;">
-                </select>
-                <br>
-                *<i>
-                  <font color="red"> HF Inference API sends the data to HuggingFace server for inference.
-                  </font>
-                </i>
-              </div>
-              <div class="input-group col-md-12" id="hfinferenceagree-divid">
-                <input type="checkbox" id="hfinferenceagreeid" name="hfinferenceagree">
-                <label for="hfinferenceagreeid"> I agree to HuggingFace Privacy Policy for using HF Inference API.
-                </label>
-                <br>
-              </div>
-              <hr />
-              
-              <div class="input-group col-md-12 modelSource" id="translationselectdivid">
-                <label for="mytranslationModelListSelect2">Model: </label><br />
-                <select class="custom-select custom-select-sm" id="mytranslationModelListSelect2" name="modelId" style="width: 50%;">              
-                </select>
-              </div>
-              <hr>
-              <div class="input-group col-md-12 sourceScript" id="translationsourcedivid">
-                <label for="mytranslationSourceScriptListSelect2">Source Script: </label><br />
-                <select class="custom-select custom-select-sm" id="mytranslationSourceScriptListSelect2" name="sourceScriptName"
-                  style="width: 50%;">
-                </select>
-              </div>
-              <hr>
-              <div class="input-group col-md-12 targetLanguage" id="translationtargetlanguagedivid">
-                <label for="mytranslationTargetLanguageListSelect2">Target Language(s): </label><br />
-                <select class="custom-select custom-select-sm" id="mytranslationTargetLanguageListSelect2" name="targetLanguageName"
-                  style="width: 50%;">
-                </select>
-              </div>
-              <hr>
-              <div class="input-group col-md-8" id="overwrite-my-translations-divid">
-                <input type="checkbox" id="overwrite-my-translationsid" name="overwrite-my-translations" checked>
-                <label for="overwrite-my-translationsid">Overwrite my Translations</label>
-              </div>
-              <hr>
-              <div class="input-group" id="dotranslation-divid">
-                <input class="btn btn-primary translationbtn" id="translatebtnid" type="submit" value="Translate">
-              </div>
-              <!-- </div> -->
-              </form>
             </div>
+            <div class="input-group" id="dogloss-divid">
+              <input class="btn btn-primary glossbtn" id="glossbtnid" type="button" value="Gloss">
+            </div>
+            <!-- </div> -->
+          </form>
+        </div>
 
-          <div class="transcription-body" id="autoTranscription-divid" style="display: none;">
-          <form name="maketranscription" action="/lifedata/transcription/maketranscription" method="POST"
+        <div class="translation-body" id="autoTranslation-divid" style="display: none;">
+          <form name="maketranslation" id="maketranslationformid" action="/lifedata/maketranslation" method="POST" enctype="multipart/form-data">
+            <!-- <div class="col upload"> -->
+            <!-- <strong>Audio Files from Source: </strong> -->
+            <h4>Translate the Text </h4>
+            <input type="hidden" id="translationAccessedOnTime" name="accessedOnTime" value="">
+            <div class="input-group col-md-12 upload" id="  ">
+              <label for="translationspeakeriduploaddropdown">Data Source: </label><br />
+              <input class="col-md-6" type="text" id="translationspeakeriduploaddropdown" name="translationSpeakerId"
+                value="" readonly>
+            </div>
+            <div class="input-group col-md-12" id="translationaudiofilename-divid">
+              <label for="audiofile">Filename: </label><br />
+              <input class="col-md-6" type="text" id="translationaudiofileid" name="translationfile" readonly>
+            </div>
+            <hr>
+            <div class="input-group col-md-12" id="translateUsingSelect2-divid">
+              <label for="translateUsingSelect2Id">Translate Using: </label><br />
+              <select class="custom-select custom-select-sm" id="translateUsingSelect2Id" name="translateUsingSelect2"
+                style="width: 50%;">
+              </select>
+              <br>
+              *<i>
+                <font color="red"> HF Inference API sends the data to HuggingFace server for inference.
+                </font>
+              </i>
+            </div>
+            <div class="input-group col-md-12" id="hfinferenceagree-divid">
+              <input type="checkbox" id="hfinferenceagreeid" name="hfinferenceagree">
+              <label for="hfinferenceagreeid"> I agree to HuggingFace Privacy Policy for using HF Inference API.
+              </label>
+              <br>
+            </div>
+            <hr />
+            <div class="input-group col-md-12" id="processBoundariesTranslationSelect2-divid">
+              <label for="processBoundariesTranslationSelect2Id">Boundary ID: </label><br />
+              <select class="custom-select custom-select-sm" id="processBoundariesTranslationSelect2Id" name="processBoundariesTranslation"
+                multiple="multiple" style="width: 50%;" required>
+              </select>
+            </div>
+            <div class="input-group col-md-12 modelSource" id="translationselectdivid">
+              <label for="mytranslationModelListSelect2">Model: </label><br />
+              <select class="custom-select custom-select-sm" id="mytranslationModelListSelect2" name="modelId"
+                style="width: 50%;">
+              </select>
+            </div>
+            <hr>
+            <div class="input-group col-md-12 sourceScript" id="translationsourcedivid">
+              <label for="mytranslationSourceScriptListSelect2">Source Script: </label><br />
+              <select class="custom-select custom-select-sm" id="mytranslationSourceScriptListSelect2"
+                name="sourceScriptName" style="width: 50%;">
+              </select>
+            </div>
+            <hr>
+            <div class="input-group col-md-12 targetLanguage" id="translationtargetlanguagedivid">
+              <label for="mytranslationTargetLanguageListSelect2">Target Language(s): </label><br />
+              <select class="custom-select custom-select-sm" id="mytranslationTargetLanguageListSelect2"
+                name="targetLanguageName" style="width: 50%;">
+              </select>
+            </div>
+            <hr>
+            <div class="input-group col-md-8" id="overwrite-my-translations-divid">
+              <input type="checkbox" id="overwrite-my-translationsid" name="overwrite-my-translations" checked>
+              <label for="overwrite-my-translationsid">Overwrite my Translations</label>
+            </div>
+            <hr>
+            <div class="input-group" id="dotranslation-divid">
+              <input class="btn btn-primary translationbtn" id="translatebtnid" type="button" value="Translate">
+            </div>
+            <!-- </div> -->
+          </form>
+        </div>
+
+        <div class="transcription-body" id="autoTranscription-divid" style="display: none;">
+          <form name="maketranscription" id="maketranscriptionformid" action="/lifedata/transcription/maketranscription" method="POST"
             enctype="multipart/form-data">
             <!-- <div class="col upload"> -->
             <!-- <strong>Audio Files from Source: </strong> -->
@@ -834,7 +874,7 @@
             <div class="input-group col-md-12 upload" id="  ">
               <label for="asrspeakeriduploaddropdown">Source: </label><br />
               <input class="col-md-6" type="text" id="asrspeakeriduploaddropdown" name="asrSpeakerId" value="" readonly>
-             
+
             </div>
             <div class="input-group col-md-12" id="asraudiofilename-divid">
               <label for="audiofile">Filename: </label><br />
@@ -847,16 +887,19 @@
             </div>
             <hr>
             <div class="input-group col-md-12" id="transcribeUsingSelect2-divid">
-              <label for="transcribeUsingSelect2Id">Transcribe using: </label><br/>
-              <select class="custom-select custom-select-sm" id="transcribeUsingSelect2Id" name="transcribeUsingSelect2" style="width: 50%;">
+              <label for="transcribeUsingSelect2Id">Transcribe using: </label><br />
+              <select class="custom-select custom-select-sm" id="transcribeUsingSelect2Id" name="transcribeUsingSelect2"
+                style="width: 50%;">
               </select>
               <br>
-              *<i><font color="red"> HF Inference API sends the data to HuggingFace server for inference.
-                <!-- which is governed
+              *<i>
+                <font color="red"> HF Inference API sends the data to HuggingFace server for inference.
+                  <!-- which is governed
                 by their privacy and might be stored on their server. However, since they might have better hardware capabilities
                 it might be quicker. HF Local runs inference using HF library (and its pipeline module) on the local server 
                 and it might be slower and generate errors for some models. -->
-              </font></i>
+                </font>
+              </i>
             </div>
             <div class="input-group col-md-12" id="hfinferenceagree-divid">
               <input type="checkbox" id="hfinferenceagreeid" name="hfinferenceagree">
@@ -868,31 +911,45 @@
                   <font color="red">*If not checked, no output will be generated if HF Inference API is selected above</font>
                 </i> -->
             </div>
-            <hr/>
+            <hr />
+            <div class="input-group col-md-12" id="processBoundariesTranscriptionSelect2-divid">
+              <label for="processBoundariesTranscriptionSelect2Id">Boundary ID: </label><br />
+              <select class="custom-select custom-select-sm" id="processBoundariesTranscriptionSelect2Id"
+                name="processBoundariesTranscription" multiple="multiple" style="width: 50%;" required>
+              </select>
+            </div>
             <div class="input-group col-md-12 modelSource" id="asrselectdivid">
               <label for="myASRModelListSelect2">Model: </label><br />
-              <select class="custom-select custom-select-sm" id="myASRModelListSelect2" name="modelId" style="width: 50%;"> 
+              <select class="custom-select custom-select-sm" id="myASRModelListSelect2" name="modelId"
+                style="width: 50%;">
 
-              </select>             
+              </select>
             </div>
             <hr>
-            
+
+            <div class="input-group col-md-12 sourceLanguage" id="asrsourcedivid">
+              <label for="myASRScriptListSelect2">Audio Language</label>
+              <select class="custom-select custom-select-sm" id="myASRLanguageListSelect2" name="languageName" style="width: 50%;">
+              </select>
+
+            </div>
             <div class="input-group col-md-12 targetScript" id="asrtargetdivid">
               <label for="myASRScriptListSelect2">Target Script(s): </label><br />
               <span id="ipaspanid" hidden="hidden"><input type="checkbox" id="get-ipaid" name="get-ipa" checked>
-              <label for="get-ipaid">IPA</label> &nbsp;&nbsp; |&nbsp;&nbsp;</span>
+                <label for="get-ipaid">IPA</label> &nbsp;&nbsp; |&nbsp;&nbsp;</span>
 
-              <span id="romanspanid" hidden="hidden"><input type="checkbox" id="get-romanid" name="get-roman" checked>
-              <label for="get-romanid">Roman</label> &nbsp;&nbsp; |&nbsp;&nbsp;</span>
+              <span id="romanspanid" hidden="hidden"><input type="checkbox" id="get-romanid" name="get-roman">
+                <label for="get-romanid">Roman</label> &nbsp;&nbsp; |&nbsp;&nbsp;</span>
               <label for="myASRScriptListSelect2">Others</label>
-               <select class="custom-select custom-select-sm" id="myASRScriptListSelect2" name="scriptName" style="width: 50%;">
-            </select>
-            
+              <select class="custom-select custom-select-sm" id="myASRScriptListSelect2" name="scriptName"
+                style="width: 50%;">
+              </select>
+
             </div>
-            <hr/>
+            <hr />
             <div class="input-group col-md-8" id="overwrite-my-boundaries-divid">
               <!-- <input type="checkbox" id="overwrite-my-boundariesid" name="overwrite-my-boundaries"> -->
-              <label for="overwrite-my-boundariesid">Create New Boundaries at level: </label><br/>
+              <label for="overwrite-my-boundariesid">Create New Boundaries at level: </label><br />
               <select class="custom-select custom-select-sm" id="overwriteMyBoundariesid" name="overwrite-my-boundaries"
                 style="width: 50%;">
               </select>
@@ -917,126 +974,133 @@
               <input type="checkbox" id="do-diarisationid" name="do-diarisation" checked>
               <label for="do-diarisationid">Infer Speakers</label>
               <input type="checkbox" id="overwrite-my-transcriptionsid" name="overwrite-my-transcriptions" checked>
-              <label for="overwrite-my-transcriptionsid">Overwrite my Transcriptions</label>              
-            </div>            
-            <hr>            
+              <label for="overwrite-my-transcriptionsid">Overwrite my Transcriptions</label>
+            </div>
+            <hr>
             <div class="input-group" id="doasr-divid">
-              <input class="btn btn-primary asrbtn" id="transcribebtnid" type="submit" value="Transcribe">
+              <input class="btn btn-primary asrbtn" id="transcribebtnid" type="button" value="Transcribe">
             </div>
             <!-- </div> -->
           </form>
-          </div>
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
       </div>
     </div>
   </div>
+</div>
 
-  
 
-  <!-- Sync all Transcription Modal -->
-  <div class="modal fade" id="syncTranscriptsAllModal" tabindex="-1" role="dialog" aria-labelledby="syncTranscriptsAllModalLabel">
-    <div class="modal-dialog modal-lg" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-              aria-hidden="true">&times;</span></button>
-          <h4 class="modal-title" id="syncTranscriptsAllModalLabel">Project Name: {{ projectName }}</h4>
-        </div>
-        <div class="modal-body">
-          <form name="synctranscription" action="/lifedata/transcription/synctranscription" method="POST"
-            enctype="multipart/form-data">
-            <!-- <div class="col upload"> -->
-            <!-- <strong>Audio Files from Source: </strong> -->
-            <h4>Sync Transcription for this file </h4>
-            <!-- <i>
+
+<!-- Sync all Transcription Modal -->
+<div class="modal fade" id="syncTranscriptsAllModal" tabindex="-1" role="dialog"
+  aria-labelledby="syncTranscriptsAllModalLabel">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+            aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="syncTranscriptsAllModalLabel">Project Name: {{ projectName }}</h4>
+      </div>
+      <div class="modal-body">
+        <form name="synctranscription" action="/lifedata/transcription/synctranscription" method="POST"
+          enctype="multipart/form-data">
+          <!-- <div class="col upload"> -->
+          <!-- <strong>Audio Files from Source: </strong> -->
+          <h4>Sync Transcription for this file </h4>
+          <!-- <i>
                 <font color="red">It will overwrite any boundaries creeated earlier</font>
               </i> -->
-              <input type="hidden" id="syncTranscriptAccessedOnTime" name="accessedOnTime" value="">
-            <div class="input-group col-md-12 upload" id="allformelementsdiv">
-              <label for="syncTranscriptScriptsSource">Source Script: </label><br />              
-              <select class="custom-select custom-select-sm" id="syncTranscriptScriptsSource" name="allSyncSourceScript"
-                style="width: 50%;" required>
-              </select>
-              <br /><br />
-                <label for="syncTranscriptScriptsTargets">Target Script(s): </label><br />                                
-                <select class="custom-select custom-select-sm" id="syncTranscriptScriptsTargets" multiple="multiple" name="allSyncTargetScripts" style="width: 50%;" required>
-                </select><br>
-                <input type="checkbox" id="overwrite-existing-transcriptionsid" name="overwrite-existing-transcriptions">
-                <label for="overwrite-existing-transcriptionsid">Overwrite Existing Transcriptions</label>
-              </div>
-              <hr>
-              <div class="input-group" id="dosyncall-divid">
-                <input class="btn btn-primary syncallbtn" id="syncallbtnid" type="button" value="Sync">
-              </div>
-            </form>
+          <input type="hidden" id="syncTranscriptAccessedOnTime" name="accessedOnTime" value="">
+          <div class="input-group col-md-12" id="processBoundariesSyncTranscriptionSelect2-divid">
+            <label for="processBoundariesSyncTranscriptionSelect2Id">Boundary ID: </label><br />
+            <select class="custom-select custom-select-sm" id="processBoundariesSyncTranscriptionSelect2Id"
+              name="processBoundariesSyncTranscription" multiple="multiple" style="width: 50%;" required>
+            </select>
           </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+          <div class="input-group col-md-12 upload" id="allformelementsdiv">
+            <label for="syncTranscriptScriptsSource">Source Script: </label><br />
+            <select class="custom-select custom-select-sm" id="syncTranscriptScriptsSource" name="allSyncSourceScript"
+              style="width: 50%;" required>
+            </select>
+            <br /><br />
+            <label for="syncTranscriptScriptsTargets">Target Script(s): </label><br />
+            <select class="custom-select custom-select-sm" id="syncTranscriptScriptsTargets" multiple="multiple"
+              name="allSyncTargetScripts" style="width: 50%;" required>
+            </select><br>
+            <input type="checkbox" id="overwrite-existing-transcriptionsid" name="overwrite-existing-transcriptions">
+            <label for="overwrite-existing-transcriptionsid">Overwrite Existing Transcriptions</label>
           </div>
-        </div>
+          <hr>
+          <div class="input-group" id="dosyncall-divid">
+            <input class="btn btn-primary syncallbtn" id="syncallbtnid" type="button" value="Sync">
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
       </div>
     </div>
+  </div>
+</div>
 
-    <!-- Recording Modal -->
-    <div class="modal fade" id="myRecordingModal" tabindex="-1" role="dialog"
-    aria-labelledby="myRecordingModalLabel">
-    <div class="modal-dialog modal-lg" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-              aria-hidden="true">&times;</span></button>
-          <h4 class="modal-title" id="myRecordingModalLabel">Project Name: {{ projectName }}</h4>
-        </div>
-        <div class="modal-body">
-          <div class="row">
-            <div class="col-xs-12">
-              <div class="form-group">
-                <div id="recording">
+<!-- Recording Modal -->
+<div class="modal fade" id="myRecordingModal" tabindex="-1" role="dialog" aria-labelledby="myRecordingModalLabel">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+            aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myRecordingModalLabel">Project Name: {{ projectName }}</h4>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-xs-12">
+            <div class="form-group">
+              <div id="recording">
 
-                  <div class="wrapper">
+                <div class="wrapper">
 
-                    <div id="questionnairederivedrecording" class="questionnairederivedclass"></div>
+                  <div id="questionnairederivedrecording" class="questionnairederivedclass"></div>
 
-                    <div class="input-group col-md-12 upload" id="speakeriduploadrecordingdropdown-divid">
-                      <label for="speakeriduploadrecordingdropdown">Audio Source: </label>
-                      <select class="custom-select custom-select-sm" id="speakeriduploadrecordingdropdown" name="speakerId" multiple="multiple"
-                        style="width:80%" required>
-                        <!-- <option selected disabled></option> -->
-                        {% for d in addedspeakerids %}
-                        <option value="{{ d }}">{{ d }}</option>
-                        {% endfor %}
-                      </select>
+                  <div class="input-group col-md-12 upload" id="speakeriduploadrecordingdropdown-divid">
+                    <label for="speakeriduploadrecordingdropdown">Audio Source: </label>
+                    <select class="custom-select custom-select-sm" id="speakeriduploadrecordingdropdown"
+                      name="speakerId" multiple="multiple" style="width:80%" required>
+                      <!-- <option selected disabled></option> -->
+                      {% for d in addedspeakerids %}
+                      <option value="{{ d }}">{{ d }}</option>
+                      {% endfor %}
+                    </select>
                   </div>
 
-                    <section class="main-controls">
-                      <canvas class="visualizer" height="60px"></canvas>
-                      <div id="recordingbuttons">
-                        <button class="btn btn-primary record">Record</button>
-                        <button class="btn btn-danger stop">Stop</button>
-                      </div>
-                    </section>
+                  <section class="main-controls">
+                    <canvas class="visualizer" height="60px"></canvas>
+                    <div id="recordingbuttons">
+                      <button class="btn btn-primary record">Record</button>
+                      <button class="btn btn-danger stop">Stop</button>
+                    </div>
+                  </section>
 
-                    <section class="sound-clips">
+                  <section class="sound-clips">
 
 
-                    </section>
-                    <div id="recordloader" style="display:none;"></div>
+                  </section>
+                  <div id="recordloader" style="display:none;"></div>
 
-                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
       </div>
     </div>
   </div>
+</div>
 
 {% endblock %}
 
@@ -1047,18 +1111,18 @@
   <script src="{{url_for('static', filename='globalVars.js')}}"></script>
   <script src="{{url_for('static', filename='speaker_select2_dropdown.js')}}"></script>
   <script src="{{url_for('.static', filename='diff_match_patch_uncompressed.js')}}"></script>
-  <script src="{{url_for('.static', filename='transcription.js')}}"></script>
+  <script src="{{url_for('.static', filename='transcription.js')}}"></script>  
   <script src="{{url_for('.static', filename='sidepanel.js')}}"></script>
   <script type="text/javascript">createSidePanel({{ shareinfo | tojson | safe }});</script>
   <script type="text/javascript">createTranscriptionInterfaceForm({{ newData | tojson | safe }});</script>
   <script type="text/javascript">questionnaireDerived({{ allQuesIds | tojson | safe }});</script>
   <script type="text/javascript">questionnaireDerivedRecording({{ allQuesIds | tojson | safe }});</script>
+  <script src="{{url_for('.static', filename='audiotranscription.js')}}"></script>
   <script src="{{url_for('.static', filename='changeactivespeaker.js')}}"></script>
   <script src="{{url_for('.static', filename='progressreport.js')}}"></script>  
   <script src="{{url_for('static', filename='addnewspeaker.js')}}"></script>  
   <script src="{{url_for('.static', filename='search.js')}}"></script>
-  <script src="{{url_for('.static', filename='sorttable.js')}}"></script>
-  <script src="{{url_for('.static', filename='audiotranscription.js')}}"></script>
+  <script src="{{url_for('.static', filename='sorttable.js')}}"></script>  
   <script src="{{url_for('.static', filename='transcriptionannotation.js')}}"></script>
   <script src="{{url_for('.static', filename='automation.js')}}"></script>
   <script src="{{url_for('static', filename='downloader/transcriptiondownload.js')}}"></script>

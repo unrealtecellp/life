@@ -68,9 +68,9 @@ $("#idhomevieweditbtn").click(function() {
             pathname = window.location.pathname
             lastIndexOfPathname = windowHref.lastIndexOf(pathname)
             // console.log(projectType,);
-            console.log(shareMode);
+            // console.log(shareMode);
             if (projectType === 'transcriptions') {
-                console.log(activeprojectform);
+                // console.log(activeprojectform);
                 if ('Sentence Language' in activeprojectform) {
                     if (shareMode === 0) {
                         window.location.href = windowHref.slice(0, lastIndexOfPathname) +  

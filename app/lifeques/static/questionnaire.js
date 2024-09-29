@@ -261,7 +261,8 @@ function createquesform(quesprojectform) {
     $('#Target').select2({
       placeholder: 'select',
       data: getJsonfileData('grammatical_target'),
-      allowClear: true
+      allowClear: true,
+      tags: true
     });
 
     quesIdDetails(quesdata['Q_Id'], quesdata['quesId'])
