@@ -6,10 +6,10 @@
 
 {% block styles %}
 {{super()}}
-<link href="{{url_for('.static', filename='sidepanel.css')}}" rel="stylesheet" />
-<link href="{{url_for('.static', filename='recording.css')}}" rel="stylesheet" />
-<link href="{{url_for('static', filename='loader.css')}}" rel="stylesheet" />
-<link href="{{url_for('.static', filename='questionnaire.css')}}" rel="stylesheet" />
+  <link href="{{url_for('.static', filename='sidepanel.css')}}" rel="stylesheet" />
+  <link href="{{url_for('.static', filename='recording.css')}}" rel="stylesheet" />
+  <link href="{{url_for('static', filename='loader.css')}}" rel="stylesheet" />
+  <link href="{{url_for('.static', filename='questionnaire.css')}}" rel="stylesheet" />
 {% endblock %}
 
 {% block app_content %}
@@ -238,9 +238,9 @@
                 <ul class="dropdown-menu">
                     <li id="json"><a href="#">JSON</a></li>
                     <!-- <li id="csv"><a href="#">CSV</a></li> -->
-                    <!-- <li id="xlsx"><a href="#">XLSX</a></li> -->
                     <li id="karyajson"><a href="#">Karya JSON</a></li>
                     <li id="karyajson2"><a href="#">Karya JSON 2</a></li>
+                    <li id="xlsx"><a href="#">XLSX</a></li>
                 </ul>
               </div>
             </div>
@@ -254,6 +254,7 @@
             </div>
           </div>
         </div>
+        <div id="loader" style="display:none;"></div>
         <div class="modal-footer">
           <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
         </div>

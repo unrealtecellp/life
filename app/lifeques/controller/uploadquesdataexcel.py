@@ -550,7 +550,7 @@ def enterquesfromuploadedfile(mongo, projects,
                 value = str(row[column_name])
                 if ('[' in value and ']' in value):
                     if (value.startswith('[') and value.endswith(']')):
-                        value = value.replace('[', '').replace(']', '').replace(' ', '').split(',')
+                        value = value.replace('[', '').replace(']', '').replace(' ', '').replace("'", "").split(',')
                 elif (value == 'nan'):
                     value = ''
                 if ('text.000000' in column_name and 'textspan' in column_name):

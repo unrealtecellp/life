@@ -21,3 +21,15 @@ function getJsonfileData(fileName) {
     }
     return select2Data;
 }
+
+function runLoader() {
+    // console.log('123213');
+    // console.log(document.getElementById("loader"));
+    document.getElementById("loader").style.display = "block";
+  }
+  
+function stopLoader() {
+// console.log('123213');
+// console.log(document.getElementById("loader"));
+document.getElementById("loader").style.display = "none";
+}

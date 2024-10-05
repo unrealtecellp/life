@@ -624,11 +624,15 @@ def downloadquestionnaire():
                                                                  basedir,
                                                                  questionnaires,
                                                                  activeprojectname)
+    elif (download_format == 'xlsx'):
+        project_folder_path = downloadquestionnairein.excel(mongo,
+                                                            basedir,
+                                                            questionnaires,
+                                                            activeprojectname)
 
     zip_file_path = createzip.createzip(project_folder_path, activeprojectname)
 
     return 'OK'
-
 
 @lifeques.route('/lifequesdownloadquestionnaire', methods=['GET', 'POST'])
 def lifequesdownloadquestionnaire():
@@ -681,7 +685,6 @@ def createnewques():
         logger.exception("")
 
     return jsonify(saveState=save_state)
-
 
 @lifeques.route('/deleteques', methods=['GET', 'POST'])
 @login_required
