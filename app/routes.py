@@ -695,9 +695,8 @@ def progressReportAdmin():
     try:
         # Connect to MongoDB and get collection stats
         client = MongoClient(app.config["MONGO_URI"])
-        project_stats, speaker_ids, speakers_audio_ids = progressreportadmin.get_collection_stats(
-            'lifedb', 'projects')
-
+        project_stats, speaker_ids, speakers_audio_ids = progressreportadmin.get_collection_stats('lifedb', 'projects')
+        print("project_stats: ", project_stats)
         # Prepare additional data for the template
         collections = getdbcollectionslist.getdbcollectionslist(mongo)
         response = {}
@@ -6093,7 +6092,6 @@ def syncspeakermetadata():
                 "karyaaccesscode": document["karyaaccesscode"],
                 "karyaspeakerid": document["karyaspeakerid"]
             }
-            # print('new_metadata : ', new_metadata)
 
             # Additional conditions to replace None values
             if new_metadata["name"] is None:
@@ -6116,9 +6114,8 @@ def syncspeakermetadata():
             if new_metadata["speakerspeaklanguage"] is None:
                 new_metadata["speakerspeaklanguage"] = []
 
-        except Exception as e:
-            # Handle exception
-            print("An error occurred:", e)
+        except:
+            logger.exception("")
             continue  # Skip to the next document
 
         # Check if the metadata already exists in speakermeta (speakerdetails)
@@ -6162,14 +6159,12 @@ def syncspeakermetadata():
                 # Check if old_lifesourceid does not exist
                 "old_lifesourceid": {"$exists": False}
             }
-            # print('filter_criteria_old_lifesourceid :', filter_criteria_old_lifesourceid)
 
             # Define filter criteria to update lifespeakerid to lifesourceid
             filter_criteria_lifespeakerid_to_lifesourceid = {
                 "projectname": activeprojectname,
                 "current.sourceMetadata.lifespeakerid": existing_lifesourceid["current"]["sourceMetadata"]["lifespeakerid"]
             }
-            # print('filter_criteria_lifespeakerid_to_lifesourceid :', filter_criteria_lifespeakerid_to_lifesourceid)
             # Define the data to be added
             lifesource_to_old_lifesourceid = {
                 "old_lifesourceid": existing_lifesourceid["lifesourceid"]}
@@ -6188,8 +6183,8 @@ def syncspeakermetadata():
                 result = speakermeta.update_many(filter_criteria_lifespeakerid_to_lifesourceid, {
                                                  "$set": lifespeakerid_to_lifesourceid})
 
-            except Exception as e:
-                print("An error occurred:", e)
+            except:
+                logger.exception("")
 
     return render_template('manageProject.html',
                            shareinfo=shareinfo,

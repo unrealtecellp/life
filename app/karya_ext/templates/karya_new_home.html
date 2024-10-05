@@ -1,4 +1,4 @@
-{% extends "links.html" %}
+{% extends "karyav5links.html" %}
 
 {% block title %}
   Karya Extension
@@ -16,16 +16,26 @@
     </h4>
   {% endif %}
 
-  <button type="button" id="karya-setup" class="btn btn-lg btn-success" 
-    onclick="window.location.href='{{ url_for('karya_bp.home_insert') }}';">
-    Karya
+  <button type="button" id="karya-setup" class="btn btn-lg btn-info" 
+    onclick="window.location.href='{{ url_for('karya_bp.karya_new_uploadacesscode') }}';">
+    Upload Access Code
   </button>
 
+  <button type="button" id="karya-setup" class="btn btn-lg btn-success" 
+    onclick="window.location.href='{{ url_for('karya_bp.karya_new_manage_accesscode') }}';">
+    Manage Access Code
+  </button>
 
-  <button type="button" id="karya-setup" class="btn btn-lg btn-danger"  
-  onclick="window.location.href='{{ url_for('karya_bp.karya_new_home') }}';">
-  Karya New
-</button>
+  <button type="button" id="karya-setup" class="btn btn-lg btn-danger" 
+  onclick="window.location.href='{{ url_for('karya_bp.karyaaudiobrowse') }}';">
+  Manage Audio
+  </button>
+
+  <button type="button" id="karya-setup" class="btn btn-lg btn-primary" 
+  onclick="window.location.href='{{ url_for('karya_bp.karya_new_fetch_karya') }}';">
+  Fetch Karya New
+  </button>
+
 {% endblock %}
 
 {% block scripts %}
@@ -34,6 +44,4 @@
 <script src="{{ url_for('.static', filename='shareprojectwith.js') }}"></script>
 <script src="{{ url_for('.static', filename='assignkaryaaccesscode.js') }}"></script>
 <script src="{{ url_for('.static', filename='home.js') }}"></script>
-<!-- <script src="{{ url_for('.static', filename='speak.js') }}"></script> -->
-<script type="text/javascript">allProjects({{ data | tojson | safe }});</script>
 {% endblock %}

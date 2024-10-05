@@ -1,4 +1,5 @@
 import pandas as pd
+import re
 from datetime import datetime
 from app.controller import (
     getprojecttype,
@@ -293,7 +294,48 @@ def get_upload_df(access_code_file):
 
     return data
 
+# Function to clean the access code
+def clean_access_code(value, prefix=None, suffix=None):
+    # Remove prefix if provided and present in the value
+    if prefix and value.startswith(prefix):
+        value = value[len(prefix):]
+    # Remove suffix if provided and present in the value
+    if suffix and value.endswith(suffix):
+        value = value[:-len(suffix)]
+    # Remove all non-numeric characters using regex
+    value = re.sub(r'\D', '', value)  # \D matches any non-digit character
+    return value
 
+
+def process_access_code_csv_karya_new(access_code_file, prefix=None, suffix=None):
+    # Read the CSV file into a pandas DataFrame and fill any missing values with an empty string
+    data = pd.read_csv(access_code_file)
+    data = data.fillna('')
+
+    # Function to remove a specific prefix, suffix, or non-numeric characters
+    def remove_affixes(value):
+        if isinstance(value, str):
+            # Remove prefix if provided and present in the value
+            if prefix and value.startswith(prefix):
+                value = value[len(prefix):]
+            # Remove suffix if provided and present in the value
+            if suffix and value.endswith(suffix):
+                value = value[:-len(suffix)]
+            # Remove all non-numeric characters using regex
+            value = re.sub(r'\D', '', value)  # \D matches any non-digit character
+        return value
+
+    # Process 'access_code' column to remove prefix, suffix, and non-numeric characters
+    if 'access_code' in data.columns:
+        data['access_code'] = data['access_code'].apply(remove_affixes)
+
+    return data
+
+
+
+# Example usage:
+# df = process_access_code_csv("path_to_your_file.csv", prefix="A-", suffix=None)
+# print(df)
 
 
 def upload_access_code_metadata_from_file(
@@ -345,6 +387,64 @@ def upload_access_code_metadata_from_file(
         
     return return_obj
 
+
+
+
+def upload_access_code_metadata_for_karya_new(
+    karyaaccesscodedetails,
+    activeprojectname,
+    current_username,
+    task,
+    language,
+    domain,
+    phase,
+    elicitationmethod,
+    fetch_data,
+    karya_version,
+    accesscode_from_csv,
+):
+
+    return_obj = None  # Initialize return_obj outside the loop
+
+    for index, item in accesscode_from_csv.iterrows():
+        current_dt = str(datetime.now()).replace('.', ':')
+        checkaccesscode = item["access_code"]
+        accesscode_exist = karyaaccesscodedetails.find_one(
+            {
+                "projectname": activeprojectname,
+                "karyaaccesscode": checkaccesscode
+            }
+        )
+        if accesscode_exist is not None:
+            continue
+
+        insert_dict = {
+            "karyaspeakerid": '', "karyaaccesscode": item["access_code"], "lifespeakerid": "",
+            "task": task, "language": language, "domain": domain,
+            "phase": phase, "elicitationmethod": elicitationmethod, "projectname": activeprojectname,
+            "uploadedBy": current_username,
+            "assignedBy": "",
+            "current": {"workerMetadata": {"name": "", "agegroup": "", "gender": "",
+                                                       "educationlevel": "", "educationmediumupto12": "",
+                                                       "educationmediumafter12": "", "speakerspeaklanguage": "",
+                                                       "recordingplace": "", "typeofrecordingplace": "",
+                                                       "activeAccessCode": ""}, "updatedBy": "", "current_date": current_dt},
+            "previous": {},
+            "fetchData": fetch_data,
+            "karyafetchedaudios": [],
+            "isActive": 0,
+            "additionalInfo": {"karya_version":karya_version}
+        }
+        
+        return_obj = karyaaccesscodedetails.insert_one(insert_dict)
+        
+    return return_obj
+
+
+
+
+
+
 """
 finding a new access code = isActive:0, if there is any blank access code that doesn't have speaker details and isActive:0
 it will find that access code randomly ... Note - this is not saving any data; this is just to find the new/fresh access code
@@ -377,6 +477,74 @@ def get_new_accesscode_speakerid(
         acode = ''
 
     return speakerid, acode
+
+
+def karya_new_get_new_accesscode_and_speakerid(
+    accesscodedetails,
+    activeprojectname,
+    accesscodefor,
+    task,
+    domain,
+    elicitationmethod,
+    language
+):
+
+
+    new_acode_spkrid = accesscodedetails.find_one({"isActive": 0, "projectname": activeprojectname,
+                                                   "fetchData": accesscodefor, "task": task,
+                                                   "domain": domain, "elicitationmethod": elicitationmethod,
+                                                   "language": language, "additionalInfo.karya_version":"karya_main"}, {"karyaspeakerid": 1, "karyaaccesscode": 1, "_id": 0})
+   
+   # "additionalInfo.karya_version":"karya_main" this might be creating issue 
+    print(new_acode_spkrid)
+    try:
+        if new_acode_spkrid is not None:
+            speakerid = new_acode_spkrid['karyaspeakerid']
+            acode = new_acode_spkrid['karyaaccesscode']
+        else:
+            speakerid = ''
+            acode = ''
+    except:
+        speakerid = ''
+        acode = ''
+
+    return speakerid, acode
+
+
+
+def karya_new_get_assigned_accesscode_and_speakerid(
+    accesscodedetails,
+    activeprojectname,
+    accesscodefor,
+    task,
+    domain,
+    elicitationmethod,
+    language
+):
+    # Retrieve all documents matching the criteria
+    results = accesscodedetails.find(
+        {"isActive": 1, "projectname": activeprojectname,
+         "fetchData": accesscodefor, "task": task,
+         "domain": domain, "elicitationmethod": elicitationmethod,
+         "language": language, "additionalInfo.karya_version": "karya_main"},
+        {"karyaspeakerid": 1, "karyaaccesscode": 1, "_id": 0}
+    )
+
+    # Initialize a dictionary to store the access codes and speaker IDs
+    access_code_speakerid_map = {}
+
+    # Process each document and populate the dictionary
+    for result in results:
+        speakerid = result.get('karyaspeakerid', '')
+        acode = result.get('karyaaccesscode', '')
+        
+        if speakerid != '':
+            access_code_speakerid_map[acode] = {
+                'karyaspeakerid': speakerid
+            }
+
+    return access_code_speakerid_map
+
 
 """ Adding speaker details for new/fresh access code {Manage access code -> Get new access code button } in accesscodedetails
  collection """
@@ -421,6 +589,48 @@ def add_access_code_metadata(
                                  {"$set": update_data}
                                  )
 
+def karya_new_add_access_code_metadata(
+    accesscodedetails,
+    activeprojectname,
+    current_username,
+    karyaspeakerid,
+    karyaaccesscode,
+    fname,
+    fage,
+    fgender,
+    educlvl,
+    moe12,
+    moea12,
+    sols,
+    por,
+    toc
+):
+
+    # renameInFormDOB = fage.replace("-", "")
+    # renameInForm = fname.replace(" ", "")
+    # lowerRenameInForm = renameInForm.lower()
+    # renameDOB = "".join([lowerRenameInForm, renameInFormDOB])
+    # renameCode = "_".join([renameDOB, karyaspeakerid])
+
+    update_data = {"lifespeakerid": "",
+                   "assignedBy":  current_username,
+                   "current.updatedBy":  current_username,
+                   "current.workerMetadata.name": fname,
+                   "current.workerMetadata.agegroup": fage,
+                   "current.workerMetadata.gender": fgender,
+                   "current.workerMetadata.educationlevel": educlvl,
+                   "current.workerMetadata.educationmediumupto12": moe12,
+                   "current.workerMetadata.educationmediumafter12": moea12,
+                   "current.workerMetadata.speakerspeaklanguage": sols,
+                   "current.workerMetadata.recordingplace": por,
+                   "current.workerMetadata.typeofrecordingplace": toc,
+                   "isActive": 1}
+
+    accesscodedetails.update_one({"karyaaccesscode": karyaaccesscode, "projectname": activeprojectname, "additionalInfo.karya_version":"karya_main"},
+                                 {"$set": update_data}
+                                 )
+
+
 
 def update_access_code_metadata(
     accesscodedetails,
@@ -463,6 +673,53 @@ def update_access_code_metadata(
                                  "$set": update_old_data})  # Edit_old_user_info
     accesscodedetails.update_one({"karyaaccesscode": accesscode, "projectname": activeprojectname}, {
                                  "$set": update_data})  # new_user_info
+    
+
+
+def karya_new_update_access_code_metadata(
+    accesscodedetails,
+    activeprojectname,
+    current_username,
+    accesscode,
+    fgender,
+    educlvl,
+    moe12,
+    moea12,
+    sols,
+    por,
+    toc
+):
+
+    update_data = {"current.updatedBy":  current_username,
+                   "current.workerMetadata.gender": fgender,
+                   "current.workerMetadata.educationlevel": educlvl,
+                   "current.workerMetadata.educationmediumupto12": moe12,
+                   "current.workerMetadata.educationmediumafter12": moea12,
+                   "current.workerMetadata.speakerspeaklanguage": sols,
+                   "current.workerMetadata.recordingplace": por,
+                   "current.workerMetadata.typeofrecordingplace": toc,
+                   "isActive": 1}
+    previous_speakerdetails = accesscodedetails.find_one({"karyaaccesscode": accesscode, "projectname": activeprojectname, 
+                                                          "additionalInfo.karya_version":"karya_main"},
+                                                         {"current.workerMetadata": 1, "current.updatedBy": 1, "_id": 0, })
+
+    date_of_modified = str(datetime.now()).replace(".", ":")
+
+    update_old_data = {"previous."+date_of_modified+".workerMetadata.gender": previous_speakerdetails["current"]["workerMetadata"]["gender"],
+                       "previous."+date_of_modified+".workerMetadata.educationlevel": previous_speakerdetails["current"]["workerMetadata"]["educationlevel"],
+                       "previous."+date_of_modified+".workerMetadata.educationmediumupto12": previous_speakerdetails["current"]["workerMetadata"]["educationmediumupto12"],
+                       "previous."+date_of_modified+".workerMetadata.educationmediumafter12": previous_speakerdetails["current"]["workerMetadata"]["educationmediumafter12"],
+                       "previous."+date_of_modified+".workerMetadata.speakerspeaklanguage": previous_speakerdetails["current"]["workerMetadata"]["speakerspeaklanguage"],
+                       "previous."+date_of_modified+".workerMetadata.recordingplace": previous_speakerdetails["current"]["workerMetadata"]["recordingplace"],
+                       "previous."+date_of_modified+".updatedBy": previous_speakerdetails["current"]["updatedBy"]
+                       }
+
+    accesscodedetails.update_one({"karyaaccesscode": accesscode, "projectname": activeprojectname, 
+                                  "additionalInfo.karya_version":"karya_main"}, {
+                                 "$set": update_old_data})  # Edit_old_user_info
+    accesscodedetails.update_one({"karyaaccesscode": accesscode, "projectname": activeprojectname, "additionalInfo.karya_version":"karya_main"}, {
+                                 "$set": update_data})  # new_user_info
+
 
 
 def get_access_code_metadata(
@@ -522,3 +779,63 @@ def get_access_code_metadata(
         data_table.append(data)
 
     return data_table
+
+
+def karya_new_get_access_code_metadata(
+        accesscode_info,
+        activeprojectname,
+        share_level,
+        all_data_share_level,
+        current_username
+):
+    karyaaccesscodedetails = ''
+    if share_level >= all_data_share_level:
+        karyaaccesscodedetails = accesscode_info.find({"isActive": 1, "projectname": activeprojectname, "additionalInfo.karya_version": "karya_main"},
+                                                      {
+            "karyaaccesscode": 1,
+            "lifespeakerid": 1,
+            "task": 1,
+            "fetchData": 1,
+            "assignedBy": 1,
+            "current.workerMetadata.name": 1,
+            "current.workerMetadata.agegroup": 1,
+            "current.workerMetadata.gender": 1,
+            "domain": 1,
+            "elicitationmethod": 1,
+            "_id": 0
+        }
+        )
+    else:
+        karyaaccesscodedetails = accesscode_info.find({"isActive": 1, "projectname": activeprojectname, "assignedBy": current_username, "additionalInfo.karya_version": "karya_main"},
+                                                      {
+            "karyaaccesscode": 1,
+            "lifespeakerid": 1,
+            "task": 1,
+            "fetchData": 1,
+            "assignedBy": 1,
+            "current.workerMetadata.name": 1,
+            "current.workerMetadata.agegroup": 1,
+            "current.workerMetadata.gender": 1,
+            "domain": 1,
+            "elicitationmethod": 1,
+            "_id": 0
+        }
+        )
+
+    data_table = []
+    fetch_data = {
+        0: "Data Collection Using Karya",
+        1: "Syncing Karya Recording with LiFE"
+    }
+    task = {
+        "SPEECH_DATA_COLLECTION": "Recording",
+        "SPEECH_VERIFICATION": "Verification of Recordings",
+        "SPEECH_TRANSCRIPTION": "Transcription of Recordings"
+    }
+    for data in karyaaccesscodedetails:
+        data['fetchData'] = fetch_data[data['fetchData']]
+        data['task'] = task[data['task']]
+        data_table.append(data)
+
+    return data_table
+
