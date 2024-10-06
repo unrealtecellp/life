@@ -6,7 +6,14 @@
 
 {% block styles %}
   {{super()}}
+  <meta charset="UTF-8">
   <link href="{{url_for('.static', filename='home_insert.css')}}" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali&display=swap" rel="stylesheet">
+  <style>
+      body, input, select, textarea {
+          font-family: 'Noto Sans Bengali', sans-serif;
+      }
+  </style>
 {% endblock %}
   
 {% block app_content %}
@@ -27,20 +34,12 @@
 <div id="infoText" style="display:none; margin-top: 10px; border: 1px solid #ccc; padding: 10px;">
   <ol>
     <li>
-      Assign New Access Code for a new speaker/user by clicking on the <span class="btn-danger"> Get New Access Code </span> button. 
-      <br>* If you get the flash message <span class="btn-info">Please Upload New Access Code</span>, there might be two issues:
-      <ul>
-        <li>Your condition didn't match the uploaded access code (e.g., inactive access code).</li>
-        <li>All uploaded access codes are already assigned (active access codes).</li>
-      </ul>
-      To know more about active and inactive access codes, go to the <span class="btn-info">Upload Access Code</span> section where you can check active and inactive access codes.
+      No need to use the <span class="btn-danger">Get New Access Code</span> button, as you can directly upload the JSON metadata from the main-Karya server by clicking the <span class="btn-info">Bulk Upload Update</span> button. 
+      <br>This will add additional metadata for users/speakers in bulk.
     </li>
-    <li>
-      After assigning the access code, the user/project owner needs to <span class="btn-primary">Link Access Code(s)</span> to get the Karya ID and Life ID or you can upload the CSV file <span class="btn-warning">Upload CSV to Link Access Code(s)</span> of the avatar task report, which can be downloaded from Karya. 
-    </li>
-    <span class="text-danger">Without assigning the Karya ID and Life ID for the access code(s), you can't fetch the data.</span>
   </ol>
 </div>
+
 
 <br>
 <br>
