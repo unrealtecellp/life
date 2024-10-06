@@ -2854,8 +2854,8 @@ def karya_new_upload_bulk_metadata():
                         "current.workerMetadata.educationmediumafter12": OutputMediumofEducationAbove12th,  # List of mapped values
                         "current.workerMetadata.educationlevel": OutputEducationLevel,  # Single mapped value
                         "current.workerMetadata.speakerspeaklanguage": OutputOtherLanguages,  # List of mapped values
-                        "current.workerMetadata.recordingplace": OutputTypeofPlace,  # Single mapped value
-                        "current.workerMetadata.typeofrecordingplace": OutputplaceofRecording,  # String as is
+                        "current.workerMetadata.recordingplace": OutputplaceofRecording,  # Single mapped value
+                        "current.workerMetadata.typeofrecordingplace": OutputTypeofPlace,  # String as is
                         "current.updatedBy": current_username  # Your current username variable
                     }
 
