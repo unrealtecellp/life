@@ -1,16 +1,16 @@
 var Sense = [
-// 	{
-//     "name": "Grammatical Category",
-//     "value": "Grammatical Category"
-//   },
-//   {
-//     "name": "Example",
-//     "value": "Example"
-//   },
-//   {
-//     "name": "Free Translation",
-//     "value": "Free Translation"
-//   },
+	{
+    "name": "Grammatical Category",
+    "value": "Grammatical Category"
+  },
+  {
+    "name": "Example",
+    "value": "Example"
+  },
+  {
+    "name": "Free Translation",
+    "value": "Free Translation"
+  },
 //   {
 //     "name": "Semantic Domain",
 //     "value": "Semantic Domain"
@@ -19,10 +19,10 @@ var Sense = [
 //     "name": "Lexical Relation",
 //     "value": "Lexical Relation"
 //   },
-//   {
-//     "name": "Upload Picture",
-//     "value": "Upload Picture"
-//   }
+  {
+    "name": "Upload Picture",
+    "value": "Upload Picture"
+  }
 ];
 
 var Variant = [{
@@ -7480,11 +7480,11 @@ function myFunction(newData) {
                   '<input type="text" class="form-control" id="Gloss '+ glossLang[i] +'"'+ 
                   'name="Gloss '+ glossLang[i] + ' Sense '+ senseCount+'" required>'+
                   '</div></div>';
-                //   inpt += '<div class="col-md-6 collapse sense' + senseCount +'"><div class="form-group">'+
-                //   '<label for="Definition '+ glossLang[i] +'">Definition '+ glossLang[i] +'</label>'+
-                //   '<input type="text" class="form-control" id="Definition '+ glossLang[i] +'"'+ 
-                //   'name="Definition '+ glossLang[i] + ' Sense '+ senseCount+'">'+
-                //   '</div></div>';
+                  inpt += '<div class="col-md-6 collapse sense' + senseCount +'"><div class="form-group">'+
+                  '<label for="Definition '+ glossLang[i] +'">Definition '+ glossLang[i] +'</label>'+
+                  '<input type="text" class="form-control" id="Definition '+ glossLang[i] +'"'+ 
+                  'name="Definition '+ glossLang[i] + ' Sense '+ senseCount+'">'+
+                  '</div></div>';
 			}
 			else {
 				inpt += '<div class="col-md-6 collapse sense' + senseCount +'"><div class="form-group">'+
@@ -7492,11 +7492,11 @@ function myFunction(newData) {
                   '<input type="text" class="form-control" id="Gloss '+ glossLang[i] +'"'+ 
                   'name="Gloss '+ glossLang[i] + ' Sense '+ senseCount+'">'+
                   '</div></div>';
-                // inpt += '<div class="col-md-6 collapse sense' + senseCount +'"><div class="form-group">'+
-                //   '<label for="Definition '+ glossLang[i] +'">Definition '+ glossLang[i] +'</label>'+
-                //   '<input type="text" class="form-control" id="Definition '+ glossLang[i] +'"'+ 
-                //   'name="Definition '+ glossLang[i] + ' Sense '+ senseCount+'">'+
-                //   '</div></div>';
+                inpt += '<div class="col-md-6 collapse sense' + senseCount +'"><div class="form-group">'+
+                  '<label for="Definition '+ glossLang[i] +'">Definition '+ glossLang[i] +'</label>'+
+                  '<input type="text" class="form-control" id="Definition '+ glossLang[i] +'"'+ 
+                  'name="Definition '+ glossLang[i] + ' Sense '+ senseCount+'">'+
+                  '</div></div>';
 			}
           
         }
@@ -7716,11 +7716,11 @@ function addsense() {
             '<input type="text" class="form-control" id="Gloss '+ glossLang[i] +'"'+ 
             'name="Gloss '+ glossLang[i] + ' Sense '+ senseCount+'">'+
             '</div></div>';
-        // addSense += '<div class="col-md-6 collapse sense' + senseCount +'"><div class="form-group">'+
-        //     '<label for="Definition '+ glossLang[i] +'">Definition '+ glossLang[i] +'</label>'+
-        //     '<input type="text" class="form-control" id="Definition '+ glossLang[i] +'"'+ 
-        //     'name="Definition '+ glossLang[i] + ' Sense '+ senseCount+'">'+
-        //     '</div></div>';
+        addSense += '<div class="col-md-6 collapse sense' + senseCount +'"><div class="form-group">'+
+            '<label for="Definition '+ glossLang[i] +'">Definition '+ glossLang[i] +'</label>'+
+            '<input type="text" class="form-control" id="Definition '+ glossLang[i] +'"'+ 
+            'name="Definition '+ glossLang[i] + ' Sense '+ senseCount+'">'+
+            '</div></div>';
   }
         
   for (var i = 0; i < Sense.length; i++) {
