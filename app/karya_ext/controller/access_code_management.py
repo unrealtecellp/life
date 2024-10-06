@@ -546,7 +546,7 @@ def upload_access_code_metadata_for_karya_new_update(
                     "agegroup": dob,    # yob (renamed as age_)
                     "gender": worker_gender,           # gender
                     "educationlevel": str(education_level.iloc[index]),  # Convert education_level to string
-                    "educationMediumUpto12": "",       # You can fill these later if needed
+                    "educationmediumupto12": "",       # You can fill these later if needed
                     "educationmediumafter12": "",
                     "speakerspeaklanguage": "",
                     "recordingplace": "",
