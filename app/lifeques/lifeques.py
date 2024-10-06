@@ -613,22 +613,26 @@ def downloadquestionnaire():
     questionnaire_data = request.args.get('data')
     questionnaire_data = eval(questionnaire_data)
     download_format = questionnaire_data['downloadFormat']
+    get_audio = questionnaire_data['getAudio']
 
     if (download_format == 'karyajson'):
         project_folder_path = downloadquestionnairein.karyajson(mongo,
                                                                 basedir,
                                                                 questionnaires,
-                                                                activeprojectname)
+                                                                activeprojectname,
+                                                                get_audio)
     elif (download_format == 'karyajson2'):
         project_folder_path = downloadquestionnairein.karyajson2(mongo,
                                                                  basedir,
                                                                  questionnaires,
-                                                                 activeprojectname)
+                                                                 activeprojectname,
+                                                                 get_audio)
     elif (download_format == 'xlsx'):
         project_folder_path = downloadquestionnairein.excel(mongo,
                                                             basedir,
                                                             questionnaires,
-                                                            activeprojectname)
+                                                            activeprojectname,
+                                                            get_audio)
 
     zip_file_path = createzip.createzip(project_folder_path, activeprojectname)
 
