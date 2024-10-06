@@ -508,7 +508,8 @@ def karya_new_update_write_speaker_metadata(speakerdetails,
                            metadata_data,
                            lifespeakerid_var,
                            source_id,
-                           upload_type
+                           upload_type,
+                           speakerdetails_additionalInfo
                            ):
 
     current_dt = str(datetime.now()).replace('.', ':')
@@ -523,8 +524,9 @@ def karya_new_update_write_speaker_metadata(speakerdetails,
                    "audioSubSource": metadata_schema,
                    "metadataSchema": metadata_schema,
                    "uploadType": upload_type,
-                   "additionalInfo": {},
+                   "additionalInfo": speakerdetails_additionalInfo,
                    "current": {
+                       "updatedBy": current_username,
                        "sourceMetadata": metadata_data,
                        "current_date": current_dt,
                    },
@@ -696,6 +698,7 @@ def karya_new_update_write_speaker_metadata_details(speakerdetails,
                                    metadata_schema,
                                    lifespeakerid_var,
                                    metadata_data,
+                                   speakerdetails_additionalInfo,
                                    upload_type,
                                    **kwargs):
 
@@ -719,5 +722,6 @@ def karya_new_update_write_speaker_metadata_details(speakerdetails,
                                metadata_data,
                                lifespeakerid_var,
                                source_id,
-                               upload_type)
+                               upload_type, 
+                               speakerdetails_additionalInfo)
                             

@@ -6,7 +6,14 @@
 
 {% block styles %}
   {{super()}}
+  <meta charset="UTF-8">
   <link href="{{url_for('.static', filename='home_insert.css')}}" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali&display=swap" rel="stylesheet">
+  <style>
+      body, input, select, textarea {
+          font-family: 'Noto Sans Bengali', sans-serif;
+      }
+  </style>
 {% endblock %}
   
 {% block app_content %}
