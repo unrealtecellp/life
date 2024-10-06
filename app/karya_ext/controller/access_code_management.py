@@ -3,7 +3,8 @@ import re
 from datetime import datetime
 from app.controller import (
     getprojecttype,
-    life_logging
+    life_logging, 
+    speakerDetails,
 )
 
 logger = life_logging.get_logger()
@@ -333,6 +334,33 @@ def process_access_code_csv_karya_new(access_code_file, prefix=None, suffix=None
 
 
 
+def process_access_code_csv_karya_new_update(access_code_file, prefix=None, suffix=None):
+    # Read the CSV file into a pandas DataFrame and fill any missing values with an empty string
+    data = pd.read_csv(access_code_file)
+    data = data.fillna('')
+
+    # Function to remove a specific prefix, suffix, or non-numeric characters
+    def remove_affixes(value):
+        if isinstance(value, str):
+            # Remove prefix if provided and present in the value
+            if prefix and value.startswith(prefix):
+                value = value[len(prefix):]
+            # Remove suffix if provided and present in the value
+            if suffix and value.endswith(suffix):
+                value = value[:-len(suffix)]
+            # Remove all non-numeric characters using regex
+            value = re.sub(r'\D', '', value)  # \D matches any non-digit character
+        return value
+
+    # Process 'access_code' column to remove prefix, suffix, and non-numeric characters
+    if 'access_code' in data.columns:
+        data['access_code'] = data['access_code'].apply(remove_affixes)
+
+    # Return the required columns
+    required_columns = ['access_code', 'avatar_id', 'worker_id', 'yob', 'gender', 'full_name', 'phone_number', 'income_source', 'education_level']
+    return data[required_columns]
+
+
 # Example usage:
 # df = process_access_code_csv("path_to_your_file.csv", prefix="A-", suffix=None)
 # print(df)
@@ -439,6 +467,132 @@ def upload_access_code_metadata_for_karya_new(
         return_obj = karyaaccesscodedetails.insert_one(insert_dict)
         
     return return_obj
+
+
+
+
+
+def upload_access_code_metadata_for_karya_new_update(
+    karyaaccesscodedetails,
+    speakerdetails,
+    activeprojectname,
+    current_username,
+    task,
+    language,
+    domain,
+    phase,
+    elicitationmethod,
+    fetch_data,
+    karya_version,
+    access_code, avatar_id, worker_id, yob, gender, full_name, phone_number, education_level
+):
+    return_obj = None  # Initialize return_obj outside the loop
+
+    # Loop through each row of the access_code DataFrame
+    for index in range(len(access_code)):
+        current_dt = str(datetime.now()).replace('.', ':')
+        
+        # Get access_code for the current row
+        checkaccesscode = str(access_code.iloc[index])  # Convert to string
+        
+        # Check if the access_code already exists
+        accesscode_exist = karyaaccesscodedetails.find_one(
+            {
+                "projectname": activeprojectname,
+                "karyaaccesscode": checkaccesscode
+            }
+        )
+        if accesscode_exist is not None:
+            continue
+        
+        # Prepare data for insertion (convert all relevant fields to strings)
+        worker_name = str(full_name.iloc[index])
+        worker_yob = str(yob.iloc[index])  # Convert yob to string
+        worker_gender = str(gender.iloc[index])
+        worker_id_value = str(worker_id.iloc[index])
+        worker_phone = str(phone_number.iloc[index])
+        worker_avatar_id = str(avatar_id.iloc[index])  # Convert avatar_id to string
+        
+        # Create life speaker ID using name and yob
+        rename_in_form_dob = worker_yob  # yob as string
+        rename_in_form = worker_name.replace(" ", "").lower()
+        lifespeakerid = f"{rename_in_form}{rename_in_form_dob}_{worker_id_value}"
+
+        # Build insert dictionary (ensure everything is converted to strings)
+        insert_dict = {
+            "karyaspeakerid": worker_id_value,  # worker_id is karyaspeakerid
+            "karyaaccesscode": checkaccesscode, 
+            "lifespeakerid": lifespeakerid,     # Generated lifespeakerid
+            "task": task, 
+            "language": language, 
+            "domain": domain,
+            "phase": phase, 
+            "elicitationmethod": elicitationmethod, 
+            "projectname": activeprojectname,
+            "uploadedBy": current_username,
+            "assignedBy": current_username,
+            "current": {
+                "workerMetadata": {
+                    "name": worker_name,               # full_name
+                    "agegroup": rename_in_form_dob,    # yob (renamed as age_)
+                    "gender": worker_gender,           # gender
+                    "educationlevel": str(education_level.iloc[index]),  # Convert education_level to string
+                    "educationmediumupto12": "",       # You can fill these later if needed
+                    "educationmediumafter12": "",
+                    "speakerspeaklanguage": "",
+                    "recordingplace": "",
+                    "typeofrecordingplace": ""
+                },
+                "updatedBy": "", 
+                "current_date": current_dt
+            },
+            "previous": {},
+            "fetchData": fetch_data,
+            "karyafetchedaudios": [],
+            "isActive": 1,
+            "additionalInfo": {
+                "karya_version": str(karya_version),       # Convert karya_version to string
+                "avatar_id": worker_avatar_id,             # avatar_id as string
+                "phone_number": worker_phone               # phone_number as string
+            }
+        }
+        
+
+        # Insert the record into the database
+        return_obj = karyaaccesscodedetails.insert_one(insert_dict)
+
+        speakerdetails_meta_data ={
+                                    "name": worker_name,                # full_name
+                                    "ageGroup": rename_in_form_dob,     # yob (renamed as age_)
+                                    "gender": worker_gender,            # gender
+                                    "educationlevel": str(education_level.iloc[index]),  # Convert education_level to string
+                                    "educationmediumupto12": "",        # This can be filled later if needed
+                                    "educationmediumafter12": "",       # This can be filled later if needed
+                                    "speakerspeaklanguage": "",         # Fill this if language details are available
+                                    "recordingplace": "",               # Can be filled with the recording place
+                                    "typeofrecordingplace": "",         # Can be filled with the type of recording place
+                                    "updatedBy": "",                    # Can be filled with the name of the updater
+                                    "current_date": current_dt,         # The current date
+                                    "previous": {},                     # Previous data (if any), for now an empty object
+                                    "isActive": 1,                      # Flag to indicate active status
+                                    "additionalInfo": {
+                                        "karya_version": str(karya_version),  # Convert karya_version to string
+                                        "avatar_id": worker_avatar_id,        # Avatar ID as string
+                                        "phone_number": worker_phone          # Phone number as string
+                                    }
+                                }
+
+
+        # Uncomment this when ready to insert metadata into speakerdetails:
+        speakerDetails.karya_new_update_write_speaker_metadata_details(
+            speakerdetails, current_username, activeprojectname,
+            current_username, 'field', 'speed', insert_dict["lifespeakerid"], speakerdetails_meta_data, 'bulk')
+        
+    return return_obj
+
+
+
+
 
 
 
