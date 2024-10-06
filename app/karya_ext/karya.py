@@ -2724,9 +2724,6 @@ def upload_csv_update_karya_speaker():
         return jsonify({'status': 'error', 'message': str(e)}), 500
     '''
 
-
-
-#assining extra meta data of user to accesscodedetails and speakerdetails collection 
 @karya_bp.route('/karya_new_upload_bulk_metadata', methods=['POST'])
 def karya_new_upload_bulk_metadata():
     try:
@@ -2754,7 +2751,7 @@ def karya_new_upload_bulk_metadata():
         try:
             data = json.loads(file_content)
             
-            # Since the outer structure is a list, iterate over each record
+            # Iterate over each record
             for item in data:
                 # Access the 'data' and 'props' fields from each record
                 own_access_code = item['data'].get('own_access_code')
@@ -2783,6 +2780,7 @@ def karya_new_upload_bulk_metadata():
                 if speaker_record:
                     # Extract 'additionalInfo' safely from the speaker_record
                     accesscodedetails_additionalinfo = speaker_record.get('additionalInfo', {})
+                    
                     # Ensure OutputTypeofPlace and OutputplaceofRecording are strings
                     if isinstance(OutputTypeofPlace, list):
                         OutputTypeofPlace = ', '.join(OutputTypeofPlace)  # Convert array to string
@@ -2824,39 +2822,28 @@ def karya_new_upload_bulk_metadata():
                         'গ্রাম': 'Village'
                     }
 
-
-                   # Function to handle mapping for lists of values (like languages)
+                    # Function to handle mapping for lists of values (like languages)
                     def map_list_values(input_list, mapping_dict):
                         if isinstance(input_list, list):
-                            # Map each individual value in the list
+                            # If it's a list, map each individual value in the list
                             return [mapping_dict.get(value.strip(), value) for value in input_list]
-                        else:
-                            # If it's not a list, return the single mapped value (if found)
+                        elif isinstance(input_list, str):
+                            # If it's a string, return the single mapped value (if found)
                             return mapping_dict.get(input_list.strip(), input_list)
+                        return input_list  # Fallback for unexpected types
 
-                    # Let's handle the list of values properly now
+                    # Handle OutputOtherLanguages as list
                     if isinstance(OutputOtherLanguages, list):
-                        # Example input: ["বাংলা, নেপালি"]
-                        # First, split each element if needed (i.e., some elements might have multiple languages combined in a single string)
                         OutputOtherLanguages = [lang.strip() for sublist in OutputOtherLanguages for lang in sublist.split(',')]
-                        
-                        # Apply mapping for each individual language
                         OutputOtherLanguages = map_list_values(OutputOtherLanguages, other_languages_map)
 
-                    if isinstance(OutputMediumofEducationUpto12th, list):
-                        # Map the medium of education for each value in the list
-                        OutputMediumofEducationUpto12th = map_list_values(OutputMediumofEducationUpto12th, medium_of_education_map)
+                    # Map medium of education for each value in the list
+                    OutputMediumofEducationUpto12th = map_list_values(OutputMediumofEducationUpto12th, medium_of_education_map)
+                    OutputMediumofEducationAbove12th = map_list_values(OutputMediumofEducationAbove12th, medium_of_education_map)
 
-                    if isinstance(OutputMediumofEducationAbove12th, list):
-                        # Map the medium of education for above 12th for each value in the list
-                        OutputMediumofEducationAbove12th = map_list_values(OutputMediumofEducationAbove12th, medium_of_education_map)
-
-                    # For single string mappings (like OutputEducationLevel and OutputTypeofPlace), no need for list handling
-                    if isinstance(OutputEducationLevel, str):
-                        OutputEducationLevel = education_level_map.get(OutputEducationLevel, OutputEducationLevel)
-
-                    if isinstance(OutputTypeofPlace, str):
-                        OutputTypeofPlace = type_of_place_map.get(OutputTypeofPlace, OutputTypeofPlace)
+                    # Map single string values directly
+                    OutputEducationLevel = map_list_values(OutputEducationLevel, education_level_map)
+                    OutputTypeofPlace = map_list_values(OutputTypeofPlace, type_of_place_map)
 
                     # Now construct the update_data with mapped values
                     update_data_accesscodedetials = {
@@ -2871,44 +2858,6 @@ def karya_new_upload_bulk_metadata():
                         "current.workerMetadata.typeofrecordingplace": OutputplaceofRecording,  # String as is
                         "current.updatedBy": current_username  # Your current username variable
                     }
-
-                    
-
-
-                    # Now use them in the update_data dictionary
-                    # update_data = {
-                    #     "additionalInfo.task_id": task_id,
-                    #     "additionalInfo.microtask_id": microtask_id,
-                    #     "additionalInfo.assignment_id": assignment_id,
-                    #     "current.workerMetadata.educationMediumUpto12-list": OutputMediumofEducationUpto12th,
-                    #     "current.workerMetadata.educationMediumAfter12-list": OutputMediumofEducationAbove12th,
-                    #     "current.workerMetadata.educationLevel": OutputEducationLevel,
-                    #     "current.workerMetadata.otherLanguages-list": OutputOtherLanguages,
-                    #     "current.workerMetadata.typeOfPlace": OutputTypeofPlace,  # Now a string
-                    #     "current.workerMetadata.placeOfRecording": OutputplaceofRecording,   # Now a string
-                    #     "current.updatedBy": current_username
-                    # }
-
-                    # Printing the dictionary and its types
-                    # print("Update Data:", update_data)
-                    # print("Types of each field:")
-                    # for key, value in update_data.items():
-                    #     print(f"{key}: {type(value)}")
-
-
-                    # Update the existing speaker record with the new data
-                    # update_data = {
-                    #     "additionalInfo.task_id": task_id,
-                    #     "additionalInfo.microtask_id": microtask_id,
-                    #     "additionalInfo.assignment_id": assignment_id,
-                    #     "current.workerMetadata.educationmediumupto12": OutputMediumofEducationUpto12th,
-                    #     "current.workerMetadata.educationmediumafter12": OutputMediumofEducationAbove12th,
-                    #     "current.workerMetadata.educationlevel": OutputEducationLevel,
-                    #     "current.workerMetadata.speakerspeaklanguage": OutputOtherLanguages,
-                    #     "current.workerMetadata.typeofrecordingplace": OutputTypeofPlace,
-                    #     "current.workerMetadata.recordingplace": OutputplaceofRecording,
-                    #     "current.updatedBy": current_username
-                    # }
 
                     # Update the accesscodedetails
                     accesscodedetails.update_one(
@@ -2944,26 +2893,12 @@ def karya_new_upload_bulk_metadata():
                                     "current.sourceMetadata.educationMediumAfter12-list": OutputMediumofEducationAbove12th,
                                     "current.sourceMetadata.otherLanguages-list": OutputOtherLanguages,
                                     "current.sourceMetadata.placeOfRecording": OutputplaceofRecording,
-                                     "current.sourceMetadata.educationLevel": OutputEducationLevel,
+                                    "current.sourceMetadata.educationLevel": OutputEducationLevel,
                                     "current.sourceMetadata.typeOfPlace": OutputTypeofPlace,
                                     "current.sourceMetadata.updatedBy": current_username
                                 }
                             }
                         )
-
-
-                    #     update_data_speakerdetails = {
-                    #     "additionalInfo.task_id": task_id,
-                    #     "additionalInfo.microtask_id": microtask_id,
-                    #     "additionalInfo.assignment_id": assignment_id,
-                    #     "current.workerMetadata.educationMediumUpto12-list": OutputMediumofEducationUpto12th,  # List of mapped values
-                    #     "current.workerMetadata.educationMediumAfter12-list": OutputMediumofEducationAbove12th,  # List of mapped values
-                    #     "current.workerMetadata.educationLevel": OutputEducationLevel,  # Single mapped value
-                    #     "current.workerMetadata.otherLanguages-list": OutputOtherLanguages,  # List of mapped values
-                    #     "current.workerMetadata.typeOfPlace": OutputTypeofPlace,  # Single mapped value
-                    #     "current.workerMetadata.placeOfRecording": OutputplaceofRecording,  # String as is
-                    #     "current.updatedBy": current_username  # Your current username variable
-                    # }
 
                     flash("Speaker/User Id Updated")
 
