@@ -2837,13 +2837,22 @@ def karya_new_upload_bulk_metadata():
                         OutputOtherLanguages = [lang.strip() for sublist in OutputOtherLanguages for lang in sublist.split(',')]
                         OutputOtherLanguages = map_list_values(OutputOtherLanguages, other_languages_map)
 
-                    # Map medium of education for each value in the list
-                    OutputMediumofEducationUpto12th = map_list_values(OutputMediumofEducationUpto12th, medium_of_education_map)
-                    OutputMediumofEducationAbove12th = map_list_values(OutputMediumofEducationAbove12th, medium_of_education_map)
-
                     # Map single string values directly
                     OutputEducationLevel = map_list_values(OutputEducationLevel, education_level_map)
                     OutputTypeofPlace = map_list_values(OutputTypeofPlace, type_of_place_map)
+
+                    # Map medium of education for each value in the list
+                    if OutputEducationLevel == 'No Schooling':
+                        OutputMediumofEducationUpto12th = ''
+                        OutputMediumofEducationAbove12th = ''
+                    elif OutputEducationLevel == 'Upto 12ᵗʰ':
+                        OutputMediumofEducationUpto12th = map_list_values(
+                            OutputMediumofEducationUpto12th, medium_of_education_map)
+                        OutputMediumofEducationAbove12th = ''
+                    else:
+                        OutputMediumofEducationUpto12th = map_list_values(OutputMediumofEducationUpto12th, medium_of_education_map)
+                        OutputMediumofEducationAbove12th = map_list_values(OutputMediumofEducationAbove12th, medium_of_education_map)
+
 
                     # Now construct the update_data with mapped values
                     update_data_accesscodedetials = {
