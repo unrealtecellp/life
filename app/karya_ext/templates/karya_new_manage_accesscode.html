@@ -51,11 +51,17 @@
           Get New Access Code
         </button>
 
+        <!-- button for Bulk Update Metadata-->
+        <button type="button" class="btn btn-info" data-toggle="modal" data-target="#uploadJSONModal">
+          Bulk Upload Update
+        </button>
+       
+
          <!-- Button to trigger modal for registering speaker -->
          <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#registerSpeakerModal" disabled>Link Access Code(s)</button>
         
          <!-- Updated button to open modal -->
-          <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#uploadCSVModal">Upload CSV to Link Access Code(s)</button>
+          <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#uploadCSVModal" disabled>Upload CSV to Link Access Code(s)</button>
         
           <!-- button for table -->
         <button type="button" class="btn btn-success" id="toggleTableBtn" onclick="toggleTableVisibility()">Assigned Access Code</button>
@@ -84,6 +90,34 @@
         <div class="modal-footer">
           <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
           <button type="submit" class="btn btn-success">Upload and Update</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- Modal for JSON file upload -->
+<div class="modal fade" id="uploadJSONModal" tabindex="-1" role="dialog" aria-labelledby="uploadJSONModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="uploadJSONModalLabel">Upload JSON File for Bulk Update</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form id="jsonUploadForm" enctype="multipart/form-data">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="jsonFile">Upload JSON File</label>
+            <input type="file" class="form-control-file" id="jsonFile" name="jsonFile" accept=".json" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-success">Upload</button>
         </div>
       </form>
     </div>
@@ -682,6 +716,43 @@
         });
     } else {
         alert('Please select a CSV file.');
+    }
+});
+</script>
+
+
+
+
+
+<script>
+  document.getElementById('jsonUploadForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    var formData = new FormData();
+    var fileInput = document.getElementById('jsonFile');
+    
+    if (fileInput.files.length > 0) {
+        formData.append('jsonFile', fileInput.files[0]);
+
+        // Use Jinja2 to get the URL for the route
+        fetch("{{ url_for('karya_bp.karya_new_upload_bulk_metadata') }}", {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                alert('JSON processed and speakers updated successfully!');
+            } else {
+                alert('Error: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while uploading the JSON file.');
+        });
+    } else {
+        alert('Please select a JSON file.');
     }
 });
 </script>

@@ -8,7 +8,7 @@ Progress Report Admin
 {{ super() }}
 
 
-
+<link href="https://cdn.metroui.org.ua/v4/css/metro-all.min.css" rel="stylesheet">
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.css">
 
 <style>/* Basic styles for the popup */
@@ -185,6 +185,8 @@ Progress Report Admin
 
 
 
+
+
 {% endblock %}
 
 {% block app_content %}
@@ -272,13 +274,14 @@ Progress Report Admin
                 </table>
             
                 <!-- Modals for Project Details -->
-                {% for project in project_stats %}
+                <!-- {% for project in project_stats %}
                 <div class="modal fade" id="projectModal{{ loop.index }}" tabindex="-1" role="dialog" aria-labelledby="projectModalLabel{{ loop.index }}" aria-hidden="true">
                     <div class="modal-dialog" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
                                 <h5 class="modal-title" id="projectModalLabel{{ loop.index }}">{{ project.projectname }}</h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <button type="button" class="btn btn-danger float-left" data-dismiss="modal" aria-label="Close">Close</button>
+
                                     <span aria-hidden="true">&times;</span>
                                 </button>
                             </div>
@@ -294,6 +297,93 @@ Progress Report Admin
                                         <tr><th>Speakers Audio IDs</th><td>{{ project.speakersAudioIds }}</td></tr>
                                         <tr><th>Total Audio IDs</th><td>{{ project.totalAudioIds }}</td></tr>
                                         <tr><th>Speakers Audio IDs Keys</th><td>{{ project.speakersAudioIdsKeys }}</td></tr>
+                                    </tbody>
+                                </table>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-danger ml-auto" data-dismiss="modal">Close</button>
+                                </div>
+                                
+                            </div>
+                            
+                            
+                        </div>
+                    </div>
+                </div>
+                {% endfor %} -->
+
+
+
+
+                <!-- Modals for Project Details -->
+                {% for project in project_stats %}
+                <div class="modal fade" id="projectModal{{ loop.index }}" tabindex="-1" role="dialog" aria-labelledby="projectModalLabel{{ loop.index }}" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="projectModalLabel{{ loop.index }}">{{ project.projectname }}</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <table class="table table-bordered">
+                                    <tbody>
+                                        <tr><th>Project Owner</th><td>{{ project.projectOwner }}</td></tr>
+                                        <tr><th>Shared With</th><td>{{ project.sharedwith | join(', ') }}</td></tr>
+                                        <tr><th>Project Derivatives</th><td>{{ project.projectDerivatives | join(', ') }}</td></tr>
+                                        <tr><th>About Project</th><td>{{ project.aboutproject }}</td></tr>
+                                        <tr><th>Project Type</th><td>{{ project.projectType }}</td></tr>
+
+                                        <!-- Speaker IDs displayed as key-value pairs -->
+                                        <tr>
+                                            <th>Speaker IDs</th>
+                                            <td>
+                                                <table class="table table-sm">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Worker</th>
+                                                            <th>Speaker IDs Shared With Worker</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {% for speaker, ids in project.speakerIds.items() %}
+                                                        <tr>
+                                                            <td>{{ speaker }}</td>
+                                                            <td>{{ ids | join(', ') }}</td>
+                                                        </tr>
+                                                        {% endfor %}
+                                                    </tbody>
+                                                </table>
+                                            </td>
+                                        </tr>
+
+                                        <!-- Speakers Audio IDs displayed as key-value pairs -->
+                                        <tr>
+                                            <th>Speakers Audio IDs</th>
+                                            <td>
+                                                <table class="table table-sm">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Speaker ID</th>
+                                                            <th>Audio IDs</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {% for speakerId, audioIds in project.speakersAudioIds.items() %}
+                                                        <tr>
+                                                            <td>{{ speakerId }}</td>
+                                                            <td>{{ audioIds | join(', ') }}</td>
+                                                        </tr>
+                                                        {% endfor %}
+                                                    </tbody>
+                                                </table>
+                                            </td>
+                                        </tr>
+
+                                        <tr><th>Total Audio IDs</th><td>{{ project.totalAudioIds }}</td></tr>
+
+                                        <!-- Speakers Audio IDs Keys displayed as a comma-separated list -->
+                                        <tr><th>Speakers Audio IDs Keys</th><td>{{ project.speakersAudioIdsKeys | join(', ') }}</td></tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -362,6 +452,50 @@ Progress Report Admin
                         <li>Total Remaining Space (as per allocation): {{ remaining_space_value }} {{ remaining_space_unit }}</li>
                         
                     </ul>
+
+
+                    <ul>
+
+                        <li class="info-button bg-green fg-white bd-green" style="flex-basis: 48%; margin-bottom: 10px;">
+                            <div class="button">
+                                <span class="mif-layers"></span> Total number of projects (by project type):
+                            </div>
+                            <div class="info text-bold">{{ all_projects | length }}</div>
+                        </li>
+                    
+                        <li class="info-button bg-orange fg-white bd-orange" style="flex-basis: 48%; margin-bottom: 10px;">
+                            <div class="button">
+                                <span class="mif-database"></span> Total space taken:
+                            </div>
+                            <div class="info text-bold">{{ data_size_value }} {{ data_size_unit }}</div>
+                        </li>
+<!-- 
+                        <li class="info-button bg-green fg-white bd-green" style="flex-basis: 48%; margin-bottom: 10px;">
+                            <div class="button">
+                                <span class="mif-chart-bars"></span> Avg space per project:
+                            </div>
+                            <div class="info text-bold">""</div>
+                        </li> -->
+                    
+                        <!-- <li class="info-button bg-blue fg-white bd-blue" style="flex-basis: 48%; margin-bottom: 10px;">
+                            <div class="button">
+                                <span class="mif-documents"></span> Avg number of documents per project:
+                            </div>
+                            <div class="info text-bold">""</div>
+                        </li> -->
+                    
+                        <li class="info-button bg-red fg-white bd-red" style="flex-basis: 48%; margin-bottom: 10px;">
+                            <div class="button">
+                                <span class="mif-cabinet"></span> Total Remaining Space (as per allocation):
+                            </div>
+                            <div class="info text-bold">{{ remaining_space_value }} {{ remaining_space_unit }}</div>
+                        </li>
+                    
+                    </ul>
+                    
+                    
+
+
 
 
                     <div class="row">
@@ -484,7 +618,7 @@ Progress Report Admin
                         </table>
                     </div>
 
-                   
+                          
 
 
 
@@ -572,7 +706,9 @@ Progress Report Admin
     
 </div>
 
-
+</main>
+</div>
+</div>  
 
 
 {% endblock %}
@@ -581,7 +717,7 @@ Progress Report Admin
 {{ super() }}
 
 
-
+<script src="https://cdn.metroui.org.ua/v4/js/metro.min.js"></script>
 
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -800,7 +936,7 @@ $(document).ready(function () {
                     '<button class="btn btn-primary view-details" data-project-name="' +
                     report['project Name'] +
                     '">View</button>' +
-                    '<button class="btn btn-secondary view-pie-chart" data-completed="' +
+                    '<button class="btn btn-warning view-pie-chart" data-completed="' +
                     report['Completed files'] +
                     '" data-remaining="' +
                     report['Remaining files'] +

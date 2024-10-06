@@ -21,6 +21,9 @@ from datetime import datetime
 from pprint import pprint, pformat
 import gridfs
 import base64
+import csv
+from io import StringIO
+from flask import request, jsonify
 # from pylatex.utils import bold, NoEscape
 from app.controller import (manageAppConfig, questionnairedetails,
                             readJSONFile, removeallaccess, savenewlexeme,
@@ -1935,12 +1938,143 @@ def karya_new_home():
         activeprojectname=activeprojectname
     )
 
-
-
-
+#updated_karya_new with access_code and speaker_id to uplaod the access code csv
 @karya_bp.route('/karya_new_uploadacesscode', methods=['GET', 'POST'])
 @login_required
 def karya_new_uploadacesscode():
+    projects, userprojects, projectsform, karyaaccesscodedetails, speakerdetails = getdbcollections.getdbcollections(mongo,
+                                                                                                     'projects',
+                                                                                                     'userprojects',
+                                                                                                     'projectsform',
+                                                                                                     'accesscodedetails', 
+                                                                                                     'speakerdetails')
+    current_username = getcurrentusername.getcurrentusername()
+    currentuserprojectsname = getcurrentuserprojects.getcurrentuserprojects(current_username,
+                                                                            userprojects)
+    activeprojectname = getactiveprojectname.getactiveprojectname(
+        current_username, userprojects)
+    project_type = getprojecttype.getprojecttype(projects, activeprojectname)
+    derived_from_project_type, derived_from_project_name = getprojecttype.getderivedfromprojectdetails(projects,
+                                                                                                       activeprojectname)
+
+    logger.debug("derived_from_project_type: %s\nderived_from_project_name: %s",
+                 derived_from_project_type, derived_from_project_name)
+    # This metadata for pre-filling the form with metadata relevant only for
+    # the current project
+    formacesscodemetadata = access_code_management.get_access_code_metadata_for_form(
+        projects,
+        projectsform,
+        activeprojectname,
+        project_type,
+        derived_from_project_type,
+        derived_from_project_name
+    )
+
+    activeacode = karyaaccesscodedetails.find(
+        {"projectname": activeprojectname, "isActive": 1, "additionalInfo.karya_version":"karya_main"})
+    deactiveacode = karyaaccesscodedetails.find(
+        {"projectname": activeprojectname, "isActive": 0, "additionalInfo.karya_version":"karya_main"})
+
+    active_data_table = []
+    deactive_data_table = []
+
+    for item in activeacode:
+        item_dict = {
+            "id": str(item["_id"]),  # Convert ObjectId to string
+            "karyaaccesscode": item["karyaaccesscode"],
+            "karyaspeakerid": item["karyaspeakerid"],
+            "isActive": item["isActive"],
+            "fetchData": item["fetchData"]
+            # Include other required fields from the item
+        }
+        active_data_table.append(item_dict)
+
+    for item in deactiveacode:
+        item_dict = {
+            "id": str(item["_id"]),  # Convert ObjectId to string
+            "karyaaccesscode": item["karyaaccesscode"],
+            "karyaspeakerid": item["karyaspeakerid"],
+            "isActive": item["isActive"],
+            "fetchData": item["fetchData"]
+            # Include other required fields from the item
+        }
+        deactive_data_table.append(item_dict)
+
+    # Convert the ObjectId to string for serialization
+    # active_data_table = [json.loads(json.dumps(item, default=str)) for item in activeacode]
+    # deactive_data_table = [json.loads(json.dumps(item, default=str)) for item in deactiveacode]
+
+    shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
+                                                      current_username,
+                                                      activeprojectname)
+
+    if request.method == "POST":
+        access_code_file = request.files['accesscodefile']
+        task = request.form.get('task')
+        language = request.form.get('langscript')
+        domain = request.form.getlist('domain')
+        phase = request.form.get('phase')  # =>numbers - 0,1,2,3, etc
+        elicitationmethod = request.form.getlist("elicitation")
+        fetch_data = request.form.get('fetchdata')
+        karya_version = 'karya_main'
+
+        if fetch_data == 'on':
+            fetch_data = 1
+        else:
+            fetch_data = 0
+
+        # Call the function to get the processed DataFrame
+        processed_dataframe_csv = access_code_management.process_access_code_csv_karya_new_update(access_code_file)
+
+        # Extract each column into separate variables
+        access_code = processed_dataframe_csv['access_code']
+        avatar_id = processed_dataframe_csv['avatar_id']
+        worker_id = processed_dataframe_csv['worker_id']
+        yob = processed_dataframe_csv['yob']
+        gender = processed_dataframe_csv['gender']
+        full_name = processed_dataframe_csv['full_name']
+        phone_number = processed_dataframe_csv['phone_number']
+        income_source = processed_dataframe_csv['income_source']
+        education_level = processed_dataframe_csv['education_level']
+
+        # Now each variable holds the respective column from the DataFrame
+        print("Access Code: ", type(access_code))
+        print("Avatar ID: ", avatar_id)
+
+        
+        upload_response = access_code_management.upload_access_code_metadata_for_karya_new_update(
+            karyaaccesscodedetails,
+            speakerdetails,
+            activeprojectname,
+            current_username,
+            task,
+            language,
+            domain,
+            phase,
+            elicitationmethod,
+            fetch_data,
+            karya_version,
+            access_code, avatar_id, worker_id, yob, gender, full_name, phone_number, education_level
+        )
+
+
+        flash("Access Code Uploaded")
+        
+        return redirect(url_for('karya_bp.karya_new_home'))
+
+    return render_template("karya_new_uploadacesscode.html",
+                           data=currentuserprojectsname,
+                           active_data_table=active_data_table,
+                           deactive_data_table=deactive_data_table,
+                           projectName=activeprojectname,
+                           uploadacesscodemetadata=formacesscodemetadata,
+                           projecttype=project_type,
+                           shareinfo=shareinfo)
+
+
+@karya_bp.route('/karya_new_uploadacesscode_old', methods=['GET', 'POST'])
+@login_required
+def karya_new_uploadacesscode_old():
     projects, userprojects, projectsform, karyaaccesscodedetails = getdbcollections.getdbcollections(mongo,
                                                                                                      'projects',
                                                                                                      'userprojects',
@@ -2039,7 +2173,7 @@ def karya_new_uploadacesscode():
         
         return redirect(url_for('karya_bp.karya_new_home'))
 
-    return render_template("karya_new_uploadacesscode.html",
+    return render_template("karya_new_uploadacesscode_old.html",
                            data=currentuserprojectsname,
                            active_data_table=active_data_table,
                            deactive_data_table=deactive_data_table,
@@ -2580,9 +2714,131 @@ def upload_csv_update_karya_speaker():
 
 
 
-import csv
-from io import StringIO
-from flask import request, jsonify
+#assining extra meta data of user to accesscodedetails and speakerdetails collection 
+@karya_bp.route('/karya_new_upload_bulk_metadata', methods=['POST'])
+def karya_new_upload_bulk_metadata():
+    try:
+        # Consolidate collection retrieval
+        accesscodedetails, userprojects, userlogin, speakermeta, projects, speakerdetails = getdbcollections.getdbcollections(
+            mongo, 'accesscodedetails', 'userprojects', 'userlogin', 'speakermeta', 'projects', 'speakerdetails'
+        )
+
+        # Retrieve current username and active project name
+        current_username = getcurrentusername.getcurrentusername()
+        activeprojectname = getactiveprojectname.getactiveprojectname(current_username, userprojects)
+                                    
+        # Check if the POST request has the file part
+        if 'jsonFile' not in request.files:
+            return jsonify({'status': 'error', 'message': 'No file part'})
+
+        file = request.files['jsonFile']
+
+        # If the user does not select a file
+        if file.filename == '':
+            return jsonify({'status': 'error', 'message': 'No selected file'})
+
+        # Read the file and load the JSON
+        file_content = file.read()
+        try:
+            data = json.loads(file_content)
+            
+            # Since the outer structure is a list, iterate over each record
+            for item in data:
+                # Access the 'data' and 'props' fields from each record
+                own_access_code = item['data'].get('own_access_code')
+                OutputTypeofPlace = item['data'].get('OutputTypeofPlace')
+                OutputEducationLevel = item['data'].get('OutputEducationLevel')
+                OutputOtherLanguages = item['data'].get('OutputOtherLanguages')
+                OutputplaceofRecording = item['data'].get('OutputplaceofRecording')
+                OutputMediumofEducationUpto12th = item['data'].get('OutputMediumofEducationUpto12th')
+                OutputMediumofEducationAbove12th = item['data'].get('OutputMediumofEducationAbove12th')
+
+                generated_by = item['props'].get('generated_by')
+                task_id = generated_by.get('task_id')
+                avatar_id = generated_by.get('avatar_id')
+                worker_id = generated_by.get('worker_id')
+                microtask_id = generated_by.get('microtask_id')
+                assignment_id = generated_by.get('assignment_id')
+
+                # Check if the access_code exists in the database and is active
+                speaker_record = accesscodedetails.find_one({
+                    'karyaaccesscode': own_access_code,
+                    'karyaspeakerid': worker_id,
+                    "projectname": activeprojectname, 
+                    "isActive": 1
+                })
+
+                if speaker_record:
+                    # Extract 'additionalInfo' safely from the speaker_record
+                    accesscodedetails_additionalinfo = speaker_record.get('additionalInfo', {})
+                    
+                    # Update the existing speaker record with the new data
+                    update_data = {
+                        "additionalInfo.task_id": task_id,
+                        "additionalInfo.microtask_id": microtask_id,
+                        "additionalInfo.assignment_id": assignment_id,
+                        "current.sourceMetadata.typeofrecordingplace": OutputTypeofPlace,
+                        "current.sourceMetadata.educationlevel": OutputEducationLevel,
+                        "current.sourceMetadata.speakerspeaklanguage": OutputOtherLanguages,
+                        "current.sourceMetadata.recordingplace": OutputplaceofRecording,
+                        "current.sourceMetadata.educationmediumupto12": OutputMediumofEducationUpto12th,
+                        "current.sourceMetadata.educationmediumafter12": OutputMediumofEducationAbove12th,
+                        "current.updatedBy": current_username
+                    }
+
+                    # Update the accesscodedetails
+                    accesscodedetails.update_one(
+                        {'karyaaccesscode': own_access_code,
+                         'karyaspeakerid': worker_id,
+                         "additionalInfo.karya_version": "karya_main", 
+                         "projectname": activeprojectname, 
+                         "isActive": 1},  # Match the record by unique keys
+                        {'$set': update_data}  # Set the new values
+                    )
+
+                    # Fetch the corresponding speaker details from the speakerdetails collection
+                    find_speaker_details = accesscodedetails.find_one({
+                        "karyaaccesscode": own_access_code,
+                        "karyaspeakerid": worker_id,
+                        "projectname": activeprojectname, 
+                        "isActive": 1
+                    }, {
+                        "lifespeakerid": 1, "karyaaccesscode": 1, "karyaspeakerid": 1,
+                        "current.workerMetadata": 1, "additionalInfo": 1, "_id": 0
+                    })
+
+                    # Update the speaker details collection with the new metadata
+                    if find_speaker_details and 'lifespeakerid' in find_speaker_details:
+                        speakerdetails.update_one(
+                            {
+                                "projectname": activeprojectname,
+                                "lifesourceid": find_speaker_details["lifespeakerid"]
+                            },
+                            {
+                                '$set': {
+                                    "current.sourceMetadata.educationmediumupto12": OutputMediumofEducationUpto12th,
+                                    "current.sourceMetadata.educationmediumafter12": OutputMediumofEducationAbove12th,
+                                    "current.sourceMetadata.speakerspeaklanguage": OutputOtherLanguages,
+                                    "current.sourceMetadata.recordingplace": OutputplaceofRecording,
+                                    "current.sourceMetadata.typeofrecordingplace": OutputTypeofPlace,
+                                    "current.sourceMetadata.updatedBy": current_username
+                                }
+                            }
+                        )
+
+                    flash("Speaker/User Id Updated")
+
+            return jsonify({'status': 'success', 'message': 'Data processed successfully'})
+        
+        except json.JSONDecodeError:
+            return jsonify({'status': 'error', 'message': 'Invalid JSON format'})
+
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)})
+
+
+
+
 
 @karya_bp.route('/upload_csv_update_karya_speaker', methods=['POST'])
 def upload_csv_update_karya_speaker():

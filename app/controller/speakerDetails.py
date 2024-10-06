@@ -499,6 +499,43 @@ def karya_new_write_speaker_metadata(speakerdetails,
     speakerdetails.insert_one(source_data)
 
 
+def karya_new_update_write_speaker_metadata(speakerdetails,
+                           projectowner,
+                           activeprojectname,
+                           current_username,
+                           audio_source,
+                           metadata_schema,
+                           metadata_data,
+                           lifespeakerid_var,
+                           source_id,
+                           upload_type
+                           ):
+
+    current_dt = str(datetime.now()).replace('.', ':')
+    logger.debug('Metadata schema %s', metadata_schema)
+
+
+    source_data = {"username": projectowner,
+                   "projectname": activeprojectname,
+                   "lifesourceid": lifespeakerid_var,
+                   "createdBy": current_username,
+                   "audioSource": audio_source,
+                   "audioSubSource": metadata_schema,
+                   "metadataSchema": metadata_schema,
+                   "uploadType": upload_type,
+                   "additionalInfo": {},
+                   "current": {
+                       "sourceMetadata": metadata_data,
+                       "current_date": current_dt,
+                   },
+                   "uploadedAt": current_dt,
+                   "isActive": 1,
+                   "old_lifesourceid": source_id}
+    logger.debug('Data to inser %s', source_data)
+    speakerdetails.insert_one(source_data)
+
+
+
 def write_bulk_speaker_metadata(speakerdetails,
                                 projectowner,
                                 activeprojectname,
@@ -649,3 +686,38 @@ def karya_new_write_speaker_metadata_details(speakerdetails,
                                source_id,
                                upload_type,
                                additionalInfo_var)
+
+
+def karya_new_update_write_speaker_metadata_details(speakerdetails,
+                                   projectowner,
+                                   activeprojectname,
+                                   current_username,
+                                   audio_source,
+                                   metadata_schema,
+                                   lifespeakerid_var,
+                                   metadata_data,
+                                   upload_type,
+                                   **kwargs):
+
+    logger.debug('Metadata schema %s', metadata_schema)
+
+    # for key, val in kwargs.items():
+    #     additionalInfo_var[key] = val
+    # print("additionalInfo_var from function karya_new_write_speaker_metadata_details:" ,  additionalInfo_var)
+
+    if upload_type == "bulk":
+        metadata_data_for_source_id = {"name"}
+        source_id = get_source_id(audio_source, metadata_schema, metadata_data) #metadata_schema = speed (for now)
+        logger.debug('Source ID %s', source_id)
+
+        karya_new_update_write_speaker_metadata(speakerdetails,
+                               projectowner,
+                               activeprojectname,
+                               current_username,
+                               audio_source,
+                               metadata_schema,
+                               metadata_data,
+                               lifespeakerid_var,
+                               source_id,
+                               upload_type)
+                            
