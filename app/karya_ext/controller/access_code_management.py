@@ -7,6 +7,9 @@ from app.controller import (
     speakerDetails,
 )
 
+from dateutil.relativedelta import relativedelta
+from datetime import date
+
 logger = life_logging.get_logger()
 
 
@@ -507,16 +510,21 @@ def upload_access_code_metadata_for_karya_new_update(
         
         # Prepare data for insertion (convert all relevant fields to strings)
         worker_name = str(full_name.iloc[index])
-        worker_yob = str(yob.iloc[index])  # Convert yob to string
+        worker_age_group = int(yob.iloc[index])  # Convert yob to string
         worker_gender = str(gender.iloc[index])
         worker_id_value = str(worker_id.iloc[index])
         worker_phone = str(phone_number.iloc[index])
         worker_avatar_id = str(avatar_id.iloc[index])  # Convert avatar_id to string
         
+
+        dob = get_life_age_group(worker_age_group)
+
+
         # Create life speaker ID using name and yob
-        rename_in_form_dob = worker_yob  # yob as string
+        rename_in_form_dob = dob.replace("-", "")  # yob as string
         rename_in_form = worker_name.replace(" ", "").lower()
         lifespeakerid = f"{rename_in_form}{rename_in_form_dob}_{worker_id_value}"
+        # print(type(lifespeakerid),"\n",type(rename_in_form_dob))
 
         # Build insert dictionary (ensure everything is converted to strings)
         insert_dict = {
@@ -532,18 +540,19 @@ def upload_access_code_metadata_for_karya_new_update(
             "uploadedBy": current_username,
             "assignedBy": current_username,
             "current": {
+                "updatedBy":current_username, 
                 "workerMetadata": {
                     "name": worker_name,               # full_name
-                    "agegroup": rename_in_form_dob,    # yob (renamed as age_)
+                    "agegroup": dob,    # yob (renamed as age_)
                     "gender": worker_gender,           # gender
                     "educationlevel": str(education_level.iloc[index]),  # Convert education_level to string
-                    "educationmediumupto12": "",       # You can fill these later if needed
+                    "educationMediumUpto12": "",       # You can fill these later if needed
                     "educationmediumafter12": "",
                     "speakerspeaklanguage": "",
                     "recordingplace": "",
                     "typeofrecordingplace": ""
                 },
-                "updatedBy": "", 
+                
                 "current_date": current_dt
             },
             "previous": {},
@@ -563,36 +572,50 @@ def upload_access_code_metadata_for_karya_new_update(
 
         speakerdetails_meta_data ={
                                     "name": worker_name,                # full_name
-                                    "ageGroup": rename_in_form_dob,     # yob (renamed as age_)
+                                    "ageGroup": dob,     # yob (renamed as age_)
                                     "gender": worker_gender,            # gender
-                                    "educationlevel": str(education_level.iloc[index]),  # Convert education_level to string
-                                    "educationmediumupto12": "",        # This can be filled later if needed
-                                    "educationmediumafter12": "",       # This can be filled later if needed
-                                    "speakerspeaklanguage": "",         # Fill this if language details are available
-                                    "recordingplace": "",               # Can be filled with the recording place
-                                    "typeofrecordingplace": "",         # Can be filled with the type of recording place
-                                    "updatedBy": "",                    # Can be filled with the name of the updater
+                                    "educationLevel": "",  # Convert education_level to string str(education_level.iloc[index])
+                                    "educationMediumUpto12-list": "",        # This can be filled later if needed
+                                    "educationMediumAfter12-list": "",       # This can be filled later if needed
+                                    "otherLanguages-list": "",         # Fill this if language details are available
+                                    "placeOfRecording": "",               # Can be filled with the recording place
+                                    "typeOfPlace": "",         # Can be filled with the type of recording place
                                     "current_date": current_dt,         # The current date
-                                    "previous": {},                     # Previous data (if any), for now an empty object
-                                    "isActive": 1,                      # Flag to indicate active status
-                                    "additionalInfo": {
+                                    "isActive": 1                    # Flag to indicate active status
+                                    
+                                }
+        speakerdetails_additionalInfo = {
                                         "karya_version": str(karya_version),  # Convert karya_version to string
                                         "avatar_id": worker_avatar_id,        # Avatar ID as string
                                         "phone_number": worker_phone          # Phone number as string
                                     }
-                                }
 
 
-        # Uncomment this when ready to insert metadata into speakerdetails:
+        #saving to speakerdetails:
         speakerDetails.karya_new_update_write_speaker_metadata_details(
             speakerdetails, current_username, activeprojectname,
-            current_username, 'field', 'speed', insert_dict["lifespeakerid"], speakerdetails_meta_data, 'bulk')
+            current_username, 'field', 'speed', insert_dict["lifespeakerid"], speakerdetails_meta_data,  speakerdetails_additionalInfo,  'bulk' )
         
     return return_obj
 
 
 
 
+def get_life_age_group(yob):
+    agroup = ''
+    dob = date(int(yob), 1, 1)
+    today = date.today()
+    age = relativedelta(today, dob).years
+    if age <= 30:
+        agroup = '18-30'
+    elif age > 30 and age <= 45:
+        agroup = '30-45'
+    elif age > 45 and age <= 60:
+        agroup = '45-60'
+    else:
+        agroup = '60+'
+
+    return agroup
 
 
 

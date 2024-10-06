@@ -4,9 +4,9 @@ $("div#audiofileid").dropzone({
     url: "/lifedata/transcription/uploadaudiofiles",
     maxFilesize: 512,
     // autoProcessQueue: false,
-    uploadMultiple: false,
+    uploadMultiple: true,
     parallelUploads: 1,
-    maxFiles: 1,
+    maxFiles: 10,
     paramName: "audiofile",
     init: function () {
         var myDropzone = this;
