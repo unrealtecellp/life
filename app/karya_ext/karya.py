@@ -2298,6 +2298,21 @@ def karya_new_assign_access_code_user():
         sols = request.form.getlist('sols')
         por = request.form.get('por')
         toc = request.form.get('toc')
+        # # Print the form data to check
+        # print(f"Access Code: {accesscode}")
+        # print(f"Name: {fname}")
+        # print(f"Age Group: {fage}")
+        # print(f"Gender: {fgender}")
+        # print(f"Education Level: {educlvl}")
+        # print(f"Medium of Education (upto 12th): {moe12}")
+        # print(f"Medium of Education (After 12th): {moea12}")
+        # print(f"Other Languages: {sols}")
+        # print(f"Place of Recording: {por}")
+        # print(f"Type of Place: {toc}")
+
+        find_lifespeakerid = accesscodedetails.find_one({"karyaaccesscode":accesscode, "projectname":activeprojectname},
+                                                   {"lifespeakerid":1,"current.workerMetadata.name":1, "_id":0})
+        # print("lifespekaerid: ", find_lifespeakerid)
 
         # Runs if a new access code is to be assigned
         if accesscode == '':
@@ -2327,38 +2342,44 @@ def karya_new_assign_access_code_user():
 
                 # metadata save to accesscodedetails
                 access_code_management.karya_new_add_access_code_metadata(
-                    accesscodedetails,
-                    activeprojectname,
-                    current_username,
-                    karyaspeakerid,
-                    accesscode,
-                    fname,
-                    fage,
-                    fgender,
-                    educlvl,
-                    moe12,
-                    moea12,
-                    sols,
-                    por,
-                    toc
-                )
-            # Runs if a metadata of already assigned access code is to be updated
-            else:
+                                                                        accesscodedetails,
+                                                                        activeprojectname,
+                                                                        current_username,
+                                                                        karyaspeakerid,
+                                                                        accesscode,
+                                                                        fname,
+                                                                        fage,
+                                                                        fgender,
+                                                                        educlvl,
+                                                                        moe12,
+                                                                        moea12,
+                                                                        sols,
+                                                                        por,
+                                                                        toc
+                                                                            )
+                
+        # Runs if a metadata of already assigned access code is to be updated
+        else:
 
-                # metadata save to accesscodedetails currten and old metadata transfer to old maetadata in accesscode details
-                access_code_management.karya_new_update_access_code_metadata(
-                    accesscodedetails,
-                    activeprojectname,
-                    current_username,
-                    accesscode,
-                    fgender,
-                    educlvl,
-                    moe12,
-                    moea12,
-                    sols,
-                    por,
-                    toc
-                )
+            # metadata save to accesscodedetails currten and old metadata transfer to old maetadata in accesscode details
+            access_code_management.karya_new_update_access_code_metadata(
+                                                                        accesscodedetails,
+                                                                        speakerdetails,
+                                                                        activeprojectname,
+                                                                        current_username,
+                                                                        find_lifespeakerid["lifespeakerid"],
+                                                                        accesscode,
+                                                                        fgender,
+                                                                        educlvl,
+                                                                        moe12,
+                                                                        moea12,
+                                                                        sols,
+                                                                        por,
+                                                                        toc)
+            
+            speaker_name = find_lifespeakerid["current"]["workerMetadata"].get("name", "Unknown Speaker")
+
+            flash(f"Metadata of \"{speaker_name}\" has been updated.")
 
     return redirect(url_for('karya_bp.karya_new_manage_accesscode'))
 
