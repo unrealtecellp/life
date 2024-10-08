@@ -92,6 +92,16 @@
                 <div style="text-align: center;">
                   <input type="submit" class="btn btn-info" id="fetchaudioid" value="Fetch Audio">
                 </div>
+
+                <!-- Modal Loader (initially hidden) -->
+                <div class="modal" id="loadingModal" style="display: none;">
+                  <div class="modal-content">
+                      <div class="loader-container">
+                          <div class="loading-text">LiFE Is Fetching Please Wait<span class="dots"></span></div>
+                      </div>
+                  </div>
+                </div>
+
                 
                 <br>
             </form>
@@ -171,53 +181,63 @@
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script>
-  $(document).ready(function() {
+$(document).ready(function() {
     $('#getotpid').click(function() {
-      var selectedValue = $('#additionalDropdown').val();
-      var acode = null;
+        var selectedValue = $('#additionalDropdown').val();
+        var acode = null;
 
-      if (selectedValue === "newVerification" || selectedValue === "completedVerification") {
-        // Code for Verification Access Code selected
-        var verAccessCodeSelect = document.getElementById("verificationDropdown");
-        acode = verAccessCodeSelect.value;
-      } else if (selectedValue === "newTranscription") {
-        // Code for Transcription Access Code selected
-        var transAccessCodeSelect = document.getElementById("transcriptionDropdown");
-        acode = transAccessCodeSelect.value;
-      } else if (selectedValue === "completedRecordings") {
-        // Code for Transcription Access Code selected
-        var recordAccessCodeSelect = document.getElementById("recordingDropdown");
-        acode = recordAccessCodeSelect.value
-      }
+        if (selectedValue === "newVerification" || selectedValue === "completedVerification") {
+            var verAccessCodeSelect = document.getElementById("verificationDropdown");
+            acode = verAccessCodeSelect.value;
+        } else if (selectedValue === "newTranscription") {
+            var transAccessCodeSelect = document.getElementById("transcriptionDropdown");
+            acode = transAccessCodeSelect.value;
+        } else if (selectedValue === "completedRecordings") {
+            var recordAccessCodeSelect = document.getElementById("recordingDropdown");
+            acode = recordAccessCodeSelect.value;
+        }
 
-      var mob = $('#pimobilenumber').val();
+        var mob = $('#pimobilenumber').val();
 
-      console.log("Selected Value:", selectedValue);
-      console.log("Access Code:", acode);
-      console.log("Mobile Number:", mob);
+        console.log("Selected Value:", selectedValue);
+        console.log("Access Code:", acode);
+        console.log("Mobile Number:", mob);
 
-      $.getJSON("{{url_for('karya_bp.karya_new_get_otp')}}", {
-        mob: String(mob),
-      })
-      .done(function(data) {
-        console.log("API Response:", data);
-        if (data.result === "True") {
-        $('#otp_id').val(data.otp_id); // Set the OTP ID in the hidden field
-        $('#getotpid').hide();
-        $('#fetchaudioid').prop('disabled', false);
-        $('#karyaotp').prop('hidden', false);
-      } else {
-        alert("Failed to get OTP. Please try again.");
-      }
-      })
-      .fail(function(jqXHR, textStatus, errorThrown) {
-        console.log("API Request Failed:", textStatus, errorThrown);
-        // Handle the failure scenario here
-      });
+        // Show the modal loader
+        $('#loadingModal').show();
 
-      return false;
+        $.getJSON("{{url_for('karya_bp.karya_new_get_otp')}}", {
+            mob: String(mob),
+        })
+        .done(function(data) {
+            console.log("API Response:", data);
+            if (data.result === "True") {
+                $('#otp_id').val(data.otp_id); // Set the OTP ID in the hidden field
+                $('#getotpid').hide();
+                $('#fetchaudioid').prop('disabled', false);
+                $('#karyaotp').prop('hidden', false);
+            } else {
+                alert("Failed to get OTP. Please try again.");
+            }
+        })
+        .fail(function(jqXHR, textStatus, errorThrown) {
+            console.log("API Request Failed:", textStatus, errorThrown);
+            // Handle the failure scenario here
+        })
+        .always(function() {
+            // Hide the modal loader after the request completes (success or fail)
+            $('#loadingModal').hide();
+        });
+
+        return false;
     });
-  });
+
+    // When Fetch Audio is clicked, show modal loader
+    $('#fetchaudioid').click(function() {
+        $('#loadingModal').show();
+    });
+});
+
 </script>
 
 

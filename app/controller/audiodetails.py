@@ -1323,19 +1323,36 @@ def karya_new_updateaudiofiles(mongo,
         # logger.debug("project_type_collection: %s", project_type_collection)
         # pprint(new_audio_details)
         if verification_report.get('accepted') == False:
-            project_type_collection.update_one({"audioId": audio_id},
-                                    {"$set": {
-                                    "audiodeleteFLAG":1
-                                    }})
+            # project_type_collection.update_one({"audioId": audio_id},
+            #                         {"$set": {
+            #                         "audiodeleteFLAG":1
+            #                         }})
+
+            project_type_collection.update_one(
+                                            {"audioId": audio_id},
+                                            {"$set": {
+                                                "audioverifiedFLAG": -1, # audio report -1 as its get rejected
+                                                "audiodeleteFLAG":1  
+                                            }}
+                                        )
                                 
             project_type_collection_doc_id = project_type_collection.update_one({"audioId": audio_id},
                                                                             {"$set": new_audio_details}) 
                                                                             
         else: 
+
+            # Set audioverifiedFLAG to 1 when the audio is accepted
+            project_type_collection.update_one(
+                                                {"audioId": audio_id},
+                                                {"$set": {
+                                                    "audioverifiedFLAG": 1 #audio report get falg 1 as its get 
+                                                }}
+                                            )
+            
             project_type_collection_doc_id = project_type_collection.update_one({"audioId": audio_id},
                                                                                     {"$set": new_audio_details}) 
-            project_type_collection_doc_id = project_type_collection.update_one({"audioId": audio_id},
-                                                                            {"$set": new_audio_details})
+
+            
         # save audio file details in fs collection
         fs_file_id = mongo.save_file(updated_audio_filename,
                                      new_audio_file['audiofile'],

@@ -3185,7 +3185,7 @@ def karya_new_fetch_audio():
 
         ###############################  Get All API Meta-Data   ########################################
 
-        flash("Please wait, LiFE is fetching the data for you! You will receive a notification once the data has been fetched.")
+        # flash("Please wait, LiFE is fetching the data for you! You will receive a notification once the data has been fetched.")
 
         karya_new_api_metadata = karya_api_access.karya_new_get_all_karya_assignments(
             token_id, access_code, assignment_url)
