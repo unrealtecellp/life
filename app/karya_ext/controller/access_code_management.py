@@ -722,9 +722,9 @@ def upload_access_code_metadata(
                     "educationMediumAfter12-list": "",       # This can be filled later if needed
                     "otherLanguages-list": "",         # Fill this if language details are available
                     "placeOfRecording": "",               # Can be filled with the recording place
-                    "typeOfPlace": "",         # Can be filled with the type of recording place
-                    "current_date": current_dt,         # The current date
-                    "isActive": 1                    # Flag to indicate active status
+                    "typeOfPlace": ""        # Can be filled with the type of recording place
+                    # "current_date": current_dt,         # The current date
+                    # "isActive": 1                    # Flag to indicate active status
 
                 }
 
@@ -1070,7 +1070,6 @@ def karya_new_update_access_code_metadata(
                                 activeprojectname, karyaspeakerid, speaker_update_data, speakerdetails)
     
     return "Access code and speaker details updated successfully."
-
 
 
 

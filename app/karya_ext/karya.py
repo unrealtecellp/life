@@ -2261,6 +2261,61 @@ def karya_new_manage_accesscode():
 @karya_bp.route('/karya_new_assign_access_code_user', methods=['GET', 'POST'])
 @login_required
 def karya_new_assign_access_code_user():
+    """Assigns or updates the metadata for a user based on the provided access code and project name.
+
+    This function retrieves the user's current metadata using a unique access code and project name, 
+    and then updates the user's metadata with new values such as gender, education level, and language proficiency.
+    It also logs the previous metadata for historical purposes.
+
+    Parameters:
+    ----------
+    accesscode : str
+        The unique access code of the user.
+        
+    activeprojectname : str
+        The name of the project the user is associated with.
+        
+    current_username : str
+        The username of the person performing the update.
+        
+    fgender : str
+        The gender of the user (e.g., 'Male', 'Female').
+        
+    educlvl : str
+        The user's education level (e.g., 'Graduate', 'Post-Graduate').
+        
+    moe12 : list
+        The medium of education the user had up to grade 12 (list of strings).
+        
+    moea12 : list
+        The medium of education after grade 12 (list of strings).
+        
+    sols : list
+        The languages spoken by the user (list of strings).
+        
+    por : str
+        The place where the user records audio (e.g., 'Home', 'Office').
+        
+    toc : str
+        The type of place where the user records audio (e.g., 'Quiet', 'Noisy').
+
+    Process:
+    --------
+    1. Fetch the current metadata for the user using their access code and project name.
+    2. Save the old metadata into a historical record before making changes.
+    3. Update the user's metadata with the new values provided in the function parameters.
+    4. Save the updated metadata back to the database.
+    5. Flash a message confirming the metadata update.
+
+    Returns:
+    --------
+    None
+
+    Raises:
+    -------
+    Exception
+        If there is an error fetching or updating the user's metadata."""
+
     # print ('Adding speaker info into server')
     accesscodedetails, userprojects, speakerdetails = getdbcollections.getdbcollections(mongo,
                                                                                         'accesscodedetails',
