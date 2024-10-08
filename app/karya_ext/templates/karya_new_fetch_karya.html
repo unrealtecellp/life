@@ -93,11 +93,14 @@
                   <input type="submit" class="btn btn-info" id="fetchaudioid" value="Fetch Audio">
                 </div>
 
+
                 <!-- Modal Loader (initially hidden) -->
                 <div class="modal" id="loadingModal" style="display: none;">
                   <div class="modal-content">
                       <div class="loader-container">
-                          <div class="loading-text">LiFE Is Fetching Please Wait<span class="dots"></span></div>
+                          <div class="loading-text">
+                              <span id="loadingMessage">LiFE Is Fetching Please Wait</span><span class="dots"></span>
+                          </div>
                       </div>
                   </div>
                 </div>
@@ -203,8 +206,9 @@ $(document).ready(function() {
         console.log("Access Code:", acode);
         console.log("Mobile Number:", mob);
 
-        // Show the modal loader
-        $('#loadingModal').show();
+        // Update the loading message for "Sending OTP"
+        $('#loadingMessage').text('Hold tight! Your OTP is being sent!');
+        $('#loadingModal').show(); // Show the modal loader
 
         $.getJSON("{{url_for('karya_bp.karya_new_get_otp')}}", {
             mob: String(mob),
@@ -232,9 +236,10 @@ $(document).ready(function() {
         return false;
     });
 
-    // When Fetch Audio is clicked, show modal loader
+    // When Fetch Audio is clicked, show modal loader with "LiFE Is Fetching Please Wait" message
     $('#fetchaudioid').click(function() {
-        $('#loadingModal').show();
+        $('#loadingMessage').text('LiFE Is Fetching Please Wait'); // Update the loading message
+        $('#loadingModal').show(); // Show the modal loader
     });
 });
 

@@ -82,6 +82,12 @@ input[type="text"]:focus {
         width: 100%;
     }
 }
+
+
+
+
+
+/* Fetching animation starts from here */
 /* Modal container */
 .modal {
     position: fixed;
@@ -115,7 +121,7 @@ input[type="text"]:focus {
 .loading-text {
     font-size: 24px;
     font-weight: bold;
-    color: #FF5C35;
+    color: #55aa0f;
 }
 
 .dots::after {
@@ -140,3 +146,5 @@ input[type="text"]:focus {
         content: '...';
     }
 }
+
+/* Fetching animation ends here */
