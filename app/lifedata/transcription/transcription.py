@@ -1159,6 +1159,8 @@ def uploadaudiofiles():
                 logger.debug("not found prompt: %s", found_prompt)
         # return redirect(url_for('lifedata.transcription.home'))
         new_audio_file = request.files.to_dict()
+        if 'audiofile[0]' in new_audio_file:
+            new_audio_file['audiofile'] = new_audio_file.pop('audiofile[0]')
         logger.info('New audio files %s', new_audio_file)
         # logger.info("Request %s", request)
         # logger.info("All Form data submitted %s\n%s\n%s",

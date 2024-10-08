@@ -145,45 +145,45 @@ def saveaudiofiles(mongo,
     try:
         # logger.debug("**kwargs: %s", kwargs)
         # return ('', '', '')
-        type = 'audiofile'
+        atype = 'audiofile'
         # logger.debug ('New ques file %s', new_ques_file)
         file_states = []
         transcription_doc_ids = []
         fs_file_ids = []
 
-        if new_audio_file[type].filename != '':
-            current_file = new_audio_file[type]
+        if new_audio_file[atype].filename != '':
+            current_file = new_audio_file[atype]
             # logger.debug("Filepath %s", current_file)
             file_format = get_file_format(current_file)
 
             if (file_format in allowed_file_formats):
                 file_state, transcription_doc_id, fs_file_id, transcription_data = saveoneaudiofile(mongo,
-                                                                                projects,
-                                                                                userprojects,
-                                                                                transcriptions,
-                                                                                projectowner,
-                                                                                activeprojectname,
-                                                                                current_username,
-                                                                                speakerId,
-                                                                                new_audio_file,
-                                                                                sourceId,
-                                                                                run_vad,
-                                                                                run_asr,
-                                                                                split_into_smaller_chunks,
-                                                                                get_audio_json,
-                                                                                vad_model,
-                                                                                asr_model,
-                                                                                transcription_type,
-                                                                                boundary_threshold,
-                                                                                slice_threshold,
-                                                                                max_slice_size,
-                                                                                data_type,
-                                                                                new_audio_details,
-                                                                                prompt,
-                                                                                update,
-                                                                                slice_offset_value,
-                                                                                min_boundary_size,
-                                                                                **kwargs)
+                                                                                                    projects,
+                                                                                                    userprojects,
+                                                                                                    transcriptions,
+                                                                                                    projectowner,
+                                                                                                    activeprojectname,
+                                                                                                    current_username,
+                                                                                                    speakerId,
+                                                                                                    new_audio_file,
+                                                                                                    sourceId,
+                                                                                                    run_vad,
+                                                                                                    run_asr,
+                                                                                                    split_into_smaller_chunks,
+                                                                                                    get_audio_json,
+                                                                                                    vad_model,
+                                                                                                    asr_model,
+                                                                                                    transcription_type,
+                                                                                                    boundary_threshold,
+                                                                                                    slice_threshold,
+                                                                                                    max_slice_size,
+                                                                                                    data_type,
+                                                                                                    new_audio_details,
+                                                                                                    prompt,
+                                                                                                    update,
+                                                                                                    slice_offset_value,
+                                                                                                    min_boundary_size,
+                                                                                                    **kwargs)
                 file_states.append(file_state)
                 transcription_doc_ids.append(transcription_doc_id)
                 fs_file_ids.append(fs_file_id)
@@ -295,31 +295,31 @@ def savemultipleaudiofiles(mongo,
                             new_audio_file['audiofile'] = FileStorage(
                                 file_content, filename=file_name)
                             file_state, transcription_doc_id, fs_file_id, transcription_data = saveoneaudiofile(mongo,
-                                                                                            projects,
-                                                                                            userprojects,
-                                                                                            transcriptions,
-                                                                                            projectowner,
-                                                                                            activeprojectname,
-                                                                                            current_username,
-                                                                                            speakerId,
-                                                                                            new_audio_file,
-                                                                                            sourceId,
-                                                                                            run_vad,
-                                                                                            run_asr,
-                                                                                            split_into_smaller_chunks,
-                                                                                            get_audio_json,
-                                                                                            vad_model,
-                                                                                            asr_model,
-                                                                                            transcription_type,
-                                                                                            boundary_threshold,
-                                                                                            slice_threshold,
-                                                                                            max_slice_size,
-                                                                                            data_type,
-                                                                                            new_audio_details,
-                                                                                            prompt,
-                                                                                            update,
-                                                                                            slice_offset_value,
-                                                                                            min_boundary_size)
+                                                                                                                projects,
+                                                                                                                userprojects,
+                                                                                                                transcriptions,
+                                                                                                                projectowner,
+                                                                                                                activeprojectname,
+                                                                                                                current_username,
+                                                                                                                speakerId,
+                                                                                                                new_audio_file,
+                                                                                                                sourceId,
+                                                                                                                run_vad,
+                                                                                                                run_asr,
+                                                                                                                split_into_smaller_chunks,
+                                                                                                                get_audio_json,
+                                                                                                                vad_model,
+                                                                                                                asr_model,
+                                                                                                                transcription_type,
+                                                                                                                boundary_threshold,
+                                                                                                                slice_threshold,
+                                                                                                                max_slice_size,
+                                                                                                                data_type,
+                                                                                                                new_audio_details,
+                                                                                                                prompt,
+                                                                                                                update,
+                                                                                                                slice_offset_value,
+                                                                                                                min_boundary_size)
 
                             all_file_states.append(file_state)
                             transcription_doc_ids.append(transcription_doc_id)
