@@ -722,9 +722,9 @@ def upload_access_code_metadata(
                     "educationMediumAfter12-list": "",       # This can be filled later if needed
                     "otherLanguages-list": "",         # Fill this if language details are available
                     "placeOfRecording": "",               # Can be filled with the recording place
-                    "typeOfPlace": "",         # Can be filled with the type of recording place
-                    "current_date": current_dt,         # The current date
-                    "isActive": 1                    # Flag to indicate active status
+                    "typeOfPlace": ""        # Can be filled with the type of recording place
+                    # "current_date": current_dt,         # The current date
+                    # "isActive": 1                    # Flag to indicate active status
 
                 }
 
@@ -992,18 +992,19 @@ def update_access_code_metadata(
 
 
 def karya_new_update_access_code_metadata(
-    accesscodedetails,
-    activeprojectname,
-    current_username,
-    accesscode,
-    fgender,
-    educlvl,
-    moe12,
-    moea12,
-    sols,
-    por,
-    toc
-):
+                                        accesscodedetails,
+                                        speakerdetails,
+                                        activeprojectname,
+                                        current_username,
+                                        karyaspeakerid,
+                                        accesscode,
+                                        fgender,
+                                        educlvl,
+                                        moe12,
+                                        moea12,
+                                        sols,
+                                        por,
+                                        toc):
 
     update_data = {"current.updatedBy":  current_username,
                    "current.workerMetadata.gender": fgender,
@@ -1026,14 +1027,52 @@ def karya_new_update_access_code_metadata(
                        "previous."+date_of_modified+".workerMetadata.educationmediumafter12": previous_speakerdetails["current"]["workerMetadata"]["educationmediumafter12"],
                        "previous."+date_of_modified+".workerMetadata.speakerspeaklanguage": previous_speakerdetails["current"]["workerMetadata"]["speakerspeaklanguage"],
                        "previous."+date_of_modified+".workerMetadata.recordingplace": previous_speakerdetails["current"]["workerMetadata"]["recordingplace"],
+                       "previous."+date_of_modified+".workerMetadata.typeofrecordingplace": previous_speakerdetails["current"]["workerMetadata"]["typeofrecordingplace"],
                        "previous."+date_of_modified+".updatedBy": previous_speakerdetails["current"]["updatedBy"]
                        }
+    
+    # Prepare data for speakerdetails update
+    # speaker_update_data = {"current": {
+    #                                     "updatedBy": current_username,
+    #                                     "sourceMetadata": {
+    #                                         "gender": fgender,
+    #                                         "educationLevel": educlvl,  # Adjust as necessary
+    #                                         "educationMediumUpto12-list": moe12,  # Adjust as necessary
+    #                                         "educationMediumAfter12-list": moea12,  # Adjust as necessary
+    #                                         "otherLanguages-list": sols,  # Adjust as necessary
+    #                                         "placeOfRecording": por,
+    #                                         "typeOfPlace": toc},
+    #                                     "current_date": datetime.now().isoformat()
+    #                                     }
+    #                                     }
+
+    # Prepare data for speakerdetails update
+    speaker_update_data = {
+        "current.updatedBy": current_username,
+        "current.sourceMetadata.gender": fgender,
+        "current.sourceMetadata.educationLevel": educlvl,  
+        "current.sourceMetadata.educationMediumUpto12-list": moe12,  
+        "current.sourceMetadata.educationMediumAfter12-list": moea12,  
+        "current.sourceMetadata.otherLanguages-list": sols,  
+        "current.sourceMetadata.placeOfRecording": por,
+        "current.sourceMetadata.typeOfPlace": toc,
+        "current.current_date": datetime.now().isoformat()
+    }
+
 
     accesscodedetails.update_one({"karyaaccesscode": accesscode, "projectname": activeprojectname,
                                   "additionalInfo.karya_version": "karya_main"}, {
                                  "$set": update_old_data})  # Edit_old_user_info
     accesscodedetails.update_one({"karyaaccesscode": accesscode, "projectname": activeprojectname, "additionalInfo.karya_version": "karya_main"}, {
                                  "$set": update_data})  # new_user_info
+    
+    speakerDetails.updateonespeakerdetails(
+                                activeprojectname, karyaspeakerid, speaker_update_data, speakerdetails)
+    
+    return "Access code and speaker details updated successfully."
+
+
+
 
 
 def get_access_code_metadata(
