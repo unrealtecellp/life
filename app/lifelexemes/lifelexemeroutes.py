@@ -465,9 +465,11 @@ def lexemeupdate():
 
         # when testing comment these to avoid any database update/changes
         # saving files for the new lexeme to the database in fs collection
-        for (filename, key) in zip(newLexemeFilesName.values(), newLexemeFiles):
-            # logger.debug(filename, key, newLexemeFiles[key])
-            mongo.save_file(filename, newLexemeFiles[key], lexemeId=lexemeId, username=current_user.username,
+        for (filename, key) in zip(newLexemeFilesName.values(), newLexemeFilesName):
+            # logger.debug(filename)
+            # logger.debug(key)
+            # logger.debug(newLexemeFiles[key])
+            mongo.save_file(filename, newLexemeFiles[key], lexemeId=lexemeId, username=projectowner,
                             projectname=lexemeFormData['projectname'], headword=lexemeFormData['headword'],
                             updatedBy=current_user.username)
 
