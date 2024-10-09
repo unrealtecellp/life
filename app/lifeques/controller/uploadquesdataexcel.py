@@ -2,17 +2,17 @@ import os
 import pickle
 from xml.etree import ElementTree as ET
 import pandas as pd
-import json
 from datetime import datetime
 import re
-import inspect
 from zipfile import ZipFile
 import io
-# import savequespromptfile
-# import savequespromptfile
+from app.controller import (
+    life_logging
+)
 from app.lifeques.controller import savequespromptfile
 from werkzeug.datastructures import FileStorage
-from pprint import pprint
+
+logger = life_logging.get_logger()
 
 def quesmetadata():
     # create quesId
@@ -530,7 +530,7 @@ def enterquesfromuploadedfile(mongo, projects,
             getquesId = questionnaires.find_one({ 'quesId' : quesId },
                                             {'_id' : 0, 'quesId' : 1, 'projectname': 1})
             if (getquesId == None):
-                print(f"quesId not in DB")
+                logger.info(f"quesId {quesId} not in DB")
                 quesId = quesmetadata()
             else:
                 if (getquesId['projectname'] != activeprojectname):
@@ -541,35 +541,18 @@ def enterquesfromuploadedfile(mongo, projects,
             questionnaires.update_one({ 'quesId': quesId }, { '$set' : uploadedFileQues })
         else:
             questionnaires.insert_one(uploadedFileQues)
-        # print(f"{inspect.currentframe().f_lineno}: {uploadedFileQues}")
-        
+        # logger.debug(f"uploadedFileQues: {uploadedFileQues}")
         all_columns = list(quesdf.columns)
-        for column_name in all_columns:            
-            # print(f"{inspect.currentframe().f_lineno}: {column_name}")
+        for column_name in all_columns:
+            if (column_name == 'quessaveFLAG'):
+                uploadedFileQues["quessaveFLAG"] = int(row[column_name])
             if (column_name not in uploadedFileQues):
                 value = str(row[column_name])
-                # print(f"{inspect.currentframe().f_lineno}: {value}")
                 if ('[' in value and ']' in value):
                     if (value.startswith('[') and value.endswith(']')):
-                        value = value.replace('[', '').replace(']', '').replace(' ', '').split(',')
-                    # print(f"{inspect.currentframe().f_lineno}: {value}")
+                        value = value.replace('[', '').replace(']', '').replace(' ', '').replace("'", "").split(',')
                 elif (value == 'nan'):
                     value = ''
-                # if ('content' in column_name):
-                #     startindex = '0'
-                #     endindex = str(len(value))
-                #     for p in range(3):
-                #         if (len(startindex) < 3):
-                #             startindex = '0'+startindex
-                #         if (len(endindex) < 3):
-                #             endindex = '0'+endindex
-                #     text_boundary_id = startindex+endindex
-                # if ('text.000000' in column_name):
-                #     column_name = column_name.replace('000000', text_boundary_id)
-                #     if ('startindex' in column_name):
-                #         value = startindex
-                #     if ('endindex' in column_name):
-                #         value = endindex
                 if ('text.000000' in column_name and 'textspan' in column_name):
                     startindex = '0'
                     endindex = str(len(value))
@@ -584,10 +567,6 @@ def enterquesfromuploadedfile(mongo, projects,
                     column_name_endindex = '.'.join(column_name.split('.')[:-2])+'.endindex'
                     uploadedFileQues[column_name_startindex] = startindex
                     uploadedFileQues[column_name_endindex] = endindex
-                # if ('Sense 1.Gloss.eng' in column_name):
-                #     uploadedFileQues['gloss'] = value
-                # if ('Sense 1.Grammatical Category' in column_name):
-                #     uploadedFileQues['grammaticalcategory'] = value
                 uploadedFileQues[column_name] = value
 
                 ## for upload of file
@@ -601,17 +580,14 @@ def enterquesfromuploadedfile(mongo, projects,
                             file_type_info[0], 
                             data_type, 
                             lang_script])
-                        # print ("File type", file_type)
-                        # print ('Upload file name', uploadfilename)                        
                         filesToBeUploaded[file_type] = uploadfilename
-                                  
-        # pprint(uploadedFileQues)
+        # logger.debug(f"uploadedFileQues: {uploadedFileQues}")
         uploadedFileQuesKeysList = list(uploadedFileQues.keys())
         for ak in uploadedFileQuesKeysList:
             if ('text.000000' in ak and
                 ('startindex' in ak or 'endindex' in ak)):
                 del uploadedFileQues[ak]
-
+        # logger.debug(f"uploadedFileQues: {uploadedFileQues}")
         projects.update_one({"projectname": activeprojectname},
                             {
                                 "$set": {
@@ -631,11 +607,7 @@ def enterquesfromuploadedfile(mongo, projects,
                 with myzip.open(fileName) as myfile:
                     upload_file_full = {}
                     file_content = io.BytesIO(myfile.read())
-                    # print ('ZIP file', mainfile)
-                    # print ("File content", file_content)
-                    # print ("Upload key", fileType)
                     upload_file_full[fileType] = FileStorage(file_content, filename = fileName)
-                    # print ("Upload file", upload_file_full)
                     savequespromptfile.savequespromptfile(mongo,
                                     projects,
                                     userprojects,
@@ -647,10 +619,7 @@ def enterquesfromuploadedfile(mongo, projects,
                                     quesId,
                                     upload_file_full)
 
-
     return (4, '')
-
-
 
 def queskeymapping(mongo, projects,
                     userprojects,

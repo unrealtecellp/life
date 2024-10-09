@@ -1,0 +1,9 @@
+[
+    {"id": "Conversation", "text": "Conversation"},
+    {"id": "Interview", "text": "Interview"},
+    {"id": "Narration", "text": "Narration"},
+    {"id": "Picture Book Narration", "text": "Picture Book Narration"},
+    {"id": "Role-Play", "text": "Role-Play"},
+    {"id": "Translation", "text": "Translation"},
+    {"id": "Video Narration", "text": "Video Narration"}  
+]

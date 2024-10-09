@@ -73,6 +73,18 @@ function createKeyboards(newData) {
             'version': '1.2.1',
             'langid': 'hi',
             'kbdid': 'itrans_devanagari_hindi'
+        },
+        'tamil': {
+            'fname': 'basic_kbdintam-1.1.js',
+            'version': '1.1',
+            'langid': 'ta',
+            'kbdid': 'basic_kbdintam'
+        },
+        'telugu': {
+            'fname': 'basic_kbdintel-1.1.js',
+            'version': '1.1',
+            'langid': 'te',
+            'kbdid': 'basic_kbdintel'
         }
     }
     let audioLanguage = newData['Audio Language'][1][0]
@@ -174,7 +186,7 @@ function createKeyboards(newData) {
 
 function updateKeyboard(e) {
     // console.log('Clicked textarea for transcription', e.id);
-    let itransScripts = ['bengali', 'gujarati', 'gurmukhi', 'odia']
+    let itransScripts = ['bengali', 'gujarati', 'gurmukhi', 'odia', 'tamil', 'telugu']
     // keyman.attachToControl(e);
     elId = e.id;
     currentScriptIndex = elId.lastIndexOf('_') + 1;
@@ -203,6 +215,22 @@ function updateKeyboard(e) {
     }
     else if (currentScript == 'toto') {
         keyman.setActiveKeyboard('Keyboard_txo_toto');
+        // addedScripts.push(currentScript);
+    }
+    else if (currentScript == 'tamil') {
+        keyman.setActiveKeyboard('Keyboard_basic_kbdintam');
+        // addedScripts.push(currentScript);
+    }
+    else if (currentScript == 'telugu') {
+        keyman.setActiveKeyboard('Keyboard_basic_kbdintel');
+        // addedScripts.push(currentScript);
+    }
+    else if (currentScript.includes('Latin')) {
+        keyman.setActiveKeyboard('Keyboard_sil_euro_latin');
+        // addedScripts.push(currentScript);
+    }
+    else {
+        keyman.setActiveKeyboard('Keyboard_sil_euro_latin');
         // addedScripts.push(currentScript);
     }
     // else if (currentScript == 'Latin') {

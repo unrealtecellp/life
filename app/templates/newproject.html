@@ -12,6 +12,8 @@
 {% endblock %}
 
 {% block app_content %}
+  <h2>LiFE - Lexicon</h2>
+  <hr>
   <h3>Create Form for your Project</h3>
   <hr>
   <form action="{{ url_for('newproject') }}" method="POST" enctype="multipart/form-data">
@@ -26,7 +28,7 @@
     <div class="container LexemeLanguage">
       <div class="row">
         <div class="col-md-3">
-          <label for="Lexeme Language">Sentence/Lexeme Language</label>
+          <label for="Lexeme Language">Lexeme Language</label>
           <select class="lexemelanguage" name="Lexeme Language" style="width: 150%" required></select>
         </div>
       </div> 
@@ -35,7 +37,7 @@
     <div class="container Lexemeformscript">
       <div class="row">
         <div class="col-md-3"> 
-          <label for="Lexeme Form Script">Transcription/Lexeme Scripts </label>
+          <label for="Lexeme Form Script">Lexeme Scripts </label>
           <br>
           <em>
             *First option will be used as the headword in lexicon
@@ -63,7 +65,7 @@
       <div class="row"> 
         <div class="col-md-3">
           <div class="form-group">
-                <button class="btn btn-success" type="button" id="addGlossField"> 
+                <button class="btn btn-sm btn-success" type="button" id="addGlossField"> 
                   <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 
                 </button>
           </div>
@@ -85,7 +87,7 @@
       <div class="row"> 
         <div class="col-md-3">
           <div class="form-group">
-                <button class="btn btn-success" type="button" id="addInterlinearGlossField"> 
+                <button class="btn btn-sm btn-success" type="button" id="addInterlinearGlossField"> 
                   <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 
                 </button>
           </div>
@@ -102,7 +104,7 @@
       <div class="row"> 
         <div class="col-md-3">
           <div class="form-group">
-                <button class="btn btn-success" type="button" id="addCustomField"> 
+                <button class="btn btn-sm btn-success" type="button" id="addCustomField"> 
                   <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 
                 </button>
           </div>

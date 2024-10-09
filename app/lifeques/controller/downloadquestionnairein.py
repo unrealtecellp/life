@@ -12,6 +12,8 @@ import json
 import shutil
 import ffmpeg
 import librosa
+import pandas as pd
+from datetime import datetime
 
 logger = life_logging.get_logger()
 
@@ -42,6 +44,12 @@ def datafolder_stats(folder_path, file_type):
                     json_file_data = json.load(read_json_file)
                 json_file_doc_folder_stats = len(json_file_data)
                 return json_file_doc_folder_stats
+        elif (file_type == 'xlsx'):
+            for xlsx_file in sorted(os.listdir(folder_path)):
+                xlsx_file_path = os.path.join(folder_path, xlsx_file)
+                xlsx_file_data = pd.read_excel(xlsx_file_path, dtype=str)
+                xlsx_file_doc_folder_stats = len(xlsx_file_data)
+                return xlsx_file_doc_folder_stats
         else:
             return 0
     except:
@@ -51,7 +59,8 @@ def datafolder_stats(folder_path, file_type):
 def karyajson(mongo,
                 base_dir,
                 questionnaires,
-                activeprojectname):
+                activeprojectname,
+                get_audio=False):
     # print('karyajson')
     project_folder_path = createprojectdirectory(base_dir, activeprojectname)
     # logger.debug('project_folder_path: %s', project_folder_path)
@@ -67,6 +76,7 @@ def karyajson(mongo,
             os.mkdir(ques_multimedia_folder_path)
         # dictionary containing lang-script as key and list of dictionaries(karya json format) as value
         lang_wise_ques = {}
+        all_lang_ques = []
         # karya_json_data = []
         saved_ques_data = questionnaires.find({'projectname': activeprojectname, 'quessaveFLAG': 1},
                                                 {
@@ -81,6 +91,17 @@ def karyajson(mongo,
             # logger.debug("Q_Id: %s", ques_data["Q_Id"])
             prompt = ques_data['prompt']
             content = prompt['content']
+            domain = prompt['Domain'][0]
+            elicitation_method = prompt['Elicitation Method']
+            # logger.debug('prompt: %s, content: %s', prompt, content)
+
+            all_langs_temp_dict = {
+                "quesId": ques_data["quesId"],
+                "Q_Id": ques_data["Q_Id"],
+                "Domain": domain,
+                "Elicitation Method": elicitation_method
+            }
+            
             # logger.debug('prompt: %s, content: %s', prompt, content)
             for lang_script, lang_info in content.items():
                 script = lang_script.split('-')[1]
@@ -89,9 +110,9 @@ def karyajson(mongo,
                     # logger.debug('prompt_type: %s', prompt_type)
                     # logger.debug('prompt_data: %s', prompt_data)
                     lang_wise_ques_key = ''
-                    domain = prompt['Domain'][0]
+                    # domain = prompt['Domain'][0]
                     # print('domain:', domain)
-                    elicitation_method = prompt['Elicitation Method']
+                    # elicitation_method = prompt['Elicitation Method']
                     temp_dict = {
                         "quesId": ques_data["quesId"],
                         "Q_Id": ques_data["Q_Id"],
@@ -111,6 +132,8 @@ def karyajson(mongo,
                         boundaryId = list(prompt_data.keys())[0]
                         sentence = prompt_data[boundaryId]['textspan'][script]
                         temp_dict['sentence'] = sentence
+                        all_langs_temp_dict['sentence_' +
+                                            lang_wise_ques_key] = sentence
                         temp_dict['hint'] = ''
                     elif (prompt_type == 'audio'):
                         # logger.debug("lang_wise_ques_key: %s", lang_wise_ques_key)
@@ -119,6 +142,8 @@ def karyajson(mongo,
                         boundaryId = list(prompt_data['textGrid']['sentence'].keys())[0]
                         sentence = prompt_data['textGrid']['sentence'][boundaryId]['transcription'][script]
                         temp_dict['sentence'] = sentence
+                        all_langs_temp_dict['sentence_' +
+                                            lang_wise_ques_key] = sentence
                         temp_dict['hint'] = prompt_data['filename']
                         audio_fileId = prompt_data['fileId']
                         # get the file to local storage from database 'fs' collection
@@ -126,12 +151,15 @@ def karyajson(mongo,
                         #         project_folder_path,
                         #         audio_fileId,
                         #         'fileId')
-                        audio_file_path = getfilefromfs(mongo,
+                        if get_audio:
+                            audio_file_path = getfilefromfs(mongo,
                                                         project_folder_path,
                                                         audio_fileId,
                                                         'audio',
                                                         'fileId')
-                        logger.debug('audio_file_path: %s', audio_file_path)
+                        else:
+                            audio_file_path = ''
+                        # logger.debug('audio_file_path: %s', audio_file_path)
                         if (audio_file_path != ''):
                             # crop audio from start to end time
                             start_time = prompt_data['textGrid']['sentence'][boundaryId]['startindex']
@@ -154,7 +182,8 @@ def karyajson(mongo,
                             ffmpeg.run(save_audio_file)
                             os.remove(audio_file_path)
                         else:
-                            continue
+                            if get_audio:
+                                continue
                     elif (prompt_type == 'multimedia'):
                         # logger.debug("lang_wise_ques_key: %s", lang_wise_ques_key)
                         lang_wise_ques_key = lang_script.replace('-', '_')+'_'+prompt_type
@@ -300,9 +329,17 @@ def karyajson(mongo,
                         shutil.copy2(multimedia_file_path, domain_wise_ques_key_prompt_type_path)
                         os.remove(multimedia_file_path)
                     # logger.debug("temp_dict: %s", temp_dict)
-                    
+
+            # all_lang_ques.append({
+            #     "data": all_langs_temp_dict,
+            #     "files": files
+            # })
+            #             
+            all_lang_ques.append(all_langs_temp_dict)
         # pprint(lang_wise_ques)
-        folder_stats = {}
+        folder_stats = {
+            'DateTime': str(datetime.now())
+        }
         for key, value in lang_wise_ques.items():
             # print('LINE NO. 127', key, len(value), folder_stats)
             # folder_stats[key] = len(value)
@@ -311,6 +348,16 @@ def karyajson(mongo,
             with open(save_file_path, 'w') as json_file:
                 json.dump(value, json_file, ensure_ascii=False, indent=2)
         # pprint(folder_stats)
+
+        filename = 'all_langs.json'
+        save_dir_path = os.path.join(project_folder_path, 'all_langs', 'json')
+        if not os.path.exists(save_dir_path):
+            os.makedirs(save_dir_path)
+        save_file_path = os.path.join(
+            save_dir_path, filename)
+        with open(save_file_path, 'w') as json_file:
+            json.dump(all_lang_ques, json_file, ensure_ascii=False, indent=2)
+
         for folder_name in sorted(os.listdir(project_folder_path)):
             # logger.debug("folder_name: %s", folder_name)
             
@@ -357,7 +404,8 @@ def karyajson(mongo,
 def karyajson2(mongo,
                 base_dir,
                 questionnaires,
-                activeprojectname):
+                activeprojectname,
+                get_audio=False):
     # print('karyajson')
     project_folder_path = createprojectdirectory(base_dir, activeprojectname)
     # logger.debug('project_folder_path: %s', project_folder_path)
@@ -373,6 +421,8 @@ def karyajson2(mongo,
             os.mkdir(ques_multimedia_folder_path)
         # dictionary containing lang-script as key and list of dictionaries(karya json format) as value
         lang_wise_ques = {}
+        all_lang_ques = []
+        all_lang_domain_wise = {}
         # karya_json_data = []
         saved_ques_data = questionnaires.find({'projectname': activeprojectname, 'quessaveFLAG': 1, 'quesdeleteFLAG': 0},
                                                 {
@@ -387,17 +437,25 @@ def karyajson2(mongo,
             # logger.debug("Q_Id: %s", ques_data["Q_Id"])
             prompt = ques_data['prompt']
             content = prompt['content']
+            domain = prompt['Domain'][0]
+            elicitation_method = prompt['Elicitation Method']
             # logger.debug('prompt: %s, content: %s', prompt, content)
+
+            all_langs_temp_dict = {
+                "quesId": ques_data["quesId"],
+                "Q_Id": ques_data["Q_Id"],
+                "Domain": domain,
+                "Elicitation Method": elicitation_method
+            }
             for lang_script, lang_info in content.items():
                 script = lang_script.split('-')[1]
                 # print(lang_script, lang_info)
                 for prompt_type, prompt_data in lang_info.items():
                     # logger.debug('prompt_type: %s', prompt_type)
                     # logger.debug('prompt_data: %s', prompt_data)
-                    lang_wise_ques_key = ''
-                    domain = prompt['Domain'][0]
+                    lang_wise_ques_key = ''                    
                     # print('domain:', domain)
-                    elicitation_method = prompt['Elicitation Method']
+
                     final_temp_dict = {}
                     temp_dict = {
                         "quesId": ques_data["quesId"],
@@ -419,6 +477,8 @@ def karyajson2(mongo,
                         boundaryId = list(prompt_data.keys())[0]
                         sentence = prompt_data[boundaryId]['textspan'][script]
                         temp_dict['sentence'] = sentence
+                        all_langs_temp_dict['sentence_' +
+                                            lang_wise_ques_key] = sentence
                         # temp_dict['hint'] = ''
                         # files['hint'] = ''
                     elif (prompt_type == 'audio'):
@@ -428,6 +488,8 @@ def karyajson2(mongo,
                         boundaryId = list(prompt_data['textGrid']['sentence'].keys())[0]
                         sentence = prompt_data['textGrid']['sentence'][boundaryId]['transcription'][script]
                         temp_dict['sentence'] = sentence
+                        all_langs_temp_dict['sentence_' +
+                                            lang_wise_ques_key] = sentence
                         # temp_dict['hint'] = prompt_data['filename']
                         files['hint'] = prompt_data['filename']
                         # logger.debug("files: %s", files)
@@ -437,12 +499,15 @@ def karyajson2(mongo,
                         #         project_folder_path,
                         #         audio_fileId,
                         #         'fileId')
-                        audio_file_path = getfilefromfs(mongo,
+                        if get_audio:
+                            audio_file_path = getfilefromfs(mongo,
                                                         project_folder_path,
                                                         audio_fileId,
                                                         'audio',
                                                         'fileId')
-                        logger.debug('audio_file_path: %s', audio_file_path)
+                        else:
+                            audio_file_path = ''
+                        # logger.debug('audio_file_path: %s', audio_file_path)
                         if (audio_file_path != ''):
                             # crop audio from start to end time
                             start_time = prompt_data['textGrid']['sentence'][boundaryId]['startindex']
@@ -465,7 +530,8 @@ def karyajson2(mongo,
                             ffmpeg.run(save_audio_file)
                             os.remove(audio_file_path)
                         else:
-                            continue
+                            if get_audio:
+                                continue
                     elif (prompt_type == 'multimedia'):
                         # logger.debug("lang_wise_ques_key: %s", lang_wise_ques_key)
                         lang_wise_ques_key = lang_script.replace('-', '_')+'_'+prompt_type
@@ -621,9 +687,32 @@ def karyajson2(mongo,
                         shutil.copy2(multimedia_file_path, domain_wise_ques_key_prompt_type_path)
                         os.remove(multimedia_file_path)
                     # logger.debug("temp_dict: %s", temp_dict)
+
+            current_ques_data = {
+                "data": all_langs_temp_dict,
+                "files": files
+            }
+            all_lang_ques.append(current_ques_data)
+
+            domain_wise_ques_key = 'all_langs_'+domain
+            domain_wise_ques_key_path = os.path.join(project_folder_path, domain_wise_ques_key)
+            domain_wise_ques_key_json_path = os.path.join(domain_wise_ques_key_path, 'json')            
+            if not os.path.exists(domain_wise_ques_key_path):
+                os.mkdir(domain_wise_ques_key_path)
+                os.mkdir(domain_wise_ques_key_json_path)                
+            domain_wise_ques_key_prompt_type_path = os.path.join(domain_wise_ques_key_path, prompt_type)
+            if not os.path.exists(domain_wise_ques_key_prompt_type_path):
+                os.mkdir(domain_wise_ques_key_prompt_type_path)
+            
+            if (domain_wise_ques_key in lang_wise_ques):
+                lang_wise_ques[domain_wise_ques_key].append(current_ques_data)
+            else:
+                lang_wise_ques[domain_wise_ques_key] = [current_ques_data]
                     
         # pprint(lang_wise_ques)
-        folder_stats = {}
+        folder_stats = {
+            'DateTime': str(datetime.now())
+        }
         for key, value in lang_wise_ques.items():
             # print('LINE NO. 127', key, len(value), folder_stats)
             # folder_stats[key] = len(value)
@@ -632,6 +721,16 @@ def karyajson2(mongo,
             with open(save_file_path, 'w') as json_file:
                 json.dump(value, json_file, ensure_ascii=False, indent=2)
         # pprint(folder_stats)
+
+        filename = 'all_langs.json'
+        save_dir_path = os.path.join(project_folder_path, 'all_langs', 'json')
+        if not os.path.exists(save_dir_path):
+            os.makedirs(save_dir_path)
+        save_file_path = os.path.join(
+            save_dir_path, filename)
+        with open(save_file_path, 'w') as json_file:
+            json.dump(all_lang_ques, json_file, ensure_ascii=False, indent=2)
+
         for folder_name in sorted(os.listdir(project_folder_path)):
             # logger.debug("folder_name: %s", folder_name)
             
@@ -647,6 +746,286 @@ def karyajson2(mongo,
 
             audio_folder_path = os.path.join(project_folder_path, folder_name, 'audio')
             # print(audio_folder_path)
+            if (os.path.exists(audio_folder_path)):
+                folder_stats[folder_name]['audio'] = datafolder_stats(audio_folder_path, 'audio')
+                zip_file_path = createzip(audio_folder_path, folder_name+'_recordings')
+
+            image_folder_path = os.path.join(project_folder_path, folder_name, 'image')
+            # print(image_folder_path)
+            if (os.path.exists(image_folder_path)):
+                folder_stats[folder_name]['image'] = datafolder_stats(image_folder_path, 'image')
+                zip_file_path = createzip(image_folder_path, folder_name+'_image')
+
+            multimedia_folder_path = os.path.join(project_folder_path, folder_name, 'multimedia')
+            # print(multimedia_folder_path)
+            if (os.path.exists(multimedia_folder_path)):
+                folder_stats[folder_name]['multimedia'] = datafolder_stats(multimedia_folder_path, 'multimedia')
+                zip_file_path = createzip(multimedia_folder_path, folder_name+'_multimedia')
+        
+        shutil.rmtree(trimmed_audio_folder_path)
+        shutil.rmtree(ques_image_folder_path)
+        shutil.rmtree(ques_multimedia_folder_path)
+        # pprint(folder_stats)
+        folder_stats_path = os.path.join(project_folder_path, 'folder_stats.json')
+        with open(folder_stats_path, 'w') as json_file:
+            json.dump(folder_stats, json_file, ensure_ascii=False, indent=2)
+    except:
+        logger.exception("")
+
+    return project_folder_path
+
+def excel(mongo,
+            base_dir,
+            questionnaires,
+            activeprojectname,
+            get_audio=False):
+    project_folder_path = createprojectdirectory(base_dir, activeprojectname)
+    logger.info('project_folder_path: %s', project_folder_path)
+    try:
+        trimmed_audio_folder_path = os.path.join(project_folder_path, 'trimmed_audio')
+        if not os.path.exists(trimmed_audio_folder_path):
+            os.mkdir(trimmed_audio_folder_path)
+        ques_image_folder_path = os.path.join(project_folder_path, 'ques_image')
+        if not os.path.exists(ques_image_folder_path):
+            os.mkdir(ques_image_folder_path)
+        ques_multimedia_folder_path = os.path.join(project_folder_path, 'ques_multimedia')
+        if not os.path.exists(ques_multimedia_folder_path):
+            os.mkdir(ques_multimedia_folder_path)
+        # dictionary containing lang-script as key and list of dictionaries(xlsx format) as value
+        lang_wise_ques = {}
+        all_lang_ques = []
+        saved_ques_data = questionnaires.find({'projectname': activeprojectname,
+                                               'quessaveFLAG': 1,
+                                               'quesdeleteFLAG': 0},
+                                                {
+                                                    "_id": 0,
+                                                    "quesId": 1,
+                                                    "Q_Id": 1,
+                                                    "prompt": 1
+                                                }
+                                            )
+
+        for ques_data in saved_ques_data:
+            prompt = ques_data['prompt']
+            content = prompt['content']
+            domain = prompt['Domain'][0]
+            elicitation_method = prompt['Elicitation Method']            
+
+            all_langs_temp_dict = {
+                "quesId": ques_data["quesId"],
+                "Q_Id": ques_data["Q_Id"],
+                "Domain": domain,
+                "Elicitation Method": elicitation_method
+            }
+            for lang_script, lang_info in content.items():
+                script = lang_script.split('-')[1]
+                for prompt_type, prompt_data in lang_info.items():
+                    lang_wise_ques_key = ''
+                    # domain = prompt['Domain'][0]
+                    domain_list = prompt['Domain']
+                    for domain in domain_list:
+                        # elicitation_method = prompt['Elicitation Method']
+                        temp_dict = {
+                            "quesId": ques_data["quesId"],
+                            "Q_Id": ques_data["Q_Id"],
+                            "Domain": domain,
+                            "Elicitation Method": elicitation_method
+                        }
+                        if (prompt_type+'Instruction' in prompt_data):
+                            temp_dict['instruction'] = prompt_data[prompt_type+'Instruction']
+                        audio_fileId = ''
+                        audio_file_path = ''
+                        image_fileId = ''
+                        image_file_path = ''
+                        multimedia_fileId = ''
+                        multimedia_file_path = ''
+                        if (prompt_type == 'text'):
+                            lang_wise_ques_key = lang_script.replace('-', '_')+'_'+prompt_type
+                            boundaryId = list(prompt_data.keys())[0]
+                            sentence = prompt_data[boundaryId]['textspan'][script]
+                            temp_dict['sentence'] = sentence
+                            all_langs_temp_dict['sentence_' +
+                                            lang_wise_ques_key] = sentence
+                            temp_dict['hint'] = ''
+                        elif (prompt_type == 'audio'):
+                            lang_wise_ques_key = lang_script.replace('-', '_')+'_'+prompt_type
+                            boundaryId = list(prompt_data['textGrid']['sentence'].keys())[0]
+                            sentence = prompt_data['textGrid']['sentence'][boundaryId]['transcription'][script]
+                            temp_dict['sentence'] = sentence
+                            all_langs_temp_dict['sentence_' +
+                                            lang_wise_ques_key] = sentence
+                            temp_dict['hint'] = prompt_data['filename']
+                            audio_fileId = prompt_data['fileId']
+                            # get the file to local storage from database 'fs' collection
+                            if get_audio:
+                                audio_file_path = getfilefromfs(mongo,
+                                                                project_folder_path,
+                                                                audio_fileId,
+                                                                'audio',
+                                                                'fileId')
+                            else:
+                                audio_file_path = ''
+                            # logger.debug('audio_file_path: %s', audio_file_path)
+                            # if (audio_file_path != ''):
+                            # crop audio from start to end time
+                                                        
+                            if audio_file_path != '':
+                                start_time = prompt_data['textGrid']['sentence'][boundaryId]['startindex']
+                                end_time = prompt_data['textGrid']['sentence'][boundaryId]['endindex']
+                                if (start_time == ''):
+                                    start_time = 0
+                                if (end_time == ''):
+                                    end_time = librosa.get_duration(filename=audio_file_path)
+                                # logger.debug("start time: %s, end time: %s", start_time, end_time)
+                                # TODO: use ffmpeg to trim audio. Try using 'ffmpeg-python' library
+                                # link: https://github.com/kkroening/ffmpeg-python
+                                actual_audio_file = ffmpeg.input(audio_file_path)
+                                actual_audio_file = actual_audio_file.filter('atrim', start=start_time, end=end_time)
+                                trimmed_audio_file_path = trimmed_audio_folder_path + '/'+audio_file_path.split('/')[-1]
+                                save_audio_file = ffmpeg.output(actual_audio_file, trimmed_audio_file_path)
+                                save_audio_file = ffmpeg.overwrite_output(save_audio_file)
+                                ffmpeg.run(save_audio_file)
+                                os.remove(audio_file_path)
+                            else:
+                                if get_audio:
+                                    continue
+                        elif (prompt_type == 'multimedia'):
+                            lang_wise_ques_key = lang_script.replace('-', '_')+'_'+prompt_type
+                            multimedia_fileId = prompt_data['fileId']
+                            if (multimedia_fileId != ''):
+                                temp_dict['hint'] = prompt_data['filename']
+                                multimedia_file_path = getfilefromfs(mongo,
+                                                                project_folder_path,
+                                                                multimedia_fileId,
+                                                                'video',
+                                                                'fileId')
+                            else:
+                                continue
+                        elif (prompt_type == 'image'):
+                            lang_wise_ques_key = lang_script.replace('-', '_')+'_'+prompt_type
+                            image_fileId = prompt_data['fileId']
+                            if (image_fileId != ''):
+                                temp_dict['hint'] = prompt_data['filename']
+                                image_file_path = getfilefromfs(mongo,
+                                                                project_folder_path,
+                                                                image_fileId,
+                                                                'image',
+                                                                'fileId')
+                            else:
+                                continue
+                        lang_wise_ques_key_path = os.path.join(project_folder_path, lang_wise_ques_key)
+                        lang_wise_ques_key_xlsx_path = os.path.join(lang_wise_ques_key_path, 'xlsx')
+                        if not os.path.exists(lang_wise_ques_key_path):
+                            os.mkdir(lang_wise_ques_key_path)
+                            os.mkdir(lang_wise_ques_key_xlsx_path)
+                        lang_wise_ques_key_prompt_type_path = os.path.join(lang_wise_ques_key_path, prompt_type)
+                        if not os.path.exists(lang_wise_ques_key_prompt_type_path):
+                            os.mkdir(lang_wise_ques_key_prompt_type_path)
+                        logger.info('Lang wise ques key %s', lang_wise_ques_key)
+                        if (lang_wise_ques_key != ''):
+                            lang_wise_ques_key_temp_dict = temp_dict
+                            lang_wise_ques_key_temp_dict['Domain'] = [','.join(domain_list)]
+                            if (lang_wise_ques_key in lang_wise_ques):
+                                lang_wise_ques[lang_wise_ques_key].append(lang_wise_ques_key_temp_dict)
+                            else:
+                                lang_wise_ques[lang_wise_ques_key] = [lang_wise_ques_key_temp_dict]
+
+                            domain_wise_ques_key = lang_wise_ques_key+'_'+domain
+                            domain_wise_ques_key_path = os.path.join(project_folder_path, domain_wise_ques_key)
+                            domain_wise_ques_key_xlsx_path = os.path.join(domain_wise_ques_key_path, 'xlsx')
+                            if not os.path.exists(domain_wise_ques_key_path):
+                                os.mkdir(domain_wise_ques_key_path)
+                                os.mkdir(domain_wise_ques_key_xlsx_path)
+                            domain_wise_ques_key_prompt_type_path = os.path.join(domain_wise_ques_key_path, prompt_type)
+                            if not os.path.exists(domain_wise_ques_key_prompt_type_path):
+                                os.mkdir(domain_wise_ques_key_prompt_type_path)
+                            
+                            if (domain_wise_ques_key in lang_wise_ques):
+                                lang_wise_ques[domain_wise_ques_key].append(temp_dict)
+                            else:
+                                lang_wise_ques[domain_wise_ques_key] = [temp_dict]
+
+                        if (audio_fileId != '' and audio_file_path != ''):
+                            shutil.copy2(trimmed_audio_file_path, lang_wise_ques_key_prompt_type_path)
+                            shutil.copy2(trimmed_audio_file_path, domain_wise_ques_key_prompt_type_path)
+                            os.remove(trimmed_audio_file_path)
+
+                        if (image_fileId != '' and image_file_path != ''):
+                            shutil.copy2(image_file_path, lang_wise_ques_key_prompt_type_path)
+                            # shutil.copy2(image_file_path, domain_wise_ques_key_image_path)
+                            shutil.copy2(image_file_path, domain_wise_ques_key_prompt_type_path)
+                            os.remove(image_file_path)
+                        
+                        if (multimedia_fileId != '' and multimedia_file_path != ''):
+                            shutil.copy2(multimedia_file_path, lang_wise_ques_key_prompt_type_path)
+                            # shutil.copy2(multimedia_file_path, domain_wise_ques_key_multimedia_path)
+                            shutil.copy2(multimedia_file_path, domain_wise_ques_key_prompt_type_path)
+                            os.remove(multimedia_file_path)
+
+            # current_ques_data = {
+            #     "data": all_langs_temp_dict,
+            #     "files": files
+            # }
+            all_lang_ques.append(all_langs_temp_dict)
+
+            domain_wise_ques_key = 'all_langs_'+domain
+            domain_wise_ques_key_path = os.path.join(project_folder_path, domain_wise_ques_key)
+            domain_wise_ques_key_json_path = os.path.join(domain_wise_ques_key_path, 'xlsx')            
+            if not os.path.exists(domain_wise_ques_key_path):
+                os.mkdir(domain_wise_ques_key_path)
+                os.mkdir(domain_wise_ques_key_json_path)                
+            domain_wise_ques_key_prompt_type_path = os.path.join(domain_wise_ques_key_path, prompt_type)
+            if not os.path.exists(domain_wise_ques_key_prompt_type_path):
+                os.mkdir(domain_wise_ques_key_prompt_type_path)
+            
+            if (domain_wise_ques_key in lang_wise_ques):
+                lang_wise_ques[domain_wise_ques_key].append(all_langs_temp_dict)
+            else:
+                lang_wise_ques[domain_wise_ques_key] = [all_langs_temp_dict]
+        
+        folder_stats = {
+            'DateTime': str(datetime.now())
+        }
+        # logger.debug(pformat(lang_wise_ques))
+        for key, value in lang_wise_ques.items():
+            filename = key+'.xlsx'
+            save_file_path = os.path.join(project_folder_path, key, 'xlsx', filename)
+            # with open(save_file_path, 'w') as xlsx_file:
+            #     json.dump(value, json_file, ensure_ascii=False, indent=2)
+            df = pd.DataFrame(value)
+            df.drop_duplicates(subset=['quesId'], inplace=True)
+            # logger.debug(df)
+            df.to_excel(save_file_path, index=False)
+        # pprint(folder_stats)
+
+        filename = 'all_langs.xlsx'
+        save_dir_path = os.path.join(project_folder_path, 'all_langs', 'xlsx')
+        if not os.path.exists(save_dir_path):
+            os.makedirs(save_dir_path)
+        save_file_path = os.path.join(
+            save_dir_path, filename)
+        
+        df = pd.DataFrame(all_lang_ques)
+        df.drop_duplicates(subset=['quesId'], inplace=True)
+        # logger.debug(df)
+        df.to_excel(save_file_path, index=False)
+
+        # with open(save_file_path, 'w') as json_file:
+        #     json.dump(all_lang_ques, json_file, ensure_ascii=False, indent=2)
+
+        for folder_name in sorted(os.listdir(project_folder_path)):
+            # logger.debug("folder_name: %s", folder_name)
+            
+            if ('trimmed_audio' in folder_name or
+                'ques_image' in folder_name or
+                'ques_multimedia' in folder_name):
+                continue
+            folder_stats[folder_name] = {}
+            xlsx_folder_path = os.path.join(project_folder_path, folder_name, 'xlsx')
+            folder_stats[folder_name]['xlsx'] = datafolder_stats(xlsx_folder_path, 'xlsx')
+            zip_file_path = createzip(xlsx_folder_path, folder_name+'_xlsx')
+
+            audio_folder_path = os.path.join(project_folder_path, folder_name, 'audio')
             if (os.path.exists(audio_folder_path)):
                 folder_stats[folder_name]['audio'] = datafolder_stats(audio_folder_path, 'audio')
                 zip_file_path = createzip(audio_folder_path, folder_name+'_recordings')

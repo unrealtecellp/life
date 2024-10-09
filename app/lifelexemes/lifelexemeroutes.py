@@ -117,6 +117,7 @@ def dictionaryview():
         langScript = readJSONFile.readJSONFile(langScriptJSONFilePath)
         if request.method == 'POST':
             new_lexeme_data = dict(request.form.lists())
+            # logger.debug(pformat(new_lexeme_data))
             new_lexeme_files = request.files.to_dict()
             savenewlexeme.savenewlexeme(mongo,
                                         projects,

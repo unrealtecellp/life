@@ -38,54 +38,28 @@ easyAnno Home
         </form>
         <br>
         <a href="https://drive.google.com/drive/folders/1ymCUawOIAW7OrTeEejyQpG5OOpCMZpVO?usp=sharing"target="_blank">Sample File</a>
-      {# <!-- <br/><br/><hr/> --> #}
-    </div>
-    <div class="col-sm-6">
-      <div id="easyannoallfileslist"></div>
-      {% if data|length > 0 %}
-      <h3>Currently Working On: {{ activeproject }}</h3>
-      <div>
-      {% if activeproject != '' %}
-        <button type="button" class="btn btn-lg btn-primary" id="ideasyannohomevieweditbtn">View/Edit File</button>
-        {% if shareinfo['sharechecked'] == 'true' %}
-          <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myShareProjectModal">
-              Share File
-          </button>
+        
+      </div>
+      <div class="col-sm-6">
+        <div id="easyannoallfileslist"></div>
+        {% if data|length > 0 %}
+          <h3>Currently Working On: {{ activeproject }}</h3>
+          <div>
+          {% if activeproject != '' %}
+            <button type="button" class="btn btn-lg btn-primary" id="ideasyannohomevieweditbtn">View/Edit File</button>
+            {% if shareinfo['sharechecked'] == 'true' %}
+              <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myShareProjectModal">
+                  Share File
+              </button>
+            {% endif %}
+            {% if 'downloadchecked' in shareinfo and shareinfo['downloadchecked'] == 'true' %}
+              <button type="button" class="btn btn-primary btn-lg" onclick="window.location.href='{{ url_for('easyAnno.downloadannotationfile') }}';">Download File</button>
+            {% endif %}
+          {% endif %}
+          </div>
         {% endif %}
-        {% if 'downloadchecked' in shareinfo and shareinfo['downloadchecked'] == 'true' %}
-          <button type="button" class="btn btn-primary btn-lg" onclick="window.location.href='{{ url_for('easyAnno.downloadannotationfile') }}';">Download File</button>
-        {% endif %}
-      {% endif %}
       </div>
     </div>
-    </div>
-    </br><hr/>
-    <div id="allProjects">
-     {# <h3>All Files : {{ data|length }}</h3>
-     <div>
-       <span class="completedtext" style="font-size: 12px">Completed : {{ projectcompleted["success"] }}</span><span class="tagcolor box success"></span>
-       <span class="completedtext" style="font-size: 12px">In Progress : {{ projectcompleted["warning"] }}</span><span class="tagcolor box warning"></span>
-       <span class="completedtext" style="font-size: 12px">Not Started : {{ projectcompleted["danger"] }}</span><span class="box danger"></span>
-      </div>
-     <input class="form-control" id="searchFile" type="text" placeholder="Search File">
-       <table class="table">
-         <tbody id="allFilesTableBody">
-             <tr>
-         {% for d in data %}
-         
-             <td><button type="button" class="btn btn-{{ projectcompleted[d] }}" id ="{{ d }}" onclick="changeActiveProject('{{ d }}')">{{ d }}</button></td>
-             {% if loop.index is divisibleby 3 %}
-                         </tr>
-                     </tbody>
-                     <tbody>
-                         <tr>    
-                 {% endif %}
-         {% endfor %}
-         </tr>
-     </tbody>
-     </table> #}
-    </div>     
-    {% endif %}
     <!-- Share Project Modal -->
    <div class="modal fade" id="myShareProjectModal" tabindex="-1" role="dialog" aria-labelledby="myShareProjectModalLabel">
      <div class="modal-dialog" role="document">

@@ -1,4 +1,4 @@
-"""Module containing the routes for the models part of the LiFe."""
+"""Module containing the routes for the models part of the LiFE."""
 from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify, send_file
 from flask_login import current_user, login_required, login_user, logout_user
 from app.controller import (
@@ -114,7 +114,7 @@ def getModelList():
             for current_lang in all_langs:
                 all_models.extend(modelManager.get_model_list(
                     models, languages, featured_authors, current_lang))
-        return jsonify({'models': all_models, 'scripts': language_scripts['scripts']})
+        return jsonify({'models': all_models, 'scripts': language_scripts['scripts'], 'languages': language_scripts['languages']})
     except:
         logger.exception("")
 

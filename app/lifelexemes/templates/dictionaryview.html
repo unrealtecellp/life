@@ -16,42 +16,43 @@
 
     </h4><br>
 {% endif %}
-<div>
-    <input id="myInput" type="text" placeholder="Search">
-    {% if 'downloadchecked' in shareinfo and shareinfo['downloadchecked'] == 'true' %}
-    <div class="btn-group" role="group">
-        <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          Download Lexicon
-          <span class="caret"></span>
-        </button>
-        <ul class="dropdown-menu">
-            <li class="json"><a href="#">JSON</a></li>
-            <li class="csv"><a href="#">CSV</a></li>
-            <li class="xlsx"><a href="#">XLSX</a></li>
-            <li class="pdf"><a href="#">PDF</a></li>
-            <li class="markdown"><a href="#">MARKDOWN</a></li>
-            <li class="latex"><a href="#">LATEX</a></li>
-            <li class="html"><a href="#">HTML</a></li>
-            <li class="rdfturtle"><a href="#">RDF/Turtle</a></li>
-            <li class="rdfxml"><a href="#">RDF/XML</a></li>
-            <li class="rdfntriples"><a href="#">RDF/N-Triples</a></li>
-            <li class="rdfn3"><a href="#">RDF/N3</a></li>
-        </ul>
-    </div>
-    {% endif %}
-</div>
-<br>
-
-<div>
-    <button type="button" class="btn btn-danger multipledelete">Delete Multiple Lexeme</button>
-</div>
-<br>
-
 <div class="row">
-    <div class="col">
-      <p id="totalrecords">Total Records:&nbsp;{{ count }}</p>
-      
-      <table class="table table-striped " id="myTable">
+  <div class="col-md-3 pull-right">
+      <input id="myInput" class="form-control" type="text" placeholder="Search">
+  </div>
+  <div class="col-md-3">
+    <button type="button" class="btn btn-sm btn-danger multipledelete">
+      <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>+1
+    </button>
+    {% if 'downloadchecked' in shareinfo and shareinfo['downloadchecked'] == 'true' %}
+      <div class="btn-group" role="group">
+          <button type="button" class="btn btn-sm btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span>
+            <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu">
+              <li class="json"><a href="#">JSON</a></li>
+              <li class="csv"><a href="#">CSV</a></li>
+              <li class="xlsx"><a href="#">XLSX</a></li>
+              <li class="pdf"><a href="#">PDF</a></li>
+              <li class="markdown"><a href="#">MARKDOWN</a></li>
+              <li class="latex"><a href="#">LATEX</a></li>
+              <li class="html"><a href="#">HTML</a></li>
+              <li class="rdfturtle"><a href="#">RDF/Turtle</a></li>
+              <li class="rdfxml"><a href="#">RDF/XML</a></li>
+              <li class="rdfntriples"><a href="#">RDF/N-Triples</a></li>
+              <li class="rdfn3"><a href="#">RDF/N3</a></li>
+          </ul>
+      </div>
+    {% endif %}
+  </div>
+</div>
+<br>
+
+<!-- <div class="row"> -->
+    <!-- <div class="col"> -->
+      <span id="totalrecords">Total Records:&nbsp;{{ count }}</span>
+      <table class="table table-striped table-hover" id="myTable">
         <thead>
             <tr>
             <!-- <th onclick="sortTable(0)">Id</th> -->
@@ -89,17 +90,23 @@
                     <td> - </td>    
                 {% endif %}
                 {%endfor%}
-                <td><button type="button" class="btn btn-primary lexemeview">View</button></td>
-                <td><button type="button" class="btn btn-warning lexemeedit">Edit</button></td>
-                <td><button type="button" class="btn btn-danger lexemedelete">Delete</button></td>
+                <td><button type="button" class="btn btn-sm btn-primary lexemeview">
+                  <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>
+                </button></td>
+                <td><button type="button" class="btn btn-sm btn-warning lexemeedit">
+                  <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+                </button></td>
+                <td><button type="button" class="btn btn-sm btn-danger lexemedelete">
+                  <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+                </button></td>
             </tr>
             {% endfor %}
             
         </tbody>    
       </table>
-    </div>
+    <!-- </div> -->
     <!-- <input type="button" value="Get Selected" onclick="GetSelected()" /> -->
-</div>
+<!-- </div> -->
   
  <!-- Share Project Modal -->
   <div class="modal fade" id="myShareProjectModal" tabindex="-1" role="dialog" aria-labelledby="myShareProjectModalLabel">

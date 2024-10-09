@@ -23,11 +23,11 @@
         </div>
     </div>
     <br>
-    <div class="row">
+    <!-- <div class="row">
         <div class="col-sm-12">
             <select class="showlexemelist" oninput="showlexemeform(event,this)" style="width: 100%"></select>
         </div>
-    </div>
+    </div> -->
 
     <div class="row">
         <div class="col-sm-12">
@@ -53,6 +53,7 @@
                 <input type="search" class="form-control" id="projectFormSearch" name="projectFormSearch" placeholder="Project Form Search">
             {% endif %}
         </div>
+    </div>
 
     <!-- Upload Excel LiftXML  -->
   <div class="modal fade" id="uploadExcelLiftXMLModal" tabindex="-1" role="dialog" aria-labelledby="uploadExcelLiftXMLModalLabel">
@@ -65,10 +66,10 @@
         </div>
         <div class="modal-body">
             <form action="{{ url_for('lexemekeymapping') }}" method="POST" enctype="multipart/form-data">
-                <input class="btn btn-primary pull-right" id="submit" type="submit" value="Upload">
-                <div class="form-group col-md-3 pull-right">
+                <div class="form-group col-md-3">
                     <input type="file" class="form-control " id="Upload Excel LiftXML" name="Upload Excel LiftXML" required>
                 </div>
+                <input class="btn btn-primary" id="submit" type="submit" value="Upload">
             </form>
           </div>
           <div class="modal-footer">

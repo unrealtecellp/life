@@ -55,10 +55,8 @@ import json
 lifeques = Blueprint('lifeques', __name__,
                      template_folder='templates', static_folder='static')
 basedir = os.path.abspath(os.path.dirname(__file__))
-# print(f"LINE 17: lifeques basedir: {basedir}")
 lifeques_download_folder_path = os.path.join(basedir, 'lifequesdownload')
 if not os.path.exists(lifeques_download_folder_path):
-    # print('!!!!!', lifeques_download_folder_path)
     os.mkdir(lifeques_download_folder_path)
 logger = life_logging.get_logger()
 
@@ -72,7 +70,6 @@ def home():
     Returns:
         _type_: _description_
     """
-    # print('lifeques home')
 
     return render_template("lifequeshome.html")
 
@@ -136,7 +133,6 @@ def newquestionnaireform():
                 return redirect(url_for('lifeques.home'))
 
             if ("derivefromproject" in new_ques_form):
-                #     print("line no: 76, derivefromproject in new_ques_form")
                 derive_from_project_name = new_ques_form["derivefromproject"][0]
                 projects.update_one({"projectname": derive_from_project_name},
                                     {"$addToSet": {
@@ -149,24 +145,15 @@ def newquestionnaireform():
                 # merge new project form and parent project form
                 derivedfromprojectform = getderivedfromprojectform.getderivedfromprojectform(projectsform,
                                                                                              derive_from_project_name)
-                # pprint(derivedfromprojectform)
                 all_keys = set(list(derivedfromprojectform.keys()
                                     ) + list(new_ques_form.keys()))
-                # for key, value in derivedfromprojectform.items():
-                # print('All keys from both projects', all_keys)
                 for key in all_keys:
                     if (key in derivedfromprojectform):
                         derivedfromprojectformvalue = derivedfromprojectform[key][1]
-                        # print(key, derivedfromprojectformvalue)
                         if isinstance(derivedfromprojectformvalue, list):
                             if (key in new_ques_form):
                                 derivedfromprojectformvalue.extend(
                                     new_ques_form[key])
-                            # print(key, derivedfromprojectformvalue)
-                            # if("Transcription" in key): continue
-                            # if (key == "Language" or key == "Script"):
-                            #     new_ques_form[key] = list(derivedfromprojectformvalue)
-                            # else:
                             new_ques_form[key] = list(
                                 set(derivedfromprojectformvalue))
                         if (key == "Prompt Type"):
@@ -194,18 +181,6 @@ def newquestionnaireform():
                             else:
                                 new_ques_form[key] = [
                                     "", derivedfromprojectformvalues]
-
-                            #     derivedfromprojectformvalue.extend(new_ques_form[key])
-                            #     new_ques_form[key] = list(set(derivedfromprojectformvalue))
-                            #     # print(new_ques_form[key])
-                            # else:
-
-                            # if ('Transcription' in derivedfromprojectform):
-                            #     new_ques_form['Transcription'] = derivedfromprojectform['Transcription'][1]
-                            # if ('Instruction' in derivedfromprojectform):
-                            #     new_ques_form['Instruction'] = derivedfromprojectform['Instruction'][1]
-            # print('LINE: 109')
-            # pprint(new_ques_form)
             updateuserprojects.updateuserprojects(userprojects,
                                                   projectname,
                                                   current_username
@@ -260,10 +235,7 @@ def questionnaire():
 
         if (current_username not in lastActiveIdDetails['lastActiveId']):
             lastActiveId = lastActiveIdDetails['questionnaireIds'][0]
-            # print(lastActiveId)
             updatequesid = 'lastActiveId.'+current_username+'.'+activeprojectname
-            # print(updatequesid)
-
             projects.update_one({"projectname": activeprojectname},
                                 {'$set': {updatequesid: lastActiveId}})
 
@@ -298,11 +270,7 @@ def questionnaire():
         quesdata = questionnaires.find_one(
             {"quesId": last_active_ques_id}, {"_id": 0})
         # logger.debug("quesdata: %s", pformat(quesdata))
-        # print(f"{inspect.currentframe().f_lineno}: {quesprojectform}")
-        # print(f"{inspect.currentframe().f_lineno}: {type(quesdata)}")
-        # print(f"{inspect.currentframe().f_lineno}: {quesdata}")
         quesprojectform['quesdata'] = quesdata
-        # print(f"{inspect.currentframe().f_lineno}: {quesdata}")
         file_path = ''
         # if (quesdata is not None and 'Transcription' in quesdata['prompt']):
 
@@ -312,7 +280,6 @@ def questionnaire():
                 ques_data_prompt_content = quesdata['prompt']['content']
                 # ques_id = quesdata['prompt']['Transcription']['quesId']
                 for lang, lang_info in ques_data_prompt_content.items():
-                    # print(lang, lang_info)
                     for prompt_type, prompt_type_info in lang_info.items():
                         # logger.debug('prompt_type: %s, prompt_type_info: %s',
                         #              prompt_type, prompt_type_info)
@@ -340,16 +307,11 @@ def questionnaire():
                                     quesprojectform['QuesAudioFilePath'] = file_path
                                     transcription_regions = questranscriptionaudiodetails.getquesfiletranscriptiondetails(
                                         questionnaires, last_active_ques_id, lang, prompt_type)
-                                    # print(type(transcription_regions))
                                     quesprojectform['transcriptionRegions'] = transcription_regions
                                     audioWaveform = 1
         if ('QuesAudioFilePath' not in quesprojectform):
             quesprojectform['QuesAudioFilePath'] = ''
         # logger.debug("quesprojectform: %s", pformat(quesprojectform))
-
-        # project_type = getprojecttype.getprojecttype(projects, activeprojectname)
-        # print('project_type', project_type)
-
         total_ques, completed, notcompleted = getquestionnairestats.getquestionnairestats(projects,
                                                                                           questionnaires,
                                                                                           activeprojectname,
@@ -360,7 +322,7 @@ def questionnaire():
     except:
         logger.exception("")
 
-    logger.debug(quesprojectform)
+    # logger.debug(quesprojectform)
 
     return render_template('questionnaire.html',
                            projectName=activeprojectname,
@@ -386,7 +348,6 @@ def questranscriptionaudio():
                                                    activeprojectname)
 
     ques_audio_file = request.files.to_dict()
-    # print(ques_audio_file)
     last_active_ques_id = getactivequestionnaireid.getactivequestionnaireid(projects,
                                                                             activeprojectname,
                                                                             current_username)
@@ -422,11 +383,7 @@ def savequestionnaire():
         if request.method == 'POST':
             # ques_data = dict(request.form.lists())
             ques_data = json.loads(request.form['a'])
-            # print('LINE 241: ')
-            logger.debug('ques_data: %s', pformat(ques_data))
-            # ques_data_file = request.files.to_dict()
-            # pprint(ques_data_file)
-
+            # logger.debug('ques_data: %s', pformat(ques_data))
             last_active_ques_id = getactivequestionnaireid.getactivequestionnaireid(projects,
                                                                                     activeprojectname,
                                                                                     current_username)
@@ -477,15 +434,6 @@ def uploadquesfiles():
     }
     if request.method == 'POST':
         new_ques_file = request.files.to_dict()
-        # print(new_ques_file)
-        # print(projects,
-        #         userprojects,
-        #         questionnaires,
-        #         activeprojectname,
-        #         projectowner,
-        #         basedir,
-        #         new_ques_file,
-        #         current_username)
         questate, quesextra = uploadquesdataexcel.queskeymapping(mongo,
                                                                  projects,
                                                                  userprojects,
@@ -512,7 +460,6 @@ def uploadquesfiles():
 @lifeques.route('/downloadformexcel', methods=['GET', 'POST'])
 @login_required
 def downloadformexcel():
-    # print(f"I download questionnaire form.")
     userprojects, questionnaires = getdbcollections.getdbcollections(mongo,
                                                                      'userprojects',
                                                                      'questionnaires')
@@ -539,7 +486,6 @@ def loadpreviousques():
     # data through ajax
     lastActiveId = request.args.get('data')
     lastActiveId = eval(lastActiveId)
-    # print(lastActiveId)
     latest_ques_id = getnewquesid.getnewquesid(projects,
                                                activeprojectname,
                                                lastActiveId,
@@ -564,7 +510,6 @@ def loadnextques():
     # data through ajax
     lastActiveId = request.args.get('data')
     lastActiveId = eval(lastActiveId)
-    # print(lastActiveId)
     latest_ques_id = getnewquesid.getnewquesid(projects,
                                                activeprojectname,
                                                lastActiveId,
@@ -607,9 +552,7 @@ def loadunannotext():
 
     lastActiveId = request.args.get('data')
     lastActiveId = eval(lastActiveId)
-    # print(lastActiveId)
     updatequesid = 'lastActiveId.'+current_username+'.'+activeprojectname
-    # print(updatequesid)
 
     projects.update_one({"projectname": activeprojectname},
                         {'$set': {updatequesid: lastActiveId}})
@@ -632,20 +575,13 @@ def quespromptfile():
                                                                       userprojects)
         projectowner = getprojectowner.getprojectowner(projects,
                                                        activeprojectname)
-
-        # ques_audio_file = request.files
-        # print(ques_audio_file)
         last_active_ques_id = getactivequestionnaireid.getactivequestionnaireid(projects,
                                                                                 activeprojectname,
                                                                                 current_username)
 
         if request.method == "POST":
             prompt_file = request.files.to_dict()
-            logger.info('prompt_file: %s, type(prompt_file): %s',
-                        prompt_file, type(prompt_file))
-            # prompt_type = list(prompt_file.keys())[0].split('_')[1]
-            # print(prompt_type)
-        # ques_audio_file['Transcription Audio'] = ques_audio_file['Prompt Type Audio']
+            # logger.info('prompt_file: %s, type(prompt_file): %s',prompt_file, type(prompt_file))
         savequespromptfile.savequespromptfile(mongo,
                                               projects,
                                               userprojects,
@@ -675,25 +611,34 @@ def downloadquestionnaire():
     activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
                                                                   userprojects)
     questionnaire_data = request.args.get('data')
-    questionnaire_data = eval(questionnaire_data)
-    # print(questionnaire_data)
+    questionnaire_data = json.loads(questionnaire_data)
+    # questionnaire_data = eval(questionnaire_data)
     download_format = questionnaire_data['downloadFormat']
+    get_audio = questionnaire_data['getAudio']
 
     if (download_format == 'karyajson'):
         project_folder_path = downloadquestionnairein.karyajson(mongo,
                                                                 basedir,
                                                                 questionnaires,
-                                                                activeprojectname)
+                                                                activeprojectname,
+                                                                get_audio)
     elif (download_format == 'karyajson2'):
         project_folder_path = downloadquestionnairein.karyajson2(mongo,
                                                                  basedir,
                                                                  questionnaires,
-                                                                 activeprojectname)
+                                                                 activeprojectname,
+                                                                 get_audio)
+    elif (download_format == 'xlsx'):
+        project_folder_path = downloadquestionnairein.excel(mongo,
+                                                            basedir,
+                                                            questionnaires,
+                                                            activeprojectname,
+                                                            get_audio)
+    
 
     zip_file_path = createzip.createzip(project_folder_path, activeprojectname)
 
     return 'OK'
-
 
 @lifeques.route('/lifequesdownloadquestionnaire', methods=['GET', 'POST'])
 def lifequesdownloadquestionnaire():
@@ -746,7 +691,6 @@ def createnewques():
         logger.exception("")
 
     return jsonify(saveState=save_state)
-
 
 @lifeques.route('/deleteques', methods=['GET', 'POST'])
 @login_required

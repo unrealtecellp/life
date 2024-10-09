@@ -20,7 +20,8 @@ catch (err) {
     lstUpdatedBy = '';
 }
 
-filePath = JSON.parse(localStorage.getItem('AudioFilePath'));
+var filePath = JSON.parse(localStorage.getItem('AudioFilePath'));
+// console.log('Audio file path', filePath);
 getAudiDuration(filePath);
 showBoundaryCount(boundaryCount);
 lastUpdatedBy(lstUpdatedBy)
@@ -29,6 +30,8 @@ lastUpdatedBy(lstUpdatedBy)
 /**
  * Init & load.
  */
+let preservePitch = true;
+const speeds = [0.25, 0.5, 0.75, 1, 1.25, 1.50, 2];
 document.addEventListener('DOMContentLoaded', function () {
     // Init wavesurfer
     wavesurfer = WaveSurfer.create({
@@ -45,7 +48,7 @@ document.addEventListener('DOMContentLoaded', function () {
         barGap: 3,
         // partialRender: true,
         plugins: [
-            WaveSurfer.regions.create(),
+            WaveSurfer.regions.create({content: 'Test'}),
             // WaveSurfer.minimap.create({
             //     height: 30,
             //     waveColor: '#ddd',
@@ -74,10 +77,20 @@ document.addEventListener('DOMContentLoaded', function () {
         ]
     });
     document.querySelector('#slider').oninput = function () {
+        // console.log(Number(this.value));
         wavesurfer.zoom(Number(this.value));
     };
+    // Set the playback rate
+    document.querySelector('#playbackRateSliderdivId').addEventListener('input', (e) => {
+        const speed = speeds[e.target.valueAsNumber];
+        document.querySelector('#rate').textContent = speed.toFixed(2);
+        wavesurfer.setPlaybackRate(speed, preservePitch);
+        // console.log(wavesurfer.getPlaybackRate());
+        // wavesurfer.play()
+    })
 
     // wavesurfer.load(filePath);
+    // console.log('Audio file path before loading', filePath);
     if (audiowaveformData === '') {
         wavesurfer.load(filePath);
 
@@ -402,7 +415,7 @@ function editAnnotation(region) {
     // console.log('editAnnotation(region)')
     // console.log(region)
     let form = document.forms.edit;
-    // console.log(form);
+    console.log(form);
     // let id = form.dataset.region;
     // let wavesurferregion = wavesurfer.regions.list[id];
     // console.log(wavesurferregion)
@@ -462,6 +475,7 @@ function editAnnotation(region) {
     saveBoundaryData(region, form)
     updateBoundaryColor(region, form);
     formOnSubmit(form, region)
+    localStorage.setItem("activeboundaryid", JSON.stringify(rid));
     // console.log(sentence);
 
     // form.onreset = function () {
@@ -470,7 +484,9 @@ function editAnnotation(region) {
     //     transcriptionFormDisplay(form);
     //     form.dataset.region = null;
     // };
+    console.log(form.dataset.region, rid);
     form.dataset.region = region.id;
+    console.log(form.dataset.region, rid);
     // region.color = boundaryColor(255, 255, 0, 0.1);
 }
 
@@ -1090,9 +1106,9 @@ function processTokenGloss(glossTokenId,
     existingMorphemes) {
     // console.log('processTokenGloss');
     // console.log('Gloss token ID info', glossTokenIdInfo);
-    try {
-        let glossedSentenceWithMorphemicBreakInfo = {};
-        let glossedSentenceWithTokenIdInfo = {};
+    let glossedSentenceWithMorphemicBreakInfo = {};
+    let glossedSentenceWithTokenIdInfo = {};
+    try {        
         for (let i = 0; i < glossTokenId.length; i++) {
             let tokenId = glossTokenId[i];
             // console.log('Processing', tokenId);
@@ -1241,17 +1257,18 @@ function processTokenGloss(glossTokenId,
         // console.log(glossedSentenceWithTokenIdInfo);
         // console.log(glossedSentenceWithMorphemicBreakInfo);
         // console.log(glossedSentenceWithTokenIdInfo);
-
         return {
             glossedSentenceWithMorphemicBreakInfo: glossedSentenceWithMorphemicBreakInfo,
             glossedSentenceWithTokenIdInfo: glossedSentenceWithTokenIdInfo
         }
     }
+    
     catch (error) {
         console.error(error);
         // console.log(glossedSentenceWithTokenIdInfo);
-        console.log('error');
+        console.log('error in processing token gloss. Most likely gloss not found');
     }
+    
     // console.log(glossedSentenceWithTokenIdInfo);
 }
 
@@ -1359,9 +1376,10 @@ function updateSentenceDetailsOnSaveBoundary(boundaryID, sentence, region, form)
                                 customizeGloss,
                                 sentence[boundaryID]['glossTokenIdInfo'],
                                 sentence[boundaryID]['gloss'][k]);
-                            // console.log(glossedSentenceWithMorphemicBreakInfo);
+                            // console.log('Glossed info', glossedSentenceWithMorphemicBreakInfo);
                             sentence[boundaryID]['gloss'][k] = glossedSentenceWithMorphemicBreakInfo.glossedSentenceWithMorphemicBreakInfo;
                             sentence[boundaryID]['glossTokenIdInfo'] = glossedSentenceWithMorphemicBreakInfo.glossedSentenceWithTokenIdInfo;
+                            // console.log(sentence);
                         }
                     }
                     // sentence[boundaryID][key][k] = form[eleName].value;
@@ -1955,11 +1973,11 @@ function createSentenceForm(formElement, boundaryID) {
     let activeTag = getActiveTag();
     createNavTabs(activeprojectform, activeTag);
     let anonymize_checked = false;
+    if('anonymize' in formElement) {
+        anonymize_checked = formElement['anonymize'];
+    }
     // console.log("activeprojectform", activeprojectform);
     for (let [key, value] of Object.entries(formElement)) {
-        if (key === 'anonymize') {
-            anonymize_checked = value;
-        }
         // console.log('first', key, value)
         if (key === 'transcription') {
             let transcriptionScriptList = activeprojectform['Transcription'][1];
@@ -2000,8 +2018,10 @@ function createSentenceForm(formElement, boundaryID) {
             // console.log('second', 'Object.keys(transcriptionScript)[0]', Object.keys(transcriptionScript)[0]);
             // firstTranscriptionScript = Object.keys(transcriptionScript)[0]
             sentSpeakerIdEle = '<label for="sentspeakeriddropdown">Speaker ID: </label>'
-            sentSpeakerIdEle += '<select class="custom-select custom-select-sm keyman-attached" id="sentspeakeriddropdown"'
-                + 'name = "sentSpeakerId" multiple = "multiple" style = "width:70%" required onclick="updateKeyboard(this)" onchange="autoSavetranscription(event,this)"> "';
+            sentSpeakerIdEle += '<select class="custom-select custom-select-sm keyman-attached"'+
+                                ' id="sentspeakeriddropdown" name = "sentSpeakerId" multiple = "multiple"'+
+                                ' style = "width:40%" required'+
+                                ' onclick="updateKeyboard(this)" onchange="autoSavetranscription(event,this)"> "';
 
 
             for (let i = 0; i < currentAudioAllSpeakerids.length; i++) {
@@ -2018,8 +2038,22 @@ function createSentenceForm(formElement, boundaryID) {
                     }
                 }
             }
-
             sentSpeakerIdEle += '</select>';
+
+            // let allQuesIds = '';
+            let allQuesIds = JSON.parse(localStorage.allQuesIds);
+            let quesIds = '&nbsp;&nbsp;&nbsp;&nbsp;';
+            if (Object.keys(allQuesIds).length !== 0) {
+                // console.log(allQuesIds);
+                quesIds +='<label for="quesiddropdownboundary">Prompt: </label>' +
+                            '<select class="custom-select custom-select-sm" id="quesiddropdownboundary"'+
+                            ' name="quesId" style="width:30%" required>';
+                for (let [quesId, Q_Id] of Object.entries(allQuesIds)) {
+                quesIds += '<option value="' + quesId + '">' + Q_Id + '</option>';
+                }
+                quesIds += '</select>';
+            }
+
             let anonymize = '';
             if (anonymize_checked) {
                 anonymize = '<label class="pull-right" for="anonymizecheckboxid_'+boundaryID+'">&nbsp;Anonymize</label>'+
@@ -2035,6 +2069,8 @@ function createSentenceForm(formElement, boundaryID) {
 
 
             inpt += sentSpeakerIdEle;
+
+            inpt += quesIds;
 
             inpt+= anonymize;
 
@@ -2159,9 +2195,8 @@ function createSentenceForm(formElement, boundaryID) {
             // document.getElementById("transcription2").value = "-";
             // $('.transcription1').append(inpt);
             $('#transcription2').append(inpt);
-            $('#sentspeakeriddropdown').select2({
-                // data: optionsList
-            });
+            $('#sentspeakeriddropdown').select2({});
+            $('#quesiddropdownboundary').select2({});
             // console.log(document.getElementById("transcription2").innerHTML)
             // console.log(activeprojectform['Interlinear Gloss'][1]);
             if ('Interlinear Gloss' in activeprojectform &&
@@ -2791,7 +2826,7 @@ function getActiveRegionSentence(region) {
             if ('sentence' in regions[i]['data']) {
                 // console.log("'sentence' in Object.values(regions[i])")
                 sentence = Object.values(regions[i]['data']['sentence'])[0]
-                // console.log('sentence YES getActiveRegionSentence(region)', sentence)    
+                // console.log('sentence YES getActiveRegionSentence(region)', sentence)
             }
             else {
                 // console.log('sentence NOT getActiveRegionSentence(region)', sentence)
@@ -3003,6 +3038,7 @@ function autoSavetranscription(e, transcriptionField, recurse = true, update = t
     // console.log(e.keyCode);
     // console.log(transcriptionField, transcriptionField.id, transcriptionField.value);
     // console.log(e, transcriptionField);
+    console.log('Transcription field', transcriptionField);
     let fieldId = transcriptionField.id;
     // let fieldClasses = transcriptionField.className;
     // console.log('Inputs for autosave', e, transcriptionField, update, from);
@@ -3366,6 +3402,7 @@ function getScriptToGlossDropdownSelected() {
 }
 
 function transcriptionToGloss() {
+    console.log("Triggered transcription to gloss");
     // console.log($('#scripttoglossdropdown').select2('data'));
     // console.log($('#scripttoglossdropdown').select2('data')[0].id);
     let activeprojectform = JSON.parse(localStorage.activeprojectform);
@@ -3444,7 +3481,11 @@ function transcriptionToGloss() {
             // console.log(sentence_morphemic_break);            
             let allTranscriptions = localStorageRegions[p]['data']['sentence'][boundaryID]['transcription'];
             let transcriptionInScript = allTranscriptions[scriptName];
-
+            // console.log(transcriptionInScript);
+            if (!transcriptionInScript) {
+                transcriptionInScript = '';
+            }
+            // console.log(transcriptionInScript);
             let cleanedTranscriptionInScript = transcriptionInScript.replace(morphemicBreakReplacerRegex, '');
 
             // if (sentenceMorphemicBreak == '') {
@@ -4415,6 +4456,7 @@ function updateTokenId(differences, scriptName, allGlossScripts, allTranscriptio
     console.log(differences, scriptName, allGlossScripts, allTranscriptions);
     let localStorageRegions = JSON.parse(localStorage.regions);
     let activeBoundaryID = document.getElementById('activeBoundaryID').value;
+    let boundaryID = activeBoundaryID;
     let existingTokenIdInfo = {};
     let existingGloss = {};
     let currentBoundaryIndex = 0;
@@ -4552,8 +4594,10 @@ function generateTokenId(sentencemorphemicbreakupdatedvalue) {
     let tokenIdObject = {};
     let localStorageRegions = JSON.parse(localStorage.regions);
     let activeBoundaryID = document.getElementById('activeBoundaryID').value;
+    let boundaryID = activeBoundaryID;
     for (let p = 0; p < localStorageRegions.length; p++) {
         // console.log(p);
+        // console.log(localStorageRegions[p]);
         // console.log(localStorageRegions[p]['data']['sentence'][boundaryID])
         if (localStorageRegions[p]['data']['sentence'][boundaryID] &&
             localStorageRegions[p]['boundaryID'] === activeBoundaryID &&
@@ -4662,6 +4706,7 @@ function getGlossTokenIdInfo() {
     let glossTokenIdInfo = {};
     let localStorageRegions = JSON.parse(localStorage.regions);
     let activeBoundaryID = document.getElementById('activeBoundaryID').value;
+    let boundaryID = activeBoundaryID;
     for (let p = 0; p < localStorageRegions.length; p++) {
         // console.log(p);
         if (localStorageRegions[p]['data']['sentence'][boundaryID] &&

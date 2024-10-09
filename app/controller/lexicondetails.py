@@ -1,5 +1,12 @@
-def get_all_lexicon_details(lexemes, activeprojectname, field_list=['lexemeId', 'headword', 'Sense.Grammatical Category',
-                                                                    'Sense.Gloss.eng', 'Sense.Gloss.hin']):
+field_list = ['lexemeId',
+              'headword',
+            #   'Sense.Grammatical Category',
+              'Sense.Gloss.eng',
+            #   'Sense.Gloss.hin',
+            #   'Sense.Gloss.san',
+            #   'Sense.Gloss.mai'
+              ]
+def get_all_lexicon_details(lexemes, activeprojectname, field_list=field_list):
     get_fields = get_mongo_output_dict(field_list)
     # print('Get fields', get_fields)
     if 'SenseNew' in get_fields:
@@ -34,10 +41,10 @@ def get_all_lexicon_details(lexemes, activeprojectname, field_list=['lexemeId', 
                     current_lexeme_details.update(field_all_details)
 
             details.append(current_lexeme_details)
-    print(details)
+    # print(details)
     # print(added_fields)
     added_fields = clean_added_fields(added_fields)
-    print(added_fields)
+    # print(added_fields)
     return added_fields, details
 
 

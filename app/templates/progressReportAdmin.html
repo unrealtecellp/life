@@ -1,0 +1,1168 @@
+{% extends "links.html" %}
+
+{% block title %}
+Progress Report Admin
+{% endblock title %}
+
+{% block styles %}
+{{ super() }}
+
+
+<link href="https://cdn.metroui.org.ua/v4/css/metro-all.min.css" rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.css">
+
+<style>/* Basic styles for the popup */
+    .popup {
+        display: none;
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+    }
+    
+    .popup-content {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: #fff;
+        padding: 20px;
+        border-radius: 5px;
+        width: 80%;
+        max-width: 500px;
+    }
+    
+    .popup-close {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        cursor: pointer;
+        font-size: 20px;
+        color: #da0707;
+    }
+    </style>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f8f9fa;
+        padding-top: 20px;
+    }
+    .container {
+        width: 80%;
+        margin: 0 auto;
+    }
+    h2 {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+        background-color: #fff;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    table th, table td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+    table th {
+        background-color: #f2f2f2;
+        font-weight: bold;
+    }
+    table tr:hover {
+        background-color: #f9f9f9;
+    }
+    .modal-dialog {
+        max-width: 1000px; /* Increase the max-width to fit wider content */
+        width: 80%; /* Set a specific width for the modal */
+        height: 80%; /* Set a specific height for the modal */
+    }
+    .modal-content {
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        height: 100%; /* Ensure content takes full height of the modal */
+    }
+    .modal-body {
+        overflow-y: auto;
+        height: calc(100% - 56px); /* Adjust for the height of the header and footer */
+    }
+    .modal-title {
+        font-weight: bold;
+    }
+    .close {
+        font-size: 1.5rem;
+        color: #da0707;
+    }
+    .close:hover {
+        color: #333;
+        text-decoration: none;
+    }
+</style>
+
+
+
+
+<style>
+
+    /* Additional styles specific to this page */
+    .metric-card {
+        margin-bottom: 20px;
+        border: 1px solid #ddd; /* Add a border */
+        border-radius: 8px; /* Rounded corners */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add shadow for depth */
+        transition: box-shadow 0.3s ease-in-out; /* Smooth shadow transition */
+    }
+
+    .metric-card:hover {
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Shadow effect on hover */
+    }
+
+    .metric-card .card-body {
+        padding: 20px; /* Padding inside the card */
+    }
+
+    .metric-card .card-title {
+        font-size: 18px; /* Title font size */
+        margin-bottom: 10px; /* Space below the title */
+    }
+
+    .metric-card .card-text {
+        font-size: 16px; /* Text font size */
+        color: #555; /* Text color */
+    }
+
+
+
+    /* Sidebar styles */
+    .side-nav-container {
+        background-color: rgb(218, 239, 247);
+        color: rgb(2, 1, 59);
+        padding: 20px;
+        height: 50vh;
+        position: fixed;
+        left: 10;
+        width: 250px; /* Adjust sidebar width here */
+        z-index: 1; /* Ensure sidebar is above main content */
+        overflow-y: auto; /* Enable scrolling if content exceeds sidebar height */
+    }
+
+    .side-nav-container a {
+        color: rgb(78, 9, 78);
+        text-decoration: none;
+        display: block;
+        padding: 10px 0;
+    }
+
+    .side-nav-container a:hover {
+        text-decoration: underline;
+    }
+
+    .main-content {
+        margin-left: 250px; /* Adjust based on sidebar width */
+        padding: 20px;
+    }
+
+    /* Ensure responsive behavior */
+    @media (max-width: 768px) {
+        .side-nav-container {
+            width: 100%; /* Sidebar takes full width on smaller screens */
+            margin-bottom: 10px; /* Add margin below sidebar */
+        }
+
+        .main-content {
+            margin-left: 0; /* No margin on the left for main content */
+        }
+    }
+
+
+</style>
+
+
+
+
+
+
+{% endblock %}
+
+{% block app_content %}
+
+<div class="container-fluid">
+    <div class="row">
+        <nav class="side-nav-container col-md-3 col-lg-2">
+            <div class="position-sticky pt-3">
+                <ul class="nav flex-column">
+                    <!-- <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="#">
+                            <span data-feather="home"></span>
+                            Dashboard
+                        </a>
+                    </li> -->
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showDashboard()">
+                            <span data-feather="home"></span>
+                            <strong>Dashboard</strong>
+                        </a>
+                    </li>
+
+                    
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showAllProjects()">
+                            <span class="font-weight-bold" data-feather="file"></span>
+                            <strong>All projects of a user</strong>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showSpecificProject()">
+                            <span data-feather="users"></span>
+                            <strong>Any specific project of the user</strong>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <span data-feather="bar-chart-2"></span>
+                            <strong>Reports</strong>
+                        </a>
+                    </li>
+                </ul>
+
+              
+                </ul>
+            </div>
+        </nav>
+
+         <main class="main-content col-md-9 ms-sm-auto col-lg-10 px-md-4">
+
+            {% if activeprojectname is defined %}
+            <h4>
+                <strong>Project Name : {{ activeprojectname }}</strong>
+              </h4>
+
+            <!-- <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">Dashboard</h1>
+            </div> -->
+            {% endif %}
+            <br>
+            <br>
+
+            <div id="projectContainer" class="hidden">
+                <h2><strong>Dashboard</strong></h2>
+                <br><br>
+                <!-- Table for Project List -->
+                <table id="audioTable" >
+                    <thead>
+                        <tr>
+                            <th>Project Name</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for project in project_stats %}
+                        <tr>
+                            <td>{{ project.projectname }}</td>
+                            <td>
+                                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#projectModal{{ loop.index }}">View Details</button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            
+                <!-- Modals for Project Details -->
+                <!-- {% for project in project_stats %}
+                <div class="modal fade" id="projectModal{{ loop.index }}" tabindex="-1" role="dialog" aria-labelledby="projectModalLabel{{ loop.index }}" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="projectModalLabel{{ loop.index }}">{{ project.projectname }}</h5>
+                                <button type="button" class="btn btn-danger float-left" data-dismiss="modal" aria-label="Close">Close</button>
+
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <table class="table table-bordered">
+                                    <tbody>
+                                        <tr><th>Project Owner</th><td>{{ project.projectOwner }}</td></tr>
+                                        <tr><th>Shared With</th><td>{{ project.sharedwith }}</td></tr>
+                                        <tr><th>Project Derivatives</th><td>{{ project.projectDerivatives }}</td></tr>
+                                        <tr><th>About Project</th><td>{{ project.aboutproject }}</td></tr>
+                                        <tr><th>Project Type</th><td>{{ project.projectType }}</td></tr>
+                                        <tr><th>Speaker IDs</th><td>{{ project.speakerIds }}</td></tr>
+                                        <tr><th>Speakers Audio IDs</th><td>{{ project.speakersAudioIds }}</td></tr>
+                                        <tr><th>Total Audio IDs</th><td>{{ project.totalAudioIds }}</td></tr>
+                                        <tr><th>Speakers Audio IDs Keys</th><td>{{ project.speakersAudioIdsKeys }}</td></tr>
+                                    </tbody>
+                                </table>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-danger ml-auto" data-dismiss="modal">Close</button>
+                                </div>
+                                
+                            </div>
+                            
+                            
+                        </div>
+                    </div>
+                </div>
+                {% endfor %} -->
+
+
+
+
+                <!-- Modals for Project Details -->
+                {% for project in project_stats %}
+                <div class="modal fade" id="projectModal{{ loop.index }}" tabindex="-1" role="dialog" aria-labelledby="projectModalLabel{{ loop.index }}" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="projectModalLabel{{ loop.index }}">{{ project.projectname }}</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <table class="table table-bordered">
+                                    <tbody>
+                                        <tr><th>Project Owner</th><td>{{ project.projectOwner }}</td></tr>
+                                        <tr><th>Shared With</th><td>{{ project.sharedwith | join(', ') }}</td></tr>
+                                        <tr><th>Project Derivatives</th><td>{{ project.projectDerivatives | join(', ') }}</td></tr>
+                                        <tr><th>About Project</th><td>{{ project.aboutproject }}</td></tr>
+                                        <tr><th>Project Type</th><td>{{ project.projectType }}</td></tr>
+
+                                        <!-- Speaker IDs displayed as key-value pairs -->
+                                        <tr>
+                                            <th>Speaker IDs</th>
+                                            <td>
+                                                <table class="table table-sm">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Worker</th>
+                                                            <th>Speaker IDs Shared With Worker</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {% for speaker, ids in project.speakerIds.items() %}
+                                                        <tr>
+                                                            <td>{{ speaker }}</td>
+                                                            <td>{{ ids | join(', ') }}</td>
+                                                        </tr>
+                                                        {% endfor %}
+                                                    </tbody>
+                                                </table>
+                                            </td>
+                                        </tr>
+
+                                        <!-- Speakers Audio IDs displayed as key-value pairs -->
+                                        <tr>
+                                            <th>Speakers Audio IDs</th>
+                                            <td>
+                                                <table class="table table-sm">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Speaker ID</th>
+                                                            <th>Audio IDs</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {% for speakerId, audioIds in project.speakersAudioIds.items() %}
+                                                        <tr>
+                                                            <td>{{ speakerId }}</td>
+                                                            <td>{{ audioIds | join(', ') }}</td>
+                                                        </tr>
+                                                        {% endfor %}
+                                                    </tbody>
+                                                </table>
+                                            </td>
+                                        </tr>
+
+                                        <tr><th>Total Audio IDs</th><td>{{ project.totalAudioIds }}</td></tr>
+
+                                        <!-- Speakers Audio IDs Keys displayed as a comma-separated list -->
+                                        <tr><th>Speakers Audio IDs Keys</th><td>{{ project.speakersAudioIdsKeys | join(', ') }}</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+
+
+
+                    <!-- Modals for Project Details -->
+                    {% for project in project_stats %}
+                    <div class="modal fade" id="projectModal{{ loop.index }}" tabindex="-1" role="dialog" aria-labelledby="projectModalLabel{{ loop.index }}" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="projectModalLabel{{ loop.index }}">{{ project.projectname }}</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <table class="table table-bordered">
+                                        <tbody>
+                                            <tr><th>Project Owner</th><td>{{ project.projectOwner }}</td></tr>
+                                            <tr><th>Shared With</th><td>{{ project.sharedwith }}</td></tr>
+                                            <tr><th>Project Derivatives</th><td>{{ project.projectDerivatives }}</td></tr>
+                                            <tr><th>About Project</th><td>{{ project.aboutproject }}</td></tr>
+                                            <tr><th>Project Type</th><td>{{ project.projectType }}</td></tr>
+                                            <tr><th>Speaker IDs</th><td>{{ project.speakerIds }}</td></tr>
+                                            <tr><th>Speakers Audio IDs</th><td>{{ project.speakersAudioIds }}</td></tr>
+                                            <tr><th>Total Audio IDs</th><td>{{ project.totalAudioIds }}</td></tr>
+                                            <tr><th>Speakers Audio IDs Keys</th><td>{{ project.speakersAudioIdsKeys }}</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+
+            <div id="secondaryDropdown">
+                <!-- Buttons for 'All projects of a user' -->
+                <div id="allProjectsButtons" class="hidden">
+                    <button class="btn btn-primary" onclick="showCumulativeResults()">Cumulative Results</button>
+                    <button class="btn btn-success" onclick="showIndividualProjectResults()">Individual Project Results</button>
+                </div>
+
+               
+                <!-- Cumulative Results Section -->
+                <div id="cumulativeResults" class="hidden">
+                    <h2><strong>Cumulative Results</strong></h2>
+                    <ul>
+                        <li>Total number of projects (by project type): {{ all_projects | length }}</li>
+                        <li>Total space taken: {{ data_size_value }} {{ data_size_unit }}</li>
+                        <li>Avg space per project: <!-- Value here --></li>
+                        <li>Avg number of documents per project: <!-- Value here --></li>
+                        <li>Total Remaining Space (as per allocation): {{ remaining_space_value }} {{ remaining_space_unit }}</li>
+                        
+                    </ul>
+
+
+                    <ul>
+
+                        <li class="info-button bg-green fg-white bd-green" style="flex-basis: 48%; margin-bottom: 10px;">
+                            <div class="button">
+                                <span class="mif-layers"></span> Total number of projects (by project type):
+                            </div>
+                            <div class="info text-bold">{{ all_projects | length }}</div>
+                        </li>
+                    
+                        <li class="info-button bg-orange fg-white bd-orange" style="flex-basis: 48%; margin-bottom: 10px;">
+                            <div class="button">
+                                <span class="mif-database"></span> Total space taken:
+                            </div>
+                            <div class="info text-bold">{{ data_size_value }} {{ data_size_unit }}</div>
+                        </li>
+<!-- 
+                        <li class="info-button bg-green fg-white bd-green" style="flex-basis: 48%; margin-bottom: 10px;">
+                            <div class="button">
+                                <span class="mif-chart-bars"></span> Avg space per project:
+                            </div>
+                            <div class="info text-bold">""</div>
+                        </li> -->
+                    
+                        <!-- <li class="info-button bg-blue fg-white bd-blue" style="flex-basis: 48%; margin-bottom: 10px;">
+                            <div class="button">
+                                <span class="mif-documents"></span> Avg number of documents per project:
+                            </div>
+                            <div class="info text-bold">""</div>
+                        </li> -->
+                    
+                        <li class="info-button bg-red fg-white bd-red" style="flex-basis: 48%; margin-bottom: 10px;">
+                            <div class="button">
+                                <span class="mif-cabinet"></span> Total Remaining Space (as per allocation):
+                            </div>
+                            <div class="info text-bold">{{ remaining_space_value }} {{ remaining_space_unit }}</div>
+                        </li>
+                    
+                    </ul>
+                    
+                    
+
+
+
+
+                    <div class="row">
+                        <!-- Total Projects -->
+                        <div class="col-md-6">
+                            <div class="card metric-card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Total Projects</h5>
+                                    <p class="card-text">{{ all_projects | length }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    
+                        <!-- Data Size -->
+                        <div class="col-md-6">
+                            <div class="card metric-card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Data Size </h5>
+                                    <p class="card-text">{{ data_size_value }} {{ data_size_unit }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    
+                        <!-- Storage Size -->
+                        <div class="col-md-6">
+                            <div class="card metric-card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Storage Size</h5>
+                                    <p class="card-text">{{ storage_size_value }} {{ storage_size_unit }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    
+                        <!-- Index Size -->
+                        <!-- <div class="col-md-6">
+                            <div class="card metric-card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Index Size</h5>
+                                    <p class="card-text">{{ index_size_value }} {{ index_size_unit }}</p>
+                                </div>
+                            </div>
+                        </div> -->
+                    
+                        <!-- Number of Objects -->
+                        <!-- <div class="col-md-6">
+                            <div class="card metric-card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Number of Objects</h5>
+                                    <p class="card-text">{{ num_objects }}</p>
+                                </div>
+                            </div>
+                        </div> -->
+                    
+                                        
+                            <!-- Remaining Space -->
+                        <div class="col-md-6">
+                            <div class="card metric-card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Remaining Space</h5>
+                                    <p class="card-text">{{ remaining_space_value }} {{ remaining_space_unit }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    
+                    <!-- Button to toggle the pie chart and total projects display -->
+                    <!-- <button class="btn btn-primary" onclick="showCumulativeResults()">Cumulative Results</button> -->
+                    <button class="btn btn-primary" id="toggleMetricsButton" onclick="toggleMetrics()">Show Project Metrics</button>
+
+                    <!-- Placeholder for displaying total projects -->
+                    <div id="totalProjectsDisplay" style="margin-top: 10px; display: none;"></div>
+
+                    <!-- Placeholder for the pie chart with a close button -->
+                    <div id="metrics_pie_chart_container" style="margin-top: 10px; display: none; width: 100%; height: 400px;"></div>
+
+                    <!-- Close button to hide the pie chart -->
+                    <button id="closeChartButton" onclick="hideMetrics()" style="display: none; margin-top: 10px;">Close</button>
+
+
+
+                    
+
+                                    
+                                    <!-- Collection Statistics Cards -->
+                    <!-- <div class="row">
+                        {% for collection_name, stats in collection_stats.items() %}
+                        <div class="col-md-6">
+                            <div class="card metric-card">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ collection_name }}</h5>
+                                    <p class="card-text">Storage Size: {{ stats["Storage Size"] }}</p>
+                                    <p class="card-text">Documents: {{ stats["Documents"] }}</p>
+                                    <p class="card-text">Avg. Document Size: {{ stats["Avg. Document Size"] }}</p>
+                                    <p class="card-text">Indexes: {{ stats["Indexes"] }}</p>
+                                    <p class="card-text">Total Index Size: {{ stats["Total Index Size"] }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>-->
+                    </div> 
+
+               <!-- Individual Project Results Section -->
+                    <div id="individualProjectResults" class="hidden">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Project Name</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for project in project_stats %}
+                                <tr data-toggle="modal" data-target="#projectModal{{ loop.index }}">
+                                    <td>{{ project.projectname }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                          
+
+
+
+ <!-- Buttons for 'Any specific project of the user' -->
+<div id="specificProjectButtons" class="hidden">
+    <button class="btn btn-primary" onclick="showFileWiseResults()">File-wise</button>
+    <button class="btn btn-success" onclick="showUserWiseResults()">User-wise</button>
+</div>
+
+
+
+<!-- File-wise Results Section -->
+<div id="fileWiseResults" class="hidden">
+    <h2><strong>File-wise Results</strong></h2>
+    <select id="selectProjects">
+        <option value="">--Select Project Name--</option>
+        {% for project in project_documents_file_wise.keys() %}
+        <option value="{{ project }}">{{ project }}</option>
+        {% endfor %}
+    </select>
+    <br><br>
+    <select id="selectSpeakers" style="display:none;">
+        <!-- Speaker options will be populated dynamically -->
+    </select>
+    <br><br><br>
+    <table id="documentsTable">
+        <thead>
+            <tr>
+                <th>Project Owner</th>
+                <th>Speaker ID</th>
+                <th>File</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Table rows will be populated dynamically -->
+        </tbody>
+    </table>
+</div>
+
+<!-- User-wise Results Section -->
+<div id="userWiseResults" class="hidden">
+    <h2><strong>User-wise Results</strong></h2>
+    <div class="form-group">
+        <label for="selectSpeakerID">--Select Speaker ID--</label>
+        <select id="selectSpeakerID" class="form-control">
+            <option value="" selected disabled>--Select Speaker ID--</option>
+            {% for report in progress_reports %}
+            <option value="{{ report['Speaker ID'] }}">{{ report['Speaker ID'] }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <table id="userWiseResultsTable" class="table table-striped hidden">
+        <thead>
+            <tr>
+                <th>Project Owner</th>
+                <th>Total no. of files</th>
+                <th>Total files completed</th>
+                <th>Total remaining files</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Populate this section dynamically based on selected Speaker ID -->
+        </tbody>
+    </table>
+
+    <!-- Placeholder for the pie chart -->
+    <!-- Placeholder for the pie chart -->
+<div id="fileCompletionPieChart" style="display: none; width: 100%; height: 400px; margin-top: 20px;">
+    <button onclick="$('#fileCompletionPieChart').hide()">Close</button>
+    <!-- The pie chart will be rendered here -->
+</div>
+
+    
+    <!-- Popup Structure -->
+    <div class="popup" id="detailsPopup">
+        <div class="popup-content">
+            <span class="popup-close" onclick="hidePopup()">×</span>
+            <div id="popupBody">
+                <!-- Content will be injected here -->
+            </div>
+        </div>
+    </div>
+    
+</div>
+
+</main>
+</div>
+</div>  
+
+
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+
+
+<script src="https://cdn.metroui.org.ua/v4/js/metro.min.js"></script>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.js"></script>
+
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/bullet.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/export-data.js"></script>
+<script src="https://code.highcharts.com/modules/accessibility.js"></script>
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.js"></script>
+
+<script>
+    $(document).ready(function() {
+    $('#audioTable').DataTable();
+});
+
+// Function to toggle the visibility of elements and hide the projectContainer
+function toggleVisibility(elementId) {
+    var element = document.getElementById(elementId);
+    if (element.classList.contains('hidden')) {
+        element.classList.remove('hidden');
+    } else {
+        element.classList.add('hidden');
+    }
+}
+
+// Function to toggle the buttons for 'All projects of a user'
+function showAllProjects() {
+    toggleVisibility('allProjectsButtons');
+    document.getElementById('specificProjectButtons').classList.add('hidden');
+    document.getElementById('cumulativeResults').classList.add('hidden');
+    document.getElementById('individualProjectResults').classList.add('hidden');
+    document.getElementById('fileWiseResults').classList.add('hidden');
+    document.getElementById('userWiseResults').classList.add('hidden');
+    document.getElementById('projectContainer').classList.add('hidden');
+}
+
+// Function to toggle the buttons for 'Any specific project of the user'
+function showSpecificProject() {
+    toggleVisibility('specificProjectButtons');
+    document.getElementById('allProjectsButtons').classList.add('hidden');
+    document.getElementById('cumulativeResults').classList.add('hidden');
+    document.getElementById('individualProjectResults').classList.add('hidden');
+    document.getElementById('fileWiseResults').classList.add('hidden');
+    document.getElementById('userWiseResults').classList.add('hidden');
+    document.getElementById('projectContainer').classList.add('hidden');
+}
+
+// Function to toggle the Dashboard and hide other sections
+function showDashboard() {
+    toggleVisibility('projectContainer');
+    document.getElementById('allProjectsButtons').classList.add('hidden');
+    document.getElementById('specificProjectButtons').classList.add('hidden');
+    document.getElementById('cumulativeResults').classList.add('hidden');
+    document.getElementById('individualProjectResults').classList.add('hidden');
+    document.getElementById('fileWiseResults').classList.add('hidden');
+    document.getElementById('userWiseResults').classList.add('hidden');
+}
+
+// Function to show the Cumulative Results section
+function showCumulativeResults() {
+    toggleVisibility('cumulativeResults');
+    document.getElementById('individualProjectResults').classList.add('hidden');
+}
+
+// Function to show the Individual Project Results section
+function showIndividualProjectResults() {
+    toggleVisibility('projectContainer');
+    document.getElementById('cumulativeResults').classList.add('hidden');
+}
+
+
+
+// Function to toggle visibility of File-wise Results section
+// Function to toggle visibility of File-wise Results section
+$(document).ready(function() {
+    // Initialize DataTables
+    var table = $('#documentsTable').DataTable({
+        pageLength: 5,
+        lengthMenu: [5, 10, 30, 50]
+    });
+
+    // Initially hide userWiseResults and speaker dropdown
+    $('#userWiseResults').addClass('hidden');
+    $('#selectSpeakers').hide();
+
+    // Event listener for the project selection dropdown
+    $('#selectProjects').change(function() {
+        updateSpeakersDropdownAndTable();
+    });
+
+    // Ensure the default option is set initially
+    $('#selectProjects').val(""); // Set to default value
+});
+
+// Function to toggle visibility of elements by id
+function toggleVisibility(id) {
+    $('#' + id).toggleClass('hidden');
+}
+
+// Function to show/hide File-wise Results section
+function showFileWiseResults() {
+    var fileWiseResults = $('#fileWiseResults');
+
+    if (fileWiseResults.hasClass('hidden')) {
+        // Show fileWiseResults and hide userWiseResults
+        fileWiseResults.removeClass('hidden');
+        $('#userWiseResults').addClass('hidden');
+    } else {
+        // Hide fileWiseResults
+        fileWiseResults.addClass('hidden');
+        $('#selectSpeakers').hide(); // Hide the speaker dropdown
+    }
+}
+
+// Function to update the speakers dropdown and table based on selected project
+function updateSpeakersDropdownAndTable() {
+    var table = $('#documentsTable').DataTable();
+
+    // Get selected project
+    var selectedProject = $('#selectProjects').val();
+    if (!selectedProject) {
+        $('#selectSpeakers').empty().hide(); // Hide and clear the speaker dropdown
+        table.clear().draw(); // Clear the table if no project is selected
+        return;
+    }
+
+    // Retrieve project data (assuming this is defined in your template)
+    var projectData = {{ project_documents_file_wise|tojson }};
+    var projectOwner = projectData[selectedProject]['projectowner'];
+    var speakersData = projectData[selectedProject]['speakersAudioIds'];
+
+    // Populate the speaker dropdown
+    var speakerOptions = '<option value="">--Select Speaker ID--</option>';
+    Object.keys(speakersData).forEach(function(speaker) {
+        speakerOptions += '<option value="' + speaker + '">' + speaker + '</option>';
+    });
+    $('#selectSpeakers').html(speakerOptions).show(); // Show the dropdown
+
+    // Handle speaker selection
+    $('#selectSpeakers').off('change').on('change', function() {
+        var selectedSpeaker = $(this).val();
+        if (!selectedSpeaker) return;
+
+        // Clear existing table
+        table.clear().draw();
+
+        // Get files for the selected speaker
+        var files = speakersData[selectedSpeaker];
+        if (!files) return; // Exit if no files for the speaker
+
+        files.forEach(function(file) {
+            var newRow = [
+                projectOwner,
+                selectedSpeaker,
+                file,
+                '<button class="btn btn-primary">View Details</button>'
+            ];
+            table.row.add(newRow).draw();
+        });
+    });
+}
+
+
+// Function to toggle visibility of User-wise Results section
+// Function to toggle visibility of User-wise Results section
+// Function to toggle visibility of User-wise Results section
+function showUserWiseResults() {
+    var userWiseResults = $('#userWiseResults');
+    var fileWiseResults = $('#fileWiseResults');
+
+    if (userWiseResults.hasClass('hidden')) {
+        // Show userWiseResults and hide fileWiseResults
+        userWiseResults.removeClass('hidden');
+        fileWiseResults.addClass('hidden');
+    } else {
+        // Hide userWiseResults
+        userWiseResults.addClass('hidden');
+    }
+}
+
+// Initialize DataTables for userWiseResultsTable
+$(document).ready(function () {
+    // Handle Speaker ID selection
+    $('#selectSpeakerID').on('change', function () {
+        var selectedSpeakerID = $(this).val();
+        var tableBody = $('#userWiseResultsTable tbody');
+        tableBody.empty();
+
+        var reports = {{ progress_reports | tojson }};
+
+        reports.forEach(function (report) {
+            if (report['Speaker ID'] === selectedSpeakerID) {
+                var newRow =
+                    '<tr>' +
+                    '<td>' +
+                    report['Created by'] +
+                    '</td>' +
+                    '<td>' +
+                    report['Total no. of files'] +
+                    '</td>' +
+                    '<td>' +
+                    report['Completed files'] +
+                    '</td>' +
+                    '<td>' +
+                    report['Remaining files'] +
+                    '</td>' +
+                    '<td>' +
+                    '<button class="btn btn-primary view-details" data-project-name="' +
+                    report['project Name'] +
+                    '">View</button>' +
+                    '<button class="btn btn-warning view-pie-chart" data-completed="' +
+                    report['Completed files'] +
+                    '" data-remaining="' +
+                    report['Remaining files'] +
+                    '">View in Pie Chart</button>' +
+                    '</td>' +
+                    '</tr>';
+                tableBody.append(newRow);
+            }
+        });
+
+        $('#userWiseResultsTable').removeClass('hidden');
+    });
+
+    // Event delegation for dynamically added view buttons
+    $('#userWiseResultsTable').on('click', '.view-details', function () {
+        var projectName = $(this).data('project-name');
+        showDetails(projectName);
+    });
+
+    // Event delegation for the "View in Pie Chart" button
+    $('#userWiseResultsTable').on('click', '.view-pie-chart', function () {
+        var completedFiles = $(this).data('completed');
+        var remainingFiles = $(this).data('remaining');
+        showPieChart(completedFiles, remainingFiles);
+    });
+});
+
+// Function to show project details in custom popup
+function showDetails(projectName) {
+    var reports = {{ progress_reports | tojson }};
+    var selectedReport = reports.find(
+        (report) => report['project Name'] === projectName
+    );
+
+    if (selectedReport) {
+        var modalBody =
+            '<p><strong>Project Name:</strong> ' +
+            selectedReport['project Name'] +
+            '</p>' +
+            '<p><strong>Created by:</strong> ' +
+            selectedReport['Created by'] +
+            '</p>' +
+            '<p><strong>Speaker ID:</strong> ' +
+            selectedReport['Speaker ID'] +
+            '</p>' +
+            '<p><strong>Assigned to:</strong> ' +
+            selectedReport['Assigned to'].join(', ') +
+            '</p>' +
+            '<p><strong>Time and date:</strong> ' +
+            (selectedReport['Time and date'] || 'N/A') +
+            '</p>' +
+            '<p><strong>Duration:</strong> ' +
+            (selectedReport['Duration'] || 'N/A') +
+            '</p>' +
+            '<p><strong>Total no. of files:</strong> ' +
+            selectedReport['Total no. of files'] +
+            '</p>' +
+            '<p><strong>Completed files:</strong> ' +
+            selectedReport['Completed files'] +
+            '</p>' +
+            '<p><strong>Remaining files:</strong> ' +
+            selectedReport['Remaining files'] +
+            '</p>';
+
+        $('#popupBody').html(modalBody);
+        showPopup();
+    } else {
+        console.error('No details found for project:', projectName);
+    }
+}
+
+// Show popup
+function showPopup() {
+    document.getElementById('detailsPopup').style.display = 'block';
+}
+
+// Hide popup
+function hidePopup() {
+    document.getElementById('detailsPopup').style.display = 'none';
+}
+// Function to show or hide the pie chart
+function togglePieChart(completedFiles, remainingFiles) {
+    var chartContainer = $('#fileCompletionPieChart');
+    
+    if (chartContainer.is(':visible')) {
+        // Hide the chart if it's currently visible
+        chartContainer.hide();
+    } else {
+        // Create or show the chart if it's currently hidden
+        Highcharts.chart('fileCompletionPieChart', {
+            chart: {
+                type: 'pie'
+            },
+            title: {
+                text: 'File Completion Status'
+            },
+            series: [{
+                name: 'Files',
+                colorByPoint: true,
+                data: [
+                    {
+                        name: 'Completed Files',
+                        y: completedFiles
+                    },
+                    {
+                        name: 'Remaining Files',
+                        y: remainingFiles
+                    }
+                ]
+            }],
+            tooltip: {
+                pointFormat: '{series.name}: <b>{point.y} files</b>'
+            },
+            plotOptions: {
+                pie: {
+                    allowPointSelect: true,
+                    cursor: 'pointer',
+                    dataLabels: {
+                        enabled: true,
+                        format: '<b>{point.name}</b>: {point.y} files'
+                    }
+                }
+            }
+        });
+
+        // Show the chart container
+        chartContainer.show();
+    }
+}
+
+// Event delegation for the "View in Pie Chart" button
+$('#userWiseResultsTable').on('click', '.view-pie-chart', function() {
+    var completedFiles = $(this).data('completed');
+    var remainingFiles = $(this).data('remaining');
+    togglePieChart(completedFiles, remainingFiles);
+});
+</script>
+    
+    <script>
+        $(document).ready(function() {
+            // Initialize DataTables for projectTable
+            $('#projectTable').DataTable();
+        });
+    </script>
+
+
+
+
+<script> type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script>
+    var chartVisible = false;
+
+    // Function to toggle the total number of projects and render the pie chart
+    function toggleMetrics() {
+        chartVisible = !chartVisible;
+
+        if (chartVisible) {
+            // Show the total number of projects
+            document.getElementById('totalProjectsDisplay').style.display = 'block';
+            document.getElementById('totalProjectsDisplay').innerHTML = '<h3>Total Projects: {{ all_projects | length }}</h3>';
+
+            // Show and render the pie chart
+            document.getElementById('metrics_pie_chart_container').style.display = 'block';
+            renderPieChart();
+
+            // Show the close button
+            document.getElementById('closeChartButton').style.display = 'inline-block';
+        } else {
+            // Hide the total number of projects and pie chart
+            hideMetrics();
+        }
+    }
+
+    // Function to hide the total projects and pie chart
+    function hideMetrics() {
+        chartVisible = false;
+        document.getElementById('totalProjectsDisplay').style.display = 'none';
+        document.getElementById('metrics_pie_chart_container').style.display = 'none';
+        document.getElementById('closeChartButton').style.display = 'none';
+    }
+
+    // Function to render the pie chart
+    function renderPieChart() {
+        // Convert remaining space from GB to MB
+        var remainingSpaceMB = {{ remaining_space_value }} * 1024;
+
+        Highcharts.chart('metrics_pie_chart_container', {
+            chart: {
+                type: 'pie'
+            },
+            title: {
+                text: 'Memory Usage'
+            },
+            series: [{
+                name: 'Memory Size',
+                colorByPoint: true,
+                data: [
+                    {
+                        name: 'Used Memory (Storage Size)',
+                        y: {{ storage_size_value }}
+                    },
+                    {
+                        name: 'Remaining Memory',
+                        y: remainingSpaceMB
+                    }
+                ]
+            }],
+            tooltip: {
+                pointFormat: '{series.name}: <b>{point.y:.1f} MB</b>'
+            },
+            plotOptions: {
+                pie: {
+                    allowPointSelect: true,
+                    cursor: 'pointer',
+                    dataLabels: {
+                        enabled: true,
+                        format: '<b>{point.name}</b>: {point.y:.1f} MB'
+                    }
+                }
+            }
+        });
+    }
+</script>
+
+
+
+
+    
+{% endblock %}

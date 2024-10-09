@@ -9,6 +9,7 @@
     "Bundeli": "Devanagari",
     "English": "Latin",
     "Gujarati": "Gujarati",
+    "Hadoti": "Devanagari",
     "Haryanvi": "Devanagari",
     "Hindi": "Devanagari",
     "IPA": "IPA",
@@ -23,7 +24,9 @@
     "Nepali": "Devanagari",
     "Odia": "Odia",
     "Punjabi": "Gurumukhi",
+    "Rajbanshi": "Bengali",
     "Santali": "Ol-Chiki",
+    "Sindhi": "PersoArabic",
     "Tamil": "Tamil",
     "Telugu": "Telugu",
     "Toto": "Toto"

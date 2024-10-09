@@ -2,7 +2,7 @@
 {% import 'bootstrap/wtf.html' as wtf %}
 
 {% block title %}
-LiFe Questionnaire Home
+LiFE Questionnaire Home
 {% endblock title %}
 
 {% block styles %}
@@ -54,90 +54,44 @@ LiFe Questionnaire Home
         <label for= "idabout">About the Project</label><br>
         <textarea id="idabout" name="aboutproject" style="width:55%" required></textarea>
         <!-- <textarea id="idabout" name="aboutproject" style="width:55%"></textarea> -->
-      </div> 
-      <div class="row ">
-        <div class="col-md-3">
-          <label>Prompt Languages and Scripts</label>
-          <p>
-            <em>
-            *Select language(s) and their script(s) of the prompts included in the Questionnaire
-          </em>
-          </p>
-        </div>
-      </div>
-      <div class="row"> 
-        <div class="col-md-3">
-          <div class="form-group">
-                <button class="btn btn-success" type="button" id="addpromptlangscripts"> 
-                  <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 
-                </button>
-          </div>
-        </div>
-      </div>
-      <div class="promptlangscripts"></div>
-
-      <!-- <div class="form-group">
-        <label for="idprompttype">Prompt Type</label><br>                           
-         <select class="prompttype" id="idprompttype" name="Prompt Type" multiple="multiple" style="width:55%" required> 
-        <select class="prompttype" id="idprompttype" name="Prompt Type" multiple="multiple" style="width:55%"></select>
       </div>
       <div class="form-group">
-        <input type="checkbox" id="idincludetranscription" name="Transcription" disabled>
-        <label for="idincludetranscription">Include Transcription</label><br>
-        <div class="row" id="idtranscriptionlangscript"  style="display: none;"> 
+        <div class="row ">
           <div class="col-md-3">
-            <div class="form-group">
-              <select class="form-control translang" id="idtranslang" name="Transcription Language" style="width:100%"></select>
-            </div>
+            <label>Prompt Languages and Scripts</label>
+            <p>
+              <em>
+              *Select language(s) and their script(s) of the prompts included in the Questionnaire
+            </em>
+            </p>
           </div>
+        </div>
+        <div class="row"> 
           <div class="col-md-3">
             <div class="form-group">
-              <select class="form-control transscript" id="idtransscript" name="Transcription Script" style="width:100%"></select>
+                  <button class="btn btn-success" type="button" id="addpromptlangscripts"> 
+                    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 
+                  </button>
             </div>
           </div>
         </div>
+        <div class="promptlangscripts"></div>
       </div>
-      <div class="form-group">
-        <input type="checkbox" id="idincludeinstruction" name="Instruction" disabled>
-        <label for="idincludeinstruction">Include Instruction</label><br>
-      </div> -->
 
       <div class="form-group">
-        <label for="iddomain">Domain</label><br>                           
+        <label for="iddomain">Domain</label><br>
         <select class="questionnairedomain" id="iddomain" name="Domain" multiple="multiple" style="width:55%" required></select><br>
-        <!-- <select class="questionnairedomain" id="iddomain" name="Domain" multiple="multiple" style="width:55%"></select><br> -->
       </div>
 
       <div class="form-group">
-          <label for="idelicitationmethod">Elicitation Method</label><br>                           
+          <label for="idelicitationmethod">Elicitation Method</label><br>
           <select class="elicitationmethod" id="idelicitationmethod" name="Elicitation Method" multiple="multiple" style="width:55%" required></select><br>
-          <!-- <select class="elicitationmethod" id="idelicitationmethod" name="Elicitation Method" multiple="multiple" style="width:55%"></select><br> -->
       </div>
 
       <div class="form-group">
         <input type="checkbox" id="idtarget" name="Target" checked>
         <label for="idtarget">Target</label><br>
       </div>
-      <!-- <div class="form-group">
-        <label for="idtarget"> Target : </label><br>                           
-        <select class="target" id="idtarget" name="Target" multiple="multiple" style="width:55%" required></select><br>
-      </div>  -->
-
-      <!-- <div class="row">
-        <div class="col-md-3">
-          <p><strong>Add Custom Fields</strong></p>
-        </div>
-      </div>
-      <div class="row"> 
-        <div class="col-md-3">
-          <div class="form-group">
-            <button class="btn btn-success" type="button" id="quesaddCustomField"> 
-              <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 
-            </button>
-          </div>
-        </div>
-      </div>
-      <div class="quescustomfield"></div> -->
       <br>
       <input class="btn btn-lg btn-primary create" id="submit" type="submit" value="Create Form">
     </form>

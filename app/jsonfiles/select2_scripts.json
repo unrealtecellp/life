@@ -28,6 +28,10 @@
         "text": "Latin"
       },
       {
+        "id": "LikTai", 
+        "text": "Lik-Tai"
+      },
+      {
         "id": "Malayalam", 
         "text": "Malayalam"
       },
@@ -44,6 +48,10 @@
         "text": "Ol Chiki"
       },
       {
+        "id": "PersoArabic", 
+        "text": "Perso-Arabic"
+      },
+      {
         "id": "Tamil", 
         "text": "Tamil"
       },
@@ -54,9 +62,5 @@
       {
         "id": "Toto", 
         "text": "Toto"
-      },
-      {
-        "id": "LikTai", 
-        "text": "Lik-Tai"
       }
 ]

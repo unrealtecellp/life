@@ -70,7 +70,7 @@ def home():
                                                                             project_type_list)
     activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
                                                                     userprojects)
-    projectcompleted = project_comments_stats(currentuserprojectsname)
+    # projectcompleted = project_comments_stats(currentuserprojectsname)
 
     active_project_type = getprojecttype.getprojecttype(projects, activeprojectname)
     shareinfo = getuserprojectinfo.getuserprojectinfo(userprojects,
@@ -102,7 +102,7 @@ def home():
     return render_template('easyannohome.html',
                             data=currentuserprojectsname,
                             activeproject=activeprojectname,
-                            projectcompleted=projectcompleted,
+                            # projectcompleted=projectcompleted,
                             shareinfo=shareinfo
                         )
 
@@ -2169,7 +2169,7 @@ def project_comments_stats(userprojectslist):
 
     project_completion_color.update(color_count)
 
-    # pprint(project_completion_color)
+    # logger.debug(project_completion_color)
     
 
     return project_completion_color    

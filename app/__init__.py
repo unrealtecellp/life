@@ -1,20 +1,22 @@
 from flask import Flask
-from flask_bootstrap import Bootstrap
 from config import Config
+from flask_bootstrap import Bootstrap
 from flask_login import LoginManager
 from flask_pymongo import PyMongo
+from flask_caching import Cache
 from werkzeug.middleware.profiler import ProfilerMiddleware
 import os
 
 app = Flask(__name__)
 app.config.from_object(Config)
-if not os.path.exists('profiler'):
-    os.mkdir('profiler')
-app.wsgi_app = ProfilerMiddleware(app.wsgi_app, stream=None, profile_dir="./profiler")
-mongo = PyMongo(app)
 bootstrap = Bootstrap(app)
 login = LoginManager(app)
+mongo = PyMongo(app)
+cache = Cache(app)
 login.login_view = 'login'
+if not os.path.exists('profiler'):
+    os.mkdir('profiler')
+# app.wsgi_app = ProfilerMiddleware(app.wsgi_app, stream=None, profile_dir="./profiler")
 
 from app.karya_ext.karya import karya_bp
 app.register_blueprint(karya_bp, url_prefix='/karyaext')

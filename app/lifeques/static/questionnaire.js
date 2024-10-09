@@ -1,207 +1,3 @@
-// var questionaireprojectform = {
-//   "username": "alice",
-//   "projectname": "alice_project_1",
-//   "Language": ["text", ["English", "Hindi"]],
-//   "Script": ["", ["latin", "devanagari"]],
-//   "Prompt Audio": ["file", ["audio"]],
-//   "Domain": ["multiselect", ["General", "Agriculture", "Sports"]],
-//   "Elicitation Method": ["select", ["Translation", "Agriculture", "Sports"]],
-//   "Target": ["multiselect", ["case", "classifier", "adposition"]]
-// }
-var questionaireprojectform = {
-  "_id": { "$oid": "6370f76bbf61c0a50d2a6ef9" },
-  "username": "alice",
-  "projectname": "Q_Derived_test_108",
-  "Prompt Type": [
-    "prompt",
-    {
-      "English": {
-        "Audio": ["waveform", ""],
-        "Multimedia": ["file", ""],
-        "Image": ["file", ""],
-        "Text": ["text", ""]
-      },
-      "Hindi": {
-        "Audio": ["waveform", ""],
-        "Multimedia": ["file", ""],
-        "Image": ["file", ""],
-        "Text": ["text", ""]
-      }
-    }
-  ],
-  "Language_Script": [
-    "",
-    {
-      "English": "Latin",
-      "Hindi": "Devanagari"
-    }
-  ],
-  "Target": ["multiselect", ["on"]],
-  "Elicitation Method": ["select", ["Translation", "Narration", "Role-Play"]],
-  "Domain": ["multiselect", ["General", "Education", "Agriculture", "Science-Technology"]]
-}
-
-var testquesdata = {
-  "username": "",
-  "projectname": "",
-  "quesID": "",
-  "Q_Id": "",
-  "lastUpdatedBy": "",
-  "prompt": {
-    "domain": [],
-    "elicitation method": "",
-    "target": [],
-    "content": {
-      "English": {
-        "text": {
-          "txtboundaryspan": {
-            "startindex": "",
-            "endindex": "",
-            "textspan": {
-              "Latin": "This is english sentence."
-            }
-          }
-        },
-        "audio": {
-          "fileId": "",
-          "filename": "",
-          "instructions": "",
-          "textgrid": {
-            "sentence": {
-              "audioboundarydur": {
-                "startindex": "",
-                "endindex": "",
-                "transcription": {
-                  "script": ""
-                }
-              }
-            }
-          }
-        },
-        "image": {
-          "fileId": "",
-          "filename": "",
-          "instructions": "",
-          "imagetext": {
-            "txtboundaryspan": {
-              "startindex": "",
-              "endindex": "",
-              "textspan": {
-                "script": ""
-              }
-            }
-          }
-        },
-        "multimedia": {
-          "fileId": "",
-          "filename": "",
-          "instructions": "",
-          "textgrid": {
-            "sentence": {
-              "audioboundarydur": {
-                "startindex": "",
-                "endindex": "",
-                "transcription": {
-                  "script": ""
-                }
-              }
-            }
-          }
-        }
-      },
-      "Hindi": {
-        "text": {
-          "txtboundaryspan": {
-            "startindex": "",
-            "endindex": "",
-            "textspan": {
-              "Devanagari": "ye hindi sentence hai."
-            }
-          }
-        },
-        "audio": {
-          "fileId": "",
-          "filename": "",
-          "instructions": "",
-          "textgrid": {
-            "sentence": {
-              "audioboundarydur": {
-                "startindex": "",
-                "endindex": "",
-                "transcription": {
-                  "script": ""
-                }
-              }
-            }
-          }
-        },
-        "image": {
-          "fileId": "",
-          "filename": "",
-          "instructions": "",
-          "imagetext": {
-            "txtboundaryspan": {
-              "startindex": "",
-              "endindex": "",
-              "textspan": {
-                "script": ""
-              }
-            }
-          }
-        },
-        "multimedia": {
-          "fileId": "",
-          "filename": "",
-          "instructions": "",
-          "textgrid": {
-            "sentence": {
-              "audioboundarydur": {
-                "startindex": "",
-                "endindex": "",
-                "transcription": {
-                  "script": ""
-                }
-              }
-            }
-          }
-        }
-      }
-
-    }
-  },
-  "current_username": {
-    "prompt": {
-      "bhojpuri": "",
-      "awadhi": ""
-    }
-  }
-}
-
-var targets = [
-  { "id": "Simple and Complex", "text": "Simple and Complex" },
-  { "id": "Case", "text": "Case" },
-  { "id": "Classifiers", "text": "Classifiers" },
-  { "id": "Reflexives and Reciprocals", "text": "Reflexives and Reciprocals" },
-  { "id": "Interrogatives", "text": "Interrogatives" },
-  { "id": "Tag Questions", "text": "Tag Questions" },
-  { "id": "Tense Aspect Mood", "text": "Tense Aspect Mood" },
-  { "id": "Intransitive", "text": "Intransitive" },
-  { "id": "Transitive", "text": "Transitive" },
-  { "id": "Ditransitive", "text": "Ditransitive" },
-  { "id": "Additional", "text": "Additional" },
-  { "id": "ECV, Converbs, Serial Verbs", "text": "ECV, Converbs, Serial Verbs" },
-  { "id": "Negatives and Prohibitives", "text": "Negatives and Prohibitives" },
-  { "id": "Causatives and Passives", "text": "Causatives and Passives" },
-  { "id": "Reduplication, echo forms and binomials", "text": "Reduplication, echo forms and binomials" },
-  { "id": "Comparatives and Superlatives", "text": "Comparatives and Superlatives" },
-  { "id": "Sentences with Adverbs", "text": "Sentences with Adverbs" },
-  { "id": "Quantifiers and Intensifiers", "text": "Quantifiers and Intensifiers" },
-  { "id": "Scrambling", "text": "Scrambling" },
-  { "id": "Modifiers", "text": "Modifiers" },
-  { "id": "Agreement", "text": "Agreement" },
-  { "id": "Miscellaneous", "text": "Miscellaneous" }
-]
-
 var audioWaveform = 0
 
 function createInputElement(key, elevalue, type, quesdatavalue) {
@@ -297,7 +93,6 @@ function createSelectElement(key, elevalue, type, quesdatavalue) {
 
 function createquesform(quesprojectform) {
   // console.log(quesprojectform);
-  // quesprojectform = questionaireprojectform;
   localStorage.setItem("quesactiveprojectform", JSON.stringify(quesprojectform));
   if (!('quesdata' in quesprojectform) ||
     !(quesprojectform['quesdata'])) {
@@ -314,28 +109,8 @@ function createquesform(quesprojectform) {
     if (activeAudioFilename === undefined) {
       activeAudioFilename = '';
     }
-    // console.log(activeAudioFilename)
-    // var inpt = '<strong>Audio Filename: </strong><strong id="audioFilename">'+ activeAudioFilename +'</strong>'
-    // $(".defaultfield").append(inpt);
-    // lastActiveId = newData["lastActiveId"]
-    // // console.log(lastActiveId)
-    // inpt = '<input type="hidden" id="lastActiveId" name="lastActiveId" value="'+lastActiveId+'">';
-    // $('.defaultfield').append(inpt);
-    // inpt = ''
-    // localStorage.removeItem('regions');
     localStorage.setItem("transcriptionDetails", JSON.stringify([quesprojectform['transcriptionDetails']]));
     localStorage.setItem("QuesAudioFilePath", JSON.stringify(quesprojectform['QuesAudioFilePath']));
-    // console.log(quesdata);
-    // var quesformControlAbove = '<div id="quesformControlAbove">'+
-    //                             '<button class="btn btn-info btn-lg" type="button" id="previous" onclick="previousQues()">'+
-    //                             '<span class="previousaudio glyphicon glyphicon-chevron-left" aria-hidden="true"></span>'+
-    //                             'Previous'+
-    //                             '</button>'+
-    //                             '<button class="btn btn-info btn-lg pull-right" type="button" id="next" onclick="nextQues()">'+
-    //                             'Next'+
-    //                             '<span class="nextaudio glyphicon glyphicon-chevron-right" aria-hidden="true"></span>'+
-    //                             '</button>'+
-    //                           '</div>';
     let quesform = '';
     quesform += createInputElement('Q_Id', [''], 'text', quesdata['Q_Id'])
     let transcriptionBoundaryForm = '';
@@ -387,13 +162,9 @@ function createquesform(quesprojectform) {
         // test field start
 
         var testquesform = ''
-        // testtype = questionaireprojectform[key][0];
-        // testvalue = questionaireprojectform[key][1];
-        testquesdata = quesdata;
-        testtype = eletype
-        testvalue = elevalue
-        // console.log(questionaireprojectform[key], testtype, testvalue);
-        // console.log(testvalue);
+        var testquesdata = quesdata;
+        testtype = eletype;
+        testvalue = elevalue;
         for (let [testpromptTypeKey, testpromptTypeValue] of Object.entries(testvalue)) {
           transcriptionBoundaryForm = '';
           // testpromptTypeKey = testpromptTypeKey.replace(new RegExp(' ', 'g'), '');
@@ -476,25 +247,6 @@ function createquesform(quesprojectform) {
         // test field end
       }
     }
-    // quesform += '<input class="btn btn-lg btn-primary" type="submit" value="Submit">';
-    // quesform += '<div id="quesformControlBelow">'+
-    //                 '<button class="btn btn-info btn-lg" type="button" id="previous" onclick="previousQues()">'+
-    //                 '<span class="previousaudio glyphicon glyphicon-chevron-left" aria-hidden="true"></span>'+
-    //                 'Previous'+
-    //                 '</button>'+
-    //                 '<button class="btn btn-info btn-lg pull-right" type="button" id="next" onclick="nextQues()">'+
-    //                 'Next'+
-    //                 '<span class="nextaudio glyphicon glyphicon-chevron-right" aria-hidden="true"></span>'+
-    //                 '</button>'+
-    //                 '<br>'+
-    //                 '<br>'+
-    //                 '<button type="submit" class="btn btn-warning btn-lg btn-block pull-right" id="saveques">'+
-    //                   'Save'+
-    //                   '<span class="glyphicon glyphicon-floppy-save" aria-hidden="true"></span>'+
-    //                 '</button>'+
-    //             '</div>';
-
-    // qform += quesformControlAbove + '<br>' + transcriptionBoundaryForm + '<hr>' + quesform;
     qform += transcriptionBoundaryForm + '<hr>' + quesform;
     qform += '</form>'
     // quesform += '</div>';
@@ -508,8 +260,9 @@ function createquesform(quesprojectform) {
     });
     $('#Target').select2({
       placeholder: 'select',
-      data: targets,
-      allowClear: true
+      data: getJsonfileData('grammatical_target'),
+      allowClear: true,
+      tags: true
     });
 
     quesIdDetails(quesdata['Q_Id'], quesdata['quesId'])
@@ -560,11 +313,6 @@ function testwaveFormFunction(key, promptTypeKey, promptTypeValue, quesdatavalue
     if (val === undefined) {
       val = '';
     }
-    // console.log(val);
-    // var x = document.getElementById("questranscriptionsubmit");
-    // x.style.display = "none";
-    // var x = document.getElementById("questranscriptionwaveform");
-    // x.style.display = "block";
     quesTranscription += createInputElement(key + ' Transcription', [lang], 'text', val);
 
     let waveform = '<div id="wave-timeline"></div>' +
@@ -583,13 +331,6 @@ function testwaveFormFunction(key, promptTypeKey, promptTypeValue, quesdatavalue
       '<button type="button" id="deleteboundary" class="btn btn-warning btn-block" data-toggle="tooltip" title="Delete Boundary" data-action="delete-region" disabled>' +
       '<span class="glyphicon glyphicon-minus" aria-hidden="true"></span>' +
       '</button>' +
-      // '<br>'+
-      // '<button class="btn btn-danger" type="button" id="stopAudio" data-action="stop-audio">STOP'+
-      //   '<span class="audiostop glyphicon glyphicon-stop" aria-hidden="true"></span>'+
-      // '</button>'+
-      // '<button class="btn btn-primary" type="button" id="playPauseAudio">PLAY/PAUSE'+
-      //   '<span class="audioplaypause glyphicon glyphicon-play" aria-hidden="true"></span>'+
-      // '</button>'+
       '</div><br><br><hr>';
 
     transcriptionBoundaryForm += waveform + waveformController;
@@ -645,9 +386,6 @@ function testpromptFileFunction(key, promptTypeKey, promptTypeValue, quesdataval
     return quesTranscription;
   }
   else {
-    // var x = document.getElementById("questranscriptionsubmit");
-    // x.style.display = "none";
-    // filePath = JSON.parse(localStorage.getItem('QuesAudioFilePath'));
     fileCaption = key + ' ' + promptTypeKey
     var fileId = fileCaption.replace(new RegExp(' ', 'g'), '');
     // console.log(fileId);
@@ -862,20 +600,6 @@ $("#save").click(function () {
       }
       window.location.reload();
     });
-  // $.post( "/savetranscription", {
-  //   a: JSON.stringify(questionnaireData)
-  // })
-  // .done(function( data ) {
-  //   // console.log(data.savedTranscription);
-  //   if (!data.savedQuestionnaire) {
-  //     alert("Unable to save the questionnaire as question seem to be deleted or revoked access by one of the shared users. Showing you the next question in the list.")
-  //     window.location.reload();
-  //   }
-  //   else {
-  //     alert("Questionnaire saved successfully.")
-  //   }
-  //   // window.location.reload();
-  // });
 });
 
 $("#addnewques").click(function () {
