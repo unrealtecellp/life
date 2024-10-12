@@ -48,6 +48,7 @@ Progress Report Admin
     </style>
 
 <style>
+
     body {
         font-family: Arial, sans-serif;
         background-color: #f8f9fa;
@@ -140,49 +141,67 @@ Progress Report Admin
 
 
 
-    /* Sidebar styles */
+/* Sidebar styles */
+.side-nav-container {
+    background-color: rgb(169, 169, 169);
+    color: rgb(255, 255, 255);
+    padding: 20px;
+    height: 50vh;
+    position: fixed;
+    left: 10;
+    width: 200px; /* Adjust sidebar width here */
+    z-index: 1; /* Ensure sidebar is above main content */
+    overflow-y: auto; /* Enable scrolling if content exceeds sidebar height */
+    border-radius: 15px; /* Add curved corners */
+    font-size: 18px; /* Adjust the font size */
+}
+
+/* Sidebar styles */
+.side-nav-container {
+    background-color: rgb(117, 201, 246); /* Background color of the sidebar */
+    color: rgb(0, 0, 0); /* Text color inside the sidebar */
+    padding: 20px; /* Padding inside the sidebar */
+    height: 50vh; /* Height of the sidebar */
+    position: fixed; /* Fixed position for sidebar */
+    left: 10; /* Position from the left */
+    width: 200px; /* Adjust sidebar width here */
+    z-index: 1; /* Ensure sidebar is above main content */
+    overflow-y: auto; /* Enable scrolling if content exceeds sidebar height */
+    border-radius: 15px; /* Add curved corners to the sidebar */
+    font-size: 10px; /* Adjust the font size for sidebar text */
+}
+
+.side-nav-container a {
+    color: rgb(0, 0, 0); /* Link text color */
+    text-decoration: none; /* Remove underline from links */
+    display: block; /* Display links as block elements */
+    padding: 10px 0; /* Padding for each link */
+    font-size: 13px; /* Adjust the text size of links */    
+}
+
+.side-nav-container a:hover {
+    text-decoration: underline; /* Underline links on hover */
+}
+
+.main-content {
+    margin-left: 250px; /* Adjust based on sidebar width */
+    padding: 20px; /* Padding for the main content area */
+}
+
+/* Ensure responsive behavior */
+@media (max-width: 768px) {
     .side-nav-container {
-        background-color: rgb(218, 239, 247);
-        color: rgb(2, 1, 59);
-        padding: 20px;
-        height: 50vh;
-        position: fixed;
-        left: 10;
-        width: 250px; /* Adjust sidebar width here */
-        z-index: 1; /* Ensure sidebar is above main content */
-        overflow-y: auto; /* Enable scrolling if content exceeds sidebar height */
-    }
-
-    .side-nav-container a {
-        color: rgb(78, 9, 78);
-        text-decoration: none;
-        display: block;
-        padding: 10px 0;
-    }
-
-    .side-nav-container a:hover {
-        text-decoration: underline;
+        width: 100%; /* Sidebar takes full width on smaller screens */
+        margin-bottom: 10px; /* Add margin below sidebar */
     }
 
     .main-content {
-        margin-left: 250px; /* Adjust based on sidebar width */
-        padding: 20px;
+        margin-left: 0; /* No margin on the left for main content */
     }
-
-    /* Ensure responsive behavior */
-    @media (max-width: 768px) {
-        .side-nav-container {
-            width: 100%; /* Sidebar takes full width on smaller screens */
-            margin-bottom: 10px; /* Add margin below sidebar */
-        }
-
-        .main-content {
-            margin-left: 0; /* No margin on the left for main content */
-        }
-    }
+}
 
 
-
+    /* Report css */
 
     .card-container {
         display: flex;               /* Use flexbox for layout */
@@ -191,7 +210,7 @@ Progress Report Admin
     }
     .card {
         flex: 1;                    /* Allow cards to grow equally */
-        max-width: 8%;            /* Set max-width to keep them smaller */
+        max-width: 45%;            /* Set max-width to keep them smaller */
         min-width: 300px;          /* Minimum width to prevent too small */
     }
     .card-body {
@@ -297,45 +316,7 @@ Progress Report Admin
                     </tbody>
                 </table>
             
-                <!-- Modals for Project Details -->
-                <!-- {% for project in project_stats %}
-                <div class="modal fade" id="projectModal{{ loop.index }}" tabindex="-1" role="dialog" aria-labelledby="projectModalLabel{{ loop.index }}" aria-hidden="true">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="projectModalLabel{{ loop.index }}">{{ project.projectname }}</h5>
-                                <button type="button" class="btn btn-danger float-left" data-dismiss="modal" aria-label="Close">Close</button>
-
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                <table class="table table-bordered">
-                                    <tbody>
-                                        <tr><th>Project Owner</th><td>{{ project.projectOwner }}</td></tr>
-                                        <tr><th>Shared With</th><td>{{ project.sharedwith }}</td></tr>
-                                        <tr><th>Project Derivatives</th><td>{{ project.projectDerivatives }}</td></tr>
-                                        <tr><th>About Project</th><td>{{ project.aboutproject }}</td></tr>
-                                        <tr><th>Project Type</th><td>{{ project.projectType }}</td></tr>
-                                        <tr><th>Speaker IDs</th><td>{{ project.speakerIds }}</td></tr>
-                                        <tr><th>Speakers Audio IDs</th><td>{{ project.speakersAudioIds }}</td></tr>
-                                        <tr><th>Total Audio IDs</th><td>{{ project.totalAudioIds }}</td></tr>
-                                        <tr><th>Speakers Audio IDs Keys</th><td>{{ project.speakersAudioIdsKeys }}</td></tr>
-                                    </tbody>
-                                </table>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-danger ml-auto" data-dismiss="modal">Close</button>
-                                </div>
-                                
-                            </div>
-                            
-                            
-                        </div>
-                    </div>
-                </div>
-                {% endfor %} -->
-
-
+                
 
 
                 <!-- Modals for Project Details -->
@@ -733,7 +714,7 @@ Progress Report Admin
 
 <!-- Reports-->
 <div id="reportContainer" class="hidden">
-    <p>This is report!</p>
+    <!-- <p>This is report!</p> -->
     <div class="card-container">
         <!-- First Table: Language Expert Places -->
         <div class="card h-100">
