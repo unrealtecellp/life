@@ -684,11 +684,14 @@ def upload_access_code_metadata(
         )
         if accesscode_record is None:
             if name != '' and agegroup != '':
-                karya_speaker_id = item.pop('worker_id', '')
-                lifespeakerid = speakerDetails.generate_speaker_id(
-                    name, agegroup)
-                lifespeakerid = lifespeakerid.split(
-                    '_')[0] + '_' + str(karya_speaker_id)
+                # karya_speaker_id = item.pop('worker_id', '')
+                # lifespeakerid = speakerDetails.generate_speaker_id(
+                #     name, agegroup)
+                # lifespeakerid = lifespeakerid.split(
+                #     '_')[0] + '_' + str(karya_speaker_id)
+                karya_speaker_id = str(item.pop('worker_id', ''))  # Convert worker_id to string
+                lifespeakerid = speakerDetails.generate_speaker_id(name, agegroup)
+                lifespeakerid = lifespeakerid.split('_')[0] + '_' + karya_speaker_id  # karya_speaker_id is now a string
 
                 item['karya_version'] = karya_version
                 insert_dict = {
