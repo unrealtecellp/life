@@ -11,6 +11,8 @@ Progress Report Admin
 <link href="https://cdn.metroui.org.ua/v4/css/metro-all.min.css" rel="stylesheet">
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.css">
 
+
+
 <style>/* Basic styles for the popup */
     .popup {
         display: none;
@@ -180,6 +182,10 @@ Progress Report Admin
     }
 
 
+
+
+
+
 </style>
 
 
@@ -224,11 +230,12 @@ Progress Report Admin
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">
+                        <a class="nav-link" href="#" onclick="showReport()">
                             <span data-feather="bar-chart-2"></span>
                             <strong>Reports</strong>
                         </a>
                     </li>
+                    
                 </ul>
 
               
@@ -706,6 +713,52 @@ Progress Report Admin
     
 </div>
 
+
+
+<div id="reportContainer" class="hidden">
+    <p>This is report!</p>
+    <div class="card h-100" >
+        <div class="card-header">
+            <h4 class="label">Places</h4>
+            <div class="settings-button">…</div>
+        </div>
+        <div class="card-body" style="overflow-y: auto; max-height: 300px;"> <!-- Add scroll functionality -->
+            <smart-table id="placesTable" class="no-border smart-element smart-table">
+                <div class="smart-container">
+                    <table class="smart-table-container">
+                        <thead>
+                            <tr>
+                                <th>Language Expert Place</th>
+                                <th>Number of Language Expert(s)</th>
+                                <th>% Language Expert(s)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for data in final_place_data %}
+                            <tr>
+                                <td>{{ data.place }}</td>
+                                <td>{{ data.experts }}</td>
+                                <td>
+                                    <smart-progress-bar value="{{ data.percentage }}" class="smart-element smart-progress-bar">
+                                        <div class="smart-value" style="transform: scaleX({{ data.percentage / 100 }});"></div>
+                                        <div class="smart-label">{{ data.percentage | round(2) }}%</div>
+                                    </smart-progress-bar>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </smart-table>
+        </div>
+    </div>
+    
+    
+</div>
+
+
+
+
 </main>
 </div>
 </div>  
@@ -736,6 +789,8 @@ Progress Report Admin
 <script src="https://code.highcharts.com/modules/accessibility.js"></script>
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.js"></script>
 
+
+
 <script>
     $(document).ready(function() {
     $('#audioTable').DataTable();
@@ -760,6 +815,7 @@ function showAllProjects() {
     document.getElementById('fileWiseResults').classList.add('hidden');
     document.getElementById('userWiseResults').classList.add('hidden');
     document.getElementById('projectContainer').classList.add('hidden');
+    document.getElementById('reportContainer').classList.add('hidden');
 }
 
 // Function to toggle the buttons for 'Any specific project of the user'
@@ -771,6 +827,7 @@ function showSpecificProject() {
     document.getElementById('fileWiseResults').classList.add('hidden');
     document.getElementById('userWiseResults').classList.add('hidden');
     document.getElementById('projectContainer').classList.add('hidden');
+    document.getElementById('reportContainer').classList.add('hidden');
 }
 
 // Function to toggle the Dashboard and hide other sections
@@ -782,7 +839,25 @@ function showDashboard() {
     document.getElementById('individualProjectResults').classList.add('hidden');
     document.getElementById('fileWiseResults').classList.add('hidden');
     document.getElementById('userWiseResults').classList.add('hidden');
+    document.getElementById('reportContainer').classList.add('hidden');
 }
+
+//Function to toggle the Report and hide other sections
+function showReport() {
+    toggleVisibility('reportContainer')
+    document.getElementById('allProjectsButtons').classList.add('hidden');
+    document.getElementById('specificProjectButtons').classList.add('hidden');
+    document.getElementById('cumulativeResults').classList.add('hidden');
+    document.getElementById('individualProjectResults').classList.add('hidden');
+    document.getElementById('fileWiseResults').classList.add('hidden');
+    document.getElementById('userWiseResults').classList.add('hidden');
+    document.getElementById('projectContainer').classList.add('hidden');
+        }
+
+
+// Function to show the Report section
+
+
 
 // Function to show the Cumulative Results section
 function showCumulativeResults() {
@@ -1162,7 +1237,29 @@ $('#userWiseResultsTable').on('click', '.view-pie-chart', function() {
 </script>
 
 
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        function showReportText() {
+            document.getElementById('dashboardContainer').style.display = 'none';
+            document.getElementById('allProjectsButtons').style.display = 'none';
+            document.getElementById('specificProjectButtons').style.display = 'none';
+            document.getElementById('projectContainer').style.display = 'none';
+            document.getElementById('cumulativeResults').style.display = 'none';
+            document.getElementById('individualProjectResults').style.display = 'none';
+            document.getElementById('fileWiseResults').style.display = 'none';
+            document.getElementById('userWiseResults').style.display = 'none';
 
+            // Show the report text
+            document.getElementById('reportText').style.display = 'block';
+        }
 
+        window.showReportText = showReportText;
+    });
+    function showReportText() {
+    console.log("Reports link clicked!"); // Debug log
+    document.getElementById('reportText').style.display = 'block';
+}
+
+</script>
     
 {% endblock %}
