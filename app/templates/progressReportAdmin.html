@@ -184,6 +184,23 @@ Progress Report Admin
 
 
 
+    .card-container {
+        display: flex;               /* Use flexbox for layout */
+        justify-content: space-between; /* Space the cards evenly */
+        gap: 10px;                  /* Add some space between the cards */
+    }
+    .card {
+        flex: 1;                    /* Allow cards to grow equally */
+        max-width: 8%;            /* Set max-width to keep them smaller */
+        min-width: 300px;          /* Minimum width to prevent too small */
+    }
+    .card-body {
+        overflow-y: auto;           /* Keep scroll functionality */
+        max-height: 200px;         /* Adjust max-height for smaller cards */
+    }
+    .label {
+        color: black;              /* Text color */
+    }
 
 
 </style>
@@ -717,44 +734,58 @@ Progress Report Admin
 
 <div id="reportContainer" class="hidden">
     <p>This is report!</p>
-    <div class="card h-100" >
-        <div class="card-header">
-            <h4 class="label">Places</h4>
-            <div class="settings-button">…</div>
-        </div>
-        <div class="card-body" style="overflow-y: auto; max-height: 300px;"> <!-- Add scroll functionality -->
-            <smart-table id="placesTable" class="no-border smart-element smart-table">
-                <div class="smart-container">
-                    <table class="smart-table-container">
-                        <thead>
-                            <tr>
-                                <th>Language Expert Place</th>
-                                <th>Number of Language Expert(s)</th>
-                                <th>% Language Expert(s)</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for data in final_place_data %}
-                            <tr>
-                                <td>{{ data.place }}</td>
-                                <td>{{ data.experts }}</td>
-                                <td>
-                                    <smart-progress-bar value="{{ data.percentage }}" class="smart-element smart-progress-bar">
-                                        <div class="smart-value" style="transform: scaleX({{ data.percentage / 100 }});"></div>
-                                        <div class="smart-label">{{ data.percentage | round(2) }}%</div>
-                                    </smart-progress-bar>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </smart-table>
+    <div class="card-container">
+        <div class="card h-100">
+            <div class="card-header">
+                <h4 class="label">Language Expert Places</h4>
+            </div>
+            <div class="card-body" style="overflow-y: auto; max-height: 300px;">
+                <smart-table id="placesTable" class="no-border smart-element smart-table">
+                    <div class="smart-container">
+                        <table class="smart-table-container">
+                            <thead>
+                                <tr>
+                                    <th>Language Expert Place</th>
+                                    <th>Number of Language Expert(s)</th>
+                                    <th>% Language Expert(s)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for data in final_place_data %}
+                                <tr>
+                                    <td>{{ data.place }}</td>
+                                    <td>{{ data.experts }}</td>
+                                    <td>
+                                        <div style="display: flex; align-items: center;">
+                                            <!-- Progress bar container -->
+                                            <div style="width: 80%; background-color: #e0e0e0; border-radius: 5px; margin-right: 10px;">
+                                                <div style="width: {{ data.percentage }}%; background-color: #4caf50; height: 100%; border-radius: 5px;">
+                                                    &nbsp;
+                                                </div>
+                                            </div>
+                                            <!-- Percentage label -->
+                                            <span>{{ data.percentage | round(2) }}%</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </smart-table>
+            </div>
         </div>
     </div>
+        
+    </div>
+
+
+
+
+
     
     
-</div>
+
 
 
 
