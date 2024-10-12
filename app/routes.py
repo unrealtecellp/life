@@ -693,10 +693,22 @@ mongo_uri = Config.MONGO_URI
 @login_required
 def progressReportAdmin():
     try:
+        # Get database collections
+        projects, userprojects, projectsform, sentences, transcriptions, speakerdetails, accesscodedetails = getdbcollections.getdbcollections(
+            mongo,
+            'projects',
+            'userprojects',
+            'projectsform',
+            'sentences',
+            'transcriptions',
+            'speakerdetails',
+            'accesscodedetails'
+        )
+
         # Connect to MongoDB and get collection stats
         client = MongoClient(app.config["MONGO_URI"])
         project_stats, speaker_ids, speakers_audio_ids = progressreportadmin.get_collection_stats('lifedb', 'projects')
-        print("project_stats: ", project_stats)
+        # print("project_stats: ", project_stats)
         # Prepare additional data for the template
         collections = getdbcollectionslist.getdbcollectionslist(mongo)
         response = {}
@@ -730,16 +742,7 @@ def progressReportAdmin():
             if allocated_storage_size else ("N/A", "")
         )
 
-        # Existing logic for fetching other data
-        projects, userprojects, projectsform, sentences, transcriptions, speakerdetails = getdbcollections.getdbcollections(
-            mongo,
-            'projects',
-            'userprojects',
-            'projectsform',
-            'sentences',
-            'transcriptions',
-            'speakerdetails'
-        )
+
         current_username = getcurrentusername.getcurrentusername()
         activeprojectname = getactiveprojectname.getactiveprojectname(
             current_username, userprojects)
@@ -749,6 +752,51 @@ def progressReportAdmin():
         if not activeprojectname:
             flash("Select a project from 'Change Active Project' to work on!")
             return redirect(url_for('home'))
+        
+        # Find speaker-meta data
+        speaker_meta_report = accesscodedetails.find(
+            {"task": "SPEECH_DATA_COLLECTION"},
+            {
+                "current.workerMetadata.name": 1,
+                "current.workerMetadata.agegroup": 1,
+                "current.workerMetadata.gender": 1,
+                "current.workerMetadata.educationlevel": 1,
+                "current.workerMetadata.educationmediumupto12": 1,
+                "current.workerMetadata.educationmediumafter12": 1,
+                "current.workerMetadata.speakerspeaklanguage": 1,
+                "current.workerMetadata.recordingplace": 1,
+                "current.workerMetadata.typeofrecordingplace": 1,
+                "karyaaccesscode": 1,
+                "task": 1,
+                "projectname": 1,
+                "lifespeakerid": 1,
+                "_id": 0  # Exclude the _id field from the results
+            }
+        )
+
+        # Initialize a dictionary for counting
+        place_count = {}
+
+        # Count Language Experts by unique place
+        for record in speaker_meta_report:
+            # Safely extract the recording place
+            place = record.get("current", {}).get("workerMetadata", {}).get("recordingplace", None)
+
+            if place:  # Only count if place is not None or empty
+                if place not in place_count:
+                    place_count[place] = 0  # Initialize count for the place if not present
+                place_count[place] += 1  # Increment the count for the place
+
+        # Prepare data for rendering
+        total_language_experts = sum(place_count.values())
+        final_place_data = []
+        for place, count in place_count.items():
+            percentage = (count / total_language_experts) * 100 if total_language_experts > 0 else 0
+            final_place_data.append({"place": place, "experts": count, "percentage": round(percentage, 2)})
+
+        print(final_place_data)
+        
+
 
         # Collect speaker_audio_data
         speaker_audio_data = []
@@ -830,17 +878,6 @@ def progressReportAdmin():
             #         return jsonify(error="An error occurred while processing the progress report"), 500
 
             project_documents_file_wise = {}
-
-            # Get database collections
-            projects, userprojects, projectsform, sentences, transcriptions, speakerdetails = getdbcollections.getdbcollections(
-                mongo,
-                'projects',
-                'userprojects',
-                'projectsform',
-                'sentences',
-                'transcriptions',
-                'speakerdetails'
-            )
 
             # Get the current username and their active project
             current_username = getcurrentusername.getcurrentusername()
@@ -993,14 +1030,17 @@ def progressReportAdmin():
                                    project_stats=project_stats,
                                    speaker_audio_data=speaker_audio_data,
                                    project_names_file_wise=project_names_file_wise,
-                                   project_documents_file_wise=project_documents_file_wise)  # Pass the collected data to the template
+                                   project_documents_file_wise=project_documents_file_wise,
+                                   final_place_data=final_place_data)  # Pass the collected data to the template
 
     # except Exception as e:
     #     error_message = str(e)
     #     error_traceback = traceback.format_exc()
     #     logger.error(f"An error occurred: {error_message}\n{error_traceback}")
-    except:
-        logger.exception("")
+    except Exception as e:
+        logger.exception("An error occurred in progressReportAdmin")
+        return jsonify(error="An error occurred while processing the request"), 500
+
         # return jsonify(error=f"An error occurred while processing the request: {error_message}"), 500
 
 
