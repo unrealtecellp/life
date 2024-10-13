@@ -753,6 +753,7 @@ def progressReportAdmin():
             flash("Select a project from 'Change Active Project' to work on!")
             return redirect(url_for('home'))
         
+
         # Find speaker-meta data
         speaker_meta_report = accesscodedetails.find(
             {"task": "SPEECH_DATA_COLLECTION"},
@@ -774,27 +775,78 @@ def progressReportAdmin():
             }
         )
 
-        # Initialize a dictionary for counting
+        # Initialize dictionaries for counting occurrences
         place_count = {}
+        gender_count = {}
+        agegroup_count = {}
+        educationlevel_count = {}
 
-        # Count Language Experts by unique place
+        # Count occurrences by unique values in each category
         for record in speaker_meta_report:
-            # Safely extract the recording place
+            # Safely extract the values
             place = record.get("current", {}).get("workerMetadata", {}).get("recordingplace", None)
+            gender = record.get("current", {}).get("workerMetadata", {}).get("gender", None)
+            agegroup = record.get("current", {}).get("workerMetadata", {}).get("agegroup", None)
+            educationlevel = record.get("current", {}).get("workerMetadata", {}).get("educationlevel", None)
 
-            if place:  # Only count if place is not None or empty
+            # Count Language Experts by place
+            if place:
                 if place not in place_count:
-                    place_count[place] = 0  # Initialize count for the place if not present
-                place_count[place] += 1  # Increment the count for the place
+                    place_count[place] = 0
+                place_count[place] += 1
 
-        # Prepare data for rendering
+            # Count by gender
+            if gender:
+                if gender not in gender_count:
+                    gender_count[gender] = 0
+                gender_count[gender] += 1
+
+            # Count by age group
+            if agegroup:
+                if agegroup not in agegroup_count:
+                    agegroup_count[agegroup] = 0
+                agegroup_count[agegroup] += 1
+
+            # Count by education level
+            if educationlevel:
+                if educationlevel not in educationlevel_count:
+                    educationlevel_count[educationlevel] = 0
+                educationlevel_count[educationlevel] += 1
+
+        # Prepare data for rendering (Place)
         total_language_experts = sum(place_count.values())
         final_place_data = []
         for place, count in place_count.items():
             percentage = (count / total_language_experts) * 100 if total_language_experts > 0 else 0
             final_place_data.append({"place": place, "experts": count, "percentage": round(percentage, 2)})
 
-        print(final_place_data)
+        # Prepare data for rendering (Gender)
+        total_genders = sum(gender_count.values())
+        final_gender_data = []
+        for gender, count in gender_count.items():
+            percentage = (count / total_genders) * 100 if total_genders > 0 else 0
+            final_gender_data.append({"gender": gender, "count": count, "percentage": round(percentage, 2)})
+
+        # Prepare data for rendering (Age Group)
+        total_agegroups = sum(agegroup_count.values())
+        final_agegroup_data = []
+        for agegroup, count in agegroup_count.items():
+            percentage = (count / total_agegroups) * 100 if total_agegroups > 0 else 0
+            final_agegroup_data.append({"agegroup": agegroup, "count": count, "percentage": round(percentage, 2)})
+
+        # Prepare data for rendering (Education Level)
+        total_educationlevels = sum(educationlevel_count.values())
+        final_educationlevel_data = []
+        for educationlevel, count in educationlevel_count.items():
+            percentage = (count / total_educationlevels) * 100 if total_educationlevels > 0 else 0
+            final_educationlevel_data.append({"educationlevel": educationlevel, "count": count, "percentage": round(percentage, 2)})
+
+        # Output the final results for debug
+        print("Place Data:", final_place_data)
+        print("Gender Data:", final_gender_data)
+        print("Age Group Data:", final_agegroup_data)
+        print("Education Level Data:", final_educationlevel_data)
+
         
 
 
@@ -1031,7 +1083,10 @@ def progressReportAdmin():
                                    speaker_audio_data=speaker_audio_data,
                                    project_names_file_wise=project_names_file_wise,
                                    project_documents_file_wise=project_documents_file_wise,
-                                   final_place_data=final_place_data)  # Pass the collected data to the template
+                                   final_place_data=final_place_data,
+                                   final_gender_data=final_gender_data,
+                                   final_agegroup_data=final_agegroup_data,
+                                   final_educationlevel_data=final_educationlevel_data)  # Pass the collected data to the template
 
     # except Exception as e:
     #     error_message = str(e)
