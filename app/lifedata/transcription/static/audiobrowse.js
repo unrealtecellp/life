@@ -601,8 +601,8 @@ function updateAudioSortingSubCategoriesDropdown() {
         url: '/lifedata/transcription/updateaudiosortingsubcategories'
     }).done(function (data) {
         // console.log(data);
-        audioSortingSubCategories = data.audioSortingSubCategories;
-        selectedAudioSortingSubCategories = data.selectedAudioSortingSubCategories;
+        let audioSortingSubCategories = data.audioSortingSubCategories;
+        let selectedAudioSortingSubCategories = data.selectedAudioSortingSubCategories;
         // console.log(audioSortingSubCategories, selectedAudioSortingSubCategories);
         if (selectedAudioSortingCategories === 'sourcemetainfo') {
             $('#speakeridsdropdown').select2('destroy');
