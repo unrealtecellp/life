@@ -3209,10 +3209,24 @@ def karya_new_fetch_audio():
         otp = request.form.get("karya_otp")
         get_otp_id = request.form.get('otp_id')
         otp_id = get_otp_id.split(',')[0]
-        access_code_of_speaker = accesscodedetails.find_one({"projectname": activeprojectname,
-                                                             "karyaspeakerid": for_worker_id,
-                                                             "additionalInfo.karya_version": "karya_main"},
-                                                            {'karyaaccesscode': 1, '_id': 0})['karyaaccesscode']
+        # access_code_of_speaker = accesscodedetails.find_one({"projectname": activeprojectname,
+        #                                                      "karyaspeakerid": for_worker_id,
+        #                                                      "additionalInfo.karya_version": "karya_main"},
+        #                                                     {'karyaaccesscode': 1, '_id': 0})['karyaaccesscode']
+
+
+
+        access_code_of_speaker = accesscodedetails.find_one(
+            {
+                "projectname": activeprojectname,
+                "$or": [
+                    {"karyaspeakerid": str(for_worker_id)},
+                    {"karyaspeakerid": int(for_worker_id)}
+                ],
+                "additionalInfo.karya_version": "karya_main"
+            },
+            {'karyaaccesscode': 1, '_id': 0}
+        )['karyaaccesscode']
 
         # print("OTP : ", otp)
         # print("OTP ID : ", otp_id)
