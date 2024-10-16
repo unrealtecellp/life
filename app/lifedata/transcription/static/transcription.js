@@ -1335,20 +1335,20 @@ function questionnaireDerived(allQuesIds) {
       // allowClear: true,
       dropdownParent: $("#myUploadAudioModal"),
     });
-    multipleQuesCheckboxEvent();
+    multipleQuesCheckboxEvent('multiplequesid', 'quesiddropdown');
   }
 }
 
-function multipleQuesCheckboxEvent () {
-  $('#multiplequesid').change(function() {
+function multipleQuesCheckboxEvent (id1, id2) {
+  $('#'+id1).change(function() {
     if (this.checked) {
-      console.log(this.checked);
+      // console.log(this.checked);
       this.value = this.checked;
-      $("#quesiddropdown").prop("disabled", true);
+      $("#"+id2).prop("disabled", true);
     } else {
-      console.log(this.checked);
+      // console.log(this.checked);
       this.value = this.checked;
-      $("#quesiddropdown").prop("disabled", false);
+      $("#"+id2).prop("disabled", false);
     }
 });
 }
@@ -1367,6 +1367,9 @@ function questionnaireDerivedRecording(allQuesIds) {
       quesIds += '<option value="' + quesId + '">' + Q_Id + '</option>';
     }
     quesIds += '</select>';
+    quesIds += '&nbsp;&nbsp;&nbsp;&nbsp;';
+    quesIds += '<input type="checkbox" id="multiplequesidrecording" name="multipleques" value="false">'+
+                '<label for="multiplequesidrecording">&nbsp;Multiple Questions</label>';
     quesIds += '</div>';
     quesIds += '<hr>';
     $('#questionnairederivedrecording').append(quesIds);
@@ -1378,6 +1381,7 @@ function questionnaireDerivedRecording(allQuesIds) {
       // allowClear: true,
       dropdownParent: $("#myRecordingModal"),
     });
+    multipleQuesCheckboxEvent('multiplequesidrecording', 'quesiddropdownrecording');
   }
 }
 
