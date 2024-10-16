@@ -1113,8 +1113,6 @@ def audiobrowsechangepage():
                    downloadChecked=download_checked)
 
 # uploadaudiofiles route
-
-
 @transcription.route('/uploadaudiofiles', methods=['GET', 'POST'])
 @login_required
 def uploadaudiofiles():

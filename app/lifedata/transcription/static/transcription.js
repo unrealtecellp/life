@@ -1309,7 +1309,7 @@ $("#deleteaudio").click(function () {
 function questionnaireDerived(allQuesIds) {
   localStorage.setItem("allQuesIds", JSON.stringify(allQuesIds));
   if (Object.keys(allQuesIds).length !== 0) {
-    console.log(allQuesIds);    
+    // console.log(allQuesIds);
     let quesIds = '';
     quesIds += '<h4>Prompt for Transcription:</h4>' +
       '<div class="input-group col-md-12" id="quesiddropdown-divid">' +
@@ -1321,6 +1321,9 @@ function questionnaireDerived(allQuesIds) {
       quesIds += '<option value="' + quesId + '">' + Q_Id + '</option>';
     }
     quesIds += '</select>';
+    quesIds += '&nbsp;&nbsp;&nbsp;&nbsp;';
+    quesIds += '<input type="checkbox" id="multiplequesid" name="multipleques" value="false">'+
+                '<label for="multiplequesid">&nbsp;Multiple Questions</label>';
     quesIds += '</div>';
     quesIds += '<hr>';
     $('#questionnairederived').append(quesIds);
@@ -1332,7 +1335,22 @@ function questionnaireDerived(allQuesIds) {
       // allowClear: true,
       dropdownParent: $("#myUploadAudioModal"),
     });
+    multipleQuesCheckboxEvent();
   }
+}
+
+function multipleQuesCheckboxEvent () {
+  $('#multiplequesid').change(function() {
+    if (this.checked) {
+      console.log(this.checked);
+      this.value = this.checked;
+      $("#quesiddropdown").prop("disabled", true);
+    } else {
+      console.log(this.checked);
+      this.value = this.checked;
+      $("#quesiddropdown").prop("disabled", false);
+    }
+});
 }
 
 function questionnaireDerivedRecording(allQuesIds) {
