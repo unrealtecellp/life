@@ -2,6 +2,7 @@ from pymongo import MongoClient
 from collections import defaultdict
 import math
 from config import Config
+import datetime
 
 
 
@@ -70,3 +71,32 @@ def get_collection_stats(db_name, collection_name):
         project_stats.append(project_data)
 
     return project_stats, speaker_ids, speakers_audio_ids
+
+
+
+
+# Function to calculate the difference between two datetime strings
+def calculate_time_diff(start_time, end_time):
+    format_str = "%d/%m/%y %H:%M:%S"
+    start_dt = datetime.datetime.strptime(start_time, format_str)
+    end_dt = datetime.datetime.strptime(end_time, format_str)
+    
+    total_seconds = (end_dt - start_dt).total_seconds()
+    hours = int(total_seconds // 3600)
+    minutes = int((total_seconds % 3600) // 60)
+    seconds = int(total_seconds % 60)
+    
+    return total_seconds, f"{hours} hours, {minutes} minutes, {seconds} seconds"
+
+# Function to calculate total working time
+def calculate_working_time(access_times, update_times):
+    total_working_time = 0
+    for access_time, update_time in zip(access_times, update_times):
+        time_diff, _ = calculate_time_diff(access_time, update_time)
+        total_working_time += time_diff
+
+    hours = int(total_working_time // 3600)
+    minutes = int((total_working_time % 3600) // 60)
+    seconds = int(total_working_time % 60)
+    
+    return total_working_time, f"{hours} hours, {minutes} minutes, {seconds} seconds"

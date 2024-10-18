@@ -842,13 +842,10 @@ def progressReportAdmin():
             final_educationlevel_data.append({"educationlevel": educationlevel, "count": count, "percentage": round(percentage, 2)})
 
         # Output the final results for debug
-        print("Place Data:", final_place_data)
-        print("Gender Data:", final_gender_data)
-        print("Age Group Data:", final_agegroup_data)
-        print("Education Level Data:", final_educationlevel_data)
-
-        
-
+        # print("Place Data:", final_place_data)
+        # print("Gender Data:", final_gender_data)
+        # print("Age Group Data:", final_agegroup_data)
+        # print("Education Level Data:", final_educationlevel_data)
 
         # Collect speaker_audio_data
         speaker_audio_data = []
@@ -869,65 +866,6 @@ def progressReportAdmin():
                                 'speaker_id': speakerid,
                                 'audio_id': audio_id
                             })
-
-            # all_projects = []
-
-            # speakerids_lists = audiodetails.combine_speaker_ids(projects, projectname, current_username)
-            # print("second speaker_id:",speakerids_lists)
-
-        # list_projectname = projects.find({}, {"projectname": 1, "_id": 0})
-        # for project in list_projectname:
-            # projectname = project["projectname"]
-            # speakerids_lists = audiodetails.combine_speaker_ids(projects, projectname, current_username)
-            # # print("second speaker_id:",speakerids_lists)
-
-        # for speaker_id in speakerids_lists:
-        #     project_type = getprojecttype.getprojecttype(projects, activeprojectname)
-        #     data_collection, = getdbcollections.getdbcollections(mongo, project_type)
-        #     projectname_cursor = projects.find({}, {"projectname": 1, "_id": 0})
-        #     # print("projectname_cursor", projectname_cursor)
-        #     for doc in projectname_cursor:
-        #         project_name = doc.get("projectname")
-        #         if project_name not in all_projects:
-        #             all_projects.append(project_name)
-
-            # # print("in progress_report :")
-            # progress_reports = []
-            # project_documents_file_wise = {}
-            # projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
-            # # print("projectowner : ", projectowner)
-
-            # activeprojectform = getactiveprojectform.getactiveprojectform(projectsform, projectowner, activeprojectname)
-            # # print("activeprojectform: ", activeprojectform)
-
-            # project_sharedwith = getprojectnamesharedwith.getprojectnamesharedwith(projects, activeprojectname)
-            # # print("project_sharedwith",project_sharedwith)
-            # if activeprojectform:
-            #     try:
-            #         activespeakerid = getuserprojectinfo.getuserprojectinfo(userprojects, current_username, activeprojectname)['activespeakerId']
-            #         speaker_audio_ids = audiodetails.get_speaker_audio_ids_new(projects, activeprojectname, current_username, speaker_id)
-            #         total_comments, annotated_comments, remaining_comments = getcommentstats.getcommentstats(
-            #             projects, data_collection, activeprojectname, speaker_id, speaker_audio_ids, 'audio'
-            #         )
-
-            #         # print("speaker_audio_ids:", speaker_audio_ids)
-            #         progress_report = {
-            #             'Created by': projectowner,
-            #             'Speaker ID': speaker_id,
-            #             'Assigned to': project_sharedwith,
-            #             'Time and date': "",
-            #             'Duration': "",
-            #             'Total no. of files': total_comments,
-            #             'Completed files': annotated_comments,
-            #             'Remaining files': remaining_comments
-            #         }
-
-            #         # print("in progress_report :", progress_report)
-            #         progress_reports.append(progress_report)
-
-            #     except Exception as e:
-            #         logger.error("An error occurred: %s", e)
-            #         return jsonify(error="An error occurred while processing the progress report"), 500
 
             project_documents_file_wise = {}
 
@@ -1015,22 +953,66 @@ def progressReportAdmin():
             if current_username == projectowner:
                 find_current_user_projects = userprojects.find_one(
                     {'username': projectowner}, {'myproject': 1, '_id': 0})
+
                 if find_current_user_projects and 'myproject' in find_current_user_projects:
                     project_names = find_current_user_projects['myproject']
+
                     for project_name in project_names:
                         find_current_user_documents = projects.find_one(
-                            {'projectOwner': projectowner,
-                                'projectname': project_name},
-                            {'speakersAudioIds': 1, 'projectOwner': 1,
-                                'sharedwith': 1, '_id': 0}
+                            {'projectOwner': projectowner, 'projectname': project_name},
+                            {'speakersAudioIds': 1, 'projectOwner': 1, 'sharedwith': 1, '_id': 0}
                         )
+
                         if find_current_user_documents:
-                            speakers_audio_ids = find_current_user_documents.get(
-                                'speakersAudioIds', {})
+                            speakers_audio_ids = find_current_user_documents.get('speakersAudioIds', {})
+
+                            # Initialize project structure
                             project_documents_file_wise[project_name] = {
                                 'projectowner': projectowner,
-                                'speakersAudioIds': speakers_audio_ids
+                                'speakersAudioIds': {}
                             }
+
+                            # Iterate through each speaker's audio ID
+                            for speaker_id, audio_ids in speakers_audio_ids.items():
+                                # Initialize the speaker's structure
+                                project_documents_file_wise[project_name]['speakersAudioIds'][speaker_id] = {}
+
+                                for audio_id in audio_ids:
+                                    transcription_data = transcriptions.find_one(
+                                        {"projectname": project_name, "audioId": audio_id},
+                                        {"audioFilename": 1, "allAccess": 1, "allUpdate": 1}
+                                    )
+                                    
+                                    if transcription_data:
+                                        all_access = transcription_data.get("allAccess", {})
+                                        all_update = transcription_data.get("allUpdate", {})
+
+                                        # Initialize dictionaries to store time data for each audio file
+                                        total_time_taken = {}
+                                        working_time = {}
+
+                                        # Process each user in allAccess
+                                        for user, access_times in all_access.items():
+                                            if user in all_update:
+                                                # Calculate total time taken (first access to last update)
+                                                total_seconds, total_time_str = progressreportadmin.calculate_time_diff(
+                                                    access_times[0], all_update[user][-1]
+                                                )
+                                                total_time_taken[user] = total_time_str
+
+                                                # Calculate working time (sum of access-update pairs)
+                                                total_working_time, working_time_str = progressreportadmin.calculate_working_time(
+                                                    access_times, all_update[user]
+                                                )
+                                                working_time[user] = working_time_str
+
+                                        # Store the time data for each audio ID under the corresponding speaker ID
+                                        project_documents_file_wise[project_name]['speakersAudioIds'][speaker_id][audio_id] = {
+                                            'total_time_taken': total_time_taken,
+                                            'working_time': working_time
+                                        }
+
+
 
             else:
                 print("No projects found for the current user.")
@@ -1060,6 +1042,19 @@ def progressReportAdmin():
             # # print("Speaker Audio Data:", speaker_audio_data)
             # print("Project Names File Wise:", project_names_file_wise)
             # print("Project Documents File Wise:", project_documents_file_wise)
+            # Print only the relevant fields
+            
+            # Print the results in the desired format
+            # for project_name, project_data in project_documents_file_wise.items():
+            #     print(f"Project Name: {project_name}")
+            #     for speaker_id, audio_data in project_data['speakersAudioIds'].items():
+            #         print(f"  Speaker ID: {speaker_id}")
+            #         for audio_id, time_data in audio_data.items():
+            #             print(f"    Audio File ID: {audio_id}")
+            #             print(f"    Total Time Taken: {time_data['total_time_taken']}")
+            #             print(f"    Working Time: {time_data['working_time']}")
+            #     print()  # Print a newline for better readability
+
 
             return render_template('progressReportAdmin.html',
                                    progress_reports=progress_reports,
