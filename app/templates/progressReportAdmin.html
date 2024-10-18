@@ -644,16 +644,28 @@ Progress Report Admin
 
 
 <!-- File-wise Results Section -->
+<!-- File-wise Results Section -->
 <div id="fileWiseResults" class="hidden">
     <h2><strong>File-wise Results</strong></h2>
-    <select id="selectProjects">
-        <option value="">--Select Project Name--</option>
-        {% for project in project_documents_file_wise.keys() %}
-        <option value="{{ project }}">{{ project }}</option>
-        {% endfor %}
-    </select>
+    <div class="form-group">
+        <label for="selectProjects">Select Project Name :</label>
+        <select id="selectProjects" class="form-control">
+            <option value="" selected disabled>--Select Project Name--</option>
+            {% for project in project_documents_file_wise.keys() %}
+            <option value="{{ project }}">{{ project }}</option>
+            {% endfor %}
+        </select>
+    </div>
+  
     <br><br>
-    <select id="selectSpeakers" style="display:none;">
+
+    <div class="form-group">
+        <label for="selectSpeakers">Select Speaker :</label>
+        <select id="selectSpeakers" style="display:none;">
+        </select>
+    </div>
+    
+    <!-- <select id="selectSpeakers" style="display:none;"> -->
         <!-- Speaker options will be populated dynamically -->
     </select>
     <br><br><br>
@@ -671,6 +683,18 @@ Progress Report Admin
         </tbody>
     </table>
 </div>
+
+<!-- Popup Structure -->
+<div class="popup" id="detailsPopup">
+    <div class="popup-content">
+        <span class="popup-close" onclick="hidePopup()">×</span>
+        <div id="popupBody">
+            <!-- Content will be injected here -->
+        </div>
+    </div>
+</div>
+
+
 
 <!-- User-wise Results Section -->
 <div id="userWiseResults" class="hidden">
@@ -1009,7 +1033,6 @@ function showIndividualProjectResults() {
 
 
 // Function to toggle visibility of File-wise Results section
-// Function to toggle visibility of File-wise Results section
 $(document).ready(function() {
     // Initialize DataTables
     var table = $('#documentsTable').DataTable({
@@ -1025,26 +1048,15 @@ $(document).ready(function() {
     $('#selectProjects').change(function() {
         updateSpeakersDropdownAndTable();
     });
-
-    // Ensure the default option is set initially
-    $('#selectProjects').val(""); // Set to default value
 });
-
-// Function to toggle visibility of elements by id
-function toggleVisibility(id) {
-    $('#' + id).toggleClass('hidden');
-}
 
 // Function to show/hide File-wise Results section
 function showFileWiseResults() {
     var fileWiseResults = $('#fileWiseResults');
-
     if (fileWiseResults.hasClass('hidden')) {
-        // Show fileWiseResults and hide userWiseResults
         fileWiseResults.removeClass('hidden');
         $('#userWiseResults').addClass('hidden');
     } else {
-        // Hide fileWiseResults
         fileWiseResults.addClass('hidden');
         $('#selectSpeakers').hide(); // Hide the speaker dropdown
     }
@@ -1053,9 +1065,8 @@ function showFileWiseResults() {
 // Function to update the speakers dropdown and table based on selected project
 function updateSpeakersDropdownAndTable() {
     var table = $('#documentsTable').DataTable();
-
-    // Get selected project
     var selectedProject = $('#selectProjects').val();
+
     if (!selectedProject) {
         $('#selectSpeakers').empty().hide(); // Hide and clear the speaker dropdown
         table.clear().draw(); // Clear the table if no project is selected
@@ -1086,17 +1097,54 @@ function updateSpeakersDropdownAndTable() {
         var files = speakersData[selectedSpeaker];
         if (!files) return; // Exit if no files for the speaker
 
-        files.forEach(function(file) {
+        // Loop through each audio file for the selected speaker
+        Object.keys(files).forEach(function(file) {
             var newRow = [
                 projectOwner,
                 selectedSpeaker,
                 file,
-                '<button class="btn btn-primary">View Details</button>'
+                '<button class="btn btn-primary view-details" data-speaker-id="' + selectedSpeaker + '" data-file-id="' + file + '">View Details</button>'
             ];
             table.row.add(newRow).draw();
         });
     });
 }
+
+// Event delegation for dynamically added view buttons
+$('#documentsTable tbody').on('click', '.view-details', function() {
+    var speakerId = $(this).data('speaker-id');
+    var fileId = $(this).data('file-id');
+    
+    // Retrieve project data (assuming this is defined in your template)
+    var projectData = {{ project_documents_file_wise|tojson }};
+    var selectedProject = $('#selectProjects').val();
+    var speakerData = projectData[selectedProject]['speakersAudioIds'][speakerId][fileId];
+
+    var totalTimeTaken = Object.entries(speakerData.total_time_taken).map(([user, time]) => `${user}: ${time}`).join('<br>');
+    var workingTime = Object.entries(speakerData.working_time).map(([user, time]) => `${user}: ${time}`).join('<br>');
+
+    var modalBody =
+        '<p><strong>Speaker ID:</strong> ' + speakerId + '</p>' +
+        '<p><strong>File ID:</strong> ' + fileId + '</p>' +
+        '<p><strong>Total Time Taken:</strong><br>' + totalTimeTaken + '</p>' +
+        '<p><strong>Working Time:</strong><br>' + workingTime + '</p>';
+
+    $('#popupBody').html(modalBody);
+    showPopup();
+});
+
+// Show popup
+function showPopup() {
+    document.getElementById('detailsPopup').style.display = 'block';
+}
+
+// Hide popup
+function hidePopup() {
+    document.getElementById('detailsPopup').style.display = 'none';
+}
+
+
+
 
 
 // Function to toggle visibility of User-wise Results section
