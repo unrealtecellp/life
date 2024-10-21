@@ -97,8 +97,8 @@ function uploadTranscriptionPromptFile(btn) {
 
 function saveTranscriptionPromptText(btn) {
   // console.log(btn, btn.id);
-  promptTextSaveBtnId = btn.id
-  promptTextId = promptTextSaveBtnId.replace(new RegExp('ques|submit', 'g'), '');
+  let promptTextSaveBtnId = btn.id
+  let promptTextId = promptTextSaveBtnId.replace(new RegExp('ques|submit', 'g'), '');
   // console.log(promptTextId);
   const data = document.getElementById(promptTextId).value;
   var formData = new FormData();
@@ -325,6 +325,10 @@ function createTranscriptionInterfaceForm(newData) {
   }
   else {
     audio_lang_script = lang_list[0];
+  }
+  if (!audio_lang_script) {
+    // console.log(audio_lang_script);
+    audio_lang_script = 'English-Latin';
   }
   // let audio_language = newData['Audio Language'][1][0]
   // let audio_script = newData['Transcription'][1][1]

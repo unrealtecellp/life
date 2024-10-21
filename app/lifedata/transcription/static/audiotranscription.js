@@ -1314,6 +1314,20 @@ function updateSentenceDetailsOnSaveBoundary(boundaryID, sentence, region, form)
         }
     }
 
+    if ('quesId' in form) {
+        // console.log('quesId');
+        key = "quesId";
+        if (key in sentence[boundaryID]) {
+            eleName = 'quesId'
+            sentence[boundaryID][key] = form[eleName].value;
+            
+        }
+        else {
+            eleName = 'quesId'
+            sentence[boundaryID][key] = form[eleName].value;
+        }
+    }
+
 
     // if ()
 
@@ -1973,8 +1987,14 @@ function createSentenceForm(formElement, boundaryID) {
     let activeTag = getActiveTag();
     createNavTabs(activeprojectform, activeTag);
     let anonymize_checked = false;
+    let boundaryQuesId = false;
+    let selectedBoundaryQuesId = '';
     if('anonymize' in formElement) {
         anonymize_checked = formElement['anonymize'];
+    }
+    if('quesId' in formElement) {
+        boundaryQuesId = true
+        selectedBoundaryQuesId = formElement['quesId'];
     }
     // console.log("activeprojectform", activeprojectform);
     for (let [key, value] of Object.entries(formElement)) {
@@ -2047,9 +2067,15 @@ function createSentenceForm(formElement, boundaryID) {
                 // console.log(allQuesIds);
                 quesIds +='<label for="quesiddropdownboundary">Prompt: </label>' +
                             '<select class="custom-select custom-select-sm" id="quesiddropdownboundary"'+
-                            ' name="quesId" style="width:30%" required>';
+                            ' name="quesId" style="width:30%"'+
+                            ' onchange="autoSavetranscription(event,this)" required>';
                 for (let [quesId, Q_Id] of Object.entries(allQuesIds)) {
-                quesIds += '<option value="' + quesId + '">' + Q_Id + '</option>';
+                    if (quesId === selectedBoundaryQuesId) {
+                        quesIds += '<option value="' + quesId + '" selected>' + Q_Id + '</option>';
+                    }
+                    else {
+                        quesIds += '<option value="' + quesId + '">' + Q_Id + '</option>';
+                    }
                 }
                 quesIds += '</select>';
             }
