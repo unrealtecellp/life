@@ -75,28 +75,61 @@ def get_collection_stats(db_name, collection_name):
 
 
 
+# # Function to calculate the difference between two datetime strings
+# def calculate_time_diff(start_time, end_time):
+#     format_str = "%d/%m/%y %H:%M:%S"
+#     start_dt = datetime.datetime.strptime(start_time, format_str)
+#     end_dt = datetime.datetime.strptime(end_time, format_str)
+    
+#     total_seconds = (end_dt - start_dt).total_seconds()
+#     hours = int(total_seconds // 3600)
+#     minutes = int((total_seconds % 3600) // 60)
+#     seconds = int(total_seconds % 60)
+    
+#     return total_seconds, f"{hours} hours, {minutes} minutes, {seconds} seconds"
+
+# # Function to calculate total working time
+# def calculate_working_time(access_times, update_times):
+#     total_working_time = 0
+#     for access_time, update_time in zip(access_times, update_times):
+#         time_diff, _ = calculate_time_diff(access_time, update_time)
+#         total_working_time += time_diff
+
+#     hours = int(total_working_time // 3600)
+#     minutes = int((total_working_time % 3600) // 60)
+#     seconds = int(total_working_time % 60)
+    
+#     return total_working_time, f"{hours} hours, {minutes} minutes, {seconds} seconds"
+
+
+import pandas as pd
+
 # Function to calculate the difference between two datetime strings
 def calculate_time_diff(start_time, end_time):
-    format_str = "%d/%m/%y %H:%M:%S"
-    start_dt = datetime.datetime.strptime(start_time, format_str)
-    end_dt = datetime.datetime.strptime(end_time, format_str)
-    
-    total_seconds = (end_dt - start_dt).total_seconds()
-    hours = int(total_seconds // 3600)
-    minutes = int((total_seconds % 3600) // 60)
-    seconds = int(total_seconds % 60)
-    
-    return total_seconds, f"{hours} hours, {minutes} minutes, {seconds} seconds"
+    # Create a Series from the start and end times
+    start_series = pd.to_datetime(pd.Series(start_time), format="%d/%m/%y %H:%M:%S")
+    end_series = pd.to_datetime(pd.Series(end_time), format="%d/%m/%y %H:%M:%S")
+
+    # Calculate the time difference
+    total_seconds = (end_series - start_series).dt.total_seconds()
+    hours = (total_seconds // 3600).astype(int)
+    minutes = ((total_seconds % 3600) // 60).astype(int)
+    seconds = (total_seconds % 60).astype(int)
+
+    return total_seconds.tolist(), [f"{h} hours, {m} minutes, {s} seconds" for h, m, s in zip(hours, minutes, seconds)]
 
 # Function to calculate total working time
 def calculate_working_time(access_times, update_times):
-    total_working_time = 0
-    for access_time, update_time in zip(access_times, update_times):
-        time_diff, _ = calculate_time_diff(access_time, update_time)
-        total_working_time += time_diff
+    # Convert access and update times to datetime Series
+    access_series = pd.to_datetime(pd.Series(access_times), format="%d/%m/%y %H:%M:%S")
+    update_series = pd.to_datetime(pd.Series(update_times), format="%d/%m/%y %H:%M:%S")
+
+    # Calculate the total working time
+    total_working_time = (update_series - access_series).dt.total_seconds().sum()
 
     hours = int(total_working_time // 3600)
     minutes = int((total_working_time % 3600) // 60)
     seconds = int(total_working_time % 60)
-    
+
     return total_working_time, f"{hours} hours, {minutes} minutes, {seconds} seconds"
+
