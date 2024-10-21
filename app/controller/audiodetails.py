@@ -1332,7 +1332,7 @@ def karya_new_updateaudiofiles(mongo,
                                             {"audioId": audio_id},
                                             {"$set": {
                                                 "audioverifiedFLAG": -1, # audio report -1 as its get rejected
-                                                "audiodeleteFLAG":1  
+                                                "audiodeleteFLAG":0  
                                             }}
                                         )
                                 
