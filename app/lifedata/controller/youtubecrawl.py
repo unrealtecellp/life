@@ -648,7 +648,6 @@ def write_mongodb_audio(mongo,
     logger.debug('filesize_mb: %s',
                  audio_stream.filesize_mb)
 
-
     string_file_name = audio_stream.title
     string_file_name = re.sub(r'[^A-Za-z0-9]+', '_', string_file_name)
     # logger.debug('string_file_name: %s', string_file_name)
@@ -662,12 +661,14 @@ def write_mongodb_audio(mongo,
                                                    skip_existing=False)
     # logger.debug('audio_stream: %s', type(audio_stream))
     # logger.debug('audio_stream_file_path: %s', audio_stream_file_path)
-    wav_audio_stream_folder_path = '/'.join(audio_stream_file_path.split('/')[1:-1])
-    wav_audio_stream_file_path = os.path.join(wav_audio_stream_folder_path, file_name)
+    wav_audio_stream_folder_path = '/'.join(
+        audio_stream_file_path.split('/')[1:-1])
+    wav_audio_stream_file_path = os.path.join(
+        wav_audio_stream_folder_path, file_name)
     # logger.debug('wav_audio_stream_file_path: %s', wav_audio_stream_file_path)
-    convert_to_wav_command = ['ffmpeg', '-y', '-i', download_file_name, file_name]
+    convert_to_wav_command = ['ffmpeg', '-y',
+                              '-i', download_file_name, file_name]
     subprocess.run(convert_to_wav_command)
-
 
     # file_content = io.BytesIO()
     # audio_stream.stream_to_buffer(file_content)
@@ -695,20 +696,20 @@ def write_mongodb_audio(mongo,
     #                                                                              run_vad=False,
     #                                                                              run_asr=False,
     #                                                                              get_audio_json=False)
-    
+
     file_state, transcription_doc_id, fs_file_id = transcription_audiodetails.saveoneaudiofile(mongo,
-                                                                                 projects,
-                                                                                 userprojects,
-                                                                                 crawling,
-                                                                                 projectowner,
-                                                                                 activeprojectname,
-                                                                                 current_username,
-                                                                                 speakerId,
-                                                                                 new_audio_file,
-                                                                                 run_vad=True,
-                                                                                 run_asr=False,
-                                                                                 get_audio_json=True)
-    
+                                                                                               projects,
+                                                                                               userprojects,
+                                                                                               crawling,
+                                                                                               projectowner,
+                                                                                               activeprojectname,
+                                                                                               current_username,
+                                                                                               speakerId,
+                                                                                               new_audio_file,
+                                                                                               run_vad=True,
+                                                                                               run_asr=False,
+                                                                                               get_audio_json=True)
+
     audio_doc_id = transcription_doc_id[0].inserted_id
     # logger.debug("audio_doc_id: %s", audio_doc_id)
     updated_filename = crawling.find_one(
@@ -1012,8 +1013,13 @@ def run_youtube_crawler(mongo, projects_collection,
             data_search_criteria = 'topn'
 
         data_links_info = data_links[data_search_criteria]
-        videos = list(data_links[data_search_criteria].keys())
+        videos = list(data_links_info.keys())
         for video in videos:
+            # if (('/embed/' in video) and (not '?v=' in video)):
+            #     org_video = video
+            #     video = video.replace('/embed/', '/watch?v=')
+            #     data_links_info[video] = data_links_info.pop(org_video)
+
             video_id = video[video.find('?v=')+3:].strip()
             if video_id not in prev_videos and video_id not in ytids:
                 ytids.append([video_id, "vid"])
