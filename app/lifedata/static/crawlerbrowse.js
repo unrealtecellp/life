@@ -617,3 +617,7 @@ function changeCrawlerBrowsePage(pageId) {
         createPagination(data.totalRecords, data.activePage);
     });
 }
+
+function getCrawlingReport(ele) {
+    window.location.href = "/lifedata/crawlingreport";
+}
