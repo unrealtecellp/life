@@ -692,316 +692,396 @@ mongo_uri = Config.MONGO_URI
 @app.route('/progressReportAdmin', methods=['GET'])
 @login_required
 def progressReportAdmin():
-    try:
-        # Connect to MongoDB and get collection stats
-        client = MongoClient(app.config["MONGO_URI"])
-        project_stats, speaker_ids, speakers_audio_ids = progressreportadmin.get_collection_stats('lifedb', 'projects')
-        print("project_stats: ", project_stats)
-        # Prepare additional data for the template
-        collections = getdbcollectionslist.getdbcollectionslist(mongo)
-        response = {}
-        for collection in collections:
-            stats = mongo.cx['lifedb'].command("collstats", collection.name)
-            response[collection.name] = {
-                "Storage Size": f"{progressreportadmin.convert_size(stats['storageSize'])}",
-                "Documents": stats['count'],
-                "Avg. Document Size": f"{progressreportadmin.convert_size(stats['avgObjSize'])}",
-                "Indexes": stats['nindexes'],
-                "Total Index Size": f"{progressreportadmin.convert_size(stats['totalIndexSize'])}"
-            }
+    # Get database collections
+    projects, userprojects, projectsform, sentences, transcriptions, speakerdetails, accesscodedetails = getdbcollections.getdbcollections(
+        mongo,
+        'projects',
+        'userprojects',
+        'projectsform',
+        'sentences',
+        'transcriptions',
+        'speakerdetails',
+        'accesscodedetails'
+    )
 
-        db = client['lifedb']
-        db_stats = db.command('dbStats')
-        data_size_value, data_size_unit = progressreportadmin.convert_size(
-            db_stats['dataSize'])
-        storage_size_value, storage_size_unit = progressreportadmin.convert_size(
-            db_stats['storageSize'])
-        index_size_value, index_size_unit = progressreportadmin.convert_size(
-            db_stats['indexSize'])
-        num_objects = db_stats['objects']
-        allocated_storage_size = db_stats.get('fsUsedSize', None)
-        total_allocated_size_value, total_allocated_size_unit = (
-            progressreportadmin.convert_size(
-                allocated_storage_size) if allocated_storage_size else ("N/A", "")
-        )
-        remaining_space_value, remaining_space_unit = (
-            progressreportadmin.convert_size(
-                allocated_storage_size - db_stats['storageSize'])
-            if allocated_storage_size else ("N/A", "")
-        )
+    # Connect to MongoDB and get collection stats
+    client = MongoClient(app.config["MONGO_URI"])
+    project_stats, speaker_ids, speakers_audio_ids = progressreportadmin.get_collection_stats('lifedb', 'projects')
+    # print("project_stats: ", project_stats)
+    # Prepare additional data for the template
+    collections = getdbcollectionslist.getdbcollectionslist(mongo)
+    response = {}
+    for collection in collections:
+        stats = mongo.cx['lifedb'].command("collstats", collection.name)
+        response[collection.name] = {
+            "Storage Size": f"{progressreportadmin.convert_size(stats['storageSize'])}",
+            "Documents": stats['count'],
+            "Avg. Document Size": f"{progressreportadmin.convert_size(stats['avgObjSize'])}",
+            "Indexes": stats['nindexes'],
+            "Total Index Size": f"{progressreportadmin.convert_size(stats['totalIndexSize'])}"
+        }
 
-        # Existing logic for fetching other data
-        projects, userprojects, projectsform, sentences, transcriptions, speakerdetails = getdbcollections.getdbcollections(
-            mongo,
-            'projects',
-            'userprojects',
-            'projectsform',
-            'sentences',
-            'transcriptions',
-            'speakerdetails'
-        )
+    db = client['lifedb']
+    db_stats = db.command('dbStats')
+    data_size_value, data_size_unit = progressreportadmin.convert_size(
+        db_stats['dataSize'])
+    storage_size_value, storage_size_unit = progressreportadmin.convert_size(
+        db_stats['storageSize'])
+    index_size_value, index_size_unit = progressreportadmin.convert_size(
+        db_stats['indexSize'])
+    num_objects = db_stats['objects']
+    allocated_storage_size = db_stats.get('fsUsedSize', None)
+    total_allocated_size_value, total_allocated_size_unit = (
+        progressreportadmin.convert_size(
+            allocated_storage_size) if allocated_storage_size else ("N/A", "")
+    )
+    remaining_space_value, remaining_space_unit = (
+        progressreportadmin.convert_size(
+            allocated_storage_size - db_stats['storageSize'])
+        if allocated_storage_size else ("N/A", "")
+    )
+
+
+    current_username = getcurrentusername.getcurrentusername()
+    activeprojectname = getactiveprojectname.getactiveprojectname(
+        current_username, userprojects)
+    shareinfo = getuserprojectinfo.getuserprojectinfo(
+        userprojects, current_username, activeprojectname)
+
+    if not activeprojectname:
+        flash("Select a project from 'Change Active Project' to work on!")
+        return redirect(url_for('home'))
+    
+
+    # Find speaker-meta data
+    speaker_meta_report = accesscodedetails.find(
+        {"task": "SPEECH_DATA_COLLECTION"},
+        {
+            "current.workerMetadata.name": 1,
+            "current.workerMetadata.agegroup": 1,
+            "current.workerMetadata.gender": 1,
+            "current.workerMetadata.educationlevel": 1,
+            "current.workerMetadata.educationmediumupto12": 1,
+            "current.workerMetadata.educationmediumafter12": 1,
+            "current.workerMetadata.speakerspeaklanguage": 1,
+            "current.workerMetadata.recordingplace": 1,
+            "current.workerMetadata.typeofrecordingplace": 1,
+            "karyaaccesscode": 1,
+            "task": 1,
+            "projectname": 1,
+            "lifespeakerid": 1,
+            "_id": 0  # Exclude the _id field from the results
+        }
+    )
+
+    # Initialize dictionaries for counting occurrences
+    place_count = {}
+    gender_count = {}
+    agegroup_count = {}
+    educationlevel_count = {}
+
+    # Count occurrences by unique values in each category
+    for record in speaker_meta_report:
+        # Safely extract the values
+        place = record.get("current", {}).get("workerMetadata", {}).get("recordingplace", None)
+        gender = record.get("current", {}).get("workerMetadata", {}).get("gender", None)
+        agegroup = record.get("current", {}).get("workerMetadata", {}).get("agegroup", None)
+        educationlevel = record.get("current", {}).get("workerMetadata", {}).get("educationlevel", None)
+
+        # Count Language Experts by place
+        if place:
+            if place not in place_count:
+                place_count[place] = 0
+            place_count[place] += 1
+
+        # Count by gender
+        if gender:
+            if gender not in gender_count:
+                gender_count[gender] = 0
+            gender_count[gender] += 1
+
+        # Count by age group
+        if agegroup:
+            if agegroup not in agegroup_count:
+                agegroup_count[agegroup] = 0
+            agegroup_count[agegroup] += 1
+
+        # Count by education level
+        if educationlevel:
+            if educationlevel not in educationlevel_count:
+                educationlevel_count[educationlevel] = 0
+            educationlevel_count[educationlevel] += 1
+
+    # Prepare data for rendering (Place)
+    total_language_experts = sum(place_count.values())
+    final_place_data = []
+    for place, count in place_count.items():
+        percentage = (count / total_language_experts) * 100 if total_language_experts > 0 else 0
+        final_place_data.append({"place": place, "experts": count, "percentage": round(percentage, 2)})
+
+    # Prepare data for rendering (Gender)
+    total_genders = sum(gender_count.values())
+    final_gender_data = []
+    for gender, count in gender_count.items():
+        percentage = (count / total_genders) * 100 if total_genders > 0 else 0
+        final_gender_data.append({"gender": gender, "count": count, "percentage": round(percentage, 2)})
+
+    # Prepare data for rendering (Age Group)
+    total_agegroups = sum(agegroup_count.values())
+    final_agegroup_data = []
+    for agegroup, count in agegroup_count.items():
+        percentage = (count / total_agegroups) * 100 if total_agegroups > 0 else 0
+        final_agegroup_data.append({"agegroup": agegroup, "count": count, "percentage": round(percentage, 2)})
+
+    # Prepare data for rendering (Education Level)
+    total_educationlevels = sum(educationlevel_count.values())
+    final_educationlevel_data = []
+    for educationlevel, count in educationlevel_count.items():
+        percentage = (count / total_educationlevels) * 100 if total_educationlevels > 0 else 0
+        final_educationlevel_data.append({"educationlevel": educationlevel, "count": count, "percentage": round(percentage, 2)})
+
+    # Output the final results for debug
+    # print("Place Data:", final_place_data)
+    # print("Gender Data:", final_gender_data)
+    # print("Age Group Data:", final_agegroup_data)
+    # print("Education Level Data:", final_educationlevel_data)
+
+    # Collect speaker_audio_data
+    speaker_audio_data = []
+    list_projectname = projects.find({}, {"projectname": 1, "_id": 0})
+    for project in list_projectname:
+        projectname = project["projectname"]
+        speakerids_list = audiodetails.combine_speaker_ids(
+            projects, projectname, current_username)
+        # print("first speakerids_list:", speakerids_list)
+        project_details = projects.find_one({"projectname": projectname}, {
+                                            "speakersAudioIds": 1, "_id": 0})
+        if project_details and 'speakersAudioIds' in project_details:
+            speakers_audio_ids = project_details['speakersAudioIds']
+            for speakerid, audio_ids in speakers_audio_ids.items():
+                if speakerid in speakerids_list:
+                    for audio_id in audio_ids:
+                        speaker_audio_data.append({
+                            'speaker_id': speakerid,
+                            'audio_id': audio_id
+                        })
+
+        project_documents_file_wise = {}
+
+        # Get the current username and their active project
         current_username = getcurrentusername.getcurrentusername()
+        currentuserprojectsname = getcurrentuserprojects.getcurrentuserprojects(
+            current_username, userprojects)
         activeprojectname = getactiveprojectname.getactiveprojectname(
             current_username, userprojects)
-        shareinfo = getuserprojectinfo.getuserprojectinfo(
-            userprojects, current_username, activeprojectname)
 
+        # If no active project is selected, redirect to home with a message
         if not activeprojectname:
             flash("Select a project from 'Change Active Project' to work on!")
             return redirect(url_for('home'))
 
-        # Collect speaker_audio_data
-        speaker_audio_data = []
-        list_projectname = projects.find({}, {"projectname": 1, "_id": 0})
-        for project in list_projectname:
-            projectname = project["projectname"]
-            speakerids_list = audiodetails.combine_speaker_ids(
-                projects, projectname, current_username)
-            # print("first speakerids_list:", speakerids_list)
-            project_details = projects.find_one({"projectname": projectname}, {
-                                                "speakersAudioIds": 1, "_id": 0})
-            if project_details and 'speakersAudioIds' in project_details:
-                speakers_audio_ids = project_details['speakersAudioIds']
-                for speakerid, audio_ids in speakers_audio_ids.items():
-                    if speakerid in speakerids_list:
-                        for audio_id in audio_ids:
-                            speaker_audio_data.append({
-                                'speaker_id': speakerid,
-                                'audio_id': audio_id
-                            })
+        # Get shared project info
+        shareinfo = getuserprojectinfo.getuserprojectinfo(
+            userprojects, current_username, activeprojectname)
 
-            # all_projects = []
+        progress_reports = []
+        all_projects = []
 
-            # speakerids_lists = audiodetails.combine_speaker_ids(projects, projectname, current_username)
-            # print("second speaker_id:",speakerids_lists)
+        # Get the owner of the active project
+        projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
+        projectsNames = projects.find({"projectOwner": projectowner, "projectType": "transcriptions"}, {
+                                "projectname": 1, "_id": 0})
 
-        # list_projectname = projects.find({}, {"projectname": 1, "_id": 0})
-        # for project in list_projectname:
-            # projectname = project["projectname"]
-            # speakerids_lists = audiodetails.combine_speaker_ids(projects, projectname, current_username)
-            # # print("second speaker_id:",speakerids_lists)
+        project_type = getprojecttype.getprojecttype(
+            projects, activeprojectname)
+        data_collection, = getdbcollections.getdbcollections(
+            mongo, project_type)
 
-        # for speaker_id in speakerids_lists:
-        #     project_type = getprojecttype.getprojecttype(projects, activeprojectname)
-        #     data_collection, = getdbcollections.getdbcollections(mongo, project_type)
-        #     projectname_cursor = projects.find({}, {"projectname": 1, "_id": 0})
-        #     # print("projectname_cursor", projectname_cursor)
-        #     for doc in projectname_cursor:
-        #         project_name = doc.get("projectname")
-        #         if project_name not in all_projects:
-        #             all_projects.append(project_name)
+        # Collect all project names
+        for project in projectsNames:
+            project_name = project.get("projectname")
+            if project_name not in all_projects:
+                all_projects.append(project_name)
 
-            # # print("in progress_report :")
-            # progress_reports = []
-            # project_documents_file_wise = {}
-            # projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
-            # # print("projectowner : ", projectowner)
+        # Generate progress reports for each project
+        for projectname in all_projects:
+            try:
+                speakerids_list = audiodetails.combine_speaker_ids(
+                    projects, projectname, current_username)
+                activeprojectform = getactiveprojectform.getactiveprojectform(
+                    projectsform, projectowner, projectname)
+                project_sharedwith = getprojectnamesharedwith.getprojectnamesharedwith(
+                    projects, projectname)
 
-            # activeprojectform = getactiveprojectform.getactiveprojectform(projectsform, projectowner, activeprojectname)
-            # # print("activeprojectform: ", activeprojectform)
+                if activeprojectform is not None:
+                    activespeakerid = getuserprojectinfo.getuserprojectinfo(
+                        userprojects, current_username, projectname).get('activespeakerId')
+                    speaker_audio_ids = audiodetails.get_speaker_audio_ids_new(
+                        projects, projectname, current_username, activespeakerid)
 
-            # project_sharedwith = getprojectnamesharedwith.getprojectnamesharedwith(projects, activeprojectname)
-            # # print("project_sharedwith",project_sharedwith)
-            # if activeprojectform:
-            #     try:
-            #         activespeakerid = getuserprojectinfo.getuserprojectinfo(userprojects, current_username, activeprojectname)['activespeakerId']
-            #         speaker_audio_ids = audiodetails.get_speaker_audio_ids_new(projects, activeprojectname, current_username, speaker_id)
-            #         total_comments, annotated_comments, remaining_comments = getcommentstats.getcommentstats(
-            #             projects, data_collection, activeprojectname, speaker_id, speaker_audio_ids, 'audio'
-            #         )
+                    total_comments, annotated_comments, remaining_comments = getcommentstats.getcommentstats(
+                        projects,
+                        data_collection,
+                        projectname,
+                        activespeakerid,
+                        speaker_audio_ids,
+                        'audio'
+                    )
 
-            #         # print("speaker_audio_ids:", speaker_audio_ids)
-            #         progress_report = {
-            #             'Created by': projectowner,
-            #             'Speaker ID': speaker_id,
-            #             'Assigned to': project_sharedwith,
-            #             'Time and date': "",
-            #             'Duration': "",
-            #             'Total no. of files': total_comments,
-            #             'Completed files': annotated_comments,
-            #             'Remaining files': remaining_comments
-            #         }
+                    progress_report = {
+                        'project Name': projectname,
+                        'Created by': projectowner,
+                        'Speaker ID': activespeakerid,
+                        'Assigned to': project_sharedwith,
+                        'Time and date': "",
+                        'Duration': "",
+                        'Total no. of files': total_comments,
+                        'Completed files': annotated_comments,
+                        'Remaining files': remaining_comments
+                    }
+                    progress_reports.append(progress_report)
 
-            #         # print("in progress_report :", progress_report)
-            #         progress_reports.append(progress_report)
+            except Exception as e:
+                logger.error("An error occurred: %s", e)
+                return jsonify(error="An error occurred while processing the progress report"), 500
 
-            #     except Exception as e:
-            #         logger.error("An error occurred: %s", e)
-            #         return jsonify(error="An error occurred while processing the progress report"), 500
+        # Print all projects (for debugging purposes)
+        # print("all_projects:", all_projects)
+        # print("progress_reports :",progress_reports)
 
-            project_documents_file_wise = {}
+        if current_username == projectowner:
+            find_current_user_projects = userprojects.find_one(
+                {'username': projectowner}, {'myproject': 1, '_id': 0})
 
-            # Get database collections
-            projects, userprojects, projectsform, sentences, transcriptions, speakerdetails = getdbcollections.getdbcollections(
-                mongo,
-                'projects',
-                'userprojects',
-                'projectsform',
-                'sentences',
-                'transcriptions',
-                'speakerdetails'
-            )
+            if find_current_user_projects and 'myproject' in find_current_user_projects:
+                project_names = find_current_user_projects['myproject']
 
-            # Get the current username and their active project
-            current_username = getcurrentusername.getcurrentusername()
-            currentuserprojectsname = getcurrentuserprojects.getcurrentuserprojects(
-                current_username, userprojects)
-            activeprojectname = getactiveprojectname.getactiveprojectname(
-                current_username, userprojects)
+                for project_name in project_names:
+                    find_current_user_documents = projects.find_one(
+                        {'projectOwner': projectowner, 'projectname': project_name},
+                        {'speakersAudioIds': 1, 'projectOwner': 1, 'sharedwith': 1, '_id': 0}
+                    )
 
-            # If no active project is selected, redirect to home with a message
-            if not activeprojectname:
-                flash("Select a project from 'Change Active Project' to work on!")
-                return redirect(url_for('home'))
+                    if find_current_user_documents:
+                        speakers_audio_ids = find_current_user_documents.get('speakersAudioIds', {})
 
-            # Get shared project info
-            shareinfo = getuserprojectinfo.getuserprojectinfo(
-                userprojects, current_username, activeprojectname)
-
-            progress_reports = []
-            all_projects = []
-
-            # Get the owner of the active project
-            projectowner = getprojectowner.getprojectowner(
-                projects, activeprojectname)
-            projectsNames = projects.find({"projectOwner": projectowner}, {
-                                          "projectname": 1, "_id": 0})
-            project_type = getprojecttype.getprojecttype(
-                projects, activeprojectname)
-            data_collection, = getdbcollections.getdbcollections(
-                mongo, project_type)
-
-            # Collect all project names
-            for project in projectsNames:
-                project_name = project.get("projectname")
-                if project_name not in all_projects:
-                    all_projects.append(project_name)
-
-            # Generate progress reports for each project
-            for projectname in all_projects:
-                try:
-                    speakerids_list = audiodetails.combine_speaker_ids(
-                        projects, projectname, current_username)
-                    activeprojectform = getactiveprojectform.getactiveprojectform(
-                        projectsform, projectowner, projectname)
-                    project_sharedwith = getprojectnamesharedwith.getprojectnamesharedwith(
-                        projects, projectname)
-
-                    if activeprojectform is not None:
-                        activespeakerid = getuserprojectinfo.getuserprojectinfo(
-                            userprojects, current_username, projectname).get('activespeakerId')
-                        speaker_audio_ids = audiodetails.get_speaker_audio_ids_new(
-                            projects, projectname, current_username, activespeakerid)
-
-                        total_comments, annotated_comments, remaining_comments = getcommentstats.getcommentstats(
-                            projects,
-                            data_collection,
-                            projectname,
-                            activespeakerid,
-                            speaker_audio_ids,
-                            'audio'
-                        )
-
-                        progress_report = {
-                            'project Name': projectname,
-                            'Created by': projectowner,
-                            'Speaker ID': activespeakerid,
-                            'Assigned to': project_sharedwith,
-                            'Time and date': "",
-                            'Duration': "",
-                            'Total no. of files': total_comments,
-                            'Completed files': annotated_comments,
-                            'Remaining files': remaining_comments
+                        # Initialize project structure
+                        project_documents_file_wise[project_name] = {
+                            'projectowner': projectowner,
+                            'speakersAudioIds': {}
                         }
-                        progress_reports.append(progress_report)
 
-                except Exception as e:
-                    logger.error("An error occurred: %s", e)
-                    return jsonify(error="An error occurred while processing the progress report"), 500
+                        # Iterate through each speaker's audio ID
+                        for speaker_id, audio_ids in speakers_audio_ids.items():
+                            # Initialize the speaker's structure
+                            project_documents_file_wise[project_name]['speakersAudioIds'][speaker_id] = {}
 
-            # Print all projects (for debugging purposes)
-            # print("all_projects:", all_projects)
-            # print("progress_reports :",progress_reports)
+                            for audio_id in audio_ids:
+                                transcription_data = transcriptions.find_one(
+                                    {"projectname": project_name, "audioId": audio_id},
+                                    {"audioFilename": 1, "allAccess": 1, "allUpdate": 1}
+                                )
+                                
+                                if transcription_data:
+                                    all_access = transcription_data.get("allAccess", {})
+                                    all_update = transcription_data.get("allUpdate", {})
 
-            if current_username == projectowner:
-                find_current_user_projects = userprojects.find_one(
-                    {'username': projectowner}, {'myproject': 1, '_id': 0})
-                if find_current_user_projects and 'myproject' in find_current_user_projects:
-                    project_names = find_current_user_projects['myproject']
-                    for project_name in project_names:
-                        find_current_user_documents = projects.find_one(
-                            {'projectOwner': projectowner,
-                                'projectname': project_name},
-                            {'speakersAudioIds': 1, 'projectOwner': 1,
-                                'sharedwith': 1, '_id': 0}
-                        )
-                        if find_current_user_documents:
-                            speakers_audio_ids = find_current_user_documents.get(
-                                'speakersAudioIds', {})
-                            project_documents_file_wise[project_name] = {
-                                'projectowner': projectowner,
-                                'speakersAudioIds': speakers_audio_ids
-                            }
+                                    # Initialize dictionaries to store time data for each audio file
+                                    total_time_taken = {}
+                                    working_time = {}
 
-            else:
-                print("No projects found for the current user.")
+                                    # Process each user in allAccess
+                                    for user, access_times in all_access.items():
+                                        if user in all_update:
+                                            # Calculate total time taken (first access to last update)
+                                            total_seconds, total_time_str = progressreportadmin.calculate_time_diff(
+                                                access_times[0], all_update[user][-1]
+                                            )
+                                            total_time_taken[user] = total_time_str
 
-            project_names_file_wise = list(project_documents_file_wise.keys())
+                                            # Calculate working time (sum of access-update pairs)
+                                            total_working_time, working_time_str = progressreportadmin.calculate_working_time(
+                                                access_times, all_update[user]
+                                            )
+                                            working_time[user] = working_time_str
 
-            # Print all the data to the console
-            # print(250*"#")
-            # print("Progress Reports:", progress_reports)
-            # print("Active Project Name:", activeprojectname)
-            # print("Share Info:", shareinfo)
-            # print("Speaker IDs List:", speakerids_list)
-            # print("All Projects:", all_projects)
-            # print("Data Size Value:", data_size_value)
-            # print("Data Size Unit:", data_size_unit)
-            # print("Storage Size Value:", storage_size_value)
-            # print("Storage Size Unit:", storage_size_unit)
-            # print("Index Size Value:", index_size_value)
-            # print("Index Size Unit:", index_size_unit)
-            # print("Number of Objects:", num_objects)
-            # # print("Collection Stats:", response)
-            # print("Total Allocated Size Value:", total_allocated_size_value)
-            # print("Total Allocated Size Unit:", total_allocated_size_unit)
-            # print("Remaining Space Value:", remaining_space_value)
-            # print("Remaining Space Unit:", remaining_space_unit)
-            # # print("Project Stats:", project_stats)
-            # # print("Speaker Audio Data:", speaker_audio_data)
-            # print("Project Names File Wise:", project_names_file_wise)
-            # print("Project Documents File Wise:", project_documents_file_wise)
+                                    # Store the time data for each audio ID under the corresponding speaker ID
+                                    project_documents_file_wise[project_name]['speakersAudioIds'][speaker_id][audio_id] = {
+                                        'total_time_taken': total_time_taken,
+                                        'working_time': working_time
+                                    }
 
-            return render_template('progressReportAdmin.html',
-                                   progress_reports=progress_reports,
-                                   activeprojectname=activeprojectname,
-                                   shareinfo=shareinfo,
-                                   speakerids_list=speakerids_list,
-                                   all_projects=all_projects,
-                                   data_size_value=data_size_value,
-                                   data_size_unit=data_size_unit,
-                                   storage_size_value=storage_size_value,
-                                   storage_size_unit=storage_size_unit,
-                                   index_size_value=index_size_value,
-                                   index_size_unit=index_size_unit,
-                                   num_objects=num_objects,
-                                   collection_stats=response,
-                                   total_allocated_size_value=total_allocated_size_value,
-                                   total_allocated_size_unit=total_allocated_size_unit,
-                                   remaining_space_value=remaining_space_value,
-                                   remaining_space_unit=remaining_space_unit,
-                                   project_stats=project_stats,
-                                   speaker_audio_data=speaker_audio_data,
-                                   project_names_file_wise=project_names_file_wise,
-                                   project_documents_file_wise=project_documents_file_wise)  # Pass the collected data to the template
 
-    # except Exception as e:
-    #     error_message = str(e)
-    #     error_traceback = traceback.format_exc()
-    #     logger.error(f"An error occurred: {error_message}\n{error_traceback}")
-    except:
-        logger.exception("")
-        # return jsonify(error=f"An error occurred while processing the request: {error_message}"), 500
+
+        else:
+            flash("No projects found for the current user.")
+
+        project_names_file_wise = list(project_documents_file_wise.keys())
+
+        # Print all the data to the console
+        # print(250*"#")
+        # print("Progress Reports:", progress_reports)
+        # print("Active Project Name:", activeprojectname)
+        # print("Share Info:", shareinfo)
+        # print("Speaker IDs List:", speakerids_list)
+        # print("All Projects:", all_projects)
+        # print("Data Size Value:", data_size_value)
+        # print("Data Size Unit:", data_size_unit)
+        # print("Storage Size Value:", storage_size_value)
+        # print("Storage Size Unit:", storage_size_unit)
+        # print("Index Size Value:", index_size_value)
+        # print("Index Size Unit:", index_size_unit)
+        # print("Number of Objects:", num_objects)
+        # # print("Collection Stats:", response)
+        # print("Total Allocated Size Value:", total_allocated_size_value)
+        # print("Total Allocated Size Unit:", total_allocated_size_unit)
+        # print("Remaining Space Value:", remaining_space_value)
+        # print("Remaining Space Unit:", remaining_space_unit)
+        # # print("Project Stats:", project_stats)
+        # # print("Speaker Audio Data:", speaker_audio_data)
+        # print("Project Names File Wise:", project_names_file_wise)
+        # print("Project Documents File Wise:", project_documents_file_wise)
+        # Print only the relevant fields
+        
+        # Print the results in the desired format
+        # for project_name, project_data in project_documents_file_wise.items():
+        #     print(f"Project Name: {project_name}")
+        #     for speaker_id, audio_data in project_data['speakersAudioIds'].items():
+        #         print(f"  Speaker ID: {speaker_id}")
+        #         for audio_id, time_data in audio_data.items():
+        #             print(f"    Audio File ID: {audio_id}")
+        #             print(f"    Total Time Taken: {time_data['total_time_taken']}")
+        #             print(f"    Working Time: {time_data['working_time']}")
+        #     print()  # Print a newline for better readability
+
+
+        return render_template('progressReportAdmin.html',
+                                progress_reports=progress_reports,
+                                activeprojectname=activeprojectname,
+                                shareinfo=shareinfo,
+                                speakerids_list=speakerids_list,
+                                all_projects=all_projects,
+                                data_size_value=data_size_value,
+                                data_size_unit=data_size_unit,
+                                storage_size_value=storage_size_value,
+                                storage_size_unit=storage_size_unit,
+                                index_size_value=index_size_value,
+                                index_size_unit=index_size_unit,
+                                num_objects=num_objects,
+                                collection_stats=response,
+                                total_allocated_size_value=total_allocated_size_value,
+                                total_allocated_size_unit=total_allocated_size_unit,
+                                remaining_space_value=remaining_space_value,
+                                remaining_space_unit=remaining_space_unit,
+                                project_stats=project_stats,
+                                speaker_audio_data=speaker_audio_data,
+                                project_names_file_wise=project_names_file_wise,
+                                project_documents_file_wise=project_documents_file_wise,
+                                final_place_data=final_place_data,
+                                final_gender_data=final_gender_data,
+                                final_agegroup_data=final_agegroup_data,
+                                final_educationlevel_data=final_educationlevel_data)  # Pass the collected data to the template
+
 
 
 @app.route('/savetranscription', methods=['GET', 'POST'])
