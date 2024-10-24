@@ -696,20 +696,20 @@ def write_mongodb_audio(mongo,
     #                                                                              run_vad=False,
     #                                                                              run_asr=False,
     #                                                                              get_audio_json=False)
-
-    file_state, transcription_doc_id, fs_file_id = transcription_audiodetails.saveoneaudiofile(mongo,
-                                                                                               projects,
-                                                                                               userprojects,
-                                                                                               crawling,
-                                                                                               projectowner,
-                                                                                               activeprojectname,
-                                                                                               current_username,
-                                                                                               speakerId,
-                                                                                               new_audio_file,
-                                                                                               run_vad=True,
-                                                                                               run_asr=False,
-                                                                                               get_audio_json=True)
-
+    
+    file_state, transcription_doc_id, fs_file_id, transcription_data = transcription_audiodetails.saveoneaudiofile(mongo,
+                                                                                 projects,
+                                                                                 userprojects,
+                                                                                 crawling,
+                                                                                 projectowner,
+                                                                                 activeprojectname,
+                                                                                 current_username,
+                                                                                 speakerId,
+                                                                                 new_audio_file,
+                                                                                 run_vad=True,
+                                                                                 run_asr=False,
+                                                                                 get_audio_json=True)
+    
     audio_doc_id = transcription_doc_id[0].inserted_id
     # logger.debug("audio_doc_id: %s", audio_doc_id)
     updated_filename = crawling.find_one(
