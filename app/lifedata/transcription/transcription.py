@@ -1113,8 +1113,6 @@ def audiobrowsechangepage():
                    downloadChecked=download_checked)
 
 # uploadaudiofiles route
-
-
 @transcription.route('/uploadaudiofiles', methods=['GET', 'POST'])
 @login_required
 def uploadaudiofiles():
@@ -1134,12 +1132,18 @@ def uploadaudiofiles():
         get_audio_json = True
         prompt = {}
         derivedfromprojectdetails = {}
+        multiplequesFLAG = 0
 
         data = dict(request.form.lists())
         logger.info("All Form data %s", request.form)
         # logger.info("All Form data submitted %s", request.form.formData)
         logger.info("Form data %s", data)
-        if ('quesId' in data):
+        if ('multipleques' in data and
+            data['multipleques'][0] == 'true'):
+            multiplequesFLAG = 1
+        # logger.debug(multiplequesFLAG)
+        if (not multiplequesFLAG and
+            'quesId' in data):
             quesId = data['quesId'][0]
             # logger.debug("quesId: %s", quesId)
             found_prompt = questionnaires.find_one({"quesId": quesId},
@@ -1159,6 +1163,8 @@ def uploadaudiofiles():
                 logger.debug("not found prompt: %s", found_prompt)
         # return redirect(url_for('lifedata.transcription.home'))
         new_audio_file = request.files.to_dict()
+        if 'audiofile[0]' in new_audio_file:
+            new_audio_file['audiofile'] = new_audio_file.pop('audiofile[0]')
         logger.info('New audio files %s', new_audio_file)
         # logger.info("Request %s", request)
         # logger.info("All Form data submitted %s\n%s\n%s",
@@ -1274,7 +1280,8 @@ def uploadaudiofiles():
                                                   update=False,
                                                   slice_offset_value=slice_offset,
                                                   min_boundary_size=min_boundary_size,
-                                                  derivedfromprojectdetails=derivedfromprojectdetails
+                                                  derivedfromprojectdetails=derivedfromprojectdetails,
+                                                  multiplequesFLAG=multiplequesFLAG
                                                   )
 
     return redirect(url_for('lifedata.transcription.home'))

@@ -4,9 +4,9 @@ $("div#audiofileid").dropzone({
     url: "/lifedata/transcription/uploadaudiofiles",
     maxFilesize: 512,
     // autoProcessQueue: false,
-    uploadMultiple: false,
+    uploadMultiple: true,
     parallelUploads: 1,
-    maxFiles: 1,
+    maxFiles: 10,
     paramName: "audiofile",
     init: function () {
         var myDropzone = this;
@@ -14,16 +14,23 @@ $("div#audiofileid").dropzone({
             $(":input[name]", $("#newaudiouploadId")).each(function () {
                 let eleName = this.name;
                 let eleVal = $(':input[name=' + eleName + ']', $("#newaudiouploadId")).val();
-                // console.log(eleVal, Array.isArray(eleVal));
+                // console.log(eleName, eleVal, Array.isArray(eleVal));
+                // if (eleName === 'speakerId' &&
+                //     eleVal === null
+                // ) {
+                //     alert('Please select speaker/source');
+                //     window.location.reload();
+                // }
                 if (Array.isArray(eleVal)) {
                     for (let currentEleVal of eleVal) {
-                        formData.append(eleName, currentEleVal);        
+                        formData.append(eleName, currentEleVal);
                     }
                 }
                 else {
                     formData.append(eleName, eleVal);
                 }
             });
+            // console.log(formData);
         });
     }
 

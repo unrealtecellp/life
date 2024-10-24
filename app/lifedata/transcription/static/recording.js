@@ -125,6 +125,7 @@ if (navigator.mediaDevices.getUserMedia) {
         $(":input[name]", $("#newaudiouploadId")).each(function () {
           let eleName = this.name;
           let eleVal = $(':input[name=' + eleName + ']', $("#newaudiouploadId")).val();
+          // console.log(eleName, eleVal);
           formData.append(eleName, eleVal);
         });
         // }
@@ -143,6 +144,9 @@ if (navigator.mediaDevices.getUserMedia) {
           }
           // console.log(recordingForSpeakersList);
           // formData.set('speakerId', recordingForSpeakersList);
+        }
+        if(document.getElementById("multiplequesidrecording")){
+          formData.set('multipleques', document.getElementById("multiplequesidrecording").value);
         }
         // console.log(formData);
         $.ajax({

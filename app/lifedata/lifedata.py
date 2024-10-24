@@ -669,14 +669,17 @@ def youtubecrawler():
                         else:
                             searchkeywords_value = []
                         for link in value:
+                            if (('/embed/' in link) and (not '?v=' in link)):
+                                link = link.replace('/embed/', '/watch?v=')
                             data_links_info[link] = searchkeywords_value
                             video_id = link[link.find('?v=')+3:].strip()
                             to_crawl_video_ids.append(video_id)
+
                         # logger.debug('key: %s, videoschannelId_count: %s, value: %s, searchkeywords_key: %s, searchkeywords_value: %s',
                         #              key, videoschannelId_count, value, searchkeywords_key, searchkeywords_value)
             data_links[youtube_data_for] = data_links_info
             logger.debug("data_links_info: %s", pformat(data_links_info))
-            logger.debug("data_links: %s", pformat(data_links))
+            logger.info("data_links: %s", pformat(data_links))
 
             logger.debug("Current active project name %s", activeprojectname)
             crawled_video_ids = youtubecrawl.run_youtube_crawler(mongo, projects_collection,

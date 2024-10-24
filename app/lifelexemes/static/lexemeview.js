@@ -102,7 +102,7 @@ function viewFunction(newData, lexeme, filen) {
       glossLang = newData[key];
       // console.log(glossLang);
       if (senseCount === 0) {
-        maxSenseCount = Object.keys(lexeme['SenseNew']).length
+        let maxSenseCount = Object.keys(lexeme['SenseNew']).length;
         // console.log(maxSenseCount);
         for (let [skey, svalue] of Object.entries(lexeme['SenseNew'])) {
           senseCount += 1;
@@ -124,20 +124,24 @@ function viewFunction(newData, lexeme, filen) {
                 'name="Gloss '+ glossLang[i] + ' Sense '+ senseCount+'"'+
                 'value="'+ lexeme["SenseNew"]["Sense "+senseCount]["Gloss"][glossLang[i].substr(0, 3).toLowerCase()]+'" readonly>'+
                 '</div></div>';
-              // inpt += '<div class="col-md-6 collapse sense' + senseCount +'"><div class="form-group">'+
-              //   '<label for="Definition '+ glossLang[i] +'">Definition '+ glossLang[i] +'</label>'+
-              //   '<input type="text" class="form-control" id="Definition '+ glossLang[i] +'"'+ 
-              //   'name="Definition '+ glossLang[i] + ' Sense '+ senseCount+'"'+
-              //   'value="'+ lexeme["SenseNew"]["Sense "+senseCount]["Definition"][glossLang[i].substr(0, 3).toLowerCase()]+'" readonly>'+
-              //   '</div></div>';
+              inpt += '<div class="col-md-6 collapse sense' + senseCount +'"><div class="form-group">'+
+                '<label for="Definition '+ glossLang[i] +'">Definition '+ glossLang[i] +'</label>'+
+                '<input type="text" class="form-control" id="Definition '+ glossLang[i] +'"'+ 
+                'name="Definition '+ glossLang[i] + ' Sense '+ senseCount+'"'+
+                'value="'+ lexeme["SenseNew"]["Sense "+senseCount]["Definition"][glossLang[i].substr(0, 3).toLowerCase()]+'" readonly>'+
+                '</div></div>';
             }
                 
             for (var i = 0; i < Sense.length; i++) {
             if (Sense[i].name === 'Upload Picture') {
+              // console.log(Sense);
+              // console.log(Sense[i]);
+              // console.log(Sense[i].name);
+              // console.log(Sense[i].name+ ' '+ senseCount);
               inpt += '<div class="col-md-4 collapse sense' + senseCount +'"><div class="form-group">'+
                 '<label for="'+ Sense[i].name +'">'+ Sense[i].name +'</label>'+
                 // '<input type="file" class="form-control" id="'+ Sense[i].name +'" name="'+ Sense[i].name + ' Sense '+ senseCount+'">'+
-                '<br><img src="'+filen[Sense[i].name]+'" alt="'+Sense[i].name+'">'+
+                '<br><img src="'+filen[Sense[i].name+ ' Sense '+ senseCount]+'" alt="'+Sense[i].name+'">'+
                 '</div></div>';  
             }
             else if (Sense[i].name === 'Semantic Domain'
@@ -226,7 +230,11 @@ function viewFunction(newData, lexeme, filen) {
     }
     else if (value === 'multimedia') {
       if (key === 'Upload Sound File') {
-        inpt += '<br><img src="'+filen[key]+'" alt="'+key+'">';
+        inpt += '<br><label for="Upload Sound File">Upload Sound File</label><br>'+
+                '<audio controls>'+
+                  '<source src="'+filen[key]+'" type="audio/wav">'+
+                  'Upload Sound File'+
+                  '</audio>';
         $('.lexemeviewenternewlexeme1').append(inpt);
         inpt = '';         
       }
@@ -236,7 +244,10 @@ function viewFunction(newData, lexeme, filen) {
         inpt = '';         
       }
       else if (key == 'Upload Field Notebook Scan') {
-        inpt += '<br><img src="'+filen[key]+'" alt="'+key+' File">';
+        inpt += '<br>'+
+                '<figure><figcaption>'+key+'</figcaption>'+
+                '<img src="'+filen[key]+'" alt="'+key+' File">'+
+                '</figure>';
         $('.lexemeviewenternewlexeme2').append(inpt);
         inpt = '';         
       }

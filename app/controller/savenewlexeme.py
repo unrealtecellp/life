@@ -200,7 +200,7 @@ def savenewlexeme(mongo,
         mongo.save_file(filename,
                         newLexemeFiles[key],
                         lexemeId=lexemeId,
-                        username=current_username,
+                        username=projectowner,
                         projectname=lexemeFormData['projectname'],
                         headword=lexemeFormData['headword'],
                         updatedBy=current_username)
