@@ -187,7 +187,7 @@ function imagevalidateForm() {
 function previousImage() {
     lastActiveId = document.forms["saveimageanno"]["lastActiveId"].value
         $.ajax({
-            url: '/loadpreviousimage',
+            url: '/easyAnno/loadpreviousimage',
             type: 'GET',
             data: {'data': JSON.stringify(lastActiveId)},
             contentType: "application/json; charset=utf-8", 
@@ -201,7 +201,7 @@ function previousImage() {
 function nextImage() {
     lastActiveId = document.forms["saveimageanno"]["lastActiveId"].value
         $.ajax({
-            url: '/loadnextimage',
+            url: '/easyAnno/loadnextimage',
             type: 'GET',
             data: {'data': JSON.stringify(lastActiveId)},
             contentType: "application/json; charset=utf-8", 
@@ -217,7 +217,7 @@ function unAnnotated() {
     console.log('unAnnotated');
     $('#uNAnnotated').remove();
     $.ajax({
-        url: '/allunannotated',
+        url: '/easyAnno/allunannotated',
         type: 'GET',
         data: {'data': JSON.stringify(unanno)},
         contentType: "application/json; charset=utf-8", 
@@ -247,7 +247,7 @@ function loadUnAnnoText() {
     textId = document.getElementById('allunanno').value;
     console.log(textId);
     $.ajax({
-        url: '/loadunannotext',
+        url: '/easyAnno/loadunannotext',
         type: 'GET',
         data: {'data': JSON.stringify(textId)},
         contentType: "application/json; charset=utf-8", 
@@ -262,7 +262,7 @@ function loadAnnoText() {
     textId = document.getElementById('allanno').value;
     console.log(textId);
     $.ajax({
-        url: '/loadunannotext',
+        url: '/easyAnno/loadunannotext',
         type: 'GET',
         data: {'data': JSON.stringify(textId)},
         contentType: "application/json; charset=utf-8", 
