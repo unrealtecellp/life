@@ -11,6 +11,8 @@ Progress Report Admin
 <link href="https://cdn.metroui.org.ua/v4/css/metro-all.min.css" rel="stylesheet">
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.css">
 
+
+
 <style>/* Basic styles for the popup */
     .popup {
         display: none;
@@ -46,6 +48,7 @@ Progress Report Admin
     </style>
 
 <style>
+
     body {
         font-family: Arial, sans-serif;
         background-color: #f8f9fa;
@@ -138,45 +141,84 @@ Progress Report Admin
 
 
 
-    /* Sidebar styles */
+/* Sidebar styles */
+.side-nav-container {
+    background-color: rgb(169, 169, 169);
+    color: rgb(255, 255, 255);
+    padding: 20px;
+    height: 50vh;
+    position: fixed;
+    left: 10;
+    width: 200px; /* Adjust sidebar width here */
+    z-index: 1; /* Ensure sidebar is above main content */
+    overflow-y: auto; /* Enable scrolling if content exceeds sidebar height */
+    border-radius: 15px; /* Add curved corners */
+    font-size: 18px; /* Adjust the font size */
+}
+
+/* Sidebar styles */
+.side-nav-container {
+    background-color: rgb(117, 201, 246); /* Background color of the sidebar */
+    color: rgb(0, 0, 0); /* Text color inside the sidebar */
+    padding: 20px; /* Padding inside the sidebar */
+    height: 50vh; /* Height of the sidebar */
+    position: fixed; /* Fixed position for sidebar */
+    left: 10; /* Position from the left */
+    width: 200px; /* Adjust sidebar width here */
+    z-index: 1; /* Ensure sidebar is above main content */
+    overflow-y: auto; /* Enable scrolling if content exceeds sidebar height */
+    border-radius: 15px; /* Add curved corners to the sidebar */
+    font-size: 10px; /* Adjust the font size for sidebar text */
+}
+
+.side-nav-container a {
+    color: rgb(0, 0, 0); /* Link text color */
+    text-decoration: none; /* Remove underline from links */
+    display: block; /* Display links as block elements */
+    padding: 10px 0; /* Padding for each link */
+    font-size: 13px; /* Adjust the text size of links */    
+}
+
+.side-nav-container a:hover {
+    text-decoration: underline; /* Underline links on hover */
+}
+
+.main-content {
+    margin-left: 250px; /* Adjust based on sidebar width */
+    padding: 20px; /* Padding for the main content area */
+}
+
+/* Ensure responsive behavior */
+@media (max-width: 768px) {
     .side-nav-container {
-        background-color: rgb(218, 239, 247);
-        color: rgb(2, 1, 59);
-        padding: 20px;
-        height: 50vh;
-        position: fixed;
-        left: 10;
-        width: 250px; /* Adjust sidebar width here */
-        z-index: 1; /* Ensure sidebar is above main content */
-        overflow-y: auto; /* Enable scrolling if content exceeds sidebar height */
-    }
-
-    .side-nav-container a {
-        color: rgb(78, 9, 78);
-        text-decoration: none;
-        display: block;
-        padding: 10px 0;
-    }
-
-    .side-nav-container a:hover {
-        text-decoration: underline;
+        width: 100%; /* Sidebar takes full width on smaller screens */
+        margin-bottom: 10px; /* Add margin below sidebar */
     }
 
     .main-content {
-        margin-left: 250px; /* Adjust based on sidebar width */
-        padding: 20px;
+        margin-left: 0; /* No margin on the left for main content */
     }
+}
 
-    /* Ensure responsive behavior */
-    @media (max-width: 768px) {
-        .side-nav-container {
-            width: 100%; /* Sidebar takes full width on smaller screens */
-            margin-bottom: 10px; /* Add margin below sidebar */
-        }
 
-        .main-content {
-            margin-left: 0; /* No margin on the left for main content */
-        }
+    /* Report css */
+
+    .card-container {
+        display: flex;               /* Use flexbox for layout */
+        justify-content: space-between; /* Space the cards evenly */
+        gap: 10px;                  /* Add some space between the cards */
+    }
+    .card {
+        flex: 1;                    /* Allow cards to grow equally */
+        max-width: 45%;            /* Set max-width to keep them smaller */
+        min-width: 300px;          /* Minimum width to prevent too small */
+    }
+    .card-body {
+        overflow-y: auto;           /* Keep scroll functionality */
+        max-height: 200px;         /* Adjust max-height for smaller cards */
+    }
+    .label {
+        color: black;              /* Text color */
     }
 
 
@@ -209,6 +251,8 @@ Progress Report Admin
                             <strong>Dashboard</strong>
                         </a>
                     </li>
+                    <br>
+                    <br>
 
                     
                     <li class="nav-item">
@@ -217,22 +261,29 @@ Progress Report Admin
                             <strong>All projects of a user</strong>
                         </a>
                     </li>
+                    <br>
+                    <br>
                     <li class="nav-item">
                         <a class="nav-link" href="#" onclick="showSpecificProject()">
                             <span data-feather="users"></span>
                             <strong>Any specific project of the user</strong>
                         </a>
                     </li>
+                    <br>
+                    <br>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">
+                        <a class="nav-link" href="#" onclick="showReport()">
                             <span data-feather="bar-chart-2"></span>
                             <strong>Reports</strong>
                         </a>
                     </li>
+                    <br>
+                    <br>
+                    
                 </ul>
 
               
-                </ul>
+
             </div>
         </nav>
 
@@ -273,45 +324,7 @@ Progress Report Admin
                     </tbody>
                 </table>
             
-                <!-- Modals for Project Details -->
-                <!-- {% for project in project_stats %}
-                <div class="modal fade" id="projectModal{{ loop.index }}" tabindex="-1" role="dialog" aria-labelledby="projectModalLabel{{ loop.index }}" aria-hidden="true">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="projectModalLabel{{ loop.index }}">{{ project.projectname }}</h5>
-                                <button type="button" class="btn btn-danger float-left" data-dismiss="modal" aria-label="Close">Close</button>
-
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                <table class="table table-bordered">
-                                    <tbody>
-                                        <tr><th>Project Owner</th><td>{{ project.projectOwner }}</td></tr>
-                                        <tr><th>Shared With</th><td>{{ project.sharedwith }}</td></tr>
-                                        <tr><th>Project Derivatives</th><td>{{ project.projectDerivatives }}</td></tr>
-                                        <tr><th>About Project</th><td>{{ project.aboutproject }}</td></tr>
-                                        <tr><th>Project Type</th><td>{{ project.projectType }}</td></tr>
-                                        <tr><th>Speaker IDs</th><td>{{ project.speakerIds }}</td></tr>
-                                        <tr><th>Speakers Audio IDs</th><td>{{ project.speakersAudioIds }}</td></tr>
-                                        <tr><th>Total Audio IDs</th><td>{{ project.totalAudioIds }}</td></tr>
-                                        <tr><th>Speakers Audio IDs Keys</th><td>{{ project.speakersAudioIdsKeys }}</td></tr>
-                                    </tbody>
-                                </table>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-danger ml-auto" data-dismiss="modal">Close</button>
-                                </div>
-                                
-                            </div>
-                            
-                            
-                        </div>
-                    </div>
-                </div>
-                {% endfor %} -->
-
-
+                
 
 
                 <!-- Modals for Project Details -->
@@ -631,16 +644,28 @@ Progress Report Admin
 
 
 <!-- File-wise Results Section -->
+<!-- File-wise Results Section -->
 <div id="fileWiseResults" class="hidden">
     <h2><strong>File-wise Results</strong></h2>
-    <select id="selectProjects">
-        <option value="">--Select Project Name--</option>
-        {% for project in project_documents_file_wise.keys() %}
-        <option value="{{ project }}">{{ project }}</option>
-        {% endfor %}
-    </select>
+    <div class="form-group">
+        <label for="selectProjects">Select Project Name :</label>
+        <select id="selectProjects" class="form-control">
+            <option value="" selected disabled>--Select Project Name--</option>
+            {% for project in project_documents_file_wise.keys() %}
+            <option value="{{ project }}">{{ project }}</option>
+            {% endfor %}
+        </select>
+    </div>
+  
     <br><br>
-    <select id="selectSpeakers" style="display:none;">
+
+    <div class="form-group">
+        <label for="selectSpeakers">Select Speaker :</label>
+        <select id="selectSpeakers" style="display:none;">
+        </select>
+    </div>
+    
+    <!-- <select id="selectSpeakers" style="display:none;"> -->
         <!-- Speaker options will be populated dynamically -->
     </select>
     <br><br><br>
@@ -658,6 +683,18 @@ Progress Report Admin
         </tbody>
     </table>
 </div>
+
+<!-- Popup Structure -->
+<div class="popup" id="detailsPopup">
+    <div class="popup-content">
+        <span class="popup-close" onclick="hidePopup()">×</span>
+        <div id="popupBody">
+            <!-- Content will be injected here -->
+        </div>
+    </div>
+</div>
+
+
 
 <!-- User-wise Results Section -->
 <div id="userWiseResults" class="hidden">
@@ -706,6 +743,181 @@ Progress Report Admin
     
 </div>
 
+
+<!-- Reports-->
+<div id="reportContainer" class="hidden">
+    <!-- <p>This is report!</p> -->
+    <div class="card-container">
+        <!-- First Table: Language Expert Places -->
+        <div class="card h-100">
+            <div class="card-header bg-orange">
+                <h4 class="label fg-white">Language Expert Places</h4>
+            </div>
+            <div class="card-body">
+                <smart-table id="placesTable" class="no-border smart-element smart-table">
+                    <div class="smart-container">
+                        <table class="smart-table-container">
+                            <thead>
+                                <tr>
+                                    <th>Language Expert Place</th>
+                                    <th>Number of Language Expert(s)</th>
+                                    <th>% Language Expert(s)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for data in final_place_data %}
+                                <tr>
+                                    <td>{{ data.place }}</td>
+                                    <td>{{ data.experts }}</td>
+                                    <td>
+                                        <div style="display: flex; align-items: center;">
+                                            <div style="width: 80%; background-color: #e0e0e0; border-radius: 5px; margin-right: 10px;">
+                                                <div style="width: {{ data.percentage }}%; background-color: #4caf50; height: 100%; border-radius: 5px;">
+                                                    &nbsp;
+                                                </div>
+                                            </div>
+                                            <span>{{ data.percentage | round(2) }}%</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </smart-table>
+            </div>
+        </div>
+    
+        <!-- Second Table: Language Experts by Age Group -->
+        <div class="card h-100">
+            <div class="card-header bg-primary">
+                <h4 class="label fg-white">Language Experts by Age Group</h4>
+            </div>
+            <div class="card-body">
+                <smart-table id="ageGroupTable" class="no-border smart-element smart-table">
+                    <div class="smart-container">
+                        <table class="smart-table-container">
+                            <thead>
+                                <tr>
+                                    <th>Age Group</th>
+                                    <th>Number of Experts</th>
+                                    <th>% of Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for data in final_agegroup_data %}
+                                <tr>
+                                    <td>{{ data.agegroup }}</td>
+                                    <td>{{ data.count }}</td>
+                                    <td>
+                                        <div style="display: flex; align-items: center;">
+                                            <div style="width: 80%; background-color: #e0e0e0; border-radius: 5px; margin-right: 10px;">
+                                                <div style="width: {{ data.percentage }}%; background-color: #4caf50; height: 100%; border-radius: 5px;">
+                                                    &nbsp;
+                                                </div>
+                                            </div>
+                                            <span>{{ data.percentage | round(2) }}%</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </smart-table>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card-container">
+        <!-- Third Table: Language Experts by Gender -->
+        <div class="card h-100">
+            <div class="card-header bg-yellow">
+                <h4 class="label fg-black">Language Experts by Gender</h4>
+            </div>
+            <div class="card-body">
+                <smart-table id="genderTable" class="no-border smart-element smart-table">
+                    <div class="smart-container">
+                        <table class="smart-table-container">
+                            <thead>
+                                <tr>
+                                    <th>Gender</th>
+                                    <th>Number of Experts</th>
+                                    <th>% of Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for data in final_gender_data %}
+                                <tr>
+                                    <td>{{ data.gender }}</td>
+                                    <td>{{ data.count }}</td>
+                                    <td>
+                                        <div style="display: flex; align-items: center;">
+                                            <div style="width: 80%; background-color: #e0e0e0; border-radius: 5px; margin-right: 10px;">
+                                                <div style="width: {{ data.percentage }}%; background-color: #4caf50; height: 100%; border-radius: 5px;">
+                                                    &nbsp;
+                                                </div>
+                                            </div>
+                                            <span>{{ data.percentage | round(2) }}%</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </smart-table>
+            </div>
+        </div>
+    
+        <!-- Fourth Table: Language Experts by Education Level -->
+        <div class="card h-100">
+            <div class="card-header bg-green">
+                <h4 class="label fg-white">Language Experts by Education Level</h4>
+            </div>
+            <div class="card-body">
+                <smart-table id="educationTable" class="no-border smart-element smart-table">
+                    <div class="smart-container">
+                        <table class="smart-table-container">
+                            <thead>
+                                <tr>
+                                    <th>Education Level</th>
+                                    <th>Number of Experts</th>
+                                    <th>% of Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for data in final_educationlevel_data %}
+                                <tr>
+                                    <td>{{ data.educationlevel }}</td>
+                                    <td>{{ data.count }}</td>
+                                    <td>
+                                        <div style="display: flex; align-items: center;">
+                                            <div style="width: 80%; background-color: #e0e0e0; border-radius: 5px; margin-right: 10px;">
+                                                <div style="width: {{ data.percentage }}%; background-color: #4caf50; height: 100%; border-radius: 5px;">
+                                                    &nbsp;
+                                                </div>
+                                            </div>
+                                            <span>{{ data.percentage | round(2) }}%</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </smart-table>
+            </div>
+        </div>
+    </div>
+     
+    </div>
+
+
+        <!-- End of Reports -->
+
+
+
 </main>
 </div>
 </div>  
@@ -736,6 +948,8 @@ Progress Report Admin
 <script src="https://code.highcharts.com/modules/accessibility.js"></script>
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.js"></script>
 
+
+
 <script>
     $(document).ready(function() {
     $('#audioTable').DataTable();
@@ -760,6 +974,7 @@ function showAllProjects() {
     document.getElementById('fileWiseResults').classList.add('hidden');
     document.getElementById('userWiseResults').classList.add('hidden');
     document.getElementById('projectContainer').classList.add('hidden');
+    document.getElementById('reportContainer').classList.add('hidden');
 }
 
 // Function to toggle the buttons for 'Any specific project of the user'
@@ -771,6 +986,7 @@ function showSpecificProject() {
     document.getElementById('fileWiseResults').classList.add('hidden');
     document.getElementById('userWiseResults').classList.add('hidden');
     document.getElementById('projectContainer').classList.add('hidden');
+    document.getElementById('reportContainer').classList.add('hidden');
 }
 
 // Function to toggle the Dashboard and hide other sections
@@ -782,7 +998,25 @@ function showDashboard() {
     document.getElementById('individualProjectResults').classList.add('hidden');
     document.getElementById('fileWiseResults').classList.add('hidden');
     document.getElementById('userWiseResults').classList.add('hidden');
+    document.getElementById('reportContainer').classList.add('hidden');
 }
+
+//Function to toggle the Report and hide other sections
+function showReport() {
+    toggleVisibility('reportContainer')
+    document.getElementById('allProjectsButtons').classList.add('hidden');
+    document.getElementById('specificProjectButtons').classList.add('hidden');
+    document.getElementById('cumulativeResults').classList.add('hidden');
+    document.getElementById('individualProjectResults').classList.add('hidden');
+    document.getElementById('fileWiseResults').classList.add('hidden');
+    document.getElementById('userWiseResults').classList.add('hidden');
+    document.getElementById('projectContainer').classList.add('hidden');
+        }
+
+
+// Function to show the Report section
+
+
 
 // Function to show the Cumulative Results section
 function showCumulativeResults() {
@@ -799,7 +1033,6 @@ function showIndividualProjectResults() {
 
 
 // Function to toggle visibility of File-wise Results section
-// Function to toggle visibility of File-wise Results section
 $(document).ready(function() {
     // Initialize DataTables
     var table = $('#documentsTable').DataTable({
@@ -815,26 +1048,15 @@ $(document).ready(function() {
     $('#selectProjects').change(function() {
         updateSpeakersDropdownAndTable();
     });
-
-    // Ensure the default option is set initially
-    $('#selectProjects').val(""); // Set to default value
 });
-
-// Function to toggle visibility of elements by id
-function toggleVisibility(id) {
-    $('#' + id).toggleClass('hidden');
-}
 
 // Function to show/hide File-wise Results section
 function showFileWiseResults() {
     var fileWiseResults = $('#fileWiseResults');
-
     if (fileWiseResults.hasClass('hidden')) {
-        // Show fileWiseResults and hide userWiseResults
         fileWiseResults.removeClass('hidden');
         $('#userWiseResults').addClass('hidden');
     } else {
-        // Hide fileWiseResults
         fileWiseResults.addClass('hidden');
         $('#selectSpeakers').hide(); // Hide the speaker dropdown
     }
@@ -843,9 +1065,8 @@ function showFileWiseResults() {
 // Function to update the speakers dropdown and table based on selected project
 function updateSpeakersDropdownAndTable() {
     var table = $('#documentsTable').DataTable();
-
-    // Get selected project
     var selectedProject = $('#selectProjects').val();
+
     if (!selectedProject) {
         $('#selectSpeakers').empty().hide(); // Hide and clear the speaker dropdown
         table.clear().draw(); // Clear the table if no project is selected
@@ -876,17 +1097,54 @@ function updateSpeakersDropdownAndTable() {
         var files = speakersData[selectedSpeaker];
         if (!files) return; // Exit if no files for the speaker
 
-        files.forEach(function(file) {
+        // Loop through each audio file for the selected speaker
+        Object.keys(files).forEach(function(file) {
             var newRow = [
                 projectOwner,
                 selectedSpeaker,
                 file,
-                '<button class="btn btn-primary">View Details</button>'
+                '<button class="btn btn-primary view-details" data-speaker-id="' + selectedSpeaker + '" data-file-id="' + file + '">View Details</button>'
             ];
             table.row.add(newRow).draw();
         });
     });
 }
+
+// Event delegation for dynamically added view buttons
+$('#documentsTable tbody').on('click', '.view-details', function() {
+    var speakerId = $(this).data('speaker-id');
+    var fileId = $(this).data('file-id');
+    
+    // Retrieve project data (assuming this is defined in your template)
+    var projectData = {{ project_documents_file_wise|tojson }};
+    var selectedProject = $('#selectProjects').val();
+    var speakerData = projectData[selectedProject]['speakersAudioIds'][speakerId][fileId];
+
+    var totalTimeTaken = Object.entries(speakerData.total_time_taken).map(([user, time]) => `${user}: ${time}`).join('<br>');
+    var workingTime = Object.entries(speakerData.working_time).map(([user, time]) => `${user}: ${time}`).join('<br>');
+
+    var modalBody =
+        '<p><strong>Speaker ID:</strong> ' + speakerId + '</p>' +
+        '<p><strong>File ID:</strong> ' + fileId + '</p>' +
+        '<p><strong>Total Time Taken:</strong><br>' + totalTimeTaken + '</p>' +
+        '<p><strong>Working Time:</strong><br>' + workingTime + '</p>';
+
+    $('#popupBody').html(modalBody);
+    showPopup();
+});
+
+// Show popup
+function showPopup() {
+    document.getElementById('detailsPopup').style.display = 'block';
+}
+
+// Hide popup
+function hidePopup() {
+    document.getElementById('detailsPopup').style.display = 'none';
+}
+
+
+
 
 
 // Function to toggle visibility of User-wise Results section
@@ -1162,7 +1420,29 @@ $('#userWiseResultsTable').on('click', '.view-pie-chart', function() {
 </script>
 
 
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        function showReportText() {
+            document.getElementById('dashboardContainer').style.display = 'none';
+            document.getElementById('allProjectsButtons').style.display = 'none';
+            document.getElementById('specificProjectButtons').style.display = 'none';
+            document.getElementById('projectContainer').style.display = 'none';
+            document.getElementById('cumulativeResults').style.display = 'none';
+            document.getElementById('individualProjectResults').style.display = 'none';
+            document.getElementById('fileWiseResults').style.display = 'none';
+            document.getElementById('userWiseResults').style.display = 'none';
 
+            // Show the report text
+            document.getElementById('reportText').style.display = 'block';
+        }
 
+        window.showReportText = showReportText;
+    });
+    function showReportText() {
+    console.log("Reports link clicked!"); // Debug log
+    document.getElementById('reportText').style.display = 'block';
+}
+
+</script>
     
 {% endblock %}

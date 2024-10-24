@@ -526,7 +526,10 @@ $('#translatebtnid').on('click', function (e) {
                   // console.log('Current transl data', currentTransData);
                   for (const currentLangScript in currentTransData) {
                     if (currentLangScript in allLangScripts) {
-                      let currentScript = allLangScripts[currentLangScript];
+                      // console.log(currentLangScript);
+                      // let currentScript = allLangScripts[currentLangScript];
+                      let currentScript = currentLangScript.split('-').join('_');
+                      // console.log(currentScript);
                       let value = currentTransData[currentLangScript];
                       // console.log('Current script value', value);
                       $('#Translation_' + currentScript).val(value).change();

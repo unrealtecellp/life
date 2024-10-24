@@ -669,6 +669,7 @@ def createTextAnno(zipFile):
 
                 # print(project_details)   
     except:
+        logger.exception("")
         flash('Please upload a zip file. Check the file format at the link provided for the Sample File', 'warning')
 
         return redirect(url_for('easyAnno.home'))
@@ -683,7 +684,8 @@ def createImageAnno(zipFile, proj_name):
     userprojects = mongo.db.userprojects              # collection of users and their respective projects
     imageanno = mongo.db.imageanno
 
-    currentuserprojectsname =  sorted(list(currentuserprojects()))
+    current_username = getcurrentusername.getcurrentusername()
+    # currentuserprojectsname =  sorted(list(currentuserprojects()))
     activeprojectname = userprojects.find_one({ 'username' : current_user.username },\
                     {'_id' : 0, 'activeprojectname': 1})['activeprojectname']
 
@@ -751,15 +753,20 @@ def createImageAnno(zipFile, proj_name):
 
         # print(project_details)
         projects.insert_one(project_details)
+        projectname = project_details['projectname']
+        updateuserprojects.updateuserprojects(userprojects,
+                                                projectname,
+                                                current_username
+                                                )
         # get curent user project list and update
-        userprojectnamelist = userprojects.find_one({'username' : current_user.username})["myproject"]
-        # print(f'{"#"*80}\n{userprojectnamelist}')
-        userprojectnamelist.append(project_details['projectname'])
-        userprojects.update_one({ 'username' : current_user.username }, \
-            { '$set' : { 'myproject' : userprojectnamelist, 'activeprojectname' :  project_details['projectname']}})
+        # userprojectnamelist = userprojects.find_one({'username' : current_user.username})["myproject"]
+        # logger.debug(userprojectnamelist)
+        # userprojectnamelist.append(project_details['projectname'])
+        # userprojects.update_one({ 'username' : current_user.username }, \
+        #     { '$set' : { 'myproject' : userprojectnamelist, 'activeprojectname' :  project_details['projectname']}})
 
     except:
-        # flash('Please upload a zip file') 
+        logger.exception("")
         flash('Please upload a zip file. Check the file format at the link provided for the Sample File', 'warning')
 
         return redirect(url_for('easyAnno.home'))   
@@ -3041,8 +3048,8 @@ def createTextAnnoNew(zipFile):
 
                 # print(project_details)
                 # print(project_details["textData"])
-    except Exception as e:
-        print(e)
+    except:
+        logger.exception("")
         flash('Please upload a zip file. Check the file format at the link provided for the Sample File', 'warning')
 
         return redirect(url_for('easyAnno.home'))

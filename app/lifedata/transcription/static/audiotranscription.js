@@ -1359,8 +1359,10 @@ function updateSentenceDetailsOnSaveBoundary(boundaryID, sentence, region, form)
             key === 'translation') {
             for (let [k, v] of Object.entries(sentence[boundaryID][key])) {
                 // console.log(k, v)
-                tk = k.split('-')[1]
+                // tk = k.split('-')[1]
+                tk = k.split('-').join('_');
                 eleName = 'translation_' + tk
+                // console.log(eleName, form[eleName].value);
                 sentence[boundaryID][key][k] = form[eleName].value
             }
         }
@@ -1542,6 +1544,7 @@ function updateSentenceDetailsOnSaveBoundary(boundaryID, sentence, region, form)
 
     // console.log('regions', regions)
     // console.log('updateSentenceDetails(boundaryID, sentence, region, form)', sentence)
+    // console.log(sentence);
 
     return sentence
 }
@@ -2287,7 +2290,9 @@ function createSentenceForm(formElement, boundaryID) {
                     if (translationvalue === '') {
                         translationvalue = translationElicitation(activeprojectform, translang[translangcount])
                     }
-                    translationkey = translationkey.split('-')[1]
+                    // translationkey = translationkey.split('-')[1]
+                    translationkey = translationkey.split('-').join('_');
+                    // console.log(translationkey, translationvalue);
                     // add fieldset
                     // inpt += '<div class="form-group translation collapse in">';
                     // inpt += '<label for="Translation_' + translationkey + '">Translation in ' + translang[translangcount] + '</label>';
