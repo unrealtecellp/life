@@ -696,7 +696,7 @@ def write_mongodb_audio(mongo,
     #                                                                              run_asr=False,
     #                                                                              get_audio_json=False)
     
-    file_state, transcription_doc_id, fs_file_id = transcription_audiodetails.saveoneaudiofile(mongo,
+    file_state, transcription_doc_id, fs_file_id, transcription_data = transcription_audiodetails.saveoneaudiofile(mongo,
                                                                                  projects,
                                                                                  userprojects,
                                                                                  crawling,

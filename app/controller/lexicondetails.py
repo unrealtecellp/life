@@ -1,17 +1,22 @@
+from app.controller import (
+    life_logging
+)
+from pprint import pformat
+
+logger = life_logging.get_logger()
+
 field_list = ['lexemeId',
               'headword',
-            #   'Sense.Grammatical Category',
+              'Sense.Grammatical Category',
               'Sense.Gloss.eng',
-            #   'Sense.Gloss.hin',
-            #   'Sense.Gloss.san',
-            #   'Sense.Gloss.mai'
               ]
+# field_list = []
 def get_all_lexicon_details(lexemes, activeprojectname, field_list=field_list):
     get_fields = get_mongo_output_dict(field_list)
-    # print('Get fields', get_fields)
+    # logger.debug('Get fields: %s', pformat(get_fields))
     if 'SenseNew' in get_fields:
         sense_subfields = get_relevant_subfields('Sense', field_list)
-        # print('Sense fields', sense_subfields)
+        # logger.debug('Sense Sub fields: %s', sense_subfields)
     elif 'Variant' in get_fields:
         variant_subfields = get_relevant_subfields('Variant', field_list)
         # print('Variant fields', variant_subfields)
@@ -29,7 +34,7 @@ def get_all_lexicon_details(lexemes, activeprojectname, field_list=field_list):
                 if 'SenseNew' in lexeme_field:
                     sense_all_details = append_with_subfields(
                         current_lexeme[lexeme_field], sense_subfields, added_fields)
-                    # print('Sense all details', sense_all_details)
+                    # logger.debug('Sense all details: %s', sense_all_details)
                     current_lexeme_details.update(sense_all_details)
                 elif 'Variant' in lexeme_field:
                     variant_all_details = append_with_subfields(
@@ -41,10 +46,10 @@ def get_all_lexicon_details(lexemes, activeprojectname, field_list=field_list):
                     current_lexeme_details.update(field_all_details)
 
             details.append(current_lexeme_details)
-    # print(details)
-    # print(added_fields)
+    # logger.debug(pformat(details))
+    # logger.debug(added_fields)
     added_fields = clean_added_fields(added_fields)
-    # print(added_fields)
+    # logger.debug(added_fields)
     return added_fields, details
 
 
@@ -77,16 +82,19 @@ def append_single(lexeme_field_value, lexeme_field, added_fields):
 
 def append_with_subfields(lexeme_field, subfields_dict, added_fields):
     all_field_details = {}
-    # print('lexeme_field', lexeme_field)
-    # print('All field details', all_field_details)
-    # print('Current field,', lexeme_field)
+    # logger.debug('lexeme_field: %s', lexeme_field)
+    # logger.debug('All field details: %s', all_field_details)
+    # logger.debug('Current field,: %s', lexeme_field)
     for current_entry_key, current_entry in lexeme_field.items():
-        # print('Current Sense', current_entry_key, current_entry)
+        # logger.debug('Current Sense: %s\n%s', current_entry_key, current_entry)
         for field_subfield, fieldsubsubfield in subfields_dict.items():
-            # print('Field subfield', field_subfield)
-            # print('Subfield dict', subfields_dict)
+            # logger.debug('Field subfield: %s', field_subfield)
+            # logger.debug('Field sub subfield: %s', fieldsubsubfield)
+            # logger.debug(len(fieldsubsubfield))
+            # logger.debug('Subfield dict: %s', subfields_dict)
             if field_subfield in current_entry:
-                if len(fieldsubsubfield) == 1:
+                if (len(fieldsubsubfield) == 1 and
+                field_subfield != 'Gloss'):
                     if field_subfield == fieldsubsubfield[0]:
                         if field_subfield in all_field_details:
                             all_field_details[field_subfield].append(
@@ -137,6 +145,7 @@ def append_with_subfields(lexeme_field, subfields_dict, added_fields):
                 if field_subfield not in added_fields:
                     added_fields.append(field_subfield)
                 # print('All field details', fieldsubsubkey, all_field_details)
+            # logger.debug('All field details: %s', all_field_details)
 
     # print('All field details returned', all_field_details)
     return all_field_details

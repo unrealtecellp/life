@@ -7419,7 +7419,7 @@ var allomorphCount = 0;
 var glossLang;
 var count = '';
 function myFunction(newData) {
-  console.log(newData);
+//   console.log(newData);
   
   var inpt = '';
 

@@ -26,6 +26,7 @@ colorlog==6.8.2
 conll-df==0.0.4
 conllu==4.5.3
 contourpy==1.1.1
+coverage==7.6.1
 csvw==3.3.0
 cycler==0.12.1
 datasets==2.16.1
@@ -39,6 +40,7 @@ dominate==2.7.0
 einops==0.8.0
 emoji==2.12.1
 et-xmlfile==1.1.0
+exceptiongroup==1.2.2
 ffmpeg-python==0.2.0
 filelock==3.13.1
 Flask==2.2.3
@@ -55,6 +57,7 @@ gitdb==4.0.11
 GitPython==3.1.41
 google-auth==2.26.2
 google-auth-oauthlib==1.0.0
+googleads==3.8.0
 greenlet==3.0.3
 grpcio==1.60.0
 gunicorn==21.2.0
@@ -66,6 +69,7 @@ HyperPyYAML==1.2.2
 idna==3.4
 importlib-metadata==6.0.0
 importlib-resources==5.13.0
+iniconfig==2.0.0
 isocodes==2024.2.2
 isodate==0.6.1
 itsdangerous==2.1.2
@@ -124,6 +128,7 @@ pandas==1.5.3
 phonemizer==3.2.1
 Pillow==9.4.0
 pkgutil-resolve-name==1.3.10
+pluggy==1.5.0
 pooch==1.6.0
 praat-parselmouth==0.4.3
 pretty-errors==1.2.25
@@ -151,6 +156,7 @@ pymongo==3.11.4
 pyparsing==3.0.9
 PySocks==1.7.1
 pytesseract==0.3.10
+pytest==8.3.2
 python-dateutil==2.8.2
 python-dotenv==1.0.0
 python-engineio==4.9.0
@@ -158,7 +164,7 @@ python-socketio==5.11.1
 pytorch-lightning==2.2.4
 pytorch-metric-learning==2.5.0
 pytube==15.0.0
-pytubefix==6.8.1
+pytubefix==8.1.1
 pytz==2023.3.post1
 PyYAML==6.0
 rdflib==6.2.0
@@ -196,6 +202,7 @@ SQLAlchemy==2.0.30
 stanza==1.8.2
 stopit==1.1.1
 streamlit==1.30.0
+suds-jurko==0.6
 sympy==1.12
 tabulate==0.9.0
 tenacity==8.2.3
@@ -206,6 +213,7 @@ tgt==1.4.4
 threadpoolctl==3.1.0
 tokenizers==0.15.0
 toml==0.10.2
+tomli==2.0.1
 toolz==0.12.0
 torch==2.3.0
 torch-audiomentations==0.11.1
