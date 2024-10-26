@@ -2851,7 +2851,7 @@ def update_text_grid(mongo, text_grid, new_boundaries, transcription_type, inclu
         # else:
         #     boundary_id_end = str(end_boundary).replace('.', '')[:4]
 
-        boundary_id = generate_boundary_id(current_boundary)
+        boundary_id = generate_boundary_id(current_boundary, boundary_offset_value)
         text_grid = generate_new_boundary(mongo, text_grid, start_boundary, end_boundary,
                                           transcription_type, boundary_id)
 
@@ -3246,10 +3246,10 @@ def get_audio_chunk_bytes(audio_file, start_boundary, end_boundary, boundary_id,
     # return write_path
 
 
-def generate_boundary_id(current_boundary):
+def generate_boundary_id(current_boundary, offset_value = 0.0):
     try:
-        start_boundary = round(float(current_boundary['start']), 2)
-        end_boundary = round(float(current_boundary['end']), 2)
+        start_boundary = round(float(current_boundary['start'] - offset_value), 2)
+        end_boundary = round(float(current_boundary['end'] - offset_value), 2)
         boundary_id_start = get_boundary_id_from_number(
             format(start_boundary, '.2f'), 5)
         boundary_id_end = get_boundary_id_from_number(

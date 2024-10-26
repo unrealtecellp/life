@@ -99,10 +99,13 @@ function autoTranscription() {
           else {
             if (entry == 'IPA') {
               $('#ipaspanid').show();
+              $('#get-ipaid').prop("checked", true);
+              $('#ipaspanid').prop("disabled", false);
             }
             if (entry == 'Latin') {
               $('#romanspanid').show();
-              $('#romanspanid').prop("checked", true);
+              $('#get-romanid').prop("checked", true);
+              $('#romanspanid').prop("disabled", false);
             }
           }
         }
